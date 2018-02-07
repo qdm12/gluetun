@@ -2,15 +2,13 @@
 
 [![PIA Docker OpenVPN](readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
-This is a Docker container running your client connection to private internet access servers.
-
-Based on [Alpine Linux](https://alpinelinux.org/) and [OpenVPN](https://openvpn.net/)
+VPN client container to private internet access servers based on [Alpine Linux](https://alpinelinux.org/) and [OpenVPN](https://openvpn.net/)
 
 It requires:
-- A [Private Internet Access account](https://www.privateinternetaccess.com/pages/buy-vpn/) (username and password)
+- A Private Internet Access **username** and **password** - [signup up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
 
-It also downloads the PIA configuration files directly from [their website](https://www.privateinternetaccess.com/openvpn/openvpn.zip) at the Docker image build stage.
+The PIA configuration files are downloaded from [the PIA website](https://www.privateinternetaccess.com/openvpn/openvpn.zip) when the Docker image gets built.
 
 ## Installation & Testing
 
@@ -59,8 +57,10 @@ It also downloads the PIA configuration files directly from [their website](http
    ```bash
     sudo docker run -d --restart=always --name=pia --cap-add=NET_ADMIN --device=/dev/net/tun --dns 209.222.18.222 --dns 209.222.18.218 -e 'REGION=Romania' -v '/yourhostpath/auth.conf:/pia/auth.conf' qmcgaw/private-internet-access
     ```
-   
-   You can now connect other Docker containers to this VPN connection by adding `--net=container:pia` when launching them for the first time.
+    
+## Connect other containers to it
+
+Connect other Docker containers to the VPN connection by adding `--net=container:pia` when launching them.
 
 ## Container launch parameters
 
