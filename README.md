@@ -53,7 +53,6 @@ The PIA configuration files are downloaded from [the PIA website](https://www.pr
         ```
         If the displayed IP address appears and is different that your host IP address, your PIA OpenVPN client works !    
 5. Run the container as a daemon in the background with (and change the `/yourhostpath/auth.conf`):
-   
    ```bash
     sudo docker run -d --restart=always --name=pia --cap-add=NET_ADMIN --device=/dev/net/tun --dns 209.222.18.222 --dns 209.222.18.218 -e 'REGION=Romania' -v '/yourhostpath/auth.conf:/pia/auth.conf' qmcgaw/private-internet-access
     ```
