@@ -86,14 +86,14 @@ You have to use another container acting as a Reverse Proxy such as Nginx.
 2. I create the following Nginx configuration file *nginx.conf*:
 
     ```
-    user  nginx;                                                                     
-    worker_processes  1;                                                             
+    user  nginx;
+    worker_processes  1;
     error_log  /var/log/nginx/error.log warn;
     pid        /var/run/nginx.pid;
     events {
         worker_connections  1024;
     }
-    http {                                         
+    http {
         include       /etc/nginx/mime.types;
         default_type  application/octet-stream;
         log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
