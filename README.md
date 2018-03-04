@@ -5,7 +5,7 @@
 VPN client container to private internet access servers based on [Alpine Linux](https://alpinelinux.org/) and [OpenVPN](https://openvpn.net/)
 
 It requires:
-- A Private Internet Access **username** and **password** - [signup up](https://www.privateinternetaccess.com/pages/buy-vpn/)
+- A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
 
 The PIA configuration files are downloaded from [the PIA website](https://www.privateinternetaccess.com/openvpn/openvpn.zip) when the Docker image gets built.
