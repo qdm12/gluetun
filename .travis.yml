@@ -1,0 +1,9 @@
+language: generic
+sudo: required
+dist: trusty
+
+services:
+  - docker
+
+install:
+  - docker build .

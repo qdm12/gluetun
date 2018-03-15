@@ -2,6 +2,8 @@
 
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
+[![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
+
 VPN client container to private internet access servers based on [Alpine Linux](https://alpinelinux.org/) and [OpenVPN](https://openvpn.net/)
 
 It requires:
