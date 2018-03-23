@@ -1,11 +1,11 @@
 FROM alpine
 MAINTAINER Quentin McGaw <quentin.mcgaw@gmail.com>
-RUN apk add --no-cache openvpn curl unzip
-RUN mkdir /pia
-WORKDIR /pia
-RUN curl https://www.privateinternetaccess.com/openvpn/openvpn.zip > openvpn.zip && unzip openvpn.zip && rm openvpn.zip
-RUN apk del curl unzip
-COPY script.sh ./
-RUN chmod +x script.sh
-VOLUME ["/pia/auth.conf"]
+RUN mkdir /pia && cd /pia
+COPY script.sh /pia
+RUN apk add --no-cache openvpn && \
+    apk add --no-cache --virtual build-dependencies curl unzip && \
+    curl https://www.privateinternetaccess.com/openvpn/openvpn.zip > openvpn.zip && \
+    unzip openvpn.zip && rm openvpn.zip && \
+    apk del build-dependencies && \
+    chmod +x script.sh
 ENTRYPOINT ["/pia/script.sh"]
