@@ -1,12 +1,16 @@
-FROM alpine
-MAINTAINER Quentin McGaw <quentin.mcgaw@gmail.com>
-RUN mkdir /pia
-WORKDIR /pia
-COPY script.sh /pia
-RUN apk add --no-cache --update openvpn && \
-    apk add --no-cache --update --virtual build-dependencies curl unzip && \
-    curl https://www.privateinternetaccess.com/openvpn/openvpn.zip > openvpn.zip && \
-    unzip openvpn.zip && rm openvpn.zip && \
-    apk del build-dependencies && \
-    chmod +x script.sh
-ENTRYPOINT ["/pia/script.sh"]
+FROM alpine:3.7
+LABEL maintainer="quentin.mcgaw@gmail.com" \
+      description="VPN client container to private internet access servers based on Alpine Linux and OpenVPN" \
+      size="?MB" \
+      ram="?MB" \
+      github="https://github.com/qdm12/private-internet-access-docker"
+COPY script.sh .
+RUN chmod +x script.sh && \
+    apk add -q --progress --no-cache --update openvpn && \
+    apk add -q --progress --no-cache --update --virtual build-dependencies wget unzip && \
+    wget https://www.privateinternetaccess.com/openvpn/openvpn.zip && \
+    unzip openvpn.zip && \
+    rm openvpn.zip && \
+    apk del -q --progress --purge build-dependencies && \
+    rm -rf /var/cache/apk/*
+ENTRYPOINT /script.sh

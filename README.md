@@ -1,10 +1,10 @@
 # Private Internet Access Docker (OpenVPN, Alpine)
 
+Docker VPN client to private internet access servers based on [Alpine Linux](https://alpinelinux.org/) and [OpenVPN](https://openvpn.net/)
+
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
-
-VPN client container to private internet access servers based on [Alpine Linux](https://alpinelinux.org/) and [OpenVPN](https://openvpn.net/)
 
 It requires:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
@@ -14,59 +14,79 @@ The PIA configuration files are downloaded from [the PIA website](https://www.pr
 
 ## Installation & Testing
 
-1. Run the *tun.sh* script on your host machine to ensure you have the **tun** device setup
+1. Run the [**tun.sh**](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/tun.sh) script on your host machine to ensure you have the **tun** device setup
 
     ```bash
+    wget https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/tun.sh
     sudo chmod +x tun.sh
     ./tun.sh
     ```
 
-2. Obtaining the Docker image
-    - Option 1 of 2: Automated download from the Docker Hub Registry, simply go to step 3.
-    - Option 2 of 2: Build the image
-        1. Download the repository files or `git clone` them
-        2. With a terminal, go in the directory where the *Dockerfile* is located
-        3. Build the image with:
-
-            ```bash
-            sudo docker build -t qmcgaw/private-internet-access ./
-            ```
-
-3. Create a file *auth.conf* in `/yourhostpath` (for example), with:
+1. Create a file *auth.conf* in `/yourhostpath` (for example), with:
     - On the first line: your PIA username (i.e. `js89ds7`)
     - On the second line: your PIA password (i.e. `8fd9s239G`)
-4. Test the container by connecting another container to it
-    1. Run the container interactively with (and change the `/yourhostpath/auth.conf`):
+    
+### Using Docker only
+
+1. Test the container by connecting another container to it
+    1. Run the container interactively with (and change `/yourhostpath/auth.conf`):
 
         ```bash
-        sudo docker run --rm --name=piaTEST --cap-add=NET_ADMIN \
+        docker run --rm --name=piaTEST --cap-add=NET_ADMIN \
         --device=/dev/net/tun --dns 209.222.18.222 --dns 209.222.18.218 \
-        -e 'REGION=Romania' -v '/yourhostpath/auth.conf:/pia/auth.conf' \
+        -e 'REGION=Germany' -v '/yourhostpath/auth.conf:/pia/auth.conf:ro' \
         qmcgaw/private-internet-access
         ```
 
-        Wait about **5** seconds for it to connect to the PIA server.
-    2. Check your host IP address with:
+        Wait about 5 seconds for it to connect to the PIA server.
+    1. Check your host IP address with:
 
         ```bash
         curl -s ifconfig.co
         ```
 
-    3. Run the **curl** Docker container using your *piaTEST* container with:
+    1. Run the **curl** Docker container using your *piaTEST* container with:
 
         ```bash
-        sudo docker run --rm --net=container:piaTEST tutum/curl curl -s ifconfig.co
+        docker run --rm --net=container:piaTEST tutum/curl curl -s ifconfig.co
         ```
 
         If the displayed IP address appears and is different that your host IP address, your PIA OpenVPN client works !    
-5. Run the container as a daemon in the background with (and change the `/yourhostpath/auth.conf`):
+
+1. Run the container as a daemon in the background with (and change the `/yourhostpath/auth.conf`):
 
    ```bash
-    sudo docker run -d --restart=always --name=pia --cap-add=NET_ADMIN \
+    docker run -d --restart=always --name=pia --cap-add=NET_ADMIN \
     --device=/dev/net/tun --dns 209.222.18.222 --dns 209.222.18.218 \
-    -e 'REGION=Romania' -v '/yourhostpath/auth.conf:/pia/auth.conf' \
+    -e 'REGION=Germany' -v '/yourhostpath/auth.conf:/pia/auth.conf' \
     qmcgaw/private-internet-access
     ```
+        
+### Using Docker Compose
+
+1. Download [**docker-compose.yml**](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml)
+1. Edit it and change `yourpath`
+1. Run the container as a daemon in the background with:
+
+   ```bash
+    docker-compose up -d
+    ```
+
+    Wait about 5 seconds for it to connect to the PIA server.
+1. Check your host IP address with:
+
+    ```bash
+    curl -s ifconfig.co
+    ```
+
+1. Run the **curl** Docker container using your *pia* container with:
+
+    ```bash
+    docker run --rm --net=container:pia tutum/curl curl -s ifconfig.co
+    ```
+
+    If the displayed IP address appears and is different that your host IP address, your PIA OpenVPN client works !    
+
 
 ## Connect other containers to it
 

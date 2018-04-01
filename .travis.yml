@@ -1,9 +1,7 @@
 language: generic
-sudo: required
-dist: trusty
-
 services:
   - docker
-
 install:
   - docker build .
+#after_script:
+#  - "curl -X POST "

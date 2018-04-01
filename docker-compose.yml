@@ -1,0 +1,17 @@
+version: '3'
+services:
+    pia:
+        image: qmcgaw/private-internet-access
+        container_name: pia
+        cap_add:
+            - NET_ADMIN
+        devices:
+            - /dev/net/tun
+        dns:
+            - 209.222.18.222
+            - 209.222.18.218
+        volumes:
+            - /yourpath/auth.conf:/pia/auth.conf:ro
+        environment:
+            - REGION=Germany
+        restart: always
