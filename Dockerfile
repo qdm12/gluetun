@@ -1,8 +1,8 @@
 FROM alpine:3.7
 LABEL maintainer="quentin.mcgaw@gmail.com" \
       description="VPN client container to private internet access servers based on Alpine Linux and OpenVPN" \
-      size="?MB" \
-      ram="?MB" \
+      size="8MB" \
+      ram="4.3MB" \
       github="https://github.com/qdm12/private-internet-access-docker"
 COPY script.sh .
 RUN chmod +x script.sh && \

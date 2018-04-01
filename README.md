@@ -6,6 +6,8 @@ Docker VPN client to private internet access servers based on [Alpine Linux](htt
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
 
+The image is **8MB** and uses **4.3MB** of ram 
+
 It requires:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host

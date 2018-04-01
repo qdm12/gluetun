@@ -11,7 +11,7 @@ services:
             - 209.222.18.222
             - 209.222.18.218
         volumes:
-            - /yourpath/auth.conf:/pia/auth.conf:ro
+            - /yourpath/auth.conf:/auth.conf:ro
         environment:
             - REGION=Germany
         restart: always
