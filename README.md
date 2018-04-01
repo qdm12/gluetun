@@ -8,6 +8,7 @@ Docker VPN client to private internet access servers based on [Alpine Linux](htt
 
 [![](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
+
 | Download size | Image size | RAM usage | CPU usage |
 | --- | --- | --- | --- |
 | 3.3MB | 8.02MB | 4.3MB | Very low |
