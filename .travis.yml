@@ -3,5 +3,5 @@ services:
   - docker
 install:
   - docker build .
-#after_script:
-#  - "curl -X POST "
+after_script:
+  - "curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I="

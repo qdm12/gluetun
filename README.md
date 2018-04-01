@@ -6,7 +6,11 @@ Docker VPN client to private internet access servers based on [Alpine Linux](htt
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
 
-The image is **8MB** and uses **4.3MB** of ram 
+[![](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
+[![](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
+| Download size | Image size | RAM usage | CPU usage |
+| --- | --- | --- | --- |
+| 3.3MB | 8.02MB | 4.3MB | Very low |
 
 It requires:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
