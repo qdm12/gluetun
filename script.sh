@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -e
-if [ ! -f "/pia/auth.conf" ]]; then
+if [ ! -f "/auth.conf" ]]; then
     echo "File auth.conf was not found, aborting !"
     exit 1
 fi
