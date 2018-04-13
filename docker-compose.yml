@@ -7,9 +7,8 @@ services:
             - NET_ADMIN
         devices:
             - /dev/net/tun
-        dns:
-            - 209.222.18.222
-            - 209.222.18.218
+        networks:
+            - pianet
         volumes:
             - /yourpath/auth.conf:/auth.conf:ro
         environment:
