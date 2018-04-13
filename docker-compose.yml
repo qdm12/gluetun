@@ -14,3 +14,7 @@ services:
         environment:
             - REGION=Germany
         restart: always
+        
+networks:
+    pianet:
+        external: true

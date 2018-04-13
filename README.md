@@ -11,7 +11,7 @@ Docker VPN client to private internet access servers based on [Alpine Linux](htt
 
 | Download size | Image size | RAM usage | CPU usage |
 | --- | --- | --- | --- |
-| ?MB | 12.9MB | ?MB | Very low |
+| 5.4MB | 12.9MB | 11.89MB | Low to Medium |
 
 It requires:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)

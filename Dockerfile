@@ -1,10 +1,10 @@
 FROM alpine:3.7
 LABEL maintainer="quentin.mcgaw@gmail.com" \
       description="VPN client to private internet access servers using OpenVPN, Alpine and Cloudflare 1.1.1.1 DNS over TLS" \
-      download="?MB" \
+      download="5.4MB" \
       size="12.9MB" \
-      ram="?MB" \
-      cpu_usage="Very low" \
+      ram="11.89MB" \
+      cpu_usage="Low to medium" \
       github="https://github.com/qdm12/private-internet-access-docker"
 RUN apk add -q --progress --no-cache --update openvpn unbound && \
     apk add -q --progress --no-cache --update --virtual build-dependencies ca-certificates wget unzip && \
