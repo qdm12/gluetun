@@ -12,6 +12,8 @@ services:
         volumes:
             - /yourpath/auth.conf:/auth.conf:ro
         environment:
+            - PROTOCOL=tcp
+            - ENCRYPTION=strong
             - REGION=Germany
         restart: always
         

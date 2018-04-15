@@ -2,18 +2,26 @@ FROM alpine:3.7
 LABEL maintainer="quentin.mcgaw@gmail.com" \
       description="VPN client to private internet access servers using OpenVPN, Alpine and Cloudflare 1.1.1.1 DNS over TLS" \
       download="5.4MB" \
-      size="12.9MB" \
+      size="13MB" \
       ram="11.89MB" \
       cpu_usage="Low to medium" \
       github="https://github.com/qdm12/private-internet-access-docker"
 RUN apk add -q --progress --no-cache --update openvpn unbound && \
-    apk add -q --progress --no-cache --update --virtual build-dependencies ca-certificates wget unzip && \
-    wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip && \
-    unzip -q openvpn.zip && \
+    apk add -q --progress --no-cache --update --virtual=build-dependencies ca-certificates wget unzip && \
+    mkdir /openvpn-udp-normal /openvpn-udp-strong /openvpn-tcp-normal /openvpn-tcp-strong && \
+    wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
+            https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
+            https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
+            https://www.privateinternetaccess.com/openvpn/openvpn-strong-tcp.zip && \
+    unzip -q openvpn.zip -d /openvpn-udp-normal && \
+    unzip -q openvpn-strong.zip -d /openvpn-udp-strong && \
+    unzip -q openvpn-tcp.zip -d /openvpn-tcp-normal && \
+    unzip -q openvpn-strong-tcp.zip -d /openvpn-tcp-strong && \
     apk del -q --progress --purge build-dependencies && \
-    rm -rf /var/cache/apk/* /etc/unbound/unbound.conf /openvpn.zip
+    rm -rf /*.zip /etc/unbound/unbound.conf /var/cache/apk/*
 COPY unbound.conf /etc/unbound/unbound.conf
-ENTRYPOINT echo "nameserver 127.0.0.1" > /etc/resolv.conf && \
-           echo "options ndots:0" >> /etc/resolv.conf && \
-           unbound && \
-           openvpn --config "$REGION".ovpn --auth-user-pass auth.conf
+ENV ENCRYPTION=strong \
+    PROTOCOL=tcp \
+    REGION=Switzerland
+COPY entrypoint.sh /
+ENTRYPOINT /entrypoint.sh

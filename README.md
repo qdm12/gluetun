@@ -1,17 +1,33 @@
 # Private Internet Access Docker (OpenVPN, Alpine)
 
-Docker VPN client to private internet access servers based on [Alpine Linux](https://alpinelinux.org/) using [OpenVPN](https://openvpn.net/) and Unbound to connect to [Cloudflare DNS 1.1.1.1 over TLS](https://developers.cloudflare.com/1.1.1.1/dns-over-tls)
+Docker VPN client to private internet access servers using [OpenVPN](https://openvpn.net/) and [Cloudflare DNS 1.1.1.1 over TLS](https://developers.cloudflare.com/1.1.1.1/dns-over-tls)
+
+Optionally set the protocol (TCP, UDP) and the level of encryption using Docker environment variables.
 
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
+[![Docker Build Status](https://img.shields.io/docker/build/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
+
+[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
+[![GitHub issues](https://img.shields.io/github/issues/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
+[![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
+[![Docker Automated](https://img.shields.io/docker/automated/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 
 [![](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 
 | Download size | Image size | RAM usage | CPU usage |
 | --- | --- | --- | --- |
-| 5.4MB | 12.9MB | 11.89MB | Low to Medium |
+| 5.4MB | 13MB | 11.89MB | Low to Medium |
+
+It is based on:
+- [Alpine 3.7](https://alpinelinux.org)
+- [OpenVPN 2.4.5-r1](https://pkgs.alpinelinux.org/package/edge/main/ppc64le/openvpn)
+- [Unbound 1.7.0-r2](https://pkgs.alpinelinux.org/package/edge/main/aarch64/unbound)
 
 It requires:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
@@ -19,18 +35,17 @@ It requires:
 
 The PIA *.ovpn* configuration files are downloaded from 
 [the PIA website](https://www.privateinternetaccess.com/openvpn/openvpn.zip) 
-when the Docker image is built.
+when the Docker image is built. You can build the image yourself if you are paranoid.
 
 Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for multiple reasons:
 - Man-in-the-middle (ISP, hacker, government) can't block you from resolving the PIA server domain name. 
     *For example, `austria.privateinternetaccess.com` maps to `185.216.34.229`*
 - Man-in-the-middle (ISP, hacker, government) can't see to which server you connect nor when.
     *As the domain name are sent to 1.1.1.1 over TLS, there is no way to examine what domains you are asking to be resolved*
-- Lower latency than other DNS such as Google DNS, Open DNS or your ISP DNS.
 
-## Installation & Testing
+## Setup
 
-1. Run the [**tun.sh**](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/tun.sh) script on your host machine to ensure you have the **tun** device setup
+1. Run the [**tun.sh**](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/tun.sh) script on your host machine to ensure you have the `/dev/tun` device setup
 
     ```bash
     wget https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/tun.sh
@@ -47,45 +62,48 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
 1. Create a file *auth.conf* in `/yourhostpath` (for example), with:
     - On the first line: your PIA username (i.e. `js89ds7`)
     - On the second line: your PIA password (i.e. `8fd9s239G`)
-    
+
 ### Using Docker only
 
-Run the container with (change `/yourhostpath` to your actual path, and optionally `Germany`):
+1. Run the container with (at least change `/yourhostpath` to your actual path):
 
-```bash
-docker run -d --restart=always --name=pia --cap-add=NET_ADMIN \
---device=/dev/net/tun --network=pianet \
--e REGION=Germany -v /yourhostpath/auth.conf:/auth.conf:ro \
-qmcgaw/private-internet-access
-```
+    ```bash
+    docker run -d --restart=always --name=pia --cap-add=NET_ADMIN \
+    --device=/dev/net/tun --network=pianet \
+    -v /yourhostpath/auth.conf:/auth.conf:ro \
+    -e REGION=Germany -e PROTOCOL=udp -e ENCRYPTION=normal \
+    qmcgaw/private-internet-access
+    ```
 
-Wait about 5 seconds for it to connect to the PIA server.
-You can check with:
+    Note that you can change `REGION`, `PROTOCOL` and `ENCRYPTION`. 
+    See the [Environment variables section](#environment-variables)
+1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
 
-```bash
-docker logs pia
-```
+    ```bash
+    docker logs pia
+    ```
 
-You should now check it works following the [Testing section](#testing)
+1. Follow the [**Testing section**](#testing)
 
 ### Using Docker Compose
 
 1. Download [**docker-compose.yml**](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml)
-1. Edit it and change `yourpath`
+1. Edit it and change at least `yourpath`
 1. Run the container as a daemon in the background with:
 
    ```bash
     docker-compose up -d
     ```
 
-    Wait about 5 seconds for it to connect to the PIA server.
-    You can check with:
+    Note that you can change `REGION`, `PROTOCOL` and `ENCRYPTION`. 
+    See the [Environment variables section](#environment-variables)
+1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
 
     ```bash
     docker logs pia
     ```
     
-1. You should now check it works following the [Testing section](#testing)
+1. Follow the [**Testing section**](#testing)
 
 ## Testing
 
@@ -98,24 +116,31 @@ You should now check it works following the [Testing section](#testing)
 1. Run the **curl** Docker container using your *pia* container with:
 
     ```bash
-    docker run --rm --network=container:pia tutum/curl curl -s ifconfig.co
+    docker run --rm --network=container:pia byrnedo/alpine-curl ifconfig.co
     ```
 
     If the displayed IP address appears and is different that your host IP address, 
     the PIA client should fully work !
 
-## Container launch parameters
+## Environment variables
 
-- You can change the `REGION` environment variable to one of the [regions supported by private internet access](https://www.privateinternetaccess.com/pages/network/)
-- If you know what you're doing, you can change the container name (`pia`), 
-  the hostname (`piaclient`) and the network name (`pianet`)
+| Environment variable | Default | Description |
+| --- | --- | --- |
+| `REGION` | `Switzerland` | Any one of the [regions supported by private internet access](https://www.privateinternetaccess.com/pages/network/) |
+| `PROTOCOL` | `tcp` | `tcp` or `udp` |
+| `ENCRYPTION` | `strong` | `normal` or `strong` |
+
+If you know what you're doing, you can change the container name (`pia`), 
+the hostname (`piaclient`) and the network name (`pianet`) as well.
 
 ## Connect other containers to it
 
 Connect other Docker containers to the PIA VPN connection by adding 
 `--network=container:pia` when launching them.
+
+---
   
-## Access ports of containers connected to the VPN container
+## EXTRA: Access ports of containers connected to the VPN container
 
 You have to use another container acting as a Reverse Proxy such as Nginx. 
 
@@ -164,3 +189,11 @@ You have to use another container acting as a Reverse Proxy such as Nginx.
 1. Access the WebUI of Deluge at [localhost:8000](http://localhost:8000)
 
 For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
+
+## EXTRA: For the paranoids
+
+- You might want to build the image yourself
+- The download and unziping is done at build for the ones not able to download the zip files with their ISPs.
+- Checksums for PIA openvpn zip files are not used as these files change often
+- You should use strong encryption for the environment variable `ENCRYPTION`
+
