@@ -1,4 +1,4 @@
-# Private Internet Access Docker (OpenVPN, Alpine)
+# Private Internet Access Client (OpenVPN, Alpine and DNS over TLS with Unbound)
 
 Docker VPN client to private internet access servers using [OpenVPN](https://openvpn.net/) and [Cloudflare DNS 1.1.1.1 over TLS](https://developers.cloudflare.com/1.1.1.1/dns-over-tls)
 
