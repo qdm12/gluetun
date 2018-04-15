@@ -6,8 +6,8 @@ LABEL maintainer="quentin.mcgaw@gmail.com" \
       ram="11.89MB" \
       cpu_usage="Low to medium" \
       github="https://github.com/qdm12/private-internet-access-docker"
-RUN apk add -q --progress --no-cache --update openvpn unbound && \
-    apk add -q --progress --no-cache --update --virtual=build-dependencies ca-certificates wget unzip && \
+RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates wget && \
+    apk add -q --progress --no-cache --update --virtual=build-dependencies unzip && \
     mkdir /openvpn-udp-normal /openvpn-udp-strong /openvpn-tcp-normal /openvpn-tcp-strong && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
@@ -20,6 +20,7 @@ RUN apk add -q --progress --no-cache --update openvpn unbound && \
     apk del -q --progress --purge build-dependencies && \
     rm -rf /*.zip /etc/unbound/unbound.conf /var/cache/apk/*
 COPY unbound.conf /etc/unbound/unbound.conf
+HEALTHCHECK --interval=10m --timeout=3s --start-period=5s --retries=1 CMD [ $(wget -qO- -T 2 https://api.ipify.org) != "$INITIALIP" ] || exit 1
 ENV ENCRYPTION=strong \
     PROTOCOL=tcp \
     REGION=Switzerland

@@ -1,6 +1,8 @@
 #!/bin/sh
 
-printf "Changing DNS to localhost..."
+printf "\nDetecting current public IP address..."
+export INITIALIP=$(wget -qO- -T 2 https://api.ipify.org)
+printf "$INITIALIP\nChanging DNS to localhost..."
 echo "nameserver 127.0.0.1" > /etc/resolv.conf
 echo "options ndots:0" >> /etc/resolv.conf
 printf "DONE\nStarting Unbound to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint TCP 853..."

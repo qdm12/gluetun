@@ -28,6 +28,7 @@ It is based on:
 - [Alpine 3.7](https://alpinelinux.org)
 - [OpenVPN 2.4.5-r1](https://pkgs.alpinelinux.org/package/edge/main/ppc64le/openvpn)
 - [Unbound 1.7.0-r2](https://pkgs.alpinelinux.org/package/edge/main/aarch64/unbound)
+- wget and ca-certificates for the healthcheck
 
 It requires:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
@@ -106,6 +107,11 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
 1. Follow the [**Testing section**](#testing)
 
 ## Testing
+
+1. Note that you can simply use the HEALTCHECK provided. The container will stop by itself 
+if the VPN IP is the same as your initial public IP address.
+
+Otherwise you can follow these instructions:
 
 1. Check your host IP address with:
 
