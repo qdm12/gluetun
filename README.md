@@ -22,13 +22,13 @@ Optionally set the protocol (TCP, UDP) and the level of encryption using Docker 
 
 | Download size | Image size | RAM usage | CPU usage |
 | --- | --- | --- | --- |
-| 5.9MB | 13.5MB | 11.89MB | Low to Medium |
+| 5.6MB | 13.5MB | 12MB | Low |
 
 It is based on:
 - [Alpine 3.7](https://alpinelinux.org)
 - [OpenVPN 2.4.5-r1](https://pkgs.alpinelinux.org/package/edge/main/ppc64le/openvpn)
 - [Unbound 1.7.0-r2](https://pkgs.alpinelinux.org/package/edge/main/aarch64/unbound)
-- wget and ca-certificates for the healthcheck
+- Ca-Certificates for the healthcheck (through HTTPS)
 
 It requires:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
