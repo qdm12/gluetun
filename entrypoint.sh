@@ -1,11 +1,12 @@
 #!/bin/sh
 
-printf "\nDetecting current public IP address..."
-export INITIALIP=$(wget -qO- -T 2 https://api.ipify.org)
-printf "$INITIALIP\nChanging DNS to localhost..."
+printf "\nDetecting details from public IP address..."
+export CITY=$(wget -qO- -T 2 https://ipinfo.io/city)
+export ORG=$(wget -qO- -T 2 https://ipinfo.io/org)
+printf "DONE\nOrganization: $ORG\nCountry: $COUNTRY\nCity: $CITY\nChanging DNS to localhost..."
 echo "nameserver 127.0.0.1" > /etc/resolv.conf
 echo "options ndots:0" >> /etc/resolv.conf
-printf "DONE\nStarting Unbound to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint TCP 853..."
+printf "DONE\nStarting Unbound to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint..."
 unbound
 printf "DONE\nStarting OpenVPN using $PROTOCOL with $ENCRYPTION encryption\n"
 DIR=/openvpn-$PROTOCOL-$ENCRYPTION
