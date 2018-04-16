@@ -1,8 +1,8 @@
 FROM alpine:3.7
 LABEL maintainer="quentin.mcgaw@gmail.com" \
       description="VPN client to private internet access servers using OpenVPN, Alpine and Cloudflare 1.1.1.1 DNS over TLS" \
-      download="5.4MB" \
-      size="13MB" \
+      download="5.9MB" \
+      size="13.5MB" \
       ram="11.89MB" \
       cpu_usage="Low to medium" \
       github="https://github.com/qdm12/private-internet-access-docker"
@@ -20,7 +20,7 @@ RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates &&
     apk del -q --progress --purge build-dependencies && \
     rm -rf /*.zip /etc/unbound/unbound.conf /var/cache/apk/*
 COPY unbound.conf /etc/unbound/unbound.conf
-HEALTHCHECK --interval=10m --timeout=3s --start-period=5s --retries=1 \
+HEALTHCHECK --interval=10m --timeout=5s --start-period=10s --retries=1 \
             CMD VPNCITY=$(wget -qO- -T 2 https://ipinfo.io/city); \
                 VPNORGANIZATION=$(wget -qO- -T 2 https://ipinfo.io/org); \
             printf "\nCity: $VPNCITY\nOrganization: $VPNORGANIZATION"; \
@@ -29,4 +29,5 @@ ENV ENCRYPTION=strong \
     PROTOCOL=tcp \
     REGION=Switzerland
 COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 ENTRYPOINT /entrypoint.sh

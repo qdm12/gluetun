@@ -22,7 +22,7 @@ Optionally set the protocol (TCP, UDP) and the level of encryption using Docker 
 
 | Download size | Image size | RAM usage | CPU usage |
 | --- | --- | --- | --- |
-| 5.4MB | 13MB | 11.89MB | Low to Medium |
+| 5.9MB | 13.5MB | 11.89MB | Low to Medium |
 
 It is based on:
 - [Alpine 3.7](https://alpinelinux.org)
