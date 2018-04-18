@@ -27,7 +27,7 @@ HEALTHCHECK --interval=10m --timeout=5s --start-period=10s --retries=1 \
             [ "$VPNCITY" != "$CITY" ] || [ "$VPNORGANIZATION" != "$ORGANIZATION" ] || exit 1
 ENV ENCRYPTION=strong \
     PROTOCOL=tcp \
-    REGION=Switzerland
+    REGION=Germany
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT /entrypoint.sh

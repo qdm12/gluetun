@@ -10,5 +10,5 @@ printf "DONE\nStarting Unbound to connect to Cloudflare DNS 1.1.1.1 at its TLS e
 unbound
 printf "DONE\nStarting OpenVPN using $PROTOCOL with $ENCRYPTION encryption\n"
 cd /openvpn-$PROTOCOL-$ENCRYPTION
-openvpn --config $REGION.ovpn --auth-user-pass /auth.conf
+openvpn --config "$REGION.ovpn" --auth-user-pass /auth.conf
 printf "\n\nExiting..."
