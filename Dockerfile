@@ -20,11 +20,11 @@ RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates &&
     apk del -q --progress --purge build-dependencies && \
     rm -rf /*.zip /etc/unbound/unbound.conf /var/cache/apk/*
 COPY unbound.conf /etc/unbound/unbound.conf
-HEALTHCHECK --interval=10m --timeout=5s --start-period=10s --retries=1 \
-            CMD VPNCITY=$(wget -qO- -T 2 https://ipinfo.io/city); \
-                VPNORGANIZATION=$(wget -qO- -T 2 https://ipinfo.io/org); \
-            printf "\nCity: $VPNCITY\nOrganization: $VPNORGANIZATION"; \
-            [ "$VPNCITY" != "$CITY" ] || [ "$VPNORGANIZATION" != "$ORGANIZATION" ] || exit 1
+HEALTHCHECK --interval=10m --timeout=10s --start-period=10s --retries=2 \
+            CMD VPNCITY=$(wget -qO- -T 2 https://ipinfo.io/city) && \
+                VPNORGANIZATION=$(wget -qO- -T 2 https://ipinfo.io/org) && \
+                echo "City: $VPNCITY | Organization: $VPNORGANIZATION" && \
+                [ "$VPNCITY" != "$CITY" ] && [ "$VPNORGANIZATION" != "$ORGANIZATION" ] || exit 1
 ENV ENCRYPTION=strong \
     PROTOCOL=tcp \
     REGION=Germany
