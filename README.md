@@ -46,15 +46,13 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
 
 ## Setup
 
-1. Make sure you have your `/dev/net/tun` device setup on your host:
+1. Make sure you have your `/dev/net/tun` device setup on your host with one of the following commands, depending on your OS:
 
 	```bash
-	mkdir -p -m 755 /dev/net
-	mknod /dev/net/tun c 10 200
 	insmod /lib/modules/tun.ko
 	```
 	
-	On Raspbian, simply run:
+	Or
 	
 	```bash
 	sudo modprobe tun
