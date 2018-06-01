@@ -53,6 +53,12 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
 	mknod /dev/net/tun c 10 200
 	insmod /lib/modules/tun.ko
 	```
+	
+	On Raspbian, simply run:
+	
+	```bash
+	sudo modprobe tun
+	```
 
 1. Create a network to be used by this container and other containers connecting to it with:
 

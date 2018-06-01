@@ -22,8 +22,8 @@ RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates &&
 COPY unbound.conf /etc/unbound/unbound.conf
 HEALTHCHECK --interval=10m --timeout=10s --start-period=10s --retries=1 \
             CMD export OLD_VPN_IP="$NEW_VPN_IP" && \
-				export NEW_VPN_IP=$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*') && \
-				[ "$NEW_VPN_IP" != "$INITIAL_IP" ] && [ "$NEW_VPN_IP" != "$OLD_VPN_IP" ] || exit 1
+                export NEW_VPN_IP=$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*') && \
+                [ "$NEW_VPN_IP" != "$INITIAL_IP" ] && [ "$NEW_VPN_IP" != "$OLD_VPN_IP" ] || exit 1
 ENV ENCRYPTION=strong \
     PROTOCOL=tcp \
     REGION=Germany
