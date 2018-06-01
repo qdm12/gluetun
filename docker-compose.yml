@@ -5,6 +5,8 @@ services:
         container_name: pia
         cap_add:
             - NET_ADMIN
+        devices:
+            - /dev/net/tun
         networks:
             - pianet
         volumes:

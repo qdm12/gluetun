@@ -46,6 +46,14 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
 
 ## Setup
 
+1. Make sure you have your `/dev/net/tun` device setup on your host:
+
+	```bash
+	mkdir -p -m 755 /dev/net
+	mknod /dev/net/tun c 10 200
+	insmod /lib/modules/tun.ko
+	```
+
 1. Create a network to be used by this container and other containers connecting to it with:
 
     ```bash
@@ -61,8 +69,9 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
 1. Run the container with (at least change `/yourhostpath` to your actual path):
 
     ```bash
-    docker run -d --restart=always --name=pia --cap-add=NET_ADMIN \
-    --network=pianet -v /yourhostpath/auth.conf:/auth.conf:ro \
+    docker run -d --restart=always --name=pia \
+	--cap-add=NET_ADMIN --device=/dev/net/tun --network=pianet \
+	-v /yourhostpath/auth.conf:/auth.conf:ro \
     -e REGION=Germany -e PROTOCOL=udp -e ENCRYPTION=normal \
     qmcgaw/private-internet-access
     ```
