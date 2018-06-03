@@ -68,12 +68,12 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
     - On the first line: your PIA username (i.e. `js89ds7`)
     - On the second line: your PIA password (i.e. `8fd9s239G`)
 
-### Using Docker only
+### Option 1: Using Docker only
 
 1. Run the container with (at least change `/yourhostpath` to your actual path):
 
     ```bash
-    docker run -d --restart=always --name=pia \
+    docker run -d --name=pia \
 	--cap-add=NET_ADMIN --device=/dev/net/tun --network=pianet \
 	-v /yourhostpath/auth.conf:/auth.conf:ro \
     -e REGION=Germany -e PROTOCOL=udp -e ENCRYPTION=normal \
@@ -90,7 +90,7 @@ Cloudflare **DNS 1.1.1.1 over TLS** is used to connect to any PIA server for mul
 
 1. Follow the [**Testing section**](#testing)
 
-### Using Docker Compose
+### Option 2: Using Docker Compose
 
 1. Download [**docker-compose.yml**](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml)
 1. Edit it and change at least `yourpath`
@@ -130,7 +130,7 @@ Otherwise you can follow these instructions:
     ```
 
     If the displayed IP address appears and is different that your host IP address, 
-    the PIA client should fully work !
+    the PIA client works !
 
 ## Environment variables
 
@@ -149,14 +149,26 @@ Connect other Docker containers to the PIA VPN connection by adding
 `--network=container:pia` when launching them.
 
 ---
-  
+
 ## EXTRA: Access ports of containers connected to the VPN container
 
 You have to use another container acting as a Reverse Proxy such as Nginx. 
 
 **Example**:
-- *Deluge* container with name **deluge** connected to the `pia` container with `--network=container:pia`
-- Deluge's WebUI runs on port TCP 8112
+- We launch a *Deluge* (torrent client) container with name **deluge** connected to the `pia` container with:
+
+	```bash
+	docker run -d --name=deluge --network=container:pia linuxserver/deluge
+	```
+
+- We launch a *Hydra* container with name **hydra** connected to the `pia` container with:
+
+	```bash
+	docker run -d --name=hydra --network=container:pia linuxserver/hydra
+	```
+
+- HTTP User interfaces are accessible at port 8112 for Deluge and 5075 for Hydra
+
 
 1. Create the Nginx configuration file *nginx.conf*:
 
@@ -178,10 +190,16 @@ You have to use another container acting as a Reverse Proxy such as Nginx.
         sendfile        on;
         keepalive_timeout  65;
         server {
-            listen 80;
+            listen 1001;
             location / {
                 proxy_pass http://deluge:8112/;
                 proxy_set_header X-Deluge-Base "/";
+            }
+        }
+        server {
+            listen 1002;
+            location / {
+                proxy_pass http://hydra:5075/;
             }
         }
         include /etc/nginx/conf.d/*.conf;
@@ -191,11 +209,11 @@ You have to use another container acting as a Reverse Proxy such as Nginx.
 1. Run the Alpine [Nginx container](https://hub.docker.com/_/nginx) with:
 
     ```bash
-    docker -d --restart=always --name=proxypia -p 8000:80 \
-    --network=pianet --link pia:deluge \
+    docker run -d --name=proxypia -p 8001:1001 -p 8002:1002 \
+    --network=pianet --link pia:deluge --link pia:hydra \
     -v /mypathto/nginx.conf:/etc/nginx/nginx.conf:ro nginx:alpine
     ```
-    
+
 1. Access the WebUI of Deluge at [localhost:8000](http://localhost:8000)
 
 For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
