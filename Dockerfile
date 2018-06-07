@@ -6,7 +6,7 @@ LABEL maintainer="quentin.mcgaw@gmail.com" \
       ram="12MB" \
       cpu_usage="Low" \
       github="https://github.com/qdm12/private-internet-access-docker"
-RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates && \
+RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates iptables && \
     apk add -q --progress --no-cache --update --virtual=build-dependencies unzip && \
     mkdir /openvpn-udp-normal /openvpn-udp-strong /openvpn-tcp-normal /openvpn-tcp-strong && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \

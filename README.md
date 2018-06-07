@@ -4,6 +4,8 @@ Docker VPN client to private internet access servers using [OpenVPN](https://ope
 
 Optionally set the protocol (TCP, UDP) and the level of encryption using Docker environment variables.
 
+A killswitch is implemented with a firewall (*iptables*), only allowing traffic with PIA servers on needed ports / protocols.
+
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
@@ -126,7 +128,7 @@ Otherwise you can follow these instructions:
 1. Run the **curl** Docker container using your *pia* container with:
 
     ```bash
-    docker run --rm --network=container:pia byrnedo/alpine-curl ifconfig.co
+    docker run --rm --network=container:pia byrnedo/alpine-curl -s ifconfig.co
     ```
 
     If the displayed IP address appears and is different that your host IP address, 
