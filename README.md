@@ -27,9 +27,9 @@ A killswitch is implemented with a firewall (*iptables*), only allowing traffic 
 | 5.6MB | 13.5MB | 12MB | Low |
 
 It is based on:
-- [Alpine 3.7](https://alpinelinux.org)
-- [OpenVPN 2.4.5-r1](https://pkgs.alpinelinux.org/package/edge/main/ppc64le/openvpn)
-- [Unbound 1.7.0-r2](https://pkgs.alpinelinux.org/package/edge/main/aarch64/unbound)
+- [Alpine 3.8](https://alpinelinux.org)
+- [OpenVPN 	2.4.6-r3](https://pkgs.alpinelinux.org/package/edge/main/ppc64le/openvpn)
+- [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/edge/main/aarch64/unbound)
 - Ca-Certificates for the healthcheck (through HTTPS)
 
 It requires:

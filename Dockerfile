@@ -1,7 +1,7 @@
-FROM alpine:3.7
+FROM alpine:3.8
 LABEL maintainer="quentin.mcgaw@gmail.com" \
-      description="VPN client to private internet access servers using OpenVPN, Alpine and Cloudflare 1.1.1.1 DNS over TLS" \
-      download="5.6MB" \
+      description="VPN client to private internet access servers using OpenVPN, Alpine, IPtables firewall and Cloudflare 1.1.1.1 DNS over TLS" \
+      download="5.7MB" \
       size="13.5MB" \
       ram="12MB" \
       cpu_usage="Low" \
