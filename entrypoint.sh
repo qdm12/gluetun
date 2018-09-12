@@ -59,7 +59,7 @@ printf "\n * Starting OpenVPN using the following parameters:"
 printf "\n   * Domain: $PIADOMAIN"
 printf "\n   * Port: $PORT"
 printf "\n   * Protocol: $PROTOCOL"
-printf "\n   * Encryption: $ENCRYPTION"
+printf "\n   * Encryption: $ENCRYPTION\n"
 cd /openvpn-$PROTOCOL-$ENCRYPTION
 openvpn --config "$REGION.ovpn" --auth-user-pass /auth.conf
 printf "\nExiting...\n\n"
