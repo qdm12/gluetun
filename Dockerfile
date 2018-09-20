@@ -1,12 +1,12 @@
 FROM alpine:3.8
 LABEL maintainer="quentin.mcgaw@gmail.com" \
-      description="VPN client to private internet access servers using OpenVPN, Alpine, IPtables firewall and Cloudflare 1.1.1.1 DNS over TLS" \
+      description="VPN client to private internet access servers using OpenVPN, Alpine and IPtables firewall" \
       download="5.7MB" \
-      size="13.5MB" \
-      ram="12MB" \
+      size="8.94MB" \
+      ram="11MB" \
       cpu_usage="Low" \
       github="https://github.com/qdm12/private-internet-access-docker"
-RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates iptables && \
+RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables && \
     apk add -q --progress --no-cache --update --virtual=build-dependencies unzip && \
     mkdir /openvpn-udp-normal /openvpn-udp-strong /openvpn-tcp-normal /openvpn-tcp-strong && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
@@ -18,8 +18,7 @@ RUN apk add -q --progress --no-cache --update openvpn unbound ca-certificates ip
     unzip -q openvpn-tcp.zip -d /openvpn-tcp-normal && \
     unzip -q openvpn-strong-tcp.zip -d /openvpn-tcp-strong && \
     apk del -q --progress --purge build-dependencies && \
-    rm -rf /*.zip /etc/unbound/unbound.conf /var/cache/apk/*
-COPY unbound.conf /etc/unbound/unbound.conf
+    rm -rf /*.zip /var/cache/apk/*
 HEALTHCHECK --interval=10m --timeout=10s --start-period=10s --retries=1 \
             CMD export OLD_VPN_IP="$NEW_VPN_IP" && \
                 export NEW_VPN_IP=$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*') && \
