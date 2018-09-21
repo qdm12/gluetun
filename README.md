@@ -1,6 +1,6 @@
-# Private Internet Access Client (OpenVPN on Alpine Linux)
+# Private Internet Access Client (OpenVPN+Iptables+DNS over TLS on Alpine Linux)
 
-Docker VPN client to private internet access servers using [OpenVPN](https://openvpn.net/) and Iptables on Alpine Linux.
+Docker VPN client to private internet access servers using [OpenVPN](https://openvpn.net/), Iptables and Unbound (Cloudflare DNS over TLS) on Alpine Linux.
 
 Optionally set the protocol (TCP, UDP) and the level of encryption using Docker environment variables.
 
@@ -24,28 +24,28 @@ A killswitch is implemented with the *iptables* firewall, only allowing traffic 
 
 | Download size | Image size | RAM usage | CPU usage |
 | --- | --- | --- | --- |
-| 5MB | 8.94MB | 11MB | Low |
+| ???MB | 15.7MB | 14MB | Low |
 
-It is based on:
+## Features
 
-- [Alpine 3.8](https://alpinelinux.org)
-- [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn)
-- [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables)
-- CA-Certificates for the healthcheck (through HTTPS)
+- Uses [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to connect to PIA servers
+- The firewall [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network
+- Your DNS queries are encrypted using [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configure with Cloudflare's 1.1.1.1 DNS over TLS
+- Malicious domain names resolution is blocked with [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound)
+- Lightweight, based on [Alpine 3.8](https://alpinelinux.org)
+- Restarts OpenVPN on failure using another IP address corresponding to the PIA server domain name (usually 10 IPs per subdomain name)
+- Regular Docker healthchecks using wget on duckduckgo.com
+- Connect other containers to it
 
-It requires:
+## Requirements
 
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
-
-The PIA *.ovpn* configuration files are downloaded from [the PIA website](https://www.privateinternetaccess.com/openvpn/openvpn.zip) when the Docker image is built. You can build the image yourself if you are paranoid.
-
-You might also want to use [my Cloudflare DNS over TLS Docker container](https://hub.docker.com/r/qmcgaw/cloudflare-dns-server/) to connect to any PIA server so that:
-
-- Man-in-the-middle (ISP, hacker, government) can't block you from resolving the PIA server domain name
-    *For example, `austria.privateinternetaccess.com` maps to `185.216.34.229`*
-- Man-in-the-middle (ISP, hacker, government) can't see to which server you connect nor when.
-    *As the domain name are sent to 1.1.1.1 over TLS, there is no way to examine what domains you are asking to be resolved*
+- If you use an advanced firewall:
+  - Allow outgoing TCP port 501 for TCP strong encryption
+  - Allow outgoing TCP port 502 for TCP normal encryption
+  - Allow outgoing UDP port 1197 for UDP strong encryption
+  - Allow outgoing UDP port 1198 for UDP normal encryption
 
 ## Setup
 
@@ -217,14 +217,13 @@ For more containers, add more `--link pia:xxx` and modify *nginx.conf* according
 
 ## EXTRA: For the paranoids
 
-- You might want to build the image yourself
+- You might want to build the Docker image yourself
 - The download and unziping is done at build for the ones not able to download the zip files with their ISPs.
 - Checksums for PIA openvpn zip files are not used as these files change often
 - You should use strong encryption for the environment variable `ENCRYPTION`
+- Let me know if you have any extra idea :) !
 
 ### TODOs
 
-- More iptables restrictions
-- Rework readme with unbound required for VPN
 - Block malicious websites with Unbound
 - Add checks when launching PIA $?

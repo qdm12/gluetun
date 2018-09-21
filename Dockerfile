@@ -1,9 +1,9 @@
 FROM alpine:3.8
 LABEL maintainer="quentin.mcgaw@gmail.com" \
-      description="VPN client to private internet access servers using OpenVPN, Alpine and IPtables firewall" \
-      download="5.7MB" \
-      size="8.94MB" \
-      ram="11MB" \
+      description="VPN client to private internet access servers using OpenVPN, IPtables firewall, DNS over TLS with Unbound and Alpine Linux" \
+      download="???MB" \
+      size="15.7MB" \
+      ram="13MB" \
       cpu_usage="Low" \
       github="https://github.com/qdm12/private-internet-access-docker"
 HEALTHCHECK --interval=1m --timeout=10s --start-period=10s --retries=1 \
