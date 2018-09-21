@@ -29,4 +29,5 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables i
     addgroup -S nonrootusers && adduser -S nonrootuser -G nonrootusers
 COPY unbound.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh /
+RUN chmod +x entrypoint.sh
 ENTRYPOINT /entrypoint.sh
