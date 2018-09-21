@@ -26,28 +26,39 @@ done
 printf "\n * Deleting all iptables rules..."
 iptables --flush
 iptables --delete-chain
-iptables -t nat --flush
-iptables -t nat --delete-chain
-iptables -P OUTPUT DROP
+ip6tables --flush
+ip6tables --delete-chain
 printf "DONE"
+iptables -F OUTPUT
+iptables -P OUTPUT DROP
+ip6tables -F OUTPUT 2>/dev/null
+ip6tables -P OUTPUT DROP 2>/dev/null
 printf "\n * Adding rules to accept local loopback traffic..."
-iptables -A INPUT -j ACCEPT -i lo
-iptables -A OUTPUT -j ACCEPT -o lo
+iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+ip6tables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -o lo -j ACCEPT 2>/dev/null
 printf "DONE"
 printf "\n * Adding rules to accept traffic of subnet $SUBNET..."
-#iptables -A INPUT --src $SUBNET -j ACCEPT -i eth0
-iptables -A OUTPUT -d $SUBNET -j ACCEPT -o eth0
+iptables -A OUTPUT -d $SUBNET -j ACCEPT
+ip6tables -A OUTPUT -d $SUBNET -j ACCEPT 2>/dev/null
 printf "DONE"
 for ip in $VPNIPS
 do
     printf "\n * Adding rules to accept traffic with $ip on port $PROTOCOL $PORT..."
     iptables -A OUTPUT -j ACCEPT -d $ip -o eth0 -p $PROTOCOL -m $PROTOCOL --dport $PORT
-    iptables -A INPUT -j ACCEPT -s $ip -i eth0 -p $PROTOCOL -m $PROTOCOL --sport $PORT
+    ip6tables -A OUTPUT -j ACCEPT -d $ip -o eth0 -p $PROTOCOL -m $PROTOCOL --dport $PORT 2>/dev/null
     printf "DONE"
 done
 printf "\n * Adding rules to accept traffic going through the tun device..."
-iptables -A INPUT -j ACCEPT -i tun0
-iptables -A OUTPUT -j ACCEPT -o tun0
+iptables -A OUTPUT -o tun0 -j ACCEPT
+iptables -A OUTPUT -o tap0 -j ACCEPT
+ip6tables -A OUTPUT -o tap0 -j ACCEPT 2>/dev/null
+ip6tables -A OUTPUT -o tun0 -j ACCEPT 2>/dev/null
+printf "DONE"
+printf "\n * Allowing outgoing DNS queries on port 53 UDP..."
+iptables -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
+ip6tables -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT 2>/dev/null
 printf "DONE"
 printf "\n * Starting OpenVPN using the following parameters:"
 printf "\n   * Domain: $PIADOMAIN"
