@@ -1,8 +1,23 @@
 #!/bin/sh
 
-printf "=== PIA CONTAINER ==="
+printf "\n ========================================="
+printf "\n ========================================="
+printf "\n ============= PIA CONTAINER ============="
+printf "\n ========================================="
+printf "\n ========================================="
+printf "\n == by github.com/qdm12 - Quentin McGaw ==\n"
 
 cd /openvpn-$PROTOCOL-$ENCRYPTION
+
+############################################
+# CHECK FOR TUN DEVICE
+############################################
+while [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ];
+do
+    printf "\nTUN device is not opened, sleeping for 30 seconds..."
+    sleep 30
+done
+printf "\nTUN device is opened"
 
 ############################################
 # ORIGINAL IP FOR HEALTHCHECK
