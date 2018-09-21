@@ -6,7 +6,14 @@ LABEL maintainer="quentin.mcgaw@gmail.com" \
       ram="11MB" \
       cpu_usage="Low" \
       github="https://github.com/qdm12/private-internet-access-docker"
-RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables && \
+HEALTHCHECK --interval=1m --timeout=10s --start-period=10s --retries=1 \
+            CMD export OLD_VPN_IP="$NEW_VPN_IP" && \
+                export NEW_VPN_IP=$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*') && \
+                [ "$NEW_VPN_IP" != "$INITIAL_IP" ] && [ "$NEW_VPN_IP" != "$OLD_VPN_IP" ] || exit 1
+ENV ENCRYPTION=strong \
+    PROTOCOL=tcp \
+    REGION=Germany
+RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound && \
     apk add -q --progress --no-cache --update --virtual=build-dependencies unzip && \
     mkdir /openvpn-udp-normal /openvpn-udp-strong /openvpn-tcp-normal /openvpn-tcp-strong && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
@@ -18,14 +25,7 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables i
     unzip -q openvpn-tcp.zip -d /openvpn-tcp-normal && \
     unzip -q openvpn-strong-tcp.zip -d /openvpn-tcp-strong && \
     apk del -q --progress --purge build-dependencies && \
-    rm -rf /*.zip /var/cache/apk/*
-HEALTHCHECK --interval=10m --timeout=10s --start-period=10s --retries=1 \
-            CMD export OLD_VPN_IP="$NEW_VPN_IP" && \
-                export NEW_VPN_IP=$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*') && \
-                [ "$NEW_VPN_IP" != "$INITIAL_IP" ] && [ "$NEW_VPN_IP" != "$OLD_VPN_IP" ] || exit 1
-ENV ENCRYPTION=strong \
-    PROTOCOL=tcp \
-    REGION=Germany
+    rm -rf /*.zip /var/cache/apk/* /etc/unbound/unbound.conf
+COPY unbound.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
 ENTRYPOINT /entrypoint.sh

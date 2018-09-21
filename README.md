@@ -221,3 +221,9 @@ For more containers, add more `--link pia:xxx` and modify *nginx.conf* according
 - The download and unziping is done at build for the ones not able to download the zip files with their ISPs.
 - Checksums for PIA openvpn zip files are not used as these files change often
 - You should use strong encryption for the environment variable `ENCRYPTION`
+
+### TODOs
+
+- More iptables restrictions
+- Rework readme with unbound required for VPN
+- Block malicious websites with Unbound
