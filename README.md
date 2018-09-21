@@ -227,3 +227,4 @@ For more containers, add more `--link pia:xxx` and modify *nginx.conf* according
 - More iptables restrictions
 - Rework readme with unbound required for VPN
 - Block malicious websites with Unbound
+- Add checks when launching PIA $?

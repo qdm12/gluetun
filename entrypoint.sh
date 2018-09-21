@@ -84,17 +84,19 @@ printf "DONE"
 ############################################
 # SUMMARY
 ############################################
-printf "\n * Starting OpenVPN using the following parameters:"
-printf "\n   * Domain: $PIADOMAIN"
-printf "\n   * Port: $PORT"
-printf "\n   * Protocol: $PROTOCOL"
-printf "\n   * Encryption: $ENCRYPTION\n"
+printf "\nStarting OpenVPN using the following parameters:"
+printf "\n * Domain: $PIADOMAIN"
+printf "\n * Port: $PORT"
+printf "\n * Protocol: $PROTOCOL"
+printf "\n * Encryption: $ENCRYPTION"
 
 ############################################
 # OPENVPN LAUNCH
 ############################################
-# RUN AS OTHER USER TODO
 cd /openvpn-$PROTOCOL-$ENCRYPTION
+printf "\nSwitching from root to nonrootuser..."
+su -l nonrootuser
+printf "DONE\n"
 openvpn --config "$REGION.ovpn" --auth-user-pass /auth.conf
 
 ############################################
