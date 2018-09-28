@@ -24,7 +24,7 @@ A killswitch is implemented with the *iptables* firewall, only allowing traffic 
 
 | Download size | Image size | RAM usage | CPU usage |
 | --- | --- | --- | --- |
-| ???MB | 15.7MB | 14MB | Low |
+| 6.6MB | 15.7MB | 14MB | Low |
 
 ## Features
 
@@ -42,6 +42,8 @@ A killswitch is implemented with the *iptables* firewall, only allowing traffic 
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
 - If you use an advanced firewall:
+  - Allow outgoing TCP port 853 for Cloudflare DNS over TLS initial resolution of PIA server domain name.
+  - Allow outgoing TCP port 443 for querying duckduckgo to obtain the initial IP address for the healthcheck.
   - Allow outgoing TCP port 501 for TCP strong encryption
   - Allow outgoing TCP port 502 for TCP normal encryption
   - Allow outgoing UDP port 1197 for UDP strong encryption

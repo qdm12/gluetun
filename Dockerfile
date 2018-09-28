@@ -1,7 +1,7 @@
 FROM alpine:3.8
 LABEL maintainer="quentin.mcgaw@gmail.com" \
       description="VPN client to private internet access servers using OpenVPN, IPtables firewall, DNS over TLS with Unbound and Alpine Linux" \
-      download="???MB" \
+      download="6.6MB" \
       size="15.7MB" \
       ram="13MB" \
       cpu_usage="Low" \
@@ -29,5 +29,4 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables i
     addgroup -S nonrootusers && adduser -S nonrootuser -G nonrootusers
 COPY unbound.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh /
-RUN chmod +x entrypoint.sh
 ENTRYPOINT /entrypoint.sh

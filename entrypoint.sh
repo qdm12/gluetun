@@ -20,6 +20,17 @@ done
 printf "\nTUN device is opened"
 
 ############################################
+# SETTING DNS OVER TLS TO 1.1.1.1 / 1.0.0.1
+############################################
+printf "\nLaunching Unbound daemon to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint..."
+unbound
+printf "DONE"
+printf "\nChanging DNS to localhost..."
+echo "nameserver 127.0.0.1" > /etc/resolv.conf
+echo "options ndots:0" >> /etc/resolv.conf
+printf "DONE"
+
+############################################
 # ORIGINAL IP FOR HEALTHCHECK
 ############################################
 printf "\nGetting non VPN public IP address..."
@@ -84,17 +95,6 @@ printf "DONE"
 #iptables -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
 #ip6tables -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT 2>/dev/null
 #printf "DONE"
-
-############################################
-# SETTING DNS OVER TLS TO 1.1.1.1 / 1.0.0.1
-############################################
-printf "\nLaunching Unbound daemon to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint..."
-unbound
-printf "DONE"
-printf "\nChanging DNS to localhost..."
-echo "nameserver 127.0.0.1" > /etc/resolv.conf
-echo "options ndots:0" >> /etc/resolv.conf
-printf "DONE"
 
 ############################################
 # USE NON-ROOT USER
