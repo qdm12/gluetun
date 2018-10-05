@@ -7,15 +7,13 @@ printf "\n ========================================="
 printf "\n ========================================="
 printf "\n == by github.com/qdm12 - Quentin McGaw ==\n"
 
-cd /openvpn-$PROTOCOL-$ENCRYPTION
-
 ############################################
 # CHECK FOR TUN DEVICE
 ############################################
 while [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ];
 do
-    printf "\nTUN device is not opened, sleeping for 30 seconds..."
-    sleep 30
+    printf "\nTUN device is not opened, sleeping for 30 seconds...";
+    sleep 30;
 done
 printf "\nTUN device is opened"
 
@@ -72,17 +70,22 @@ PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
 if [[ "$PORT" == "" ]]; then printf "Port could not be extracted from configuration file\n"; exit 1; fi
 PIADOMAIN=$(echo $CONNECTIONSTRING | cut -d' ' -f2)
 if [[ "$PIADOMAIN" == "" ]]; then printf "Port could not be extracted from configuration file\n"; exit 1; fi
+sed -i '/^remote $PIADOMAIN $PORT/d' "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" && \
 printf "\n   * Port: $PORT"
 printf "\n   * Domain: $PIADOMAIN"
 printf "\n     * Detecting IP addresses corresponding to $PIADOMAIN..."
 VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +5 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 status=$?
 if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-VPNIPSLENGTH=0
 for ip in $VPNIPS
 do
     printf "\n        $ip"
-    VPNIPSLENGTH=$((VPNIPSLENGTH+1))
+done
+printf "\n * Adding IP addresses of $PIADOMAIN to /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn..."
+for ip in $VPNIPS
+do
+    printf "\n     remote $ip $PORT"
+    echo "remote $ip $PORT" >> "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
 done
 printf "\n * Deleting all iptables rules..."
 iptables --flush
@@ -98,11 +101,21 @@ iptables -t nat --delete-chain
 status=$?
 if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
 printf "DONE"
+printf "\n * Blocking all output traffic..."
 iptables -F OUTPUT
+status=$?
+if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
 iptables -P OUTPUT DROP
+status=$?
+if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+printf "DONE"
 printf "\n * Adding rules to accept local loopback traffic..."
 iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+status=$?
+if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
 iptables -A OUTPUT -o lo -j ACCEPT
+status=$?
+if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
 printf "DONE"
 printf "\n * Adding rules to accept traffic of subnet $SUBNET..."
 iptables -A OUTPUT -d $SUBNET -j ACCEPT
@@ -119,36 +132,28 @@ do
 done
 printf "\n * Adding rules to accept traffic going through the tun device..."
 iptables -A OUTPUT -o tun0 -j ACCEPT
+status=$?
+if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
 printf "DONE"
 
 ############################################
-# OPENVPN LAUNCH (retry with next VPN IP if fail)
+# USER SECURITY
 ############################################
-failed=1
-i=1
-PREVIOUSIP=$PIADOMAIN
-while [ $failed != 0 ]
-do
-    VPNIP=$(echo $VPNIPS | cut -d' ' -f$i)
-    printf "\nChanging server VPN address $PREVIOUSIP to $VPNIP..."
-    sed -i "s/$PREVIOUSIP/$VPNIP/g" $REGION.ovpn
-    status=$?
-    if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-    PREVIOUSIP=$VPNIP
-    printf "\nStarting OpenVPN using the following parameters:"
-    printf "\n * Region: $REGION"
-    printf "\n * Encryption: $ENCRYPTION"
-    printf "\n * Address: $PROTOCOL://$VPNIP:$PORT"
-    printf "\n\n"
-    openvpn --config "$REGION.ovpn" --auth-user-pass /auth.conf
-    failed=$?
-    if [[ $failed != 0 ]]; then
-        printf "\n==> Openvpn failed with status code: $failed"
-        i=$((i+1))
-        if [[ $i -gt $VPNIPSLENGTH ]]; then
-            i=0
-        fi
-    else
-        printf "\n==> Openvpn stopped gracefully"
-    fi
-done
+printf "\nChanging /auth.conf ownership to nonrootuser with read only access..."
+chown nonrootuser /auth.conf
+chmod 400 /auth.conf
+printf "DONE"
+
+############################################
+# OPENVPN LAUNCH
+############################################
+printf "\nStarting OpenVPN using the following parameters:"
+printf "\n * Region: $REGION"
+printf "\n * Encryption: $ENCRYPTION"
+printf "\n * Protocol: $PROTOCOL"
+printf "\n * Port: $PORT"
+printf "\n * Initial IP address: $(echo $VPNIPS | cut -d' ' -f1)"
+printf "\n\n"
+cd "/openvpn-$PROTOCOL-$ENCRYPTION"
+openvpn --config $REGION.ovpn --user nonrootuser --persist-tun --auth-retry nointeract --auth-user-pass /auth.conf --auth-nocache
+printf "\n\nOpenVPN exited with status $?\n"

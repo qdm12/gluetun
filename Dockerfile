@@ -85,7 +85,8 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables u
     unzip -q openvpn-strong-tcp.zip -d /openvpn-tcp-strong && \
     apk del -q --progress --purge build-dependencies && \
     rm -rf /*.zip /var/cache/apk/* /etc/unbound/unbound.conf && \
-    chown unbound /etc/unbound/root.key
+    chown unbound /etc/unbound/root.key && \
+    adduser -S nonrootuser
 COPY unbound.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
