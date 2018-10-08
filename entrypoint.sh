@@ -8,6 +8,12 @@ printf "\n ========================================="
 printf "\n == by github.com/qdm12 - Quentin McGaw ==\n"
 
 ############################################
+# CHECK PARAMETERS
+############################################
+cat "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
+if [[ "$?" != 0 ]]; then printf "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible\nSleeping for 10 seconds before exit...\n"; sleep 10; exit 1; fi
+
+############################################
 # CHECK FOR TUN DEVICE
 ############################################
 while [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ];
@@ -155,5 +161,6 @@ printf "\n * Port: $PORT"
 printf "\n * Initial IP address: $(echo $VPNIPS | cut -d' ' -f1)"
 printf "\n\n"
 cd "/openvpn-$PROTOCOL-$ENCRYPTION"
-openvpn --config $REGION.ovpn --user nonrootuser --persist-tun --auth-retry nointeract --auth-user-pass /auth.conf --auth-nocache
-printf "\n\nOpenVPN exited with status $?\n"
+openvpn --config "$REGION.ovpn" --user nonrootuser --persist-tun --auth-retry nointeract --auth-user-pass /auth.conf --auth-nocache
+status=$?
+printf "\nOpenVPN exited with status $status\n"
