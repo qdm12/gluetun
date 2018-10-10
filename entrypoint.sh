@@ -158,7 +158,7 @@ printf "\n * Region: $REGION"
 printf "\n * Encryption: $ENCRYPTION"
 printf "\n * Protocol: $PROTOCOL"
 printf "\n * Port: $PORT"
-printf "\n * Initial IP address: $(echo $VPNIPS | cut -d' ' -f1)"
+printf "\n * Initial IP address: $(echo "$VPNIPS" | head -n 1)"
 printf "\n\n"
 cd "/openvpn-$PROTOCOL-$ENCRYPTION"
 openvpn --config "$REGION.ovpn" --user nonrootuser --persist-tun --auth-retry nointeract --auth-user-pass /auth.conf --auth-nocache
