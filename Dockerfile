@@ -1,5 +1,5 @@
 FROM alpine:3.8 AS rootanchors
-RUN apk add -q --progress wget perl-xml-xpath
+RUN apk add -q --update --no-cache --progress wget perl-xml-xpath
 RUN wget -q https://www.internic.net/domain/named.root -O named.root && \
     echo "602f28581292bf5e50c8137c955173e6  named.root" > hashes.md5 && \
     md5sum -c hashes.md5
@@ -22,7 +22,7 @@ RUN wget -q https://data.iana.org/root-anchors/root-anchors.xml -O root-anchors.
     done;
 
 FROM alpine:3.8 AS blocks
-RUN apk add -q --progress wget ca-certificates sed
+RUN apk add -q --update --no-cache --progress wget ca-certificates sed
 RUN hostnames=$(wget -qO- https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | \
     sed '/\(^[ \|\t]*#\)\|\(^[ ]\+\)\|\(^$\)\|\(^[\n\|\r\|\r\n][ \|\t]*$\)\|\(^127.0.0.1\)\|\(^255.255.255.255\)\|\(^::1\)\|\(^fe80\)\|\(^ff00\)\|\(^ff02\)\|\(^0.0.0.0 0.0.0.0\)/d' | \
     sed 's/\([ \|\t]*#.*$\)\|\(\r\)\|\(0.0.0.0 \)//g')$'\n'$( \
