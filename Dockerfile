@@ -1,7 +1,7 @@
 FROM alpine:3.8 AS rootanchors
 RUN apk add -q --update --no-cache --progress wget perl-xml-xpath
 RUN wget -q https://www.internic.net/domain/named.root -O named.root && \
-    echo "602f28581292bf5e50c8137c955173e6  named.root" > hashes.md5 && \
+    echo "3a434d30e41db78c2ccfdaf29be460d0  named.root" > hashes.md5 && \
     md5sum -c hashes.md5
 RUN wget -q https://data.iana.org/root-anchors/root-anchors.xml -O root-anchors.xml && \
     echo "1b2a628d1ff22d4dc7645cfc89f21b6a575526439c6706ecf853e6fff7099dc8  root-anchors.xml" > hashes.sha256 && \
