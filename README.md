@@ -81,7 +81,7 @@ A killswitch is implemented with the *iptables* firewall, only allowing traffic 
     docker run -d --name=pia \
     --cap-add=NET_ADMIN --device=/dev/net/tun --network=pianet \
     -v /yourhostpath/auth.conf:/auth.conf:ro \
-    -e REGION=Germany -e PROTOCOL=udp -e ENCRYPTION=normal \
+    -e REGION="CA Montreal" -e PROTOCOL=udp -e ENCRYPTION=normal \
     qmcgaw/private-internet-access
     ```
 

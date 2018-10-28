@@ -7,32 +7,47 @@ printf "\n ========================================="
 printf "\n ========================================="
 printf "\n == by github.com/qdm12 - Quentin McGaw ==\n"
 
+printf "\nOpenVPN version: $(openvpn --version | head -n 1 | grep -oE "OpenVPN [0-9\.]* " | cut -d" " -f2)"
+printf "\nUnbound version: $(unbound -h | grep "Version" | cut -d" " -f2)"
+printf "\nIptables version: $(iptables --version | cut -d" " -f2)"
+
 ############################################
 # CHECK PARAMETERS
 ############################################
 cat "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 if [[ "$?" != 0 ]]; then printf "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible\nSleeping for 10 seconds before exit...\n"; sleep 10; exit 1; fi
+# TODO more
 
 ############################################
 # CHECK FOR TUN DEVICE
 ############################################
 while [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ];
-do
-    printf "\nTUN device is not opened, sleeping for 30 seconds...";
-    sleep 30;
-done
+do printf "\nTUN device is not opened, sleeping for 30 seconds..."; sleep 30; done
 printf "\nTUN device is opened"
 
 ############################################
-# BLOCKING MALICIOUS HOSTS WITH UNBOUND
+# BLOCKING MALICIOUS HOSTNAMES AND IPs WITH UNBOUND
 ############################################
 touch /etc/unbound/blocks-malicious.conf
-printf "\nUnbound malicious hosts blocking is $BLOCK_MALICIOUS"
-if [[ "$BLOCK_MALICIOUS" == "on" ]]; then
-  printf "\nExtracting blocks-malicious.conf.bz2..."
-  tar -xjf /etc/unbound/blocks-malicious.conf.bz2 -C /etc/unbound/
-  rm /etc/unbound/blocks-malicious.conf.bz2
-  printf "DONE"
+printf "\nUnbound malicious hostnames blocking is $BLOCK_MALICIOUS"
+if [ "$BLOCK_MALICIOUS" = "on" ] && [ ! -f /etc/unbound/blocks-malicious.conf ]; then
+    printf "Extracting malicious hostnames archive..."
+    tar -xjf /etc/unbound/malicious-hostnames.bz2 -C /etc/unbound/
+    printf "DONE\n"
+    printf "Extracting malicious IPs archive..."
+    tar -xjf /etc/unbound/malicious-ips.bz2 -C /etc/unbound/
+    printf "DONE\n"
+    printf "Building blocks-malicious.conf for Unbound..."
+    while read hostname; do
+        echo "local-zone: \""$hostname"\" static" >> /etc/unbound/blocks-malicious.conf
+    done < /etc/unbound/malicious-hostnames
+    while read ip; do
+        echo "private-address: $ip" >> /etc/unbound/blocks-malicious.conf
+    done < /etc/unbound/malicious-ips
+    printf "$(cat /etc/unbound/malicious-hostnames | wc -l ) malicious hostnames and $(cat /etc/unbound/malicious-ips | wc -l) malicious IP addresses added\n"
+    rm -f /etc/unbound/malicious-hostnames* /etc/unbound/malicious-ips*
+else
+    touch /etc/unbound/blocks-malicious.conf
 fi
 
 ############################################

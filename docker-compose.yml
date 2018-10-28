@@ -1,22 +1,24 @@
 version: '3'
 services:
-    pia:
-        image: qmcgaw/private-internet-access
-        container_name: pia
-        cap_add:
-            - NET_ADMIN
-        devices:
-            - /dev/net/tun
-        networks:
-            - pianet
-        volumes:
-            - /yourpath/auth.conf:/auth.conf:ro
-        environment:
-            - PROTOCOL=tcp
-            - ENCRYPTION=strong
-            - REGION=Germany
-        restart: always
-        
+  pia:
+    build: .
+    image: qmcgaw/private-internet-access
+    container_name: pia
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    networks:
+      - pianet
+    volumes:
+      - /yourpath/auth.conf:/auth.conf:ro
+    environment:
+      - PROTOCOL=tcp
+      - ENCRYPTION=strong
+      - REGION=CA Montreal
+    restart: always
+    
 networks:
-    pianet:
-        external: true
+  pianet:
+    external: true
+ 
