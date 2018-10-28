@@ -91,7 +91,7 @@ printf "\n * Adding IP addresses of $PIADOMAIN to /openvpn-$PROTOCOL-$ENCRYPTION
 for ip in $VPNIPS
 do
     printf "\n     remote $ip $PORT"
-    echo "remote $ip $PORT" >> "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+    grep "remote $ip $PORT" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" || echo "remote $ip $PORT" >> "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
 done
 printf "\n * Deleting all iptables rules..."
 iptables --flush
