@@ -62,20 +62,17 @@ It is based on:
     insmod /lib/modules/tun.ko
     ```
 
-
     Or
 
     ```bash
     sudo modprobe tun
     ```
 
-
 1. Create a network to be used by this container and other containers connecting to it with:
 
     ```bash
     docker network create pianet
     ```
-
 
 1. Create a file *auth.conf* in `./`, with:
     - On the first line: your PIA username (i.e. `js89ds7`)
@@ -89,23 +86,18 @@ It is based on:
     qmcgaw/private-internet-access
     ```
 
-
     or use [docker-compose.yml](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml) with:
-
 
     ```bash
     docker-compose up -d
     ```
 
-
     Note that you can change `REGION`, `PROTOCOL` and `ENCRYPTION`, see the [Environment variables section](#environment-variables)
-
 1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
 
     ```bash
     docker logs -f pia
     ```
-
 
 1. Follow the [**Testing section**](#testing)
 
@@ -223,10 +215,10 @@ For more containers, add more `--link pia:xxx` and modify *nginx.conf* according
 ## TODOs
 
 - [ ] Iptables should change after initial ip address is obtained
-- More checks for environment variables provided
-- Add checks when launching PIA $?
-- VPN server for other devices to go through the tunnel
+- [ ] More checks for environment variables provided
+- [ ] Add checks when launching PIA $?
+- [ ] VPN server for other devices to go through the tunnel
 
 ## License
 
-This repository is under an [MIT license](https://github.com/qdm12/REPONAME_GITHUB/master/license)
+This repository is under an [MIT license](https://github.com/qdm12/private-internet-access-docker/master/license)
