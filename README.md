@@ -1,6 +1,6 @@
 # Private Internet Access Client (OpenVPN+Iptables+DNS over TLS on Alpine Linux)
 
-Docker VPN client to private internet access servers using [OpenVPN](https://openvpn.net/), Iptables and Unbound (Cloudflare DNS over TLS) on Alpine Linux.
+*VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux*
 
 Optionally set the protocol (TCP, UDP) and the level of encryption using Docker environment variables.
 
@@ -19,31 +19,36 @@ A killswitch is implemented with the *iptables* firewall, only allowing traffic 
 [![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 [![Docker Automated](https://img.shields.io/docker/automated/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 
-[![?](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
-[![?](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
+[![Image size](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
+[![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 
-| Download size | Image size | RAM usage | CPU usage |
-| --- | --- | --- | --- |
-| 6.6MB | 15.7MB | 14MB | Low |
+| Image size | RAM usage | CPU usage |
+| --- | --- | --- |
+| 15.7MB | 14MB | Low |
 
-## Features
+It is based on:
 
-- Uses [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to connect to PIA servers
-- The firewall [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network
-- Your DNS queries are encrypted using [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configure with Cloudflare's 1.1.1.1 DNS over TLS
-- Malicious domain names resolution is blocked with [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound)
-- Lightweight, based on [Alpine 3.8](https://alpinelinux.org)
-- Restarts OpenVPN on failure using another IP address corresponding to the PIA server domain name (usually 10 IPs per subdomain name)
-- Regular Docker healthchecks using wget on duckduckgo.com
+- [Alpine 3.8](https://alpinelinux.org) for a tiny image
+- [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to tunnel to PIA servers
+- [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (killswitch)
+- [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
+- [Malicious hostnames list](https://github.com/qdm12/malicious-hostnames-docker) used with Unbound (see `BLOCK_MALICIOUS` environment variable)
+- [Malicious IPs list](https://github.com/qdm12/malicious-ips-docker) used with Unbound (see `BLOCK_MALICIOUS`)
+
+## Extra features
+
 - Connect other containers to it
+- Restarts OpenVPN on failure using another IP address corresponding to the PIA server domain name (usually 10 IPs per subdomain name)
+- Regular Docker healthchecks using [duckduckgo.com](https://duckduckgo.com) to obtain your current public IP address and compare it with your initial non-VPN IP address
+- Openvpn and Unbound do not run as root
 
 ## Requirements
 
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
-- If you use an advanced firewall:
+- If you use a firewall on the host:
   - Allow outgoing TCP port 853 for Cloudflare DNS over TLS initial resolution of PIA server domain name.
-  - Allow outgoing TCP port 443 for querying duckduckgo to obtain the initial IP address for the healthcheck.
+  - Allow outgoing TCP port 443 for querying duckduckgo.com to obtain the initial IP address for the healthcheck.
   - Allow outgoing TCP port 501 for TCP strong encryption
   - Allow outgoing TCP port 502 for TCP normal encryption
   - Allow outgoing UDP port 1197 for UDP strong encryption
@@ -57,11 +62,13 @@ A killswitch is implemented with the *iptables* firewall, only allowing traffic 
     insmod /lib/modules/tun.ko
     ```
 
+
     Or
 
     ```bash
     sudo modprobe tun
     ```
+
 
 1. Create a network to be used by this container and other containers connecting to it with:
 
@@ -69,66 +76,53 @@ A killswitch is implemented with the *iptables* firewall, only allowing traffic 
     docker network create pianet
     ```
 
-1. Create a file *auth.conf* in `/yourhostpath` (for example), with:
+
+1. Create a file *auth.conf* in `./`, with:
     - On the first line: your PIA username (i.e. `js89ds7`)
     - On the second line: your PIA password (i.e. `8fd9s239G`)
-
-### Option 1: Using Docker only
-
-1. Run the container with (at least change `/yourhostpath` to your actual path):
+1. Launch the container with:
 
     ```bash
-    docker run -d --name=pia \
+    docker run -d --name=pia -v ./auth.conf:/auth.conf:ro \
     --cap-add=NET_ADMIN --device=/dev/net/tun --network=pianet \
-    -v /yourhostpath/auth.conf:/auth.conf:ro \
-    -e REGION="CA Montreal" -e PROTOCOL=udp -e ENCRYPTION=normal \
+    -e REGION="CA Montreal" -e PROTOCOL=udp -e ENCRYPTION=strong \
     qmcgaw/private-internet-access
     ```
 
-    Note that you can change `REGION`, `PROTOCOL` and `ENCRYPTION`, see the [Environment variables section](#environment-variables) for more.
-1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
 
-    ```bash
-    docker logs pia
-    ```
+    or use [docker-compose.yml](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml) with:
 
-1. Follow the [**Testing section**](#testing)
-
-### Option 2: Using Docker Compose
-
-1. Download [**docker-compose.yml**](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml)
-1. Edit it and change at least `yourpath`
-1. Run the container as a daemon in the background with:
 
     ```bash
     docker-compose up -d
     ```
 
-    Note that you can change `REGION`, `PROTOCOL` and `ENCRYPTION`, see the [Environment variables section](#environment-variables) for more.
+
+    Note that you can change `REGION`, `PROTOCOL` and `ENCRYPTION`, see the [Environment variables section](#environment-variables)
+
 1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
 
     ```bash
     docker logs -f pia
     ```
 
+
 1. Follow the [**Testing section**](#testing)
 
 ## Testing
 
-1. Note that you can simply use the HEALTCHECK provided. The container will stop by itself if the VPN IP is the same as your initial public IP address.
-
-Otherwise you can follow these instructions:
+You can simply use the Docker healthcheck. The container will mark itself as **unhealthy** if the public IP address is the same as your initial public IP address. Otherwise you can follow these instructions:
 
 1. Check your host IP address with:
 
     ```bash
-    curl -s ifconfig.co
+    wget -qO- https://ipinfo.io/ip
     ```
 
 1. Run the **curl** Docker container using your *pia* container with:
 
     ```bash
-    docker run --rm --network=container:pia byrnedo/alpine-curl -s ifconfig.co
+    docker run --rm --network=container:pia alpine:3.8 wget -qO- https://ipinfo.io/ip
     ```
 
     If the displayed IP address appears and is different that your host IP address, the PIA client works !
@@ -137,11 +131,12 @@ Otherwise you can follow these instructions:
 
 | Environment variable | Default | Description |
 | --- | --- | --- |
-| `REGION` | `Switzerland` | Any one of the [regions supported by private internet access](https://www.privateinternetaccess.com/pages/network/) |
-| `PROTOCOL` | `tcp` | `tcp` or `udp` |
+| `REGION` | `CA Montreal` | Any one of the [regions supported by private internet access](https://www.privateinternetaccess.com/pages/network/) |
+| `PROTOCOL` | `udp` | `tcp` or `udp` |
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
+| `BLOCK_MALICIOUS` | `off` | `on` or `off` |
 
-If you know what you're doing, you can change the container name (`pia`), the hostname (`piaclient`) and the network name (`pianet`) as well.
+If you know what you're doing, you can change the container name (`pia`) and the network name (`pianet`)
 
 ## Connect other containers to it
 
@@ -220,12 +215,18 @@ For more containers, add more `--link pia:xxx` and modify *nginx.conf* according
 ## EXTRA: For the paranoids
 
 - You might want to build the Docker image yourself
-- The download and unziping is done at build for the ones not able to download the zip files with their ISPs.
+- The download and unziping is done at build for the ones not able to download the zip files through their ISP
 - Checksums for PIA openvpn zip files are not used as these files change often
 - You should use strong encryption for the environment variable `ENCRYPTION`
 - Let me know if you have any extra idea :) !
 
-### TODOs
+## TODOs
 
-- Block malicious websites with Unbound
+- [ ] Iptables should change after initial ip address is obtained
+- More checks for environment variables provided
 - Add checks when launching PIA $?
+- VPN server for other devices to go through the tunnel
+
+## License
+
+This repository is under an [MIT license](https://github.com/qdm12/REPONAME_GITHUB/master/license)

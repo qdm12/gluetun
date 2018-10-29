@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# see http://label-schema.org/rc1
+# https://docs.docker.com/docker-cloud/builds/advanced/#override-build-test-or-push-commands
+# https://docs.docker.com/docker-cloud/builds/advanced/#custom-build-phase-hooks
+
+docker build --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+             --build-arg VCS_REF=`git rev-parse --short HEAD` \
+             -t $IMAGE_NAME .
