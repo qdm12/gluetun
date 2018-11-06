@@ -13,7 +13,7 @@ LABEL org.label-schema.schema-version="1.0.0-rc1" \
       org.label-schema.vcs-usage="https://github.com/qdm12/private-internet-access-docker/blob/master/README.md#setup" \
       org.label-schema.docker.cmd="docker run -d -v ./auth.conf:/auth.conf:ro --cap-add=NET_ADMIN --device=/dev/net/tun qmcgaw/private-internet-access" \
       org.label-schema.docker.cmd.devel="docker run -it --rm -v ./auth.conf:/auth.conf:ro --cap-add=NET_ADMIN --device=/dev/net/tun qmcgaw/private-internet-access" \
-      org.label-schema.docker.params="" \
+      org.label-schema.docker.params="REGION=PIA region,PROTOCOL=udp or tcp,ENCRYPTION=strong or normal,BLOCK_MALICIOUS=on or off" \
       org.label-schema.version="" \
       image-size="17.1MB" \
       ram-usage="13MB to 80MB" \
@@ -23,7 +23,7 @@ ENV ENCRYPTION=strong \
     REGION="CA Montreal" \
     BLOCK_MALICIOUS=off
 HEALTHCHECK --interval=5m --timeout=15s --start-period=10s --retries=2 \
-            CMD if [[ "$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*')" == "$INITIAL_IP" ]]; then echo "IP address is the same as the non VPN IP address"; exit 1; fi
+            CMD [ "$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*')" != "$INITIAL_IP" ] || exit 1
 RUN V_ALPINE="v$(cat /etc/alpine-release | grep -oE '[0-9]+\.[0-9]+')" && \
     echo https://dl-3.alpinelinux.org/alpine/$V_ALPINE/main > /etc/apk/repositories && \
     apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \

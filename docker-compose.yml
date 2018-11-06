@@ -1,7 +1,7 @@
 version: '3'
 services:
   pia:
-    build: .
+    build: https://github.com/qdm12/private-internet-access-docker.git
     image: qmcgaw/private-internet-access
     container_name: pia
     cap_add:
@@ -17,7 +17,7 @@ services:
       - ENCRYPTION=strong
       - REGION=CA Montreal
     restart: always
-    
+
 networks:
   pianet:
     external: true

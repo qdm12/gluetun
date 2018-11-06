@@ -1,10 +1,6 @@
 # Private Internet Access Client (OpenVPN+Iptables+DNS over TLS on Alpine Linux)
 
-*VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux*
-
-Optionally set the protocol (TCP, UDP) and the level of encryption using Docker environment variables.
-
-A killswitch is implemented with the *iptables* firewall, only allowing traffic with PIA servers on needed ports / protocols.
+*Lightweight VPN client to tunnel to private internet access servers*
 
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
@@ -30,16 +26,21 @@ It is based on:
 
 - [Alpine 3.8](https://alpinelinux.org) for a tiny image
 - [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to tunnel to PIA servers
-- [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (killswitch)
+- [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 - [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
 - [Malicious hostnames list](https://github.com/qdm12/malicious-hostnames-docker) used with Unbound (see `BLOCK_MALICIOUS` environment variable)
 - [Malicious IPs list](https://github.com/qdm12/malicious-ips-docker) used with Unbound (see `BLOCK_MALICIOUS`)
 
 ## Extra features
 
+- With environment variables, choose:
+    - the PIA region
+    - the protocol `TCP` or `UDP`
+    - the level of encryption
 - Connect other containers to it
-- Restarts OpenVPN on failure using another IP address corresponding to the PIA server domain name (usually 10 IPs per subdomain name)
-- Regular Docker healthchecks using [duckduckgo.com](https://duckduckgo.com) to obtain your current public IP address and compare it with your initial non-VPN IP address
+- The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combination
+- OpenVPN restarts on failure using another PIA IP address in the same region
+- Docker healthchecks using [duckduckgo.com](https://duckduckgo.com) to obtain your public IP address and compare it with your initial non-VPN IP address
 - Openvpn and Unbound do not run as root
 
 ## Requirements
@@ -111,7 +112,7 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
     wget -qO- https://ipinfo.io/ip
     ```
 
-1. Run the **curl** Docker container using your *pia* container with:
+1. Run the same command in a Docker container using your *pia* container as network with:
 
     ```bash
     docker run --rm --network=container:pia alpine:3.8 wget -qO- https://ipinfo.io/ip
@@ -214,10 +215,11 @@ For more containers, add more `--link pia:xxx` and modify *nginx.conf* according
 
 ## TODOs
 
+- [ ] Test pia with port mappings and without pia_net and nginx
 - [ ] Iptables should change after initial ip address is obtained
 - [ ] More checks for environment variables provided
 - [ ] Add checks when launching PIA $?
-- [ ] VPN server for other devices to go through the tunnel
+- [ ] VPN server for other devices to go through the tunnel OR hiproxy
 
 ## License
 

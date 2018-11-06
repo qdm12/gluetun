@@ -1,49 +1,66 @@
 #!/bin/sh
 
-printf "\n ========================================="
-printf "\n ========================================="
-printf "\n ============= PIA CONTAINER ============="
-printf "\n ========================================="
-printf "\n ========================================="
-printf "\n == by github.com/qdm12 - Quentin McGaw ==\n"
+exitOnError(){
+    # $1 should be $?
+    status=$1
+    message=$2
+    [ "$message" != "" ] || message="Error!"
+    if [ $status != 0 ]; then
+      printf "$message (status $status)\n"
+      exit $status
+    fi
+}
 
-printf "\nOpenVPN version: $(openvpn --version | head -n 1 | grep -oE "OpenVPN [0-9\.]* " | cut -d" " -f2)"
-printf "\nUnbound version: $(unbound -h | grep "Version" | cut -d" " -f2)"
-printf "\nIptables version: $(iptables --version | cut -d" " -f2)"
+printf "\n =========================================\n"
+printf "=========================================\n"
+printf "============= PIA CONTAINER =============\n"
+printf "=========================================\n"
+printf "=========================================\n"
+printf "== by github.com/qdm12 - Quentin McGaw ==\n\n"
+
+printf "OpenVPN version: $(openvpn --version | head -n 1 | grep -oE "OpenVPN [0-9\.]* " | cut -d" " -f2)\n"
+printf "Unbound version: $(unbound -h | grep "Version" | cut -d" " -f2)\n"
+printf "Iptables version: $(iptables --version | cut -d" " -f2)\n"
 
 ############################################
 # CHECK PARAMETERS
 ############################################
 cat "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
-if [[ "$?" != 0 ]]; then printf "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible\nSleeping for 10 seconds before exit...\n"; sleep 10; exit 1; fi
+exitOnError $? "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
 # TODO more
 
 ############################################
 # CHECK FOR TUN DEVICE
 ############################################
-while [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ];
-do printf "\nTUN device is not opened, sleeping for 30 seconds..."; sleep 30; done
-printf "\nTUN device is opened"
+while [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ]; do
+  printf "TUN device is not available, sleeping for 30 seconds...\n"
+  sleep 30
+done
+printf "TUN device OK\n"
 
 ############################################
 # BLOCKING MALICIOUS HOSTNAMES AND IPs WITH UNBOUND
 ############################################
 touch /etc/unbound/blocks-malicious.conf
-printf "\nUnbound malicious hostnames blocking is $BLOCK_MALICIOUS"
+printf "Unbound malicious hostnames blocking is $BLOCK_MALICIOUS\n"
 if [ "$BLOCK_MALICIOUS" = "on" ] && [ ! -f /etc/unbound/blocks-malicious.conf ]; then
     printf "Extracting malicious hostnames archive..."
     tar -xjf /etc/unbound/malicious-hostnames.bz2 -C /etc/unbound/
+    exitOnError $?
     printf "DONE\n"
     printf "Extracting malicious IPs archive..."
     tar -xjf /etc/unbound/malicious-ips.bz2 -C /etc/unbound/
+    exitOnError $?
     printf "DONE\n"
     printf "Building blocks-malicious.conf for Unbound..."
     while read hostname; do
         echo "local-zone: \""$hostname"\" static" >> /etc/unbound/blocks-malicious.conf
     done < /etc/unbound/malicious-hostnames
+    exitOnError $?
     while read ip; do
         echo "private-address: $ip" >> /etc/unbound/blocks-malicious.conf
     done < /etc/unbound/malicious-ips
+    exitOnError $?
     printf "$(cat /etc/unbound/malicious-hostnames | wc -l ) malicious hostnames and $(cat /etc/unbound/malicious-ips | wc -l) malicious IP addresses added\n"
     rm -f /etc/unbound/malicious-hostnames* /etc/unbound/malicious-ips*
 else
@@ -53,129 +70,122 @@ fi
 ############################################
 # SETTING DNS OVER TLS TO 1.1.1.1 / 1.0.0.1
 ############################################
-printf "\nLaunching Unbound daemon to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint..."
+printf "Launching Unbound daemon to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint...\n"
 unbound
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "DONE"
-printf "\nChanging DNS to localhost..."
+exitOnError $?
+printf "DONE\n"
+printf "Changing DNS to localhost..."
 echo "nameserver 127.0.0.1" > /etc/resolv.conf
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+exitOnError $?
 echo "options ndots:0" >> /etc/resolv.conf
-printf "DONE"
+exitOnError $?
+printf "DONE\n"
 
 ############################################
 # ORIGINAL IP FOR HEALTHCHECK
 ############################################
-printf "\nGetting non VPN public IP address..."
-export INITIAL_IP=$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*')
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "$INITIAL_IP"
+printf "Getting non VPN public IP address..."
+export INITIAL_IP=$(wget -qO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -o 'Your IP address is [0-9.]*[0-9]' | grep -o '[0-9][0-9.]*')
+exitOnError $?
+printf "$INITIAL_IP\n"
 
 ############################################
 # FIREWALL
 ############################################
-printf "\nSetting firewall for killswitch purposes..."
-printf "\n * Detecting local subnet..."
+printf "Setting firewall for killswitch purposes...\n"
+printf " * Detecting local subnet..."
 SUBNET=$(ip route show default | tail -n 1 | awk '// {print $1}')
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "$SUBNET"
-printf "\n * Reading parameters to be used for region $REGION, protocol $PROTOCOL and encryption $ENCRYPTION..."
+exitOnError $?
+printf "$SUBNET\n"
+printf " * Reading parameters to be used for region $REGION, protocol $PROTOCOL and encryption $ENCRYPTION..."
 CONNECTIONSTRING=$(grep -i "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" -e 'privateinternetaccess.com')
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+exitOnError $?
 PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
-if [[ "$PORT" == "" ]]; then printf "Port could not be extracted from configuration file\n"; exit 1; fi
+if [ "$PORT" = "" ]; then
+  printf "Port not found in /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
+  exit 1
+fi
 PIADOMAIN=$(echo $CONNECTIONSTRING | cut -d' ' -f2)
-if [[ "$PIADOMAIN" == "" ]]; then printf "Port could not be extracted from configuration file\n"; exit 1; fi
-sed -i '/^remote $PIADOMAIN $PORT/d' "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" && \
-printf "\n   * Port: $PORT"
-printf "\n   * Domain: $PIADOMAIN"
-printf "\n     * Detecting IP addresses corresponding to $PIADOMAIN..."
+if [ "$PIADOMAIN" = "" ]; then
+  printf "Domain not found in /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
+  exit 1
+fi
+sed -i '/^remote $PIADOMAIN $PORT/d' "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+exitOnError $? "Can't delete remote connection string in /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+printf "DONE\n"
+printf "   * Port: $PORT\n"
+printf "   * Domain: $PIADOMAIN\n"
+printf "     * Detecting IP addresses corresponding to $PIADOMAIN..."
 VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +5 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-for ip in $VPNIPS
-do
-    printf "\n        $ip"
+exitOnError $?
+printf "DONE\n"
+for ip in $VPNIPS; do printf "        $ip\n"; done
+printf " * Adding IP addresses of $PIADOMAIN to /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn...\n"
+for ip in $VPNIPS; do
+  if [ $(grep "remote $ip $PORT" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn") != "" ]; then
+    printf "     remote $ip $PORT (already present)\n"
+  else
+    printf "     remote $ip $PORT\n"
+    echo "remote $ip $PORT" >> "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+  fi
 done
-printf "\n * Adding IP addresses of $PIADOMAIN to /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn..."
-for ip in $VPNIPS
-do
-    printf "\n     remote $ip $PORT"
-    grep "remote $ip $PORT" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" || echo "remote $ip $PORT" >> "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
-done
-printf "\n * Deleting all iptables rules..."
+printf " * Deleting all iptables rules..."
 iptables --flush
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+exitOnError $?
 iptables --delete-chain
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+exitOnError $?
 iptables -t nat --flush
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+exitOnError $?
 iptables -t nat --delete-chain
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "DONE"
-printf "\n * Blocking all output traffic..."
+exitOnError $?
+printf "DONE\n"
+printf " * Blocking all output traffic..."
 iptables -F OUTPUT
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+exitOnError $?
 iptables -P OUTPUT DROP
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "DONE"
-printf "\n * Adding rules to accept local loopback traffic..."
+exitOnError $?
+printf "DONE\n"
+printf " * Adding rules to accept local loopback traffic..."
 iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
+exitOnError $?
 iptables -A OUTPUT -o lo -j ACCEPT
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "DONE"
-printf "\n * Adding rules to accept traffic of subnet $SUBNET..."
+exitOnError $?
+printf "DONE\n"
+printf " * Adding rules to accept traffic of subnet $SUBNET..."
 iptables -A OUTPUT -d $SUBNET -j ACCEPT
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "DONE"
-for ip in $VPNIPS
-do
-    printf "\n * Adding rules to accept traffic with $ip on port $PROTOCOL $PORT..."
+exitOnError $?
+printf "DONE\n"
+for ip in $VPNIPS; do
+    printf " * Adding rules to accept traffic with $ip on port $PROTOCOL $PORT..."
     iptables -A OUTPUT -j ACCEPT -d $ip -o eth0 -p $PROTOCOL -m $PROTOCOL --dport $PORT
-    status=$?
-    if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-    printf "DONE"
+    exitOnError $?
+    printf "DONE\n"
 done
-printf "\n * Adding rules to accept traffic going through the tun device..."
+printf " * Adding rules to accept traffic going through the tun device..."
 iptables -A OUTPUT -o tun0 -j ACCEPT
-status=$?
-if [[ "$status" != 0 ]]; then printf "ERROR with status code $status\nSleeping for 10 seconds before exit...\n"; sleep 10; exit $status; fi
-printf "DONE"
+exitOnError $?
+printf "DONE\n"
 
 ############################################
 # USER SECURITY
 ############################################
-printf "\nChanging /auth.conf ownership to nonrootuser with read only access..."
+printf "Changing /auth.conf ownership to nonrootuser with read only access..."
 chown nonrootuser /auth.conf
+exitOnError $?
 chmod 400 /auth.conf
-printf "DONE"
+exitOnError $?
+printf "DONE\n"
 
 ############################################
 # OPENVPN LAUNCH
 ############################################
-printf "\nStarting OpenVPN using the following parameters:"
-printf "\n * Region: $REGION"
-printf "\n * Encryption: $ENCRYPTION"
-printf "\n * Protocol: $PROTOCOL"
-printf "\n * Port: $PORT"
-printf "\n * Initial IP address: $(echo "$VPNIPS" | head -n 1)"
-printf "\n\n"
+printf "Starting OpenVPN using the following parameters:\n"
+printf " * Region: $REGION\n"
+printf " * Encryption: $ENCRYPTION\n"
+printf " * Protocol: $PROTOCOL\n"
+printf " * Port: $PORT\n"
+printf " * Initial IP address: $(echo "$VPNIPS" | head -n 1)\n\n"
 cd "/openvpn-$PROTOCOL-$ENCRYPTION"
+exitOnError $? "Can't access /openvpn-$PROTOCOL-$ENCRYPTION"
 openvpn --config "$REGION.ovpn" --user nonrootuser --persist-tun --auth-retry nointeract --auth-user-pass /auth.conf --auth-nocache
-status=$?
-printf "\nOpenVPN exited with status $status\n"
+printf "\nOpenVPN exited with status $?\n"
