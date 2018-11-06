@@ -170,10 +170,10 @@ printf "DONE\n"
 # USER SECURITY
 ############################################
 printf "Changing /auth.conf ownership to nonrootuser with read only access..."
-chown nonrootuser /auth.conf
-exitOnError $?
-chmod 400 /auth.conf
-exitOnError $?
+err=$(chown nonrootuser /auth.conf 2>&1)
+if [ "$(echo "$err" | grep "Read-only file system")" = "" ]; then exitOnError $?; fi
+err=$(chmod 400 /auth.conf 2>&1)
+if [ "$(echo "$err" | grep "Read-only file system")" = "" ]; then exitOnError $?; fi
 printf "DONE\n"
 
 ############################################
