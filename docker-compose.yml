@@ -10,15 +10,12 @@ services:
       - /dev/net/tun
     networks:
       - pianet
-    volumes:
-      - /yourpath/auth.conf:/auth.conf:ro
     environment:
-      - PROTOCOL=tcp
+      - USER=
+      - PASSWORD=
+      - PROTOCOL=udp
       - ENCRYPTION=strong
       - REGION=CA Montreal
+      - EXTRA_SUBNETS=
     restart: always
-
-networks:
-  pianet:
-    external: true
  

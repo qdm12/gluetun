@@ -2,6 +2,8 @@
 
 *Lightweight VPN client to tunnel to private internet access servers*
 
+**WARNING: auth.conf is now replaced by the environment variables `USER` and `PASSWORD`, please update your configuration**
+
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
@@ -20,7 +22,7 @@
 
 | Image size | RAM usage | CPU usage |
 | --- | --- | --- |
-| 15.7MB | 14MB | Low |
+| 20MB | 14MB to 80MB | Low to Medium |
 
 It is based on:
 
@@ -33,13 +35,13 @@ It is based on:
 
 ## Extra features
 
-- With environment variables, choose:
-    - the PIA region
-    - the protocol `TCP` or `UDP`
-    - the level of encryption
+- Only use environment variables:
+    - the [destination region]((https://www.privateinternetaccess.com/pages/network/))
+    - the protocol `tcp` or `udp`
+    - the level of encryption `normal` or `strong`
 - Connect other containers to it
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combination
-- OpenVPN restarts on failure using another PIA IP address in the same region
+- OpenVPN restarts on failure using another PIA IP address for the same region
 - Docker healthchecks using [duckduckgo.com](https://duckduckgo.com) to obtain your public IP address and compare it with your initial non-VPN IP address
 - Openvpn and Unbound do not run as root
 
@@ -48,8 +50,8 @@ It is based on:
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
 - If you use a firewall on the host:
-  - Allow outgoing TCP port 853 for Cloudflare DNS over TLS initial resolution of PIA server domain name.
-  - Allow outgoing TCP port 443 for querying duckduckgo.com to obtain the initial IP address for the healthcheck.
+  - Allow outgoing TCP port 853 for Cloudflare DNS over TLS initial resolution of PIA server domain name, **you should then BLOCK it**
+  - Allow outgoing TCP port 443 for querying duckduckgo.com to obtain the initial IP address *only at the start of the container*, **you should then BLOCK it**
   - Allow outgoing TCP port 501 for TCP strong encryption
   - Allow outgoing TCP port 502 for TCP normal encryption
   - Allow outgoing UDP port 1197 for UDP strong encryption
@@ -66,24 +68,16 @@ It is based on:
     Or
 
     ```bash
-    sudo modprobe tun
+    modprobe tun
     ```
 
-1. Create a network to be used by this container and other containers connecting to it with:
-
-    ```bash
-    docker network create pianet
-    ```
-
-1. Create a file *auth.conf* in `./`, with:
-    - On the first line: your PIA username (i.e. `js89ds7`)
-    - On the second line: your PIA password (i.e. `8fd9s239G`)
 1. Launch the container with:
 
     ```bash
     docker run -d --name=pia -v ./auth.conf:/auth.conf:ro \
     --cap-add=NET_ADMIN --device=/dev/net/tun --network=pianet \
     -e REGION="CA Montreal" -e PROTOCOL=udp -e ENCRYPTION=strong \
+    -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     qmcgaw/private-internet-access
     ```
 
@@ -93,7 +87,7 @@ It is based on:
     docker-compose up -d
     ```
 
-    Note that you can change `REGION`, `PROTOCOL` and `ENCRYPTION`, see the [Environment variables section](#environment-variables)
+    Note that you can change all the [environment variables](#environment-variables)
 1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
 
     ```bash
@@ -124,102 +118,38 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 
 | Environment variable | Default | Description |
 | --- | --- | --- |
-| `REGION` | `CA Montreal` | Any one of the [regions supported by private internet access](https://www.privateinternetaccess.com/pages/network/) |
+| `REGION` | `CA Montreal` | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) |
 | `PROTOCOL` | `udp` | `tcp` or `udp` |
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off` |
+| `USER` | `` | Your PIA username |
+| `PASSWORD` | `` | Your PIA password |
+| `EXTRA_SUBNETS` | `` | Comma separated subnets allowed in the container firewall |
 
-If you know what you're doing, you can change the container name (`pia`) and the network name (`pianet`)
+`EXTRA_SUBNETS` can be in example: `192.168.1.0/24,192.168.10.121,10.0.0.5/28`
 
 ## Connect other containers to it
 
 Connect other Docker containers to the PIA VPN connection by adding `--network=container:pia` when launching them.
 
----
+## For the paranoids
 
-## EXTRA: Access ports of containers connected to the VPN container
-
-You have to use another container acting as a Reverse Proxy such as Nginx.
-
-**Example**:
-
-- We launch a *Deluge* (torrent client) container with name **deluge** connected to the `pia` container with:
+- You can review the code which essential consits in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
+- Build the images yourself:
 
     ```bash
-    docker run -d --name=deluge --network=container:pia linuxserver/deluge
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
     ```
 
-- We launch a *Hydra* container with name **hydra** connected to the `pia` container with:
-
-    ```bash
-    docker run -d --name=hydra --network=container:pia linuxserver/hydra
-    ```
-
-- HTTP User interfaces are accessible at port 8112 for Deluge and 5075 for Hydra
-
-1. Create the Nginx configuration file *nginx.conf*:
-
-    ```txt
-    user  nginx;
-    worker_processes  1;
-    error_log  /var/log/nginx/error.log warn;
-    pid        /var/run/nginx.pid;
-    events {
-        worker_connections  1024;
-    }
-    http {
-        include       /etc/nginx/mime.types;
-        default_type  application/octet-stream;
-        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                          '$status $body_bytes_sent "$http_referer" '
-                          '"$http_user_agent" "$http_x_forwarded_for"';
-        access_log  /var/log/nginx/access.log  main;
-        sendfile        on;
-        keepalive_timeout  65;
-        server {
-            listen 1001;
-            location / {
-                proxy_pass http://deluge:8112/;
-                proxy_set_header X-Deluge-Base "/";
-            }
-        }
-        server {
-            listen 1002;
-            location / {
-                proxy_pass http://hydra:5075/;
-            }
-        }
-        include /etc/nginx/conf.d/*.conf;
-    }
-    ```
-
-1. Run the Alpine [Nginx container](https://hub.docker.com/_/nginx) with:
-
-    ```bash
-    docker run -d --name=proxypia -p 8001:1001 -p 8002:1002 \
-    --network=pianet --link pia:deluge --link pia:hydra \
-    -v /mypathto/nginx.conf:/etc/nginx/nginx.conf:ro nginx:alpine
-    ```
-
-1. Access the WebUI of Deluge at [localhost:8000](http://localhost:8000)
-
-For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
-
-## EXTRA: For the paranoids
-
-- You might want to build the Docker image yourself
-- The download and unziping is done at build for the ones not able to download the zip files through their ISP
-- Checksums for PIA openvpn zip files are not used as these files change often
-- You should use strong encryption for the environment variable `ENCRYPTION`
-- Let me know if you have any extra idea :) !
+- The download and unziping of PIA openvpn files is done at build for the ones not able to download the zip files
+- Checksums for PIA openvpn zip files are not used as these files change often (but HTTPS is used)
+- Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
 
 ## TODOs
 
-- [ ] Test pia with port mappings and without pia_net and nginx
-- [ ] Iptables should change after initial ip address is obtained
-- [ ] More checks for environment variables provided
-- [ ] Add checks when launching PIA $?
-- [ ] VPN server for other devices to go through the tunnel OR hiproxy
+- [ ] Malicious IPs and hostnames with wget at launch+checksums
+- [ ] Su Exec (fork and addition)
+- [ ] SOCKS proxy/Hiproxy/VPN server for other devices to use the container
 
 ## License
 
