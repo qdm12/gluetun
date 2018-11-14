@@ -120,14 +120,6 @@ exitOnError $?
 printf "DONE\n"
 
 ############################################
-# ORIGINAL IP FOR HEALTHCHECK
-############################################
-printf "Getting non VPN public IP address..."
-export INITIAL_IP=$(wget -qO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -o 'Your IP address is [0-9.]*[0-9]' | grep -o '[0-9][0-9.]*')
-exitOnError $?
-printf "$INITIAL_IP\n"
-
-############################################
 # FIREWALL
 ############################################
 printf "Setting firewall for killswitch purposes...\n"

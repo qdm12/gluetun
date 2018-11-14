@@ -26,8 +26,8 @@ ENV USER= \
     BLOCK_MALICIOUS=off \
     EXTRA_SUBNETS=
 ENTRYPOINT /entrypoint.sh
-HEALTHCHECK --interval=5m --timeout=15s --start-period=10s --retries=2 \
-            CMD [ "$(wget -qqO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -ow 'Your IP address is [0-9.]*[0-9]' | grep -ow '[0-9][0-9.]*')" != "$INITIAL_IP" ] || exit 1
+HEALTHCHECK --interval=5m --timeout=5s --start-period=15s --retries=1 \
+            CMD grep -Fq "$(wget -qO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -oE 'Your IP address is [0-9.]*[0-9]' | grep -oE '[0-9][0-9.]*')" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
 RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \

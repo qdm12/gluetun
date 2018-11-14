@@ -42,20 +42,19 @@ It is based on:
 - Connect other containers to it
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combination
 - OpenVPN restarts on failure using another PIA IP address for the same region
-- Docker healthchecks using [duckduckgo.com](https://duckduckgo.com) to obtain your public IP address and compare it with your initial non-VPN IP address
+- Docker healthchecks using [duckduckgo.com](https://duckduckgo.com) to obtain your public IP address and compare it with PIA Ips in configuration file
 - Openvpn and Unbound do not run as root
 
 ## Requirements
 
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
-- If you use a firewall on the host:
-  - Allow outgoing TCP port 853 for Cloudflare DNS over TLS initial resolution of PIA server domain name, **you should then BLOCK it**
-  - Allow outgoing TCP port 443 for querying duckduckgo.com to obtain the initial IP address *only at the start of the container*, **you should then BLOCK it**
-  - Allow outgoing TCP port 501 for TCP strong encryption
-  - Allow outgoing TCP port 502 for TCP normal encryption
-  - Allow outgoing UDP port 1197 for UDP strong encryption
-  - Allow outgoing UDP port 1198 for UDP normal encryption
+- If you use a strict firewall on the host/router:
+  - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
+  - For UDP strong encryption, allow outbound UDP 1197
+  - For UDP normal encryption, allow outbound UDP 1198
+  - For TCP strong encryption, allow outbound TCP 501
+  - For TCP normal encryption, allow outbound TCP 502
 
 ## Setup
 
@@ -98,7 +97,7 @@ It is based on:
 
 ## Testing
 
-You can simply use the Docker healthcheck. The container will mark itself as **unhealthy** if the public IP address is the same as your initial public IP address. Otherwise you can follow these instructions:
+You can simply use the Docker healthcheck. The container will mark itself as **unhealthy** if the public IP address is not part of the PIA IPs. Otherwise you can follow these instructions:
 
 1. Check your host IP address with:
 
