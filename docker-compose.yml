@@ -11,8 +11,8 @@ services:
     networks:
       - pianet
     environment:
-      - USER=
-      - PASSWORD=
+      - USER=js89ds7
+      - PASSWORD=8fd9s239G
       - PROTOCOL=udp
       - ENCRYPTION=strong
       - REGION=CA Montreal
