@@ -27,7 +27,7 @@ ENV USER= \
     EXTRA_SUBNETS=
 ENTRYPOINT /entrypoint.sh
 HEALTHCHECK --interval=5m --timeout=5s --start-period=15s --retries=1 \
-            CMD grep -Fq "$(wget -qO- 'https://duckduckgo.com/?q=what+is+my+ip' | grep -oE 'Your IP address is [0-9.]*[0-9]' | grep -oE '[0-9][0-9.]*')" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+            CMD [ "$(grep -o "$(wget -qO- https://diagnostic.opendns.com/myip)" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn")" != "" ] || exit 1
 RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
