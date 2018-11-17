@@ -27,20 +27,21 @@ ENV USER= \
     EXTRA_SUBNETS=
 ENTRYPOINT /entrypoint.sh
 HEALTHCHECK --interval=5m --timeout=5s --start-period=15s --retries=1 \
-            CMD [ "$(grep -o "$(wget -qO- https://diagnostic.opendns.com/myip)" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn")" != "" ] || exit 1
+            CMD [ "$(grep -o "$(wget -qO- https://diagnostic.opendns.com/myip)" "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn")" != "" ] || exit 1
 RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong-tcp.zip && \
-    unzip -q openvpn.zip -d /openvpn-udp-normal && \
-    unzip -q openvpn-strong.zip -d /openvpn-udp-strong && \
-    unzip -q openvpn-tcp.zip -d /openvpn-tcp-normal && \
-    unzip -q openvpn-strong-tcp.zip -d /openvpn-tcp-strong && \
+    mkdir /openvpn && \
+    unzip -q openvpn.zip -d /openvpn/udp-normal && \
+    unzip -q openvpn-strong.zip -d /openvpn/udp-strong && \
+    unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
+    unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
+    find /openvpn -type f -name "*.ovpn" -exec sed -i '/resolv-retry/d' {} + && \
     apk del -q --progress --purge unzip && \
     rm -rf /*.zip /var/cache/apk/* /etc/unbound/unbound.conf && \
-    addgroup nonrootgroup --gid 1000 && \
-    adduser nonrootuser -G nonrootgroup -D -H --uid 1000
+    adduser nonrootuser -D -H --uid 1000
 COPY --from=qmcgaw/dns-trustanchor /named.root /etc/unbound/root.hints
 COPY --from=qmcgaw/dns-trustanchor /root.key /etc/unbound/root.key
 COPY --from=qmcgaw/malicious-hostnames /malicious-hostnames.bz2 /tmp/malicious-hostnames.bz2
@@ -54,7 +55,7 @@ RUN cd /tmp && \
     rm -f /tmp/*
 COPY unbound.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh /entrypoint.sh
-RUN chown nonrootuser:nonrootgroup -R /etc/unbound && \
+RUN chown nonrootuser -R /etc/unbound && \
     chmod 700 /etc/unbound && \
     chmod 500 /entrypoint.sh && \
     chmod 400 \

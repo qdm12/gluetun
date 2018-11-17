@@ -58,8 +58,8 @@ exitIfUnset PASSWORD
 exitIfNotIn ENCRYPTION "normal,strong"
 exitIfNotIn PROTOCOL "tcp,udp"
 exitIfNotIn BLOCK_MALICIOUS "on,off"
-cat "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
-exitOnError $? "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
+cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
+exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
 for SUBNET in ${EXTRA_SUBNETS//,/ }; do
   if [ $(echo "$SUBNET" | grep -Eo '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(/([0-2]?[0-9])|([3]?[0-1]))?$') = "" ]; then
     printf "Subnet $SUBNET is not a valid IPv4 subnet of the form 255.255.255.255/31 or 255.255.255.255\n"
@@ -128,20 +128,20 @@ SUBNET=$(ip route show default | tail -n 1 | cut -d" " -f 1)
 exitOnError $?
 printf "$SUBNET\n"
 printf " * Reading parameters to be used for region $REGION, protocol $PROTOCOL and encryption $ENCRYPTION..."
-CONNECTIONSTRING=$(grep -i "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn" -e 'privateinternetaccess.com')
+CONNECTIONSTRING=$(grep -i "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" -e 'privateinternetaccess.com')
 exitOnError $?
 PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
 if [ "$PORT" = "" ]; then
-  printf "Port not found in /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
+  printf "Port not found in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
   exit 1
 fi
 PIADOMAIN=$(echo $CONNECTIONSTRING | cut -d' ' -f2)
 if [ "$PIADOMAIN" = "" ]; then
-  printf "Domain not found in /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
+  printf "Domain not found in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
   exit 1
 fi
-sed -i '/^remote $PIADOMAIN $PORT/d' "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
-exitOnError $? "Can't delete remote connection string in /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+sed -i "/$CONNECTIONSTRING/d" "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+exitOnError $? "Can't delete remote connection string in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
 printf "DONE\n"
 printf "   * Port: $PORT\n"
 printf "   * Domain: $PIADOMAIN\n"
@@ -150,13 +150,13 @@ VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +5 | grep -o '[0-9]\{1,3\}\.[0-
 exitOnError $?
 printf "DONE\n"
 for ip in $VPNIPS; do printf "        $ip\n"; done
-printf " * Adding IP addresses of $PIADOMAIN to /openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn...\n"
+printf " * Adding IP addresses of $PIADOMAIN to /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn...\n"
 for ip in $VPNIPS; do
-  if [ "$(grep "remote $ip $PORT" "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn")" != "" ]; then
+  if [ "$(grep "remote $ip $PORT" "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn")" != "" ]; then
     printf "     remote $ip $PORT (already present)\n"
   else
     printf "     remote $ip $PORT\n"
-    echo "remote $ip $PORT" >> "/openvpn-$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
+    echo "remote $ip $PORT" >> "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
   fi
 done
 printf " * Deleting all iptables rules..."
@@ -214,8 +214,8 @@ printf " * Encryption: $ENCRYPTION\n"
 printf " * Protocol: $PROTOCOL\n"
 printf " * Port: $PORT\n"
 printf " * Initial VPN IP address: $(echo "$VPNIPS" | head -n 1)\n\n"
-cd "/openvpn-$PROTOCOL-$ENCRYPTION"
-openvpn --config "$REGION.ovpn" --user nonrootuser --persist-tun --auth-retry nointeract --auth-user-pass /auth.conf --auth-nocache
+cd "/openvpn/$PROTOCOL-$ENCRYPTION"
+openvpn --config "$REGION.ovpn" --user nonrootuser --auth-retry nointeract --auth-user-pass /auth.conf
 status=$?
 printf "\n =========================================\n"
 printf " OpenVPN exit with status $status\n"
