@@ -131,6 +131,60 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 
 Connect other Docker containers to the PIA VPN connection by adding `--network=container:pia` when launching them.
 
+### Access ports of containers connected to the PIA container
+
+1. For example, the following containers are launched connected through PIA:
+
+    ```bash
+    docker run -d --name=deluge --network=container:pia linuxserver/deluge
+    docker run -d --name=hydra --network=container:pia linuxserver/hydra
+    ```
+
+    We want to access:
+        - The HTTP web UI of Deluge at port **8112**
+        - The HTTP Web UI of Hydra at port **5075**
+
+1. In this case we use Nginx for its small size. Create `./nginx.conf` with:
+
+    ```bash
+    # nginx.conf
+    user nginx;
+    worker_processes 1;
+    events {
+      worker_connections 64;
+    }
+    http {
+      server {
+        listen 8000;
+        location /deluge {
+          proxy_pass http://deluge:8112/;
+          proxy_set_header X-Deluge-Base "/deluge";
+        }
+      }
+      server {
+        listen 8001;
+        location / {
+          proxy_pass http://hydra:5075/;
+        }
+      }
+    }
+    ```
+
+1. Run the [Nginx Alpine container](https://hub.docker.com/_/nginx):
+
+    ```bash
+    docker run -d -p 8001:8001/tcp -p 8002:8002/tcp \
+    --link pia:deluge --link pia:hydra \
+    -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf:ro \
+    nginx:alpine
+    ```
+
+    **WARNING**: Make sure the Docker network in which Nginx runs is the same as the one of PIA. It can be the default `bridge` network.
+
+1. Access the WebUI of Deluge at [localhost:8000](http://localhost:8000) and Hydra at [localhost:8001](http://localhost:8001)
+
+For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
+
 ## For the paranoids
 
 - You can review the code which essential consits in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
@@ -147,7 +201,6 @@ Connect other Docker containers to the PIA VPN connection by adding `--network=c
 ## TODOs
 
 - [ ] Malicious IPs and hostnames with wget at launch+checksums
-- [ ] Su Exec (fork and addition)
 - [ ] SOCKS proxy/Hiproxy/VPN server for other devices to use the container
 
 ## License
