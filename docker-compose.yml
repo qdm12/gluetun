@@ -8,8 +8,7 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun
-    networks:
-      - pianet
+    network_mode: bridge
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G
