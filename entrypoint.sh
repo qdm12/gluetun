@@ -206,6 +206,19 @@ exitOnError $?
 printf "DONE\n"
 
 ############################################
+# Additional OpenVPN settings
+############################################
+cd "/openvpn/$PROTOCOL-$ENCRYPTION"
+# Uses the username/password from this file to get the token from PIA
+[ "$(grep "auth-user-pass /auth.conf" "$REGION.ovpn")" != "" ] || echo "auth-user-pass /auth.conf" >> "$REGION.ovpn"
+# Reconnects automatically on failure
+[ "$(grep "auth-retry nointeract" "$REGION.ovpn")" != "" ] || echo "auth-retry nointeract" >> "$REGION.ovpn"
+# Prevents auth_failed infinite loops - make it interact? Remove persist-tun? nobind?
+[ "$(grep "pull-filter ignore \"auth-token\"" "$REGION.ovpn")" != "" ] || echo "pull-filter ignore \"auth-token\"" >> "$REGION.ovpn"
+# Runs openvpn without root, as nonrootuser
+[ "$(grep "user nonrootuser" "$REGION.ovpn")" != "" ] || echo "user nonrootuser" >> "$REGION.ovpn"
+
+############################################
 # OPENVPN LAUNCH
 ############################################
 printf "Starting OpenVPN using the following parameters:\n"
@@ -214,8 +227,8 @@ printf " * Encryption: $ENCRYPTION\n"
 printf " * Protocol: $PROTOCOL\n"
 printf " * Port: $PORT\n"
 printf " * Initial VPN IP address: $(echo "$VPNIPS" | head -n 1)\n\n"
-cd "/openvpn/$PROTOCOL-$ENCRYPTION"
-openvpn --config "$REGION.ovpn" --user nonrootuser --auth-retry nointeract --auth-user-pass /auth.conf
+
+openvpn --config "$REGION.ovpn"
 status=$?
 printf "\n =========================================\n"
 printf " OpenVPN exit with status $status\n"
