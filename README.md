@@ -131,9 +131,13 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 
 Connect other Docker containers to the PIA VPN connection by adding `--network=container:pia` when launching them.
 
-### Access ports of containers connected to the PIA container
+For containers in the same `docker-compose.yml` as PIA, you can use `network: "service:pia` (see below)
 
-1. For example, the following containers are launched connected through PIA:
+### Access ports of PIA-connected containers
+
+#### General case
+
+1. For example, the following containers are launched connected to PIA:
 
     ```bash
     docker run -d --name=deluge --network=container:pia linuxserver/deluge
@@ -185,6 +189,44 @@ Connect other Docker containers to the PIA VPN connection by adding `--network=c
 
 For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
 
+#### Containers with PIA in one docker-compose.yml
+
+This is simpler but restrictive in terms of management as all containers must be in the same *docker-compose.yml*.
+
+For example, the following file
+
+```yml
+version: '3'
+services:
+  pia:
+    build: https://github.com/qdm12/private-internet-access-docker.git
+    image: qmcgaw/private-internet-access
+    container_name: pia
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    network_mode: bridge
+    ports:
+      - 8112:8112/tcp
+    environment:
+      - USER=js89ds7
+      - PASSWORD=8fd9s239G
+      - PROTOCOL=udp
+      - ENCRYPTION=strong
+      - REGION=CA Montreal
+      - EXTRA_SUBNETS=
+    restart: always
+  deluge:
+    image: linuxserver/deluge
+    depends_on:
+      - pia
+    network_mode: "service:pia"
+    restart: always
+```
+
+will publish port 8112 as Deluge WebUI without any trouble.
+
 ## For the paranoids
 
 - You can review the code which essential consits in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
@@ -201,7 +243,9 @@ For more containers, add more `--link pia:xxx` and modify *nginx.conf* according
 ## TODOs
 
 - [ ] Malicious IPs and hostnames with wget at launch+checksums
+- [ ] Nginx scratch
 - [ ] SOCKS proxy/Hiproxy/VPN server for other devices to use the container
+- [ ] Port forwarding
 
 ## License
 
