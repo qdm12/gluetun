@@ -2,8 +2,6 @@
 
 *Lightweight VPN client to tunnel to private internet access servers*
 
-**WARNING: auth.conf is now replaced by the environment variables `USER` and `PASSWORD`, please update your configuration**
-
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)

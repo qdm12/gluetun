@@ -33,12 +33,11 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
             https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong-tcp.zip && \
-    mkdir /openvpn && \
+    mkdir -p /openvpn/target && \
     unzip -q openvpn.zip -d /openvpn/udp-normal && \
     unzip -q openvpn-strong.zip -d /openvpn/udp-strong && \
     unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
     unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
-    find /openvpn -type f -name "*.ovpn" -exec sed -i '/resolv-retry/d' {} + && \
     apk del -q --progress --purge unzip && \
     rm -rf /*.zip /var/cache/apk/* /etc/unbound/unbound.conf && \
     adduser nonrootuser -D -H --uid 1000

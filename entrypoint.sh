@@ -70,20 +70,24 @@ done
 #####################################################
 # Writes to protected file and remove USER, PASSWORD
 #####################################################
-printf "Writing USER and PASSWORD to protected file /auth.conf..."
-echo "$USER" > /auth.conf
-exitOnError $?
-echo "$PASSWORD" >> /auth.conf
-exitOnError $?
-chown nonrootuser /auth.conf
-exitOnError $?
-chmod 400 /auth.conf
-exitOnError $?
-printf "DONE\n"
-printf "Clearing environment variables USER and PASSWORD..."
-unset -v USER
-unset -v PASSWORD
-printf "DONE\n"
+if [ -f /auth.conf ]; then
+  printf "/auth.conf already exists\n"
+else
+  printf "Writing USER and PASSWORD to protected file /auth.conf..."
+  echo "$USER" > /auth.conf
+  exitOnError $?
+  echo "$PASSWORD" >> /auth.conf
+  exitOnError $?
+  chown nonrootuser /auth.conf
+  exitOnError $?
+  chmod 400 /auth.conf
+  exitOnError $?
+  printf "DONE\n"
+  printf "Clearing environment variables USER and PASSWORD..."
+  unset -v USER
+  unset -v PASSWORD
+  printf "DONE\n"
+fi
 
 ############################################
 # CHECK FOR TUN DEVICE
@@ -98,6 +102,7 @@ printf "TUN device OK\n"
 # BLOCKING MALICIOUS HOSTNAMES AND IPs WITH UNBOUND
 ############################################
 printf "Malicious hostnames and ips blocking is $BLOCK_MALICIOUS\n"
+rm -f /etc/unbound/blocks-malicious.conf
 if [ "$BLOCK_MALICIOUS" = "on" ]; then
   tar -xjf /etc/unbound/blocks-malicious.bz2 -C /etc/unbound/
   printf "$(cat /etc/unbound/blocks-malicious.conf | grep "local-zone" | wc -l ) malicious hostnames and $(cat /etc/unbound/blocks-malicious.conf | grep "private-address" | wc -l) malicious IP addresses blacklisted\n"
@@ -120,14 +125,9 @@ exitOnError $?
 printf "DONE\n"
 
 ############################################
-# FIREWALL
+# Reading chosen OpenVPN configuration
 ############################################
-printf "Setting firewall for killswitch purposes...\n"
-printf " * Detecting local subnet..."
-SUBNET=$(ip route show default | tail -n 1 | cut -d" " -f 1)
-exitOnError $?
-printf "$SUBNET\n"
-printf " * Reading parameters to be used for region $REGION, protocol $PROTOCOL and encryption $ENCRYPTION..."
+printf "Reading configuration for region $REGION, protocol $PROTOCOL and encryption $ENCRYPTION...\n"
 CONNECTIONSTRING=$(grep -i "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" -e 'privateinternetaccess.com')
 exitOnError $?
 PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
@@ -140,25 +140,59 @@ if [ "$PIADOMAIN" = "" ]; then
   printf "Domain not found in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
   exit 1
 fi
-sed -i "/$CONNECTIONSTRING/d" "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
-exitOnError $? "Can't delete remote connection string in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
-printf "DONE\n"
-printf "   * Port: $PORT\n"
-printf "   * Domain: $PIADOMAIN\n"
-printf "     * Detecting IP addresses corresponding to $PIADOMAIN..."
+printf " * Port: $PORT\n"
+printf " * Domain: $PIADOMAIN\n"
+printf "Detecting IP addresses corresponding to $PIADOMAIN...\n"
 VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +5 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 exitOnError $?
-printf "DONE\n"
-for ip in $VPNIPS; do printf "        $ip\n"; done
-printf " * Adding IP addresses of $PIADOMAIN to /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn...\n"
 for ip in $VPNIPS; do
-  if [ "$(grep "remote $ip $PORT" "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn")" != "" ]; then
-    printf "     remote $ip $PORT (already present)\n"
-  else
-    printf "     remote $ip $PORT\n"
-    echo "remote $ip $PORT" >> "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn"
-  fi
+  printf "   $ip\n";
 done
+
+############################################
+# Writing target OpenVPN files
+############################################
+TARGET_PATH="/openvpn/target"
+printf "Creating target OpenVPN files in $TARGET_PATH..."
+rm -rf $TARGET_PATH/*
+cd "/openvpn/$PROTOCOL-$ENCRYPTION"
+cp -f *.crt "$TARGET_PATH"
+exitOnError $? "Cannot copy crt file to $TARGET_PATH"
+cp -f *.pem "$TARGET_PATH"
+exitOnError $? "Cannot copy pem file to $TARGET_PATH"
+cp -f "$REGION.ovpn" "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot copy $REGION.ovpn file to $TARGET_PATH"
+sed -i "/$CONNECTIONSTRING/d" "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot delete '$CONNECTIONSTRING' from $TARGET_PATH/config.ovpn"
+sed -i '/resolv-retry/d' "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot delete 'resolv-retry' from $TARGET_PATH/config.ovpn"
+for ip in $VPNIPS; do
+  echo "remote $ip $PORT" >> "$TARGET_PATH/config.ovpn"
+  exitOnError $? "Cannot add 'remote $ip $PORT' to $TARGET_PATH/config.ovpn"
+done
+# Uses the username/password from this file to get the token from PIA
+echo "auth-user-pass /auth.conf" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'auth-user-pass /auth.conf' to $TARGET_PATH/config.ovpn"
+# Reconnects automatically on failure
+echo "auth-retry nointeract" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'auth-retry nointeract' to $TARGET_PATH/config.ovpn"
+# Prevents auth_failed infinite loops - make it interact? Remove persist-tun? nobind?
+echo "pull-filter ignore \"auth-token\"" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'pull-filter ignore \"auth-token\"' to $TARGET_PATH/config.ovpn"
+# Runs openvpn without root, as nonrootuser
+echo "user nonrootuser" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'user nonrootuser' to $TARGET_PATH/config.ovpn"
+# Note: TUN device re-opening will restart the container due to permissions
+printf "DONE\n"
+
+############################################
+# FIREWALL
+############################################
+printf "Setting firewall for killswitch purposes...\n"
+printf " * Detecting local subnet..."
+SUBNET=$(ip route show default | tail -n 1 | cut -d" " -f 1)
+exitOnError $?
+printf "$SUBNET\n"
 printf " * Deleting all iptables rules..."
 iptables --flush
 exitOnError $?
@@ -206,19 +240,6 @@ exitOnError $?
 printf "DONE\n"
 
 ############################################
-# Additional OpenVPN settings
-############################################
-cd "/openvpn/$PROTOCOL-$ENCRYPTION"
-# Uses the username/password from this file to get the token from PIA
-[ "$(grep "auth-user-pass /auth.conf" "$REGION.ovpn")" != "" ] || echo "auth-user-pass /auth.conf" >> "$REGION.ovpn"
-# Reconnects automatically on failure
-[ "$(grep "auth-retry nointeract" "$REGION.ovpn")" != "" ] || echo "auth-retry nointeract" >> "$REGION.ovpn"
-# Prevents auth_failed infinite loops - make it interact? Remove persist-tun? nobind?
-[ "$(grep "pull-filter ignore \"auth-token\"" "$REGION.ovpn")" != "" ] || echo "pull-filter ignore \"auth-token\"" >> "$REGION.ovpn"
-# Runs openvpn without root, as nonrootuser
-[ "$(grep "user nonrootuser" "$REGION.ovpn")" != "" ] || echo "user nonrootuser" >> "$REGION.ovpn"
-
-############################################
 # OPENVPN LAUNCH
 ############################################
 printf "Starting OpenVPN using the following parameters:\n"
@@ -227,9 +248,9 @@ printf " * Encryption: $ENCRYPTION\n"
 printf " * Protocol: $PROTOCOL\n"
 printf " * Port: $PORT\n"
 printf " * Initial VPN IP address: $(echo "$VPNIPS" | head -n 1)\n\n"
-
-openvpn --config "$REGION.ovpn"
+cd "$TARGET_PATH"
+openvpn --config config.ovpn
 status=$?
 printf "\n =========================================\n"
 printf " OpenVPN exit with status $status\n"
-printf " =========================================\n"
+printf " =========================================\n\n"
