@@ -20,7 +20,7 @@
 
 | Image size | RAM usage | CPU usage |
 | --- | --- | --- |
-| 20MB | 14MB to 80MB | Low to Medium |
+| 19.1MB | 14MB to 80MB | Low to Medium |
 
 It is based on:
 
@@ -28,15 +28,14 @@ It is based on:
 - [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to tunnel to PIA servers
 - [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 - [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
-- [Malicious hostnames list](https://github.com/qdm12/malicious-hostnames-docker) used with Unbound (see `BLOCK_MALICIOUS` environment variable)
-- [Malicious IPs list](https://github.com/qdm12/malicious-ips-docker) used with Unbound (see `BLOCK_MALICIOUS`)
+- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` environment variable)
 
 ## Extra features
 
 - Only use environment variables:
-    - the [destination region]((https://www.privateinternetaccess.com/pages/network/))
-    - the protocol `tcp` or `udp`
-    - the level of encryption `normal` or `strong`
+  - the [destination region]((https://www.privateinternetaccess.com/pages/network/))
+  - the protocol `tcp` or `udp`
+  - the level of encryption `normal` or `strong`
 - Connect other containers to it
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combination
 - OpenVPN restarts on failure using another PIA IP address for the same region
@@ -240,7 +239,6 @@ will publish port 8112 as Deluge WebUI without any trouble.
 
 ## TODOs
 
-- [ ] Malicious IPs and hostnames with wget at launch+checksums
 - [ ] Nginx scratch
 - [ ] SOCKS proxy/Hiproxy/VPN server for other devices to use the container
 - [ ] Port forwarding

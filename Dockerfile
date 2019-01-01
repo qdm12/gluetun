@@ -40,14 +40,12 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
     apk del -q --progress --purge unzip && \
     rm -rf /*.zip /var/cache/apk/* /etc/unbound/unbound.conf && \
-    adduser nonrootuser -D -H --uid 1000
-COPY --from=qmcgaw/dns-trustanchor /named.root /etc/unbound/root.hints
-COPY --from=qmcgaw/dns-trustanchor /root.key /etc/unbound/root.key
-COPY --from=qmcgaw/malicious-hostnames /malicious-hostnames.bz2 /tmp/malicious-hostnames.bz2
-COPY --from=qmcgaw/malicious-ips /malicious-ips.bz2 /tmp/malicious-ips.bz2
-RUN cd /tmp && \
-    tar -xjf malicious-hostnames.bz2 && \
-    tar -xjf malicious-ips.bz2 && \
+    adduser nonrootuser -D -H --uid 1000 && \
+    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/named.root.updated -O /etc/unbound/root.hints && \
+    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/root.key.updated -O /etc/unbound/root.key && \
+    cd /tmp && \
+    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/malicious-hostnames.updated -O malicious-hostnames && \
+    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/malicious-ips.updated -O malicious-ips && \
     while read hostname; do echo "local-zone: \""$hostname"\" static" >> blocks-malicious.conf; done < malicious-hostnames && \
     while read ip; do echo "private-address: $ip" >> blocks-malicious.conf; done < malicious-ips && \
     tar -cjf /etc/unbound/blocks-malicious.bz2 blocks-malicious.conf && \
