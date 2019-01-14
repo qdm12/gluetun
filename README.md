@@ -20,7 +20,13 @@
 
 | Image size | RAM usage | CPU usage |
 | --- | --- | --- |
-| 19.1MB | 14MB to 80MB | Low to Medium |
+| 17.1MB | 14MB to 80MB | Low to Medium |
+
+Three tags:
+
+- `qmcgaw/private-internet-access` for x86/amd64
+- `qmcgaw/private-internet-access:arm32v7` for arm 32 bit v7 (Raspberry Pi)
+- `qmcgaw/private-internet-access:arm64v8` for arm 64 bit v8
 
 It is based on:
 
@@ -239,6 +245,7 @@ will publish port 8112 as Deluge WebUI without any trouble.
 
 ## TODOs
 
+- [ ] Travis CI for arm images
 - [ ] Nginx scratch
 - [ ] SOCKS proxy/Hiproxy/VPN server for other devices to use the container
 - [ ] Port forwarding
