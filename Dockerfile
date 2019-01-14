@@ -15,7 +15,7 @@ LABEL org.label-schema.schema-version="1.0.0-rc1" \
       org.label-schema.docker.cmd.devel="docker run -it --rm --cap-add=NET_ADMIN --device=/dev/net/tun -e USER=js89ds7 -e PASSWORD=8fd9s239G qmcgaw/private-internet-access" \
       org.label-schema.docker.params="REGION=PIA region,PROTOCOL=udp/tcp,ENCRYPTION=strong/normal,BLOCK_MALICIOUS=on/off,USER=PIA user,PASSWORD=PIA password,EXTRA_SUBNETS=extra subnets to allow on the firewall" \
       org.label-schema.version="" \
-      image-size="20MB" \
+      image-size="17.1MB" \
       ram-usage="13MB to 80MB" \
       cpu-usage="Low to Medium"
 ENV USER= \
@@ -39,7 +39,7 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
     unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
     apk del -q --progress --purge unzip && \
-    rm -rf /*.zip /var/cache/apk/* /etc/unbound/unbound.conf && \
+    rm -rf /*.zip /var/cache/apk/* /etc/unbound/unbound.conf /usr/sbin/unbound-anchor /usr/sbin/unbound-checkconf /usr/sbin/unbound-control /usr/sbin/unbound-control-setup /usr/sbin/unbound-host && \
     adduser nonrootuser -D -H --uid 1000 && \
     wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/named.root.updated -O /etc/unbound/root.hints && \
     wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/root.key.updated -O /etc/unbound/root.key && \
