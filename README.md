@@ -118,9 +118,9 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 | `PROTOCOL` | `udp` | `tcp` or `udp` |
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off` |
-| `USER` | `` | Your PIA username |
-| `PASSWORD` | `` | Your PIA password |
-| `EXTRA_SUBNETS` | `` | Comma separated subnets allowed in the container firewall |
+| `USER` | | Your PIA username |
+| `PASSWORD` | | Your PIA password |
+| `EXTRA_SUBNETS` | | Comma separated subnets allowed in the container firewall |
 
 `EXTRA_SUBNETS` can be in example: `192.168.1.0/24,192.168.10.121,10.0.0.5/28`
 
