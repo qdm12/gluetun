@@ -25,7 +25,7 @@
 Three tags:
 
 - `qmcgaw/private-internet-access` for x86/amd64
-- `qmcgaw/private-internet-access:arm32v7` for arm 32 bit v7 (Raspberry Pi)
+- `qmcgaw/private-internet-access:arm32v6` for arm 32 bit v6 (Raspberry Pi)
 - `qmcgaw/private-internet-access:arm64v8` for arm 64 bit v8
 
 It is based on:
@@ -38,14 +38,17 @@ It is based on:
 
 ## Extra features
 
-- Only use environment variables:
-  - the [destination region]((https://www.privateinternetaccess.com/pages/network/))
-  - the protocol `tcp` or `udp`
-  - the level of encryption `normal` or `strong`
+- Configure everything with environment variables
+  - [Destination region](https://www.privateinternetaccess.com/pages/network)
+  - Internet protocol
+  - Level of encryption
+  - Username and password
+  - Malicious DNS blocking
+  - Extra subnets allowed by firewall
 - Connect other containers to it
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combination
 - OpenVPN restarts on failure using another PIA IP address for the same region
-- Docker healthchecks using [duckduckgo.com](https://duckduckgo.com) to obtain your public IP address and compare it with PIA Ips in configuration file
+- Docker healthcheck uses [https://diagnostic.opendns.com/myip](https://diagnostic.opendns.com/myip) to check that the current public IP address exists in the selected OpenVPN configuration file
 - Openvpn and Unbound do not run as root
 
 ## Requirements
