@@ -26,8 +26,7 @@ ENV USER= \
     BLOCK_MALICIOUS=off \
     EXTRA_SUBNETS=
 ENTRYPOINT /entrypoint.sh
-HEALTHCHECK --interval=5m --timeout=5s --start-period=15s --retries=1 \
-            CMD [ "$(grep -o "$(wget -qO- https://diagnostic.opendns.com/myip)" /openvpn/target/config.ovpn)" != "" ] || exit 1
+HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
 RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
             https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
@@ -51,10 +50,10 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     tar -cjf /etc/unbound/blocks-malicious.bz2 blocks-malicious.conf && \
     rm -f /tmp/*
 COPY unbound.conf /etc/unbound/unbound.conf
-COPY entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh healthcheck.sh /
 RUN chown nonrootuser -R /etc/unbound && \
     chmod 700 /etc/unbound && \
-    chmod 500 /entrypoint.sh && \
+    chmod 500 /entrypoint.sh healthcheck.sh && \
     chmod 400 \
         /etc/unbound/root.hints \
         /etc/unbound/root.key \
