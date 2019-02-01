@@ -24,19 +24,24 @@
 | --- | --- | --- |
 | 17.1MB | 14MB to 80MB | Low to Medium |
 
-Three tags:
+<details><summary>Click to show Docker tags</summary><p>
 
 - `qmcgaw/private-internet-access` for x86/amd64
 - `qmcgaw/private-internet-access:arm32v6` for arm 32 bit v6 (Raspberry Pi)
 - `qmcgaw/private-internet-access:arm64v8` for arm 64 bit v8
 
-It is based on:
+</p></details>
+
+
+<details><summary>Click to show base components</summary><p>
 
 - [Alpine 3.8](https://alpinelinux.org) for a tiny image
 - [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to tunnel to PIA servers
 - [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 - [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
 - [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` environment variable)
+
+</p></details>
 
 ## Extra features
 
@@ -139,7 +144,7 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 
 Connect other Docker containers to the PIA VPN connection by adding `--network=container:pia` when launching them.
 
-For containers in the same `docker-compose.yml` as PIA, you can use `network: "service:pia` (see below)
+For containers in the same `docker-compose.yml` as PIA, you can use `network: "service:pia"` (see below)
 
 ### Access ports of PIA-connected containers
 
