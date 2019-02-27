@@ -87,7 +87,7 @@
 
     ```bash
     docker run -d --name=pia -v ./auth.conf:/auth.conf:ro \
-    --cap-add=NET_ADMIN --device=/dev/net/tun --network=pianet \
+    --cap-add=NET_ADMIN --device=/dev/net/tun \
     -e REGION="CA Montreal" -e PROTOCOL=udp -e ENCRYPTION=strong \
     -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     qmcgaw/private-internet-access
@@ -148,8 +148,6 @@ For containers in the same `docker-compose.yml` as PIA, you can use `network: "s
 
 ### Access ports of PIA-connected containers
 
-#### General case
-
 1. For example, the following containers are launched connected to PIA:
 
     ```bash
@@ -202,17 +200,12 @@ For containers in the same `docker-compose.yml` as PIA, you can use `network: "s
 
 For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
 
-#### Containers with PIA in one docker-compose.yml
-
-This is simpler but restrictive in terms of management as all containers must be in the same *docker-compose.yml*.
-
-For example, the following file
+The docker compose file would look like:
 
 ```yml
 version: '3'
 services:
   pia:
-    build: https://github.com/qdm12/private-internet-access-docker.git
     image: qmcgaw/private-internet-access
     container_name: pia
     cap_add:
@@ -220,8 +213,6 @@ services:
     devices:
       - /dev/net/tun
     network_mode: bridge
-    ports:
-      - 8112:8112/tcp
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G
@@ -230,15 +221,28 @@ services:
       - REGION=CA Montreal
       - EXTRA_SUBNETS=
     restart: always
+  nginx:
+    image: nginx:alpine
+    container_name: pia_proxy
+    ports:
+      - 8001:8001/tcp
+      - 8002:8002/tcp
+    links:
+      - pia:deluge
+      - pia:hydra
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
   deluge:
     image: linuxserver/deluge
-    depends_on:
-      - pia
-    network_mode: "service:pia"
-    restart: always
+    container_name: deluge
+    network_mode: "container:pia"
+    # add more volumes etc.
+  hydra:
+    image: linuxserver/hydra
+    container_name: hydra
+    network_mode: "container:hydra"
+    # add more volumes etc.
 ```
-
-will publish port 8112 as Deluge WebUI without any trouble.
 
 ## For the paranoids
 
