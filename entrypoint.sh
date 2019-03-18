@@ -179,9 +179,11 @@ exitOnError $? "Cannot add 'auth-retry nointeract' to $TARGET_PATH/config.ovpn"
 # Prevents auth_failed infinite loops - make it interact? Remove persist-tun? nobind?
 echo "pull-filter ignore \"auth-token\"" >> "$TARGET_PATH/config.ovpn"
 exitOnError $? "Cannot add 'pull-filter ignore \"auth-token\"' to $TARGET_PATH/config.ovpn"
-# Runs openvpn without root, as nonrootuser
-echo "user nonrootuser" >> "$TARGET_PATH/config.ovpn"
-exitOnError $? "Cannot add 'user nonrootuser' to $TARGET_PATH/config.ovpn"
+# Runs openvpn without root, as nonrootuser if specified
+if [ "$NONROOT" = "yes" ]; then
+  echo "user nonrootuser" >> "$TARGET_PATH/config.ovpn"
+  exitOnError $? "Cannot add 'user nonrootuser' to $TARGET_PATH/config.ovpn"
+fi
 # Note: TUN device re-opening will restart the container due to permissions
 printf "DONE\n"
 

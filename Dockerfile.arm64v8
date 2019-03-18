@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.8
+ARG ALPINE_VERSION=3.9
 
 FROM arm64v8/alpine:${ALPINE_VERSION}
 ARG BUILD_DATE
@@ -13,7 +13,7 @@ LABEL org.label-schema.schema-version="1.0.0-rc1" \
       org.label-schema.vcs-usage="https://github.com/qdm12/private-internet-access-docker/blob/master/README.md#setup" \
       org.label-schema.docker.cmd="docker run -d --cap-add=NET_ADMIN --device=/dev/net/tun -e USER=js89ds7 -e PASSWORD=8fd9s239G qmcgaw/private-internet-access" \
       org.label-schema.docker.cmd.devel="docker run -it --rm --cap-add=NET_ADMIN --device=/dev/net/tun -e USER=js89ds7 -e PASSWORD=8fd9s239G qmcgaw/private-internet-access" \
-      org.label-schema.docker.params="REGION=PIA region,PROTOCOL=udp/tcp,ENCRYPTION=strong/normal,BLOCK_MALICIOUS=on/off,USER=PIA user,PASSWORD=PIA password,EXTRA_SUBNETS=extra subnets to allow on the firewall" \
+      org.label-schema.docker.params="REGION=PIA region,PROTOCOL=udp/tcp,ENCRYPTION=strong/normal,BLOCK_MALICIOUS=on/off,USER=PIA user,PASSWORD=PIA password,EXTRA_SUBNETS=extra subnets to allow on the firewall,NONROOT=yes/no" \
       org.label-schema.version="" \
       image-size="16.7MB" \
       ram-usage="13MB to 80MB" \
@@ -24,7 +24,8 @@ ENV USER= \
     PROTOCOL=udp \
     REGION="CA Montreal" \
     BLOCK_MALICIOUS=off \
-    EXTRA_SUBNETS=
+    EXTRA_SUBNETS= \
+    NONROOT=
 ENTRYPOINT /entrypoint.sh
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
 RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \

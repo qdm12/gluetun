@@ -52,6 +52,7 @@
   - Username and password
   - Malicious DNS blocking
   - Extra subnets allowed by firewall
+  - Run openvpn without root (but will give reconnect problems)
 - Connect other containers to it
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combination
 - OpenVPN restarts on failure using another PIA IP address for the same region
@@ -136,6 +137,7 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 | `BLOCK_MALICIOUS` | `off` | `on` or `off` |
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
+| `NONROOT` | | Run OpenVPN without root, `yes` or other |
 | `EXTRA_SUBNETS` | | Comma separated subnets allowed in the container firewall |
 
 `EXTRA_SUBNETS` can be in example: `192.168.1.0/24,192.168.10.121,10.0.0.5/28`
@@ -220,6 +222,7 @@ services:
       - ENCRYPTION=strong
       - REGION=CA Montreal
       - EXTRA_SUBNETS=
+      - NONROOT=
     restart: always
   nginx:
     image: nginx:alpine
