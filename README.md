@@ -214,7 +214,6 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun
-    network_mode: bridge
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G
@@ -233,17 +232,23 @@ services:
     links:
       - pia:deluge
       - pia:hydra
+    depends_on:
+      - pia
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
   deluge:
     image: linuxserver/deluge
     container_name: deluge
     network_mode: "container:pia"
+    depends_on:
+      - pia
     # add more volumes etc.
   hydra:
     image: linuxserver/hydra
     container_name: hydra
     network_mode: "container:hydra"
+    depends_on:
+      - pia
     # add more volumes etc.
 ```
 
