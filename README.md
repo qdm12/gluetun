@@ -24,15 +24,6 @@
 | --- | --- | --- |
 | 17.1MB | 14MB to 80MB | Low to Medium |
 
-<details><summary>Click to show Docker tags</summary><p>
-
-- `qmcgaw/private-internet-access` for x86/amd64
-- `qmcgaw/private-internet-access:arm32v6` for arm 32 bit v6 (Raspberry Pi)
-- `qmcgaw/private-internet-access:arm64v8` for arm 64 bit v8
-
-</p></details>
-
-
 <details><summary>Click to show base components</summary><p>
 
 - [Alpine 3.8](https://alpinelinux.org) for a tiny image
@@ -83,6 +74,17 @@
     ```bash
     modprobe tun
     ```
+
+1. **ONLY IF YOU AN ARM DEVICE, depending on your cpu architecture:**
+
+    ```sh
+    # ARM 32 bit V6
+    docker build -t qmcgaw/private-internet-access https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/Dockerfile.arm32v6
+    # ARM 64 bit v8
+    docker build -t qmcgaw/private-internet-access https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/Dockerfile.arm64v8
+    ```
+
+    I will rework the CI pipeline to build ARM images later.
 
 1. Launch the container with:
 
@@ -264,12 +266,13 @@ services:
 - The download and unziping of PIA openvpn files is done at build for the ones not able to download the zip files
 - Checksums for PIA openvpn zip files are not used as these files change often (but HTTPS is used)
 - Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
+- DNS Leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: DNS server is a local caching intermediary)
 
 ## TODOs
 
+- [ ] SOCKS/HTTP proxy or VPN server for LAN devices to use the container
 - [ ] Travis CI for arm images
 - [ ] Nginx scratch
-- [ ] SOCKS proxy/Hiproxy/VPN server for other devices to use the container
 - [ ] Port forwarding
 
 ## License
