@@ -58,6 +58,7 @@ exitIfUnset PASSWORD
 exitIfNotIn ENCRYPTION "normal,strong"
 exitIfNotIn PROTOCOL "tcp,udp"
 exitIfNotIn BLOCK_MALICIOUS "on,off"
+exitIfNotIn BLOCK_NSA "on,off"
 cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
 for SUBNET in ${EXTRA_SUBNETS//,/ }; do
@@ -109,6 +110,18 @@ if [ "$BLOCK_MALICIOUS" = "on" ]; then
 else
   echo "" > /etc/unbound/blocks-malicious.conf
 fi
+if [ "$BLOCK_NSA" = "on" ]; then
+  tar -xjf /etc/unbound/blocks-nsa.bz2 -C /etc/unbound/
+  printf "$(cat /etc/unbound/blocks-nsa.conf | grep "local-zone" | wc -l ) NSA hostnames blacklisted\n"
+  cat /etc/unbound/blocks-nsa.conf >> /etc/unbound/blocks-malicious.conf
+  rm /etc/unbound/blocks-nsa.conf
+  sort -u -o /etc/unbound/blocks-malicious.conf /etc/unbound/blocks-malicious.conf
+fi
+for hostname in ${UNBLOCK//,/ }
+do
+  printf "Unblocking hostname $hostname\n"
+  sed -i "/$hostname/d" /etc/unbound/blocks-malicious.conf
+done
 
 ############################################
 # SETTING DNS OVER TLS TO 1.1.1.1 / 1.0.0.1

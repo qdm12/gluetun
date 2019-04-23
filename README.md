@@ -30,7 +30,7 @@
 - [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to tunnel to PIA servers
 - [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 - [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
-- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` environment variable)
+- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` and `BLOCK_NSA` environment variables)
 
 </p></details>
 
@@ -136,13 +136,13 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 | `REGION` | `CA Montreal` | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) |
 | `PROTOCOL` | `udp` | `tcp` or `udp` |
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
-| `BLOCK_MALICIOUS` | `off` | `on` or `off` |
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
 | `NONROOT` | | Run OpenVPN without root, `yes` or other |
 | `EXTRA_SUBNETS` | | Comma separated subnets allowed in the container firewall |
-
-`EXTRA_SUBNETS` can be in example: `192.168.1.0/24,192.168.10.121,10.0.0.5/28`
+| `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
+| `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
+| `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 
 ## Connect other containers to it
 

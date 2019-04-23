@@ -24,6 +24,8 @@ ENV USER= \
     PROTOCOL=udp \
     REGION="CA Montreal" \
     BLOCK_MALICIOUS=off \
+    BLOCK_NSA=off \
+    UNBLOCK= \
     EXTRA_SUBNETS= \
     NONROOT=
 ENTRYPOINT /entrypoint.sh
@@ -45,10 +47,13 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/root.key.updated -O /etc/unbound/root.key && \
     cd /tmp && \
     wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/malicious-hostnames.updated -O malicious-hostnames && \
+    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/nsa-hostnames.updated -O nsa-hostnames && \
     wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/malicious-ips.updated -O malicious-ips && \
     while read hostname; do echo "local-zone: \""$hostname"\" static" >> blocks-malicious.conf; done < malicious-hostnames && \
     while read ip; do echo "private-address: $ip" >> blocks-malicious.conf; done < malicious-ips && \
     tar -cjf /etc/unbound/blocks-malicious.bz2 blocks-malicious.conf && \
+    while read hostname; do echo "local-zone: \""$hostname"\" static" >> blocks-nsa.conf; done < nsa-hostnames && \
+    tar -cjf /etc/unbound/blocks-nsa.bz2 blocks-nsa.conf && \
     rm -f /tmp/*
 COPY unbound.conf /etc/unbound/unbound.conf
 COPY entrypoint.sh healthcheck.sh /
@@ -59,4 +64,4 @@ RUN chown nonrootuser -R /etc/unbound && \
         /etc/unbound/root.hints \
         /etc/unbound/root.key \
         /etc/unbound/unbound.conf \
-        /etc/unbound/blocks-malicious.bz2
+        /etc/unbound/*.bz2
