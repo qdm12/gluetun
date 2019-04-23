@@ -192,7 +192,7 @@ For containers in the same `docker-compose.yml` as PIA, you can use `network: "s
 1. Run the [Nginx Alpine container](https://hub.docker.com/_/nginx):
 
     ```bash
-    docker run -d -p 8001:8001/tcp -p 8002:8002/tcp \
+    docker run -d -p 8000:8000/tcp -p 8001:8001/tcp \
     --link pia:deluge --link pia:hydra \
     -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf:ro \
     nginx:alpine
