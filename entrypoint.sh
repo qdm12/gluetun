@@ -157,7 +157,7 @@ fi
 printf " * Port: $PORT\n"
 printf " * Domain: $PIADOMAIN\n"
 printf "Detecting IP addresses corresponding to $PIADOMAIN...\n"
-VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +5 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
+VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +3 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 exitOnError $?
 for ip in $VPNIPS; do
   printf "   $ip\n";
@@ -206,7 +206,7 @@ printf "DONE\n"
 ############################################
 printf "Setting firewall for killswitch purposes...\n"
 printf " * Detecting local subnet..."
-SUBNET=$(ip route show default | tail -n 1 | cut -d" " -f 1)
+SUBNET=$(ip route show | tail -n 1 | cut -d" " -f 1)
 exitOnError $?
 printf "$SUBNET\n"
 printf " * Deleting all iptables rules..."

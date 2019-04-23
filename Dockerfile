@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.8
+ARG ALPINE_VERSION=3.9
 
 FROM alpine:${ALPINE_VERSION}
 ARG BUILD_DATE
@@ -15,7 +15,7 @@ LABEL org.label-schema.schema-version="1.0.0-rc1" \
       org.label-schema.docker.cmd.devel="docker run -it --rm --cap-add=NET_ADMIN --device=/dev/net/tun -e USER=js89ds7 -e PASSWORD=8fd9s239G qmcgaw/private-internet-access" \
       org.label-schema.docker.params="REGION=PIA region,PROTOCOL=udp/tcp,ENCRYPTION=strong/normal,BLOCK_MALICIOUS=on/off,BLOCK_NSA=on/off,UNBLOCK=allowed hostnames,USER=PIA user,PASSWORD=PIA password,EXTRA_SUBNETS=extra subnets to allow on the firewall,NONROOT=yes/no" \
       org.label-schema.version="" \
-      image-size="17.1MB" \
+      image-size="19.6MB" \
       ram-usage="13MB to 80MB" \
       cpu-usage="Low to Medium"
 ENV USER= \

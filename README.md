@@ -22,14 +22,14 @@
 
 | Image size | RAM usage | CPU usage |
 | --- | --- | --- |
-| 17.1MB | 14MB to 80MB | Low to Medium |
+| 19.6MB | 14MB to 80MB | Low to Medium |
 
 <details><summary>Click to show base components</summary><p>
 
-- [Alpine 3.8](https://alpinelinux.org) for a tiny image
-- [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/openvpn) to tunnel to PIA servers
-- [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
-- [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.8/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
+- [Alpine 3.9](https://alpinelinux.org) for a tiny image
+- [OpenVPN 2.4.6-r3](https://pkgs.alpinelinux.org/package/v3.9/main/x86_64/openvpn) to tunnel to PIA servers
+- [IPtables 1.6.2-r0](https://pkgs.alpinelinux.org/package/v3.9/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
+- [Unbound 1.7.3-r0](https://pkgs.alpinelinux.org/package/v3.9/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
 - [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` and `BLOCK_NSA` environment variables)
 
 </p></details>
@@ -124,7 +124,7 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 1. Run the same command in a Docker container using your *pia* container as network with:
 
     ```bash
-    docker run --rm --network=container:pia alpine:3.8 wget -qO- https://ipinfo.io/ip
+    docker run --rm --network=container:pia alpine:3.9 wget -qO- https://ipinfo.io/ip
     ```
 
     If the displayed IP address appears and is different that your host IP address, the PIA client works !
