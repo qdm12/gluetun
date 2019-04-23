@@ -79,9 +79,9 @@
 
     ```sh
     # ARM 32 bit V6
-    docker build -t qmcgaw/private-internet-access https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/Dockerfile.arm32v6
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git -f Dockerfile.arm32v6
     # ARM 64 bit v8
-    docker build -t qmcgaw/private-internet-access https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/Dockerfile.arm64v8
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git -f Dockerfile.arm64v8
     ```
 
     I will rework the CI pipeline to build ARM images later.
