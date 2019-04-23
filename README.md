@@ -75,7 +75,7 @@
     modprobe tun
     ```
 
-1. **ONLY IF YOU AN ARM DEVICE, depending on your cpu architecture:**
+1. **ONLY IF YOU HAVE AN ARM DEVICE, depending on your cpu architecture:**
 
     ```sh
     # ARM 32 bit V6
@@ -138,8 +138,8 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
-| `NONROOT` | | Run OpenVPN without root, `yes` or other |
-| `EXTRA_SUBNETS` | | Comma separated subnets allowed in the container firewall |
+| `NONROOT` | `no` | Run OpenVPN without root, `yes` or other |
+| `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
 | `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |

@@ -16,6 +16,7 @@ services:
       - ENCRYPTION=strong
       - REGION=CA Montreal
       - EXTRA_SUBNETS=
+      - NONROOT=no
       - BLOCK_MALICIOUS=off
       - BLOCK_NSA=off
       - UNBLOCK=

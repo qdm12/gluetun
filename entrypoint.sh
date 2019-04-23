@@ -59,6 +59,7 @@ exitIfNotIn ENCRYPTION "normal,strong"
 exitIfNotIn PROTOCOL "tcp,udp"
 exitIfNotIn BLOCK_MALICIOUS "on,off"
 exitIfNotIn BLOCK_NSA "on,off"
+exitIfNotIn NONROOT "yes,no"
 cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
 for SUBNET in ${EXTRA_SUBNETS//,/ }; do
