@@ -9,17 +9,20 @@ env:
     - DOCKER_BUILD=qmcgaw/private-internet-access
     - MICROBADGER_CODE=tQFy7AxtSUNANPe6aoVChYdsI_I=
   matrix:
+    - TARGET_IMAGE=${DOCKER_BUILD}
     - ARCH=armhf
       BASE_IMAGE=arm32v6/alpine
       TARGET_IMAGE=${DOCKER_BUILD}:${ARCH}
+      QEMU=https://github.com/multiarch/qemu-user-static/releases/download/v3.1.0-3/qemu-arm-static
     - ARCH=aarch64
       BASE_IMAGE=arm64v8/alpine
       TARGET_IMAGE=${DOCKER_BUILD}:${ARCH}
+      QEMU=https://github.com/multiarch/qemu-user-static/releases/download/v3.1.0-3/qemu-arm-static
 script:
   - set -e
   - echo "$DOCKER_PASSWORD" | docker login -u qmcgaw --password-stdin
   - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-  - docker build -t ${TARGET_IMAGE} --build-arg BASE_IMAGE=${BASE_IMAGE} --build-arg VCF=${TRAVIS_COMMIT} --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
+  - docker build -t ${TARGET_IMAGE} --build-arg BASE_IMAGE=${BASE_IMAGE} --build-arg QEMU=${QEMU} --build-arg VCF=${TRAVIS_COMMIT} --build-arg BUILD_DATE="$(date -u +"%Y-%m-%dT%H:%M:%SZ")" .
   - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && docker push ${DOCKER_BUILD} || false'
   - "curl -X POST https://hooks.microbadger.com/images/${DOCKER_BUILD}/${MICROBADGER_CODE}"
   
