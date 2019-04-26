@@ -1,6 +1,4 @@
 .git
-.travis.yml
 readme
-tun.sh
-docker-compose.yml
-README.md
+*.yml
+*.md
