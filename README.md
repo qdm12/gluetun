@@ -75,7 +75,7 @@
     modprobe tun
     ```
 
-1. **IF YOU HAVE AN ARM DEVICE, follow the steps** in the [ARM devices section](#arm-devices)
+1. **IF YOU HAVE AN ARM DEVICE**, follow the steps in the [ARM devices section](#arm-devices)
 
 1. Launch the container with:
 
@@ -143,16 +143,19 @@ For containers in the same `docker-compose.yml` as PIA, you can use `network: "s
 
 ### Access ports of PIA-connected containers
 
-1. For example, the following containers are launched connected to PIA:
+For example, the following containers are launched connected to PIA:
 
-    ```bash
-    docker run -d --name=deluge --network=container:pia linuxserver/deluge
-    docker run -d --name=hydra --network=container:pia linuxserver/hydra
-    ```
+```bash
+docker run -d --name=deluge --network=container:pia linuxserver/deluge
+docker run -d --name=hydra --network=container:pia linuxserver/hydra
+```
 
-    We want to access:
-        - The HTTP web UI of Deluge at port **8112**
-        - The HTTP Web UI of Hydra at port **5075**
+We want to access:
+
+- The HTTP web UI of Deluge at port **8112**
+- The HTTP Web UI of Hydra at port **5075**
+
+#### With plain Docker
 
 1. In this case we use Nginx for its small size. Create `./nginx.conf` with:
 
@@ -195,38 +198,22 @@ For containers in the same `docker-compose.yml` as PIA, you can use `network: "s
 
 For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
 
-The docker compose file would look like:
+#### With an external docker-compose
+
+The docker compose file would look like (see above for *nginx.conf* content):
 
 ```yml
 version: '3'
 services:
-  pia:
-    image: qmcgaw/private-internet-access
-    container_name: pia
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    environment:
-      - USER=js89ds7
-      - PASSWORD=8fd9s239G
-      - PROTOCOL=udp
-      - ENCRYPTION=strong
-      - REGION=CA Montreal
-      - EXTRA_SUBNETS=
-      - NONROOT=
-    restart: always
   nginx:
     image: nginx:alpine
     container_name: pia_proxy
     ports:
+      - 8000:8000/tcp
       - 8001:8001/tcp
-      - 8002:8002/tcp
     links:
       - pia:deluge
       - pia:hydra
-    depends_on:
-      - pia
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
   deluge:
@@ -244,6 +231,10 @@ services:
       - pia
     # add more volumes etc.
 ```
+
+#### All in one docker-compose
+
+To be written, see [issue 21](https://github.com/qdm12/private-internet-access-docker/issues/21)
 
 ## ARM devices
 
@@ -280,7 +271,6 @@ services:
 ## TODOs
 
 - [ ] SOCKS/HTTP proxy or VPN server for LAN devices to use the container
-- [ ] Travis CI for arm images
 - [ ] Nginx scratch
 - [ ] Port forwarding
 
