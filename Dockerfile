@@ -1,11 +1,8 @@
 ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE:-alpine}:3.9
-ARG QEMU=
 ARG BUILD_DATE
 ARG VCS_REF
-# Only installed for ARM devices
-ADD .void ${QEMU}? /usr/bin/
 LABEL org.label-schema.schema-version="1.0.0-rc1" \
       maintainer="quentin.mcgaw@gmail.com" \
       org.label-schema.build-date=$BUILD_DATE \
@@ -67,5 +64,4 @@ RUN chown nonrootuser -R /etc/unbound && \
         /etc/unbound/root.hints \
         /etc/unbound/root.key \
         /etc/unbound/unbound.conf \
-        /etc/unbound/*.bz2 && \
-    rm -f /usr/bin/qemu-arm-static /usr/bin/.void
+        /etc/unbound/*.bz2

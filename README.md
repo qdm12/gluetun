@@ -75,8 +75,7 @@
     modprobe tun
     ```
 
-1. **ONLY IF YOU HAVE AN ARM DEVICE, depending on your cpu architecture,** replace `qmcgaw/private-internet-access`
-   with either `qmcgaw/private-internet-access:armhf` (32 bit) or `qmcgaw/private-internet-access:aarch64` (64 bit).
+1. **IF YOU HAVE AN ARM DEVICE, follow the steps** in the [ARM devices section](#arm-devices)
 
 1. Launch the container with:
 
@@ -248,21 +247,18 @@ services:
 
 ## ARM devices
 
-If you want to save 3-5MB on the image (because of QEMU), use the following command on
-your ARM device:
-
-- If your architecture is ARMHF (32 bit)
+- If your architecture is ARMHF (32 bit), run this on your ARM device:
 
     ```sh
-    docker build -t qmcgaw/private-internet-access:armhf \
+    docker build -t qmcgaw/private-internet-access \
     --build-arg BASE_IMAGE=arm32v6/alpine \
     https://github.com/qdm12/private-internet-access-docker.git
     ```
 
-- If your architecture is AARCH64 (64 bit)
+- If your architecture is AARCH64 (64 bit), run this on your ARM device:
 
     ```sh
-    docker build -t qmcgaw/private-internet-access:aarch64 \
+    docker build -t qmcgaw/private-internet-access \
     --build-arg BASE_IMAGE=arm64v8/alpine \
     https://github.com/qdm12/private-internet-access-docker.git
     ```
