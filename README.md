@@ -75,16 +75,8 @@
     modprobe tun
     ```
 
-1. **ONLY IF YOU HAVE AN ARM DEVICE, depending on your cpu architecture:**
-
-    ```sh
-    # ARM 32 bit V6
-    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git -f Dockerfile.arm32v6
-    # ARM 64 bit v8
-    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git -f Dockerfile.arm64v8
-    ```
-
-    I will rework the CI pipeline to build ARM images later.
+1. **IF YOU HAVE AN ARM DEVICE, depending on your cpu architecture:** replace `qmcgaw/private-internet-access`
+   with either `qmcgaw/private-internet-access:armhf` (32 bit) or `qmcgaw/private-internet-access:aarch64` (64 bit).
 
 1. Launch the container with:
 

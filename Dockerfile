@@ -1,6 +1,6 @@
-ARG ALPINE_VERSION=3.9
+ARG BASE_IMAGE
 
-FROM alpine:${ALPINE_VERSION}
+FROM ${BASE_IMAGE:-alpine}:3.9
 ARG BUILD_DATE
 ARG VCS_REF
 LABEL org.label-schema.schema-version="1.0.0-rc1" \

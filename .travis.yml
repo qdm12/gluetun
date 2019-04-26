@@ -1,7 +1,23 @@
-language: generic
+sudo: required
 services:
   - docker
-install:
-  - docker build .
+branches:
+  only:
+    - master
+env:
+  global:
+    - DOCKER_BUILD=qmcgaw/private-internet-access
+  matrix:
+    - ARCH=armhf
+      BASE_IMAGE=arm32v6/alpine
+      TARGET_IMAGE=${DOCKER_BUILD}:${ARCH}
+    - ARCH=aarch64
+      BASE_IMAGE=arm64v8/alpine
+      TARGET_IMAGE=${DOCKER_BUILD}:${ARCH}
+script:
+  - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+  - docker build -t ${TARGET_IMAGE} --build-arg BASE_IMAGE=${BASE_IMAGE} --build-arg VCF=${TRAVIS_COMMIT} --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") .
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin || false'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && docker push ${DOCKER_BUILD} || false'
 after_script:
   - "curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I="
