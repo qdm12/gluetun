@@ -54,12 +54,15 @@
 
 - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
 - [Docker](https://docs.docker.com/install/) installed on the host
-- If you use a strict firewall on the host/router:
-  - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
-  - For UDP strong encryption, allow outbound UDP 1197
-  - For UDP normal encryption, allow outbound UDP 1198
-  - For TCP strong encryption, allow outbound TCP 501
-  - For TCP normal encryption, allow outbound TCP 502
+- <details><summary>Click to show firewall requirements</summary><p>
+
+    - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
+    - For UDP strong encryption, allow outbound UDP 1197
+    - For UDP normal encryption, allow outbound UDP 1198
+    - For TCP strong encryption, allow outbound TCP 501
+    - For TCP normal encryption, allow outbound TCP 502
+
+    </p></details>
 
 ## Setup
 
@@ -75,7 +78,33 @@
     modprobe tun
     ```
 
-1. **IF YOU HAVE AN ARM DEVICE**, follow the steps in the [ARM devices section](#arm-devices)
+1. <details><summary>CLICK IF YOU HAVE AN ARM DEVICE</summary><p>
+
+    - If you have a ARM 32 bit v6 architecture
+
+        ```sh
+        docker build -t qmcgaw/ddns-updater \
+        --build-arg BASE_IMAGE=arm32v6/alpine \
+        https://github.com/qdm12/private-internet-access-docker.git
+        ```
+
+    - If you have a ARM 32 bit v7 architecture
+
+        ```sh
+        docker build -t qmcgaw/ddns-updater \
+        --build-arg BASE_IMAGE=arm32v7/alpine \
+        https://github.com/qdm12/private-internet-access-docker.git
+        ```
+
+    - If you have a ARM 64 bit v8 architecture
+
+        ```sh
+        docker build -t qmcgaw/ddns-updater \
+        --build-arg BASE_IMAGE=arm64v8/alpine \
+        https://github.com/qdm12/private-internet-access-docker.git
+        ```
+
+    </p></details>
 
 1. Launch the container with:
 
@@ -97,7 +126,7 @@
 1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
 
     ```bash
-    docker logs -f pia
+    docker logs pia
     ```
 
 1. Follow the [**Testing section**](#testing)
@@ -234,29 +263,34 @@ services:
 
 #### All in one docker-compose
 
-To be written, see [issue 21](https://github.com/qdm12/private-internet-access-docker/issues/21)
+According to [issue 21](https://github.com/qdm12/private-internet-access-docker/issues/21), this should do:
 
-## ARM devices
-
-- If your architecture is ARMHF (32 bit), run this on your ARM device:
-
-    ```sh
-    docker build -t qmcgaw/private-internet-access \
-    --build-arg BASE_IMAGE=arm32v6/alpine \
-    https://github.com/qdm12/private-internet-access-docker.git
-    ```
-
-- If your architecture is AARCH64 (64 bit), run this on your ARM device:
-
-    ```sh
-    docker build -t qmcgaw/private-internet-access \
-    --build-arg BASE_IMAGE=arm64v8/alpine \
-    https://github.com/qdm12/private-internet-access-docker.git
-    ```
+```yml
+version: '3'
+services:
+  pia:
+    image: qmcgaw/private-internet-access
+    container_name: pia
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - USER=
+      - PASSWORD=
+      - REGION=
+  deluge:
+    image: linuxserver/deluge
+    container_name: deluge
+    network_mode: "service:pia"
+    depends_on:
+      - pia
+    # add more volumes etc.
+```
 
 ## For the paranoids
 
-- You can review the code which essential consits in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
+- You can review the code which essential consists in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
 - Build the images yourself:
 
     ```bash
@@ -271,8 +305,8 @@ To be written, see [issue 21](https://github.com/qdm12/private-internet-access-d
 ## TODOs
 
 - [ ] SOCKS/HTTP proxy or VPN server for LAN devices to use the container
-- [ ] Nginx scratch
 - [ ] Port forwarding
+- [ ] Nginx scratch
 
 ## License
 
