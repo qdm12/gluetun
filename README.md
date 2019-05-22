@@ -83,7 +83,7 @@
     - If you have a ARM 32 bit v6 architecture
 
         ```sh
-        docker build -t qmcgaw/ddns-updater \
+        docker build -t qmcgaw/private-internet-access \
         --build-arg BASE_IMAGE=arm32v6/alpine \
         https://github.com/qdm12/private-internet-access-docker.git
         ```
@@ -91,7 +91,7 @@
     - If you have a ARM 32 bit v7 architecture
 
         ```sh
-        docker build -t qmcgaw/ddns-updater \
+        docker build -t qmcgaw/private-internet-access \
         --build-arg BASE_IMAGE=arm32v7/alpine \
         https://github.com/qdm12/private-internet-access-docker.git
         ```
@@ -99,7 +99,7 @@
     - If you have a ARM 64 bit v8 architecture
 
         ```sh
-        docker build -t qmcgaw/ddns-updater \
+        docker build -t qmcgaw/private-internet-access \
         --build-arg BASE_IMAGE=arm64v8/alpine \
         https://github.com/qdm12/private-internet-access-docker.git
         ```
