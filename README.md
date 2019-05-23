@@ -34,47 +34,44 @@
 
 </p></details>
 
-## Extra features
+## Features
 
-- Configure everything with environment variables
-  - [Destination region](https://www.privateinternetaccess.com/pages/network)
-  - Internet protocol
-  - Level of encryption
-  - Username and password
-  - Malicious DNS blocking
-  - Extra subnets allowed by firewall
-  - Run openvpn without root (but will give reconnect problems)
-- Connect other containers to it
-- The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combination
-- OpenVPN restarts on failure using another PIA IP address for the same region
-- Docker healthcheck uses [https://diagnostic.opendns.com/myip](https://diagnostic.opendns.com/myip) to check that the current public IP address exists in the selected OpenVPN configuration file
-- Openvpn and Unbound do not run as root
+- <details><summary>Configure everything with environment variables</summary><p>
 
-## Requirements
-
-- A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
-- [Docker](https://docs.docker.com/install/) installed on the host
-- <details><summary>Click to show firewall requirements</summary><p>
-
-    - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
-    - For UDP strong encryption, allow outbound UDP 1197
-    - For UDP normal encryption, allow outbound UDP 1198
-    - For TCP strong encryption, allow outbound TCP 501
-    - For TCP normal encryption, allow outbound TCP 502
+    - [Destination region](https://www.privateinternetaccess.com/pages/network)
+    - Internet protocol
+    - Level of encryption
+    - Username and password
+    - Malicious DNS blocking
+    - Extra subnets allowed by firewall
+    - Run openvpn without root (but will give reconnect problems)
 
     </p></details>
+- Connect other containers to it (and thus computers, [see this]())
+- The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
+- OpenVPN restarts on failure using another PIA IP address for the same region encryption combination
+- Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
+- Openvpn and Unbound run **without root**
 
 ## Setup
 
-1. Make sure you have your `/dev/net/tun` device setup on your host with one of the following commands, depending on your OS:
+1. <details><summary>Requirements</summary><p>
 
-    ```bash
+    - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
+    - Firewall requirements
+        - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
+        - For UDP strong encryption, allow outbound UDP 1197
+        - For UDP normal encryption, allow outbound UDP 1198
+        - For TCP strong encryption, allow outbound TCP 501
+        - For TCP normal encryption, allow outbound TCP 502
+
+    </p></details>
+
+1. Ensure `/dev/net/tun` is setup on your host with either:
+
+    ```sh
     insmod /lib/modules/tun.ko
-    ```
-
-    Or
-
-    ```bash
+    # or...
     modprobe tun
     ```
 
@@ -109,10 +106,8 @@
 1. Launch the container with:
 
     ```bash
-    docker run -d --name=pia -v ./auth.conf:/auth.conf:ro \
-    --cap-add=NET_ADMIN --device=/dev/net/tun \
-    -e REGION="CA Montreal" -e PROTOCOL=udp -e ENCRYPTION=strong \
-    -e USER=js89ds7 -e PASSWORD=8fd9s239G \
+    docker run -d --name=pia --cap-add=NET_ADMIN --device=/dev/net/tun \
+    -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     qmcgaw/private-internet-access
     ```
 
@@ -123,31 +118,14 @@
     ```
 
     Note that you can change all the [environment variables](#environment-variables)
-1. Wait about 5 seconds for it to connect to the PIA server. You can check with:
-
-    ```bash
-    docker logs pia
-    ```
-
-1. Follow the [**Testing section**](#testing)
 
 ## Testing
 
-You can simply use the Docker healthcheck. The container will mark itself as **unhealthy** if the public IP address is not part of the PIA IPs. Otherwise you can follow these instructions:
+Check the PIA IP address matches your expectations
 
-1. Check your host IP address with:
-
-    ```bash
-    wget -qO- https://ipinfo.io/ip
-    ```
-
-1. Run the same command in a Docker container using your *pia* container as network with:
-
-    ```bash
-    docker run --rm --network=container:pia alpine:3.9 wget -qO- https://ipinfo.io/ip
-    ```
-
-    If the displayed IP address appears and is different that your host IP address, the PIA client works !
+```sh
+docker run --rm --network=container:pia alpine:3.9 wget -qO- https://ipinfo.io
+```
 
 ## Environment variables
 
@@ -158,135 +136,120 @@ You can simply use the Docker healthcheck. The container will mark itself as **u
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
-| `NONROOT` | `no` | Run OpenVPN without root, `yes` or other |
+| `NONROOT` | `no` | Run OpenVPN without root, `yes` or `no` |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
 | `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 
-## Connect other containers to it
+## Connect to it
 
-Connect other Docker containers to the PIA VPN connection by adding `--network=container:pia` when launching them.
+There are various ways to achieve this, depending on your use case.
 
-For containers in the same `docker-compose.yml` as PIA, you can use `network: "service:pia"` (see below)
+- <details><summary>Connect other containers to PIA</summary><p>
 
-### Access ports of PIA-connected containers
+    Add `--network=container:pia` when launching the container
 
-For example, the following containers are launched connected to PIA:
+    </p></details>
+- <details><summary>Connect containers from another docker-compose.yml</summary><p>
 
-```bash
-docker run -d --name=deluge --network=container:pia linuxserver/deluge
-docker run -d --name=hydra --network=container:pia linuxserver/hydra
-```
+    Add `network_mode: "container:pia"` to your *docker-compose.yml*
 
-We want to access:
+    </p></details>
+- <details><summary>Access ports of containers connected to PIA</summary><p>
 
-- The HTTP web UI of Deluge at port **8112**
-- The HTTP Web UI of Hydra at port **5075**
+    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch`
 
-#### With plain Docker
+    1. Create the file *Caddyfile* with:
 
-1. In this case we use Nginx for its small size. Create `./nginx.conf` with:
-
-    ```bash
-    # nginx.conf
-    user nginx;
-    worker_processes 1;
-    events {
-      worker_connections 64;
-    }
-    http {
-      server {
-        listen 8000;
-        location /deluge {
-          proxy_pass http://deluge:8112/;
-          proxy_set_header X-Deluge-Base "/deluge";
+        ```ruby
+        :8000 {
+            proxy / xyz:8000
         }
-      }
-      server {
-        listen 8001;
-        location / {
-          proxy_pass http://hydra:5075/;
+        :9000 {
+            proxy / abc:9000
         }
-      }
-    }
+        ```
+
+        You can of course make more complicated Caddyfile (such as proxying `/xyz` to xyz:8000 and `/abc` to abc:9000, just ask me!)
+
+    1. Run Caddy with
+
+        ```sh
+        docker run -d -p 8000:8000/tcp -p 9000:9000/tcp \
+        --link pia:xyz --link pia:abc \
+        -v $(pwd)/Caddyfile:/Caddyfile:ro \
+        qmcgaw/caddy-scratch
+        ```
+
+        **WARNING**: Make sure the Docker network in which Caddy runs is the same as the one of PIA. It can be the default `bridge` network.
+
+    1. You can now access xyz:8000 at [localhost:8000](http://localhost:8000) and abc:9000 at [localhost:9000](http://localhost:9000)
+
+    For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
+
+    If you want to user a *docker-compose.yml*, use this example:
+
+    ```yml
+    version: '3'
+    services:
+      piaproxy:
+        image: qmcgaw/caddy-scratch
+        container_name: piaproxy
+        ports:
+          - 8000:8000/tcp
+          - 9000:9000/tcp
+        external_links:
+          - pia:xzy
+          - pia:abc
+        volumes:
+          - ./Caddyfile:/Caddyfile:ro
+      abc:
+        image: abc
+        container_name: abc
+        network_mode: "container:pia"
+      xyz:
+        image: xyz
+        container_name: xyz
+        network_mode: "container:pia"
     ```
 
-1. Run the [Nginx Alpine container](https://hub.docker.com/_/nginx):
+    </p></details>
+- <details><summary>Access ports of containers connected to PIA, all in the same *docker-compose.yml*</summary><p>
 
-    ```bash
-    docker run -d -p 8000:8000/tcp -p 8001:8001/tcp \
-    --link pia:deluge --link pia:hydra \
-    -v $(pwd)/nginx.conf:/etc/nginx/nginx.conf:ro \
-    nginx:alpine
+    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you can put all the configuration in
+    one single *docker-compose.yml* file. According to [issue 21](https://github.com/qdm12/private-internet-access-docker/issues/21),
+    this should do (**untested**):
+
+    ```yml
+    version: '3'
+    services:
+    pia:
+        image: qmcgaw/private-internet-access
+        container_name: pia
+        cap_add:
+        - NET_ADMIN
+        devices:
+        - /dev/net/tun
+        environment:
+        - USER=
+        - PASSWORD=
+        - REGION=
+    abc:
+      image: abc
+      container_name: abc
+      network_mode: "service:pia"
+      ports:
+        - 8000:8000/tcp
+    xyz:
+      image: xyz
+      container_name: xyz
+      network_mode: "service:pia"
+      ports:
+        - 9000:9000/tcp
     ```
 
-    **WARNING**: Make sure the Docker network in which Nginx runs is the same as the one of PIA. It can be the default `bridge` network.
-
-1. Access the WebUI of Deluge at [localhost:8000](http://localhost:8000) and Hydra at [localhost:8001](http://localhost:8001)
-
-For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
-
-#### With an external docker-compose
-
-The docker compose file would look like (see above for *nginx.conf* content):
-
-```yml
-version: '3'
-services:
-  nginx:
-    image: nginx:alpine
-    container_name: pia_proxy
-    ports:
-      - 8000:8000/tcp
-      - 8001:8001/tcp
-    links:
-      - pia:deluge
-      - pia:hydra
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  deluge:
-    image: linuxserver/deluge
-    container_name: deluge
-    network_mode: "container:pia"
-    depends_on:
-      - pia
-    # add more volumes etc.
-  hydra:
-    image: linuxserver/hydra
-    container_name: hydra
-    network_mode: "container:hydra"
-    depends_on:
-      - pia
-    # add more volumes etc.
-```
-
-#### All in one docker-compose
-
-According to [issue 21](https://github.com/qdm12/private-internet-access-docker/issues/21), this should do:
-
-```yml
-version: '3'
-services:
-  pia:
-    image: qmcgaw/private-internet-access
-    container_name: pia
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
-    environment:
-      - USER=
-      - PASSWORD=
-      - REGION=
-  deluge:
-    image: linuxserver/deluge
-    container_name: deluge
-    network_mode: "service:pia"
-    depends_on:
-      - pia
-    # add more volumes etc.
-```
+    </p></details>
 
 ## For the paranoids
 
