@@ -158,9 +158,17 @@ There are various ways to achieve this, depending on your use case.
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
 
-    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch`
+    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch` (you can build it for **ARM**, see its readme)
 
     1. Create the file *Caddyfile* with:
+
+        ```sh
+        touch Caddyfile
+        chown 1000 Caddyfile
+        chmod 600 Caddyfile
+        ```
+
+        with this content:
 
         ```ruby
         :8000 {
@@ -248,6 +256,12 @@ There are various ways to achieve this, depending on your use case.
       ports:
         - 9000:9000/tcp
     ```
+
+    </p></details>
+
+- <details><summary>Connect to the PIA through an HTTP proxy (i.e. with Firefox)</summary><p>
+
+    *I cannot make it so far sadly.. maybe someone can enlighten !*
 
     </p></details>
 
