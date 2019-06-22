@@ -156,15 +156,21 @@ There are various ways to achieve this, depending on your use case.
     Add `network_mode: "container:pia"` to your *docker-compose.yml*
 
     </p></details>
+- <details><summary>Connect containers in the same docker-compose.yml as PIA</summary><p>
+
+    Add `network_mode: "service:pia"` to your *docker-compose.yml* (no need for `depends_on`)
+
+    </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
 
-    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch` (you can build it for **ARM**, see its readme)
+    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch` (you can build it for **ARM**, see its [readme](https://github.com/qdm12/caddy-scratch))
 
-    1. Create the file *Caddyfile* with:
+    1. Create the file *Caddyfile*
 
         ```sh
         touch Caddyfile
         chown 1000 Caddyfile
+        # chown 1000 because caddy-scratch runs as user ID 1000 by default
         chmod 600 Caddyfile
         ```
 
@@ -194,9 +200,9 @@ There are various ways to achieve this, depending on your use case.
 
     1. You can now access xyz:8000 at [localhost:8000](http://localhost:8000) and abc:9000 at [localhost:9000](http://localhost:9000)
 
-    For more containers, add more `--link pia:xxx` and modify *nginx.conf* accordingly
+    For more containers, add more `--link pia:xxx` and modify the *Caddyfile* accordingly
 
-    If you want to user a *docker-compose.yml*, use this example:
+    If you want to user a *docker-compose.yml*, you can use this example - **make sure PIA is launched and connected first**:
 
     ```yml
     version: '3'
@@ -208,7 +214,7 @@ There are various ways to achieve this, depending on your use case.
           - 8000:8000/tcp
           - 9000:9000/tcp
         external_links:
-          - pia:xzy
+          - pia:xyz
           - pia:abc
         volumes:
           - ./Caddyfile:/Caddyfile:ro
@@ -223,45 +229,104 @@ There are various ways to achieve this, depending on your use case.
     ```
 
     </p></details>
-- <details><summary>Access ports of containers connected to PIA, all in the same *docker-compose.yml*</summary><p>
+- <details><summary>Access ports of containers connected to PIA, all in the same docker-compose.yml</summary><p>
 
-    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you can put all the configuration in
-    one single *docker-compose.yml* file. According to [issue 21](https://github.com/qdm12/private-internet-access-docker/issues/21),
-    this should do (**untested**):
+    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you could use:
 
     ```yml
     version: '3'
     services:
-    pia:
+      pia:
         image: qmcgaw/private-internet-access
         container_name: pia
         cap_add:
-        - NET_ADMIN
+          - NET_ADMIN
         devices:
-        - /dev/net/tun
+          - /dev/net/tun
         environment:
-        - USER=
-        - PASSWORD=
-        - REGION=
-    abc:
-      image: abc
-      container_name: abc
-      network_mode: "service:pia"
-      ports:
-        - 8000:8000/tcp
-    xyz:
-      image: xyz
-      container_name: xyz
-      network_mode: "service:pia"
-      ports:
-        - 9000:9000/tcp
+          - USER=js89ds7
+          - PASSWORD=8fd9s239G
+        ports:
+          - 8000:8000/tcp
+          - 9000:9000/tcp
+      abc:
+        image: abc
+        container_name: abc
+        network_mode: "service:pia"
+      xyz:
+        image: xyz
+        container_name: xyz
+        network_mode: "service:pia"
     ```
 
     </p></details>
 
+- <details><summary>Access ports of containers connected to PIA, all in the same docker-compose.yml, using a reverse proxy</summary><p>
+
+    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch` (you can build it for **ARM**, see its [readme](https://github.com/qdm12/caddy-scratch))
+
+    1. Create the file *Caddyfile*
+
+        ```sh
+        touch Caddyfile
+        chown 1000 Caddyfile
+        # chown 1000 because caddy-scratch runs as user ID 1000 by default
+        chmod 600 Caddyfile
+        ```
+
+        with this content:
+
+        ```ruby
+        :8000 {
+            proxy / xyz:8000
+        }
+        :9000 {
+            proxy / abc:9000
+        }
+        ```
+
+        You can of course make more complicated Caddyfile (such as proxying `/xyz` to xyz:8000 and `/abc` to abc:9000, just ask me!)
+
+    1. Use this example:
+
+        ```yml
+        version: '3'
+        services:
+          pia:
+            image: qmcgaw/private-internet-access
+            container_name: pia
+            cap_add:
+              - NET_ADMIN
+            devices:
+              - /dev/net/tun
+            environment:
+              - USER=js89ds7
+              - PASSWORD=8fd9s239G
+          piaproxy:
+            image: qmcgaw/caddy-scratch
+            container_name: piaproxy
+            ports:
+              - 8000:8000/tcp
+              - 9000:9000/tcp
+            external_links:
+              - pia:xyz
+              - pia:abc
+            volumes:
+              - ./Caddyfile:/Caddyfile:ro
+          abc:
+            image: abc
+            container_name: abc
+            network_mode: "service:pia"
+          xyz:
+            image: xyz
+            container_name: xyz
+            network_mode: "service:pia"
+        ```
+
+    </p></details>
 - <details><summary>Connect to the PIA through an HTTP proxy (i.e. with Firefox)</summary><p>
 
-    *I cannot make it so far sadly.. maybe someone can enlighten !*
+    *This is in progress, using Tiny Proxy, thanks for waiting !*
 
     </p></details>
 
@@ -281,9 +346,8 @@ There are various ways to achieve this, depending on your use case.
 
 ## TODOs
 
-- [ ] SOCKS/HTTP proxy or VPN server for LAN devices to use the container
+- [ ] Tiny proxy for LAN devices to use the container
 - [ ] Port forwarding
-- [ ] Nginx scratch
 
 ## License
 
