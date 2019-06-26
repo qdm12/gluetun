@@ -57,9 +57,9 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     tar -cjf /etc/unbound/blocks-nsa.bz2 blocks-nsa.conf && \
     rm -f /tmp/*
 COPY unbound.conf /etc/unbound/unbound.conf
-COPY entrypoint.sh healthcheck.sh /
+COPY entrypoint.sh healthcheck.sh portforward.sh /
 RUN chown nonrootuser -R /etc/unbound && \
     chmod 700 /etc/unbound && \
     chmod 600 /etc/unbound/unbound.conf && \
-    chmod 500 /entrypoint.sh /healthcheck.sh && \
+    chmod 500 /entrypoint.sh /healthcheck.sh /portforward.sh && \
     chmod 400 /etc/unbound/root.hints /etc/unbound/root.key /etc/unbound/*.bz2

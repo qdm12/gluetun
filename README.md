@@ -54,6 +54,7 @@
 - Unbound DNS runs *without root*
 - OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
 - **ARM** compatible
+- Port forwarding
 
 ## Setup
 
@@ -332,6 +333,18 @@ There are various ways to achieve this, depending on your use case.
 
     </p></details>
 
+## Port forwarding
+
+On a running PIA container, say `pia`, simply run:
+
+```sh
+docker exec -it pia /portforward.sh
+```
+
+And it will indicate you the port forwarded for your current public IP address.
+
+Note that not all regions support port forwarding.
+
 ## For the paranoids
 
 - You can review the code which essential consists in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
@@ -349,7 +362,6 @@ There are various ways to achieve this, depending on your use case.
 ## TODOs
 
 - [ ] Tiny proxy for LAN devices to use the container
-- [ ] Port forwarding
 
 ## License
 
