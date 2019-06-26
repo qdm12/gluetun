@@ -47,11 +47,13 @@
     - Run openvpn without root (but will give reconnect problems)
 
     </p></details>
-- Connect other containers to it (and thus computers, [see this]())
+- Connect other containers to it, [see this](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
-- OpenVPN restarts on failure using another PIA IP address for the same region encryption combination
+- OpenVPN reconnects automatically on failure
 - Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
-- Openvpn and Unbound run **without root**
+- Unbound DNS runs *without root*
+- OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
+- **ARM** compatible
 
 ## Setup
 
