@@ -30,7 +30,7 @@ exitIfNotIn(){
       return 0
     fi
   done
-  printf "Environment variable $1=$var must be one of the following: "
+  printf "Environment variable $1 cannot be '$var' and must be one of the following: "
   for value in ${2//,/ }
   do
     printf "$value "
@@ -57,8 +57,6 @@ exitIfUnset USER
 exitIfUnset PASSWORD
 exitIfNotIn ENCRYPTION "normal,strong"
 exitIfNotIn PROTOCOL "tcp,udp"
-exitIfNotIn BLOCK_MALICIOUS "on,off"
-exitIfNotIn BLOCK_NSA "on,off"
 exitIfNotIn NONROOT "yes,no"
 cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
@@ -68,6 +66,19 @@ for SUBNET in ${EXTRA_SUBNETS//,/ }; do
     exit 1
   fi
 done
+exitIfNotIn DOT "on,off"
+exitIfNotIn BLOCK_MALICIOUS "on,off"
+exitIfNotIn BLOCK_NSA "on,off"
+if [ "$DOT" == "off" ]; then
+  if [ "$BLOCK_MALICIOUS" == "on" ]; then
+    printf "DOT is off so BLOCK_MALICIOUS cannot be on\n"
+    exit 1
+  elif [ "$BLOCK_NSA" == "on" ]; then
+    printf "DOT is off so BLOCK_NSA cannot be on\n"
+    exit 1
+  fi
+fi
+exitIfNotIn FIREWALL "on,off"
 
 #####################################################
 # Writes to protected file and remove USER, PASSWORD
@@ -103,40 +114,45 @@ printf "TUN device OK\n"
 ############################################
 # BLOCKING MALICIOUS HOSTNAMES AND IPs WITH UNBOUND
 ############################################
-printf "Malicious hostnames and ips blocking is $BLOCK_MALICIOUS\n"
-rm -f /etc/unbound/blocks-malicious.conf
-if [ "$BLOCK_MALICIOUS" = "on" ]; then
-  tar -xjf /etc/unbound/blocks-malicious.bz2 -C /etc/unbound/
-  printf "$(cat /etc/unbound/blocks-malicious.conf | grep "local-zone" | wc -l ) malicious hostnames and $(cat /etc/unbound/blocks-malicious.conf | grep "private-address" | wc -l) malicious IP addresses blacklisted\n"
-else
-  echo "" > /etc/unbound/blocks-malicious.conf
+if [ "$DOT" == "on" ]; then
+  printf "Malicious hostnames and ips blocking is $BLOCK_MALICIOUS\n"
+  rm -f /etc/unbound/blocks-malicious.conf
+  if [ "$BLOCK_MALICIOUS" = "on" ]; then
+    tar -xjf /etc/unbound/blocks-malicious.bz2 -C /etc/unbound/
+    printf "$(cat /etc/unbound/blocks-malicious.conf | grep "local-zone" | wc -l ) malicious hostnames and $(cat /etc/unbound/blocks-malicious.conf | grep "private-address" | wc -l) malicious IP addresses blacklisted\n"
+  else
+    echo "" > /etc/unbound/blocks-malicious.conf
+  fi
+  if [ "$BLOCK_NSA" = "on" ]; then
+    tar -xjf /etc/unbound/blocks-nsa.bz2 -C /etc/unbound/
+    printf "$(cat /etc/unbound/blocks-nsa.conf | grep "local-zone" | wc -l ) NSA hostnames blacklisted\n"
+    cat /etc/unbound/blocks-nsa.conf >> /etc/unbound/blocks-malicious.conf
+    rm /etc/unbound/blocks-nsa.conf
+    sort -u -o /etc/unbound/blocks-malicious.conf /etc/unbound/blocks-malicious.conf
+  fi
+  for hostname in ${UNBLOCK//,/ }
+  do
+    printf "Unblocking hostname $hostname\n"
+    sed -i "/$hostname/d" /etc/unbound/blocks-malicious.conf
+  done
 fi
-if [ "$BLOCK_NSA" = "on" ]; then
-  tar -xjf /etc/unbound/blocks-nsa.bz2 -C /etc/unbound/
-  printf "$(cat /etc/unbound/blocks-nsa.conf | grep "local-zone" | wc -l ) NSA hostnames blacklisted\n"
-  cat /etc/unbound/blocks-nsa.conf >> /etc/unbound/blocks-malicious.conf
-  rm /etc/unbound/blocks-nsa.conf
-  sort -u -o /etc/unbound/blocks-malicious.conf /etc/unbound/blocks-malicious.conf
-fi
-for hostname in ${UNBLOCK//,/ }
-do
-  printf "Unblocking hostname $hostname\n"
-  sed -i "/$hostname/d" /etc/unbound/blocks-malicious.conf
-done
 
 ############################################
 # SETTING DNS OVER TLS TO 1.1.1.1 / 1.0.0.1
 ############################################
-printf "Launching Unbound daemon to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint..."
-unbound
-exitOnError $?
-printf "DONE\n"
-printf "Changing DNS to localhost..."
-echo "nameserver 127.0.0.1" > /etc/resolv.conf
-exitOnError $?
-echo "options ndots:0" >> /etc/resolv.conf
-exitOnError $?
-printf "DONE\n"
+printf "DNS over TLS is $DOT\n"
+if [ "$DOT" == "on" ]; then
+  printf "Launching Unbound daemon to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint..."
+  unbound
+  exitOnError $?
+  printf "DONE\n"
+  printf "Changing DNS to localhost..."
+  echo "nameserver 127.0.0.1" > /etc/resolv.conf
+  exitOnError $?
+  echo "options ndots:0" >> /etc/resolv.conf
+  exitOnError $?
+  printf "DONE\n"
+fi
 
 ############################################
 # Reading chosen OpenVPN configuration
@@ -204,56 +220,59 @@ printf "DONE\n"
 ############################################
 # FIREWALL
 ############################################
-printf "Setting firewall for killswitch purposes...\n"
-printf " * Detecting local subnet..."
-SUBNET=$(ip route show | tail -n 1 | cut -d" " -f 1)
-exitOnError $?
-printf "$SUBNET\n"
-printf " * Deleting all iptables rules..."
-iptables --flush
-exitOnError $?
-iptables --delete-chain
-exitOnError $?
-iptables -t nat --flush
-exitOnError $?
-iptables -t nat --delete-chain
-exitOnError $?
-printf "DONE\n"
-printf " * Block output traffic..."
-iptables -F OUTPUT
-exitOnError $?
-iptables -P OUTPUT DROP
-exitOnError $?
-printf "DONE\n"
-printf " * Accept established and related output traffic..."
-iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-exitOnError $?
-printf "DONE\n"
-printf " * Accept local loopback output traffic..."
-iptables -A OUTPUT -o lo -j ACCEPT
-exitOnError $?
-printf "DONE\n"
-printf " * Accept output traffic with local subnet $SUBNET..."
-iptables -A OUTPUT -d $SUBNET -j ACCEPT
-exitOnError $?
-printf "DONE\n"
-for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
-do
-  printf " * Accept output traffic with extra subnet $EXTRASUBNET..."
-  iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
+printf "Firewall is $FIREWALL\n"
+if [ "$FIREWALL" == "on" ]; then
+  printf "Setting firewall for killswitch purposes...\n"
+  printf " * Detecting local subnet..."
+  SUBNET=$(ip route show | tail -n 1 | cut -d" " -f 1)
+  exitOnError $?
+  printf "$SUBNET\n"
+  printf " * Deleting all iptables rules..."
+  iptables --flush
+  exitOnError $?
+  iptables --delete-chain
+  exitOnError $?
+  iptables -t nat --flush
+  exitOnError $?
+  iptables -t nat --delete-chain
   exitOnError $?
   printf "DONE\n"
-done
-for ip in $VPNIPS; do
-  printf " * Accept output traffic to $ip on interface eth0, port $PROTOCOL $PORT..."
-  iptables -A OUTPUT -j ACCEPT -d $ip -o eth0 -p $PROTOCOL -m $PROTOCOL --dport $PORT
+  printf " * Block output traffic..."
+  iptables -F OUTPUT
+  exitOnError $?
+  iptables -P OUTPUT DROP
   exitOnError $?
   printf "DONE\n"
-done
-printf " * Accept all output traffic on tun0 interface..."
-iptables -A OUTPUT -o tun0 -j ACCEPT
-exitOnError $?
-printf "DONE\n"
+  printf " * Accept established and related output traffic..."
+  iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  exitOnError $?
+  printf "DONE\n"
+  printf " * Accept local loopback output traffic..."
+  iptables -A OUTPUT -o lo -j ACCEPT
+  exitOnError $?
+  printf "DONE\n"
+  printf " * Accept output traffic with local subnet $SUBNET..."
+  iptables -A OUTPUT -d $SUBNET -j ACCEPT
+  exitOnError $?
+  printf "DONE\n"
+  for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
+  do
+    printf " * Accept output traffic with extra subnet $EXTRASUBNET..."
+    iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
+    exitOnError $?
+    printf "DONE\n"
+  done
+  for ip in $VPNIPS; do
+    printf " * Accept output traffic to $ip on interface eth0, port $PROTOCOL $PORT..."
+    iptables -A OUTPUT -j ACCEPT -d $ip -o eth0 -p $PROTOCOL -m $PROTOCOL --dport $PORT
+    exitOnError $?
+    printf "DONE\n"
+  done
+  printf " * Accept all output traffic on tun0 interface..."
+  iptables -A OUTPUT -o tun0 -j ACCEPT
+  exitOnError $?
+  printf "DONE\n"
+fi
 
 ############################################
 # OPENVPN LAUNCH

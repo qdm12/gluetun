@@ -41,10 +41,12 @@
     - [Destination region](https://www.privateinternetaccess.com/pages/network)
     - Internet protocol
     - Level of encryption
-    - Username and password
+    - PIA Username and password
+    - DNS over TLS
     - Malicious DNS blocking
-    - Extra subnets allowed by firewall
+    - Internal firewall
     - Run openvpn without root (but will give reconnect problems)
+    - Run openvpn without root
 
     </p></details>
 - Connect other containers to it, [see this](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
@@ -109,7 +111,7 @@
 1. Launch the container with:
 
     ```bash
-    docker run -d --name=pia --cap-add=NET_ADMIN --device=/dev/net/tun \
+    docker run -d --init --name=pia --cap-add=NET_ADMIN --device=/dev/net/tun \
     -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     qmcgaw/private-internet-access
     ```
@@ -120,7 +122,7 @@
     docker-compose up -d
     ```
 
-    Note that you can change all the [environment variables](#environment-variables)
+    Note that you can change all the [environment variables](#environment-variables).
 
 ## Testing
 
@@ -140,10 +142,12 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
 | `NONROOT` | `no` | Run OpenVPN without root, `yes` or `no` |
-| `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
+| `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
 | `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
+| `FIREWALL` | `on` | `on` or `off`, to switch the internal killswitch firewall (should be left `on`) |
+| `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 
 ## Connect to it
 
