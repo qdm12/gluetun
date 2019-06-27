@@ -15,13 +15,19 @@ services:
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G
-      - PROTOCOL=udp
       - ENCRYPTION=strong
+      - PROTOCOL=udp
       - REGION=CA Montreal
-      - EXTRA_SUBNETS=
       - NONROOT=no
-      - BLOCK_MALICIOUS=off
+      - DOT=on
+      - BLOCK_MALICIOUS=on
       - BLOCK_NSA=off
       - UNBLOCK=
+      - FIREWALL=on
+      - EXTRA_SUBNETS=
+      - PROXY=on
+      - PROXY_LOG_LEVEL=Critical
+      - PROXY_USER=
+      - PROXY_PASSWORD=
     restart: always
  
