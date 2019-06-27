@@ -265,12 +265,21 @@ if [ "$FIREWALL" == "on" ]; then
   iptables -A OUTPUT -d $SUBNET -j ACCEPT
   exitOnError $?
   printf "DONE\n"
+  printf " * Accept connections from $SUBNET to port 8888 for web proxy\n"
+  iptables -A INPUT -p tcp -s $SUBNET --dport 8888 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+  exitOnError $?
+  printf " * Accept established and related input traffic for web proxy\n"
+  iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+  exitOnError $?
   for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
   do
     printf " * Accept output traffic with extra subnet $EXTRASUBNET..."
     iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
     exitOnError $?
     printf "DONE\n"
+    printf " * Accept connections from $EXTRASUBNET to port 8888 for web proxy\n"
+    iptables -A INPUT -p tcp -s $EXTRASUBNET --dport 8888 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+    exitOnError $?
   done
   for ip in $VPNIPS; do
     printf " * Accept output traffic to $ip on interface eth0, port $PROTOCOL $PORT..."
