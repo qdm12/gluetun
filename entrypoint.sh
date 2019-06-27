@@ -49,6 +49,7 @@ printf " == by github.com/qdm12 - Quentin McGaw ==\n\n"
 printf "OpenVPN version: $(openvpn --version | head -n 1 | grep -oE "OpenVPN [0-9\.]* " | cut -d" " -f2)\n"
 printf "Unbound version: $(unbound -h | grep "Version" | cut -d" " -f2)\n"
 printf "Iptables version: $(iptables --version | cut -d" " -f2)\n"
+printf "TinyProxy version: $(tinyproxy -v | cut -d" " -f2)\n"
 
 ############################################
 # CHECK PARAMETERS
@@ -79,6 +80,15 @@ if [ "$DOT" == "off" ]; then
   fi
 fi
 exitIfNotIn FIREWALL "on,off"
+exitIfNotIn PROXY "on,off"
+exitIfNotIn PROXY_LOG_LEVEL "Info,Warning,Error,Critical"
+if [ ! -z "$PROXY_USER" ] && [ -z "$PROXY_PASSWORD" ]; then
+  printf "PROXY_USER is set but PROXY_PASSWORD is unset\n"
+  exit 1
+elif [ -z "$PROXY_USER" ] && [ ! -z "$PROXY_PASSWORD" ]; then
+  printf "PROXY_USER is unset but PROXY_PASSWORD is set\n"
+  exit 1
+fi
 
 #####################################################
 # Writes to protected file and remove USER, PASSWORD
@@ -272,6 +282,24 @@ if [ "$FIREWALL" == "on" ]; then
   iptables -A OUTPUT -o tun0 -j ACCEPT
   exitOnError $?
   printf "DONE\n"
+fi
+
+############################################
+# TINYPROXY LAUNCH
+############################################
+printf "HTTP proxy is $PROXY\n"
+if [ "$PROXY" == "on" ]; then
+  printf "Setting TinyProxy log level to $PROXY_LOG_LEVEL\n"
+  sed -i "/LogLevel /c\LogLevel $PROXY_LOG_LEVEL" /etc/tinyproxy/tinyproxy.conf
+  if [ ! -z "$PROXY_USER" ]; then
+    printf "Setting TinyProxy credentials\n"
+    echo "BasicAuth $PROXY_USER $PROXY_PASSWORD" >> /etc/tinyproxy/tinyproxy.conf
+    unset -v PROXY_USER
+    unset -v PROXY_PASSWORD
+  fi
+  printf "Starting HTTP proxy TinyProxy\n"
+  tinyproxy
+  exitOnError $?
 fi
 
 ############################################

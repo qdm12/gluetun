@@ -31,6 +31,7 @@
 - [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 - [Unbound 1.9.1](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
 - [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` and `BLOCK_NSA` environment variables)
+- [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/tinyproxy)
 
 </p></details>
 
@@ -45,7 +46,7 @@
     - DNS over TLS
     - Malicious DNS blocking
     - Internal firewall
-    - Run openvpn without root (but will give reconnect problems)
+    - Web HTTP proxy
     - Run openvpn without root
 
     </p></details>
@@ -57,6 +58,7 @@
 - OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
 - **ARM** compatible
 - Port forwarding
+- HTTP proxy for LAN devices
 
 ## Setup
 
@@ -124,6 +126,8 @@
 
     Note that you can change all the [environment variables](#environment-variables).
 
+    If you want to use the **HTTP proxy**, add `-p 8888:8888/tcp` so that it is accessible from LAN devices.
+
 ## Testing
 
 Check the PIA IP address matches your expectations
@@ -148,6 +152,10 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `FIREWALL` | `on` | `on` or `off`, to switch the internal killswitch firewall (should be left `on`) |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
+| `PROXY` | `on` | `on` or `off`, to switch the internal HTTP proxy |
+| `PROXY_LOG_LEVEL` | `Critical` | `Info`, `Warning`, `Error` or `Critical` |
+| `PROXY_USER` | | Username to use to connect to the HTTP proxy |
+| `PROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
 
 ## Connect to it
 
@@ -331,9 +339,20 @@ There are various ways to achieve this, depending on your use case.
         ```
 
     </p></details>
-- <details><summary>Connect to the PIA through an HTTP proxy (i.e. with Firefox)</summary><p>
+- <details><summary>Connect to the PIA through an HTTP proxy (i.e. with Chrome, Kodi, etc.)</summary><p>
 
-    *This is in progress, using Tiny Proxy, thanks for waiting !*
+    1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
+    1. Make sure the PIA container:
+        - Has port 8888 published `-p 8888:8888/tcp`
+        - **Has your LAN** in `EXTRA_SUBNETS`
+    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You might need to enter your credentials if you set them with the environment variables `PROXY_USER` and `PROXY_PASSWORD`.
+    1. If you set `PROXY_LOG_LEVEL` to `Info`, you can check the log output of tinyproxy with:
+
+        ```sh
+        docker exec -it pia cat /var/log/tinyproxy/tinyproxy.log
+        ```
+
+        `PROXY_LOG_LEVEL` defaults to `Critical` to avoid logging everything, for privacy purposes as well as to save storage.
 
     </p></details>
 
@@ -364,8 +383,6 @@ Note that not all regions support port forwarding.
 - DNS Leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: DNS server is a local caching intermediary)
 
 ## TODOs
-
-- [ ] Tiny proxy for LAN devices to use the container
 
 ## License
 

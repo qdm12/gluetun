@@ -30,10 +30,15 @@ ENV USER= \
     BLOCK_NSA=off \
     UNBLOCK= \
     FIREWALL=on \
-    EXTRA_SUBNETS=
+    EXTRA_SUBNETS= \
+    PROXY=on \
+    PROXY_LOG_LEVEL=Critical \
+    PROXY_USER= \
+    PROXY_PASSWORD=
 ENTRYPOINT /entrypoint.sh
+EXPOSE 8888
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
-RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip && \
+RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip tinyproxy && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
@@ -44,7 +49,7 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
     unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
     apk del -q --progress --purge unzip && \
-    rm -rf /*.zip /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-anchor /usr/sbin/unbound-checkconf /usr/sbin/unbound-control /usr/sbin/unbound-control-setup /usr/sbin/unbound-host && \
+    rm -rf /*.zip /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-anchor /usr/sbin/unbound-checkconf /usr/sbin/unbound-control /usr/sbin/unbound-control-setup /usr/sbin/unbound-host /etc/tinyproxy/tinyproxy.conf && \
     adduser nonrootuser -D -H --uid 1000 && \
     wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/named.root.updated -O /etc/unbound/root.hints && \
     wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/root.key.updated -O /etc/unbound/root.key && \
@@ -59,9 +64,10 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     tar -cjf /etc/unbound/blocks-nsa.bz2 blocks-nsa.conf && \
     rm -f /tmp/*
 COPY unbound.conf /etc/unbound/unbound.conf
+COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
 COPY entrypoint.sh healthcheck.sh portforward.sh /
-RUN chown nonrootuser -R /etc/unbound && \
-    chmod 700 /etc/unbound && \
-    chmod 600 /etc/unbound/unbound.conf && \
+RUN chown nonrootuser -R /etc/unbound /etc/tinyproxy && \
+    chmod 700 /etc/unbound /etc/tinyproxy && \
+    chmod 600 /etc/unbound/unbound.conf /etc/tinyproxy/tinyproxy.conf && \
     chmod 500 /entrypoint.sh /healthcheck.sh /portforward.sh && \
     chmod 400 /etc/unbound/root.hints /etc/unbound/root.key /etc/unbound/*.bz2

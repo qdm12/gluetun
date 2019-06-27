@@ -10,6 +10,8 @@ services:
       - /dev/net/tun
     network_mode: bridge
     init: true
+    ports:
+      - 8888:8888/tcp
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G
