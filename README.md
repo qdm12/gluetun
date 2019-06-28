@@ -46,7 +46,7 @@
     - DNS over TLS
     - Malicious DNS blocking
     - Internal firewall
-    - Web HTTP proxy
+    - Web HTTP proxy (**not working yet**)
     - Run openvpn without root
 
     </p></details>
@@ -58,7 +58,7 @@
 - OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
 - **ARM** compatible
 - Port forwarding
-- HTTP proxy for LAN devices
+- HTTP proxy for LAN devices (**not working yet**)
 
 ## Setup
 
@@ -341,6 +341,8 @@ There are various ways to achieve this, depending on your use case.
     </p></details>
 - <details><summary>Connect to the PIA through an HTTP proxy (i.e. with Chrome, Kodi, etc.)</summary><p>
 
+    **THIS IS NOT CURRENTLY WORKING, INVESTIGATION IS IN PROGRESS...**
+
     1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
     1. Make sure the PIA container:
         - Has port 8888 published `-p 8888:8888/tcp`
@@ -383,6 +385,10 @@ Note that not all regions support port forwarding.
 - DNS Leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: DNS server is a local caching intermediary)
 
 ## TODOs
+
+- Create TUN device: https://github.com/haugene/docker-transmission-openvpn/blob/master/openvpn/start.sh#L7
+- Mix logs from unbound, tinyproxy and openvpn in Docker logs
+- Maybe use `--inactive 3600 --ping 10 --ping-exit 60`
 
 ## License
 
