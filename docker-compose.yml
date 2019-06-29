@@ -12,6 +12,7 @@ services:
     init: true
     ports:
       - 8888:8888/tcp
+    command: 
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G

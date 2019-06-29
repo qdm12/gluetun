@@ -4,9 +4,9 @@ exitOnError(){
   # $1 must be set to $?
   status=$1
   message=$2
-  [ "$message" != "" ] || message="Error!"
+  [ "$message" != "" ] || message="Undefined error"
   if [ $status != 0 ]; then
-    printf "$message (status $status)\n"
+    printf "[ERROR] $message, with status $status)\n"
     exit $status
   fi
 }
@@ -15,7 +15,7 @@ exitIfUnset(){
   # $1 is the name of the variable to check - not the variable itself
   var="$(eval echo "\$$1")"
   if [ -z "$var" ]; then
-    printf "Environment variable $1 is not set\n"
+    printf "[ERROR] Environment variable $1 is not set\n"
     exit 1
   fi
 }
@@ -30,7 +30,7 @@ exitIfNotIn(){
       return 0
     fi
   done
-  printf "Environment variable $1 cannot be '$var' and must be one of the following: "
+  printf "[ERROR] Environment variable $1 cannot be '$var' and must be one of the following: "
   for value in ${2//,/ }
   do
     printf "$value "
@@ -61,9 +61,9 @@ exitIfNotIn PROTOCOL "tcp,udp"
 exitIfNotIn NONROOT "yes,no"
 cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
-for SUBNET in ${EXTRA_SUBNETS//,/ }; do
-  if [ $(echo "$SUBNET" | grep -Eo '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(/([0-2]?[0-9])|([3]?[0-1]))?$') = "" ]; then
-    printf "Subnet $SUBNET is not a valid IPv4 subnet of the form 255.255.255.255/31 or 255.255.255.255\n"
+for EXTRA_SUBNET in ${EXTRA_SUBNETS//,/ }; do
+  if [ $(echo "$EXTRA_SUBNET" | grep -Eo '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(/([0-2]?[0-9])|([3]?[0-1]))?$') = "" ]; then
+    printf "Extra subnet $EXTRA_SUBNET is not a valid IPv4 subnet of the form 255.255.255.255/31 or 255.255.255.255\n"
     exit 1
   fi
 done
@@ -79,7 +79,6 @@ if [ "$DOT" == "off" ]; then
     exit 1
   fi
 fi
-exitIfNotIn FIREWALL "on,off"
 exitIfNotIn PROXY "on,off"
 exitIfNotIn PROXY_LOG_LEVEL "Info,Warning,Error,Critical"
 if [ ! -z "$PROXY_USER" ] && [ -z "$PROXY_PASSWORD" ]; then
@@ -90,13 +89,40 @@ elif [ -z "$PROXY_USER" ] && [ ! -z "$PROXY_PASSWORD" ]; then
   exit 1
 fi
 
+############################################
+# SHOW PARAMETERS
+############################################
+printf "\n"
+printf "OpenVPN parameters:\n"
+printf " * Region: $REGION\n"
+printf " * Encryption: $ENCRYPTION\n"
+printf " * Protocol: $PROTOCOL\n"
+printf " * Running without root: $NONROOT\n"
+printf "DNS over TLS:\n"
+printf " * Activated: $DOT\n"
+if [ "$DOT" = "on" ]; then
+  printf " * Malicious hostnames DNS blocking: $BLOCK_MALICIOUS\n"
+  printf " * NSA related DNS blocking: $BLOCK_NSA\n"
+  printf " * Unblocked hostnames: $UNBLOCK\n"
+fi
+printf "Local network parameters:\n"
+printf " * Extra subnets: $EXTRA_SUBNETS\n"
+printf " * Web proxy activated: $PROXY\n"
+proxy_auth=yes
+if [ -z $PROXY_USER ]; then
+  proxy_auth=no
+fi
+printf " * Web proxy has authentication: $proxy_auth\n"
+unset -v proxy_auth
+printf "\n"
+
 #####################################################
 # Writes to protected file and remove USER, PASSWORD
 #####################################################
 if [ -f /auth.conf ]; then
-  printf "/auth.conf already exists\n"
+  printf "[INFO] /auth.conf already exists\n"
 else
-  printf "Writing USER and PASSWORD to protected file /auth.conf..."
+  printf "[INFO] Writing USER and PASSWORD to protected file /auth.conf..."
   echo "$USER" > /auth.conf
   exitOnError $?
   echo "$PASSWORD" >> /auth.conf
@@ -106,7 +132,7 @@ else
   chmod 400 /auth.conf
   exitOnError $?
   printf "DONE\n"
-  printf "Clearing environment variables USER and PASSWORD..."
+  printf "[INFO] Clearing environment variables USER and PASSWORD..."
   unset -v USER
   unset -v PASSWORD
   printf "DONE\n"
@@ -115,34 +141,36 @@ fi
 ############################################
 # CHECK FOR TUN DEVICE
 ############################################
-while [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ]; do
-  printf "TUN device is not available, sleeping for 30 seconds...\n"
-  sleep 30
-done
-printf "TUN device OK\n"
+if [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor in bad state" ]; then
+  printf "[WARNING] TUN device is not available, creating it..."
+  mkdir -p /dev/net
+  mknod /dev/net/tun c 10 200
+  exitOnError $?
+  chmod 0666 /dev/net/tun
+  printf "DONE\n"  
+fi
 
 ############################################
 # BLOCKING MALICIOUS HOSTNAMES AND IPs WITH UNBOUND
 ############################################
 if [ "$DOT" == "on" ]; then
-  printf "Malicious hostnames and ips blocking is $BLOCK_MALICIOUS\n"
   rm -f /etc/unbound/blocks-malicious.conf
   if [ "$BLOCK_MALICIOUS" = "on" ]; then
     tar -xjf /etc/unbound/blocks-malicious.bz2 -C /etc/unbound/
-    printf "$(cat /etc/unbound/blocks-malicious.conf | grep "local-zone" | wc -l ) malicious hostnames and $(cat /etc/unbound/blocks-malicious.conf | grep "private-address" | wc -l) malicious IP addresses blacklisted\n"
+    printf "[INFO] $(cat /etc/unbound/blocks-malicious.conf | grep "local-zone" | wc -l ) malicious hostnames and $(cat /etc/unbound/blocks-malicious.conf | grep "private-address" | wc -l) malicious IP addresses blacklisted\n"
   else
     echo "" > /etc/unbound/blocks-malicious.conf
   fi
   if [ "$BLOCK_NSA" = "on" ]; then
     tar -xjf /etc/unbound/blocks-nsa.bz2 -C /etc/unbound/
-    printf "$(cat /etc/unbound/blocks-nsa.conf | grep "local-zone" | wc -l ) NSA hostnames blacklisted\n"
+    printf "[INFO] $(cat /etc/unbound/blocks-nsa.conf | grep "local-zone" | wc -l ) NSA hostnames blacklisted\n"
     cat /etc/unbound/blocks-nsa.conf >> /etc/unbound/blocks-malicious.conf
     rm /etc/unbound/blocks-nsa.conf
     sort -u -o /etc/unbound/blocks-malicious.conf /etc/unbound/blocks-malicious.conf
   fi
   for hostname in ${UNBLOCK//,/ }
   do
-    printf "Unblocking hostname $hostname\n"
+    printf "[INFO] Unblocking hostname $hostname\n"
     sed -i "/$hostname/d" /etc/unbound/blocks-malicious.conf
   done
 fi
@@ -150,13 +178,12 @@ fi
 ############################################
 # SETTING DNS OVER TLS TO 1.1.1.1 / 1.0.0.1
 ############################################
-printf "DNS over TLS is $DOT\n"
 if [ "$DOT" == "on" ]; then
-  printf "Launching Unbound daemon to connect to Cloudflare DNS 1.1.1.1 at its TLS endpoint..."
+  printf "[INFO] Launching Unbound to connect to Cloudflare DNS 1.1.1.1 over TLS..."
   unbound
   exitOnError $?
   printf "DONE\n"
-  printf "Changing DNS to localhost..."
+  printf "[INFO] Changing DNS to localhost..."
   echo "nameserver 127.0.0.1" > /etc/resolv.conf
   exitOnError $?
   echo "options ndots:0" >> /etc/resolv.conf
@@ -167,22 +194,22 @@ fi
 ############################################
 # Reading chosen OpenVPN configuration
 ############################################
-printf "Reading configuration for region $REGION, protocol $PROTOCOL and encryption $ENCRYPTION...\n"
+printf "[INFO] Reading OpenVPN configuration...\n"
 CONNECTIONSTRING=$(grep -i "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" -e 'privateinternetaccess.com')
 exitOnError $?
 PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
 if [ "$PORT" = "" ]; then
-  printf "Port not found in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
+  printf "[ERROR] Port not found in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
   exit 1
 fi
 PIADOMAIN=$(echo $CONNECTIONSTRING | cut -d' ' -f2)
 if [ "$PIADOMAIN" = "" ]; then
-  printf "Domain not found in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
+  printf "[ERROR] Domain not found in /openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn\n"
   exit 1
 fi
 printf " * Port: $PORT\n"
 printf " * Domain: $PIADOMAIN\n"
-printf "Detecting IP addresses corresponding to $PIADOMAIN...\n"
+printf "[INFO] Detecting IP addresses corresponding to $PIADOMAIN...\n"
 VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +3 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 exitOnError $?
 for ip in $VPNIPS; do
@@ -193,7 +220,7 @@ done
 # Writing target OpenVPN files
 ############################################
 TARGET_PATH="/openvpn/target"
-printf "Creating target OpenVPN files in $TARGET_PATH..."
+printf "[INFO] Creating target OpenVPN files in $TARGET_PATH..."
 rm -rf $TARGET_PATH/*
 cd "/openvpn/$PROTOCOL-$ENCRYPTION"
 cp -f *.crt "$TARGET_PATH"
@@ -227,101 +254,135 @@ fi
 # Note: TUN device re-opening will restart the container due to permissions
 printf "DONE\n"
 
+
+
+############################################
+# NETWORKING
+############################################
+printf "[INFO] Finding network properties...\n"
+printf " * Detecting default gateway..."
+DEFAULT_GATEWAY=$(ip r | grep 'default via' | cut -d" " -f 3)
+exitOnError $?
+printf "$DEFAULT_GATEWAY\n"
+printf " * Detecting local interface..."
+INTERFACE=$(ip r | grep 'default via' | cut -d" " -f 5)
+exitOnError $?
+printf "$INTERFACE\n"
+printf " * Detecting local subnet..."
+SUBNET=$(ip r | grep -v 'default via' | grep $INTERFACE | tail -n 1 | cut -d" " -f 1)
+exitOnError $?
+printf "$SUBNET\n"
+for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
+do
+  printf " * Adding $EXTRASUBNET as route via $INTERFACE..."
+  ip route add $EXTRASUBNET via $DEFAULT_GATEWAY dev $INTERFACE
+  exitOnError $?
+  printf "DONE\n"
+done
+printf " * Detecting target VPN interface..."
+VPN_DEVICE=$(cat $TARGET_PATH/config.ovpn | grep 'dev ' | cut -d" " -f 2)0
+exitOnError $?
+printf "$VPN_DEVICE\n"
+
+
 ############################################
 # FIREWALL
 ############################################
-printf "Firewall is $FIREWALL\n"
-if [ "$FIREWALL" == "on" ]; then
-  printf "Setting firewall for killswitch purposes...\n"
-  printf " * Detecting local subnet..."
-  SUBNET=$(ip route show | tail -n 1 | cut -d" " -f 1)
-  exitOnError $?
-  printf "$SUBNET\n"
-  printf " * Deleting all iptables rules..."
-  iptables --flush
-  exitOnError $?
-  iptables --delete-chain
-  exitOnError $?
-  iptables -t nat --flush
-  exitOnError $?
-  iptables -t nat --delete-chain
-  exitOnError $?
-  printf "DONE\n"
-  printf " * Block output traffic..."
-  iptables -F OUTPUT
-  exitOnError $?
-  iptables -P OUTPUT DROP
-  exitOnError $?
-  printf "DONE\n"
-  printf " * Accept established and related output traffic..."
-  iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-  exitOnError $?
-  printf "DONE\n"
-  printf " * Accept local loopback output traffic..."
-  iptables -A OUTPUT -o lo -j ACCEPT
-  exitOnError $?
-  printf "DONE\n"
-  printf " * Accept output traffic with local subnet $SUBNET..."
-  iptables -A OUTPUT -d $SUBNET -j ACCEPT
-  exitOnError $?
-  printf "DONE\n"
-  printf " * Accept connections from $SUBNET to port 8888 for web proxy\n"
-  iptables -A INPUT -p tcp -s $SUBNET --dport 8888 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-  exitOnError $?
-  printf " * Accept established and related input traffic for web proxy\n"
-  iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-  exitOnError $?
-  for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
-  do
-    printf " * Accept output traffic with extra subnet $EXTRASUBNET..."
-    iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
-    exitOnError $?
-    printf "DONE\n"
-    printf " * Accept connections from $EXTRASUBNET to port 8888 for web proxy\n"
-    iptables -A INPUT -p tcp -s $EXTRASUBNET --dport 8888 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
-    exitOnError $?
-  done
-  for ip in $VPNIPS; do
-    printf " * Accept output traffic to $ip on interface eth0, port $PROTOCOL $PORT..."
-    iptables -A OUTPUT -j ACCEPT -d $ip -o eth0 -p $PROTOCOL -m $PROTOCOL --dport $PORT
-    exitOnError $?
-    printf "DONE\n"
-  done
-  printf " * Accept all output traffic on tun0 interface..."
-  iptables -A OUTPUT -o tun0 -j ACCEPT
+printf "[INFO] Setting firewall\n"
+printf " * Blocking everyting\n"
+printf "   * Deleting all iptables rules..."
+iptables --flush
+exitOnError $?
+iptables --delete-chain
+exitOnError $?
+iptables -t nat --flush
+exitOnError $?
+iptables -t nat --delete-chain
+exitOnError $?
+printf "DONE\n"
+printf "   * Block input traffic..."
+iptables -P INPUT DROP
+exitOnError $?
+printf "DONE\n"
+printf "   * Block output traffic..."
+iptables -F OUTPUT
+exitOnError $?
+iptables -P OUTPUT DROP
+exitOnError $?
+printf "DONE\n"
+printf "   * Block forward traffic..."
+iptables -P FORWARD DROP
+exitOnError $?
+printf "DONE\n"
+
+printf " * Creating general rules\n"
+printf "   * Accept established and related input and output traffic..."
+iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+exitOnError $?
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+exitOnError $?
+printf "DONE\n"
+printf "   * Accept local loopback input and output traffic..."
+iptables -A OUTPUT -o lo -j ACCEPT
+exitOnError $?
+iptables -A INPUT -i lo -j ACCEPT
+exitOnError $?
+printf "DONE\n"
+
+printf " * Creating VPN rules\n"
+for ip in $VPNIPS; do
+  printf "   * Accept output traffic to VPN server $ip through $INTERFACE, port $PROTOCOL $PORT..."
+  iptables -A OUTPUT -d $ip -o $INTERFACE -p $PROTOCOL -m $PROTOCOL --dport $PORT -j ACCEPT
   exitOnError $?
   printf "DONE\n"
-fi
+done
+printf "   * Accept all output traffic through $VPN_DEVICE..."
+iptables -A OUTPUT -o $VPN_DEVICE -j ACCEPT
+exitOnError $?
+printf "DONE\n"
+
+printf " * Creating local subnet rules\n"
+printf "   * Accept input and output traffic to and from $SUBNET..."
+iptables -A INPUT -s $SUBNET -d $SUBNET -j ACCEPT
+iptables -A OUTPUT -s $SUBNET -d $SUBNET -j ACCEPT
+printf "DONE\n"
+for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
+do
+  printf "   * Accept input traffic through $INTERFACE from $EXTRASUBNET to $SUBNET..."
+  iptables -A INPUT -i $INTERFACE -s $EXTRASUBNET -d $SUBNET -j ACCEPT
+  exitOnError $?
+  printf "DONE\n"
+  # iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
+  # iptables -A OUTPUT -o $INTERFACE -s $SUBNET -d $EXTRASUBNET -j ACCEPT
+done
 
 ############################################
 # TINYPROXY LAUNCH
 ############################################
-printf "HTTP proxy is $PROXY\n"
 if [ "$PROXY" == "on" ]; then
-  printf "Setting TinyProxy log level to $PROXY_LOG_LEVEL\n"
+  printf "[INFO] Setting TinyProxy log level to $PROXY_LOG_LEVEL..."
   sed -i "/LogLevel /c\LogLevel $PROXY_LOG_LEVEL" /etc/tinyproxy/tinyproxy.conf
+  exitOnError $?
+  printf "DONE\n"
   if [ ! -z "$PROXY_USER" ]; then
-    printf "Setting TinyProxy credentials\n"
+    printf "[INFO] Setting TinyProxy credentials..."
     echo "BasicAuth $PROXY_USER $PROXY_PASSWORD" >> /etc/tinyproxy/tinyproxy.conf
     unset -v PROXY_USER
     unset -v PROXY_PASSWORD
+    printf "DONE\n"
   fi
-  printf "Starting HTTP proxy TinyProxy\n"
+  printf "[INFO] Launching HTTP proxy TinyProxy..."
   tinyproxy
   exitOnError $?
+  printf "DONE\n"
 fi
 
 ############################################
 # OPENVPN LAUNCH
 ############################################
-printf "Starting OpenVPN using the following parameters:\n"
-printf " * Region: $REGION\n"
-printf " * Encryption: $ENCRYPTION\n"
-printf " * Protocol: $PROTOCOL\n"
-printf " * Port: $PORT\n"
-printf " * Initial VPN IP address: $(echo "$VPNIPS" | head -n 1)\n\n"
+printf "[INFO] Launching OpenVPN\n"
 cd "$TARGET_PATH"
-openvpn --config config.ovpn
+openvpn --config config.ovpn "$@"
 status=$?
 printf "\n =========================================\n"
 printf " OpenVPN exit with status $status\n"

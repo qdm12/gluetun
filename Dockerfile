@@ -16,7 +16,7 @@ LABEL org.label-schema.schema-version="1.0.0-rc1" \
     org.label-schema.docker.cmd.devel="docker run -it --rm --init --cap-add=NET_ADMIN --device=/dev/net/tun -e USER=js89ds7 -e PASSWORD=8fd9s239G qmcgaw/private-internet-access" \
     org.label-schema.docker.params="REGION=PIA region,PROTOCOL=udp/tcp,ENCRYPTION=strong/normal,BLOCK_MALICIOUS=on/off,BLOCK_NSA=on/off,UNBLOCK=allowed hostnames,USER=PIA user,PASSWORD=PIA password,EXTRA_SUBNETS=extra subnets to allow on the firewall,NONROOT=yes/no" \
     org.label-schema.version="" \
-    image-size="19.8MB" \
+    image-size="19.9MB" \
     ram-usage="13MB to 80MB" \
     cpu-usage="Low to Medium"
 ENV USER= \
@@ -29,7 +29,6 @@ ENV USER= \
     BLOCK_MALICIOUS=off \
     BLOCK_NSA=off \
     UNBLOCK= \
-    FIREWALL=on \
     EXTRA_SUBNETS= \
     PROXY=on \
     PROXY_LOG_LEVEL=Critical \

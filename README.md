@@ -22,7 +22,7 @@
 
 | Image size | RAM usage | CPU usage |
 | --- | --- | --- |
-| 19.8MB | 14MB to 80MB | Low to Medium |
+| 19.9MB | 14MB to 80MB | Low to Medium |
 
 <details><summary>Click to show base components</summary><p>
 
@@ -46,31 +46,33 @@
     - DNS over TLS
     - Malicious DNS blocking
     - Internal firewall
-    - Web HTTP proxy (**not working yet**)
+    - Web HTTP proxy
     - Run openvpn without root
 
     </p></details>
 - Connect other containers to it, [see this](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+- **ARM** compatible
+- Port forwarding
+- HTTP proxy for LAN devices
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
 - OpenVPN reconnects automatically on failure
 - Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
 - Unbound DNS runs *without root*
 - OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
-- **ARM** compatible
-- Port forwarding
-- HTTP proxy for LAN devices (**not working yet**)
+
 
 ## Setup
 
 1. <details><summary>Requirements</summary><p>
 
     - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
-    - Firewall requirements
+    - External firewall requirements, if you have one
         - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
         - For UDP strong encryption, allow outbound UDP 1197
         - For UDP normal encryption, allow outbound UDP 1198
         - For TCP strong encryption, allow outbound TCP 501
         - For TCP normal encryption, allow outbound TCP 502
+        - For the built-in web HTTP proxy, allow inbound TCP 8888
 
     </p></details>
 
@@ -124,9 +126,10 @@
     docker-compose up -d
     ```
 
-    Note that you can change all the [environment variables](#environment-variables).
-
-    If you want to use the **HTTP proxy**, add `-p 8888:8888/tcp` so that it is accessible from LAN devices.
+    Note that you can:
+    - Change the many [environment variables](#environment-variables) available
+    - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
+    - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
 
 ## Testing
 
@@ -150,7 +153,6 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
 | `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
-| `FIREWALL` | `on` | `on` or `off`, to switch the internal killswitch firewall (should be left `on`) |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `PROXY` | `on` | `on` or `off`, to switch the internal HTTP proxy |
 | `PROXY_LOG_LEVEL` | `Critical` | `Info`, `Warning`, `Error` or `Critical` |
@@ -161,24 +163,42 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 
 There are various ways to achieve this, depending on your use case.
 
-- <details><summary>Connect other containers to PIA</summary><p>
-
-    Add `--network=container:pia` when launching the container
-
-    </p></details>
-- <details><summary>Connect containers from another docker-compose.yml</summary><p>
-
-    Add `network_mode: "container:pia"` to your *docker-compose.yml*
-
-    </p></details>
 - <details><summary>Connect containers in the same docker-compose.yml as PIA</summary><p>
 
     Add `network_mode: "service:pia"` to your *docker-compose.yml* (no need for `depends_on`)
 
     </p></details>
+- <details><summary>Connect other containers to PIA</summary><p>
+
+    Add `--network=container:pia` when launching the container, provided PIA is already running
+
+    </p></details>
+- <details><summary>Connect containers from another docker-compose.yml</summary><p>
+
+    Add `network_mode: "container:pia"` to your *docker-compose.yml*, provided PIA is already running
+
+    </p></details>
+- <details><summary>Connect LAN devices through the built-in HTTP proxy (i.e. with Chrome, Kodi, etc.)</summary><p>
+
+    1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
+    1. Ensure the PIA container is launched with:
+        - port 8888 published `-p 8888:8888/tcp`
+        - your LAN subnet, i.e. 192.168.1.0/24, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
+    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You might need to enter your credentials if you set them with the environment variables `PROXY_USER` and `PROXY_PASSWORD`.
+    1. If you set `PROXY_LOG_LEVEL` to `Info`, you can check the log output of tinyproxy with:
+
+        ```sh
+        docker exec -it pia cat /var/log/tinyproxy/tinyproxy.log
+        ```
+
+        `PROXY_LOG_LEVEL` defaults to `Critical` to avoid logging everything, for privacy purposes as well as to save storage.
+
+    </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
 
-    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch` (you can build it for **ARM**, see its [readme](https://github.com/qdm12/caddy-scratch))
+    In example, to access port `8000` of container `xyz`  and `9000` of container `abc` connected to PIA:
+    **With recent changes to the firewall**, you might be able to simply publish ports `8000` and `9000` for the PIA container and access them as you would
+    with any other container. Otherwise...
 
     1. Create the file *Caddyfile*
 
@@ -246,7 +266,8 @@ There are various ways to achieve this, depending on your use case.
     </p></details>
 - <details><summary>Access ports of containers connected to PIA, all in the same docker-compose.yml</summary><p>
 
-    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you could use:
+    In example, to access port `8000` of container `xyz`  and `9000` of container `abc` connected to PIA, publish port `8000` and `9000` for the PIA container.
+    The docker-compose.yml file would look like:
 
     ```yml
     version: '3'
@@ -273,88 +294,6 @@ There are various ways to achieve this, depending on your use case.
         container_name: xyz
         network_mode: "service:pia"
     ```
-
-    </p></details>
-
-- <details><summary>Access ports of containers connected to PIA, all in the same docker-compose.yml, using a reverse proxy</summary><p>
-
-    To access port `8000` of container `xyz` and `9000` of container `abc` connected to PIA, you will need a reverse proxy such as `qmcgaw/caddy-scratch` (you can build it for **ARM**, see its [readme](https://github.com/qdm12/caddy-scratch))
-
-    1. Create the file *Caddyfile*
-
-        ```sh
-        touch Caddyfile
-        chown 1000 Caddyfile
-        # chown 1000 because caddy-scratch runs as user ID 1000 by default
-        chmod 600 Caddyfile
-        ```
-
-        with this content:
-
-        ```ruby
-        :8000 {
-            proxy / xyz:8000
-        }
-        :9000 {
-            proxy / abc:9000
-        }
-        ```
-
-        You can of course make more complicated Caddyfile (such as proxying `/xyz` to xyz:8000 and `/abc` to abc:9000, just ask me!)
-
-    1. Use this example:
-
-        ```yml
-        version: '3'
-        services:
-          pia:
-            image: qmcgaw/private-internet-access
-            container_name: pia
-            cap_add:
-              - NET_ADMIN
-            devices:
-              - /dev/net/tun
-            environment:
-              - USER=js89ds7
-              - PASSWORD=8fd9s239G
-          piaproxy:
-            image: qmcgaw/caddy-scratch
-            container_name: piaproxy
-            ports:
-              - 8000:8000/tcp
-              - 9000:9000/tcp
-            external_links:
-              - pia:xyz
-              - pia:abc
-            volumes:
-              - ./Caddyfile:/Caddyfile:ro
-          abc:
-            image: abc
-            container_name: abc
-            network_mode: "service:pia"
-          xyz:
-            image: xyz
-            container_name: xyz
-            network_mode: "service:pia"
-        ```
-
-    </p></details>
-- <details><summary>Connect to the PIA through an HTTP proxy (i.e. with Chrome, Kodi, etc.)</summary><p>
-
-    **THIS IS NOT CURRENTLY WORKING, INVESTIGATION IS IN PROGRESS...**
-
-    1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
-    1. Make sure the PIA container:
-        - Has port 8888 published `-p 8888:8888/tcp`
-        - **Has your LAN** in `EXTRA_SUBNETS`
-    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You might need to enter your credentials if you set them with the environment variables `PROXY_USER` and `PROXY_PASSWORD`.
-    1. If you set `PROXY_LOG_LEVEL` to `Info`, you can check the log output of tinyproxy with:
-
-        ```sh
-        docker exec -it pia cat /var/log/tinyproxy/tinyproxy.log
-        ```
-
-        `PROXY_LOG_LEVEL` defaults to `Critical` to avoid logging everything, for privacy purposes as well as to save storage.
 
     </p></details>
 
@@ -386,9 +325,9 @@ Note that not all regions support port forwarding.
 
 ## TODOs
 
-- Create TUN device: https://github.com/haugene/docker-transmission-openvpn/blob/master/openvpn/start.sh#L7
 - Mix logs from unbound, tinyproxy and openvpn in Docker logs
-- Maybe use `--inactive 3600 --ping 10 --ping-exit 60`
+- Maybe use `--inactive 3600 --ping 10 --ping-exit 60` as default behavior
+- Try without tun
 
 ## License
 
