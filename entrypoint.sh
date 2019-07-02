@@ -6,7 +6,7 @@ exitOnError(){
   message=$2
   [ "$message" != "" ] || message="Undefined error"
   if [ $status != 0 ]; then
-    printf "[ERROR] $message, with status $status)\n"
+    printf "[ERROR] $message, with status $status\n"
     exit $status
   fi
 }
@@ -184,9 +184,7 @@ if [ "$DOT" == "on" ]; then
   exitOnError $?
   printf "DONE\n"
   printf "[INFO] Changing DNS to localhost..."
-  echo "nameserver 127.0.0.1" > /etc/resolv.conf
-  exitOnError $?
-  echo "options ndots:0" >> /etc/resolv.conf
+  printf "`sed '/^nameserver /d' /etc/resolv.conf`\nnameserver 127.0.0.1\n" > /etc/resolv.conf
   exitOnError $?
   printf "DONE\n"
 fi
