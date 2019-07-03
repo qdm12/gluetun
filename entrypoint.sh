@@ -81,6 +81,19 @@ if [ "$DOT" == "off" ]; then
 fi
 exitIfNotIn PROXY "on,off"
 exitIfNotIn PROXY_LOG_LEVEL "Info,Warning,Error,Critical"
+if [ -z $PROXY_PORT ]; then
+  PROXY_PORT=8888
+fi
+if [ `echo $PROXY_PORT | grep -E "^[0-9]+$"` != $PROXY_PORT ]; then
+  printf "PROXY_PORT is not a valid number\n"
+  exit 1
+elif [ $PROXY_PORT -lt 1024 ]; then
+  printf "PROXY_PORT cannot be a privileged port under port 1024\n"
+  exit 1
+elif [ $PROXY_PORT -gt 65535 ]; then
+  printf "PROXY_PORT cannot be a port higher than the maximum port 65535\n"
+  exit 1
+fi
 if [ ! -z "$PROXY_USER" ] && [ -z "$PROXY_PASSWORD" ]; then
   printf "PROXY_USER is set but PROXY_PASSWORD is unset\n"
   exit 1
@@ -108,6 +121,7 @@ fi
 printf "Local network parameters:\n"
 printf " * Extra subnets: $EXTRA_SUBNETS\n"
 printf " * Web proxy activated: $PROXY\n"
+printf " * Web proxy port: $PROXY_PORT\n"
 proxy_auth=yes
 if [ -z $PROXY_USER ]; then
   proxy_auth=no
@@ -362,6 +376,12 @@ if [ "$PROXY" == "on" ]; then
   sed -i "/LogLevel /c\LogLevel $PROXY_LOG_LEVEL" /etc/tinyproxy/tinyproxy.conf
   exitOnError $?
   printf "DONE\n"
+  if [ ! -z "$PROXY_PORT" ]; then
+    printf "[INFO] Setting TinyProxy port to $PROXY_PORT..."
+    sed -i "/Port /c\Port $PROXY_PORT" /etc/tinyproxy/tinyproxy.conf
+    exitOnError $?
+    printf "DONE\n"
+  fi
   if [ ! -z "$PROXY_USER" ]; then
     printf "[INFO] Setting TinyProxy credentials..."
     echo "BasicAuth $PROXY_USER $PROXY_PASSWORD" >> /etc/tinyproxy/tinyproxy.conf

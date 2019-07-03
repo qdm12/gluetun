@@ -156,6 +156,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `PROXY` | `on` | `on` or `off`, to switch the internal HTTP proxy |
 | `PROXY_LOG_LEVEL` | `Critical` | `Info`, `Warning`, `Error` or `Critical` |
+| `PROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
 | `PROXY_USER` | | Username to use to connect to the HTTP proxy |
 | `PROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
 

@@ -32,6 +32,7 @@ ENV USER= \
     EXTRA_SUBNETS= \
     PROXY=on \
     PROXY_LOG_LEVEL=Critical \
+    PROXY_PORT=8888 \
     PROXY_USER= \
     PROXY_PASSWORD=
 ENTRYPOINT /entrypoint.sh
