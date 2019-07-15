@@ -30,6 +30,7 @@ ENV USER= \
     BLOCK_NSA=off \
     UNBLOCK= \
     EXTRA_SUBNETS= \
+    PORT_FORWARDING=false \
     PROXY=on \
     PROXY_LOG_LEVEL=Critical \
     PROXY_PORT=8888 \
@@ -38,7 +39,7 @@ ENV USER= \
 ENTRYPOINT /entrypoint.sh
 EXPOSE 8888
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
-RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip tinyproxy && \
+RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip tinyproxy jq && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
