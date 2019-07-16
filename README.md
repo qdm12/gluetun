@@ -241,14 +241,6 @@ By setting `PORT_FORWARDING` environment variable to `true`, the forwarded port 
 
 You can mount this file as a volume to read it from other containers.
 
-On a running PIA container, say `pia`, you can also run the script manually:
-
-```sh
-docker exec -it pia /portforward.sh
-```
-
-And it will indicate you the port forwarded for your current public IP address.
-
 Note that not all regions support port forwarding.
 
 ## For the paranoids
