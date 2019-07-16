@@ -24,15 +24,16 @@ port_file="/forwarded_port"
 echo "$port" > $port_file
 printf " * Written forwarded port to $port_file\n"
 ip=`wget -qO- https://diagnostic.opendns.com/myip`
-exitOnError $?
-printf " * Forwarded port is $port on remote IP $ip\n"
+exitOnError $? "Unable to read remote VPN IP"
+printf " * Forwarded port is $port on remote VPN IP $ip\n"
 printf " * Detecting target VPN interface..."
 TARGET_PATH="/openvpn/target"
 vpn_device=$(cat $TARGET_PATH/config.ovpn | grep 'dev ' | cut -d" " -f 2)0
-exitOnError $?
+exitOnError $? "Unable to find VPN interface"
 printf "$vpn_device\n"
 printf " * Accepting input traffic through $vpn_device to port $port..."
 iptables -A INPUT -i $vpn_device -p tcp --dport $port -j ACCEPT
+exitOnError $? "Unable to allow the forwarded port in TCP"
 iptables -A INPUT -i $vpn_device -p udp --dport $port -j ACCEPT
-exitOnError $?
+exitOnError $? "Unable to allow the forwarded port in UDP"
 printf "DONE\n"
