@@ -154,7 +154,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
-| `PORT_FORWARDING` | | Set to `true` to read the forwarded port |
+| `PORT_FORWARDING` | false | Set to `true` to read the forwarded port |
 | `PROXY` | `on` | `on` or `off`, to switch the internal HTTP proxy |
 | `PROXY_LOG_LEVEL` | `Critical` | `Info`, `Warning`, `Error` or `Critical` |
 | `PROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |

@@ -13,12 +13,11 @@ exitOnError(){
 
 printf "[INFO] Reading forwarded port\n"
 client_id=`head -n 100 /dev/urandom | sha256sum | tr -d " -"`
-exitOnError $?
-json=`wget -qO- "http://209.222.18.222:2000/?client_id=$client_id" 2>/dev/null`
-exitOnError $?
+exitOnError $? "Unable to generate Client ID"
+json=`wget -qO- "http://209.222.18.222:2000/?client_id=$client_id"`
 if [ "$json" == "" ]; then
-    printf "Port forwarding is already activated on this connection, has expired, or you are not connected to a PIA region that supports port forwarding\n"
-    exit 1
+  printf " * Port forwarding is already activated on this connection, has expired, or you are not connected to a PIA region that supports port forwarding\n"
+  exit 1
 fi
 port=`echo $json | jq .port`
 port_file="/forwarded_port"
@@ -26,7 +25,7 @@ echo "$port" > $port_file
 printf " * Written forwarded port to $port_file\n"
 ip=`wget -qO- https://diagnostic.opendns.com/myip`
 exitOnError $?
-printf " * Forwarded port for IP $ip is: $port\n"
+printf " * Forwarded port is $port on remote IP $ip\n"
 printf " * Detecting target VPN interface..."
 TARGET_PATH="/openvpn/target"
 vpn_device=$(cat $TARGET_PATH/config.ovpn | grep 'dev ' | cut -d" " -f 2)0
