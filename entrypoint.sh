@@ -266,8 +266,6 @@ fi
 # Note: TUN device re-opening will restart the container due to permissions
 printf "DONE\n"
 
-
-
 ############################################
 # NETWORKING
 ############################################
@@ -393,6 +391,14 @@ if [ "$PROXY" == "on" ]; then
   tinyproxy
   exitOnError $?
   printf "DONE\n"
+fi
+
+############################################
+# READ FORWARDED PORT
+############################################
+
+if [ "$PORT_FORWARDING" == "true" ]; then
+  sleep 10 && /portforward.sh &
 fi
 
 ############################################
