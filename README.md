@@ -154,6 +154,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
+| `PORT_FORWARDING` | false | Set to `true` to read the forwarded port |
 | `PROXY` | `on` | `on` or `off`, to switch the internal HTTP proxy |
 | `PROXY_LOG_LEVEL` | `Critical` | `Info`, `Warning`, `Error` or `Critical` |
 | `PROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
@@ -236,13 +237,9 @@ There are various ways to achieve this, depending on your use case.
 
 ## Port forwarding
 
-On a running PIA container, say `pia`, simply run:
+By setting `PORT_FORWARDING` environment variable to `true`, the forwarded port will be read and written to `/forwarded_port`.
 
-```sh
-docker exec -it pia /portforward.sh
-```
-
-And it will indicate you the port forwarded for your current public IP address.
+You can mount this file as a volume to read it from other containers.
 
 Note that not all regions support port forwarding.
 
