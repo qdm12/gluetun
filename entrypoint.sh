@@ -263,6 +263,8 @@ if [ "$NONROOT" = "yes" ]; then
   echo "user nonrootuser" >> "$TARGET_PATH/config.ovpn"
   exitOnError $? "Cannot add 'user nonrootuser' to $TARGET_PATH/config.ovpn"
 fi
+echo "mssfix 1300" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'mssfix 1300' to $TARGET_PATH/config.ovpn"
 # Note: TUN device re-opening will restart the container due to permissions
 printf "DONE\n"
 
