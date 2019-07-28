@@ -73,6 +73,8 @@
         - For TCP strong encryption, allow outbound TCP 501
         - For TCP normal encryption, allow outbound TCP 502
         - For the built-in web HTTP proxy, allow inbound TCP 8888
+    - Docker API 1.25 to support `init`
+    - If you use Docker Compose, docker-compose >= 1.22.0, to support `init: true`
 
     </p></details>
 
@@ -208,11 +210,12 @@ There are various ways to achieve this, depending on your use case.
     The docker-compose.yml file would look like:
 
     ```yml
-    version: '3'
+    version: '3.7'
     services:
       pia:
         image: qmcgaw/private-internet-access
         container_name: pia
+        init: true
         cap_add:
           - NET_ADMIN
         devices:

@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   pia:
     build: https://github.com/qdm12/private-internet-access-docker.git
@@ -12,7 +12,7 @@ services:
     init: true
     ports:
       - 8888:8888/tcp
-    command: 
+    # command: 
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G
