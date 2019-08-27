@@ -5,28 +5,32 @@ ENV USER= \
     PASSWORD= \
     ENCRYPTION=strong \
     PROTOCOL=udp \
-    REGION="UK London" \
-    NONROOT=no \
-    EXTRA_SUBNETS= \
-    PORT_FORWARDING=false \
-    PROXY=on \
-    PROXY_LOG_LEVEL=Critical \
-    PROXY_PORT=8888 \
-    PROXY_USER= \
-    PROXY_PASSWORD=
+    REGION="Netherlands" \
+    WEBUI_PORT=8888 \
+	DNS_SERVERS=209.222.18.222,209.222.18.218
+
 
 # Start point for docker
 ENTRYPOINT /entrypoint.sh
 
+# Download Folder
+VOLUME /downloads
+# qBittorrent Config Folder
+VOLUME /config
+
 # Port for qBittorrent
 EXPOSE 8888
+
+ENV DEBIAN_FRONTEND noninteractive
 
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
 
 # Ok lets install everything
-RUN apt-get update \
-    && set -x \
-    && apt-get install -qq --no-install-recommends -y qbittorrent openvpn wget ca-certificates iptables unzip \
+RUN apt-get update && \
+	apt-get install --no-install-recommends -y apt-utils software-properties-common && \
+	add-apt-repository ppa:qbittorrent-team/qbittorrent-stable -y && \
+	set -x &&\
+    apt-get install --no-install-recommends -y qbittorrent-nox openvpn openvpn-systemd-resolved wget ca-certificates iptables unzip dnsutils iputils-ping net-tools && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
@@ -36,13 +40,12 @@ RUN apt-get update \
     unzip -q openvpn-strong.zip -d /openvpn/udp-strong && \
     unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
     unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
-    && apt-get purge -y -qq unzip \
-    && apt-get clean -qq
-    rm -rf /*.zip /etc/tinyproxy/tinyproxy.conf && \
+    apt-get purge -y -qq unzip software-properties-common wget apt-utils && \
+    apt-get clean -qq && \
+    apt-get autoclean -qq && \
+    rm -rf /*.zip /tmp/* /var/tmp/*
 
-COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
-COPY entrypoint.sh healthcheck.sh portforward.sh /
-RUN chown nonrootuser -R /etc/tinyproxy && \
-    chmod 700 /etc/tinyproxy && \
-    chmod 600 /etc/tinyproxy/tinyproxy.conf && \
-    chmod 500 /entrypoint.sh /healthcheck.sh /portforward.sh
+
+COPY entrypoint.sh healthcheck.sh qBittorrent.conf /
+
+RUN chmod 500 /entrypoint.sh /healthcheck.sh
