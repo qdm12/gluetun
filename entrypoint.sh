@@ -24,14 +24,14 @@ exitIfNotIn(){
   # $1 is the name of the variable to check - not the variable itself
   # $2 is a string of comma separated possible values
   var="$(eval echo "\$$1")"
-  for value in ${2//,/ }
+  for value in $(echo $2 | sed "s/,/ /g")
   do
     if [ "$var" = "$value" ]; then
       return 0
     fi
   done
   printf "[ERROR] Environment variable $1 cannot be '$var' and must be one of the following: "
-  for value in ${2//,/ }
+  for value in $(echo $2 | sed "s/,/ /g")
   do
     printf "$value "
   done
@@ -40,15 +40,13 @@ exitIfNotIn(){
 }
 
 printf " =========================================\n"
-printf " =========================================\n"
+printf " ============== qBittorrent ==============\n"
+printf " =================== + ===================\n"
 printf " ============= PIA CONTAINER =============\n"
 printf " =========================================\n"
-printf " =========================================\n"
-printf " == by github.com/qdm12 - Quentin McGaw ==\n\n"
 
 printf "OpenVPN version: $(openvpn --version | head -n 1 | grep -oE "OpenVPN [0-9\.]* " | cut -d" " -f2)\n"
 printf "Iptables version: $(iptables --version | cut -d" " -f2)\n"
-printf "TinyProxy version: $(tinyproxy -v | cut -d" " -f2)\n"
 
 ############################################
 # CHECK PARAMETERS
@@ -57,35 +55,25 @@ exitIfUnset USER
 exitIfUnset PASSWORD
 exitIfNotIn ENCRYPTION "normal,strong"
 exitIfNotIn PROTOCOL "tcp,udp"
-exitIfNotIn NONROOT "yes,no"
 cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
-for EXTRA_SUBNET in ${EXTRA_SUBNETS//,/ }; do
+for EXTRA_SUBNET in $(echo $EXTRA_SUBNETS | sed "s/,/ /g"); do
   if [ $(echo "$EXTRA_SUBNET" | grep -Eo '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(/([0-2]?[0-9])|([3]?[0-1]))?$') = "" ]; then
     printf "Extra subnet $EXTRA_SUBNET is not a valid IPv4 subnet of the form 255.255.255.255/31 or 255.255.255.255\n"
     exit 1
   fi
 done
-exitIfNotIn PROXY "on,off"
-exitIfNotIn PROXY_LOG_LEVEL "Info,Warning,Error,Critical"
-if [ -z $PROXY_PORT ]; then
-  PROXY_PORT=8888
+if [ -z $WEBUI_PORT ]; then
+  WEBUI_PORT=8888
 fi
-if [ `echo $PROXY_PORT | grep -E "^[0-9]+$"` != $PROXY_PORT ]; then
-  printf "PROXY_PORT is not a valid number\n"
+if [ `echo $WEBUI_PORT | grep -E "^[0-9]+$"` != $WEBUI_PORT ]; then
+  printf "WEBUI_PORT is not a valid number\n"
   exit 1
-elif [ $PROXY_PORT -lt 1024 ]; then
+elif [ $WEBUI_PORT -lt 1024 ]; then
   printf "PROXY_PORT cannot be a privileged port under port 1024\n"
   exit 1
-elif [ $PROXY_PORT -gt 65535 ]; then
+elif [ $WEBUI_PORT -gt 65535 ]; then
   printf "PROXY_PORT cannot be a port higher than the maximum port 65535\n"
-  exit 1
-fi
-if [ ! -z "$PROXY_USER" ] && [ -z "$PROXY_PASSWORD" ]; then
-  printf "PROXY_USER is set but PROXY_PASSWORD is unset\n"
-  exit 1
-elif [ -z "$PROXY_USER" ] && [ ! -z "$PROXY_PASSWORD" ]; then
-  printf "PROXY_USER is unset but PROXY_PASSWORD is set\n"
   exit 1
 fi
 
@@ -97,18 +85,9 @@ printf "OpenVPN parameters:\n"
 printf " * Region: $REGION\n"
 printf " * Encryption: $ENCRYPTION\n"
 printf " * Protocol: $PROTOCOL\n"
-printf " * Running without root: $NONROOT\n"
 printf "Local network parameters:\n"
-printf " * Extra subnets: $EXTRA_SUBNETS\n"
-printf " * Web proxy activated: $PROXY\n"
-printf " * Web proxy port: $PROXY_PORT\n"
-proxy_auth=yes
-if [ -z $PROXY_USER ]; then
-  proxy_auth=no
-fi
-printf " * Web proxy has authentication: $proxy_auth\n"
-unset -v proxy_auth
-printf "\n"
+printf " * Web UI port: $WEBUI_PORT\n"
+
 
 #####################################################
 # Writes to protected file and remove USER, PASSWORD
@@ -120,8 +99,6 @@ else
   echo "$USER" > /auth.conf
   exitOnError $?
   echo "$PASSWORD" >> /auth.conf
-  exitOnError $?
-  chown nonrootuser /auth.conf
   exitOnError $?
   chmod 400 /auth.conf
   exitOnError $?
@@ -148,6 +125,8 @@ fi
 ############################################
 # Reading chosen OpenVPN configuration
 ############################################
+IP=$(ifconfig)
+printf "$ip"
 printf "[INFO] Reading OpenVPN configuration...\n"
 CONNECTIONSTRING=$(grep -i "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" -e 'privateinternetaccess.com')
 exitOnError $?
@@ -164,7 +143,7 @@ fi
 printf " * Port: $PORT\n"
 printf " * Domain: $PIADOMAIN\n"
 printf "[INFO] Detecting IP addresses corresponding to $PIADOMAIN...\n"
-VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +3 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
+VPNIPS=$(nslookup $PIADOMAIN | tail -n +3 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 exitOnError $?
 for ip in $VPNIPS; do
   printf "   $ip\n";
@@ -200,13 +179,14 @@ exitOnError $? "Cannot add 'auth-retry nointeract' to $TARGET_PATH/config.ovpn"
 # Prevents auth_failed infinite loops - make it interact? Remove persist-tun? nobind?
 echo "pull-filter ignore \"auth-token\"" >> "$TARGET_PATH/config.ovpn"
 exitOnError $? "Cannot add 'pull-filter ignore \"auth-token\"' to $TARGET_PATH/config.ovpn"
-# Runs openvpn without root, as nonrootuser if specified
-if [ "$NONROOT" = "yes" ]; then
-  echo "user nonrootuser" >> "$TARGET_PATH/config.ovpn"
-  exitOnError $? "Cannot add 'user nonrootuser' to $TARGET_PATH/config.ovpn"
-fi
 echo "mssfix 1300" >> "$TARGET_PATH/config.ovpn"
 exitOnError $? "Cannot add 'mssfix 1300' to $TARGET_PATH/config.ovpn"
+echo "script-security 2" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'script-security 2' to $TARGET_PATH/config.ovpn"
+echo "up /etc/openvpn/update-resolv-conf" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'up /etc/openvpn/update-resolv-conf' to $TARGET_PATH/config.ovpn"
+echo "down /etc/openvpn/update-resolv-conf" >> "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot add 'down /etc/openvpn/update-resolv-conf' to $TARGET_PATH/config.ovpn"
 # Note: TUN device re-opening will restart the container due to permissions
 printf "DONE\n"
 
@@ -226,7 +206,7 @@ printf " * Detecting local subnet..."
 SUBNET=$(ip r | grep -v 'default via' | grep $INTERFACE | tail -n 1 | cut -d" " -f 1)
 exitOnError $?
 printf "$SUBNET\n"
-for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
+for EXTRASUBNET in $(echo $EXTRA_SUBNETS | sed "s/,/ /g")
 do
   printf " * Adding $EXTRASUBNET as route via $INTERFACE..."
   ip route add $EXTRASUBNET via $DEFAULT_GATEWAY dev $INTERFACE
@@ -237,6 +217,14 @@ printf " * Detecting target VPN interface..."
 VPN_DEVICE=$(cat $TARGET_PATH/config.ovpn | grep 'dev ' | cut -d" " -f 2)0
 exitOnError $?
 printf "$VPN_DEVICE\n"
+printf " * Addning PIA DNS Servers\n"
+cat /dev/null > /etc/resolv.conf
+for name_server in $(echo $DNS_SERVERS | sed "s/,/ /g")
+do
+	echo " * * Adding $name_server to resolv.conf"
+	echo "nameserver $name_server" >> /etc/resolv.conf
+done
+printf "DONE\n"
 
 
 ############################################
@@ -283,6 +271,16 @@ iptables -A INPUT -i lo -j ACCEPT
 exitOnError $?
 printf "DONE\n"
 
+	iptables -A OUTPUT -o eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
+	iptables -A OUTPUT -o eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
+	iptables -A INPUT -i eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
+	iptables -A INPUT -i eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
+ip rule add from $(ip route get 1 | grep -Po '(?<=src )(\S+)') table 128
+ip route add table 128 to $(ip route get 1 | grep -Po '(?<=src )(\S+)')/32 dev $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
+ip route add table 128 default via $(ip -4 route ls | grep default | grep -Po '(?<=via )(\S+)')
+
+
+
 printf " * Creating VPN rules\n"
 for ip in $VPNIPS; do
   printf "   * Accept output traffic to VPN server $ip through $INTERFACE, port $PROTOCOL $PORT..."
@@ -300,7 +298,7 @@ printf "   * Accept input and output traffic to and from $SUBNET..."
 iptables -A INPUT -s $SUBNET -d $SUBNET -j ACCEPT
 iptables -A OUTPUT -s $SUBNET -d $SUBNET -j ACCEPT
 printf "DONE\n"
-for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
+for EXTRASUBNET in $(echo $EXTRA_SUBNETS | sed "s/,/ /g")
 do
   printf "   * Accept input traffic through $INTERFACE from $EXTRASUBNET to $SUBNET..."
   iptables -A INPUT -i $INTERFACE -s $EXTRASUBNET -d $SUBNET -j ACCEPT
@@ -311,47 +309,38 @@ do
 done
 
 ############################################
-# TINYPROXY LAUNCH
-############################################
-if [ "$PROXY" == "on" ]; then
-  printf "[INFO] Setting TinyProxy log level to $PROXY_LOG_LEVEL..."
-  sed -i "/LogLevel /c\LogLevel $PROXY_LOG_LEVEL" /etc/tinyproxy/tinyproxy.conf
-  exitOnError $?
-  printf "DONE\n"
-  if [ ! -z "$PROXY_PORT" ]; then
-    printf "[INFO] Setting TinyProxy port to $PROXY_PORT..."
-    sed -i "/Port /c\Port $PROXY_PORT" /etc/tinyproxy/tinyproxy.conf
-    exitOnError $?
-    printf "DONE\n"
-  fi
-  if [ ! -z "$PROXY_USER" ]; then
-    printf "[INFO] Setting TinyProxy credentials..."
-    echo "BasicAuth $PROXY_USER $PROXY_PASSWORD" >> /etc/tinyproxy/tinyproxy.conf
-    unset -v PROXY_USER
-    unset -v PROXY_PASSWORD
-    printf "DONE\n"
-  fi
-  printf "[INFO] Launching HTTP proxy TinyProxy..."
-  tinyproxy
-  exitOnError $?
-  printf "DONE\n"
-fi
-
-############################################
-# READ FORWARDED PORT
-############################################
-
-if [ "$PORT_FORWARDING" == "true" ]; then
-  sleep 10 && /portforward.sh &
-fi
-
-############################################
 # OPENVPN LAUNCH
 ############################################
 printf "[INFO] Launching OpenVPN\n"
 cd "$TARGET_PATH"
-openvpn --config config.ovpn "$@"
+openvpn --config config.ovpn --daemon
+
+############################################
+# Start qBittorrent
+############################################
+printf "[INFO] Checking qBittorrent config\n"
+if [ ! -e /config/qBittorrent/config/qBittorrent.conf ]; then
+	mkdir -p /config/qBittorrent/config && cp /qBittorrent.conf /config/qBittorrent/config/qBittorrent.conf
+	chmod 755 /config/qBittorrent/config/qBittorrent.conf
+	printf " * copying default qBittorrent config\n"
+fi
+
+# Wait until vpn is up
+while : ; do
+	tunnelstat=$(netstat -ie | grep -E "tun|tap")
+	if [ ! -z "${tunnelstat}" ]; then
+		break
+	else
+		sleep 1
+	fi
+done
+
+printf "[INFO] Launching qBittorrent\n"
+qbittorrent-nox --webui-port=$WEBUI_PORT -d --profile=/config
 status=$?
 printf "\n =========================================\n"
-printf " OpenVPN exit with status $status\n"
-printf " =========================================\n\n"
+
+while : ; do
+	ifconfig $VPN_DEVICE
+	sleep 60s
+done
