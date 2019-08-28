@@ -57,12 +57,6 @@ exitIfNotIn ENCRYPTION "normal,strong"
 exitIfNotIn PROTOCOL "tcp,udp"
 cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
-for EXTRA_SUBNET in $(echo $EXTRA_SUBNETS | sed "s/,/ /g"); do
-  if [ $(echo "$EXTRA_SUBNET" | grep -Eo '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(/([0-2]?[0-9])|([3]?[0-1]))?$') = "" ]; then
-    printf "Extra subnet $EXTRA_SUBNET is not a valid IPv4 subnet of the form 255.255.255.255/31 or 255.255.255.255\n"
-    exit 1
-  fi
-done
 if [ -z $WEBUI_PORT ]; then
   WEBUI_PORT=8888
 fi
@@ -87,6 +81,14 @@ printf " * Encryption: $ENCRYPTION\n"
 printf " * Protocol: $PROTOCOL\n"
 printf "Local network parameters:\n"
 printf " * Web UI port: $WEBUI_PORT\n"
+printf " * Addning PIA DNS Servers\n"
+cat /dev/null > /etc/resolv.conf
+for name_server in $(echo $DNS_SERVERS | sed "s/,/ /g")
+do
+	echo " * * Adding $name_server to resolv.conf"
+	echo "nameserver $name_server" >> /etc/resolv.conf
+done
+printf "DONE\n"
 
 
 #####################################################
@@ -217,14 +219,6 @@ printf " * Detecting target VPN interface..."
 VPN_DEVICE=$(cat $TARGET_PATH/config.ovpn | grep 'dev ' | cut -d" " -f 2)0
 exitOnError $?
 printf "$VPN_DEVICE\n"
-printf " * Addning PIA DNS Servers\n"
-cat /dev/null > /etc/resolv.conf
-for name_server in $(echo $DNS_SERVERS | sed "s/,/ /g")
-do
-	echo " * * Adding $name_server to resolv.conf"
-	echo "nameserver $name_server" >> /etc/resolv.conf
-done
-printf "DONE\n"
 
 
 ############################################
@@ -271,15 +265,15 @@ iptables -A INPUT -i lo -j ACCEPT
 exitOnError $?
 printf "DONE\n"
 
-	iptables -A OUTPUT -o eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
-	iptables -A OUTPUT -o eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
-	iptables -A INPUT -i eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
-	iptables -A INPUT -i eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
+printf "   * Accept traffic to webui-port:$WEBUI_PORT..."
+iptables -A OUTPUT -o eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
+iptables -A OUTPUT -o eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
+iptables -A INPUT -i eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
+iptables -A INPUT -i eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
 ip rule add from $(ip route get 1 | grep -Po '(?<=src )(\S+)') table 128
 ip route add table 128 to $(ip route get 1 | grep -Po '(?<=src )(\S+)')/32 dev $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
 ip route add table 128 default via $(ip -4 route ls | grep default | grep -Po '(?<=via )(\S+)')
-
-
+printf "DONE\n"
 
 printf " * Creating VPN rules\n"
 for ip in $VPNIPS; do
@@ -313,7 +307,7 @@ done
 ############################################
 printf "[INFO] Launching OpenVPN\n"
 cd "$TARGET_PATH"
-openvpn --config config.ovpn --daemon
+openvpn --config config.ovpn --daemon "$@"
 
 ############################################
 # Start qBittorrent
