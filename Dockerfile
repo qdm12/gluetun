@@ -7,7 +7,7 @@ ENV USER= \
     PROTOCOL=udp \
     REGION="Netherlands" \
     WEBUI_PORT=8888 \
-	DNS_SERVERS=209.222.18.222,209.222.18.218
+    DNS_SERVERS=209.222.18.222,209.222.18.218
 
 
 # Start point for docker
@@ -27,9 +27,9 @@ HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healt
 
 # Ok lets install everything
 RUN apt-get update && \
-	apt-get install --no-install-recommends -y apt-utils software-properties-common && \
-	add-apt-repository ppa:qbittorrent-team/qbittorrent-stable -y && \
-	set -x &&\
+    apt-get install --no-install-recommends -y apt-utils software-properties-common && \
+    add-apt-repository ppa:qbittorrent-team/qbittorrent-stable -y && \
+    set -x &&\
     apt-get install --no-install-recommends -y qbittorrent-nox openvpn openvpn-systemd-resolved wget ca-certificates iptables unzip dnsutils iputils-ping net-tools && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
@@ -43,7 +43,7 @@ RUN apt-get update && \
     apt-get purge -y -qq unzip software-properties-common wget apt-utils && \
     apt-get clean -qq && \
     apt-get autoclean -qq && \
-    rm -rf /*.zip /tmp/* /var/tmp/*
+    rm -rf /*.zip /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
 
 COPY entrypoint.sh healthcheck.sh qBittorrent.conf /
