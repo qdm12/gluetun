@@ -121,13 +121,15 @@ fi
 printf "Local network parameters:\n"
 printf " * Extra subnets: $EXTRA_SUBNETS\n"
 printf " * Web proxy activated: $PROXY\n"
-printf " * Web proxy port: $PROXY_PORT\n"
-proxy_auth=yes
-if [ -z $PROXY_USER ]; then
-  proxy_auth=no
+if [ "$PROXY" = "on" ]; then
+  printf " * Web proxy port: $PROXY_PORT\n"
+  proxy_auth=yes
+  if [ -z $PROXY_USER ]; then
+    proxy_auth=no
+  fi
+  printf " * Web proxy has authentication: $proxy_auth\n"
+  unset -v proxy_auth
 fi
-printf " * Web proxy has authentication: $proxy_auth\n"
-unset -v proxy_auth
 printf "\n"
 
 #####################################################
@@ -161,7 +163,7 @@ if [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor i
   mknod /dev/net/tun c 10 200
   exitOnError $?
   chmod 0666 /dev/net/tun
-  printf "DONE\n"  
+  printf "DONE\n"
 fi
 
 ############################################
