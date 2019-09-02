@@ -157,6 +157,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `PORT_FORWARDING` | false | Set to `true` to read the forwarded port |
+| `PORT_FORWARDING_STATUS_FILE` | /forwarded_port | Set to the file where you want to write the forwarded port |
 | `PROXY` | `on` | `on` or `off`, to switch the internal HTTP proxy |
 | `PROXY_LOG_LEVEL` | `Critical` | `Info`, `Warning`, `Error` or `Critical` |
 | `PROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
@@ -240,7 +241,7 @@ There are various ways to achieve this, depending on your use case.
 
 ## Port forwarding
 
-By setting `PORT_FORWARDING` environment variable to `true`, the forwarded port will be read and written to `/forwarded_port`.
+By setting `PORT_FORWARDING` environment variable to `true`, the forwarded port will be read and written to the file specified in `PORT_FORWARDING_STATUS_FILE` (by default, this is set to `/forwarded_port`). If the location for this file does not exist, it will be created automatically.
 
 You can mount this file as a volume to read it from other containers.
 
