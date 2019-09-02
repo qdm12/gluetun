@@ -26,7 +26,7 @@ if [ ! -d "${port_status_folder}" ];
 fi
 echo "$port" > "${PORT_FORWARDING_STATUS_FILE}"
 printf " * Written forwarded port to ${PORT_FORWARDING_STATUS_FILE}\n"
-ip=`wget -qO- https://diagnostic.opendns.com/myip`
+ip=`wget -qO- https://duckduckgo.com/?q=ip | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b"`
 exitOnError $? "Unable to read remote VPN IP"
 printf " * Forwarded port is $port on remote VPN IP $ip\n"
 printf " * Detecting target VPN interface..."
