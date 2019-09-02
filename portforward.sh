@@ -20,9 +20,12 @@ if [ "$json" == "" ]; then
   exit 1
 fi
 port=`echo $json | jq .port`
-port_file="/forwarded_port"
-echo "$port" > $port_file
-printf " * Written forwarded port to $port_file\n"
+port_status_folder=`dirname "${PORT_FORWARDING_STATUS_FILE}"`
+if [ ! -d "${port_status_folder}" ];
+  mkdir -p "${port_status_folder}"
+fi
+echo "$port" > "${PORT_FORWARDING_STATUS_FILE}"
+printf " * Written forwarded port to ${PORT_FORWARDING_STATUS_FILE}\n"
 ip=`wget -qO- https://diagnostic.opendns.com/myip`
 exitOnError $? "Unable to read remote VPN IP"
 printf " * Forwarded port is $port on remote VPN IP $ip\n"
