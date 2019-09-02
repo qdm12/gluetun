@@ -261,6 +261,13 @@ Note that not all regions support port forwarding.
 - Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
 - DNS Leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: DNS server is a local caching intermediary)
 
+## Troubleshooting
+
+- Password problems `AUTH: Received control message: AUTH_FAILED`
+    - Your password may contain a special character such as `$`.
+     You need to escape it with `\` in your run command or docker-compose.yml.
+     For example you would set `-e PASSWORD=mypa\$\$word`.
+
 ## TODOs
 
 - Mix logs from unbound, tinyproxy and openvpn in Docker logs
