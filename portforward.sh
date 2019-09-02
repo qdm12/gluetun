@@ -21,7 +21,7 @@ if [ "$json" == "" ]; then
 fi
 port=`echo $json | jq .port`
 port_status_folder=`dirname "${PORT_FORWARDING_STATUS_FILE}"`
-if [ ! -d "${port_status_folder}" ];
+if [ ! -d "${port_status_folder}" ]; then
   mkdir -p "${port_status_folder}"
 fi
 echo "$port" > "${PORT_FORWARDING_STATUS_FILE}"
