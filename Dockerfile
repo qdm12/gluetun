@@ -14,8 +14,7 @@ LABEL \
     org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.title="PIA client" \
     org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux" \
-    image-size="21.1MB" \
-    image-size="19.9MB" \
+    image-size="23.3MB" \
     ram-usage="13MB to 80MB" \
     cpu-usage="Low to Medium"
 ENV USER= \

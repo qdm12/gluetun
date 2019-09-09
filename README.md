@@ -22,7 +22,7 @@
 
 | Image size | RAM usage | CPU usage |
 | --- | --- | --- |
-| 19.9MB | 14MB to 80MB | Low to Medium |
+| 23.3MB | 14MB to 80MB | Low to Medium |
 
 <details><summary>Click to show base components</summary><p>
 
@@ -59,7 +59,6 @@
 - Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
 - Unbound DNS runs *without root*
 - OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
-
 
 ## Setup
 

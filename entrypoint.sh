@@ -147,7 +147,7 @@ fi
 printf "Local network parameters:\n"
 printf " * Extra subnets: $EXTRA_SUBNETS\n"
 printf " * Tinyproxy HTTP proxy: $TINYPROXY\n"
-if [ "$TINYPROXY" = "on" ]; then
+if [ "$TINYPROXY" == "on" ]; then
   printf " * Tinyproxy port: $TINYPROXY_PORT\n"
   tinyproxy_auth=yes
   if [ -z $TINYPROXY_USER ]; then
@@ -407,12 +407,10 @@ if [ "$TINYPROXY" == "on" ]; then
   sed -i "/LogLevel /c\LogLevel $TINYPROXY_LOG" /etc/tinyproxy/tinyproxy.conf
   exitOnError $?
   printf "DONE\n"
-  if [ ! -z "$TINYPROXY_PORT" ]; then
-    printf "[INFO] Setting TinyProxy port to $TINYPROXY_PORT..."
-    sed -i "/Port /c\Port $TINYPROXY_PORT" /etc/tinyproxy/tinyproxy.conf
-    exitOnError $?
-    printf "DONE\n"
-  fi
+  printf "[INFO] Setting TinyProxy port to $TINYPROXY_PORT..."
+  sed -i "/Port /c\Port $TINYPROXY_PORT" /etc/tinyproxy/tinyproxy.conf
+  exitOnError $?
+  printf "DONE\n"
   if [ ! -z "$TINYPROXY_USER" ]; then
     printf "[INFO] Setting TinyProxy credentials..."
     echo "BasicAuth $TINYPROXY_USER $TINYPROXY_PASSWORD" >> /etc/tinyproxy/tinyproxy.conf
