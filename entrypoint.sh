@@ -52,6 +52,12 @@ printf "Iptables version: $(iptables --version | cut -d" " -f2)\n"
 printf "TinyProxy version: $(tinyproxy -v | cut -d" " -f2)\n"
 
 ############################################
+# BACKWARD COMPATIBILITY PARAMETERS
+############################################
+[ "$PORT_FORWARDING" == "false" ] && PORT_FORWARDING=on
+[ "$PORT_FORWARDING" == "true" ] && PORT_FORWARDING=off
+
+############################################
 # CHECK PARAMETERS
 ############################################
 exitIfUnset USER
@@ -78,6 +84,11 @@ if [ "$DOT" == "off" ]; then
     printf "DOT is off so BLOCK_NSA cannot be on\n"
     exit 1
   fi
+fi
+exitIfNotIn PORT_FORWARDING "on,off"
+if [ "$PORT_FORWARDING" == "on" && -z "$PORT_FORWARDING_STATUS_FILE" ]; then
+  printf "PORT_FORWARDING is on but PORT_FORWARDING_STATUS_FILE is not set\n"
+  exit 1
 fi
 exitIfNotIn PROXY "on,off"
 exitIfNotIn PROXY_LOG_LEVEL "Info,Warning,Error,Critical"
@@ -130,6 +141,9 @@ if [ "$PROXY" = "on" ]; then
   printf " * Web proxy has authentication: $proxy_auth\n"
   unset -v proxy_auth
 fi
+printf "PIA parameters:\n"
+printf " * Remote port forwarding: $PORT_FORWARDING\n"
+[ "$PORT_FORWARDING" == "on" ] && printf " * Remote port forwarding status file: $PORT_FORWARDING_STATUS_FILE\n"
 printf "\n"
 
 #####################################################
