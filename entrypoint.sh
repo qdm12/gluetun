@@ -56,6 +56,21 @@ printf "TinyProxy version: $(tinyproxy -v | cut -d" " -f2)\n"
 ############################################
 [ "$PORT_FORWARDING" == "false" ] && PORT_FORWARDING=on
 [ "$PORT_FORWARDING" == "true" ] && PORT_FORWARDING=off
+if [ -z $TINYPROXY && ! -z $PROXY ]; then
+  TINYPROXY=$PROXY
+fi
+if [ -z $TINYPROXY_LOG && ! -z $PROXY_LOG_LEVEL ]; then
+  TINYPROXY_LOG=$PROXY_LOG_LEVEL
+fi
+if [ -z $TINYPROXY_PORT && ! -z $PROXY_PORT ]; then
+  TINYPROXY_PORT=$PROXY_PORT
+fi
+if [ -z $TINYPROXY_USER && ! -z $PROXY_USER ]; then
+  TINYPROXY_USER=$PROXY_USER
+fi
+if [ -z $TINYPROXY_PASSWORD && ! -z $PROXY_PASSWORD ]; then
+  TINYPROXY_PASSWORD=$PROXY_PASSWORD
+fi
 
 ############################################
 # CHECK PARAMETERS
@@ -90,26 +105,26 @@ if [ "$PORT_FORWARDING" == "on" && -z "$PORT_FORWARDING_STATUS_FILE" ]; then
   printf "PORT_FORWARDING is on but PORT_FORWARDING_STATUS_FILE is not set\n"
   exit 1
 fi
-exitIfNotIn PROXY "on,off"
-exitIfNotIn PROXY_LOG_LEVEL "Info,Warning,Error,Critical"
-if [ -z $PROXY_PORT ]; then
-  PROXY_PORT=8888
+exitIfNotIn TINYPROXY "on,off"
+exitIfNotIn TINYPROXY_LOG "Info,Warning,Error,Critical"
+if [ -z $TINYPROXY_PORT ]; then
+  TINYPROXY_PORT=8888
 fi
-if [ `echo $PROXY_PORT | grep -E "^[0-9]+$"` != $PROXY_PORT ]; then
-  printf "PROXY_PORT is not a valid number\n"
+if [ `echo $TINYPROXY_PORT | grep -E "^[0-9]+$"` != $TINYPROXY_PORT ]; then
+  printf "TINYPROXY_PORT is not a valid number\n"
   exit 1
-elif [ $PROXY_PORT -lt 1024 ]; then
-  printf "PROXY_PORT cannot be a privileged port under port 1024\n"
+elif [ $TINYPROXY_PORT -lt 1024 ]; then
+  printf "TINYPROXY_PORT cannot be a privileged port under port 1024\n"
   exit 1
-elif [ $PROXY_PORT -gt 65535 ]; then
-  printf "PROXY_PORT cannot be a port higher than the maximum port 65535\n"
+elif [ $TINYPROXY_PORT -gt 65535 ]; then
+  printf "TINYPROXY_PORT cannot be a port higher than the maximum port 65535\n"
   exit 1
 fi
-if [ ! -z "$PROXY_USER" ] && [ -z "$PROXY_PASSWORD" ]; then
-  printf "PROXY_USER is set but PROXY_PASSWORD is unset\n"
+if [ ! -z "$TINYPROXY_USER" ] && [ -z "$TINYPROXY_PASSWORD" ]; then
+  printf "TINYPROXY_USER is set but TINYPROXY_PASSWORD is not set\n"
   exit 1
-elif [ -z "$PROXY_USER" ] && [ ! -z "$PROXY_PASSWORD" ]; then
-  printf "PROXY_USER is unset but PROXY_PASSWORD is set\n"
+elif [ -z "$TINYPROXY_USER" ] && [ ! -z "$TINYPROXY_PASSWORD" ]; then
+  printf "TINYPROXY_USER is not set but TINYPROXY_PASSWORD is set\n"
   exit 1
 fi
 
@@ -131,15 +146,15 @@ if [ "$DOT" = "on" ]; then
 fi
 printf "Local network parameters:\n"
 printf " * Extra subnets: $EXTRA_SUBNETS\n"
-printf " * Web proxy activated: $PROXY\n"
-if [ "$PROXY" = "on" ]; then
-  printf " * Web proxy port: $PROXY_PORT\n"
-  proxy_auth=yes
-  if [ -z $PROXY_USER ]; then
-    proxy_auth=no
+printf " * Tinyproxy HTTP proxy: $TINYPROXY\n"
+if [ "$TINYPROXY" = "on" ]; then
+  printf " * Tinyproxy port: $TINYPROXY_PORT\n"
+  tinyproxy_auth=yes
+  if [ -z $TINYPROXY_USER ]; then
+    tinyproxy_auth=no
   fi
-  printf " * Web proxy has authentication: $proxy_auth\n"
-  unset -v proxy_auth
+  printf " * Tinyproxy has authentication: $tinyproxy_auth\n"
+  unset -v tinyproxy_auth
 fi
 printf "PIA parameters:\n"
 printf " * Remote port forwarding: $PORT_FORWARDING\n"
@@ -387,22 +402,22 @@ done
 ############################################
 # TINYPROXY LAUNCH
 ############################################
-if [ "$PROXY" == "on" ]; then
-  printf "[INFO] Setting TinyProxy log level to $PROXY_LOG_LEVEL..."
-  sed -i "/LogLevel /c\LogLevel $PROXY_LOG_LEVEL" /etc/tinyproxy/tinyproxy.conf
+if [ "$TINYPROXY" == "on" ]; then
+  printf "[INFO] Setting TinyProxy log level to $TINYPROXY_LOG..."
+  sed -i "/LogLevel /c\LogLevel $TINYPROXY_LOG" /etc/tinyproxy/tinyproxy.conf
   exitOnError $?
   printf "DONE\n"
-  if [ ! -z "$PROXY_PORT" ]; then
-    printf "[INFO] Setting TinyProxy port to $PROXY_PORT..."
-    sed -i "/Port /c\Port $PROXY_PORT" /etc/tinyproxy/tinyproxy.conf
+  if [ ! -z "$TINYPROXY_PORT" ]; then
+    printf "[INFO] Setting TinyProxy port to $TINYPROXY_PORT..."
+    sed -i "/Port /c\Port $TINYPROXY_PORT" /etc/tinyproxy/tinyproxy.conf
     exitOnError $?
     printf "DONE\n"
   fi
-  if [ ! -z "$PROXY_USER" ]; then
+  if [ ! -z "$TINYPROXY_USER" ]; then
     printf "[INFO] Setting TinyProxy credentials..."
-    echo "BasicAuth $PROXY_USER $PROXY_PASSWORD" >> /etc/tinyproxy/tinyproxy.conf
-    unset -v PROXY_USER
-    unset -v PROXY_PASSWORD
+    echo "BasicAuth $TINYPROXY_USER $TINYPROXY_PASSWORD" >> /etc/tinyproxy/tinyproxy.conf
+    unset -v TINYPROXY_USER
+    unset -v TINYPROXY_PASSWORD
     printf "DONE\n"
   fi
   tinyproxy -d &

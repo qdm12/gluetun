@@ -31,11 +31,11 @@ ENV USER= \
     EXTRA_SUBNETS= \
     PORT_FORWARDING=false \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
-    PROXY=on \
-    PROXY_LOG_LEVEL=Critical \
-    PROXY_PORT=8888 \
-    PROXY_USER= \
-    PROXY_PASSWORD=
+    TINYPROXY=on \
+    TINYPROXY_LOG=Critical \
+    TINYPROXY_PORT=8888 \
+    TINYPROXY_USER= \
+    TINYPROXY_PASSWORD=
 ENTRYPOINT /entrypoint.sh
 EXPOSE 8888
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
