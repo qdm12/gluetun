@@ -2,9 +2,7 @@
     "recommendations": [
         "shardulm94.trailing-spaces",
         "ms-azuretools.vscode-docker",
-        "davidanson.vscode-markdownlint"
-    ],
-    "unwantedRecommendations": [
-
+        "davidanson.vscode-markdownlint",
+        "IBM.output-colorizer"
     ]
 }
