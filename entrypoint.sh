@@ -391,10 +391,7 @@ if [ "$PROXY" == "on" ]; then
     unset -v PROXY_PASSWORD
     printf "DONE\n"
   fi
-  printf "[INFO] Launching HTTP proxy TinyProxy..."
-  tinyproxy
-  exitOnError $?
-  printf "DONE\n"
+  tinyproxy -d &
 fi
 
 ############################################
