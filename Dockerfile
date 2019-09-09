@@ -4,18 +4,17 @@ ARG ALPINE_VERSION=3.10
 FROM ${BASE_IMAGE}:${ALPINE_VERSION}
 ARG BUILD_DATE
 ARG VCS_REF
-LABEL org.label-schema.schema-version="1.0.0-rc1" \
-    maintainer="quentin.mcgaw@gmail.com" \
-    org.label-schema.build-date=$BUILD_DATE \
-    org.label-schema.vcs-ref=$VCS_REF \
-    org.label-schema.vcs-url="https://github.com/qdm12/private-internet-access-docker" \
-    org.label-schema.url="https://github.com/qdm12/private-internet-access-docker" \
-    org.label-schema.vcs-description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux" \
-    org.label-schema.vcs-usage="https://github.com/qdm12/private-internet-access-docker/blob/master/README.md#setup" \
-    org.label-schema.docker.cmd="docker run -d --init --cap-add=NET_ADMIN --device=/dev/net/tun -e USER=js89ds7 -e PASSWORD=8fd9s239G qmcgaw/private-internet-access" \
-    org.label-schema.docker.cmd.devel="docker run -it --rm --init --cap-add=NET_ADMIN --device=/dev/net/tun -e USER=js89ds7 -e PASSWORD=8fd9s239G qmcgaw/private-internet-access" \
-    org.label-schema.docker.params="REGION=PIA region,PROTOCOL=udp/tcp,ENCRYPTION=strong/normal,BLOCK_MALICIOUS=on/off,BLOCK_NSA=on/off,UNBLOCK=allowed hostnames,USER=PIA user,PASSWORD=PIA password,EXTRA_SUBNETS=extra subnets to allow on the firewall,NONROOT=yes/no" \
-    org.label-schema.version="" \
+LABEL \
+    org.opencontainers.image.authors="quentin.mcgaw@gmail.com" \
+    org.opencontainers.image.created=$BUILD_DATE \
+    org.opencontainers.image.version="" \
+    org.opencontainers.image.revision=$VCS_REF \
+    org.opencontainers.image.url="https://github.com/qdm12/private-internet-access-docker" \
+    org.opencontainers.image.documentation="https://github.com/qdm12/private-internet-access-docker" \
+    org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
+    org.opencontainers.image.title="PIA client" \
+    org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux" \
+    image-size="21.1MB" \
     image-size="19.9MB" \
     ram-usage="13MB to 80MB" \
     cpu-usage="Low to Medium"
