@@ -190,13 +190,8 @@ There are various ways to achieve this, depending on your use case.
         - port 8888 published `-p 8888:8888/tcp`
         - your LAN subnet, i.e. 192.168.1.0/24, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You might need to enter your credentials if you set them with the environment variables `PROXY_USER` and `PROXY_PASSWORD`.
-    1. If you set `PROXY_LOG_LEVEL` to `Info`, you can check the log output of tinyproxy with:
-
-        ```sh
-        docker exec -it pia cat /var/log/tinyproxy/tinyproxy.log
-        ```
-
-        `PROXY_LOG_LEVEL` defaults to `Critical` to avoid logging everything, for privacy purposes as well as to save storage.
+    1. If you set `PROXY_LOG_LEVEL` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
+       `PROXY_LOG_LEVEL` defaults to `Critical` to avoid logging everything, for privacy purposes.
 
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
