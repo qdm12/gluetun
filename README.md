@@ -53,12 +53,14 @@
 - Connect other containers to it, [see this](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - **ARM** compatible
 - Port forwarding
-- HTTP proxy for LAN devices
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
 - OpenVPN reconnects automatically on failure
 - Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
 - Unbound DNS runs *without root*
 - OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
+- Connect your LAN devices
+  - HTTP Web proxy *tinyproxy*
+  - SOCKS5 proxy *shadowsocks*
 
 ## Setup
 
@@ -72,6 +74,7 @@
         - For TCP strong encryption, allow outbound TCP 501
         - For TCP normal encryption, allow outbound TCP 502
         - For the built-in web HTTP proxy, allow inbound TCP 8888
+        - For the built-in SOCKS5 proxy, allow inbound TCP 8388 and UDP 8388
     - Docker API 1.25 to support `init`
     - If you use Docker Compose, docker-compose >= 1.22.0, to support `init: true`
 
@@ -130,6 +133,7 @@
     Note that you can:
     - Change the many [environment variables](#environment-variables) available
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
+    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
 
 ## Testing
@@ -162,6 +166,10 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `TINYPROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
 | `TINYPROXY_USER` | | Username to use to connect to the HTTP proxy |
 | `TINYPROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
+| `SHADOWSOCKS` | `on` | `on` or `off`, to enable the internal SOCKS5 proxy Shadowsocks |
+| `SHADOWSOCKS_LOG` | `on` | `on` or `off` to enable logging for Shadowsocks  |
+| `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
+| `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
 
 ## Connect to it
 
@@ -182,15 +190,25 @@ There are various ways to achieve this, depending on your use case.
     Add `network_mode: "container:pia"` to your *docker-compose.yml*, provided PIA is already running
 
     </p></details>
-- <details><summary>Connect LAN devices through the built-in HTTP proxy (i.e. with Chrome, Kodi, etc.)</summary><p>
+- <details><summary>Connect LAN devices through the built-in HTTP proxy *Tinyproxy* (i.e. with Chrome, Kodi, etc.)</summary><p>
 
     1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
     1. Ensure the PIA container is launched with:
-        - port 8888 published `-p 8888:8888/tcp`
-        - your LAN subnet, i.e. 192.168.1.0/24, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
-    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You might need to enter your credentials if you set them with the environment variables `PROXY_USER` and `PROXY_PASSWORD`.
+        - port `8888` published `-p 8888:8888/tcp`
+        - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
+    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `TINYPROXY_USER` and `TINYPROXY_PASSWORD`.
     1. If you set `PROXY_LOG_LEVEL` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
-       `PROXY_LOG_LEVEL` defaults to `Critical` to avoid logging everything, for privacy purposes.
+       `TINYPROXY_LOG` defaults to `Critical` to avoid logging everything, for privacy purposes.
+
+    </p></details>
+- <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
+
+    1. Setup a SOCKS5 proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
+    1. Ensure the PIA container is launched with:
+        - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
+        - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
+    1. With your SOCKS5 proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8388`, using the password you have set with `SHADOWSOCKS_PASSWORD`.
+    1. If you set `PROXY_LOG_LEVEL` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
 
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
@@ -264,7 +282,10 @@ Note that not all regions support port forwarding.
 
 ## TODOs
 
-- Mix logs from unbound, tinyproxy and openvpn in Docker logs
+- Shadowsocks
+    - Test DNS queries
+    - Get logs from file and merge with docker stdout
+- Mix Logs of Unbound
 - Maybe use `--inactive 3600 --ping 10 --ping-exit 60` as default behavior
 - Try without tun
 

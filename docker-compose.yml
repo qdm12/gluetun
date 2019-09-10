@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   pia:
     build: https://github.com/qdm12/private-internet-access-docker.git
@@ -12,7 +12,9 @@ services:
     init: true
     ports:
       - 8888:8888/tcp
-    # command: 
+      - 8388:8388/tcp
+      - 8388:8388/udp
+    # command:
     environment:
       - USER=js89ds7
       - PASSWORD=8fd9s239G
@@ -26,9 +28,11 @@ services:
       - UNBLOCK=
       - FIREWALL=on
       - EXTRA_SUBNETS=
-      - PROXY=on
-      - PROXY_LOG_LEVEL=Critical
-      - PROXY_USER=
-      - PROXY_PASSWORD=
+      - TINYPROXY=on
+      - TINYPROXY_LOG=Critical
+      - TINYPROXY_USER=
+      - TINYPROXY_PASSWORD=
+      - SHADOWSOCKS=on
+      - SHADOWSOCKS_LOG=on
+      - SHADOWSOCKS_PASSWORD=
     restart: always
- 

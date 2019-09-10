@@ -34,11 +34,17 @@ ENV USER= \
     TINYPROXY_LOG=Critical \
     TINYPROXY_PORT=8888 \
     TINYPROXY_USER= \
-    TINYPROXY_PASSWORD=
+    TINYPROXY_PASSWORD= \
+    SHADOWSOCKS=on \
+    SHADOWSOCKS_LOG=on \
+    SHADOWSOCKS_PORT=8388 \
+    SHADOWSOCKS_PASSWORD=
 ENTRYPOINT /entrypoint.sh
-EXPOSE 8888
+EXPOSE 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
 RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip tinyproxy jq && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    apk add -q --progress --no-cache --update shadowsocks-libev && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
@@ -65,9 +71,10 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     rm -f /tmp/*
 COPY unbound.conf /etc/unbound/unbound.conf
 COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
+COPY shadowsocks.json /etc/shadowsocks.json
 COPY entrypoint.sh healthcheck.sh portforward.sh /
 RUN chown nonrootuser -R /etc/unbound /etc/tinyproxy && \
     chmod 700 /etc/unbound /etc/tinyproxy && \
-    chmod 600 /etc/unbound/unbound.conf /etc/tinyproxy/tinyproxy.conf && \
+    chmod 600 /etc/unbound/unbound.conf /etc/tinyproxy/tinyproxy.conf /etc/shadowsocks.json && \
     chmod 500 /entrypoint.sh /healthcheck.sh /portforward.sh && \
     chmod 400 /etc/unbound/root.hints /etc/unbound/root.key /etc/unbound/*.bz2

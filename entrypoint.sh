@@ -50,6 +50,7 @@ printf "OpenVPN version: $(openvpn --version | head -n 1 | grep -oE "OpenVPN [0-
 printf "Unbound version: $(unbound -h | grep "Version" | cut -d" " -f2)\n"
 printf "Iptables version: $(iptables --version | cut -d" " -f2)\n"
 printf "TinyProxy version: $(tinyproxy -v | cut -d" " -f2)\n"
+printf "ShadowSocks version: $(ss-server --help | head -n 2 | tail -n 1 | cut -d" " -f 2)\n"
 
 ############################################
 # BACKWARD COMPATIBILITY PARAMETERS
@@ -127,6 +128,25 @@ elif [ -z "$TINYPROXY_USER" ] && [ ! -z "$TINYPROXY_PASSWORD" ]; then
   printf "TINYPROXY_USER is not set but TINYPROXY_PASSWORD is set\n"
   exit 1
 fi
+exitIfNotIn SHADOWSOCKS "on,off"
+exitIfNotIn SHADOWSOCKS_LOG "on,off"
+if [ -z $SHADOWSOCKS_PORT ]; then
+  SHADOWSOCKS_PORT=8388
+fi
+if [ `echo $SHADOWSOCKS_PORT | grep -E "^[0-9]+$"` != $SHADOWSOCKS_PORT ]; then
+  printf "SHADOWSOCKS_PORT is not a valid number\n"
+  exit 1
+elif [ $SHADOWSOCKS_PORT -lt 1024 ]; then
+  printf "SHADOWSOCKS_PORT cannot be a privileged port under port 1024\n"
+  exit 1
+elif [ $SHADOWSOCKS_PORT -gt 65535 ]; then
+  printf "SHADOWSOCKS_PORT cannot be a port higher than the maximum port 65535\n"
+  exit 1
+fi
+if [ -z $SHADOWSOCKS_PASSWORD ]; then
+  printf "SHADOWSOCKS_PASSWORD is not set\n"
+  exit 1
+fi
 
 ############################################
 # SHOW PARAMETERS
@@ -156,6 +176,7 @@ if [ "$TINYPROXY" == "on" ]; then
   printf " * Tinyproxy has authentication: $tinyproxy_auth\n"
   unset -v tinyproxy_auth
 fi
+printf " * ShadowSocks SOCKS5 proxy: $SHADOWSOCKS\n"
 printf "PIA parameters:\n"
 printf " * Remote port forwarding: $PORT_FORWARDING\n"
 [ "$PORT_FORWARDING" == "on" ] && printf " * Remote port forwarding status file: $PORT_FORWARDING_STATUS_FILE\n"
@@ -419,6 +440,33 @@ if [ "$TINYPROXY" == "on" ]; then
     printf "DONE\n"
   fi
   tinyproxy -d &
+fi
+
+############################################
+# SHADOWSOCKS
+############################################
+if [ "$SHADOWSOCKS" == "on" ]; then
+  ARGS="-c /etc/shadowsocks.json"
+  # add -d 127.0.0.1 for DNS?
+  if [ "$SHADOWSOCKS_LOG" == " on" ]; then
+    printf "[INFO] Setting ShadowSocks logging..."
+    ARGS="$ARGS -v"
+    printf "DONE\n"
+  fi
+  printf "[INFO] Setting ShadowSocks port to $SHADOWSOCKS_PORT..."
+  jq ".port_password = {\"$SHADOWSOCKS_PORT\":\"\"}" /etc/shadowsocks.json > /tmp/shadowsocks.json && mv /tmp/shadowsocks.json /etc/shadowsocks.json
+  exitOnError $?
+  printf "DONE\n"
+  printf "[INFO] Setting ShadowSocks password..."
+  jq ".port_password[\"$SHADOWSOCKS_PORT\"] = \"$SHADOWSOCKS_PASSWORD\"" /etc/shadowsocks.json > /tmp/shadowsocks.json && mv /tmp/shadowsocks.json /etc/shadowsocks.json
+  exitOnError $?
+  printf "DONE\n"
+  ARGS="$ARGS -s `jq --raw-output '.server' /etc/shadowsocks.json`"
+  unset -v SERVER
+  ARGS="$ARGS -p $SHADOWSOCKS_PORT"
+  ARGS="$ARGS -k $SHADOWSOCKS_PASSWORD"
+  ss-server $ARGS &
+  unset -v ARGS
 fi
 
 ############################################
