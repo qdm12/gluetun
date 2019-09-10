@@ -107,45 +107,49 @@ if [ "$PORT_FORWARDING" == "on" ] && [ -z "$PORT_FORWARDING_STATUS_FILE" ]; then
   exit 1
 fi
 exitIfNotIn TINYPROXY "on,off"
-exitIfNotIn TINYPROXY_LOG "Info,Warning,Error,Critical"
-if [ -z $TINYPROXY_PORT ]; then
-  TINYPROXY_PORT=8888
-fi
-if [ `echo $TINYPROXY_PORT | grep -E "^[0-9]+$"` != $TINYPROXY_PORT ]; then
-  printf "TINYPROXY_PORT is not a valid number\n"
-  exit 1
-elif [ $TINYPROXY_PORT -lt 1024 ]; then
-  printf "TINYPROXY_PORT cannot be a privileged port under port 1024\n"
-  exit 1
-elif [ $TINYPROXY_PORT -gt 65535 ]; then
-  printf "TINYPROXY_PORT cannot be a port higher than the maximum port 65535\n"
-  exit 1
-fi
-if [ ! -z "$TINYPROXY_USER" ] && [ -z "$TINYPROXY_PASSWORD" ]; then
-  printf "TINYPROXY_USER is set but TINYPROXY_PASSWORD is not set\n"
-  exit 1
-elif [ -z "$TINYPROXY_USER" ] && [ ! -z "$TINYPROXY_PASSWORD" ]; then
-  printf "TINYPROXY_USER is not set but TINYPROXY_PASSWORD is set\n"
-  exit 1
+if [ "$TINYPROXY" == "on" ]; then
+  exitIfNotIn TINYPROXY_LOG "Info,Warning,Error,Critical"
+  if [ -z $TINYPROXY_PORT ]; then
+    TINYPROXY_PORT=8888
+  fi
+  if [ `echo $TINYPROXY_PORT | grep -E "^[0-9]+$"` != $TINYPROXY_PORT ]; then
+    printf "TINYPROXY_PORT is not a valid number\n"
+    exit 1
+  elif [ $TINYPROXY_PORT -lt 1024 ]; then
+    printf "TINYPROXY_PORT cannot be a privileged port under port 1024\n"
+    exit 1
+  elif [ $TINYPROXY_PORT -gt 65535 ]; then
+    printf "TINYPROXY_PORT cannot be a port higher than the maximum port 65535\n"
+    exit 1
+  fi
+  if [ ! -z "$TINYPROXY_USER" ] && [ -z "$TINYPROXY_PASSWORD" ]; then
+    printf "TINYPROXY_USER is set but TINYPROXY_PASSWORD is not set\n"
+    exit 1
+  elif [ -z "$TINYPROXY_USER" ] && [ ! -z "$TINYPROXY_PASSWORD" ]; then
+    printf "TINYPROXY_USER is not set but TINYPROXY_PASSWORD is set\n"
+    exit 1
+  fi
 fi
 exitIfNotIn SHADOWSOCKS "on,off"
-exitIfNotIn SHADOWSOCKS_LOG "on,off"
-if [ -z $SHADOWSOCKS_PORT ]; then
-  SHADOWSOCKS_PORT=8388
-fi
-if [ `echo $SHADOWSOCKS_PORT | grep -E "^[0-9]+$"` != $SHADOWSOCKS_PORT ]; then
-  printf "SHADOWSOCKS_PORT is not a valid number\n"
-  exit 1
-elif [ $SHADOWSOCKS_PORT -lt 1024 ]; then
-  printf "SHADOWSOCKS_PORT cannot be a privileged port under port 1024\n"
-  exit 1
-elif [ $SHADOWSOCKS_PORT -gt 65535 ]; then
-  printf "SHADOWSOCKS_PORT cannot be a port higher than the maximum port 65535\n"
-  exit 1
-fi
-if [ -z $SHADOWSOCKS_PASSWORD ]; then
-  printf "SHADOWSOCKS_PASSWORD is not set\n"
-  exit 1
+if [ "$SHADOWSOCKS" == "on" ]; then
+  exitIfNotIn SHADOWSOCKS_LOG "on,off"
+  if [ -z $SHADOWSOCKS_PORT ]; then
+    SHADOWSOCKS_PORT=8388
+  fi
+  if [ `echo $SHADOWSOCKS_PORT | grep -E "^[0-9]+$"` != $SHADOWSOCKS_PORT ]; then
+    printf "SHADOWSOCKS_PORT is not a valid number\n"
+    exit 1
+  elif [ $SHADOWSOCKS_PORT -lt 1024 ]; then
+    printf "SHADOWSOCKS_PORT cannot be a privileged port under port 1024\n"
+    exit 1
+  elif [ $SHADOWSOCKS_PORT -gt 65535 ]; then
+    printf "SHADOWSOCKS_PORT cannot be a port higher than the maximum port 65535\n"
+    exit 1
+  fi
+  if [ -z $SHADOWSOCKS_PASSWORD ]; then
+    printf "SHADOWSOCKS_PASSWORD is not set\n"
+    exit 1
+  fi
 fi
 
 ############################################
@@ -447,7 +451,6 @@ fi
 ############################################
 if [ "$SHADOWSOCKS" == "on" ]; then
   ARGS="-c /etc/shadowsocks.json"
-  # add -d 127.0.0.1 for DNS?
   if [ "$SHADOWSOCKS_LOG" == " on" ]; then
     printf "[INFO] Setting ShadowSocks logging..."
     ARGS="$ARGS -v"
