@@ -1,0 +1,14 @@
+{
+    "server": "0.0.0.0",
+    "user": "nonrootuser",
+    "method": "chacha20-ietf-poly1305",
+    "timeout": 30,
+    "fast_open": false,
+    "mode": "tcp_and_udp",
+    "port_password": {
+        "8388": ""
+    },
+    "workers": 2,
+    "interface": "tun",
+    "nameserver": "127.0.0.1"
+}
