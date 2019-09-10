@@ -476,7 +476,7 @@ fi
 # READ FORWARDED PORT
 ############################################
 
-if [ "$PORT_FORWARDING" == "true" ]; then
+if [ "$PORT_FORWARDING" == "on" ]; then
   sleep 10 && /portforward.sh &
 fi
 

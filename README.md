@@ -197,7 +197,7 @@ There are various ways to achieve this, depending on your use case.
         - port `8888` published `-p 8888:8888/tcp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `TINYPROXY_USER` and `TINYPROXY_PASSWORD`.
-    1. If you set `PROXY_LOG_LEVEL` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
+    1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
        `TINYPROXY_LOG` defaults to `Critical` to avoid logging everything, for privacy purposes.
 
     </p></details>
@@ -208,7 +208,7 @@ There are various ways to achieve this, depending on your use case.
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your SOCKS5 proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8388`, using the password you have set with `SHADOWSOCKS_PASSWORD`.
-    1. If you set `PROXY_LOG_LEVEL` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
+    1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
 
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
@@ -253,7 +253,7 @@ There are various ways to achieve this, depending on your use case.
 
 ## Port forwarding
 
-By setting `PORT_FORWARDING` environment variable to `true`, the forwarded port will be read and written to the file specified in `PORT_FORWARDING_STATUS_FILE` (by default, this is set to `/forwarded_port`). If the location for this file does not exist, it will be created automatically.
+By setting `PORT_FORWARDING` environment variable to `on`, the forwarded port will be read and written to the file specified in `PORT_FORWARDING_STATUS_FILE` (by default, this is set to `/forwarded_port`). If the location for this file does not exist, it will be created automatically.
 
 You can mount this file as a volume to read it from other containers.
 
@@ -279,6 +279,26 @@ Note that not all regions support port forwarding.
     - Your password may contain a special character such as `$`.
      You need to escape it with `\` in your run command or docker-compose.yml.
      For example you would set `-e PASSWORD=mypa\$\$word`.
+- Fallback to a previous version
+    1. Clone the repository on your machine
+
+        ```sh
+        git clone https://github.com/qdm12/private-internet-access-docker.git pia
+        cd pia
+        ```
+
+    1. Look up which commit you want to go back to [here](https://github.com/qdm12/private-internet-access-docker/commits/master), i.e. `942cc7d4d10545b6f5f89c907b7dd1dbc39368e0`
+    1. Revert to this commit locally
+
+        ```sh
+        git reset --hard 942cc7d4d10545b6f5f89c907b7dd1dbc39368e0
+        ```
+
+    1. Build the Docker image
+
+        ```sh
+        docker build -t qmcgaw/private-internet-access .
+        ```
 
 ## TODOs
 
