@@ -208,7 +208,11 @@ There are various ways to achieve this, depending on your use case.
     1. Ensure the PIA container is launched with:
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
-    1. With your SOCKS5 proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8388`, using the password you have set with `SHADOWSOCKS_PASSWORD`.
+    1. With your SOCKS5 proxy client
+        - Enter the Docker host (i.e. `192.168.1.10`) as the server IP
+        - Enter port TCP (and UDP, if available) `8388` as the server port
+        - Use the password you have set with `SHADOWSOCKS_PASSWORD`
+        - Choose the encryption method/algorithm `chacha20-ietf-poly1305`
     1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
 
     </p></details>
