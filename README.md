@@ -204,6 +204,7 @@ There are various ways to achieve this, depending on your use case.
 - <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
 
     1. Setup a SOCKS5 proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
+        - **note** that some clients do not tunnel UDP so your DNS queries will be done locally and not through PIA and its built in DNS over TLS
     1. Ensure the PIA container is launched with:
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
@@ -271,6 +272,8 @@ Note that not all regions support port forwarding.
 - The download and unziping of PIA openvpn files is done at build for the ones not able to download the zip files
 - Checksums for PIA openvpn zip files are not used as these files change often (but HTTPS is used)
 - Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
+- You can test DNSSEC using [internet.nl/connection](https://www.internet.nl/connection/)
+- Check DNS leak tests with [https://www.dnsleaktest.com](https://www.dnsleaktest.com)
 - DNS Leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: DNS server is a local caching intermediary)
 
 ## Troubleshooting
@@ -303,7 +306,6 @@ Note that not all regions support port forwarding.
 ## TODOs
 
 - Shadowsocks
-    - Test DNS queries
     - Get logs from file and merge with docker stdout
 - Mix Logs of Unbound
 - Maybe use `--inactive 3600 --ping 10 --ping-exit 60` as default behavior
