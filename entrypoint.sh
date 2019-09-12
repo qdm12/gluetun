@@ -336,7 +336,7 @@ status=$?
 printf "\n =========================================\n"
 
 while : ; do
-  if pgrep -x "qbittorrent-nox" >/dev/null
+  if ! pgrep -x "qbittorrent-nox" >/dev/null
   then
     killall -SIGINT openvpn
     exit
