@@ -1,5 +1,5 @@
 # Latest version of ubuntu
-FROM ubuntu:18.04
+FROM amd64/ubuntu:18.04
 
 ENV USER= \
     PASSWORD= \
