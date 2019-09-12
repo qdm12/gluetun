@@ -320,6 +320,7 @@ if [ ! -e /config/qBittorrent/config/qBittorrent.conf ]; then
 fi
 
 # Wait until vpn is up
+printf "[INFO] Waiting for VPN to connect\n"
 while : ; do
 	tunnelstat=$(netstat -ie | grep -E "tun|tap")
 	if [ ! -z "${tunnelstat}" ]; then
@@ -335,6 +336,11 @@ status=$?
 printf "\n =========================================\n"
 
 while : ; do
+  if pgrep -x "qbittorrent-nox" >/dev/null
+  then
+    killall -SIGINT openvpn
+    exit
+  fi
 	ifconfig $VPN_DEVICE
 	sleep 60s
 done
