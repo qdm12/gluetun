@@ -30,7 +30,7 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y apt-utils software-properties-common && \
     add-apt-repository ppa:qbittorrent-team/qbittorrent-stable -y && \
     set -x &&\
-    apt-get install --no-install-recommends -y qbittorrent-nox openvpn openvpn-systemd-resolved wget ca-certificates iptables unzip dnsutils iputils-ping net-tools && \
+    apt-get install --no-install-recommends -y qbittorrent-nox openvpn openvpn-systemd-resolved wget ca-certificates iptables unzip dnsutils iputils-ping net-tools psmisc && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
