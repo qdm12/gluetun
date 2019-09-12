@@ -1,5 +1,5 @@
 # Latest version of ubuntu
-FROM arm32v6/ubuntu:18.04
+FROM ubuntu:18.04
 
 ENV USER= \
     PASSWORD= \
