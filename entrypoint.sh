@@ -338,9 +338,8 @@ printf "\n =========================================\n"
 while : ; do
   if ! pgrep -x "qbittorrent-nox" >/dev/null
   then
-    killall -SIGINT openvpn
     exit
   fi
-	ifconfig $VPN_DEVICE
-	sleep 60s
+	#ifconfig $VPN_DEVICE
+	sleep 10s
 done
