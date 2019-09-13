@@ -204,7 +204,11 @@ There are various ways to achieve this, depending on your use case.
 - <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
 
     1. Setup a SOCKS5 proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
-        - **note** that some clients do not tunnel UDP so your DNS queries will be done locally and not through PIA and its built in DNS over TLS
+        - **note** some clients do not tunnel UDP so your DNS queries will be done locally and not through PIA and its built in DNS over TLS
+        - Clients that support such UDP tunneling are, as far as I know:
+            - iOS: Potatso Lite
+            - OSX: ShadowsocksX
+            - Android: Shadowsocks by Max Lv
     1. Ensure the PIA container is launched with:
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
