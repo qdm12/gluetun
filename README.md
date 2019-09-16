@@ -170,6 +170,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `SHADOWSOCKS_LOG` | `on` | `on` or `off` to enable logging for Shadowsocks  |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
+| `TZ` | | Specify a timezone to use e.g. `Europe/London` |
 
 ## Connect to it
 
