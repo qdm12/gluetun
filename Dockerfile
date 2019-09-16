@@ -38,7 +38,8 @@ ENV USER= \
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=on \
     SHADOWSOCKS_PORT=8388 \
-    SHADOWSOCKS_PASSWORD=
+    SHADOWSOCKS_PASSWORD= \
+    TZ=
 ENTRYPOINT /entrypoint.sh
 EXPOSE 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
