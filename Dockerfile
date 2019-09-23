@@ -15,6 +15,7 @@ ENTRYPOINT /entrypoint.sh
 
 # Download Folder
 VOLUME /downloads
+
 # qBittorrent Config Folder
 VOLUME /config
 
