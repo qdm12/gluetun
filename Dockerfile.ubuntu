@@ -1,5 +1,5 @@
 # Latest version of ubuntu
-FROM amd64/ubuntu:18.04
+FROM ubuntu:18.04
 
 ENV USER= \
     PASSWORD= \
@@ -15,6 +15,7 @@ ENTRYPOINT /entrypoint.sh
 
 # Download Folder
 VOLUME /downloads
+
 # qBittorrent Config Folder
 VOLUME /config
 
