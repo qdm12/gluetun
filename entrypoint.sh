@@ -39,14 +39,21 @@ exitIfNotIn(){
   exit 1
 }
 
+# link the lib for qbittorrent for alpine
+export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${LD_LIBRARY_PATH}
+
 printf " =========================================\n"
 printf " ============== qBittorrent ==============\n"
 printf " =================== + ===================\n"
 printf " ============= PIA CONTAINER =============\n"
 printf " =========================================\n"
+printf " OS: $(cat /etc/os-release | ack PRETTY_NAME=\"*\" | cut -d "\"" -f 2 | cut -d "\"" -f 1)\n"
+printf " =========================================\n"
+printf " OpenVPN version: $(openvpn --version | head -n 1 | ack "OpenVPN [0-9\.]* " | cut -d" " -f2)\n"
+printf " Iptables version: $(iptables --version | cut -d" " -f2)\n"
+printf " qBittorrent version: $(qbittorrent-nox --version | cut -d" " -f2)\n"
+printf " =========================================\n"
 
-printf "OpenVPN version: $(openvpn --version | head -n 1 | grep -oE "OpenVPN [0-9\.]* " | cut -d" " -f2)\n"
-printf "Iptables version: $(iptables --version | cut -d" " -f2)\n"
 
 ############################################
 # CHECK PARAMETERS
@@ -60,7 +67,7 @@ exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
 if [ -z $WEBUI_PORT ]; then
   WEBUI_PORT=8888
 fi
-if [ `echo $WEBUI_PORT | grep -E "^[0-9]+$"` != $WEBUI_PORT ]; then
+if [ `echo $WEBUI_PORT | ack "^[0-9]+$"` != $WEBUI_PORT ]; then
   printf "WEBUI_PORT is not a valid number\n"
   exit 1
 elif [ $WEBUI_PORT -lt 1024 ]; then
@@ -130,7 +137,7 @@ fi
 IP=$(ifconfig)
 printf "$ip"
 printf "[INFO] Reading OpenVPN configuration...\n"
-CONNECTIONSTRING=$(grep -i "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" -e 'privateinternetaccess.com')
+CONNECTIONSTRING=$(ack 'privateinternetaccess.com' "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn")
 exitOnError $?
 PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
 if [ "$PORT" = "" ]; then
@@ -145,7 +152,7 @@ fi
 printf " * Port: $PORT\n"
 printf " * Domain: $PIADOMAIN\n"
 printf "[INFO] Detecting IP addresses corresponding to $PIADOMAIN...\n"
-VPNIPS=$(nslookup $PIADOMAIN | tail -n +3 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
+VPNIPS=$(dig $PIADOMAIN +short)
 exitOnError $?
 for ip in $VPNIPS; do
   printf "   $ip\n";
@@ -185,10 +192,10 @@ echo "mssfix 1300" >> "$TARGET_PATH/config.ovpn"
 exitOnError $? "Cannot add 'mssfix 1300' to $TARGET_PATH/config.ovpn"
 echo "script-security 2" >> "$TARGET_PATH/config.ovpn"
 exitOnError $? "Cannot add 'script-security 2' to $TARGET_PATH/config.ovpn"
-echo "up /etc/openvpn/update-resolv-conf" >> "$TARGET_PATH/config.ovpn"
-exitOnError $? "Cannot add 'up /etc/openvpn/update-resolv-conf' to $TARGET_PATH/config.ovpn"
-echo "down /etc/openvpn/update-resolv-conf" >> "$TARGET_PATH/config.ovpn"
-exitOnError $? "Cannot add 'down /etc/openvpn/update-resolv-conf' to $TARGET_PATH/config.ovpn"
+#echo "up /etc/openvpn/update-resolv-conf" >> "$TARGET_PATH/config.ovpn"
+#exitOnError $? "Cannot add 'up /etc/openvpn/update-resolv-conf' to $TARGET_PATH/config.ovpn"
+#echo "down /etc/openvpn/update-resolv-conf" >> "$TARGET_PATH/config.ovpn"
+#exitOnError $? "Cannot add 'down /etc/openvpn/update-resolv-conf' to $TARGET_PATH/config.ovpn"
 # Note: TUN device re-opening will restart the container due to permissions
 printf "DONE\n"
 
@@ -197,15 +204,15 @@ printf "DONE\n"
 ############################################
 printf "[INFO] Finding network properties...\n"
 printf " * Detecting default gateway..."
-DEFAULT_GATEWAY=$(ip r | grep 'default via' | cut -d" " -f 3)
+DEFAULT_GATEWAY=$(ip r | ack 'default via' | cut -d" " -f 3)
 exitOnError $?
 printf "$DEFAULT_GATEWAY\n"
 printf " * Detecting local interface..."
-INTERFACE=$(ip r | grep 'default via' | cut -d" " -f 5)
+INTERFACE=$(ip r | ack 'default via' | cut -d" " -f 5)
 exitOnError $?
 printf "$INTERFACE\n"
 printf " * Detecting local subnet..."
-SUBNET=$(ip r | grep -v 'default via' | grep $INTERFACE | tail -n 1 | cut -d" " -f 1)
+SUBNET=$(ip r | ack -v 'default via' | ack $INTERFACE | tail -n 1 | cut -d" " -f 1)
 exitOnError $?
 printf "$SUBNET\n"
 for EXTRASUBNET in $(echo $EXTRA_SUBNETS | sed "s/,/ /g")
@@ -216,7 +223,7 @@ do
   printf "DONE\n"
 done
 printf " * Detecting target VPN interface..."
-VPN_DEVICE=$(cat $TARGET_PATH/config.ovpn | grep 'dev ' | cut -d" " -f 2)0
+VPN_DEVICE=$(cat $TARGET_PATH/config.ovpn | ack 'dev ' | cut -d" " -f 2)0
 exitOnError $?
 printf "$VPN_DEVICE\n"
 
@@ -270,9 +277,9 @@ iptables -A OUTPUT -o eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
 iptables -A OUTPUT -o eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
 iptables -A INPUT -i eth0 -p tcp --dport $WEBUI_PORT -j ACCEPT
 iptables -A INPUT -i eth0 -p tcp --sport $WEBUI_PORT -j ACCEPT
-ip rule add from $(ip route get 1 | grep -Po '(?<=src )(\S+)') table 128
-ip route add table 128 to $(ip route get 1 | grep -Po '(?<=src )(\S+)')/32 dev $(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)')
-ip route add table 128 default via $(ip -4 route ls | grep default | grep -Po '(?<=via )(\S+)')
+ip rule add from $(ip route get 1 | ack -o '(?<=src )(\S+)') table 128
+ip route add table 128 to $(ip route get 1 | ack -o '(?<=src )(\S+)')/32 dev $(ip -4 route ls | ack default | ack -o '(?<=dev )(\S+)')
+ip route add table 128 default via $(ip -4 route ls | ack default | ack -o '(?<=via )(\S+)')
 printf "DONE\n"
 
 printf " * Creating VPN rules\n"
@@ -322,7 +329,7 @@ fi
 # Wait until vpn is up
 printf "[INFO] Waiting for VPN to connect\n"
 while : ; do
-	tunnelstat=$(netstat -ie | grep -E "tun|tap")
+	tunnelstat=$(ifconfig | ack "tun|tap")
 	if [ ! -z "${tunnelstat}" ]; then
 		break
 	else
@@ -336,8 +343,8 @@ status=$?
 printf "\n =========================================\n"
 
 while : ; do
-  if ! pgrep -x "qbittorrent-nox" >/dev/null
-  then
+  proc=$(pgrep qbittorrent-nox)
+  if [ -z "${proc}" ]; then
     exit
   fi
 	#ifconfig $VPN_DEVICE
