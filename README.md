@@ -1,5 +1,15 @@
 # Private Internet Access Client (qBittorrent+OpenVPN+Iptables+DNS over TLS on ubuntu)
 
+<p align="center">
+  <a href="https://hub.docker.com/r/j4ym0/pia-qbittorrent">
+    <img src="https://images.microbadger.com/badges/image/j4ym0/pia-qbittorrent.svg">
+  </a>
+  <a href="https://hub.docker.com/r/j4ym0/pia-qbittorrent">
+    <img alt="Pulls from DockerHub" src="https://img.shields.io/docker/pulls/j4ym0/pia-qbittorrent.svg?style=flat-square" />
+  </a>
+</p>
+
+
 *Lightweight qBittorrent & Private Internet Access VPN client*
 
 [![PIA Docker OpenVPN](https://github.com/j4ym0/pia-qbittorrent-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
