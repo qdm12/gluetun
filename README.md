@@ -4,6 +4,9 @@
   <a href="https://hub.docker.com/r/j4ym0/pia-qbittorrent">
     <img src="https://images.microbadger.com/badges/image/j4ym0/pia-qbittorrent.svg">
   </a>
+  <a href="https://github.com/j4ym0/pia-qbittorrent/releases">
+    <img alt="latest version" src="https://img.shields.io/github/v/tag/j4ym0/pia-qbittorrent-docker.svg" />
+  </a>
   <a href="https://hub.docker.com/r/j4ym0/pia-qbittorrent">
     <img alt="Pulls from DockerHub" src="https://img.shields.io/docker/pulls/j4ym0/pia-qbittorrent.svg?style=flat-square" />
   </a>
