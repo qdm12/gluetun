@@ -40,7 +40,7 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	make install && \
 	QBITTORRENT_URL=$(curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tags | grep tarball_url | head -n 1 | cut -d '"' -f 4) && \
 	mkdir /tmp/qbittorrent && \
-	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.1.9 | tar xzC /tmp/qbittorrent && \
+	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.1.9.1 | tar xzC /tmp/qbittorrent && \
 	cd /tmp/qbittorrent/*qbittorrent* && \
 	PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig ./configure --disable-gui && \
 	make install && \
