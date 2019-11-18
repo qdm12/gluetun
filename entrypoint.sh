@@ -238,6 +238,7 @@ if [ "$DOT" == "on" ]; then
     rm /etc/unbound/blocks-nsa.conf
     sort -u -o /etc/unbound/blocks-malicious.conf /etc/unbound/blocks-malicious.conf
   fi
+  dos2unix /etc/unbound/blocks-malicious.conf
   for hostname in ${UNBLOCK//,/ }
   do
     printf "[INFO] Unblocking hostname $hostname\n"
