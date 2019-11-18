@@ -58,12 +58,12 @@ RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptab
     apk del -q --progress --purge unzip && \
     rm -rf /*.zip /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-anchor /usr/sbin/unbound-checkconf /usr/sbin/unbound-control /usr/sbin/unbound-control-setup /usr/sbin/unbound-host /etc/tinyproxy/tinyproxy.conf && \
     adduser nonrootuser -D -H --uid 1000 && \
-    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/named.root.updated -O /etc/unbound/root.hints && \
-    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/root.key.updated -O /etc/unbound/root.key && \
+    wget -q https://raw.githubusercontent.com/qdm12/files/master/named.root.updated -O /etc/unbound/root.hints && \
+    wget -q https://raw.githubusercontent.com/qdm12/files/master/root.key.updated -O /etc/unbound/root.key && \
     cd /tmp && \
-    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/malicious-hostnames.updated -O malicious-hostnames && \
-    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/nsa-hostnames.updated -O nsa-hostnames && \
-    wget -q https://raw.githubusercontent.com/qdm12/updated/master/files/malicious-ips.updated -O malicious-ips && \
+    wget -q https://raw.githubusercontent.com/qdm12/files/master/malicious-hostnames.updated -O malicious-hostnames && \
+    wget -q https://raw.githubusercontent.com/qdm12/files/master/surveillance-hostnames.updated -O nsa-hostnames && \
+    wget -q https://raw.githubusercontent.com/qdm12/files/master/malicious-ips.updated -O malicious-ips && \
     while read hostname; do echo "local-zone: \""$hostname"\" static" >> blocks-malicious.conf; done < malicious-hostnames && \
     while read ip; do echo "private-address: $ip" >> blocks-malicious.conf; done < malicious-ips && \
     tar -cjf /etc/unbound/blocks-malicious.bz2 blocks-malicious.conf && \
