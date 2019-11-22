@@ -87,30 +87,13 @@
     modprobe tun
     ```
 
-1. <details><summary>CLICK IF YOU HAVE AN ARM DEVICE</summary><p>
+1. <details><summary>If you have a non-amd64 device (**ARM** etc.), either...</summary><p>
 
-    - If you have a ARM 32 bit v6 architecture
-
-        ```sh
-        docker build -t qmcgaw/private-internet-access \
-        --build-arg BASE_IMAGE=arm32v6/alpine \
-        https://github.com/qdm12/private-internet-access-docker.git
-        ```
-
-    - If you have a ARM 32 bit v7 architecture
+    - **IN PROGRESS** download the slightly slower and larger pre-built Docker image ([why?](https://www.reddit.com/r/docker/comments/c7vo7f/arm_buildx_on_amd64_vs_build_on_arm_device/esk3ejb))
+    - Build the image on your device:
 
         ```sh
-        docker build -t qmcgaw/private-internet-access \
-        --build-arg BASE_IMAGE=arm32v7/alpine \
-        https://github.com/qdm12/private-internet-access-docker.git
-        ```
-
-    - If you have a ARM 64 bit v8 architecture
-
-        ```sh
-        docker build -t qmcgaw/private-internet-access \
-        --build-arg BASE_IMAGE=arm64v8/alpine \
-        https://github.com/qdm12/private-internet-access-docker.git
+        docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
         ```
 
     </p></details>
