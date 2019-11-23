@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
-  docker buildx build --platform=$PLATFORMS  .
+  docker buildx build --platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7,linux/arm/v6,linux/ppc64le,linux/s390x  .
   return $?
 fi
 echo $DOCKER_PASSWORD | docker login -u qmcgaw --password-stdin &> /dev/null

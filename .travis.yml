@@ -3,14 +3,9 @@ sudo: required
 git:
   quiet: true
   depth: 1
-branches:
-  only:
-  - master
-  - xbuild
 env:
   global:
     - IMAGE_PATH=qmcgaw/private-internet-access
-    - BASE_TAG=xbuild
 before_install:
   - curl -fsSL https://get.docker.com | sh
   - echo '{"experimental":"enabled"}' | sudo tee /etc/docker/daemon.json
