@@ -1,6 +1,8 @@
-# Private Internet Access Client (OpenVPN+Iptables+DNS over TLS on Alpine Linux)
+# Private Internet Access Client
 
-*Lightweight VPN client to tunnel to private internet access servers*
+*Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
+
+**ANNOUCEMENT**: Supports all CPU architectures :art: just pull the image!
 
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
@@ -19,7 +21,7 @@
 [![Image size](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 
-| Image size | RAM usage | CPU usage |
+| Image size (amd64) | RAM usage | CPU usage |
 | --- | --- | --- |
 | 23.3MB | 14MB to 80MB | Low to Medium |
 
@@ -50,7 +52,7 @@
 
     </p></details>
 - Connect other containers to it, [see this](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- **ARM** compatible
+- Compatible with amd64, i686 (32 bit), ARM 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
 - Port forwarding
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
 - OpenVPN reconnects automatically on failure
@@ -59,7 +61,7 @@
 - OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
 - Connect your LAN devices
   - HTTP Web proxy *tinyproxy*
-  - SOCKS5 proxy *shadowsocks*
+  - SOCKS5 proxy *shadowsocks* (better as it does UDP too)
 
 ## Setup
 
@@ -87,17 +89,6 @@
     modprobe tun
     ```
 
-1. <details><summary>If you have a non-amd64 device (**ARM** etc.), either...</summary><p>
-
-    - **IN PROGRESS** download the slightly slower and larger pre-built Docker image ([why?](https://www.reddit.com/r/docker/comments/c7vo7f/arm_buildx_on_amd64_vs_build_on_arm_device/esk3ejb))
-    - Build the image on your device:
-
-        ```sh
-        docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
-        ```
-
-    </p></details>
-
 1. Launch the container with:
 
     ```bash
@@ -117,6 +108,8 @@
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
+
+You can update the image with `docker pull qmcgaw/private-internet-access:latest`
 
 ## Testing
 
@@ -296,9 +289,9 @@ Note that not all regions support port forwarding.
 
 ## TODOs
 
-- Shadowsocks
-    - Get logs from file and merge with docker stdout
-- Mix Logs of Unbound
+- Golang binary to setup the container at start, and:
+  - Mix logs of unbound, tinyproxy, shadowsocks and openvpn together somehow
+  - support other VPN providers
 - Maybe use `--inactive 3600 --ping 10 --ping-exit 60` as default behavior
 - Try without tun
 
