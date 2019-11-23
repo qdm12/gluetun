@@ -1,4 +1,9 @@
 .git
+.vscode
 readme
-*.yml
-*.md
+.gitignore
+.travis.yml
+ci.sh
+docker-compose.yml
+LICENSE
+README.md
