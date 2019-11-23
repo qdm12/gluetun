@@ -1,0 +1,25 @@
+dist: xenial
+sudo: required
+git:
+  quiet: true
+  depth: 1
+branches:
+  only:
+  - master
+  - xbuild
+env:
+  global:
+    - IMAGE_PATH=qmcgaw/private-internet-access
+    - BASE_TAG=xbuild
+before_install:
+  - curl -fsSL https://get.docker.com | sh
+  - echo '{"experimental":"enabled"}' | sudo tee /etc/docker/daemon.json
+  - mkdir -p $HOME/.docker
+  - echo '{"experimental":"enabled"}' | sudo tee $HOME/.docker/config.json
+  - sudo service docker start
+install:
+  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  - docker buildx create --name xbuilder --use
+script: bash ci.sh $IMAGE_PATH
+after_success:
+  - curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I= || exit 0
