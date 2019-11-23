@@ -101,7 +101,6 @@
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
-
 1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags available:
     - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0)
 
