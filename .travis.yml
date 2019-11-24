@@ -5,7 +5,7 @@ git:
   depth: 1
 env:
   global:
-    - IMAGE_PATH=qmcgaw/private-internet-access
+    - DOCKER_REPO=qmcgaw/private-internet-access
 before_install:
   - curl -fsSL https://get.docker.com | sh
   - echo '{"experimental":"enabled"}' | sudo tee /etc/docker/daemon.json
@@ -15,6 +15,6 @@ before_install:
 install:
   - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   - docker buildx create --name xbuilder --use
-script: bash ci.sh $IMAGE_PATH
+script: bash ci.sh
 after_success:
-  - curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I= || exit 0
+  - curl -X POST https://hooks.microbadger.com/images/$DOCKER_REPO/tQFy7AxtSUNANPe6aoVChYdsI_I= || exit 0

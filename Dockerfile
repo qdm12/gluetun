@@ -4,20 +4,16 @@ FROM alpine:${ALPINE_VERSION}
 ARG VERSION
 ARG BUILD_DATE
 ARG VCS_REF
-ARG TAG=latest
 LABEL \
     org.opencontainers.image.authors="quentin.mcgaw@gmail.com" \
     org.opencontainers.image.created=$BUILD_DATE \
-    org.opencontainers.image.version="$VERSION" \
+    org.opencontainers.image.version=$VERSION \
     org.opencontainers.image.revision=$VCS_REF \
     org.opencontainers.image.url="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.documentation="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.title="PIA client" \
-    org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux" \
-    image-size="23.3MB" \
-    ram-usage="13MB to 80MB" \
-    cpu-usage="Low to Medium"
+    org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
 ENV USER= \
     PASSWORD= \
     ENCRYPTION=strong \
