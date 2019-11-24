@@ -51,7 +51,7 @@
 - OpenVPN reconnects automatically on failure
 - Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
 - Unbound DNS runs *without root*
-- OpenVPN can run *without root* but this disallows OpenVPN reconnecting, it can be set with `NONROOT=yes`
+- OpenVPN runs *without root* by default. You can run it with root with the environment variable `NONROOT=no`
 - Connect your LAN devices
   - HTTP Web proxy *tinyproxy*
   - SOCKS5 proxy *shadowsocks* (better as it does UDP too)
@@ -121,7 +121,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
-| `NONROOT` | `no` | Run OpenVPN without root, `yes` or `no` |
+| `NONROOT` | `yes` | Run OpenVPN without root, `yes` or `no` |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
 | `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
