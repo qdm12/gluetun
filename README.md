@@ -285,6 +285,7 @@ Note that not all regions support port forwarding.
 - Golang binary to setup the container at start, and:
   - Mix logs of unbound, tinyproxy, shadowsocks and openvpn together somehow
   - support other VPN providers
+  - Use google's nftables to manage firewall in Go
 - Maybe use `--inactive 3600 --ping 10 --ping-exit 60` as default behavior
 - Try without tun
 
