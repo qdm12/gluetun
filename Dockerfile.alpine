@@ -38,7 +38,6 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	cd build && \
 	cmake .. && \
 	make install && \
-	QBITTORRENT_URL=$(curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tags | grep tarball_url | head -n 1 | cut -d '"' -f 4) && \
 	mkdir /tmp/qbittorrent && \
 	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.2.0 | tar xzC /tmp/qbittorrent && \
 	cd /tmp/qbittorrent/*qbittorrent* && \
