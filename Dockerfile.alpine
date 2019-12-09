@@ -24,8 +24,6 @@ EXPOSE 8888
 
 ENV DEBIAN_FRONTEND noninteractive
 
-HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
-
 # Ok lets install everything
 RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ git make cmake libressl-dev qt5-qttools-dev curl unzip dumb-init && \
 	apk add --no-cache ca-certificates libressl qt5-qtbase iptables openvpn ack bind-tools python3 && \
@@ -61,6 +59,6 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 
 
 
-COPY entrypoint.sh healthcheck.sh qBittorrent.conf /
+COPY entrypoint.sh qBittorrent.conf /
 
-RUN chmod 500 /entrypoint.sh /healthcheck.sh
+RUN chmod 500 /entrypoint.sh
