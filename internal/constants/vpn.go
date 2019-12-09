@@ -8,10 +8,10 @@ const (
 	Windscribe
 )
 
-type Protocol uint8
+type NetworkProtocol uint8
 
 const (
-	TCP Protocol = iota
+	TCP NetworkProtocol = iota
 	UDP
 )
 
