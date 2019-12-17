@@ -3,13 +3,17 @@ package constants
 import "fmt"
 
 // TinyProxyLogLevel is the log level for TinyProxy
-type TinyProxyLogLevel uint8
+type TinyProxyLogLevel string
 
 const (
-	TinyProxyInfoLevel TinyProxyLogLevel = iota
-	TinyProxyWarnLevel
-	TinyProxyErrorLevel
-	TinyProxyCriticalLevel
+	// TinyProxyInfoLevel is the info log level for TinyProxy
+	TinyProxyInfoLevel TinyProxyLogLevel = "Info"
+	// TinyProxyWarnLevel is the warning log level for TinyProxy
+	TinyProxyWarnLevel = "Warning"
+	// TinyProxyErrorLevel is the error log level for TinyProxy
+	TinyProxyErrorLevel = "Error"
+	// TinyProxyCriticalLevel is the critical log level for TinyProxy
+	TinyProxyCriticalLevel = "Critical"
 )
 
 // ParseTinyProxyLogLevel parses a string to obtain the corresponding TinyProxyLogLevel
@@ -24,21 +28,6 @@ func ParseTinyProxyLogLevel(s string) (level TinyProxyLogLevel, err error) {
 	case "Critical":
 		return TinyProxyCriticalLevel, nil
 	default:
-		return 0, fmt.Errorf("TinyProxy log level %q is not valid", s)
-	}
-}
-
-func (l TinyProxyLogLevel) String() string {
-	switch l {
-	case TinyProxyInfoLevel:
-		return "Info"
-	case TinyProxyWarnLevel:
-		return "Warning"
-	case TinyProxyErrorLevel:
-		return "Error"
-	case TinyProxyCriticalLevel:
-		return "Critical"
-	default:
-		return "INVALID"
+		return "", fmt.Errorf("TinyProxy log level %q is not valid", s)
 	}
 }

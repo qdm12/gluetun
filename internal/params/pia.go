@@ -29,10 +29,5 @@ func GetPortForwardingStatusFilepath() (filepath string, err error) {
 // from the environment variable PORT_FORWARDING
 func GetPIAEncryption() (encryption constants.PIAEncryption, err error) {
 	s := libparams.GetEnv("ENCRYPTION", "strong")
-	if s == "strong" {
-		return constants.PIAEncryptionStrong, nil
-	} else if s == "normal" {
-		return constants.PIAEncryptionNormal, nil
-	}
-	return 0, fmt.Errorf("ENCRYPTION can only be \"normal\" or \"strong\"")
+	return constants.ParsePIAEncryption(s)
 }

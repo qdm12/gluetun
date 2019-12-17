@@ -1,10 +1,16 @@
 package constants
 
-type DNSProvider uint8
+// DNSProvider is a DNS over TLS server provider name
+type DNSProvider string
 
 const (
-	Cloudflare DNSProvider = iota
-	Google
-	Quad9
-	CleanBrowsing
+	// Cloudflare is a DNS over TLS provider
+	Cloudflare DNSProvider = "cloudflare"
+	// Google is a DNS over TLS provider
+	Google = "google"
+	// Quad9 is a DNS over TLS provider
+	Quad9 = "quad9"
+	// CleanBrowsing is a DNS over TLS provider
+	CleanBrowsing = "cleanbrowsing"
+	// TODO add more
 )

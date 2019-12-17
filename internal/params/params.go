@@ -1,26 +1,23 @@
 package params
 
-import (
-	"fmt"
+import libparams "github.com/qdm12/golibs/params"
 
-	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-)
+import "fmt"
 
-// GetNonRoot obtains if openvpn should be run without root from the
-// environment variable NONROOT
-func GetNonRoot() (nonRoot bool, err error) {
-	return libparams.GetYesNo("NONROOT", true)
+// GetUser obtains the user to use to connect to the VPN servers
+func GetUser() (s string, err error) {
+	s = libparams.GetEnv("USER", "")
+	if len(s) == 0 {
+		return s, fmt.Errorf("USER environment variable cannot be empty")
+	}
+	return s, nil
 }
 
-// GetNetworkProtocol obtains the network protocol to use to connect to the
-// VPN servers from the environment variable PROTOCOL
-func GetNetworkProtocol() (protocol constants.NetworkProtocol, err error) {
-	s := libparams.GetEnv("PROTOCOL", "tcp")
-	if s == "tcp" {
-		return constants.TCP, nil
-	} else if s == "udp" {
-		return constants.UDP, nil
+// GetPassword obtains the password to use to connect to the VPN servers
+func GetPassword() (s string, err error) {
+	s = libparams.GetEnv("PASSWORD", "")
+	if len(s) == 0 {
+		return s, fmt.Errorf("PASSWORD environment variable cannot be empty")
 	}
-	return 0, fmt.Errorf("PROTOCOL can only be \"tcp\" or \"udp\"")
+	return s, nil
 }
