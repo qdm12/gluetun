@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
 
-**ANNOUCEMENT**: Supports all CPU architectures :art: just pull the image!
+**ANNOUCEMENT**: I just published [*Kape acquisition of Private Internet Access: not worry you must*](https://link.medium.com/e70B1j0wz2)
 
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
