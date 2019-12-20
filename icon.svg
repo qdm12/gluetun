@@ -10,13 +10,16 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="118.13646mm"
+   height="91.499428mm"
+   viewBox="0 0 118.13646 91.499428"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="pia.svg">
+   sodipodi:docname="pia.svg"
+   inkscape:export-filename="C:\Users\quentin\Desktop\DRAWINGS\pia.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <defs
      id="defs2">
     <inkscape:path-effect
@@ -1059,9 +1062,9 @@
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
        id="filter3423"
-       x="-0.016111516"
+       x="-0.016111515"
        width="1.032223"
-       y="-0.049018065"
+       y="-0.049018066"
        height="1.0980361">
       <feGaussianBlur
          inkscape:collect="always"
@@ -1100,9 +1103,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="16"
-     inkscape:cx="338.27362"
-     inkscape:cy="742.89222"
+     inkscape:zoom="1"
+     inkscape:cx="216.06326"
+     inkscape:cy="116.38198"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1126,7 +1129,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-49.873959,-54.158905)">
     <rect
        style="opacity:0.60100002;fill:#6961ff;fill-opacity:0.29145729;stroke:none;stroke-width:0.59457326;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.90055249"
        id="rect3427"
