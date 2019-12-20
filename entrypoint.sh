@@ -132,7 +132,7 @@ if [ "$TINYPROXY" == "on" ]; then
 fi
 exitIfNotIn SHADOWSOCKS "on,off"
 if [ "$SHADOWSOCKS" == "on" ]; then
-  exitIfNotIn SHADOWSOCKS_LOG "on,off"
+  exitIfNotIn SHADOWSOCKS "on,off"
   if [ -z $SHADOWSOCKS_PORT ]; then
     SHADOWSOCKS_PORT=8388
   fi
