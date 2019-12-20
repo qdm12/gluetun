@@ -4,7 +4,9 @@
 
 **ANNOUCEMENT**: I just published [*Kape acquisition of Private Internet Access: not worry you must*](https://link.medium.com/e70B1j0wz2)
 
-[![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
+<a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
+    <img width="300" height="300" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/new-icon/icon.svg?sanitize=true">
+</a>
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
