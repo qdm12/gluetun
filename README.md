@@ -5,7 +5,7 @@
 **ANNOUCEMENT**: I just published [*Kape acquisition of Private Internet Access: not worry you must*](https://link.medium.com/e70B1j0wz2)
 
 <a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
-    <img width="300" height="300" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/new-icon/title.svg?sanitize=true">
+    <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/new-icon/title.svg?sanitize=true">
 </a>
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
