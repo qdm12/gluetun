@@ -13,16 +13,14 @@ type OpenVPN struct {
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
 func GetOpenVPNSettings() (settings OpenVPN, err error) {
-	nonRoot, err := params.GetNonRoot()
+	settings.NonRoot, err = params.GetNonRoot()
 	if err != nil {
 		return settings, err
 	}
-	settings.NonRoot = nonRoot
-	networkProtocol, err := params.GetNetworkProtocol()
+	settings.NetworkProtocol, err = params.GetNetworkProtocol()
 	if err != nil {
 		return settings, err
 	}
-	settings.NetworkProtocol = networkProtocol
 	return settings, nil
 }
 
