@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
 // PIA contains the settings to connect to a PIA server
@@ -37,7 +38,33 @@ func (p *PIA) String() string {
 	return "PIA settings:\n" + strings.Join(settingsList, "\n |--")
 }
 
+// GetPIASettings obtains PIA settings from environment variables using the params package.
 func GetPIASettings() (settings PIA, err error) {
-	// TODO
+	settings.User, err = params.GetUser()
+	if err != nil {
+		return settings, err
+	}
+	settings.Password, err = params.GetPassword()
+	if err != nil {
+		return settings, err
+	}
+	settings.Encryption, err = params.GetPIAEncryption()
+	if err != nil {
+		return settings, err
+	}
+	settings.Region, err = params.GetPIARegion()
+	if err != nil {
+		return settings, err
+	}
+	settings.PortForwarding.Enabled, err = params.GetPortForwarding()
+	if err != nil {
+		return settings, err
+	}
+	if settings.PortForwarding.Enabled {
+		settings.PortForwarding.Filepath, err = params.GetPortForwardingStatusFilepath()
+		if err != nil {
+			return settings, err
+		}
+	}
 	return settings, nil
 }

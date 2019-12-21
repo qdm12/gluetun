@@ -30,6 +30,36 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println(openVPNSettings)
+	PIASettings, err := settings.GetPIASettings()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(PIASettings)
+	DNSSettings, err := settings.GetDNSSettings()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(DNSSettings)
+	firewallSettings, err := settings.GetFirewallSettings()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(firewallSettings)
+	tinyProxySettings, err := settings.GetTinyProxySettings()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(tinyProxySettings)
+	shadowSocksSettings, err := settings.GetShadowSocksSettings()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println(shadowSocksSettings)
 }
 
 func printVersion(program string, commandFn func() (string, error)) {
