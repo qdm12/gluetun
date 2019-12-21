@@ -27,15 +27,15 @@ func GetTinyProxy() (activated bool, err error) {
 
 // GetTinyProxyLog obtains the TinyProxy log level from the environment variable
 // TINYPROXY_LOG, and using PROXY_LOG_LEVEL as a retro-compatibility name
-func GetTinyProxyLog() (logLevel constants.TinyProxyLogLevel, err error) {
+func GetTinyProxyLog() (constants.TinyProxyLogLevel, error) {
 	// Retro-compatibility
-	s := libparams.GetEnv("PROXY_LOG_LEVEL", "")
-	if len(s) != 0 {
+	if libparams.GetEnv("PROXY_LOG_LEVEL", "") != "" {
 		logging.Warn("You are using the old environment variable PROXY_LOG_LEVEL, please consider changing it to TINYPROXY_LOG")
-	} else {
-		s = libparams.GetEnv("TINYPROXY_LOG", "")
+		s, err := libparams.GetValueIfInside("PROXY_LOG_LEVEL", []string{"info", "warning", "error", "critical"}, true, "")
+		return constants.TinyProxyLogLevel(s), err
 	}
-	return constants.ParseTinyProxyLogLevel(s)
+	s, err := libparams.GetValueIfInside("TINYPROXY_LOG", []string{"info", "warning", "error", "critical"}, false, "info")
+	return constants.TinyProxyLogLevel(s), err
 }
 
 // GetTinyProxyPort obtains the TinyProxy listening port from the environment variable

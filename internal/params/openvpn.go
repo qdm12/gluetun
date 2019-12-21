@@ -14,6 +14,6 @@ func GetNonRoot() (nonRoot bool, err error) {
 // GetNetworkProtocol obtains the network protocol to use to connect to the
 // VPN servers from the environment variable PROTOCOL
 func GetNetworkProtocol() (protocol constants.NetworkProtocol, err error) {
-	s := libparams.GetEnv("PROTOCOL", "tcp")
-	return constants.ParseNetworkProtocol(s)
+	s, err := libparams.GetValueIfInside("PROTOCOL", []string{"tcp", "udp"}, false, "udp")
+	return constants.NetworkProtocol(s), err
 }
