@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -12,9 +13,12 @@ type DNS struct {
 	Enabled           bool
 	Provider          constants.DNSProvider
 	AllowedHostnames  []string
+	PrivateAddresses  []string
 	BlockMalicious    bool
 	BlockSurveillance bool
 	BlockAds          bool
+	Verbosity         uint8
+	LogLevel          uint8
 }
 
 func (d *DNS) String() string {
@@ -37,6 +41,9 @@ func (d *DNS) String() string {
 		"Block surveillance: " + blockSurveillance,
 		"Block ads: " + blockAds,
 		"Allowed hostnames: " + strings.Join(d.AllowedHostnames, ", "),
+		"Private addresses: " + strings.Join(d.PrivateAddresses, ", "),
+		"Verbosity level: " + fmt.Sprintf("%d", d.Verbosity),
+		"Log level: " + fmt.Sprintf("%d", d.LogLevel),
 	}
 	return "DNS over TLS settings:\n" + strings.Join(settingsList, "\n |--")
 }
@@ -60,9 +67,22 @@ func GetDNSSettings() (settings DNS, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockAds, err = params.GetDNSAdsBlocking() // TODO add to list
+	settings.BlockAds, err = params.GetDNSAdsBlocking() // TODO add to README list
 	if err != nil {
 		return settings, err
 	}
+	settings.PrivateAddresses = []string{ // TODO make env variable
+		"127.0.0.1/8",
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+		"169.254.0.0/16",
+		"::1/128",
+		"fc00::/7",
+		"fe80::/10",
+		"::ffff:0:0/96",
+	}
+	settings.Verbosity = 1
+	settings.LogLevel = 1 // TODO make env variable
 	return settings, nil
 }
