@@ -48,7 +48,7 @@ func main() {
 }
 
 func checkTUN() error {
-	fileDescriptor, err := os.OpenFile("/dev/net/tun", os.O_RDWR, 0)
+	fileDescriptor, err := os.OpenFile(constants.TunnelDevice, os.O_RDWR, 0)
 	if err != nil {
 		return fmt.Errorf("TUN device is not available: %w", err)
 	}
