@@ -6,32 +6,35 @@ import "strings"
 
 // GetDNSOverTLS obtains if the DNS over TLS should be enabled
 // from the environment variable DOT
-func GetDNSOverTLS() (DNSOverTLS bool, err error) {
-	return libparams.GetOnOff("DOT", true)
+func GetDNSOverTLS(envParams libparams.EnvParams) (DNSOverTLS bool, err error) {
+	return envParams.GetOnOff("DOT", libparams.Default("on"))
 }
 
 // GetDNSMaliciousBlocking obtains if malicious hostnames/IPs should be blocked
 // from being resolved by Unbound, using the environment variable BLOCK_MALICIOUS
-func GetDNSMaliciousBlocking() (blocking bool, err error) {
-	return libparams.GetOnOff("BLOCK_MALICIOUS", false)
+func GetDNSMaliciousBlocking(envParams libparams.EnvParams) (blocking bool, err error) {
+	return envParams.GetOnOff("BLOCK_MALICIOUS", libparams.Default("off"))
 }
 
 // GetDNSSurveillanceBlocking obtains if surveillance hostnames/IPs should be blocked
 // from being resolved by Unbound, using the environment variable BLOCK_NSA
-func GetDNSSurveillanceBlocking() (blocking bool, err error) {
-	return libparams.GetOnOff("BLOCK_NSA", false)
+func GetDNSSurveillanceBlocking(envParams libparams.EnvParams) (blocking bool, err error) {
+	return envParams.GetOnOff("BLOCK_NSA", libparams.Default("off"))
 }
 
 // GetDNSAdsBlocking obtains if ads hostnames/IPs should be blocked
 // from being resolved by Unbound, using the environment variable BLOCK_ADS
-func GetDNSAdsBlocking() (blocking bool, err error) {
-	return libparams.GetOnOff("BLOCK_ADS", false)
+func GetDNSAdsBlocking(envParams libparams.EnvParams) (blocking bool, err error) {
+	return envParams.GetOnOff("BLOCK_ADS", libparams.Default("off"))
 }
 
 // GetDNSUnblockedHostnames obtains a list of hostnames to unblock from block lists
 // from the comma separated list for the environment variable UNBLOCK
-func GetDNSUnblockedHostnames() (hostnames []string, err error) {
-	s := libparams.GetEnv("UNBLOCK", "")
+func GetDNSUnblockedHostnames(envParams libparams.EnvParams) (hostnames []string, err error) {
+	s, err := envParams.GetEnv("UNBLOCK")
+	if err != nil {
+		return nil, err
+	}
 	if len(s) == 0 {
 		return nil, nil
 	}

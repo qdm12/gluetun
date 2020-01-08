@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
@@ -49,25 +50,25 @@ func (d *DNS) String() string {
 }
 
 // GetDNSSettings obtains DNS over TLS settings from environment variables using the params package.
-func GetDNSSettings() (settings DNS, err error) {
-	settings.Enabled, err = params.GetDNSOverTLS()
+func GetDNSSettings(envParams libparams.EnvParams) (settings DNS, err error) {
+	settings.Enabled, err = params.GetDNSOverTLS(envParams)
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
 	settings.Provider = constants.DNSProvider("cloudflare") // TODO make variable
-	settings.AllowedHostnames, err = params.GetDNSUnblockedHostnames()
+	settings.AllowedHostnames, err = params.GetDNSUnblockedHostnames(envParams)
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockMalicious, err = params.GetDNSMaliciousBlocking()
+	settings.BlockMalicious, err = params.GetDNSMaliciousBlocking(envParams)
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockSurveillance, err = params.GetDNSSurveillanceBlocking()
+	settings.BlockSurveillance, err = params.GetDNSSurveillanceBlocking(envParams)
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockAds, err = params.GetDNSAdsBlocking() // TODO add to README list
+	settings.BlockAds, err = params.GetDNSAdsBlocking(envParams) // TODO add to README list
 	if err != nil {
 		return settings, err
 	}

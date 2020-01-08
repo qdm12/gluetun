@@ -10,10 +10,10 @@ import (
 
 // GetExtraSubnets obtains the CIDR subnets from the comma separated list of the
 // environment variable EXTRA_SUBNETS
-func GetExtraSubnets() (extraSubnets []*net.IPNet, err error) {
-	s := libparams.GetEnv("EXTRA_SUBNETS", "")
-	if len(s) == 0 {
-		return nil, nil
+func GetExtraSubnets(envParams libparams.EnvParams) (extraSubnets []*net.IPNet, err error) {
+	s, err := envParams.GetEnv("EXTRA_SUBNETS")
+	if err != nil {
+		return nil, err
 	}
 	subnets := strings.Split(s, ",")
 	for _, subnet := range subnets {
