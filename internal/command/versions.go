@@ -3,13 +3,11 @@ package command
 import (
 	"fmt"
 	"strings"
-
-	"github.com/qdm12/golibs/command"
 )
 
 // VersionOpenVPN obtains the version of the installed OpenVPN
-func VersionOpenVPN() (string, error) {
-	output, err := command.Run("openvpn", "--version")
+func (c *command) VersionOpenVPN() (string, error) {
+	output, err := c.command.Run("openvpn", "--version")
 	if err != nil {
 		return "", err
 	}
@@ -22,8 +20,8 @@ func VersionOpenVPN() (string, error) {
 }
 
 // VersionUnbound obtains the version of the installed Unbound
-func VersionUnbound() (string, error) {
-	output, err := command.Run("unbound", "-h")
+func (c *command) VersionUnbound() (string, error) {
+	output, err := c.command.Run("unbound", "-h")
 	if err != nil {
 		return "", err
 	}
@@ -44,8 +42,8 @@ func VersionUnbound() (string, error) {
 }
 
 // VersionIptables obtains the version of the installed iptables
-func VersionIptables() (string, error) {
-	output, err := command.Run("iptables", "--version")
+func (c *command) VersionIptables() (string, error) {
+	output, err := c.command.Run("iptables", "--version")
 	if err != nil {
 		return "", err
 	}
@@ -57,8 +55,8 @@ func VersionIptables() (string, error) {
 }
 
 // VersionShadowSocks obtains the version of the installed shadowsocks server
-func VersionShadowSocks() (string, error) {
-	output, err := command.Run("ss-server", "-h")
+func (c *command) VersionShadowSocks() (string, error) {
+	output, err := c.command.Run("ss-server", "-h")
 	if err != nil {
 		return "", err
 	}
@@ -74,8 +72,8 @@ func VersionShadowSocks() (string, error) {
 }
 
 // VersionTinyProxy obtains the version of the installed shadowsocks server
-func VersionTinyProxy() (string, error) {
-	output, err := command.Run("tinyproxy", "-v")
+func (c *command) VersionTinyProxy() (string, error) {
+	output, err := c.command.Run("tinyproxy", "-v")
 	if err != nil {
 		return "", err
 	}

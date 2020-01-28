@@ -3,6 +3,8 @@ package constants
 const (
 	// UnboundConf is the file path to the Unbound configuration file
 	UnboundConf = "/etc/unbound/unbound.conf"
+	// ResolvConf is the file path to the system resolv.conf file
+	ResolvConf = "/etc/resolv.conf"
 	// OpenVPNAuthConf is the file path to the OpenVPN auth file
 	OpenVPNAuthConf = "/etc/openvpn/auth.conf"
 	// OpenVPNConf is the file path to the OpenVPN client configuration file

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_MakeUnboundConf(t *testing.T) {
+func Test_generateUnboundConf(t *testing.T) {
 	t.Parallel()
 	settings := settings.DNS{
 		Provider:          constants.Cloudflare,
@@ -32,11 +32,7 @@ func Test_MakeUnboundConf(t *testing.T) {
 		Return([]byte("c\nd\n"), 200, nil).Once()
 	emptyLogger, err := logging.NewEmptyLogging()
 	require.NoError(t, err)
-	conf := &configurator{
-		client: client,
-		logger: emptyLogger,
-	}
-	lines, errs := conf.MakeUnboundConf(settings)
+	lines, errs := generateUnboundConf(settings, client, emptyLogger)
 	require.Len(t, errs, 0)
 	client.AssertExpectations(t)
 	expected := `
