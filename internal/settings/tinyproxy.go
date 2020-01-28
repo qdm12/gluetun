@@ -3,7 +3,6 @@ package settings
 import (
 	"strings"
 
-	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
@@ -19,7 +18,7 @@ type TinyProxy struct {
 
 func (t *TinyProxy) String() string {
 	if !t.Enabled {
-		return "TinyProxy settings: disabled"
+		return "TinyPry settings: disabled"
 	}
 	auth := "disabled"
 	if t.User != "" {
@@ -34,24 +33,24 @@ func (t *TinyProxy) String() string {
 }
 
 // GetTinyProxySettings obtains TinyProxy settings from environment variables using the params package.
-func GetTinyProxySettings(envParams libparams.EnvParams) (settings TinyProxy, err error) {
-	settings.Enabled, err = params.GetTinyProxy(envParams)
+func GetTinyProxySettings(params params.ParamsReader) (settings TinyProxy, err error) {
+	settings.Enabled, err = params.GetTinyProxy()
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
-	settings.User, err = params.GetTinyProxyUser(envParams)
+	settings.User, err = params.GetTinyProxyUser()
 	if err != nil {
 		return settings, err
 	}
-	settings.Password, err = params.GetTinyProxyPassword(envParams)
+	settings.Password, err = params.GetTinyProxyPassword()
 	if err != nil {
 		return settings, err
 	}
-	settings.Port, err = params.GetTinyProxyPort(envParams)
+	settings.Port, err = params.GetTinyProxyPort()
 	if err != nil {
 		return settings, err
 	}
-	settings.LogLevel, err = params.GetTinyProxyLog(envParams)
+	settings.LogLevel, err = params.GetTinyProxyLog()
 	if err != nil {
 		return settings, err
 	}

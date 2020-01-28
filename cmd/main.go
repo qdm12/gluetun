@@ -2,19 +2,28 @@ package main
 
 import (
 	"fmt"
-	"os"
-	libuser "os/user"
-	"strconv"
+	"time"
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/params"
+	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/command"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/dns"
+	"github.com/qdm12/private-internet-access-docker/internal/env"
+	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
+	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/private-internet-access-docker/internal/pia"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
 func main() {
 	// TODO use colors, emojis, maybe move to Golibs
+	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
+	if err != nil {
+		panic(err)
+	}
+	e := env.New(logger)
 	fmt.Printf(`
 	=========================================
 	=========================================
@@ -23,82 +32,39 @@ func main() {
 	=========================================
 	== by github.com/qdm12 - Quentin McGaw ==
 	`)
-	printVersion("OpenVPN", command.VersionOpenVPN)
-	printVersion("Unbound", command.VersionUnbound)
-	printVersion("IPtables", command.VersionIptables)
-	printVersion("TinyProxy", command.VersionTinyProxy)
-	printVersion("ShadowSocks", command.VersionShadowSocks)
-	allSettings, err := settings.GetAllSettings()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println(allSettings)
-	if err := setupAuthFile(allSettings.PIA.User, allSettings.PIA.Password); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	if err := checkTUN(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	e.PrintVersion("OpenVPN", command.VersionOpenVPN)
+	e.PrintVersion("Unbound", command.VersionUnbound)
+	e.PrintVersion("IPtables", command.VersionIptables)
+	e.PrintVersion("TinyProxy", command.VersionTinyProxy)
+	e.PrintVersion("ShadowSocks", command.VersionShadowSocks)
+	params := params.NewParams(logger)
+	allSettings, err := settings.GetAllSettings(params)
+	e.FatalOnError(err)
+	logger.Info(allSettings)
+	fileManager := files.NewFileManager()
+	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
+	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password)
+	e.FatalOnError(err)
+	err = ovpnConf.CheckTUN()
+	e.FatalOnError(err)
+	client := network.NewClient(3 * time.Second)
 	if allSettings.DNS.Enabled {
+		dnsConf := dns.NewConfigurator(logger, client)
+		lines, warnings := dnsConf.MakeUnboundConf(allSettings.DNS)
+		for _, warning := range warnings {
+			logger.Warn(warning)
+		}
+		err = fileManager.WriteLinesToFile(constants.UnboundConf, lines)
+		e.FatalOnError(err)
 	}
-
-}
-
-func checkTUN() error {
-	fileDescriptor, err := os.OpenFile(constants.TunnelDevice, os.O_RDWR, 0)
-	if err != nil {
-		return fmt.Errorf("TUN device is not available: %w", err)
-	}
-	if err := fileDescriptor.Close(); err != nil {
-		fmt.Println("Could not close TUN device file descriptor:", err)
-	}
-	return nil
-}
-
-func setupAuthFile(user, password string) error {
-	exeDir, err := params.GetExeDir()
-	if err != nil {
-		return err
-	}
-	authConfFilepath := exeDir + "auth.conf"
-	authExists, err := files.FileExists(authConfFilepath)
-	if err != nil {
-		return err
-	} else if authExists { // in case of container stop/start
-		fmt.Printf("%s already exists\n", authConfFilepath)
-		return nil
-	}
-	fmt.Printf("Writing credentials to %s\n", authConfFilepath)
-	files.WriteLinesToFile(authConfFilepath, []string{user, password})
-	userObject, err := libuser.Lookup("nonrootuser")
-	if err != nil {
-		return err
-	}
-	uid, err := strconv.Atoi(userObject.Uid)
-	if err != nil {
-		return err
-	}
-	gid, err := strconv.Atoi(userObject.Uid)
-	if err != nil {
-		return err
-	}
-	if err := os.Chown(authConfFilepath, uid, gid); err != nil {
-		return err
-	}
-	if err := os.Chmod(authConfFilepath, 0400); err != nil {
-		return err
-	}
-	return nil
-}
-
-func printVersion(program string, commandFn func() (string, error)) {
-	version, err := commandFn()
-	if err != nil {
-		logging.Err(err)
-	} else {
-		fmt.Printf("%s version: %s\n", program, version)
-	}
+	piaConf := pia.NewConfigurator()
+	ovpnLines, err := piaConf.Get(client, allSettings.PIA.Encryption, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Region)
+	e.FatalOnError(err)
+	IPs, port, device, err := piaConf.Read(ovpnLines)
+	e.FatalOnError(err)
+	ovpnLines, err = piaConf.Modify(ovpnLines, IPs, port)
+	e.FatalOnError(err)
+	err = fileManager.WriteLinesToFile(constants.OpenVPNConf, ovpnLines)
+	e.FatalOnError(err)
+	fmt.Println(device)
 }

@@ -1,10 +1,10 @@
 package settings
 
 import (
-	libparams "github.com/qdm12/golibs/params"
+	"strings"
+
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
-	"strings"
 )
 
 // OpenVPN contains settings to configure the OpenVPN client
@@ -14,12 +14,12 @@ type OpenVPN struct {
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
-func GetOpenVPNSettings(envParams libparams.EnvParams) (settings OpenVPN, err error) {
-	settings.NonRoot, err = params.GetNonRoot(envParams)
+func GetOpenVPNSettings(params params.ParamsReader) (settings OpenVPN, err error) {
+	settings.NonRoot, err = params.GetNonRoot()
 	if err != nil {
 		return settings, err
 	}
-	settings.NetworkProtocol, err = params.GetNetworkProtocol(envParams)
+	settings.NetworkProtocol, err = params.GetNetworkProtocol()
 	if err != nil {
 		return settings, err
 	}

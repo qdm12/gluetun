@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/qdm12/golibs/helpers"
+	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network/mocks"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
@@ -27,10 +27,16 @@ func Test_MakeUnboundConf(t *testing.T) {
 	}
 	client := &mocks.Client{}
 	client.On("GetContent", constants.MaliciousBlockListHostnamesURL).
-		Return([]byte("b\na"), 200, nil).Once()
+		Return([]byte("b\na\nc"), 200, nil).Once()
 	client.On("GetContent", constants.MaliciousBlockListIPsURL).
 		Return([]byte("c\nd\n"), 200, nil).Once()
-	lines, errs := MakeUnboundConf(client, settings)
+	emptyLogger, err := logging.NewEmptyLogging()
+	require.NoError(t, err)
+	conf := &configurator{
+		client: client,
+		logger: emptyLogger,
+	}
+	lines, errs := conf.MakeUnboundConf(settings)
 	require.Len(t, errs, 0)
 	client.AssertExpectations(t)
 	expected := `
@@ -64,6 +70,7 @@ server:
   val-log-level: 3
   verbosity: 2
   local-zone: "b" static
+  local-zone: "c" static
   private-address: 9.9.9.9
   private-address: c
   private-address: d
@@ -88,7 +95,8 @@ func Test_buildBlocked(t *testing.T) {
 		surveillance     blockParams
 		allowedHostnames []string
 		privateAddresses []string
-		lines            []string
+		hostnamesLines   []string
+		ipsLines         []string
 		errsString       []string
 	}{
 		"none blocked": {},
@@ -116,14 +124,14 @@ func Test_buildBlocked(t *testing.T) {
 				blocked: true,
 				content: []byte("surveillance"),
 			},
-			lines: []string{
+			hostnamesLines: []string{
 				"  local-zone: \"ads\" static",
 				"  local-zone: \"malicious\" static",
-				"  local-zone: \"surveillance\" static",
+				"  local-zone: \"surveillance\" static"},
+			ipsLines: []string{
 				"  private-address: ads",
 				"  private-address: malicious",
-				"  private-address: surveillance",
-			},
+				"  private-address: surveillance"},
 		},
 		"all blocked with allowed hostnames": {
 			malicious: blockParams{
@@ -139,13 +147,13 @@ func Test_buildBlocked(t *testing.T) {
 				content: []byte("surveillance"),
 			},
 			allowedHostnames: []string{"ads"},
-			lines: []string{
+			hostnamesLines: []string{
 				"  local-zone: \"malicious\" static",
-				"  local-zone: \"surveillance\" static",
+				"  local-zone: \"surveillance\" static"},
+			ipsLines: []string{
 				"  private-address: ads",
 				"  private-address: malicious",
-				"  private-address: surveillance",
-			},
+				"  private-address: surveillance"},
 		},
 		"all blocked with private addresses": {
 			malicious: blockParams{
@@ -161,15 +169,15 @@ func Test_buildBlocked(t *testing.T) {
 				content: []byte("surveillance"),
 			},
 			privateAddresses: []string{"ads", "192.100.1.5"},
-			lines: []string{
+			hostnamesLines: []string{
 				"  local-zone: \"ads\" static",
 				"  local-zone: \"malicious\" static",
-				"  local-zone: \"surveillance\" static",
+				"  local-zone: \"surveillance\" static"},
+			ipsLines: []string{
 				"  private-address: 192.100.1.5",
 				"  private-address: ads",
 				"  private-address: malicious",
-				"  private-address: surveillance",
-			},
+				"  private-address: surveillance"},
 		},
 		"all blocked with lists and one error": {
 			malicious: blockParams{
@@ -185,12 +193,12 @@ func Test_buildBlocked(t *testing.T) {
 				blocked: true,
 				content: []byte("surveillance"),
 			},
-			lines: []string{
+			hostnamesLines: []string{
 				"  local-zone: \"malicious\" static",
-				"  local-zone: \"surveillance\" static",
+				"  local-zone: \"surveillance\" static"},
+			ipsLines: []string{
 				"  private-address: malicious",
-				"  private-address: surveillance",
-			},
+				"  private-address: surveillance"},
 			errsString: []string{"ads error", "ads error"},
 		},
 		"all blocked with errors": {
@@ -232,14 +240,15 @@ func Test_buildBlocked(t *testing.T) {
 				client.On("GetContent", constants.SurveillanceBlockListIPsURL).
 					Return(tc.surveillance.content, 200, tc.surveillance.clientErr).Once()
 			}
-			lines, errs := buildBlocked(client, tc.malicious.blocked, tc.ads.blocked, tc.surveillance.blocked,
+			hostnamesLines, ipsLines, errs := buildBlocked(client, tc.malicious.blocked, tc.ads.blocked, tc.surveillance.blocked,
 				tc.allowedHostnames, tc.privateAddresses)
 			var errsString []string
 			for _, err := range errs {
 				errsString = append(errsString, err.Error())
 			}
 			assert.ElementsMatch(t, tc.errsString, errsString)
-			assert.Equal(t, tc.lines, lines)
+			assert.ElementsMatch(t, tc.hostnamesLines, hostnamesLines)
+			assert.ElementsMatch(t, tc.ipsLines, ipsLines)
 			client.AssertExpectations(t)
 		})
 	}
@@ -268,7 +277,12 @@ func Test_getList(t *testing.T) {
 				tc.content, tc.status, tc.clientErr,
 			).Once()
 			results, err := getList(client, "irrelevant_url")
-			helpers.AssertErrorsEqual(t, tc.err, err)
+			if tc.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, tc.err.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
 			assert.Equal(t, tc.results, results)
 			client.AssertExpectations(t)
 		})
@@ -382,7 +396,7 @@ func Test_buildBlockedHostnames(t *testing.T) {
 				errsString = append(errsString, err.Error())
 			}
 			assert.ElementsMatch(t, tc.errsString, errsString)
-			assert.Equal(t, tc.lines, lines)
+			assert.ElementsMatch(t, tc.lines, lines)
 			client.AssertExpectations(t)
 		})
 	}
@@ -497,7 +511,7 @@ func Test_buildBlockedIPs(t *testing.T) {
 				errsString = append(errsString, err.Error())
 			}
 			assert.ElementsMatch(t, tc.errsString, errsString)
-			assert.Equal(t, tc.lines, lines)
+			assert.ElementsMatch(t, tc.lines, lines)
 			client.AssertExpectations(t)
 		})
 	}

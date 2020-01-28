@@ -3,8 +3,6 @@ package settings
 import (
 	"strings"
 
-	libparams "github.com/qdm12/golibs/params"
-
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
@@ -41,29 +39,29 @@ func (p *PIA) String() string {
 }
 
 // GetPIASettings obtains PIA settings from environment variables using the params package.
-func GetPIASettings(envParams libparams.EnvParams) (settings PIA, err error) {
-	settings.User, err = params.GetUser(envParams)
+func GetPIASettings(params params.ParamsReader) (settings PIA, err error) {
+	settings.User, err = params.GetUser()
 	if err != nil {
 		return settings, err
 	}
-	settings.Password, err = params.GetPassword(envParams)
+	settings.Password, err = params.GetPassword()
 	if err != nil {
 		return settings, err
 	}
-	settings.Encryption, err = params.GetPIAEncryption(envParams)
+	settings.Encryption, err = params.GetPIAEncryption()
 	if err != nil {
 		return settings, err
 	}
-	settings.Region, err = params.GetPIARegion(envParams)
+	settings.Region, err = params.GetPIARegion()
 	if err != nil {
 		return settings, err
 	}
-	settings.PortForwarding.Enabled, err = params.GetPortForwarding(envParams)
+	settings.PortForwarding.Enabled, err = params.GetPortForwarding()
 	if err != nil {
 		return settings, err
 	}
 	if settings.PortForwarding.Enabled {
-		settings.PortForwarding.Filepath, err = params.GetPortForwardingStatusFilepath(envParams)
+		settings.PortForwarding.Filepath, err = params.GetPortForwardingStatusFilepath()
 		if err != nil {
 			return settings, err
 		}

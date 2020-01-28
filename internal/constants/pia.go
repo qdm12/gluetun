@@ -14,3 +14,7 @@ const (
 type PIARegion string
 
 // TODO add regions
+
+const (
+	PIAOpenVPNURL = "https://www.privateinternetaccess.com/openvpn"
+)

@@ -4,7 +4,6 @@ import (
 	"net"
 	"strings"
 
-	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
@@ -25,8 +24,8 @@ func (f *Firewall) String() string {
 }
 
 // GetFirewallSettings obtains firewall settings from environment variables using the params package.
-func GetFirewallSettings(envParams libparams.EnvParams) (settings Firewall, err error) {
-	settings.AllowedSubnets, err = params.GetExtraSubnets(envParams)
+func GetFirewallSettings(params params.ParamsReader) (settings Firewall, err error) {
+	settings.AllowedSubnets, err = params.GetExtraSubnets()
 	if err != nil {
 		return settings, err
 	}

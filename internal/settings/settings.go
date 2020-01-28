@@ -3,7 +3,7 @@ package settings
 import (
 	"strings"
 
-	libparams "github.com/qdm12/golibs/params"
+	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
 // Settings contains all settings for the program to run
@@ -29,28 +29,28 @@ func (s *Settings) String() string {
 
 // GetAllSettings obtains all settings for the program and returns an error as soon
 // as an error is encountered reading them.
-func GetAllSettings(envParams libparams.EnvParams) (settings Settings, err error) {
-	settings.OpenVPN, err = GetOpenVPNSettings(envParams)
+func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
+	settings.OpenVPN, err = GetOpenVPNSettings(params)
 	if err != nil {
 		return settings, err
 	}
-	settings.PIA, err = GetPIASettings(envParams)
+	settings.PIA, err = GetPIASettings(params)
 	if err != nil {
 		return settings, err
 	}
-	settings.DNS, err = GetDNSSettings(envParams)
+	settings.DNS, err = GetDNSSettings(params)
 	if err != nil {
 		return settings, err
 	}
-	settings.Firewall, err = GetFirewallSettings(envParams)
+	settings.Firewall, err = GetFirewallSettings(params)
 	if err != nil {
 		return settings, err
 	}
-	settings.TinyProxy, err = GetTinyProxySettings(envParams)
+	settings.TinyProxy, err = GetTinyProxySettings(params)
 	if err != nil {
 		return settings, err
 	}
-	settings.ShadowSocks, err = GetShadowSocksSettings(envParams)
+	settings.ShadowSocks, err = GetShadowSocksSettings(params)
 	if err != nil {
 		return settings, err
 	}

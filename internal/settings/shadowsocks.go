@@ -3,7 +3,6 @@ package settings
 import (
 	"strings"
 
-	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
@@ -26,20 +25,20 @@ func (s *ShadowSocks) String() string {
 }
 
 // GetShadowSocksSettings obtains ShadowSocks settings from environment variables using the params package.
-func GetShadowSocksSettings(envParams libparams.EnvParams) (settings ShadowSocks, err error) {
-	settings.Enabled, err = params.GetShadowSocks(envParams)
+func GetShadowSocksSettings(params params.ParamsReader) (settings ShadowSocks, err error) {
+	settings.Enabled, err = params.GetShadowSocks()
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
-	settings.Port, err = params.GetShadowSocksPort(envParams)
+	settings.Port, err = params.GetShadowSocksPort()
 	if err != nil {
 		return settings, err
 	}
-	settings.Password, err = params.GetShadowSocksPassword(envParams)
+	settings.Password, err = params.GetShadowSocksPassword()
 	if err != nil {
 		return settings, err
 	}
-	settings.Log, err = params.GetShadowSocksLog(envParams)
+	settings.Log, err = params.GetShadowSocksLog()
 	if err != nil {
 		return settings, err
 	}
