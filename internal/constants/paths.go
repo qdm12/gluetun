@@ -11,4 +11,6 @@ const (
 	OpenVPNConf = "/etc/openvpn/target.ovpn"
 	// TunnelDevice is the file path to tun device
 	TunnelDevice = "/dev/net/tun"
+	// NetRoute is the path to the file containing information on the network route
+	NetRoute = "/proc/net/route"
 )
