@@ -7,14 +7,13 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func downloadOvpnConfig(client network.Client, encryption constants.PIAEncryption,
+func (c *configurator) DownloadOvpnConfig(encryption constants.PIAEncryption,
 	protocol constants.NetworkProtocol, region constants.PIARegion) (lines []string, err error) {
 	URL := buildZipURL(encryption, protocol)
-	content, status, err := client.GetContent(URL)
+	content, status, err := c.client.GetContent(URL)
 	if err != nil {
 		return nil, err
 	} else if status != 200 {

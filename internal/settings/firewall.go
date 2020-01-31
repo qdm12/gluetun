@@ -9,7 +9,7 @@ import (
 
 // Firewall contains settings to customize the firewall operation
 type Firewall struct {
-	AllowedSubnets []*net.IPNet
+	AllowedSubnets []net.IPNet
 }
 
 func (f *Firewall) String() string {

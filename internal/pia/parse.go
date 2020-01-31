@@ -3,13 +3,14 @@ package pia
 import (
 	"fmt"
 	"net"
+	"strconv"
 	"strings"
 
-	"github.com/qdm12/golibs/verification"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func parseConfig(lines []string, verifier verification.Verifier, lookupIP func(host string) ([]net.IP, error)) (
-	IPs []string, port, device string, err error) {
+func (c *configurator) ParseConfig(lines []string) (IPs []net.IP, port uint16, device models.VPNDevice, err error) {
 	remoteLineFound := false
 	deviceLineFound := false
 	for _, line := range lines {
@@ -17,37 +18,38 @@ func parseConfig(lines []string, verifier verification.Verifier, lookupIP func(h
 			remoteLineFound = true
 			words := strings.Split(line, " ")
 			if len(words) != 3 {
-				return nil, "", "", fmt.Errorf("line %q misses information", line)
+				return nil, 0, "", fmt.Errorf("line %q misses information", line)
 			}
 			host := words[1]
-			if err := verifier.VerifyPort(words[2]); err != nil {
-				return nil, "", "", fmt.Errorf("line %q has an invalid port: %w", line, err)
+			if err := c.verifyPort(words[2]); err != nil {
+				return nil, 0, "", fmt.Errorf("line %q has an invalid port: %w", line, err)
 			}
-			port = words[2]
-			netIPs, err := lookupIP(host) // TODO use Unbound
+			portUint64, err := strconv.ParseUint(words[2], 10, 16)
 			if err != nil {
-				return nil, "", "", err
+				return nil, 0, "", err
 			}
-			for _, netIP := range netIPs {
-				IPs = append(IPs, netIP.String())
+			port = uint16(portUint64)
+			IPs, err = c.lookupIP(host) // TODO use Unbound
+			if err != nil {
+				return nil, 0, "", err
 			}
 		} else if strings.HasPrefix(line, "dev ") {
 			deviceLineFound = true
-			words := strings.Split(line, " ")
-			if len(words) != 2 {
-				return nil, "", "", fmt.Errorf("line %q misses information", line)
+			fields := strings.Fields(line)
+			if len(fields) != 2 {
+				return nil, 0, "", fmt.Errorf("line %q misses information", line)
 			}
-			device = words[1]
-			if device != "tun" && device != "tap" {
-				return nil, "", "", fmt.Errorf("device %q is not valid", device)
+			device = models.VPNDevice(fields[1] + "0")
+			if device != constants.TUN && device != constants.TAP {
+				return nil, 0, "", fmt.Errorf("device %q is not valid", device)
 			}
 		}
 	}
 	if remoteLineFound && deviceLineFound {
 		return IPs, port, device, nil
 	} else if !remoteLineFound {
-		return nil, "", "", fmt.Errorf("remote line not found in Openvpn configuration")
+		return nil, 0, "", fmt.Errorf("remote line not found in Openvpn configuration")
 	} else {
-		return nil, "", "", fmt.Errorf("device line not found in Openvpn configuration")
+		return nil, 0, "", fmt.Errorf("device line not found in Openvpn configuration")
 	}
 }

@@ -4,20 +4,21 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"net"
 	"testing"
 
 	"github.com/qdm12/golibs/files/mocks"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func Test_getDefaultInterface(t *testing.T) {
+func Test_getDefaultRoute(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
 		data             []byte
 		readErr          error
 		defaultInterface string
-		gateway          string
-		netMask          string
+		defaultGateway   net.IP
+		defaultSubnet    net.IPNet
 		err              error
 	}{
 		"no data": {
@@ -40,6 +41,11 @@ eth0    000011AC        00000000        0001    0       0       0`),
 eth0    00000000        x               0003    0       0       0       00000000        0       0       0
 eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0`),
 			err: fmt.Errorf("cannot parse reversed IP hex \"x\": encoding/hex: invalid byte: U+0078 'x'")},
+		"bad net number": {
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
+eth0    x               00000000        0001    0       0       0       0000FFFF        0       0       0`),
+			err: fmt.Errorf("cannot parse reversed IP hex \"x\": encoding/hex: invalid byte: U+0078 'x'")},
 		"bad net mask": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
 eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
@@ -50,9 +56,12 @@ eth0    000011AC        00000000        0001    0       0       0       x       
 eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0             
 eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0`),
 			defaultInterface: "eth0",
-			gateway:          "172.17.0.1",
-			netMask:          "16"},
-	}
+			defaultGateway:   net.IP{0xac, 0x11, 0x0, 0x1},
+			defaultSubnet: net.IPNet{
+				IP:   net.IP{0xac, 0x11, 0x0, 0x0},
+				Mask: net.IPMask{0x0, 0x0, 0xff, 0xff},
+			}},
+	} // TODO find full subnet 172.17.0.0/16
 	for name, tc := range tests {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
@@ -60,7 +69,8 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 			fileManager := &mocks.FileManager{}
 			fileManager.On("ReadFile", constants.NetRoute).
 				Return(tc.data, tc.readErr).Once()
-			defaultInterface, gateway, netMask, err := getDefaultInterface(fileManager)
+			c := &configurator{fileManager: fileManager}
+			defaultInterface, defaultGateway, defaultSubnet, err := c.GetDefaultRoute()
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())
@@ -68,17 +78,17 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tc.defaultInterface, defaultInterface)
-			assert.Equal(t, tc.gateway, gateway)
-			assert.Equal(t, tc.netMask, netMask)
+			assert.Equal(t, tc.defaultGateway, defaultGateway)
+			assert.Equal(t, tc.defaultSubnet, defaultSubnet)
 		})
 	}
 }
 
-func Test_reversedHexToIP(t *testing.T) {
+func Test_reversedHexToIPv4(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
 		reversedHex string
-		IP          string
+		IP          net.IP
 		err         error
 	}{
 		"empty hex": {
@@ -91,18 +101,18 @@ func Test_reversedHexToIP(t *testing.T) {
 			err:         fmt.Errorf("hex string contains 3 bytes instead of 4")},
 		"correct hex": {
 			reversedHex: "010011AC",
-			IP:          "172.17.0.1",
+			IP:          []byte{0xac, 0x11, 0x0, 0x1},
 			err:         nil},
 		"correct hex 2": {
 			reversedHex: "000011AC",
-			IP:          "172.17.0.0",
+			IP:          []byte{0xac, 0x11, 0x0, 0x0},
 			err:         nil},
 	}
 	for name, tc := range tests {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			IP, err := reversedHexToIP(tc.reversedHex)
+			IP, err := reversedHexToIPv4(tc.reversedHex)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())
@@ -118,7 +128,7 @@ func Test_hexMaskToDecMask(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
 		hexString string
-		decMask   string
+		mask      net.IPMask
 		err       error
 	}{
 		"empty hex": {
@@ -131,21 +141,21 @@ func Test_hexMaskToDecMask(t *testing.T) {
 			err:       fmt.Errorf("hex string contains 3 bytes instead of 4")},
 		"16": {
 			hexString: "0000FFFF",
-			decMask:   "16",
+			mask:      []byte{0x0, 0x0, 0xff, 0xff},
 			err:       nil},
 	}
 	for name, tc := range tests {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			decMask, err := hexMaskToDecMask(tc.hexString)
+			mask, err := hexToIPv4Mask(tc.hexString)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tc.decMask, decMask)
+			assert.Equal(t, tc.mask, mask)
 		})
 	}
 }
