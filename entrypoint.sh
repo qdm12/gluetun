@@ -220,6 +220,14 @@ if [ "$(cat /dev/net/tun 2>&1 /dev/null)" != "cat: read error: File descriptor i
   printf "DONE\n"
 fi
 
+# NOTE: Temporarily reset chain policies allowing Kubernetes sidecar to
+# successfully restart the container. Without this, the existing rules will
+# pre-exist, preventing the nslookup of the PIA region address. These will
+# simply be redundant at Docker runtime as they will already be set this way
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD ACCEPT
+
 ############################################
 # BLOCKING MALICIOUS HOSTNAMES AND IPs WITH UNBOUND
 ############################################
@@ -278,7 +286,8 @@ fi
 printf " * Port: $PORT\n"
 printf " * Domain: $PIADOMAIN\n"
 printf "[INFO] Detecting IP addresses corresponding to $PIADOMAIN...\n"
-VPNIPS=$(nslookup $PIADOMAIN localhost | tail -n +3 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
+# DoT will force localhost DNS resolution, without it using localhost fails
+VPNIPS=$(nslookup $PIADOMAIN | tail -n +3 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
 exitOnError $?
 for ip in $VPNIPS; do
   printf "   $ip\n";
@@ -342,10 +351,14 @@ exitOnError $?
 printf "$SUBNET\n"
 for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
 do
-  printf " * Adding $EXTRASUBNET as route via $INTERFACE..."
-  ip route add $EXTRASUBNET via $DEFAULT_GATEWAY dev $INTERFACE
-  exitOnError $?
-  printf "DONE\n"
+  # In kubernetes, any automatic restart of a container will fail as this route
+  # will pre-exist from the initial pod execution, causing a non-zero exit
+  if [ -z "$(ip route show $EXTRASUBNET)" ]; then
+    printf " * Adding $EXTRASUBNET as route via $INTERFACE..."
+    ip route add $EXTRASUBNET via $DEFAULT_GATEWAY dev $INTERFACE
+    exitOnError $?
+    printf "DONE\n"
+  fi
 done
 printf " * Detecting target VPN interface..."
 VPN_DEVICE=$(cat $TARGET_PATH/config.ovpn | grep 'dev ' | cut -d" " -f 2)0
@@ -420,8 +433,12 @@ do
   iptables -A INPUT -i $INTERFACE -s $EXTRASUBNET -d $SUBNET -j ACCEPT
   exitOnError $?
   printf "DONE\n"
-  # iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
+  printf "   * Accept output traffic through $INTERFACE to $EXTRASUBNET..."
   # iptables -A OUTPUT -o $INTERFACE -s $SUBNET -d $EXTRASUBNET -j ACCEPT
+  iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
+  exitOnError $?
+  printf "DONE\n"
+
 done
 
 ############################################
