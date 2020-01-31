@@ -8,8 +8,10 @@ import (
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/command"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/env"
+	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
@@ -60,8 +62,29 @@ func main() {
 		err = dnsConf.SetLocalNameserver()
 		e.FatalOnError(err)
 	}
-	piaConf := pia.NewConfigurator(client, fileManager)
+	piaConf := pia.NewConfigurator(client)
 	logger.Info("Configuring PIA")
-	err = piaConf.MakeOvpn(allSettings.PIA.Encryption, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Region)
+	lines, err := piaConf.DownloadOvpnConfig(allSettings.PIA.Encryption, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Region)
+	e.FatalOnError(err)
+	VPNIPs, port, VPNDevice, err := piaConf.ParseConfig(lines)
+	e.FatalOnError(err)
+	lines, err = piaConf.ModifyLines(lines, VPNIPs, port)
+	e.FatalOnError(err)
+	fileManager.WriteLinesToFile(constants.OpenVPNConf, lines)
+	e.FatalOnError(err)
+	firewallConf := firewall.NewConfigurator(logger, fileManager)
+	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
+	e.FatalOnError(err)
+	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
+	e.FatalOnError(err)
+	err = firewallConf.Clear()
+	e.FatalOnError(err)
+	err = firewallConf.BlockAll()
+	e.FatalOnError(err)
+	err = firewallConf.CreateGeneralRules()
+	e.FatalOnError(err)
+	err = firewallConf.CreateVPNRules(VPNDevice, VPNIPs, defaultInterface, port, allSettings.OpenVPN.NetworkProtocol)
+	e.FatalOnError(err)
+	err = firewallConf.CreateLocalSubnetsRules(defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
 	e.FatalOnError(err)
 }
