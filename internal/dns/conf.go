@@ -12,15 +12,18 @@ import (
 )
 
 func (c *configurator) MakeUnboundConf(settings settings.DNS) (err error) {
-	lines, errs := generateUnboundConf(settings, c.client, c.logger)
-	for _, err := range errs {
-		c.logger.Warn(err)
+	lines, warnings, err := generateUnboundConf(settings, c.client, c.logger)
+	for _, warning := range warnings {
+		c.logger.Warn(warning)
+	}
+	if err != nil {
+		return err
 	}
 	return c.fileManager.WriteLinesToFile(constants.UnboundConf, lines)
 }
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings
-func generateUnboundConf(settings settings.DNS, client network.Client, logger logging.Logger) (lines []string, errs []error) {
+func generateUnboundConf(settings settings.DNS, client network.Client, logger logging.Logger) (lines []string, warnings []error, err error) {
 	serverSection := map[string]string{
 		// Logging
 		"verbosity":     fmt.Sprintf("%d", settings.Verbosity),
@@ -59,7 +62,7 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 	}
 
 	// Block lists
-	hostnamesLines, ipsLines, errs := buildBlocked(client,
+	hostnamesLines, ipsLines, warnings := buildBlocked(client,
 		settings.BlockMalicious, settings.BlockAds, settings.BlockSurveillance,
 		settings.AllowedHostnames, settings.PrivateAddresses,
 	)
@@ -99,10 +102,14 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		return forwardZoneLines[i] < forwardZoneLines[j]
 	})
 	lines = append(lines, forwardZoneLines...)
-	for _, forwardAddress := range settings.Provider.GetForwardAddresses() {
-		lines = append(lines, "  forward-addr: "+forwardAddress)
+	forwardAddresses, ok := constants.DNSAddressesMapping[settings.Provider]
+	if !ok || len(forwardAddresses) == 0 {
+		return nil, warnings, fmt.Errorf("DNS provider %q does not have any matching forward addresses", settings.Provider)
 	}
-	return lines, errs
+	for _, forwardAddress := range forwardAddresses {
+		lines = append(lines, fmt.Sprintf("  forward-addr: %s", forwardAddress))
+	}
+	return lines, warnings, nil
 }
 
 func buildBlocked(client network.Client, blockMalicious, blockAds, blockSurveillance bool,

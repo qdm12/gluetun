@@ -1,48 +1,48 @@
 package constants
 
-// DNSProvider is a DNS over TLS server provider name
-type DNSProvider string
+import (
+	"github.com/qdm12/private-internet-access-docker/internal/models"
+)
 
 const (
 	// Cloudflare is a DNS over TLS provider
-	Cloudflare DNSProvider = "cloudflare"
+	Cloudflare models.DNSProvider = "cloudflare"
 	// Google is a DNS over TLS provider
-	Google = "google"
+	Google models.DNSProvider = "google"
 	// Quad9 is a DNS over TLS provider
-	Quad9 = "quad9"
+	Quad9 models.DNSProvider = "quad9"
 	// Quadrant is a DNS over TLS provider
-	Quadrant = "quadrant"
+	Quadrant models.DNSProvider = "quadrant"
 	// CleanBrowsing is a DNS over TLS provider
-	CleanBrowsing = "cleanbrowsing"
+	CleanBrowsing models.DNSProvider = "cleanbrowsing"
 	// SecureDNS is a DNS over TLS provider
-	SecureDNS = "securedns"
+	SecureDNS models.DNSProvider = "securedns"
 	// LibreDNS is a DNS over TLS provider
-	LibreDNS = "libredns"
+	LibreDNS models.DNSProvider = "libredns"
 )
 
-// GetForwardAddresses gets forwarded addresses corresponding to a
-// DNS over TLS provider.
-func (p *DNSProvider) GetForwardAddresses() []string {
-	switch *p {
-	case Cloudflare:
-		return []string{"1.1.1.1@853#cloudflare-dns.com", "1.0.0.1@853#cloudflare-dns.com"}
-	case Google:
-		return []string{"8.8.8.8@853#dns.google", "8.8.4.4@853#dns.google"}
-	case Quad9:
-		return []string{"9.9.9.9@853#dns.quad9.net", "149.112.112.112@853#dns.quad9.net"}
-	case Quadrant:
-		return []string{"12.159.2.159@853#dns-tls.qis.io"}
-	case CleanBrowsing:
-		return []string{
-			"185.228.168.9@853#security-filter-dns.cleanbrowsing.org",
-			"185.228.169.9@853#security-filter-dns.cleanbrowsing.org"}
-	case SecureDNS:
-		return []string{"146.185.167.43@853#dot.securedns.eu"}
-	case LibreDNS:
-		return []string{"116.203.115.192@853#dot.libredns.gr"}
-	default:
-		return nil
-	}
+const (
+	CloudflareAddress1    models.DNSForwardAddress = "1.1.1.1@853#cloudflare-dns.com"
+	CloudflareAddress2    models.DNSForwardAddress = "1.0.0.1@853#cloudflare-dns.com"
+	GoogleAddress1        models.DNSForwardAddress = "8.8.8.8@853#dns.google"
+	GoogleAddress2        models.DNSForwardAddress = "8.8.4.4@853#dns.google"
+	Quad9Address1         models.DNSForwardAddress = "9.9.9.9@853#dns.quad9.net"
+	Quad9Address2         models.DNSForwardAddress = "149.112.112.112@853#dns.quad9.net"
+	QuadrantAddress       models.DNSForwardAddress = "12.159.2.159@853#dns-tls.qis.io"
+	CleanBrowsingAddress1 models.DNSForwardAddress = "185.228.168.9@853#security-filter-dns.cleanbrowsing.org"
+	CleanBrowsingAddress2 models.DNSForwardAddress = "185.228.169.9@853#security-filter-dns.cleanbrowsing.org"
+	SecureDNSAddress      models.DNSForwardAddress = "146.185.167.43@853#dot.securedns.eu"
+	LibreDNSAddress       models.DNSForwardAddress = "116.203.115.192@853#dot.libredns.gr"
+)
+
+var DNSAddressesMapping = map[models.DNSProvider][]models.DNSForwardAddress{
+	Cloudflare:    []models.DNSForwardAddress{CloudflareAddress1, CloudflareAddress2},
+	Google:        []models.DNSForwardAddress{GoogleAddress1, GoogleAddress2},
+	Quad9:         []models.DNSForwardAddress{Quad9Address1, Quad9Address2},
+	Quadrant:      []models.DNSForwardAddress{QuadrantAddress},
+	CleanBrowsing: []models.DNSForwardAddress{CleanBrowsingAddress1, CleanBrowsingAddress2},
+	SecureDNS:     []models.DNSForwardAddress{SecureDNSAddress},
+	LibreDNS:      []models.DNSForwardAddress{LibreDNSAddress},
 }
 
 // Block lists URLs

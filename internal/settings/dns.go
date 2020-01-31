@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
 // DNS contains settings to configure Unbound for DNS over TLS operation
 type DNS struct {
 	Enabled           bool
-	Provider          constants.DNSProvider
+	Provider          models.DNSProvider
 	AllowedHostnames  []string
 	PrivateAddresses  []string
 	BlockMalicious    bool
@@ -54,7 +54,7 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
-	settings.Provider = constants.DNSProvider("cloudflare") // TODO make variable
+	settings.Provider = models.DNSProvider("cloudflare") // TODO make variable
 	settings.AllowedHostnames, err = params.GetDNSUnblockedHostnames()
 	if err != nil {
 		return settings, err

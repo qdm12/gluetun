@@ -32,8 +32,9 @@ func Test_generateUnboundConf(t *testing.T) {
 		Return([]byte("c\nd\n"), 200, nil).Once()
 	emptyLogger, err := logging.NewEmptyLogging()
 	require.NoError(t, err)
-	lines, errs := generateUnboundConf(settings, client, emptyLogger)
-	require.Len(t, errs, 0)
+	lines, warnings, err := generateUnboundConf(settings, client, emptyLogger)
+	require.Len(t, warnings, 0)
+	require.NoError(t, err)
 	client.AssertExpectations(t)
 	expected := `
 server:
