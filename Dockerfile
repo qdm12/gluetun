@@ -40,7 +40,7 @@ ENV USER= \
 ENTRYPOINT /entrypoint.sh
 EXPOSE 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
-RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip tinyproxy jq tzdata && \
+RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip tinyproxy jq tzdata sipcalc && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk add -q --progress --no-cache --update shadowsocks-libev && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \

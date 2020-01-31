@@ -346,8 +346,9 @@ INTERFACE=$(ip r | grep 'default via' | cut -d" " -f 5)
 exitOnError $?
 printf "$INTERFACE\n"
 printf " * Detecting local subnet..."
-SUBNET=$(ip r | grep -v 'default via' | grep $INTERFACE | tail -n 1 | cut -d" " -f 1)
-exitOnError $?
+NETWORK=$(sipcalc $(ip a sh $INTERFACE | awk '/inet / {print $2}') | awk '/Network address/ { print $NF }')
+CIDR=$(sipcalc $(ip a sh $INTERFACE | awk '/inet / {print $2}') | awk '/Network mask \(bits/ { print $NF }')
+SUBNET="$NETWORK/$CIDR"
 printf "$SUBNET\n"
 for EXTRASUBNET in ${EXTRA_SUBNETS//,/ }
 do
@@ -434,8 +435,8 @@ do
   exitOnError $?
   printf "DONE\n"
   printf "   * Accept output traffic through $INTERFACE to $EXTRASUBNET..."
-  # iptables -A OUTPUT -o $INTERFACE -s $SUBNET -d $EXTRASUBNET -j ACCEPT
-  iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
+  iptables -A OUTPUT -o $INTERFACE -s $SUBNET -d $EXTRASUBNET -j ACCEPT
+  # iptables -A OUTPUT -d $EXTRASUBNET -j ACCEPT
   exitOnError $?
   printf "DONE\n"
 
