@@ -19,7 +19,7 @@ func (c *configurator) MakeUnboundConf(settings settings.DNS) (err error) {
 	if err != nil {
 		return err
 	}
-	return c.fileManager.WriteLinesToFile(constants.UnboundConf, lines)
+	return c.fileManager.WriteLinesToFile(string(constants.UnboundConf), lines)
 }
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings
@@ -175,7 +175,7 @@ func buildBlockedHostnames(client network.Client, blockMalicious, blockAds, bloc
 	if blockMalicious {
 		listsLeftToFetch++
 		go func() {
-			results, err := getList(client, constants.MaliciousBlockListHostnamesURL)
+			results, err := getList(client, string(constants.MaliciousBlockListHostnamesURL))
 			chResults <- results
 			chError <- err
 		}()
@@ -183,7 +183,7 @@ func buildBlockedHostnames(client network.Client, blockMalicious, blockAds, bloc
 	if blockAds {
 		listsLeftToFetch++
 		go func() {
-			results, err := getList(client, constants.AdsBlockListHostnamesURL)
+			results, err := getList(client, string(constants.AdsBlockListHostnamesURL))
 			chResults <- results
 			chError <- err
 		}()
@@ -191,7 +191,7 @@ func buildBlockedHostnames(client network.Client, blockMalicious, blockAds, bloc
 	if blockSurveillance {
 		listsLeftToFetch++
 		go func() {
-			results, err := getList(client, constants.SurveillanceBlockListHostnamesURL)
+			results, err := getList(client, string(constants.SurveillanceBlockListHostnamesURL))
 			chResults <- results
 			chError <- err
 		}()
@@ -227,7 +227,7 @@ func buildBlockedIPs(client network.Client, blockMalicious, blockAds, blockSurve
 	if blockMalicious {
 		listsLeftToFetch++
 		go func() {
-			results, err := getList(client, constants.MaliciousBlockListIPsURL)
+			results, err := getList(client, string(constants.MaliciousBlockListIPsURL))
 			chResults <- results
 			chError <- err
 		}()
@@ -235,7 +235,7 @@ func buildBlockedIPs(client network.Client, blockMalicious, blockAds, blockSurve
 	if blockAds {
 		listsLeftToFetch++
 		go func() {
-			results, err := getList(client, constants.AdsBlockListIPsURL)
+			results, err := getList(client, string(constants.AdsBlockListIPsURL))
 			chResults <- results
 			chError <- err
 		}()
@@ -243,7 +243,7 @@ func buildBlockedIPs(client network.Client, blockMalicious, blockAds, blockSurve
 	if blockSurveillance {
 		listsLeftToFetch++
 		go func() {
-			results, err := getList(client, constants.SurveillanceBlockListIPsURL)
+			results, err := getList(client, string(constants.SurveillanceBlockListIPsURL))
 			chResults <- results
 			chError <- err
 		}()

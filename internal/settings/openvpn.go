@@ -3,14 +3,14 @@ package settings
 import (
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
 // OpenVPN contains settings to configure the OpenVPN client
 type OpenVPN struct {
 	NonRoot         bool
-	NetworkProtocol constants.NetworkProtocol
+	NetworkProtocol models.NetworkProtocol
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions

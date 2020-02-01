@@ -1,9 +1,10 @@
 package settings
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
@@ -12,8 +13,8 @@ type TinyProxy struct {
 	Enabled  bool
 	User     string
 	Password string
-	Port     string
-	LogLevel constants.TinyProxyLogLevel
+	Port     uint16
+	LogLevel models.TinyProxyLogLevel
 }
 
 func (t *TinyProxy) String() string {
@@ -25,7 +26,7 @@ func (t *TinyProxy) String() string {
 		auth = "enabled"
 	}
 	settingsList := []string{
-		"Port: " + t.Port,
+		fmt.Sprintf("Port: %d", t.Port),
 		"Authentication: " + auth,
 		"Log level: " + string(t.LogLevel),
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 type ParamsReader interface {
@@ -18,18 +18,18 @@ type ParamsReader interface {
 	GetDNSUnblockedHostnames() (hostnames []string, err error)
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
 	GetNonRoot() (nonRoot bool, err error)
-	GetNetworkProtocol() (protocol constants.NetworkProtocol, err error)
+	GetNetworkProtocol() (protocol models.NetworkProtocol, err error)
 	GetPortForwarding() (activated bool, err error)
-	GetPortForwardingStatusFilepath() (filepath string, err error)
-	GetPIAEncryption() (constants.PIAEncryption, error)
-	GetPIARegion() (constants.PIARegion, error)
+	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
+	GetPIAEncryption() (models.PIAEncryption, error)
+	GetPIARegion() (models.PIARegion, error)
 	GetShadowSocks() (activated bool, err error)
 	GetShadowSocksLog() (activated bool, err error)
-	GetShadowSocksPort() (port string, err error)
+	GetShadowSocksPort() (port uint16, err error)
 	GetShadowSocksPassword() (password string, err error)
 	GetTinyProxy() (activated bool, err error)
-	GetTinyProxyLog() (constants.TinyProxyLogLevel, error)
-	GetTinyProxyPort() (port string, err error)
+	GetTinyProxyLog() (models.TinyProxyLogLevel, error)
+	GetTinyProxyPort() (port uint16, err error)
 	GetTinyProxyUser() (user string, err error)
 	GetTinyProxyPassword() (password string, err error)
 	GetUser() (s string, err error)

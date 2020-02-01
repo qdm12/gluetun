@@ -8,10 +8,11 @@ import (
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) DownloadOvpnConfig(encryption constants.PIAEncryption,
-	protocol constants.NetworkProtocol, region constants.PIARegion) (lines []string, err error) {
+func (c *configurator) DownloadOvpnConfig(encryption models.PIAEncryption,
+	protocol models.NetworkProtocol, region models.PIARegion) (lines []string, err error) {
 	URL := buildZipURL(encryption, protocol)
 	content, status, err := c.client.GetContent(URL)
 	if err != nil {
@@ -28,8 +29,8 @@ func (c *configurator) DownloadOvpnConfig(encryption constants.PIAEncryption,
 	return lines, nil
 }
 
-func buildZipURL(encryption constants.PIAEncryption, protocol constants.NetworkProtocol) (URL string) {
-	URL = constants.PIAOpenVPNURL + "/openvpn"
+func buildZipURL(encryption models.PIAEncryption, protocol models.NetworkProtocol) (URL string) {
+	URL = string(constants.PIAOpenVPNURL) + "/openvpn"
 	if encryption == constants.PIAEncryptionStrong {
 		URL += "-strong"
 	}

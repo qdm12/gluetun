@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/params"
@@ -11,7 +12,7 @@ type ShadowSocks struct {
 	Enabled  bool
 	Password string
 	Log      bool
-	Port     string
+	Port     uint16
 }
 
 func (s *ShadowSocks) String() string {
@@ -19,7 +20,7 @@ func (s *ShadowSocks) String() string {
 		return "ShadowSocks settings: disabled"
 	}
 	settingsList := []string{
-		"Port: " + s.Port,
+		fmt.Sprintf("Port: %d", s.Port),
 	}
 	return "ShadowSocks settings:\n" + strings.Join(settingsList, "\n |--")
 }

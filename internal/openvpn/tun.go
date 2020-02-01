@@ -9,7 +9,7 @@ import (
 
 // CheckTUN checks the tunnel device is present and accessible
 func (c *configurator) CheckTUN() error {
-	f, err := c.openFile(constants.TunnelDevice, os.O_RDWR, 0)
+	f, err := c.openFile(string(constants.TunnelDevice), os.O_RDWR, 0)
 	if err != nil {
 		return fmt.Errorf("TUN device is not available: %w", err)
 	}

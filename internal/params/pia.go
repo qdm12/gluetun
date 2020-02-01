@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // GetUser obtains the user to use to connect to the VPN servers
@@ -59,20 +59,21 @@ func (p *paramsReader) GetPortForwarding() (activated bool, err error) {
 
 // GetPortForwardingStatusFilepath obtains the port forwarding status file path
 // from the environment variable PORT_FORWARDING_STATUS_FILE
-func (p *paramsReader) GetPortForwardingStatusFilepath() (filepath string, err error) {
-	return p.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/forwarded_port"))
+func (p *paramsReader) GetPortForwardingStatusFilepath() (filepath models.Filepath, err error) {
+	filepathStr, err := p.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/forwarded_port"))
+	return models.Filepath(filepathStr), err
 }
 
 // GetPIAEncryption obtains the encryption level for the PIA connection
 // from the environment variable ENCRYPTION
-func (p *paramsReader) GetPIAEncryption() (constants.PIAEncryption, error) {
+func (p *paramsReader) GetPIAEncryption() (models.PIAEncryption, error) {
 	s, err := p.envParams.GetValueIfInside("ENCRYPTION", []string{"normal", "strong"}, libparams.Default("strong"))
-	return constants.PIAEncryption(s), err
+	return models.PIAEncryption(s), err
 }
 
 // GetPIARegion obtains the region for the PIA server from the
 // environment variable REGION
-func (p *paramsReader) GetPIARegion() (constants.PIARegion, error) {
+func (p *paramsReader) GetPIARegion() (models.PIARegion, error) {
 	s, err := p.envParams.GetValueIfInside("REGION", []string{"Netherlands"}, libparams.Compulsory())
-	return constants.PIARegion(s), err
+	return models.PIARegion(s), err
 }

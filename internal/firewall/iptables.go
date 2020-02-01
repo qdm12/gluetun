@@ -5,7 +5,6 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -57,7 +56,7 @@ func (c *configurator) CreateGeneralRules() error {
 }
 
 func (c *configurator) CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP,
-	defaultInterface string, port uint16, protocol constants.NetworkProtocol) error {
+	defaultInterface string, port uint16, protocol models.NetworkProtocol) error {
 	for _, serverIP := range serverIPs {
 		c.logger.Info("allowing output traffic to VPN server %q through %q on port %s %d",
 			serverIP, defaultInterface, protocol, port)

@@ -1,23 +1,21 @@
 package constants
 
-// VPNProvider is the name of the VPN provider to be used
-type VPNProvider string
+import (
+	"github.com/qdm12/private-internet-access-docker/internal/models"
+)
 
 const (
 	// PrivateInternetAccess is a VPN provider
-	PrivateInternetAccess VPNProvider = "private internet access"
+	PrivateInternetAccess models.VPNProvider = "private internet access"
 	// Mullvad is a VPN provider
-	Mullvad = "mullvad"
+	Mullvad models.VPNProvider = "mullvad"
 	// Windscribe is a VPN provider
-	Windscribe = "windscribe"
+	Windscribe models.VPNProvider = "windscribe"
 )
-
-// NetworkProtocol contains the network protocol to be used to communicate with the VPN servers
-type NetworkProtocol string
 
 const (
 	// TCP is a network protocol (reliable and slower than UDP)
-	TCP NetworkProtocol = "tcp"
+	TCP models.NetworkProtocol = "tcp"
 	// UDP is a network protocol (unreliable and faster than TCP)
-	UDP = "udp"
+	UDP models.NetworkProtocol = "udp"
 )

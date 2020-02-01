@@ -47,16 +47,17 @@ var DNSAddressesMapping = map[models.DNSProvider][]models.DNSForwardAddress{
 
 // Block lists URLs
 const (
-	AdsBlockListHostnamesURL          = "https://raw.githubusercontent.com/qdm12/files/master/ads-hostnames.updated"
-	AdsBlockListIPsURL                = "https://raw.githubusercontent.com/qdm12/files/master/ads-ips.updated"
-	MaliciousBlockListHostnamesURL    = "https://raw.githubusercontent.com/qdm12/files/master/malicious-hostnames.updated"
-	MaliciousBlockListIPsURL          = "https://raw.githubusercontent.com/qdm12/files/master/malicious-ips.updated"
-	SurveillanceBlockListHostnamesURL = "https://raw.githubusercontent.com/qdm12/files/master/surveillance-hostnames.updated"
-	SurveillanceBlockListIPsURL       = "https://raw.githubusercontent.com/qdm12/files/master/surveillance-ips.updated"
+	AdsBlockListHostnamesURL          models.URL = "https://raw.githubusercontent.com/qdm12/files/master/ads-hostnames.updated"
+	AdsBlockListIPsURL                models.URL = "https://raw.githubusercontent.com/qdm12/files/master/ads-ips.updated"
+	MaliciousBlockListHostnamesURL    models.URL = "https://raw.githubusercontent.com/qdm12/files/master/malicious-hostnames.updated"
+	MaliciousBlockListIPsURL          models.URL = "https://raw.githubusercontent.com/qdm12/files/master/malicious-ips.updated"
+	SurveillanceBlockListHostnamesURL models.URL = "https://raw.githubusercontent.com/qdm12/files/master/surveillance-hostnames.updated"
+	SurveillanceBlockListIPsURL       models.URL = "https://raw.githubusercontent.com/qdm12/files/master/surveillance-ips.updated"
 )
 
-// DNS certificates to fetch (TODO obtain from source directly, see qdm12/updated)
+// DNS certificates to fetch
+// TODO obtain from source directly, see qdm12/updated)
 const (
-	NamedRootURL = "https://raw.githubusercontent.com/qdm12/files/master/named.root.updated"
-	RootKeyURL   = "https://raw.githubusercontent.com/qdm12/files/master/root.key.updated"
+	NamedRootURL models.URL = "https://raw.githubusercontent.com/qdm12/files/master/named.root.updated"
+	RootKeyURL   models.URL = "https://raw.githubusercontent.com/qdm12/files/master/root.key.updated"
 )

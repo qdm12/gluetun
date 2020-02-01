@@ -2,10 +2,11 @@ package firewall
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/qdm12/golibs/files/mocks"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -67,7 +68,7 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			fileManager := &mocks.FileManager{}
-			fileManager.On("ReadFile", constants.NetRoute).
+			fileManager.On("ReadFile", string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Once()
 			c := &configurator{fileManager: fileManager}
 			defaultInterface, defaultGateway, defaultSubnet, err := c.GetDefaultRoute()

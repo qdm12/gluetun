@@ -6,7 +6,6 @@ import (
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -16,7 +15,7 @@ type Configurator interface {
 	BlockAll() error
 	CreateGeneralRules() error
 	CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP, defaultInterface string,
-		port uint16, protocol constants.NetworkProtocol) error
+		port uint16, protocol models.NetworkProtocol) error
 	CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error
 	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error
 	GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)

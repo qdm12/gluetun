@@ -22,7 +22,7 @@ func (c *configurator) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, 
 }
 
 func (c *configurator) GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error) {
-	data, err := c.fileManager.ReadFile(constants.NetRoute)
+	data, err := c.fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
 		return "", nil, defaultSubnet, err
 	}

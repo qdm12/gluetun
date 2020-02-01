@@ -11,7 +11,7 @@ import (
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions
 func (c *configurator) WriteAuthFile(user, password string) error {
 	// TODO bundle all IO operations in files interface Files
-	authExists, err := c.fileManager.FileExists(constants.OpenVPNAuthConf)
+	authExists, err := c.fileManager.FileExists(string(constants.OpenVPNAuthConf))
 	if err != nil {
 		return err
 	} else if authExists { // in case of container stop/start
@@ -19,7 +19,7 @@ func (c *configurator) WriteAuthFile(user, password string) error {
 		return nil
 	}
 	c.logger.Info("Writing credentials to %s", constants.OpenVPNAuthConf)
-	c.fileManager.WriteLinesToFile(constants.OpenVPNAuthConf, []string{user, password})
+	c.fileManager.WriteLinesToFile(string(constants.OpenVPNAuthConf), []string{user, password})
 	userObject, err := libuser.Lookup("nonrootuser")
 	if err != nil {
 		return err
@@ -33,10 +33,10 @@ func (c *configurator) WriteAuthFile(user, password string) error {
 	if err != nil {
 		return err
 	}
-	if err := os.Chown(constants.OpenVPNAuthConf, uid, gid); err != nil {
+	if err := os.Chown(string(constants.OpenVPNAuthConf), uid, gid); err != nil {
 		return err
 	}
-	if err := os.Chmod(constants.OpenVPNAuthConf, 0400); err != nil {
+	if err := os.Chmod(string(constants.OpenVPNAuthConf), 0400); err != nil {
 		return err
 	}
 	return nil

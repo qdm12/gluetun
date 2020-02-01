@@ -1,16 +1,20 @@
 package constants
 
+import (
+	"github.com/qdm12/private-internet-access-docker/internal/models"
+)
+
 const (
 	// UnboundConf is the file path to the Unbound configuration file
-	UnboundConf = "/etc/unbound/unbound.conf"
+	UnboundConf models.Filepath = "/etc/unbound/unbound.conf"
 	// ResolvConf is the file path to the system resolv.conf file
-	ResolvConf = "/etc/resolv.conf"
+	ResolvConf models.Filepath = "/etc/resolv.conf"
 	// OpenVPNAuthConf is the file path to the OpenVPN auth file
-	OpenVPNAuthConf = "/etc/openvpn/auth.conf"
+	OpenVPNAuthConf models.Filepath = "/etc/openvpn/auth.conf"
 	// OpenVPNConf is the file path to the OpenVPN client configuration file
-	OpenVPNConf = "/etc/openvpn/target.ovpn"
+	OpenVPNConf models.Filepath = "/etc/openvpn/target.ovpn"
 	// TunnelDevice is the file path to tun device
-	TunnelDevice = "/dev/net/tun"
+	TunnelDevice models.Filepath = "/dev/net/tun"
 	// NetRoute is the path to the file containing information on the network route
-	NetRoute = "/proc/net/route"
+	NetRoute models.Filepath = "/proc/net/route"
 )

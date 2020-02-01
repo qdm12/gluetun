@@ -7,7 +7,7 @@ import (
 )
 
 func (c *configurator) SetLocalNameserver() error {
-	data, err := c.fileManager.ReadFile(constants.ResolvConf)
+	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))
 	if err != nil {
 		return err
 	}
@@ -17,5 +17,5 @@ func (c *configurator) SetLocalNameserver() error {
 			lines[i] = "nameserver 127.0.0.1"
 		}
 	}
-	return c.fileManager.WriteLinesToFile(constants.ResolvConf, lines)
+	return c.fileManager.WriteLinesToFile(string(constants.ResolvConf), lines)
 }

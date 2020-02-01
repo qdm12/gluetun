@@ -70,7 +70,7 @@ func main() {
 	e.FatalOnError(err)
 	lines, err = piaConf.ModifyLines(lines, VPNIPs, port)
 	e.FatalOnError(err)
-	fileManager.WriteLinesToFile(constants.OpenVPNConf, lines)
+	fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines)
 	e.FatalOnError(err)
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()

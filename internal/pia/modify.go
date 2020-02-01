@@ -21,7 +21,7 @@ func (c *configurator) ModifyLines(lines []string, IPs []net.IP, port uint16) (m
 	for _, IP := range IPs {
 		modifiedLines = append(modifiedLines, fmt.Sprintf("remote %s %d", IP, port))
 	}
-	modifiedLines = append(modifiedLines, "auth-user-pass "+constants.OpenVPNAuthConf)
+	modifiedLines = append(modifiedLines, "auth-user-pass "+string(constants.OpenVPNAuthConf))
 	modifiedLines = append(modifiedLines, "auth-retry nointeract")
 	modifiedLines = append(modifiedLines, "pull-filter ignore \"auth-token\"") // prevent auth failed loops
 	modifiedLines = append(modifiedLines, "user nonrootuser")

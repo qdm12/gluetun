@@ -1,8 +1,10 @@
 package params
 
 import (
+	"strconv"
+
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // GetTinyProxy obtains if TinyProxy is on from the environment variable
@@ -21,36 +23,40 @@ func (p *paramsReader) GetTinyProxy() (activated bool, err error) {
 
 // GetTinyProxyLog obtains the TinyProxy log level from the environment variable
 // TINYPROXY_LOG, and using PROXY_LOG_LEVEL as a retro-compatibility name
-func (p *paramsReader) GetTinyProxyLog() (constants.TinyProxyLogLevel, error) {
+func (p *paramsReader) GetTinyProxyLog() (models.TinyProxyLogLevel, error) {
 	// Retro-compatibility
 	s, err := p.envParams.GetEnv("PROXY_LOG_LEVEL")
 	if err != nil {
-		return constants.TinyProxyLogLevel(s), err
+		return models.TinyProxyLogLevel(s), err
 	} else if len(s) != 0 {
 		p.logger.Warn("You are using the old environment variable PROXY_LOG_LEVEL, please consider changing it to TINYPROXY_LOG")
 		s, err = p.envParams.GetValueIfInside("PROXY_LOG_LEVEL", []string{"info", "warning", "error", "critical"}, libparams.Compulsory())
-		return constants.TinyProxyLogLevel(s), err
+		return models.TinyProxyLogLevel(s), err
 	}
 	s, err = p.envParams.GetValueIfInside("TINYPROXY_LOG", []string{"info", "warning", "error", "critical"}, libparams.Default("info"))
-	return constants.TinyProxyLogLevel(s), err
+	return models.TinyProxyLogLevel(s), err
 }
 
 // GetTinyProxyPort obtains the TinyProxy listening port from the environment variable
 // TINYPROXY_PORT, and using PROXY_PORT as a retro-compatibility name
-func (p *paramsReader) GetTinyProxyPort() (port string, err error) {
+func (p *paramsReader) GetTinyProxyPort() (port uint16, err error) {
 	// Retro-compatibility
-	port, err = p.envParams.GetEnv("PROXY_PORT")
+	portStr, err := p.envParams.GetEnv("PROXY_PORT")
 	if err != nil {
-		return port, err
-	} else if len(port) != 0 {
+		return 0, err
+	} else if len(portStr) != 0 {
 		p.logger.Warn("You are using the old environment variable PROXY_PORT, please consider changing it to TINYPROXY_PORT")
 	} else {
-		port, err = p.envParams.GetEnv("TINYPROXY_PORT", libparams.Default("8888"))
+		portStr, err = p.envParams.GetEnv("TINYPROXY_PORT", libparams.Default("8888"))
 		if err != nil {
-			return port, err
+			return 0, err
 		}
 	}
-	return port, p.verifier.VerifyPort(port)
+	if err := p.verifier.VerifyPort(portStr); err != nil {
+		return 0, err
+	}
+	portUint64, err := strconv.ParseUint(portStr, 10, 16)
+	return uint16(portUint64), err
 }
 
 // GetTinyProxyUser obtains the TinyProxy server user from the environment variable

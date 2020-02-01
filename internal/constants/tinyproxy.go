@@ -1,15 +1,16 @@
 package constants
 
-// TinyProxyLogLevel is the log level for TinyProxy
-type TinyProxyLogLevel string
+import (
+	"github.com/qdm12/private-internet-access-docker/internal/models"
+)
 
 const (
 	// TinyProxyInfoLevel is the info log level for TinyProxy
-	TinyProxyInfoLevel TinyProxyLogLevel = "Info"
+	TinyProxyInfoLevel models.TinyProxyLogLevel = "Info"
 	// TinyProxyWarnLevel is the warning log level for TinyProxy
-	TinyProxyWarnLevel = "Warning"
+	TinyProxyWarnLevel models.TinyProxyLogLevel = "Warning"
 	// TinyProxyErrorLevel is the error log level for TinyProxy
-	TinyProxyErrorLevel = "Error"
+	TinyProxyErrorLevel models.TinyProxyLogLevel = "Error"
 	// TinyProxyCriticalLevel is the critical log level for TinyProxy
-	TinyProxyCriticalLevel = "Critical"
+	TinyProxyCriticalLevel models.TinyProxyLogLevel = "Critical"
 )

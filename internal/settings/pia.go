@@ -3,7 +3,7 @@ package settings
 import (
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
@@ -11,20 +11,20 @@ import (
 type PIA struct {
 	User           string
 	Password       string
-	Encryption     constants.PIAEncryption
-	Region         constants.PIARegion
+	Encryption     models.PIAEncryption
+	Region         models.PIARegion
 	PortForwarding PortForwarding
 }
 
 // PortForwarding contains settings for port forwarding
 type PortForwarding struct {
 	Enabled  bool
-	Filepath string
+	Filepath models.Filepath
 }
 
 func (p *PortForwarding) String() string {
 	if p.Enabled {
-		return "Port forwarding: on, saved in " + p.Filepath
+		return "Port forwarding: on, saved in " + string(p.Filepath)
 	}
 	return "Port forwarding: off"
 }
