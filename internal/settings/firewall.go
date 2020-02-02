@@ -18,9 +18,10 @@ func (f *Firewall) String() string {
 		allowedSubnets = append(allowedSubnets, net.String())
 	}
 	settingsList := []string{
+		"Firewall settings:",
 		"Allowed subnets: " + strings.Join(allowedSubnets, ", "),
 	}
-	return "Firewall settings:\n" + strings.Join(settingsList, "\n |--")
+	return strings.Join(settingsList, "\n |--")
 }
 
 // GetFirewallSettings obtains firewall settings from environment variables using the params package.

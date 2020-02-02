@@ -18,6 +18,7 @@ type Settings struct {
 
 func (s *Settings) String() string {
 	return strings.Join([]string{
+		"Settings summary below:"
 		s.OpenVPN.String(),
 		s.PIA.String(),
 		s.DNS.String(),

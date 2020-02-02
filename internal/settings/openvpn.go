@@ -32,8 +32,9 @@ func (o *OpenVPN) String() string {
 		nonRootStr = "off"
 	}
 	settingsList := []string{
+		"OpenVPN settings:",
 		"Running without root privileges: " + nonRootStr,
 		"Network protocol: " + string(o.NetworkProtocol),
 	}
-	return "OpenVPN settings:\n" + strings.Join(settingsList, "\n|--")
+	return strings.Join(settingsList, "\n|--")
 }

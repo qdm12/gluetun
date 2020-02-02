@@ -53,7 +53,7 @@ func main() {
 
 	allSettings, err := settings.GetAllSettings(params.NewParamsReader(logger))
 	e.FatalOnError(err)
-	logger.Info(allSettings)
+	logger.Info(allSettings.String())
 
 	logger.Info("Checking /dev/tun device")
 	err = ovpnConf.CheckTUN()

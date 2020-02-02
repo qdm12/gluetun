@@ -20,9 +20,10 @@ func (s *ShadowSocks) String() string {
 		return "ShadowSocks settings: disabled"
 	}
 	settingsList := []string{
+		"ShadowSocks settings:",
 		fmt.Sprintf("Port: %d", s.Port),
 	}
-	return "ShadowSocks settings:\n" + strings.Join(settingsList, "\n |--")
+	return strings.Join(settingsList, "\n |--")
 }
 
 // GetShadowSocksSettings obtains ShadowSocks settings from environment variables using the params package.

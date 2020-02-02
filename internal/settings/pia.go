@@ -31,11 +31,12 @@ func (p *PortForwarding) String() string {
 
 func (p *PIA) String() string {
 	settingsList := []string{
+		"PIA settings:",
 		"Region: " + string(p.Region),
 		"Encryption: " + string(p.Encryption),
 		"Port forwarding: " + p.PortForwarding.String(),
 	}
-	return "PIA settings:\n" + strings.Join(settingsList, "\n |--")
+	return strings.Join(settingsList, "\n |--")
 }
 
 // GetPIASettings obtains PIA settings from environment variables using the params package.

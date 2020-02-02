@@ -36,6 +36,7 @@ func (d *DNS) String() string {
 		blockAds = "enabled"
 	}
 	settingsList := []string{
+		"DNS over TLS settings:",
 		"DNS over TLS provider: " + string(d.Provider),
 		"Block malicious: " + blockMalicious,
 		"Block surveillance: " + blockSurveillance,
@@ -45,7 +46,7 @@ func (d *DNS) String() string {
 		"Verbosity level: " + fmt.Sprintf("%d", d.Verbosity),
 		"Log level: " + fmt.Sprintf("%d", d.LogLevel),
 	}
-	return "DNS over TLS settings:\n" + strings.Join(settingsList, "\n |--")
+	return strings.Join(settingsList, "\n |--")
 }
 
 // GetDNSSettings obtains DNS over TLS settings from environment variables using the params package.

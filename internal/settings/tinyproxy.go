@@ -26,6 +26,7 @@ func (t *TinyProxy) String() string {
 		auth = "enabled"
 	}
 	settingsList := []string{
+		"TinyProxy settings:",
 		fmt.Sprintf("Port: %d", t.Port),
 		"Authentication: " + auth,
 		"Log level: " + string(t.LogLevel),
