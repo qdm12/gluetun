@@ -13,7 +13,7 @@ import (
 func (c *configurator) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error {
 	for _, subnet := range subnets {
 		c.logger.Info("adding %s as route via %s", subnet, defaultInterface)
-		_, err := c.command.Run("ip", "route", "add", subnet.String(), "via", defaultGateway.String(), "dev", defaultInterface)
+		_, err := c.commander.Run("ip", "route", "add", subnet.String(), "via", defaultGateway.String(), "dev", defaultInterface)
 		if err != nil {
 			return fmt.Errorf("cannot add route for %s: %w", subnet, err)
 		}

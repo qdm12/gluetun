@@ -19,7 +19,7 @@ func (c *configurator) runIptablesInstructions(instructions []string) error {
 
 func (c *configurator) runIptablesInstruction(instruction string) error {
 	flags := strings.Fields(instruction)
-	if _, err := c.command.Run("iptables", flags...); err != nil {
+	if _, err := c.commander.Run("iptables", flags...); err != nil {
 		return fmt.Errorf("failed executing %q: %w", instruction, err)
 	}
 	return nil

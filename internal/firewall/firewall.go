@@ -22,7 +22,7 @@ type Configurator interface {
 }
 
 type configurator struct {
-	command     command.Command
+	commander   command.Commander
 	logger      logging.Logger
 	fileManager files.FileManager
 }
@@ -30,7 +30,7 @@ type configurator struct {
 // NewConfigurator creates a new Configurator instance
 func NewConfigurator(logger logging.Logger, fileManager files.FileManager) Configurator {
 	return &configurator{
-		command:     command.NewCommand(),
+		commander:   command.NewCommander(),
 		logger:      logger,
 		fileManager: fileManager,
 	}
