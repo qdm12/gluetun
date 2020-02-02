@@ -1,0 +1,37 @@
+package shadowsocks
+
+import (
+	"fmt"
+	"io"
+	"strings"
+
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
+)
+
+func (c *configurator) Start(log bool) (stdout io.ReadCloser, err error) {
+	args := []string{
+		"-c", string(constants.ShadowsocksConf),
+	}
+	if log {
+		args = append(args, "-v")
+	}
+	stdout, _, err = c.commander.Start("ss-server", args...)
+	return stdout, err
+}
+
+// Version obtains the version of the installed shadowsocks server
+func (c *configurator) Version() (string, error) {
+	output, err := c.commander.Run("ss-server", "-h")
+	if err != nil {
+		return "", err
+	}
+	lines := strings.Split(output, "\n")
+	if len(lines) < 2 {
+		return "", fmt.Errorf("ss-server -h: not enough lines in %q", output)
+	}
+	words := strings.Split(lines[1], " ")
+	if len(words) < 2 {
+		return "", fmt.Errorf("ss-server -h: line 2 is too short: %q", lines[1])
+	}
+	return words[1], nil
+}
