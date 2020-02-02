@@ -15,7 +15,7 @@ func (c *configurator) Start() (stdout io.ReadCloser, err error) {
 
 func (c *configurator) Version() (string, error) {
 	output, err := c.commander.Run("openvpn", "--version")
-	if err != nil {
+	if err != nil && err.Error() != "exit status 1" {
 		return "", err
 	}
 	firstLine := strings.Split(output, "\n")[0]
