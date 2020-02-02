@@ -1,13 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"time"
 
+	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/command"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/env"
@@ -16,53 +18,67 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
+	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
+	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
 )
 
 func main() {
-	// TODO use colors, emojis, maybe move to Golibs
 	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
 	if err != nil {
 		panic(err)
 	}
 	e := env.New(logger)
-	fmt.Printf(`
-	=========================================
-	=========================================
-	============= PIA CONTAINER =============
-	=========================================
-	=========================================
-	== by github.com/qdm12 - Quentin McGaw ==
-	`)
-	cmd := command.NewCommand()
-	e.PrintVersion("OpenVPN", cmd.VersionOpenVPN)
-	e.PrintVersion("Unbound", cmd.VersionUnbound)
-	e.PrintVersion("IPtables", cmd.VersionIptables)
-	e.PrintVersion("TinyProxy", cmd.VersionTinyProxy)
-	e.PrintVersion("ShadowSocks", cmd.VersionShadowSocks)
-	paramsReader := params.NewParamsReader(logger)
-	allSettings, err := settings.GetAllSettings(paramsReader)
-	e.FatalOnError(err)
-	logger.Info(allSettings)
+	fmt.Printf(`=========================================
+=========================================
+============= PIA CONTAINER =============
+=========================================
+=========================================
+========== by github.com/qdm12 ==========
+`)
+	client := network.NewClient(3 * time.Second)
+	// Create configurators
 	fileManager := files.NewFileManager()
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
-	logger.Info("Writing auth file")
-	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password)
+	dnsConf := dns.NewConfigurator(logger, client, fileManager)
+	piaConf := pia.NewConfigurator(client)
+	firewallConf := firewall.NewConfigurator(logger, fileManager)
+	tinyProxyConf := tinyproxy.NewConfigurator(fileManager)
+	shadowsocksConf := shadowsocks.NewConfigurator(fileManager)
+
+	e.PrintVersion("OpenVPN", ovpnConf.Version)
+	e.PrintVersion("Unbound", dnsConf.Version)
+	e.PrintVersion("IPtables", firewallConf.Version)
+	e.PrintVersion("TinyProxy", tinyProxyConf.Version)
+	e.PrintVersion("ShadowSocks", shadowsocksConf.Version)
+
+	allSettings, err := settings.GetAllSettings(params.NewParamsReader(logger))
 	e.FatalOnError(err)
+	logger.Info(allSettings)
+
 	logger.Info("Checking /dev/tun device")
 	err = ovpnConf.CheckTUN()
 	e.FatalOnError(err)
-	client := network.NewClient(3 * time.Second)
+
+	logger.Info("Writing auth file")
+	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password)
+	e.FatalOnError(err)
+
+	stdouts := make(map[string]io.ReadCloser)
+
 	if allSettings.DNS.Enabled {
 		logger.Info("Setting up DNS over TLS")
-		dnsConf := dns.NewConfigurator(logger, client, fileManager)
+		err = dnsConf.DownloadRootHints()
+		e.FatalOnError(err)
+		err = dnsConf.DownloadRootKey()
+		e.FatalOnError(err)
 		err = dnsConf.MakeUnboundConf(allSettings.DNS)
 		e.FatalOnError(err)
-		err = cmd.Unbound()
+		stdouts["Unbound"], err = dnsConf.Start()
 		e.FatalOnError(err)
 		err = dnsConf.SetLocalNameserver()
 		e.FatalOnError(err)
 	}
-	piaConf := pia.NewConfigurator(client)
+
 	logger.Info("Configuring PIA")
 	lines, err := piaConf.DownloadOvpnConfig(allSettings.PIA.Encryption, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Region)
 	e.FatalOnError(err)
@@ -72,7 +88,8 @@ func main() {
 	e.FatalOnError(err)
 	fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines)
 	e.FatalOnError(err)
-	firewallConf := firewall.NewConfigurator(logger, fileManager)
+
+	logger.Info("Configuring firewall")
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
 	e.FatalOnError(err)
 	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
@@ -87,4 +104,38 @@ func main() {
 	e.FatalOnError(err)
 	err = firewallConf.CreateLocalSubnetsRules(defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
 	e.FatalOnError(err)
+
+	if allSettings.TinyProxy.Enabled {
+		logger.Info("Configuring Tinyproxy")
+		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.ShadowSocks.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password)
+		e.FatalOnError(err)
+		stdouts["TinyProxy"], err = tinyProxyConf.Start()
+		e.FatalOnError(err)
+	}
+
+	if allSettings.ShadowSocks.Enabled {
+		logger.Info("Configuring Shadowsocks")
+		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.TinyProxy.Password)
+		e.FatalOnError(err)
+		stdouts["Shadowsocks"], err = shadowsocksConf.Start(allSettings.ShadowSocks.Log)
+		e.FatalOnError(err)
+	}
+
+	if allSettings.PIA.PortForwarding.Enabled {
+		time.AfterFunc(10*time.Second, func() {
+			piaConf.PortForward(allSettings.PIA.PortForwarding.Filepath)
+		})
+	}
+
+	stdouts["Shadowsocks"], err = ovpnConf.Start()
+	e.FatalOnError(err)
+
+	// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
+	command.NewCommander().MergeLineReaders(
+		context.Background(),
+		func(line string) {
+			logger.Info(line)
+		},
+		stdouts,
+	)
 }
