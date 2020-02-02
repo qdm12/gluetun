@@ -81,6 +81,14 @@ exitIfUnset PASSWORD
 exitIfNotIn ENCRYPTION "normal,strong"
 exitIfNotIn PROTOCOL "tcp,udp"
 exitIfNotIn NONROOT "yes,no"
+
+if [ -z $REGION ]; then
+  REGION=$(ls -1 /openvpn/$PROTOCOL-$ENCRYPTION/*.ovpn | while IFS= read -r line ; do
+    printf "%06d %s\n" $RANDOM "$line"
+  done | sort -n | cut -c8- | tail -1 | rev | cut -d'/' -f1 | rev | cut -d'.' -f1)
+  printf "Random region: $REGION\n"
+fi
+
 cat "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn" &> /dev/null
 exitOnError $? "/openvpn/$PROTOCOL-$ENCRYPTION/$REGION.ovpn is not accessible"
 for EXTRA_SUBNET in ${EXTRA_SUBNETS//,/ }; do
