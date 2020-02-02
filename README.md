@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
 
-**ANNOUCEMENT**: Supports all CPU architectures :art: just pull the image!
+**ANNOUCEMENT**: *Total rewrite in Go for more features*
 
 [![PIA Docker OpenVPN](https://github.com/qdm12/private-internet-access-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
 
@@ -20,12 +20,13 @@
 
 <details><summary>Click to show base components</summary><p>
 
-- [Alpine 3.10](https://alpinelinux.org) for a tiny image
-- [OpenVPN 2.4.7](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/openvpn) to tunnel to PIA servers
-- [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
-- [Unbound 1.9.1](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
+- [Alpine 3.11](https://alpinelinux.org) for a tiny image
+- [OpenVPN 2.4.8](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to PIA servers
+- [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
+- [Unbound 1.9.6](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
 - [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` and `BLOCK_NSA` environment variables)
-- [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/tinyproxy)
+- [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/tinyproxy)
+- [Shadowsocks 3.3.4](https://pkgs.alpinelinux.org/package/edge/testing/x86/shadowsocks-libev)
 
 </p></details>
 
@@ -124,7 +125,8 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `NONROOT` | `yes` | Run OpenVPN without root, `yes` or `no` |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
-| `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
+| `BLOCK_SURVEILLANCE` | `off` | `on` or `off`, blocks surveillance hostnames and IPs |
+| `BLOCK_ADS` | `off` | `on` or `off`, blocks ads hostnames and IPs |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `PORT_FORWARDING` | `off` | Set to `on` to forward a port on PIA server |
@@ -138,7 +140,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `SHADOWSOCKS_LOG` | `on` | `on` or `off` to enable logging for Shadowsocks  |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
-| `TZ` | | Specify a timezone to use e.g. `Europe/London` |
+| `TZ` | | Specify a timezone to use i.e. `Europe/London` |
 
 ## Connect to it
 
@@ -282,12 +284,16 @@ Note that not all regions support port forwarding.
 
 ## TODOs
 
-- Golang binary to setup the container at start, and:
-  - Mix logs of unbound, tinyproxy, shadowsocks and openvpn together somehow
-  - support other VPN providers
-  - Use google's nftables to manage firewall in Go
-- Maybe use `--inactive 3600 --ping 10 --ping-exit 60` as default behavior
-- Try without tun
+- Environment variables
+    - DNS over TLS providers
+    - DNS private addresses
+    - Unbound log level and verbosity
+- Port forwarding
+- Periodic healthcheck checking for network leaks etc.
+- Support other VPN providers
+- Periodic update of malicious block lists with Unbound restart
+- Colors, emojis and announcements in entrypoint or periodically
+- Switch to iptables-go instead of using the shell iptables
 
 ## License
 
