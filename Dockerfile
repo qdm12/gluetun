@@ -1,4 +1,16 @@
-ARG ALPINE_VERSION=3.10
+ARG ALPINE_VERSION=3.11
+ARG GO_VERSION=1.13.7
+
+FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS builder
+RUN apk --update add git
+WORKDIR /tmp/gobuild
+ENV CGO_ENABLED=0
+COPY go.mod go.sum ./
+RUN go mod download 2>&1
+COPY internal/ ./internal/
+COPY cmd/main.go .
+RUN go test -v ./...
+RUN go build -ldflags="-s -w" -o entrypoint main.go
 
 FROM alpine:${ALPINE_VERSION}
 ARG VERSION
@@ -37,42 +49,15 @@ ENV USER= \
     SHADOWSOCKS_PORT=8388 \
     SHADOWSOCKS_PASSWORD= \
     TZ=
-ENTRYPOINT /entrypoint.sh
+ENTRYPOINT /entrypoint
 EXPOSE 8888/tcp 8388/tcp 8388/udp
-HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /healthcheck.sh
-RUN apk add -q --progress --no-cache --update openvpn wget ca-certificates iptables unbound unzip tinyproxy jq tzdata && \
+# HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /entrypoint -healthcheck
+RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables unbound tinyproxy tzdata && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk add -q --progress --no-cache --update shadowsocks-libev && \
-    wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
-    https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
-    https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
-    https://www.privateinternetaccess.com/openvpn/openvpn-strong-tcp.zip && \
-    mkdir -p /openvpn/target && \
-    unzip -q openvpn.zip -d /openvpn/udp-normal && \
-    unzip -q openvpn-strong.zip -d /openvpn/udp-strong && \
-    unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
-    unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
-    apk del -q --progress --purge unzip && \
     rm -rf /*.zip /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-anchor /usr/sbin/unbound-checkconf /usr/sbin/unbound-control /usr/sbin/unbound-control-setup /usr/sbin/unbound-host /etc/tinyproxy/tinyproxy.conf && \
-    adduser nonrootuser -D -H --uid 1000 && \
-    wget -q https://raw.githubusercontent.com/qdm12/files/master/named.root.updated -O /etc/unbound/root.hints && \
-    wget -q https://raw.githubusercontent.com/qdm12/files/master/root.key.updated -O /etc/unbound/root.key && \
-    cd /tmp && \
-    wget -q https://raw.githubusercontent.com/qdm12/files/master/malicious-hostnames.updated -O malicious-hostnames && \
-    wget -q https://raw.githubusercontent.com/qdm12/files/master/surveillance-hostnames.updated -O nsa-hostnames && \
-    wget -q https://raw.githubusercontent.com/qdm12/files/master/malicious-ips.updated -O malicious-ips && \
-    while read hostname; do echo "local-zone: \""$hostname"\" static" >> blocks-malicious.conf; done < malicious-hostnames && \
-    while read ip; do echo "private-address: $ip" >> blocks-malicious.conf; done < malicious-ips && \
-    tar -cjf /etc/unbound/blocks-malicious.bz2 blocks-malicious.conf && \
-    while read hostname; do echo "local-zone: \""$hostname"\" static" >> blocks-nsa.conf; done < nsa-hostnames && \
-    tar -cjf /etc/unbound/blocks-nsa.bz2 blocks-nsa.conf && \
-    rm -f /tmp/*
-COPY unbound.conf /etc/unbound/unbound.conf
-COPY tinyproxy.conf /etc/tinyproxy/tinyproxy.conf
-COPY shadowsocks.json /etc/shadowsocks.json
-COPY entrypoint.sh healthcheck.sh portforward.sh /
+    adduser nonrootuser -D -H --uid 1000
+COPY --from=builder --chown=1000:1000 /tmp/gobuild/entrypoint /entrypoint
 RUN chown nonrootuser -R /etc/unbound /etc/tinyproxy && \
     chmod 700 /etc/unbound /etc/tinyproxy && \
-    chmod 600 /etc/unbound/unbound.conf /etc/tinyproxy/tinyproxy.conf /etc/shadowsocks.json && \
-    chmod 500 /entrypoint.sh /healthcheck.sh /portforward.sh && \
-    chmod 400 /etc/unbound/root.hints /etc/unbound/root.key /etc/unbound/*.bz2
+    chmod 500 /entrypoint
