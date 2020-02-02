@@ -17,4 +17,12 @@ const (
 	TunnelDevice models.Filepath = "/dev/net/tun"
 	// NetRoute is the path to the file containing information on the network route
 	NetRoute models.Filepath = "/proc/net/route"
+	// TinyProxyConf is the filepath to the tinyproxy configuration file
+	TinyProxyConf models.Filepath = "/etc/tinyproxy/tinyproxy.conf"
+	// ShadowsocksConf is the filepath to the shadowsocks configuration file
+	ShadowsocksConf models.Filepath = "/etc/shadowsocks.json"
+	// RootHints is the filepath to the root.hints file used by Unbound
+	RootHints models.Filepath = "/etc/unbound/root.hints"
+	// RootKey is the filepath to the root.key file used by Unbound
+	RootKey models.Filepath = "/etc/unbound/root.key"
 )

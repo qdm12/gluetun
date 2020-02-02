@@ -47,8 +47,8 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		"hide-version":     "yes",
 		// Security
 		"tls-cert-bundle":       "\"/etc/ssl/certs/ca-certificates.crt\"",
-		"root-hints":            "\"/etc/unbound/root.hints\"",
-		"trust-anchor-file":     "\"/etc/unbound/root.key\"",
+		"root-hints":            fmt.Sprintf("%q", constants.RootHints),
+		"trust-anchor-file":     fmt.Sprintf("%q", constants.RootKey),
 		"harden-below-nxdomain": "yes",
 		"harden-referral-path":  "yes",
 		"harden-algo-downgrade": "yes",
