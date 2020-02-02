@@ -12,7 +12,7 @@ func (c *configurator) Start() (stdout io.ReadCloser, err error) {
 }
 
 func (c *configurator) Version() (version string, err error) {
-	output, err := c.commander.Run("unbound", "-h")
+	output, err := c.commander.Run("unbound", "-V")
 	if err != nil {
 		return "", err
 	}
