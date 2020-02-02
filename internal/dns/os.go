@@ -11,11 +11,21 @@ func (c *configurator) SetLocalNameserver() error {
 	if err != nil {
 		return err
 	}
-	lines := strings.Split(string(data), "\n")
+	s := strings.TrimSuffix(string(data), "\n")
+	lines := strings.Split(s, "\n")
+	if len(lines) == 1 && lines[0] == "" {
+		lines = nil
+	}
+	found := false
 	for i := range lines {
 		if strings.HasPrefix(lines[i], "nameserver ") {
 			lines[i] = "nameserver 127.0.0.1"
+			found = true
 		}
 	}
-	return c.fileManager.WriteLinesToFile(string(constants.ResolvConf), lines)
+	if !found {
+		lines = append(lines, "nameserver 127.0.0.1")
+	}
+	data = []byte(strings.Join(lines, "\n"))
+	return c.fileManager.WriteToFile(string(constants.ResolvConf), data)
 }
