@@ -67,7 +67,7 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockAds, err = params.GetDNSAdsBlocking() // TODO add to README list
+	settings.BlockAds, err = params.GetDNSAdsBlocking()
 	if err != nil {
 		return settings, err
 	}

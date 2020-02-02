@@ -10,7 +10,6 @@ import (
 
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions
 func (c *configurator) WriteAuthFile(user, password string) error {
-	// TODO bundle all IO operations in files interface Files
 	authExists, err := c.fileManager.FileExists(string(constants.OpenVPNAuthConf))
 	if err != nil {
 		return err

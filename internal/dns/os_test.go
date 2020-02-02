@@ -10,8 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TODO check empty lines write 0 byte in golibs/files
-
 func Test_SetLocalNameserver(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {

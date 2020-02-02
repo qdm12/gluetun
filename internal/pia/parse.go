@@ -29,7 +29,7 @@ func (c *configurator) ParseConfig(lines []string) (IPs []net.IP, port uint16, d
 				return nil, 0, "", err
 			}
 			port = uint16(portUint64)
-			IPs, err = c.lookupIP(host) // TODO use Unbound
+			IPs, err = c.lookupIP(host)
 			if err != nil {
 				return nil, 0, "", err
 			}
