@@ -12,7 +12,7 @@ import (
 
 func Test_NewConfigurator(t *testing.T) {
 	t.Parallel()
-	logger, err := logging.NewEmptyLogging()
+	logger, err := logging.NewEmptyLogger()
 	require.NoError(t, err)
 	client := network.NewClient(0)
 	fileManager := files.NewFileManager()

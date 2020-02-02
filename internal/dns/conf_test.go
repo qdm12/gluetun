@@ -30,7 +30,7 @@ func Test_generateUnboundConf(t *testing.T) {
 		Return([]byte("b\na\nc"), 200, nil).Once()
 	client.On("GetContent", string(constants.MaliciousBlockListIPsURL)).
 		Return([]byte("c\nd\n"), 200, nil).Once()
-	emptyLogger, err := logging.NewEmptyLogging()
+	emptyLogger, err := logging.NewEmptyLogger()
 	require.NoError(t, err)
 	lines, warnings, err := generateUnboundConf(settings, client, emptyLogger)
 	require.Len(t, warnings, 0)
