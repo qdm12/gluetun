@@ -14,6 +14,7 @@ type Configurator interface {
 		protocol models.NetworkProtocol, region models.PIARegion) (lines []string, err error)
 	ParseConfig(lines []string) (IPs []net.IP, port uint16, device models.VPNDevice, err error)
 	ModifyLines(lines []string, IPs []net.IP, port uint16) (modifiedLines []string, err error)
+	PortForward(filepath models.Filepath)
 }
 
 type configurator struct {
