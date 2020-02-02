@@ -73,5 +73,5 @@ func hexToIPv4Mask(hexString string) (mask net.IPMask, err error) {
 	} else if len(bytes) != 4 {
 		return nil, fmt.Errorf("hex string contains %d bytes instead of 4", len(bytes))
 	}
-	return bytes, nil
+	return []byte{bytes[3], bytes[2], bytes[1], bytes[0]}, nil
 }

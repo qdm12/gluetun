@@ -60,7 +60,7 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 			defaultGateway:   net.IP{0xac, 0x11, 0x0, 0x1},
 			defaultSubnet: net.IPNet{
 				IP:   net.IP{0xac, 0x11, 0x0, 0x0},
-				Mask: net.IPMask{0x0, 0x0, 0xff, 0xff},
+				Mask: net.IPMask{0xff, 0xff, 0x0, 0x0},
 			}},
 	} // TODO find full subnet 172.17.0.0/16
 	for name, tc := range tests {
@@ -142,7 +142,7 @@ func Test_hexMaskToDecMask(t *testing.T) {
 			err:       fmt.Errorf("hex string contains 3 bytes instead of 4")},
 		"16": {
 			hexString: "0000FFFF",
-			mask:      []byte{0x0, 0x0, 0xff, 0xff},
+			mask:      []byte{0xff, 0xff, 0x0, 0x0},
 			err:       nil},
 	}
 	for name, tc := range tests {

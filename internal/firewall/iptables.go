@@ -86,17 +86,19 @@ func (c *configurator) CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP,
 }
 
 func (c *configurator) CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error {
-	c.logger.Info("accepting input and output traffic for %s", subnet)
+	subnetStr := subnet.String()
+	c.logger.Info("firewall: accepting input and output traffic for %s", subnetStr)
 	if err := c.runIptablesInstructions([]string{
-		fmt.Sprintf("-A INPUT -s %s -d %s -j ACCEPT", subnet, subnet),
-		fmt.Sprintf("-A OUTPUT -s %s -d %s -j ACCEPT", subnet, subnet),
+		fmt.Sprintf("-A INPUT -s %s -d %s -j ACCEPT", subnetStr, subnetStr),
+		fmt.Sprintf("-A OUTPUT -s %s -d %s -j ACCEPT", subnetStr, subnetStr),
 	}); err != nil {
 		return err
 	}
 	for _, extraSubnet := range extraSubnets {
-		c.logger.Info("accepting input traffic through %s from %s to %s", defaultInterface, extraSubnet, subnet)
+		extraSubnetStr := extraSubnet.String()
+		c.logger.Info("firewall: accepting input traffic through %s from %s to %s", defaultInterface, extraSubnetStr, subnetStr)
 		if err := c.runIptablesInstruction(
-			fmt.Sprintf("-A INPUT -i %s -s %s -d %s -j ACCEPT", defaultInterface, extraSubnet, subnet)); err != nil {
+			fmt.Sprintf("-A INPUT -i %s -s %s -d %s -j ACCEPT", defaultInterface, extraSubnetStr, subnetStr)); err != nil {
 			return err
 		}
 	}
