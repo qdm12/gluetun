@@ -62,6 +62,8 @@ func (p *paramsReader) GetTinyProxyPort() (port uint16, err error) {
 // GetTinyProxyUser obtains the TinyProxy server user from the environment variable
 // TINYPROXY_USER, and using PROXY_USER as a retro-compatibility name
 func (p *paramsReader) GetTinyProxyUser() (user string, err error) {
+	defer p.unsetEnv("PROXY_USER")
+	defer p.unsetEnv("TINYPROXY_USER")
 	// Retro-compatibility
 	user, err = p.envParams.GetEnv("PROXY_USER")
 	if err != nil {
@@ -77,6 +79,8 @@ func (p *paramsReader) GetTinyProxyUser() (user string, err error) {
 // GetTinyProxyPassword obtains the TinyProxy server password from the environment variable
 // TINYPROXY_PASSWORD, and using PROXY_PASSWORD as a retro-compatibility name
 func (p *paramsReader) GetTinyProxyPassword() (password string, err error) {
+	defer p.unsetEnv("PROXY_PASSWORD")
+	defer p.unsetEnv("TINYPROXY_PASSWORD")
 	// Retro-compatibility
 	password, err = p.envParams.GetEnv("PROXY_PASSWORD")
 	if err != nil {

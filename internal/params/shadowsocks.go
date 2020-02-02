@@ -35,5 +35,6 @@ func (p *paramsReader) GetShadowSocksPort() (port uint16, err error) {
 // GetShadowSocksPassword obtains the ShadowSocks server password from the environment variable
 // SHADOWSOCKS_PASSWORD
 func (p *paramsReader) GetShadowSocksPassword() (password string, err error) {
+	defer p.unsetEnv("SHADOWSOCKS_PASSWORD")
 	return p.envParams.GetEnv("SHADOWSOCKS_PASSWORD")
 }
