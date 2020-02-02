@@ -8,6 +8,19 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
+// Version obtains the version of the installed iptables
+func (c *configurator) Version() (string, error) {
+	output, err := c.commander.Run("iptables", "--version")
+	if err != nil {
+		return "", err
+	}
+	words := strings.Split(output, " ")
+	if len(words) < 2 {
+		return "", fmt.Errorf("iptables --version: output is too short: %q", output)
+	}
+	return words[1], nil
+}
+
 func (c *configurator) runIptablesInstructions(instructions []string) error {
 	for _, instruction := range instructions {
 		if err := c.runIptablesInstruction(instruction); err != nil {

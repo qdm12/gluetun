@@ -11,6 +11,7 @@ import (
 
 // Configurator allows to change firewall rules and modify network routes
 type Configurator interface {
+	Version() (string, error)
 	Clear() error
 	BlockAll() error
 	CreateGeneralRules() error

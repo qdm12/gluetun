@@ -1,6 +1,9 @@
 package dns
 
 import (
+	"io"
+
+	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
@@ -8,14 +11,19 @@ import (
 )
 
 type Configurator interface {
+	DownloadRootHints() error
+	DownloadRootKey() error
 	MakeUnboundConf(settings settings.DNS) (err error)
 	SetLocalNameserver() error
+	Start() (stdout io.ReadCloser, err error)
+	Version() (version string, err error)
 }
 
 type configurator struct {
 	logger      logging.Logger
 	client      network.Client
 	fileManager files.FileManager
+	commander   command.Commander
 }
 
 func NewConfigurator(logger logging.Logger, client network.Client, fileManager files.FileManager) Configurator {
@@ -23,5 +31,6 @@ func NewConfigurator(logger logging.Logger, client network.Client, fileManager f
 		logger:      logger,
 		client:      client,
 		fileManager: fileManager,
+		commander:   command.NewCommander(),
 	}
 }
