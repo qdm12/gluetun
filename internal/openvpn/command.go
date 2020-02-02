@@ -19,7 +19,7 @@ func (c *configurator) Version() (string, error) {
 		return "", err
 	}
 	firstLine := strings.Split(output, "\n")[0]
-	words := strings.Split(firstLine, " ")
+	words := strings.Fields(firstLine)
 	if len(words) < 2 {
 		return "", fmt.Errorf("openvpn --version: first line is too short: %q", firstLine)
 	}

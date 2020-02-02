@@ -29,7 +29,7 @@ func (c *configurator) Version() (string, error) {
 	if len(lines) < 2 {
 		return "", fmt.Errorf("ss-server -h: not enough lines in %q", output)
 	}
-	words := strings.Split(lines[1], " ")
+	words := strings.Fields(lines[1])
 	if len(words) < 2 {
 		return "", fmt.Errorf("ss-server -h: line 2 is too short: %q", lines[1])
 	}

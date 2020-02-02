@@ -17,7 +17,7 @@ func (c *configurator) Version() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	words := strings.Split(output, " ")
+	words := strings.Fields(output)
 	if len(words) < 2 {
 		return "", fmt.Errorf("tinyproxy -v: output is too short: %q", output)
 	}

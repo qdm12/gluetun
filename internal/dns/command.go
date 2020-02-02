@@ -18,7 +18,7 @@ func (c *configurator) Version() (version string, err error) {
 	}
 	for _, line := range strings.Split(output, "\n") {
 		if strings.Contains(line, "Version ") {
-			words := strings.Split(line, " ")
+			words := strings.Fields(line)
 			if len(words) < 2 {
 				continue
 			}

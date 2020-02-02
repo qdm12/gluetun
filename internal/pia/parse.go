@@ -16,7 +16,7 @@ func (c *configurator) ParseConfig(lines []string) (IPs []net.IP, port uint16, d
 	for _, line := range lines {
 		if strings.HasPrefix(line, "remote ") {
 			remoteLineFound = true
-			words := strings.Split(line, " ")
+			words := strings.Fields(line)
 			if len(words) != 3 {
 				return nil, 0, "", fmt.Errorf("line %q misses information", line)
 			}
