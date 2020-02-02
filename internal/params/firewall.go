@@ -12,6 +12,8 @@ func (p *paramsReader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
 	s, err := p.envParams.GetEnv("EXTRA_SUBNETS")
 	if err != nil {
 		return nil, err
+	} else if s == "" {
+		return nil, nil
 	}
 	subnets := strings.Split(s, ",")
 	for _, subnet := range subnets {
