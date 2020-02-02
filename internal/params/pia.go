@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	libparams "github.com/qdm12/golibs/params"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -73,7 +74,16 @@ func (p *paramsReader) GetPIAEncryption() (models.PIAEncryption, error) {
 
 // GetPIARegion obtains the region for the PIA server from the
 // environment variable REGION
-func (p *paramsReader) GetPIARegion() (models.PIARegion, error) {
+func (p *paramsReader) GetPIARegion() (region models.PIARegion, err error) {
 	s, err := p.envParams.GetValueIfInside("REGION", []string{"Netherlands"}, libparams.Compulsory())
-	return models.PIARegion(s), err
+	if err != nil {
+		return "", err
+	}
+	region = models.PIARegion(s)
+	switch region {
+	case constants.AUMelbourne, constants.AUPerth, constants.AUSydney, constants.Austria, constants.Belgium, constants.CAMontreal, constants.CAToronto, constants.CAVancouver, constants.CzechRepublic, constants.DEBerlin, constants.DEFrankfurt, constants.Denmark, constants.Finland, constants.France, constants.HongKong, constants.Hungary, constants.India, constants.Ireland, constants.Israel, constants.Italy, constants.Japan, constants.Luxembourg, constants.Mexico, constants.Netherlands, constants.NewZealand, constants.Norway, constants.Poland, constants.Romania, constants.Singapore, constants.Spain, constants.Sweden, constants.Switzerland, constants.UAE, constants.UKLondon, constants.UKManchester, constants.UKSouthampton, constants.USAtlanta, constants.USCalifornia, constants.USChicago, constants.USDenver, constants.USEast, constants.USFlorida, constants.USHouston, constants.USLasVegas, constants.USNewYorkCity, constants.USSeattle, constants.USSiliconValley, constants.USTexas, constants.USWashingtonDC, constants.USWest:
+		return region, nil
+	default:
+		return "", fmt.Errorf("region %q is invalid", region)
+	}
 }
