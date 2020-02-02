@@ -39,7 +39,7 @@ func (c *configurator) runIptablesInstruction(instruction string) error {
 }
 
 func (c *configurator) Clear() error {
-	c.logger.Info("clearing iptables rules")
+	c.logger.Info("firewall: clearing all rules")
 	return c.runIptablesInstructions([]string{
 		"--flush",
 		"--delete-chain",
@@ -49,7 +49,7 @@ func (c *configurator) Clear() error {
 }
 
 func (c *configurator) BlockAll() error {
-	c.logger.Info("blocking all traffic")
+	c.logger.Info("firewall: blocking all traffic")
 	return c.runIptablesInstructions([]string{
 		"-P INPUT DROP",
 		"-F OUTPUT",
@@ -59,7 +59,7 @@ func (c *configurator) BlockAll() error {
 }
 
 func (c *configurator) CreateGeneralRules() error {
-	c.logger.Info("creating general rules")
+	c.logger.Info("firewall: creating general rules")
 	return c.runIptablesInstructions([]string{
 		"-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
 		"-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
@@ -71,7 +71,7 @@ func (c *configurator) CreateGeneralRules() error {
 func (c *configurator) CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP,
 	defaultInterface string, port uint16, protocol models.NetworkProtocol) error {
 	for _, serverIP := range serverIPs {
-		c.logger.Info("allowing output traffic to VPN server %q through %q on port %s %d",
+		c.logger.Info("firewall: allowing output traffic to VPN server %s through %s on port %s %d",
 			serverIP, defaultInterface, protocol, port)
 		if err := c.runIptablesInstruction(
 			fmt.Sprintf("-A OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",

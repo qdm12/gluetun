@@ -55,7 +55,6 @@ func main() {
 	e.FatalOnError(err)
 	logger.Info(allSettings.String())
 
-	logger.Info("Checking /dev/tun device")
 	err = ovpnConf.CheckTUN()
 	e.FatalOnError(err)
 
@@ -131,11 +130,12 @@ func main() {
 	e.FatalOnError(err)
 
 	// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
-	command.NewCommander().MergeLineReaders(
+	err = command.NewCommander().MergeLineReaders(
 		context.Background(),
 		func(line string) {
 			logger.Info(line)
 		},
 		stdouts,
 	)
+	e.FatalOnError(err)
 }

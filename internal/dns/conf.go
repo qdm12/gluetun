@@ -66,8 +66,8 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		settings.BlockMalicious, settings.BlockAds, settings.BlockSurveillance,
 		settings.AllowedHostnames, settings.PrivateAddresses,
 	)
-	logger.Info("%d hostnames blocked overall", len(hostnamesLines))
-	logger.Info("%d IP addresses blocked overall", len(ipsLines))
+	logger.Info("dns configurator: %d hostnames blocked overall", len(hostnamesLines))
+	logger.Info("dns configurator: %d IP addresses blocked overall", len(ipsLines))
 	sort.Slice(hostnamesLines, func(i, j int) bool { // for unit tests really
 		return hostnamesLines[i] < hostnamesLines[j]
 	})

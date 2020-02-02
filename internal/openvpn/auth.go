@@ -14,10 +14,10 @@ func (c *configurator) WriteAuthFile(user, password string) error {
 	if err != nil {
 		return err
 	} else if authExists { // in case of container stop/start
-		c.logger.Info("%s already exists", constants.OpenVPNAuthConf)
+		c.logger.Info("openvpn configurator: %s already exists", constants.OpenVPNAuthConf)
 		return nil
 	}
-	c.logger.Info("Writing credentials to %s", constants.OpenVPNAuthConf)
+	c.logger.Info("openvpn configurator: writing auth file %s", constants.OpenVPNAuthConf)
 	c.fileManager.WriteLinesToFile(string(constants.OpenVPNAuthConf), []string{user, password})
 	userObject, err := libuser.Lookup("nonrootuser")
 	if err != nil {
