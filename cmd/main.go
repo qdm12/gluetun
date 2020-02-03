@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/qdm12/golibs/command"
@@ -44,6 +43,7 @@ func main() {
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager)
+	streamMerger := command.NewStreamMerger()
 
 	e.PrintVersion("OpenVPN", ovpnConf.Version)
 	e.PrintVersion("Unbound", dnsConf.Version)
@@ -62,8 +62,6 @@ func main() {
 	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password)
 	e.FatalOnError(err)
 
-	stdouts := make(map[string]io.ReadCloser)
-
 	if allSettings.DNS.Enabled {
 		logger.Info("Setting up DNS over TLS")
 		err = dnsConf.DownloadRootHints()
@@ -72,8 +70,9 @@ func main() {
 		e.FatalOnError(err)
 		err = dnsConf.MakeUnboundConf(allSettings.DNS)
 		e.FatalOnError(err)
-		stdouts["Unbound"], err = dnsConf.Start()
+		stream, err := dnsConf.Start()
 		e.FatalOnError(err)
+		streamMerger.Add("unbound", stream)
 		err = dnsConf.SetLocalNameserver()
 		e.FatalOnError(err)
 	}
@@ -108,16 +107,18 @@ func main() {
 		logger.Info("Configuring Tinyproxy")
 		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.ShadowSocks.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password)
 		e.FatalOnError(err)
-		stdouts["TinyProxy"], err = tinyProxyConf.Start()
+		stream, err := tinyProxyConf.Start()
 		e.FatalOnError(err)
+		streamMerger.Add("tinyproxy", stream)
 	}
 
 	if allSettings.ShadowSocks.Enabled {
 		logger.Info("Configuring Shadowsocks")
 		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.TinyProxy.Password)
 		e.FatalOnError(err)
-		stdouts["Shadowsocks"], err = shadowsocksConf.Start(allSettings.ShadowSocks.Log)
+		stream, err := shadowsocksConf.Start(allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
+		streamMerger.Add("shadowsocks", stream)
 	}
 
 	if allSettings.PIA.PortForwarding.Enabled {
@@ -126,16 +127,11 @@ func main() {
 		})
 	}
 
-	stdouts["Shadowsocks"], err = ovpnConf.Start()
+	stream, err := ovpnConf.Start()
 	e.FatalOnError(err)
+	streamMerger.Add("openvpn", stream)
 
 	// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
-	err = command.NewCommander().MergeLineReaders(
-		context.Background(),
-		func(line string) {
-			logger.Info(line)
-		},
-		stdouts,
-	)
+	err = streamMerger.ListenToAll(context.Background(), func(line string) { logger.Info(line) })
 	e.FatalOnError(err)
 }
