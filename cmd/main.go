@@ -70,7 +70,7 @@ func main() {
 	// Thanks to @npawelek https://github.com/npawelek
 	err = firewallConf.Clear()
 	e.FatalOnError(err)
-	err = firewallConf.BlockAll()
+	err = firewallConf.AcceptAll()
 	e.FatalOnError(err)
 
 	if allSettings.DNS.Enabled {
