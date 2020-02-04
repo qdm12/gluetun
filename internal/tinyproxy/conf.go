@@ -15,7 +15,7 @@ func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, 
 
 func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string) (lines []string) {
 	confMapping := map[string]string{
-		"User":                "tinyproxy",
+		"User":                "nonrootuser",
 		"Group":               "tinyproxy",
 		"Port":                fmt.Sprintf("%d", port),
 		"Timeout":             "600",

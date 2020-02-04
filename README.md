@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
 
-**ANNOUCEMENT**: *Total rewrite in Go for more features*
+**ANNOUCEMENT**: *Total rewrite in Go: all stdout streams merged, download files at start*
 
 <a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
     <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
@@ -26,7 +26,7 @@
 - [OpenVPN 2.4.8](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to PIA servers
 - [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 - [Unbound 1.9.6](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
-- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` and `BLOCK_NSA` environment variables)
+- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS`, `BLOCK_SURVEILLANCE` and `BLOCK_ADS` environment variables)
 - [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/tinyproxy)
 - [Shadowsocks 3.3.4](https://pkgs.alpinelinux.org/package/edge/testing/x86/shadowsocks-libev)
 
@@ -41,23 +41,20 @@
     - Level of encryption
     - PIA Username and password
     - DNS over TLS
-    - Malicious DNS blocking
+    - DNS blocking: ads, malicious, surveillance
     - Internal firewall
+    - Socks5 proxy
     - Web HTTP proxy
     - Run openvpn without root
 
     </p></details>
-- Connect other containers to it, [see this](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- Compatible with amd64, i686 (32 bit), ARM 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
+- Connect
+    - [Other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+    - [LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+- Killswitch using *iptables* to allow traffic only with needed PIA servers and LAN devices
 - Port forwarding
-- The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
-- OpenVPN reconnects automatically on failure
-- Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
-- Unbound DNS runs *without root*
-- OpenVPN runs *without root* by default. You can run it with root with the environment variable `NONROOT=no`
-- Connect your LAN devices
-  - HTTP Web proxy *tinyproxy*
-  - SOCKS5 proxy *shadowsocks* (better as it does UDP too)
+- Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
+- Programs run without root: Openvpn, Unbound, Shadowsocks, Tinyproxy
 
 ## Setup
 
@@ -165,6 +162,8 @@ There are various ways to achieve this, depending on your use case.
     </p></details>
 - <details><summary>Connect LAN devices through the built-in HTTP proxy *Tinyproxy* (i.e. with Chrome, Kodi, etc.)</summary><p>
 
+    You might want to use Shadowsocks instead which tunnels UDP as well as TCP, whereas Tinyproxy only tunnels TCP.
+
     1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
     1. Ensure the PIA container is launched with:
         - port `8888` published `-p 8888:8888/tcp`
@@ -259,10 +258,6 @@ Note that not all regions support port forwarding.
 
 ## Troubleshooting
 
-- Password problems `AUTH: Received control message: AUTH_FAILED`
-    - Your password may contain a special character such as `$`.
-     You need to escape it with `\` in your run command or docker-compose.yml.
-     For example you would set `-e PASSWORD=mypa\$\$word`.
 - Fallback to a previous version
     1. Clone the repository on your machine
 
@@ -290,10 +285,10 @@ Note that not all regions support port forwarding.
     - DNS over TLS providers
     - DNS private addresses
     - Unbound log level and verbosity
-- Port forwarding
 - Periodic healthcheck checking for network leaks etc.
-- Support other VPN providers
+- Unit tests!
 - Periodic update of malicious block lists with Unbound restart
+- Support other VPN providers
 - Colors, emojis and announcements in entrypoint or periodically
 - Switch to iptables-go instead of using the shell iptables
 
