@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 func (c *configurator) Start() (stdout io.ReadCloser, err error) {
-	stdout, _, err = c.commander.Start("unbound")
+	stdout, _, err = c.commander.Start("unbound", "-d", "-c", string(constants.UnboundConf))
 	return stdout, err
 }
 
