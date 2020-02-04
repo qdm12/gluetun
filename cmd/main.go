@@ -39,8 +39,8 @@ func main() {
 	fileManager := files.NewFileManager()
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
-	piaConf := pia.NewConfigurator(client, logger)
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
+	piaConf := pia.NewConfigurator(client, fileManager, firewallConf, logger)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -129,7 +129,16 @@ func main() {
 
 	if allSettings.PIA.PortForwarding.Enabled {
 		time.AfterFunc(10*time.Second, func() {
-			piaConf.PortForward(allSettings.PIA.PortForwarding.Filepath)
+			port, err := piaConf.GetPortForward()
+			if err != nil {
+				logger.Error("port forwarding:", err)
+			}
+			if err := piaConf.WritePortForward(allSettings.PIA.PortForwarding.Filepath, port); err != nil {
+				logger.Error("port forwarding:", err)
+			}
+			if err := piaConf.AllowPortForwardFirewall(VPNDevice, port); err != nil {
+				logger.Error("port forwarding:", err)
+			}
 		})
 	}
 

@@ -65,5 +65,6 @@ const (
 )
 
 const (
-	PIAOpenVPNURL models.URL = "https://www.privateinternetaccess.com/openvpn"
+	PIAOpenVPNURL     models.URL = "https://www.privateinternetaccess.com/openvpn"
+	PIAPortForwardURL models.URL = "http://209.222.18.222:2000"
 )

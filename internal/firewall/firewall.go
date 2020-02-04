@@ -23,6 +23,7 @@ type Configurator interface {
 	CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error
 	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string, device models.VPNDevice) error
 	GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)
+	AllowInputTrafficOnPort(device models.VPNDevice, port uint16) error
 }
 
 type configurator struct {

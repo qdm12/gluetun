@@ -119,3 +119,12 @@ func (c *configurator) CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []
 	}
 	return nil
 }
+
+// Used for port forwarding
+func (c *configurator) AllowInputTrafficOnPort(device models.VPNDevice, port uint16) error {
+	c.logger.Info("%s: accepting input traffic through %s on port %d", logPrefix, device, port)
+	return c.runIptablesInstructions([]string{
+		fmt.Sprintf("-A INPUT -i %s -p tcp --dport %d -j ACCEPT", device, port),
+		fmt.Sprintf("-A INPUT -i %s -p udp --dport %d -j ACCEPT", device, port),
+	})
+}
