@@ -7,3 +7,4 @@ ci.sh
 docker-compose.yml
 LICENSE
 README.md
+Dockerfile
