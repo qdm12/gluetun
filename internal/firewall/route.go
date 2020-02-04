@@ -8,12 +8,20 @@ import (
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error {
+func (c *configurator) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string, device models.VPNDevice) error {
 	for _, subnet := range subnets {
+		output, err := c.commander.Run("ip", "route", "show", subnet.String())
+		if err != nil {
+			return err
+		} else if len(output) > 0 { // thanks to @npawelek https://github.com/npawelek
+			continue // already exists
+			// TODO remove it instead and continue execution below
+		}
 		c.logger.Info("%s: adding %s as route via %s", logPrefix, subnet.String(), defaultInterface)
-		_, err := c.commander.Run("ip", "route", "add", subnet.String(), "via", defaultGateway.String(), "dev", defaultInterface)
+		_, err = c.commander.Run("ip", "route", "add", subnet.String(), "via", defaultGateway.String(), string(device), defaultInterface)
 		if err != nil {
 			return fmt.Errorf("cannot add route for %s: %w", subnet, err)
 		}

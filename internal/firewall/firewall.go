@@ -14,13 +14,14 @@ const logPrefix = "firewall configurator"
 // Configurator allows to change firewall rules and modify network routes
 type Configurator interface {
 	Version() (string, error)
+	AcceptAll() error
 	Clear() error
 	BlockAll() error
 	CreateGeneralRules() error
 	CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP, defaultInterface string,
 		port uint16, protocol models.NetworkProtocol) error
 	CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error
-	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error
+	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string, device models.VPNDevice) error
 	GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)
 }
 

@@ -63,6 +63,16 @@ func main() {
 	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password)
 	e.FatalOnError(err)
 
+	// Temporarily reset chain policies allowing Kubernetes sidecar to
+	// successfully restart the container. Without this, the existing rules will
+	// pre-exist, preventing the nslookup of the PIA region address. These will
+	// simply be redundant at Docker runtime as they will already be set this way
+	// Thanks to @npawelek https://github.com/npawelek
+	err = firewallConf.Clear()
+	e.FatalOnError(err)
+	err = firewallConf.BlockAll()
+	e.FatalOnError(err)
+
 	if allSettings.DNS.Enabled {
 		err = dnsConf.DownloadRootHints()
 		e.FatalOnError(err)
@@ -88,7 +98,7 @@ func main() {
 
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
 	e.FatalOnError(err)
-	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
+	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface, VPNDevice)
 	e.FatalOnError(err)
 	err = firewallConf.Clear()
 	e.FatalOnError(err)

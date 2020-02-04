@@ -48,6 +48,15 @@ func (c *configurator) Clear() error {
 	})
 }
 
+func (c *configurator) AcceptAll() error {
+	c.logger.Info("%s: accepting all traffic", logPrefix)
+	return c.runIptablesInstructions([]string{
+		"-P INPUT ACCEPT",
+		"-P OUTPUT ACCEPT",
+		"-P FORWARD ACCEPT",
+	})
+}
+
 func (c *configurator) BlockAll() error {
 	c.logger.Info("%s: blocking all traffic", logPrefix)
 	return c.runIptablesInstructions([]string{
@@ -99,6 +108,12 @@ func (c *configurator) CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []
 		c.logger.Info("%s: accepting input traffic through %s from %s to %s", logPrefix, defaultInterface, extraSubnetStr, subnetStr)
 		if err := c.runIptablesInstruction(
 			fmt.Sprintf("-A INPUT -i %s -s %s -d %s -j ACCEPT", defaultInterface, extraSubnetStr, subnetStr)); err != nil {
+			return err
+		}
+		// Thanks to @npawelek
+		c.logger.Info("%s: accepting output traffic through %s from %s to %s", logPrefix, defaultInterface, subnetStr, extraSubnetStr)
+		if err := c.runIptablesInstruction(
+			fmt.Sprintf("-A OUTPUT -o %s -s %s -d %s -j ACCEPT", defaultInterface, subnetStr, extraSubnetStr)); err != nil {
 			return err
 		}
 	}
