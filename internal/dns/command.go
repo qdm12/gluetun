@@ -17,7 +17,7 @@ func (c *configurator) Start() (stdout io.ReadCloser, err error) {
 func (c *configurator) Version() (version string, err error) {
 	output, err := c.commander.Run("unbound", "-V")
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("unbound version: %w", err)
 	}
 	for _, line := range strings.Split(output, "\n") {
 		if strings.Contains(line, "Version ") {
@@ -29,7 +29,7 @@ func (c *configurator) Version() (version string, err error) {
 		}
 	}
 	if version == "" {
-		return "", fmt.Errorf("unbound -h: version was not found in %q", output)
+		return "", fmt.Errorf("unbound version was not found in %q", output)
 	}
 	return version, nil
 }
