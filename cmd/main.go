@@ -118,7 +118,7 @@ func main() {
 		logger.Info("Configuring Shadowsocks")
 		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.TinyProxy.Password)
 		e.FatalOnError(err)
-		stream, err := shadowsocksConf.Start(allSettings.ShadowSocks.Log)
+		stream, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
 		go streamMerger.Merge("shadowsocks", stream)
 	}

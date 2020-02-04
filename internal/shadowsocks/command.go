@@ -8,9 +8,11 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) Start(log bool) (stdout io.ReadCloser, err error) {
+func (c *configurator) Start(server string, port uint16, password string, log bool) (stdout io.ReadCloser, err error) {
 	args := []string{
 		"-c", string(constants.ShadowsocksConf),
+		"-p", fmt.Sprintf("%d", port),
+		"-k", password,
 	}
 	if log {
 		args = append(args, "-v")

@@ -10,7 +10,7 @@ import (
 type Configurator interface {
 	Version() (string, error)
 	MakeConf(port uint16, password string) error
-	Start(log bool) (stdout io.ReadCloser, err error)
+	Start(server string, port uint16, password string, log bool) (stdout io.ReadCloser, err error)
 }
 
 type configurator struct {
