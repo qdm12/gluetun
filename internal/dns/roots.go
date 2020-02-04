@@ -19,7 +19,7 @@ func (c *configurator) DownloadRootHints() error {
 
 func (c *configurator) DownloadRootKey() error {
 	c.logger.Info("%s: downloading root key from %s", logPrefix, constants.RootKeyURL)
-	content, status, err := c.client.GetContent(string(constants.NamedRootURL))
+	content, status, err := c.client.GetContent(string(constants.RootKeyURL))
 	if err != nil {
 		return err
 	} else if status != 200 {
