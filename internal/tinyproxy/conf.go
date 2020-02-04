@@ -8,6 +8,7 @@ import (
 )
 
 func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string) error {
+	c.logger.Info("%s: generating tinyproxy configuration file", logPrefix)
 	lines := generateConf(logLevel, port, user, password)
 	return c.fileManager.WriteLinesToFile(string(constants.TinyProxyConf), lines)
 }

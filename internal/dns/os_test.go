@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/qdm12/golibs/files/mocks"
+	filesmocks "github.com/qdm12/golibs/files/mocks"
+	loggingmocks "github.com/qdm12/golibs/logging/mocks"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -44,13 +45,18 @@ func Test_SetLocalNameserver(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			fileManager := &mocks.FileManager{}
+			fileManager := &filesmocks.FileManager{}
 			fileManager.On("ReadFile", string(constants.ResolvConf)).
 				Return(tc.data, tc.readErr).Once()
-			fileManager.On("WriteToFile", string(constants.ResolvConf), tc.writtenData).
-				Return(tc.writeErr).Once()
+			if tc.readErr == nil {
+				fileManager.On("WriteToFile", string(constants.ResolvConf), tc.writtenData).
+					Return(tc.writeErr).Once()
+			}
+			logger := &loggingmocks.Logger{}
+			logger.On("Info", "%s: setting local nameserver to 127.0.0.1", logPrefix).Once()
 			c := &configurator{
 				fileManager: fileManager,
+				logger:      logger,
 			}
 			err := c.SetLocalNameserver()
 			if tc.err != nil {
@@ -59,6 +65,8 @@ func Test_SetLocalNameserver(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
+			fileManager.AssertExpectations(t)
+			logger.AssertExpectations(t)
 		})
 	}
 }

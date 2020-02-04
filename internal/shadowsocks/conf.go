@@ -8,6 +8,7 @@ import (
 )
 
 func (c *configurator) MakeConf(port uint16, password string) (err error) {
+	c.logger.Info("%s: generating configuration file", logPrefix)
 	data, err := generateConf(port, password)
 	if err != nil {
 		return err

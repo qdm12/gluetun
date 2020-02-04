@@ -5,8 +5,11 @@ import (
 
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
+
+const logPrefix = "tinyproxy configurator"
 
 type Configurator interface {
 	Version() (string, error)
@@ -15,10 +18,11 @@ type Configurator interface {
 }
 
 type configurator struct {
-	commander   command.Commander
 	fileManager files.FileManager
+	logger      logging.Logger
+	commander   command.Commander
 }
 
-func NewConfigurator(fileManager files.FileManager) Configurator {
-	return &configurator{fileManager: fileManager, commander: command.NewCommander()}
+func NewConfigurator(fileManager files.FileManager, logger logging.Logger) Configurator {
+	return &configurator{fileManager, logger, command.NewCommander()}
 }

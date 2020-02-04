@@ -9,6 +9,7 @@ import (
 )
 
 func (c *configurator) ModifyLines(lines []string, IPs []net.IP, port uint16) (modifiedLines []string, err error) {
+	c.logger.Info("%s: adapting openvpn configuration for server IP addresses and port %d", logPrefix, port)
 	// Remove lines
 	for _, line := range lines {
 		if strings.Contains(line, "privateinternetaccess.com") ||

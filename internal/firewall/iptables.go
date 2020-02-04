@@ -39,7 +39,7 @@ func (c *configurator) runIptablesInstruction(instruction string) error {
 }
 
 func (c *configurator) Clear() error {
-	c.logger.Info("firewall: clearing all rules")
+	c.logger.Info("%s: clearing all rules", logPrefix)
 	return c.runIptablesInstructions([]string{
 		"--flush",
 		"--delete-chain",
@@ -49,7 +49,7 @@ func (c *configurator) Clear() error {
 }
 
 func (c *configurator) BlockAll() error {
-	c.logger.Info("firewall: blocking all traffic")
+	c.logger.Info("%s: blocking all traffic", logPrefix)
 	return c.runIptablesInstructions([]string{
 		"-P INPUT DROP",
 		"-F OUTPUT",
@@ -59,7 +59,7 @@ func (c *configurator) BlockAll() error {
 }
 
 func (c *configurator) CreateGeneralRules() error {
-	c.logger.Info("firewall: creating general rules")
+	c.logger.Info("%s: creating general rules", logPrefix)
 	return c.runIptablesInstructions([]string{
 		"-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
 		"-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
@@ -71,8 +71,8 @@ func (c *configurator) CreateGeneralRules() error {
 func (c *configurator) CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP,
 	defaultInterface string, port uint16, protocol models.NetworkProtocol) error {
 	for _, serverIP := range serverIPs {
-		c.logger.Info("firewall: allowing output traffic to VPN server %s through %s on port %s %d",
-			serverIP, defaultInterface, protocol, port)
+		c.logger.Info("%s: allowing output traffic to VPN server %s through %s on port %s %d",
+			logPrefix, serverIP, defaultInterface, protocol, port)
 		if err := c.runIptablesInstruction(
 			fmt.Sprintf("-A OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 				serverIP, defaultInterface, protocol, protocol, port)); err != nil {
@@ -87,7 +87,7 @@ func (c *configurator) CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP,
 
 func (c *configurator) CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error {
 	subnetStr := subnet.String()
-	c.logger.Info("firewall: accepting input and output traffic for %s", subnetStr)
+	c.logger.Info("%s: accepting input and output traffic for %s", logPrefix, subnetStr)
 	if err := c.runIptablesInstructions([]string{
 		fmt.Sprintf("-A INPUT -s %s -d %s -j ACCEPT", subnetStr, subnetStr),
 		fmt.Sprintf("-A OUTPUT -s %s -d %s -j ACCEPT", subnetStr, subnetStr),
@@ -96,7 +96,7 @@ func (c *configurator) CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []
 	}
 	for _, extraSubnet := range extraSubnets {
 		extraSubnetStr := extraSubnet.String()
-		c.logger.Info("firewall: accepting input traffic through %s from %s to %s", defaultInterface, extraSubnetStr, subnetStr)
+		c.logger.Info("%s: accepting input traffic through %s from %s to %s", logPrefix, defaultInterface, extraSubnetStr, subnetStr)
 		if err := c.runIptablesInstruction(
 			fmt.Sprintf("-A INPUT -i %s -s %s -d %s -j ACCEPT", defaultInterface, extraSubnetStr, subnetStr)); err != nil {
 			return err

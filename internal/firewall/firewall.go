@@ -9,6 +9,8 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
+const logPrefix = "firewall configurator"
+
 // Configurator allows to change firewall rules and modify network routes
 type Configurator interface {
 	Version() (string, error)

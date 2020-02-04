@@ -39,10 +39,10 @@ func main() {
 	fileManager := files.NewFileManager()
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
-	piaConf := pia.NewConfigurator(client)
+	piaConf := pia.NewConfigurator(client, logger)
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
-	tinyProxyConf := tinyproxy.NewConfigurator(fileManager)
-	shadowsocksConf := shadowsocks.NewConfigurator(fileManager)
+	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
+	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	streamMerger := command.NewStreamMerger(ctx)
@@ -60,12 +60,10 @@ func main() {
 	err = ovpnConf.CheckTUN()
 	e.FatalOnError(err)
 
-	logger.Info("Writing auth file")
 	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password)
 	e.FatalOnError(err)
 
 	if allSettings.DNS.Enabled {
-		logger.Info("Setting up DNS over TLS")
 		err = dnsConf.DownloadRootHints()
 		e.FatalOnError(err)
 		err = dnsConf.DownloadRootKey()
@@ -79,7 +77,6 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	logger.Info("Configuring PIA")
 	lines, err := piaConf.DownloadOvpnConfig(allSettings.PIA.Encryption, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Region)
 	e.FatalOnError(err)
 	VPNIPs, port, VPNDevice, err := piaConf.ParseConfig(lines)
@@ -89,7 +86,6 @@ func main() {
 	fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines)
 	e.FatalOnError(err)
 
-	logger.Info("Configuring firewall")
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
 	e.FatalOnError(err)
 	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
@@ -106,7 +102,6 @@ func main() {
 	e.FatalOnError(err)
 
 	if allSettings.TinyProxy.Enabled {
-		logger.Info("Configuring Tinyproxy")
 		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.ShadowSocks.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password)
 		e.FatalOnError(err)
 		stream, err := tinyProxyConf.Start()
@@ -115,7 +110,6 @@ func main() {
 	}
 
 	if allSettings.ShadowSocks.Enabled {
-		logger.Info("Configuring Shadowsocks")
 		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.TinyProxy.Password)
 		e.FatalOnError(err)
 		stream, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)

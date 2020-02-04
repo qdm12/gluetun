@@ -9,6 +9,7 @@ import (
 )
 
 func (c *configurator) Start(server string, port uint16, password string, log bool) (stdout io.ReadCloser, err error) {
+	c.logger.Info("%s: starting shadowsocks server", logPrefix)
 	args := []string{
 		"-c", string(constants.ShadowsocksConf),
 		"-p", fmt.Sprintf("%d", port),

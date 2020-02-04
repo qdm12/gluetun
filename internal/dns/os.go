@@ -7,6 +7,7 @@ import (
 )
 
 func (c *configurator) SetLocalNameserver() error {
+	c.logger.Info("%s: setting local nameserver to 127.0.0.1", logPrefix)
 	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))
 	if err != nil {
 		return err

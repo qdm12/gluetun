@@ -7,6 +7,7 @@ import (
 )
 
 func (c *configurator) DownloadRootHints() error {
+	c.logger.Info("%s: downloading root hints from %s", logPrefix, constants.NamedRootURL)
 	content, status, err := c.client.GetContent(string(constants.NamedRootURL))
 	if err != nil {
 		return err
@@ -17,6 +18,7 @@ func (c *configurator) DownloadRootHints() error {
 }
 
 func (c *configurator) DownloadRootKey() error {
+	c.logger.Info("%s: downloading root key from %s", logPrefix, constants.RootKeyURL)
 	content, status, err := c.client.GetContent(string(constants.NamedRootURL))
 	if err != nil {
 		return err

@@ -8,7 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/qdm12/golibs/files/mocks"
+	filesmocks "github.com/qdm12/golibs/files/mocks"
+	loggingmocks "github.com/qdm12/golibs/logging/mocks"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
@@ -67,10 +68,16 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			fileManager := &mocks.FileManager{}
+			fileManager := &filesmocks.FileManager{}
 			fileManager.On("ReadFile", string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Once()
-			c := &configurator{fileManager: fileManager}
+			logger := &loggingmocks.Logger{}
+			logger.On("Info", "%s: detecting default network route", logPrefix).Once()
+			if tc.err == nil {
+				logger.On("Info", "%s: default route found: interface %s, gateway %s, subnet %s",
+					logPrefix, tc.defaultInterface, tc.defaultGateway.String(), tc.defaultSubnet.String()).Once()
+			}
+			c := &configurator{logger: logger, fileManager: fileManager}
 			defaultInterface, defaultGateway, defaultSubnet, err := c.GetDefaultRoute()
 			if tc.err != nil {
 				require.Error(t, err)
@@ -81,6 +88,8 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 			assert.Equal(t, tc.defaultInterface, defaultInterface)
 			assert.Equal(t, tc.defaultGateway, defaultGateway)
 			assert.Equal(t, tc.defaultSubnet, defaultSubnet)
+			fileManager.AssertExpectations(t)
+			logger.AssertExpectations(t)
 		})
 	}
 }

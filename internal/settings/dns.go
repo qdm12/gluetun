@@ -42,7 +42,7 @@ func (d *DNS) String() string {
 		"Block surveillance: " + blockSurveillance,
 		"Block ads: " + blockAds,
 		"Allowed hostnames: " + strings.Join(d.AllowedHostnames, ", "),
-		"Private addresses: " + strings.Join(d.PrivateAddresses, ", "),
+		"Private addresses: \n  |---" + strings.Join(d.PrivateAddresses, "\n   |--"),
 		"Verbosity level: " + fmt.Sprintf("%d", d.Verbosity),
 		"Log level: " + fmt.Sprintf("%d", d.LogLevel),
 	}

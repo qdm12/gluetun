@@ -11,6 +11,7 @@ import (
 )
 
 func (c *configurator) ParseConfig(lines []string) (IPs []net.IP, port uint16, device models.VPNDevice, err error) {
+	c.logger.Info("%s: parsing openvpn configuration", logPrefix)
 	remoteLineFound := false
 	deviceLineFound := false
 	for _, line := range lines {
@@ -46,6 +47,7 @@ func (c *configurator) ParseConfig(lines []string) (IPs []net.IP, port uint16, d
 		}
 	}
 	if remoteLineFound && deviceLineFound {
+		c.logger.Info("%s: Found %d PIA server IP addresses, port %d and device %s", logPrefix, len(IPs), port, device)
 		return IPs, port, device, nil
 	} else if !remoteLineFound {
 		return nil, 0, "", fmt.Errorf("remote line not found in Openvpn configuration")

@@ -9,6 +9,8 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
+const logPrefix = "openvpn configurator"
+
 type Configurator interface {
 	Version() (string, error)
 	WriteAuthFile(user, password string) error

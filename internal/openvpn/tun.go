@@ -9,7 +9,7 @@ import (
 
 // CheckTUN checks the tunnel device is present and accessible
 func (c *configurator) CheckTUN() error {
-	c.logger.Info("openvpn configurator: checking for device %s", constants.TunnelDevice)
+	c.logger.Info("%s: checking for device %s", logPrefix, constants.TunnelDevice)
 	f, err := c.openFile(string(constants.TunnelDevice), os.O_RDWR, 0)
 	if err != nil {
 		return fmt.Errorf("TUN device is not available: %w", err)

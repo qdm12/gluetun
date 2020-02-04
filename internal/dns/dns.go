@@ -10,6 +10,8 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
+const logPrefix = "dns configurator"
+
 type Configurator interface {
 	DownloadRootHints() error
 	DownloadRootKey() error

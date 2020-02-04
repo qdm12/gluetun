@@ -9,6 +9,7 @@ import (
 )
 
 func (c *configurator) Start() (stdout io.ReadCloser, err error) {
+	c.logger.Info("%s: starting unbound", logPrefix)
 	stdout, _, err = c.commander.Start("unbound", "-d", "-c", string(constants.UnboundConf))
 	return stdout, err
 }

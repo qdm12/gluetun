@@ -25,6 +25,7 @@ func (s *Settings) String() string {
 		s.Firewall.String(),
 		s.TinyProxy.String(),
 		s.ShadowSocks.String(),
+		"", // new line at the end
 	}, "\n")
 }
 

@@ -12,7 +12,7 @@ import (
 
 func (c *configurator) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error {
 	for _, subnet := range subnets {
-		c.logger.Info("adding %s as route via %s", subnet, defaultInterface)
+		c.logger.Info("%s: adding %s as route via %s", logPrefix, subnet.String(), defaultInterface)
 		_, err := c.commander.Run("ip", "route", "add", subnet.String(), "via", defaultGateway.String(), "dev", defaultInterface)
 		if err != nil {
 			return fmt.Errorf("cannot add route for %s: %w", subnet, err)
@@ -22,6 +22,7 @@ func (c *configurator) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, 
 }
 
 func (c *configurator) GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error) {
+	c.logger.Info("%s: detecting default network route", logPrefix)
 	data, err := c.fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
 		return "", nil, defaultSubnet, err
@@ -53,7 +54,9 @@ func (c *configurator) GetDefaultRoute() (defaultInterface string, defaultGatewa
 	if err != nil {
 		return "", nil, defaultSubnet, err
 	}
-	return defaultInterface, defaultGateway, net.IPNet{IP: netNumber, Mask: netMask}, nil
+	subnet := net.IPNet{IP: netNumber, Mask: netMask}
+	c.logger.Info("%s: default route found: interface %s, gateway %s, subnet %s", logPrefix, defaultInterface, defaultGateway.String(), subnet.String())
+	return defaultInterface, defaultGateway, subnet, nil
 }
 
 func reversedHexToIPv4(reversedHex string) (IP net.IP, err error) {

@@ -13,6 +13,7 @@ import (
 
 func (c *configurator) DownloadOvpnConfig(encryption models.PIAEncryption,
 	protocol models.NetworkProtocol, region models.PIARegion) (lines []string, err error) {
+	c.logger.Info("%s: downloading openvpn configuration files", logPrefix)
 	URL := buildZipURL(encryption, protocol)
 	content, status, err := c.client.GetContent(URL)
 	if err != nil {
