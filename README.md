@@ -121,7 +121,6 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
-| `NONROOT` | `yes` | Run OpenVPN without root, `yes` or `no` |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
 | `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |

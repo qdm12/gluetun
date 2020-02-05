@@ -21,7 +21,6 @@ services:
       - ENCRYPTION=strong
       - PROTOCOL=udp
       - REGION=CA Montreal
-      - NONROOT=no
       - DOT=on
       - DOT_PROVIDERS=cloudflare
       - BLOCK_MALICIOUS=on

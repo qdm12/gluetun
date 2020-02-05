@@ -31,7 +31,6 @@ ENV USER= \
     ENCRYPTION=strong \
     PROTOCOL=udp \
     REGION="CA Montreal" \
-    NONROOT=yes \
     DOT=on \
     DOT_PROVIDERS=cloudflare \
     BLOCK_MALICIOUS=off \
