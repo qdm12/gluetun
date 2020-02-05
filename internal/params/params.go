@@ -12,6 +12,7 @@ import (
 
 type ParamsReader interface {
 	GetDNSOverTLS() (DNSOverTLS bool, err error)
+	GetDNSOverTLSProviders() (providers []models.DNSProvider, err error)
 	GetDNSMaliciousBlocking() (blocking bool, err error)
 	GetDNSSurveillanceBlocking() (blocking bool, err error)
 	GetDNSAdsBlocking() (blocking bool, err error)

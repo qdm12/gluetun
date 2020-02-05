@@ -102,14 +102,16 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 	sort.Slice(forwardZoneLines, func(i, j int) bool {
 		return forwardZoneLines[i] < forwardZoneLines[j]
 	})
+	for _, provider := range settings.Providers {
+		forwardAddresses, ok := constants.DNSAddressesMapping[provider]
+		if !ok || len(forwardAddresses) == 0 {
+			return nil, warnings, fmt.Errorf("DNS provider %q does not have any matching forward addresses", provider)
+		}
+		for _, forwardAddress := range forwardAddresses {
+			forwardZoneLines = append(forwardZoneLines, fmt.Sprintf("  forward-addr: %s", forwardAddress))
+		}
+	}
 	lines = append(lines, forwardZoneLines...)
-	forwardAddresses, ok := constants.DNSAddressesMapping[settings.Provider]
-	if !ok || len(forwardAddresses) == 0 {
-		return nil, warnings, fmt.Errorf("DNS provider %q does not have any matching forward addresses", settings.Provider)
-	}
-	for _, forwardAddress := range forwardAddresses {
-		lines = append(lines, fmt.Sprintf("  forward-addr: %s", forwardAddress))
-	}
 	return lines, warnings, nil
 }
 

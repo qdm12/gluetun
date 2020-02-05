@@ -23,6 +23,7 @@ services:
       - REGION=CA Montreal
       - NONROOT=no
       - DOT=on
+      - DOT_PROVIDERS=cloudflare
       - BLOCK_MALICIOUS=on
       - BLOCK_NSA=off
       - UNBLOCK=

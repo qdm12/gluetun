@@ -33,6 +33,7 @@ ENV USER= \
     REGION="CA Montreal" \
     NONROOT=yes \
     DOT=on \
+    DOT_PROVIDERS=cloudflare \
     BLOCK_MALICIOUS=off \
     BLOCK_NSA=off \
     UNBLOCK= \

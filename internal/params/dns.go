@@ -1,13 +1,37 @@
 package params
 
-import libparams "github.com/qdm12/golibs/params"
+import (
+	"fmt"
+	"strings"
 
-import "strings"
+	libparams "github.com/qdm12/golibs/params"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
+)
 
 // GetDNSOverTLS obtains if the DNS over TLS should be enabled
 // from the environment variable DOT
 func (p *paramsReader) GetDNSOverTLS() (DNSOverTLS bool, err error) {
 	return p.envParams.GetOnOff("DOT", libparams.Default("on"))
+}
+
+// GetDNSOverTLSProviders obtains the DNS over TLS providers to use
+// from the environment variable DOT_PROVIDERS
+func (p *paramsReader) GetDNSOverTLSProviders() (providers []models.DNSProvider, err error) {
+	s, err := p.envParams.GetEnv("DOT_PROVIDERS", libparams.Default("cloudflare"))
+	if err != nil {
+		return nil, err
+	}
+	for _, word := range strings.Split(s, ",") {
+		provider := models.DNSProvider(word)
+		switch provider {
+		case constants.Cloudflare, constants.Google, constants.Quad9, constants.Quadrant, constants.CleanBrowsing, constants.SecureDNS, constants.LibreDNS:
+			providers = append(providers, provider)
+		default:
+			return nil, fmt.Errorf("DNS over TLS provider %q is not valid", provider)
+		}
+	}
+	return providers, nil
 }
 
 // GetDNSMaliciousBlocking obtains if malicious hostnames/IPs should be blocked
@@ -39,6 +63,10 @@ func (p *paramsReader) GetDNSUnblockedHostnames() (hostnames []string, err error
 		return nil, nil
 	}
 	hostnames = strings.Split(s, ",")
-	// TODO validate hostnames
+	for _, hostname := range hostnames {
+		if !p.verifier.MatchHostname(hostname) {
+			return nil, fmt.Errorf("hostname %q does not seem valid", hostname)
+		}
+	}
 	return hostnames, nil
 }

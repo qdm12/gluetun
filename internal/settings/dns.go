@@ -11,7 +11,7 @@ import (
 // DNS contains settings to configure Unbound for DNS over TLS operation
 type DNS struct {
 	Enabled           bool
-	Provider          models.DNSProvider
+	Providers         []models.DNSProvider
 	AllowedHostnames  []string
 	PrivateAddresses  []string
 	BlockMalicious    bool
@@ -35,9 +35,13 @@ func (d *DNS) String() string {
 	if d.BlockAds {
 		blockAds = "enabled"
 	}
+	var providersStr []string
+	for _, provider := range d.Providers {
+		providersStr = append(providersStr, string(provider))
+	}
 	settingsList := []string{
 		"DNS over TLS settings:",
-		"DNS over TLS provider: " + string(d.Provider),
+		"DNS over TLS provider: \n  |---" + strings.Join(providersStr, "\n   |--"),
 		"Block malicious: " + blockMalicious,
 		"Block surveillance: " + blockSurveillance,
 		"Block ads: " + blockAds,
@@ -55,7 +59,10 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
-	settings.Provider = models.DNSProvider("cloudflare") // TODO make variable
+	settings.Providers, err = params.GetDNSOverTLSProviders()
+	if err != nil {
+		return settings, err
+	}
 	settings.AllowedHostnames, err = params.GetDNSUnblockedHostnames()
 	if err != nil {
 		return settings, err

@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network/mocks"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,7 @@ import (
 func Test_generateUnboundConf(t *testing.T) {
 	t.Parallel()
 	settings := settings.DNS{
-		Provider:          constants.Cloudflare,
+		Providers:         []models.DNSProvider{constants.Cloudflare, constants.Quad9},
 		AllowedHostnames:  []string{"a"},
 		PrivateAddresses:  []string{"9.9.9.9"},
 		BlockMalicious:    true,
@@ -75,7 +76,9 @@ forward-zone:
   forward-tls-upstream: yes
   name: "."
   forward-addr: 1.1.1.1@853#cloudflare-dns.com
-  forward-addr: 1.0.0.1@853#cloudflare-dns.com`
+  forward-addr: 1.0.0.1@853#cloudflare-dns.com
+  forward-addr: 9.9.9.9@853#dns.quad9.net
+  forward-addr: 149.112.112.112@853#dns.quad9.net`
 	assert.Equal(t, expected, "\n"+strings.Join(lines, "\n"))
 }
 
