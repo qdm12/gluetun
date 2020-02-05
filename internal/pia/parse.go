@@ -25,10 +25,7 @@ func (c *configurator) ParseConfig(lines []string) (IPs []net.IP, port uint16, d
 			if err := c.verifyPort(words[2]); err != nil {
 				return nil, 0, "", fmt.Errorf("line %q has an invalid port: %w", line, err)
 			}
-			portUint64, err := strconv.ParseUint(words[2], 10, 16)
-			if err != nil {
-				return nil, 0, "", err
-			}
+			portUint64, _ := strconv.ParseUint(words[2], 10, 16)
 			port = uint16(portUint64)
 			IPs, err = c.lookupIP(host)
 			if err != nil {
