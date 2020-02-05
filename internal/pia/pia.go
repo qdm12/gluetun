@@ -19,7 +19,7 @@ type Configurator interface {
 	DownloadOvpnConfig(encryption models.PIAEncryption,
 		protocol models.NetworkProtocol, region models.PIARegion) (lines []string, err error)
 	ParseConfig(lines []string) (IPs []net.IP, port uint16, device models.VPNDevice, err error)
-	ModifyLines(lines []string, IPs []net.IP, port uint16) (modifiedLines []string, err error)
+	ModifyLines(lines []string, IPs []net.IP, port uint16) (modifiedLines []string)
 	GetPortForward() (port uint16, err error)
 	WritePortForward(filepath models.Filepath, port uint16) (err error)
 	AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error)

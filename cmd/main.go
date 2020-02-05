@@ -91,8 +91,7 @@ func main() {
 	e.FatalOnError(err)
 	VPNIPs, port, VPNDevice, err := piaConf.ParseConfig(lines)
 	e.FatalOnError(err)
-	lines, err = piaConf.ModifyLines(lines, VPNIPs, port)
-	e.FatalOnError(err)
+	lines = piaConf.ModifyLines(lines, VPNIPs, port)
 	fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines)
 	e.FatalOnError(err)
 
