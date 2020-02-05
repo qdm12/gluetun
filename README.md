@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
 
-**ANNOUCEMENT**: *Total rewrite in Go: all stdout streams merged, download files at start*
+**ANNOUCEMENT**: *Total rewrite in Go: see the new features [below](#Features)*
 
 <a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
     <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
@@ -34,6 +34,14 @@
 
 ## Features
 
+- **New features**
+    - Choice to block ads, malicious and surveillance at the DNS level
+    - All program output streams are merged (openvpn, unbound, shadowsocks, tinyproxy, etc.)
+    - Choice of DNS over TLS provider(s)
+    - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
+    - Download block lists and cryptographic files at start instead of at build time
+    - Can work as a Kubernetes sidecar container, thanks @rorph
+    - Pick a random region if no region is given, thanks @rorph
 - <details><summary>Configure everything with environment variables</summary><p>
 
     - [Destination region](https://www.privateinternetaccess.com/pages/network)
@@ -53,7 +61,7 @@
 - Killswitch using *iptables* to allow traffic only with needed PIA servers and LAN devices
 - Port forwarding
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
-- Programs run without root: Openvpn, Unbound, Shadowsocks, Tinyproxy
+- Sub programs drop root privileges once launched: Openvpn, Unbound, Shadowsocks, Tinyproxy
 
 ## Setup
 
