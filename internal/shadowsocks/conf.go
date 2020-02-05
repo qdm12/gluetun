@@ -9,14 +9,11 @@ import (
 
 func (c *configurator) MakeConf(port uint16, password string) (err error) {
 	c.logger.Info("%s: generating configuration file", logPrefix)
-	data, err := generateConf(port, password)
-	if err != nil {
-		return err
-	}
+	data := generateConf(port, password)
 	return c.fileManager.WriteToFile(string(constants.ShadowsocksConf), data)
 }
 
-func generateConf(port uint16, password string) (data []byte, err error) {
+func generateConf(port uint16, password string) (data []byte) {
 	conf := struct {
 		Server       string            `json:"server"`
 		User         string            `json:"user"`
@@ -42,5 +39,6 @@ func generateConf(port uint16, password string) (data []byte, err error) {
 		Interface:  "tun",
 		Nameserver: "127.0.0.1",
 	}
-	return json.Marshal(conf)
+	data, _ = json.Marshal(conf)
+	return data
 }
