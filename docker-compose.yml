@@ -27,13 +27,12 @@ services:
       - BLOCK_SURVEILLANCE=off
       - BLOCK_ADS=off
       - UNBLOCK=
-      - FIREWALL=on
       - EXTRA_SUBNETS=
-      - TINYPROXY=on
-      - TINYPROXY_LOG=Critical
+      - TINYPROXY=off
       - TINYPROXY_USER=
       - TINYPROXY_PASSWORD=
-      - SHADOWSOCKS=on
+      - SHADOWSOCKS=off
       - SHADOWSOCKS_LOG=on
+      - SHADOWSOCKS_PORT=8388
       - SHADOWSOCKS_PASSWORD=
     restart: always

@@ -13,7 +13,7 @@ func (p *paramsReader) GetShadowSocks() (activated bool, err error) {
 }
 
 // GetShadowSocksLog obtains the ShadowSocks log level from the environment variable
-// TINYPROXY_LOG, and using PROXY_LOG_LEVEL as a retro-compatibility name
+// SHADOWSOCKS_LOG
 func (p *paramsReader) GetShadowSocksLog() (activated bool, err error) {
 	return p.envParams.GetOnOff("SHADOWSOCKS_LOG", libparams.Default("off"))
 }

@@ -45,7 +45,6 @@
     - Internal firewall
     - Socks5 proxy
     - Web HTTP proxy
-    - Run openvpn without root
 
     </p></details>
 - Connect
@@ -169,8 +168,7 @@ There are various ways to achieve this, depending on your use case.
         - port `8888` published `-p 8888:8888/tcp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `TINYPROXY_USER` and `TINYPROXY_PASSWORD`.
-    1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
-       `TINYPROXY_LOG` defaults to `Critical` to avoid logging everything, for privacy purposes.
+    1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs
 
     </p></details>
 - <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
@@ -189,7 +187,7 @@ There are various ways to achieve this, depending on your use case.
         - Enter port TCP (and UDP, if available) `8388` as the server port
         - Use the password you have set with `SHADOWSOCKS_PASSWORD`
         - Choose the encryption method/algorithm `chacha20-ietf-poly1305`
-    1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
+    1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs
 
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>

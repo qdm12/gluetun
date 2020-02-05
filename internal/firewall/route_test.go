@@ -63,7 +63,7 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 				IP:   net.IP{0xac, 0x11, 0x0, 0x0},
 				Mask: net.IPMask{0xff, 0xff, 0x0, 0x0},
 			}},
-	} // TODO find full subnet 172.17.0.0/16
+	}
 	for name, tc := range tests {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
