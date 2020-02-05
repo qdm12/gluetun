@@ -18,7 +18,6 @@ type ParamsReader interface {
 	GetDNSAdsBlocking() (blocking bool, err error)
 	GetDNSUnblockedHostnames() (hostnames []string, err error)
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
-	GetNonRoot() (nonRoot bool, err error)
 	GetNetworkProtocol() (protocol models.NetworkProtocol, err error)
 	GetPortForwarding() (activated bool, err error)
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)

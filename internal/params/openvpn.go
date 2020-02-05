@@ -5,12 +5,6 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-// GetNonRoot obtains if openvpn should be run without root from the
-// environment variable NONROOT
-func (p *paramsReader) GetNonRoot() (nonRoot bool, err error) {
-	return p.envParams.GetYesNo("NONROOT", libparams.Default("yes"))
-}
-
 // GetNetworkProtocol obtains the network protocol to use to connect to the
 // VPN servers from the environment variable PROTOCOL
 func (p *paramsReader) GetNetworkProtocol() (protocol models.NetworkProtocol, err error) {
