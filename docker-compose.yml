@@ -29,6 +29,7 @@ services:
       - UNBLOCK=
       - EXTRA_SUBNETS=
       - TINYPROXY=off
+      - TINYPROXY_LOG=Info
       - TINYPROXY_USER=
       - TINYPROXY_PASSWORD=
       - SHADOWSOCKS=off
