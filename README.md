@@ -60,16 +60,22 @@
 1. <details><summary>Requirements</summary><p>
 
     - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
-    - External firewall requirements, if you have one
-        - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
-        - For UDP strong encryption, allow outbound UDP 1197
-        - For UDP normal encryption, allow outbound UDP 1198
-        - For TCP strong encryption, allow outbound TCP 501
-        - For TCP normal encryption, allow outbound TCP 502
-        - For the built-in web HTTP proxy, allow inbound TCP 8888
-        - For the built-in SOCKS5 proxy, allow inbound TCP 8388 and UDP 8388
     - Docker API 1.25 to support `init`
     - If you use Docker Compose, docker-compose >= 1.22.0, to support `init: true`
+    - <details><summary>External firewall requirements, if you have one</summary><p>
+
+        - At start only
+            - Allow outbound TCP 443 to github.com and privateinternetaccess.com
+            - If `DOT=on`, allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name.
+            - If `DOT=off`, allow outbound UDP 53 to your DNS provider to resolve the PIA domain name.
+        - For UDP strong encryption, allow outbound UDP 1197 to the corresponding VPN server IPs
+        - For UDP normal encryption, allow outbound UDP 1198 to the corresponding VPN server IPs
+        - For TCP strong encryption, allow outbound TCP 501 to the corresponding VPN server IPs
+        - For TCP normal encryption, allow outbound TCP 502 to the corresponding VPN server IPs
+        - If `SHADOWSOCKS=on`, allow inbound TCP 8388 and UDP 8388 from your LAN
+        - If `TINYPROXY=on`, allow inbound TCP 8888 from your LAN
+
+    </p></details>
 
     </p></details>
 
