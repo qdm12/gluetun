@@ -240,15 +240,19 @@ Note that not all regions support port forwarding.
 
 ## For the paranoids
 
-- You can review the code which essential consists in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
-- Build the images yourself:
+- You can review the code which consists in:
+    - [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile)
+    - [main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go), the main code entrypoint
+    - [internal package](https://github.com/qdm12/private-internet-access-docker/blob/master/internal)
+    - [github.com/qdm12/golibs](https://github.com/qdm12/golibs) dependency
+    - [github.com/qdm12/files](https://github.com/qdm12/files) for files downloaded at start (DNS root hints, block lists, etc.)
+- Build the image yourself:
 
     ```bash
     docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
     ```
 
-- The download and unziping of PIA openvpn files is done at build for the ones not able to download the zip files
-- Checksums for PIA openvpn zip files are not used as these files change often (but HTTPS is used)
+- The download and parsing of all needed files is done at start (openvpn config files, Unbound files, block lists, etc.)
 - Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
 - You can test DNSSEC using [internet.nl/connection](https://www.internet.nl/connection/)
 - Check DNS leak tests with [https://www.dnsleaktest.com](https://www.dnsleaktest.com)
