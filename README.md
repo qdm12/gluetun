@@ -123,7 +123,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `PASSWORD` | | Your PIA password |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
-| `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
+| `BLOCK_MALICIOUS` | `on` | `on` or `off`, blocks malicious hostnames and IPs |
 | `BLOCK_SURVEILLANCE` | `off` | `on` or `off`, blocks surveillance hostnames and IPs |
 | `BLOCK_ADS` | `off` | `on` or `off`, blocks ads hostnames and IPs |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |

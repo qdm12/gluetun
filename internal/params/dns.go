@@ -37,7 +37,7 @@ func (p *paramsReader) GetDNSOverTLSProviders() (providers []models.DNSProvider,
 // GetDNSMaliciousBlocking obtains if malicious hostnames/IPs should be blocked
 // from being resolved by Unbound, using the environment variable BLOCK_MALICIOUS
 func (p *paramsReader) GetDNSMaliciousBlocking() (blocking bool, err error) {
-	return p.envParams.GetOnOff("BLOCK_MALICIOUS", libparams.Default("off"))
+	return p.envParams.GetOnOff("BLOCK_MALICIOUS", libparams.Default("on"))
 }
 
 // GetDNSSurveillanceBlocking obtains if surveillance hostnames/IPs should be blocked
