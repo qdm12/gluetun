@@ -8,9 +8,13 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) Start() (stdout io.ReadCloser, err error) {
+func (c *configurator) Start(verbosityDetailsLevel uint8) (stdout io.ReadCloser, err error) {
 	c.logger.Info("%s: starting unbound", logPrefix)
-	stdout, _, err = c.commander.Start("unbound", "-d", "-c", string(constants.UnboundConf))
+	args := []string{"-d", "-c", string(constants.UnboundConf)}
+	if verbosityDetailsLevel > 0 {
+		args = append(args, "-"+strings.Repeat("v", int(verbosityDetailsLevel)))
+	}
+	stdout, _, err = c.commander.Start("unbound", args...)
 	return stdout, err
 }
 

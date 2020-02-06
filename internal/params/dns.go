@@ -34,6 +34,27 @@ func (p *paramsReader) GetDNSOverTLSProviders() (providers []models.DNSProvider,
 	return providers, nil
 }
 
+// GetDNSOverTLSVerbosity obtains the verbosity level to use for Unbound
+// from the environment variable DOT_VERBOSITY
+func (p *paramsReader) GetDNSOverTLSVerbosity() (verbosityLevel uint8, err error) {
+	n, err := p.envParams.GetEnvIntRange("DOT_VERBOSITY", 0, 5, libparams.Default("1"))
+	return uint8(n), err
+}
+
+// GetDNSOverTLSVerbosityDetails obtains the log level to use for Unbound
+// from the environment variable DOT_VERBOSITY_DETAILS
+func (p *paramsReader) GetDNSOverTLSVerbosityDetails() (verbosityDetailsLevel uint8, err error) {
+	n, err := p.envParams.GetEnvIntRange("DOT_VERBOSITY_DETAILS", 0, 4, libparams.Default("0"))
+	return uint8(n), err
+}
+
+// GetDNSOverTLSValidationLogLevel obtains the log level to use for Unbound DOT validation
+// from the environment variable DOT_VALIDATION_LOGLEVEL
+func (p *paramsReader) GetDNSOverTLSValidationLogLevel() (validationLogLevel uint8, err error) {
+	n, err := p.envParams.GetEnvIntRange("DOT_VALIDATION_LOGLEVEL", 0, 2, libparams.Default("0"))
+	return uint8(n), err
+}
+
 // GetDNSMaliciousBlocking obtains if malicious hostnames/IPs should be blocked
 // from being resolved by Unbound, using the environment variable BLOCK_MALICIOUS
 func (p *paramsReader) GetDNSMaliciousBlocking() (blocking bool, err error) {

@@ -32,8 +32,8 @@ func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err
 func generateUnboundConf(settings settings.DNS, client network.Client, logger logging.Logger) (lines []string, warnings []error, err error) {
 	serverSection := map[string]string{
 		// Logging
-		"verbosity":     fmt.Sprintf("%d", settings.Verbosity),
-		"val-log-level": fmt.Sprintf("%d", settings.LogLevel),
+		"verbosity":     fmt.Sprintf("%d", settings.VerbosityLevel),
+		"val-log-level": fmt.Sprintf("%d", settings.ValidationLogLevel),
 		"use-syslog":    "no",
 		// Performance
 		"num-threads":       "1",

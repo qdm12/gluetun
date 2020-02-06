@@ -10,30 +10,45 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
+// ParamsReader contains methods to obtain parameters
 type ParamsReader interface {
+	// DNS over TLS getters
 	GetDNSOverTLS() (DNSOverTLS bool, err error)
 	GetDNSOverTLSProviders() (providers []models.DNSProvider, err error)
+	GetDNSOverTLSVerbosity() (verbosityLevel uint8, err error)
+	GetDNSOverTLSVerbosityDetails() (verbosityDetailsLevel uint8, err error)
+	GetDNSOverTLSValidationLogLevel() (validationLogLevel uint8, err error)
 	GetDNSMaliciousBlocking() (blocking bool, err error)
 	GetDNSSurveillanceBlocking() (blocking bool, err error)
 	GetDNSAdsBlocking() (blocking bool, err error)
 	GetDNSUnblockedHostnames() (hostnames []string, err error)
+
+	// Firewall getters
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
+
+	// VPN getters
 	GetNetworkProtocol() (protocol models.NetworkProtocol, err error)
+
+	// PIA getters
+	GetUser() (s string, err error)
+	GetPassword() (s string, err error)
 	GetPortForwarding() (activated bool, err error)
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
 	GetPIAEncryption() (models.PIAEncryption, error)
 	GetPIARegion() (models.PIARegion, error)
+
+	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
 	GetShadowSocksLog() (activated bool, err error)
 	GetShadowSocksPort() (port uint16, err error)
 	GetShadowSocksPassword() (password string, err error)
+
+	// Tinyproxy getters
 	GetTinyProxy() (activated bool, err error)
 	GetTinyProxyLog() (models.TinyProxyLogLevel, error)
 	GetTinyProxyPort() (port uint16, err error)
 	GetTinyProxyUser() (user string, err error)
 	GetTinyProxyPassword() (password string, err error)
-	GetUser() (s string, err error)
-	GetPassword() (s string, err error)
 }
 
 type paramsReader struct {

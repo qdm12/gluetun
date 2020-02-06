@@ -17,7 +17,7 @@ type Configurator interface {
 	DownloadRootKey(uid, gid int) error
 	MakeUnboundConf(settings settings.DNS, uid, gid int) (err error)
 	SetLocalNameserver() error
-	Start() (stdout io.ReadCloser, err error)
+	Start(logLevel uint8) (stdout io.ReadCloser, err error)
 	Version() (version string, err error)
 }
 

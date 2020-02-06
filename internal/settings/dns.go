@@ -10,15 +10,16 @@ import (
 
 // DNS contains settings to configure Unbound for DNS over TLS operation
 type DNS struct {
-	Enabled           bool
-	Providers         []models.DNSProvider
-	AllowedHostnames  []string
-	PrivateAddresses  []string
-	BlockMalicious    bool
-	BlockSurveillance bool
-	BlockAds          bool
-	Verbosity         uint8
-	LogLevel          uint8
+	Enabled               bool
+	Providers             []models.DNSProvider
+	AllowedHostnames      []string
+	PrivateAddresses      []string
+	BlockMalicious        bool
+	BlockSurveillance     bool
+	BlockAds              bool
+	VerbosityLevel        uint8
+	VerbosityDetailsLevel uint8
+	ValidationLogLevel    uint8
 }
 
 func (d *DNS) String() string {
@@ -47,8 +48,9 @@ func (d *DNS) String() string {
 		"Block ads: " + blockAds,
 		"Allowed hostnames: " + strings.Join(d.AllowedHostnames, ", "),
 		"Private addresses:\n  |--" + strings.Join(d.PrivateAddresses, "\n  |--"),
-		"Verbosity level: " + fmt.Sprintf("%d", d.Verbosity),
-		"Log level: " + fmt.Sprintf("%d", d.LogLevel),
+		"Verbosity level: " + fmt.Sprintf("%d/5", d.VerbosityLevel),
+		"Verbosity details level: " + fmt.Sprintf("%d/4", d.VerbosityDetailsLevel),
+		"Validation log level: " + fmt.Sprintf("%d/2", d.ValidationLogLevel),
 	}
 	return strings.Join(settingsList, "\n |--")
 }
@@ -79,6 +81,18 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 	if err != nil {
 		return settings, err
 	}
+	settings.VerbosityLevel, err = params.GetDNSOverTLSVerbosity()
+	if err != nil {
+		return settings, err
+	}
+	settings.VerbosityDetailsLevel, err = params.GetDNSOverTLSVerbosityDetails()
+	if err != nil {
+		return settings, err
+	}
+	settings.ValidationLogLevel, err = params.GetDNSOverTLSValidationLogLevel()
+	if err != nil {
+		return settings, err
+	}
 	settings.PrivateAddresses = []string{ // TODO make env variable
 		"127.0.0.1/8",
 		"10.0.0.0/8",
@@ -90,7 +104,5 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 		"fe80::/10",
 		"::ffff:0:0/96",
 	}
-	settings.Verbosity = 1
-	settings.LogLevel = 1 // TODO make env variable
 	return settings, nil
 }

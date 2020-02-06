@@ -17,14 +17,14 @@ import (
 func Test_generateUnboundConf(t *testing.T) {
 	t.Parallel()
 	settings := settings.DNS{
-		Providers:         []models.DNSProvider{constants.Cloudflare, constants.Quad9},
-		AllowedHostnames:  []string{"a"},
-		PrivateAddresses:  []string{"9.9.9.9"},
-		BlockMalicious:    true,
-		BlockSurveillance: false,
-		BlockAds:          false,
-		Verbosity:         2,
-		LogLevel:          3,
+		Providers:          []models.DNSProvider{constants.Cloudflare, constants.Quad9},
+		AllowedHostnames:   []string{"a"},
+		PrivateAddresses:   []string{"9.9.9.9"},
+		BlockMalicious:     true,
+		BlockSurveillance:  false,
+		BlockAds:           false,
+		VerbosityLevel:     2,
+		ValidationLogLevel: 3,
 	}
 	client := &mocks.Client{}
 	client.On("GetContent", string(constants.MaliciousBlockListHostnamesURL)).
