@@ -4,13 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) MakeConf(port uint16, password string) (err error) {
+func (c *configurator) MakeConf(port uint16, password string, uid, gid int) (err error) {
 	c.logger.Info("%s: generating configuration file", logPrefix)
 	data := generateConf(port, password)
-	return c.fileManager.WriteToFile(string(constants.ShadowsocksConf), data)
+	return c.fileManager.WriteToFile(
+		string(constants.ShadowsocksConf),
+		data,
+		files.FileOwnership(uid, gid),
+		files.FilePermissions(0400))
 }
 
 func generateConf(port uint16, password string) (data []byte) {

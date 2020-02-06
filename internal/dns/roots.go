@@ -3,10 +3,11 @@ package dns
 import (
 	"fmt"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) DownloadRootHints() error {
+func (c *configurator) DownloadRootHints(uid, gid int) error {
 	c.logger.Info("%s: downloading root hints from %s", logPrefix, constants.NamedRootURL)
 	content, status, err := c.client.GetContent(string(constants.NamedRootURL))
 	if err != nil {
@@ -14,10 +15,14 @@ func (c *configurator) DownloadRootHints() error {
 	} else if status != 200 {
 		return fmt.Errorf("HTTP status code is %d for %s", status, constants.NamedRootURL)
 	}
-	return c.fileManager.WriteToFile(string(constants.RootHints), content)
+	return c.fileManager.WriteToFile(
+		string(constants.RootHints),
+		content,
+		files.FileOwnership(uid, gid),
+		files.FilePermissions(0400))
 }
 
-func (c *configurator) DownloadRootKey() error {
+func (c *configurator) DownloadRootKey(uid, gid int) error {
 	c.logger.Info("%s: downloading root key from %s", logPrefix, constants.RootKeyURL)
 	content, status, err := c.client.GetContent(string(constants.RootKeyURL))
 	if err != nil {
@@ -25,5 +30,9 @@ func (c *configurator) DownloadRootKey() error {
 	} else if status != 200 {
 		return fmt.Errorf("HTTP status code is %d for %s", status, constants.RootKeyURL)
 	}
-	return c.fileManager.WriteToFile(string(constants.RootKey), content)
+	return c.fileManager.WriteToFile(
+		string(constants.RootKey),
+		content,
+		files.FileOwnership(uid, gid),
+		files.FilePermissions(0400))
 }

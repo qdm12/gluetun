@@ -21,6 +21,8 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
 )
 
+const uid, gid = 1000, 1000
+
 func main() {
 	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
 	if err != nil {
@@ -60,7 +62,7 @@ func main() {
 	err = ovpnConf.CheckTUN()
 	e.FatalOnError(err)
 
-	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password)
+	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password, uid, gid)
 	e.FatalOnError(err)
 
 	// Temporarily reset chain policies allowing Kubernetes sidecar to
@@ -74,13 +76,13 @@ func main() {
 	e.FatalOnError(err)
 
 	if allSettings.DNS.Enabled {
-		err = dnsConf.DownloadRootHints()
+		err = dnsConf.DownloadRootHints(uid, gid)
 		e.FatalOnError(err)
-		err = dnsConf.DownloadRootKey()
+		err = dnsConf.DownloadRootKey(uid, gid)
 		e.FatalOnError(err)
-		err = dnsConf.MakeUnboundConf(allSettings.DNS)
+		err = dnsConf.MakeUnboundConf(allSettings.DNS, uid, gid)
 		e.FatalOnError(err)
-		stream, err := dnsConf.Start()
+		stream, err := dnsConf.Start(allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
 		go streamMerger.Merge("unbound", stream)
 		err = dnsConf.SetLocalNameserver()
@@ -111,7 +113,7 @@ func main() {
 	e.FatalOnError(err)
 
 	if allSettings.TinyProxy.Enabled {
-		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.ShadowSocks.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password)
+		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.ShadowSocks.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password, uid, gid)
 		e.FatalOnError(err)
 		stream, err := tinyProxyConf.Start()
 		e.FatalOnError(err)
@@ -119,7 +121,7 @@ func main() {
 	}
 
 	if allSettings.ShadowSocks.Enabled {
-		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.TinyProxy.Password)
+		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.TinyProxy.Password, uid, gid)
 		e.FatalOnError(err)
 		stream, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)

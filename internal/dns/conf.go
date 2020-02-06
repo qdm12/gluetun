@@ -5,13 +5,14 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
-func (c *configurator) MakeUnboundConf(settings settings.DNS) (err error) {
+func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err error) {
 	c.logger.Info("%s: generating Unbound configuration", logPrefix)
 	lines, warnings, err := generateUnboundConf(settings, c.client, c.logger)
 	for _, warning := range warnings {
@@ -20,7 +21,11 @@ func (c *configurator) MakeUnboundConf(settings settings.DNS) (err error) {
 	if err != nil {
 		return err
 	}
-	return c.fileManager.WriteLinesToFile(string(constants.UnboundConf), lines)
+	return c.fileManager.WriteLinesToFile(
+		string(constants.UnboundConf),
+		lines,
+		files.FileOwnership(uid, gid),
+		files.FilePermissions(0400))
 }
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings

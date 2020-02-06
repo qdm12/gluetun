@@ -13,9 +13,9 @@ import (
 const logPrefix = "dns configurator"
 
 type Configurator interface {
-	DownloadRootHints() error
-	DownloadRootKey() error
-	MakeUnboundConf(settings settings.DNS) (err error)
+	DownloadRootHints(uid, gid int) error
+	DownloadRootKey(uid, gid int) error
+	MakeUnboundConf(settings settings.DNS, uid, gid int) (err error)
 	SetLocalNameserver() error
 	Start() (stdout io.ReadCloser, err error)
 	Version() (version string, err error)

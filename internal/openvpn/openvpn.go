@@ -13,7 +13,7 @@ const logPrefix = "openvpn configurator"
 
 type Configurator interface {
 	Version() (string, error)
-	WriteAuthFile(user, password string) error
+	WriteAuthFile(user, password string, uid, gid int) error
 	CheckTUN() error
 	Start() (stdout io.ReadCloser, err error)
 }

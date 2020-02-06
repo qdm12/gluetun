@@ -3,14 +3,18 @@ package tinyproxy
 import (
 	"fmt"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string) error {
+func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) error {
 	c.logger.Info("%s: generating tinyproxy configuration file", logPrefix)
 	lines := generateConf(logLevel, port, user, password)
-	return c.fileManager.WriteLinesToFile(string(constants.TinyProxyConf), lines)
+	return c.fileManager.WriteLinesToFile(string(constants.TinyProxyConf),
+		lines,
+		files.FileOwnership(uid, gid),
+		files.FilePermissions(0400))
 }
 
 func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string) (lines []string) {
