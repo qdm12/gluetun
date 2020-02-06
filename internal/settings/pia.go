@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/models"
@@ -24,9 +25,9 @@ type PortForwarding struct {
 
 func (p *PortForwarding) String() string {
 	if p.Enabled {
-		return "Port forwarding: on, saved in " + string(p.Filepath)
+		return fmt.Sprintf("on, saved in %s", p.Filepath)
 	}
-	return "Port forwarding: off"
+	return "off"
 }
 
 func (p *PIA) String() string {

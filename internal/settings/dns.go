@@ -41,12 +41,12 @@ func (d *DNS) String() string {
 	}
 	settingsList := []string{
 		"DNS over TLS settings:",
-		"DNS over TLS provider: \n  |---" + strings.Join(providersStr, "\n   |--"),
+		"DNS over TLS provider: \n  |--" + strings.Join(providersStr, "\n  |--"),
 		"Block malicious: " + blockMalicious,
 		"Block surveillance: " + blockSurveillance,
 		"Block ads: " + blockAds,
 		"Allowed hostnames: " + strings.Join(d.AllowedHostnames, ", "),
-		"Private addresses: \n  |---" + strings.Join(d.PrivateAddresses, "\n   |--"),
+		"Private addresses:\n  |--" + strings.Join(d.PrivateAddresses, "\n  |--"),
 		"Verbosity level: " + fmt.Sprintf("%d", d.Verbosity),
 		"Log level: " + fmt.Sprintf("%d", d.LogLevel),
 	}
