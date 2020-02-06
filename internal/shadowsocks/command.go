@@ -18,7 +18,7 @@ func (c *configurator) Start(server string, port uint16, password string, log bo
 	if log {
 		args = append(args, "-v")
 	}
-	stdout, _, err = c.commander.Start("ss-server", args...)
+	stdout, _, _, err = c.commander.Start("ss-server", args...)
 	return stdout, err
 }
 

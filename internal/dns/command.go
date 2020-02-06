@@ -14,7 +14,8 @@ func (c *configurator) Start(verbosityDetailsLevel uint8) (stdout io.ReadCloser,
 	if verbosityDetailsLevel > 0 {
 		args = append(args, "-"+strings.Repeat("v", int(verbosityDetailsLevel)))
 	}
-	stdout, _, err = c.commander.Start("unbound", args...)
+	// Only logs to stderr
+	_, stdout, _, err = c.commander.Start("unbound", args...)
 	return stdout, err
 }
 

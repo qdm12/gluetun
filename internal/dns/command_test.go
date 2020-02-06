@@ -18,7 +18,7 @@ func Test_Start(t *testing.T) {
 	logger.On("Info", "%s: starting unbound", logPrefix).Once()
 	commander := &commandMocks.Commander{}
 	commander.On("Start", "unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
-		Return(nil, nil, nil).Once()
+		Return(nil, nil, nil, nil).Once()
 	c := &configurator{commander: commander, logger: logger}
 	stdout, err := c.Start(2)
 	assert.Nil(t, stdout)

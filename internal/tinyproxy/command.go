@@ -8,7 +8,7 @@ import (
 
 func (c *configurator) Start() (stdout io.ReadCloser, err error) {
 	c.logger.Info("%s: starting tinyproxy server", logPrefix)
-	stdout, _, err = c.commander.Start("tinyproxy", "-d")
+	stdout, _, _, err = c.commander.Start("tinyproxy", "-d")
 	return stdout, err
 }
 

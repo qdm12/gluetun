@@ -10,7 +10,7 @@ import (
 
 func (c *configurator) Start() (stdout io.ReadCloser, err error) {
 	c.logger.Info("%s: starting openvpn", logPrefix)
-	stdout, _, err = c.commander.Start("openvpn", "--config", string(constants.OpenVPNConf))
+	stdout, _, _, err = c.commander.Start("openvpn", "--config", string(constants.OpenVPNConf))
 	return stdout, err
 }
 
