@@ -19,7 +19,7 @@ type TinyProxy struct {
 
 func (t *TinyProxy) String() string {
 	if !t.Enabled {
-		return "TinyPry settings: disabled"
+		return "TinyProxy settings: disabled"
 	}
 	auth := "disabled"
 	if t.User != "" {

@@ -32,8 +32,8 @@ func (c *configurator) runIptablesInstructions(instructions []string) error {
 
 func (c *configurator) runIptablesInstruction(instruction string) error {
 	flags := strings.Fields(instruction)
-	if _, err := c.commander.Run("iptables", flags...); err != nil {
-		return fmt.Errorf("failed executing %q: %w", instruction, err)
+	if output, err := c.commander.Run("iptables", flags...); err != nil {
+		return fmt.Errorf("failed executing %q: %s: %w", instruction, output, err)
 	}
 	return nil
 }
