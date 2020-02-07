@@ -18,24 +18,21 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
+	"github.com/qdm12/private-internet-access-docker/internal/splash"
 	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
 )
 
-const uid, gid = 1000, 1000
+const (
+	uid, gid = 1000, 1000
+)
 
 func main() {
+	fmt.Println(splash.Splash())
 	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
 	if err != nil {
 		panic(err)
 	}
 	e := env.New(logger)
-	fmt.Printf(`=========================================
-=========================================
-============= PIA CONTAINER =============
-=========================================
-=========================================
-========== by github.com/qdm12 ==========
-`)
 	client := network.NewClient(3 * time.Second)
 	// Create configurators
 	fileManager := files.NewFileManager()
