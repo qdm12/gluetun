@@ -16,6 +16,9 @@ FROM alpine:${ALPINE_VERSION}
 ARG VERSION
 ARG BUILD_DATE
 ARG VCS_REF
+ENV VERSION=$VERSION \
+    BUILD_DATE=$BUILD_DATE \
+    VCS_REF=$VCS_REF
 LABEL \
     org.opencontainers.image.authors="quentin.mcgaw@gmail.com" \
     org.opencontainers.image.created=$BUILD_DATE \

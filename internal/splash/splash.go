@@ -1,16 +1,25 @@
 package splash
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
 	"github.com/kyokomi/emoji"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
-func Splash() string {
+func Splash(paramsReader params.ParamsReader) string {
+	version := paramsReader.GetVersion()
+	vcsRef := paramsReader.GetVcsRef()
+	buildDate := paramsReader.GetBuildDate()
 	lines := title()
+	lines = append(lines, "")
+	lines = append(lines, fmt.Sprintf("Running version %s built on %s (commit %s)", version, buildDate, vcsRef))
+	lines = append(lines, "")
 	lines = append(lines, annoucement()...)
+	lines = append(lines, "")
 	lines = append(lines, links()...)
 	return strings.Join(lines, "\n")
 }

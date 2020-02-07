@@ -49,6 +49,11 @@ type ParamsReader interface {
 	GetTinyProxyPort() (port uint16, err error)
 	GetTinyProxyUser() (user string, err error)
 	GetTinyProxyPassword() (password string, err error)
+
+	// Version getters
+	GetVersion() string
+	GetBuildDate() string
+	GetVcsRef() string
 }
 
 type paramsReader struct {

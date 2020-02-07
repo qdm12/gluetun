@@ -27,11 +27,12 @@ const (
 )
 
 func main() {
-	fmt.Println(splash.Splash())
 	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
 	if err != nil {
 		panic(err)
 	}
+	paramsReader := params.NewParamsReader(logger)
+	fmt.Println(splash.Splash(paramsReader))
 	e := env.New(logger)
 	client := network.NewClient(3 * time.Second)
 	// Create configurators
@@ -52,7 +53,7 @@ func main() {
 	e.PrintVersion("TinyProxy", tinyProxyConf.Version)
 	e.PrintVersion("ShadowSocks", shadowsocksConf.Version)
 
-	allSettings, err := settings.GetAllSettings(params.NewParamsReader(logger))
+	allSettings, err := settings.GetAllSettings(paramsReader)
 	e.FatalOnError(err)
 	logger.Info(allSettings.String())
 

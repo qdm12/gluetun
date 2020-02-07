@@ -310,14 +310,18 @@ Note that not all regions support port forwarding.
 
 ## TODOs
 
-- Environment variables
-    - DNS private addresses
-    - Unbound log level and verbosity
-- Periodic healthcheck checking for network leaks etc.
-- Unit tests!
+- Healthcheck checking for IP address, DNS leaks etc.
 - Periodic update of malicious block lists with Unbound restart
 - Support other VPN providers
-- Colors, emojis and announcements in entrypoint or periodically
+    - Mullvad
+    - Windscribe
+- Support for other VPN protocols
+    - Wireguard (wireguard-go)
+- Show new versions/commits at start
+- Colors & emojis
+    - Setup
+    - Logging streams
+- More unit tests
 - Switch to iptables-go instead of using the shell iptables
 
 ## License
