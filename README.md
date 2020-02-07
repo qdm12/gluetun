@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
 
-**ANNOUCEMENT**: I just published [*Kape acquisition of Private Internet Access: not worry you must*](https://link.medium.com/e70B1j0wz2)
+**ANNOUCEMENT**: *Total rewrite in Go: see the new features [below](#Features)* (in case something break use the image with tag `:old`)
 
 <a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
     <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
@@ -22,17 +22,26 @@
 
 <details><summary>Click to show base components</summary><p>
 
-- [Alpine 3.10](https://alpinelinux.org) for a tiny image
-- [OpenVPN 2.4.7](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/openvpn) to tunnel to PIA servers
-- [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
-- [Unbound 1.9.1](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS
-- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS` and `BLOCK_NSA` environment variables)
-- [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.10/main/x86_64/tinyproxy)
+- [Alpine 3.11](https://alpinelinux.org) for a tiny image (37MB of packages, 6.7MB of Go binary and 5.6MB for Alpine)
+- [OpenVPN 2.4.8](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to PIA servers
+- [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
+- [Unbound 1.9.6](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
+- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS`, `BLOCK_SURVEILLANCE` and `BLOCK_ADS` environment variables)
+- [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/tinyproxy)
+- [Shadowsocks 3.3.4](https://pkgs.alpinelinux.org/package/edge/testing/x86/shadowsocks-libev)
 
 </p></details>
 
 ## Features
 
+- **New features**
+    - Choice to block ads, malicious and surveillance at the DNS level
+    - All program output streams are merged (openvpn, unbound, shadowsocks, tinyproxy, etc.)
+    - Choice of DNS over TLS provider(s)
+    - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
+    - Download block lists and cryptographic files at start instead of at build time
+    - Can work as a Kubernetes sidecar container, thanks @rorph
+    - Pick a random region if no region is given, thanks @rorph
 - <details><summary>Configure everything with environment variables</summary><p>
 
     - [Destination region](https://www.privateinternetaccess.com/pages/network)
@@ -40,39 +49,41 @@
     - Level of encryption
     - PIA Username and password
     - DNS over TLS
-    - Malicious DNS blocking
+    - DNS blocking: ads, malicious, surveillance
     - Internal firewall
+    - Socks5 proxy
     - Web HTTP proxy
-    - Run openvpn without root
 
     </p></details>
-- Connect other containers to it, [see this](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- Compatible with amd64, i686 (32 bit), ARM 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
+- Connect
+    - [Other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+    - [LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+- Killswitch using *iptables* to allow traffic only with needed PIA servers and LAN devices
 - Port forwarding
-- The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
-- OpenVPN reconnects automatically on failure
-- Docker healthcheck pings the DNS 1.1.1.1 to verify the connection is up
-- Unbound DNS runs *without root*
-- OpenVPN runs *without root* by default. You can run it with root with the environment variable `NONROOT=no`
-- Connect your LAN devices
-  - HTTP Web proxy *tinyproxy*
-  - SOCKS5 proxy *shadowsocks* (better as it does UDP too)
+- Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
+- Sub programs drop root privileges once launched: Openvpn, Unbound, Shadowsocks, Tinyproxy
 
 ## Setup
 
 1. <details><summary>Requirements</summary><p>
 
     - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
-    - External firewall requirements, if you have one
-        - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
-        - For UDP strong encryption, allow outbound UDP 1197
-        - For UDP normal encryption, allow outbound UDP 1198
-        - For TCP strong encryption, allow outbound TCP 501
-        - For TCP normal encryption, allow outbound TCP 502
-        - For the built-in web HTTP proxy, allow inbound TCP 8888
-        - For the built-in SOCKS5 proxy, allow inbound TCP 8388 and UDP 8388
     - Docker API 1.25 to support `init`
     - If you use Docker Compose, docker-compose >= 1.22.0, to support `init: true`
+    - <details><summary>External firewall requirements, if you have one</summary><p>
+
+        - At start only
+            - Allow outbound TCP 443 to github.com and privateinternetaccess.com
+            - If `DOT=on`, allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name.
+            - If `DOT=off`, allow outbound UDP 53 to your DNS provider to resolve the PIA domain name.
+        - For UDP strong encryption, allow outbound UDP 1197 to the corresponding VPN server IPs
+        - For UDP normal encryption, allow outbound UDP 1198 to the corresponding VPN server IPs
+        - For TCP strong encryption, allow outbound TCP 501 to the corresponding VPN server IPs
+        - For TCP normal encryption, allow outbound TCP 502 to the corresponding VPN server IPs
+        - If `SHADOWSOCKS=on`, allow inbound TCP 8388 and UDP 8388 from your LAN
+        - If `TINYPROXY=on`, allow inbound TCP 8888 from your LAN
+
+    </p></details>
 
     </p></details>
 
@@ -123,16 +134,20 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `ENCRYPTION` | `strong` | `normal` or `strong` |
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
-| `NONROOT` | `yes` | Run OpenVPN without root, `yes` or `no` |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
-| `BLOCK_MALICIOUS` | `off` | `on` or `off`, blocks malicious hostnames and IPs |
-| `BLOCK_NSA` | `off` | `on` or `off`, blocks NSA hostnames |
+| `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
+| `DOT_VERBOSITY` | `1` | Unbound verbosity level from `0` to `5` (full debug) |
+| `DOT_VERBOSITY_DETAILS` | `0` | Unbound details verbosity level from `0` to `4` |
+| `DOT_VALIDATION_LOGLEVEL` | `0` | Unbound validation log level from `0` to `2` |
+| `BLOCK_MALICIOUS` | `on` | `on` or `off`, blocks malicious hostnames and IPs |
+| `BLOCK_SURVEILLANCE` | `off` | `on` or `off`, blocks surveillance hostnames and IPs |
+| `BLOCK_ADS` | `off` | `on` or `off`, blocks ads hostnames and IPs |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `PORT_FORWARDING` | `off` | Set to `on` to forward a port on PIA server |
 | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | File path to store the forwarded port number |
 | `TINYPROXY` | `on` | `on` or `off`, to enable the internal HTTP proxy tinyproxy |
-| `TINYPROXY_LOG` | `Critical` | `Info`, `Warning`, `Error` or `Critical` |
+| `TINYPROXY_LOG` | `Info` | `Info`, `Warning`, `Error` or `Critical` |
 | `TINYPROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
 | `TINYPROXY_USER` | | Username to use to connect to the HTTP proxy |
 | `TINYPROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
@@ -140,7 +155,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `SHADOWSOCKS_LOG` | `on` | `on` or `off` to enable logging for Shadowsocks  |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
-| `TZ` | | Specify a timezone to use e.g. `Europe/London` |
+| `TZ` | | Specify a timezone to use i.e. `Europe/London` |
 
 ## Connect to it
 
@@ -163,13 +178,14 @@ There are various ways to achieve this, depending on your use case.
     </p></details>
 - <details><summary>Connect LAN devices through the built-in HTTP proxy *Tinyproxy* (i.e. with Chrome, Kodi, etc.)</summary><p>
 
+    You might want to use Shadowsocks instead which tunnels UDP as well as TCP, whereas Tinyproxy only tunnels TCP.
+
     1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
     1. Ensure the PIA container is launched with:
         - port `8888` published `-p 8888:8888/tcp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `TINYPROXY_USER` and `TINYPROXY_PASSWORD`.
-    1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
-       `TINYPROXY_LOG` defaults to `Critical` to avoid logging everything, for privacy purposes.
+    1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs
 
     </p></details>
 - <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
@@ -188,7 +204,7 @@ There are various ways to achieve this, depending on your use case.
         - Enter port TCP (and UDP, if available) `8388` as the server port
         - Use the password you have set with `SHADOWSOCKS_PASSWORD`
         - Choose the encryption method/algorithm `chacha20-ietf-poly1305`
-    1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs, merged with the OpenVPN logs.
+    1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs
 
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
@@ -241,15 +257,19 @@ Note that not all regions support port forwarding.
 
 ## For the paranoids
 
-- You can review the code which essential consists in the [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/qdm12/private-internet-access-docker/blob/master/entrypoint.sh)
-- Build the images yourself:
+- You can review the code which consists in:
+    - [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile)
+    - [main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go), the main code entrypoint
+    - [internal package](https://github.com/qdm12/private-internet-access-docker/blob/master/internal)
+    - [github.com/qdm12/golibs](https://github.com/qdm12/golibs) dependency
+    - [github.com/qdm12/files](https://github.com/qdm12/files) for files downloaded at start (DNS root hints, block lists, etc.)
+- Build the image yourself:
 
     ```bash
     docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
     ```
 
-- The download and unziping of PIA openvpn files is done at build for the ones not able to download the zip files
-- Checksums for PIA openvpn zip files are not used as these files change often (but HTTPS is used)
+- The download and parsing of all needed files is done at start (openvpn config files, Unbound files, block lists, etc.)
 - Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
 - You can test DNSSEC using [internet.nl/connection](https://www.internet.nl/connection/)
 - Check DNS leak tests with [https://www.dnsleaktest.com](https://www.dnsleaktest.com)
@@ -257,10 +277,6 @@ Note that not all regions support port forwarding.
 
 ## Troubleshooting
 
-- Password problems `AUTH: Received control message: AUTH_FAILED`
-    - Your password may contain a special character such as `$`.
-     You need to escape it with `\` in your run command or docker-compose.yml.
-     For example you would set `-e PASSWORD=mypa\$\$word`.
 - Fallback to a previous version
     1. Clone the repository on your machine
 
@@ -282,13 +298,31 @@ Note that not all regions support port forwarding.
         docker build -t qmcgaw/private-internet-access .
         ```
 
+## Development
+
+### Using VSCode and Docker
+
+1. Install [Docker](https://docs.docker.com/install)
+    - On Windows, share a drive with Docker Desktop and have the project on that partition
+1. With [Visual Studio Code](https://code.visualstudio.com/download), install the [remote containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+1. In Visual Studio Code, press on `F1` and select `Remote-Containers: Open Folder in Container...`
+1. Your dev environment is ready to go!... and it's running in a container :+1:
+
 ## TODOs
 
-- Golang binary to setup the container at start, and:
-  - Mix logs of unbound, tinyproxy, shadowsocks and openvpn together somehow
-  - support other VPN providers
-- Maybe use `--inactive 3600 --ping 10 --ping-exit 60` as default behavior
-- Try without tun
+- Healthcheck checking for IP address, DNS leaks etc.
+- Periodic update of malicious block lists with Unbound restart
+- Support other VPN providers
+    - Mullvad
+    - Windscribe
+- Support for other VPN protocols
+    - Wireguard (wireguard-go)
+- Show new versions/commits at start
+- Colors & emojis
+    - Setup
+    - Logging streams
+- More unit tests
+- Switch to iptables-go instead of using the shell iptables
 
 ## License
 
