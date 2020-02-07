@@ -60,8 +60,7 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables u
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk add -q --progress --no-cache --update shadowsocks-libev && \
     rm -rf /*.zip /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-anchor /usr/sbin/unbound-checkconf /usr/sbin/unbound-control /usr/sbin/unbound-control-setup /usr/sbin/unbound-host /etc/tinyproxy/tinyproxy.conf && \
-    adduser nonrootuser -D -H --uid 1000
+    adduser nonrootuser -D -H --uid 1000 && \
+    chown nonrootuser -R /etc/unbound /etc/tinyproxy && \
+    chmod 700 /etc/unbound /etc/tinyproxy
 COPY --from=builder --chown=1000:1000 /tmp/gobuild/entrypoint /entrypoint
-RUN chown nonrootuser -R /etc/unbound /etc/tinyproxy && \
-    chmod 700 /etc/unbound /etc/tinyproxy && \
-    chmod 500 /entrypoint
