@@ -9,7 +9,7 @@ COPY go.mod go.sum ./
 RUN go mod download 2>&1
 COPY internal/ ./internal/
 COPY cmd/main.go .
-RUN go test -v ./...
+RUN go test ./...
 RUN go build -ldflags="-s -w" -o entrypoint main.go
 
 FROM alpine:${ALPINE_VERSION}
