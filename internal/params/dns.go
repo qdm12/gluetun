@@ -62,9 +62,18 @@ func (p *paramsReader) GetDNSMaliciousBlocking() (blocking bool, err error) {
 }
 
 // GetDNSSurveillanceBlocking obtains if surveillance hostnames/IPs should be blocked
-// from being resolved by Unbound, using the environment variable BLOCK_NSA
+// from being resolved by Unbound, using the environment variable BLOCK_SURVEILLANCE
+// and BLOCK_NSA for retrocompatibility
 func (p *paramsReader) GetDNSSurveillanceBlocking() (blocking bool, err error) {
-	return p.envParams.GetOnOff("BLOCK_NSA", libparams.Default("off"))
+	// Retro-compatibility
+	s, err := p.envParams.GetEnv("BLOCK_NSA")
+	if err != nil {
+		return false, err
+	} else if len(s) != 0 {
+		p.logger.Warn("You are using the old environment variable BLOCK_NSA, please consider changing it to BLOCK_SURVEILLANCE")
+		return p.envParams.GetOnOff("BLOCK_NSA", libparams.Compulsory())
+	}
+	return p.envParams.GetOnOff("BLOCK_SURVEILLANCE", libparams.Default("off"))
 }
 
 // GetDNSAdsBlocking obtains if ads hostnames/IPs should be blocked
