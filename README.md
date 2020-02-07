@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
 
-**ANNOUCEMENT**: *Total rewrite in Go: see the new features [below](#Features)*
+**ANNOUCEMENT**: *Total rewrite in Go: see the new features [below](#Features)* (in case something break use the image with tag `:old`)
 
 <a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
     <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
