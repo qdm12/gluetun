@@ -68,8 +68,6 @@ func main() {
 	// pre-exist, preventing the nslookup of the PIA region address. These will
 	// simply be redundant at Docker runtime as they will already be set this way
 	// Thanks to @npawelek https://github.com/npawelek
-	err = firewallConf.Clear()
-	e.FatalOnError(err)
 	err = firewallConf.AcceptAll()
 	e.FatalOnError(err)
 
@@ -97,7 +95,7 @@ func main() {
 
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
 	e.FatalOnError(err)
-	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface, VPNDevice)
+	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
 	e.FatalOnError(err)
 	err = firewallConf.Clear()
 	e.FatalOnError(err)
