@@ -85,12 +85,7 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	lines, err := piaConf.DownloadOvpnConfig(allSettings.PIA.Encryption, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Region)
-	e.FatalOnError(err)
-	VPNIPs, port, VPNDevice, err := piaConf.ParseConfig(lines)
-	e.FatalOnError(err)
-	lines = piaConf.ModifyLines(lines, VPNIPs, port)
-	fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines)
+	VPNIPs, port, err := piaConf.BuildConf(allSettings.PIA.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Encryption, uid, gid)
 	e.FatalOnError(err)
 
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
@@ -103,7 +98,7 @@ func main() {
 	e.FatalOnError(err)
 	err = firewallConf.CreateGeneralRules()
 	e.FatalOnError(err)
-	err = firewallConf.CreateVPNRules(VPNDevice, VPNIPs, defaultInterface, port, allSettings.OpenVPN.NetworkProtocol)
+	err = firewallConf.CreateVPNRules(constants.TUN, VPNIPs, defaultInterface, port, allSettings.OpenVPN.NetworkProtocol)
 	e.FatalOnError(err)
 	err = firewallConf.CreateLocalSubnetsRules(defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
 	e.FatalOnError(err)
@@ -133,7 +128,7 @@ func main() {
 			if err := piaConf.WritePortForward(allSettings.PIA.PortForwarding.Filepath, port); err != nil {
 				logger.Error("port forwarding:", err)
 			}
-			if err := piaConf.AllowPortForwardFirewall(VPNDevice, port); err != nil {
+			if err := piaConf.AllowPortForwardFirewall(constants.TUN, port); err != nil {
 				logger.Error("port forwarding:", err)
 			}
 		})
