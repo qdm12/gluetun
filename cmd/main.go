@@ -34,7 +34,7 @@ func main() {
 	paramsReader := params.NewParamsReader(logger)
 	fmt.Println(splash.Splash(paramsReader))
 	e := env.New(logger)
-	client := network.NewClient(3 * time.Second)
+	client := network.NewClient(15 * time.Second)
 	// Create configurators
 	fileManager := files.NewFileManager()
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
