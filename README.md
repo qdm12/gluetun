@@ -87,18 +87,10 @@
 
     </p></details>
 
-1. Ensure `/dev/net/tun` is setup on your host with either:
-
-    ```sh
-    insmod /lib/modules/tun.ko
-    # or...
-    modprobe tun
-    ```
-
 1. Launch the container with:
 
     ```bash
-    docker run -d --init --name=pia --cap-add=NET_ADMIN --device=/dev/net/tun \
+    docker run -d --init --name=pia --cap-add=NET_ADMIN \
     -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     qmcgaw/private-internet-access
     ```
@@ -227,8 +219,6 @@ There are various ways to achieve this, depending on your use case.
         init: true
         cap_add:
           - NET_ADMIN
-        devices:
-          - /dev/net/tun
         environment:
           - USER=js89ds7
           - PASSWORD=8fd9s239G
@@ -277,7 +267,16 @@ Note that not all regions support port forwarding.
 
 ## Troubleshooting
 
-- Fallback to a previous version
+- If openvpn fails to start, you may need to:
+    - Install the tun kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
+    - Add `--device=/dev/net/tun` to your docker run command (equivalent for docker-compose, kubernetes, etc.)
+
+- Fallback to a previous Docker image tags:
+    - `v1` tag, stable shell scripting based (no support)
+    - `old` tag, latest shell scripting version (no support)
+    - `v2`... waiting for `latest` to become more stable
+
+- Fallback to a precise previous version
     1. Clone the repository on your machine
 
         ```sh
@@ -312,6 +311,7 @@ Note that not all regions support port forwarding.
 
 - Healthcheck checking for IP address, DNS leaks etc.
 - Periodic update of malicious block lists with Unbound restart
+- HTTP proxy in Go to replace tinyproxy
 - Support other VPN providers
     - Mullvad
     - Windscribe
