@@ -100,6 +100,11 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		"name":                 "\".\"",
 		"forward-tls-upstream": "yes",
 	}
+	if settings.Caching {
+		forwardZoneSection["forward-no-cache"] = "no"
+	} else {
+		forwardZoneSection["forward-no-cache"] = "yes"
+	}
 	var forwardZoneLines []string
 	for k, v := range forwardZoneSection {
 		forwardZoneLines = append(forwardZoneLines, "  "+k+": "+v)

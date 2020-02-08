@@ -15,6 +15,7 @@ type ParamsReader interface {
 	// DNS over TLS getters
 	GetDNSOverTLS() (DNSOverTLS bool, err error)
 	GetDNSOverTLSProviders() (providers []models.DNSProvider, err error)
+	GetDNSOverTLSCaching() (caching bool, err error)
 	GetDNSOverTLSVerbosity() (verbosityLevel uint8, err error)
 	GetDNSOverTLSVerbosityDetails() (verbosityDetailsLevel uint8, err error)
 	GetDNSOverTLSValidationLogLevel() (validationLogLevel uint8, err error)

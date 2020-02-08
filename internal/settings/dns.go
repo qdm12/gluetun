@@ -14,6 +14,7 @@ type DNS struct {
 	Providers             []models.DNSProvider
 	AllowedHostnames      []string
 	PrivateAddresses      []string
+	Caching               bool
 	BlockMalicious        bool
 	BlockSurveillance     bool
 	BlockAds              bool
@@ -26,7 +27,10 @@ func (d *DNS) String() string {
 	if !d.Enabled {
 		return "DNS over TLS settings: disabled"
 	}
-	blockMalicious, blockSurveillance, blockAds := "disabed", "disabed", "disabed"
+	caching, blockMalicious, blockSurveillance, blockAds := "disabled", "disabed", "disabed", "disabed"
+	if d.Caching {
+		caching = "enabled"
+	}
 	if d.BlockMalicious {
 		blockMalicious = "enabled"
 	}
@@ -43,6 +47,7 @@ func (d *DNS) String() string {
 	settingsList := []string{
 		"DNS over TLS settings:",
 		"DNS over TLS provider:\n  |--" + strings.Join(providersStr, "\n  |--"),
+		"Caching: " + caching,
 		"Block malicious: " + blockMalicious,
 		"Block surveillance: " + blockSurveillance,
 		"Block ads: " + blockAds,
@@ -66,6 +71,10 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 		return settings, err
 	}
 	settings.AllowedHostnames, err = params.GetDNSUnblockedHostnames()
+	if err != nil {
+		return settings, err
+	}
+	settings.Caching, err = params.GetDNSOverTLSCaching()
 	if err != nil {
 		return settings, err
 	}

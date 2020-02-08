@@ -128,6 +128,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `PASSWORD` | | Your PIA password |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
+| `DOT_CACHING` | `on` | Unbound caching feature, `on` or `off` |
 | `DOT_VERBOSITY` | `1` | Unbound verbosity level from `0` to `5` (full debug) |
 | `DOT_VERBOSITY_DETAILS` | `0` | Unbound details verbosity level from `0` to `4` |
 | `DOT_VALIDATION_LOGLEVEL` | `0` | Unbound validation log level from `0` to `2` |

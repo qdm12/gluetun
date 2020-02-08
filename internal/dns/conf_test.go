@@ -25,6 +25,7 @@ func Test_generateUnboundConf(t *testing.T) {
 		BlockAds:           false,
 		VerbosityLevel:     2,
 		ValidationLogLevel: 3,
+		Caching:            true,
 	}
 	client := &mocks.Client{}
 	client.On("GetContent", string(constants.MaliciousBlockListHostnamesURL)).
@@ -73,6 +74,7 @@ server:
   private-address: c
   private-address: d
 forward-zone:
+  forward-no-cache: no
   forward-tls-upstream: yes
   name: "."
   forward-addr: 1.1.1.1@853#cloudflare-dns.com

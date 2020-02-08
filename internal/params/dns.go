@@ -100,3 +100,10 @@ func (p *paramsReader) GetDNSUnblockedHostnames() (hostnames []string, err error
 	}
 	return hostnames, nil
 }
+
+// GetDNSOverTLSCaching obtains if Unbound caching should be enable or not
+// from the environment variable DOT_CACHING
+func (p *paramsReader) GetDNSOverTLSCaching() (caching bool, err error) {
+	return p.envParams.GetOnOff("DOT_CACHING")
+}
+
