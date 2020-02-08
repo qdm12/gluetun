@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/qdm12/golibs/command"
@@ -75,6 +76,8 @@ func main() {
 	e.FatalOnError(err)
 
 	if allSettings.DNS.Enabled {
+		initialDNSToUse := constants.DNSProviderMapping()[allSettings.DNS.Providers[0]]
+		dnsConf.UseDNSInternally(initialDNSToUse.IPs[0])
 		err = dnsConf.DownloadRootHints(uid, gid)
 		e.FatalOnError(err)
 		err = dnsConf.DownloadRootKey(uid, gid)
@@ -84,7 +87,10 @@ func main() {
 		stream, err := dnsConf.Start(allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
 		go streamMerger.Merge("unbound", stream)
-		err = dnsConf.SetLocalNameserver()
+		dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
+		err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
+		e.FatalOnError(err)
+		err = dnsConf.WaitForUnbound()
 		e.FatalOnError(err)
 	}
 

@@ -1,14 +1,28 @@
 package dns
 
 import (
+	"context"
 	"net"
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) SetNameserver(IP net.IP) error {
-	c.logger.Info("%s: setting local nameserver to %s", logPrefix, IP.String())
+// UseDNSInternally is to change the Go program DNS only
+func (c *configurator) UseDNSInternally(IP net.IP) {
+	c.logger.Info("%s: using DNS address %s internally", logPrefix, IP.String())
+	net.DefaultResolver = &net.Resolver{
+		PreferGo: true,
+		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+			d := net.Dialer{}
+			return d.DialContext(ctx, "udp", net.JoinHostPort(IP.String(), "53"))
+		},
+	}
+}
+
+// UseDNSSystemWide changes the nameserver to use for DNS system wide
+func (c *configurator) UseDNSSystemWide(IP net.IP) error {
+	c.logger.Info("%s: using DNS address %s system wide", logPrefix, IP.String())
 	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))
 	if err != nil {
 		return err

@@ -2,6 +2,7 @@ package dns
 
 import (
 	"fmt"
+	"net"
 	"testing"
 
 	filesmocks "github.com/qdm12/golibs/files/mocks"
@@ -11,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_SetLocalNameserver(t *testing.T) {
+func Test_UseDNSSystemWide(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
 		data        []byte
@@ -53,12 +54,12 @@ func Test_SetLocalNameserver(t *testing.T) {
 					Return(tc.writeErr).Once()
 			}
 			logger := &loggingmocks.Logger{}
-			logger.On("Info", "%s: setting local nameserver to 127.0.0.1", logPrefix).Once()
+			logger.On("Info", "%s: using DNS address %s system wide", logPrefix, "127.0.0.1").Once()
 			c := &configurator{
 				fileManager: fileManager,
 				logger:      logger,
 			}
-			err := c.SetLocalNameserver()
+			err := c.UseDNSSystemWide(net.IP{127, 0, 0, 1})
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())

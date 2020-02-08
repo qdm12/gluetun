@@ -2,6 +2,7 @@ package dns
 
 import (
 	"io"
+	"net"
 
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
@@ -16,8 +17,10 @@ type Configurator interface {
 	DownloadRootHints(uid, gid int) error
 	DownloadRootKey(uid, gid int) error
 	MakeUnboundConf(settings settings.DNS, uid, gid int) (err error)
-	SetLocalNameserver() error
+	UseDNSInternally(IP net.IP)
+	UseDNSSystemWide(IP net.IP) error
 	Start(logLevel uint8) (stdout io.ReadCloser, err error)
+	WaitForUnbound() (err error)
 	Version() (version string, err error)
 }
 
@@ -26,6 +29,7 @@ type configurator struct {
 	client      network.Client
 	fileManager files.FileManager
 	commander   command.Commander
+	lookupIP    func(host string) ([]net.IP, error)
 }
 
 func NewConfigurator(logger logging.Logger, client network.Client, fileManager files.FileManager) Configurator {
@@ -34,5 +38,6 @@ func NewConfigurator(logger logging.Logger, client network.Client, fileManager f
 		client:      client,
 		fileManager: fileManager,
 		commander:   command.NewCommander(),
+		lookupIP:    net.LookupIP,
 	}
 }
