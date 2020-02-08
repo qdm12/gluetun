@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
+	"github.com/qdm12/golibs/signals"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/env"
@@ -74,6 +75,13 @@ func main() {
 	// Thanks to @npawelek https://github.com/npawelek
 	err = firewallConf.AcceptAll()
 	e.FatalOnError(err)
+
+	go func() {
+		// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
+		logger.Info("Launching standard output merger")
+		err = streamMerger.CollectLines(func(line string) { logger.Info(line) })
+		e.FatalOnError(err)
+	}()
 
 	if allSettings.DNS.Enabled {
 		initialDNSToUse := constants.DNSProviderMapping()[allSettings.DNS.Providers[0]]
@@ -146,9 +154,9 @@ func main() {
 	stream, err := ovpnConf.Start()
 	e.FatalOnError(err)
 	go streamMerger.Merge("openvpn", stream)
-
-	// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
-	logger.Info("Launching standard output merger")
-	err = streamMerger.CollectLines(func(line string) { logger.Info(line) })
-	e.FatalOnError(err)
+	signals.WaitForExit(func(signal string) int {
+		logger.Warn("Caught OS signal %s, shutting down", signal)
+		time.Sleep(100 * time.Millisecond) // wait for other processes to exit
+		return 0
+	})
 }
