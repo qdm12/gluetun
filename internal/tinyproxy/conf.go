@@ -2,6 +2,7 @@ package tinyproxy
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -23,7 +24,7 @@ func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password
 		"Group":               "tinyproxy",
 		"Port":                fmt.Sprintf("%d", port),
 		"Timeout":             "600",
-		"DefaultErrorFile":    "/usr/share/tinyproxy/default.html",
+		"DefaultErrorFile":    "\"/usr/share/tinyproxy/default.html\"",
 		"MaxClients":          "100",
 		"MinSpareServers":     "5",
 		"MaxSpareServers":     "20",
@@ -31,7 +32,7 @@ func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password
 		"MaxRequestsPerChild": "0",
 		"DisableViaHeader":    "Yes",
 		"LogLevel":            string(logLevel),
-		// "StatFile": "/usr/share/tinyproxy/stats.html",
+		// "StatFile": "\"/usr/share/tinyproxy/stats.html\"",
 	}
 	if len(user) > 0 {
 		confMapping["BasicAuth"] = fmt.Sprintf("%s %s", user, password)
@@ -40,5 +41,8 @@ func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password
 		line := fmt.Sprintf("%s %s", k, v)
 		lines = append(lines, line)
 	}
+	sort.Slice(lines, func(i, j int) bool {
+		return lines[i] < lines[j]
+	})
 	return lines
 }
