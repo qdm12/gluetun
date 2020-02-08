@@ -129,7 +129,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
 | `DOT_CACHING` | `on` | Unbound caching feature, `on` or `off` |
-| `DOT_PRIVATE_ADDRESS` | `127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:0:0/96` | Prevent hostnames to resolve to these IP addresses, to prevent DNS rebinding attacks |
+| `DOT_PRIVATE_ADDRESS` | All IPv4 and IPv6 CIDRs private ranges | Comma separated list of CIDRs or single IP addresses. Note that the default setting prevents DNS rebinding |
 | `DOT_VERBOSITY` | `1` | Unbound verbosity level from `0` to `5` (full debug) |
 | `DOT_VERBOSITY_DETAILS` | `0` | Unbound details verbosity level from `0` to `4` |
 | `DOT_VALIDATION_LOGLEVEL` | `0` | Unbound validation log level from `0` to `2` |
@@ -140,12 +140,12 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
 | `PORT_FORWARDING` | `off` | Set to `on` to forward a port on PIA server |
 | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | File path to store the forwarded port number |
-| `TINYPROXY` | `on` | `on` or `off`, to enable the internal HTTP proxy tinyproxy |
+| `TINYPROXY` | `off` | `on` or `off`, to enable the internal HTTP proxy tinyproxy |
 | `TINYPROXY_LOG` | `Info` | `Info`, `Connect`, `Notice`, `Warning`, `Error` or `Critical` |
 | `TINYPROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
 | `TINYPROXY_USER` | | Username to use to connect to the HTTP proxy |
 | `TINYPROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
-| `SHADOWSOCKS` | `on` | `on` or `off`, to enable the internal SOCKS5 proxy Shadowsocks |
+| `SHADOWSOCKS` | `off` | `on` or `off`, to enable the internal SOCKS5 proxy Shadowsocks |
 | `SHADOWSOCKS_LOG` | `on` | `on` or `off` to enable logging for Shadowsocks  |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
@@ -314,6 +314,7 @@ Note that not all regions support port forwarding.
 - Support other VPN providers
     - Mullvad
     - Windscribe
+- Gotify support for notificactions
 - Periodic update of malicious block lists with Unbound restart
 - Improve healthcheck
     - Check IP address belongs to selected region
