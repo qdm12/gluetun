@@ -5,8 +5,8 @@ type (
 	VPNDevice string
 	// DNSProvider is a DNS over TLS server provider name
 	DNSProvider string
-	// DNSForwardAddress is the Unbound formatted forward address
-	DNSForwardAddress string
+	// DNSHost is the DNS host to use for TLS validation
+	DNSHost string
 	// PIAEncryption defines the level of encryption for communication with PIA servers
 	PIAEncryption string
 	// PIARegion contains the list of regions available for PIA

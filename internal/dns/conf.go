@@ -108,12 +108,15 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		return forwardZoneLines[i] < forwardZoneLines[j]
 	})
 	for _, provider := range settings.Providers {
-		forwardAddresses, ok := constants.DNSAddressesMapping[provider]
-		if !ok || len(forwardAddresses) == 0 {
-			return nil, warnings, fmt.Errorf("DNS provider %q does not have any matching forward addresses", provider)
+		providerData, ok := constants.DNSProviderMapping()[provider]
+		if !ok {
+			return nil, warnings, fmt.Errorf("DNS provider %q does not have associated data", provider)
+		} else if !providerData.SupportsTLS {
+			return nil, warnings, fmt.Errorf("DNS provider %q does not support DNS over TLS", provider)
 		}
-		for _, forwardAddress := range forwardAddresses {
-			forwardZoneLines = append(forwardZoneLines, fmt.Sprintf("  forward-addr: %s", forwardAddress))
+		for _, IP := range providerData.IPs {
+			forwardZoneLines = append(forwardZoneLines,
+				fmt.Sprintf("  forward-addr: %s@853#%s", IP.String(), providerData.Host))
 		}
 	}
 	lines = append(lines, forwardZoneLines...)

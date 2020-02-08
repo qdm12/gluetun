@@ -1,6 +1,8 @@
 package constants
 
 import (
+	"net"
+
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -21,28 +23,46 @@ const (
 	LibreDNS models.DNSProvider = "libredns"
 )
 
-const (
-	CloudflareAddress1    models.DNSForwardAddress = "1.1.1.1@853#cloudflare-dns.com"
-	CloudflareAddress2    models.DNSForwardAddress = "1.0.0.1@853#cloudflare-dns.com"
-	GoogleAddress1        models.DNSForwardAddress = "8.8.8.8@853#dns.google"
-	GoogleAddress2        models.DNSForwardAddress = "8.8.4.4@853#dns.google"
-	Quad9Address1         models.DNSForwardAddress = "9.9.9.9@853#dns.quad9.net"
-	Quad9Address2         models.DNSForwardAddress = "149.112.112.112@853#dns.quad9.net"
-	QuadrantAddress       models.DNSForwardAddress = "12.159.2.159@853#dns-tls.qis.io"
-	CleanBrowsingAddress1 models.DNSForwardAddress = "185.228.168.9@853#security-filter-dns.cleanbrowsing.org"
-	CleanBrowsingAddress2 models.DNSForwardAddress = "185.228.169.9@853#security-filter-dns.cleanbrowsing.org"
-	SecureDNSAddress      models.DNSForwardAddress = "146.185.167.43@853#dot.securedns.eu"
-	LibreDNSAddress       models.DNSForwardAddress = "116.203.115.192@853#dot.libredns.gr"
-)
-
-var DNSAddressesMapping = map[models.DNSProvider][]models.DNSForwardAddress{
-	Cloudflare:    []models.DNSForwardAddress{CloudflareAddress1, CloudflareAddress2},
-	Google:        []models.DNSForwardAddress{GoogleAddress1, GoogleAddress2},
-	Quad9:         []models.DNSForwardAddress{Quad9Address1, Quad9Address2},
-	Quadrant:      []models.DNSForwardAddress{QuadrantAddress},
-	CleanBrowsing: []models.DNSForwardAddress{CleanBrowsingAddress1, CleanBrowsingAddress2},
-	SecureDNS:     []models.DNSForwardAddress{SecureDNSAddress},
-	LibreDNS:      []models.DNSForwardAddress{LibreDNSAddress},
+// DNSProviderMapping returns a constant mapping of dns provider name
+// to their data such as IP addresses or TLS host name.
+func DNSProviderMapping() map[models.DNSProvider]models.DNSProviderData {
+	return map[models.DNSProvider]models.DNSProviderData{
+		Cloudflare: models.DNSProviderData{
+			IPs:         []net.IP{{1, 1, 1, 1}, {1, 0, 0, 1}},
+			SupportsTLS: true,
+			Host:        models.DNSHost("cloudflare-dns.com"),
+		},
+		Google: models.DNSProviderData{
+			IPs:         []net.IP{{8, 8, 8, 8}, {8, 8, 4, 4}},
+			SupportsTLS: true,
+			Host:        models.DNSHost("dns.google"),
+		},
+		Quad9: models.DNSProviderData{
+			IPs:         []net.IP{{9, 9, 9, 9}, {149, 112, 112, 112}},
+			SupportsTLS: true,
+			Host:        models.DNSHost("dns.quad9.net"),
+		},
+		Quadrant: models.DNSProviderData{
+			IPs:         []net.IP{{12, 159, 2, 159}},
+			SupportsTLS: true,
+			Host:        models.DNSHost("dns-tls.qis.io"),
+		},
+		CleanBrowsing: models.DNSProviderData{
+			IPs:         []net.IP{{185, 228, 168, 9}, {185, 228, 169, 9}},
+			SupportsTLS: true,
+			Host:        models.DNSHost("security-filter-dns.cleanbrowsing.org"),
+		},
+		SecureDNS: models.DNSProviderData{
+			IPs:         []net.IP{{146, 185, 167, 43}},
+			SupportsTLS: true,
+			Host:        models.DNSHost("dot.securedns.eu"),
+		},
+		LibreDNS: models.DNSProviderData{
+			IPs:         []net.IP{{116, 203, 115, 192}},
+			SupportsTLS: true,
+			Host:        models.DNSHost("dot.libredns.gr"),
+		},
+	}
 }
 
 // Block lists URLs
