@@ -129,6 +129,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
 | `DOT_CACHING` | `on` | Unbound caching feature, `on` or `off` |
+| `DOT_PRIVATE_ADDRESS` | `127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:0:0/96` | Prevent hostnames to resolve to these IP addresses, to prevent DNS rebinding attacks |
 | `DOT_VERBOSITY` | `1` | Unbound verbosity level from `0` to `5` (full debug) |
 | `DOT_VERBOSITY_DETAILS` | `0` | Unbound details verbosity level from `0` to `4` |
 | `DOT_VALIDATION_LOGLEVEL` | `0` | Unbound validation log level from `0` to `2` |

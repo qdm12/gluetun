@@ -102,16 +102,6 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.PrivateAddresses = []string{ // TODO make env variable
-		"127.0.0.1/8",
-		"10.0.0.0/8",
-		"172.16.0.0/12",
-		"192.168.0.0/16",
-		"169.254.0.0/16",
-		"::1/128",
-		"fc00::/7",
-		"fe80::/10",
-		"::ffff:0:0/96",
-	}
+	settings.PrivateAddresses = params.GetDNSOverTLSPrivateAddresses()
 	return settings, nil
 }

@@ -107,3 +107,12 @@ func (p *paramsReader) GetDNSOverTLSCaching() (caching bool, err error) {
 	return p.envParams.GetOnOff("DOT_CACHING")
 }
 
+// GetDNSOverTLSPrivateAddresses obtains if Unbound caching should be enable or not
+// from the environment variable DOT_PRIVATE_ADDRESS
+func (p *paramsReader) GetDNSOverTLSPrivateAddresses() (privateAddresses []string) {
+	s, _ := p.envParams.GetEnv("DOT_PRIVATE_ADDRESS")
+	for _, s := range strings.Split(s, ",") {
+		privateAddresses = append(privateAddresses, s)
+	}
+	return privateAddresses
+}
