@@ -81,6 +81,6 @@ func (c *configurator) BuildConf(region models.PIARegion, protocol models.Networ
 		"</ca>",
 		"",
 	}...)
-	err = c.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.FileOwnership(uid, gid), files.FilePermissions(0400))
+	err = c.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
 	return IPs, port, err
 }

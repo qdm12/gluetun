@@ -18,6 +18,6 @@ func (c *configurator) WriteAuthFile(user, password string, uid, gid int) error 
 	return c.fileManager.WriteLinesToFile(
 		string(constants.OpenVPNAuthConf),
 		[]string{user, password},
-		files.FileOwnership(uid, gid),
-		files.FilePermissions(0400))
+		files.Ownership(uid, gid),
+		files.Permissions(0400))
 }

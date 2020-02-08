@@ -14,8 +14,8 @@ func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, 
 	lines := generateConf(logLevel, port, user, password)
 	return c.fileManager.WriteLinesToFile(string(constants.TinyProxyConf),
 		lines,
-		files.FileOwnership(uid, gid),
-		files.FilePermissions(0400))
+		files.Ownership(uid, gid),
+		files.Permissions(0400))
 }
 
 func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string) (lines []string) {

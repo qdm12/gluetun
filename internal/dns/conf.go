@@ -24,8 +24,8 @@ func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err
 	return c.fileManager.WriteLinesToFile(
 		string(constants.UnboundConf),
 		lines,
-		files.FileOwnership(uid, gid),
-		files.FilePermissions(0400))
+		files.Ownership(uid, gid),
+		files.Permissions(0400))
 }
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings

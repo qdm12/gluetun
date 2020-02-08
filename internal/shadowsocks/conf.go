@@ -14,8 +14,8 @@ func (c *configurator) MakeConf(port uint16, password string, uid, gid int) (err
 	return c.fileManager.WriteToFile(
 		string(constants.ShadowsocksConf),
 		data,
-		files.FileOwnership(uid, gid),
-		files.FilePermissions(0400))
+		files.Ownership(uid, gid),
+		files.Permissions(0400))
 }
 
 func generateConf(port uint16, password string) (data []byte) {

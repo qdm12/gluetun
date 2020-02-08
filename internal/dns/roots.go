@@ -18,8 +18,8 @@ func (c *configurator) DownloadRootHints(uid, gid int) error {
 	return c.fileManager.WriteToFile(
 		string(constants.RootHints),
 		content,
-		files.FileOwnership(uid, gid),
-		files.FilePermissions(0400))
+		files.Ownership(uid, gid),
+		files.Permissions(0400))
 }
 
 func (c *configurator) DownloadRootKey(uid, gid int) error {
@@ -33,6 +33,6 @@ func (c *configurator) DownloadRootKey(uid, gid int) error {
 	return c.fileManager.WriteToFile(
 		string(constants.RootKey),
 		content,
-		files.FileOwnership(uid, gid),
-		files.FilePermissions(0400))
+		files.Ownership(uid, gid),
+		files.Permissions(0400))
 }
