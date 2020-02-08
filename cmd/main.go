@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 	"time"
 
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
+	libhealthcheck "github.com/qdm12/golibs/healthcheck"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/golibs/signals"
@@ -15,6 +17,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/env"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
+	"github.com/qdm12/private-internet-access-docker/internal/healthcheck"
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
@@ -32,6 +35,13 @@ func main() {
 	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
 	if err != nil {
 		panic(err)
+	}
+	if libhealthcheck.Mode(os.Args) {
+		if err := healthcheck.HealthCheck(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		os.Exit(0)
 	}
 	paramsReader := params.NewParamsReader(logger)
 	fmt.Println(splash.Splash(paramsReader))

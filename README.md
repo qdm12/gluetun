@@ -311,12 +311,13 @@ Note that not all regions support port forwarding.
 
 ## TODOs
 
-- Healthcheck checking for IP address, DNS leaks etc.
-- Periodic update of malicious block lists with Unbound restart
-- HTTP proxy in Go to replace tinyproxy
 - Support other VPN providers
     - Mullvad
     - Windscribe
+- Periodic update of malicious block lists with Unbound restart
+- Improve healthcheck
+    - Check IP address belongs to selected region
+    - Check for DNS provider somehow if this is even possible
 - Support for other VPN protocols
     - Wireguard (wireguard-go)
 - Show new versions/commits at start

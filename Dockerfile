@@ -60,7 +60,7 @@ ENV USER= \
     TZ=
 ENTRYPOINT /entrypoint
 EXPOSE 8888/tcp 8388/tcp 8388/udp
-# HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /entrypoint -healthcheck
+HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /entrypoint healthcheck
 RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables unbound tinyproxy tzdata && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk add -q --progress --no-cache --update shadowsocks-libev && \
