@@ -52,7 +52,7 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		"hide-identity":    "yes",
 		"hide-version":     "yes",
 		// Security
-		"tls-cert-bundle":       "\"/etc/ssl/certs/ca-certificates.crt\"",
+		"tls-cert-bundle":       fmt.Sprintf("%q", constants.CACertificates),
 		"root-hints":            fmt.Sprintf("%q", constants.RootHints),
 		"trust-anchor-file":     fmt.Sprintf("%q", constants.RootKey),
 		"harden-below-nxdomain": "yes",

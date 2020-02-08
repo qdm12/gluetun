@@ -63,6 +63,8 @@ type paramsReader struct {
 	unsetEnv  func(key string) error
 }
 
+// NewParamsReader returns a paramsReadeer object to read parameters from
+// environment variables
 func NewParamsReader(logger logging.Logger) ParamsReader {
 	return &paramsReader{
 		envParams: libparams.NewEnvParams(),

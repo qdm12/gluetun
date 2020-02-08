@@ -322,7 +322,14 @@ Note that not all regions support port forwarding.
     - Setup
     - Logging streams
 - More unit tests
-- Switch to iptables-go instead of using the shell iptables
+- Write in Go
+    - DNS over TLS to replace Unbound
+    - HTTP proxy to replace tinyproxy
+    - use [go-Shadowsocks2](https://github.com/shadowsocks/go-shadowsocks2)
+    - DNS over HTTPS, maybe use [github.com/likexian/doh-go](https://github.com/likexian/doh-go)
+    - use [iptables-go](https://github.com/coreos/go-iptables) to replace iptables
+    - wireguard-go
+    - Openvpn to replace openvpn
 
 ## License
 

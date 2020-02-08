@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
+// Splash returns the welcome spash message
 func Splash(paramsReader params.ParamsReader) string {
 	version := paramsReader.GetVersion()
 	vcsRef := paramsReader.GetVcsRef()
@@ -40,7 +41,7 @@ func title() []string {
 func annoucement() []string {
 	timestamp := time.Now().UnixNano() / 1000000000
 	if timestamp < constants.AnnoucementExpiration {
-		return []string{emoji.Sprint(":rotating_light: ") + constants.Annoucement}
+		return []string{emoji.Sprint(":mega: ") + constants.Annoucement}
 	}
 	return nil
 }

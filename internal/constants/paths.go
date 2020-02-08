@@ -9,6 +9,8 @@ const (
 	UnboundConf models.Filepath = "/etc/unbound/unbound.conf"
 	// ResolvConf is the file path to the system resolv.conf file
 	ResolvConf models.Filepath = "/etc/resolv.conf"
+	// CACertificates is the file path to the CA certificates file
+	CACertificates models.Filepath = "/etc/ssl/certs/ca-certificates.crt"
 	// OpenVPNAuthConf is the file path to the OpenVPN auth file
 	OpenVPNAuthConf models.Filepath = "/etc/openvpn/auth.conf"
 	// OpenVPNConf is the file path to the OpenVPN client configuration file
