@@ -147,7 +147,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `PORT_FORWARDING` | `off` | Set to `on` to forward a port on PIA server |
 | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | File path to store the forwarded port number |
 | `TINYPROXY` | `on` | `on` or `off`, to enable the internal HTTP proxy tinyproxy |
-| `TINYPROXY_LOG` | `Info` | `Info`, `Warning`, `Error` or `Critical` |
+| `TINYPROXY_LOG` | `Info` | `Info`, `Connect`, `Notice`, `Warning`, `Error` or `Critical` |
 | `TINYPROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
 | `TINYPROXY_USER` | | Username to use to connect to the HTTP proxy |
 | `TINYPROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |

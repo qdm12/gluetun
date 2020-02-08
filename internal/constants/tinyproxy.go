@@ -7,6 +7,10 @@ import (
 const (
 	// TinyProxyInfoLevel is the info log level for TinyProxy
 	TinyProxyInfoLevel models.TinyProxyLogLevel = "Info"
+	// TinyProxyConnectLevel is the info log level for TinyProxy
+	TinyProxyConnectLevel models.TinyProxyLogLevel = "Connect"
+	// TinyProxyNoticeLevel is the info log level for TinyProxy
+	TinyProxyNoticeLevel models.TinyProxyLogLevel = "Notice"
 	// TinyProxyWarnLevel is the warning log level for TinyProxy
 	TinyProxyWarnLevel models.TinyProxyLogLevel = "Warning"
 	// TinyProxyErrorLevel is the error log level for TinyProxy

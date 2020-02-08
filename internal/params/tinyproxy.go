@@ -30,10 +30,10 @@ func (p *paramsReader) GetTinyProxyLog() (models.TinyProxyLogLevel, error) {
 		return models.TinyProxyLogLevel(s), err
 	} else if len(s) != 0 {
 		p.logger.Warn("You are using the old environment variable PROXY_LOG_LEVEL, please consider changing it to TINYPROXY_LOG")
-		s, err = p.envParams.GetValueIfInside("PROXY_LOG_LEVEL", []string{"info", "warning", "error", "critical"}, libparams.Compulsory())
+		s, err = p.envParams.GetValueIfInside("PROXY_LOG_LEVEL", []string{"Info", "Connect", "Notice", "Warning", "Error", "Critical"}, libparams.Compulsory())
 		return models.TinyProxyLogLevel(s), err
 	}
-	s, err = p.envParams.GetValueIfInside("TINYPROXY_LOG", []string{"Info", "Warning", "Error", "Critical"}, libparams.Default("info"))
+	s, err = p.envParams.GetValueIfInside("TINYPROXY_LOG", []string{"Info", "Connect", "Notice", "Warning", "Error", "Critical"}, libparams.Default("Connect"))
 	return models.TinyProxyLogLevel(s), err
 }
 
