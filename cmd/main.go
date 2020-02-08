@@ -57,8 +57,11 @@ func main() {
 	e.FatalOnError(err)
 	logger.Info(allSettings.String())
 
-	err = ovpnConf.CheckTUN()
-	e.FatalOnError(err)
+	if err := ovpnConf.CheckTUN(); err != nil {
+		logger.Warn(err)
+		err = ovpnConf.CreateTUN()
+		e.FatalOnError(err)
+	}
 
 	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password, uid, gid)
 	e.FatalOnError(err)

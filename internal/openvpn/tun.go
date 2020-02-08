@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"golang.org/x/sys/unix"
 )
 
 // CheckTUN checks the tunnel device is present and accessible
@@ -16,6 +17,21 @@ func (c *configurator) CheckTUN() error {
 	}
 	if err := f.Close(); err != nil {
 		c.logger.Warn("Could not close TUN device file: %s", err)
+	}
+	return nil
+}
+
+func (c *configurator) CreateTUN() error {
+	c.logger.Info("%s: creating %s", logPrefix, constants.TunnelDevice)
+	if err := c.fileManager.CreateDir("/dev/net"); err != nil {
+		return err
+	}
+	dev := c.mkDev(10, 200)
+	if err := c.mkNod(string(constants.TunnelDevice), unix.S_IFCHR, int(dev)); err != nil {
+		return err
+	}
+	if err := c.fileManager.SetUserPermissions(string(constants.TunnelDevice), 666); err != nil {
+		return err
 	}
 	return nil
 }
