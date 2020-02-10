@@ -31,7 +31,7 @@ func (c *configurator) GetPortForward() (port uint16, err error) {
 	if err := json.Unmarshal(content, &body); err != nil {
 		return 0, fmt.Errorf("port forwarding response: %w", err)
 	}
-	c.logger.Info("%s: Port forwarded is %d", logPrefix, port)
+	c.logger.Info("%s: Port forwarded is %d", logPrefix, body.Port)
 	return body.Port, nil
 }
 
