@@ -9,7 +9,7 @@ type (
 	DNSHost string
 	// PIAEncryption defines the level of encryption for communication with PIA servers
 	PIAEncryption string
-	// PIARegion contains the list of regions available for PIA
+	// PIARegion is used to define the list of regions available for PIA
 	PIARegion string
 	// URL is an HTTP(s) URL address
 	URL string

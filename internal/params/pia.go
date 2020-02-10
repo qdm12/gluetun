@@ -76,9 +76,7 @@ func (p *paramsReader) GetPIAEncryption() (models.PIAEncryption, error) {
 // GetPIARegion obtains the region for the PIA server from the
 // environment variable REGION
 func (p *paramsReader) GetPIARegion() (region models.PIARegion, err error) {
-	choices := []string{
-		string(constants.AUMelbourne), string(constants.AUPerth), string(constants.AUSydney), string(constants.Austria), string(constants.Belgium), string(constants.CAMontreal), string(constants.CAToronto), string(constants.CAVancouver), string(constants.CzechRepublic), string(constants.DEBerlin), string(constants.DEFrankfurt), string(constants.Denmark), string(constants.Finland), string(constants.France), string(constants.HongKong), string(constants.Hungary), string(constants.India), string(constants.Ireland), string(constants.Israel), string(constants.Italy), string(constants.Japan), string(constants.Luxembourg), string(constants.Mexico), string(constants.Netherlands), string(constants.NewZealand), string(constants.Norway), string(constants.Poland), string(constants.Romania), string(constants.Singapore), string(constants.Spain), string(constants.Sweden), string(constants.Switzerland), string(constants.UAE), string(constants.UKLondon), string(constants.UKManchester), string(constants.UKSouthampton), string(constants.USAtlanta), string(constants.USCalifornia), string(constants.USChicago), string(constants.USDenver), string(constants.USEast), string(constants.USFlorida), string(constants.USHouston), string(constants.USLasVegas), string(constants.USNewYorkCity), string(constants.USSeattle), string(constants.USSiliconValley), string(constants.USTexas), string(constants.USWashingtonDC), string(constants.USWest),
-	}
+	choices := constants.PIAGeoChoices()
 	s, err := p.envParams.GetValueIfInside("REGION", choices)
 	if len(s) == 0 { // Suggestion by @rorph https://github.com/rorph
 		s = choices[rand.Int()%len(choices)]

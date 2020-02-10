@@ -1,6 +1,9 @@
 package constants
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -18,163 +21,68 @@ const (
 	PIACertificate_STRONG = "MIIHqzCCBZOgAwIBAgIJAJ0u+vODZJntMA0GCSqGSIb3DQEBDQUAMIHoMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExEzARBgNVBAcTCkxvc0FuZ2VsZXMxIDAeBgNVBAoTF1ByaXZhdGUgSW50ZXJuZXQgQWNjZXNzMSAwHgYDVQQLExdQcml2YXRlIEludGVybmV0IEFjY2VzczEgMB4GA1UEAxMXUHJpdmF0ZSBJbnRlcm5ldCBBY2Nlc3MxIDAeBgNVBCkTF1ByaXZhdGUgSW50ZXJuZXQgQWNjZXNzMS8wLQYJKoZIhvcNAQkBFiBzZWN1cmVAcHJpdmF0ZWludGVybmV0YWNjZXNzLmNvbTAeFw0xNDA0MTcxNzQwMzNaFw0zNDA0MTIxNzQwMzNaMIHoMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExEzARBgNVBAcTCkxvc0FuZ2VsZXMxIDAeBgNVBAoTF1ByaXZhdGUgSW50ZXJuZXQgQWNjZXNzMSAwHgYDVQQLExdQcml2YXRlIEludGVybmV0IEFjY2VzczEgMB4GA1UEAxMXUHJpdmF0ZSBJbnRlcm5ldCBBY2Nlc3MxIDAeBgNVBCkTF1ByaXZhdGUgSW50ZXJuZXQgQWNjZXNzMS8wLQYJKoZIhvcNAQkBFiBzZWN1cmVAcHJpdmF0ZWludGVybmV0YWNjZXNzLmNvbTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALVkhjumaqBbL8aSgj6xbX1QPTfTd1qHsAZd2B97m8Vw31c/2yQgZNf5qZY0+jOIHULNDe4R9TIvyBEbvnAg/OkPw8n/+ScgYOeH876VUXzjLDBnDb8DLr/+w9oVsuDeFJ9KV2UFM1OYX0SnkHnrYAN2QLF98ESK4NCSU01h5zkcgmQ+qKSfA9Ny0/UpsKPBFqsQ25NvjDWFhCpeqCHKUJ4Be27CDbSl7lAkBuHMPHJs8f8xPgAbHRXZOxVCpayZ2SNDfCwsnGWpWFoMGvdMbygngCn6jA/W1VSFOlRlfLuuGe7QFfDwA0jaLCxuWt/BgZylp7tAzYKR8lnWmtUCPm4+BtjyVDYtDCiGBD9Z4P13RFWvJHw5aapx/5W/CuvVyI7pKwvc2IT+KPxCUhH1XI8ca5RN3C9NoPJJf6qpg4g0rJH3aaWkoMRrYvQ+5PXXYUzjtRHImghRGd/ydERYoAZXuGSbPkm9Y/p2X8unLcW+F0xpJD98+ZI+tzSsI99Zs5wijSUGYr9/j18KHFTMQ8n+1jauc5bCCegN27dPeKXNSZ5riXFL2XX6BkY68y58UaNzmeGMiUL9BOV1iV+PMb7B7PYs7oFLjAhh0EdyvfHkrh/ZV9BEhtFa7yXp8XR0J6vz1YV9R6DYJmLjOEbhU8N0gc3tZm4Qz39lIIG6w3FDAgMBAAGjggFUMIIBUDAdBgNVHQ4EFgQUrsRtyWJftjpdRM0+925Y6Cl08SUwggEfBgNVHSMEggEWMIIBEoAUrsRtyWJftjpdRM0+925Y6Cl08SWhge6kgeswgegxCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTETMBEGA1UEBxMKTG9zQW5nZWxlczEgMB4GA1UEChMXUHJpdmF0ZSBJbnRlcm5ldCBBY2Nlc3MxIDAeBgNVBAsTF1ByaXZhdGUgSW50ZXJuZXQgQWNjZXNzMSAwHgYDVQQDExdQcml2YXRlIEludGVybmV0IEFjY2VzczEgMB4GA1UEKRMXUHJpdmF0ZSBJbnRlcm5ldCBBY2Nlc3MxLzAtBgkqhkiG9w0BCQEWIHNlY3VyZUBwcml2YXRlaW50ZXJuZXRhY2Nlc3MuY29tggkAnS7684Nkme0wDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQ0FAAOCAgEAJsfhsPk3r8kLXLxY+v+vHzbr4ufNtqnL9/1Uuf8NrsCtpXAoyZ0YqfbkWx3NHTZ7OE9ZRhdMP/RqHQE1p4N4Sa1nZKhTKasV6KhHDqSCt/dvEm89xWm2MVA7nyzQxVlHa9AkcBaemcXEiyT19XdpiXOP4Vhs+J1R5m8zQOxZlV1GtF9vsXmJqWZpOVPmZ8f35BCsYPvv4yMewnrtAC8PFEK/bOPeYcKN50bol22QYaZuLfpkHfNiFTnfMh8sl/ablPyNY7DUNiP5DRcMdIwmfGQxR5WEQoHL3yPJ42LkB5zs6jIm26DGNXfwura/mi105+ENH1CaROtRYwkiHb08U6qLXXJz80mWJkT90nr8Asj35xN2cUppg74nG3YVav/38P48T56hG1NHbYF5uOCske19F6wi9maUoto/3vEr0rnXJUp2KODmKdvBI7co245lHBABWikk8VfejQSlCtDBXn644ZMtAdoxKNfR2WTFVEwJiyd1Fzx0yujuiXDROLhISLQDRjVVAvawrAtLZWYK31bY7KlezPlQnl/D9Asxe85l8jO5+0LdJ6VyOs/Hd4w52alDW/MFySDZSfQHMTIc30hLBJ8OnCEIvluVQQ2UQvoW+no177N9L2Y+M9TcTA62ZyMXShHQGeh20rb4kK8f+iFX8NxtdHVSkxMEFSfDDyQ="
 )
 
-const (
-	AUMelbourne     models.PIARegion = "AU Melbourne"
-	AUPerth         models.PIARegion = "AU Perth"
-	AUSydney        models.PIARegion = "AU Sydney"
-	Austria         models.PIARegion = "Austria"
-	Belgium         models.PIARegion = "Belgium"
-	CAMontreal      models.PIARegion = "CA Montreal"
-	CAToronto       models.PIARegion = "CA Toronto"
-	CAVancouver     models.PIARegion = "CA Vancouver"
-	CzechRepublic   models.PIARegion = "Czech Republic"
-	DEBerlin        models.PIARegion = "DE Berlin"
-	DEFrankfurt     models.PIARegion = "DE Frankfurt"
-	Denmark         models.PIARegion = "Denmark"
-	Finland         models.PIARegion = "Finland"
-	France          models.PIARegion = "France"
-	HongKong        models.PIARegion = "Hong Kong"
-	Hungary         models.PIARegion = "Hungary"
-	India           models.PIARegion = "India"
-	Ireland         models.PIARegion = "Ireland"
-	Israel          models.PIARegion = "Israel"
-	Italy           models.PIARegion = "Italy"
-	Japan           models.PIARegion = "Japan"
-	Luxembourg      models.PIARegion = "Luxembourg"
-	Mexico          models.PIARegion = "Mexico"
-	Netherlands     models.PIARegion = "Netherlands"
-	NewZealand      models.PIARegion = "New Zealand"
-	Norway          models.PIARegion = "Norway"
-	Poland          models.PIARegion = "Poland"
-	Romania         models.PIARegion = "Romania"
-	Singapore       models.PIARegion = "Singapore"
-	Spain           models.PIARegion = "Spain"
-	Sweden          models.PIARegion = "Sweden"
-	Switzerland     models.PIARegion = "Switzerland"
-	UAE             models.PIARegion = "UAE"
-	UKLondon        models.PIARegion = "UK London"
-	UKManchester    models.PIARegion = "UK Manchester"
-	UKSouthampton   models.PIARegion = "UK Southampton"
-	USAtlanta       models.PIARegion = "US Atlanta"
-	USCalifornia    models.PIARegion = "US California"
-	USChicago       models.PIARegion = "US Chicago"
-	USDenver        models.PIARegion = "US Denver"
-	USEast          models.PIARegion = "US East"
-	USFlorida       models.PIARegion = "US Florida"
-	USHouston       models.PIARegion = "US Houston"
-	USLasVegas      models.PIARegion = "US Las Vegas"
-	USNewYorkCity   models.PIARegion = "US New York City"
-	USSeattle       models.PIARegion = "US Seattle"
-	USSiliconValley models.PIARegion = "US Silicon Valley"
-	USTexas         models.PIARegion = "US Texas"
-	USWashingtonDC  models.PIARegion = "US Washington DC"
-	USWest          models.PIARegion = "US West"
-)
+func PIAGeoChoices() []string {
+	return []string{"AU Melbourne", "AU Perth", "AU Sydney", "Austria", "Belgium", "CA Montreal", "CA Toronto", "CA Vancouver", "Czech Republic", "DE Berlin", "DE Frankfurt", "Denmark", "Finland", "France", "Hong Kong", "Hungary", "India", "Ireland", "Israel", "Italy", "Japan", "Luxembourg", "Mexico", "Netherlands", "New Zealand", "Norway", "Poland", "Romania", "Singapore", "Spain", "Sweden", "Switzerland", "UAE", "UK London", "UK Manchester", "UK Southampton", "US Atlanta", "US California", "US Chicago", "US Denver", "US East", "US Florida", "US Houston", "US Las Vegas", "US New York City", "US Seattle", "US Silicon Valley", "US Texas", "US Washington DC", "US West"}
+}
 
-const (
-	PIASubdomainAUMelbourne     string = "au-melbourne"
-	PIASubdomainAUPerth         string = "au-perth"
-	PIASubdomainAUSydney        string = "au-sydney"
-	PIASubdomainAustria         string = "austria"
-	PIASubdomainBelgium         string = "belgium"
-	PIASubdomainCAMontreal      string = "ca-montreal"
-	PIASubdomainCAToronto       string = "ca-toronto"
-	PIASubdomainCAVancouver     string = "ca-vancouver"
-	PIASubdomainCzechRepublic   string = "czech"
-	PIASubdomainDEBerlin        string = "de-berlin"
-	PIASubdomainDEFrankfurt     string = "de-frankfurt"
-	PIASubdomainDenmark         string = "denmark"
-	PIASubdomainFinland         string = "fi"
-	PIASubdomainFrance          string = "france"
-	PIASubdomainHongKong        string = "hk"
-	PIASubdomainHungary         string = "hungary"
-	PIASubdomainIndia           string = "in"
-	PIASubdomainIreland         string = "ireland"
-	PIASubdomainIsrael          string = "israel"
-	PIASubdomainItaly           string = "italy"
-	PIASubdomainJapan           string = "japan"
-	PIASubdomainLuxembourg      string = "lu"
-	PIASubdomainMexico          string = "mexico"
-	PIASubdomainNetherlands     string = "nl"
-	PIASubdomainNewZealand      string = "nz"
-	PIASubdomainNorway          string = "no"
-	PIASubdomainPoland          string = "poland"
-	PIASubdomainRomania         string = "ro"
-	PIASubdomainSingapore       string = "sg"
-	PIASubdomainSpain           string = "spain"
-	PIASubdomainSweden          string = "sweden"
-	PIASubdomainSwitzerland     string = "swiss"
-	PIASubdomainUAE             string = "ae"
-	PIASubdomainUKLondon        string = "uk-london"
-	PIASubdomainUKManchester    string = "uk-manchester"
-	PIASubdomainUKSouthampton   string = "uk-southampton"
-	PIASubdomainUSAtlanta       string = "us-atlanta"
-	PIASubdomainUSCalifornia    string = "us-california"
-	PIASubdomainUSChicago       string = "us-chicago"
-	PIASubdomainUSDenver        string = "us-denver"
-	PIASubdomainUSEast          string = "us-east"
-	PIASubdomainUSFlorida       string = "us-florida"
-	PIASubdomainUSHouston       string = "us-houston"
-	PIASubdomainUSLasVegas      string = "us-lasvegas"
-	PIASubdomainUSNewYorkCity   string = "us-newyorkcity"
-	PIASubdomainUSSeattle       string = "us-seattle"
-	PIASubdomainUSSiliconValley string = "us-siliconvalley"
-	PIASubdomainUSTexas         string = "us-texas"
-	PIASubdomainUSWashingtonDC  string = "us-washingtondc"
-	PIASubdomainUSWest          string = "us-west"
-)
-
-var PIARegionToSubdomainMapping = map[models.PIARegion]string{
-	AUMelbourne:     PIASubdomainAUMelbourne,
-	AUPerth:         PIASubdomainAUPerth,
-	AUSydney:        PIASubdomainAUSydney,
-	Austria:         PIASubdomainAustria,
-	Belgium:         PIASubdomainBelgium,
-	CAMontreal:      PIASubdomainCAMontreal,
-	CAToronto:       PIASubdomainCAToronto,
-	CAVancouver:     PIASubdomainCAVancouver,
-	CzechRepublic:   PIASubdomainCzechRepublic,
-	DEBerlin:        PIASubdomainDEBerlin,
-	DEFrankfurt:     PIASubdomainDEFrankfurt,
-	Denmark:         PIASubdomainDenmark,
-	Finland:         PIASubdomainFinland,
-	France:          PIASubdomainFrance,
-	HongKong:        PIASubdomainHongKong,
-	Hungary:         PIASubdomainHungary,
-	India:           PIASubdomainIndia,
-	Ireland:         PIASubdomainIreland,
-	Israel:          PIASubdomainIsrael,
-	Italy:           PIASubdomainItaly,
-	Japan:           PIASubdomainJapan,
-	Luxembourg:      PIASubdomainLuxembourg,
-	Mexico:          PIASubdomainMexico,
-	Netherlands:     PIASubdomainNetherlands,
-	NewZealand:      PIASubdomainNewZealand,
-	Norway:          PIASubdomainNorway,
-	Poland:          PIASubdomainPoland,
-	Romania:         PIASubdomainRomania,
-	Singapore:       PIASubdomainSingapore,
-	Spain:           PIASubdomainSpain,
-	Sweden:          PIASubdomainSweden,
-	Switzerland:     PIASubdomainSwitzerland,
-	UAE:             PIASubdomainUAE,
-	UKLondon:        PIASubdomainUKLondon,
-	UKManchester:    PIASubdomainUKManchester,
-	UKSouthampton:   PIASubdomainUKSouthampton,
-	USAtlanta:       PIASubdomainUSAtlanta,
-	USCalifornia:    PIASubdomainUSCalifornia,
-	USChicago:       PIASubdomainUSChicago,
-	USDenver:        PIASubdomainUSDenver,
-	USEast:          PIASubdomainUSEast,
-	USFlorida:       PIASubdomainUSFlorida,
-	USHouston:       PIASubdomainUSHouston,
-	USLasVegas:      PIASubdomainUSLasVegas,
-	USNewYorkCity:   PIASubdomainUSNewYorkCity,
-	USSeattle:       PIASubdomainUSSeattle,
-	USSiliconValley: PIASubdomainUSSiliconValley,
-	USTexas:         PIASubdomainUSTexas,
-	USWashingtonDC:  PIASubdomainUSWashingtonDC,
-	USWest:          PIASubdomainUSWest,
+func PIAGeoToSubdomainMapping(region models.PIARegion) (subdomain string, err error) {
+	mapping := map[models.PIARegion]string{
+		models.PIARegion("AU Melbourne"):      "au-melbourne",
+		models.PIARegion("AU Perth"):          "au-perth",
+		models.PIARegion("AU Sydney"):         "au-sydney",
+		models.PIARegion("Austria"):           "austria",
+		models.PIARegion("Belgium"):           "belgium",
+		models.PIARegion("CA Montreal"):       "ca-montreal",
+		models.PIARegion("CA Toronto"):        "ca-toronto",
+		models.PIARegion("CA Vancouver"):      "ca-vancouver",
+		models.PIARegion("Czech Republic"):    "czech",
+		models.PIARegion("DE Berlin"):         "de-berlin",
+		models.PIARegion("DE Frankfurt"):      "de-frankfurt",
+		models.PIARegion("Denmark"):           "denmark",
+		models.PIARegion("Finland"):           "fi",
+		models.PIARegion("France"):            "france",
+		models.PIARegion("Hong Kong"):         "hk",
+		models.PIARegion("Hungary"):           "hungary",
+		models.PIARegion("India"):             "in",
+		models.PIARegion("Ireland"):           "ireland",
+		models.PIARegion("Israel"):            "israel",
+		models.PIARegion("Italy"):             "italy",
+		models.PIARegion("Japan"):             "japan",
+		models.PIARegion("Luxembourg"):        "lu",
+		models.PIARegion("Mexico"):            "mexico",
+		models.PIARegion("Netherlands"):       "nl",
+		models.PIARegion("New Zealand"):       "nz",
+		models.PIARegion("Norway"):            "no",
+		models.PIARegion("Poland"):            "poland",
+		models.PIARegion("Romania"):           "ro",
+		models.PIARegion("Singapore"):         "sg",
+		models.PIARegion("Spain"):             "spain",
+		models.PIARegion("Sweden"):            "sweden",
+		models.PIARegion("Switzerland"):       "swiss",
+		models.PIARegion("UAE"):               "ae",
+		models.PIARegion("UK London"):         "uk-london",
+		models.PIARegion("UK Manchester"):     "uk-manchester",
+		models.PIARegion("UK Southampton"):    "uk-southampton",
+		models.PIARegion("US Atlanta"):        "us-atlanta",
+		models.PIARegion("US California"):     "us-california",
+		models.PIARegion("US Chicago"):        "us-chicago",
+		models.PIARegion("US Denver"):         "us-denver",
+		models.PIARegion("US East"):           "us-east",
+		models.PIARegion("US Florida"):        "us-florida",
+		models.PIARegion("US Houston"):        "us-houston",
+		models.PIARegion("US Las Vegas"):      "us-lasvegas",
+		models.PIARegion("US New York City"):  "us-newyorkcity",
+		models.PIARegion("US Seattle"):        "us-seattle",
+		models.PIARegion("US Silicon Valley"): "us-siliconvalley",
+		models.PIARegion("US Texas"):          "us-texas",
+		models.PIARegion("US Washington DC"):  "us-washingtondc",
+		models.PIARegion("US West"):           "us-west",
+	}
+	subdomain, ok := mapping[region]
+	if !ok {
+		return "", fmt.Errorf("PIA region %q does not exist and can only be one of ", strings.Join(PIAGeoChoices(), ","))
+	}
+	return subdomain, nil
 }
 
 const (

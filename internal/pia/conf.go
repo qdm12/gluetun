@@ -34,7 +34,10 @@ func (c *configurator) BuildConf(region models.PIARegion, protocol models.Networ
 			port = 501
 		}
 	}
-	subdomain := constants.PIARegionToSubdomainMapping[region]
+	subdomain, err := constants.PIAGeoToSubdomainMapping(region)
+	if err != nil {
+		return nil, 0, err
+	}
 	IPs, err = c.lookupIP(subdomain + ".privateinternetaccess.com")
 	if err != nil {
 		return nil, 0, err
@@ -56,6 +59,7 @@ func (c *configurator) BuildConf(region models.PIARegion, protocol models.Networ
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
 		"disable-occ",
+		"remote-random",
 
 		// Modified variables
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
