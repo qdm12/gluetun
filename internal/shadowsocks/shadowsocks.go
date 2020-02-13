@@ -13,7 +13,7 @@ const logPrefix = "shadowsocks configurator"
 type Configurator interface {
 	Version() (string, error)
 	MakeConf(port uint16, password string, uid, gid int) (err error)
-	Start(server string, port uint16, password string, log bool) (stdout io.ReadCloser, err error)
+	Start(server string, port uint16, password string, log bool) (stdout io.ReadCloser, waitFn func() error, err error)
 }
 
 type configurator struct {

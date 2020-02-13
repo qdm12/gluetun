@@ -14,7 +14,7 @@ const logPrefix = "tinyproxy configurator"
 type Configurator interface {
 	Version() (string, error)
 	MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) error
-	Start() (stdout io.ReadCloser, err error)
+	Start() (stdout io.ReadCloser, waitFn func() error, err error)
 }
 
 type configurator struct {

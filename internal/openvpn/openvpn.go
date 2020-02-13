@@ -17,7 +17,7 @@ type Configurator interface {
 	WriteAuthFile(user, password string, uid, gid int) error
 	CheckTUN() error
 	CreateTUN() error
-	Start() (stdout io.ReadCloser, err error)
+	Start() (stdout io.ReadCloser, waitFn func() error, err error)
 }
 
 type configurator struct {

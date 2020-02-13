@@ -102,8 +102,11 @@ func main() {
 		e.FatalOnError(err)
 		err = dnsConf.MakeUnboundConf(allSettings.DNS, uid, gid)
 		e.FatalOnError(err)
-		stream, err := dnsConf.Start(allSettings.DNS.VerbosityDetailsLevel)
+		stream, waitFn, err := dnsConf.Start(allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
+		go func() {
+			e.FatalOnError(waitFn())
+		}()
 		go streamMerger.Merge("unbound", stream)
 		dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
 		err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
@@ -133,16 +136,26 @@ func main() {
 	if allSettings.TinyProxy.Enabled {
 		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.TinyProxy.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password, uid, gid)
 		e.FatalOnError(err)
-		stream, err := tinyProxyConf.Start()
+		stream, waitFn, err := tinyProxyConf.Start()
 		e.FatalOnError(err)
+		go func() {
+			if err := waitFn(); err != nil {
+				logger.Error(err)
+			}
+		}()
 		go streamMerger.Merge("tinyproxy", stream)
 	}
 
 	if allSettings.ShadowSocks.Enabled {
 		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, uid, gid)
 		e.FatalOnError(err)
-		stream, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
+		stream, waitFn, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
+		go func() {
+			if err := waitFn(); err != nil {
+				logger.Error(err)
+			}
+		}()
 		go streamMerger.Merge("shadowsocks", stream)
 	}
 
@@ -161,12 +174,13 @@ func main() {
 		})
 	}
 
-	stream, err := ovpnConf.Start()
+	stream, waitFn, err := ovpnConf.Start()
 	e.FatalOnError(err)
 	go streamMerger.Merge("openvpn", stream)
-	signals.WaitForExit(func(signal string) int {
+	go signals.WaitForExit(func(signal string) int {
 		logger.Warn("Caught OS signal %s, shutting down", signal)
 		time.Sleep(100 * time.Millisecond) // wait for other processes to exit
 		return 0
 	})
+	e.FatalOnError(waitFn())
 }

@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-func (c *configurator) Start() (stdout io.ReadCloser, err error) {
+func (c *configurator) Start() (stdout io.ReadCloser, waitFn func() error, err error) {
 	c.logger.Info("%s: starting tinyproxy server", logPrefix)
-	stdout, _, _, err = c.commander.Start("tinyproxy", "-d")
-	return stdout, err
+	stdout, _, waitFn, err = c.commander.Start("tinyproxy", "-d")
+	return stdout, waitFn, err
 }
 
 // Version obtains the version of the installed Tinyproxy server

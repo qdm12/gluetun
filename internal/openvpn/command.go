@@ -8,10 +8,10 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) Start() (stdout io.ReadCloser, err error) {
+func (c *configurator) Start() (stdout io.ReadCloser, waitFn func() error, err error) {
 	c.logger.Info("%s: starting openvpn", logPrefix)
-	stdout, _, _, err = c.commander.Start("openvpn", "--config", string(constants.OpenVPNConf))
-	return stdout, err
+	stdout, _, waitFn, err = c.commander.Start("openvpn", "--config", string(constants.OpenVPNConf))
+	return stdout, waitFn, err
 }
 
 func (c *configurator) Version() (string, error) {

@@ -20,8 +20,9 @@ func Test_Start(t *testing.T) {
 	commander.On("Start", "unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
 		Return(nil, nil, nil, nil).Once()
 	c := &configurator{commander: commander, logger: logger}
-	stdout, err := c.Start(2)
+	stdout, waitFn, err := c.Start(2)
 	assert.Nil(t, stdout)
+	assert.Nil(t, waitFn)
 	assert.NoError(t, err)
 	logger.AssertExpectations(t)
 	commander.AssertExpectations(t)
