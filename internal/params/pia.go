@@ -42,7 +42,7 @@ func (p *paramsReader) GetPIAEncryption() (models.PIAEncryption, error) {
 // GetPIARegion obtains the region for the PIA server from the
 // environment variable REGION
 func (p *paramsReader) GetPIARegion() (region models.PIARegion, err error) {
-	choices := constants.PIAGeoChoices()
+	choices := append(constants.PIAGeoChoices(), "")
 	s, err := p.envParams.GetValueIfInside("REGION", choices)
 	if len(s) == 0 { // Suggestion by @rorph https://github.com/rorph
 		s = choices[rand.Int()%len(choices)]
