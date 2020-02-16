@@ -24,6 +24,7 @@ type Configurator interface {
 	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error
 	GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)
 	AllowInputTrafficOnPort(device models.VPNDevice, port uint16) error
+	AllowAnyIncomingOnPort(port uint16) error
 }
 
 type configurator struct {

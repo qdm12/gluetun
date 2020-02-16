@@ -136,6 +136,8 @@ func main() {
 	if allSettings.TinyProxy.Enabled {
 		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.TinyProxy.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password, uid, gid)
 		e.FatalOnError(err)
+		err = firewallConf.AllowAnyIncomingOnPort(allSettings.TinyProxy.Port)
+		e.FatalOnError(err)
 		stream, waitFn, err := tinyProxyConf.Start()
 		e.FatalOnError(err)
 		go func() {
@@ -148,6 +150,8 @@ func main() {
 
 	if allSettings.ShadowSocks.Enabled {
 		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, uid, gid)
+		e.FatalOnError(err)
+		err = firewallConf.AllowAnyIncomingOnPort(allSettings.ShadowSocks.Port)
 		e.FatalOnError(err)
 		stream, waitFn, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)

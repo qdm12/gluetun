@@ -128,3 +128,11 @@ func (c *configurator) AllowInputTrafficOnPort(device models.VPNDevice, port uin
 		fmt.Sprintf("-A INPUT -i %s -p udp --dport %d -j ACCEPT", device, port),
 	})
 }
+
+func (c *configurator) AllowAnyIncomingOnPort(port uint16) error {
+	c.logger.Info("%s: accepting any input traffic on port %d", logPrefix, port)
+	return c.runIptablesInstructions([]string{
+		fmt.Sprintf("-A INPUT -p tcp --dport %d -j ACCEPT", port),
+		fmt.Sprintf("-A INPUT -p udp --dport %d -j ACCEPT", port),
+	})
+}
