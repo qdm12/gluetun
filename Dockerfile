@@ -29,11 +29,22 @@ LABEL \
     org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.title="PIA client" \
     org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
-ENV USER= \
-    PASSWORD= \
-    ENCRYPTION=strong \
+ENV VPNSP=pia \
+    USER= \
     PROTOCOL=udp \
+    TZ= \
+    # PIA only
+    PASSWORD= \
     REGION="CA Montreal" \
+    ENCRYPTION=strong \
+    PORT_FORWARDING=off \
+    PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
+    # Mullvad only
+    COUNTRY=Sweden \
+    CITY= \
+    ISP= \
+    PORT= \
+    # DNS over TLS
     DOT=on \
     DOT_PROVIDERS=cloudflare \
     DOT_PRIVATE_ADDRESS=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:0:0/96 \
@@ -45,19 +56,19 @@ ENV USER= \
     BLOCK_SURVEILLANCE=off \
     BLOCK_ADS=off \
     UNBLOCK= \
+    # Firewall
     EXTRA_SUBNETS= \
-    PORT_FORWARDING=off \
-    PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
+    # Tinyproxy
     TINYPROXY=off \
     TINYPROXY_LOG=Info \
     TINYPROXY_PORT=8888 \
     TINYPROXY_USER= \
     TINYPROXY_PASSWORD= \
+    # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=on \
     SHADOWSOCKS_PORT=8388 \
-    SHADOWSOCKS_PASSWORD= \
-    TZ=
+    SHADOWSOCKS_PASSWORD=
 ENTRYPOINT /entrypoint
 EXPOSE 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /entrypoint healthcheck

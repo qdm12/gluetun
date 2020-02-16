@@ -12,6 +12,8 @@ import (
 
 // ParamsReader contains methods to obtain parameters
 type ParamsReader interface {
+	GetVPNSP() (country models.MullvadCountry, err error)
+
 	// DNS over TLS getters
 	GetDNSOverTLS() (DNSOverTLS bool, err error)
 	GetDNSOverTLSProviders() (providers []models.DNSProvider, err error)
@@ -38,6 +40,12 @@ type ParamsReader interface {
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
 	GetPIAEncryption() (models.PIAEncryption, error)
 	GetPIARegion() (models.PIARegion, error)
+
+	// Mullvad getters
+	GetMullvadCountry() (country models.MullvadCountry, err error)
+	GetMullvadCity() (country models.MullvadCity, err error)
+	GetMullvadISP() (country models.MullvadProvider, err error)
+	GetMullvadPort() (port uint16, err error)
 
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
@@ -74,4 +82,10 @@ func NewParamsReader(logger logging.Logger) ParamsReader {
 		verifier:  verification.NewVerifier(),
 		unsetEnv:  os.Unsetenv,
 	}
+}
+
+// GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
+func (p *paramsReader) GetVPNSP() (country models.MullvadCountry, err error) {
+	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "mullvad"})
+	return models.MullvadCountry(s), err
 }

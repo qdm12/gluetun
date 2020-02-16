@@ -121,10 +121,14 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 
 | Environment variable | Default | Description |
 | --- | --- | --- |
-| `REGION` | `CA Montreal` | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) |
+| `REGION` | `CA Montreal` | (PIA only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) |
+| `COUNTRY` | `Sweden` | (Mullvad only) one of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
+| `CITY` |  | (Mullvad only, *optional*) one of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
+| `ISP` |  | (Mullvad only, *optional*) one of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
+| `PORT` |  | (Mullvad only, *optional*) For TCP, `80` or `443`, or `53` for UDP. Leave blank for default Mullvad server port |
 | `PROTOCOL` | `udp` | `tcp` or `udp` |
-| `ENCRYPTION` | `strong` | `normal` or `strong` |
-| `USER` | | Your PIA username |
+| `ENCRYPTION` | `strong` | (PIA only) `normal` or `strong` |
+| `USER` | | PIA username **or** Mullvad user ID |
 | `PASSWORD` | | Your PIA password |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
@@ -138,8 +142,8 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `BLOCK_ADS` | `off` | `on` or `off`, blocks ads hostnames and IPs |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
-| `PORT_FORWARDING` | `off` | Set to `on` to forward a port on PIA server |
-| `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | File path to store the forwarded port number |
+| `PORT_FORWARDING` | `off` | (PIA only) Set to `on` to forward a port on PIA server |
+| `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | (PIA only) File path to store the forwarded port number |
 | `TINYPROXY` | `off` | `on` or `off`, to enable the internal HTTP proxy tinyproxy |
 | `TINYPROXY_LOG` | `Info` | `Info`, `Connect`, `Notice`, `Warning`, `Error` or `Critical` |
 | `TINYPROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
@@ -311,8 +315,9 @@ Note that not all regions support port forwarding.
 
 ## TODOs
 
+- Case insensitive for env variables values
 - Support other VPN providers
-    - Mullvad
+    - ~Mullvad~
     - Windscribe
 - Gotify support for notificactions
 - Periodic update of malicious block lists with Unbound restart
