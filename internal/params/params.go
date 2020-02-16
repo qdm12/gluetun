@@ -29,11 +29,11 @@ type ParamsReader interface {
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
 
 	// VPN getters
+	GetUser() (s string, err error)
+	GetPassword() (s string, err error)
 	GetNetworkProtocol() (protocol models.NetworkProtocol, err error)
 
 	// PIA getters
-	GetUser() (s string, err error)
-	GetPassword() (s string, err error)
 	GetPortForwarding() (activated bool, err error)
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
 	GetPIAEncryption() (models.PIAEncryption, error)
