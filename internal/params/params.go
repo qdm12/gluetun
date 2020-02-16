@@ -12,7 +12,7 @@ import (
 
 // ParamsReader contains methods to obtain parameters
 type ParamsReader interface {
-	GetVPNSP() (country models.MullvadCountry, err error)
+	GetVPNSP() (vpnServiceProvider string, err error)
 
 	// DNS over TLS getters
 	GetDNSOverTLS() (DNSOverTLS bool, err error)
@@ -85,7 +85,7 @@ func NewParamsReader(logger logging.Logger) ParamsReader {
 }
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
-func (p *paramsReader) GetVPNSP() (country models.MullvadCountry, err error) {
+func (p *paramsReader) GetVPNSP() (vpnServiceProvider string, err error) {
 	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "mullvad"})
-	return models.MullvadCountry(s), err
+	return s, err
 }
