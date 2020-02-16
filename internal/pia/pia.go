@@ -16,8 +16,9 @@ const logPrefix = "PIA configurator"
 
 // Configurator contains methods to download, read and modify the openvpn configuration to connect as a client
 type Configurator interface {
-	BuildConf(region models.PIARegion, protocol models.NetworkProtocol,
-		encryption models.PIAEncryption, uid, gid int) (IPs []net.IP, port uint16, err error)
+	GetOpenVPNConnections(region models.PIARegion, protocol models.NetworkProtocol,
+		encryption models.PIAEncryption) (connections []models.OpenVPNConnection, err error)
+	BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, uid, gid int) (err error)
 	GetPortForward() (port uint16, err error)
 	WritePortForward(filepath models.Filepath, port uint16) (err error)
 	AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error)

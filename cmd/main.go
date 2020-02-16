@@ -115,7 +115,9 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	VPNIPs, port, err := piaConf.BuildConf(allSettings.PIA.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Encryption, uid, gid)
+	connections, err := piaConf.GetOpenVPNConnections(allSettings.PIA.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Encryption)
+	e.FatalOnError(err)
+	err = piaConf.BuildConf(connections, allSettings.PIA.Encryption, uid, gid)
 	e.FatalOnError(err)
 
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
@@ -128,7 +130,7 @@ func main() {
 	e.FatalOnError(err)
 	err = firewallConf.CreateGeneralRules()
 	e.FatalOnError(err)
-	err = firewallConf.CreateVPNRules(constants.TUN, VPNIPs, defaultInterface, port, allSettings.OpenVPN.NetworkProtocol)
+	err = firewallConf.CreateVPNRules(constants.TUN, defaultInterface, connections)
 	e.FatalOnError(err)
 	err = firewallConf.CreateLocalSubnetsRules(defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
 	e.FatalOnError(err)
