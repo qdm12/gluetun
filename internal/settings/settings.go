@@ -64,10 +64,6 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 	default:
 		return settings, fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
 	}
-	settings.PIA, err = GetPIASettings(params)
-	if err != nil {
-		return settings, err
-	}
 	settings.DNS, err = GetDNSSettings(params)
 	if err != nil {
 		return settings, err

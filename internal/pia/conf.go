@@ -38,7 +38,7 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 		return nil, fmt.Errorf("combination of protocol %q and encryption %q does not yield any port number", protocol, encryption)
 	}
 	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port})
+		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: protocol})
 	}
 	return connections, nil
 }
@@ -62,17 +62,18 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"nobind",
 		"persist-key",
 		"persist-tun",
-		"tls-client",
 		"remote-cert-tls server",
-		"compress",
-		"verb 1", // TODO env variable
+		"ping 300", // Ping every 5 minutes to prevent a timeout error
+		"verb 1",   // TODO env variable
+
+		// PIA specific
 		"reneg-sec 0",
+
 		// Added constant values
 		"mute-replay-warnings",
 		"user nonrootuser",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
-		"disable-occ",
 		"remote-random",
 
 		// Modified variables
