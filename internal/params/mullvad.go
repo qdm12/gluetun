@@ -11,7 +11,7 @@ import (
 // GetMullvadCountry obtains the country for the Mullvad server from the
 // environment variable COUNTRY
 func (p *paramsReader) GetMullvadCountry() (country models.MullvadCountry, err error) {
-	choices := append(constants.MullvadCityChoices(), "")
+	choices := append(constants.MullvadCountryChoices(), "")
 	s, err := p.envParams.GetValueIfInside("COUNTRY", choices)
 	return models.MullvadCountry(strings.ToLower(s)), err
 }
