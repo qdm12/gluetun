@@ -21,6 +21,7 @@ func (p *paramsReader) GetUser() (s string, err error) {
 	} else if len(s) == 0 {
 		return s, fmt.Errorf("USER environment variable cannot be empty")
 	}
+	s = strings.Replace(s, ' ', '', -1)
 	return s, nil
 }
 
