@@ -79,4 +79,4 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables u
     adduser nonrootuser -D -H --uid 1000 && \
     chown nonrootuser -R /etc/unbound /etc/tinyproxy && \
     chmod 700 /etc/unbound /etc/tinyproxy
-COPY --from=builder --chown=1000:1000 /tmp/gobuild/entrypoint /entrypointex
+COPY --from=builder --chown=1000:1000 /tmp/gobuild/entrypoint /entrypoint
