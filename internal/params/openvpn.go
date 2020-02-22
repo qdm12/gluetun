@@ -1,8 +1,6 @@
 package params
 
 import (
-	"fmt"
-
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
@@ -15,13 +13,7 @@ func (p *paramsReader) GetUser() (s string, err error) {
 			err = unsetenvErr
 		}
 	}()
-	s, err = p.envParams.GetEnv("USER", libparams.CaseSensitiveValue())
-	if err != nil {
-		return "", err
-	} else if len(s) == 0 {
-		return s, fmt.Errorf("USER environment variable cannot be empty")
-	}
-	return s, nil
+	return p.envParams.GetEnv("USER", libparams.CaseSensitiveValue(), libparams.Compulsory())
 }
 
 // GetPassword obtains the password to use to connect to the VPN servers
@@ -32,13 +24,7 @@ func (p *paramsReader) GetPassword() (s string, err error) {
 			err = unsetenvErr
 		}
 	}()
-	s, err = p.envParams.GetEnv("PASSWORD", libparams.CaseSensitiveValue())
-	if err != nil {
-		return "", err
-	} else if len(s) == 0 {
-		return s, fmt.Errorf("PASSWORD environment variable cannot be empty")
-	}
-	return s, nil
+	return p.envParams.GetEnv("PASSWORD", libparams.CaseSensitiveValue(), libparams.Compulsory())
 }
 
 // GetNetworkProtocol obtains the network protocol to use to connect to the
