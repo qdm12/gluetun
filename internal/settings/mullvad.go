@@ -35,6 +35,8 @@ func GetMullvadSettings(params params.ParamsReader) (settings Mullvad, err error
 	if err != nil {
 		return settings, err
 	}
+	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
+	settings.User = strings.ReplaceAll(settings.User, " ", "")
 	settings.Country, err = params.GetMullvadCountry()
 	if err != nil {
 		return settings, err
