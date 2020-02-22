@@ -363,6 +363,8 @@ you might want to start reading the main.go file.
 
 ## TODOs
 
+<details><summary>Expand me</summary><p>
+
 - Support Windscribe
 - Gotify support for notificactions
 - Periodic update of malicious block lists with Unbound restart
@@ -384,6 +386,8 @@ you might want to start reading the main.go file.
     - use [iptables-go](https://github.com/coreos/go-iptables) to replace iptables
     - wireguard-go
     - Openvpn to replace openvpn
+
+</p></details>
 
 ## License
 
