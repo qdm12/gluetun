@@ -2,6 +2,7 @@ package pia
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -9,7 +10,17 @@ import (
 )
 
 func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol models.NetworkProtocol, encryption models.PIAEncryption) (connections []models.OpenVPNConnection, err error) {
-	subdomain, err := constants.PIAGeoToSubdomainMapping(region)
+	geoMapping := constants.PIAGeoToSubdomainMapping()
+	var subdomain string
+	for r, s := range geoMapping {
+		if strings.ToLower(string(region)) == strings.ToLower(string(r)) {
+			subdomain = s
+			break
+		}
+	}
+	if len(subdomain) == 0 {
+		return nil, fmt.Errorf("region %q has no associated PIA subdomain", region)
+	}
 	if err != nil {
 		return nil, err
 	}
