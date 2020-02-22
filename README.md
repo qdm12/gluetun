@@ -155,7 +155,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `TINYPROXY_USER` | | Username to use to connect to the HTTP proxy |
 | `TINYPROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
 | `SHADOWSOCKS` | `off` | `on` or `off`, to enable the internal SOCKS5 proxy Shadowsocks |
-| `SHADOWSOCKS_LOG` | `on` | `on` or `off` to enable logging for Shadowsocks  |
+| `SHADOWSOCKS_LOG` | `off` | `on` or `off` to enable logging for Shadowsocks  |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
@@ -208,7 +208,7 @@ There are various ways to achieve this, depending on your use case.
         - Enter port TCP (and UDP, if available) `8388` as the server port
         - Use the password you have set with `SHADOWSOCKS_PASSWORD`
         - Choose the encryption method/algorithm `chacha20-ietf-poly1305`
-    1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs
+    1. If you set `SHADOWSOCKS_LOG` to `on`, (a lot) more information will be logged in the Docker logs
 
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
