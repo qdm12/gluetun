@@ -34,34 +34,35 @@
 
 ## Features
 
-- **New features**
-    - Choice to block ads, malicious and surveillance at the DNS level
-    - All program output streams are merged (openvpn, unbound, shadowsocks, tinyproxy, etc.)
-    - Choice of DNS over TLS provider(s)
-    - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
-    - Download block lists and cryptographic files at start instead of at build time
-    - Can work as a Kubernetes sidecar container, thanks @rorph
-    - Pick a random region if no region is given, thanks @rorph
-- <details><summary>Configure everything with environment variables</summary><p>
-
-    - [Destination region](https://www.privateinternetaccess.com/pages/network)
-    - Internet protocol
-    - Level of encryption
-    - PIA Username and password
-    - DNS over TLS
-    - DNS blocking: ads, malicious, surveillance
-    - Internal firewall
-    - Socks5 proxy
-    - Web HTTP proxy
-
-    </p></details>
-- Connect
-    - [Other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-    - [LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- Killswitch using *iptables* to allow traffic only with needed PIA servers and LAN devices
-- Port forwarding
+- Based on Alpine 3.11 for a small Docker image below 50MB
+- Supports **Private Internet Access** and **Mullvad** servers
+- DNS over TLS baked in with service provider(s) of your choice
+- DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses
+- Choose the vpn network protocol, `udp` or `tcp`
+- Built in firewall kill switch to allow traffic only with needed PIA servers and LAN devices
+- Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
+- Built in HTTP proxy (Tinyproxy, tunnels TCP)
+- [Connect other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+- [Connect LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
-- Sub programs drop root privileges once launched: Openvpn, Unbound, Shadowsocks, Tinyproxy
+
+### Private Internet Access
+
+- Pick the [region](https://www.privateinternetaccess.com/pages/network/)
+- Pick the level of encryption
+- Enable port forwarding
+
+### Mullvad
+
+- Pick the [country, city and ISP](https://mullvad.net/en/servers/#openvpn)
+- Pick the port to use (i.e. `53` (udp) or `80` (tcp))
+
+### Extra niche features
+
+    - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
+- Subprograms all drop root privileges once launched
+- Subprograms output streams are all merged together
+    - Can work as a Kubernetes sidecar container, thanks @rorph
 
 ## Setup
 
