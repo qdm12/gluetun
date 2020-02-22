@@ -1,7 +1,6 @@
 version: "3.7"
 services:
   pia:
-    build: https://github.com/qdm12/private-internet-access-docker.git
     image: qmcgaw/private-internet-access
     container_name: pia
     cap_add:

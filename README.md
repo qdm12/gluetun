@@ -1,6 +1,6 @@
 # Private Internet Access Client
 
-*Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
+*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access or Mullvad VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 **ANNOUCEMENT**: *Support for [Mullvad](http://mullvad.net)*
 
@@ -59,10 +59,10 @@
 
 ### Extra niche features
 
-    - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
+- Possibility of split horizon DNS by selecting multiple DNS over TLS providers
 - Subprograms all drop root privileges once launched
 - Subprograms output streams are all merged together
-    - Can work as a Kubernetes sidecar container, thanks @rorph
+- Can work as a Kubernetes sidecar container, thanks @rorph
 
 ## Setup
 
@@ -103,19 +103,21 @@
     ```
 
     Note that you can:
+
     - Change the many [environment variables](#environment-variables) available
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
+
 1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags available:
-    - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0)
+    - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0) (shell scripting based, no support)
 
 ## Testing
 
 Check the PIA IP address matches your expectations
 
 ```sh
-docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
+docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 ```
 
 ## Environment variables
@@ -267,7 +269,7 @@ openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'auth' is used inconsistently, local=
 openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'keysize' is used inconsistently, local='keysize 256', remote='keysize 128'
 openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'comp-lzo' is present in remote config but missing in local config, remote='comp-lzo'
 openvpn: Sat Feb 22 15:55:02 2020 [a121ce520d670b71bfd3aa475485539b] Peer Connection Initiated with [AF_INET]xx.xx.xx.xx:1197
-    ```
+```
 
 It is mainly because the option [disable-occ](https://openvpn.net/community-resources/reference-manual-for-openvpn-2-4/) was removed for transparency with you.
 
@@ -306,21 +308,21 @@ The following will build the Docker image locally and replace the previous one y
 
 - Build the latest image
 
-        ```sh
+    ```sh
     docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
-        ```
+    ```
 
 - Find a [commit](https://github.com/qdm12/private-internet-access-docker/commits/master) you want to build for, in example `095623925a9cc0e5cf89d5b9b510714792267d9b`, then:
 
-        ```sh
+    ```sh
     docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git#095623925a9cc0e5cf89d5b9b510714792267d9b
-        ```
+    ```
 
 - Find a [branch](https://github.com/qdm12/private-internet-access-docker/branches) you want to build for, in example `mullvad`, then:
 
-        ```sh
+    ```sh
     docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git#mullvad
-        ```
+    ```
 
 </p></details>
 
@@ -365,12 +367,12 @@ You can try:
 1. In Visual Studio Code, press on `F1` and select `Remote-Containers: Open Folder in Container...`
 1. Your dev environment is ready to go!... and it's running in a container :+1:
 
+The Go code is in the Go file [cmd/main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go) and the [internal directory](https://github.com/qdm12/private-internet-access-docker/tree/master/internal),
+you might want to start reading the main.go file.
+
 ## TODOs
 
-- Case insensitive for env variables values
-- Support other VPN providers
-    - ~Mullvad~
-    - Windscribe
+- Support Windscribe
 - Gotify support for notificactions
 - Periodic update of malicious block lists with Unbound restart
 - Improve healthcheck
@@ -378,7 +380,7 @@ You can try:
     - Check for DNS provider somehow if this is even possible
 - Support for other VPN protocols
     - Wireguard (wireguard-go)
-- Show new versions/commits at start
+- Show new versions/commits available at start
 - Colors & emojis
     - Setup
     - Logging streams

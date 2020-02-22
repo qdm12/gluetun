@@ -7,8 +7,8 @@ WORKDIR /tmp/gobuild
 ENV CGO_ENABLED=0
 COPY go.mod go.sum ./
 RUN go mod download 2>&1
-COPY internal/ ./internal/
 COPY cmd/main.go .
+COPY internal/ ./internal/
 RUN go test ./...
 RUN go build -ldflags="-s -w" -o entrypoint main.go
 
