@@ -109,8 +109,10 @@
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
 
-1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags available:
-    - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0) (shell scripting based, no support)
+1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags for older versions available:
+    - `qmcgaw/private-internet-access:v2` linked to the [v2 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v2.0) (Golang based, only PIA)
+    - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0) (shell scripting based, no support, only PIA)
+    - `qmcgaw/private-internet-access:old` tag, which is the latest shell scripting version (shell scripting based, no support, only PIA)
 
 ## Testing
 
@@ -274,17 +276,6 @@ openvpn: Sat Feb 22 15:55:02 2020 [a121ce520d670b71bfd3aa475485539b] Peer Connec
 It is mainly because the option [disable-occ](https://openvpn.net/community-resources/reference-manual-for-openvpn-2-4/) was removed for transparency with you.
 
 Private Internet Access explains [here why](https://www.privateinternetaccess.com/helpdesk/kb/articles/why-do-i-get-cipher-auth-warnings-when-i-connect) the warnings show up.
-
-</p></details>
-
-<details><summary>How to fallback to a previous Docker image</summary><p>
-
-You can use the following Docker image tags:
-
-- `v1` tag, stable shell scripting based (no support, only PIA)
-- `old` tag, latest shell scripting version (no support, only PIA)
-
-You might want to build a specific Docker image yourself, see below (it's easy)
 
 </p></details>
 
