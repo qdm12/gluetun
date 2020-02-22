@@ -252,57 +252,107 @@ You can mount this file as a volume to read it from other containers.
 
 Note that not all regions support port forwarding.
 
-## For the paranoids
+## FAQ
 
-- You can review the code which consists in:
-    - [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile)
-    - [main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go), the main code entrypoint
-    - [internal package](https://github.com/qdm12/private-internet-access-docker/blob/master/internal)
-    - [github.com/qdm12/golibs](https://github.com/qdm12/golibs) dependency
-    - [github.com/qdm12/files](https://github.com/qdm12/files) for files downloaded at start (DNS root hints, block lists, etc.)
-- Build the image yourself:
+<details><summary>Private Internet Access: Why do I see openvpn warnings at start?</summary><p>
 
-    ```bash
-    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
+You might see some warnings similar to:
+
+```s
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1569', remote='link-mtu 1542'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'cipher' is used inconsistently, local='cipher AES-256-CBC', remote='cipher BF-CBC'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'auth' is used inconsistently, local='auth SHA256', remote='auth SHA1'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'keysize' is used inconsistently, local='keysize 256', remote='keysize 128'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'comp-lzo' is present in remote config but missing in local config, remote='comp-lzo'
+openvpn: Sat Feb 22 15:55:02 2020 [a121ce520d670b71bfd3aa475485539b] Peer Connection Initiated with [AF_INET]xx.xx.xx.xx:1197
     ```
 
-- The download and parsing of all needed files is done at start (openvpn config files, Unbound files, block lists, etc.)
-- Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
+It is mainly because the option [disable-occ](https://openvpn.net/community-resources/reference-manual-for-openvpn-2-4/) was removed for transparency with you.
+
+Private Internet Access explains [here why](https://www.privateinternetaccess.com/helpdesk/kb/articles/why-do-i-get-cipher-auth-warnings-when-i-connect) the warnings show up.
+
+</p></details>
+
+<details><summary>How to fallback to a previous Docker image</summary><p>
+
+You can use the following Docker image tags:
+
+- `v1` tag, stable shell scripting based (no support, only PIA)
+- `old` tag, latest shell scripting version (no support, only PIA)
+
+You might want to build a specific Docker image yourself, see below (it's easy)
+
+</p></details>
+
+<details><summary>What files does it download at start before tunneling?</summary><p>
+
+At start, the Go entrypoint only downloads, depending on your settings:
+
+- If `DOT=on`: [DNS over TLS named root](https://github.com/qdm12/files/blob/master/named.root.updated) for Unbound
+- If `DOT=on`: [DNS over TLS root key](https://github.com/qdm12/files/blob/master/root.key.updated) for Unbound
+- If `BLOCK_MALICIOUS=on`: [Malicious hostnames and IP addresses block lists](https://github.com/qdm12/files) for Unbound
+- If `BLOCK_SURVEILLANCE=on`: [Surveillance hostnames and IP addresses block lists](https://github.com/qdm12/files) for Unbound
+- If `BLOCK_ADS=on`: [Ads hostnames and IP addresses block lists](https://github.com/qdm12/files) for Unbound
+
+</p></details>
+
+<details><summary>How to build Docker images of older or alternate versions</summary><p>
+
+First, install [Git](https://git-scm.com/).
+
+The following will build the Docker image locally and replace the previous one you built or pulled.
+
+- Build the latest image
+
+        ```sh
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
+        ```
+
+- Find a [commit](https://github.com/qdm12/private-internet-access-docker/commits/master) you want to build for, in example `095623925a9cc0e5cf89d5b9b510714792267d9b`, then:
+
+        ```sh
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git#095623925a9cc0e5cf89d5b9b510714792267d9b
+        ```
+
+- Find a [branch](https://github.com/qdm12/private-internet-access-docker/branches) you want to build for, in example `mullvad`, then:
+
+        ```sh
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git#mullvad
+        ```
+
+</p></details>
+
+<details><summary>What's all this Go code?</summary><p>
+
+The Go code is a big rewrite of the previous shell entrypoint, it allows for:
+
+- better testing
+- better maintainability
+- ease of implementing new features
+- faster boot
+- asynchronous/parallel operations
+
+It is mostly made of the [internal directory](https://github.com/qdm12/private-internet-access-docker/tree/master/internal) and the entry Go file [cmd/main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go).
+
+</p></details>
+
+<details><summary>How to test DNS over TLS?</summary><p>
+
 - You can test DNSSEC using [internet.nl/connection](https://www.internet.nl/connection/)
 - Check DNS leak tests with [https://www.dnsleaktest.com](https://www.dnsleaktest.com)
-- DNS Leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: DNS server is a local caching intermediary)
+- Some other DNS leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: Unbound DNS server is a local caching intermediary)
 
-## Troubleshooting
+</p></details>
 
-- If openvpn fails to start, you may need to:
-    - Install the tun kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-    - Add `--device=/dev/net/tun` to your docker run command (equivalent for docker-compose, kubernetes, etc.)
+<details><summary>How to fix OpenVPN failing to start?</summary><p>
 
-- Fallback to a previous Docker image tags:
-    - `v1` tag, stable shell scripting based (no support)
-    - `old` tag, latest shell scripting version (no support)
-    - `v2`... waiting for `latest` to become more stable
+You can try:
 
-- Fallback to a precise previous version
-    1. Clone the repository on your machine
+- Installing the tun kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
+- Adding `--device=/dev/net/tun` to your docker run command (equivalent for docker-compose, kubernetes, etc.)
 
-        ```sh
-        git clone https://github.com/qdm12/private-internet-access-docker.git pia
-        cd pia
-        ```
-
-    1. Look up which commit you want to go back to [here](https://github.com/qdm12/private-internet-access-docker/commits/master), i.e. `942cc7d4d10545b6f5f89c907b7dd1dbc39368e0`
-    1. Revert to this commit locally
-
-        ```sh
-        git reset --hard 942cc7d4d10545b6f5f89c907b7dd1dbc39368e0
-        ```
-
-    1. Build the Docker image
-
-        ```sh
-        docker build -t qmcgaw/private-internet-access .
-        ```
+</p></details>
 
 ## Development
 
