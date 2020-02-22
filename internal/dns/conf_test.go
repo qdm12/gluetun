@@ -43,7 +43,7 @@ server:
   cache-max-ttl: 9000
   cache-min-ttl: 3600
   do-ip4: yes
-  do-ip6: no
+  do-ip6: yes
   harden-algo-downgrade: yes
   harden-below-nxdomain: yes
   harden-referral-path: yes

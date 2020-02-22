@@ -80,6 +80,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"reneg-sec 0",
 
 		// Added constant values
+		"tun-ipv6",
 		"mute-replay-warnings",
 		"user nonrootuser",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops

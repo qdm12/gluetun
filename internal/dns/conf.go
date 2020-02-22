@@ -60,7 +60,7 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		"harden-algo-downgrade": "yes",
 		// Network
 		"do-ip4":    "yes",
-		"do-ip6":    "no",
+		"do-ip6":    "yes",
 		"interface": "127.0.0.1",
 		"port":      "53",
 		// Other
