@@ -79,6 +79,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 
 		// PIA specific
 		"reneg-sec 0",
+		"compress", // allow PIA server to choose the compression to use
 
 		// Added constant values
 		"tun-ipv6",
