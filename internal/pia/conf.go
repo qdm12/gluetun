@@ -81,6 +81,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 
 		// Added constant values
 		"tun-ipv6",
+		"auth-nocache",
 		"mute-replay-warnings",
 		"user nonrootuser",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops

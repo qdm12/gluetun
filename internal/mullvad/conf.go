@@ -47,6 +47,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 
 		// Added constant values
 		"mute-replay-warnings",
+		"auth-nocache",
 		"user nonrootuser",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
