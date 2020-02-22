@@ -18,6 +18,7 @@ services:
       - VPNSP=pia
       - USER=js89ds7
       - PROTOCOL=udp
+      - OPENVPN_VERBOSITY=1
       - TZ=
 
       # PIA only

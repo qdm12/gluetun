@@ -54,7 +54,7 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, uid, gid int) (err error) {
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int) (err error) {
 	var X509CRL, certificate, cipherAlgo, authAlgo string
 	if encryption == constants.PIAEncryptionNormal {
 		cipherAlgo = "aes-128-cbc"
@@ -75,7 +75,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"persist-tun",
 		"remote-cert-tls server",
 		"ping 300", // Ping every 5 minutes to prevent a timeout error
-		"verb 1",   // TODO env variable
 
 		// PIA specific
 		"reneg-sec 0",
@@ -88,6 +87,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"remote-random",
 
 		// Modified variables
+		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
 		fmt.Sprintf("cipher %s", cipherAlgo),

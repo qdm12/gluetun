@@ -32,6 +32,7 @@ LABEL \
 ENV VPNSP=pia \
     USER= \
     PROTOCOL=udp \
+    OPENVPN_VERBOSITY=1 \
     TZ= \
     # PIA only
     PASSWORD= \

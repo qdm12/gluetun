@@ -154,6 +154,7 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
+| `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
 
 ## Connect to it
 

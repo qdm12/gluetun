@@ -25,7 +25,7 @@ func (c *configurator) GetOpenVPNConnections(country models.MullvadCountry, city
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, uid, gid int) (err error) {
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int) (err error) {
 	if len(connections) == 0 {
 		return fmt.Errorf("at least one connection string is expected")
 	}
@@ -37,7 +37,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, uid, gi
 		"persist-tun",
 		"remote-cert-tls server",
 		"ping 300",
-		"verb 1", // TODO env variable
 
 		// Mullvad specific
 		// "sndbuf 524288"
@@ -53,6 +52,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, uid, gi
 		"remote-random",
 
 		// Modified variables
+		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
 	}

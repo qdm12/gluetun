@@ -47,3 +47,9 @@ func (p *paramsReader) GetNetworkProtocol() (protocol models.NetworkProtocol, er
 	s, err := p.envParams.GetValueIfInside("PROTOCOL", []string{"tcp", "udp"}, libparams.Default("udp"))
 	return models.NetworkProtocol(s), err
 }
+
+// GetOpenVPNVerbosity obtains the verbosity level for verbosity between 0 and 6
+// from the environment variable OPENVPN_VERBOSITY
+func (p *paramsReader) GetOpenVPNVerbosity() (verbosity int, err error) {
+	return p.envParams.GetEnvIntRange("OPENVPN_VERBOSITY", 0, 6, libparams.Default("1"))
+}
