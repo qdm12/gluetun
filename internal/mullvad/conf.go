@@ -35,6 +35,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"nobind",
 		"persist-key",
 		"persist-tun",
+		"tls-client",
 		"remote-cert-tls server",
 		"ping 300",
 

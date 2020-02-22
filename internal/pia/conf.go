@@ -73,6 +73,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"nobind",
 		"persist-key",
 		"persist-tun",
+		"tls-client",
 		"remote-cert-tls server",
 		"ping 300", // Ping every 5 minutes to prevent a timeout error
 
