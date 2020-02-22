@@ -247,13 +247,13 @@ There are various ways to achieve this, depending on your use case.
 
     </p></details>
 
-## Port forwarding
+## Private Internet Access port forwarding
 
-By setting `PORT_FORWARDING` environment variable to `on`, the forwarded port will be read and written to the file specified in `PORT_FORWARDING_STATUS_FILE` (by default, this is set to `/forwarded_port`). If the location for this file does not exist, it will be created automatically.
+Note that [not all regions support port forwarding](https://www.privateinternetaccess.com/helpdesk/kb/articles/how-do-i-enable-port-forwarding-on-my-vpn).
 
-You can mount this file as a volume to read it from other containers.
+When `PORT_FORWARDING=on`, a port will be forwarded on the PIA server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
 
-Note that not all regions support port forwarding.
+It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
 
 ## FAQ
 
