@@ -28,7 +28,7 @@ func (p *paramsReader) GetPortForwarding() (activated bool, err error) {
 // GetPortForwardingStatusFilepath obtains the port forwarding status file path
 // from the environment variable PORT_FORWARDING_STATUS_FILE
 func (p *paramsReader) GetPortForwardingStatusFilepath() (filepath models.Filepath, err error) {
-	filepathStr, err := p.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/forwarded_port"))
+	filepathStr, err := p.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/forwarded_port"), libparams.CaseSensitiveValue())
 	return models.Filepath(filepathStr), err
 }
 

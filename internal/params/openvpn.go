@@ -15,7 +15,7 @@ func (p *paramsReader) GetUser() (s string, err error) {
 			err = unsetenvErr
 		}
 	}()
-	s, err = p.envParams.GetEnv("USER")
+	s, err = p.envParams.GetEnv("USER", libparams.CaseSensitiveValue())
 	if err != nil {
 		return "", err
 	} else if len(s) == 0 {
@@ -32,7 +32,7 @@ func (p *paramsReader) GetPassword() (s string, err error) {
 			err = unsetenvErr
 		}
 	}()
-	s, err = p.envParams.GetEnv("PASSWORD")
+	s, err = p.envParams.GetEnv("PASSWORD", libparams.CaseSensitiveValue())
 	if err != nil {
 		return "", err
 	} else if len(s) == 0 {
