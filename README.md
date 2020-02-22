@@ -65,25 +65,25 @@
 
 ## Setup
 
-1. <details><summary>Requirements</summary><p>
-
-    - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
-    - Docker API 1.25 to support `init`
-    - If you use Docker Compose, docker-compose >= 1.22.0, to support `init: true`
+1. Requirements
+    - Docker 1.13, in order to have Docker API 1.25 which supports `init` (and, if you use docker-compose, docker-compose version 1.22.0)
+    - A Private Internet Access **username** and **password** ([sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)) or Mullvad user ID ([sign up](https://mullvad.net/en/account/))
     - <details><summary>External firewall requirements, if you have one</summary><p>
 
         - At start only
-            - Allow outbound TCP 443 to github.com and privateinternetaccess.com
-            - If `DOT=on`, allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name.
-            - If `DOT=off`, allow outbound UDP 53 to your DNS provider to resolve the PIA domain name.
-        - For UDP strong encryption, allow outbound UDP 1197 to the corresponding VPN server IPs
-        - For UDP normal encryption, allow outbound UDP 1198 to the corresponding VPN server IPs
-        - For TCP strong encryption, allow outbound TCP 501 to the corresponding VPN server IPs
-        - For TCP normal encryption, allow outbound TCP 502 to the corresponding VPN server IPs
+            - Allow outbound TCP 443 to github.com
+            - If `DOT=on`, allow outbound TCP 853 to allow Unbound to resolve github.com and the PIA subdomain name if you use PIA.
+            - If `DOT=off` and `VPNSP=pia`, allow outbound UDP 53 to your DNS provider to resolve the PIA subdomain name.
+        - If `VPNSP=pia`, `ENCRYPTION=strong` and `PROTOCOL=udp`: allow outbound UDP 1197 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `ENCRYPTION=normal` and `PROTOCOL=udp`: allow outbound UDP 1198 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `ENCRYPTION=strong` and `PROTOCOL=tcp`: allow outbound TCP 501 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `ENCRYPTION=normal` and `PROTOCOL=tcp`: allow outbound TCP 502 to the corresponding VPN server IPs
+        - If `VPNSP=mullvad` and `PORT=`, please refer to the mapping of Mullvad servers in [these source code lines](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667) to find the corresponding UDP port number and IP address(es) of your choice
+        - If `VPNSP=mullvad` and `PORT=53`, allow outbound UDP 53 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
+        - If `VPNSP=mullvad` and `PORT=80`, allow outbound TCP 80 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
+        - If `VPNSP=mullvad` and `PORT=443`, allow outbound TCP 443 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
         - If `SHADOWSOCKS=on`, allow inbound TCP 8388 and UDP 8388 from your LAN
         - If `TINYPROXY=on`, allow inbound TCP 8888 from your LAN
-
-    </p></details>
 
     </p></details>
 
