@@ -1,7 +1,6 @@
 version: "3.7"
 services:
   pia:
-    build: https://github.com/qdm12/private-internet-access-docker.git
     image: qmcgaw/private-internet-access
     container_name: pia
     cap_add:
@@ -14,24 +13,40 @@ services:
       - 8388:8388/udp
     # command:
     environment:
+      # More variables are available, see the readme table
+      - VPNSP=pia
       - USER=js89ds7
+      - PROTOCOL=udp
+      - OPENVPN_VERBOSITY=1
+      - TZ=
+
+      # PIA only
+      - REGION=CA Montreal
       - PASSWORD=8fd9s239G
       - ENCRYPTION=strong
-      - PROTOCOL=udp
-      - REGION=CA Montreal
+      - PORT_FORWARDING=off
+
+      # Mullvad only
+      - COUNTRY=Sweden
+      - CITY=
+      - ISP=
+      - PORT=
+
+      # DNS over TLS
       - DOT=on
       - DOT_PROVIDERS=cloudflare
+      - DOT_VERBOSITY=1
       - BLOCK_MALICIOUS=on
       - BLOCK_SURVEILLANCE=off
       - BLOCK_ADS=off
       - UNBLOCK=
+      # Firewall
       - EXTRA_SUBNETS=
+      # Shadowsocks
+      - SHADOWSOCKS=off
+      - SHADOWSOCKS_PASSWORD=
+      # Tinyproxy
       - TINYPROXY=off
-      - TINYPROXY_LOG=Info
       - TINYPROXY_USER=
       - TINYPROXY_PASSWORD=
-      - SHADOWSOCKS=off
-      - SHADOWSOCKS_LOG=on
-      - SHADOWSOCKS_PORT=8388
-      - SHADOWSOCKS_PASSWORD=
     restart: always

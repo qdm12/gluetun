@@ -36,5 +36,5 @@ func (p *paramsReader) GetShadowSocksPort() (port uint16, err error) {
 // SHADOWSOCKS_PASSWORD
 func (p *paramsReader) GetShadowSocksPassword() (password string, err error) {
 	defer p.unsetEnv("SHADOWSOCKS_PASSWORD")
-	return p.envParams.GetEnv("SHADOWSOCKS_PASSWORD")
+	return p.envParams.GetEnv("SHADOWSOCKS_PASSWORD", libparams.CaseSensitiveValue())
 }

@@ -1,8 +1,8 @@
 # Private Internet Access Client
 
-*Lightweight swiss-knife-like VPN client to tunnel to private internet access servers, using OpenVPN, iptables, DNS over TLS, ShadowSocks, Tinyproxy and more*
+*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access or Mullvad VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUCEMENT**: *Total rewrite in Go: see the new features [below](#Features)* (in case something break use the image with tag `:old`)
+**ANNOUCEMENT**: *Support for [Mullvad](http://mullvad.net)*
 
 <a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
     <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
@@ -34,56 +34,57 @@
 
 ## Features
 
-- **New features**
-    - Choice to block ads, malicious and surveillance at the DNS level
-    - All program output streams are merged (openvpn, unbound, shadowsocks, tinyproxy, etc.)
-    - Choice of DNS over TLS provider(s)
-    - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
-    - Download block lists and cryptographic files at start instead of at build time
-    - Can work as a Kubernetes sidecar container, thanks @rorph
-    - Pick a random region if no region is given, thanks @rorph
-- <details><summary>Configure everything with environment variables</summary><p>
-
-    - [Destination region](https://www.privateinternetaccess.com/pages/network)
-    - Internet protocol
-    - Level of encryption
-    - PIA Username and password
-    - DNS over TLS
-    - DNS blocking: ads, malicious, surveillance
-    - Internal firewall
-    - Socks5 proxy
-    - Web HTTP proxy
-
-    </p></details>
-- Connect
-    - [Other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-    - [LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- Killswitch using *iptables* to allow traffic only with needed PIA servers and LAN devices
-- Port forwarding
+- Based on Alpine 3.11 for a small Docker image below 50MB
+- Supports **Private Internet Access** and **Mullvad** servers
+- DNS over TLS baked in with service provider(s) of your choice
+- DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses
+- Choose the vpn network protocol, `udp` or `tcp`
+- Built in firewall kill switch to allow traffic only with needed PIA servers and LAN devices
+- Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
+- Built in HTTP proxy (Tinyproxy, tunnels TCP)
+- [Connect other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+- [Connect LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, ppc64le and even that s390x 🎆
-- Sub programs drop root privileges once launched: Openvpn, Unbound, Shadowsocks, Tinyproxy
+
+### Private Internet Access
+
+- Pick the [region](https://www.privateinternetaccess.com/pages/network/)
+- Pick the level of encryption
+- Enable port forwarding
+
+### Mullvad
+
+- Pick the [country, city and ISP](https://mullvad.net/en/servers/#openvpn)
+- Pick the port to use (i.e. `53` (udp) or `80` (tcp))
+
+### Extra niche features
+
+- Possibility of split horizon DNS by selecting multiple DNS over TLS providers
+- Subprograms all drop root privileges once launched
+- Subprograms output streams are all merged together
+- Can work as a Kubernetes sidecar container, thanks @rorph
 
 ## Setup
 
-1. <details><summary>Requirements</summary><p>
-
-    - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
-    - Docker API 1.25 to support `init`
-    - If you use Docker Compose, docker-compose >= 1.22.0, to support `init: true`
+1. Requirements
+    - Docker 1.13, in order to have Docker API 1.25 which supports `init` (and, if you use docker-compose, docker-compose version 1.22.0)
+    - A Private Internet Access **username** and **password** ([sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)) or Mullvad user ID ([sign up](https://mullvad.net/en/account/))
     - <details><summary>External firewall requirements, if you have one</summary><p>
 
         - At start only
-            - Allow outbound TCP 443 to github.com and privateinternetaccess.com
-            - If `DOT=on`, allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name.
-            - If `DOT=off`, allow outbound UDP 53 to your DNS provider to resolve the PIA domain name.
-        - For UDP strong encryption, allow outbound UDP 1197 to the corresponding VPN server IPs
-        - For UDP normal encryption, allow outbound UDP 1198 to the corresponding VPN server IPs
-        - For TCP strong encryption, allow outbound TCP 501 to the corresponding VPN server IPs
-        - For TCP normal encryption, allow outbound TCP 502 to the corresponding VPN server IPs
+            - Allow outbound TCP 443 to github.com
+            - If `DOT=on`, allow outbound TCP 853 to allow Unbound to resolve github.com and the PIA subdomain name if you use PIA.
+            - If `DOT=off` and `VPNSP=pia`, allow outbound UDP 53 to your DNS provider to resolve the PIA subdomain name.
+        - If `VPNSP=pia`, `ENCRYPTION=strong` and `PROTOCOL=udp`: allow outbound UDP 1197 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `ENCRYPTION=normal` and `PROTOCOL=udp`: allow outbound UDP 1198 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `ENCRYPTION=strong` and `PROTOCOL=tcp`: allow outbound TCP 501 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `ENCRYPTION=normal` and `PROTOCOL=tcp`: allow outbound TCP 502 to the corresponding VPN server IPs
+        - If `VPNSP=mullvad` and `PORT=`, please refer to the mapping of Mullvad servers in [these source code lines](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667) to find the corresponding UDP port number and IP address(es) of your choice
+        - If `VPNSP=mullvad` and `PORT=53`, allow outbound UDP 53 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
+        - If `VPNSP=mullvad` and `PORT=80`, allow outbound TCP 80 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
+        - If `VPNSP=mullvad` and `PORT=443`, allow outbound TCP 443 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
         - If `SHADOWSOCKS=on`, allow inbound TCP 8388 and UDP 8388 from your LAN
         - If `TINYPROXY=on`, allow inbound TCP 8888 from your LAN
-
-    </p></details>
 
     </p></details>
 
@@ -102,29 +103,38 @@
     ```
 
     Note that you can:
+
     - Change the many [environment variables](#environment-variables) available
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable)
     - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
-1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags available:
-    - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0)
+
+1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags for older versions available:
+    - `qmcgaw/private-internet-access:v2` linked to the [v2 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v2.0) (Golang based, only PIA)
+    - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0) (shell scripting based, no support, only PIA)
+    - `qmcgaw/private-internet-access:old` tag, which is the latest shell scripting version (shell scripting based, no support, only PIA)
 
 ## Testing
 
 Check the PIA IP address matches your expectations
 
 ```sh
-docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
+docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 ```
 
 ## Environment variables
 
 | Environment variable | Default | Description |
 | --- | --- | --- |
-| `REGION` | `CA Montreal` | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) |
+| `VPNSP` | `pia` | VPN Service Provider, one of `pia`, `mullvad` |
+| `REGION` | `CA Montreal` | (PIA only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) |
+| `COUNTRY` | `Sweden` | (Mullvad only) one of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
+| `CITY` |  | (Mullvad only, *optional*) one of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
+| `ISP` |  | (Mullvad only, *optional*) one of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
+| `PORT` |  | (Mullvad only, *optional*) For TCP, `80` or `443`, or `53` for UDP. Leave blank for default Mullvad server port |
 | `PROTOCOL` | `udp` | `tcp` or `udp` |
-| `ENCRYPTION` | `strong` | `normal` or `strong` |
-| `USER` | | Your PIA username |
+| `ENCRYPTION` | `strong` | (PIA only) `normal` or `strong` |
+| `USER` | | PIA username **or** Mullvad user ID |
 | `PASSWORD` | | Your PIA password |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
@@ -138,18 +148,19 @@ docker run --rm --network=container:pia alpine:3.10 wget -qO- https://ipinfo.io
 | `BLOCK_ADS` | `off` | `on` or `off`, blocks ads hostnames and IPs |
 | `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
 | `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
-| `PORT_FORWARDING` | `off` | Set to `on` to forward a port on PIA server |
-| `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | File path to store the forwarded port number |
+| `PORT_FORWARDING` | `off` | (PIA only) Set to `on` to forward a port on PIA server |
+| `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | (PIA only) File path to store the forwarded port number |
 | `TINYPROXY` | `off` | `on` or `off`, to enable the internal HTTP proxy tinyproxy |
 | `TINYPROXY_LOG` | `Info` | `Info`, `Connect`, `Notice`, `Warning`, `Error` or `Critical` |
 | `TINYPROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
 | `TINYPROXY_USER` | | Username to use to connect to the HTTP proxy |
 | `TINYPROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
 | `SHADOWSOCKS` | `off` | `on` or `off`, to enable the internal SOCKS5 proxy Shadowsocks |
-| `SHADOWSOCKS_LOG` | `on` | `on` or `off` to enable logging for Shadowsocks  |
+| `SHADOWSOCKS_LOG` | `off` | `on` or `off` to enable logging for Shadowsocks  |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
+| `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
 
 ## Connect to it
 
@@ -198,7 +209,7 @@ There are various ways to achieve this, depending on your use case.
         - Enter port TCP (and UDP, if available) `8388` as the server port
         - Use the password you have set with `SHADOWSOCKS_PASSWORD`
         - Choose the encryption method/algorithm `chacha20-ietf-poly1305`
-    1. If you set `SHADOWSOCKS_LOG` to `on`, more information will be logged in the Docker logs
+    1. If you set `SHADOWSOCKS_LOG` to `on`, (a lot) more information will be logged in the Docker logs
 
     </p></details>
 - <details><summary>Access ports of containers connected to PIA</summary><p>
@@ -239,65 +250,104 @@ There are various ways to achieve this, depending on your use case.
 
     </p></details>
 
-## Port forwarding
+## Private Internet Access port forwarding
 
-By setting `PORT_FORWARDING` environment variable to `on`, the forwarded port will be read and written to the file specified in `PORT_FORWARDING_STATUS_FILE` (by default, this is set to `/forwarded_port`). If the location for this file does not exist, it will be created automatically.
+Note that [not all regions support port forwarding](https://www.privateinternetaccess.com/helpdesk/kb/articles/how-do-i-enable-port-forwarding-on-my-vpn).
 
-You can mount this file as a volume to read it from other containers.
+When `PORT_FORWARDING=on`, a port will be forwarded on the PIA server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
 
-Note that not all regions support port forwarding.
+It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
 
-## For the paranoids
+## FAQ
 
-- You can review the code which consists in:
-    - [Dockerfile](https://github.com/qdm12/private-internet-access-docker/blob/master/Dockerfile)
-    - [main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go), the main code entrypoint
-    - [internal package](https://github.com/qdm12/private-internet-access-docker/blob/master/internal)
-    - [github.com/qdm12/golibs](https://github.com/qdm12/golibs) dependency
-    - [github.com/qdm12/files](https://github.com/qdm12/files) for files downloaded at start (DNS root hints, block lists, etc.)
-- Build the image yourself:
+<details><summary>Private Internet Access: Why do I see openvpn warnings at start?</summary><p>
 
-    ```bash
+You might see some warnings similar to:
+
+```s
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1569', remote='link-mtu 1542'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'cipher' is used inconsistently, local='cipher AES-256-CBC', remote='cipher BF-CBC'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'auth' is used inconsistently, local='auth SHA256', remote='auth SHA1'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'keysize' is used inconsistently, local='keysize 256', remote='keysize 128'
+openvpn: Sat Feb 22 15:55:02 2020 WARNING: 'comp-lzo' is present in remote config but missing in local config, remote='comp-lzo'
+openvpn: Sat Feb 22 15:55:02 2020 [a121ce520d670b71bfd3aa475485539b] Peer Connection Initiated with [AF_INET]xx.xx.xx.xx:1197
+```
+
+It is mainly because the option [disable-occ](https://openvpn.net/community-resources/reference-manual-for-openvpn-2-4/) was removed for transparency with you.
+
+Private Internet Access explains [here why](https://www.privateinternetaccess.com/helpdesk/kb/articles/why-do-i-get-cipher-auth-warnings-when-i-connect) the warnings show up.
+
+</p></details>
+
+<details><summary>What files does it download at start before tunneling?</summary><p>
+
+At start, the Go entrypoint only downloads, depending on your settings:
+
+- If `DOT=on`: [DNS over TLS named root](https://github.com/qdm12/files/blob/master/named.root.updated) for Unbound
+- If `DOT=on`: [DNS over TLS root key](https://github.com/qdm12/files/blob/master/root.key.updated) for Unbound
+- If `BLOCK_MALICIOUS=on`: [Malicious hostnames and IP addresses block lists](https://github.com/qdm12/files) for Unbound
+- If `BLOCK_SURVEILLANCE=on`: [Surveillance hostnames and IP addresses block lists](https://github.com/qdm12/files) for Unbound
+- If `BLOCK_ADS=on`: [Ads hostnames and IP addresses block lists](https://github.com/qdm12/files) for Unbound
+
+</p></details>
+
+<details><summary>How to build Docker images of older or alternate versions</summary><p>
+
+First, install [Git](https://git-scm.com/).
+
+The following will build the Docker image locally and replace the previous one you built or pulled.
+
+- Build the latest image
+
+    ```sh
     docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git
     ```
 
-- The download and parsing of all needed files is done at start (openvpn config files, Unbound files, block lists, etc.)
-- Use `-e ENCRYPTION=strong -e BLOCK_MALICIOUS=on`
+- Find a [commit](https://github.com/qdm12/private-internet-access-docker/commits/master) you want to build for, in example `095623925a9cc0e5cf89d5b9b510714792267d9b`, then:
+
+    ```sh
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git#095623925a9cc0e5cf89d5b9b510714792267d9b
+    ```
+
+- Find a [branch](https://github.com/qdm12/private-internet-access-docker/branches) you want to build for, in example `mullvad`, then:
+
+    ```sh
+    docker build -t qmcgaw/private-internet-access https://github.com/qdm12/private-internet-access-docker.git#mullvad
+    ```
+
+</p></details>
+
+<details><summary>What's all this Go code?</summary><p>
+
+The Go code is a big rewrite of the previous shell entrypoint, it allows for:
+
+- better testing
+- better maintainability
+- ease of implementing new features
+- faster boot
+- asynchronous/parallel operations
+
+It is mostly made of the [internal directory](https://github.com/qdm12/private-internet-access-docker/tree/master/internal) and the entry Go file [cmd/main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go).
+
+</p></details>
+
+<details><summary>How to test DNS over TLS?</summary><p>
+
 - You can test DNSSEC using [internet.nl/connection](https://www.internet.nl/connection/)
 - Check DNS leak tests with [https://www.dnsleaktest.com](https://www.dnsleaktest.com)
-- DNS Leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: DNS server is a local caching intermediary)
+- Some other DNS leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: Unbound DNS server is a local caching intermediary)
 
-## Troubleshooting
+</p></details>
 
-- If openvpn fails to start, you may need to:
-    - Install the tun kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-    - Add `--device=/dev/net/tun` to your docker run command (equivalent for docker-compose, kubernetes, etc.)
+<details><summary>How to fix OpenVPN failing to start?</summary><p>
 
-- Fallback to a previous Docker image tags:
-    - `v1` tag, stable shell scripting based (no support)
-    - `old` tag, latest shell scripting version (no support)
-    - `v2`... waiting for `latest` to become more stable
+You can try:
 
-- Fallback to a precise previous version
-    1. Clone the repository on your machine
+- Installing the tun kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
+- Adding `--device=/dev/net/tun` to your docker run command (equivalent for docker-compose, kubernetes, etc.)
 
-        ```sh
-        git clone https://github.com/qdm12/private-internet-access-docker.git pia
-        cd pia
-        ```
-
-    1. Look up which commit you want to go back to [here](https://github.com/qdm12/private-internet-access-docker/commits/master), i.e. `942cc7d4d10545b6f5f89c907b7dd1dbc39368e0`
-    1. Revert to this commit locally
-
-        ```sh
-        git reset --hard 942cc7d4d10545b6f5f89c907b7dd1dbc39368e0
-        ```
-
-    1. Build the Docker image
-
-        ```sh
-        docker build -t qmcgaw/private-internet-access .
-        ```
+</p></details>
 
 ## Development
 
@@ -309,11 +359,26 @@ Note that not all regions support port forwarding.
 1. In Visual Studio Code, press on `F1` and select `Remote-Containers: Open Folder in Container...`
 1. Your dev environment is ready to go!... and it's running in a container :+1:
 
+The Go code is in the Go file [cmd/main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go) and the [internal directory](https://github.com/qdm12/private-internet-access-docker/tree/master/internal),
+you might want to start reading the main.go file.
+
+### Contributors
+
+Thanks for all the contributions, wether small or not so small!
+
+- [@JeordyR](https://github.com/JeordyR) for testing the Mullvad version and opening a [PR with a few fixes](https://github.com/qdm12/private-internet-access-docker/pull/84/files) 👍
+- [@rorph](https://github.com/rorph) for a [PR to pick a random region for PIA](https://github.com/qdm12/private-internet-access-docker/pull/70) and a [PR to make the container work with kubernetes](https://github.com/qdm12/private-internet-access-docker/pull/69)
+- [@JesterEE](https://github.com/JesterEE) for a [PR to fix silly line endings in block lists back then](https://github.com/qdm12/private-internet-access-docker/pull/55) 📎
+- [@elmerfdz](https://github.com/elmerfdz) for a [PR to add timezone information to have correct log timestampts](https://github.com/qdm12/private-internet-access-docker/pull/51) 🕙
+- [@Juggels](https://github.com/Juggels) for a [PR to write the PIA forwarded port to a file](https://github.com/qdm12/private-internet-access-docker/pull/43)
+- [@gdlx](https://github.com/gdlx) for a [PR to fix and improve PIA port forwarding script](https://github.com/qdm12/private-internet-access-docker/pull/32)
+- [@janaz](https://github.com/janaz) for keeping an eye on [updating things in the Dockerfile](https://github.com/qdm12/private-internet-access-docker/pull/8)
+
 ## TODOs
 
-- Support other VPN providers
-    - Mullvad
-    - Windscribe
+<details><summary>Expand me</summary><p>
+
+- Support Windscribe
 - Gotify support for notificactions
 - Periodic update of malicious block lists with Unbound restart
 - Improve healthcheck
@@ -321,7 +386,7 @@ Note that not all regions support port forwarding.
     - Check for DNS provider somehow if this is even possible
 - Support for other VPN protocols
     - Wireguard (wireguard-go)
-- Show new versions/commits at start
+- Show new versions/commits available at start
 - Colors & emojis
     - Setup
     - Logging streams
@@ -334,6 +399,8 @@ Note that not all regions support port forwarding.
     - use [iptables-go](https://github.com/coreos/go-iptables) to replace iptables
     - wireguard-go
     - Openvpn to replace openvpn
+
+</p></details>
 
 ## License
 

@@ -18,6 +18,8 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/env"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/healthcheck"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
+	"github.com/qdm12/private-internet-access-docker/internal/mullvad"
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
@@ -53,6 +55,7 @@ func main() {
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
 	piaConf := pia.NewConfigurator(client, fileManager, firewallConf, logger)
+	mullvadConf := mullvad.NewConfigurator(client, fileManager, logger)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -75,7 +78,16 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	err = ovpnConf.WriteAuthFile(allSettings.PIA.User, allSettings.PIA.Password, uid, gid)
+	var openVPNUser, openVPNPassword string
+	switch allSettings.VPNSP {
+	case "pia":
+		openVPNUser = allSettings.PIA.User
+		openVPNPassword = allSettings.PIA.Password
+	case "mullvad":
+		openVPNUser = allSettings.Mullvad.User
+		openVPNPassword = "m"
+	}
+	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, uid, gid)
 	e.FatalOnError(err)
 
 	// Temporarily reset chain policies allowing Kubernetes sidecar to
@@ -115,8 +127,19 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	VPNIPs, port, err := piaConf.BuildConf(allSettings.PIA.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Encryption, uid, gid)
-	e.FatalOnError(err)
+	var connections []models.OpenVPNConnection
+	switch allSettings.VPNSP {
+	case "pia":
+		connections, err = piaConf.GetOpenVPNConnections(allSettings.PIA.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Encryption)
+		e.FatalOnError(err)
+		err = piaConf.BuildConf(connections, allSettings.PIA.Encryption, allSettings.OpenVPN.Verbosity, uid, gid)
+		e.FatalOnError(err)
+	case "mullvad":
+		connections, err = mullvadConf.GetOpenVPNConnections(allSettings.Mullvad.Country, allSettings.Mullvad.City, allSettings.Mullvad.ISP, allSettings.OpenVPN.NetworkProtocol, allSettings.Mullvad.Port)
+		e.FatalOnError(err)
+		err = mullvadConf.BuildConf(connections, allSettings.OpenVPN.Verbosity, uid, gid)
+		e.FatalOnError(err)
+	}
 
 	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
 	e.FatalOnError(err)
@@ -128,7 +151,7 @@ func main() {
 	e.FatalOnError(err)
 	err = firewallConf.CreateGeneralRules()
 	e.FatalOnError(err)
-	err = firewallConf.CreateVPNRules(constants.TUN, VPNIPs, defaultInterface, port, allSettings.OpenVPN.NetworkProtocol)
+	err = firewallConf.CreateVPNRules(constants.TUN, defaultInterface, connections)
 	e.FatalOnError(err)
 	err = firewallConf.CreateLocalSubnetsRules(defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
 	e.FatalOnError(err)
@@ -163,7 +186,7 @@ func main() {
 		go streamMerger.Merge("shadowsocks", stream)
 	}
 
-	if allSettings.PIA.PortForwarding.Enabled {
+	if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
 		time.AfterFunc(10*time.Second, func() {
 			port, err := piaConf.GetPortForward()
 			if err != nil {

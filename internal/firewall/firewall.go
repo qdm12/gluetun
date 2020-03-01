@@ -18,8 +18,7 @@ type Configurator interface {
 	Clear() error
 	BlockAll() error
 	CreateGeneralRules() error
-	CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP, defaultInterface string,
-		port uint16, protocol models.NetworkProtocol) error
+	CreateVPNRules(dev models.VPNDevice, defaultInterface string, connections []models.OpenVPNConnection) error
 	CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error
 	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error
 	GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)

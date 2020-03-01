@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Annoucement is a message annoucement
-	Annoucement = "Total rewrite in Go with many new features"
-	// AnnoucementExpiration is the expiration time of the annoucement in unix timestamp
-	AnnoucementExpiration = 1582761600
+	Annoucement = "Support for Mullvad"
+	// AnnoucementExpiration is the expiration date of the annoucement in format yyyy-mm-dd
+	AnnoucementExpiration = "2020-03-15"
 )
 
 const (

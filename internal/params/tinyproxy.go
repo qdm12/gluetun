@@ -65,7 +65,7 @@ func (p *paramsReader) GetTinyProxyUser() (user string, err error) {
 	defer p.unsetEnv("PROXY_USER")
 	defer p.unsetEnv("TINYPROXY_USER")
 	// Retro-compatibility
-	user, err = p.envParams.GetEnv("PROXY_USER")
+	user, err = p.envParams.GetEnv("PROXY_USER", libparams.CaseSensitiveValue())
 	if err != nil {
 		return user, err
 	}
@@ -73,7 +73,7 @@ func (p *paramsReader) GetTinyProxyUser() (user string, err error) {
 		p.logger.Warn("You are using the old environment variable PROXY_USER, please consider changing it to TINYPROXY_USER")
 		return user, nil
 	}
-	return p.envParams.GetEnv("TINYPROXY_USER")
+	return p.envParams.GetEnv("TINYPROXY_USER", libparams.CaseSensitiveValue())
 }
 
 // GetTinyProxyPassword obtains the TinyProxy server password from the environment variable
@@ -82,7 +82,7 @@ func (p *paramsReader) GetTinyProxyPassword() (password string, err error) {
 	defer p.unsetEnv("PROXY_PASSWORD")
 	defer p.unsetEnv("TINYPROXY_PASSWORD")
 	// Retro-compatibility
-	password, err = p.envParams.GetEnv("PROXY_PASSWORD")
+	password, err = p.envParams.GetEnv("PROXY_PASSWORD", libparams.CaseSensitiveValue())
 	if err != nil {
 		return password, err
 	}
@@ -90,5 +90,5 @@ func (p *paramsReader) GetTinyProxyPassword() (password string, err error) {
 		p.logger.Warn("You are using the old environment variable PROXY_PASSWORD, please consider changing it to TINYPROXY_PASSWORD")
 		return password, nil
 	}
-	return p.envParams.GetEnv("TINYPROXY_PASSWORD")
+	return p.envParams.GetEnv("TINYPROXY_PASSWORD", libparams.CaseSensitiveValue())
 }

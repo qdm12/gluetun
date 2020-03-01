@@ -39,11 +39,14 @@ func title() []string {
 }
 
 func annoucement() []string {
-	timestamp := time.Now().UnixNano() / 1000000000
-	if timestamp < constants.AnnoucementExpiration {
-		return []string{emoji.Sprint(":mega: ") + constants.Annoucement}
+	if len(constants.Annoucement) == 0 {
+		return nil
 	}
-	return nil
+	expirationDate, _ := time.Parse("2006-01-02", constants.AnnoucementExpiration) // error covered by a unit test
+	if time.Now().After(expirationDate) {
+		return nil
+	}
+	return []string{emoji.Sprint(":mega: ") + constants.Annoucement}
 }
 
 func links() []string {

@@ -77,14 +77,13 @@ func (c *configurator) CreateGeneralRules() error {
 	})
 }
 
-func (c *configurator) CreateVPNRules(dev models.VPNDevice, serverIPs []net.IP,
-	defaultInterface string, port uint16, protocol models.NetworkProtocol) error {
-	for _, serverIP := range serverIPs {
+func (c *configurator) CreateVPNRules(dev models.VPNDevice, defaultInterface string, connections []models.OpenVPNConnection) error {
+	for _, connection := range connections {
 		c.logger.Info("%s: allowing output traffic to VPN server %s through %s on port %s %d",
-			logPrefix, serverIP, defaultInterface, protocol, port)
+			logPrefix, connection.IP, defaultInterface, connection.Protocol, connection.Port)
 		if err := c.runIptablesInstruction(
 			fmt.Sprintf("-A OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
-				serverIP, defaultInterface, protocol, protocol, port)); err != nil {
+				connection.IP, defaultInterface, connection.Protocol, connection.Protocol, connection.Port)); err != nil {
 			return err
 		}
 	}
