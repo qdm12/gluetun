@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access or Mullvad VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUCEMENT**: *Support for [Mullvad](http://mullvad.net)*
+**ANNOUNCEMENT**: *Support for [Mullvad](http://mullvad.net)*
 
 <a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
     <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
