@@ -37,11 +37,12 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"persist-tun",
 		"tls-client",
 		"remote-cert-tls server",
-		"ping 300",
+		"ping 10",
+		"ping-restart 60",
 
 		// Mullvad specific
-		// "sndbuf 524288"
-		// "rcvbuf 524288"
+		"sndbuf 524288",
+		"rcvbuf 524288",
 		"cipher AES-256-CBC",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
 
