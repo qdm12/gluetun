@@ -26,6 +26,7 @@ type ParamsReader interface {
 	GetDNSAdsBlocking() (blocking bool, err error)
 	GetDNSUnblockedHostnames() (hostnames []string, err error)
 	GetDNSOverTLSPrivateAddresses() (privateAddresses []string)
+	GetDNSOverTLSIPv6() (ipv6 bool, err error)
 
 	// Firewall getters
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)

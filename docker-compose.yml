@@ -35,6 +35,7 @@ services:
       # DNS over TLS
       - DOT=on
       - DOT_PROVIDERS=cloudflare
+      - DOT_IPV6=on
       - DOT_VERBOSITY=1
       - BLOCK_MALICIOUS=on
       - BLOCK_SURVEILLANCE=off

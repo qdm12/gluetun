@@ -30,6 +30,10 @@ func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings
 func generateUnboundConf(settings settings.DNS, client network.Client, logger logging.Logger) (lines []string, warnings []error, err error) {
+	doIPv6 := "no"
+	if settings.IPv6 {
+		doIPv6 = "yes"
+	}
 	serverSection := map[string]string{
 		// Logging
 		"verbosity":     fmt.Sprintf("%d", settings.VerbosityLevel),
@@ -60,7 +64,7 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		"harden-algo-downgrade": "yes",
 		// Network
 		"do-ip4":    "yes",
-		"do-ip6":    "yes",
+		"do-ip6":    doIPv6,
 		"interface": "127.0.0.1",
 		"port":      "53",
 		// Other

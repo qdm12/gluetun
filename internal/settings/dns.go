@@ -21,13 +21,14 @@ type DNS struct {
 	VerbosityLevel        uint8
 	VerbosityDetailsLevel uint8
 	ValidationLogLevel    uint8
+	IPv6                  bool
 }
 
 func (d *DNS) String() string {
 	if !d.Enabled {
 		return "DNS over TLS settings: disabled"
 	}
-	caching, blockMalicious, blockSurveillance, blockAds := "disabled", "disabed", "disabed", "disabed"
+	caching, blockMalicious, blockSurveillance, blockAds, ipv6 := "disabled", "disabed", "disabed", "disabed", "disabed"
 	if d.Caching {
 		caching = "enabled"
 	}
@@ -39,6 +40,9 @@ func (d *DNS) String() string {
 	}
 	if d.BlockAds {
 		blockAds = "enabled"
+	}
+	if d.IPv6 {
+		ipv6 = "enabled"
 	}
 	var providersStr []string
 	for _, provider := range d.Providers {
@@ -56,6 +60,7 @@ func (d *DNS) String() string {
 		"Verbosity level: " + fmt.Sprintf("%d/5", d.VerbosityLevel),
 		"Verbosity details level: " + fmt.Sprintf("%d/4", d.VerbosityDetailsLevel),
 		"Validation log level: " + fmt.Sprintf("%d/2", d.ValidationLogLevel),
+		"IPv6 resolution: " + ipv6,
 	}
 	return strings.Join(settingsList, "\n |--")
 }
@@ -103,5 +108,9 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 		return settings, err
 	}
 	settings.PrivateAddresses = params.GetDNSOverTLSPrivateAddresses()
+	settings.IPv6, err = params.GetDNSOverTLSIPv6()
+	if err != nil {
+		return settings, err
+	}
 	return settings, nil
 }
