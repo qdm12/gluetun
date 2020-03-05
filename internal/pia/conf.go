@@ -82,7 +82,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"compress", // allow PIA server to choose the compression to use
 
 		// Added constant values
-		"tun-ipv6",
 		"auth-nocache",
 		"mute-replay-warnings",
 		"user nonrootuser",
