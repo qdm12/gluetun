@@ -318,6 +318,22 @@ The following will build the Docker image locally and replace the previous one y
 
 </p></details>
 
+<details><summary>Mullvad does not work with IPv6?</summary><p>
+
+By default, the Mullvad server tunnels both ipv4 and ipv6, hence openvpn will try to create an
+ipv6 route. To allow the container to create such route, you have to specify `net.ipv6.conf.all.disable_ipv6=0`
+at runtime, using either:
+
+- For a Docker run command, the flag: `--sysctl net.ipv6.conf.all.disable_ipv6=0`
+- In a docker-compose file:
+
+    ```yml
+        sysctls:
+          - net.ipv6.conf.all.disable_ipv6=0
+    ```
+
+</p></details>
+
 <details><summary>What's all this Go code?</summary><p>
 
 The Go code is a big rewrite of the previous shell entrypoint, it allows for:
