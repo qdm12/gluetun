@@ -54,7 +54,7 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int) (err error) {
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int, root bool) (err error) {
 	var X509CRL, certificate, cipherAlgo, authAlgo string
 	if encryption == constants.PIAEncryptionNormal {
 		cipherAlgo = "aes-128-cbc"
@@ -84,7 +84,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		// Added constant values
 		"auth-nocache",
 		"mute-replay-warnings",
-		"user nonrootuser",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
 		"remote-random",
@@ -95,6 +94,9 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
 		fmt.Sprintf("cipher %s", cipherAlgo),
 		fmt.Sprintf("auth %s", authAlgo),
+	}
+	if !root {
+		lines = append(lines, "user nonrootuser")
 	}
 	for _, connection := range connections {
 		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port))

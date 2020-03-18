@@ -36,6 +36,7 @@ type ParamsReader interface {
 	GetPassword() (s string, err error)
 	GetNetworkProtocol() (protocol models.NetworkProtocol, err error)
 	GetOpenVPNVerbosity() (verbosity int, err error)
+	GetOpenVPNRoot() (root bool, err error)
 
 	// PIA getters
 	GetPortForwarding() (activated bool, err error)

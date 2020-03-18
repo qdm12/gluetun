@@ -18,6 +18,7 @@ services:
       - USER=js89ds7
       - PROTOCOL=udp
       - OPENVPN_VERBOSITY=1
+      - OPENVPN_ROOT=no
       - TZ=
 
       # PIA only

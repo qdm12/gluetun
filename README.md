@@ -160,6 +160,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
 | `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
+| `OPENVPN_ROOT` | `no` | Run OpenVPN as root, `yes` or `no` |
 
 ## Connect to it
 
@@ -258,6 +259,33 @@ When `PORT_FORWARDING=on`, a port will be forwarded on the PIA server side and w
 It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
 
 ## FAQ
+
+<details><summary>Openvpn disconnects because of a ping timeout</summary><p>
+
+It happens especially on some PIA servers where they change their configuration or the server goes offline.
+
+You will obtain an error similar to:
+
+```s
+openvpn: Wed Mar 18 22:13:00 2020 [3a51ae90324bcb0719cb399b650c64d4] Inactivity timeout (--ping-restart), restarting,
+openvpn: Wed Mar 18 22:13:00 2020 SIGUSR1[soft,ping-restart] received, process restarting,
+...
+openvpn: Wed Mar 18 22:13:17 2020 Preserving previous TUN/TAP instance: tun0,
+openvpn: Wed Mar 18 22:13:17 2020 NOTE: Pulled options changed on restart, will need to close and reopen TUN/TAP device.,
+openvpn: Wed Mar 18 22:13:17 2020 ERROR: Linux route delete command failed: external program exited with error status: 2,
+openvpn: Wed Mar 18 22:13:17 2020 ERROR: Linux route delete command failed: external program exited with error status: 2,
+openvpn: Wed Mar 18 22:13:17 2020 ERROR: Linux route delete command failed: external program exited with error status: 2,
+openvpn: Wed Mar 18 22:13:17 2020 ERROR: Linux route delete command failed: external program exited with error status: 2,
+openvpn: Wed Mar 18 22:13:17 2020 /sbin/ip addr del dev tun0 local 10.6.11.6 peer 10.6.11.5,
+openvpn: Wed Mar 18 22:13:17 2020 Linux ip addr del failed: external program exited with error status: 2,
+openvpn: Wed Mar 18 22:13:18 2020 ERROR: Cannot ioctl TUNSETIFF tun: Operation not permitted (errno=1),
+openvpn: Wed Mar 18 22:13:18 2020 Exiting due to fatal error,
+exit status 1
+```
+
+To fix it, you would have to run openvpn with root, by setting the environment variable `OPENVPN_ROOT=yes`.
+
+</p></details>
 
 <details><summary>Private Internet Access: Why do I see openvpn warnings at start?</summary><p>
 

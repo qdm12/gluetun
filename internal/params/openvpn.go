@@ -39,3 +39,9 @@ func (p *paramsReader) GetNetworkProtocol() (protocol models.NetworkProtocol, er
 func (p *paramsReader) GetOpenVPNVerbosity() (verbosity int, err error) {
 	return p.envParams.GetEnvIntRange("OPENVPN_VERBOSITY", 0, 6, libparams.Default("1"))
 }
+
+// GetOpenVPNRoot obtains if openvpn should be run as root
+// from the environment variable OPENVPN_ROOT
+func (p *paramsReader) GetOpenVPNRoot() (root bool, err error) {
+	return p.envParams.GetYesNo("OPENVPN_ROOT", libparams.Default("no"))
+}

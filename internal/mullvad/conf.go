@@ -25,7 +25,7 @@ func (c *configurator) GetOpenVPNConnections(country models.MullvadCountry, city
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int) (err error) {
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool) (err error) {
 	if len(connections) == 0 {
 		return fmt.Errorf("at least one connection string is expected")
 	}
@@ -49,7 +49,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		// Added constant values
 		"mute-replay-warnings",
 		"auth-nocache",
-		"user nonrootuser",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
 		"remote-random",
@@ -58,6 +57,9 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
+	}
+	if !root {
+		lines = append(lines, "user nonrootuser")
 	}
 	for _, connection := range connections {
 		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port))
