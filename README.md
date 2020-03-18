@@ -4,9 +4,7 @@
 
 **ANNOUNCEMENT**: *Support for [Mullvad](http://mullvad.net)*
 
-<a href="https://hub.docker.com/r/qmcgaw/private-internet-access">
-    <img width="100%" height="320" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
-</a>
+<img height="200" src="title.svg?sanitize=true">
 
 [![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
