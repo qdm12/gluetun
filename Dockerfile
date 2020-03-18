@@ -1,5 +1,5 @@
 ARG ALPINE_VERSION=3.11
-ARG GO_VERSION=1.13.7
+ARG GO_VERSION=1.14
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS builder
 RUN apk --update add git
