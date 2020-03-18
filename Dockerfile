@@ -34,6 +34,7 @@ ENV VPNSP=pia \
     PROTOCOL=udp \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_ROOT=no \
+    OPENVPN_TARGET_IP= \
     TZ= \
     # PIA only
     PASSWORD= \

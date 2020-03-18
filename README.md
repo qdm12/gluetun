@@ -161,6 +161,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
 | `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
 | `OPENVPN_ROOT` | `no` | Run OpenVPN as root, `yes` or `no` |
+| `OPENVPN_TARGET_IP` | | Specify a target VPN server IP address to use, valid for Mullvad and Private Internet Access |
 
 ## Connect to it
 

@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/qdm12/private-internet-access-docker/internal/models"
@@ -13,6 +14,7 @@ type OpenVPN struct {
 	NetworkProtocol models.NetworkProtocol
 	Verbosity       int
 	Root            bool
+	TargetIP        net.IP
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
@@ -26,6 +28,13 @@ func GetOpenVPNSettings(params params.ParamsReader) (settings OpenVPN, err error
 		return settings, err
 	}
 	settings.Root, err = params.GetOpenVPNRoot()
+	if err != nil {
+		return settings, err
+	}
+	settings.TargetIP, err = params.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
 	return settings, nil
 }
 
@@ -39,6 +48,7 @@ func (o *OpenVPN) String() string {
 		"Network protocol: " + string(o.NetworkProtocol),
 		"Verbosity level: " + fmt.Sprintf("%d", o.Verbosity),
 		"Run as root: " + runAsRoot,
+		"Target IP address: " + o.TargetIP.String(),
 	}
 	return strings.Join(settingsList, "\n|--")
 }

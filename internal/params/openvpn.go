@@ -1,6 +1,9 @@
 package params
 
 import (
+	"fmt"
+	"net"
+
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
@@ -44,4 +47,19 @@ func (p *paramsReader) GetOpenVPNVerbosity() (verbosity int, err error) {
 // from the environment variable OPENVPN_ROOT
 func (p *paramsReader) GetOpenVPNRoot() (root bool, err error) {
 	return p.envParams.GetYesNo("OPENVPN_ROOT", libparams.Default("no"))
+}
+
+// GetTargetIP obtains the IP address to choose from the list of IP addresses
+// available for a particular region, from the environment variable
+// OPENVPN_TARGET_IP
+func (p *paramsReader) GetTargetIP() (ip net.IP, err error) {
+	s, err := p.envParams.GetEnv("OPENVPN_TARGET_IP")
+	if len(s) == 0 {
+		return nil, nil
+	}
+	ip = net.ParseIP(s)
+	if ip == nil {
+		return nil, fmt.Errorf("target IP address %q is not valid", s)
+	}
+	return ip, nil
 }

@@ -2,13 +2,14 @@ package mullvad
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) GetOpenVPNConnections(country models.MullvadCountry, city models.MullvadCity, provider models.MullvadProvider, protocol models.NetworkProtocol, customPort uint16) (connections []models.OpenVPNConnection, err error) {
+func (c *configurator) GetOpenVPNConnections(country models.MullvadCountry, city models.MullvadCity, provider models.MullvadProvider, protocol models.NetworkProtocol, customPort uint16, targetIP net.IP) (connections []models.OpenVPNConnection, err error) {
 	servers := constants.MullvadServerFilter(country, city, provider)
 	if len(servers) == 0 {
 		return nil, fmt.Errorf("no server found for country %q, city %q and ISP %q", country, city, provider)
@@ -19,8 +20,17 @@ func (c *configurator) GetOpenVPNConnections(country models.MullvadCountry, city
 			port = customPort
 		}
 		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: protocol})
+			if targetIP != nil {
+				if targetIP.Equal(IP) {
+					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: protocol}}, nil
+				}
+			} else {
+				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: protocol})
+			}
 		}
+	}
+	if targetIP != nil {
+		return nil, fmt.Errorf("target IP address %q not found in IP addresses", targetIP)
 	}
 	return connections, nil
 }

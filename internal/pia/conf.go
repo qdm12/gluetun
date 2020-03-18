@@ -2,6 +2,7 @@ package pia
 
 import (
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/qdm12/golibs/files"
@@ -9,7 +10,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol models.NetworkProtocol, encryption models.PIAEncryption) (connections []models.OpenVPNConnection, err error) {
+func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol models.NetworkProtocol, encryption models.PIAEncryption, targetIP net.IP) (connections []models.OpenVPNConnection, err error) {
 	geoMapping := constants.PIAGeoToSubdomainMapping()
 	var subdomain string
 	for r, s := range geoMapping {
@@ -24,9 +25,23 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 	if err != nil {
 		return nil, err
 	}
-	IPs, err := c.lookupIP(subdomain + ".privateinternetaccess.com")
+	hostname := subdomain + ".privateinternetaccess.com"
+	IPs, err := c.lookupIP(hostname)
 	if err != nil {
 		return nil, err
+	}
+	if targetIP != nil {
+		found := false
+		for i := range IPs {
+			if IPs[i].Equal(targetIP) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return nil, fmt.Errorf("target IP address %q not found from IP addresses resolved from %s", targetIP, hostname)
+		}
+		IPs = []net.IP{targetIP}
 	}
 	var port uint16
 	switch protocol {
