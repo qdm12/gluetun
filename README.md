@@ -1,8 +1,8 @@
-# Private Internet Access Client
+# Gluetun VPN client
 
-*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access or Mullvad VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
+*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad and Windscribe VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *Support for [Mullvad](http://mullvad.net)*
+**ANNOUNCEMENT**: *Support for [Windscribe](https://windscribe.com/)*
 
 <img height="200" src="title.svg?sanitize=true">
 
@@ -33,7 +33,7 @@
 ## Features
 
 - Based on Alpine 3.11 for a small Docker image below 50MB
-- Supports **Private Internet Access** and **Mullvad** servers
+- Supports **Private Internet Access**, **Mullvad** and **Windscribe** servers
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses
 - Choose the vpn network protocol, `udp` or `tcp`
@@ -54,6 +54,10 @@
 
 - Pick the [country, city and ISP](https://mullvad.net/en/servers/#openvpn)
 - Pick the port to use (i.e. `53` (udp) or `80` (tcp))
+
+### Windscribe
+
+- Pick the [region](https://windscribe.com/status)
 
 ### Extra niche features
 
@@ -81,6 +85,8 @@
         - If `VPNSP=mullvad` and `PORT=53`, allow outbound UDP 53 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
         - If `VPNSP=mullvad` and `PORT=80`, allow outbound TCP 80 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
         - If `VPNSP=mullvad` and `PORT=443`, allow outbound TCP 443 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
+        - If `VPNSP=windscribe` and `PROTOCOL=udp`: allow outbound UDP 443 to the corresponding VPN server IPs
+        - If `VPNSP=windscribe` and `PROTOCOL=tcp`: allow outbound TCP 1194 to the corresponding VPN server IPs
         - If `SHADOWSOCKS=on`, allow inbound TCP 8388 and UDP 8388 from your LAN
         - If `TINYPROXY=on`, allow inbound TCP 8888 from your LAN
 
@@ -124,7 +130,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 
 | Environment variable | Default | Description |
 | --- | --- | --- |
-| `VPNSP` | `pia` | VPN Service Provider, one of `pia`, `mullvad` |
+| `VPNSP` | `pia` | VPN Service Provider, one of `pia`, `mullvad` or `windscribe` |
 | `REGION` | `Netherlands` | (PIA & Windscribe only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) or one of the [Windscribe regions](https://windscribe.com/status) |
 | `COUNTRY` | `Sweden` | (Mullvad only) one of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
 | `CITY` |  | (Mullvad only, *optional*) one of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
@@ -132,8 +138,8 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `PORT` |  | (Mullvad only, *optional*) For TCP, `80` or `443`, or `53` for UDP. Leave blank for default Mullvad server port |
 | `PROTOCOL` | `udp` | `tcp` or `udp` |
 | `ENCRYPTION` | `strong` | (PIA only) `normal` or `strong` |
-| `USER` | | PIA username **or** Mullvad user ID |
-| `PASSWORD` | | Your PIA password |
+| `USER` | | PIA username **or** Mullvad user ID **or** Windscribe username |
+| `PASSWORD` | | Your PIA password **or** Windscribe password |
 | `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
 | `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
 | `DOT_CACHING` | `on` | Unbound caching feature, `on` or `off` |
@@ -161,7 +167,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
 | `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
 | `OPENVPN_ROOT` | `no` | Run OpenVPN as root, `yes` or `no` |
-| `OPENVPN_TARGET_IP` | | Specify a target VPN server IP address to use, valid for Mullvad and Private Internet Access |
+| `OPENVPN_TARGET_IP` | | (Optional) Specify a target VPN server IP address to use |
 
 ## Connect to it
 
@@ -422,7 +428,6 @@ Thanks for all the contributions, wether small or not so small!
 
 <details><summary>Expand me</summary><p>
 
-- Support Windscribe
 - Gotify support for notificactions
 - Periodic update of malicious block lists with Unbound restart
 - Improve healthcheck
