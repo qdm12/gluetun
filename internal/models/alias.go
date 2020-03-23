@@ -17,6 +17,8 @@ type (
 	MullvadCity string
 	// MullvadProvider is used as the Internet service provider for a Mullvad server
 	MullvadProvider string
+	// WindscribeCity is used as the region for a Windscribe server
+	WindscribeRegion string
 	// URL is an HTTP(s) URL address
 	URL string
 	// Filepath is a local filesytem file path
