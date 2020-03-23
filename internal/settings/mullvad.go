@@ -17,7 +17,6 @@ type Mullvad struct {
 }
 
 func (m *Mullvad) String() string {
-
 	settingsList := []string{
 		"Mullvad settings:",
 		"User: [redacted]",

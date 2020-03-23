@@ -22,9 +22,6 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 	if len(subdomain) == 0 {
 		return nil, fmt.Errorf("region %q has no associated PIA subdomain", region)
 	}
-	if err != nil {
-		return nil, err
-	}
 	hostname := subdomain + ".privateinternetaccess.com"
 	IPs, err := c.lookupIP(hostname)
 	if err != nil {

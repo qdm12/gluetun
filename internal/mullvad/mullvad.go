@@ -5,7 +5,6 @@ import (
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -18,12 +17,11 @@ type Configurator interface {
 }
 
 type configurator struct {
-	client      network.Client
 	fileManager files.FileManager
 	logger      logging.Logger
 }
 
 // NewConfigurator returns a new Configurator object
-func NewConfigurator(client network.Client, fileManager files.FileManager, logger logging.Logger) Configurator {
-	return &configurator{client, fileManager, logger}
+func NewConfigurator(fileManager files.FileManager, logger logging.Logger) Configurator {
+	return &configurator{fileManager, logger}
 }
