@@ -51,6 +51,9 @@ type ParamsReader interface {
 	GetMullvadISP() (country models.MullvadProvider, err error)
 	GetMullvadPort() (port uint16, err error)
 
+	// Windscribe getters
+	GetWindscribeRegion() (country models.WindscribeRegion, err error)
+
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
 	GetShadowSocksLog() (activated bool, err error)

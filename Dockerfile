@@ -38,7 +38,7 @@ ENV VPNSP=pia \
     TZ= \
     # PIA only
     PASSWORD= \
-    REGION="CA Montreal" \
+    REGION="Netherlands" \
     ENCRYPTION=strong \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \

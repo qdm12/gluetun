@@ -22,8 +22,10 @@ services:
       - OPENVPN_TARGET_IP=
       - TZ=
 
+      # PIA and Windscribe only
+      - REGION=Netherlands
+
       # PIA only
-      - REGION=CA Montreal
       - PASSWORD=8fd9s239G
       - ENCRYPTION=strong
       - PORT_FORWARDING=off

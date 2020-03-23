@@ -125,7 +125,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | Environment variable | Default | Description |
 | --- | --- | --- |
 | `VPNSP` | `pia` | VPN Service Provider, one of `pia`, `mullvad` |
-| `REGION` | `CA Montreal` | (PIA only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) |
+| `REGION` | `Netherlands` | (PIA & Windscribe only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) or one of the [Windscribe regions](https://windscribe.com/status) |
 | `COUNTRY` | `Sweden` | (Mullvad only) one of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
 | `CITY` |  | (Mullvad only, *optional*) one of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
 | `ISP` |  | (Mullvad only, *optional*) one of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
