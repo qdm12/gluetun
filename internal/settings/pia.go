@@ -33,6 +33,8 @@ func (p *PortForwarding) String() string {
 func (p *PIA) String() string {
 	settingsList := []string{
 		"PIA settings:",
+		"User: [redacted]",
+		"Password: [redacted]",
 		"Region: " + string(p.Region),
 		"Encryption: " + string(p.Encryption),
 		"Port forwarding: " + p.PortForwarding.String(),

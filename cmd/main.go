@@ -55,7 +55,7 @@ func main() {
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
 	piaConf := pia.NewConfigurator(client, fileManager, firewallConf, logger)
-	mullvadConf := mullvad.NewConfigurator(client, fileManager, logger)
+	mullvadConf := mullvad.NewConfigurator(fileManager, logger)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	ctx, cancel := context.WithCancel(context.Background())
