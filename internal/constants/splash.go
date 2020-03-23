@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Announcement is a message announcement
-	Announcement = "Support for Mullvad (a bit unstable)"
+	Announcement = "Support for Windscribe"
 	// AnnouncementExpiration is the expiration date of the announcement in format yyyy-mm-dd
-	AnnouncementExpiration = "2020-03-15"
+	AnnouncementExpiration = "2020-04-15"
 )
 
 const (
