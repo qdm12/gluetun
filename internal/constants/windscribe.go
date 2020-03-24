@@ -23,12 +23,44 @@ func WindscribeRegionChoices() (choices []string) {
 func WindscribeServers() []models.WindscribeServer {
 	return []models.WindscribeServer{
 		{
+			Region:    models.WindscribeRegion("albania"),
+			Subdomain: "al",
+		},
+		{
+			Region:    models.WindscribeRegion("argentina"),
+			Subdomain: "ar",
+		},
+		{
+			Region:    models.WindscribeRegion("argentina"),
+			Subdomain: "ar",
+		},
+		{
 			Region:    models.WindscribeRegion("australia"),
 			Subdomain: "au",
 		},
 		{
+			Region:    models.WindscribeRegion("austria"),
+			Subdomain: "at",
+		},
+		{
+			Region:    models.WindscribeRegion("azerbaijan"),
+			Subdomain: "az",
+		},
+		{
+			Region:    models.WindscribeRegion("belgium"),
+			Subdomain: "be",
+		},
+		{
+			Region:    models.WindscribeRegion("bosnia"),
+			Subdomain: "ba",
+		},
+		{
 			Region:    models.WindscribeRegion("brazil"),
 			Subdomain: "br",
+		},
+		{
+			Region:    models.WindscribeRegion("bulgaria"),
+			Subdomain: "bg",
 		},
 		{
 			Region:    models.WindscribeRegion("canada east"),
@@ -39,32 +71,84 @@ func WindscribeServers() []models.WindscribeServer {
 			Subdomain: "ca-west",
 		},
 		{
+			Region:    models.WindscribeRegion("colombia"),
+			Subdomain: "co",
+		},
+		{
+			Region:    models.WindscribeRegion("croatia"),
+			Subdomain: "hr",
+		},
+		{
+			Region:    models.WindscribeRegion("cyprus"),
+			Subdomain: "cy",
+		},
+		{
+			Region:    models.WindscribeRegion("czech republic"),
+			Subdomain: "cz",
+		},
+		{
 			Region:    models.WindscribeRegion("denmark"),
 			Subdomain: "dk",
+		},
+		{
+			Region:    models.WindscribeRegion("estonia"),
+			Subdomain: "ee",
 		},
 		{
 			Region:    models.WindscribeRegion("egypt"),
 			Subdomain: "eg",
 		},
 		{
+			Region:    models.WindscribeRegion("fake antarctica"),
+			Subdomain: "aq",
+		},
+		{
+			Region:    models.WindscribeRegion("finland"),
+			Subdomain: "fi",
+		},
+		{
 			Region:    models.WindscribeRegion("france"),
 			Subdomain: "fr",
+		},
+		{
+			Region:    models.WindscribeRegion("georgia"),
+			Subdomain: "ge",
 		},
 		{
 			Region:    models.WindscribeRegion("germany"),
 			Subdomain: "de",
 		},
 		{
+			Region:    models.WindscribeRegion("greece"),
+			Subdomain: "gr",
+		},
+		{
 			Region:    models.WindscribeRegion("hong kong"),
 			Subdomain: "hk",
+		},
+		{
+			Region:    models.WindscribeRegion("hungary"),
+			Subdomain: "hu",
+		},
+		{
+			Region:    models.WindscribeRegion("iceland"),
+			Subdomain: "is",
 		},
 		{
 			Region:    models.WindscribeRegion("india"),
 			Subdomain: "in",
 		},
 		{
+			Region:    models.WindscribeRegion("indonesia"),
+			Subdomain: "id",
+		},
+		{
 			Region:    models.WindscribeRegion("ireland"),
 			Subdomain: "ie",
+		},
+		{
+			Region:    models.WindscribeRegion("israel"),
+			Subdomain: "il",
 		},
 		{
 			Region:    models.WindscribeRegion("italy"),
@@ -75,12 +159,28 @@ func WindscribeServers() []models.WindscribeServer {
 			Subdomain: "jp",
 		},
 		{
-			Region:    models.WindscribeRegion("luxembourg"),
-			Subdomain: "lu",
+			Region:    models.WindscribeRegion("latvia"),
+			Subdomain: "lv",
+		},
+		{
+			Region:    models.WindscribeRegion("lithuania"),
+			Subdomain: "lt",
+		},
+		{
+			Region:    models.WindscribeRegion("macedonia"),
+			Subdomain: "mk",
+		},
+		{
+			Region:    models.WindscribeRegion("malaysia"),
+			Subdomain: "my",
 		},
 		{
 			Region:    models.WindscribeRegion("mexico"),
 			Subdomain: "mx",
+		},
+		{
+			Region:    models.WindscribeRegion("moldova"),
+			Subdomain: "md",
 		},
 		{
 			Region:    models.WindscribeRegion("netherlands"),
@@ -95,6 +195,18 @@ func WindscribeServers() []models.WindscribeServer {
 			Subdomain: "no",
 		},
 		{
+			Region:    models.WindscribeRegion("philippines"),
+			Subdomain: "ph",
+		},
+		{
+			Region:    models.WindscribeRegion("poland"),
+			Subdomain: "pl",
+		},
+		{
+			Region:    models.WindscribeRegion("portugal"),
+			Subdomain: "pt",
+		},
+		{
 			Region:    models.WindscribeRegion("romania"),
 			Subdomain: "ro",
 		},
@@ -103,8 +215,20 @@ func WindscribeServers() []models.WindscribeServer {
 			Subdomain: "ru",
 		},
 		{
+			Region:    models.WindscribeRegion("serbia"),
+			Subdomain: "rs",
+		},
+		{
 			Region:    models.WindscribeRegion("singapore"),
 			Subdomain: "sg",
+		},
+		{
+			Region:    models.WindscribeRegion("slovakia"),
+			Subdomain: "sk",
+		},
+		{
+			Region:    models.WindscribeRegion("slovenia"),
+			Subdomain: "si",
 		},
 		{
 			Region:    models.WindscribeRegion("south africa"),
@@ -127,8 +251,24 @@ func WindscribeServers() []models.WindscribeServer {
 			Subdomain: "ch",
 		},
 		{
+			Region:    models.WindscribeRegion("thailand"),
+			Subdomain: "th",
+		},
+		{
+			Region:    models.WindscribeRegion("tunisia"),
+			Subdomain: "tn",
+		},
+		{
 			Region:    models.WindscribeRegion("turkey"),
 			Subdomain: "tr",
+		},
+		{
+			Region:    models.WindscribeRegion("ukraine"),
+			Subdomain: "ua",
+		},
+		{
+			Region:    models.WindscribeRegion("united arab emirates"),
+			Subdomain: "ae",
 		},
 		{
 			Region:    models.WindscribeRegion("united kingdom"),
@@ -145,6 +285,26 @@ func WindscribeServers() []models.WindscribeServer {
 		{
 			Region:    models.WindscribeRegion("us west"),
 			Subdomain: "us-west",
+		},
+		{
+			Region:    models.WindscribeRegion("vietnam"),
+			Subdomain: "vn",
+		},
+		{
+			Region:    models.WindscribeRegion("windflix ca"),
+			Subdomain: "wf-ca",
+		},
+		{
+			Region:    models.WindscribeRegion("windflix jp"),
+			Subdomain: "wf-jp",
+		},
+		{
+			Region:    models.WindscribeRegion("windflix uk"),
+			Subdomain: "wf-uk",
+		},
+		{
+			Region:    models.WindscribeRegion("windflix us"),
+			Subdomain: "wf-us",
 		},
 	}
 }
