@@ -93,6 +93,6 @@ func NewParamsReader(logger logging.Logger) ParamsReader {
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
 func (p *paramsReader) GetVPNSP() (vpnServiceProvider string, err error) {
-	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "mullvad"})
+	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "mullvad", "windscribe"})
 	return s, err
 }
