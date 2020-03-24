@@ -66,9 +66,8 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"resolv-retry infinite",
 		"auth SHA512",
 		"cipher AES-256-CBC",
-		"keysize 256",
 		"comp-lzo",
-		"ns-cert-type server",
+		"remote-cert-tls server",
 
 		// Added constant values
 		"auth-nocache",
