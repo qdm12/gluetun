@@ -42,7 +42,7 @@
 - Built in HTTP proxy (Tinyproxy, tunnels TCP)
 - [Connect other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - [Connect LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7 and ppc64le 🎆
+- Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7 🎆
 
 ### Private Internet Access
 
