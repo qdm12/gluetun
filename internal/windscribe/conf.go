@@ -62,7 +62,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"persist-tun",
 
 		// Windscribe specific
-		"reneg-sec 432000",
 		"resolv-retry infinite",
 		"auth SHA512",
 		"cipher AES-256-CBC",
