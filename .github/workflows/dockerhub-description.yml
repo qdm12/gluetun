@@ -1,0 +1,24 @@
+name: Docker Hub description
+on:
+  push:
+    branches: [master]
+    paths:
+      - README.md
+      - .github/workflows/dockerhub-description.yml
+  pull_request:
+    branches: [master]
+    paths:
+      - README.md
+      - .github/workflows/dockerhub-description.yml
+jobs:
+  dockerHubDescription:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v2.1.0
+        env:
+          DOCKERHUB_USERNAME: qmcgaw
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          DOCKERHUB_REPOSITORY: qmcgaw/private-internet-access
