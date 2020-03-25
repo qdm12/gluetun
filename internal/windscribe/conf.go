@@ -67,6 +67,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"cipher AES-256-CBC",
 		"comp-lzo",
 		"remote-cert-tls server",
+		"key-direction 1",
 
 		// Added constant values
 		"auth-nocache",
