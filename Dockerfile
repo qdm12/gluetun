@@ -39,7 +39,7 @@ ENV VPNSP=pia \
     # PIA only
     PASSWORD= \
     REGION="CA Montreal" \
-    ENCRYPTION=strong \
+    PIA_ENCRYPTION=strong \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
     # Mullvad only
