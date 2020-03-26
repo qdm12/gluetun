@@ -1,4 +1,4 @@
-name: Buildx latest
+name: Buildx branch
 on:
   push:
     branches:
