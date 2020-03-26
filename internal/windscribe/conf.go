@@ -93,7 +93,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		constants.WindscribeCertificate,
 		"-----END CERTIFICATE-----",
 		"</ca>",
-		"",
 	}...)
 	lines = append(lines, []string{
 		"<tls-auth>",
@@ -101,6 +100,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		constants.WindscribeOpenvpnStaticKeyV1,
 		"-----END OpenVPN Static key V1-----",
 		"</tls-auth>",
+		"",
 	}...)
 	return c.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
 }
