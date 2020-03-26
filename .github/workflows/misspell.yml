@@ -15,6 +15,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           locale: "US"
+          level: error
       - name: sobolevn fixer
         uses: sobolevn/misspell-fixer-action@master
       #- uses: peter-evans/create-pull-request@v2.4.4
