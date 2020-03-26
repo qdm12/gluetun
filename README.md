@@ -446,7 +446,7 @@ You can try:
 
 ### Contributors
 
-Thanks for all the contributions, wether small or not so small!
+Thanks for all the contributions, whether small or not so small!
 
 - [@JeordyR](https://github.com/JeordyR) for testing the Mullvad version and opening a [PR with a few fixes](https://github.com/qdm12/private-internet-access-docker/pull/84/files) 👍
 - [@rorph](https://github.com/rorph) for a [PR to pick a random region for PIA](https://github.com/qdm12/private-internet-access-docker/pull/70) and a [PR to make the container work with kubernetes](https://github.com/qdm12/private-internet-access-docker/pull/69)
