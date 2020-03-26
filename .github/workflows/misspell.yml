@@ -17,8 +17,8 @@ jobs:
           locale: "US"
       - name: sobolevn fixer
         uses: sobolevn/misspell-fixer-action@master
-      - uses: peter-evans/create-pull-request@v2.4.4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Typos fixes'
-          title: "Typos fixes"
+      #- uses: peter-evans/create-pull-request@v2.4.4
+      #  with:
+      #    token: ${{ secrets.GITHUB_TOKEN }}
+      #    commit-message: 'Typos fixes'
+      #    title: "Typos fixes"
