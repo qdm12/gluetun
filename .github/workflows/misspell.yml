@@ -1,0 +1,20 @@
+name: Misspells
+on: [pull_request,push]
+jobs:
+  misspell:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: reviewdog fixer
+        uses: reviewdog/action-misspell@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          locale: "US"
+      - name: sobolevn fixer
+        uses: sobolevn/misspell-fixer-action@master
+      - uses: peter-evans/create-pull-request@v2.4.4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Typos fixes'
+          title: "Typos fixes"

@@ -1,0 +1,40 @@
+name: Buildx release
+on:
+  release:
+    types: [published]
+    paths-ignore:
+      - .github/workflows/buildx-latest.yml
+      - .github/workflows/dockerhub-description.yml
+      - .github/workflows/greetings.yml
+      - .github/workflows/labels.yml
+      - .github/workflows/misspell.yml
+      - .github/workflows/security.yml
+      - .dockerignore
+      - .gitignore
+      - docker-compose.yml
+      - LICENSE
+      - README.md
+      - title.svg
+jobs:
+  buildx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+      - name: Dockerhub login
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u qmcgaw --password-stdin 2>&1
+      - name: Run Buildx
+        run: |
+          docker buildx build \
+            --progress plain \
+            --platform=linux/amd64,linux/386,linux/arm64,linux/arm/v7,linux/arm/v6 \
+            --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+            --build-arg VCS_REF=`git rev-parse --short HEAD` \
+            --build-arg VERSION=${GITHUB_REF##*/} \
+            -t qmcgaw/private-internet-access:${GITHUB_REF##*/} \
+            --push \
+            .
+      - run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I= || exit 0

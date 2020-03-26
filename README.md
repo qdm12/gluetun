@@ -6,7 +6,7 @@
 
 <img height="200" src="title.svg?sanitize=true">
 
-[![Build Status](https://travis-ci.org/qdm12/private-internet-access-docker.svg?branch=master)](https://travis-ci.org/qdm12/private-internet-access-docker)
+[![Build status](https://github.com/qdm12/private-internet-access-docker/workflows/Buildx%20latest/badge.svg)](https://github.com/qdm12/private-internet-access-docker/actions?query=workflow%3A%22Buildx+latest%22)
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 [![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 
@@ -401,16 +401,48 @@ You can try:
 
 ## Development
 
-### Using VSCode and Docker
+1. Setup your environment
 
-1. Install [Docker](https://docs.docker.com/install)
-    - On Windows, share a drive with Docker Desktop and have the project on that partition
-1. With [Visual Studio Code](https://code.visualstudio.com/download), install the [remote containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-1. In Visual Studio Code, press on `F1` and select `Remote-Containers: Open Folder in Container...`
-1. Your dev environment is ready to go!... and it's running in a container :+1:
+    <details><summary>Using VSCode and Docker</summary><p>
 
-The Go code is in the Go file [cmd/main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go) and the [internal directory](https://github.com/qdm12/private-internet-access-docker/tree/master/internal),
-you might want to start reading the main.go file.
+    1. Install [Docker](https://docs.docker.com/install/)
+       - On Windows, share a drive with Docker Desktop and have the project on that partition
+       - On OSX, share your project directory with Docker Desktop
+    1. With [Visual Studio Code](https://code.visualstudio.com/download), install the [remote containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+    1. In Visual Studio Code, press on `F1` and select `Remote-Containers: Open Folder in Container...`
+    1. Your dev environment is ready to go!... and it's running in a container :+1:
+
+    </p></details>
+
+    <details><summary>Locally</summary><p>
+
+    Install [Go](https://golang.org/dl/), [Docker](https://www.docker.com/products/docker-desktop) and [Git](https://git-scm.com/downloads); then:
+
+    ```sh
+    go mod download
+    go get github.com/golang/mock/gomock
+    go get github.com/golang/mock/mockgen
+    ```
+
+    And finally install [golangci-lint](https://github.com/golangci/golangci-lint#install)
+
+    </p></details>
+
+1. Commands available:
+
+    ```sh
+    # Build the entrypoint binary
+    go build cmd/main.go
+    # Test the entrypoint code
+    go test ./...
+    # Lint the code
+    golangci-lint run
+    # Build the Docker image
+    docker build -t qmcgaw/private-internet-access .
+    ```
+
+1. The Go code is in the Go file [cmd/main.go](https://github.com/qdm12/private-internet-access-docker/blob/master/cmd/main.go) and the [internal directory](https://github.com/qdm12/private-internet-access-docker/tree/master/internal), you might want to start reading the main.go file.
+1. See [Contributing](.github/CONTRIBUTING.md) for more information on how to contribute to this repository.
 
 ### Contributors
 

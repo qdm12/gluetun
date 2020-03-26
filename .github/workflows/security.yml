@@ -1,0 +1,30 @@
+name: Security scan of Docker image
+on:
+  push:
+  schedule:
+    - cron: '0 9 * * *'
+jobs:
+  security-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Check for scratch
+        id: scratchCheck
+        run: echo ::set-output name=scratch::$(cat Dockerfile | grep 'FROM scratch')
+      - name: Build image
+        if: steps.scratchCheck.outputs.scratch == ''
+        run: docker build -t image .
+      - name: Phonito
+        if: steps.scratchCheck.outputs.scratch == ''
+        uses: phonito/phonito-scanner-action@master
+        with:
+          image: image
+          fail-level: LOW
+          phonito-token: ${{ secrets.PHONITO_TOKEN }}
+      - name: Trivy
+        if: steps.scratchCheck.outputs.scratch == ''
+        uses: homoluctus/gitrivy@v1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image: image
