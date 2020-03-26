@@ -25,7 +25,7 @@ services:
       # PIA only
       - REGION=CA Montreal
       - PASSWORD=8fd9s239G
-      - ENCRYPTION=strong
+      - PIA_ENCRYPTION=strong
       - PORT_FORWARDING=off
 
       # Mullvad only
