@@ -33,9 +33,18 @@ func (p *paramsReader) GetPortForwardingStatusFilepath() (filepath models.Filepa
 }
 
 // GetPIAEncryption obtains the encryption level for the PIA connection
-// from the environment variable ENCRYPTION
+// from the environment variable PIA_ENCRYPTION, and using ENCRYPTION for
+// retro compatibility
 func (p *paramsReader) GetPIAEncryption() (models.PIAEncryption, error) {
-	s, err := p.envParams.GetValueIfInside("ENCRYPTION", []string{"normal", "strong"}, libparams.Default("strong"))
+	// Retro-compatibility
+	s, err := p.envParams.GetValueIfInside("ENCRYPTION", []string{"normal", "strong", ""})
+	if err != nil {
+		return "", err
+	} else if len(s) != 0 {
+		p.logger.Warn("You are using the old environment variable ENCRYPTION, please consider changing it to PIA_ENCRYPTION")
+		return models.PIAEncryption(s), nil
+	}
+	s, err = p.envParams.GetValueIfInside("PIA_ENCRYPTION", []string{"normal", "strong"}, libparams.Default("strong"))
 	return models.PIAEncryption(s), err
 }
 

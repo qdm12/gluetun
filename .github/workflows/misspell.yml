@@ -1,5 +1,9 @@
 name: Misspells
-on: [pull_request,push]
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
 jobs:
   misspell:
     runs-on: ubuntu-latest
@@ -11,10 +15,11 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           locale: "US"
+          level: error
       - name: sobolevn fixer
         uses: sobolevn/misspell-fixer-action@master
-      - uses: peter-evans/create-pull-request@v2.4.4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Typos fixes'
-          title: "Typos fixes"
+      #- uses: peter-evans/create-pull-request@v2.4.4
+      #  with:
+      #    token: ${{ secrets.GITHUB_TOKEN }}
+      #    commit-message: 'Typos fixes'
+      #    title: "Typos fixes"

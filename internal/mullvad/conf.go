@@ -35,9 +35,12 @@ func (c *configurator) GetOpenVPNConnections(country models.MullvadCountry, city
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool) (err error) {
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher string) (err error) {
 	if len(connections) == 0 {
 		return fmt.Errorf("at least one connection string is expected")
+	}
+	if len(cipher) == 0 {
+		cipher = "AES-256-CBC"
 	}
 	lines := []string{
 		"client",
@@ -53,7 +56,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		// Mullvad specific
 		"sndbuf 524288",
 		"rcvbuf 524288",
-		"cipher AES-256-CBC",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
 
 		// Added constant values
@@ -67,6 +69,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
+		fmt.Sprintf("cipher %s", cipher),
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")

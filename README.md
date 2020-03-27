@@ -77,10 +77,10 @@
             - Allow outbound TCP 443 to github.com
             - If `DOT=on`, allow outbound TCP 853 to allow Unbound to resolve github.com and the PIA subdomain name if you use PIA.
             - If `DOT=off` and `VPNSP=pia`, allow outbound UDP 53 to your DNS provider to resolve the PIA subdomain name.
-        - If `VPNSP=pia`, `ENCRYPTION=strong` and `PROTOCOL=udp`: allow outbound UDP 1197 to the corresponding VPN server IPs
-        - If `VPNSP=pia`, `ENCRYPTION=normal` and `PROTOCOL=udp`: allow outbound UDP 1198 to the corresponding VPN server IPs
-        - If `VPNSP=pia`, `ENCRYPTION=strong` and `PROTOCOL=tcp`: allow outbound TCP 501 to the corresponding VPN server IPs
-        - If `VPNSP=pia`, `ENCRYPTION=normal` and `PROTOCOL=tcp`: allow outbound TCP 502 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `PIA_ENCRYPTION=strong` and `PROTOCOL=udp`: allow outbound UDP 1197 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `PIA_ENCRYPTION=normal` and `PROTOCOL=udp`: allow outbound UDP 1198 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `PIA_ENCRYPTION=strong` and `PROTOCOL=tcp`: allow outbound TCP 501 to the corresponding VPN server IPs
+        - If `VPNSP=pia`, `PIA_ENCRYPTION=normal` and `PROTOCOL=tcp`: allow outbound TCP 502 to the corresponding VPN server IPs
         - If `VPNSP=mullvad` and `PORT=`, please refer to the mapping of Mullvad servers in [these source code lines](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667) to find the corresponding UDP port number and IP address(es) of your choice
         - If `VPNSP=mullvad` and `PORT=53`, allow outbound UDP 53 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
         - If `VPNSP=mullvad` and `PORT=80`, allow outbound TCP 80 to the corresponding VPN server IPs, which you can fine in [the mapping of Mullvad servers](https://github.com/qdm12/private-internet-access-docker/blob/master/internal/constants/mullvad.go#L64-L667)
@@ -131,7 +131,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | Environment variable | Default | Description |
 | --- | --- | --- |
 | `VPNSP` | `pia` | VPN Service Provider, one of `pia`, `mullvad` or `windscribe` |
-| `REGION` | `Netherlands` | (PIA & Windscribe only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) or one of the [Windscribe regions](https://windscribe.com/status) |
+| `REGION` | `Austria` | (PIA & Windscribe only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) or one of the [Windscribe regions](https://windscribe.com/status) |
 | `COUNTRY` | `Sweden` | (Mullvad only) one of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
 | `CITY` |  | (Mullvad only, *optional*) one of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
 | `ISP` |  | (Mullvad only, *optional*) one of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
@@ -167,7 +167,8 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
 | `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
 | `OPENVPN_ROOT` | `no` | Run OpenVPN as root, `yes` or `no` |
-| `OPENVPN_TARGET_IP` | | (Optional) Specify a target VPN server IP address to use |
+| `OPENVPN_TARGET_IP` | | (Optional) Specify a target VPN server IP address to use, valid for Mullvad and Private Internet Access |
+| `OPENVPN_CIPHER` | | Specify a custom cipher to use, use at your own risk. It will also set `ncp-disable` if using AES GCM for PIA |
 
 ## Connect to it
 

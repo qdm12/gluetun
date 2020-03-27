@@ -23,11 +23,11 @@ services:
       - TZ=
 
       # PIA and Windscribe only
-      - REGION=Netherlands
+      - REGION=Austria
+      - PASSWORD=8fd9s239G
 
       # PIA only
-      - PASSWORD=8fd9s239G
-      - ENCRYPTION=strong
+      - PIA_ENCRYPTION=strong
       - PORT_FORWARDING=off
 
       # Mullvad only

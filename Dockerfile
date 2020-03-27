@@ -38,8 +38,8 @@ ENV VPNSP=pia \
     TZ= \
     # PIA only
     PASSWORD= \
-    REGION="Netherlands" \
-    ENCRYPTION=strong \
+    REGION="Austria" \
+    PIA_ENCRYPTION=strong \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
     # Mullvad only
