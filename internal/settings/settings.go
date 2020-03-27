@@ -52,17 +52,24 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 	}
 	switch settings.VPNSP {
 	case "pia":
+		switch settings.OpenVPN.Cipher {
+		case "", "aes-128-cbc", "aes-256-cbc", "aes-128-gcm", "aes-256-gcm":
+		default:
+			return settings, fmt.Errorf("cipher %q is not supported by Private Internet Access", settings.OpenVPN.Cipher)
+		}
 		settings.PIA, err = GetPIASettings(params)
-		if err != nil {
-			return settings, err
-		}
 	case "mullvad":
-		settings.Mullvad, err = GetMullvadSettings(params)
-		if err != nil {
-			return settings, err
+		switch settings.OpenVPN.Cipher {
+		case "":
+		default:
+			return settings, fmt.Errorf("cipher %q is not supported by Mullvad", settings.OpenVPN.Cipher)
 		}
+		settings.Mullvad, err = GetMullvadSettings(params)
 	default:
 		return settings, fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
+	}
+	if err != nil {
+		return settings, err
 	}
 	settings.DNS, err = GetDNSSettings(params)
 	if err != nil {
