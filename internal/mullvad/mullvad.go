@@ -13,7 +13,7 @@ const logPrefix = "Mullvad configurator"
 // Configurator contains methods to download, read and modify the openvpn configuration to connect as a client
 type Configurator interface {
 	GetOpenVPNConnections(country models.MullvadCountry, city models.MullvadCity, provider models.MullvadProvider, protocol models.NetworkProtocol, customPort uint16, targetIP net.IP) (connections []models.OpenVPNConnection, err error)
-	BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool) (err error)
+	BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher string) (err error)
 }
 
 type configurator struct {

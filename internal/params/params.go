@@ -38,6 +38,7 @@ type ParamsReader interface {
 	GetOpenVPNVerbosity() (verbosity int, err error)
 	GetOpenVPNRoot() (root bool, err error)
 	GetTargetIP() (ip net.IP, err error)
+	GetOpenVPNCipher() (cipher string, err error)
 
 	// PIA getters
 	GetPortForwarding() (activated bool, err error)
