@@ -1,20 +1,5 @@
 name: Buildx latest
 on:
-  pull_request:
-    branches: [master]
-    paths-ignore:
-      - .github/workflows/buildx-release.yml
-      - .github/workflows/dockerhub-description.yml
-      - .github/workflows/greetings.yml
-      - .github/workflows/labels.yml
-      - .github/workflows/misspell.yml
-      - .github/workflows/security.yml
-      - .dockerignore
-      - .gitignore
-      - docker-compose.yml
-      - LICENSE
-      - README.md
-      - title.svg
   push:
     branches: [master]
     paths-ignore:
