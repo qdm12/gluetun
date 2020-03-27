@@ -84,6 +84,11 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 		default:
 			return settings, fmt.Errorf("cipher %q is not supported by Windscribe", settings.OpenVPN.Cipher)
 		}
+		switch settings.OpenVPN.Auth {
+		case "", "sha512":
+		default:
+			return settings, fmt.Errorf("auth algorithm %q is not supported by Windscribe", settings.OpenVPN.Auth)
+		}
 		settings.Windscribe, err = GetWindscribeSettings(params)
 	default:
 		err = fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)

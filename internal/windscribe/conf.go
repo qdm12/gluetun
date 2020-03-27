@@ -54,9 +54,12 @@ func (c *configurator) GetOpenVPNConnections(region models.WindscribeRegion, pro
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher string) (err error) {
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string) (err error) {
 	if len(cipher) == 0 {
 		cipher = "AES-256-CBC"
+	}
+	if len(auth) == 0 {
+		auth = "sha512"
 	}
 	lines := []string{
 		"client",
@@ -67,7 +70,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 
 		// Windscribe specific
 		"resolv-retry infinite",
-		"auth SHA512",
 		"comp-lzo",
 		"remote-cert-tls server",
 		"key-direction 1",
@@ -84,6 +86,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
 		fmt.Sprintf("cipher %s", cipher),
+		fmt.Sprintf("auth %s", auth),
 	}
 	if strings.HasSuffix(cipher, "-gcm") {
 		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")

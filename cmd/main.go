@@ -147,7 +147,7 @@ func main() {
 	case "windscribe":
 		connections, err = windscribeConf.GetOpenVPNConnections(allSettings.Windscribe.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.OpenVPN.TargetIP)
 		e.FatalOnError(err)
-		err = windscribeConf.BuildConf(connections, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher)
+		err = windscribeConf.BuildConf(connections, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher, allSettings.OpenVPN.Auth)
 		e.FatalOnError(err)
 	}
 
