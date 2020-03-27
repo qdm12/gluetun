@@ -137,7 +137,7 @@ func main() {
 	case "pia":
 		connections, err = piaConf.GetOpenVPNConnections(allSettings.PIA.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Encryption, allSettings.OpenVPN.TargetIP)
 		e.FatalOnError(err)
-		err = piaConf.BuildConf(connections, allSettings.PIA.Encryption, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher)
+		err = piaConf.BuildConf(connections, allSettings.PIA.Encryption, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher, allSettings.OpenVPN.Auth)
 		e.FatalOnError(err)
 	case "mullvad":
 		connections, err = mullvadConf.GetOpenVPNConnections(allSettings.Mullvad.Country, allSettings.Mullvad.City, allSettings.Mullvad.ISP, allSettings.OpenVPN.NetworkProtocol, allSettings.Mullvad.Port, allSettings.OpenVPN.TargetIP)

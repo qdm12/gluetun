@@ -66,20 +66,24 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int, root bool, cipher string) (err error) {
-	var X509CRL, certificate, authAlgo string
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int, root bool, cipher, auth string) (err error) {
+	var X509CRL, certificate string
 	if encryption == constants.PIAEncryptionNormal {
 		if len(cipher) == 0 {
 			cipher = "aes-128-cbc"
 		}
-		authAlgo = "sha1"
+		if len(auth) == 0 {
+			auth = "sha1"
+		}
 		X509CRL = constants.PIAX509CRL_NORMAL
 		certificate = constants.PIACertificate_NORMAL
 	} else { // strong encryption
 		if len(cipher) == 0 {
 			cipher = "aes-256-cbc"
 		}
-		authAlgo = "sha256"
+		if len(auth) == 0 {
+			auth = "sha256"
+		}
 		X509CRL = constants.PIAX509CRL_STRONG
 		certificate = constants.PIACertificate_STRONG
 	}
@@ -109,7 +113,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
 		fmt.Sprintf("cipher %s", cipher),
-		fmt.Sprintf("auth %s", authAlgo),
+		fmt.Sprintf("auth %s", auth),
 	}
 	if strings.HasSuffix(cipher, "-gcm") {
 		lines = append(lines, "ncp-disable")

@@ -18,7 +18,7 @@ const logPrefix = "PIA configurator"
 type Configurator interface {
 	GetOpenVPNConnections(region models.PIARegion, protocol models.NetworkProtocol,
 		encryption models.PIAEncryption, targetIP net.IP) (connections []models.OpenVPNConnection, err error)
-	BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int, root bool, cipher string) (err error)
+	BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int, root bool, cipher, auth string) (err error)
 	GetPortForward() (port uint16, err error)
 	WritePortForward(filepath models.Filepath, port uint16) (err error)
 	AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error)

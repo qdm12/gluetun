@@ -40,6 +40,8 @@ ENV VPNSP=pia \
     PASSWORD= \
     REGION="Austria" \
     PIA_ENCRYPTION=strong \
+    OPENVPN_CIPHER= \
+    OPENVPN_AUTH= \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
     # Mullvad only
