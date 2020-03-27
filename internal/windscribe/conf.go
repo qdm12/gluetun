@@ -3,6 +3,7 @@ package windscribe
 import (
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -53,7 +54,10 @@ func (c *configurator) GetOpenVPNConnections(region models.WindscribeRegion, pro
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool) (err error) {
+func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher string) (err error) {
+	if len(cipher) == 0 {
+		cipher = "AES-256-CBC"
+	}
 	lines := []string{
 		"client",
 		"dev tun",
@@ -64,7 +68,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		// Windscribe specific
 		"resolv-retry infinite",
 		"auth SHA512",
-		"cipher AES-256-CBC",
 		"comp-lzo",
 		"remote-cert-tls server",
 		"key-direction 1",
@@ -80,6 +83,10 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
+		fmt.Sprintf("cipher %s", cipher),
+	}
+	if strings.HasSuffix(cipher, "-gcm") {
+		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
