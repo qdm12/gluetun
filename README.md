@@ -162,6 +162,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
 | `OPENVPN_ROOT` | `no` | Run OpenVPN as root, `yes` or `no` |
 | `OPENVPN_TARGET_IP` | | Specify a target VPN server IP address to use, valid for Mullvad and Private Internet Access |
+| `OPENVPN_CIPHER` | | Specify a custom cipher to use, use at your own risk. It will also set `ncp-disable` if using AES GCM for PIA |
 
 ## Connect to it
 
