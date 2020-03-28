@@ -135,7 +135,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `COUNTRY` | `Sweden` | (Mullvad only) one of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
 | `CITY` |  | (Mullvad only, *optional*) one of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
 | `ISP` |  | (Mullvad only, *optional*) one of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
-| `PORT` |  | (Mullvad only, *optional*) For TCP, `80` or `443`, or `53` for UDP. Leave blank for default Mullvad server port |
+| `PORT` |  | (Mullvad and Windscribe only, *optional*) **Mullvad**: For TCP, `80` or `443`, or `53` for UDP. Leave blank for default Mullvad server port; **Windscribe** see [this list of ports](https://windscribe.com/getconfig/openvpn) |
 | `PROTOCOL` | `udp` | `tcp` or `udp` |
 | `ENCRYPTION` | `strong` | (PIA only) `normal` or `strong` |
 | `USER` | | PIA username **or** Mullvad user ID **or** Windscribe username |

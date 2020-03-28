@@ -48,6 +48,7 @@ ENV VPNSP=pia \
     COUNTRY=Sweden \
     CITY= \
     ISP= \
+    # Mullvad and Windscribe only
     PORT= \
     # DNS over TLS
     DOT=on \

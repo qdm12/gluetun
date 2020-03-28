@@ -80,7 +80,7 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 		settings.Mullvad, err = GetMullvadSettings(params)
 	case "windscribe":
 		switch settings.OpenVPN.Cipher {
-		case "", "aes-256-cbc", "aes-256-gcm":
+		case "", "aes-256-cbc", "aes-256-gcm": // TODO check inside params getters
 		default:
 			return settings, fmt.Errorf("cipher %q is not supported by Windscribe", settings.OpenVPN.Cipher)
 		}
@@ -89,7 +89,7 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 		default:
 			return settings, fmt.Errorf("auth algorithm %q is not supported by Windscribe", settings.OpenVPN.Auth)
 		}
-		settings.Windscribe, err = GetWindscribeSettings(params)
+		settings.Windscribe, err = GetWindscribeSettings(params, settings.OpenVPN.NetworkProtocol)
 	default:
 		err = fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
 	}

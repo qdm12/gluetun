@@ -10,7 +10,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) GetOpenVPNConnections(region models.WindscribeRegion, protocol models.NetworkProtocol, targetIP net.IP) (connections []models.OpenVPNConnection, err error) {
+func (c *configurator) GetOpenVPNConnections(region models.WindscribeRegion, protocol models.NetworkProtocol, customPort uint16, targetIP net.IP) (connections []models.OpenVPNConnection, err error) {
 	var subdomain string
 	for _, server := range constants.WindscribeServers() {
 		if server.Region == region {
@@ -40,10 +40,12 @@ func (c *configurator) GetOpenVPNConnections(region models.WindscribeRegion, pro
 		IPs = []net.IP{targetIP}
 	}
 	var port uint16
-	switch protocol {
-	case constants.TCP:
+	switch {
+	case customPort > 0:
+		port = customPort
+	case protocol == constants.TCP:
 		port = 1194
-	case constants.UDP:
+	case protocol == constants.UDP:
 		port = 443
 	default:
 		return nil, fmt.Errorf("protocol %q is unknown", protocol)

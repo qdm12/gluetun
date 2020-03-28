@@ -55,6 +55,7 @@ type ParamsReader interface {
 
 	// Windscribe getters
 	GetWindscribeRegion() (country models.WindscribeRegion, err error)
+	GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error)
 
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
