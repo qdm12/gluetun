@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  security-analysis:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

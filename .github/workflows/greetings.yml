@@ -7,5 +7,5 @@ jobs:
       - uses: actions/first-interaction@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-message: 'Thanks for creating your first issue :+1:\nFeel free to use [Slack](https://join.slack.com/t/qdm12/shared_invite/enQtODMwMDQyMTAxMjY1LTU1YjE1MTVhNTBmNTViNzJiZmQwZWRmMDhhZjEyNjVhZGM4YmIxOTMxOTYzN2U0N2U2YjQ2MDk3YmYxN2NiNTc) if you just need some quick help or want to chat'
+          issue-message: 'Thanks for creating your first issue :+1: Feel free to use [Slack](https://join.slack.com/t/qdm12/shared_invite/enQtODMwMDQyMTAxMjY1LTU1YjE1MTVhNTBmNTViNzJiZmQwZWRmMDhhZjEyNjVhZGM4YmIxOTMxOTYzN2U0N2U2YjQ2MDk3YmYxN2NiNTc) if you just need some quick help or want to chat'
           pr-message: 'Thank you so much for contributing, that means a lot to me :wink:'
