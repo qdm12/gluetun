@@ -82,8 +82,8 @@ HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /entry
 RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables unbound tinyproxy tzdata && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk add -q --progress --no-cache --update shadowsocks-libev && \
-    rm -rf /*.zip /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-anchor /usr/sbin/unbound-checkconf /usr/sbin/unbound-control /usr/sbin/unbound-control-setup /usr/sbin/unbound-host /etc/tinyproxy/tinyproxy.conf && \
-    adduser nonrootuser -D -H --uid 1000 && \
-    chown nonrootuser -R /etc/unbound /etc/tinyproxy && \
-    chmod 700 /etc/unbound /etc/tinyproxy
-COPY --from=builder --chown=1000:1000 /tmp/gobuild/entrypoint /entrypoint
+    rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/tinyproxy/tinyproxy.conf && \
+    deluser openvpn && \
+    deluser tinyproxy && \
+    deluser unbound
+COPY --from=builder /tmp/gobuild/entrypoint /entrypoint

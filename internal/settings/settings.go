@@ -18,6 +18,8 @@ type Settings struct {
 	Firewall    Firewall
 	TinyProxy   TinyProxy
 	ShadowSocks ShadowSocks
+	UID         int
+	GID         int
 }
 
 func (s *Settings) String() string {
@@ -32,6 +34,7 @@ func (s *Settings) String() string {
 	}
 	return strings.Join([]string{
 		"Settings summary below:",
+		fmt.Sprintf("|-- Using UID %d and GID %d", s.UID, s.GID),
 		s.OpenVPN.String(),
 		vpnServiceProvider,
 		s.DNS.String(),
@@ -112,6 +115,14 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 		return settings, err
 	}
 	settings.ShadowSocks, err = GetShadowSocksSettings(params)
+	if err != nil {
+		return settings, err
+	}
+	settings.UID, err = params.GetUID()
+	if err != nil {
+		return settings, err
+	}
+	settings.GID, err = params.GetGID()
 	if err != nil {
 		return settings, err
 	}
