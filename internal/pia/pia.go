@@ -20,7 +20,7 @@ type Configurator interface {
 		encryption models.PIAEncryption, targetIP net.IP) (connections []models.OpenVPNConnection, err error)
 	BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int, root bool, cipher, auth string) (err error)
 	GetPortForward() (port uint16, err error)
-	WritePortForward(filepath models.Filepath, port uint16) (err error)
+	WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error)
 	AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error)
 }
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
@@ -35,9 +36,13 @@ func (c *configurator) GetPortForward() (port uint16, err error) {
 	return body.Port, nil
 }
 
-func (c *configurator) WritePortForward(filepath models.Filepath, port uint16) (err error) {
+func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
 	c.logger.Info("%s: Writing forwarded port to %s", logPrefix, filepath)
-	return c.fileManager.WriteLinesToFile(string(filepath), []string{fmt.Sprintf("%d", port)})
+	return c.fileManager.WriteLinesToFile(
+		string(filepath),
+		[]string{fmt.Sprintf("%d", port)},
+		files.Ownership(uid, gid),
+		files.Permissions(400))
 }
 
 func (c *configurator) AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error) {
