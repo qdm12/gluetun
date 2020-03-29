@@ -16,6 +16,7 @@ type OpenVPN struct {
 	Root            bool
 	TargetIP        net.IP
 	Cipher          string
+	Auth            string
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
@@ -40,6 +41,10 @@ func GetOpenVPNSettings(params params.ParamsReader) (settings OpenVPN, err error
 	if err != nil {
 		return settings, err
 	}
+	settings.Auth, err = params.GetOpenVPNAuth()
+	if err != nil {
+		return settings, err
+	}
 	return settings, nil
 }
 
@@ -55,6 +60,7 @@ func (o *OpenVPN) String() string {
 		"Run as root: " + runAsRoot,
 		"Target IP address: " + o.TargetIP.String(),
 		"Custom cipher: " + o.Cipher,
+		"Custom auth algorithm: " + o.Auth,
 	}
 	return strings.Join(settingsList, "\n|--")
 }

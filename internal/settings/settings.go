@@ -57,12 +57,22 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 		default:
 			return settings, fmt.Errorf("cipher %q is not supported by Private Internet Access", settings.OpenVPN.Cipher)
 		}
+		switch settings.OpenVPN.Auth {
+		case "", "sha1", "sha256":
+		default:
+			return settings, fmt.Errorf("auth algorithm %q is not supported by Private Internet Access", settings.OpenVPN.Auth)
+		}
 		settings.PIA, err = GetPIASettings(params)
 	case "mullvad":
 		switch settings.OpenVPN.Cipher {
 		case "":
 		default:
 			return settings, fmt.Errorf("cipher %q is not supported by Mullvad", settings.OpenVPN.Cipher)
+		}
+		switch settings.OpenVPN.Auth {
+		case "":
+		default:
+			return settings, fmt.Errorf("auth algorithm %q is not supported by Mullvad (not using auth at all)", settings.OpenVPN.Auth)
 		}
 		settings.Mullvad, err = GetMullvadSettings(params)
 	default:

@@ -27,6 +27,8 @@ services:
       - PASSWORD=8fd9s239G
       - PIA_ENCRYPTION=strong
       - PORT_FORWARDING=off
+      - OPENVPN_CIPHER=
+      - OPENVPN_AUTH=
 
       # Mullvad only
       - COUNTRY=Sweden

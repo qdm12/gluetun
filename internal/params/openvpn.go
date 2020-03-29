@@ -71,3 +71,10 @@ func (p *paramsReader) GetOpenVPNCipher() (cipher string, err error) {
 	cipher, err = p.envParams.GetEnv("OPENVPN_CIPHER")
 	return strings.ToLower(cipher), err
 }
+
+// GetOpenVPNAuth obtains a custom auth algorithm to use with OpenVPN
+// from the environment variable OPENVPN_AUTH
+func (p *paramsReader) GetOpenVPNAuth() (auth string, err error) {
+	auth, err = p.envParams.GetEnv("OPENVPN_AUTH")
+	return strings.ToLower(auth), err
+}
