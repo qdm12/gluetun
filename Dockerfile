@@ -36,6 +36,8 @@ ENV VPNSP=pia \
     OPENVPN_ROOT=no \
     OPENVPN_TARGET_IP= \
     TZ= \
+    UID=1000 \
+    GID=1000 \
     # PIA only
     PASSWORD= \
     REGION="Austria" \
