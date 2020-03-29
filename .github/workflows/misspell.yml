@@ -1,11 +1,9 @@
 name: Misspells
 on:
-  push:
-    branches:
-      - master
   pull_request:
-    branches:
-      - master
+    branches: [master]
+  push:
+    branches: [master]
 jobs:
   misspell:
     runs-on: ubuntu-latest
