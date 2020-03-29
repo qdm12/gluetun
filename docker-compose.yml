@@ -25,13 +25,11 @@ services:
       # PIA and Windscribe only
       - REGION=Austria
       - PASSWORD=8fd9s239G
-      - OPENVPN_CIPHER=
 
       # PIA only
       - PASSWORD=8fd9s239G
       - PIA_ENCRYPTION=strong
       - PORT_FORWARDING=off
-      - OPENVPN_AUTH=
 
       # Mullvad only
       - COUNTRY=Sweden
