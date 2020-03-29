@@ -13,6 +13,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/golibs/signals"
+	"github.com/qdm12/private-internet-access-docker/internal/alpine"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/env"
@@ -28,10 +29,6 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/splash"
 	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
 	"github.com/qdm12/private-internet-access-docker/internal/windscribe"
-)
-
-const (
-	uid, gid = 1000, 1000
 )
 
 func main() {
@@ -52,6 +49,7 @@ func main() {
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
 	fileManager := files.NewFileManager()
+	alpineConf := alpine.NewConfigurator(logger, fileManager)
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
@@ -74,6 +72,13 @@ func main() {
 	e.FatalOnError(err)
 	logger.Info(allSettings.String())
 
+	err = alpineConf.CreateUser("nonrootuser", allSettings.UID)
+	e.FatalOnError(err)
+	err = fileManager.SetOwnership("/etc/unbound", allSettings.UID, allSettings.GID)
+	e.FatalOnError(err)
+	err = fileManager.SetOwnership("/etc/tinyproxy", allSettings.UID, allSettings.GID)
+	e.FatalOnError(err)
+
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()
@@ -92,7 +97,7 @@ func main() {
 		openVPNUser = allSettings.Windscribe.User
 		openVPNPassword = allSettings.Windscribe.Password
 	}
-	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, uid, gid)
+	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, allSettings.UID, allSettings.GID)
 	e.FatalOnError(err)
 
 	// Temporarily reset chain policies allowing Kubernetes sidecar to
@@ -113,11 +118,11 @@ func main() {
 	if allSettings.DNS.Enabled {
 		initialDNSToUse := constants.DNSProviderMapping()[allSettings.DNS.Providers[0]]
 		dnsConf.UseDNSInternally(initialDNSToUse.IPs[0])
-		err = dnsConf.DownloadRootHints(uid, gid)
+		err = dnsConf.DownloadRootHints(allSettings.UID, allSettings.GID)
 		e.FatalOnError(err)
-		err = dnsConf.DownloadRootKey(uid, gid)
+		err = dnsConf.DownloadRootKey(allSettings.UID, allSettings.GID)
 		e.FatalOnError(err)
-		err = dnsConf.MakeUnboundConf(allSettings.DNS, uid, gid)
+		err = dnsConf.MakeUnboundConf(allSettings.DNS, allSettings.UID, allSettings.GID)
 		e.FatalOnError(err)
 		stream, waitFn, err := dnsConf.Start(allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
@@ -135,19 +140,54 @@ func main() {
 	var connections []models.OpenVPNConnection
 	switch allSettings.VPNSP {
 	case "pia":
-		connections, err = piaConf.GetOpenVPNConnections(allSettings.PIA.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.PIA.Encryption, allSettings.OpenVPN.TargetIP)
+		connections, err = piaConf.GetOpenVPNConnections(
+			allSettings.PIA.Region,
+			allSettings.OpenVPN.NetworkProtocol,
+			allSettings.PIA.Encryption,
+			allSettings.OpenVPN.TargetIP)
 		e.FatalOnError(err)
-		err = piaConf.BuildConf(connections, allSettings.PIA.Encryption, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher, allSettings.OpenVPN.Auth)
+		err = piaConf.BuildConf(
+			connections,
+			allSettings.PIA.Encryption,
+			allSettings.OpenVPN.Verbosity,
+			allSettings.UID,
+			allSettings.GID,
+			allSettings.OpenVPN.Root,
+			allSettings.OpenVPN.Cipher,
+			allSettings.OpenVPN.Auth)
 		e.FatalOnError(err)
 	case "mullvad":
-		connections, err = mullvadConf.GetOpenVPNConnections(allSettings.Mullvad.Country, allSettings.Mullvad.City, allSettings.Mullvad.ISP, allSettings.OpenVPN.NetworkProtocol, allSettings.Mullvad.Port, allSettings.OpenVPN.TargetIP)
+		connections, err = mullvadConf.GetOpenVPNConnections(
+			allSettings.Mullvad.Country,
+			allSettings.Mullvad.City,
+			allSettings.Mullvad.ISP,
+			allSettings.OpenVPN.NetworkProtocol,
+			allSettings.Mullvad.Port,
+			allSettings.OpenVPN.TargetIP)
 		e.FatalOnError(err)
-		err = mullvadConf.BuildConf(connections, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher)
+		err = mullvadConf.BuildConf(
+			connections,
+			allSettings.OpenVPN.Verbosity,
+			allSettings.UID,
+			allSettings.GID,
+			allSettings.OpenVPN.Root,
+			allSettings.OpenVPN.Cipher)
 		e.FatalOnError(err)
 	case "windscribe":
-		connections, err = windscribeConf.GetOpenVPNConnections(allSettings.Windscribe.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.Windscribe.Port, allSettings.OpenVPN.TargetIP)
+		connections, err = windscribeConf.GetOpenVPNConnections(
+			allSettings.Windscribe.Region,
+			allSettings.OpenVPN.NetworkProtocol,
+			allSettings.Windscribe.Port,
+			allSettings.OpenVPN.TargetIP)
 		e.FatalOnError(err)
-		err = windscribeConf.BuildConf(connections, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher, allSettings.OpenVPN.Auth)
+		err = windscribeConf.BuildConf(
+			connections,
+			allSettings.OpenVPN.Verbosity,
+			allSettings.UID,
+			allSettings.GID,
+			allSettings.OpenVPN.Root,
+			allSettings.OpenVPN.Cipher,
+			allSettings.OpenVPN.Auth)
 		e.FatalOnError(err)
 	}
 
@@ -167,7 +207,13 @@ func main() {
 	e.FatalOnError(err)
 
 	if allSettings.TinyProxy.Enabled {
-		err = tinyProxyConf.MakeConf(allSettings.TinyProxy.LogLevel, allSettings.TinyProxy.Port, allSettings.TinyProxy.User, allSettings.TinyProxy.Password, uid, gid)
+		err = tinyProxyConf.MakeConf(
+			allSettings.TinyProxy.LogLevel,
+			allSettings.TinyProxy.Port,
+			allSettings.TinyProxy.User,
+			allSettings.TinyProxy.Password,
+			allSettings.UID,
+			allSettings.GID)
 		e.FatalOnError(err)
 		err = firewallConf.AllowAnyIncomingOnPort(allSettings.TinyProxy.Port)
 		e.FatalOnError(err)
@@ -182,7 +228,11 @@ func main() {
 	}
 
 	if allSettings.ShadowSocks.Enabled {
-		err = shadowsocksConf.MakeConf(allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, uid, gid)
+		err = shadowsocksConf.MakeConf(
+			allSettings.ShadowSocks.Port,
+			allSettings.ShadowSocks.Password,
+			allSettings.UID,
+			allSettings.GID)
 		e.FatalOnError(err)
 		err = firewallConf.AllowAnyIncomingOnPort(allSettings.ShadowSocks.Port)
 		e.FatalOnError(err)
@@ -202,7 +252,11 @@ func main() {
 			if err != nil {
 				logger.Error("port forwarding:", err)
 			}
-			if err := piaConf.WritePortForward(allSettings.PIA.PortForwarding.Filepath, port); err != nil {
+			if err := piaConf.WritePortForward(
+				allSettings.PIA.PortForwarding.Filepath,
+				port,
+				allSettings.UID,
+				allSettings.GID); err != nil {
 				logger.Error("port forwarding:", err)
 			}
 			if err := piaConf.AllowPortForwardFirewall(constants.TUN, port); err != nil {

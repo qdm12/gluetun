@@ -28,6 +28,10 @@ type ParamsReader interface {
 	GetDNSOverTLSPrivateAddresses() (privateAddresses []string)
 	GetDNSOverTLSIPv6() (ipv6 bool, err error)
 
+	// IDs
+	GetUID() (uid int, err error)
+	GetGID() (gid int, err error)
+
 	// Firewall getters
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
 

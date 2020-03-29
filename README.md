@@ -170,6 +170,8 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `OPENVPN_TARGET_IP` | | (Optional) Specify a target VPN server IP address to use, valid for Mullvad and Private Internet Access |
 | `OPENVPN_CIPHER` | | Specify a custom cipher to use, use at your own risk. It will also set `ncp-disable` if using AES GCM for PIA |
 | `OPENVPN_AUTH` | | Specify a custom auth algorithm to use (i.e. `sha256`) *for pia only* |
+| `UID` | `1000` | User ID to run as non root and for ownership of files written |
+| `GID` | `1000` | Group ID to run as non root and for ownership of files written |
 
 ## Connect to it
 
