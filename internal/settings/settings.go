@@ -13,6 +13,7 @@ type Settings struct {
 	OpenVPN     OpenVPN
 	PIA         PIA
 	Mullvad     Mullvad
+	Windscribe  Windscribe
 	DNS         DNS
 	Firewall    Firewall
 	TinyProxy   TinyProxy
@@ -26,6 +27,8 @@ func (s *Settings) String() string {
 		vpnServiceProvider = s.PIA.String()
 	case "mullvad":
 		vpnServiceProvider = s.Mullvad.String()
+	case "windscribe":
+		vpnServiceProvider = s.Windscribe.String()
 	}
 	return strings.Join([]string{
 		"Settings summary below:",
@@ -75,8 +78,23 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 			return settings, fmt.Errorf("auth algorithm %q is not supported by Mullvad (not using auth at all)", settings.OpenVPN.Auth)
 		}
 		settings.Mullvad, err = GetMullvadSettings(params)
+	case "windscribe":
+		switch settings.OpenVPN.Cipher {
+		case "", "aes-256-cbc", "aes-256-gcm": // TODO check inside params getters
+		default:
+			return settings, fmt.Errorf("cipher %q is not supported by Windscribe", settings.OpenVPN.Cipher)
+		}
+		switch settings.OpenVPN.Auth {
+		case "", "sha512":
+		default:
+			return settings, fmt.Errorf("auth algorithm %q is not supported by Windscribe", settings.OpenVPN.Auth)
+		}
+		settings.Windscribe, err = GetWindscribeSettings(params, settings.OpenVPN.NetworkProtocol)
 	default:
-		return settings, fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
+		err = fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
+	}
+	if err != nil {
+		return settings, err
 	}
 	if err != nil {
 		return settings, err

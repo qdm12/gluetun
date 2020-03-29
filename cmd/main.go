@@ -27,6 +27,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
 	"github.com/qdm12/private-internet-access-docker/internal/splash"
 	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
+	"github.com/qdm12/private-internet-access-docker/internal/windscribe"
 )
 
 const (
@@ -56,6 +57,7 @@ func main() {
 	firewallConf := firewall.NewConfigurator(logger, fileManager)
 	piaConf := pia.NewConfigurator(client, fileManager, firewallConf, logger)
 	mullvadConf := mullvad.NewConfigurator(fileManager, logger)
+	windscribeConf := windscribe.NewConfigurator(fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -86,6 +88,9 @@ func main() {
 	case "mullvad":
 		openVPNUser = allSettings.Mullvad.User
 		openVPNPassword = "m"
+	case "windscribe":
+		openVPNUser = allSettings.Windscribe.User
+		openVPNPassword = allSettings.Windscribe.Password
 	}
 	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, uid, gid)
 	e.FatalOnError(err)
@@ -138,6 +143,11 @@ func main() {
 		connections, err = mullvadConf.GetOpenVPNConnections(allSettings.Mullvad.Country, allSettings.Mullvad.City, allSettings.Mullvad.ISP, allSettings.OpenVPN.NetworkProtocol, allSettings.Mullvad.Port, allSettings.OpenVPN.TargetIP)
 		e.FatalOnError(err)
 		err = mullvadConf.BuildConf(connections, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher)
+		e.FatalOnError(err)
+	case "windscribe":
+		connections, err = windscribeConf.GetOpenVPNConnections(allSettings.Windscribe.Region, allSettings.OpenVPN.NetworkProtocol, allSettings.Windscribe.Port, allSettings.OpenVPN.TargetIP)
+		e.FatalOnError(err)
+		err = windscribeConf.BuildConf(connections, allSettings.OpenVPN.Verbosity, uid, gid, allSettings.OpenVPN.Root, allSettings.OpenVPN.Cipher, allSettings.OpenVPN.Auth)
 		e.FatalOnError(err)
 	}
 

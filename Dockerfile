@@ -38,7 +38,7 @@ ENV VPNSP=pia \
     TZ= \
     # PIA only
     PASSWORD= \
-    REGION="CA Montreal" \
+    REGION="Austria" \
     PIA_ENCRYPTION=strong \
     OPENVPN_CIPHER= \
     OPENVPN_AUTH= \
@@ -48,6 +48,7 @@ ENV VPNSP=pia \
     COUNTRY=Sweden \
     CITY= \
     ISP= \
+    # Mullvad and Windscribe only
     PORT= \
     # DNS over TLS
     DOT=on \
