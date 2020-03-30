@@ -23,7 +23,7 @@ func Test_generateConf(t *testing.T) {
 			lines: []string{
 				"DefaultErrorFile \"/usr/share/tinyproxy/default.html\"",
 				"DisableViaHeader Yes",
-				"Group tinyproxy",
+				"Group 1001",
 				"LogLevel Info",
 				"MaxClients 100",
 				"MaxRequestsPerChild 0",
@@ -32,7 +32,7 @@ func Test_generateConf(t *testing.T) {
 				"Port 2000",
 				"StartServers 10",
 				"Timeout 600",
-				"User nonrootuser",
+				"User 1000",
 			},
 		},
 		"With credentials": {
@@ -44,7 +44,7 @@ func Test_generateConf(t *testing.T) {
 				"BasicAuth abc def",
 				"DefaultErrorFile \"/usr/share/tinyproxy/default.html\"",
 				"DisableViaHeader Yes",
-				"Group tinyproxy",
+				"Group 1001",
 				"LogLevel Error",
 				"MaxClients 100",
 				"MaxRequestsPerChild 0",
@@ -53,7 +53,7 @@ func Test_generateConf(t *testing.T) {
 				"Port 2000",
 				"StartServers 10",
 				"Timeout 600",
-				"User nonrootuser",
+				"User 1000",
 			},
 		},
 	}
@@ -61,7 +61,7 @@ func Test_generateConf(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			lines := generateConf(tc.logLevel, tc.port, tc.user, tc.password)
+			lines := generateConf(tc.logLevel, tc.port, tc.user, tc.password, 1000, 1001)
 			assert.Equal(t, tc.lines, lines)
 		})
 	}
