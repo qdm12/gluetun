@@ -32,7 +32,7 @@ func Test_generateConf(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			data := generateConf(tc.port, tc.password)
+			data := generateConf(tc.port, tc.password, "chacha20-ietf-poly1305")
 			assert.Equal(t, tc.data, data)
 		})
 	}
@@ -65,7 +65,7 @@ func Test_MakeConf(t *testing.T) {
 			).
 				Return(tc.writeErr).Once()
 			c := &configurator{logger: logger, fileManager: fileManager}
-			err := c.MakeConf(2000, "abcde", 1000, 1001)
+			err := c.MakeConf(2000, "abcde", "chacha20-ietf-poly1305", 1000, 1001)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())

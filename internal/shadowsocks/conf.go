@@ -8,9 +8,9 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) MakeConf(port uint16, password string, uid, gid int) (err error) {
+func (c *configurator) MakeConf(port uint16, password, method string, uid, gid int) (err error) {
 	c.logger.Info("%s: generating configuration file", logPrefix)
-	data := generateConf(port, password)
+	data := generateConf(port, password, method)
 	return c.fileManager.WriteToFile(
 		string(constants.ShadowsocksConf),
 		data,
@@ -18,7 +18,7 @@ func (c *configurator) MakeConf(port uint16, password string, uid, gid int) (err
 		files.Permissions(0400))
 }
 
-func generateConf(port uint16, password string) (data []byte) {
+func generateConf(port uint16, password, method string) (data []byte) {
 	conf := struct {
 		Server       string            `json:"server"`
 		User         string            `json:"user"`
@@ -33,7 +33,7 @@ func generateConf(port uint16, password string) (data []byte) {
 	}{
 		Server:   "0.0.0.0",
 		User:     "nonrootuser",
-		Method:   "chacha20-ietf-poly1305",
+		Method:   method,
 		Timeout:  30,
 		FastOpen: false,
 		Mode:     "tcp_and_udp",

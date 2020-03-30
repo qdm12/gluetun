@@ -38,3 +38,9 @@ func (p *paramsReader) GetShadowSocksPassword() (password string, err error) {
 	defer p.unsetEnv("SHADOWSOCKS_PASSWORD")
 	return p.envParams.GetEnv("SHADOWSOCKS_PASSWORD", libparams.CaseSensitiveValue())
 }
+
+// GetShadowSocksMethod obtains the ShadowSocks method to use from the environment variable
+// SHADOWSOCKS_METHOD
+func (p *paramsReader) GetShadowSocksMethod() (method string, err error) {
+	return p.envParams.GetEnv("SHADOWSOCKS_METHOD", libparams.Default("chacha20-ietf-poly1305"))
+}

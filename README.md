@@ -164,6 +164,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `SHADOWSOCKS_LOG` | `off` | `on` or `off` to enable logging for Shadowsocks  |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
 | `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
+| `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | Methods to use for Shadowsocks |
 | `TZ` | | Specify a timezone to use i.e. `Europe/London` |
 | `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
 | `OPENVPN_ROOT` | `no` | Run OpenVPN as root, `yes` or `no` |
@@ -219,7 +220,7 @@ There are various ways to achieve this, depending on your use case.
         - Enter the Docker host (i.e. `192.168.1.10`) as the server IP
         - Enter port TCP (and UDP, if available) `8388` as the server port
         - Use the password you have set with `SHADOWSOCKS_PASSWORD`
-        - Choose the encryption method/algorithm `chacha20-ietf-poly1305`
+        - Choose the encryption method/algorithm to the method you specified in `SHADOWSOCKS_METHOD`
     1. If you set `SHADOWSOCKS_LOG` to `on`, (a lot) more information will be logged in the Docker logs
 
     </p></details>
