@@ -14,12 +14,11 @@ type Settings struct {
 	PIA         PIA
 	Mullvad     Mullvad
 	Windscribe  Windscribe
+	System      System
 	DNS         DNS
 	Firewall    Firewall
 	TinyProxy   TinyProxy
 	ShadowSocks ShadowSocks
-	UID         int
-	GID         int
 }
 
 func (s *Settings) String() string {
@@ -34,9 +33,9 @@ func (s *Settings) String() string {
 	}
 	return strings.Join([]string{
 		"Settings summary below:",
-		fmt.Sprintf("|-- Using UID %d and GID %d", s.UID, s.GID),
 		s.OpenVPN.String(),
 		vpnServiceProvider,
+		s.System.String(),
 		s.DNS.String(),
 		s.Firewall.String(),
 		s.TinyProxy.String(),
@@ -118,11 +117,7 @@ func GetAllSettings(params params.ParamsReader) (settings Settings, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.UID, err = params.GetUID()
-	if err != nil {
-		return settings, err
-	}
-	settings.GID, err = params.GetGID()
+	settings.System, err = GetSystemSettings(params)
 	if err != nil {
 		return settings, err
 	}
