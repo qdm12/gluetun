@@ -128,51 +128,53 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 
 ## Environment variables
 
-| Environment variable | Default | Description |
-| --- | --- | --- |
-| `VPNSP` | `pia` | VPN Service Provider, one of `pia`, `mullvad` or `windscribe` |
-| `REGION` | `Austria` | (PIA & Windscribe only) one of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) or one of the [Windscribe regions](https://windscribe.com/status) |
-| `COUNTRY` | `Sweden` | (Mullvad only) one of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
-| `CITY` |  | (Mullvad only, *optional*) one of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
-| `ISP` |  | (Mullvad only, *optional*) one of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
-| `PORT` |  | (Mullvad and Windscribe only, *optional*) **Mullvad**: For TCP, `80` or `443`, or `53` for UDP. Leave blank for default Mullvad server port; **Windscribe** see [this list of ports](https://windscribe.com/getconfig/openvpn) |
-| `PROTOCOL` | `udp` | `tcp` or `udp` |
-| `ENCRYPTION` | `strong` | (PIA only) `normal` or `strong` |
-| `USER` | | PIA username **or** Mullvad user ID **or** Windscribe username |
-| `PASSWORD` | | Your PIA password **or** Windscribe password |
-| `DOT` | `on` | `on` or `off`, to activate DNS over TLS to 1.1.1.1 |
-| `DOT_PROVIDERS` | `cloudflare` | Comma delimited list of DNS over TLS providers from `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
-| `DOT_CACHING` | `on` | Unbound caching feature, `on` or `off` |
-| `DOT_IPV6` | `on` | Unbound will resolve domain names using IPv6 as well as IPv4 |
-| `DOT_PRIVATE_ADDRESS` | All IPv4 and IPv6 CIDRs private ranges | Comma separated list of CIDRs or single IP addresses. Note that the default setting prevents DNS rebinding |
-| `DOT_VERBOSITY` | `1` | Unbound verbosity level from `0` to `5` (full debug) |
-| `DOT_VERBOSITY_DETAILS` | `0` | Unbound details verbosity level from `0` to `4` |
-| `DOT_VALIDATION_LOGLEVEL` | `0` | Unbound validation log level from `0` to `2` |
-| `BLOCK_MALICIOUS` | `on` | `on` or `off`, blocks malicious hostnames and IPs |
-| `BLOCK_SURVEILLANCE` | `off` | `on` or `off`, blocks surveillance hostnames and IPs |
-| `BLOCK_ADS` | `off` | `on` or `off`, blocks ads hostnames and IPs |
-| `UNBLOCK` | | comma separated string (i.e. `web.com,web2.ca`) to unblock hostnames |
-| `EXTRA_SUBNETS` | | comma separated subnets allowed in the container firewall (i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28`) |
-| `PORT_FORWARDING` | `off` | (PIA only) Set to `on` to forward a port on PIA server |
-| `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | (PIA only) File path to store the forwarded port number |
-| `TINYPROXY` | `off` | `on` or `off`, to enable the internal HTTP proxy tinyproxy |
-| `TINYPROXY_LOG` | `Info` | `Info`, `Connect`, `Notice`, `Warning`, `Error` or `Critical` |
-| `TINYPROXY_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
-| `TINYPROXY_USER` | | Username to use to connect to the HTTP proxy |
-| `TINYPROXY_PASSWORD` | | Passsword to use to connect to the HTTP proxy |
-| `SHADOWSOCKS` | `off` | `on` or `off`, to enable the internal SOCKS5 proxy Shadowsocks |
-| `SHADOWSOCKS_LOG` | `off` | `on` or `off` to enable logging for Shadowsocks  |
-| `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` internal port for SOCKS5 proxy |
-| `SHADOWSOCKS_PASSWORD` | | Passsword to use to connect to the SOCKS5 proxy |
-| `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | Methods to use for Shadowsocks |
-| `TZ` | | Specify a timezone to use i.e. `Europe/London` |
-| `OPENVPN_VERBOSITY` | `1` | Openvpn verbosity level from 0 to 6 |
-| `OPENVPN_ROOT` | `no` | Run OpenVPN as root, `yes` or `no` |
-| `OPENVPN_TARGET_IP` | | (Optional) Specify a target VPN server IP address to use, valid for Mullvad and Private Internet Access |
-| `OPENVPN_CIPHER` | | Specify a custom cipher to use, use at your own risk. It will also set `ncp-disable` if using AES GCM for PIA |
-| `OPENVPN_AUTH` | | Specify a custom auth algorithm to use (i.e. `sha256`) *for pia only* |
-| `UID` | `1000` | User ID to run as non root and for ownership of files written |
-| `GID` | `1000` | Group ID to run as non root and for ownership of files written |
+**Note**: `VPNSP` means VPN service provider
+
+| Environment variable | Default | Properties | PIA | Mullvad | Windscribe | Description | Choices |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `VPNSP` | `pia` | | ✅ | ✅ | ✅ | VPN Service Provider | `pia`, `mullvad`, `windscribe` |
+| `REGION` | `Austria` | | ✅ | ❌ | ✅ | VPN server region | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) or of the [Windscribe regions](https://windscribe.com/status) |
+| `COUNTRY` | `Sweden` | Optional | ❌ | ✅ | ❌ | VPN server country | One of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
+| `CITY` | | Optional | ❌ | ✅ | ❌ | VPN server city | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |
+| `ISP` | | Optional | ❌ | ✅ | ❌ | VPN server ISP | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
+| `PORT` | | Optional | ❌ | ✅ | ✅ | Custom VPN port to use | **Mullvad**: `80` or `443` for TCP; or `53` for UDP. Leave blank for default Mullvad server port. **Windscribe** see [this list of ports](https://windscribe.com/getconfig/openvpn) |
+| `PROTOCOL` | `udp` | | ✅ | ✅ | ✅ | Network protocol to use | `tcp`, `udp` |
+| `ENCRYPTION` | `strong` | | ✅ | ❌ | ❌ | Encryption preset | `normal`, `strong` |
+| `USER` | | **To fill** | ✅ | ✅ | ✅ | PIA/Windscribe username **or** Mullvad user ID | |
+| `PASSWORD` | |  **To fill** | ✅ | ❌ | ✅ | PIA/Windscribe password | |
+| `DOT` | `on` | | ✅ | ✅ | ✅ | Activate DNS over TLS | `on`, `off` |
+| `DOT_PROVIDERS` | `cloudflare` | | ✅ | ✅ | ✅ | Comma delimited list of DNS over TLS providers | `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
+| `DOT_CACHING` | `on` | |  ✅ | ✅ | ✅ | DNS over TLS Unbound caching | `on`, `off` |
+| `DOT_IPV6` | `on` | | ✅ | ✅ | ✅ | DNS over TLS IPv6 resolution | `on`, `off` |
+| `DOT_PRIVATE_ADDRESS` | All private CIDRs ranges | | ✅ | ✅ | ✅ | Comma separated list of CIDRs or single IP addresses Unbound won't resolve to. Note that the default setting prevents DNS rebinding | |
+| `DOT_VERBOSITY` | `1` | | ✅ | ✅ | ✅ | DNS over TLS Unbound verbosity level | `0`, `1`, `2`, `3`, `4`, `5` |
+| `DOT_VERBOSITY_DETAILS` | `0` | | ✅ | ✅ | ✅ | Unbound details verbosity level | `0`, `1`, `2`, `3`, `4` |
+| `DOT_VALIDATION_LOGLEVEL` | `0` | | ✅ | ✅ | ✅ | Unbound validation log level | `0`, `1`, `2` |
+| `BLOCK_MALICIOUS` | `on` | | ✅ | ✅ | ✅ | Block malicious hostnames and IPs with Unbound DNS over TLS | `on`, `off` |
+| `BLOCK_SURVEILLANCE` | `off` | | ✅ | ✅ | ✅ | Block surveillance hostnames and IPs with Unbound DNS over TLS | `on`, `off` |
+| `BLOCK_ADS` | `off` | | ✅ | ✅ | ✅ | Block ads hostnames and IPs with Unbound DNS over TLS | `on`, `off` |
+| `UNBLOCK` | | Optional | ✅ | ✅ | ✅ | Comma separated list of domain names to leave unblocked | In example `domain1.com,x.domain2.co.uk` |
+| `EXTRA_SUBNETS` | | Optional | ✅ | ✅ | ✅ | Comma separated subnets allowed in the container firewall | In example `192.168.1.0/24,192.168.10.121,10.0.0.5/28` |
+| `PORT_FORWARDING` | `off` | | ✅ | ❌ | ❌ | Enable port forwarding on the VPN server | `on`, `off` |
+| `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | | ✅ | ❌ | ❌ | File path to store the forwarded port number | Any valid file path |
+| `TINYPROXY` | `off` | | ✅ | ✅ | ✅ | Enable the internal HTTP proxy tinyproxy | `on`, `off` |
+| `TINYPROXY_LOG` | `Info` | | ✅ | ✅ | ✅ | Tinyproxy log level | `Info`, `Connect`, `Notice`, `Warning`, `Error`, `Critical` |
+| `TINYPROXY_PORT` | `8888` | | ✅ | ✅ | ✅ | Internal port number for Tinyproxy to listen on | `1024` to `65535` |
+| `TINYPROXY_USER` | | | ✅ | ✅ | ✅ | Username to use to connect to the HTTP proxy | |
+| `TINYPROXY_PASSWORD` | | | ✅ | ✅ | ✅ | Password to use to connect to the HTTP proxy | |
+| `SHADOWSOCKS` | `off` | | ✅ | ✅ | ✅ | Enable the internal SOCKS5 proxy Shadowsocks | `on`, `off` |
+| `SHADOWSOCKS_LOG` | `off` | | ✅ | ✅ | ✅ | Enable Shadowsocks logging | `on`, `off` |
+| `SHADOWSOCKS_PORT` | `8388` | | ✅ | ✅ | ✅ | Internal port number for Shadowsocks to listen on | `1024` to `65535` |
+| `SHADOWSOCKS_PASSWORD` | | | ✅ | ✅ | ✅ | Passsword to use to connect to the SOCKS5 proxy | |
+| `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | | ✅ | ✅ | ✅ | Method to use for Shadowsocks | One of [these ciphers](https://shadowsocks.org/en/config/quick-guide.html) |
+| `TZ` | | Optional | ✅ | ✅ | ✅ | Specify a timezone to use | In example `Europe/London` |
+| `OPENVPN_VERBOSITY` | `1` | | ✅ | ✅ | ✅ | Openvpn verbosity level | `0`, `1`, `2`, `3`, `4`, `5`, `6` |
+| `OPENVPN_ROOT` | `no` | | ✅ | ✅ | ✅ | Run OpenVPN as root | `yes`, `no` |
+| `OPENVPN_TARGET_IP` | | Optional | ✅ | ✅ | ✅ | Specify a target VPN server IP address to use | In example `199.65.55.100` |
+| `OPENVPN_CIPHER` | | Optional | ✅ | ✅ | ✅ | Specify a custom cipher to use. It will also set `ncp-disable` if using AES GCM for PIA | In example `aes-256-gcm` |
+| `OPENVPN_AUTH` | | Optional | ✅ | ❌ | ✅ | Specify a custom auth algorithm to use | In example `sha256` |
+| `UID` | `1000` | | ✅ | ✅ | ✅ | User ID to run as non root and for ownership of files written | |
+| `GID` | `1000` | | ✅ | ✅ | ✅ | Group ID to run as non root and for ownership of files written | |
 
 ## Connect to it
 
