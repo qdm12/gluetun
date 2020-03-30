@@ -77,7 +77,8 @@ ENV VPNSP=pia \
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
     SHADOWSOCKS_PORT=8388 \
-    SHADOWSOCKS_PASSWORD=
+    SHADOWSOCKS_PASSWORD= \
+    SHADOWSOCKS_METHOD=chacha20-ietf-poly1305
 ENTRYPOINT /entrypoint
 EXPOSE 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /entrypoint healthcheck

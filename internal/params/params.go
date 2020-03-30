@@ -66,6 +66,7 @@ type ParamsReader interface {
 	GetShadowSocksLog() (activated bool, err error)
 	GetShadowSocksPort() (port uint16, err error)
 	GetShadowSocksPassword() (password string, err error)
+	GetShadowSocksMethod() (method string, err error)
 
 	// Tinyproxy getters
 	GetTinyProxy() (activated bool, err error)

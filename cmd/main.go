@@ -231,6 +231,7 @@ func main() {
 		err = shadowsocksConf.MakeConf(
 			allSettings.ShadowSocks.Port,
 			allSettings.ShadowSocks.Password,
+			allSettings.ShadowSocks.Method,
 			allSettings.UID,
 			allSettings.GID)
 		e.FatalOnError(err)

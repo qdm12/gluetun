@@ -13,15 +13,23 @@ type ShadowSocks struct {
 	Password string
 	Log      bool
 	Port     uint16
+	Method   string
 }
 
 func (s *ShadowSocks) String() string {
 	if !s.Enabled {
 		return "ShadowSocks settings: disabled"
 	}
+	log := "disabled"
+	if s.Log {
+		log = "enabled"
+	}
 	settingsList := []string{
 		"ShadowSocks settings:",
+		"Password: [redacted]",
+		"Log: " + log,
 		fmt.Sprintf("Port: %d", s.Port),
+		"Method: " + s.Method,
 	}
 	return strings.Join(settingsList, "\n |--")
 }
@@ -41,6 +49,10 @@ func GetShadowSocksSettings(params params.ParamsReader) (settings ShadowSocks, e
 		return settings, err
 	}
 	settings.Log, err = params.GetShadowSocksLog()
+	if err != nil {
+		return settings, err
+	}
+	settings.Method, err = params.GetShadowSocksMethod()
 	if err != nil {
 		return settings, err
 	}
