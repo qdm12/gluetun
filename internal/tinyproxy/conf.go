@@ -11,17 +11,17 @@ import (
 
 func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) error {
 	c.logger.Info("%s: generating tinyproxy configuration file", logPrefix)
-	lines := generateConf(logLevel, port, user, password)
+	lines := generateConf(logLevel, port, user, password, uid, gid)
 	return c.fileManager.WriteLinesToFile(string(constants.TinyProxyConf),
 		lines,
 		files.Ownership(uid, gid),
 		files.Permissions(0400))
 }
 
-func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string) (lines []string) {
+func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) (lines []string) {
 	confMapping := map[string]string{
-		"User":                "nonrootuser",
-		"Group":               "tinyproxy",
+		"User":                fmt.Sprintf("%d", uid),
+		"Group":               fmt.Sprintf("%d", gid),
 		"Port":                fmt.Sprintf("%d", port),
 		"Timeout":             "600",
 		"DefaultErrorFile":    "\"/usr/share/tinyproxy/default.html\"",
