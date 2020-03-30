@@ -72,11 +72,11 @@ func main() {
 	e.FatalOnError(err)
 	logger.Info(allSettings.String())
 
-	err = alpineConf.CreateUser("nonrootuser", allSettings.UID)
+	err = alpineConf.CreateUser("nonrootuser", allSettings.System.UID)
 	e.FatalOnError(err)
-	err = fileManager.SetOwnership("/etc/unbound", allSettings.UID, allSettings.GID)
+	err = fileManager.SetOwnership("/etc/unbound", allSettings.System.UID, allSettings.System.GID)
 	e.FatalOnError(err)
-	err = fileManager.SetOwnership("/etc/tinyproxy", allSettings.UID, allSettings.GID)
+	err = fileManager.SetOwnership("/etc/tinyproxy", allSettings.System.UID, allSettings.System.GID)
 	e.FatalOnError(err)
 
 	if err := ovpnConf.CheckTUN(); err != nil {
@@ -97,7 +97,7 @@ func main() {
 		openVPNUser = allSettings.Windscribe.User
 		openVPNPassword = allSettings.Windscribe.Password
 	}
-	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, allSettings.UID, allSettings.GID)
+	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, allSettings.System.UID, allSettings.System.GID)
 	e.FatalOnError(err)
 
 	// Temporarily reset chain policies allowing Kubernetes sidecar to
@@ -118,11 +118,11 @@ func main() {
 	if allSettings.DNS.Enabled {
 		initialDNSToUse := constants.DNSProviderMapping()[allSettings.DNS.Providers[0]]
 		dnsConf.UseDNSInternally(initialDNSToUse.IPs[0])
-		err = dnsConf.DownloadRootHints(allSettings.UID, allSettings.GID)
+		err = dnsConf.DownloadRootHints(allSettings.System.UID, allSettings.System.GID)
 		e.FatalOnError(err)
-		err = dnsConf.DownloadRootKey(allSettings.UID, allSettings.GID)
+		err = dnsConf.DownloadRootKey(allSettings.System.UID, allSettings.System.GID)
 		e.FatalOnError(err)
-		err = dnsConf.MakeUnboundConf(allSettings.DNS, allSettings.UID, allSettings.GID)
+		err = dnsConf.MakeUnboundConf(allSettings.DNS, allSettings.System.UID, allSettings.System.GID)
 		e.FatalOnError(err)
 		stream, waitFn, err := dnsConf.Start(allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
@@ -150,8 +150,8 @@ func main() {
 			connections,
 			allSettings.PIA.Encryption,
 			allSettings.OpenVPN.Verbosity,
-			allSettings.UID,
-			allSettings.GID,
+			allSettings.System.UID,
+			allSettings.System.GID,
 			allSettings.OpenVPN.Root,
 			allSettings.OpenVPN.Cipher,
 			allSettings.OpenVPN.Auth)
@@ -168,8 +168,8 @@ func main() {
 		err = mullvadConf.BuildConf(
 			connections,
 			allSettings.OpenVPN.Verbosity,
-			allSettings.UID,
-			allSettings.GID,
+			allSettings.System.UID,
+			allSettings.System.GID,
 			allSettings.OpenVPN.Root,
 			allSettings.OpenVPN.Cipher)
 		e.FatalOnError(err)
@@ -183,8 +183,8 @@ func main() {
 		err = windscribeConf.BuildConf(
 			connections,
 			allSettings.OpenVPN.Verbosity,
-			allSettings.UID,
-			allSettings.GID,
+			allSettings.System.UID,
+			allSettings.System.GID,
 			allSettings.OpenVPN.Root,
 			allSettings.OpenVPN.Cipher,
 			allSettings.OpenVPN.Auth)
@@ -212,8 +212,8 @@ func main() {
 			allSettings.TinyProxy.Port,
 			allSettings.TinyProxy.User,
 			allSettings.TinyProxy.Password,
-			allSettings.UID,
-			allSettings.GID)
+			allSettings.System.UID,
+			allSettings.System.GID)
 		e.FatalOnError(err)
 		err = firewallConf.AllowAnyIncomingOnPort(allSettings.TinyProxy.Port)
 		e.FatalOnError(err)
@@ -232,8 +232,8 @@ func main() {
 			allSettings.ShadowSocks.Port,
 			allSettings.ShadowSocks.Password,
 			allSettings.ShadowSocks.Method,
-			allSettings.UID,
-			allSettings.GID)
+			allSettings.System.UID,
+			allSettings.System.GID)
 		e.FatalOnError(err)
 		err = firewallConf.AllowAnyIncomingOnPort(allSettings.ShadowSocks.Port)
 		e.FatalOnError(err)
@@ -256,8 +256,8 @@ func main() {
 			if err := piaConf.WritePortForward(
 				allSettings.PIA.PortForwarding.Filepath,
 				port,
-				allSettings.UID,
-				allSettings.GID); err != nil {
+				allSettings.System.UID,
+				allSettings.System.GID); err != nil {
 				logger.Error("port forwarding:", err)
 			}
 			if err := piaConf.AllowPortForwardFirewall(constants.TUN, port); err != nil {
