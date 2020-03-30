@@ -13,3 +13,8 @@ func (p *paramsReader) GetUID() (uid int, err error) {
 func (p *paramsReader) GetGID() (gid int, err error) {
 	return p.envParams.GetEnvIntRange("GID", 0, 65535, libparams.Default("1000"))
 }
+
+// GetTZ obtains the timezone from the environment variable TZ
+func (p *paramsReader) GetTimezone() (timezone string, err error) {
+	return p.envParams.GetEnv("TZ")
+}
