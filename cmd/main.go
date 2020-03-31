@@ -252,6 +252,7 @@ func main() {
 			port, err := piaConf.GetPortForward()
 			if err != nil {
 				logger.Error("port forwarding:", err)
+				return
 			}
 			if err := piaConf.WritePortForward(
 				allSettings.PIA.PortForwarding.Filepath,
@@ -259,9 +260,11 @@ func main() {
 				allSettings.System.UID,
 				allSettings.System.GID); err != nil {
 				logger.Error("port forwarding:", err)
+				return
 			}
 			if err := piaConf.AllowPortForwardFirewall(constants.TUN, port); err != nil {
 				logger.Error("port forwarding:", err)
+				return
 			}
 		})
 	}
