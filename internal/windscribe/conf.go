@@ -77,6 +77,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"key-direction 1",
 
 		// Added constant values
+		"persist-remote-ip",
 		"auth-nocache",
 		"mute-replay-warnings",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
