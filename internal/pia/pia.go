@@ -21,6 +21,7 @@ type Configurator interface {
 	BuildConf(connections []models.OpenVPNConnection, encryption models.PIAEncryption, verbosity, uid, gid int, root bool, cipher, auth string) (err error)
 	GetPortForward() (port uint16, err error)
 	WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error)
+	ClearPortForward(filepath models.Filepath, uid, gid int) (err error)
 	AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error)
 }
 

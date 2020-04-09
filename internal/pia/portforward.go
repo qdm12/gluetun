@@ -49,3 +49,8 @@ func (c *configurator) AllowPortForwardFirewall(device models.VPNDevice, port ui
 	c.logger.Info("%s: Allowing forwarded port %d through firewall", logPrefix, port)
 	return c.firewall.AllowInputTrafficOnPort(device, port)
 }
+
+func (c *configurator) ClearPortForward(filepath models.Filepath, uid, gid int) (err error) {
+	c.logger.Info("%s: Clearing forwarded port status file %s", logPrefix, filepath)
+	return c.fileManager.WriteToFile(string(filepath), nil, files.Ownership(uid, gid), files.Permissions(400))
+}

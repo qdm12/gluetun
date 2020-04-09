@@ -274,6 +274,11 @@ func main() {
 	go streamMerger.Merge("openvpn", stream)
 	go signals.WaitForExit(func(signal string) int {
 		logger.Warn("Caught OS signal %s, shutting down", signal)
+		if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
+			if err := piaConf.ClearPortForward(allSettings.PIA.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID); err != nil {
+				logger.Error(err)
+			}
+		}
 		time.Sleep(100 * time.Millisecond) // wait for other processes to exit
 		return 0
 	})
