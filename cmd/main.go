@@ -24,6 +24,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
+	"github.com/qdm12/private-internet-access-docker/internal/routing"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
 	"github.com/qdm12/private-internet-access-docker/internal/splash"
@@ -52,7 +53,8 @@ func main() {
 	alpineConf := alpine.NewConfigurator(logger, fileManager)
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
-	firewallConf := firewall.NewConfigurator(logger, fileManager)
+	firewallConf := firewall.NewConfigurator(logger)
+	routingConf := routing.NewRouting(logger, fileManager)
 	piaConf := pia.NewConfigurator(client, fileManager, firewallConf, logger)
 	mullvadConf := mullvad.NewConfigurator(fileManager, logger)
 	windscribeConf := windscribe.NewConfigurator(fileManager)
@@ -191,9 +193,9 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
+	defaultInterface, defaultGateway, defaultSubnet, err := routingConf.DefaultRoute()
 	e.FatalOnError(err)
-	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
+	err = routingConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
 	e.FatalOnError(err)
 	err = firewallConf.Clear()
 	e.FatalOnError(err)

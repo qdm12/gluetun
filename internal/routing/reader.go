@@ -1,4 +1,4 @@
-package firewall
+package routing
 
 import (
 	"encoding/hex"
@@ -10,28 +10,9 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error {
-	for _, subnet := range subnets {
-		subnetStr := subnet.String()
-		output, err := c.commander.Run("ip", "route", "show", subnetStr)
-		if err != nil {
-			return fmt.Errorf("cannot read route %s: %s: %w", subnetStr, output, err)
-		} else if len(output) > 0 { // thanks to @npawelek https://github.com/npawelek
-			continue // already exists
-			// TODO remove it instead and continue execution below
-		}
-		c.logger.Info("%s: adding %s as route via %s", logPrefix, subnetStr, defaultInterface)
-		output, err = c.commander.Run("ip", "route", "add", subnetStr, "via", defaultGateway.String(), "dev", defaultInterface)
-		if err != nil {
-			return fmt.Errorf("cannot add route for %s via %s %s %s: %s: %w", subnetStr, defaultGateway.String(), "dev", defaultInterface, output, err)
-		}
-	}
-	return nil
-}
-
-func (c *configurator) GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error) {
-	c.logger.Info("%s: detecting default network route", logPrefix)
-	data, err := c.fileManager.ReadFile(string(constants.NetRoute))
+func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error) {
+	r.logger.Info("detecting default network route")
+	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
 		return "", nil, defaultSubnet, err
 	}
@@ -63,7 +44,7 @@ func (c *configurator) GetDefaultRoute() (defaultInterface string, defaultGatewa
 		return "", nil, defaultSubnet, err
 	}
 	subnet := net.IPNet{IP: netNumber, Mask: netMask}
-	c.logger.Info("%s: default route found: interface %s, gateway %s, subnet %s", logPrefix, defaultInterface, defaultGateway.String(), subnet.String())
+	r.logger.Info("default route found: interface %s, gateway %s, subnet %s", defaultInterface, defaultGateway.String(), subnet.String())
 	return defaultInterface, defaultGateway, subnet, nil
 }
 

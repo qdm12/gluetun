@@ -1,4 +1,4 @@
-package firewall
+package routing
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func Test_getDefaultRoute(t *testing.T) {
+func Test_DefaultRoute(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
 		data             []byte
@@ -72,13 +72,13 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 			fileManager.On("ReadFile", string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Once()
 			logger := &loggingmocks.Logger{}
-			logger.On("Info", "%s: detecting default network route", logPrefix).Once()
+			logger.On("Info", "detecting default network route").Once()
 			if tc.err == nil {
-				logger.On("Info", "%s: default route found: interface %s, gateway %s, subnet %s",
-					logPrefix, tc.defaultInterface, tc.defaultGateway.String(), tc.defaultSubnet.String()).Once()
+				logger.On("Info", "default route found: interface %s, gateway %s, subnet %s",
+					tc.defaultInterface, tc.defaultGateway.String(), tc.defaultSubnet.String()).Once()
 			}
-			c := &configurator{logger: logger, fileManager: fileManager}
-			defaultInterface, defaultGateway, defaultSubnet, err := c.GetDefaultRoute()
+			r := &routing{logger: logger, fileManager: fileManager}
+			defaultInterface, defaultGateway, defaultSubnet, err := r.DefaultRoute()
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())
