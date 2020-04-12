@@ -46,11 +46,11 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
 	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
-		return false, fmt.Errorf("cannot check route existance: %w", err)
+		return false, fmt.Errorf("cannot check route existence: %w", err)
 	}
 	entries, err := parseRoutingTable(data)
 	if err != nil {
-		return false, fmt.Errorf("cannot check route existance: %w", err)
+		return false, fmt.Errorf("cannot check route existence: %w", err)
 	}
 	for _, entry := range entries {
 		entrySubnet := net.IPNet{IP: entry.destination, Mask: entry.mask}
