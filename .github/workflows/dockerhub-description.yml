@@ -1,16 +1,7 @@
 name: Docker Hub description
 on:
   push:
-    branches-ignore:
-      - '**'
-    #branches: [master]
-    paths:
-      - README.md
-      - .github/workflows/dockerhub-description.yml
-  pull_request:
-    branches-ignore:
-      - '**'
-    #branches: [master]
+    branches: [master]
     paths:
       - README.md
       - .github/workflows/dockerhub-description.yml
