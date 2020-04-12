@@ -13,7 +13,7 @@ func (c *configurator) WaitForUnbound() (err error) {
 		if err == nil {
 			return nil
 		}
-		c.logger.Warn("could not resolve %s (try %d of %d): %w", hostToResolve, try, maxTries, err)
+		c.logger.Warn("could not resolve %s (try %d of %d): %s", hostToResolve, try, maxTries, err)
 		time.Sleep(time.Duration(maxTries * 50 * time.Millisecond))
 	}
 	return fmt.Errorf("Unbound does not seem to be working after %d tries", maxTries)
