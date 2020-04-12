@@ -1,0 +1,89 @@
+{
+    // General settings
+    "files.eol": "\n",
+    // Docker
+    "remote.extensionKind": {
+        "ms-azuretools.vscode-docker": "workspace"
+    },
+    // Golang general settings
+    "go.useLanguageServer": true,
+    "go.autocompleteUnimportedPackages": true,
+    "go.gotoSymbol.includeImports": true,
+    "go.gotoSymbol.includeGoroot": true,
+    "gopls": {
+        "completeUnimported": true,
+        "deepCompletion": true,
+        "usePlaceholders": false
+    },
+    "go.lintTool": "golangci-lint",
+    "go.lintFlags": [
+        "--fast",
+        "--enable",
+        "rowserrcheck",
+        "--enable",
+        "bodyclose",
+        "--enable",
+        "dogsled",
+        "--enable",
+        "dupl",
+        "--enable",
+        "gochecknoglobals",
+        "--enable",
+        "gochecknoinits",
+        "--enable",
+        "gocognit",
+        "--enable",
+        "goconst",
+        "--enable",
+        "gocritic",
+        "--enable",
+        "gocyclo",
+        "--enable",
+        "goimports",
+        "--enable",
+        "golint",
+        "--enable",
+        "gosec",
+        "--enable",
+        "interfacer",
+        "--enable",
+        "maligned",
+        "--enable",
+        "misspell",
+        "--enable",
+        "nakedret",
+        "--enable",
+        "prealloc",
+        "--enable",
+        "scopelint",
+        "--enable",
+        "unconvert",
+        "--enable",
+        "unparam",
+        "--enable",
+        "whitespace"
+    ],
+    // Golang on save
+    "go.buildOnSave": "workspace",
+    "go.lintOnSave": "workspace",
+    "go.vetOnSave": "workspace",
+    "editor.formatOnSave": true,
+    "[go]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    },
+    // Golang testing
+    "go.toolsEnvVars": {
+        "GOFLAGS": "-tags="
+    },
+    "gopls.env": {
+        "GOFLAGS": "-tags="
+    },
+    "go.testEnvVars": {},
+    "go.testFlags": [
+        "-v",
+        // "-race"
+    ],
+    "go.testTimeout": "600s"
+}

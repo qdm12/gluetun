@@ -3,6 +3,7 @@
         "shardulm94.trailing-spaces",
         "ms-azuretools.vscode-docker",
         "davidanson.vscode-markdownlint",
-        "IBM.output-colorizer"
+        "IBM.output-colorizer",
+        "ms-vscode.go",
     ]
 }
