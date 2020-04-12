@@ -2,6 +2,7 @@ package params
 
 import (
 	libparams "github.com/qdm12/golibs/params"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // GetUID obtains the user ID to use from the environment variable UID
@@ -17,4 +18,11 @@ func (p *paramsReader) GetGID() (gid int, err error) {
 // GetTZ obtains the timezone from the environment variable TZ
 func (p *paramsReader) GetTimezone() (timezone string, err error) {
 	return p.envParams.GetEnv("TZ")
+}
+
+// GetIPStatusFilepath obtains the IP status file path
+// from the environment variable IP_STATUS_FILE
+func (p *paramsReader) GetIPStatusFilepath() (filepath models.Filepath, err error) {
+	filepathStr, err := p.envParams.GetPath("IP_STATUS_FILE", libparams.Default("/ip"), libparams.CaseSensitiveValue())
+	return models.Filepath(filepathStr), err
 }

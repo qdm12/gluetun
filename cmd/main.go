@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/qdm12/golibs/command"
@@ -24,6 +25,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
+	"github.com/qdm12/private-internet-access-docker/internal/routing"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
 	"github.com/qdm12/private-internet-access-docker/internal/splash"
@@ -52,7 +54,8 @@ func main() {
 	alpineConf := alpine.NewConfigurator(logger, fileManager)
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
-	firewallConf := firewall.NewConfigurator(logger, fileManager)
+	firewallConf := firewall.NewConfigurator(logger)
+	routingConf := routing.NewRouting(logger, fileManager)
 	piaConf := pia.NewConfigurator(client, fileManager, firewallConf, logger)
 	mullvadConf := mullvad.NewConfigurator(fileManager, logger)
 	windscribeConf := windscribe.NewConfigurator(fileManager)
@@ -100,6 +103,9 @@ func main() {
 	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, allSettings.System.UID, allSettings.System.GID)
 	e.FatalOnError(err)
 
+	defaultInterface, defaultGateway, defaultSubnet, err := routingConf.DefaultRoute()
+	e.FatalOnError(err)
+
 	// Temporarily reset chain policies allowing Kubernetes sidecar to
 	// successfully restart the container. Without this, the existing rules will
 	// pre-exist, preventing the nslookup of the PIA region address. These will
@@ -111,7 +117,19 @@ func main() {
 	go func() {
 		// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
 		logger.Info("Launching standard output merger")
-		err = streamMerger.CollectLines(func(line string) { logger.Info(line) })
+		err = streamMerger.CollectLines(func(line string) {
+			logger.Info(line)
+			if strings.Contains(line, "Initialization Sequence Completed") {
+				onConnected(logger, routingConf, fileManager, piaConf,
+					defaultInterface,
+					allSettings.VPNSP,
+					allSettings.PIA.PortForwarding.Enabled,
+					allSettings.PIA.PortForwarding.Filepath,
+					allSettings.System.IPStatusFilepath,
+					allSettings.System.UID,
+					allSettings.System.GID)
+			}
+		})
 		e.FatalOnError(err)
 	}()
 
@@ -191,9 +209,7 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	defaultInterface, defaultGateway, defaultSubnet, err := firewallConf.GetDefaultRoute()
-	e.FatalOnError(err)
-	err = firewallConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
+	err = routingConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
 	e.FatalOnError(err)
 	err = firewallConf.Clear()
 	e.FatalOnError(err)
@@ -247,28 +263,6 @@ func main() {
 		go streamMerger.Merge("shadowsocks", stream)
 	}
 
-	if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
-		time.AfterFunc(10*time.Second, func() {
-			port, err := piaConf.GetPortForward()
-			if err != nil {
-				logger.Error("port forwarding:", err)
-				return
-			}
-			if err := piaConf.WritePortForward(
-				allSettings.PIA.PortForwarding.Filepath,
-				port,
-				allSettings.System.UID,
-				allSettings.System.GID); err != nil {
-				logger.Error("port forwarding:", err)
-				return
-			}
-			if err := piaConf.AllowPortForwardFirewall(constants.TUN, port); err != nil {
-				logger.Error("port forwarding:", err)
-				return
-			}
-		})
-	}
-
 	stream, waitFn, err := ovpnConf.Start()
 	e.FatalOnError(err)
 	go streamMerger.Merge("openvpn", stream)
@@ -283,4 +277,49 @@ func main() {
 		return 0
 	})
 	e.FatalOnError(waitFn())
+}
+
+func onConnected(
+	logger logging.Logger,
+	routingConf routing.Routing,
+	fileManager files.FileManager,
+	piaConf pia.Configurator,
+	defaultInterface string,
+	VPNSP string,
+	portForwarding bool,
+	portForwardingFilepath models.Filepath,
+	ipStatusFilepath models.Filepath,
+	uid, gid int,
+) {
+	ip, err := routingConf.CurrentPublicIP(defaultInterface)
+	if err != nil {
+		logger.Error(err)
+	} else {
+		logger.Info("Tunnel IP is %s, see more information at https://ipinfo.io/%s", ip, ip)
+		err := fileManager.WriteLinesToFile(
+			string(ipStatusFilepath),
+			[]string{ip.String()},
+			files.Ownership(uid, gid),
+			files.Permissions(400))
+		if err != nil {
+			logger.Error(err)
+		}
+	}
+	if VPNSP != "pia" || !portForwarding {
+		return
+	}
+	port, err := piaConf.GetPortForward()
+	if err != nil {
+		logger.Error("port forwarding:", err)
+		return
+	}
+	logger.Info("port forwarding: Port %d", port)
+	if err := piaConf.WritePortForward(portForwardingFilepath, port, uid, gid); err != nil {
+		logger.Error("port forwarding:", err)
+		return
+	}
+	if err := piaConf.AllowPortForwardFirewall(constants.TUN, port); err != nil {
+		logger.Error("port forwarding:", err)
+		return
+	}
 }

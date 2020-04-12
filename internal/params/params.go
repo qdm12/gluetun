@@ -32,6 +32,7 @@ type ParamsReader interface {
 	GetUID() (uid int, err error)
 	GetGID() (gid int, err error)
 	GetTimezone() (timezone string, err error)
+	GetIPStatusFilepath() (filepath models.Filepath, err error)
 
 	// Firewall getters
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)

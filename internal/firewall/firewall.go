@@ -4,7 +4,6 @@ import (
 	"net"
 
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
@@ -20,23 +19,19 @@ type Configurator interface {
 	CreateGeneralRules() error
 	CreateVPNRules(dev models.VPNDevice, defaultInterface string, connections []models.OpenVPNConnection) error
 	CreateLocalSubnetsRules(subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error
-	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error
-	GetDefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)
 	AllowInputTrafficOnPort(device models.VPNDevice, port uint16) error
 	AllowAnyIncomingOnPort(port uint16) error
 }
 
 type configurator struct {
-	commander   command.Commander
-	logger      logging.Logger
-	fileManager files.FileManager
+	commander command.Commander
+	logger    logging.Logger
 }
 
 // NewConfigurator creates a new Configurator instance
-func NewConfigurator(logger logging.Logger, fileManager files.FileManager) Configurator {
+func NewConfigurator(logger logging.Logger) Configurator {
 	return &configurator{
-		commander:   command.NewCommander(),
-		logger:      logger,
-		fileManager: fileManager,
+		commander: command.NewCommander(),
+		logger:    logger,
 	}
 }

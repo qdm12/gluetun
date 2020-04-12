@@ -157,6 +157,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `EXTRA_SUBNETS` | | Optional | ✅ | ✅ | ✅ | Comma separated subnets allowed in the container firewall | In example `192.168.1.0/24,192.168.10.121,10.0.0.5/28` |
 | `PORT_FORWARDING` | `off` | | ✅ | ❌ | ❌ | Enable port forwarding on the VPN server | `on`, `off` |
 | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | | ✅ | ❌ | ❌ | File path to store the forwarded port number | Any valid file path |
+| `IP_STATUS_FILE` | `/ip` | | ✅ | ✅ | ✅ | File path to store the public IP address assigned | Any valid file path |
 | `TINYPROXY` | `off` | | ✅ | ✅ | ✅ | Enable the internal HTTP proxy tinyproxy | `on`, `off` |
 | `TINYPROXY_LOG` | `Info` | | ✅ | ✅ | ✅ | Tinyproxy log level | `Info`, `Connect`, `Notice`, `Warning`, `Error`, `Critical` |
 | `TINYPROXY_PORT` | `8888` | | ✅ | ✅ | ✅ | Internal port number for Tinyproxy to listen on | `1024` to `65535` |

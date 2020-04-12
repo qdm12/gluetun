@@ -38,6 +38,7 @@ ENV VPNSP=pia \
     TZ= \
     UID=1000 \
     GID=1000 \
+    IP_STATUS_FILE="/ip" \
     # PIA only
     PASSWORD= \
     REGION="Austria" \
