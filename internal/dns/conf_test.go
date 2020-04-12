@@ -37,8 +37,8 @@ func Test_generateUnboundConf(t *testing.T) {
 	client.EXPECT().GetContent(string(constants.MaliciousBlockListIPsURL)).
 		Return([]byte("c\nd\n"), 200, nil).Times(1)
 	logger := mock_logging.NewMockLogger(mockCtrl)
-	logger.EXPECT().Info("%s: %d hostnames blocked overall", logPrefix, 2).Times(1)
-	logger.EXPECT().Info("%s: %d IP addresses blocked overall", logPrefix, 3).Times(1)
+	logger.EXPECT().Info("%d hostnames blocked overall", 2).Times(1)
+	logger.EXPECT().Info("%d IP addresses blocked overall", 3).Times(1)
 	lines, warnings, err := generateUnboundConf(settings, client, logger)
 	require.Len(t, warnings, 0)
 	require.NoError(t, err)

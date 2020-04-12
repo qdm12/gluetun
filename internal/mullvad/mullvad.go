@@ -8,8 +8,6 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-const logPrefix = "Mullvad configurator"
-
 // Configurator contains methods to download, read and modify the openvpn configuration to connect as a client
 type Configurator interface {
 	GetOpenVPNConnections(country models.MullvadCountry, city models.MullvadCity, provider models.MullvadProvider, protocol models.NetworkProtocol, customPort uint16, targetIP net.IP) (connections []models.OpenVPNConnection, err error)
@@ -23,5 +21,8 @@ type configurator struct {
 
 // NewConfigurator returns a new Configurator object
 func NewConfigurator(fileManager files.FileManager, logger logging.Logger) Configurator {
-	return &configurator{fileManager, logger}
+	return &configurator{
+		fileManager: fileManager,
+		logger:      logger.WithPrefix("Mullvad configurator: "),
+	}
 }

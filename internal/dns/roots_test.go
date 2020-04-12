@@ -53,7 +53,7 @@ func Test_DownloadRootHints(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 			logger := mock_logging.NewMockLogger(mockCtrl)
-			logger.EXPECT().Info("%s: downloading root hints from %s", logPrefix, constants.NamedRootURL).Times(1)
+			logger.EXPECT().Info("downloading root hints from %s", constants.NamedRootURL).Times(1)
 			client := mock_network.NewMockClient(mockCtrl)
 			client.EXPECT().GetContent(string(constants.NamedRootURL)).
 				Return(tc.content, tc.status, tc.clientErr).Times(1)
@@ -115,7 +115,7 @@ func Test_DownloadRootKey(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 			logger := mock_logging.NewMockLogger(mockCtrl)
-			logger.EXPECT().Info("%s: downloading root key from %s", logPrefix, constants.RootKeyURL).Times(1)
+			logger.EXPECT().Info("downloading root key from %s", constants.RootKeyURL).Times(1)
 			client := mock_network.NewMockClient(mockCtrl)
 			client.EXPECT().GetContent(string(constants.RootKeyURL)).
 				Return(tc.content, tc.status, tc.clientErr).Times(1)

@@ -9,7 +9,7 @@ import (
 )
 
 func (c *configurator) Start(verbosityDetailsLevel uint8) (stdout io.ReadCloser, waitFn func() error, err error) {
-	c.logger.Info("%s: starting unbound", logPrefix)
+	c.logger.Info("starting unbound")
 	args := []string{"-d", "-c", string(constants.UnboundConf)}
 	if verbosityDetailsLevel > 0 {
 		args = append(args, "-"+strings.Repeat("v", int(verbosityDetailsLevel)))

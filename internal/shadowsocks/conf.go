@@ -9,7 +9,7 @@ import (
 )
 
 func (c *configurator) MakeConf(port uint16, password, method string, uid, gid int) (err error) {
-	c.logger.Info("%s: generating configuration file", logPrefix)
+	c.logger.Info("generating configuration file")
 	data := generateConf(port, password, method)
 	return c.fileManager.WriteToFile(
 		string(constants.ShadowsocksConf),

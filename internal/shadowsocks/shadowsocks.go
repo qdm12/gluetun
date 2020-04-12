@@ -8,8 +8,6 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-const logPrefix = "shadowsocks configurator"
-
 type Configurator interface {
 	Version() (string, error)
 	MakeConf(port uint16, password, method string, uid, gid int) (err error)
@@ -23,5 +21,8 @@ type configurator struct {
 }
 
 func NewConfigurator(fileManager files.FileManager, logger logging.Logger) Configurator {
-	return &configurator{fileManager, logger, command.NewCommander()}
+	return &configurator{
+		fileManager: fileManager,
+		logger:      logger.WithPrefix("shadowsocks configurator: "),
+		commander:   command.NewCommander()}
 }

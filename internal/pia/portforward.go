@@ -11,7 +11,7 @@ import (
 )
 
 func (c *configurator) GetPortForward() (port uint16, err error) {
-	c.logger.Info("%s: Obtaining port to be forwarded", logPrefix)
+	c.logger.Info("Obtaining port to be forwarded")
 	b, err := c.random.GenerateRandomBytes(32)
 	if err != nil {
 		return 0, err
@@ -32,12 +32,12 @@ func (c *configurator) GetPortForward() (port uint16, err error) {
 	if err := json.Unmarshal(content, &body); err != nil {
 		return 0, fmt.Errorf("port forwarding response: %w", err)
 	}
-	c.logger.Info("%s: Port forwarded is %d", logPrefix, body.Port)
+	c.logger.Info("Port forwarded is %d", body.Port)
 	return body.Port, nil
 }
 
 func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	c.logger.Info("%s: Writing forwarded port to %s", logPrefix, filepath)
+	c.logger.Info("Writing forwarded port to %s", filepath)
 	return c.fileManager.WriteLinesToFile(
 		string(filepath),
 		[]string{fmt.Sprintf("%d", port)},
@@ -46,11 +46,11 @@ func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, u
 }
 
 func (c *configurator) AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error) {
-	c.logger.Info("%s: Allowing forwarded port %d through firewall", logPrefix, port)
+	c.logger.Info("Allowing forwarded port %d through firewall", port)
 	return c.firewall.AllowInputTrafficOnPort(device, port)
 }
 
 func (c *configurator) ClearPortForward(filepath models.Filepath, uid, gid int) (err error) {
-	c.logger.Info("%s: Clearing forwarded port status file %s", logPrefix, filepath)
+	c.logger.Info("Clearing forwarded port status file %s", filepath)
 	return c.fileManager.WriteToFile(string(filepath), nil, files.Ownership(uid, gid), files.Permissions(400))
 }

@@ -11,10 +11,10 @@ func (c *configurator) WriteAuthFile(user, password string, uid, gid int) error 
 	if err != nil {
 		return err
 	} else if authExists { // in case of container stop/start
-		c.logger.Info("%s: %s already exists", logPrefix, constants.OpenVPNAuthConf)
+		c.logger.Info("%s already exists", constants.OpenVPNAuthConf)
 		return nil
 	}
-	c.logger.Info("%s: writing auth file %s", logPrefix, constants.OpenVPNAuthConf)
+	c.logger.Info("writing auth file %s", constants.OpenVPNAuthConf)
 	return c.fileManager.WriteLinesToFile(
 		string(constants.OpenVPNAuthConf),
 		[]string{user, password},

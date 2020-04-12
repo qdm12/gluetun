@@ -57,7 +57,7 @@ func Test_UseDNSSystemWide(t *testing.T) {
 					Return(tc.writeErr).Times(1)
 			}
 			logger := mock_logging.NewMockLogger(mockCtrl)
-			logger.EXPECT().Info("%s: using DNS address %s system wide", logPrefix, "127.0.0.1").Times(1)
+			logger.EXPECT().Info("using DNS address %s system wide", "127.0.0.1").Times(1)
 			c := &configurator{
 				fileManager: fileManager,
 				logger:      logger,

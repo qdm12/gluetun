@@ -11,8 +11,6 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
-const logPrefix = "dns configurator"
-
 type Configurator interface {
 	DownloadRootHints(uid, gid int) error
 	DownloadRootKey(uid, gid int) error
@@ -34,7 +32,7 @@ type configurator struct {
 
 func NewConfigurator(logger logging.Logger, client network.Client, fileManager files.FileManager) Configurator {
 	return &configurator{
-		logger:      logger,
+		logger:      logger.WithPrefix("dns configurator: "),
 		client:      client,
 		fileManager: fileManager,
 		commander:   command.NewCommander(),

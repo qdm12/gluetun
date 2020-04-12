@@ -10,8 +10,6 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-const logPrefix = "openvpn configurator"
-
 type Configurator interface {
 	Version() (string, error)
 	WriteAuthFile(user, password string, uid, gid int) error
@@ -32,7 +30,7 @@ type configurator struct {
 func NewConfigurator(logger logging.Logger, fileManager files.FileManager) Configurator {
 	return &configurator{
 		fileManager: fileManager,
-		logger:      logger,
+		logger:      logger.WithPrefix("openvpn configurator: "),
 		commander:   command.NewCommander(),
 		openFile:    os.OpenFile,
 		mkDev:       unix.Mkdev,

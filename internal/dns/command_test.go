@@ -18,7 +18,7 @@ func Test_Start(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	logger := mock_logging.NewMockLogger(mockCtrl)
-	logger.EXPECT().Info("%s: starting unbound", logPrefix).Times(1)
+	logger.EXPECT().Info("starting unbound").Times(1)
 	commander := mock_command.NewMockCommander(mockCtrl)
 	commander.EXPECT().Start("unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
 		Return(nil, nil, nil, nil).Times(1)

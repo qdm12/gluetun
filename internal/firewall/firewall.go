@@ -8,8 +8,6 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-const logPrefix = "firewall configurator"
-
 // Configurator allows to change firewall rules and modify network routes
 type Configurator interface {
 	Version() (string, error)
@@ -32,6 +30,6 @@ type configurator struct {
 func NewConfigurator(logger logging.Logger) Configurator {
 	return &configurator{
 		commander: command.NewCommander(),
-		logger:    logger,
+		logger:    logger.WithPrefix("firewall configurator: "),
 	}
 }

@@ -51,7 +51,7 @@ func main() {
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
 	fileManager := files.NewFileManager()
-	alpineConf := alpine.NewConfigurator(logger, fileManager)
+	alpineConf := alpine.NewConfigurator(fileManager)
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
 	firewallConf := firewall.NewConfigurator(logger)

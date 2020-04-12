@@ -58,7 +58,7 @@ func Test_MakeConf(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 			logger := mock_logging.NewMockLogger(mockCtrl)
-			logger.EXPECT().Info("%s: generating configuration file", logPrefix).Times(1)
+			logger.EXPECT().Info("generating configuration file").Times(1)
 			fileManager := mock_files.NewMockFileManager(mockCtrl)
 			fileManager.EXPECT().WriteToFile(
 				string(constants.ShadowsocksConf),

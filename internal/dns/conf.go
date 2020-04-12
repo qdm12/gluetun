@@ -13,7 +13,7 @@ import (
 )
 
 func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err error) {
-	c.logger.Info("%s: generating Unbound configuration", logPrefix)
+	c.logger.Info("generating Unbound configuration")
 	lines, warnings, err := generateUnboundConf(settings, c.client, c.logger)
 	for _, warning := range warnings {
 		c.logger.Warn(warning)
@@ -76,8 +76,8 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		settings.BlockMalicious, settings.BlockAds, settings.BlockSurveillance,
 		settings.AllowedHostnames, settings.PrivateAddresses,
 	)
-	logger.Info("%s: %d hostnames blocked overall", logPrefix, len(hostnamesLines))
-	logger.Info("%s: %d IP addresses blocked overall", logPrefix, len(ipsLines))
+	logger.Info("%d hostnames blocked overall", len(hostnamesLines))
+	logger.Info("%d IP addresses blocked overall", len(ipsLines))
 	sort.Slice(hostnamesLines, func(i, j int) bool { // for unit tests really
 		return hostnamesLines[i] < hostnamesLines[j]
 	})

@@ -10,7 +10,7 @@ import (
 
 // UseDNSInternally is to change the Go program DNS only
 func (c *configurator) UseDNSInternally(IP net.IP) {
-	c.logger.Info("%s: using DNS address %s internally", logPrefix, IP.String())
+	c.logger.Info("using DNS address %s internally", IP.String())
 	net.DefaultResolver = &net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
@@ -22,7 +22,7 @@ func (c *configurator) UseDNSInternally(IP net.IP) {
 
 // UseDNSSystemWide changes the nameserver to use for DNS system wide
 func (c *configurator) UseDNSSystemWide(IP net.IP) error {
-	c.logger.Info("%s: using DNS address %s system wide", logPrefix, IP.String())
+	c.logger.Info("using DNS address %s system wide", IP.String())
 	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))
 	if err != nil {
 		return err

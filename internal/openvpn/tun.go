@@ -10,7 +10,7 @@ import (
 
 // CheckTUN checks the tunnel device is present and accessible
 func (c *configurator) CheckTUN() error {
-	c.logger.Info("%s: checking for device %s", logPrefix, constants.TunnelDevice)
+	c.logger.Info("checking for device %s", constants.TunnelDevice)
 	f, err := c.openFile(string(constants.TunnelDevice), os.O_RDWR, 0)
 	if err != nil {
 		return fmt.Errorf("TUN device is not available: %w", err)
@@ -22,7 +22,7 @@ func (c *configurator) CheckTUN() error {
 }
 
 func (c *configurator) CreateTUN() error {
-	c.logger.Info("%s: creating %s", logPrefix, constants.TunnelDevice)
+	c.logger.Info("creating %s", constants.TunnelDevice)
 	if err := c.fileManager.CreateDir("/dev/net"); err != nil {
 		return err
 	}
