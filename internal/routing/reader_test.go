@@ -194,7 +194,6 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 			mockFilemanager := NewMockFileManager(mockCtrl)
-
 			mockFilemanager.EXPECT().ReadFile(string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Times(1)
 			r := &routing{fileManager: mockFilemanager}
@@ -206,6 +205,69 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tc.exists, exists)
+		})
+	}
+}
+
+func Test_CurrentIP(t *testing.T) {
+	t.Parallel()
+	const exampleRouteData = `Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+tun0    00000000        050A090A        0003    0       0       0       00000080        0       0       0
+eth0    00000000        0100000A        0003    0       0       0       00000000        0       0       0
+eth0    0000000A        00000000        0001    0       0       0       00FFFFFF        0       0       0
+tun0    010A090A        050A090A        0007    0       0       0       FFFFFFFF        0       0       0
+tun0    050A090A        00000000        0005    0       0       0       FFFFFFFF        0       0       0
+eth0    2194B05F        0100000A        0007    0       0       0       FFFFFFFF        0       0       0
+tun0    00000080        050A090A        0003    0       0       0       00000080        0       0       0
+eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0`
+	tests := map[string]struct {
+		defaultInterface string
+		data             []byte
+		readErr          error
+		ip               net.IP
+		err              error
+	}{
+		"no data": {
+			err: fmt.Errorf("cannot find current IP address from ip routes"),
+		},
+		"read error": {
+			readErr: fmt.Errorf("error"),
+			err:     fmt.Errorf("cannot find current IP address: error"),
+		},
+		"parse error": {
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0   x`),
+			err: fmt.Errorf("cannot find current IP address: line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
+		},
+		"found eth0": {
+			defaultInterface: "eth0",
+			data:             []byte(exampleRouteData),
+			ip:               net.IP{95, 176, 148, 33},
+		},
+		"not found tun0": {
+			defaultInterface: "tun0",
+			data:             []byte(exampleRouteData),
+			err:              fmt.Errorf("cannot find current IP address from ip routes"),
+		},
+	}
+	for name, tc := range tests {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			mockFilemanager := NewMockFileManager(mockCtrl)
+			mockFilemanager.EXPECT().ReadFile(string(constants.NetRoute)).
+				Return(tc.data, tc.readErr).Times(1)
+			r := &routing{fileManager: mockFilemanager}
+			ip, err := r.CurrentPublicIP(tc.defaultInterface)
+			if tc.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, tc.err.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tc.ip, ip)
 		})
 	}
 }

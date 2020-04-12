@@ -11,6 +11,7 @@ import (
 type Routing interface {
 	AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)
+	CurrentPublicIP(defaultInterface string) (ip net.IP, err error)
 }
 
 type routing struct {

@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"bytes"
 	"net"
 
 	"fmt"
@@ -58,4 +59,46 @@ func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
 		}
 	}
 	return false, nil
+}
+
+func (r *routing) CurrentPublicIP(defaultInterface string) (ip net.IP, err error) {
+	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
+	if err != nil {
+		return nil, fmt.Errorf("cannot find current IP address: %w", err)
+	}
+	entries, err := parseRoutingTable(data)
+	if err != nil {
+		return nil, fmt.Errorf("cannot find current IP address: %w", err)
+	}
+	for _, entry := range entries {
+		if entry.iface == defaultInterface &&
+			!ipIsPrivate(entry.destination) &&
+			bytes.Equal(entry.mask, net.IPMask{255, 255, 255, 255}) {
+			return entry.destination, nil
+		}
+	}
+	return nil, fmt.Errorf("cannot find current IP address from ip routes")
+}
+
+func ipIsPrivate(ip net.IP) bool {
+	if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+		return true
+	}
+	privateCIDRBlocks := [8]string{
+		"127.0.0.0/8",    // localhost
+		"10.0.0.0/8",     // 24-bit block
+		"172.16.0.0/12",  // 20-bit block
+		"192.168.0.0/16", // 16-bit block
+		"169.254.0.0/16", // link local address
+		"::1/128",        // localhost IPv6
+		"fc00::/7",       // unique local address IPv6
+		"fe80::/10",      // link local address IPv6
+	}
+	for i := range privateCIDRBlocks {
+		_, CIDR, _ := net.ParseCIDR(privateCIDRBlocks[i])
+		if CIDR.Contains(ip) {
+			return true
+		}
+	}
+	return false
 }
