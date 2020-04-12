@@ -5,8 +5,9 @@ import (
 	"net"
 	"testing"
 
-	filesmocks "github.com/qdm12/golibs/files/mocks"
-	loggingmocks "github.com/qdm12/golibs/logging/mocks"
+	"github.com/golang/mock/gomock"
+	"github.com/qdm12/golibs/files/mock_files"
+	"github.com/qdm12/golibs/logging/mock_logging"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -46,15 +47,17 @@ func Test_UseDNSSystemWide(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			fileManager := &filesmocks.FileManager{}
-			fileManager.On("ReadFile", string(constants.ResolvConf)).
-				Return(tc.data, tc.readErr).Once()
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			fileManager := mock_files.NewMockFileManager(mockCtrl)
+			fileManager.EXPECT().ReadFile(string(constants.ResolvConf)).
+				Return(tc.data, tc.readErr).Times(1)
 			if tc.readErr == nil {
-				fileManager.On("WriteToFile", string(constants.ResolvConf), tc.writtenData).
-					Return(tc.writeErr).Once()
+				fileManager.EXPECT().WriteToFile(string(constants.ResolvConf), tc.writtenData).
+					Return(tc.writeErr).Times(1)
 			}
-			logger := &loggingmocks.Logger{}
-			logger.On("Info", "%s: using DNS address %s system wide", logPrefix, "127.0.0.1").Once()
+			logger := mock_logging.NewMockLogger(mockCtrl)
+			logger.EXPECT().Info("%s: using DNS address %s system wide", logPrefix, "127.0.0.1").Times(1)
 			c := &configurator{
 				fileManager: fileManager,
 				logger:      logger,
@@ -66,8 +69,6 @@ func Test_UseDNSSystemWide(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-			fileManager.AssertExpectations(t)
-			logger.AssertExpectations(t)
 		})
 	}
 }

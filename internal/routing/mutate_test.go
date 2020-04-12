@@ -5,12 +5,11 @@ import (
 	"net"
 	"testing"
 
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
+	"github.com/qdm12/golibs/command/mock_command"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-//go:generate mockgen -destination=mockCommander_test.go -package=routing github.com/qdm12/golibs/command Commander
 
 func Test_removeRoute(t *testing.T) {
 	t.Parallel()
@@ -50,11 +49,11 @@ func Test_removeRoute(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
-			mockCommander := NewMockCommander(mockCtrl)
+			commander := mock_command.NewMockCommander(mockCtrl)
 
-			mockCommander.EXPECT().Run("ip", "route", "del", tc.subnet.String()).
+			commander.EXPECT().Run("ip", "route", "del", tc.subnet.String()).
 				Return(tc.runOutput, tc.runErr).Times(1)
-			r := &routing{commander: mockCommander}
+			r := &routing{commander: commander}
 			err := r.removeRoute(tc.subnet)
 			if tc.err != nil {
 				require.Error(t, err)

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/qdm12/golibs/logging/mocks"
+	"github.com/golang/mock/gomock"
+	"github.com/qdm12/golibs/logging/mock_logging"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func Test_FatalOnError(t *testing.T) {
@@ -23,13 +23,13 @@ func Test_FatalOnError(t *testing.T) {
 			t.Parallel()
 			var logged string
 			var exitCode int
-			logger := &mocks.Logger{}
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			logger := mock_logging.NewMockLogger(mockCtrl)
 			if tc.err != nil {
-				logger.On("Error", tc.err).
-					Run(func(args mock.Arguments) {
-						err := args.Get(0).(error)
-						logged = err.Error()
-					}).Once()
+				logger.EXPECT().Error(tc.err).Do(func(err error) {
+					logged = err.Error()
+				}).Times(1)
 			}
 			osExit := func(n int) { exitCode = n }
 			e := &env{logger, osExit}
@@ -61,21 +61,19 @@ func Test_PrintVersion(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			var logged string
-			logger := &mocks.Logger{}
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			logger := mock_logging.NewMockLogger(mockCtrl)
 			if tc.commandErr != nil {
-				logger.On("Error", tc.commandErr).
-					Run(func(args mock.Arguments) {
-						err := args.Get(0).(error)
-						logged = err.Error()
-					}).Once()
+				logger.EXPECT().Error(tc.commandErr).Do(func(err error) {
+					logged = err.Error()
+				}).Times(1)
+
 			} else {
-				logger.On("Info", "%s version: %s", tc.program, tc.commandVersion).
-					Run(func(args mock.Arguments) {
-						format := args.Get(0).(string)
-						program := args.Get(1).(string)
-						version := args.Get(2).(string)
+				logger.EXPECT().Info("%s version: %s", tc.program, tc.commandVersion).
+					Do(func(format, program, version string) {
 						logged = fmt.Sprintf(format, program, version)
-					}).Once()
+					}).Times(1)
 			}
 			e := &env{logger: logger}
 			commandFn := func() (string, error) { return tc.commandVersion, tc.commandErr }

@@ -5,15 +5,14 @@ import (
 	"net"
 	"testing"
 
-	gomock "github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/qdm12/golibs/files/mock_files"
+	"github.com/qdm12/golibs/logging/mock_logging"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
-
-//go:generate mockgen -destination=mockLogger_test.go -package=routing github.com/qdm12/golibs/logging Logger
-//go:generate mockgen -destination=mockFilemanager_test.go -package=routing github.com/qdm12/golibs/files FileManager
 
 func Test_parseRoutingTable(t *testing.T) {
 	t.Parallel()
@@ -130,19 +129,19 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
-			mockLogger := NewMockLogger(mockCtrl)
-			mockFilemanager := NewMockFileManager(mockCtrl)
+			logger := mock_logging.NewMockLogger(mockCtrl)
+			filemanager := mock_files.NewMockFileManager(mockCtrl)
 
-			mockFilemanager.EXPECT().ReadFile(string(constants.NetRoute)).
+			filemanager.EXPECT().ReadFile(string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Times(1)
-			mockLogger.EXPECT().Info("detecting default network route").Times(1)
+			logger.EXPECT().Info("detecting default network route").Times(1)
 			if tc.err == nil {
-				mockLogger.EXPECT().Info(
+				logger.EXPECT().Info(
 					"default route found: interface %s, gateway %s, subnet %s",
 					tc.defaultInterface, tc.defaultGateway.String(), tc.defaultSubnet.String(),
 				).Times(1)
 			}
-			r := &routing{logger: mockLogger, fileManager: mockFilemanager}
+			r := &routing{logger: logger, fileManager: filemanager}
 			defaultInterface, defaultGateway, defaultSubnet, err := r.DefaultRoute()
 			if tc.err != nil {
 				require.Error(t, err)
@@ -203,10 +202,10 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
-			mockFilemanager := NewMockFileManager(mockCtrl)
-			mockFilemanager.EXPECT().ReadFile(string(constants.NetRoute)).
+			filemanager := mock_files.NewMockFileManager(mockCtrl)
+			filemanager.EXPECT().ReadFile(string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Times(1)
-			r := &routing{fileManager: mockFilemanager}
+			r := &routing{fileManager: filemanager}
 			exists, err := r.routeExists(tc.subnet)
 			if tc.err != nil {
 				require.Error(t, err)
@@ -268,10 +267,10 @@ eth0   x
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
-			mockFilemanager := NewMockFileManager(mockCtrl)
-			mockFilemanager.EXPECT().ReadFile(string(constants.NetRoute)).
+			filemanager := mock_files.NewMockFileManager(mockCtrl)
+			filemanager.EXPECT().ReadFile(string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Times(1)
-			r := &routing{fileManager: mockFilemanager}
+			r := &routing{fileManager: filemanager}
 			ip, err := r.CurrentPublicIP(tc.defaultInterface)
 			if tc.err != nil {
 				require.Error(t, err)

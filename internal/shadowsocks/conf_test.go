@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	filesMocks "github.com/qdm12/golibs/files/mocks"
-	loggingMocks "github.com/qdm12/golibs/logging/mocks"
+	"github.com/golang/mock/gomock"
+	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/files/mock_files"
+	"github.com/qdm12/golibs/logging/mock_logging"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -54,16 +55,17 @@ func Test_MakeConf(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			logger := &loggingMocks.Logger{}
-			logger.On("Info", "%s: generating configuration file", logPrefix).Once()
-			fileManager := &filesMocks.FileManager{}
-			fileManager.On("WriteToFile",
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			logger := mock_logging.NewMockLogger(mockCtrl)
+			logger.EXPECT().Info("%s: generating configuration file", logPrefix).Times(1)
+			fileManager := mock_files.NewMockFileManager(mockCtrl)
+			fileManager.EXPECT().WriteToFile(
 				string(constants.ShadowsocksConf),
 				[]byte(`{"server":"0.0.0.0","user":"nonrootuser","method":"chacha20-ietf-poly1305","timeout":30,"fast_open":false,"mode":"tcp_and_udp","port_password":{"2000":"abcde"},"workers":2,"interface":"tun","nameserver":"127.0.0.1"}`),
-				mock.AnythingOfType("files.WriteOptionSetter"),
-				mock.AnythingOfType("files.WriteOptionSetter"),
-			).
-				Return(tc.writeErr).Once()
+				gomock.AssignableToTypeOf(files.Ownership(0, 0)),
+				gomock.AssignableToTypeOf(files.Ownership(0, 0)),
+			).Return(tc.writeErr).Times(1)
 			c := &configurator{logger: logger, fileManager: fileManager}
 			err := c.MakeConf(2000, "abcde", "chacha20-ietf-poly1305", 1000, 1001)
 			if tc.err != nil {
@@ -72,8 +74,6 @@ func Test_MakeConf(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-			logger.AssertExpectations(t)
-			fileManager.AssertExpectations(t)
 		})
 	}
 }

@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/golibs/network"
+	"github.com/qdm12/golibs/network/connectivity"
 )
 
 func HealthCheck() error {
 	// DNS, HTTP and HTTPs check on github.com
-	connectivty := network.NewConnectivity(3 * time.Second)
+	connectivty := connectivity.NewConnectivity(3 * time.Second)
 	errs := connectivty.Checks("github.com")
 	if len(errs) > 0 {
 		var errsStr []string

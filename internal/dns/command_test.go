@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	commandMocks "github.com/qdm12/golibs/command/mocks"
-	loggingMocks "github.com/qdm12/golibs/logging/mocks"
+	"github.com/golang/mock/gomock"
+	"github.com/qdm12/golibs/command/mock_command"
+	"github.com/qdm12/golibs/logging/mock_logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -14,18 +15,18 @@ import (
 
 func Test_Start(t *testing.T) {
 	t.Parallel()
-	logger := &loggingMocks.Logger{}
-	logger.On("Info", "%s: starting unbound", logPrefix).Once()
-	commander := &commandMocks.Commander{}
-	commander.On("Start", "unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
-		Return(nil, nil, nil, nil).Once()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	logger := mock_logging.NewMockLogger(mockCtrl)
+	logger.EXPECT().Info("%s: starting unbound", logPrefix).Times(1)
+	commander := mock_command.NewMockCommander(mockCtrl)
+	commander.EXPECT().Start("unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
+		Return(nil, nil, nil, nil).Times(1)
 	c := &configurator{commander: commander, logger: logger}
 	stdout, waitFn, err := c.Start(2)
 	assert.Nil(t, stdout)
 	assert.Nil(t, waitFn)
 	assert.NoError(t, err)
-	logger.AssertExpectations(t)
-	commander.AssertExpectations(t)
 }
 
 func Test_Version(t *testing.T) {
@@ -52,9 +53,11 @@ func Test_Version(t *testing.T) {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			commander := &commandMocks.Commander{}
-			commander.On("Run", "unbound", "-V").
-				Return(tc.runOutput, tc.runErr).Once()
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			commander := mock_command.NewMockCommander(mockCtrl)
+			commander.EXPECT().Run("unbound", "-V").
+				Return(tc.runOutput, tc.runErr).Times(1)
 			c := &configurator{commander: commander}
 			version, err := c.Version()
 			if tc.err != nil {
@@ -64,7 +67,6 @@ func Test_Version(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tc.version, version)
-			commander.AssertExpectations(t)
 		})
 	}
 }
