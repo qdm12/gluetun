@@ -118,6 +118,7 @@ func main() {
 		// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
 		logger.Info("Launching standard output merger")
 		err = streamMerger.CollectLines(func(line string) {
+			logger.Info(line)
 			if strings.Contains(line, "Initialization Sequence Completed") {
 				onConnected(logger, routingConf, fileManager, piaConf,
 					defaultInterface,
@@ -128,7 +129,6 @@ func main() {
 					allSettings.System.UID,
 					allSettings.System.GID)
 			}
-			logger.Info(line)
 		})
 		e.FatalOnError(err)
 	}()

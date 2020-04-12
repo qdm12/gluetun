@@ -11,7 +11,7 @@ import (
 )
 
 func parseRoutingTable(data []byte) (entries []routingEntry, err error) {
-	lines := strings.Split(string(data), "\n")
+	lines := strings.Split(strings.TrimSuffix(string(data), "\n"), "\n")
 	lines = lines[1:]
 	entries = make([]routingEntry, len(lines))
 	for i := range lines {

@@ -26,12 +26,14 @@ func Test_parseRoutingTable(t *testing.T) {
 			entries: []routingEntry{},
 		},
 		"legend only": {
-			data:    []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT`),
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+`),
 			entries: []routingEntry{},
 		},
 		"legend and single line": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0   0002A8C0  0100000A  0003   0 0 0  00FFFFFF   0 0  0`),
+eth0   0002A8C0  0100000A  0003   0 0 0  00FFFFFF   0 0  0
+`),
 			entries: []routingEntry{{
 				iface:       "eth0",
 				destination: net.IP{192, 168, 2, 0},
@@ -43,7 +45,8 @@ eth0   0002A8C0  0100000A  0003   0 0 0  00FFFFFF   0 0  0`),
 		"legend and two lines": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
 eth0   0002A8C0  0100000A  0003   0 0 0  00FFFFFF   0 0  0
-eth0   0002A8C0  0100000A  0002   0 0 0  00FFFFFF   0 0  0`),
+eth0   0002A8C0  0100000A  0002   0 0 0  00FFFFFF   0 0  0
+`),
 			entries: []routingEntry{
 				{
 					iface:       "eth0",
@@ -62,7 +65,8 @@ eth0   0002A8C0  0100000A  0002   0 0 0  00FFFFFF   0 0  0`),
 		},
 		"error": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0   x  0100000A  0003   0 0 0  00FFFFFF   0 0  0`),
+eth0   x  0100000A  0003   0 0 0  00FFFFFF   0 0  0
+`),
 			entries: nil,
 			err:     fmt.Errorf("line 1 in /proc/net/route: line \"eth0   x  0100000A  0003   0 0 0  00FFFFFF   0 0  0\": cannot parse reversed IP hex \"x\": encoding/hex: invalid byte: U+0078 'x'"),
 		},
@@ -100,16 +104,19 @@ func Test_DefaultRoute(t *testing.T) {
 			err:     fmt.Errorf("error")},
 		"parse error": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0   x`),
+eth0   x
+`),
 			err: fmt.Errorf("line 1 in /proc/net/route: line \"eth0   x\": not enough fields")},
 		"single entry": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT        
-eth0    00000000        050A090A        0003    0       0       0       00000080        0       0       0`),
+eth0    00000000        050A090A        0003    0       0       0       00000080        0       0       0
+`),
 			err: fmt.Errorf("not enough entries (1) found in %s", constants.NetRoute)},
 		"success": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT        
 eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
-eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0`),
+eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0
+`),
 			defaultInterface: "eth0",
 			defaultGateway:   net.IP{172, 17, 0, 1},
 			defaultSubnet: net.IPNet{
@@ -166,7 +173,8 @@ func Test_routeExists(t *testing.T) {
 		},
 		"parse error": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0   x`),
+eth0   x
+`),
 			err: fmt.Errorf("cannot check route existance: line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
 		},
 		"not existing": {
@@ -175,7 +183,8 @@ eth0   x`),
 				Mask: net.IPMask{255, 255, 255, 128},
 			},
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0`),
+eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0
+`),
 		},
 		"existing": {
 			subnet: net.IPNet{
@@ -183,7 +192,8 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 				Mask: net.IPMask{255, 255, 255, 0},
 			},
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0`),
+eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0
+`),
 			exists: true,
 		},
 	}
@@ -219,7 +229,8 @@ tun0    010A090A        050A090A        0007    0       0       0       FFFFFFFF
 tun0    050A090A        00000000        0005    0       0       0       FFFFFFFF        0       0       0
 eth0    2194B05F        0100000A        0007    0       0       0       FFFFFFFF        0       0       0
 tun0    00000080        050A090A        0003    0       0       0       00000080        0       0       0
-eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0`
+eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0
+`
 	tests := map[string]struct {
 		defaultInterface string
 		data             []byte
@@ -236,7 +247,8 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 		},
 		"parse error": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0   x`),
+eth0   x
+`),
 			err: fmt.Errorf("cannot find current IP address: line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
 		},
 		"found eth0": {
