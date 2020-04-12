@@ -162,12 +162,12 @@ func Test_routeExists(t *testing.T) {
 		"no data": {},
 		"read error": {
 			readErr: fmt.Errorf("error"),
-			err:     fmt.Errorf("error"),
+			err:     fmt.Errorf("cannot check route existance: error"),
 		},
 		"parse error": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
 eth0   x`),
-			err: fmt.Errorf("line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
+			err: fmt.Errorf("cannot check route existance: line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
 		},
 		"not existing": {
 			subnet: net.IPNet{
