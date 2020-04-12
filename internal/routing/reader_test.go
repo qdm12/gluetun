@@ -5,14 +5,83 @@ import (
 	"net"
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	filesmocks "github.com/qdm12/golibs/files/mocks"
-	loggingmocks "github.com/qdm12/golibs/logging/mocks"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
+func Test_parseRoutingTable(t *testing.T) {
+	t.Parallel()
+	tests := map[string]struct {
+		data    []byte
+		entries []routingEntry
+		err     error
+	}{
+		"nil data": {
+			entries: []routingEntry{},
+		},
+		"legend only": {
+			data:    []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT`),
+			entries: []routingEntry{},
+		},
+		"legend and single line": {
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0   0002A8C0  0100000A  0003   0 0 0  00FFFFFF   0 0  0`),
+			entries: []routingEntry{{
+				iface:       "eth0",
+				destination: net.IP{192, 168, 2, 0},
+				gateway:     net.IP{10, 0, 0, 1},
+				flags:       "0003",
+				mask:        net.IPMask{255, 255, 255, 0},
+			}},
+		},
+		"legend and two lines": {
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0   0002A8C0  0100000A  0003   0 0 0  00FFFFFF   0 0  0
+eth0   0002A8C0  0100000A  0002   0 0 0  00FFFFFF   0 0  0`),
+			entries: []routingEntry{
+				{
+					iface:       "eth0",
+					destination: net.IP{192, 168, 2, 0},
+					gateway:     net.IP{10, 0, 0, 1},
+					flags:       "0003",
+					mask:        net.IPMask{255, 255, 255, 0},
+				},
+				{
+					iface:       "eth0",
+					destination: net.IP{192, 168, 2, 0},
+					gateway:     net.IP{10, 0, 0, 1},
+					flags:       "0002",
+					mask:        net.IPMask{255, 255, 255, 0},
+				}},
+		},
+		"error": {
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0   x  0100000A  0003   0 0 0  00FFFFFF   0 0  0`),
+			entries: nil,
+			err:     fmt.Errorf("line 1 in /proc/net/route: line \"eth0   x  0100000A  0003   0 0 0  00FFFFFF   0 0  0\": cannot parse reversed IP hex \"x\": encoding/hex: invalid byte: U+0078 'x'"),
+		},
+	}
+	for name, tc := range tests {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			entries, err := parseRoutingTable(tc.data)
+			if tc.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, tc.err.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tc.entries, entries)
+		})
+	}
+}
+
+//go:generate mockgen -destination=mockLogger_test.go -package=routing github.com/qdm12/golibs/logging Logger
+//go:generate mockgen -destination=mockFilemanager_test.go -package=routing github.com/qdm12/golibs/files FileManager
 func Test_DefaultRoute(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
@@ -24,60 +93,48 @@ func Test_DefaultRoute(t *testing.T) {
 		err              error
 	}{
 		"no data": {
-			err: fmt.Errorf("not enough lines (1) found in %s", constants.NetRoute)},
+			err: fmt.Errorf("not enough entries (0) found in %s", constants.NetRoute)},
 		"read error": {
 			readErr: fmt.Errorf("error"),
 			err:     fmt.Errorf("error")},
-		"not enough fields line 1": {
+		"parse error": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0    00000000
-eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0`),
-			err: fmt.Errorf("not enough fields in \"eth0    00000000\"")},
-		"not enough fields line 2": {
-			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
-eth0    000011AC        00000000        0001    0       0       0`),
-			err: fmt.Errorf("not enough fields in \"eth0    000011AC        00000000        0001    0       0       0\"")},
-		"bad gateway": {
-			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0    00000000        x               0003    0       0       0       00000000        0       0       0
-eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0`),
-			err: fmt.Errorf("cannot parse reversed IP hex \"x\": encoding/hex: invalid byte: U+0078 'x'")},
-		"bad net number": {
-			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
-eth0    x               00000000        0001    0       0       0       0000FFFF        0       0       0`),
-			err: fmt.Errorf("cannot parse reversed IP hex \"x\": encoding/hex: invalid byte: U+0078 'x'")},
-		"bad net mask": {
-			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
-eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
-eth0    000011AC        00000000        0001    0       0       0       x               0       0       0`),
-			err: fmt.Errorf("cannot parse hex mask \"x\": encoding/hex: invalid byte: U+0078 'x'")},
+eth0   x`),
+			err: fmt.Errorf("line 1 in /proc/net/route: line \"eth0   x\": not enough fields")},
+		"single entry": {
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT        
+eth0    00000000        050A090A        0003    0       0       0       00000080        0       0       0`),
+			err: fmt.Errorf("not enough entries (1) found in %s", constants.NetRoute)},
 		"success": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT        
-eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0             
+eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0
 eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0`),
 			defaultInterface: "eth0",
-			defaultGateway:   net.IP{0xac, 0x11, 0x0, 0x1},
+			defaultGateway:   net.IP{172, 17, 0, 1},
 			defaultSubnet: net.IPNet{
-				IP:   net.IP{0xac, 0x11, 0x0, 0x0},
-				Mask: net.IPMask{0xff, 0xff, 0x0, 0x0},
+				IP:   net.IP{172, 17, 0, 0},
+				Mask: net.IPMask{255, 255, 0, 0},
 			}},
 	}
 	for name, tc := range tests {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			fileManager := &filesmocks.FileManager{}
-			fileManager.On("ReadFile", string(constants.NetRoute)).
-				Return(tc.data, tc.readErr).Once()
-			logger := &loggingmocks.Logger{}
-			logger.On("Info", "detecting default network route").Once()
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			mockLogger := NewMockLogger(mockCtrl)
+			mockFilemanager := NewMockFileManager(mockCtrl)
+
+			mockFilemanager.EXPECT().ReadFile(string(constants.NetRoute)).
+				Return(tc.data, tc.readErr).Times(1)
+			mockLogger.EXPECT().Info("detecting default network route").Times(1)
 			if tc.err == nil {
-				logger.On("Info", "default route found: interface %s, gateway %s, subnet %s",
-					tc.defaultInterface, tc.defaultGateway.String(), tc.defaultSubnet.String()).Once()
+				mockLogger.EXPECT().Info(
+					"default route found: interface %s, gateway %s, subnet %s",
+					tc.defaultInterface, tc.defaultGateway.String(), tc.defaultSubnet.String(),
+				).Times(1)
 			}
-			r := &routing{logger: logger, fileManager: fileManager}
+			r := &routing{logger: mockLogger, fileManager: mockFilemanager}
 			defaultInterface, defaultGateway, defaultSubnet, err := r.DefaultRoute()
 			if tc.err != nil {
 				require.Error(t, err)
@@ -88,84 +145,6 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 			assert.Equal(t, tc.defaultInterface, defaultInterface)
 			assert.Equal(t, tc.defaultGateway, defaultGateway)
 			assert.Equal(t, tc.defaultSubnet, defaultSubnet)
-			fileManager.AssertExpectations(t)
-			logger.AssertExpectations(t)
-		})
-	}
-}
-
-func Test_reversedHexToIPv4(t *testing.T) {
-	t.Parallel()
-	tests := map[string]struct {
-		reversedHex string
-		IP          net.IP
-		err         error
-	}{
-		"empty hex": {
-			err: fmt.Errorf("hex string contains 0 bytes instead of 4")},
-		"bad hex": {
-			reversedHex: "x",
-			err:         fmt.Errorf("cannot parse reversed IP hex \"x\": encoding/hex: invalid byte: U+0078 'x'")},
-		"3 bytes hex": {
-			reversedHex: "9abcde",
-			err:         fmt.Errorf("hex string contains 3 bytes instead of 4")},
-		"correct hex": {
-			reversedHex: "010011AC",
-			IP:          []byte{0xac, 0x11, 0x0, 0x1},
-			err:         nil},
-		"correct hex 2": {
-			reversedHex: "000011AC",
-			IP:          []byte{0xac, 0x11, 0x0, 0x0},
-			err:         nil},
-	}
-	for name, tc := range tests {
-		tc := tc
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			IP, err := reversedHexToIPv4(tc.reversedHex)
-			if tc.err != nil {
-				require.Error(t, err)
-				assert.Equal(t, tc.err.Error(), err.Error())
-			} else {
-				assert.NoError(t, err)
-			}
-			assert.Equal(t, tc.IP, IP)
-		})
-	}
-}
-
-func Test_hexMaskToDecMask(t *testing.T) {
-	t.Parallel()
-	tests := map[string]struct {
-		hexString string
-		mask      net.IPMask
-		err       error
-	}{
-		"empty hex": {
-			err: fmt.Errorf("hex string contains 0 bytes instead of 4")},
-		"bad hex": {
-			hexString: "x",
-			err:       fmt.Errorf("cannot parse hex mask \"x\": encoding/hex: invalid byte: U+0078 'x'")},
-		"3 bytes hex": {
-			hexString: "9abcde",
-			err:       fmt.Errorf("hex string contains 3 bytes instead of 4")},
-		"16": {
-			hexString: "0000FFFF",
-			mask:      []byte{0xff, 0xff, 0x0, 0x0},
-			err:       nil},
-	}
-	for name, tc := range tests {
-		tc := tc
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			mask, err := hexToIPv4Mask(tc.hexString)
-			if tc.err != nil {
-				require.Error(t, err)
-				assert.Equal(t, tc.err.Error(), err.Error())
-			} else {
-				assert.NoError(t, err)
-			}
-			assert.Equal(t, tc.mask, mask)
 		})
 	}
 }

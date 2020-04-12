@@ -1,7 +1,6 @@
 package routing
 
 import (
-	"encoding/hex"
 	"net"
 
 	"fmt"
@@ -10,60 +9,35 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
+func parseRoutingTable(data []byte) (entries []routingEntry, err error) {
+	lines := strings.Split(string(data), "\n")
+	lines = lines[1:]
+	entries = make([]routingEntry, len(lines))
+	for i := range lines {
+		entries[i], err = parseRoutingEntry(lines[i])
+		if err != nil {
+			return nil, fmt.Errorf("line %d in %s: %w", i+1, constants.NetRoute, err)
+		}
+	}
+	return entries, nil
+}
+
 func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error) {
 	r.logger.Info("detecting default network route")
 	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
 		return "", nil, defaultSubnet, err
 	}
-	// Verify number of lines and fields
-	lines := strings.Split(string(data), "\n")
-	if len(lines) < 3 {
-		return "", nil, defaultSubnet, fmt.Errorf("not enough lines (%d) found in %s", len(lines), constants.NetRoute)
-	}
-	fieldsLine1 := strings.Fields(lines[1])
-	if len(fieldsLine1) < 3 {
-		return "", nil, defaultSubnet, fmt.Errorf("not enough fields in %q", lines[1])
-	}
-	fieldsLine2 := strings.Fields(lines[2])
-	if len(fieldsLine2) < 8 {
-		return "", nil, defaultSubnet, fmt.Errorf("not enough fields in %q", lines[2])
-	}
-	// get information
-	defaultInterface = fieldsLine1[0]
-	defaultGateway, err = reversedHexToIPv4(fieldsLine1[2])
+	entries, err := parseRoutingTable(data)
 	if err != nil {
 		return "", nil, defaultSubnet, err
 	}
-	netNumber, err := reversedHexToIPv4(fieldsLine2[1])
-	if err != nil {
-		return "", nil, defaultSubnet, err
+	if len(entries) < 2 {
+		return "", nil, defaultSubnet, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
 	}
-	netMask, err := hexToIPv4Mask(fieldsLine2[7])
-	if err != nil {
-		return "", nil, defaultSubnet, err
-	}
-	subnet := net.IPNet{IP: netNumber, Mask: netMask}
-	r.logger.Info("default route found: interface %s, gateway %s, subnet %s", defaultInterface, defaultGateway.String(), subnet.String())
-	return defaultInterface, defaultGateway, subnet, nil
-}
-
-func reversedHexToIPv4(reversedHex string) (IP net.IP, err error) {
-	bytes, err := hex.DecodeString(reversedHex)
-	if err != nil {
-		return nil, fmt.Errorf("cannot parse reversed IP hex %q: %s", reversedHex, err)
-	} else if len(bytes) != 4 {
-		return nil, fmt.Errorf("hex string contains %d bytes instead of 4", len(bytes))
-	}
-	return []byte{bytes[3], bytes[2], bytes[1], bytes[0]}, nil
-}
-
-func hexToIPv4Mask(hexString string) (mask net.IPMask, err error) {
-	bytes, err := hex.DecodeString(hexString)
-	if err != nil {
-		return nil, fmt.Errorf("cannot parse hex mask %q: %s", hexString, err)
-	} else if len(bytes) != 4 {
-		return nil, fmt.Errorf("hex string contains %d bytes instead of 4", len(bytes))
-	}
-	return []byte{bytes[3], bytes[2], bytes[1], bytes[0]}, nil
+	defaultInterface = entries[0].iface
+	defaultGateway = entries[0].gateway
+	defaultSubnet = net.IPNet{IP: entries[1].destination, Mask: entries[1].mask}
+	r.logger.Info("default route found: interface %s, gateway %s, subnet %s", defaultInterface, defaultGateway.String(), defaultSubnet.String())
+	return defaultInterface, defaultGateway, defaultSubnet, nil
 }
