@@ -8,18 +8,16 @@ import (
 
 func (r *routing) AddRoutesVia(subnets []net.IPNet, defaultGateway net.IP, defaultInterface string) error {
 	for _, subnet := range subnets {
-		subnetStr := subnet.String()
-		output, err := r.commander.Run("ip", "route", "show", subnetStr)
+		exists, err := r.routeExists(subnet)
 		if err != nil {
-			return fmt.Errorf("cannot read route %s: %s: %w", subnetStr, output, err)
-		} else if len(output) > 0 { // thanks to @npawelek https://github.com/npawelek
-			continue // already exists
-			// TODO remove it instead and continue execution below
+			return fmt.Errorf("cannot check route for subnet %s: %w", subnet, err)
+		} else if exists { // thanks to @npawelek https://github.com/npawelek
+			continue
 		}
-		r.logger.Info("adding %s as route via %s", subnetStr, defaultInterface)
-		output, err = r.commander.Run("ip", "route", "add", subnetStr, "via", defaultGateway.String(), "dev", defaultInterface)
+		r.logger.Info("adding %s as route via %s", subnet.String(), defaultInterface)
+		output, err := r.commander.Run("ip", "route", "add", subnet.String(), "via", defaultGateway.String(), "dev", defaultInterface)
 		if err != nil {
-			return fmt.Errorf("cannot add route for %s via %s %s %s: %s: %w", subnetStr, defaultGateway.String(), "dev", defaultInterface, output, err)
+			return fmt.Errorf("cannot add route for %s via %s %s %s: %s: %w", subnet.String(), defaultGateway.String(), "dev", defaultInterface, output, err)
 		}
 	}
 	return nil

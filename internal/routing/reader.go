@@ -41,3 +41,21 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 	r.logger.Info("default route found: interface %s, gateway %s, subnet %s", defaultInterface, defaultGateway.String(), defaultSubnet.String())
 	return defaultInterface, defaultGateway, defaultSubnet, nil
 }
+
+func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
+	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
+	if err != nil {
+		return false, err
+	}
+	entries, err := parseRoutingTable(data)
+	if err != nil {
+		return false, err
+	}
+	for _, entry := range entries {
+		entrySubnet := net.IPNet{IP: entry.destination, Mask: entry.mask}
+		if entrySubnet.String() == subnet.String() {
+			return true, nil
+		}
+	}
+	return false, nil
+}

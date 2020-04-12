@@ -12,6 +12,9 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
+//go:generate mockgen -destination=mockLogger_test.go -package=routing github.com/qdm12/golibs/logging Logger
+//go:generate mockgen -destination=mockFilemanager_test.go -package=routing github.com/qdm12/golibs/files FileManager
+
 func Test_parseRoutingTable(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
@@ -80,8 +83,6 @@ eth0   x  0100000A  0003   0 0 0  00FFFFFF   0 0  0`),
 	}
 }
 
-//go:generate mockgen -destination=mockLogger_test.go -package=routing github.com/qdm12/golibs/logging Logger
-//go:generate mockgen -destination=mockFilemanager_test.go -package=routing github.com/qdm12/golibs/files FileManager
 func Test_DefaultRoute(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
@@ -145,6 +146,66 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 			assert.Equal(t, tc.defaultInterface, defaultInterface)
 			assert.Equal(t, tc.defaultGateway, defaultGateway)
 			assert.Equal(t, tc.defaultSubnet, defaultSubnet)
+		})
+	}
+}
+
+func Test_routeExists(t *testing.T) {
+	t.Parallel()
+	tests := map[string]struct {
+		subnet  net.IPNet
+		data    []byte
+		readErr error
+		exists  bool
+		err     error
+	}{
+		"no data": {},
+		"read error": {
+			readErr: fmt.Errorf("error"),
+			err:     fmt.Errorf("error"),
+		},
+		"parse error": {
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0   x`),
+			err: fmt.Errorf("line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
+		},
+		"not existing": {
+			subnet: net.IPNet{
+				IP:   net.IP{192, 168, 2, 0},
+				Mask: net.IPMask{255, 255, 255, 128},
+			},
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0`),
+		},
+		"existing": {
+			subnet: net.IPNet{
+				IP:   net.IP{192, 168, 2, 0},
+				Mask: net.IPMask{255, 255, 255, 0},
+			},
+			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
+eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF        0       0       0`),
+			exists: true,
+		},
+	}
+	for name, tc := range tests {
+		tc := tc
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			mockCtrl := gomock.NewController(t)
+			defer mockCtrl.Finish()
+			mockFilemanager := NewMockFileManager(mockCtrl)
+
+			mockFilemanager.EXPECT().ReadFile(string(constants.NetRoute)).
+				Return(tc.data, tc.readErr).Times(1)
+			r := &routing{fileManager: mockFilemanager}
+			exists, err := r.routeExists(tc.subnet)
+			if tc.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, tc.err.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tc.exists, exists)
 		})
 	}
 }
