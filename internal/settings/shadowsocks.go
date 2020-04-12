@@ -9,11 +9,11 @@ import (
 
 // ShadowSocks contains settings to configure the Shadowsocks server
 type ShadowSocks struct {
-	Enabled  bool
-	Password string
-	Log      bool
-	Port     uint16
 	Method   string
+	Password string
+	Port     uint16
+	Enabled  bool
+	Log      bool
 }
 
 func (s *ShadowSocks) String() string {
@@ -35,24 +35,24 @@ func (s *ShadowSocks) String() string {
 }
 
 // GetShadowSocksSettings obtains ShadowSocks settings from environment variables using the params package.
-func GetShadowSocksSettings(params params.ParamsReader) (settings ShadowSocks, err error) {
-	settings.Enabled, err = params.GetShadowSocks()
+func GetShadowSocksSettings(paramsReader params.Reader) (settings ShadowSocks, err error) {
+	settings.Enabled, err = paramsReader.GetShadowSocks()
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
-	settings.Port, err = params.GetShadowSocksPort()
+	settings.Port, err = paramsReader.GetShadowSocksPort()
 	if err != nil {
 		return settings, err
 	}
-	settings.Password, err = params.GetShadowSocksPassword()
+	settings.Password, err = paramsReader.GetShadowSocksPassword()
 	if err != nil {
 		return settings, err
 	}
-	settings.Log, err = params.GetShadowSocksLog()
+	settings.Log, err = paramsReader.GetShadowSocksLog()
 	if err != nil {
 		return settings, err
 	}
-	settings.Method, err = params.GetShadowSocksMethod()
+	settings.Method, err = paramsReader.GetShadowSocksMethod()
 	if err != nil {
 		return settings, err
 	}

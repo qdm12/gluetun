@@ -8,7 +8,7 @@ import (
 
 // GetExtraSubnets obtains the CIDR subnets from the comma separated list of the
 // environment variable EXTRA_SUBNETS
-func (p *paramsReader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
+func (p *reader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
 	s, err := p.envParams.GetEnv("EXTRA_SUBNETS")
 	if err != nil {
 		return nil, err

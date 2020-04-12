@@ -43,29 +43,29 @@ func (p *PIA) String() string {
 }
 
 // GetPIASettings obtains PIA settings from environment variables using the params package.
-func GetPIASettings(params params.ParamsReader) (settings PIA, err error) {
-	settings.User, err = params.GetUser()
+func GetPIASettings(paramsReader params.Reader) (settings PIA, err error) {
+	settings.User, err = paramsReader.GetUser()
 	if err != nil {
 		return settings, err
 	}
-	settings.Password, err = params.GetPassword()
+	settings.Password, err = paramsReader.GetPassword()
 	if err != nil {
 		return settings, err
 	}
-	settings.Encryption, err = params.GetPIAEncryption()
+	settings.Encryption, err = paramsReader.GetPIAEncryption()
 	if err != nil {
 		return settings, err
 	}
-	settings.Region, err = params.GetPIARegion()
+	settings.Region, err = paramsReader.GetPIARegion()
 	if err != nil {
 		return settings, err
 	}
-	settings.PortForwarding.Enabled, err = params.GetPortForwarding()
+	settings.PortForwarding.Enabled, err = paramsReader.GetPortForwarding()
 	if err != nil {
 		return settings, err
 	}
 	if settings.PortForwarding.Enabled {
-		settings.PortForwarding.Filepath, err = params.GetPortForwardingStatusFilepath()
+		settings.PortForwarding.Filepath, err = paramsReader.GetPortForwardingStatusFilepath()
 		if err != nil {
 			return settings, err
 		}

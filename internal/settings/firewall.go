@@ -13,9 +13,9 @@ type Firewall struct {
 }
 
 func (f *Firewall) String() string {
-	var allowedSubnets []string
-	for _, net := range f.AllowedSubnets {
-		allowedSubnets = append(allowedSubnets, net.String())
+	allowedSubnets := make([]string, len(f.AllowedSubnets))
+	for i := range f.AllowedSubnets {
+		allowedSubnets[i] = f.AllowedSubnets[i].String()
 	}
 	settingsList := []string{
 		"Firewall settings:",
@@ -25,8 +25,8 @@ func (f *Firewall) String() string {
 }
 
 // GetFirewallSettings obtains firewall settings from environment variables using the params package.
-func GetFirewallSettings(params params.ParamsReader) (settings Firewall, err error) {
-	settings.AllowedSubnets, err = params.GetExtraSubnets()
+func GetFirewallSettings(paramsReader params.Reader) (settings Firewall, err error) {
+	settings.AllowedSubnets, err = paramsReader.GetExtraSubnets()
 	if err != nil {
 		return settings, err
 	}

@@ -4,17 +4,17 @@ import (
 	libparams "github.com/qdm12/golibs/params"
 )
 
-func (p *paramsReader) GetVersion() string {
+func (p *reader) GetVersion() string {
 	version, _ := p.envParams.GetEnv("VERSION", libparams.Default("?"), libparams.CaseSensitiveValue())
 	return version
 }
 
-func (p *paramsReader) GetBuildDate() string {
+func (p *reader) GetBuildDate() string {
 	buildDate, _ := p.envParams.GetEnv("BUILD_DATE", libparams.Default("?"), libparams.CaseSensitiveValue())
 	return buildDate
 }
 
-func (p *paramsReader) GetVcsRef() string {
+func (p *reader) GetVcsRef() string {
 	buildDate, _ := p.envParams.GetEnv("VCS_REF", libparams.Default("?"), libparams.CaseSensitiveValue())
 	return buildDate
 }

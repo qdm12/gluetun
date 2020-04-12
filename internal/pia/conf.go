@@ -14,7 +14,7 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 	geoMapping := constants.PIAGeoToSubdomainMapping()
 	var subdomain string
 	for r, s := range geoMapping {
-		if strings.ToLower(string(region)) == strings.ToLower(string(r)) {
+		if strings.EqualFold(string(region), string(r)) {
 			subdomain = s
 			break
 		}
@@ -75,8 +75,8 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		if len(auth) == 0 {
 			auth = "sha1"
 		}
-		X509CRL = constants.PIAX509CRL_NORMAL
-		certificate = constants.PIACertificate_NORMAL
+		X509CRL = constants.PiaX509CRLNormal
+		certificate = constants.PIACertificateNormal
 	} else { // strong encryption
 		if len(cipher) == 0 {
 			cipher = "aes-256-cbc"
@@ -84,8 +84,8 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		if len(auth) == 0 {
 			auth = "sha256"
 		}
-		X509CRL = constants.PIAX509CRL_STRONG
-		certificate = constants.PIACertificate_STRONG
+		X509CRL = constants.PiaX509CRLStrong
+		certificate = constants.PIACertificateStrong
 	}
 	lines := []string{
 		"client",

@@ -72,7 +72,7 @@ func parseRoutingEntry(s string) (r routingEntry, err error) {
 	return r, nil
 }
 
-func reversedHexToIPv4(reversedHex string) (IP net.IP, err error) {
+func reversedHexToIPv4(reversedHex string) (ip net.IP, err error) {
 	bytes, err := hex.DecodeString(reversedHex)
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse reversed IP hex %q: %s", reversedHex, err)

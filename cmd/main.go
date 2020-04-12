@@ -45,7 +45,7 @@ func main() {
 		}
 		os.Exit(0)
 	}
-	paramsReader := params.NewParamsReader(logger)
+	paramsReader := params.NewReader(logger)
 	fmt.Println(splash.Splash(paramsReader))
 	e := env.New(logger)
 	client := network.NewClient(15 * time.Second)
@@ -90,13 +90,13 @@ func main() {
 
 	var openVPNUser, openVPNPassword string
 	switch allSettings.VPNSP {
-	case "pia":
+	case constants.PrivateInternetAccess:
 		openVPNUser = allSettings.PIA.User
 		openVPNPassword = allSettings.PIA.Password
-	case "mullvad":
+	case constants.Mullvad:
 		openVPNUser = allSettings.Mullvad.User
 		openVPNPassword = "m"
-	case "windscribe":
+	case constants.Windscribe:
 		openVPNUser = allSettings.Windscribe.User
 		openVPNPassword = allSettings.Windscribe.Password
 	}
@@ -115,7 +115,7 @@ func main() {
 	e.FatalOnError(err)
 
 	go func() {
-		// Blocking line merging reader for all programs: openvpn, tinyproxy, unbound and shadowsocks
+		// Blocking line merging paramsReader for all programs: openvpn, tinyproxy, unbound and shadowsocks
 		logger.Info("Launching standard output merger")
 		err = streamMerger.CollectLines(func(line string) {
 			logger.Info(line)
@@ -157,7 +157,7 @@ func main() {
 
 	var connections []models.OpenVPNConnection
 	switch allSettings.VPNSP {
-	case "pia":
+	case constants.PrivateInternetAccess:
 		connections, err = piaConf.GetOpenVPNConnections(
 			allSettings.PIA.Region,
 			allSettings.OpenVPN.NetworkProtocol,
@@ -174,7 +174,7 @@ func main() {
 			allSettings.OpenVPN.Cipher,
 			allSettings.OpenVPN.Auth)
 		e.FatalOnError(err)
-	case "mullvad":
+	case constants.Mullvad:
 		connections, err = mullvadConf.GetOpenVPNConnections(
 			allSettings.Mullvad.Country,
 			allSettings.Mullvad.City,
@@ -191,7 +191,7 @@ func main() {
 			allSettings.OpenVPN.Root,
 			allSettings.OpenVPN.Cipher)
 		e.FatalOnError(err)
-	case "windscribe":
+	case constants.Windscribe:
 		connections, err = windscribeConf.GetOpenVPNConnections(
 			allSettings.Windscribe.Region,
 			allSettings.OpenVPN.NetworkProtocol,
@@ -285,7 +285,7 @@ func onConnected(
 	fileManager files.FileManager,
 	piaConf pia.Configurator,
 	defaultInterface string,
-	VPNSP string,
+	vpnsp models.VPNProvider,
 	portForwarding bool,
 	portForwardingFilepath models.Filepath,
 	ipStatusFilepath models.Filepath,
@@ -300,12 +300,12 @@ func onConnected(
 			string(ipStatusFilepath),
 			[]string{ip.String()},
 			files.Ownership(uid, gid),
-			files.Permissions(400))
+			files.Permissions(0400))
 		if err != nil {
 			logger.Error(err)
 		}
 	}
-	if VPNSP != "pia" || !portForwarding {
+	if vpnsp != constants.PrivateInternetAccess || !portForwarding {
 		return
 	}
 	port, err := piaConf.GetPortForward()

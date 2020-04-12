@@ -29,25 +29,29 @@ func (d *DNS) String() string {
 	if !d.Enabled {
 		return "DNS over TLS settings: disabled"
 	}
-	caching, blockMalicious, blockSurveillance, blockAds, ipv6 := "disabled", "disabed", "disabed", "disabed", "disabed"
+	const (
+		enabled  = "enabled"
+		disabled = "disabled"
+	)
+	caching, blockMalicious, blockSurveillance, blockAds, ipv6 := disabled, disabled, disabled, disabled, disabled
 	if d.Caching {
-		caching = "enabled"
+		caching = enabled
 	}
 	if d.BlockMalicious {
-		blockMalicious = "enabled"
+		blockMalicious = enabled
 	}
 	if d.BlockSurveillance {
-		blockSurveillance = "enabled"
+		blockSurveillance = enabled
 	}
 	if d.BlockAds {
-		blockAds = "enabled"
+		blockAds = enabled
 	}
 	if d.IPv6 {
-		ipv6 = "enabled"
+		ipv6 = enabled
 	}
-	var providersStr []string
-	for _, provider := range d.Providers {
-		providersStr = append(providersStr, string(provider))
+	providersStr := make([]string, len(d.Providers))
+	for i := range d.Providers {
+		providersStr[i] = string(d.Providers[i])
 	}
 	settingsList := []string{
 		"DNS over TLS settings:",
@@ -67,49 +71,49 @@ func (d *DNS) String() string {
 }
 
 // GetDNSSettings obtains DNS over TLS settings from environment variables using the params package.
-func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
-	settings.Enabled, err = params.GetDNSOverTLS()
+func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
+	settings.Enabled, err = paramsReader.GetDNSOverTLS()
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
-	settings.Providers, err = params.GetDNSOverTLSProviders()
+	settings.Providers, err = paramsReader.GetDNSOverTLSProviders()
 	if err != nil {
 		return settings, err
 	}
-	settings.AllowedHostnames, err = params.GetDNSUnblockedHostnames()
+	settings.AllowedHostnames, err = paramsReader.GetDNSUnblockedHostnames()
 	if err != nil {
 		return settings, err
 	}
-	settings.Caching, err = params.GetDNSOverTLSCaching()
+	settings.Caching, err = paramsReader.GetDNSOverTLSCaching()
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockMalicious, err = params.GetDNSMaliciousBlocking()
+	settings.BlockMalicious, err = paramsReader.GetDNSMaliciousBlocking()
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockSurveillance, err = params.GetDNSSurveillanceBlocking()
+	settings.BlockSurveillance, err = paramsReader.GetDNSSurveillanceBlocking()
 	if err != nil {
 		return settings, err
 	}
-	settings.BlockAds, err = params.GetDNSAdsBlocking()
+	settings.BlockAds, err = paramsReader.GetDNSAdsBlocking()
 	if err != nil {
 		return settings, err
 	}
-	settings.VerbosityLevel, err = params.GetDNSOverTLSVerbosity()
+	settings.VerbosityLevel, err = paramsReader.GetDNSOverTLSVerbosity()
 	if err != nil {
 		return settings, err
 	}
-	settings.VerbosityDetailsLevel, err = params.GetDNSOverTLSVerbosityDetails()
+	settings.VerbosityDetailsLevel, err = paramsReader.GetDNSOverTLSVerbosityDetails()
 	if err != nil {
 		return settings, err
 	}
-	settings.ValidationLogLevel, err = params.GetDNSOverTLSValidationLogLevel()
+	settings.ValidationLogLevel, err = paramsReader.GetDNSOverTLSValidationLogLevel()
 	if err != nil {
 		return settings, err
 	}
-	settings.PrivateAddresses = params.GetDNSOverTLSPrivateAddresses()
-	settings.IPv6, err = params.GetDNSOverTLSIPv6()
+	settings.PrivateAddresses = paramsReader.GetDNSOverTLSPrivateAddresses()
+	settings.IPv6, err = paramsReader.GetDNSOverTLSIPv6()
 	if err != nil {
 		return settings, err
 	}
@@ -118,11 +122,12 @@ func GetDNSSettings(params params.ParamsReader) (settings DNS, err error) {
 	IPv6Support := false
 	for _, provider := range settings.Providers {
 		providerData, ok := constants.DNSProviderMapping()[provider]
-		if !ok {
+		switch {
+		case !ok:
 			return settings, fmt.Errorf("DNS provider %q does not have associated data", provider)
-		} else if !providerData.SupportsTLS {
+		case !providerData.SupportsTLS:
 			return settings, fmt.Errorf("DNS provider %q does not support DNS over TLS", provider)
-		} else if providerData.SupportsIPv6 {
+		case providerData.SupportsIPv6:
 			IPv6Support = true
 		}
 	}

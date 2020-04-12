@@ -68,7 +68,6 @@ func Test_PrintVersion(t *testing.T) {
 				logger.EXPECT().Error(tc.commandErr).Do(func(err error) {
 					logged = err.Error()
 				}).Times(1)
-
 			} else {
 				logger.EXPECT().Info("%s version: %s", tc.program, tc.commandVersion).
 					Do(func(format, program, version string) {

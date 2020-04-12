@@ -9,20 +9,20 @@ import (
 )
 
 // UseDNSInternally is to change the Go program DNS only
-func (c *configurator) UseDNSInternally(IP net.IP) {
-	c.logger.Info("using DNS address %s internally", IP.String())
+func (c *configurator) UseDNSInternally(ip net.IP) {
+	c.logger.Info("using DNS address %s internally", ip.String())
 	net.DefaultResolver = &net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
 			d := net.Dialer{}
-			return d.DialContext(ctx, "udp", net.JoinHostPort(IP.String(), "53"))
+			return d.DialContext(ctx, "udp", net.JoinHostPort(ip.String(), "53"))
 		},
 	}
 }
 
 // UseDNSSystemWide changes the nameserver to use for DNS system wide
-func (c *configurator) UseDNSSystemWide(IP net.IP) error {
-	c.logger.Info("using DNS address %s system wide", IP.String())
+func (c *configurator) UseDNSSystemWide(ip net.IP) error {
+	c.logger.Info("using DNS address %s system wide", ip.String())
 	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))
 	if err != nil {
 		return err
@@ -35,12 +35,12 @@ func (c *configurator) UseDNSSystemWide(IP net.IP) error {
 	found := false
 	for i := range lines {
 		if strings.HasPrefix(lines[i], "nameserver ") {
-			lines[i] = "nameserver " + IP.String()
+			lines[i] = "nameserver " + ip.String()
 			found = true
 		}
 	}
 	if !found {
-		lines = append(lines, "nameserver "+IP.String())
+		lines = append(lines, "nameserver "+ip.String())
 	}
 	data = []byte(strings.Join(lines, "\n"))
 	return c.fileManager.WriteToFile(string(constants.ResolvConf), data)

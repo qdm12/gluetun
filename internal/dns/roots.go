@@ -2,6 +2,7 @@ package dns
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -12,7 +13,7 @@ func (c *configurator) DownloadRootHints(uid, gid int) error {
 	content, status, err := c.client.GetContent(string(constants.NamedRootURL))
 	if err != nil {
 		return err
-	} else if status != 200 {
+	} else if status != http.StatusOK {
 		return fmt.Errorf("HTTP status code is %d for %s", status, constants.NamedRootURL)
 	}
 	return c.fileManager.WriteToFile(
@@ -27,7 +28,7 @@ func (c *configurator) DownloadRootKey(uid, gid int) error {
 	content, status, err := c.client.GetContent(string(constants.RootKeyURL))
 	if err != nil {
 		return err
-	} else if status != 200 {
+	} else if status != http.StatusOK {
 		return fmt.Errorf("HTTP status code is %d for %s", status, constants.RootKeyURL)
 	}
 	return c.fileManager.WriteToFile(

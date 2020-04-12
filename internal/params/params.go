@@ -10,9 +10,9 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-// ParamsReader contains methods to obtain parameters
-type ParamsReader interface {
-	GetVPNSP() (vpnServiceProvider string, err error)
+// Reader contains methods to obtain parameters
+type Reader interface {
+	GetVPNSP() (vpnServiceProvider models.VPNProvider, err error)
 
 	// DNS over TLS getters
 	GetDNSOverTLS() (DNSOverTLS bool, err error)
@@ -83,17 +83,17 @@ type ParamsReader interface {
 	GetVcsRef() string
 }
 
-type paramsReader struct {
+type reader struct {
 	envParams libparams.EnvParams
 	logger    logging.Logger
 	verifier  verification.Verifier
 	unsetEnv  func(key string) error
 }
 
-// NewParamsReader returns a paramsReadeer object to read parameters from
+// Newreader returns a paramsReadeer object to read parameters from
 // environment variables
-func NewParamsReader(logger logging.Logger) ParamsReader {
-	return &paramsReader{
+func NewReader(logger logging.Logger) Reader {
+	return &reader{
 		envParams: libparams.NewEnvParams(),
 		logger:    logger,
 		verifier:  verification.NewVerifier(),
@@ -102,7 +102,10 @@ func NewParamsReader(logger logging.Logger) ParamsReader {
 }
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
-func (p *paramsReader) GetVPNSP() (vpnServiceProvider string, err error) {
-	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "mullvad", "windscribe"})
-	return s, err
+func (p *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
+	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe"})
+	if s == "pia" {
+		s = "private internet access"
+	}
+	return models.VPNProvider(s), err
 }

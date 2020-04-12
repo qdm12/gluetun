@@ -3,13 +3,17 @@ ARG GO_VERSION=1.14
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS builder
 RUN apk --update add git
-WORKDIR /tmp/gobuild
 ENV CGO_ENABLED=0
+ARG GOLANGCI_LINT_VERSION=v1.24.0
+RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s ${GOLANGCI_LINT_VERSION}
+WORKDIR /tmp/gobuild
+COPY .golangci.yml .
 COPY go.mod go.sum ./
 RUN go mod download 2>&1
 COPY cmd/main.go .
 COPY internal/ ./internal/
 RUN go test ./...
+RUN golangci-lint run --timeout=10m
 RUN go build -ldflags="-s -w" -o entrypoint main.go
 
 FROM alpine:${ALPINE_VERSION}
@@ -29,7 +33,7 @@ LABEL \
     org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.title="PIA client" \
     org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
-ENV VPNSP=pia \
+ENV VPNSP="private internet access" \
     USER= \
     PROTOCOL=udp \
     OPENVPN_VERBOSITY=1 \

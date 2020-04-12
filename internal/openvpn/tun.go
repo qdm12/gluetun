@@ -30,7 +30,7 @@ func (c *configurator) CreateTUN() error {
 	if err := c.mkNod(string(constants.TunnelDevice), unix.S_IFCHR, int(dev)); err != nil {
 		return err
 	}
-	if err := c.fileManager.SetUserPermissions(string(constants.TunnelDevice), 666); err != nil {
+	if err := c.fileManager.SetUserPermissions(string(constants.TunnelDevice), 0666); err != nil {
 		return err
 	}
 	return nil

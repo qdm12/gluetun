@@ -14,7 +14,7 @@ services:
     # command:
     environment:
       # More variables are available, see the readme table
-      - VPNSP=pia
+      - VPNSP=private internet access
       - USER=js89ds7
       - PROTOCOL=udp
       - OPENVPN_VERBOSITY=1

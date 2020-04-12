@@ -20,28 +20,28 @@ type OpenVPN struct {
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
-func GetOpenVPNSettings(params params.ParamsReader) (settings OpenVPN, err error) {
-	settings.NetworkProtocol, err = params.GetNetworkProtocol()
+func GetOpenVPNSettings(paramsReader params.Reader) (settings OpenVPN, err error) {
+	settings.NetworkProtocol, err = paramsReader.GetNetworkProtocol()
 	if err != nil {
 		return settings, err
 	}
-	settings.Verbosity, err = params.GetOpenVPNVerbosity()
+	settings.Verbosity, err = paramsReader.GetOpenVPNVerbosity()
 	if err != nil {
 		return settings, err
 	}
-	settings.Root, err = params.GetOpenVPNRoot()
+	settings.Root, err = paramsReader.GetOpenVPNRoot()
 	if err != nil {
 		return settings, err
 	}
-	settings.TargetIP, err = params.GetTargetIP()
+	settings.TargetIP, err = paramsReader.GetTargetIP()
 	if err != nil {
 		return settings, err
 	}
-	settings.Cipher, err = params.GetOpenVPNCipher()
+	settings.Cipher, err = paramsReader.GetOpenVPNCipher()
 	if err != nil {
 		return settings, err
 	}
-	settings.Auth, err = params.GetOpenVPNAuth()
+	settings.Auth, err = paramsReader.GetOpenVPNAuth()
 	if err != nil {
 		return settings, err
 	}

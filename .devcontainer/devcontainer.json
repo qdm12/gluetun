@@ -1,10 +1,14 @@
 {
     "name": "pia-dev",
-    "dockerComposeFile": ["docker-compose.yml"],
+    "dockerComposeFile": [
+        "docker-compose.yml"
+    ],
     "service": "vscode",
-    "runServices": ["vscode"],
+    "runServices": [
+        "vscode"
+    ],
     "shutdownAction": "stopCompose",
-    // "postCreateCommand": "go mod download",
+    "postCreateCommand": "go mod download",
     "workspaceFolder": "/workspace",
     "extensions": [
         "ms-vscode.go",
@@ -38,10 +42,54 @@
             "deepCompletion": true,
             "usePlaceholders": false
         },
+        "go.lintTool": "golangci-lint",
+        "go.lintFlags": [
+            "--fast",
+            "--enable",
+            "staticcheck",
+            "--enable",
+            "bodyclose",
+            "--enable",
+            "dogsled",
+            "--enable",
+            "gochecknoglobals",
+            "--enable",
+            "gochecknoinits",
+            "--enable",
+            "gocognit",
+            "--enable",
+            "goconst",
+            "--enable",
+            "gocritic",
+            "--enable",
+            "gocyclo",
+            "--enable",
+            "golint",
+            "--enable",
+            "gosec",
+            "--enable",
+            "interfacer",
+            "--enable",
+            "maligned",
+            "--enable",
+            "misspell",
+            "--enable",
+            "nakedret",
+            "--enable",
+            "prealloc",
+            "--enable",
+            "scopelint",
+            "--enable",
+            "unconvert",
+            "--enable",
+            "unparam",
+            "--enable",
+            "whitespace"
+        ],
         // Golang on save
-        "go.buildOnSave": "package",
-        "go.lintOnSave": "package",
-        "go.vetOnSave": "package",
+        "go.buildOnSave": "workspace",
+        "go.lintOnSave": "workspace",
+        "go.vetOnSave": "workspace",
         "editor.formatOnSave": true,
         "[go]": {
             "editor.codeActionsOnSave": {
@@ -56,7 +104,10 @@
             "GOFLAGS": "-tags=integration"
         },
         "go.testEnvVars": {},
-        "go.testFlags": ["-v"],
+        "go.testFlags": [
+            "-v",
+            // "-race"
+        ],
         "go.testTimeout": "600s"
     }
 }

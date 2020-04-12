@@ -10,11 +10,11 @@ import (
 
 // TinyProxy contains settings to configure TinyProxy
 type TinyProxy struct {
-	Enabled  bool
 	User     string
 	Password string
-	Port     uint16
 	LogLevel models.TinyProxyLogLevel
+	Port     uint16
+	Enabled  bool
 }
 
 func (t *TinyProxy) String() string {
@@ -34,24 +34,24 @@ func (t *TinyProxy) String() string {
 }
 
 // GetTinyProxySettings obtains TinyProxy settings from environment variables using the params package.
-func GetTinyProxySettings(params params.ParamsReader) (settings TinyProxy, err error) {
-	settings.Enabled, err = params.GetTinyProxy()
+func GetTinyProxySettings(paramsReader params.Reader) (settings TinyProxy, err error) {
+	settings.Enabled, err = paramsReader.GetTinyProxy()
 	if err != nil || !settings.Enabled {
 		return settings, err
 	}
-	settings.User, err = params.GetTinyProxyUser()
+	settings.User, err = paramsReader.GetTinyProxyUser()
 	if err != nil {
 		return settings, err
 	}
-	settings.Password, err = params.GetTinyProxyPassword()
+	settings.Password, err = paramsReader.GetTinyProxyPassword()
 	if err != nil {
 		return settings, err
 	}
-	settings.Port, err = params.GetTinyProxyPort()
+	settings.Port, err = paramsReader.GetTinyProxyPort()
 	if err != nil {
 		return settings, err
 	}
-	settings.LogLevel, err = params.GetTinyProxyLog()
+	settings.LogLevel, err = paramsReader.GetTinyProxyLog()
 	if err != nil {
 		return settings, err
 	}

@@ -11,7 +11,7 @@ import (
 
 // GetPortForwarding obtains if port forwarding on the VPN provider server
 // side is enabled or not from the environment variable PORT_FORWARDING
-func (p *paramsReader) GetPortForwarding() (activated bool, err error) {
+func (p *reader) GetPortForwarding() (activated bool, err error) {
 	s, err := p.envParams.GetEnv("PORT_FORWARDING", libparams.Default("off"))
 	if err != nil {
 		return false, err
@@ -27,7 +27,7 @@ func (p *paramsReader) GetPortForwarding() (activated bool, err error) {
 
 // GetPortForwardingStatusFilepath obtains the port forwarding status file path
 // from the environment variable PORT_FORWARDING_STATUS_FILE
-func (p *paramsReader) GetPortForwardingStatusFilepath() (filepath models.Filepath, err error) {
+func (p *reader) GetPortForwardingStatusFilepath() (filepath models.Filepath, err error) {
 	filepathStr, err := p.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/forwarded_port"), libparams.CaseSensitiveValue())
 	return models.Filepath(filepathStr), err
 }
@@ -35,7 +35,7 @@ func (p *paramsReader) GetPortForwardingStatusFilepath() (filepath models.Filepa
 // GetPIAEncryption obtains the encryption level for the PIA connection
 // from the environment variable PIA_ENCRYPTION, and using ENCRYPTION for
 // retro compatibility
-func (p *paramsReader) GetPIAEncryption() (models.PIAEncryption, error) {
+func (p *reader) GetPIAEncryption() (models.PIAEncryption, error) {
 	// Retro-compatibility
 	s, err := p.envParams.GetValueIfInside("ENCRYPTION", []string{"normal", "strong", ""})
 	if err != nil {
@@ -50,11 +50,11 @@ func (p *paramsReader) GetPIAEncryption() (models.PIAEncryption, error) {
 
 // GetPIARegion obtains the region for the PIA server from the
 // environment variable REGION
-func (p *paramsReader) GetPIARegion() (region models.PIARegion, err error) {
+func (p *reader) GetPIARegion() (region models.PIARegion, err error) {
 	choices := append(constants.PIAGeoChoices(), "")
 	s, err := p.envParams.GetValueIfInside("REGION", choices)
 	if len(s) == 0 { // Suggestion by @rorph https://github.com/rorph
-		s = choices[rand.Int()%len(choices)]
+		s = choices[rand.Int()%len(choices)] //nolint:gosec
 	}
 	return models.PIARegion(s), err
 }

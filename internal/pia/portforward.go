@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -19,11 +20,12 @@ func (c *configurator) GetPortForward() (port uint16, err error) {
 	clientID := hex.EncodeToString(b)
 	url := fmt.Sprintf("%s/?client_id=%s", constants.PIAPortForwardURL, clientID)
 	content, status, err := c.client.GetContent(url)
-	if err != nil {
+	switch {
+	case err != nil:
 		return 0, err
-	} else if status != 200 {
+	case status != http.StatusOK:
 		return 0, fmt.Errorf("status is %d for %s; does your PIA server support port forwarding?", status, url)
-	} else if len(content) == 0 {
+	case len(content) == 0:
 		return 0, fmt.Errorf("port forwarding is already activated on this connection, has expired, or you are not connected to a PIA region that supports port forwarding")
 	}
 	body := struct {
@@ -42,7 +44,7 @@ func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, u
 		string(filepath),
 		[]string{fmt.Sprintf("%d", port)},
 		files.Ownership(uid, gid),
-		files.Permissions(400))
+		files.Permissions(0400))
 }
 
 func (c *configurator) AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error) {
@@ -52,5 +54,5 @@ func (c *configurator) AllowPortForwardFirewall(device models.VPNDevice, port ui
 
 func (c *configurator) ClearPortForward(filepath models.Filepath, uid, gid int) (err error) {
 	c.logger.Info("Clearing forwarded port status file %s", filepath)
-	return c.fileManager.WriteToFile(string(filepath), nil, files.Ownership(uid, gid), files.Permissions(400))
+	return c.fileManager.WriteToFile(string(filepath), nil, files.Ownership(uid, gid), files.Permissions(0400))
 }

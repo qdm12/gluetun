@@ -11,15 +11,14 @@ import (
 
 // GetWindscribeRegion obtains the region for the Windscribe server from the
 // environment variable REGION
-func (p *paramsReader) GetWindscribeRegion() (country models.WindscribeRegion, err error) {
-	choices := append(constants.WindscribeRegionChoices())
-	s, err := p.envParams.GetValueIfInside("REGION", choices)
+func (p *reader) GetWindscribeRegion() (country models.WindscribeRegion, err error) {
+	s, err := p.envParams.GetValueIfInside("REGION", constants.WindscribeRegionChoices())
 	return models.WindscribeRegion(strings.ToLower(s)), err
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the
 // environment variable PORT
-func (p *paramsReader) GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error) {
+func (p *reader) GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error) {
 	n, err := p.envParams.GetEnvIntRange("PORT", 0, 65535, libparams.Default("0"))
 	if err != nil {
 		return 0, err

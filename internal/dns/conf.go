@@ -2,6 +2,7 @@ package dns
 
 import (
 	"fmt"
+	"net/http"
 	"sort"
 	"strings"
 
@@ -14,12 +15,9 @@ import (
 
 func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err error) {
 	c.logger.Info("generating Unbound configuration")
-	lines, warnings, err := generateUnboundConf(settings, c.client, c.logger)
+	lines, warnings := generateUnboundConf(settings, c.client, c.logger)
 	for _, warning := range warnings {
 		c.logger.Warn(warning)
-	}
-	if err != nil {
-		return err
 	}
 	return c.fileManager.WriteLinesToFile(
 		string(constants.UnboundConf),
@@ -29,7 +27,7 @@ func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err
 }
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings
-func generateUnboundConf(settings settings.DNS, client network.Client, logger logging.Logger) (lines []string, warnings []error, err error) {
+func generateUnboundConf(settings settings.DNS, client network.Client, logger logging.Logger) (lines []string, warnings []error) {
 	doIPv6 := "no"
 	if settings.IPv6 {
 		doIPv6 = "yes"
@@ -87,9 +85,11 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 
 	// Server
 	lines = append(lines, "server:")
-	var serverLines []string
+	serverLines := make([]string, len(serverSection))
+	i := 0
 	for k, v := range serverSection {
-		serverLines = append(serverLines, "  "+k+": "+v)
+		serverLines[i] = "  " + k + ": " + v
+		i++
 	}
 	sort.Slice(serverLines, func(i, j int) bool {
 		return serverLines[i] < serverLines[j]
@@ -109,9 +109,11 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 	} else {
 		forwardZoneSection["forward-no-cache"] = "yes"
 	}
-	var forwardZoneLines []string
+	forwardZoneLines := make([]string, len(forwardZoneSection))
+	i = 0
 	for k, v := range forwardZoneSection {
-		forwardZoneLines = append(forwardZoneLines, "  "+k+": "+v)
+		forwardZoneLines[i] = "  " + k + ": " + v
+		i++
 	}
 	sort.Slice(forwardZoneLines, func(i, j int) bool {
 		return forwardZoneLines[i] < forwardZoneLines[j]
@@ -124,7 +126,7 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		}
 	}
 	lines = append(lines, forwardZoneLines...)
-	return lines, warnings, nil
+	return lines, warnings
 }
 
 func buildBlocked(client network.Client, blockMalicious, blockAds, blockSurveillance bool,
@@ -157,11 +159,11 @@ func buildBlocked(client network.Client, blockMalicious, blockAds, blockSurveill
 	return hostnamesLines, ipsLines, errs
 }
 
-func getList(client network.Client, URL string) (results []string, err error) {
-	content, status, err := client.GetContent(URL)
+func getList(client network.Client, url string) (results []string, err error) {
+	content, status, err := client.GetContent(url)
 	if err != nil {
 		return nil, err
-	} else if status != 200 {
+	} else if status != http.StatusOK {
 		return nil, fmt.Errorf("HTTP status code is %d and not 200", status)
 	}
 	results = strings.Split(string(content), "\n")

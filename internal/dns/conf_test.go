@@ -39,9 +39,8 @@ func Test_generateUnboundConf(t *testing.T) {
 	logger := mock_logging.NewMockLogger(mockCtrl)
 	logger.EXPECT().Info("%d hostnames blocked overall", 2).Times(1)
 	logger.EXPECT().Info("%d IP addresses blocked overall", 3).Times(1)
-	lines, warnings, err := generateUnboundConf(settings, client, logger)
+	lines, warnings := generateUnboundConf(settings, client, logger)
 	require.Len(t, warnings, 0)
-	require.NoError(t, err)
 	expected := `
 server:
   cache-max-ttl: 9000
@@ -383,7 +382,7 @@ func Test_buildBlockedHostnames(t *testing.T) {
 				"  local-zone: \"site_d\" static"},
 		},
 	}
-	for name, tc := range tests {
+	for name, tc := range tests { //nolint:dupl
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
@@ -499,7 +498,7 @@ func Test_buildBlockedIPs(t *testing.T) {
 				"  private-address: site_d"},
 		},
 	}
-	for name, tc := range tests {
+	for name, tc := range tests { //nolint:dupl
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()

@@ -10,8 +10,8 @@ import (
 
 func HealthCheck() error {
 	// DNS, HTTP and HTTPs check on github.com
-	connectivty := connectivity.NewConnectivity(3 * time.Second)
-	errs := connectivty.Checks("github.com")
+	connectivity := connectivity.NewConnectivity(3 * time.Second)
+	errs := connectivity.Checks("github.com")
 	if len(errs) > 0 {
 		var errsStr []string
 		for _, err := range errs {

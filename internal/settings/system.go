@@ -17,20 +17,20 @@ type System struct {
 }
 
 // GetSystemSettings obtains the System settings using the params functions
-func GetSystemSettings(params params.ParamsReader) (settings System, err error) {
-	settings.UID, err = params.GetUID()
+func GetSystemSettings(paramsReader params.Reader) (settings System, err error) {
+	settings.UID, err = paramsReader.GetUID()
 	if err != nil {
 		return settings, err
 	}
-	settings.GID, err = params.GetGID()
+	settings.GID, err = paramsReader.GetGID()
 	if err != nil {
 		return settings, err
 	}
-	settings.Timezone, err = params.GetTimezone()
+	settings.Timezone, err = paramsReader.GetTimezone()
 	if err != nil {
 		return settings, err
 	}
-	settings.IPStatusFilepath, err = params.GetIPStatusFilepath()
+	settings.IPStatusFilepath, err = paramsReader.GetIPStatusFilepath()
 	if err != nil {
 		return settings, err
 	}

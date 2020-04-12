@@ -29,26 +29,26 @@ func (m *Mullvad) String() string {
 }
 
 // GetMullvadSettings obtains Mullvad settings from environment variables using the params package.
-func GetMullvadSettings(params params.ParamsReader) (settings Mullvad, err error) {
-	settings.User, err = params.GetUser()
+func GetMullvadSettings(paramsReader params.Reader) (settings Mullvad, err error) {
+	settings.User, err = paramsReader.GetUser()
 	if err != nil {
 		return settings, err
 	}
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
 	settings.User = strings.ReplaceAll(settings.User, " ", "")
-	settings.Country, err = params.GetMullvadCountry()
+	settings.Country, err = paramsReader.GetMullvadCountry()
 	if err != nil {
 		return settings, err
 	}
-	settings.City, err = params.GetMullvadCity()
+	settings.City, err = paramsReader.GetMullvadCity()
 	if err != nil {
 		return settings, err
 	}
-	settings.ISP, err = params.GetMullvadISP()
+	settings.ISP, err = paramsReader.GetMullvadISP()
 	if err != nil {
 		return settings, err
 	}
-	settings.Port, err = params.GetMullvadPort()
+	settings.Port, err = paramsReader.GetMullvadPort()
 	if err != nil {
 		return settings, err
 	}

@@ -113,7 +113,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 
 | Environment variable | Default | Properties | PIA | Mullvad | Windscribe | Description | Choices |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `VPNSP` | `pia` | | ✅ | ✅ | ✅ | VPN Service Provider | `pia`, `mullvad`, `windscribe` |
+| `VPNSP` | `private internet access` | | ✅ | ✅ | ✅ | VPN Service Provider | `private internet access`, `mullvad`, `windscribe` |
 | `REGION` | `Austria` | | ✅ | ❌ | ✅ | VPN server region | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) or of the [Windscribe regions](https://windscribe.com/status) |
 | `COUNTRY` | `Sweden` | Optional | ❌ | ✅ | ❌ | VPN server country | One of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) |
 | `CITY` | | Optional | ❌ | ✅ | ❌ | VPN server city | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) |

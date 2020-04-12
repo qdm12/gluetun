@@ -16,7 +16,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func Test_DownloadRootHints(t *testing.T) {
+func Test_DownloadRootHints(t *testing.T) { //nolint:dupl
 	t.Parallel()
 	tests := map[string]struct {
 		content   []byte
@@ -78,7 +78,7 @@ func Test_DownloadRootHints(t *testing.T) {
 	}
 }
 
-func Test_DownloadRootKey(t *testing.T) {
+func Test_DownloadRootKey(t *testing.T) { //nolint:dupl
 	t.Parallel()
 	tests := map[string]struct {
 		content   []byte

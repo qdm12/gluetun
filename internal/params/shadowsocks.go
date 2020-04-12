@@ -8,19 +8,19 @@ import (
 
 // GetShadowSocks obtains if ShadowSocks is on from the environment variable
 // SHADOWSOCKS
-func (p *paramsReader) GetShadowSocks() (activated bool, err error) {
+func (p *reader) GetShadowSocks() (activated bool, err error) {
 	return p.envParams.GetOnOff("SHADOWSOCKS", libparams.Default("off"))
 }
 
 // GetShadowSocksLog obtains the ShadowSocks log level from the environment variable
 // SHADOWSOCKS_LOG
-func (p *paramsReader) GetShadowSocksLog() (activated bool, err error) {
+func (p *reader) GetShadowSocksLog() (activated bool, err error) {
 	return p.envParams.GetOnOff("SHADOWSOCKS_LOG", libparams.Default("off"))
 }
 
 // GetShadowSocksPort obtains the ShadowSocks listening port from the environment variable
 // SHADOWSOCKS_PORT
-func (p *paramsReader) GetShadowSocksPort() (port uint16, err error) {
+func (p *reader) GetShadowSocksPort() (port uint16, err error) {
 	portStr, err := p.envParams.GetEnv("SHADOWSOCKS_PORT", libparams.Default("8388"))
 	if err != nil {
 		return 0, err
@@ -34,13 +34,18 @@ func (p *paramsReader) GetShadowSocksPort() (port uint16, err error) {
 
 // GetShadowSocksPassword obtains the ShadowSocks server password from the environment variable
 // SHADOWSOCKS_PASSWORD
-func (p *paramsReader) GetShadowSocksPassword() (password string, err error) {
-	defer p.unsetEnv("SHADOWSOCKS_PASSWORD")
+func (p *reader) GetShadowSocksPassword() (password string, err error) {
+	defer func() {
+		unsetErr := p.unsetEnv("SHADOWSOCKS_PASSWORD")
+		if err == nil {
+			err = unsetErr
+		}
+	}()
 	return p.envParams.GetEnv("SHADOWSOCKS_PASSWORD", libparams.CaseSensitiveValue())
 }
 
 // GetShadowSocksMethod obtains the ShadowSocks method to use from the environment variable
 // SHADOWSOCKS_METHOD
-func (p *paramsReader) GetShadowSocksMethod() (method string, err error) {
+func (p *reader) GetShadowSocksMethod() (method string, err error) {
 	return p.envParams.GetEnv("SHADOWSOCKS_METHOD", libparams.Default("chacha20-ietf-poly1305"))
 }

@@ -28,20 +28,20 @@ func (w *Windscribe) String() string {
 }
 
 // GetWindscribeSettings obtains Windscribe settings from environment variables using the params package.
-func GetWindscribeSettings(params params.ParamsReader, protocol models.NetworkProtocol) (settings Windscribe, err error) {
-	settings.User, err = params.GetUser()
+func GetWindscribeSettings(paramsReader params.Reader, protocol models.NetworkProtocol) (settings Windscribe, err error) {
+	settings.User, err = paramsReader.GetUser()
 	if err != nil {
 		return settings, err
 	}
-	settings.Password, err = params.GetPassword()
+	settings.Password, err = paramsReader.GetPassword()
 	if err != nil {
 		return settings, err
 	}
-	settings.Region, err = params.GetWindscribeRegion()
+	settings.Region, err = paramsReader.GetWindscribeRegion()
 	if err != nil {
 		return settings, err
 	}
-	settings.Port, err = params.GetWindscribePort(protocol)
+	settings.Port, err = paramsReader.GetWindscribePort(protocol)
 	if err != nil {
 		return settings, err
 	}

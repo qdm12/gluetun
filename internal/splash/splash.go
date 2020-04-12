@@ -11,7 +11,7 @@ import (
 )
 
 // Splash returns the welcome spash message
-func Splash(paramsReader params.ParamsReader) string {
+func Splash(paramsReader params.Reader) string {
 	version := paramsReader.GetVersion()
 	vcsRef := paramsReader.GetVcsRef()
 	buildDate := paramsReader.GetBuildDate()
