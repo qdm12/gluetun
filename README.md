@@ -75,7 +75,7 @@
         - Mullvad: user ID ([sign up](https://mullvad.net/en/account/))
         - Windscribe: **username** and **password** | Signup up using my affiliate link below
 
-            [![https://windscribe.com/?affid=mh7nyafu](doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
+            [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
@@ -275,3 +275,14 @@ Please refer to [the FAQ table of content](https://github.com/qdm12/private-inte
 ## License
 
 This repository is under an [MIT license](https://github.com/qdm12/private-internet-access-docker/master/license)
+
+## Support
+
+Sponsor me on [Github](https://github.com/sponsors/qdm12), donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw) or subscribe to a VPN provider through one of my affiliate links:
+
+[![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
+[![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
+
+[![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
+
+Feel also free to have a look at [the Kanban board](https://github.com/qdm12/private-internet-access-docker/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
