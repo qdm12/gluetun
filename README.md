@@ -69,8 +69,14 @@
 ## Setup
 
 1. Requirements
-    - Docker 1.13, in order to have Docker API 1.25 which supports `init` (and, if you use docker-compose, docker-compose version 1.22.0)
-    - A Private Internet Access **username** and **password** ([sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)) or Mullvad user ID ([sign up](https://mullvad.net/en/account/))
+    - *Ideally*, Docker 1.13, in order to have Docker API 1.25 which supports `init` (and, if you use docker-compose, docker-compose version 1.22.0)
+    - A VPN account with one of the service providers:
+        - Private Internet Access: **username** and **password**
+        - Mullvad: user ID ([sign up](https://mullvad.net/en/account/))
+        - Windscribe: **username** and **password** | Signup up using my affiliate link below
+
+            [![https://windscribe.com/?affid=mh7nyafu](doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
+
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
 1. Launch the container with:
