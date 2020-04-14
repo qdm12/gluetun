@@ -253,14 +253,15 @@ func main() {
 		e.FatalOnError(err)
 		err = firewallConf.AllowAnyIncomingOnPort(allSettings.ShadowSocks.Port)
 		e.FatalOnError(err)
-		stream, waitFn, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
+		stdout, stderr, waitFn, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
 		go func() {
 			if err := waitFn(); err != nil {
 				logger.Error(err)
 			}
 		}()
-		go streamMerger.Merge("shadowsocks", stream)
+		go streamMerger.Merge("shadowsocks", stdout)
+		go streamMerger.Merge("shadowsocks error", stderr)
 	}
 
 	stream, waitFn, err := ovpnConf.Start()
