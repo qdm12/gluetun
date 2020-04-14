@@ -126,7 +126,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `ISP` | | Optional | ❌ | ✅ | ❌ | VPN server ISP | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) |
 | `PORT` | | Optional | ❌ | ✅ | ✅ | Custom VPN port to use | **Mullvad**: `80` or `443` for TCP; or `53` for UDP. Leave blank for default Mullvad server port. **Windscribe** see [this list of ports](https://windscribe.com/getconfig/openvpn) |
 | `PROTOCOL` | `udp` | | ✅ | ✅ | ✅ | Network protocol to use | `tcp`, `udp` |
-| `ENCRYPTION` | `strong` | | ✅ | ❌ | ❌ | Encryption preset | `normal`, `strong` |
+| `PIA_ENCRYPTION` | `strong` | | ✅ | ❌ | ❌ | Encryption preset | `normal`, `strong` |
 | `USER` | | **To fill** | ✅ | ✅ | ✅ | PIA/Windscribe username **or** Mullvad user ID | |
 | `PASSWORD` | |  **To fill** | ✅ | ❌ | ✅ | PIA/Windscribe password | |
 | `DOT` | `on` | | ✅ | ✅ | ✅ | Activate DNS over TLS | `on`, `off` |
