@@ -286,3 +286,5 @@ Sponsor me on [Github](https://github.com/sponsors/qdm12), donate to [paypal.me/
 [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
 Feel also free to have a look at [the Kanban board](https://github.com/qdm12/private-internet-access-docker/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
+
+Many thanks to @Ralph521 for supporting me financially 🥇👍
