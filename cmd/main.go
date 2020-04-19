@@ -133,6 +133,7 @@ func main() {
 		e.FatalOnError(err)
 	}()
 
+	waiter := command.NewWaiter()
 	if allSettings.DNS.Enabled {
 		initialDNSToUse := constants.DNSProviderMapping()[allSettings.DNS.Providers[0]]
 		dnsConf.UseDNSInternally(initialDNSToUse.IPs[0])
@@ -144,9 +145,7 @@ func main() {
 		e.FatalOnError(err)
 		stream, waitFn, err := dnsConf.Start(ctx, allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
-		go func() {
-			e.FatalOnError(waitFn())
-		}()
+		waiter.Add(waitFn)
 		go streamMerger.Merge(stream, command.MergeName("unbound"))
 		dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
 		err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
@@ -235,11 +234,7 @@ func main() {
 		e.FatalOnError(err)
 		stream, waitFn, err := tinyProxyConf.Start(ctx)
 		e.FatalOnError(err)
-		go func() {
-			if err := waitFn(); err != nil {
-				logger.Error(err)
-			}
-		}()
+		waiter.Add(waitFn)
 		go streamMerger.Merge(stream, command.MergeName("tinyproxy"))
 	}
 
@@ -255,29 +250,29 @@ func main() {
 		e.FatalOnError(err)
 		stdout, stderr, waitFn, err := shadowsocksConf.Start(ctx, "0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
-		go func() {
-			if err := waitFn(); err != nil {
-				logger.Error(err)
-			}
-		}()
+		waiter.Add(waitFn)
 		go streamMerger.Merge(stdout, command.MergeName("shadowsocks"))
 		go streamMerger.Merge(stderr, command.MergeName("shadowsocks error"))
 	}
 
 	stream, waitFn, err := ovpnConf.Start(ctx)
 	e.FatalOnError(err)
+	waiter.Add(waitFn)
 	go streamMerger.Merge(stream, command.MergeName("openvpn"))
-	go signals.WaitForExit(func(signal string) int {
+	signals.WaitForExit(func(signal string) int {
 		logger.Warn("Caught OS signal %s, shutting down", signal)
 		if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
 			if err := piaConf.ClearPortForward(allSettings.PIA.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID); err != nil {
 				logger.Error(err)
 			}
 		}
-		time.Sleep(100 * time.Millisecond) // wait for other processes to exit
+		logger.Info("Waiting for processes to exit...")
+		errors := waiter.WaitForAll()
+		for _, err := range errors {
+			logger.Error(err)
+		}
 		return 0
 	})
-	e.FatalOnError(waitFn())
 }
 
 func onConnected(
