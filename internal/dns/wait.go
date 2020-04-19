@@ -8,6 +8,7 @@ import (
 func (c *configurator) WaitForUnbound() (err error) {
 	const maxTries = 10
 	const hostToResolve = "github.com"
+	time.Sleep(300 * time.Millisecond)
 	for try := 1; try <= maxTries; try++ {
 		_, err := c.lookupIP(hostToResolve)
 		if err == nil {
