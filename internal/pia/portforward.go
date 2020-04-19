@@ -55,5 +55,5 @@ func (c *configurator) AllowPortForwardFirewall(ctx context.Context, device mode
 
 func (c *configurator) ClearPortForward(filepath models.Filepath, uid, gid int) (err error) {
 	c.logger.Info("Clearing forwarded port status file %s", filepath)
-	return c.fileManager.WriteToFile(string(filepath), nil, files.Ownership(uid, gid), files.Permissions(0400))
+	return c.fileManager.Remove(string(filepath))
 }
