@@ -1,6 +1,7 @@
 package env
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -75,8 +76,8 @@ func Test_PrintVersion(t *testing.T) {
 					}).Times(1)
 			}
 			e := &env{logger: logger}
-			commandFn := func() (string, error) { return tc.commandVersion, tc.commandErr }
-			e.PrintVersion(tc.program, commandFn)
+			commandFn := func(ctx context.Context) (string, error) { return tc.commandVersion, tc.commandErr }
+			e.PrintVersion(context.Background(), tc.program, commandFn)
 			if tc.commandErr != nil {
 				assert.Equal(t, logged, tc.commandErr.Error())
 			} else {

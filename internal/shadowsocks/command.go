@@ -1,6 +1,7 @@
 package shadowsocks
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -8,7 +9,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) Start(server string, port uint16, password string, log bool) (stdout, stderr io.ReadCloser, waitFn func() error, err error) {
+func (c *configurator) Start(ctx context.Context, server string, port uint16, password string, log bool) (stdout, stderr io.ReadCloser, waitFn func() error, err error) {
 	c.logger.Info("starting shadowsocks server")
 	args := []string{
 		"-c", string(constants.ShadowsocksConf),
@@ -18,13 +19,13 @@ func (c *configurator) Start(server string, port uint16, password string, log bo
 	if log {
 		args = append(args, "-v")
 	}
-	stdout, stderr, waitFn, err = c.commander.Start("ss-server", args...)
+	stdout, stderr, waitFn, err = c.commander.Start(ctx, "ss-server", args...)
 	return stdout, stderr, waitFn, err
 }
 
 // Version obtains the version of the installed shadowsocks server
-func (c *configurator) Version() (string, error) {
-	output, err := c.commander.Run("ss-server", "-h")
+func (c *configurator) Version(ctx context.Context) (string, error) {
+	output, err := c.commander.Run(ctx, "ss-server", "-h")
 	if err != nil {
 		return "", err
 	}

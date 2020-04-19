@@ -1,6 +1,7 @@
 package openvpn
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
@@ -8,14 +9,14 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) Start() (stdout io.ReadCloser, waitFn func() error, err error) {
+func (c *configurator) Start(ctx context.Context) (stdout io.ReadCloser, waitFn func() error, err error) {
 	c.logger.Info("starting openvpn")
-	stdout, _, waitFn, err = c.commander.Start("openvpn", "--config", string(constants.OpenVPNConf))
+	stdout, _, waitFn, err = c.commander.Start(ctx, "openvpn", "--config", string(constants.OpenVPNConf))
 	return stdout, waitFn, err
 }
 
-func (c *configurator) Version() (string, error) {
-	output, err := c.commander.Run("openvpn", "--version")
+func (c *configurator) Version(ctx context.Context) (string, error) {
+	output, err := c.commander.Run(ctx, "openvpn", "--version")
 	if err != nil && err.Error() != "exit status 1" {
 		return "", err
 	}

@@ -1,6 +1,7 @@
 package pia
 
 import (
+	"context"
 	"net"
 
 	"github.com/qdm12/golibs/crypto/random"
@@ -20,7 +21,7 @@ type Configurator interface {
 	GetPortForward() (port uint16, err error)
 	WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error)
 	ClearPortForward(filepath models.Filepath, uid, gid int) (err error)
-	AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error)
+	AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error)
 }
 
 type configurator struct {

@@ -65,11 +65,11 @@ func main() {
 	defer cancel()
 	streamMerger := command.NewStreamMerger(ctx)
 
-	e.PrintVersion("OpenVPN", ovpnConf.Version)
-	e.PrintVersion("Unbound", dnsConf.Version)
-	e.PrintVersion("IPtables", firewallConf.Version)
-	e.PrintVersion("TinyProxy", tinyProxyConf.Version)
-	e.PrintVersion("ShadowSocks", shadowsocksConf.Version)
+	e.PrintVersion(ctx, "OpenVPN", ovpnConf.Version)
+	e.PrintVersion(ctx, "Unbound", dnsConf.Version)
+	e.PrintVersion(ctx, "IPtables", firewallConf.Version)
+	e.PrintVersion(ctx, "TinyProxy", tinyProxyConf.Version)
+	e.PrintVersion(ctx, "ShadowSocks", shadowsocksConf.Version)
 
 	allSettings, err := settings.GetAllSettings(paramsReader)
 	e.FatalOnError(err)
@@ -111,7 +111,7 @@ func main() {
 	// pre-exist, preventing the nslookup of the PIA region address. These will
 	// simply be redundant at Docker runtime as they will already be set this way
 	// Thanks to @npawelek https://github.com/npawelek
-	err = firewallConf.AcceptAll()
+	err = firewallConf.AcceptAll(ctx)
 	e.FatalOnError(err)
 
 	go func() {
@@ -120,7 +120,7 @@ func main() {
 		err = streamMerger.CollectLines(func(line string) {
 			logger.Info(line)
 			if strings.Contains(line, "Initialization Sequence Completed") {
-				onConnected(logger, routingConf, fileManager, piaConf,
+				onConnected(ctx, logger, routingConf, fileManager, piaConf,
 					defaultInterface,
 					allSettings.VPNSP,
 					allSettings.PIA.PortForwarding.Enabled,
@@ -142,12 +142,12 @@ func main() {
 		e.FatalOnError(err)
 		err = dnsConf.MakeUnboundConf(allSettings.DNS, allSettings.System.UID, allSettings.System.GID)
 		e.FatalOnError(err)
-		stream, waitFn, err := dnsConf.Start(allSettings.DNS.VerbosityDetailsLevel)
+		stream, waitFn, err := dnsConf.Start(ctx, allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
 		go func() {
 			e.FatalOnError(waitFn())
 		}()
-		go streamMerger.Merge("unbound", stream)
+		go streamMerger.Merge(stream, command.MergeName("unbound"))
 		dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
 		err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
 		e.FatalOnError(err)
@@ -209,17 +209,17 @@ func main() {
 		e.FatalOnError(err)
 	}
 
-	err = routingConf.AddRoutesVia(allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
+	err = routingConf.AddRoutesVia(ctx, allSettings.Firewall.AllowedSubnets, defaultGateway, defaultInterface)
 	e.FatalOnError(err)
-	err = firewallConf.Clear()
+	err = firewallConf.Clear(ctx)
 	e.FatalOnError(err)
-	err = firewallConf.BlockAll()
+	err = firewallConf.BlockAll(ctx)
 	e.FatalOnError(err)
-	err = firewallConf.CreateGeneralRules()
+	err = firewallConf.CreateGeneralRules(ctx)
 	e.FatalOnError(err)
-	err = firewallConf.CreateVPNRules(constants.TUN, defaultInterface, connections)
+	err = firewallConf.CreateVPNRules(ctx, constants.TUN, defaultInterface, connections)
 	e.FatalOnError(err)
-	err = firewallConf.CreateLocalSubnetsRules(defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
+	err = firewallConf.CreateLocalSubnetsRules(ctx, defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
 	e.FatalOnError(err)
 
 	if allSettings.TinyProxy.Enabled {
@@ -231,16 +231,16 @@ func main() {
 			allSettings.System.UID,
 			allSettings.System.GID)
 		e.FatalOnError(err)
-		err = firewallConf.AllowAnyIncomingOnPort(allSettings.TinyProxy.Port)
+		err = firewallConf.AllowAnyIncomingOnPort(ctx, allSettings.TinyProxy.Port)
 		e.FatalOnError(err)
-		stream, waitFn, err := tinyProxyConf.Start()
+		stream, waitFn, err := tinyProxyConf.Start(ctx)
 		e.FatalOnError(err)
 		go func() {
 			if err := waitFn(); err != nil {
 				logger.Error(err)
 			}
 		}()
-		go streamMerger.Merge("tinyproxy", stream)
+		go streamMerger.Merge(stream, command.MergeName("tinyproxy"))
 	}
 
 	if allSettings.ShadowSocks.Enabled {
@@ -251,22 +251,22 @@ func main() {
 			allSettings.System.UID,
 			allSettings.System.GID)
 		e.FatalOnError(err)
-		err = firewallConf.AllowAnyIncomingOnPort(allSettings.ShadowSocks.Port)
+		err = firewallConf.AllowAnyIncomingOnPort(ctx, allSettings.ShadowSocks.Port)
 		e.FatalOnError(err)
-		stdout, stderr, waitFn, err := shadowsocksConf.Start("0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
+		stdout, stderr, waitFn, err := shadowsocksConf.Start(ctx, "0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
 		go func() {
 			if err := waitFn(); err != nil {
 				logger.Error(err)
 			}
 		}()
-		go streamMerger.Merge("shadowsocks", stdout)
-		go streamMerger.Merge("shadowsocks error", stderr)
+		go streamMerger.Merge(stdout, command.MergeName("shadowsocks"))
+		go streamMerger.Merge(stderr, command.MergeName("shadowsocks error"))
 	}
 
-	stream, waitFn, err := ovpnConf.Start()
+	stream, waitFn, err := ovpnConf.Start(ctx)
 	e.FatalOnError(err)
-	go streamMerger.Merge("openvpn", stream)
+	go streamMerger.Merge(stream, command.MergeName("openvpn"))
 	go signals.WaitForExit(func(signal string) int {
 		logger.Warn("Caught OS signal %s, shutting down", signal)
 		if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
@@ -281,6 +281,7 @@ func main() {
 }
 
 func onConnected(
+	ctx context.Context,
 	logger logging.Logger,
 	routingConf routing.Routing,
 	fileManager files.FileManager,
@@ -319,7 +320,7 @@ func onConnected(
 		logger.Error("port forwarding:", err)
 		return
 	}
-	if err := piaConf.AllowPortForwardFirewall(constants.TUN, port); err != nil {
+	if err := piaConf.AllowPortForwardFirewall(ctx, constants.TUN, port); err != nil {
 		logger.Error("port forwarding:", err)
 		return
 	}

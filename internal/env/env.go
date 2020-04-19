@@ -1,6 +1,7 @@
 package env
 
 import (
+	"context"
 	"os"
 
 	"github.com/qdm12/golibs/logging"
@@ -8,7 +9,7 @@ import (
 
 type Env interface {
 	FatalOnError(err error)
-	PrintVersion(program string, commandFn func() (string, error))
+	PrintVersion(ctx context.Context, program string, commandFn func(ctx context.Context) (string, error))
 }
 
 type env struct {
@@ -30,8 +31,8 @@ func (e *env) FatalOnError(err error) {
 	}
 }
 
-func (e *env) PrintVersion(program string, commandFn func() (string, error)) {
-	version, err := commandFn()
+func (e *env) PrintVersion(ctx context.Context, program string, commandFn func(ctx context.Context) (string, error)) {
+	version, err := commandFn(ctx)
 	if err != nil {
 		e.logger.Error(err)
 	} else {

@@ -1,20 +1,21 @@
 package tinyproxy
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"strings"
 )
 
-func (c *configurator) Start() (stdout io.ReadCloser, waitFn func() error, err error) {
+func (c *configurator) Start(ctx context.Context) (stdout io.ReadCloser, waitFn func() error, err error) {
 	c.logger.Info("starting tinyproxy server")
-	stdout, _, waitFn, err = c.commander.Start("tinyproxy", "-d")
+	stdout, _, waitFn, err = c.commander.Start(ctx, "tinyproxy", "-d")
 	return stdout, waitFn, err
 }
 
 // Version obtains the version of the installed Tinyproxy server
-func (c *configurator) Version() (string, error) {
-	output, err := c.commander.Run("tinyproxy", "-v")
+func (c *configurator) Version(ctx context.Context) (string, error) {
+	output, err := c.commander.Run(ctx, "tinyproxy", "-v")
 	if err != nil {
 		return "", err
 	}

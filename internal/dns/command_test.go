@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -20,10 +21,10 @@ func Test_Start(t *testing.T) {
 	logger := mock_logging.NewMockLogger(mockCtrl)
 	logger.EXPECT().Info("starting unbound").Times(1)
 	commander := mock_command.NewMockCommander(mockCtrl)
-	commander.EXPECT().Start("unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
+	commander.EXPECT().Start(context.Background(), "unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
 		Return(nil, nil, nil, nil).Times(1)
 	c := &configurator{commander: commander, logger: logger}
-	stdout, waitFn, err := c.Start(2)
+	stdout, waitFn, err := c.Start(context.Background(), 2)
 	assert.Nil(t, stdout)
 	assert.Nil(t, waitFn)
 	assert.NoError(t, err)
@@ -56,10 +57,10 @@ func Test_Version(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 			commander := mock_command.NewMockCommander(mockCtrl)
-			commander.EXPECT().Run("unbound", "-V").
+			commander.EXPECT().Run(context.Background(), "unbound", "-V").
 				Return(tc.runOutput, tc.runErr).Times(1)
 			c := &configurator{commander: commander}
-			version, err := c.Version()
+			version, err := c.Version(context.Background())
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())

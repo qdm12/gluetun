@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"context"
 	"io"
 	"net"
 
@@ -17,9 +18,9 @@ type Configurator interface {
 	MakeUnboundConf(settings settings.DNS, uid, gid int) (err error)
 	UseDNSInternally(IP net.IP)
 	UseDNSSystemWide(IP net.IP) error
-	Start(logLevel uint8) (stdout io.ReadCloser, waitFn func() error, err error)
+	Start(ctx context.Context, logLevel uint8) (stdout io.ReadCloser, waitFn func() error, err error)
 	WaitForUnbound() (err error)
-	Version() (version string, err error)
+	Version(ctx context.Context) (version string, err error)
 }
 
 type configurator struct {

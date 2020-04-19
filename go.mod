@@ -4,8 +4,8 @@ go 1.14
 
 require (
 	github.com/golang/mock v1.4.3
-	github.com/kyokomi/emoji v2.2.1+incompatible
-	github.com/qdm12/golibs v0.0.0-20200412175259-da41d65db446
+	github.com/kyokomi/emoji v2.2.2+incompatible
+	github.com/qdm12/golibs v0.0.0-20200419174016-f1c612728dfa
 	github.com/stretchr/testify v1.5.1
-	golang.org/x/sys v0.0.0-20200409092240-59c9f1ba88fa
+	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4
 )

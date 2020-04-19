@@ -1,6 +1,7 @@
 package tinyproxy
 
 import (
+	"context"
 	"io"
 
 	"github.com/qdm12/golibs/command"
@@ -10,9 +11,9 @@ import (
 )
 
 type Configurator interface {
-	Version() (string, error)
+	Version(ctx context.Context) (string, error)
 	MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) error
-	Start() (stdout io.ReadCloser, waitFn func() error, err error)
+	Start(ctx context.Context) (stdout io.ReadCloser, waitFn func() error, err error)
 }
 
 type configurator struct {

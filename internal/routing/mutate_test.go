@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"testing"
@@ -51,10 +52,10 @@ func Test_removeRoute(t *testing.T) {
 			defer mockCtrl.Finish()
 			commander := mock_command.NewMockCommander(mockCtrl)
 
-			commander.EXPECT().Run("ip", "route", "del", tc.subnet.String()).
+			commander.EXPECT().Run(context.Background(), "ip", "route", "del", tc.subnet.String()).
 				Return(tc.runOutput, tc.runErr).Times(1)
 			r := &routing{commander: commander}
-			err := r.removeRoute(tc.subnet)
+			err := r.removeRoute(context.Background(), tc.subnet)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())

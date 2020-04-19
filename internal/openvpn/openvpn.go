@@ -1,6 +1,7 @@
 package openvpn
 
 import (
+	"context"
 	"io"
 	"os"
 
@@ -11,11 +12,11 @@ import (
 )
 
 type Configurator interface {
-	Version() (string, error)
+	Version(ctx context.Context) (string, error)
 	WriteAuthFile(user, password string, uid, gid int) error
 	CheckTUN() error
 	CreateTUN() error
-	Start() (stdout io.ReadCloser, waitFn func() error, err error)
+	Start(ctx context.Context) (stdout io.ReadCloser, waitFn func() error, err error)
 }
 
 type configurator struct {

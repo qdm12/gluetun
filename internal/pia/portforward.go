@@ -1,6 +1,7 @@
 package pia
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -47,9 +48,9 @@ func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, u
 		files.Permissions(0400))
 }
 
-func (c *configurator) AllowPortForwardFirewall(device models.VPNDevice, port uint16) (err error) {
+func (c *configurator) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
 	c.logger.Info("Allowing forwarded port %d through firewall", port)
-	return c.firewall.AllowInputTrafficOnPort(device, port)
+	return c.firewall.AllowInputTrafficOnPort(ctx, device, port)
 }
 
 func (c *configurator) ClearPortForward(filepath models.Filepath, uid, gid int) (err error) {

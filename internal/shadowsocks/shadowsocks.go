@@ -1,6 +1,7 @@
 package shadowsocks
 
 import (
+	"context"
 	"io"
 
 	"github.com/qdm12/golibs/command"
@@ -9,9 +10,9 @@ import (
 )
 
 type Configurator interface {
-	Version() (string, error)
+	Version(ctx context.Context) (string, error)
 	MakeConf(port uint16, password, method string, uid, gid int) (err error)
-	Start(server string, port uint16, password string, log bool) (stdout, stderr io.ReadCloser, waitFn func() error, err error)
+	Start(ctx context.Context, server string, port uint16, password string, log bool) (stdout, stderr io.ReadCloser, waitFn func() error, err error)
 }
 
 type configurator struct {
