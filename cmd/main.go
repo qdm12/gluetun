@@ -146,7 +146,7 @@ func main() {
 		stream, waitFn, err := dnsConf.Start(ctx, allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
 		waiter.Add(waitFn)
-		go streamMerger.Merge(stream, command.MergeName("unbound"))
+		go streamMerger.Merge(stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
 		dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
 		err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
 		e.FatalOnError(err)
@@ -235,7 +235,7 @@ func main() {
 		stream, waitFn, err := tinyProxyConf.Start(ctx)
 		e.FatalOnError(err)
 		waiter.Add(waitFn)
-		go streamMerger.Merge(stream, command.MergeName("tinyproxy"))
+		go streamMerger.Merge(stream, command.MergeName("tinyproxy"), command.MergeColor(constants.ColorTinyproxy()))
 	}
 
 	if allSettings.ShadowSocks.Enabled {
@@ -251,14 +251,14 @@ func main() {
 		stdout, stderr, waitFn, err := shadowsocksConf.Start(ctx, "0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
 		waiter.Add(waitFn)
-		go streamMerger.Merge(stdout, command.MergeName("shadowsocks"))
-		go streamMerger.Merge(stderr, command.MergeName("shadowsocks error"))
+		go streamMerger.Merge(stdout, command.MergeName("shadowsocks"), command.MergeColor(constants.ColorShadowsocks()))
+		go streamMerger.Merge(stderr, command.MergeName("shadowsocks error"), command.MergeColor(constants.ColorShadowsocksError()))
 	}
 
 	stream, waitFn, err := ovpnConf.Start(ctx)
 	e.FatalOnError(err)
 	waiter.Add(waitFn)
-	go streamMerger.Merge(stream, command.MergeName("openvpn"))
+	go streamMerger.Merge(stream, command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
 	signals.WaitForExit(func(signal string) int {
 		logger.Warn("Caught OS signal %s, shutting down", signal)
 		if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
