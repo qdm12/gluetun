@@ -112,7 +112,10 @@ func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.PrivateAddresses = paramsReader.GetDNSOverTLSPrivateAddresses()
+	settings.PrivateAddresses, err = paramsReader.GetDNSOverTLSPrivateAddresses()
+	if err != nil {
+		return settings, err
+	}
 	settings.IPv6, err = paramsReader.GetDNSOverTLSIPv6()
 	if err != nil {
 		return settings, err

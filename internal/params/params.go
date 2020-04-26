@@ -25,7 +25,7 @@ type Reader interface {
 	GetDNSSurveillanceBlocking() (blocking bool, err error)
 	GetDNSAdsBlocking() (blocking bool, err error)
 	GetDNSUnblockedHostnames() (hostnames []string, err error)
-	GetDNSOverTLSPrivateAddresses() (privateAddresses []string)
+	GetDNSOverTLSPrivateAddresses() (privateAddresses []string, err error)
 	GetDNSOverTLSIPv6() (ipv6 bool, err error)
 
 	// System

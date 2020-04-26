@@ -2,6 +2,7 @@ package params
 
 import (
 	"fmt"
+	"net"
 	"strings"
 
 	libparams "github.com/qdm12/golibs/params"
@@ -88,8 +89,7 @@ func (p *reader) GetDNSUnblockedHostnames() (hostnames []string, err error) {
 	s, err := p.envParams.GetEnv("UNBLOCK")
 	if err != nil {
 		return nil, err
-	}
-	if len(s) == 0 {
+	} else if len(s) == 0 {
 		return nil, nil
 	}
 	hostnames = strings.Split(s, ",")
@@ -109,10 +109,22 @@ func (p *reader) GetDNSOverTLSCaching() (caching bool, err error) {
 
 // GetDNSOverTLSPrivateAddresses obtains if Unbound caching should be enable or not
 // from the environment variable DOT_PRIVATE_ADDRESS
-func (p *reader) GetDNSOverTLSPrivateAddresses() (privateAddresses []string) {
-	s, _ := p.envParams.GetEnv("DOT_PRIVATE_ADDRESS")
-	privateAddresses = append(privateAddresses, strings.Split(s, ",")...)
-	return privateAddresses
+func (p *reader) GetDNSOverTLSPrivateAddresses() (privateAddresses []string, err error) {
+	s, err := p.envParams.GetEnv("DOT_PRIVATE_ADDRESS")
+	if err != nil {
+		return nil, err
+	} else if len(s) == 0 {
+		return nil, nil
+	}
+	privateAddresses = strings.Split(s, ",")
+	for _, address := range privateAddresses {
+		ip := net.ParseIP(address)
+		_, _, err := net.ParseCIDR(address)
+		if ip == nil && err != nil {
+			return nil, fmt.Errorf("private address %q is not a valid IP or CIDR range", address)
+		}
+	}
+	return privateAddresses, nil
 }
 
 // GetDNSOverTLSIPv6 obtains if Unbound should resolve ipv6 addresses using ipv6 DNS over TLS
