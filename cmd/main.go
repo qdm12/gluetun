@@ -120,14 +120,16 @@ func main() {
 		err = streamMerger.CollectLines(func(line string) {
 			logger.Info(line)
 			if strings.Contains(line, "Initialization Sequence Completed") {
-				onConnected(ctx, logger, routingConf, fileManager, piaConf,
-					defaultInterface,
-					allSettings.VPNSP,
-					allSettings.PIA.PortForwarding.Enabled,
-					allSettings.PIA.PortForwarding.Filepath,
-					allSettings.System.IPStatusFilepath,
-					allSettings.System.UID,
-					allSettings.System.GID)
+				time.AfterFunc(time.Second, func() {
+					onConnected(ctx, logger, routingConf, fileManager, piaConf,
+						defaultInterface,
+						allSettings.VPNSP,
+						allSettings.PIA.PortForwarding.Enabled,
+						allSettings.PIA.PortForwarding.Filepath,
+						allSettings.System.IPStatusFilepath,
+						allSettings.System.UID,
+						allSettings.System.GID)
+				})
 			}
 		})
 		e.FatalOnError(err)
