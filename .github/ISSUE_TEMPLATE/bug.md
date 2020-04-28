@@ -9,7 +9,7 @@ assignees: qdm12
 
 1. What VPN service provider are you using?
 
-    - [ ] PIA
+    - [x] PIA
     - [ ] Mullvad
     - [ ] Windscribe
 
@@ -22,7 +22,7 @@ assignees: qdm12
 3. What are you using to run the container?
 
     - [ ] Docker run
-    - [ ] Docker Compose
+    - [x] Docker Compose
     - [ ] Kubernetes
     - [ ] Docker stack
     - [ ] Docker swarm
@@ -31,7 +31,19 @@ assignees: qdm12
 
 4. What's wrong? (please share some of your logs, and maybe configuration)
 
+    Logs
+
+    ```log
+
+    ```
+
+    Configuration file:
+
+    ```yml
+
+    ```
+
 5. Is this urgent?
 
     - [ ] Yes
-    - [ ] No
+    - [x] No
