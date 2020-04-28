@@ -4,8 +4,8 @@
 
 - [Openvpn disconnects because of a ping timeout](#Openvpn-disconnects-because-of-a-ping-timeout)
 - [Private Internet Access: Why do I see openvpn warnings at start](#Private-Internet-Access:-Why-do-I-see-openvpn-warnings-at-start)
-- [What files does it download at start before tunneling](What-files-does-it-download-at-start-before-tunneling)
-- [How to build Docker images of older or alternate versions](How-to-build-Docker-images-of-older-or-alternate-versions)
+- [What files does it download at start before tunneling](#What-files-does-it-download-at-start-before-tunneling)
+- [How to build Docker images of older or alternate versions](#How-to-build-Docker-images-of-older-or-alternate-versions)
 - [Mullvad does not work with IPv6](#Mullvad-does-not-work-with-IPv6)
 - [What's all this Go code](#What-is-all-this-Go-code)
 - [How to test DNS over TLS](#How-to-test-DNS-over-TLS)
