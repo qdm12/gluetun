@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/qdm12/golibs/command"
@@ -13,7 +15,6 @@ import (
 	libhealthcheck "github.com/qdm12/golibs/healthcheck"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/golibs/signals"
 	"github.com/qdm12/private-internet-access-docker/internal/alpine"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
@@ -269,20 +270,31 @@ func main() {
 			}
 		}
 	}()
-	signals.WaitForExit(func(signal string) int {
+	signalsCh := make(chan os.Signal, 1)
+	signal.Notify(signalsCh,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		os.Interrupt,
+	)
+	select {
+	case signal := <-signalsCh:
 		logger.Warn("Caught OS signal %s, shutting down", signal)
-		if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
-			if err := piaConf.ClearPortForward(allSettings.PIA.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID); err != nil {
-				logger.Error(err)
-			}
-		}
-		logger.Info("Waiting for processes to exit...")
-		errors := waiter.WaitForAll()
-		for _, err := range errors {
+		cancel()
+	case <-ctx.Done():
+		logger.Warn("context canceled, shutting down")
+	}
+	if allSettings.PIA.PortForwarding.Enabled {
+		if err := piaConf.ClearPortForward(allSettings.PIA.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID); err != nil {
 			logger.Error(err)
 		}
-		return 0
-	})
+	}
+	errors := waiter.WaitForAll()
+	for _, err := range errors {
+		logger.Error(err)
+	}
+	if err := logger.Sync(); err != nil {
+		panic(err)
+	}
 }
 
 func onConnected(
