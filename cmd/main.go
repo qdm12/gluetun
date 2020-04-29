@@ -256,11 +256,19 @@ func main() {
 		go streamMerger.Merge(stdout, command.MergeName("shadowsocks"), command.MergeColor(constants.ColorShadowsocks()))
 		go streamMerger.Merge(stderr, command.MergeName("shadowsocks error"), command.MergeColor(constants.ColorShadowsocksError()))
 	}
-
-	stream, waitFn, err := ovpnConf.Start(ctx)
-	e.FatalOnError(err)
-	waiter.Add(waitFn)
-	go streamMerger.Merge(stream, command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
+	// Runs openvpn and restarts it if it does not exit cleanly
+	go func() {
+		for {
+			stream, waitFn, err := ovpnConf.Start(ctx)
+			e.FatalOnError(err)
+			go streamMerger.Merge(stream, command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
+			if err := waitFn(); err != nil {
+				logger.Error("openvpn crashed: %s", err)
+			} else {
+				break
+			}
+		}
+	}()
 	signals.WaitForExit(func(signal string) int {
 		logger.Warn("Caught OS signal %s, shutting down", signal)
 		if allSettings.VPNSP == "pia" && allSettings.PIA.PortForwarding.Enabled {
