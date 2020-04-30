@@ -325,13 +325,17 @@ func onConnected(
 			logger.Error(err)
 		}
 	}
-	if vpnsp != constants.PrivateInternetAccess || !portForwarding {
+	if !portForwarding {
 		return
 	}
-	port, err := piaConf.GetPortForward()
-	if err != nil {
-		logger.Error("port forwarding:", err)
-		return
+	var port uint16
+	for err != nil {
+		port, err = piaConf.GetPortForward()
+		if err != nil {
+			logger.Error("port forwarding:", err)
+		}
+		logger.Info("port forwarding: retrying in 5 seconds...")
+		time.Sleep(5 * time.Second)
 	}
 	logger.Info("port forwarding: Port %d", port)
 	if err := piaConf.WritePortForward(portForwardingFilepath, port, uid, gid); err != nil {
