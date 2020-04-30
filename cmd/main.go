@@ -286,6 +286,10 @@ func main() {
 	case <-ctx.Done():
 		logger.Warn("context canceled, shutting down")
 	}
+	logger.Info("Clearing ip status file %s", allSettings.System.IPStatusFilepath)
+	if err := fileManager.Remove(string(allSettings.System.IPStatusFilepath)); err != nil {
+		logger.Error(err)
+	}
 	if allSettings.PIA.PortForwarding.Enabled {
 		logger.Info("Clearing forwarded port status file %s", allSettings.PIA.PortForwarding.Filepath)
 		if err := fileManager.Remove(string(allSettings.PIA.PortForwarding.Filepath)); err != nil {
