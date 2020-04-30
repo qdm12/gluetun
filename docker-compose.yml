@@ -8,9 +8,10 @@ services:
     network_mode: bridge
     init: true
     ports:
-      - 8888:8888/tcp
-      - 8388:8388/tcp
-      - 8388:8388/udp
+      - 8888:8888/tcp # Tinyproxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8000:8000/tcp # Built-in HTTP control server
     # command:
     environment:
       # More variables are available, see the readme table

@@ -37,3 +37,4 @@ You need the following to allow communicating with the VPN servers
 
 - If `SHADOWSOCKS=on`, allow inbound TCP 8388 and UDP 8388 from your LAN
 - If `TINYPROXY=on`, allow inbound TCP 8888 from your LAN
+- If you want access to the built-in HTTP control server, allow inbound TCP 8000 from your LAN

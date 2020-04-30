@@ -27,6 +27,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
 	"github.com/qdm12/private-internet-access-docker/internal/routing"
+	"github.com/qdm12/private-internet-access-docker/internal/server"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
 	"github.com/qdm12/private-internet-access-docker/internal/splash"
@@ -267,13 +268,20 @@ func main() {
 		go streamMerger.Merge(ctx, stdout, command.MergeName("shadowsocks"), command.MergeColor(constants.ColorShadowsocks()))
 		go streamMerger.Merge(ctx, stderr, command.MergeName("shadowsocks error"), command.MergeColor(constants.ColorShadowsocksError()))
 	}
+
+	httpServer := server.New("0.0.0.0:8000", logger)
+
 	// Runs openvpn and restarts it if it does not exit cleanly
+	openvpnCancelSet, signalOpenvpnCancelSet := context.WithCancel(context.Background())
 	go func() {
 		waitErrors := make(chan error)
 		for {
-			stream, waitFn, err := ovpnConf.Start(ctx)
+			openvpnCtx, openvpnCancel := context.WithCancel(ctx)
+			stream, waitFn, err := ovpnConf.Start(openvpnCtx)
 			e.FatalOnError(err)
-			go streamMerger.Merge(ctx, stream, command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
+			httpServer.SetOpenVPNRestart(openvpnCancel)
+			signalOpenvpnCancelSet()
+			go streamMerger.Merge(openvpnCtx, stream, command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
 			waiter.Add(func() error {
 				err := <-waitErrors
 				logger.Error("openvpn: %s", err)
@@ -284,8 +292,18 @@ func main() {
 			} else {
 				break
 			}
+			openvpnCancel()
 		}
 	}()
+
+	<-openvpnCancelSet.Done()
+
+	waiter.Add(func() error {
+		err := httpServer.Run(ctx)
+		logger.Error("http server: %s", err)
+		return err
+	})
+
 	signalsCh := make(chan os.Signal, 1)
 	signal.Notify(signalsCh,
 		syscall.SIGINT,

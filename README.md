@@ -98,6 +98,7 @@
     - Change the many [environment variables](#environment-variables) available
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
+    - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
     - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
 
 1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags for older versions available:
@@ -259,6 +260,12 @@ Note that [not all regions support port forwarding](https://www.privateinterneta
 When `PORT_FORWARDING=on`, a port will be forwarded on the PIA server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
 
 It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
+
+## HTTP control server
+
+A built-in HTTP server listens on port `8000` to modify the state of the container. You have the following routes available:
+
+- `http://<your-docker-host-ip>:8000/openvpn/actions/restart` restarts the openvpn process
 
 ## FAQ
 
