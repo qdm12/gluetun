@@ -7,19 +7,26 @@ assignees: qdm12
 
 ---
 
-1. What VPN service provider are you using?
+**TLDR**: *Describe your issue in a one liner here*
+
+1. Is this urgent?
+
+    - [ ] Yes
+    - [x] No
+
+2. What VPN service provider are you using?
 
     - [x] PIA
     - [ ] Mullvad
     - [ ] Windscribe
 
-2. What's the version of the program?
+3. What's the version of the program?
 
     **See the line at the top of your logs**
 
     `Running version latest built on 2020-03-13T01:30:06Z (commit d0f678c)`
 
-3. What are you using to run the container?
+4. What are you using to run the container?
 
     - [ ] Docker run
     - [x] Docker Compose
@@ -29,21 +36,18 @@ assignees: qdm12
     - [ ] Podman
     - [ ] Other:
 
-4. What's wrong? (please share some of your logs, and maybe configuration)
+5. Extra information
 
-    Logs
+Logs:
 
-    ```log
+```log
 
-    ```
+```
 
-    Configuration file:
+Configuration file:
 
-    ```yml
+```yml
 
-    ```
+```
 
-5. Is this urgent?
-
-    - [ ] Yes
-    - [x] No
+Host OS:
