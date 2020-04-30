@@ -13,7 +13,6 @@ import (
 )
 
 func (c *configurator) GetPortForward() (port uint16, err error) {
-	c.logger.Info("Obtaining port to be forwarded")
 	b, err := c.random.GenerateRandomBytes(32)
 	if err != nil {
 		return 0, err
@@ -35,12 +34,10 @@ func (c *configurator) GetPortForward() (port uint16, err error) {
 	if err := json.Unmarshal(content, &body); err != nil {
 		return 0, fmt.Errorf("port forwarding response: %w", err)
 	}
-	c.logger.Info("Port forwarded is %d", body.Port)
 	return body.Port, nil
 }
 
 func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	c.logger.Info("Writing forwarded port to %s", filepath)
 	return c.fileManager.WriteLinesToFile(
 		string(filepath),
 		[]string{fmt.Sprintf("%d", port)},
@@ -49,11 +46,5 @@ func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, u
 }
 
 func (c *configurator) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
-	c.logger.Info("Allowing forwarded port %d through firewall", port)
 	return c.firewall.AllowInputTrafficOnPort(ctx, device, port)
-}
-
-func (c *configurator) ClearPortForward(filepath models.Filepath, uid, gid int) (err error) {
-	c.logger.Info("Clearing forwarded port status file %s", filepath)
-	return c.fileManager.Remove(string(filepath))
 }
