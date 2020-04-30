@@ -300,9 +300,6 @@ func main() {
 	for _, err := range errors {
 		logger.Error(err)
 	}
-	if err := logger.Sync(); err != nil {
-		panic(err)
-	}
 }
 
 func onConnected(
