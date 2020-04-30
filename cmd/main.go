@@ -124,7 +124,6 @@ func main() {
 				time.AfterFunc(time.Second, func() {
 					onConnected(ctx, logger, routingConf, fileManager, piaConf,
 						defaultInterface,
-						allSettings.VPNSP,
 						allSettings.PIA.PortForwarding.Enabled,
 						allSettings.PIA.PortForwarding.Filepath,
 						allSettings.System.IPStatusFilepath,
@@ -305,7 +304,6 @@ func onConnected(
 	fileManager files.FileManager,
 	piaConf pia.Configurator,
 	defaultInterface string,
-	vpnsp models.VPNProvider,
 	portForwarding bool,
 	portForwardingFilepath models.Filepath,
 	ipStatusFilepath models.Filepath,
