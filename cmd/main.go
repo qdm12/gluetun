@@ -259,11 +259,16 @@ func main() {
 	}
 	// Runs openvpn and restarts it if it does not exit cleanly
 	go func() {
+		waitErrors := make(chan error)
 		for {
 			stream, waitFn, err := ovpnConf.Start(ctx)
 			e.FatalOnError(err)
 			go streamMerger.Merge(ctx, stream, command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
+			waiter.Add(func() error {
+				return <-waitErrors
+			})
 			if err := waitFn(); err != nil {
+				waitErrors <- err
 				logger.Error("openvpn crashed: %s", err)
 			} else {
 				break
