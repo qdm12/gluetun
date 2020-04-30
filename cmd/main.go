@@ -327,21 +327,20 @@ func onConnected(
 		return
 	}
 	var port uint16
-	for err != nil {
+	for {
 		port, err = piaConf.GetPortForward()
 		if err != nil {
 			logger.Error("port forwarding:", err)
+			logger.Info("port forwarding: retrying in 5 seconds...")
+			time.Sleep(5 * time.Second)
+		} else {
+			break
 		}
-		logger.Info("port forwarding: retrying in 5 seconds...")
-		time.Sleep(5 * time.Second)
 	}
-	logger.Info("port forwarding: Port %d", port)
 	if err := piaConf.WritePortForward(portForwardingFilepath, port, uid, gid); err != nil {
 		logger.Error("port forwarding:", err)
-		return
 	}
 	if err := piaConf.AllowPortForwardFirewall(ctx, constants.TUN, port); err != nil {
 		logger.Error("port forwarding:", err)
-		return
 	}
 }
