@@ -146,7 +146,11 @@ func main() {
 		e.FatalOnError(err)
 		stream, waitFn, err := dnsConf.Start(ctx, allSettings.DNS.VerbosityDetailsLevel)
 		e.FatalOnError(err)
-		waiter.Add(waitFn)
+		waiter.Add(func() error {
+			err := waitFn()
+			logger.Error("unbound: %s", err)
+			return err
+		})
 		go streamMerger.Merge(ctx, stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
 		dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
 		err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
@@ -235,7 +239,11 @@ func main() {
 		e.FatalOnError(err)
 		stream, waitFn, err := tinyProxyConf.Start(ctx)
 		e.FatalOnError(err)
-		waiter.Add(waitFn)
+		waiter.Add(func() error {
+			err := waitFn()
+			logger.Error("tinyproxy: %s", err)
+			return err
+		})
 		go streamMerger.Merge(ctx, stream, command.MergeName("tinyproxy"), command.MergeColor(constants.ColorTinyproxy()))
 	}
 
@@ -251,7 +259,11 @@ func main() {
 		e.FatalOnError(err)
 		stdout, stderr, waitFn, err := shadowsocksConf.Start(ctx, "0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
 		e.FatalOnError(err)
-		waiter.Add(waitFn)
+		waiter.Add(func() error {
+			err := waitFn()
+			logger.Error("shadowsocks: %s", err)
+			return err
+		})
 		go streamMerger.Merge(ctx, stdout, command.MergeName("shadowsocks"), command.MergeColor(constants.ColorShadowsocks()))
 		go streamMerger.Merge(ctx, stderr, command.MergeName("shadowsocks error"), command.MergeColor(constants.ColorShadowsocksError()))
 	}
@@ -263,11 +275,12 @@ func main() {
 			e.FatalOnError(err)
 			go streamMerger.Merge(ctx, stream, command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
 			waiter.Add(func() error {
-				return <-waitErrors
+				err := <-waitErrors
+				logger.Error("openvpn: %s", err)
+				return err
 			})
 			if err := waitFn(); err != nil {
 				waitErrors <- err
-				logger.Error("openvpn crashed: %s", err)
 			} else {
 				break
 			}
