@@ -11,21 +11,14 @@ import (
 )
 
 func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol models.NetworkProtocol, encryption models.PIAEncryption, targetIP net.IP) (connections []models.OpenVPNConnection, err error) {
-	geoMapping := constants.PIAGeoToSubdomainMapping()
-	var subdomain string
-	for r, s := range geoMapping {
-		if strings.EqualFold(string(region), string(r)) {
-			subdomain = s
-			break
+	var IPs []net.IP
+	for _, server := range constants.PIAServers() {
+		if strings.EqualFold(string(server.Region), string(region)) {
+			IPs = server.IPs
 		}
 	}
-	if len(subdomain) == 0 {
-		return nil, fmt.Errorf("region %q has no associated PIA subdomain", region)
-	}
-	hostname := subdomain + ".privateinternetaccess.com"
-	IPs, err := c.lookupIP(hostname)
-	if err != nil {
-		return nil, err
+	if len(IPs) == 0 {
+		return nil, fmt.Errorf("no IP found for region %q", region)
 	}
 	if targetIP != nil {
 		found := false
@@ -36,7 +29,7 @@ func (c *configurator) GetOpenVPNConnections(region models.PIARegion, protocol m
 			}
 		}
 		if !found {
-			return nil, fmt.Errorf("target IP address %q not found from IP addresses resolved from %s", targetIP, hostname)
+			return nil, fmt.Errorf("target IP address %q not found in IP addresses", targetIP)
 		}
 		IPs = []net.IP{targetIP}
 	}
