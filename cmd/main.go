@@ -49,7 +49,11 @@ func main() { //nolint:gocognit
 	}
 	paramsReader := params.NewReader(logger)
 	fmt.Println(splash.Splash(paramsReader))
-	e := env.New(logger)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	e := env.New(logger, cancel)
+
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
 	fileManager := files.NewFileManager()
@@ -63,8 +67,6 @@ func main() { //nolint:gocognit
 	windscribeConf := windscribe.NewConfigurator(fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	streamMerger := command.NewStreamMerger()
 
 	e.PrintVersion(ctx, "OpenVPN", ovpnConf.Version)

@@ -23,7 +23,7 @@ func Test_FatalOnError(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			var logged string
-			var exitCode int
+			var canceled bool
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 			logger := mock_logging.NewMockLogger(mockCtrl)
@@ -32,15 +32,17 @@ func Test_FatalOnError(t *testing.T) {
 					logged = err.Error()
 				}).Times(1)
 			}
-			osExit := func(n int) { exitCode = n }
-			e := &env{logger, osExit}
+			e := &env{
+				logger:        logger,
+				cancelContext: func() { canceled = true },
+			}
 			e.FatalOnError(tc.err)
 			if tc.err != nil {
 				assert.Equal(t, logged, tc.err.Error())
-				assert.Equal(t, exitCode, 1)
+				assert.True(t, canceled)
 			} else {
 				assert.Empty(t, logged)
-				assert.Zero(t, exitCode)
+				assert.False(t, canceled)
 			}
 		})
 	}

@@ -2,7 +2,6 @@ package env
 
 import (
 	"context"
-	"os"
 
 	"github.com/qdm12/golibs/logging"
 )
@@ -13,21 +12,21 @@ type Env interface {
 }
 
 type env struct {
-	logger logging.Logger
-	osExit func(n int)
+	logger        logging.Logger
+	cancelContext func()
 }
 
-func New(logger logging.Logger) Env {
+func New(logger logging.Logger, cancelContext context.CancelFunc) Env {
 	return &env{
-		logger: logger,
-		osExit: os.Exit,
+		logger:        logger,
+		cancelContext: cancelContext,
 	}
 }
 
 func (e *env) FatalOnError(err error) {
 	if err != nil {
 		e.logger.Error(err)
-		e.osExit(1)
+		e.cancelContext()
 	}
 }
 
