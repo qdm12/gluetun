@@ -396,7 +396,15 @@ func setupUnbound(ctx context.Context, logger logging.Logger, dnsConf dns.Config
 		}
 	}()
 	initialDNSToUse := constants.DNSProviderMapping()[settings.Providers[0]]
-	dnsConf.UseDNSInternally(initialDNSToUse.IPs[0])
+	var ipToUse net.IP
+	for _, ipToUse = range initialDNSToUse.IPs {
+		if settings.IPv6 && ipToUse.To4() == nil {
+			break
+		} else if !settings.IPv6 && ipToUse.To4() != nil {
+			break
+		}
+	}
+	dnsConf.UseDNSInternally(ipToUse)
 	if err := dnsConf.DownloadRootHints(uid, gid); err != nil {
 		return err
 	}
@@ -410,9 +418,9 @@ func setupUnbound(ctx context.Context, logger logging.Logger, dnsConf dns.Config
 	if err != nil {
 		return err
 	}
-	waiter.Add(func() error {
+	waiter.Add(func() error { //nolint:scopelint
 		err := waitFn()
-		logger.Error("unbound: %s", err)
+		logger.Error("unbound: %s", err) //nolint:scopelint
 		return err
 	})
 	go streamMerger.Merge(ctx, stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
