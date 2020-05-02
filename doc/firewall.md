@@ -2,14 +2,6 @@
 
 If you have a strict firewall setup (host level or router level), you might want to setup the following.
 
-## Start only
-
-The following is required when the container starts only:
-
-- Allow outbound TCP 443 to github.com
-- If `DOT=on`, allow outbound TCP 853 to allow Unbound to resolve github.com and the PIA subdomain name if you use PIA.
-- If `DOT=off` and `VPNSP=pia`, allow outbound UDP 53 to your DNS provider to resolve the PIA subdomain name.
-
 ## VPN connections
 
 You need the following to allow communicating with the VPN servers
