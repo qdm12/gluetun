@@ -135,7 +135,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `DOT` | `on` | | ✅ | ✅ | ✅ | Activate DNS over TLS | `on`, `off` |
 | `DOT_PROVIDERS` | `cloudflare` | | ✅ | ✅ | ✅ | Comma delimited list of DNS over TLS providers | `cloudflare`, `google`, `quad9`, `quadrant`, `cleanbrowsing`, `securedns`, `libredns` |
 | `DOT_CACHING` | `on` | |  ✅ | ✅ | ✅ | DNS over TLS Unbound caching | `on`, `off` |
-| `DOT_IPV6` | `on` | | ✅ | ✅ | ✅ | DNS over TLS IPv6 resolution | `on`, `off` |
+| `DOT_IPV6` | `off` | | ✅ | ✅ | ✅ | DNS over TLS IPv6 resolution | `on`, `off` |
 | `DOT_PRIVATE_ADDRESS` | All private CIDRs ranges | | ✅ | ✅ | ✅ | Comma separated list of CIDRs or single IP addresses Unbound won't resolve to. Note that the default setting prevents DNS rebinding | |
 | `DOT_VERBOSITY` | `1` | | ✅ | ✅ | ✅ | DNS over TLS Unbound verbosity level | `0`, `1`, `2`, `3`, `4`, `5` |
 | `DOT_VERBOSITY_DETAILS` | `0` | | ✅ | ✅ | ✅ | Unbound details verbosity level | `0`, `1`, `2`, `3`, `4` |

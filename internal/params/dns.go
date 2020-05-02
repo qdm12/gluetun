@@ -130,5 +130,5 @@ func (p *reader) GetDNSOverTLSPrivateAddresses() (privateAddresses []string, err
 // GetDNSOverTLSIPv6 obtains if Unbound should resolve ipv6 addresses using ipv6 DNS over TLS
 //  servers from the environment variable DOT_IPV6
 func (p *reader) GetDNSOverTLSIPv6() (ipv6 bool, err error) {
-	return p.envParams.GetOnOff("DOT_IPV6")
+	return p.envParams.GetOnOff("DOT_IPV6", libparams.Default("off"))
 }
