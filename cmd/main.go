@@ -333,6 +333,7 @@ func openvpnRunLoop(ctx context.Context, ovpnConf openvpn.Configurator, streamMe
 		if ctx.Err() == context.Canceled {
 			break
 		}
+		logger.Info("openvpn: starting")
 		openvpnCtx, openvpnCancel := context.WithCancel(ctx)
 		stream, waitFn, err := ovpnConf.Start(openvpnCtx)
 		fatalOnError(err)
@@ -343,6 +344,9 @@ func openvpnRunLoop(ctx context.Context, ovpnConf openvpn.Configurator, streamMe
 		})
 		err = waitFn()
 		waitErrors <- err
+		if openvpnCtx.Err() == context.Canceled {
+			logger.Info("openvpn: shutting down")
+		}
 		logger.Error("openvpn: %s", err)
 		openvpnCancel()
 	}
