@@ -4,7 +4,7 @@
 
 - [Openvpn disconnects because of a ping timeout](#Openvpn-disconnects-because-of-a-ping-timeout)
 - [Private Internet Access: Why do I see openvpn warnings at start](#Private-Internet-Access:-Why-do-I-see-openvpn-warnings-at-start)
-- [What files does it download at start before tunneling](#What-files-does-it-download-at-start-before-tunneling)
+- [What files does it download after tunneling](#What-files-does-it-download-after-tunneling)
 - [How to build Docker images of older or alternate versions](#How-to-build-Docker-images-of-older-or-alternate-versions)
 - [Mullvad does not work with IPv6](#Mullvad-does-not-work-with-IPv6)
 - [What's all this Go code](#What-is-all-this-Go-code)
@@ -54,9 +54,9 @@ It is mainly because the option [disable-occ](https://openvpn.net/community-reso
 
 Private Internet Access explains [here why](https://www.privateinternetaccess.com/helpdesk/kb/articles/why-do-i-get-cipher-auth-warnings-when-i-connect) the warnings show up.
 
-## What files does it download at start before tunneling
+## What files does it download after tunneling
 
-At start, the Go entrypoint only downloads, depending on your settings:
+At start, after tunneling, the Go entrypoint only downloads, depending on your settings:
 
 - If `DOT=on`: [DNS over TLS named root](https://github.com/qdm12/files/blob/master/named.root.updated) for Unbound
 - If `DOT=on`: [DNS over TLS root key](https://github.com/qdm12/files/blob/master/root.key.updated) for Unbound

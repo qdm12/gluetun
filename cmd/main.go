@@ -133,29 +133,6 @@ func main() { //nolint:gocognit
 	}()
 
 	waiter := command.NewWaiter()
-	if allSettings.DNS.Enabled {
-		initialDNSToUse := constants.DNSProviderMapping()[allSettings.DNS.Providers[0]]
-		dnsConf.UseDNSInternally(initialDNSToUse.IPs[0])
-		err = dnsConf.DownloadRootHints(allSettings.System.UID, allSettings.System.GID)
-		e.FatalOnError(err)
-		err = dnsConf.DownloadRootKey(allSettings.System.UID, allSettings.System.GID)
-		e.FatalOnError(err)
-		err = dnsConf.MakeUnboundConf(allSettings.DNS, allSettings.System.UID, allSettings.System.GID)
-		e.FatalOnError(err)
-		stream, waitFn, err := dnsConf.Start(ctx, allSettings.DNS.VerbosityDetailsLevel)
-		e.FatalOnError(err)
-		waiter.Add(func() error {
-			err := waitFn()
-			logger.Error("unbound: %s", err)
-			return err
-		})
-		go streamMerger.Merge(ctx, stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
-		dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
-		err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
-		e.FatalOnError(err)
-		err = dnsConf.WaitForUnbound()
-		e.FatalOnError(err)
-	}
 
 	var connections []models.OpenVPNConnection
 	switch allSettings.VPNSP {
@@ -303,6 +280,31 @@ func main() { //nolint:gocognit
 
 	go func() {
 		<-connected.Done() // blocks until openvpn is connected
+
+		if allSettings.DNS.Enabled {
+			initialDNSToUse := constants.DNSProviderMapping()[allSettings.DNS.Providers[0]]
+			dnsConf.UseDNSInternally(initialDNSToUse.IPs[0])
+			err = dnsConf.DownloadRootHints(allSettings.System.UID, allSettings.System.GID)
+			e.FatalOnError(err)
+			err = dnsConf.DownloadRootKey(allSettings.System.UID, allSettings.System.GID)
+			e.FatalOnError(err)
+			err = dnsConf.MakeUnboundConf(allSettings.DNS, allSettings.System.UID, allSettings.System.GID)
+			e.FatalOnError(err)
+			stream, waitFn, err := dnsConf.Start(ctx, allSettings.DNS.VerbosityDetailsLevel)
+			e.FatalOnError(err)
+			waiter.Add(func() error {
+				err := waitFn()
+				logger.Error("unbound: %s", err)
+				return err
+			})
+			go streamMerger.Merge(ctx, stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
+			dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})       // use Unbound
+			err = dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}) // use Unbound
+			e.FatalOnError(err)
+			err = dnsConf.WaitForUnbound()
+			e.FatalOnError(err)
+			logger.Info("DNS over TLS with Unbound setup completed")
+		}
 
 		ip, err := routingConf.CurrentPublicIP(defaultInterface)
 		if err != nil {
