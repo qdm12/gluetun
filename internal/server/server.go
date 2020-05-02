@@ -16,22 +16,28 @@ type Server interface {
 }
 
 type server struct {
-	address        string
-	logger         logging.Logger
-	restartOpenvpn func()
+	address                 string
+	logger                  logging.Logger
+	restartOpenvpn          func()
+	restartOpenvpnSet       context.Context
+	restartOpenvpnSetSignal func()
 	sync.RWMutex
 }
 
 func New(address string, logger logging.Logger) Server {
+	restartOpenvpnSet, restartOpenvpnSetSignal := context.WithCancel(context.Background())
 	return &server{
-		address: address,
-		logger:  logger.WithPrefix("http server: "),
+		address:                 address,
+		logger:                  logger.WithPrefix("http server: "),
+		restartOpenvpnSet:       restartOpenvpnSet,
+		restartOpenvpnSetSignal: restartOpenvpnSetSignal,
 	}
 }
 
 func (s *server) Run(ctx context.Context) error {
-	if s.restartOpenvpn == nil {
-		s.logger.Warn("restartOpenvpn function is not set")
+	if s.restartOpenvpnSet.Err() == nil {
+		s.logger.Warn("restartOpenvpn function is not set, waiting...")
+		<-s.restartOpenvpnSet.Done()
 	}
 	server := http.Server{Addr: s.address, Handler: s.makeHandler()}
 	go func() {
@@ -50,6 +56,9 @@ func (s *server) SetOpenVPNRestart(f func()) {
 	s.Lock()
 	defer s.Unlock()
 	s.restartOpenvpn = f
+	if s.restartOpenvpnSet.Err() == nil {
+		s.restartOpenvpnSetSignal()
+	}
 }
 
 func (s *server) makeHandler() http.HandlerFunc {
