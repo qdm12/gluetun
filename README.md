@@ -35,7 +35,7 @@
 - Based on Alpine 3.11 for a small Docker image below 50MB
 - Supports **Private Internet Access**, **Mullvad** and **Windscribe** servers
 - DNS over TLS baked in with service provider(s) of your choice
-- DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses
+- DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
 - Built in firewall kill switch to allow traffic only with needed PIA servers and LAN devices
 - Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
@@ -268,6 +268,7 @@ It can be useful to mount this file as a volume to read it from other containers
 A built-in HTTP server listens on port `8000` to modify the state of the container. You have the following routes available:
 
 - `http://<your-docker-host-ip>:8000/openvpn/actions/restart` restarts the openvpn process
+- `http://<your-docker-host-ip>:8000/unbound/actions/restart` re-downloads the DNS files (crypto and block lists) and restarts the unbound process
 
 ## FAQ
 

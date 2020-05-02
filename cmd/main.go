@@ -249,7 +249,7 @@ func main() {
 	go func() {
 		<-connected.Done() // blocks until openvpn is connected
 		onConnected(ctx, allSettings, logger, dnsConf, fileManager, waiter,
-			streamMerger, routingConf, defaultInterface, piaConf)
+			streamMerger, httpServer, routingConf, defaultInterface, piaConf)
 	}()
 
 	signalsCh := make(chan os.Signal, 1)
@@ -354,7 +354,7 @@ func openvpnRunLoop(ctx context.Context, ovpnConf openvpn.Configurator, streamMe
 
 func onConnected(ctx context.Context, allSettings settings.Settings,
 	logger logging.Logger, dnsConf dns.Configurator, fileManager files.FileManager,
-	waiter command.Waiter, streamMerger command.StreamMerger,
+	waiter command.Waiter, streamMerger command.StreamMerger, httpServer server.Server,
 	routingConf routing.Routing, defaultInterface string,
 	piaConf pia.Configurator,
 ) {
@@ -365,12 +365,7 @@ func onConnected(ctx context.Context, allSettings settings.Settings,
 	}
 
 	if allSettings.DNS.Enabled {
-		err := setupUnbound(ctx, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger)
-		if err != nil {
-			logger.Error("unbound dns over tls setup: %s", err)
-		} else {
-			logger.Info("unbound dns over tls setup: completed")
-		}
+		go unboundRunLoop(ctx, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger, httpServer)
 	}
 
 	ip, err := routingConf.CurrentPublicIP(defaultInterface)
@@ -389,53 +384,95 @@ func onConnected(ctx context.Context, allSettings settings.Settings,
 	}
 }
 
-func setupUnbound(ctx context.Context, logger logging.Logger, dnsConf dns.Configurator,
-	settings settings.DNS, uid, gid int,
-	waiter command.Waiter, streamMerger command.StreamMerger,
-) (err error) {
-	ctx, cancel := context.WithCancel(ctx)
-	defer func() {
-		if err != nil {
-			cancel()
-		}
-	}()
-	initialDNSToUse := constants.DNSProviderMapping()[settings.Providers[0]]
-	var ipToUse net.IP
-	for _, ipToUse = range initialDNSToUse.IPs {
-		if settings.IPv6 && ipToUse.To4() == nil {
+func fallbackToUnencryptedDNS(dnsConf dns.Configurator, provider models.DNSProvider, ipv6 bool) error {
+	targetDNS := constants.DNSProviderMapping()[provider]
+	var targetIP net.IP
+	for _, targetIP = range targetDNS.IPs {
+		if ipv6 && targetIP.To4() == nil {
 			break
-		} else if !settings.IPv6 && ipToUse.To4() != nil {
+		} else if !ipv6 && targetIP.To4() != nil {
 			break
 		}
 	}
-	dnsConf.UseDNSInternally(ipToUse)
+	dnsConf.UseDNSInternally(targetIP)
+	return dnsConf.UseDNSSystemWide(targetIP)
+}
+
+func unboundRun(ctx, unboundCtx context.Context, unboundCancel context.CancelFunc, dnsConf dns.Configurator, settings settings.DNS, uid, gid int,
+	streamMerger command.StreamMerger, waiter command.Waiter, httpServer server.Server) (newCtx context.Context, newCancel context.CancelFunc, err error) {
 	if err := dnsConf.DownloadRootHints(uid, gid); err != nil {
-		return err
+		return unboundCtx, unboundCancel, err
 	}
 	if err := dnsConf.DownloadRootKey(uid, gid); err != nil {
-		return err
+		return unboundCtx, unboundCancel, err
 	}
 	if err := dnsConf.MakeUnboundConf(settings, uid, gid); err != nil {
-		return err
+		return unboundCtx, unboundCancel, err
 	}
-	stream, waitFn, err := dnsConf.Start(ctx, settings.VerbosityDetailsLevel)
+	unboundCancel()
+	newCtx, newCancel = context.WithTimeout(ctx, 24*time.Hour)
+	stream, waitFn, err := dnsConf.Start(newCtx, settings.VerbosityDetailsLevel)
 	if err != nil {
-		return err
+		newCancel()
+		if fallbackErr := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+			return newCtx, newCancel, fmt.Errorf("%s: %w", err, fallbackErr)
+		}
+		return newCtx, newCancel, err
 	}
-	waiter.Add(func() error { //nolint:scopelint
-		err := waitFn()
-		logger.Error("unbound: %s", err) //nolint:scopelint
-		return err
-	})
-	go streamMerger.Merge(ctx, stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
+	go streamMerger.Merge(newCtx, stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
 	dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})                         // use Unbound
 	if err := dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}); err != nil { // use Unbound
-		return err
+		newCancel()
+		if fallbackErr := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+			return newCtx, newCancel, fmt.Errorf("%s: %w", err, fallbackErr)
+		}
+		return newCtx, newCancel, err
 	}
 	if err := dnsConf.WaitForUnbound(); err != nil {
-		return err
+		newCancel()
+		if fallbackErr := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+			return newCtx, newCancel, fmt.Errorf("%s: %w", err, fallbackErr)
+		}
+		return newCtx, newCancel, err
 	}
-	return nil
+	// Unbound is up and running at this point
+	httpServer.SetUnboundRestart(newCancel)
+	waitErrors := make(chan error)
+	waiter.Add(func() error { //nolint:scopelint
+		return <-waitErrors
+	})
+	err = waitFn()
+	waitErrors <- err
+	if newCtx.Err() == context.Canceled || newCtx.Err() == context.DeadlineExceeded {
+		return newCtx, newCancel, nil
+	}
+	return newCtx, newCancel, err
+}
+
+func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Configurator,
+	settings settings.DNS, uid, gid int,
+	waiter command.Waiter, streamMerger command.StreamMerger, httpServer server.Server,
+) {
+	logger = logger.WithPrefix("unbound dns over tls setup: ")
+	if err := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+		logger.Error(err)
+	}
+	unboundCtx, unboundCancel := context.WithCancel(ctx)
+	defer unboundCancel()
+	for {
+		if ctx.Err() == context.Canceled {
+			logger.Info("shutting down")
+			break
+		}
+		var err error
+		unboundCtx, unboundCancel, err = unboundRun(ctx, unboundCtx, unboundCancel, dnsConf, settings, uid, gid, streamMerger, waiter, httpServer)
+		if err != nil {
+			logger.Error(err)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+		logger.Info("attempting restart")
+	}
 }
 
 func setupPortForwarding(logger logging.Logger, piaConf pia.Configurator, settings settings.PIA, uid, gid int) {

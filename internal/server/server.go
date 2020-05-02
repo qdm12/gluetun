@@ -12,6 +12,7 @@ import (
 
 type Server interface {
 	SetOpenVPNRestart(f func())
+	SetUnboundRestart(f func())
 	Run(ctx context.Context) error
 }
 
@@ -21,16 +22,22 @@ type server struct {
 	restartOpenvpn          func()
 	restartOpenvpnSet       context.Context
 	restartOpenvpnSetSignal func()
+	restartUnbound          func()
+	restartUnboundSet       context.Context
+	restartUnboundSetSignal func()
 	sync.RWMutex
 }
 
 func New(address string, logger logging.Logger) Server {
 	restartOpenvpnSet, restartOpenvpnSetSignal := context.WithCancel(context.Background())
+	restartUnboundSet, restartUnboundSetSignal := context.WithCancel(context.Background())
 	return &server{
 		address:                 address,
 		logger:                  logger.WithPrefix("http server: "),
 		restartOpenvpnSet:       restartOpenvpnSet,
 		restartOpenvpnSetSignal: restartOpenvpnSetSignal,
+		restartUnboundSet:       restartUnboundSet,
+		restartUnboundSetSignal: restartUnboundSetSignal,
 	}
 }
 
@@ -38,6 +45,10 @@ func (s *server) Run(ctx context.Context) error {
 	if s.restartOpenvpnSet.Err() == nil {
 		s.logger.Warn("restartOpenvpn function is not set, waiting...")
 		<-s.restartOpenvpnSet.Done()
+	}
+	if s.restartUnboundSet.Err() == nil {
+		s.logger.Warn("restartUnbound function is not set, waiting...")
+		<-s.restartUnboundSet.Done()
 	}
 	server := http.Server{Addr: s.address, Handler: s.makeHandler()}
 	go func() {
@@ -61,6 +72,15 @@ func (s *server) SetOpenVPNRestart(f func()) {
 	}
 }
 
+func (s *server) SetUnboundRestart(f func()) {
+	s.Lock()
+	defer s.Unlock()
+	s.restartUnbound = f
+	if s.restartUnboundSet.Err() == nil {
+		s.restartUnboundSetSignal()
+	}
+}
+
 func (s *server) makeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.logger.Info("HTTP %s %s", r.Method, r.RequestURI)
@@ -71,6 +91,10 @@ func (s *server) makeHandler() http.HandlerFunc {
 				s.RLock()
 				defer s.RUnlock()
 				s.restartOpenvpn()
+			case "/unbound/actions/restart":
+				s.RLock()
+				defer s.RUnlock()
+				s.restartUnbound()
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}
@@ -87,4 +111,3 @@ func routeDoesNotExist(logger logging.Logger, w http.ResponseWriter, r *http.Req
 		logger.Error(err)
 	}
 }
-
