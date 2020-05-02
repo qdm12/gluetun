@@ -70,10 +70,6 @@ func (s *server) makeHandler() http.HandlerFunc {
 			case "/openvpn/actions/restart":
 				s.RLock()
 				defer s.RUnlock()
-				if s.restartOpenvpn == nil {
-					functionNotSet("restartOpenvpn", s.logger, w)
-					return
-				}
 				s.restartOpenvpn()
 			default:
 				routeDoesNotExist(s.logger, w, r)
@@ -92,11 +88,3 @@ func routeDoesNotExist(logger logging.Logger, w http.ResponseWriter, r *http.Req
 	}
 }
 
-func functionNotSet(functionName string, logger logging.Logger, w http.ResponseWriter) {
-	logger.Error("function %s is not set", functionName)
-	w.WriteHeader(http.StatusInternalServerError)
-	_, err := w.Write([]byte(fmt.Sprintf("%s function is not set", functionName)))
-	if err != nil {
-		logger.Error(err)
-	}
-}
