@@ -125,4 +125,11 @@ It is mostly made of the [internal directory](../internal) and the entry Go file
 You can try:
 
 - Installing the tun kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-- Adding `--device=/dev/net/tun` to your docker run command (equivalent for docker-compose, kubernetes, etc.)
+- Add to your:
+    - Docker run command: `--device=/dev/net/tun`
+    - Docker compose:
+
+        ```yml
+        devices:
+          - /dev/net/tun
+        ```
