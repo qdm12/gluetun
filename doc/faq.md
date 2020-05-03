@@ -9,7 +9,6 @@
 - [Mullvad does not work with IPv6](#Mullvad-does-not-work-with-IPv6)
 - [What's all this Go code](#What-is-all-this-Go-code)
 - [How to test DNS over TLS](#How-to-test-DNS-over-TLS)
-- [How to fix OpenVPN failing to start](#How-to-fix-OpenVPN-failing-to-start)
 
 ## Openvpn disconnects because of a ping timeout
 
@@ -119,17 +118,3 @@ It is mostly made of the [internal directory](../internal) and the entry Go file
 - You can test DNSSEC using [internet.nl/connection](https://www.internet.nl/connection/)
 - Check DNS leak tests with [https://www.dnsleaktest.com](https://www.dnsleaktest.com)
 - Some other DNS leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: Unbound DNS server is a local caching intermediary)
-
-## How to fix OpenVPN failing to start
-
-You can try:
-
-- Installing the tun kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-- Add to your:
-    - Docker run command: `--device=/dev/net/tun`
-    - Docker compose:
-
-        ```yml
-        devices:
-          - /dev/net/tun
-        ```
