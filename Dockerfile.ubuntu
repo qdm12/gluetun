@@ -38,7 +38,7 @@ RUN apt-get update && \
 	cmake .. && \
 	make install && \
 	mkdir /tmp/qbittorrent && \
-	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.2.3 | tar xzC /tmp/qbittorrent && \
+	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.2.5 | tar xzC /tmp/qbittorrent && \
 	cd /tmp/qbittorrent/*qbittorrent* && \
 	./configure --disable-gui CXXFLAGS="-std=c++14" && \
 	make -j$(nproc) && \
