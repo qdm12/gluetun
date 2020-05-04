@@ -152,7 +152,7 @@ fi
 printf " * Port: $PORT\n"
 printf " * Domain: $PIADOMAIN\n"
 printf "[INFO] Detecting IP addresses corresponding to $PIADOMAIN...\n"
-VPNIPS=$(dig $PIADOMAIN +short)
+VPNIPS=$(dig $PIADOMAIN +short | grep '^[.0-9]*$')
 exitOnError $?
 for ip in $VPNIPS; do
   printf "   $ip\n";
