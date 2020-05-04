@@ -57,6 +57,8 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
+		"tun-ipv6",
+		"fast-io",
 
 		// Added constant values
 		"mute-replay-warnings",
