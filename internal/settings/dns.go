@@ -55,6 +55,10 @@ func (d *DNS) String() string {
 	for i := range d.Providers {
 		providersStr[i] = string(d.Providers[i])
 	}
+	update := "deactivated"
+	if d.UpdatePeriod > 0 {
+		update = fmt.Sprintf("every %s", d.UpdatePeriod)
+	}
 	settingsList := []string{
 		"DNS over TLS settings:",
 		"DNS over TLS provider:\n  |--" + strings.Join(providersStr, "\n  |--"),
@@ -68,7 +72,7 @@ func (d *DNS) String() string {
 		"Verbosity details level: " + fmt.Sprintf("%d/4", d.VerbosityDetailsLevel),
 		"Validation log level: " + fmt.Sprintf("%d/2", d.ValidationLogLevel),
 		"IPv6 resolution: " + ipv6,
-		"Update period: " + d.UpdatePeriod.String(),
+		"Update: " + update,
 	}
 	return strings.Join(settingsList, "\n |--")
 }

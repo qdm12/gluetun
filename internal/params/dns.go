@@ -137,5 +137,9 @@ func (p *reader) GetDNSOverTLSIPv6() (ipv6 bool, err error) {
 // GetDNSUpdatePeriod obtains the period to use to update the block lists and cryptographic files
 // and restart Unbound from the environment variable DNS_UPDATE_PERIOD
 func (p *reader) GetDNSUpdatePeriod() (period time.Duration, err error) {
-	return p.envParams.GetDuration("DNS_UPDATE_PERIOD", libparams.Default("24h"))
+	s, err := p.envParams.GetEnv("DNS_UPDATE_PERIOD", libparams.Default("24h"))
+	if err != nil {
+		return period, err
+	}
+	return time.ParseDuration(s)
 }
