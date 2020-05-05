@@ -70,6 +70,7 @@ ENV VPNSP="private internet access" \
     BLOCK_SURVEILLANCE=off \
     BLOCK_ADS=off \
     UNBLOCK= \
+    DNS_UPDATE_PERIOD=24h \
     # Firewall
     EXTRA_SUBNETS= \
     # Tinyproxy

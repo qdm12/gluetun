@@ -3,6 +3,7 @@ package params
 import (
 	"net"
 	"os"
+	"time"
 
 	"github.com/qdm12/golibs/logging"
 	libparams "github.com/qdm12/golibs/params"
@@ -27,6 +28,7 @@ type Reader interface {
 	GetDNSUnblockedHostnames() (hostnames []string, err error)
 	GetDNSOverTLSPrivateAddresses() (privateAddresses []string, err error)
 	GetDNSOverTLSIPv6() (ipv6 bool, err error)
+	GetDNSUpdatePeriod() (period time.Duration, err error)
 
 	// System
 	GetUID() (uid int, err error)

@@ -410,7 +410,11 @@ func unboundRun(ctx, unboundCtx context.Context, unboundCancel context.CancelFun
 		return unboundCtx, unboundCancel, err
 	}
 	unboundCancel()
-	newCtx, newCancel = context.WithTimeout(ctx, 24*time.Hour)
+	if settings.UpdatePeriod > 0 {
+		newCtx, newCancel = context.WithTimeout(ctx, settings.UpdatePeriod)
+	} else {
+		newCtx, newCancel = context.WithCancel(ctx)
+	}
 	stream, waitFn, err := dnsConf.Start(newCtx, settings.VerbosityDetailsLevel)
 	if err != nil {
 		newCancel()
@@ -459,11 +463,7 @@ func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Conf
 	}
 	unboundCtx, unboundCancel := context.WithCancel(ctx)
 	defer unboundCancel()
-	for {
-		if ctx.Err() == context.Canceled {
-			logger.Info("shutting down")
-			break
-		}
+	for ctx.Err() == nil {
 		var err error
 		unboundCtx, unboundCancel, err = unboundRun(ctx, unboundCtx, unboundCancel, dnsConf, settings, uid, gid, streamMerger, waiter, httpServer)
 		if err != nil {
@@ -473,6 +473,7 @@ func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Conf
 		}
 		logger.Info("attempting restart")
 	}
+	logger.Info("shutting down")
 }
 
 func setupPortForwarding(logger logging.Logger, piaConf pia.Configurator, settings settings.PIA, uid, gid int) {

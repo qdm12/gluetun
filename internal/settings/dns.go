@@ -3,6 +3,7 @@ package settings
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
@@ -23,6 +24,7 @@ type DNS struct {
 	VerbosityDetailsLevel uint8
 	ValidationLogLevel    uint8
 	IPv6                  bool
+	UpdatePeriod          time.Duration
 }
 
 func (d *DNS) String() string {
@@ -66,6 +68,7 @@ func (d *DNS) String() string {
 		"Verbosity details level: " + fmt.Sprintf("%d/4", d.VerbosityDetailsLevel),
 		"Validation log level: " + fmt.Sprintf("%d/2", d.ValidationLogLevel),
 		"IPv6 resolution: " + ipv6,
+		"Update period: " + d.UpdatePeriod.String(),
 	}
 	return strings.Join(settingsList, "\n |--")
 }
@@ -117,6 +120,10 @@ func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
 		return settings, err
 	}
 	settings.IPv6, err = paramsReader.GetDNSOverTLSIPv6()
+	if err != nil {
+		return settings, err
+	}
+	settings.UpdatePeriod, err = paramsReader.GetDNSUpdatePeriod()
 	if err != nil {
 		return settings, err
 	}

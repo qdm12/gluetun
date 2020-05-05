@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad and Windscribe VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *Support for [Windscribe](https://windscribe.com/)*
+**ANNOUNCEMENT**: *Auto-update of Unbound block lists and cryptographic files, see `DNS_UPDATE_PERIOD`*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
 
@@ -150,6 +150,7 @@ docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 | `DOT_VERBOSITY` | `1` | | ✅ | ✅ | ✅ | DNS over TLS Unbound verbosity level | `0`, `1`, `2`, `3`, `4`, `5` |
 | `DOT_VERBOSITY_DETAILS` | `0` | | ✅ | ✅ | ✅ | Unbound details verbosity level | `0`, `1`, `2`, `3`, `4` |
 | `DOT_VALIDATION_LOGLEVEL` | `0` | | ✅ | ✅ | ✅ | Unbound validation log level | `0`, `1`, `2` |
+| `DNS_UPDATE_PERIOD` | `24h` | | ✅ | ✅ | ✅ | Period to update block lists and cryptographic files and restart Unbound. Set to `0` to deactivate updates | Can be `30s`, `5m` or `10h` for example |
 | `BLOCK_MALICIOUS` | `on` | | ✅ | ✅ | ✅ | Block malicious hostnames and IPs with Unbound DNS over TLS | `on`, `off` |
 | `BLOCK_SURVEILLANCE` | `off` | | ✅ | ✅ | ✅ | Block surveillance hostnames and IPs with Unbound DNS over TLS | `on`, `off` |
 | `BLOCK_ADS` | `off` | | ✅ | ✅ | ✅ | Block ads hostnames and IPs with Unbound DNS over TLS | `on`, `off` |

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"time"
 
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -131,4 +132,10 @@ func (p *reader) GetDNSOverTLSPrivateAddresses() (privateAddresses []string, err
 //  servers from the environment variable DOT_IPV6
 func (p *reader) GetDNSOverTLSIPv6() (ipv6 bool, err error) {
 	return p.envParams.GetOnOff("DOT_IPV6", libparams.Default("off"))
+}
+
+// GetDNSUpdatePeriod obtains the period to use to update the block lists and cryptographic files
+// and restart Unbound from the environment variable DNS_UPDATE_PERIOD
+func (p *reader) GetDNSUpdatePeriod() (period time.Duration, err error) {
+	return p.envParams.GetDuration("DNS_UPDATE_PERIOD", libparams.Default("24h"))
 }
