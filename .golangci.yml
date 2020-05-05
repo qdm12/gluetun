@@ -47,4 +47,4 @@ run:
     - postgres
 
 service:
-  golangci-lint-version: 1.24.x # use the fixed version to not introduce new linters unexpectedly
+  golangci-lint-version: 1.26.x # use the fixed version to not introduce new linters unexpectedly
