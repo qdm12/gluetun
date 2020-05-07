@@ -275,8 +275,9 @@ func main() {
 			logger.Error(err)
 		}
 	}
-	errors := waiter.WaitForAll(ctx)
-	for _, err := range errors {
+	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	for _, err := range waiter.WaitForAll(timeoutCtx) {
 		logger.Error(err)
 	}
 }
