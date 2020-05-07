@@ -398,59 +398,59 @@ func fallbackToUnencryptedDNS(dnsConf dns.Configurator, provider models.DNSProvi
 	return dnsConf.UseDNSSystemWide(targetIP)
 }
 
-func unboundRun(ctx, unboundCtx context.Context, unboundCancel context.CancelFunc, dnsConf dns.Configurator, settings settings.DNS, uid, gid int,
-	streamMerger command.StreamMerger, waiter command.Waiter, httpServer server.Server) (newCtx context.Context, newCancel context.CancelFunc, err error) {
+func unboundRun(ctx, oldCtx context.Context, oldCancel context.CancelFunc, timer *time.Timer,
+	dnsConf dns.Configurator, settings settings.DNS, uid, gid int,
+	streamMerger command.StreamMerger, waiter command.Waiter, httpServer server.Server) (
+	newCtx context.Context, newCancel context.CancelFunc, setupErr, startErr, waitErr error) {
+	if timer != nil {
+		timer.Stop()
+		timer.Reset(settings.UpdatePeriod)
+	}
 	if err := dnsConf.DownloadRootHints(uid, gid); err != nil {
-		return unboundCtx, unboundCancel, err
+		return oldCtx, oldCancel, err, nil, nil
 	}
 	if err := dnsConf.DownloadRootKey(uid, gid); err != nil {
-		return unboundCtx, unboundCancel, err
+		return oldCtx, oldCancel, err, nil, nil
 	}
 	if err := dnsConf.MakeUnboundConf(settings, uid, gid); err != nil {
-		return unboundCtx, unboundCancel, err
+		return oldCtx, oldCancel, err, nil, nil
 	}
-	unboundCancel()
-	if settings.UpdatePeriod > 0 {
-		newCtx, newCancel = context.WithTimeout(ctx, settings.UpdatePeriod)
-	} else {
-		newCtx, newCancel = context.WithCancel(ctx)
-	}
+	newCtx, newCancel = context.WithCancel(ctx)
+	oldCancel()
 	stream, waitFn, err := dnsConf.Start(newCtx, settings.VerbosityDetailsLevel)
 	if err != nil {
-		newCancel()
-		if fallbackErr := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
-			return newCtx, newCancel, fmt.Errorf("%s: %w", err, fallbackErr)
-		}
-		return newCtx, newCancel, err
+		return newCtx, newCancel, nil, err, nil
 	}
 	go streamMerger.Merge(newCtx, stream, command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
 	dnsConf.UseDNSInternally(net.IP{127, 0, 0, 1})                         // use Unbound
 	if err := dnsConf.UseDNSSystemWide(net.IP{127, 0, 0, 1}); err != nil { // use Unbound
-		newCancel()
-		if fallbackErr := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
-			return newCtx, newCancel, fmt.Errorf("%s: %w", err, fallbackErr)
-		}
-		return newCtx, newCancel, err
+		return newCtx, newCancel, nil, err, nil
 	}
 	if err := dnsConf.WaitForUnbound(); err != nil {
-		newCancel()
-		if fallbackErr := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
-			return newCtx, newCancel, fmt.Errorf("%s: %w", err, fallbackErr)
-		}
-		return newCtx, newCancel, err
+		return newCtx, newCancel, nil, err, nil
 	}
 	// Unbound is up and running at this point
 	httpServer.SetUnboundRestart(newCancel)
-	waitErrors := make(chan error)
+	waitError := make(chan error)
+	waiterError := make(chan error)
 	waiter.Add(func() error { //nolint:scopelint
-		return <-waitErrors
+		return <-waiterError
 	})
-	err = waitFn()
-	waitErrors <- err
-	if newCtx.Err() == context.Canceled || newCtx.Err() == context.DeadlineExceeded {
-		return newCtx, newCancel, nil
+	go func() {
+		err := fmt.Errorf("unbound: %w", waitFn())
+		waitError <- err
+		waiterError <- err
+	}()
+	if timer == nil {
+		waitErr := <-waitError
+		return newCtx, newCancel, nil, nil, waitErr
 	}
-	return newCtx, newCancel, err
+	select {
+	case <-timer.C:
+		return newCtx, newCancel, nil, nil, nil
+	case waitErr := <-waitError:
+		return newCtx, newCancel, nil, nil, waitErr
+	}
 }
 
 func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Configurator,
@@ -461,19 +461,38 @@ func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Conf
 	if err := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
 		logger.Error(err)
 	}
+	var timer *time.Timer
+	if settings.UpdatePeriod > 0 {
+		timer = time.NewTimer(settings.UpdatePeriod)
+	}
 	unboundCtx, unboundCancel := context.WithCancel(ctx)
 	defer unboundCancel()
 	for ctx.Err() == nil {
-		var err error
-		unboundCtx, unboundCancel, err = unboundRun(ctx, unboundCtx, unboundCancel, dnsConf, settings, uid, gid, streamMerger, waiter, httpServer)
-		if err != nil {
-			logger.Error(err)
-			time.Sleep(10 * time.Second)
-			continue
+		var setupErr, startErr, waitErr error
+		unboundCtx, unboundCancel, setupErr, startErr, waitErr = unboundRun(
+			ctx, unboundCtx, unboundCancel, timer, dnsConf, settings,
+			uid, gid, streamMerger, waiter, httpServer)
+		switch {
+		case ctx.Err() != nil:
+			logger.Warn("context canceled: exiting unbound run loop")
+		case timer != nil && !timer.Stop():
+			logger.Info("planned restart of unbound")
+		case setupErr != nil:
+			logger.Warn(setupErr)
+		case startErr != nil:
+			logger.Error(startErr)
+			unboundCancel()
+			if err := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+				logger.Error(err)
+			}
+		case waitErr != nil:
+			logger.Warn(waitErr)
+			if err := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+				logger.Error(err)
+			}
+			logger.Warn("restarting unbound because of unexpected exit")
 		}
-		logger.Info("attempting restart")
 	}
-	logger.Info("shutting down")
 }
 
 func setupPortForwarding(logger logging.Logger, piaConf pia.Configurator, settings settings.PIA, uid, gid int) {
