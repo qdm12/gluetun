@@ -387,18 +387,19 @@ func onConnected(ctx context.Context, allSettings settings.Settings,
 	}
 }
 
-func fallbackToUnencryptedDNS(dnsConf dns.Configurator, provider models.DNSProvider, ipv6 bool) error {
-	targetDNS := constants.DNSProviderMapping()[provider]
+func fallbackToUnencryptedIPv4DNS(dnsConf dns.Configurator, providers []models.DNSProvider) error {
 	var targetIP net.IP
-	for _, targetIP = range targetDNS.IPs {
-		if ipv6 && targetIP.To4() == nil {
-			break
-		} else if !ipv6 && targetIP.To4() != nil {
-			break
+	for _, provider := range providers {
+		data := constants.DNSProviderMapping()[provider]
+		for _, targetIP = range data.IPs {
+			if targetIP.To4() != nil {
+				dnsConf.UseDNSInternally(targetIP)
+				return dnsConf.UseDNSSystemWide(targetIP)
+			}
 		}
 	}
-	dnsConf.UseDNSInternally(targetIP)
-	return dnsConf.UseDNSSystemWide(targetIP)
+	// No IPv4 address found
+	return fmt.Errorf("no ipv4 DNS address found for providers %s", providers)
 }
 
 func unboundRun(ctx, oldCtx context.Context, oldCancel context.CancelFunc, timer *time.Timer,
@@ -461,7 +462,7 @@ func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Conf
 	waiter command.Waiter, streamMerger command.StreamMerger, httpServer server.Server,
 ) {
 	logger = logger.WithPrefix("unbound dns over tls setup: ")
-	if err := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+	if err := fallbackToUnencryptedIPv4DNS(dnsConf, settings.Providers); err != nil {
 		logger.Error(err)
 	}
 	var timer *time.Timer
@@ -487,12 +488,12 @@ func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Conf
 		case startErr != nil:
 			logger.Error(startErr)
 			unboundCancel()
-			if err := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+			if err := fallbackToUnencryptedIPv4DNS(dnsConf, settings.Providers); err != nil {
 				logger.Error(err)
 			}
 		case waitErr != nil:
 			logger.Warn(waitErr)
-			if err := fallbackToUnencryptedDNS(dnsConf, settings.Providers[0], settings.IPv6); err != nil {
+			if err := fallbackToUnencryptedIPv4DNS(dnsConf, settings.Providers); err != nil {
 				logger.Error(err)
 			}
 			logger.Warn("restarting unbound because of unexpected exit")
