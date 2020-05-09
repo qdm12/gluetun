@@ -323,18 +323,16 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 			signalConnected()
 		}
 	}, func(err error) {
-		logger.Error(err)
+		logger.Warn(err)
 	})
 }
 
 func openvpnRunLoop(ctx context.Context, ovpnConf openvpn.Configurator, streamMerger command.StreamMerger,
 	logger logging.Logger, httpServer server.Server, waiter command.Waiter, fatalOnError func(err error)) {
+	logger = logger.WithPrefix("openvpn: ")
 	waitErrors := make(chan error)
-	for {
-		if ctx.Err() == context.Canceled {
-			break
-		}
-		logger.Info("openvpn: starting")
+	for ctx.Err() == nil {
+		logger.Info("starting")
 		openvpnCtx, openvpnCancel := context.WithCancel(ctx)
 		stream, waitFn, err := ovpnConf.Start(openvpnCtx)
 		fatalOnError(err)
@@ -344,12 +342,16 @@ func openvpnRunLoop(ctx context.Context, ovpnConf openvpn.Configurator, streamMe
 			return <-waitErrors
 		})
 		err = waitFn()
-		waitErrors <- err
-		if openvpnCtx.Err() == context.Canceled {
-			logger.Info("openvpn: shutting down")
+		waitErrors <- fmt.Errorf("openvpn: %w", err)
+		switch {
+		case ctx.Err() != nil:
+			logger.Warn("context canceled: exiting openvpn run loop")
+		case openvpnCtx.Err() == context.Canceled:
+			logger.Info("triggered openvpn restart")
+		default:
+			logger.Warn(err)
+			openvpnCancel()
 		}
-		logger.Error("openvpn: %s", err)
-		openvpnCancel()
 	}
 }
 
@@ -478,6 +480,8 @@ func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Conf
 			logger.Warn("context canceled: exiting unbound run loop")
 		case timer != nil && !timer.Stop():
 			logger.Info("planned restart of unbound")
+		case unboundCtx.Err() == context.Canceled:
+			logger.Info("triggered restart of unbound")
 		case setupErr != nil:
 			logger.Warn(setupErr)
 		case startErr != nil:
