@@ -9,6 +9,7 @@
 - [Mullvad does not work with IPv6](#Mullvad-does-not-work-with-IPv6)
 - [What's all this Go code](#What-is-all-this-Go-code)
 - [How to test DNS over TLS](#How-to-test-DNS-over-TLS)
+- [Add custom iptables rules](#Add-custom-iptables-rules)
 
 ## Openvpn disconnects because of a ping timeout
 
@@ -118,3 +119,14 @@ It is mostly made of the [internal directory](../internal) and the entry Go file
 - You can test DNSSEC using [internet.nl/connection](https://www.internet.nl/connection/)
 - Check DNS leak tests with [https://www.dnsleaktest.com](https://www.dnsleaktest.com)
 - Some other DNS leaks tests might not work because of [this](https://github.com/qdm12/cloudflare-dns-server#verify-dns-connection) (*TLDR*: Unbound DNS server is a local caching intermediary)
+
+## Add custom iptables rules
+
+If for some reason, you need additional iptables rules to be run after the built-in iptables rules, you can
+use the file at `/iptables` with one iptables command per line and these will automatically be run on container start.
+For example the `/iptables` file could be:
+
+```sh
+iptables -A INPUT -i eth0 -s 0.0.0.0/0 -d 192.168.2.0/24 -p udp --sport 1197 -j ACCEPT
+iptables -A INPUT -i eth0 -s 0.0.0.0/0 -d 192.168.2.0/24 -p tcp --sport 1197 -j ACCEPT
+```
