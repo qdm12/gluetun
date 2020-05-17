@@ -20,6 +20,7 @@ type Configurator interface {
 	CreateLocalSubnetsRules(ctx context.Context, subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error
 	AllowInputTrafficOnPort(ctx context.Context, device models.VPNDevice, port uint16) error
 	AllowAnyIncomingOnPort(ctx context.Context, port uint16) error
+	RunExtraRules(ctx context.Context, rules []string) error
 }
 
 type configurator struct {

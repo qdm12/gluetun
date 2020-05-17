@@ -34,7 +34,7 @@ func (c *configurator) runIptablesInstructions(ctx context.Context, instructions
 func (c *configurator) runIptablesInstruction(ctx context.Context, instruction string) error {
 	flags := strings.Fields(instruction)
 	if output, err := c.commander.Run(ctx, "iptables", flags...); err != nil {
-		return fmt.Errorf("failed executing %q: %s: %w", instruction, output, err)
+		return fmt.Errorf("failed executing \"iptables %s\": %s: %w", instruction, output, err)
 	}
 	return nil
 }
@@ -135,4 +135,13 @@ func (c *configurator) AllowAnyIncomingOnPort(ctx context.Context, port uint16) 
 		fmt.Sprintf("-A INPUT -p tcp --dport %d -j ACCEPT", port),
 		fmt.Sprintf("-A INPUT -p udp --dport %d -j ACCEPT", port),
 	})
+}
+
+func (c *configurator) RunExtraRules(ctx context.Context, rules []string) error {
+	for i := range rules {
+		rules[i] = strings.TrimPrefix(rules[i], "iptables")
+		rules[i] = strings.TrimSpace(rules[i])
+	}
+	c.logger.Info("running %d extra firewall rules", len(rules))
+	return c.runIptablesInstructions(ctx, rules)
 }
