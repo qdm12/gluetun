@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad and Windscribe VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *Auto-update of Unbound block lists and cryptographic files, see `DNS_UPDATE_PERIOD`*
+**ANNOUNCEMENT**: *New wiki available [here](https://github.com/qdm12/private-internet-access-docker/wiki)*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
 
@@ -113,10 +113,7 @@
 
     **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
 
-1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. There are also docker tags for older versions available:
-    - `qmcgaw/private-internet-access:v2` linked to the [v2 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v2.0) (Golang based, only PIA)
-    - `qmcgaw/private-internet-access:v1` linked to the [v1 release](https://github.com/qdm12/private-internet-access-docker/releases/tag/v1.0) (shell scripting based, no support, only PIA)
-    - `qmcgaw/private-internet-access:old` tag, which is the latest shell scripting version (shell scripting based, no support, only PIA)
+1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. See the [wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#use-a-release-tag) for more information on other tags available.
 
 ## Testing
 
@@ -125,6 +122,8 @@ Check the PIA IP address matches your expectations
 ```sh
 docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
 ```
+
+Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Testing)
 
 ## Environment variables
 
@@ -281,14 +280,9 @@ A built-in HTTP server listens on port `8000` to modify the state of the contain
 - `http://<your-docker-host-ip>:8000/openvpn/actions/restart` restarts the openvpn process
 - `http://<your-docker-host-ip>:8000/unbound/actions/restart` re-downloads the DNS files (crypto and block lists) and restarts the unbound process
 
-## FAQ
-
-Please refer to [the FAQ table of content](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/faq.md#Table-of-content)
-
 ## Development and contributing
 
-- [Setup your environment](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/development.md).
-- [Contributing guidelines](https://github.com/qdm12/private-internet-access-docker/blob/master/.github/CONTRIBUTING.md)
+- Contribute with code: see [the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Contributing).
 - [The list of existing contributors 👍](https://github.com/qdm12/private-internet-access-docker/blob/master/.github/CONTRIBUTING.md#Contributors)
 - [Github workflows](https://github.com/qdm12/private-internet-access-docker/actions) to know what's building
 - [List of issues and feature requests](https://github.com/qdm12/private-internet-access-docker/issues)

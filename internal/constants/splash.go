@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Announcement is a message announcement
-	Announcement = "Auto update of DNS over TLS block lists and crypto files"
+	Announcement = "New Wiki available at https://github.com/qdm12/private-internet-access-docker/wiki"
 	// AnnouncementExpiration is the expiration date of the announcement in format yyyy-mm-dd
-	AnnouncementExpiration = "2020-05-28"
+	AnnouncementExpiration = "2020-06-10"
 )
 
 const (
