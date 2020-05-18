@@ -522,7 +522,6 @@ func setupPortForwarding(logger logging.Logger, piaConf pia.Configurator, settin
 	if err := piaConf.WritePortForward(settings.PortForwarding.Filepath, port, uid, gid); err != nil {
 		pfLogger.Error(err)
 	}
-	pfLogger.Info("allowing forwarded port %d through firewall", port)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := piaConf.AllowPortForwardFirewall(ctx, constants.TUN, port); err != nil {
