@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -34,7 +35,7 @@ func (c *configurator) runIptablesInstructions(ctx context.Context, instructions
 func (c *configurator) runIptablesInstruction(ctx context.Context, instruction string) error {
 	flags := strings.Fields(instruction)
 	if output, err := c.commander.Run(ctx, "iptables", flags...); err != nil {
-		return fmt.Errorf("failed executing %q: %s: %w", instruction, output, err)
+		return fmt.Errorf("failed executing \"iptables %s\": %s: %w", instruction, output, err)
 	}
 	return nil
 }
@@ -135,4 +136,28 @@ func (c *configurator) AllowAnyIncomingOnPort(ctx context.Context, port uint16) 
 		fmt.Sprintf("-A INPUT -p tcp --dport %d -j ACCEPT", port),
 		fmt.Sprintf("-A INPUT -p udp --dport %d -j ACCEPT", port),
 	})
+}
+
+func (c *configurator) RunUserPostRules(ctx context.Context, fileManager files.FileManager, filepath string) error {
+	exists, err := fileManager.FileExists(filepath)
+	if err != nil {
+		return err
+	}
+	if exists {
+		b, err := fileManager.ReadFile(filepath)
+		if err != nil {
+			return err
+		}
+		lines := strings.Split(string(b), "\n")
+		var rules []string
+		for _, line := range lines {
+			if !strings.HasPrefix(line, "iptables ") {
+				continue
+			}
+			rules = append(rules, strings.TrimPrefix(line, "iptables "))
+			c.logger.Info("running user post firewall rule: %s", line)
+		}
+		return c.runIptablesInstructions(ctx, rules)
+	}
+	return nil
 }

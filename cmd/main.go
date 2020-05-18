@@ -193,6 +193,8 @@ func main() {
 	fatalOnError(err)
 	err = firewallConf.CreateLocalSubnetsRules(ctx, defaultSubnet, allSettings.Firewall.AllowedSubnets, defaultInterface)
 	fatalOnError(err)
+	err = firewallConf.RunUserPostRules(ctx, fileManager, "/iptables/post-rules.txt")
+	fatalOnError(err)
 
 	if allSettings.TinyProxy.Enabled {
 		err = tinyProxyConf.MakeConf(

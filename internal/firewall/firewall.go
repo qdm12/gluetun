@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/qdm12/golibs/command"
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
@@ -20,6 +21,7 @@ type Configurator interface {
 	CreateLocalSubnetsRules(ctx context.Context, subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error
 	AllowInputTrafficOnPort(ctx context.Context, device models.VPNDevice, port uint16) error
 	AllowAnyIncomingOnPort(ctx context.Context, port uint16) error
+	RunUserPostRules(ctx context.Context, fileManager files.FileManager, filepath string) error
 }
 
 type configurator struct {
