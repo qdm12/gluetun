@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -137,11 +138,26 @@ func (c *configurator) AllowAnyIncomingOnPort(ctx context.Context, port uint16) 
 	})
 }
 
-func (c *configurator) RunExtraRules(ctx context.Context, rules []string) error {
-	for i := range rules {
-		rules[i] = strings.TrimPrefix(rules[i], "iptables")
-		rules[i] = strings.TrimSpace(rules[i])
+func (c *configurator) RunUserPostRules(ctx context.Context, fileManager files.FileManager, filepath string) error {
+	exists, err := fileManager.FileExists(filepath)
+	if err != nil {
+		return err
 	}
-	c.logger.Info("running %d extra firewall rules", len(rules))
-	return c.runIptablesInstructions(ctx, rules)
+	if exists {
+		b, err := fileManager.ReadFile(filepath)
+		if err != nil {
+			return err
+		}
+		lines := strings.Split(string(b), "\n")
+		var rules []string
+		for _, line := range lines {
+			if !strings.HasPrefix(line, "iptables ") {
+				continue
+			}
+			rules = append(rules, strings.TrimPrefix(line, "iptables "))
+			c.logger.Info("running user post firewall rule: %s", line)
+		}
+		return c.runIptablesInstructions(ctx, rules)
+	}
+	return nil
 }
