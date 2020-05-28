@@ -10,7 +10,7 @@ WORKDIR /tmp/gobuild
 COPY .golangci.yml .
 COPY go.mod go.sum ./
 RUN go mod download 2>&1
-COPY cmd/main.go .
+COPY cmd/gluetun/main.go .
 COPY internal/ ./internal/
 RUN go test ./...
 RUN golangci-lint run --timeout=10m
