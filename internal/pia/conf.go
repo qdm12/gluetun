@@ -86,11 +86,10 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"nobind",
 		"persist-key",
 		"persist-tun",
-		"tls-client",
 		"remote-cert-tls server",
-		"ping 300", // Ping every 5 minutes to prevent a timeout error
 
 		// PIA specific
+		"ping 300", // Ping every 5 minutes to prevent a timeout error
 		"reneg-sec 0",
 		"compress", // allow PIA server to choose the compression to use
 
@@ -100,6 +99,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
 		"remote-random",
+		"suppress-timestamps",
 
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),

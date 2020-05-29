@@ -2,6 +2,28 @@ name: Docker build
 on:
   pull_request:
     branches: [master]
+    paths-ignore:
+      - .devcontainer
+      - .github/ISSUE_TEMPLATE
+      - .github/workflows/buildx-release.yml
+      - .github/workflows/buildx-branch.yml
+      - .github/workflows/buildx-latest.yml
+      - .github/workflows/dockerhub-description.yml
+      - .github/workflows/labels.yml
+      - .github/workflows/misspell.yml
+      - .github/CODEOWNERS
+      - .github/CONTRIBUTING.md
+      - .github/FUNDING.yml
+      - .github/labels.yml
+      - .vscode
+      - cmd/ovpnparser
+      - cmd/resolver
+      - doc
+      - .gitignore
+      - docker-compose.yml
+      - LICENSE
+      - README.md
+      - title.svg
 jobs:
   build:
     runs-on: ubuntu-latest

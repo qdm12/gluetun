@@ -73,7 +73,6 @@
 ## Setup
 
 1. Requirements
-    - *Ideally*, Docker 1.13, in order to have Docker API 1.25 which supports `init` (and, if you use docker-compose, docker-compose version 1.22.0)
     - A VPN account with one of the service providers:
         - Private Internet Access: **username** and **password**
         - Mullvad: user ID ([sign up](https://mullvad.net/en/account/))
@@ -97,7 +96,7 @@
 1. Launch the container with:
 
     ```bash
-    docker run -d --init --name=pia --cap-add=NET_ADMIN \
+    docker run -d --name=pia --cap-add=NET_ADMIN \
     -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     qmcgaw/private-internet-access
     ```
@@ -308,7 +307,6 @@ There are various ways to achieve this, depending on your use case.
       pia:
         image: qmcgaw/private-internet-access
         container_name: pia
-        init: true
         cap_add:
           - NET_ADMIN
         environment:
