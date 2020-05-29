@@ -61,6 +61,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"nobind",
 		"persist-key",
 		"persist-tun",
+		"remote-cert-tls server",
 
 		// Surfshark specific
 		"resolv-retry infinite",
@@ -71,8 +72,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"ping-restart 0",
 		"ping-timer-rem",
 		"reneg-sec 0",
-		"remote-cert-tls server",
-		"pull",
 		"fast-io",
 		"key-direction 1",
 
@@ -82,6 +81,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
 		"remote-random",
+		"suppress-timestamps",
 
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
