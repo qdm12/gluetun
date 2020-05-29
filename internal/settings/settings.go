@@ -16,6 +16,7 @@ type Settings struct {
 	PIA         PIA
 	Mullvad     Mullvad
 	Windscribe  Windscribe
+	Surfshark   Surfshark
 	System      System
 	DNS         DNS
 	Firewall    Firewall
@@ -32,6 +33,8 @@ func (s *Settings) String() string {
 		vpnServiceProviderSettings = s.Mullvad.String()
 	case constants.Windscribe:
 		vpnServiceProviderSettings = s.Windscribe.String()
+	case constants.Surfshark:
+		vpnServiceProviderSettings = s.Surfshark.String()
 	}
 	return strings.Join([]string{
 		"Settings summary below:",
@@ -46,9 +49,11 @@ func (s *Settings) String() string {
 	}, "\n")
 }
 
+const aes256cbc = "aes-256-cbc"
+
 // GetAllSettings obtains all settings for the program and returns an error as soon
 // as an error is encountered reading them.
-func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
+func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) { //nolint:gocyclo
 	settings.VPNSP, err = paramsReader.GetVPNSP()
 	if err != nil {
 		return settings, err
@@ -60,7 +65,7 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 	switch settings.VPNSP {
 	case constants.PrivateInternetAccess:
 		switch settings.OpenVPN.Cipher {
-		case "", "aes-128-cbc", "aes-256-cbc", "aes-128-gcm", "aes-256-gcm":
+		case "", "aes-128-cbc", aes256cbc, "aes-128-gcm", "aes-256-gcm":
 		default:
 			return settings, fmt.Errorf("cipher %q is not supported by Private Internet Access", settings.OpenVPN.Cipher)
 		}
@@ -84,7 +89,7 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 		settings.Mullvad, err = GetMullvadSettings(paramsReader)
 	case constants.Windscribe:
 		switch settings.OpenVPN.Cipher {
-		case "", "aes-256-cbc", "aes-256-gcm": // TODO check inside params getters
+		case "", aes256cbc, "aes-256-gcm": // TODO check inside params getters
 		default:
 			return settings, fmt.Errorf("cipher %q is not supported by Windscribe", settings.OpenVPN.Cipher)
 		}
@@ -94,6 +99,18 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 			return settings, fmt.Errorf("auth algorithm %q is not supported by Windscribe", settings.OpenVPN.Auth)
 		}
 		settings.Windscribe, err = GetWindscribeSettings(paramsReader, settings.OpenVPN.NetworkProtocol)
+	case constants.Surfshark:
+		switch settings.OpenVPN.Cipher {
+		case "", aes256cbc: // TODO check inside params getters
+		default:
+			return settings, fmt.Errorf("cipher %q is not supported by Surfshark", settings.OpenVPN.Cipher)
+		}
+		switch settings.OpenVPN.Auth {
+		case "", "sha512":
+		default:
+			return settings, fmt.Errorf("auth algorithm %q is not supported by Surfshark", settings.OpenVPN.Auth)
+		}
+		settings.Surfshark, err = GetSurfsharkSettings(paramsReader)
 	default:
 		err = fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
 	}

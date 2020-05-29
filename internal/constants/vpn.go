@@ -11,6 +11,8 @@ const (
 	Mullvad models.VPNProvider = "mullvad"
 	// Windscribe is a VPN provider
 	Windscribe models.VPNProvider = "windscribe"
+	// Surfshark is a VPN provider
+	Surfshark models.VPNProvider = "surfshark"
 )
 
 const (

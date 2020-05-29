@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Announcement is a message announcement
-	Announcement = "New Wiki available at https://github.com/qdm12/private-internet-access-docker/wiki"
+	Announcement = "New VPN provider supported surfshark.com"
 	// AnnouncementExpiration is the expiration date of the announcement in format yyyy-mm-dd
-	AnnouncementExpiration = "2020-06-10"
+	AnnouncementExpiration = "2020-06-20"
 )
 
 const (

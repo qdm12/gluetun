@@ -42,7 +42,7 @@ ENV VPNSP="private internet access" \
     UID=1000 \
     GID=1000 \
     IP_STATUS_FILE="/ip" \
-    # PIA and Windscribe only
+    # PIA, Windscribe and Surfshark only
     USER= \
     PASSWORD= \
     REGION="Austria" \

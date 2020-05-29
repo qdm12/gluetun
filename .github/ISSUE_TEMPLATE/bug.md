@@ -19,6 +19,7 @@ assignees: qdm12
     - [x] PIA
     - [ ] Mullvad
     - [ ] Windscribe
+    - [ ] Surfshark
 
 3. What's the version of the program?
 

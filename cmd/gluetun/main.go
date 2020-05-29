@@ -31,6 +31,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
 	"github.com/qdm12/private-internet-access-docker/internal/splash"
+	"github.com/qdm12/private-internet-access-docker/internal/surfshark"
 	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
 	"github.com/qdm12/private-internet-access-docker/internal/windscribe"
 )
@@ -64,6 +65,7 @@ func main() {
 	piaConf := pia.NewConfigurator(client, fileManager, firewallConf)
 	mullvadConf := mullvad.NewConfigurator(fileManager, logger)
 	windscribeConf := windscribe.NewConfigurator(fileManager)
+	surfsharkConf := surfshark.NewConfigurator(fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()
@@ -104,6 +106,9 @@ func main() {
 	case constants.Windscribe:
 		openVPNUser = allSettings.Windscribe.User
 		openVPNPassword = allSettings.Windscribe.Password
+	case constants.Surfshark:
+		openVPNUser = allSettings.Surfshark.User
+		openVPNPassword = allSettings.Surfshark.Password
 	}
 	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, allSettings.System.UID, allSettings.System.GID)
 	fatalOnError(err)
@@ -172,6 +177,22 @@ func main() {
 			break
 		}
 		err = windscribeConf.BuildConf(
+			connections,
+			allSettings.OpenVPN.Verbosity,
+			allSettings.System.UID,
+			allSettings.System.GID,
+			allSettings.OpenVPN.Root,
+			allSettings.OpenVPN.Cipher,
+			allSettings.OpenVPN.Auth)
+	case constants.Surfshark:
+		connections, err = surfsharkConf.GetOpenVPNConnections(
+			allSettings.Surfshark.Region,
+			allSettings.OpenVPN.NetworkProtocol,
+			allSettings.OpenVPN.TargetIP)
+		if err != nil {
+			break
+		}
+		err = surfsharkConf.BuildConf(
 			connections,
 			allSettings.OpenVPN.Verbosity,
 			allSettings.System.UID,

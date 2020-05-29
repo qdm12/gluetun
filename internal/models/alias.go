@@ -19,6 +19,8 @@ type (
 	MullvadProvider string
 	// WindscribeCity is used as the region for a Windscribe server
 	WindscribeRegion string
+	// SurfsharkRegion is used as the region for a Surfshark server
+	SurfsharkRegion string
 	// URL is an HTTP(s) URL address
 	URL string
 	// Filepath is a local filesytem file path
