@@ -22,7 +22,7 @@ services:
       - OPENVPN_TARGET_IP=
       - TZ=
 
-      # PIA and Windscribe only
+      # PIA, Windscribe and Surfshark only
       - REGION=Austria
       - USER=js89ds7
       - PASSWORD=8fd9s239G

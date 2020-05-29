@@ -133,7 +133,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe` | VPN Service Provider |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark` | VPN Service Provider |
 | `IP_STATUS_FILE` | `/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
@@ -171,6 +171,14 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | `Austria` | One of the [Windscribe regions](https://windscribe.com/status) | VPN server region |
     | `PORT` | | One from the [this list of ports](https://windscribe.com/getconfig/openvpn) | Custom VPN port to use |
+
+- Surfshark
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | `REGION` | `Austria` | One of the [Surfshark regions (subdomains)](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
 
 ### DNS over TLS
 
