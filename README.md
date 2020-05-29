@@ -1,6 +1,6 @@
 # Gluetun VPN client
 
-*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad and Windscribe VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
+*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad, Windscribe and Surfshark VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 **ANNOUNCEMENT**: *New wiki available [here](https://github.com/qdm12/private-internet-access-docker/wiki)*
 
@@ -33,7 +33,7 @@
 ## Features
 
 - Based on Alpine 3.11 for a small Docker image below 50MB
-- Supports **Private Internet Access**, **Mullvad** and **Windscribe** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe** and **Surfshark** servers
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
@@ -59,6 +59,10 @@
 
 - Pick the [region](https://windscribe.com/status)
 
+### Surfshark
+
+- Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark)
+
 ### Extra niche features
 
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
@@ -77,6 +81,7 @@
 
             [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
+        - Surfshark: **username** and **password**
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
 1. On some devices such as Synology or Qnap machines, it's required to setup your tunnel device `/dev/net/tun` on your host:
