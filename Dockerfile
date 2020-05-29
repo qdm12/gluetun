@@ -34,7 +34,6 @@ LABEL \
     org.opencontainers.image.title="PIA client" \
     org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
 ENV VPNSP="private internet access" \
-    USER= \
     PROTOCOL=udp \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_ROOT=no \
@@ -43,12 +42,12 @@ ENV VPNSP="private internet access" \
     UID=1000 \
     GID=1000 \
     IP_STATUS_FILE="/ip" \
-    # PIA only
+    # PIA and Windscribe only
+    USER= \
     PASSWORD= \
     REGION="Austria" \
+    # PIA only
     PIA_ENCRYPTION=strong \
-    OPENVPN_CIPHER= \
-    OPENVPN_AUTH= \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
     # Mullvad only
@@ -57,6 +56,9 @@ ENV VPNSP="private internet access" \
     ISP= \
     # Mullvad and Windscribe only
     PORT= \
+    # Openvpn
+    OPENVPN_CIPHER= \
+    OPENVPN_AUTH= \
     # DNS over TLS
     DOT=on \
     DOT_PROVIDERS=cloudflare \

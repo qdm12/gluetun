@@ -16,7 +16,6 @@ services:
     environment:
       # More variables are available, see the readme table
       - VPNSP=private internet access
-      - USER=js89ds7
       - PROTOCOL=udp
       - OPENVPN_VERBOSITY=1
       - OPENVPN_ROOT=no
@@ -25,10 +24,10 @@ services:
 
       # PIA and Windscribe only
       - REGION=Austria
+      - USER=js89ds7
       - PASSWORD=8fd9s239G
 
       # PIA only
-      - PASSWORD=8fd9s239G
       - PIA_ENCRYPTION=strong
       - PORT_FORWARDING=off
 
