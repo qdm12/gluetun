@@ -6,7 +6,6 @@ services:
     cap_add:
       - NET_ADMIN
     network_mode: bridge
-    init: true
     ports:
       - 8888:8888/tcp # Tinyproxy
       - 8388:8388/tcp # Shadowsocks
