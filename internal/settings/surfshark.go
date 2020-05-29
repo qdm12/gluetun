@@ -16,7 +16,7 @@ type Surfshark struct {
 
 func (s *Surfshark) String() string {
 	settingsList := []string{
-		"Windscribe settings:",
+		"Surfshark settings:",
 		"User: [redacted]",
 		"Password: [redacted]",
 		"Region: " + strings.Title(string(s.Region)),

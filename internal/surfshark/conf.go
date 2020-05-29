@@ -53,7 +53,7 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		cipher = "AES-256-CBC"
 	}
 	if len(auth) == 0 {
-		auth = "sha512"
+		auth = "SHA512"
 	}
 	lines := []string{
 		"client",
