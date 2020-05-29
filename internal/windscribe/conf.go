@@ -63,11 +63,11 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"nobind",
 		"persist-key",
 		"persist-tun",
+		"remote-cert-tls server",
 
 		// Windscribe specific
 		"resolv-retry infinite",
 		"comp-lzo",
-		"remote-cert-tls server",
 		"key-direction 1",
 
 		// Added constant values
