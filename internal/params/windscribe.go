@@ -11,7 +11,7 @@ import (
 
 // GetWindscribeRegion obtains the region for the Windscribe server from the
 // environment variable REGION
-func (p *reader) GetWindscribeRegion() (country models.WindscribeRegion, err error) {
+func (p *reader) GetWindscribeRegion() (region models.WindscribeRegion, err error) {
 	s, err := p.envParams.GetValueIfInside("REGION", constants.WindscribeRegionChoices())
 	return models.WindscribeRegion(strings.ToLower(s)), err
 }

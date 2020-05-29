@@ -12,7 +12,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-// Configurator contains methods to download, read and modify the openvpn configuration to connect as a client
+// Configurator contains methods to read and modify the openvpn configuration to connect as a client
 type Configurator interface {
 	GetOpenVPNConnections(region models.PIARegion, protocol models.NetworkProtocol,
 		encryption models.PIAEncryption, targetIP net.IP) (connections []models.OpenVPNConnection, err error)
