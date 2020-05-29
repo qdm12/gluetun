@@ -36,9 +36,9 @@ func (c *configurator) GetOpenVPNConnections(region models.SurfsharkRegion, prot
 	var port uint16
 	switch {
 	case protocol == constants.TCP:
-		port = 1194
-	case protocol == constants.UDP:
 		port = 1443
+	case protocol == constants.UDP:
+		port = 1194
 	default:
 		return nil, fmt.Errorf("protocol %q is unknown", protocol)
 	}
