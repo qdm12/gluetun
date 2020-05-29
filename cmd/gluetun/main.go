@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -320,6 +321,7 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 	// Blocking line merging paramsReader for all programs: openvpn, tinyproxy, unbound and shadowsocks
 	logger.Info("Launching standard output merger")
 	streamMerger.CollectLines(ctx, func(line string) {
+		line = trimEventualProgramPrefix(line)
 		logger.Info(line)
 		if strings.Contains(line, "Initialization Sequence Completed") {
 			signalConnected()
@@ -327,6 +329,27 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 	}, func(err error) {
 		logger.Warn(err)
 	})
+}
+
+func trimEventualProgramPrefix(s string) string {
+	switch {
+	case strings.HasPrefix(s, "unbound: "):
+		prefixRegex := regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:0\] `)
+		prefix := prefixRegex.FindString(s)
+		return fmt.Sprintf("unbound: %s", s[len(prefix):])
+	case strings.HasPrefix(s, "shadowsocks: "):
+		prefixRegex := regexp.MustCompile(`shadowsocks:[ ]+2[0-9]{3}\-[0-1][0-9]\-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] `)
+		prefix := prefixRegex.FindString(s)
+		return fmt.Sprintf("shadowsocks: %s", s[len(prefix):])
+	case strings.HasPrefix(s, "tinyproxy: "):
+		logLevelRegex := regexp.MustCompile(`INFO|CONNECT|NOTICE|WARNING|ERROR|CRITICAL`)
+		logLevel := logLevelRegex.FindString(s)
+		prefixRegex := regexp.MustCompile(`tinyproxy: (INFO|CONNECT|NOTICE|WARNING|ERROR|CRITICAL)[ ]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] \[[0-9]+\]: `)
+		prefix := prefixRegex.FindString(s)
+		return fmt.Sprintf("tinyproxy: %s %s", logLevel, s[len(prefix):])
+	default:
+		return s
+	}
 }
 
 func openvpnRunLoop(ctx context.Context, ovpnConf openvpn.Configurator, streamMerger command.StreamMerger,
