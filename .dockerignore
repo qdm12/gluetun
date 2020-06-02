@@ -1,10 +1,11 @@
+.devcontainer
 .git
+.github
 .vscode
-readme
-.gitignore
-.travis.yml
-ci.sh
+cmd
+!cmd/gluetun
+doc
 docker-compose.yml
 LICENSE
 README.md
-Dockerfile
+title.svg
