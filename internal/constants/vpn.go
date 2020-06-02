@@ -13,6 +13,8 @@ const (
 	Windscribe models.VPNProvider = "windscribe"
 	// Surfshark is a VPN provider
 	Surfshark models.VPNProvider = "surfshark"
+	// Cyberghost is a VPN provider
+	Cyberghost models.VPNProvider = "cyberghost"
 )
 
 const (
