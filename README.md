@@ -58,10 +58,11 @@
 ### Windscribe
 
 - Pick the [region](https://windscribe.com/status)
+- Pick the port to use
 
 ### Surfshark
 
-- Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark)
+- Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
 
 ### Extra niche features
 
@@ -74,13 +75,13 @@
 
 1. Requirements
     - A VPN account with one of the service providers:
-        - Private Internet Access: **username** and **password**
+        - Private Internet Access: **username** and **password** ([sign up](https://www.privateinternetaccess.com/pages/buy-vpn/))
         - Mullvad: user ID ([sign up](https://mullvad.net/en/account/))
         - Windscribe: **username** and **password** | Signup up using my affiliate link below
 
             [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
-        - Surfshark: **username** and **password**
+        - Surfshark: **username** and **password** ([sign up](https://order.surfshark.com/))
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
 1. On some devices such as Synology or Qnap machines, it's required to setup your tunnel device `/dev/net/tun` on your host:

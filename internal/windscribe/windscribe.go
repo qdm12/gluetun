@@ -15,10 +15,9 @@ type Configurator interface {
 
 type configurator struct {
 	fileManager files.FileManager
-	lookupIP    func(host string) ([]net.IP, error)
 }
 
 // NewConfigurator returns a new Configurator object
 func NewConfigurator(fileManager files.FileManager) Configurator {
-	return &configurator{fileManager, net.LookupIP}
+	return &configurator{fileManager: fileManager}
 }

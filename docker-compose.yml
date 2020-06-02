@@ -34,6 +34,8 @@ services:
       - COUNTRY=Sweden
       - CITY=
       - ISP=
+
+      # Mullvad and Windscribe only
       - PORT=
 
       # DNS over TLS
