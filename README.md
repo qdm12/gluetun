@@ -185,6 +185,24 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | `Austria` | One of the [Surfshark regions (subdomains)](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
 
+- Cyberghost
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `CLIENT_KEY` | | | Your device client key content on a single line, **see below** |
+    | `REGION` | `Austria` | One of the [Cyberghost countries](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#regions) | VPN server country |
+    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#server-groups) | Server group |
+
+    To make `CLIENT_KEY`, run the following using your client.key file:
+
+    ```sh
+    docker run -it --rm -v /yourpath/client.key:/client.key:ro qmcgaw/private-internet-access clientkey
+    ```
+
+    And use the line produced as the environment variable `CLIENT_KEY`
+
 ### DNS over TLS
 
 None of the following values are required.

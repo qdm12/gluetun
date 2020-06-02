@@ -21,7 +21,7 @@ services:
       - OPENVPN_TARGET_IP=
       - TZ=
 
-      # PIA, Windscribe and Surfshark only
+      # PIA, Windscribe, Surfshark and Cyberghost only
       - REGION=Austria
       - USER=js89ds7
       - PASSWORD=8fd9s239G
@@ -37,6 +37,10 @@ services:
 
       # Mullvad and Windscribe only
       - PORT=
+
+      # Cyberghost only
+      - CYBERGHOST_GROUP=Premium UDP Europe
+      - CLIENT_KEY=
 
       # DNS over TLS
       - DOT=on
