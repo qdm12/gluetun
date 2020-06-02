@@ -20,6 +20,7 @@ assignees:
     - [ ] Mullvad
     - [ ] Windscribe
     - [ ] Surfshark
+    - [ ] Cyberghost
 
 3. What's the version of the program?
 
