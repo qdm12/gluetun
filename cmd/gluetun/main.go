@@ -13,14 +13,13 @@ import (
 
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
-	libhealthcheck "github.com/qdm12/golibs/healthcheck"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/alpine"
+	"github.com/qdm12/private-internet-access-docker/internal/cli"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
-	"github.com/qdm12/private-internet-access-docker/internal/healthcheck"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/mullvad"
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
@@ -37,14 +36,26 @@ import (
 )
 
 func main() {
-	if libhealthcheck.Mode(os.Args) {
-		if err := healthcheck.HealthCheck(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+	ctx := context.Background()
+	os.Exit(_main(ctx, os.Args))
+}
+
+func _main(background context.Context, args []string) int {
+	if len(args) > 1 { // cli operation
+		var err error
+		switch args[1] {
+		case "healthcheck":
+			err = cli.HealthCheck()
+		default:
+			err = fmt.Errorf("command %q is unknown", args[1])
 		}
-		os.Exit(0)
+		if err != nil {
+			fmt.Println(err)
+			return 1
+		}
+		return 0
 	}
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(background)
 	defer cancel()
 	logger := createLogger()
 	fatalOnError := makeFatalOnError(logger, cancel)
@@ -282,9 +293,11 @@ func main() {
 		syscall.SIGTERM,
 		os.Interrupt,
 	)
+	exitStatus := 0
 	select {
 	case signal := <-signalsCh:
 		logger.Warn("Caught OS signal %s, shutting down", signal)
+		exitStatus = 1
 		cancel()
 	case <-ctx.Done():
 		logger.Warn("context canceled, shutting down")
@@ -292,18 +305,22 @@ func main() {
 	logger.Info("Clearing ip status file %s", allSettings.System.IPStatusFilepath)
 	if err := fileManager.Remove(string(allSettings.System.IPStatusFilepath)); err != nil {
 		logger.Error(err)
+		exitStatus = 1
 	}
 	if allSettings.PIA.PortForwarding.Enabled {
 		logger.Info("Clearing forwarded port status file %s", allSettings.PIA.PortForwarding.Filepath)
 		if err := fileManager.Remove(string(allSettings.PIA.PortForwarding.Filepath)); err != nil {
 			logger.Error(err)
+			exitStatus = 1
 		}
 	}
-	timeoutCtx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
+	timeoutCtx, timeoutCancel := context.WithTimeout(background, time.Second)
+	defer timeoutCancel()
 	for _, err := range waiter.WaitForAll(timeoutCtx) {
 		logger.Error(err)
+		exitStatus = 1
 	}
+	return exitStatus
 }
 
 func makeFatalOnError(logger logging.Logger, cancel func()) func(err error) {
