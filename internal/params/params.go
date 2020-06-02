@@ -68,6 +68,11 @@ type Reader interface {
 	// Surfshark getters
 	GetSurfsharkRegion() (country models.SurfsharkRegion, err error)
 
+	// Cyberghost getters
+	GetCyberghostGroup() (region models.CyberghostGroup, err error)
+	GetCyberghostRegion() (region models.CyberghostRegion, err error)
+	GetCyberghostClientKey() (clientKey string, err error)
+
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
 	GetShadowSocksLog() (activated bool, err error)
@@ -108,7 +113,7 @@ func NewReader(logger logging.Logger) Reader {
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
 func (p *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
-	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe", "surfshark"})
+	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe", "surfshark", "cyberghost"})
 	if s == "pia" {
 		s = "private internet access"
 	}

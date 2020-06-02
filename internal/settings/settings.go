@@ -17,6 +17,7 @@ type Settings struct {
 	Mullvad     Mullvad
 	Windscribe  Windscribe
 	Surfshark   Surfshark
+	Cyberghost  Cyberghost
 	System      System
 	DNS         DNS
 	Firewall    Firewall
@@ -35,6 +36,8 @@ func (s *Settings) String() string {
 		vpnServiceProviderSettings = s.Windscribe.String()
 	case constants.Surfshark:
 		vpnServiceProviderSettings = s.Surfshark.String()
+	case constants.Cyberghost:
+		vpnServiceProviderSettings = s.Cyberghost.String()
 	}
 	return strings.Join([]string{
 		"Settings summary below:",
@@ -69,6 +72,8 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 		settings.Windscribe, err = GetWindscribeSettings(paramsReader, settings.OpenVPN.NetworkProtocol)
 	case constants.Surfshark:
 		settings.Surfshark, err = GetSurfsharkSettings(paramsReader)
+	case constants.Cyberghost:
+		settings.Cyberghost, err = GetCyberghostSettings(paramsReader)
 	default:
 		err = fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
 	}
