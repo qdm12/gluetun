@@ -46,6 +46,8 @@ func _main(background context.Context, args []string) int {
 		switch args[1] {
 		case "healthcheck":
 			err = cli.HealthCheck()
+		case "clientkey":
+			err = cli.ClientKey(args[2:])
 		default:
 			err = fmt.Errorf("command %q is unknown", args[1])
 		}
