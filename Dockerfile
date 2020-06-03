@@ -31,9 +31,9 @@ LABEL \
     org.opencontainers.image.url="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.documentation="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
-    org.opencontainers.image.title="PIA client" \
-    org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
-ENV VPNSP="private internet access" \
+    org.opencontainers.image.title="VPN client for PIA, Mullvad, Windscribe, Surfshark and Cyberghost" \
+    org.opencontainers.image.description="VPN client to tunnel to PIA, Mullvad, Windscribe, Surfshark and Cyberghost servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
+ENV VPNSP=pia \
     PROTOCOL=udp \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_ROOT=no \
