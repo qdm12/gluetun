@@ -9,22 +9,22 @@ import (
 
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 func HealthCheck() error {
-	paramsReader := params.NewReader(nil)
-	ipStatusFilepath, err := paramsReader.GetIPStatusFilepath()
-	if err != nil {
-		return err
-	}
-	// Get VPN ip address written to file
+	// Get all VPN ip addresses from openvpn configuration file
 	fileManager := files.NewFileManager()
-	b, err := fileManager.ReadFile(string(ipStatusFilepath))
+	b, err := fileManager.ReadFile(string(constants.OpenVPNConf))
 	if err != nil {
 		return err
 	}
-	vpnIP := string(b)
+	var vpnIPs []string
+	for _, line := range strings.Split(string(b), "\n") {
+		if strings.HasPrefix(line, "remote ") {
+			vpnIPs = append(vpnIPs, strings.TrimPrefix(line, "remote "))
+		}
+	}
 
 	// Get public IP address from one of the following urls
 	urls := []string{
@@ -46,8 +46,15 @@ func HealthCheck() error {
 		return fmt.Errorf("Received unexpected status code %d from %s", status, url)
 	}
 	publicIP := strings.ReplaceAll(string(content), "\n", "")
-	if publicIP != vpnIP {
-		return fmt.Errorf("Public IP address %s does not match VPN ip address %s on file", publicIP, vpnIP)
+	match := false
+	for _, vpnIP := range vpnIPs {
+		if publicIP == vpnIP {
+			match = true
+			break
+		}
+	}
+	if !match {
+		return fmt.Errorf("Public IP address %s does not match any of the VPN ip addresses %s", publicIP, strings.Join(vpnIPs, ", "))
 	}
 	return nil
 }
