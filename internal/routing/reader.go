@@ -61,14 +61,14 @@ func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
 	return false, nil
 }
 
-func (r *routing) CurrentPublicIP(defaultInterface string) (ip net.IP, err error) {
+func (r *routing) VPNGatewayIP(defaultInterface string) (ip net.IP, err error) {
 	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
-		return nil, fmt.Errorf("cannot find current IP address: %w", err)
+		return nil, fmt.Errorf("cannot find VPN gateway IP address: %w", err)
 	}
 	entries, err := parseRoutingTable(data)
 	if err != nil {
-		return nil, fmt.Errorf("cannot find current IP address: %w", err)
+		return nil, fmt.Errorf("cannot find VPN gateway IP address: %w", err)
 	}
 	for _, entry := range entries {
 		if entry.iface == defaultInterface &&
@@ -77,7 +77,7 @@ func (r *routing) CurrentPublicIP(defaultInterface string) (ip net.IP, err error
 			return entry.destination, nil
 		}
 	}
-	return nil, fmt.Errorf("cannot find current IP address from ip routes")
+	return nil, fmt.Errorf("cannot find VPN gateway IP address from ip routes")
 }
 
 func ipIsPrivate(ip net.IP) bool {

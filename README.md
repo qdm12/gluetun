@@ -143,7 +143,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
 | `OPENVPN_ROOT` | `no` | `yes` or `no` | Run OpenVPN as root |
-| `OPENVPN_TARGET_IP` | | Valid IP address | Specify a target VPN server IP address to use |
+| `OPENVPN_TARGET_IP` | | Valid IP address | Specify a target VPN server (or gateway) IP address to use |
 | `OPENVPN_CIPHER` | | i.e. `aes-256-gcm` | Specify a custom cipher to use. It will also set `ncp-disable` if using AES GCM for PIA |
 | `OPENVPN_AUTH` | | i.e. `sha256` | Specify a custom auth algorithm to use |
 

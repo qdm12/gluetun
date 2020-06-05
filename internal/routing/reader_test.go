@@ -238,17 +238,17 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 		err              error
 	}{
 		"no data": {
-			err: fmt.Errorf("cannot find current IP address from ip routes"),
+			err: fmt.Errorf("cannot find VPN gateway IP address from ip routes"),
 		},
 		"read error": {
 			readErr: fmt.Errorf("error"),
-			err:     fmt.Errorf("cannot find current IP address: error"),
+			err:     fmt.Errorf("cannot find VPN gateway IP address: error"),
 		},
 		"parse error": {
 			data: []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
 eth0   x
 `),
-			err: fmt.Errorf("cannot find current IP address: line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
+			err: fmt.Errorf("cannot find VPN gateway IP address: line 1 in /proc/net/route: line \"eth0   x\": not enough fields"),
 		},
 		"found eth0": {
 			defaultInterface: "eth0",
@@ -258,7 +258,7 @@ eth0   x
 		"not found tun0": {
 			defaultInterface: "tun0",
 			data:             []byte(exampleRouteData),
-			err:              fmt.Errorf("cannot find current IP address from ip routes"),
+			err:              fmt.Errorf("cannot find VPN gateway IP address from ip routes"),
 		},
 	}
 	for name, tc := range tests {
@@ -271,7 +271,7 @@ eth0   x
 			filemanager.EXPECT().ReadFile(string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Times(1)
 			r := &routing{fileManager: filemanager}
-			ip, err := r.CurrentPublicIP(tc.defaultInterface)
+			ip, err := r.VPNGatewayIP(tc.defaultInterface)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())

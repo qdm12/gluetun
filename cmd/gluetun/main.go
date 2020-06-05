@@ -25,6 +25,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
+	"github.com/qdm12/private-internet-access-docker/internal/publicip"
 	"github.com/qdm12/private-internet-access-docker/internal/routing"
 	"github.com/qdm12/private-internet-access-docker/internal/server"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
@@ -434,14 +435,20 @@ func onConnected(ctx context.Context, allSettings settings.Settings,
 		go unboundRunLoop(ctx, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger, httpServer)
 	}
 
-	ip, err := routingConf.CurrentPublicIP(defaultInterface)
+	vpnGatewayIP, err := routingConf.VPNGatewayIP(defaultInterface)
+	if err != nil {
+		logger.Warn(err)
+	} else {
+		logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
+	}
+	publicIP, err := publicip.NewIPGetter(network.NewClient(3 * time.Second)).Get()
 	if err != nil {
 		logger.Error(err)
 	} else {
-		logger.Info("Tunnel IP is %s, see more information at https://ipinfo.io/%s", ip, ip)
+		logger.Info("Public IP address is %s", publicIP)
 		err = fileManager.WriteLinesToFile(
 			string(allSettings.System.IPStatusFilepath),
-			[]string{ip.String()},
+			[]string{publicIP.String()},
 			files.Ownership(allSettings.System.UID, allSettings.System.GID),
 			files.Permissions(0400))
 		if err != nil {
