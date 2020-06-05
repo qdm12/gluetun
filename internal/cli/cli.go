@@ -22,7 +22,8 @@ func HealthCheck() error {
 	var vpnIPs []string
 	for _, line := range strings.Split(string(b), "\n") {
 		if strings.HasPrefix(line, "remote ") {
-			vpnIPs = append(vpnIPs, strings.TrimPrefix(line, "remote "))
+			fields := strings.Fields(line)
+			vpnIPs = append(vpnIPs, fields[1])
 		}
 	}
 
