@@ -365,4 +365,4 @@ Sponsor me on [Github](https://github.com/sponsors/qdm12), donate to [paypal.me/
 
 Feel also free to have a look at [the Kanban board](https://github.com/qdm12/private-internet-access-docker/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
 
-Many thanks to @Frepke and @Ralph521 for supporting me financially 🥇👍
+Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez and A. Cooper for supporting me financially 🥇👍
