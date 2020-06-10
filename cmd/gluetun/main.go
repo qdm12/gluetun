@@ -136,7 +136,11 @@ func _main(background context.Context, args []string) int {
 	err = firewallConf.AcceptAll(ctx)
 	fatalOnError(err)
 
-	connected, signalConnected := context.WithCancel(context.Background())
+	connectedCh := make(chan struct{})
+	signalConnected := func() {
+		connectedCh <- struct{}{}
+	}
+	defer close(connectedCh)
 	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
 
 	waiter := command.NewWaiter()
@@ -283,9 +287,17 @@ func _main(background context.Context, args []string) int {
 	})
 
 	go func() {
-		<-connected.Done() // blocks until openvpn is connected
-		onConnected(ctx, allSettings, logger, dnsConf, fileManager, waiter,
-			streamMerger, httpServer, routingConf, defaultInterface, piaConf)
+		firstRun := true
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-connectedCh: // blocks until openvpn is connected
+				onConnected(ctx, allSettings, logger, dnsConf, fileManager, waiter,
+					streamMerger, httpServer, routingConf, defaultInterface, piaConf, firstRun)
+				firstRun = false
+			}
+		}
 	}()
 
 	signalsCh := make(chan os.Signal, 1)
@@ -423,15 +435,14 @@ func onConnected(ctx context.Context, allSettings settings.Settings,
 	logger logging.Logger, dnsConf dns.Configurator, fileManager files.FileManager,
 	waiter command.Waiter, streamMerger command.StreamMerger, httpServer server.Server,
 	routingConf routing.Routing, defaultInterface string,
-	piaConf pia.Configurator,
+	piaConf pia.Configurator, firstRun bool,
 ) {
 	if allSettings.PIA.PortForwarding.Enabled {
 		time.AfterFunc(5*time.Second, func() {
 			setupPortForwarding(logger, piaConf, allSettings.PIA, allSettings.System.UID, allSettings.System.GID)
 		})
 	}
-
-	if allSettings.DNS.Enabled {
+	if allSettings.DNS.Enabled && firstRun {
 		go unboundRunLoop(ctx, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger, httpServer)
 	}
 
