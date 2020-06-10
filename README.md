@@ -84,15 +84,8 @@
         - Surfshark: **username** and **password** ([sign up](https://order.surfshark.com/))
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
-1. On some devices such as Synology or Qnap machines, it's required to setup your tunnel device `/dev/net/tun` on your host:
-
-    ```sh
-    insmod /lib/modules/tun.ko
-    # or
-    modprobe tun
-    ```
-
-    You can verify it's here with `ls /dev/net`
+1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
+    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#synology)
 
 1. Launch the container with:
 
