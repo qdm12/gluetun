@@ -10,51 +10,51 @@ import (
 )
 
 // GetUser obtains the user to use to connect to the VPN servers
-func (p *reader) GetUser() (s string, err error) {
+func (r *reader) GetUser() (s string, err error) {
 	defer func() {
-		unsetenvErr := p.unsetEnv("USER")
+		unsetenvErr := r.unsetEnv("USER")
 		if err == nil {
 			err = unsetenvErr
 		}
 	}()
-	return p.envParams.GetEnv("USER", libparams.CaseSensitiveValue(), libparams.Compulsory())
+	return r.envParams.GetEnv("USER", libparams.CaseSensitiveValue(), libparams.Compulsory())
 }
 
 // GetPassword obtains the password to use to connect to the VPN servers
-func (p *reader) GetPassword() (s string, err error) {
+func (r *reader) GetPassword() (s string, err error) {
 	defer func() {
-		unsetenvErr := p.unsetEnv("PASSWORD")
+		unsetenvErr := r.unsetEnv("PASSWORD")
 		if err == nil {
 			err = unsetenvErr
 		}
 	}()
-	return p.envParams.GetEnv("PASSWORD", libparams.CaseSensitiveValue(), libparams.Compulsory())
+	return r.envParams.GetEnv("PASSWORD", libparams.CaseSensitiveValue(), libparams.Compulsory())
 }
 
 // GetNetworkProtocol obtains the network protocol to use to connect to the
 // VPN servers from the environment variable PROTOCOL
-func (p *reader) GetNetworkProtocol() (protocol models.NetworkProtocol, err error) {
-	s, err := p.envParams.GetValueIfInside("PROTOCOL", []string{"tcp", "udp"}, libparams.Default("udp"))
+func (r *reader) GetNetworkProtocol() (protocol models.NetworkProtocol, err error) {
+	s, err := r.envParams.GetValueIfInside("PROTOCOL", []string{"tcp", "udp"}, libparams.Default("udp"))
 	return models.NetworkProtocol(s), err
 }
 
 // GetOpenVPNVerbosity obtains the verbosity level for verbosity between 0 and 6
 // from the environment variable OPENVPN_VERBOSITY
-func (p *reader) GetOpenVPNVerbosity() (verbosity int, err error) {
-	return p.envParams.GetEnvIntRange("OPENVPN_VERBOSITY", 0, 6, libparams.Default("1"))
+func (r *reader) GetOpenVPNVerbosity() (verbosity int, err error) {
+	return r.envParams.GetEnvIntRange("OPENVPN_VERBOSITY", 0, 6, libparams.Default("1"))
 }
 
 // GetOpenVPNRoot obtains if openvpn should be run as root
 // from the environment variable OPENVPN_ROOT
-func (p *reader) GetOpenVPNRoot() (root bool, err error) {
-	return p.envParams.GetYesNo("OPENVPN_ROOT", libparams.Default("no"))
+func (r *reader) GetOpenVPNRoot() (root bool, err error) {
+	return r.envParams.GetYesNo("OPENVPN_ROOT", libparams.Default("no"))
 }
 
 // GetTargetIP obtains the IP address to choose from the list of IP addresses
 // available for a particular region, from the environment variable
 // OPENVPN_TARGET_IP
-func (p *reader) GetTargetIP() (ip net.IP, err error) {
-	s, err := p.envParams.GetEnv("OPENVPN_TARGET_IP")
+func (r *reader) GetTargetIP() (ip net.IP, err error) {
+	s, err := r.envParams.GetEnv("OPENVPN_TARGET_IP")
 	if len(s) == 0 {
 		return nil, nil
 	} else if err != nil {
@@ -69,14 +69,14 @@ func (p *reader) GetTargetIP() (ip net.IP, err error) {
 
 // GetOpenVPNCipher obtains a custom cipher to use with OpenVPN
 // from the environment variable OPENVPN_CIPHER
-func (p *reader) GetOpenVPNCipher() (cipher string, err error) {
-	cipher, err = p.envParams.GetEnv("OPENVPN_CIPHER")
+func (r *reader) GetOpenVPNCipher() (cipher string, err error) {
+	cipher, err = r.envParams.GetEnv("OPENVPN_CIPHER")
 	return strings.ToLower(cipher), err
 }
 
 // GetOpenVPNAuth obtains a custom auth algorithm to use with OpenVPN
 // from the environment variable OPENVPN_AUTH
-func (p *reader) GetOpenVPNAuth() (auth string, err error) {
-	auth, err = p.envParams.GetEnv("OPENVPN_AUTH")
+func (r *reader) GetOpenVPNAuth() (auth string, err error) {
+	auth, err = r.envParams.GetEnv("OPENVPN_AUTH")
 	return strings.ToLower(auth), err
 }

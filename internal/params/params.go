@@ -107,8 +107,8 @@ func NewReader(logger logging.Logger) Reader {
 }
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
-func (p *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
-	s, err := p.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe", "surfshark"})
+func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
+	s, err := r.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe", "surfshark"})
 	if s == "pia" {
 		s = "private internet access"
 	}

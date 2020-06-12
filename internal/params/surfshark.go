@@ -9,7 +9,7 @@ import (
 
 // GetSurfsharkRegion obtains the region for the Surfshark server from the
 // environment variable REGION
-func (p *reader) GetSurfsharkRegion() (region models.SurfsharkRegion, err error) {
-	s, err := p.envParams.GetValueIfInside("REGION", constants.SurfsharkRegionChoices())
+func (r *reader) GetSurfsharkRegion() (region models.SurfsharkRegion, err error) {
+	s, err := r.envParams.GetValueIfInside("REGION", constants.SurfsharkRegionChoices())
 	return models.SurfsharkRegion(strings.ToLower(s)), err
 }
