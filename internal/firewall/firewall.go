@@ -22,11 +22,13 @@ type Configurator interface {
 	AllowInputTrafficOnPort(ctx context.Context, device models.VPNDevice, port uint16) error
 	AllowAnyIncomingOnPort(ctx context.Context, port uint16) error
 	RunUserPostRules(ctx context.Context, fileManager files.FileManager, filepath string) error
+	Disable()
 }
 
 type configurator struct {
 	commander command.Commander
 	logger    logging.Logger
+	disabled  bool
 }
 
 // NewConfigurator creates a new Configurator instance
@@ -35,4 +37,8 @@ func NewConfigurator(logger logging.Logger) Configurator {
 		commander: command.NewCommander(),
 		logger:    logger.WithPrefix("firewall configurator: "),
 	}
+}
+
+func (c *configurator) Disable() {
+	c.disabled = true
 }

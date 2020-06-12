@@ -74,6 +74,7 @@ ENV VPNSP=pia \
     UNBLOCK= \
     DNS_UPDATE_PERIOD=24h \
     # Firewall
+    FIREWALL=on \
     EXTRA_SUBNETS= \
     # Tinyproxy
     TINYPROXY=off \

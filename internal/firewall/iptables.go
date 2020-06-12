@@ -41,6 +41,9 @@ func (c *configurator) runIptablesInstruction(ctx context.Context, instruction s
 }
 
 func (c *configurator) Clear(ctx context.Context) error {
+	if c.disabled {
+		return nil
+	}
 	c.logger.Info("clearing all rules")
 	return c.runIptablesInstructions(ctx, []string{
 		"--flush",
@@ -51,6 +54,9 @@ func (c *configurator) Clear(ctx context.Context) error {
 }
 
 func (c *configurator) AcceptAll(ctx context.Context) error {
+	if c.disabled {
+		return nil
+	}
 	c.logger.Info("accepting all traffic")
 	return c.runIptablesInstructions(ctx, []string{
 		"-P INPUT ACCEPT",
@@ -60,6 +66,9 @@ func (c *configurator) AcceptAll(ctx context.Context) error {
 }
 
 func (c *configurator) BlockAll(ctx context.Context) error {
+	if c.disabled {
+		return nil
+	}
 	c.logger.Info("blocking all traffic")
 	return c.runIptablesInstructions(ctx, []string{
 		"-P INPUT DROP",
@@ -70,6 +79,9 @@ func (c *configurator) BlockAll(ctx context.Context) error {
 }
 
 func (c *configurator) CreateGeneralRules(ctx context.Context) error {
+	if c.disabled {
+		return nil
+	}
 	c.logger.Info("creating general rules")
 	return c.runIptablesInstructions(ctx, []string{
 		"-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
@@ -80,6 +92,9 @@ func (c *configurator) CreateGeneralRules(ctx context.Context) error {
 }
 
 func (c *configurator) CreateVPNRules(ctx context.Context, dev models.VPNDevice, defaultInterface string, connections []models.OpenVPNConnection) error {
+	if c.disabled {
+		return nil
+	}
 	for _, connection := range connections {
 		c.logger.Info("allowing output traffic to VPN server %s through %s on port %s %d",
 			connection.IP, defaultInterface, connection.Protocol, connection.Port)
@@ -96,6 +111,9 @@ func (c *configurator) CreateVPNRules(ctx context.Context, dev models.VPNDevice,
 }
 
 func (c *configurator) CreateLocalSubnetsRules(ctx context.Context, subnet net.IPNet, extraSubnets []net.IPNet, defaultInterface string) error {
+	if c.disabled {
+		return nil
+	}
 	subnetStr := subnet.String()
 	c.logger.Info("accepting input and output traffic for %s", subnetStr)
 	if err := c.runIptablesInstructions(ctx, []string{
@@ -123,6 +141,9 @@ func (c *configurator) CreateLocalSubnetsRules(ctx context.Context, subnet net.I
 
 // Used for port forwarding
 func (c *configurator) AllowInputTrafficOnPort(ctx context.Context, device models.VPNDevice, port uint16) error {
+	if c.disabled {
+		return nil
+	}
 	c.logger.Info("accepting input traffic through %s on port %d", device, port)
 	return c.runIptablesInstructions(ctx, []string{
 		fmt.Sprintf("-A INPUT -i %s -p tcp --dport %d -j ACCEPT", device, port),
@@ -131,6 +152,9 @@ func (c *configurator) AllowInputTrafficOnPort(ctx context.Context, device model
 }
 
 func (c *configurator) AllowAnyIncomingOnPort(ctx context.Context, port uint16) error {
+	if c.disabled {
+		return nil
+	}
 	c.logger.Info("accepting any input traffic on port %d", port)
 	return c.runIptablesInstructions(ctx, []string{
 		fmt.Sprintf("-A INPUT -p tcp --dport %d -j ACCEPT", port),

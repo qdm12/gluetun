@@ -94,6 +94,10 @@ func _main(background context.Context, args []string) int {
 	fatalOnError(err)
 	logger.Info(allSettings.String())
 
+	if !allSettings.Firewall.Enabled {
+		firewallConf.Disable()
+	}
+
 	err = alpineConf.CreateUser("nonrootuser", allSettings.System.UID)
 	fatalOnError(err)
 	err = fileManager.SetOwnership("/etc/unbound", allSettings.System.UID, allSettings.System.GID)

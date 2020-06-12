@@ -37,6 +37,7 @@ type Reader interface {
 	GetIPStatusFilepath() (filepath models.Filepath, err error)
 
 	// Firewall getters
+	GetFirewall() (enabled bool, err error)
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
 
 	// VPN getters
