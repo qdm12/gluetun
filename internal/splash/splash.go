@@ -24,10 +24,14 @@ func Splash(version, vcsRef, buildDate string) string {
 func title() []string {
 	return []string{
 		"=========================================",
-		"============= PIA container =============",
-		"========== An exquisite mix of ==========",
-		"==== OpenVPN, Unbound, DNS over TLS, ====",
-		"===== Shadowsocks, Tinyproxy and Go =====",
+		"================ Gluetun ================",
+		"=========================================",
+		"==== A mix of OpenVPN, DNS over TLS, ====",
+		"======= Shadowsocks and Tinyproxy =======",
+		"========= all glued up with Go ==========",
+		"=========================================",
+		"=========== For tunneling to ============",
+		"======== your favorite VPN server =======",
 		"=========================================",
 		"=== Made with " + emoji.Sprint(":heart:") + " by github.com/qdm12 ====",
 		"=========================================",

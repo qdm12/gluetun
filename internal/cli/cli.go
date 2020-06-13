@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"strings"
-	"time"
+
+	"net"
 
 	"github.com/qdm12/golibs/files"
-	"github.com/qdm12/golibs/network/connectivity"
 )
 
 func ClientKey(args []string) error {
@@ -30,16 +30,11 @@ func ClientKey(args []string) error {
 }
 
 func HealthCheck() error {
-	// DNS, HTTP and HTTPs check on github.com
-	connectivity := connectivity.NewConnectivity(3 * time.Second)
-	errs := connectivity.Checks("github.com")
-	if len(errs) > 0 {
-		var errsStr []string
-		for _, err := range errs {
-			errsStr = append(errsStr, err.Error())
-		}
-		return fmt.Errorf("Multiple errors: %s", strings.Join(errsStr, "; "))
+	ips, err := net.LookupIP("github.com")
+	if err != nil {
+		return fmt.Errorf("cannot resolve github.com (%s)", err)
+	} else if len(ips) == 0 {
+		return fmt.Errorf("resolved no IP addresses for github.com")
 	}
-	// TODO check IP address is in the right region
 	return nil
 }

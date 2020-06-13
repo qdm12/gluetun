@@ -26,6 +26,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/pia"
+	"github.com/qdm12/private-internet-access-docker/internal/publicip"
 	"github.com/qdm12/private-internet-access-docker/internal/routing"
 	"github.com/qdm12/private-internet-access-docker/internal/server"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
@@ -97,6 +98,10 @@ func _main(background context.Context, args []string) int {
 	fatalOnError(err)
 	logger.Info(allSettings.String())
 
+	if !allSettings.Firewall.Enabled {
+		firewallConf.Disable()
+	}
+
 	err = alpineConf.CreateUser("nonrootuser", allSettings.System.UID)
 	fatalOnError(err)
 	err = fileManager.SetOwnership("/etc/unbound", allSettings.System.UID, allSettings.System.GID)
@@ -142,7 +147,11 @@ func _main(background context.Context, args []string) int {
 	err = firewallConf.AcceptAll(ctx)
 	fatalOnError(err)
 
-	connected, signalConnected := context.WithCancel(context.Background())
+	connectedCh := make(chan struct{})
+	signalConnected := func() {
+		connectedCh <- struct{}{}
+	}
+	defer close(connectedCh)
 	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
 
 	waiter := command.NewWaiter()
@@ -276,10 +285,15 @@ func _main(background context.Context, args []string) int {
 	}
 
 	if allSettings.ShadowSocks.Enabled {
+		nameserver := ""
+		if allSettings.DNS.Enabled {
+			nameserver = "127.0.0.1"
+		}
 		err = shadowsocksConf.MakeConf(
 			allSettings.ShadowSocks.Port,
 			allSettings.ShadowSocks.Password,
 			allSettings.ShadowSocks.Method,
+			nameserver,
 			allSettings.System.UID,
 			allSettings.System.GID)
 		fatalOnError(err)
@@ -307,9 +321,17 @@ func _main(background context.Context, args []string) int {
 	})
 
 	go func() {
-		<-connected.Done() // blocks until openvpn is connected
-		onConnected(ctx, allSettings, logger, dnsConf, fileManager, waiter,
-			streamMerger, httpServer, routingConf, defaultInterface, piaConf)
+		firstRun := true
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-connectedCh: // blocks until openvpn is connected
+				onConnected(ctx, allSettings, logger, dnsConf, fileManager, waiter,
+					streamMerger, httpServer, routingConf, defaultInterface, piaConf, firstRun)
+				firstRun = false
+			}
+		}
 	}()
 
 	signalsCh := make(chan os.Signal, 1)
@@ -447,26 +469,31 @@ func onConnected(ctx context.Context, allSettings settings.Settings,
 	logger logging.Logger, dnsConf dns.Configurator, fileManager files.FileManager,
 	waiter command.Waiter, streamMerger command.StreamMerger, httpServer server.Server,
 	routingConf routing.Routing, defaultInterface string,
-	piaConf pia.Configurator,
+	piaConf pia.Configurator, firstRun bool,
 ) {
 	if allSettings.PIA.PortForwarding.Enabled {
 		time.AfterFunc(5*time.Second, func() {
 			setupPortForwarding(logger, piaConf, allSettings.PIA, allSettings.System.UID, allSettings.System.GID)
 		})
 	}
-
-	if allSettings.DNS.Enabled {
+	if allSettings.DNS.Enabled && firstRun {
 		go unboundRunLoop(ctx, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger, httpServer)
 	}
 
-	ip, err := routingConf.CurrentPublicIP(defaultInterface)
+	vpnGatewayIP, err := routingConf.VPNGatewayIP(defaultInterface)
+	if err != nil {
+		logger.Warn(err)
+	} else {
+		logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
+	}
+	publicIP, err := publicip.NewIPGetter(network.NewClient(3 * time.Second)).Get()
 	if err != nil {
 		logger.Error(err)
 	} else {
-		logger.Info("Tunnel IP is %s, see more information at https://ipinfo.io/%s", ip, ip)
+		logger.Info("Public IP address is %s", publicIP)
 		err = fileManager.WriteLinesToFile(
 			string(allSettings.System.IPStatusFilepath),
-			[]string{ip.String()},
+			[]string{publicIP.String()},
 			files.Ownership(allSettings.System.UID, allSettings.System.GID),
 			files.Permissions(0400))
 		if err != nil {

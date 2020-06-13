@@ -1,8 +1,8 @@
 version: "3.7"
 services:
-  pia:
+  gluetun:
     image: qmcgaw/private-internet-access
-    container_name: pia
+    container_name: gluetun
     cap_add:
       - NET_ADMIN
     network_mode: bridge

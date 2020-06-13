@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"net"
 	"strings"
+
+	libparams "github.com/qdm12/golibs/params"
 )
+
+// GetFirewall obtains if the firewall should be enabled from the environment variable FIREWALL
+func (r *reader) GetFirewall() (enabled bool, err error) {
+	return r.envParams.GetOnOff("FIREWALL", libparams.Default("on"))
+}
 
 // GetExtraSubnets obtains the CIDR subnets from the comma separated list of the
 // environment variable EXTRA_SUBNETS
-func (p *reader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
-	s, err := p.envParams.GetEnv("EXTRA_SUBNETS")
+func (r *reader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
+	s, err := r.envParams.GetEnv("EXTRA_SUBNETS")
 	if err != nil {
 		return nil, err
 	} else if s == "" {

@@ -21,7 +21,7 @@
 <details><summary>Click to show base components</summary><p>
 
 - [Alpine 3.11](https://alpinelinux.org) for a tiny image (37MB of packages, 6.7MB of Go binary and 5.6MB for Alpine)
-- [OpenVPN 2.4.8](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to PIA servers
+- [OpenVPN 2.4.8](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to your VPN provider servers
 - [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 - [Unbound 1.9.6](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
 - [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS`, `BLOCK_SURVEILLANCE` and `BLOCK_ADS` environment variables)
@@ -37,7 +37,7 @@
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
-- Built in firewall kill switch to allow traffic only with needed PIA servers and LAN devices
+- Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
 - Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
 - Built in HTTP proxy (Tinyproxy, tunnels TCP)
 - [Connect other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
@@ -89,20 +89,13 @@
         - Cyberghost: **username**, **password** and **device client key file** ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
-1. On some devices such as Synology or Qnap machines, it's required to setup your tunnel device `/dev/net/tun` on your host:
-
-    ```sh
-    insmod /lib/modules/tun.ko
-    # or
-    modprobe tun
-    ```
-
-    You can verify it's here with `ls /dev/net`
+1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
+    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#synology)
 
 1. Launch the container with:
 
     ```bash
-    docker run -d --name=pia --cap-add=NET_ADMIN \
+    docker run -d --name gluetun --cap-add=NET_ADMIN \
     -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     qmcgaw/private-internet-access
     ```
@@ -127,10 +120,10 @@
 
 ## Testing
 
-Check the PIA IP address matches your expectations
+Check the VPN IP address matches your expectations
 
 ```sh
-docker run --rm --network=container:pia alpine:3.11 wget -qO- https://ipinfo.io
+docker run --rm --network=container:gluetun alpine:3.11 wget -qO- https://ipinfo.io
 ```
 
 Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Testing)
@@ -148,7 +141,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
 | `OPENVPN_ROOT` | `no` | `yes` or `no` | Run OpenVPN as root |
-| `OPENVPN_TARGET_IP` | | Valid IP address | Specify a target VPN server IP address to use |
+| `OPENVPN_TARGET_IP` | | Valid IP address | Specify a target VPN server (or gateway) IP address to use |
 | `OPENVPN_CIPHER` | | i.e. `aes-256-gcm` | Specify a custom cipher to use. It will also set `ncp-disable` if using AES GCM for PIA |
 | `OPENVPN_AUTH` | | i.e. `sha256` | Specify a custom auth algorithm to use |
 
@@ -234,6 +227,7 @@ That one is important if you want to connect to the container from your LAN for 
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
+| `FIREWALL` | `on` | `on` or `off` | Turn on or off the container built-in firewall. You should use it for **debugging purposes** only. |
 | `EXTRA_SUBNETS` | | i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28` | Comma separated subnets allowed in the container firewall |
 
 ### Shadowsocks
@@ -268,19 +262,19 @@ That one is important if you want to connect to the container from your LAN for 
 
 There are various ways to achieve this, depending on your use case.
 
-- <details><summary>Connect containers in the same docker-compose.yml as PIA</summary><p>
+- <details><summary>Connect containers in the same docker-compose.yml as Gluetun</summary><p>
 
-    Add `network_mode: "service:pia"` to your *docker-compose.yml* (no need for `depends_on`)
+    Add `network_mode: "service:gluetun"` to your *docker-compose.yml* (no need for `depends_on`)
 
     </p></details>
-- <details><summary>Connect other containers to PIA</summary><p>
+- <details><summary>Connect other containers to Gluetun</summary><p>
 
-    Add `--network=container:pia` when launching the container, provided PIA is already running
+    Add `--network=container:gluetun` when launching the container, provided Gluetun is already running
 
     </p></details>
 - <details><summary>Connect containers from another docker-compose.yml</summary><p>
 
-    Add `network_mode: "container:pia"` to your *docker-compose.yml*, provided PIA is already running
+    Add `network_mode: "container:gluetun"` to your *docker-compose.yml*, provided Gluetun is already running
 
     </p></details>
 - <details><summary>Connect LAN devices through the built-in HTTP proxy *Tinyproxy* (i.e. with Chrome, Kodi, etc.)</summary><p>
@@ -288,7 +282,7 @@ There are various ways to achieve this, depending on your use case.
     You might want to use Shadowsocks instead which tunnels UDP as well as TCP, whereas Tinyproxy only tunnels TCP.
 
     1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
-    1. Ensure the PIA container is launched with:
+    1. Ensure the Gluetun container is launched with:
         - port `8888` published `-p 8888:8888/tcp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `TINYPROXY_USER` and `TINYPROXY_PASSWORD`.
@@ -298,12 +292,12 @@ There are various ways to achieve this, depending on your use case.
 - <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
 
     1. Setup a SOCKS5 proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
-        - **note** some clients do not tunnel UDP so your DNS queries will be done locally and not through PIA and its built in DNS over TLS
+        - **note** some clients do not tunnel UDP so your DNS queries will be done locally and not through Gluetun and its built in DNS over TLS
         - Clients that support such UDP tunneling are, as far as I know:
             - iOS: Potatso Lite
             - OSX: ShadowsocksX
             - Android: Shadowsocks by Max Lv
-    1. Ensure the PIA container is launched with:
+    1. Ensure the Gluetun container is launched with:
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your SOCKS5 proxy client
@@ -314,23 +308,23 @@ There are various ways to achieve this, depending on your use case.
     1. If you set `SHADOWSOCKS_LOG` to `on`, (a lot) more information will be logged in the Docker logs
 
     </p></details>
-- <details><summary>Access ports of containers connected to PIA</summary><p>
+- <details><summary>Access ports of containers connected to Gluetun</summary><p>
 
-    In example, to access port `8000` of container `xyz`  and `9000` of container `abc` connected to PIA,
-    publish ports `8000` and `9000` for the PIA container and access them as you would with any other container
+    In example, to access port `8000` of container `xyz`  and `9000` of container `abc` connected to Gluetun,
+    publish ports `8000` and `9000` for the Gluetun container and access them as you would with any other container
 
     </p></details>
-- <details><summary>Access ports of containers connected to PIA, all in the same docker-compose.yml</summary><p>
+- <details><summary>Access ports of containers connected to Gluetun, all in the same docker-compose.yml</summary><p>
 
-    In example, to access port `8000` of container `xyz`  and `9000` of container `abc` connected to PIA, publish port `8000` and `9000` for the PIA container.
+    In example, to access port `8000` of container `xyz`  and `9000` of container `abc` connected to Gluetun, publish port `8000` and `9000` for the Gluetun container.
     The docker-compose.yml file would look like:
 
     ```yml
     version: '3.7'
     services:
-      pia:
+      gluetun:
         image: qmcgaw/private-internet-access
-        container_name: pia
+        container_name: gluetun
         cap_add:
           - NET_ADMIN
         environment:
@@ -342,11 +336,11 @@ There are various ways to achieve this, depending on your use case.
       abc:
         image: abc
         container_name: abc
-        network_mode: "service:pia"
+        network_mode: "service:gluetun"
       xyz:
         image: xyz
         container_name: xyz
-        network_mode: "service:pia"
+        network_mode: "service:gluetun"
     ```
 
     </p></details>
@@ -355,7 +349,7 @@ There are various ways to achieve this, depending on your use case.
 
 Note that [not all regions support port forwarding](https://www.privateinternetaccess.com/helpdesk/kb/articles/how-do-i-enable-port-forwarding-on-my-vpn).
 
-When `PORT_FORWARDING=on`, a port will be forwarded on the PIA server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
+When `PORT_FORWARDING=on`, a port will be forwarded on the VPN server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
 
 It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
 
@@ -388,4 +382,4 @@ Sponsor me on [Github](https://github.com/sponsors/qdm12), donate to [paypal.me/
 
 Feel also free to have a look at [the Kanban board](https://github.com/qdm12/private-internet-access-docker/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
 
-Many thanks to @Frepke and @Ralph521 for supporting me financially 🥇👍
+Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez and A. Cooper for supporting me financially 🥇👍

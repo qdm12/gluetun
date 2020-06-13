@@ -31,9 +31,9 @@ LABEL \
     org.opencontainers.image.url="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.documentation="https://github.com/qdm12/private-internet-access-docker" \
     org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
-    org.opencontainers.image.title="PIA client" \
-    org.opencontainers.image.description="VPN client to tunnel to private internet access servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
-ENV VPNSP="private internet access" \
+    org.opencontainers.image.title="VPN client for PIA, Mullvad, Windscribe, Surfshark and Cyberghost" \
+    org.opencontainers.image.description="VPN client to tunnel to PIA, Mullvad, Windscribe, Surfshark and Cyberghost servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
+ENV VPNSP=pia \
     PROTOCOL=udp \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_ROOT=no \
@@ -76,6 +76,7 @@ ENV VPNSP="private internet access" \
     UNBLOCK= \
     DNS_UPDATE_PERIOD=24h \
     # Firewall
+    FIREWALL=on \
     EXTRA_SUBNETS= \
     # Tinyproxy
     TINYPROXY=off \
@@ -91,7 +92,7 @@ ENV VPNSP="private internet access" \
     SHADOWSOCKS_METHOD=chacha20-ietf-poly1305
 ENTRYPOINT /entrypoint
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
-HEALTHCHECK --interval=3m --timeout=3s --start-period=20s --retries=1 CMD /entrypoint healthcheck
+HEALTHCHECK --interval=10m --timeout=10s --start-period=30s --retries=2 CMD /entrypoint healthcheck
 RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound tinyproxy tzdata && \
     echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk add -q --progress --no-cache --update shadowsocks-libev && \

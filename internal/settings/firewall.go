@@ -10,12 +10,16 @@ import (
 // Firewall contains settings to customize the firewall operation
 type Firewall struct {
 	AllowedSubnets []net.IPNet
+	Enabled        bool
 }
 
 func (f *Firewall) String() string {
 	allowedSubnets := make([]string, len(f.AllowedSubnets))
 	for i := range f.AllowedSubnets {
 		allowedSubnets[i] = f.AllowedSubnets[i].String()
+	}
+	if !f.Enabled {
+		return "Firewall settings: disabled"
 	}
 	settingsList := []string{
 		"Firewall settings:",
@@ -27,6 +31,10 @@ func (f *Firewall) String() string {
 // GetFirewallSettings obtains firewall settings from environment variables using the params package.
 func GetFirewallSettings(paramsReader params.Reader) (settings Firewall, err error) {
 	settings.AllowedSubnets, err = paramsReader.GetExtraSubnets()
+	if err != nil {
+		return settings, err
+	}
+	settings.Enabled, err = paramsReader.GetFirewall()
 	if err != nil {
 		return settings, err
 	}

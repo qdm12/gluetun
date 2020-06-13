@@ -85,7 +85,6 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, encrypt
 		"dev tun",
 		"nobind",
 		"persist-key",
-		"persist-tun",
 		"remote-cert-tls server",
 
 		// PIA specific

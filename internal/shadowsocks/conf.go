@@ -8,9 +8,9 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-func (c *configurator) MakeConf(port uint16, password, method string, uid, gid int) (err error) {
+func (c *configurator) MakeConf(port uint16, password, method, nameserver string, uid, gid int) (err error) {
 	c.logger.Info("generating configuration file")
-	data := generateConf(port, password, method)
+	data := generateConf(port, password, method, nameserver)
 	return c.fileManager.WriteToFile(
 		string(constants.ShadowsocksConf),
 		data,
@@ -18,7 +18,7 @@ func (c *configurator) MakeConf(port uint16, password, method string, uid, gid i
 		files.Permissions(0400))
 }
 
-func generateConf(port uint16, password, method string) (data []byte) {
+func generateConf(port uint16, password, method, nameserver string) (data []byte) {
 	conf := struct {
 		Server       string            `json:"server"`
 		User         string            `json:"user"`
@@ -29,7 +29,7 @@ func generateConf(port uint16, password, method string) (data []byte) {
 		PortPassword map[string]string `json:"port_password"`
 		Workers      uint              `json:"workers"`
 		Interface    string            `json:"interface"`
-		Nameserver   string            `json:"nameserver"`
+		Nameserver   *string           `json:"nameserver,omitempty"`
 	}{
 		Server:   "0.0.0.0",
 		User:     "nonrootuser",
@@ -40,9 +40,11 @@ func generateConf(port uint16, password, method string) (data []byte) {
 		PortPassword: map[string]string{
 			fmt.Sprintf("%d", port): password,
 		},
-		Workers:    2,
-		Interface:  "tun",
-		Nameserver: "127.0.0.1",
+		Workers:   2,
+		Interface: "tun",
+	}
+	if len(nameserver) > 0 {
+		conf.Nameserver = &nameserver
 	}
 	data, _ = json.Marshal(conf)
 	return data
