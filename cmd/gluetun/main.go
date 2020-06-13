@@ -260,10 +260,15 @@ func _main(background context.Context, args []string) int {
 	}
 
 	if allSettings.ShadowSocks.Enabled {
+		nameserver := ""
+		if allSettings.DNS.Enabled {
+			nameserver = "127.0.0.1"
+		}
 		err = shadowsocksConf.MakeConf(
 			allSettings.ShadowSocks.Port,
 			allSettings.ShadowSocks.Password,
 			allSettings.ShadowSocks.Method,
+			nameserver,
 			allSettings.System.UID,
 			allSettings.System.GID)
 		fatalOnError(err)

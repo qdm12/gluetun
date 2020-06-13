@@ -16,24 +16,26 @@ import (
 func Test_generateConf(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
-		port     uint16
-		password string
-		data     []byte
+		port       uint16
+		password   string
+		nameserver string
+		data       []byte
 	}{
 		"no data": {
-			data: []byte(`{"server":"0.0.0.0","user":"nonrootuser","method":"chacha20-ietf-poly1305","timeout":30,"fast_open":false,"mode":"tcp_and_udp","port_password":{"0":""},"workers":2,"interface":"tun","nameserver":"127.0.0.1"}`),
+			data: []byte(`{"server":"0.0.0.0","user":"nonrootuser","method":"chacha20-ietf-poly1305","timeout":30,"fast_open":false,"mode":"tcp_and_udp","port_password":{"0":""},"workers":2,"interface":"tun"}`),
 		},
 		"data": {
-			port:     2000,
-			password: "abcde",
-			data:     []byte(`{"server":"0.0.0.0","user":"nonrootuser","method":"chacha20-ietf-poly1305","timeout":30,"fast_open":false,"mode":"tcp_and_udp","port_password":{"2000":"abcde"},"workers":2,"interface":"tun","nameserver":"127.0.0.1"}`),
+			port:       2000,
+			password:   "abcde",
+			nameserver: "127.0.0.1",
+			data:       []byte(`{"server":"0.0.0.0","user":"nonrootuser","method":"chacha20-ietf-poly1305","timeout":30,"fast_open":false,"mode":"tcp_and_udp","port_password":{"2000":"abcde"},"workers":2,"interface":"tun","nameserver":"127.0.0.1"}`),
 		},
 	}
 	for name, tc := range tests {
 		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			data := generateConf(tc.port, tc.password, "chacha20-ietf-poly1305")
+			data := generateConf(tc.port, tc.password, "chacha20-ietf-poly1305", tc.nameserver)
 			assert.Equal(t, tc.data, data)
 		})
 	}
@@ -67,7 +69,7 @@ func Test_MakeConf(t *testing.T) {
 				gomock.AssignableToTypeOf(files.Ownership(0, 0)),
 			).Return(tc.writeErr).Times(1)
 			c := &configurator{logger: logger, fileManager: fileManager}
-			err := c.MakeConf(2000, "abcde", "chacha20-ietf-poly1305", 1000, 1001)
+			err := c.MakeConf(2000, "abcde", "chacha20-ietf-poly1305", "127.0.0.1", 1000, 1001)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())
