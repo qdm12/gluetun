@@ -12,14 +12,14 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) GetPortForward() (port uint16, err error) {
-	b, err := c.random.GenerateRandomBytes(32)
+func (p *pia) GetPortForward() (port uint16, err error) {
+	b, err := p.random.GenerateRandomBytes(32)
 	if err != nil {
 		return 0, err
 	}
 	clientID := hex.EncodeToString(b)
 	url := fmt.Sprintf("%s/?client_id=%s", constants.PIAPortForwardURL, clientID)
-	content, status, err := c.client.GetContent(url)
+	content, status, err := p.client.GetContent(url)
 	switch {
 	case err != nil:
 		return 0, err
@@ -37,14 +37,14 @@ func (c *configurator) GetPortForward() (port uint16, err error) {
 	return body.Port, nil
 }
 
-func (c *configurator) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	return c.fileManager.WriteLinesToFile(
+func (p *pia) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
+	return p.fileManager.WriteLinesToFile(
 		string(filepath),
 		[]string{fmt.Sprintf("%d", port)},
 		files.Ownership(uid, gid),
 		files.Permissions(0400))
 }
 
-func (c *configurator) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
-	return c.firewall.AllowInputTrafficOnPort(ctx, device, port)
+func (p *pia) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
+	return p.firewall.AllowInputTrafficOnPort(ctx, device, port)
 }

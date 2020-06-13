@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"golang.org/x/sys/unix"
 )
 
@@ -26,15 +27,20 @@ type configurator struct {
 	openFile    func(name string, flag int, perm os.FileMode) (*os.File, error)
 	mkDev       func(major uint32, minor uint32) uint64
 	mkNod       func(path string, mode uint32, dev int) error
+	provider    Provider
 }
 
-func NewConfigurator(logger logging.Logger, fileManager files.FileManager) Configurator {
-	return &configurator{
+func NewConfigurator(logger logging.Logger, fileManager files.FileManager, provider string) Configurator {
+	c := &configurator{
 		fileManager: fileManager,
 		logger:      logger.WithPrefix("openvpn configurator: "),
 		commander:   command.NewCommander(),
 		openFile:    os.OpenFile,
 		mkDev:       unix.Mkdev,
 		mkNod:       unix.Mknod,
+	}
+	switch provider {
+	case constants.PrivateInternetAccess:
+		c.provider = newPIA()
 	}
 }
