@@ -1,6 +1,6 @@
 # Gluetun VPN client
 
-*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad, Windscribe and Surfshark VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
+*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad, Windscribe, Surfshark and Cyberghost VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 **ANNOUNCEMENT**: *New wiki available [here](https://github.com/qdm12/private-internet-access-docker/wiki)*
 
@@ -33,7 +33,7 @@
 ## Features
 
 - Based on Alpine 3.11 for a small Docker image below 50MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe** and **Surfshark** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark** and **Cyberghost** servers
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
@@ -64,6 +64,10 @@
 
 - Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
 
+### Cyberghost
+
+- Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost)
+
 ### Extra niche features
 
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
@@ -82,6 +86,7 @@
             [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
         - Surfshark: **username** and **password** ([sign up](https://order.surfshark.com/))
+        - Cyberghost: **username**, **password** and **device client key file** ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
@@ -177,6 +182,24 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | `Austria` | One of the [Surfshark regions (subdomains)](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
+
+- Cyberghost
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `CLIENT_KEY` | | | Your device client key content on a single line, **see below** |
+    | `REGION` | `Austria` | One of the [Cyberghost countries](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#regions) | VPN server country |
+    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#server-groups) | Server group |
+
+    To make `CLIENT_KEY`, run the following using your client.key file:
+
+    ```sh
+    docker run -it --rm -v /yourpath/client.key:/client.key:ro qmcgaw/private-internet-access clientkey
+    ```
+
+    And use the line produced as the environment variable `CLIENT_KEY`
 
 ### DNS over TLS
 

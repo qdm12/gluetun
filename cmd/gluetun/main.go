@@ -18,6 +18,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/alpine"
 	"github.com/qdm12/private-internet-access-docker/internal/cli"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/cyberghost"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
@@ -47,6 +48,8 @@ func _main(background context.Context, args []string) int {
 		switch args[1] {
 		case "healthcheck":
 			err = cli.HealthCheck()
+		case "clientkey":
+			err = cli.ClientKey(args[2:])
 		default:
 			err = fmt.Errorf("command %q is unknown", args[1])
 		}
@@ -78,6 +81,7 @@ func _main(background context.Context, args []string) int {
 	mullvadConf := mullvad.NewConfigurator(fileManager, logger)
 	windscribeConf := windscribe.NewConfigurator(fileManager)
 	surfsharkConf := surfshark.NewConfigurator(fileManager)
+	cyberghostConf := cyberghost.NewConfigurator(fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()
@@ -125,6 +129,9 @@ func _main(background context.Context, args []string) int {
 	case constants.Surfshark:
 		openVPNUser = allSettings.Surfshark.User
 		openVPNPassword = allSettings.Surfshark.Password
+	case constants.Cyberghost:
+		openVPNUser = allSettings.Cyberghost.User
+		openVPNPassword = allSettings.Cyberghost.Password
 	}
 	err = ovpnConf.WriteAuthFile(openVPNUser, openVPNPassword, allSettings.System.UID, allSettings.System.GID)
 	fatalOnError(err)
@@ -214,6 +221,24 @@ func _main(background context.Context, args []string) int {
 		}
 		err = surfsharkConf.BuildConf(
 			connections,
+			allSettings.OpenVPN.Verbosity,
+			allSettings.System.UID,
+			allSettings.System.GID,
+			allSettings.OpenVPN.Root,
+			allSettings.OpenVPN.Cipher,
+			allSettings.OpenVPN.Auth)
+	case constants.Cyberghost:
+		connections, err = cyberghostConf.GetOpenVPNConnections(
+			allSettings.Cyberghost.Group,
+			allSettings.Cyberghost.Region,
+			allSettings.OpenVPN.NetworkProtocol,
+			allSettings.OpenVPN.TargetIP)
+		if err != nil {
+			break
+		}
+		err = cyberghostConf.BuildConf(
+			connections,
+			allSettings.Cyberghost.ClientKey,
 			allSettings.OpenVPN.Verbosity,
 			allSettings.System.UID,
 			allSettings.System.GID,
