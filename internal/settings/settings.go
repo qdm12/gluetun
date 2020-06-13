@@ -13,11 +13,7 @@ import (
 type Settings struct {
 	VPNSP       models.VPNProvider
 	OpenVPN     OpenVPN
-	PIA         PIA
-	Mullvad     Mullvad
-	Windscribe  Windscribe
-	Surfshark   Surfshark
-	Cyberghost  Cyberghost
+	Provider    models.ProviderSettings
 	System      System
 	DNS         DNS
 	Firewall    Firewall
@@ -26,23 +22,10 @@ type Settings struct {
 }
 
 func (s *Settings) String() string {
-	var vpnServiceProviderSettings string
-	switch s.VPNSP {
-	case constants.PrivateInternetAccess:
-		vpnServiceProviderSettings = s.PIA.String()
-	case constants.Mullvad:
-		vpnServiceProviderSettings = s.Mullvad.String()
-	case constants.Windscribe:
-		vpnServiceProviderSettings = s.Windscribe.String()
-	case constants.Surfshark:
-		vpnServiceProviderSettings = s.Surfshark.String()
-	case constants.Cyberghost:
-		vpnServiceProviderSettings = s.Cyberghost.String()
-	}
 	return strings.Join([]string{
 		"Settings summary below:",
 		s.OpenVPN.String(),
-		vpnServiceProviderSettings,
+		s.Provider.String(),
 		s.System.String(),
 		s.DNS.String(),
 		s.Firewall.String(),
@@ -59,26 +42,29 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.OpenVPN, err = GetOpenVPNSettings(paramsReader)
-	if err != nil {
-		return settings, err
-	}
 	switch settings.VPNSP {
 	case constants.PrivateInternetAccess:
-		settings.PIA, err = GetPIASettings(paramsReader)
+		settings.Provider, err = GetPIASettings(paramsReader)
 	case constants.Mullvad:
-		settings.Mullvad, err = GetMullvadSettings(paramsReader)
+		settings.Provider, err = GetMullvadSettings(paramsReader)
 	case constants.Windscribe:
-		settings.Windscribe, err = GetWindscribeSettings(paramsReader, settings.OpenVPN.NetworkProtocol)
+		settings.Provider, err = GetWindscribeSettings(paramsReader)
 	case constants.Surfshark:
-		settings.Surfshark, err = GetSurfsharkSettings(paramsReader)
+		settings.Provider, err = GetSurfsharkSettings(paramsReader)
 	case constants.Cyberghost:
-		settings.Cyberghost, err = GetCyberghostSettings(paramsReader)
+		settings.Provider, err = GetCyberghostSettings(paramsReader)
 	default:
 		err = fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
 	}
 	if err != nil {
 		return settings, err
+	}
+	settings.OpenVPN, err = GetOpenVPNSettings(paramsReader)
+	if err != nil {
+		return settings, err
+	}
+	if settings.VPNSP == constants.Mullvad {
+		settings.OpenVPN.Password = "m"
 	}
 	settings.DNS, err = GetDNSSettings(paramsReader)
 	if err != nil {

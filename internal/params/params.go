@@ -53,25 +53,25 @@ type Reader interface {
 	// PIA getters
 	GetPortForwarding() (activated bool, err error)
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
-	GetPIAEncryption() (models.PIAEncryption, error)
-	GetPIARegion() (models.PIARegion, error)
+	GetPIAEncryptionPreset() (preset string, err error)
+	GetPIARegion() (region string, err error)
 
 	// Mullvad getters
-	GetMullvadCountry() (country models.MullvadCountry, err error)
-	GetMullvadCity() (country models.MullvadCity, err error)
-	GetMullvadISP() (country models.MullvadProvider, err error)
+	GetMullvadCountry() (country string, err error)
+	GetMullvadCity() (country string, err error)
+	GetMullvadISP() (country string, err error)
 	GetMullvadPort() (port uint16, err error)
 
 	// Windscribe getters
-	GetWindscribeRegion() (country models.WindscribeRegion, err error)
+	GetWindscribeRegion() (country string, err error)
 	GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error)
 
 	// Surfshark getters
-	GetSurfsharkRegion() (country models.SurfsharkRegion, err error)
+	GetSurfsharkRegion() (country string, err error)
 
 	// Cyberghost getters
-	GetCyberghostGroup() (region models.CyberghostGroup, err error)
-	GetCyberghostRegion() (region models.CyberghostRegion, err error)
+	GetCyberghostGroup() (group string, err error)
+	GetCyberghostRegion() (region string, err error)
 	GetCyberghostClientKey() (clientKey string, err error)
 
 	// Shadowsocks getters

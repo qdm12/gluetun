@@ -1,6 +1,7 @@
-package cyberghost
+package provider
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strings"
@@ -10,38 +11,46 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) GetOpenVPNConnections(group models.CyberghostGroup, region models.CyberghostRegion, protocol models.NetworkProtocol, targetIP net.IP) (connections []models.OpenVPNConnection, err error) {
+type cyberghost struct {
+	fileManager files.FileManager
+}
+
+func newCyberghost(fileManager files.FileManager) *cyberghost {
+	return &cyberghost{fileManager: fileManager}
+}
+
+func (c *cyberghost) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
 	var IPs []net.IP
 	for _, server := range constants.CyberghostServers() {
-		if strings.EqualFold(string(server.Region), string(region)) && strings.EqualFold(string(server.Group), string(group)) {
+		if strings.EqualFold(server.Region, selection.Region) && strings.EqualFold(server.Group, selection.Group) {
 			IPs = server.IPs
 		}
 	}
 	if len(IPs) == 0 {
-		return nil, fmt.Errorf("no IP found for group %q and region %q", group, region)
+		return nil, fmt.Errorf("no IP found for group %q and region %q", selection.Group, selection.Region)
 	}
-	if targetIP != nil {
+	if selection.TargetIP != nil {
 		found := false
 		for i := range IPs {
-			if IPs[i].Equal(targetIP) {
+			if IPs[i].Equal(selection.TargetIP) {
 				found = true
 				break
 			}
 		}
 		if !found {
-			return nil, fmt.Errorf("target IP address %q not found in IP addresses", targetIP)
+			return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 		}
-		IPs = []net.IP{targetIP}
+		IPs = []net.IP{selection.TargetIP}
 	}
 	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: 1443, Protocol: protocol})
+		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: 1443, Protocol: selection.Protocol})
 	}
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, clientKey string, verbosity, uid, gid int, root bool, cipher, auth string) (err error) {
+func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) {
 	if len(cipher) == 0 {
-		cipher = "AES-256-CBC"
+		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
 		auth = "SHA256"
@@ -105,10 +114,22 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, clientK
 	lines = append(lines, []string{
 		"<key>",
 		"-----BEGIN PRIVATE KEY-----",
-		clientKey,
+		extras.ClientKey,
 		"-----END PRIVATE KEY-----",
 		"</key>",
 		"",
 	}...)
 	return c.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+}
+
+func (c *cyberghost) GetPortForward() (port uint16, err error) {
+	panic("port forwarding is not supported for cyberghost")
+}
+
+func (c *cyberghost) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
+	panic("port forwarding is not supported for cyberghost")
+}
+
+func (c *cyberghost) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
+	panic("port forwarding is not supported for cyberghost")
 }

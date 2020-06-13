@@ -2,26 +2,30 @@ package settings
 
 import (
 	"fmt"
-	"net"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
 // OpenVPN contains settings to configure the OpenVPN client
 type OpenVPN struct {
-	NetworkProtocol models.NetworkProtocol
-	Verbosity       int
-	Root            bool
-	TargetIP        net.IP
-	Cipher          string
-	Auth            string
+	User      string
+	Password  string
+	Verbosity int
+	Root      bool
+	Cipher    string
+	Auth      string
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
 func GetOpenVPNSettings(paramsReader params.Reader) (settings OpenVPN, err error) {
-	settings.NetworkProtocol, err = paramsReader.GetNetworkProtocol()
+	settings.User, err = paramsReader.GetUser()
+	if err != nil {
+		return settings, err
+	}
+	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
+	settings.User = strings.ReplaceAll(settings.User, " ", "")
+	settings.Password, err = paramsReader.GetPassword()
 	if err != nil {
 		return settings, err
 	}
@@ -30,10 +34,6 @@ func GetOpenVPNSettings(paramsReader params.Reader) (settings OpenVPN, err error
 		return settings, err
 	}
 	settings.Root, err = paramsReader.GetOpenVPNRoot()
-	if err != nil {
-		return settings, err
-	}
-	settings.TargetIP, err = paramsReader.GetTargetIP()
 	if err != nil {
 		return settings, err
 	}
@@ -55,12 +55,16 @@ func (o *OpenVPN) String() string {
 	}
 	settingsList := []string{
 		"OpenVPN settings:",
-		"Network protocol: " + string(o.NetworkProtocol),
+		"User: [redacted]",
+		"Password: [redacted]",
 		"Verbosity level: " + fmt.Sprintf("%d", o.Verbosity),
 		"Run as root: " + runAsRoot,
-		"Target IP address: " + o.TargetIP.String(),
-		"Custom cipher: " + o.Cipher,
-		"Custom auth algorithm: " + o.Auth,
+	}
+	if len(o.Cipher) > 0 {
+		settingsList = append(settingsList, "Custom cipher: "+o.Cipher)
+	}
+	if len(o.Auth) > 0 {
+		settingsList = append(settingsList, "Custom auth algorithm: "+o.Auth)
 	}
 	return strings.Join(settingsList, "\n|--")
 }

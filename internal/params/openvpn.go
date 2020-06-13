@@ -3,7 +3,6 @@ package params
 import (
 	"fmt"
 	"net"
-	"strings"
 
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
@@ -70,13 +69,11 @@ func (r *reader) GetTargetIP() (ip net.IP, err error) {
 // GetOpenVPNCipher obtains a custom cipher to use with OpenVPN
 // from the environment variable OPENVPN_CIPHER
 func (r *reader) GetOpenVPNCipher() (cipher string, err error) {
-	cipher, err = r.envParams.GetEnv("OPENVPN_CIPHER")
-	return strings.ToLower(cipher), err
+	return r.envParams.GetEnv("OPENVPN_CIPHER")
 }
 
 // GetOpenVPNAuth obtains a custom auth algorithm to use with OpenVPN
 // from the environment variable OPENVPN_AUTH
 func (r *reader) GetOpenVPNAuth() (auth string, err error) {
-	auth, err = r.envParams.GetEnv("OPENVPN_AUTH")
-	return strings.ToLower(auth), err
+	return r.envParams.GetEnv("OPENVPN_AUTH")
 }
