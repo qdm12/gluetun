@@ -2,7 +2,6 @@ package params
 
 import (
 	"fmt"
-	"strings"
 
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -11,9 +10,9 @@ import (
 
 // GetWindscribeRegion obtains the region for the Windscribe server from the
 // environment variable REGION
-func (r *reader) GetWindscribeRegion() (region models.WindscribeRegion, err error) {
+func (r *reader) GetWindscribeRegion() (region string, err error) {
 	s, err := r.envParams.GetValueIfInside("REGION", constants.WindscribeRegionChoices())
-	return models.WindscribeRegion(strings.ToLower(s)), err
+	return s, err
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the

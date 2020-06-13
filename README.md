@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad, Windscribe, Surfshark and Cyberghost VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *New wiki available [here](https://github.com/qdm12/private-internet-access-docker/wiki)*
+**ANNOUNCEMENT**: *Rather big code refactoring so things may break but I'll fix anything super quickly*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
 

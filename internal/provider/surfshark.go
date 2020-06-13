@@ -1,6 +1,7 @@
-package surfshark
+package provider
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strings"
@@ -10,47 +11,56 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-func (c *configurator) GetOpenVPNConnections(region models.SurfsharkRegion, protocol models.NetworkProtocol, targetIP net.IP) (connections []models.OpenVPNConnection, err error) {
+type surfshark struct {
+	fileManager files.FileManager
+	lookupIP    func(host string) ([]net.IP, error)
+}
+
+func newSurfshark(fileManager files.FileManager) *surfshark {
+	return &surfshark{fileManager, net.LookupIP}
+}
+
+func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
 	var IPs []net.IP
 	for _, server := range constants.SurfsharkServers() {
-		if strings.EqualFold(string(server.Region), string(region)) {
+		if strings.EqualFold(server.Region, selection.Region) {
 			IPs = server.IPs
 		}
 	}
 	if len(IPs) == 0 {
-		return nil, fmt.Errorf("no IP found for region %q", region)
+		return nil, fmt.Errorf("no IP found for region %q", selection.Region)
 	}
-	if targetIP != nil {
+	if selection.TargetIP != nil {
 		found := false
 		for i := range IPs {
-			if IPs[i].Equal(targetIP) {
+			if IPs[i].Equal(selection.TargetIP) {
 				found = true
 				break
 			}
 		}
 		if !found {
-			return nil, fmt.Errorf("target IP address %q not found in IP addresses", targetIP)
+			return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 		}
-		IPs = []net.IP{targetIP}
+		IPs = []net.IP{selection.TargetIP}
 	}
 	var port uint16
 	switch {
-	case protocol == constants.TCP:
+	case selection.Protocol == constants.TCP:
 		port = 1443
-	case protocol == constants.UDP:
+	case selection.Protocol == constants.UDP:
 		port = 1194
 	default:
-		return nil, fmt.Errorf("protocol %q is unknown", protocol)
+		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: protocol})
+		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
 	}
 	return connections, nil
 }
 
-func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string) (err error) {
+func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) {
 	if len(cipher) == 0 {
-		cipher = "AES-256-CBC"
+		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
 		auth = "SHA512"
@@ -110,5 +120,17 @@ func (c *configurator) BuildConf(connections []models.OpenVPNConnection, verbosi
 		"</tls-auth>",
 		"",
 	}...)
-	return c.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return s.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+}
+
+func (s *surfshark) GetPortForward() (port uint16, err error) {
+	panic("port forwarding is not supported for surfshark")
+}
+
+func (s *surfshark) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
+	panic("port forwarding is not supported for surfshark")
+}
+
+func (s *surfshark) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
+	panic("port forwarding is not supported for surfshark")
 }

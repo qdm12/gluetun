@@ -32,29 +32,37 @@ func (r *reader) GetPortForwardingStatusFilepath() (filepath models.Filepath, er
 	return models.Filepath(filepathStr), err
 }
 
-// GetPIAEncryption obtains the encryption level for the PIA connection
+// GetPIAEncryptionPreset obtains the encryption level for the PIA connection
 // from the environment variable PIA_ENCRYPTION, and using ENCRYPTION for
 // retro compatibility
-func (r *reader) GetPIAEncryption() (models.PIAEncryption, error) {
+func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 	// Retro-compatibility
-	s, err := r.envParams.GetValueIfInside("ENCRYPTION", []string{"normal", "strong", ""})
+	s, err := r.envParams.GetValueIfInside("ENCRYPTION", []string{
+		constants.PIAEncryptionPresetNormal,
+		constants.PIAEncryptionPresetStrong,
+		""})
 	if err != nil {
 		return "", err
 	} else if len(s) != 0 {
 		r.logger.Warn("You are using the old environment variable ENCRYPTION, please consider changing it to PIA_ENCRYPTION")
-		return models.PIAEncryption(s), nil
+		return s, nil
 	}
-	s, err = r.envParams.GetValueIfInside("PIA_ENCRYPTION", []string{"normal", "strong"}, libparams.Default("strong"))
-	return models.PIAEncryption(s), err
+	return r.envParams.GetValueIfInside(
+		"PIA_ENCRYPTION",
+		[]string{
+			constants.PIAEncryptionPresetNormal,
+			constants.PIAEncryptionPresetStrong,
+		},
+		libparams.Default(constants.PIAEncryptionPresetStrong))
 }
 
 // GetPIARegion obtains the region for the PIA server from the
 // environment variable REGION
-func (r *reader) GetPIARegion() (region models.PIARegion, err error) {
+func (r *reader) GetPIARegion() (region string, err error) {
 	choices := append(constants.PIAGeoChoices(), "")
 	s, err := r.envParams.GetValueIfInside("REGION", choices)
 	if len(s) == 0 { // Suggestion by @rorph https://github.com/rorph
 		s = choices[rand.Int()%len(choices)] //nolint:gosec
 	}
-	return models.PIARegion(s), err
+	return s, err
 }
