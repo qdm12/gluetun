@@ -21,6 +21,10 @@ type (
 	WindscribeRegion string
 	// SurfsharkRegion is used as the region for a Surfshark server
 	SurfsharkRegion string
+	// CyberghostRegion is the country name for a Cyberghost server
+	CyberghostRegion string
+	// CyberghostGroup is the server group for a Cyberghost server
+	CyberghostGroup string
 	// URL is an HTTP(s) URL address
 	URL string
 	// Filepath is a local filesytem file path
