@@ -221,16 +221,22 @@ func _main(background context.Context, args []string) int {
 		return err
 	})
 
+	startUnboundCh := make(chan struct{})
+	go unboundRunLoop(ctx, startUnboundCh, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger, httpServer)
+	if !allSettings.DNS.Enabled {
+		httpServer.SetUnboundRestart(func() {})
+	}
+
 	go func() {
-		firstRun := true
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			case <-connectedCh: // blocks until openvpn is connected
-				onConnected(ctx, allSettings, logger, dnsConf, fileManager, waiter,
-					streamMerger, httpServer, routingConf, defaultInterface, providerConf, firstRun)
-				firstRun = false
+				if allSettings.DNS.Enabled {
+					startUnboundCh <- struct{}{}
+				}
+				onConnected(allSettings, logger, fileManager, routingConf, defaultInterface, providerConf)
 			}
 		}
 	}()
@@ -366,19 +372,15 @@ func openvpnRunLoop(ctx context.Context, ovpnConf openvpn.Configurator, streamMe
 	}
 }
 
-func onConnected(ctx context.Context, allSettings settings.Settings,
-	logger logging.Logger, dnsConf dns.Configurator, fileManager files.FileManager,
-	waiter command.Waiter, streamMerger command.StreamMerger, httpServer server.Server,
+func onConnected(allSettings settings.Settings,
+	logger logging.Logger, fileManager files.FileManager,
 	routingConf routing.Routing, defaultInterface string,
-	providerConf provider.Provider, firstRun bool,
+	providerConf provider.Provider,
 ) {
 	if allSettings.Provider.PortForwarding.Enabled {
 		time.AfterFunc(5*time.Second, func() {
 			setupPortForwarding(logger, providerConf, allSettings.Provider.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID)
 		})
-	}
-	if allSettings.DNS.Enabled && firstRun {
-		go unboundRunLoop(ctx, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger, httpServer)
 	}
 
 	vpnGatewayIP, err := routingConf.VPNGatewayIP(defaultInterface)
@@ -387,20 +389,22 @@ func onConnected(ctx context.Context, allSettings settings.Settings,
 	} else {
 		logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
 	}
-	publicIP, err := publicip.NewIPGetter(network.NewClient(3 * time.Second)).Get()
-	if err != nil {
-		logger.Error(err)
-	} else {
-		logger.Info("Public IP address is %s", publicIP)
-		err = fileManager.WriteLinesToFile(
-			string(allSettings.System.IPStatusFilepath),
-			[]string{publicIP.String()},
-			files.Ownership(allSettings.System.UID, allSettings.System.GID),
-			files.Permissions(0400))
+	time.AfterFunc(7*time.Second, func() { // wait for Unbound to start - TODO use signal channel
+		publicIP, err := publicip.NewIPGetter(network.NewClient(3 * time.Second)).Get()
 		if err != nil {
 			logger.Error(err)
+		} else {
+			logger.Info("Public IP address is %s", publicIP)
+			err = fileManager.WriteLinesToFile(
+				string(allSettings.System.IPStatusFilepath),
+				[]string{publicIP.String()},
+				files.Ownership(allSettings.System.UID, allSettings.System.GID),
+				files.Permissions(0400))
+			if err != nil {
+				logger.Error(err)
+			}
 		}
-	}
+	})
 }
 
 func fallbackToUnencryptedIPv4DNS(dnsConf dns.Configurator, providers []models.DNSProvider) error {
@@ -473,11 +477,17 @@ func unboundRun(ctx, oldCtx context.Context, oldCancel context.CancelFunc, timer
 	}
 }
 
-func unboundRunLoop(ctx context.Context, logger logging.Logger, dnsConf dns.Configurator,
+func unboundRunLoop(ctx context.Context, startCh chan struct{}, logger logging.Logger, dnsConf dns.Configurator,
 	settings settings.DNS, uid, gid int,
 	waiter command.Waiter, streamMerger command.StreamMerger, httpServer server.Server,
 ) {
 	logger = logger.WithPrefix("unbound dns over tls setup: ")
+	select {
+	case <-startCh:
+	case <-ctx.Done():
+		logger.Warn("context canceled: exiting unbound run loop")
+		return
+	}
 	if err := fallbackToUnencryptedIPv4DNS(dnsConf, settings.Providers); err != nil {
 		logger.Error(err)
 	}
