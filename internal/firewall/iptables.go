@@ -48,8 +48,6 @@ func (c *configurator) Clear(ctx context.Context) error {
 	return c.runIptablesInstructions(ctx, []string{
 		"--flush",
 		"--delete-chain",
-		"-t nat --flush",
-		"-t nat --delete-chain",
 	})
 }
 
