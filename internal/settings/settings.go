@@ -59,11 +59,12 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.OpenVPN, err = GetOpenVPNSettings(paramsReader)
+	isMullvad := settings.VPNSP == constants.Mullvad
+	settings.OpenVPN, err = GetOpenVPNSettings(paramsReader, !isMullvad)
 	if err != nil {
 		return settings, err
 	}
-	if settings.VPNSP == constants.Mullvad {
+	if isMullvad {
 		settings.OpenVPN.Password = "m"
 	}
 	settings.DNS, err = GetDNSSettings(paramsReader)

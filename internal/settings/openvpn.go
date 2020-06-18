@@ -18,14 +18,14 @@ type OpenVPN struct {
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
-func GetOpenVPNSettings(paramsReader params.Reader) (settings OpenVPN, err error) {
+func GetOpenVPNSettings(paramsReader params.Reader, passwordRequired bool) (settings OpenVPN, err error) {
 	settings.User, err = paramsReader.GetUser()
 	if err != nil {
 		return settings, err
 	}
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
 	settings.User = strings.ReplaceAll(settings.User, " ", "")
-	settings.Password, err = paramsReader.GetPassword()
+	settings.Password, err = paramsReader.GetPassword(passwordRequired)
 	if err != nil {
 		return settings, err
 	}
