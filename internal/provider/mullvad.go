@@ -70,6 +70,7 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
 		"tun-ipv6",
 		"fast-io",
+		"script-security 2",
 
 		// Added constant values
 		"mute-replay-warnings",

@@ -83,6 +83,7 @@ func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity,
 		"reneg-sec 0",
 		"fast-io",
 		"key-direction 1",
+		"script-security 2",
 
 		// Added constant values
 		"auth-nocache",

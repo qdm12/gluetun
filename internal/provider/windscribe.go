@@ -77,6 +77,7 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 		"resolv-retry infinite",
 		"comp-lzo",
 		"key-direction 1",
+		"script-security 2",
 
 		// Added constant values
 		"auth-nocache",
