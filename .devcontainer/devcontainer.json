@@ -11,7 +11,7 @@
     "postCreateCommand": "go mod download",
     "workspaceFolder": "/workspace",
     "extensions": [
-        "ms-vscode.go",
+        "golang.go",
         "IBM.output-colorizer",
         "eamodio.gitlens",
         "mhutchie.git-graph",

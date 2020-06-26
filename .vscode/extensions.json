@@ -4,6 +4,6 @@
         "ms-azuretools.vscode-docker",
         "davidanson.vscode-markdownlint",
         "IBM.output-colorizer",
-        "ms-vscode.go",
+        "golang.go"
     ]
 }
