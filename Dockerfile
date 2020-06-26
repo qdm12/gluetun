@@ -75,6 +75,7 @@ ENV VPNSP=pia \
     BLOCK_ADS=off \
     UNBLOCK= \
     DNS_UPDATE_PERIOD=24h \
+    DNS_PLAINTEXT_ADDRESS=1.1.1.1 \
     # Firewall
     FIREWALL=on \
     EXTRA_SUBNETS= \

@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 type DNS struct {
 	Enabled               bool
 	Providers             []models.DNSProvider
+	PlaintextAddress      net.IP
 	AllowedHostnames      []string
 	PrivateAddresses      []string
 	Caching               bool
@@ -28,13 +30,13 @@ type DNS struct {
 }
 
 func (d *DNS) String() string {
-	if !d.Enabled {
-		return "DNS over TLS settings: disabled"
-	}
 	const (
 		enabled  = "enabled"
 		disabled = "disabled"
 	)
+	if !d.Enabled {
+		return fmt.Sprintf("DNS over TLS disabled, using plaintext DNS %s", d.PlaintextAddress)
+	}
 	caching, blockMalicious, blockSurveillance, blockAds, ipv6 := disabled, disabled, disabled, disabled, disabled
 	if d.Caching {
 		caching = enabled
@@ -80,7 +82,11 @@ func (d *DNS) String() string {
 // GetDNSSettings obtains DNS over TLS settings from environment variables using the params package.
 func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
 	settings.Enabled, err = paramsReader.GetDNSOverTLS()
-	if err != nil || !settings.Enabled {
+	if err != nil {
+		return settings, err
+	}
+	if !settings.Enabled {
+		settings.PlaintextAddress, err = paramsReader.GetDNSPlaintext()
 		return settings, err
 	}
 	settings.Providers, err = paramsReader.GetDNSOverTLSProviders()

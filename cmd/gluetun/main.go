@@ -186,7 +186,7 @@ func _main(background context.Context, args []string) int {
 	}
 
 	if allSettings.ShadowSocks.Enabled {
-		nameserver := ""
+		nameserver := allSettings.DNS.PlaintextAddress.String()
 		if allSettings.DNS.Enabled {
 			nameserver = "127.0.0.1"
 		}
@@ -225,6 +225,10 @@ func _main(background context.Context, args []string) int {
 	go unboundRunLoop(ctx, startUnboundCh, logger, dnsConf, allSettings.DNS, allSettings.System.UID, allSettings.System.GID, waiter, streamMerger, httpServer)
 	if !allSettings.DNS.Enabled {
 		httpServer.SetUnboundRestart(func() {})
+		dnsConf.UseDNSInternally(allSettings.DNS.PlaintextAddress)
+		if err := dnsConf.UseDNSSystemWide(allSettings.DNS.PlaintextAddress); err != nil {
+			logger.Error(err)
+		}
 	}
 
 	go func() {

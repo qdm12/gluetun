@@ -220,6 +220,7 @@ None of the following values are required.
 | `BLOCK_SURVEILLANCE` | `off` | `on`, `off` | Block surveillance hostnames and IPs with Unbound |
 | `BLOCK_ADS` | `off` | `on`, `off` | Block ads hostnames and IPs with Unbound |
 | `UNBLOCK` | |i.e. `domain1.com,x.domain2.co.uk` | Comma separated list of domain names to leave unblocked with Unbound |
+| `DNS_PLAINTEXT_ADDRESS` | `1.1.1.1` | Any IP address | IP address to use as DNS resolver if `DOT` is `off` |
 
 ### Firewall
 

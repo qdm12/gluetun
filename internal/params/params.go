@@ -29,6 +29,7 @@ type Reader interface {
 	GetDNSOverTLSPrivateAddresses() (privateAddresses []string, err error)
 	GetDNSOverTLSIPv6() (ipv6 bool, err error)
 	GetDNSUpdatePeriod() (period time.Duration, err error)
+	GetDNSPlaintext() (ip net.IP, err error)
 
 	// System
 	GetUID() (uid int, err error)

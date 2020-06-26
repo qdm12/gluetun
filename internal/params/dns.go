@@ -143,3 +143,17 @@ func (r *reader) GetDNSUpdatePeriod() (period time.Duration, err error) {
 	}
 	return time.ParseDuration(s)
 }
+
+// GetDNSPlaintext obtains the plaintext DNS address to use if DNS over TLS is disabled
+// from the environment variable DNS_PLAINTEXT_ADDRESS
+func (r *reader) GetDNSPlaintext() (ip net.IP, err error) {
+	s, err := r.envParams.GetEnv("DNS_PLAINTEXT_ADDRESS", libparams.Default("1.1.1.1"))
+	if err != nil {
+		return nil, err
+	}
+	ip = net.ParseIP(s)
+	if ip == nil {
+		return nil, fmt.Errorf("DNS plaintext address %q is not a valid IP address", s)
+	}
+	return ip, nil
+}
