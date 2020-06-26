@@ -123,7 +123,7 @@
 Check the VPN IP address matches your expectations
 
 ```sh
-docker run --rm --network=container:gluetun alpine:3.11 wget -qO- https://ipinfo.io
+docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo.io
 ```
 
 Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Testing)
