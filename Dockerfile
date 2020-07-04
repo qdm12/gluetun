@@ -91,7 +91,7 @@ ENV VPNSP=pia \
     SHADOWSOCKS_PORT=8388 \
     SHADOWSOCKS_PASSWORD= \
     SHADOWSOCKS_METHOD=chacha20-ietf-poly1305
-ENTRYPOINT /entrypoint
+ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=10m --timeout=10s --start-period=30s --retries=2 CMD /entrypoint healthcheck
 RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound tinyproxy tzdata && \
