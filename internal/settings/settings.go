@@ -1,10 +1,8 @@
 package settings
 
 import (
-	"fmt"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
@@ -13,7 +11,6 @@ import (
 type Settings struct {
 	VPNSP       models.VPNProvider
 	OpenVPN     OpenVPN
-	Provider    models.ProviderSettings
 	System      System
 	DNS         DNS
 	Firewall    Firewall
@@ -25,7 +22,6 @@ func (s *Settings) String() string {
 	return strings.Join([]string{
 		"Settings summary below:",
 		s.OpenVPN.String(),
-		s.Provider.String(),
 		s.System.String(),
 		s.DNS.String(),
 		s.Firewall.String(),
@@ -42,30 +38,9 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 	if err != nil {
 		return settings, err
 	}
-	switch settings.VPNSP {
-	case constants.PrivateInternetAccess:
-		settings.Provider, err = GetPIASettings(paramsReader)
-	case constants.Mullvad:
-		settings.Provider, err = GetMullvadSettings(paramsReader)
-	case constants.Windscribe:
-		settings.Provider, err = GetWindscribeSettings(paramsReader)
-	case constants.Surfshark:
-		settings.Provider, err = GetSurfsharkSettings(paramsReader)
-	case constants.Cyberghost:
-		settings.Provider, err = GetCyberghostSettings(paramsReader)
-	default:
-		err = fmt.Errorf("VPN service provider %q is not valid", settings.VPNSP)
-	}
+	settings.OpenVPN, err = GetOpenVPNSettings(paramsReader, settings.VPNSP)
 	if err != nil {
 		return settings, err
-	}
-	isMullvad := settings.VPNSP == constants.Mullvad
-	settings.OpenVPN, err = GetOpenVPNSettings(paramsReader, !isMullvad)
-	if err != nil {
-		return settings, err
-	}
-	if isMullvad {
-		settings.OpenVPN.Password = "m"
 	}
 	settings.DNS, err = GetDNSSettings(paramsReader)
 	if err != nil {

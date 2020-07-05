@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 )
 
@@ -15,19 +17,23 @@ type OpenVPN struct {
 	Root      bool
 	Cipher    string
 	Auth      string
+	Provider  models.ProviderSettings
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
-func GetOpenVPNSettings(paramsReader params.Reader, passwordRequired bool) (settings OpenVPN, err error) {
+func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvider) (settings OpenVPN, err error) {
 	settings.User, err = paramsReader.GetUser()
 	if err != nil {
 		return settings, err
 	}
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
 	settings.User = strings.ReplaceAll(settings.User, " ", "")
-	settings.Password, err = paramsReader.GetPassword(passwordRequired)
+	isMullvad := vpnProvider == constants.Mullvad
+	settings.Password, err = paramsReader.GetPassword(!isMullvad)
 	if err != nil {
 		return settings, err
+	} else if isMullvad {
+		settings.Password = "m"
 	}
 	settings.Verbosity, err = paramsReader.GetOpenVPNVerbosity()
 	if err != nil {
@@ -45,7 +51,21 @@ func GetOpenVPNSettings(paramsReader params.Reader, passwordRequired bool) (sett
 	if err != nil {
 		return settings, err
 	}
-	return settings, nil
+	switch vpnProvider {
+	case constants.PrivateInternetAccess:
+		settings.Provider, err = GetPIASettings(paramsReader)
+	case constants.Mullvad:
+		settings.Provider, err = GetMullvadSettings(paramsReader)
+	case constants.Windscribe:
+		settings.Provider, err = GetWindscribeSettings(paramsReader)
+	case constants.Surfshark:
+		settings.Provider, err = GetSurfsharkSettings(paramsReader)
+	case constants.Cyberghost:
+		settings.Provider, err = GetCyberghostSettings(paramsReader)
+	default:
+		err = fmt.Errorf("VPN service provider %q is not valid", vpnProvider)
+	}
+	return settings, err
 }
 
 func (o *OpenVPN) String() string {
@@ -59,6 +79,7 @@ func (o *OpenVPN) String() string {
 		"Password: [redacted]",
 		"Verbosity level: " + fmt.Sprintf("%d", o.Verbosity),
 		"Run as root: " + runAsRoot,
+		o.Provider.String(),
 	}
 	if len(o.Cipher) > 0 {
 		settingsList = append(settingsList, "Custom cipher: "+o.Cipher)

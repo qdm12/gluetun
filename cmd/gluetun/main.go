@@ -135,7 +135,7 @@ func _main(background context.Context, args []string) int {
 
 	waiter := command.NewWaiter()
 
-	connections, err := providerConf.GetOpenVPNConnections(allSettings.Provider.ServerSelection)
+	connections, err := providerConf.GetOpenVPNConnections(allSettings.OpenVPN.Provider.ServerSelection)
 	fatalOnError(err)
 	err = providerConf.BuildConf(
 		connections,
@@ -145,7 +145,7 @@ func _main(background context.Context, args []string) int {
 		allSettings.OpenVPN.Root,
 		allSettings.OpenVPN.Cipher,
 		allSettings.OpenVPN.Auth,
-		allSettings.Provider.ExtraConfigOptions,
+		allSettings.OpenVPN.Provider.ExtraConfigOptions,
 	)
 	fatalOnError(err)
 
@@ -265,9 +265,9 @@ func _main(background context.Context, args []string) int {
 		logger.Error(err)
 		exitStatus = 1
 	}
-	if allSettings.Provider.PortForwarding.Enabled {
-		logger.Info("Clearing forwarded port status file %s", allSettings.Provider.PortForwarding.Filepath)
-		if err := fileManager.Remove(string(allSettings.Provider.PortForwarding.Filepath)); err != nil {
+	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
+		logger.Info("Clearing forwarded port status file %s", allSettings.OpenVPN.Provider.PortForwarding.Filepath)
+		if err := fileManager.Remove(string(allSettings.OpenVPN.Provider.PortForwarding.Filepath)); err != nil {
 			logger.Error(err)
 			exitStatus = 1
 		}
@@ -381,9 +381,9 @@ func onConnected(allSettings settings.Settings,
 	routingConf routing.Routing, defaultInterface string,
 	providerConf provider.Provider,
 ) {
-	if allSettings.Provider.PortForwarding.Enabled {
+	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
 		time.AfterFunc(5*time.Second, func() {
-			setupPortForwarding(logger, providerConf, allSettings.Provider.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID)
+			setupPortForwarding(logger, providerConf, allSettings.OpenVPN.Provider.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID)
 		})
 	}
 
