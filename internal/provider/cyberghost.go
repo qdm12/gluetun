@@ -105,11 +105,11 @@ func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity
 		"</ca>",
 	}...)
 	lines = append(lines, []string{
-		"<crt>",
+		"<cert>",
 		"-----BEGIN CERTIFICATE-----",
 		constants.CyberghostClientCertificate,
 		"-----END CERTIFICATE-----",
-		"</crt>",
+		"</cert>",
 	}...)
 	lines = append(lines, []string{
 		"<key>",
