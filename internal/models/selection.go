@@ -63,33 +63,33 @@ func (p *ProviderSettings) String() string {
 	}
 	switch strings.ToLower(string(p.Name)) {
 	case "private internet access":
-		settingsList = []string{
-			"Region: " + p.ServerSelection.Region,
-			"Encryption preset: " + p.ExtraConfigOptions.EncryptionPreset,
-			"Port forwarding: " + p.PortForwarding.String(),
-		}
+		settingsList = append(settingsList,
+			"Region: "+p.ServerSelection.Region,
+			"Encryption preset: "+p.ExtraConfigOptions.EncryptionPreset,
+			"Port forwarding: "+p.PortForwarding.String(),
+		)
 	case "mullvad":
-		settingsList = []string{
-			"Country: " + p.ServerSelection.Country,
-			"City: " + p.ServerSelection.City,
-			"ISP: " + p.ServerSelection.ISP,
-			"Custom port: " + string(p.ServerSelection.CustomPort),
-		}
+		settingsList = append(settingsList,
+			"Country: "+p.ServerSelection.Country,
+			"City: "+p.ServerSelection.City,
+			"ISP: "+p.ServerSelection.ISP,
+			"Custom port: "+string(p.ServerSelection.CustomPort),
+		)
 	case "windscribe":
-		settingsList = []string{
-			"Region: " + p.ServerSelection.Region,
-			"Custom port: " + string(p.ServerSelection.CustomPort),
-		}
+		settingsList = append(settingsList,
+			"Region: "+p.ServerSelection.Region,
+			"Custom port: "+string(p.ServerSelection.CustomPort),
+		)
 	case "surfshark":
-		settingsList = []string{
-			"Region: " + p.ServerSelection.Region,
-		}
+		settingsList = append(settingsList,
+			"Region: "+p.ServerSelection.Region,
+		)
 	case "cyberghost":
-		settingsList = []string{
+		settingsList = append(settingsList,
 			"ClientKey: [redacted]",
-			"Group: " + p.ServerSelection.Group,
-			"Region: " + p.ServerSelection.Region,
-		}
+			"Group: "+p.ServerSelection.Group,
+			"Region: "+p.ServerSelection.Region,
+		)
 	}
 	if p.ServerSelection.TargetIP != nil {
 		settingsList = append(settingsList,
