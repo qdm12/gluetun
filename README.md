@@ -63,7 +63,6 @@
 ### Surfshark
 
 - Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
-- Fetch the `username` and `password` from the bottom of the [manual setup](https://account.surfshark.com/setup/manual) page.
 
 ### Cyberghost
 
