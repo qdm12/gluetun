@@ -332,7 +332,7 @@ func surfsharkServers() []server {
 		{subdomain: "au-syd", region: "Australia Sydney"},
 		{subdomain: "au-us", region: "Australia US"},
 		{subdomain: "az-bak", region: "Azerbaijan"},
-		{subdomain: "ba-sjj", region: "Bosnia and Herzegovina "},
+		{subdomain: "ba-sjj", region: "Bosnia and Herzegovina"},
 		{subdomain: "be-bru", region: "Belgium"},
 		{subdomain: "bg-sof", region: "Bulgaria"},
 		{subdomain: "br-sao", region: "Brazil"},
