@@ -159,27 +159,6 @@ func _main(background context.Context, args []string) int {
 	err = firewallConf.RunUserPostRules(ctx, fileManager, "/iptables/post-rules.txt")
 	fatalOnError(err)
 
-	if allSettings.TinyProxy.Enabled {
-		err = tinyProxyConf.MakeConf(
-			allSettings.TinyProxy.LogLevel,
-			allSettings.TinyProxy.Port,
-			allSettings.TinyProxy.User,
-			allSettings.TinyProxy.Password,
-			uid,
-			gid)
-		fatalOnError(err)
-		err = firewallConf.AllowAnyIncomingOnPort(ctx, allSettings.TinyProxy.Port)
-		fatalOnError(err)
-		stream, waitFn, err := tinyProxyConf.Start(ctx)
-		fatalOnError(err)
-		waiter.Add(func() error {
-			err := waitFn()
-			logger.Error("tinyproxy: %s", err)
-			return err
-		})
-		go streamMerger.Merge(ctx, stream, command.MergeName("tinyproxy"), command.MergeColor(constants.ColorTinyproxy()))
-	}
-
 	if allSettings.ShadowSocks.Enabled {
 		nameserver := allSettings.DNS.PlaintextAddress.String()
 		if allSettings.DNS.Enabled {
@@ -209,9 +188,11 @@ func _main(background context.Context, args []string) int {
 	restartOpenvpn := make(chan struct{})
 	restartUnbound := make(chan struct{})
 	restartPublicIP := make(chan struct{})
+	restartTinyproxy := make(chan struct{})
 	openvpnDone := make(chan struct{})
 	unboundDone := make(chan struct{})
 	serverDone := make(chan struct{})
+	tinyproxyDone := make(chan struct{})
 
 	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError, uid, gid)
 	// wait for restartOpenvpn
@@ -224,6 +205,13 @@ func _main(background context.Context, args []string) int {
 	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, uid, gid)
 	go publicIPLooper.Run(ctx, restartPublicIP)
 	go publicIPLooper.RunRestartTicker(ctx, restartPublicIP)
+
+	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid)
+	go tinyproxyLooper.Run(ctx, restartTinyproxy, tinyproxyDone)
+
+	if allSettings.TinyProxy.Enabled {
+		<-restartTinyproxy
+	}
 
 	go func() {
 		first := true
