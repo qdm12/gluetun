@@ -159,40 +159,16 @@ func _main(background context.Context, args []string) int {
 	err = firewallConf.RunUserPostRules(ctx, fileManager, "/iptables/post-rules.txt")
 	fatalOnError(err)
 
-	if allSettings.ShadowSocks.Enabled {
-		nameserver := allSettings.DNS.PlaintextAddress.String()
-		if allSettings.DNS.Enabled {
-			nameserver = "127.0.0.1"
-		}
-		err = shadowsocksConf.MakeConf(
-			allSettings.ShadowSocks.Port,
-			allSettings.ShadowSocks.Password,
-			allSettings.ShadowSocks.Method,
-			nameserver,
-			uid,
-			gid)
-		fatalOnError(err)
-		err = firewallConf.AllowAnyIncomingOnPort(ctx, allSettings.ShadowSocks.Port)
-		fatalOnError(err)
-		stdout, stderr, waitFn, err := shadowsocksConf.Start(ctx, "0.0.0.0", allSettings.ShadowSocks.Port, allSettings.ShadowSocks.Password, allSettings.ShadowSocks.Log)
-		fatalOnError(err)
-		waiter.Add(func() error {
-			err := waitFn()
-			logger.Error("shadowsocks: %s", err)
-			return err
-		})
-		go streamMerger.Merge(ctx, stdout, command.MergeName("shadowsocks"), command.MergeColor(constants.ColorShadowsocks()))
-		go streamMerger.Merge(ctx, stderr, command.MergeName("shadowsocks error"), command.MergeColor(constants.ColorShadowsocksError()))
-	}
-
 	restartOpenvpn := make(chan struct{})
 	restartUnbound := make(chan struct{})
 	restartPublicIP := make(chan struct{})
 	restartTinyproxy := make(chan struct{})
+	restartShadowsocks := make(chan struct{})
 	openvpnDone := make(chan struct{})
 	unboundDone := make(chan struct{})
 	serverDone := make(chan struct{})
 	tinyproxyDone := make(chan struct{})
+	shadowsocksDone := make(chan struct{})
 
 	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError, uid, gid)
 	// wait for restartOpenvpn
@@ -209,8 +185,14 @@ func _main(background context.Context, args []string) int {
 	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid)
 	go tinyproxyLooper.Run(ctx, restartTinyproxy, tinyproxyDone)
 
+	shadowsocksLooper := shadowsocks.NewLooper(shadowsocksConf, firewallConf, allSettings.ShadowSocks, allSettings.DNS, logger, streamMerger, uid, gid)
+	go shadowsocksLooper.Run(ctx, restartShadowsocks, shadowsocksDone)
+
 	if allSettings.TinyProxy.Enabled {
 		<-restartTinyproxy
+	}
+	if allSettings.ShadowSocks.Enabled {
+		<-restartShadowsocks
 	}
 
 	go func() {
@@ -278,6 +260,7 @@ func _main(background context.Context, args []string) int {
 	<-unboundDone
 	<-openvpnDone
 	<-tinyproxyDone
+	<-shadowsocksDone
 	return exitStatus
 }
 
