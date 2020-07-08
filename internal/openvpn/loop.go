@@ -21,10 +21,12 @@ type looper struct {
 	logger       logging.Logger
 	streamMerger command.StreamMerger
 	fatalOnError func(err error)
+	uid          int
+	gid          int
 }
 
 func NewLooper(conf Configurator, settings settings.OpenVPN, logger logging.Logger,
-	streamMerger command.StreamMerger, fatalOnError func(err error)) Looper {
+	streamMerger command.StreamMerger, fatalOnError func(err error), uid, gid int) Looper {
 	return &looper{
 		conf:         conf,
 		settings:     settings,
@@ -43,6 +45,13 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- s
 	}
 	for {
 		openvpnCtx, openvpnCancel := context.WithCancel(ctx)
+		err := l.conf.WriteAuthFile(
+			l.settings.User,
+			l.settings.Password,
+			l.uid,
+			l.gid,
+		)
+		l.fatalOnError(err)
 		stream, waitFn, err := l.conf.Start(openvpnCtx)
 		l.fatalOnError(err)
 		go l.streamMerger.Merge(openvpnCtx, stream,

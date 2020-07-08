@@ -107,13 +107,6 @@ func _main(background context.Context, args []string) int {
 		fatalOnError(err)
 	}
 
-	err = ovpnConf.WriteAuthFile(
-		allSettings.OpenVPN.User,
-		allSettings.OpenVPN.Password,
-		allSettings.System.UID,
-		allSettings.System.GID)
-	fatalOnError(err)
-
 	defaultInterface, defaultGateway, defaultSubnet, err := routingConf.DefaultRoute()
 	fatalOnError(err)
 
@@ -216,7 +209,7 @@ func _main(background context.Context, args []string) int {
 	unboundDone := make(chan struct{})
 	serverDone := make(chan struct{})
 
-	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError)
+	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError, allSettings.System.UID, allSettings.System.GID)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, restartOpenvpn, openvpnDone)
 
