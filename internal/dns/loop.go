@@ -110,9 +110,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		waitError := make(chan error)
 		go func() {
 			err := waitFn() // blocking
-			if unboundCtx.Err() != context.Canceled {
-				waitError <- err
-			}
+			waitError <- err
 		}()
 
 		// Wait for one of the three cases below
@@ -120,6 +118,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		case <-ctx.Done():
 			l.logger.Warn("context canceled: exiting loop")
 			unboundCancel()
+			<-waitError
 			close(waitError)
 			return
 		case <-restart: // triggered restart

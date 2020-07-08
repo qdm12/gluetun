@@ -82,14 +82,13 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		waitError := make(chan error)
 		go func() {
 			err := waitFn() // blocking
-			if tinyproxyCtx.Err() != context.Canceled {
-				waitError <- err
-			}
+			waitError <- err
 		}()
 		select {
 		case <-ctx.Done():
 			l.logger.Warn("context canceled: exiting loop")
 			tinyproxyCancel()
+			<-waitError
 			close(waitError)
 			return
 		case <-restart: // triggered restart
