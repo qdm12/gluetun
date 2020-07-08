@@ -2,7 +2,6 @@ package openvpn
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/qdm12/golibs/command"
@@ -62,7 +61,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- s
 		go func() {
 			err := waitFn() // blocking
 			if openvpnCtx.Err() != context.Canceled {
-				waitError <- fmt.Errorf("openvpn: %w", err)
+				waitError <- err
 			}
 		}()
 		select {

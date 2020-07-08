@@ -2,7 +2,6 @@ package dns
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"time"
 
@@ -112,7 +111,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- s
 		go func() {
 			err := waitFn() // blocking
 			if unboundCtx.Err() != context.Canceled {
-				waitError <- fmt.Errorf("unbound: %w", err)
+				waitError <- err
 			}
 		}()
 

@@ -277,6 +277,7 @@ func _main(background context.Context, args []string) int {
 	<-serverDone
 	<-unboundDone
 	<-openvpnDone
+	<-tinyproxyDone
 	return exitStatus
 }
 
