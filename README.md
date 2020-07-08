@@ -235,21 +235,21 @@ That one is important if you want to connect to the container from your LAN for 
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| `SHADOWSOCKS` | `on` | `on`, `off` | Enable the internal SOCKS5 proxy Shadowsocks |
+| `SHADOWSOCKS` | `off` | `on`, `off` | Enable the internal SOCKS5 proxy Shadowsocks |
 | `SHADOWSOCKS_LOG` | `off` | `on`, `off` | Enable logging |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` | Internal port number for Shadowsocks to listen on |
-| `SHADOWSOCKS_PASSWORD` | `8388` | `1024` to `65535` | Password to use to connect to Shadowsocks |
+| `SHADOWSOCKS_PASSWORD` | |  | Password to use to connect to Shadowsocks |
 | `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | One of [these ciphers](https://shadowsocks.org/en/config/quick-guide.html) | Method to use for Shadowsocks |
 
 ### Tinyproxy
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| `TINYPROXY` | `on` | `on`, `off` | Enable the internal HTTP proxy tinyproxy |
+| `TINYPROXY` | `off` | `on`, `off` | Enable the internal HTTP proxy tinyproxy |
 | `TINYPROXY_LOG` | `Info` | `Info`, `Connect`, `Notice`, `Warning`, `Error`, `Critical` | Tinyproxy log level |
 | `TINYPROXY_PORT` | `8888` | `1024` to `65535` | Internal port number for Tinyproxy to listen on |
-| `TINYPROXY_USER` | `8388` | `1024` to `65535` | Username to use to connect to Tinyproxy |
-| `TINYPROXY_PASSWORD` | `8388` | `1024` to `65535` | Password to use to connect to Tinyproxy |
+| `TINYPROXY_USER` | | | Username to use to connect to Tinyproxy |
+| `TINYPROXY_PASSWORD` | | | Password to use to connect to Tinyproxy |
 
 ### System
 
