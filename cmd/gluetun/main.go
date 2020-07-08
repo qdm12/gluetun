@@ -208,6 +208,7 @@ func _main(background context.Context, args []string) int {
 
 	restartOpenvpn := make(chan struct{})
 	restartUnbound := make(chan struct{})
+	restartPublicIP := make(chan struct{})
 	openvpnDone := make(chan struct{})
 	unboundDone := make(chan struct{})
 	serverDone := make(chan struct{})
@@ -219,6 +220,9 @@ func _main(background context.Context, args []string) int {
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, uid, gid)
 	// wait for restartUnbound
 	go unboundLooper.Run(ctx, restartUnbound, unboundDone)
+
+	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, uid, gid)
+	go publicIPLooper.Run(ctx, restartPublicIP)
 
 	go func() {
 		first := true
@@ -237,7 +241,7 @@ func _main(background context.Context, args []string) int {
 				restartTickerCancel()
 				restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 				go unboundLooper.RunRestartTicker(restartTickerContext, restartUnbound)
-				onConnected(allSettings, logger, fileManager, routingConf, defaultInterface, providerConf)
+				onConnected(allSettings, logger, routingConf, defaultInterface, providerConf, restartPublicIP)
 			}
 		}
 	}()
@@ -355,10 +359,10 @@ func trimEventualProgramPrefix(s string) string {
 }
 
 func onConnected(allSettings settings.Settings,
-	logger logging.Logger, fileManager files.FileManager,
-	routingConf routing.Routing, defaultInterface string,
-	providerConf provider.Provider,
+	logger logging.Logger, routingConf routing.Routing, defaultInterface string,
+	providerConf provider.Provider, restartPublicIP chan<- struct{},
 ) {
+	restartPublicIP <- struct{}{}
 	uid, gid := allSettings.System.UID, allSettings.System.GID
 	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
 		time.AfterFunc(5*time.Second, func() {
@@ -372,22 +376,6 @@ func onConnected(allSettings settings.Settings,
 	} else {
 		logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
 	}
-	time.AfterFunc(10*time.Second, func() { // wait for Unbound to start - TODO use signal channel
-		publicIP, err := publicip.NewIPGetter(network.NewClient(3 * time.Second)).Get()
-		if err != nil {
-			logger.Error(err)
-		} else {
-			logger.Info("Public IP address is %s", publicIP)
-			err = fileManager.WriteLinesToFile(
-				string(allSettings.System.IPStatusFilepath),
-				[]string{publicIP.String()},
-				files.Ownership(uid, gid),
-				files.Permissions(0400))
-			if err != nil {
-				logger.Error(err)
-			}
-		}
-	})
 }
 
 func setupPortForwarding(logger logging.Logger, providerConf provider.Provider, filepath models.Filepath, uid, gid int) {
