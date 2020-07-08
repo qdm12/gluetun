@@ -28,6 +28,7 @@ func NewIPGetter(client network.Client) IPGetter {
 
 func (i *ipGetter) Get() (ip net.IP, err error) {
 	urls := []string{
+		"https://ifconfig.me/ip",
 		"http://ip1.dynupdate.no-ip.com:8245",
 		"http://ip1.dynupdate.no-ip.com",
 		"https://api.ipify.org",
