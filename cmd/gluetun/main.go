@@ -223,6 +223,7 @@ func _main(background context.Context, args []string) int {
 
 	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, uid, gid)
 	go publicIPLooper.Run(ctx, restartPublicIP)
+	go publicIPLooper.RunRestartTicker(ctx, restartPublicIP)
 
 	go func() {
 		first := true

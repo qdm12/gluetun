@@ -12,6 +12,7 @@ import (
 
 type Looper interface {
 	Run(ctx context.Context, restart <-chan struct{})
+	RunRestartTicker(ctx context.Context, restart chan<- struct{})
 }
 
 type looper struct {
@@ -68,6 +69,19 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}) {
 		case <-ctx.Done():
 			l.logger.Warn("context canceled: exiting loop")
 			return
+		}
+	}
+}
+
+func (l *looper) RunRestartTicker(ctx context.Context, restart chan<- struct{}) {
+	ticker := time.NewTicker(time.Hour)
+	for {
+		select {
+		case <-ctx.Done():
+			ticker.Stop()
+			return
+		case <-ticker.C:
+			restart <- struct{}{}
 		}
 	}
 }
