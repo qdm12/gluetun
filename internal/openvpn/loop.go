@@ -33,6 +33,8 @@ func NewLooper(conf Configurator, settings settings.OpenVPN, logger logging.Logg
 		logger:       logger.WithPrefix("openvpn: "),
 		streamMerger: streamMerger,
 		fatalOnError: fatalOnError,
+		uid:          uid,
+		gid:          gid,
 	}
 }
 
