@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/qdm12/golibs/command"
@@ -12,7 +13,7 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, restart <-chan struct{}, done chan<- struct{})
+	Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup)
 	RunRestartTicker(ctx context.Context, restart chan<- struct{})
 }
 
@@ -43,12 +44,13 @@ func (l *looper) attemptingRestart(err error) {
 	time.Sleep(10 * time.Second)
 }
 
-func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- struct{}) {
+func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
 	l.fallbackToUnencryptedDNS()
 	select {
 	case <-restart:
 	case <-ctx.Done():
-		close(done)
 		return
 	}
 	_, unboundCancel := context.WithCancel(ctx)
@@ -59,13 +61,11 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- s
 			case <-restart:
 			case <-ctx.Done():
 				unboundCancel()
-				close(done)
 				return
 			}
 		}
 		if ctx.Err() == context.Canceled {
 			unboundCancel()
-			close(done)
 			return
 		}
 
@@ -121,7 +121,6 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- s
 			l.logger.Warn("context canceled: exiting loop")
 			unboundCancel()
 			close(waitError)
-			close(done)
 			return
 		case <-restart: // triggered restart
 			unboundCancel()

@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"regexp"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -164,29 +165,25 @@ func _main(background context.Context, args []string) int {
 	restartPublicIP := make(chan struct{})
 	restartTinyproxy := make(chan struct{})
 	restartShadowsocks := make(chan struct{})
-	openvpnDone := make(chan struct{})
-	unboundDone := make(chan struct{})
-	serverDone := make(chan struct{})
-	tinyproxyDone := make(chan struct{})
-	shadowsocksDone := make(chan struct{})
+	wg := &sync.WaitGroup{}
 
 	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError, uid, gid)
 	// wait for restartOpenvpn
-	go openvpnLooper.Run(ctx, restartOpenvpn, openvpnDone)
+	go openvpnLooper.Run(ctx, restartOpenvpn, wg)
 
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, uid, gid)
 	// wait for restartUnbound
-	go unboundLooper.Run(ctx, restartUnbound, unboundDone)
+	go unboundLooper.Run(ctx, restartUnbound, wg)
 
 	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, uid, gid)
 	go publicIPLooper.Run(ctx, restartPublicIP)
 	go publicIPLooper.RunRestartTicker(ctx, restartPublicIP)
 
 	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid)
-	go tinyproxyLooper.Run(ctx, restartTinyproxy, tinyproxyDone)
+	go tinyproxyLooper.Run(ctx, restartTinyproxy, wg)
 
 	shadowsocksLooper := shadowsocks.NewLooper(shadowsocksConf, firewallConf, allSettings.ShadowSocks, allSettings.DNS, logger, streamMerger, uid, gid)
-	go shadowsocksLooper.Run(ctx, restartShadowsocks, shadowsocksDone)
+	go shadowsocksLooper.Run(ctx, restartShadowsocks, wg)
 
 	if allSettings.TinyProxy.Enabled {
 		<-restartTinyproxy
@@ -218,7 +215,7 @@ func _main(background context.Context, args []string) int {
 	}()
 
 	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound)
-	go httpServer.Run(ctx, serverDone)
+	go httpServer.Run(ctx, wg)
 
 	// Start openvpn for the first time
 	restartOpenvpn <- struct{}{}
@@ -256,11 +253,7 @@ func _main(background context.Context, args []string) int {
 		logger.Error(err)
 		exitStatus = 1
 	}
-	<-serverDone
-	<-unboundDone
-	<-openvpnDone
-	<-tinyproxyDone
-	<-shadowsocksDone
+	wg.Wait()
 	return exitStatus
 }
 

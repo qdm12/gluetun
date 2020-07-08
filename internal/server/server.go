@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/qdm12/golibs/logging"
 )
 
 type Server interface {
-	Run(ctx context.Context, serverDone chan struct{})
+	Run(ctx context.Context, wg *sync.WaitGroup)
 }
 
 type server struct {
@@ -29,10 +30,11 @@ func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound c
 	}
 }
 
-func (s *server) Run(ctx context.Context, serverDone chan struct{}) {
+func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
+	wg.Add(1)
 	server := http.Server{Addr: s.address, Handler: s.makeHandler()}
 	go func() {
-		defer close(serverDone)
+		defer wg.Done()
 		<-ctx.Done()
 		s.logger.Warn("context canceled: exiting loop")
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

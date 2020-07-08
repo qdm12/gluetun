@@ -2,6 +2,7 @@ package shadowsocks
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/qdm12/golibs/command"
@@ -12,7 +13,7 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, restart <-chan struct{}, done chan<- struct{})
+	Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup)
 }
 
 type looper struct {
@@ -46,11 +47,12 @@ func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings s
 	}
 }
 
-func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- struct{}) {
+func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
 	select {
 	case <-restart:
 	case <-ctx.Done():
-		close(done)
 		return
 	}
 	for {
@@ -97,7 +99,6 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, done chan<- s
 			l.logger.Warn("context canceled: exiting loop")
 			shadowsocksCancel()
 			close(waitError)
-			close(done)
 			return
 		case <-restart: // triggered restart
 			l.logger.Info("restarting")
