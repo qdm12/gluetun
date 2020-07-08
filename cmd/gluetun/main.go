@@ -129,8 +129,6 @@ func _main(background context.Context, args []string) int {
 	defer close(connectedCh)
 	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
 
-	waiter := command.NewWaiter()
-
 	connections, err := providerConf.GetOpenVPNConnections(allSettings.OpenVPN.Provider.ServerSelection)
 	fatalOnError(err)
 	err = providerConf.BuildConf(
@@ -246,12 +244,6 @@ func _main(background context.Context, args []string) int {
 			logger.Error(err)
 			exitStatus = 1
 		}
-	}
-	timeoutCtx, timeoutCancel := context.WithTimeout(background, time.Second)
-	defer timeoutCancel()
-	for _, err := range waiter.WaitForAll(timeoutCtx) {
-		logger.Error(err)
-		exitStatus = 1
 	}
 	wg.Wait()
 	return exitStatus
