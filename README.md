@@ -179,8 +179,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
-    | 🏁 `USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `USER` | | | Your **service** username, found at the bottom of the [manual setup page](https://account.surfshark.com/setup/manual) |
+    | 🏁 `PASSWORD` | | | Your **service** password |
     | `REGION` | `Austria` | One of the [Surfshark regions (subdomains)](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
 
 - Cyberghost
