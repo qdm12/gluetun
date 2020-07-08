@@ -4,55 +4,37 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/qdm12/golibs/logging"
 )
 
 type Server interface {
-	SetOpenVPNRestart(f func())
-	SetUnboundRestart(f func())
-	Run(ctx context.Context) error
+	Run(ctx context.Context, serverDone chan struct{})
 }
 
 type server struct {
-	address                 string
-	logger                  logging.Logger
-	restartOpenvpn          func()
-	restartOpenvpnSet       context.Context
-	restartOpenvpnSetSignal func()
-	restartUnbound          func()
-	restartUnboundSet       context.Context
-	restartUnboundSetSignal func()
-	sync.RWMutex
+	address        string
+	logger         logging.Logger
+	restartOpenvpn chan<- struct{}
+	restartUnbound chan<- struct{}
 }
 
-func New(address string, logger logging.Logger) Server {
-	restartOpenvpnSet, restartOpenvpnSetSignal := context.WithCancel(context.Background())
-	restartUnboundSet, restartUnboundSetSignal := context.WithCancel(context.Background())
+func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound chan<- struct{}) Server {
 	return &server{
-		address:                 address,
-		logger:                  logger.WithPrefix("http server: "),
-		restartOpenvpnSet:       restartOpenvpnSet,
-		restartOpenvpnSetSignal: restartOpenvpnSetSignal,
-		restartUnboundSet:       restartUnboundSet,
-		restartUnboundSetSignal: restartUnboundSetSignal,
+		address:        address,
+		logger:         logger.WithPrefix("http server: "),
+		restartOpenvpn: restartOpenvpn,
+		restartUnbound: restartUnbound,
 	}
 }
 
-func (s *server) Run(ctx context.Context) error {
-	if s.restartOpenvpnSet.Err() == nil {
-		s.logger.Warn("restartOpenvpn function is not set, waiting...")
-		<-s.restartOpenvpnSet.Done()
-	}
-	if s.restartUnboundSet.Err() == nil {
-		s.logger.Warn("restartUnbound function is not set, waiting...")
-		<-s.restartUnboundSet.Done()
-	}
+func (s *server) Run(ctx context.Context, serverDone chan struct{}) {
 	server := http.Server{Addr: s.address, Handler: s.makeHandler()}
 	go func() {
+		defer close(serverDone)
 		<-ctx.Done()
+		s.logger.Warn("context canceled: exiting loop")
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
@@ -60,24 +42,9 @@ func (s *server) Run(ctx context.Context) error {
 		}
 	}()
 	s.logger.Info("listening on %s", s.address)
-	return server.ListenAndServe()
-}
-
-func (s *server) SetOpenVPNRestart(f func()) {
-	s.Lock()
-	defer s.Unlock()
-	s.restartOpenvpn = f
-	if s.restartOpenvpnSet.Err() == nil {
-		s.restartOpenvpnSetSignal()
-	}
-}
-
-func (s *server) SetUnboundRestart(f func()) {
-	s.Lock()
-	defer s.Unlock()
-	s.restartUnbound = f
-	if s.restartUnboundSet.Err() == nil {
-		s.restartUnboundSetSignal()
+	err := server.ListenAndServe()
+	if err != nil && ctx.Err() != context.Canceled {
+		s.logger.Error(err)
 	}
 }
 
@@ -88,13 +55,9 @@ func (s *server) makeHandler() http.HandlerFunc {
 		case http.MethodGet:
 			switch r.RequestURI {
 			case "/openvpn/actions/restart":
-				s.RLock()
-				defer s.RUnlock()
-				s.restartOpenvpn()
+				s.restartOpenvpn <- struct{}{}
 			case "/unbound/actions/restart":
-				s.RLock()
-				defer s.RUnlock()
-				s.restartUnbound()
+				s.restartUnbound <- struct{}{}
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}
