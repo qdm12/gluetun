@@ -88,17 +88,20 @@ func _main(background context.Context, args []string) int {
 	fatalOnError(err)
 	logger.Info(allSettings.String())
 
+	// Should never change
+	uid, gid := allSettings.System.UID, allSettings.System.GID
+
 	providerConf := provider.New(allSettings.VPNSP, logger, client, fileManager, firewallConf)
 
 	if !allSettings.Firewall.Enabled {
 		firewallConf.Disable()
 	}
 
-	err = alpineConf.CreateUser("nonrootuser", allSettings.System.UID)
+	err = alpineConf.CreateUser("nonrootuser", uid)
 	fatalOnError(err)
-	err = fileManager.SetOwnership("/etc/unbound", allSettings.System.UID, allSettings.System.GID)
+	err = fileManager.SetOwnership("/etc/unbound", uid, gid)
 	fatalOnError(err)
-	err = fileManager.SetOwnership("/etc/tinyproxy", allSettings.System.UID, allSettings.System.GID)
+	err = fileManager.SetOwnership("/etc/tinyproxy", uid, gid)
 	fatalOnError(err)
 
 	if err := ovpnConf.CheckTUN(); err != nil {
@@ -132,8 +135,8 @@ func _main(background context.Context, args []string) int {
 	err = providerConf.BuildConf(
 		connections,
 		allSettings.OpenVPN.Verbosity,
-		allSettings.System.UID,
-		allSettings.System.GID,
+		uid,
+		gid,
 		allSettings.OpenVPN.Root,
 		allSettings.OpenVPN.Cipher,
 		allSettings.OpenVPN.Auth,
@@ -162,8 +165,8 @@ func _main(background context.Context, args []string) int {
 			allSettings.TinyProxy.Port,
 			allSettings.TinyProxy.User,
 			allSettings.TinyProxy.Password,
-			allSettings.System.UID,
-			allSettings.System.GID)
+			uid,
+			gid)
 		fatalOnError(err)
 		err = firewallConf.AllowAnyIncomingOnPort(ctx, allSettings.TinyProxy.Port)
 		fatalOnError(err)
@@ -187,8 +190,8 @@ func _main(background context.Context, args []string) int {
 			allSettings.ShadowSocks.Password,
 			allSettings.ShadowSocks.Method,
 			nameserver,
-			allSettings.System.UID,
-			allSettings.System.GID)
+			uid,
+			gid)
 		fatalOnError(err)
 		err = firewallConf.AllowAnyIncomingOnPort(ctx, allSettings.ShadowSocks.Port)
 		fatalOnError(err)
@@ -209,12 +212,11 @@ func _main(background context.Context, args []string) int {
 	unboundDone := make(chan struct{})
 	serverDone := make(chan struct{})
 
-	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError, allSettings.System.UID, allSettings.System.GID)
+	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError, uid, gid)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, restartOpenvpn, openvpnDone)
 
-	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger,
-		streamMerger, allSettings.System.UID, allSettings.System.GID)
+	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, uid, gid)
 	// wait for restartUnbound
 	go unboundLooper.Run(ctx, restartUnbound, unboundDone)
 
@@ -357,9 +359,10 @@ func onConnected(allSettings settings.Settings,
 	routingConf routing.Routing, defaultInterface string,
 	providerConf provider.Provider,
 ) {
+	uid, gid := allSettings.System.UID, allSettings.System.GID
 	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
 		time.AfterFunc(5*time.Second, func() {
-			setupPortForwarding(logger, providerConf, allSettings.OpenVPN.Provider.PortForwarding.Filepath, allSettings.System.UID, allSettings.System.GID)
+			setupPortForwarding(logger, providerConf, allSettings.OpenVPN.Provider.PortForwarding.Filepath, uid, gid)
 		})
 	}
 
@@ -378,7 +381,7 @@ func onConnected(allSettings settings.Settings,
 			err = fileManager.WriteLinesToFile(
 				string(allSettings.System.IPStatusFilepath),
 				[]string{publicIP.String()},
-				files.Ownership(allSettings.System.UID, allSettings.System.GID),
+				files.Ownership(uid, gid),
 				files.Permissions(0400))
 			if err != nil {
 				logger.Error(err)
