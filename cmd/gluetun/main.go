@@ -184,10 +184,10 @@ func _main(background context.Context, args []string) int {
 	go shadowsocksLooper.Run(ctx, restartShadowsocks, wg)
 
 	if allSettings.TinyProxy.Enabled {
-		<-restartTinyproxy
+		restartTinyproxy <- struct{}{}
 	}
 	if allSettings.ShadowSocks.Enabled {
-		<-restartShadowsocks
+		restartShadowsocks <- struct{}{}
 	}
 
 	go func() {
