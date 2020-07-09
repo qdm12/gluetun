@@ -58,7 +58,8 @@ func _main(background context.Context, args []string) int {
 	ctx, cancel := context.WithCancel(background)
 	defer cancel()
 	logger := createLogger()
-	fatalOnError := makeFatalOnError(logger, cancel)
+	wg := &sync.WaitGroup{}
+	fatalOnError := makeFatalOnError(logger, cancel, wg)
 	paramsReader := params.NewReader(logger)
 	fmt.Println(splash.Splash(
 		paramsReader.GetVersion(),
@@ -163,7 +164,6 @@ func _main(background context.Context, args []string) int {
 	restartPublicIP := make(chan struct{})
 	restartTinyproxy := make(chan struct{})
 	restartShadowsocks := make(chan struct{})
-	wg := &sync.WaitGroup{}
 
 	openvpnLooper := openvpn.NewLooper(ovpnConf, allSettings.OpenVPN, logger, streamMerger, fatalOnError, uid, gid)
 	// wait for restartOpenvpn
@@ -249,12 +249,17 @@ func _main(background context.Context, args []string) int {
 	return exitStatus
 }
 
-func makeFatalOnError(logger logging.Logger, cancel func()) func(err error) {
+func makeFatalOnError(logger logging.Logger, cancel func(), wg *sync.WaitGroup) func(err error) {
 	return func(err error) {
 		if err != nil {
 			logger.Error(err)
 			cancel()
-			time.Sleep(100 * time.Millisecond) // wait for operations to terminate
+			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+			go func() {
+				wg.Wait()
+				cancel()
+			}()
+			<-ctx.Done() // either timeout or wait group completed
 			os.Exit(1)
 		}
 	}
