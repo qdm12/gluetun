@@ -26,10 +26,12 @@ type looper struct {
 	gid          int
 }
 
-func (l *looper) logAndWait(err error) {
+func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
 	l.logger.Info("retrying in 1 minute")
-	time.Sleep(time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel() // just for the linter
+	<-ctx.Done()
 }
 
 func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings settings.TinyProxy,
@@ -53,7 +55,9 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 	case <-ctx.Done():
 		return
 	}
-	for {
+	defer l.logger.Warn("loop exited")
+
+	for ctx.Err() == nil {
 		err := l.conf.MakeConf(
 			l.settings.LogLevel,
 			l.settings.Port,
@@ -62,7 +66,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			l.uid,
 			l.gid)
 		if err != nil {
-			l.logAndWait(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		err = l.firewallConf.AllowAnyIncomingOnPort(ctx, l.settings.Port)
@@ -70,11 +74,11 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		if err != nil {
 			l.logger.Error(err)
 		}
-		tinyproxyCtx, tinyproxyCancel := context.WithCancel(ctx)
+		tinyproxyCtx, tinyproxyCancel := context.WithCancel(context.Background())
 		stream, waitFn, err := l.conf.Start(tinyproxyCtx)
 		if err != nil {
 			tinyproxyCancel()
-			l.logAndWait(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		go l.streamMerger.Merge(tinyproxyCtx, stream,
@@ -94,13 +98,12 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		case <-restart: // triggered restart
 			l.logger.Info("restarting")
 			tinyproxyCancel()
+			<-waitError
 			close(waitError)
 		case err := <-waitError: // unexpected error
-			l.logger.Warn(err)
-			l.logger.Info("restarting")
 			tinyproxyCancel()
 			close(waitError)
-			time.Sleep(time.Second)
+			l.logAndWait(ctx, err)
 		}
 	}
 }

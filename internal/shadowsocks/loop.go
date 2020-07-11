@@ -27,10 +27,12 @@ type looper struct {
 	gid          int
 }
 
-func (l *looper) logAndWait(err error) {
+func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
 	l.logger.Info("retrying in 1 minute")
-	time.Sleep(time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel() // just for the linter
+	<-ctx.Done()
 }
 
 func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings settings.ShadowSocks, dnsSettings settings.DNS,
@@ -55,7 +57,9 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 	case <-ctx.Done():
 		return
 	}
-	for {
+	defer l.logger.Warn("loop exited")
+
+	for ctx.Err() == nil {
 		nameserver := l.dnsSettings.PlaintextAddress.String()
 		if l.dnsSettings.Enabled {
 			nameserver = "127.0.0.1"
@@ -68,7 +72,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			l.uid,
 			l.gid)
 		if err != nil {
-			l.logAndWait(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		err = l.firewallConf.AllowAnyIncomingOnPort(ctx, l.settings.Port)
@@ -76,11 +80,11 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		if err != nil {
 			l.logger.Error(err)
 		}
-		shadowsocksCtx, shadowsocksCancel := context.WithCancel(ctx)
-		stdout, stderr, waitFn, err := l.conf.Start(ctx, "0.0.0.0", l.settings.Port, l.settings.Password, l.settings.Log)
+		shadowsocksCtx, shadowsocksCancel := context.WithCancel(context.Background())
+		stdout, stderr, waitFn, err := l.conf.Start(shadowsocksCtx, "0.0.0.0", l.settings.Port, l.settings.Password, l.settings.Log)
 		if err != nil {
 			shadowsocksCancel()
-			l.logAndWait(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		go l.streamMerger.Merge(shadowsocksCtx, stdout,
@@ -102,13 +106,12 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		case <-restart: // triggered restart
 			l.logger.Info("restarting")
 			shadowsocksCancel()
+			<-waitError
 			close(waitError)
 		case err := <-waitError: // unexpected error
-			l.logger.Warn(err)
-			l.logger.Info("restarting")
 			shadowsocksCancel()
 			close(waitError)
-			time.Sleep(time.Second)
+			l.logAndWait(ctx, err)
 		}
 	}
 }

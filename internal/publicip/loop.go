@@ -36,10 +36,12 @@ func NewLooper(client network.Client, logger logging.Logger, fileManager files.F
 	}
 }
 
-func (l *looper) logAndWait(err error) {
+func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
 	l.logger.Info("retrying in 5 seconds")
-	time.Sleep(5 * time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel() // just for the linter
+	<-ctx.Done()
 }
 
 func (l *looper) Run(ctx context.Context, restart <-chan struct{}) {
@@ -48,10 +50,12 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}) {
 	case <-ctx.Done():
 		return
 	}
-	for {
+	defer l.logger.Warn("loop exited")
+
+	for ctx.Err() == nil {
 		ip, err := l.getter.Get()
 		if err != nil {
-			l.logAndWait(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		l.logger.Info("Public IP address is %s", ip)
@@ -61,7 +65,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}) {
 			files.Ownership(l.uid, l.gid),
 			files.Permissions(0600))
 		if err != nil {
-			l.logAndWait(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		select {

@@ -37,6 +37,7 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 		defer wg.Done()
 		<-ctx.Done()
 		s.logger.Warn("context canceled: exiting loop")
+		defer s.logger.Warn("loop exited")
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {

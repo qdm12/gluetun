@@ -38,10 +38,12 @@ func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 	}
 }
 
-func (l *looper) attemptingRestart(err error) {
+func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Warn(err)
 	l.logger.Info("attempting restart in 10 seconds")
-	time.Sleep(10 * time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	<-ctx.Done()
 }
 
 func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup) {
@@ -53,8 +55,13 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 	case <-ctx.Done():
 		return
 	}
-	_, unboundCancel := context.WithCancel(ctx)
-	for {
+	defer l.logger.Warn("loop exited")
+
+	var unboundCtx context.Context
+	var unboundCancel context.CancelFunc = func() {}
+	var waitError chan error
+	triggeredRestart := false
+	for ctx.Err() == nil {
 		if !l.settings.Enabled {
 			// wait for another restart signal to recheck if it is enabled
 			select {
@@ -64,33 +71,34 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 				return
 			}
 		}
-		if ctx.Err() == context.Canceled {
-			unboundCancel()
-			return
-		}
 
 		// Setup
 		if err := l.conf.DownloadRootHints(l.uid, l.gid); err != nil {
-			l.attemptingRestart(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		if err := l.conf.DownloadRootKey(l.uid, l.gid); err != nil {
-			l.attemptingRestart(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 		if err := l.conf.MakeUnboundConf(l.settings, l.uid, l.gid); err != nil {
-			l.attemptingRestart(err)
+			l.logAndWait(ctx, err)
 			continue
 		}
 
-		// Start command
-		unboundCancel()
-		unboundCtx, unboundCancel := context.WithCancel(ctx)
+		if triggeredRestart {
+			triggeredRestart = false
+			unboundCancel()
+			<-waitError
+			close(waitError)
+		}
+		unboundCtx, unboundCancel = context.WithCancel(context.Background())
 		stream, waitFn, err := l.conf.Start(unboundCtx, l.settings.VerbosityDetailsLevel)
 		if err != nil {
 			unboundCancel()
 			l.fallbackToUnencryptedDNS()
-			l.attemptingRestart(err)
+			l.logAndWait(ctx, err)
+			continue
 		}
 
 		// Started successfully
@@ -98,16 +106,15 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
 		l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                         // use Unbound
 		if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}); err != nil { // use Unbound
-			unboundCancel()
-			l.fallbackToUnencryptedDNS()
-			l.attemptingRestart(err)
+			l.logger.Error(err)
 		}
 		if err := l.conf.WaitForUnbound(); err != nil {
 			unboundCancel()
 			l.fallbackToUnencryptedDNS()
-			l.attemptingRestart(err)
+			l.logAndWait(ctx, err)
+			continue
 		}
-		waitError := make(chan error)
+		waitError = make(chan error)
 		go func() {
 			err := waitFn() // blocking
 			waitError <- err
@@ -122,16 +129,17 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			close(waitError)
 			return
 		case <-restart: // triggered restart
-			unboundCancel()
-			close(waitError)
 			l.logger.Info("restarting")
+			// unboundCancel occurs next loop run when the setup is complete
+			triggeredRestart = true
 		case err := <-waitError: // unexpected error
-			unboundCancel()
 			close(waitError)
+			unboundCancel()
 			l.fallbackToUnencryptedDNS()
-			l.attemptingRestart(err)
+			l.logAndWait(ctx, err)
 		}
 	}
+	unboundCancel()
 }
 
 func (l *looper) fallbackToUnencryptedDNS() {
