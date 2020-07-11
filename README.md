@@ -2,7 +2,7 @@
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad, Windscribe, Surfshark and Cyberghost VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *Rather big code refactoring so things may break but I'll fix anything super quickly*
+**ANNOUNCEMENT**: *Firewall refactoring, let me know if anything breaks on :latest*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
 
@@ -20,10 +20,10 @@
 
 <details><summary>Click to show base components</summary><p>
 
-- [Alpine 3.11](https://alpinelinux.org) for a tiny image (37MB of packages, 6.7MB of Go binary and 5.6MB for Alpine)
-- [OpenVPN 2.4.8](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to your VPN provider servers
-- [IPtables 1.8.3](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
-- [Unbound 1.9.6](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
+- [Alpine 3.12](https://alpinelinux.org) for a tiny image (37MB of packages, 6.7MB of Go binary and 5.6MB for Alpine)
+- [OpenVPN 2.4.9](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to your VPN provider servers
+- [IPtables 1.8.4](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
+- [Unbound 1.10.1](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
 - [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS`, `BLOCK_SURVEILLANCE` and `BLOCK_ADS` environment variables)
 - [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/tinyproxy)
 - [Shadowsocks 3.3.4](https://pkgs.alpinelinux.org/package/edge/testing/x86/shadowsocks-libev)
@@ -32,7 +32,7 @@
 
 ## Features
 
-- Based on Alpine 3.11 for a small Docker image below 50MB
+- Based on Alpine 3.12 for a small Docker image of 52MB
 - Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark** and **Cyberghost** servers
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
