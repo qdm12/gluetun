@@ -10,59 +10,46 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type surfshark struct {
+type nordvpn struct {
 	fileManager files.FileManager
-	lookupIP    func(host string) ([]net.IP, error)
 }
 
-func newSurfshark(fileManager files.FileManager) *surfshark {
-	return &surfshark{fileManager, net.LookupIP}
+func newNordvpn(fileManager files.FileManager) *nordvpn {
+	return &nordvpn{fileManager: fileManager}
 }
 
-func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
-	var IPs []net.IP
-	for _, server := range constants.SurfsharkServers() {
+func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
+	var IP net.IP
+	for _, server := range constants.NordvpnServers() {
 		if strings.EqualFold(server.Region, selection.Region) {
-			IPs = server.IPs
+			IP = server.IP
+			break
 		}
 	}
-	if len(IPs) == 0 {
-		return nil, fmt.Errorf("no IP found for region %q", selection.Region)
+	if IP == nil {
+		return nil, fmt.Errorf("no IP found for server %q", selection.Region)
 	}
-	if selection.TargetIP != nil {
-		found := false
-		for i := range IPs {
-			if IPs[i].Equal(selection.TargetIP) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
-		}
-		IPs = []net.IP{selection.TargetIP}
+	if selection.TargetIP != nil && !selection.TargetIP.Equal(IP) {
+		return nil, fmt.Errorf("target IP address %s does not match IP address %s", selection.TargetIP, IP)
 	}
 	var port uint16
 	switch {
-	case selection.Protocol == constants.TCP:
-		port = 1443
 	case selection.Protocol == constants.UDP:
 		port = 1194
+	case selection.Protocol == constants.TCP:
+		port = 443
 	default:
 		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
-	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-	}
-	return connections, nil
+	return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
 }
 
-func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) { //nolint:dupl
+func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) { //nolint:dupl
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
-		auth = "SHA512"
+		auth = "sha512"
 	}
 	lines := []string{
 		"client",
@@ -71,18 +58,18 @@ func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity,
 		"persist-key",
 		"remote-cert-tls server",
 
-		// Surfshark specific
+		// Nordvpn specific
 		"resolv-retry infinite",
 		"tun-mtu 1500",
 		"tun-mtu-extra 32",
 		"mssfix 1450",
 		"ping 15",
-		"ping-restart 60",
+		"ping-restart 0",
 		"ping-timer-rem",
 		"reneg-sec 0",
+		"comp-lzo no",
 		"fast-io",
 		"key-direction 1",
-		"script-security 2",
 
 		// Added constant values
 		"auth-nocache",
@@ -108,21 +95,21 @@ func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity,
 	lines = append(lines, []string{
 		"<ca>",
 		"-----BEGIN CERTIFICATE-----",
-		constants.SurfsharkCertificate,
+		constants.NordvpnCertificate,
 		"-----END CERTIFICATE-----",
 		"</ca>",
 	}...)
 	lines = append(lines, []string{
 		"<tls-auth>",
 		"-----BEGIN OpenVPN Static key V1-----",
-		constants.SurfsharkOpenvpnStaticKeyV1,
+		constants.NordvpnOpenvpnStaticKeyV1,
 		"-----END OpenVPN Static key V1-----",
 		"</tls-auth>",
 		"",
 	}...)
-	return s.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return n.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
 }
 
-func (s *surfshark) GetPortForward() (port uint16, err error) {
-	panic("port forwarding is not supported for surfshark")
+func (n *nordvpn) GetPortForward() (port uint16, err error) {
+	panic("port forwarding is not supported for nordvpn")
 }
