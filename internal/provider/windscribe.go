@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"strings"
@@ -122,13 +121,5 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 }
 
 func (w *windscribe) GetPortForward() (port uint16, err error) {
-	panic("port forwarding is not supported for windscribe")
-}
-
-func (w *windscribe) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	panic("port forwarding is not supported for windscribe")
-}
-
-func (w *windscribe) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
 	panic("port forwarding is not supported for windscribe")
 }

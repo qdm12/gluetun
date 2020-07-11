@@ -1,24 +1,20 @@
 package provider
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/qdm12/golibs/files"
-	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 type mullvad struct {
 	fileManager files.FileManager
-	logger      logging.Logger
 }
 
-func newMullvad(fileManager files.FileManager, logger logging.Logger) *mullvad {
+func newMullvad(fileManager files.FileManager) *mullvad {
 	return &mullvad{
 		fileManager: fileManager,
-		logger:      logger.WithPrefix("Mullvad configurator: "),
 	}
 }
 
@@ -104,13 +100,5 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 }
 
 func (m *mullvad) GetPortForward() (port uint16, err error) {
-	panic("port forwarding is not supported for mullvad")
-}
-
-func (m *mullvad) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	panic("port forwarding is not supported for mullvad")
-}
-
-func (m *mullvad) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
 	panic("port forwarding is not supported for mullvad")
 }

@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"strings"
@@ -125,13 +124,5 @@ func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity,
 }
 
 func (s *surfshark) GetPortForward() (port uint16, err error) {
-	panic("port forwarding is not supported for surfshark")
-}
-
-func (s *surfshark) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	panic("port forwarding is not supported for surfshark")
-}
-
-func (s *surfshark) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
 	panic("port forwarding is not supported for surfshark")
 }

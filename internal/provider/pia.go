@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -14,24 +13,21 @@ import (
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/golibs/verification"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 type pia struct {
 	client      network.Client
 	fileManager files.FileManager
-	firewall    firewall.Configurator
 	random      random.Random
 	verifyPort  func(port string) error
 	lookupIP    func(host string) ([]net.IP, error)
 }
 
-func newPrivateInternetAccess(client network.Client, fileManager files.FileManager, firewall firewall.Configurator) *pia {
+func newPrivateInternetAccess(client network.Client, fileManager files.FileManager) *pia {
 	return &pia{
 		client:      client,
 		fileManager: fileManager,
-		firewall:    firewall,
 		random:      random.NewRandom(),
 		verifyPort:  verification.NewVerifier().VerifyPort,
 		lookupIP:    net.LookupIP}
@@ -168,7 +164,7 @@ func (p *pia) GetPortForward() (port uint16, err error) {
 	}
 	clientID := hex.EncodeToString(b)
 	url := fmt.Sprintf("%s/?client_id=%s", constants.PIAPortForwardURL, clientID)
-	content, status, err := p.client.GetContent(url)
+	content, status, err := p.client.GetContent(url) // TODO add ctx
 	switch {
 	case err != nil:
 		return 0, err
@@ -184,16 +180,4 @@ func (p *pia) GetPortForward() (port uint16, err error) {
 		return 0, fmt.Errorf("port forwarding response: %w", err)
 	}
 	return body.Port, nil
-}
-
-func (p *pia) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	return p.fileManager.WriteLinesToFile(
-		string(filepath),
-		[]string{fmt.Sprintf("%d", port)},
-		files.Ownership(uid, gid),
-		files.Permissions(0400))
-}
-
-func (p *pia) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
-	return p.firewall.AllowInputTrafficOnPort(ctx, device, port)
 }

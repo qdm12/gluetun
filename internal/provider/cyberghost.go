@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"strings"
@@ -123,13 +122,5 @@ func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity
 }
 
 func (c *cyberghost) GetPortForward() (port uint16, err error) {
-	panic("port forwarding is not supported for cyberghost")
-}
-
-func (c *cyberghost) WritePortForward(filepath models.Filepath, port uint16, uid, gid int) (err error) {
-	panic("port forwarding is not supported for cyberghost")
-}
-
-func (c *cyberghost) AllowPortForwardFirewall(ctx context.Context, device models.VPNDevice, port uint16) (err error) {
 	panic("port forwarding is not supported for cyberghost")
 }

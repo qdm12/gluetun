@@ -59,6 +59,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 	}
 	defer l.logger.Warn("loop exited")
 
+	var previousPort uint16
 	for ctx.Err() == nil {
 		nameserver := l.dnsSettings.PlaintextAddress.String()
 		if l.dnsSettings.Enabled {
@@ -75,11 +76,19 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			l.logAndWait(ctx, err)
 			continue
 		}
-		err = l.firewallConf.AllowAnyIncomingOnPort(ctx, l.settings.Port)
-		// TODO remove firewall rule on exit below
-		if err != nil {
-			l.logger.Error(err)
+
+		if previousPort > 0 {
+			if err := l.firewallConf.RemoveAllowedPort(ctx, previousPort); err != nil {
+				l.logger.Error(err)
+				continue
+			}
 		}
+		if err := l.firewallConf.SetAllowedPort(ctx, l.settings.Port); err != nil {
+			l.logger.Error(err)
+			continue
+		}
+		previousPort = l.settings.Port
+
 		shadowsocksCtx, shadowsocksCancel := context.WithCancel(context.Background())
 		stdout, stderr, waitFn, err := l.conf.Start(shadowsocksCtx, "0.0.0.0", l.settings.Port, l.settings.Password, l.settings.Log)
 		if err != nil {
