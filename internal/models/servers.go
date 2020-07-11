@@ -31,3 +31,8 @@ type CyberghostServer struct {
 	Group  string
 	IPs    []net.IP
 }
+
+type NordvpnServer struct {
+	Region string // server name really
+	IP     net.IP
+}
