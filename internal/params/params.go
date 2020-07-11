@@ -75,6 +75,9 @@ type Reader interface {
 	GetCyberghostRegion() (region string, err error)
 	GetCyberghostClientKey() (clientKey string, err error)
 
+	// NordVPN getters
+	GetNordvpnRegion() (region string, err error)
+
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
 	GetShadowSocksLog() (activated bool, err error)
@@ -115,7 +118,7 @@ func NewReader(logger logging.Logger) Reader {
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
 func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
-	s, err := r.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe", "surfshark", "cyberghost"})
+	s, err := r.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe", "surfshark", "cyberghost", "nordvpn"})
 	if s == "pia" {
 		s = "private internet access"
 	}
