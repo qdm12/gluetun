@@ -146,6 +146,7 @@ func (l *looper) fallbackToUnencryptedDNS() {
 	// Try with user provided plaintext ip address
 	targetIP := l.settings.PlaintextAddress
 	if targetIP != nil {
+		l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
 		l.conf.UseDNSInternally(targetIP)
 		if err := l.conf.UseDNSSystemWide(targetIP); err != nil {
 			l.logger.Error(err)
@@ -158,6 +159,7 @@ func (l *looper) fallbackToUnencryptedDNS() {
 		data := constants.DNSProviderMapping()[provider]
 		for _, targetIP = range data.IPs {
 			if targetIP.To4() != nil {
+				l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
 				l.conf.UseDNSInternally(targetIP)
 				if err := l.conf.UseDNSSystemWide(targetIP); err != nil {
 					l.logger.Error(err)

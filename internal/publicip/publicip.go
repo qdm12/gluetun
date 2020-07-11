@@ -35,7 +35,6 @@ func (i *ipGetter) Get() (ip net.IP, err error) {
 		"https://diagnostic.opendns.com/myip",
 		"https://domains.google.com/checkip",
 		"https://ifconfig.io/ip",
-		"https://ip4.ddnss.de/meineip.php",
 		"https://ipinfo.io/ip",
 	}
 	url := urls[i.randIntn(len(urls))]
