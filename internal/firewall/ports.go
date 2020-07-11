@@ -87,11 +87,13 @@ func (c *configurator) SetPortForward(ctx context.Context, port uint16) (err err
 	}
 
 	const tun = string(constants.TUN)
-	if err := c.acceptInputToPort(ctx, tun, constants.TCP, c.portForwarded, true); err != nil {
-		return fmt.Errorf("cannot remove outdated port forward rule from firewall: %w", err)
-	}
-	if err := c.acceptInputToPort(ctx, tun, constants.UDP, c.portForwarded, true); err != nil {
-		return fmt.Errorf("cannot remove outdated port forward rule from firewall: %w", err)
+	if c.portForwarded > 0 {
+		if err := c.acceptInputToPort(ctx, tun, constants.TCP, c.portForwarded, true); err != nil {
+			return fmt.Errorf("cannot remove outdated port forward rule from firewall: %w", err)
+		}
+		if err := c.acceptInputToPort(ctx, tun, constants.UDP, c.portForwarded, true); err != nil {
+			return fmt.Errorf("cannot remove outdated port forward rule from firewall: %w", err)
+		}
 	}
 
 	if port == 0 { // not changing port
