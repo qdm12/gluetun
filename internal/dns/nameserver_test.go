@@ -62,7 +62,7 @@ func Test_UseDNSSystemWide(t *testing.T) {
 				fileManager: fileManager,
 				logger:      logger,
 			}
-			err := c.UseDNSSystemWide(net.IP{127, 0, 0, 1})
+			err := c.UseDNSSystemWide(net.IP{127, 0, 0, 1}, false)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())

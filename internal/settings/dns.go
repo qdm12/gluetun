@@ -14,6 +14,7 @@ import (
 // DNS contains settings to configure Unbound for DNS over TLS operation
 type DNS struct {
 	Enabled               bool
+	KeepNameserver        bool
 	Providers             []models.DNSProvider
 	PlaintextAddress      net.IP
 	AllowedHostnames      []string
@@ -61,6 +62,10 @@ func (d *DNS) String() string {
 	if d.UpdatePeriod > 0 {
 		update = fmt.Sprintf("every %s", d.UpdatePeriod)
 	}
+	keepNameserver := "no"
+	if d.KeepNameserver {
+		keepNameserver = "yes"
+	}
 	settingsList := []string{
 		"DNS over TLS settings:",
 		"DNS over TLS provider:\n  |--" + strings.Join(providersStr, "\n  |--"),
@@ -75,6 +80,7 @@ func (d *DNS) String() string {
 		"Validation log level: " + fmt.Sprintf("%d/2", d.ValidationLogLevel),
 		"IPv6 resolution: " + ipv6,
 		"Update: " + update,
+		"Keep nameserver (disabled blocking): " + keepNameserver,
 	}
 	return strings.Join(settingsList, "\n |--")
 }
@@ -134,6 +140,10 @@ func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
 		return settings, err
 	}
 	settings.UpdatePeriod, err = paramsReader.GetDNSUpdatePeriod()
+	if err != nil {
+		return settings, err
+	}
+	settings.KeepNameserver, err = paramsReader.GetDNSKeepNameserver()
 	if err != nil {
 		return settings, err
 	}

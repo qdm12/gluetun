@@ -17,7 +17,7 @@ type Configurator interface {
 	DownloadRootKey(uid, gid int) error
 	MakeUnboundConf(settings settings.DNS, uid, gid int) (err error)
 	UseDNSInternally(IP net.IP)
-	UseDNSSystemWide(IP net.IP) error
+	UseDNSSystemWide(ip net.IP, keepNameserver bool) error
 	Start(ctx context.Context, logLevel uint8) (stdout io.ReadCloser, waitFn func() error, err error)
 	WaitForUnbound() (err error)
 	Version(ctx context.Context) (version string, err error)
