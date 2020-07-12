@@ -72,7 +72,6 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 
-	fmt.Println(1)
 	if err = c.setAllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
