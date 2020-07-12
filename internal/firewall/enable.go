@@ -63,7 +63,11 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 }
 
 func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocognit
-	defaultInterface, defaultGateway, defaultSubnet, err := c.routing.DefaultRoute()
+	defaultInterface, defaultGateway, err := c.routing.DefaultRoute()
+	if err != nil {
+		return fmt.Errorf("cannot enable firewall: %w", err)
+	}
+	localSubnet, err := c.routing.LocalSubnet()
 	if err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
@@ -100,10 +104,10 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 	if err = c.acceptOutputThroughInterface(ctx, string(constants.TUN), remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptInputFromToSubnet(ctx, defaultSubnet, "*", remove); err != nil {
+	if err := c.acceptInputFromToSubnet(ctx, localSubnet, "*", remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptOutputFromToSubnet(ctx, defaultSubnet, "*", remove); err != nil {
+	if err := c.acceptOutputFromToSubnet(ctx, localSubnet, "*", remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 	for _, subnet := range c.allowedSubnets {

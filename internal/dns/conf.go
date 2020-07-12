@@ -122,7 +122,7 @@ func generateUnboundConf(settings settings.DNS, client network.Client, logger lo
 		providerData := constants.DNSProviderMapping()[provider]
 		for _, IP := range providerData.IPs {
 			forwardZoneLines = append(forwardZoneLines,
-				fmt.Sprintf("  forward-addr: %s@853#%s", IP.String(), providerData.Host))
+				fmt.Sprintf("  forward-addr: %s@853#%s", IP, providerData.Host))
 		}
 	}
 	lines = append(lines, forwardZoneLines...)

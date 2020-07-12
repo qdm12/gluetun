@@ -157,3 +157,9 @@ func (r *reader) GetDNSPlaintext() (ip net.IP, err error) {
 	}
 	return ip, nil
 }
+
+// GetDNSKeepNameserver obtains if the nameserver present in /etc/resolv.conf
+// should be kept instead of overridden, from the environment variable DNS_KEEP_NAMESERVER
+func (r *reader) GetDNSKeepNameserver() (on bool, err error) {
+	return r.envParams.GetOnOff("DNS_KEEP_NAMESERVER", libparams.Default("off"))
+}

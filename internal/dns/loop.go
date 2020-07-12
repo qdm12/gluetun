@@ -104,8 +104,8 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		// Started successfully
 		go l.streamMerger.Merge(unboundCtx, stream,
 			command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
-		l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                         // use Unbound
-		if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}); err != nil { // use Unbound
+		l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                                                    // use Unbound
+		if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}, l.settings.KeepNameserver); err != nil { // use Unbound
 			l.logger.Error(err)
 		}
 		if err := l.conf.WaitForUnbound(); err != nil {
@@ -148,7 +148,7 @@ func (l *looper) fallbackToUnencryptedDNS() {
 	if targetIP != nil {
 		l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
 		l.conf.UseDNSInternally(targetIP)
-		if err := l.conf.UseDNSSystemWide(targetIP); err != nil {
+		if err := l.conf.UseDNSSystemWide(targetIP, l.settings.KeepNameserver); err != nil {
 			l.logger.Error(err)
 		}
 		return
@@ -161,7 +161,7 @@ func (l *looper) fallbackToUnencryptedDNS() {
 			if targetIP.To4() != nil {
 				l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
 				l.conf.UseDNSInternally(targetIP)
-				if err := l.conf.UseDNSSystemWide(targetIP); err != nil {
+				if err := l.conf.UseDNSSystemWide(targetIP, l.settings.KeepNameserver); err != nil {
 					l.logger.Error(err)
 				}
 				return

@@ -25,7 +25,7 @@ func (c *configurator) SetAllowedSubnets(ctx context.Context, subnets []net.IPNe
 		return nil
 	}
 
-	defaultInterface, defaultGateway, _, err := c.routing.DefaultRoute()
+	defaultInterface, defaultGateway, err := c.routing.DefaultRoute()
 	if err != nil {
 		return fmt.Errorf("cannot set allowed subnets through firewall: %w", err)
 	}

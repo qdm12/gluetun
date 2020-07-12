@@ -21,7 +21,7 @@ func (c *configurator) UseDNSInternally(ip net.IP) {
 }
 
 // UseDNSSystemWide changes the nameserver to use for DNS system wide
-func (c *configurator) UseDNSSystemWide(ip net.IP) error {
+func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	c.logger.Info("using DNS address %s system wide", ip.String())
 	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))
 	if err != nil {
@@ -33,10 +33,12 @@ func (c *configurator) UseDNSSystemWide(ip net.IP) error {
 		lines = nil
 	}
 	found := false
-	for i := range lines {
-		if strings.HasPrefix(lines[i], "nameserver ") {
-			lines[i] = "nameserver " + ip.String()
-			found = true
+	if !keepNameserver { // default
+		for i := range lines {
+			if strings.HasPrefix(lines[i], "nameserver ") {
+				lines[i] = "nameserver " + ip.String()
+				found = true
+			}
 		}
 	}
 	if !found {
