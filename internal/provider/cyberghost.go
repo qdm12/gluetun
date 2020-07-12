@@ -63,12 +63,10 @@ func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity
 		"remote-cert-tls server",
 
 		// Cyberghost specific
-		"resolv-retry infinite",
-		"redirect-gateway def1",
+		// "redirect-gateway def1",
 		"ncp-disable",
 		"ping 5",
-		"ping-exit 60",
-		"ping-timer-rem",
+		"explicit-exit-notify 2",
 		"script-security 2",
 		"route-delay 5",
 
