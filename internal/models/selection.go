@@ -90,6 +90,10 @@ func (p *ProviderSettings) String() string {
 			"Group: "+p.ServerSelection.Group,
 			"Region: "+p.ServerSelection.Region,
 		)
+	case "vyprvpn":
+		settingsList = append(settingsList,
+			"Region: "+p.ServerSelection.Region,
+		)
 	}
 	if p.ServerSelection.TargetIP != nil {
 		settingsList = append(settingsList,

@@ -31,3 +31,8 @@ type CyberghostServer struct {
 	Group  string
 	IPs    []net.IP
 }
+
+type VyprvpnServer struct {
+	Region string
+	IPs    []net.IP
+}

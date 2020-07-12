@@ -62,6 +62,8 @@ func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvid
 		settings.Provider, err = GetSurfsharkSettings(paramsReader)
 	case constants.Cyberghost:
 		settings.Provider, err = GetCyberghostSettings(paramsReader)
+	case constants.Vyprvpn:
+		settings.Provider, err = GetVyprvpnSettings(paramsReader)
 	default:
 		err = fmt.Errorf("VPN service provider %q is not valid", vpnProvider)
 	}
