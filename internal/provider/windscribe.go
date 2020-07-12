@@ -73,7 +73,6 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 		"remote-cert-tls server",
 
 		// Windscribe specific
-		"resolv-retry infinite",
 		"comp-lzo",
 		"key-direction 1",
 		"script-security 2",
@@ -89,7 +88,7 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
+		fmt.Sprintf("proto %s", connections[0].Protocol),
 		fmt.Sprintf("cipher %s", cipher),
 		fmt.Sprintf("auth %s", auth),
 	}
@@ -100,7 +99,7 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 		lines = append(lines, "user nonrootuser")
 	}
 	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port))
+		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP, connection.Port))
 	}
 	lines = append(lines, []string{
 		"<ca>",

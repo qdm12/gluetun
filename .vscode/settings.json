@@ -85,5 +85,7 @@
         "-v",
         // "-race"
     ],
-    "go.testTimeout": "600s"
+    "go.testTimeout": "600s",
+    "go.coverOnSingleTestFile": true,
+    "go.coverOnSingleTest": true
 }
