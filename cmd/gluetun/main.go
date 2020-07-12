@@ -123,6 +123,9 @@ func _main(background context.Context, args []string) int {
 		fatalOnError(err)
 	}
 
+	err = firewallConf.SetAllowedSubnets(ctx, allSettings.Firewall.AllowedSubnets)
+	fatalOnError(err)
+
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
 	// wait for restartOpenvpn

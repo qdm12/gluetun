@@ -11,7 +11,10 @@ func (c *configurator) SetAllowedSubnets(ctx context.Context, subnets []net.IPNe
 	defer c.stateMutex.Unlock()
 
 	if !c.enabled {
-		c.logger.Info("firewall disabled, only updating allowed subnets internal list")
+		c.logger.Info("firewall disabled, only updating allowed subnets internal list and updating routes")
+		if err := c.updateSubnetRoutes(ctx, c.allowedSubnets, subnets); err != nil {
+			return err
+		}
 		c.allowedSubnets = make([]net.IPNet, len(subnets))
 		copy(c.allowedSubnets, subnets)
 		return nil
@@ -122,6 +125,29 @@ func (c *configurator) addSubnets(ctx context.Context, subnets []net.IPNet, defa
 			return fmt.Errorf("cannot add route for allowed subnet: %w", err)
 		}
 		c.allowedSubnets = append(c.allowedSubnets, subnet)
+	}
+	return nil
+}
+
+func (c *configurator) updateSubnetRoutes(ctx context.Context, oldSubnets, newSubnets []net.IPNet) error {
+	subnetsToAdd := findSubnetsToAdd(oldSubnets, newSubnets)
+	subnetsToRemove := findSubnetsToRemove(oldSubnets, newSubnets)
+	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
+		return nil
+	}
+	defaultInterface, defaultGateway, err := c.routing.DefaultRoute()
+	if err != nil {
+		return err
+	}
+	for _, subnet := range subnetsToRemove {
+		if err := c.routing.DeleteRouteVia(ctx, subnet); err != nil {
+			c.logger.Error("cannot remove outdated route for subnet: %s", err)
+		}
+	}
+	for _, subnet := range subnetsToAdd {
+		if err := c.routing.AddRouteVia(ctx, subnet, defaultGateway, defaultInterface); err != nil {
+			c.logger.Error("cannot add route for subnet: %s", err)
+		}
 	}
 	return nil
 }

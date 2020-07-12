@@ -48,7 +48,6 @@ func (c *configurator) disable(ctx context.Context) (err error) {
 	if err = c.setAllPolicies(ctx, "ACCEPT"); err != nil {
 		return fmt.Errorf("cannot disable firewall: %w", err)
 	}
-	// TODO routes?
 	return nil
 }
 
