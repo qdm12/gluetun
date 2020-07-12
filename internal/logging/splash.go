@@ -1,4 +1,4 @@
-package splash
+package logging
 
 import (
 	"fmt"

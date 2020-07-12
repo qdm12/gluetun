@@ -102,8 +102,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		}
 
 		// Started successfully
-		go l.streamMerger.Merge(unboundCtx, stream,
-			command.MergeName("unbound"), command.MergeColor(constants.ColorUnbound()))
+		go l.streamMerger.Merge(unboundCtx, stream, command.MergeName("unbound"))
 		l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                                                    // use Unbound
 		if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}, l.settings.KeepNameserver); err != nil { // use Unbound
 			l.logger.Error(err)
