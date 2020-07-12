@@ -12,7 +12,8 @@ import (
 type Routing interface {
 	AddRouteVia(ctx context.Context, subnet net.IPNet, defaultGateway net.IP, defaultInterface string) error
 	DeleteRouteVia(ctx context.Context, subnet net.IPNet) (err error)
-	DefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error)
+	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
+	LocalSubnet() (defaultSubnet net.IPNet, err error)
 	VPNGatewayIP(defaultInterface string) (ip net.IP, err error)
 }
 

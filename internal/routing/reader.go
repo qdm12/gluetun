@@ -23,24 +23,59 @@ func parseRoutingTable(data []byte) (entries []routingEntry, err error) {
 	return entries, nil
 }
 
-func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, defaultSubnet net.IPNet, err error) {
-	r.logger.Info("detecting default network route")
+func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
 	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
-		return "", nil, defaultSubnet, err
+		return "", nil, err
 	}
 	entries, err := parseRoutingTable(data)
 	if err != nil {
-		return "", nil, defaultSubnet, err
+		return "", nil, err
 	}
 	if len(entries) < 2 {
-		return "", nil, defaultSubnet, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
+		return "", nil, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
 	}
-	defaultInterface = entries[0].iface
-	defaultGateway = entries[0].gateway
-	defaultSubnet = net.IPNet{IP: entries[1].destination, Mask: entries[1].mask}
-	r.logger.Info("default route found: interface %s, gateway %s, subnet %s", defaultInterface, defaultGateway.String(), defaultSubnet.String())
-	return defaultInterface, defaultGateway, defaultSubnet, nil
+	var defaultRouteEntry routingEntry
+	for _, entry := range entries {
+		if entry.mask.String() == "00000000" {
+			defaultRouteEntry = entry
+			break
+		}
+	}
+	if defaultRouteEntry.iface == "" {
+		return "", nil, fmt.Errorf("cannot find default route")
+	}
+	defaultInterface = defaultRouteEntry.iface
+	defaultGateway = defaultRouteEntry.gateway
+	r.logger.Info("default route found: interface %s, gateway %s", defaultInterface, defaultGateway.String())
+	return defaultInterface, defaultGateway, nil
+}
+
+func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
+	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
+	if err != nil {
+		return defaultSubnet, err
+	}
+	entries, err := parseRoutingTable(data)
+	if err != nil {
+		return defaultSubnet, err
+	}
+	if len(entries) < 2 {
+		return defaultSubnet, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
+	}
+	var localSubnetEntry routingEntry
+	for _, entry := range entries {
+		if entry.gateway.Equal(net.IP{0, 0, 0, 0}) && !strings.HasPrefix(entry.iface, "tun") {
+			localSubnetEntry = entry
+			break
+		}
+	}
+	if localSubnetEntry.iface == "" {
+		return defaultSubnet, fmt.Errorf("cannot find local subnet route")
+	}
+	defaultSubnet = net.IPNet{IP: localSubnetEntry.destination, Mask: localSubnetEntry.mask}
+	r.logger.Info("local subnet found: %s", defaultSubnet.String())
+	return defaultSubnet, nil
 }
 
 func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {

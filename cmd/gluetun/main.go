@@ -301,7 +301,7 @@ func onConnected(allSettings settings.Settings, logger logging.Logger, routingCo
 			portForward <- struct{}{}
 		})
 	}
-	defaultInterface, _, _, err := routingConf.DefaultRoute()
+	defaultInterface, _, err := routingConf.DefaultRoute()
 	if err != nil {
 		logger.Warn(err)
 	} else {
