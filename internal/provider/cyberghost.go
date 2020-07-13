@@ -5,17 +5,15 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type cyberghost struct {
-	fileManager files.FileManager
-}
+type cyberghost struct{}
 
-func newCyberghost(fileManager files.FileManager) *cyberghost {
-	return &cyberghost{fileManager: fileManager}
+func newCyberghost() *cyberghost {
+	return &cyberghost{}
 }
 
 func (c *cyberghost) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
@@ -47,14 +45,14 @@ func (c *cyberghost) GetOpenVPNConnections(selection models.ServerSelection) (co
 	return connections, nil
 }
 
-func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) {
+func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
 		auth = "SHA256"
 	}
-	lines := []string{
+	lines = []string{
 		"client",
 		"dev tun",
 		"nobind",
@@ -116,9 +114,9 @@ func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity
 		"</key>",
 		"",
 	}...)
-	return c.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return lines
 }
 
-func (c *cyberghost) GetPortForward() (port uint16, err error) {
+func (c *cyberghost) GetPortForward(client network.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for cyberghost")
 }

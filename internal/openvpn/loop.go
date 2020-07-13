@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/provider"
@@ -69,10 +70,10 @@ func (l *looper) Run(ctx context.Context, restart, portForward <-chan struct{}, 
 	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
-		providerConf := provider.New(l.provider, l.client, l.fileManager)
+		providerConf := provider.New(l.provider)
 		connections, err := providerConf.GetOpenVPNConnections(l.settings.Provider.ServerSelection)
 		l.fatalOnError(err)
-		err = providerConf.BuildConf(
+		lines := providerConf.BuildConf(
 			connections,
 			l.settings.Verbosity,
 			l.uid,
@@ -82,6 +83,7 @@ func (l *looper) Run(ctx context.Context, restart, portForward <-chan struct{}, 
 			l.settings.Auth,
 			l.settings.Provider.ExtraConfigOptions,
 		)
+		err = l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400))
 		l.fatalOnError(err)
 
 		err = l.conf.WriteAuthFile(l.settings.User, l.settings.Password, l.uid, l.gid)
@@ -106,7 +108,7 @@ func (l *looper) Run(ctx context.Context, restart, portForward <-chan struct{}, 
 				case <-ctx.Done():
 					return
 				case <-portForward:
-					l.portForward(ctx, providerConf)
+					l.portForward(ctx, providerConf, l.client)
 				}
 			}
 		}(openvpnCtx)
@@ -145,7 +147,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	<-ctx.Done()
 }
 
-func (l *looper) portForward(ctx context.Context, providerConf provider.Provider) {
+func (l *looper) portForward(ctx context.Context, providerConf provider.Provider, client network.Client) {
 	if !l.settings.Provider.PortForwarding.Enabled {
 		return
 	}
@@ -155,7 +157,7 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 		if ctx.Err() != nil {
 			return
 		}
-		port, err = providerConf.GetPortForward()
+		port, err = providerConf.GetPortForward(client)
 		if err != nil {
 			l.logAndWait(ctx, err)
 			continue

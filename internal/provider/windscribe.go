@@ -5,17 +5,15 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type windscribe struct {
-	fileManager files.FileManager
-}
+type windscribe struct{}
 
-func newWindscribe(fileManager files.FileManager) *windscribe {
-	return &windscribe{fileManager: fileManager}
+func newWindscribe() *windscribe {
+	return &windscribe{}
 }
 
 func (w *windscribe) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
@@ -58,14 +56,14 @@ func (w *windscribe) GetOpenVPNConnections(selection models.ServerSelection) (co
 	return connections, nil
 }
 
-func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) {
+func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
 		auth = "sha512"
 	}
-	lines := []string{
+	lines = []string{
 		"client",
 		"dev tun",
 		"nobind",
@@ -116,9 +114,9 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 		"</tls-auth>",
 		"",
 	}...)
-	return w.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return lines
 }
 
-func (w *windscribe) GetPortForward() (port uint16, err error) {
+func (w *windscribe) GetPortForward(client network.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for windscribe")
 }
