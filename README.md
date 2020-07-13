@@ -68,6 +68,10 @@
 
 - Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost)
 
+### Vyprvpn
+
+- Pick the [region](https://www.vyprvpn.com/server-locations)
+
 ### Extra niche features
 
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
@@ -86,7 +90,9 @@
             [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
         - Surfshark: **username** and **password** ([sign up](https://order.surfshark.com/))
-        - Cyberghost: **username**, **password** and **device client key file** ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
+        - Cyberghost: **username**, **password** and **device client key file**
+          ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
+        - Vyprvpn: **username** and **password**
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
@@ -136,7 +142,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark` | VPN Service Provider |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn` | VPN Service Provider |
 | `IP_STATUS_FILE` | `/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
@@ -200,6 +206,14 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     ```
 
     And use the line produced as the environment variable `CLIENT_KEY`
+
+- VyprVPN
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | `REGION` | `Austria` | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
 
 ### DNS over TLS
 

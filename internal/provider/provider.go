@@ -26,6 +26,8 @@ func New(provider models.VPNProvider, client network.Client, fileManager files.F
 		return newSurfshark(fileManager)
 	case constants.Cyberghost:
 		return newCyberghost(fileManager)
+	case constants.Vyprvpn:
+		return newVyprvpn(fileManager)
 	default:
 		return nil // should never occur
 	}

@@ -15,6 +15,8 @@ const (
 	Surfshark models.VPNProvider = "surfshark"
 	// Cyberghost is a VPN provider
 	Cyberghost models.VPNProvider = "cyberghost"
+	// Vyprvpn is a VPN provider
+	Vyprvpn models.VPNProvider = "vyprvpn"
 )
 
 const (
