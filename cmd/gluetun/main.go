@@ -42,6 +42,8 @@ func _main(background context.Context, args []string) int {
 			err = cli.HealthCheck()
 		case "clientkey":
 			err = cli.ClientKey(args[2:])
+		case "openvpnconfig":
+			err = cli.OpenvpnConfig()
 		default:
 			err = fmt.Errorf("command %q is unknown", args[1])
 		}
