@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
@@ -30,11 +29,6 @@ func (c *configurator) SetVPNConnections(ctx context.Context, connections []mode
 	defaultInterface, _, err := c.routing.DefaultRoute()
 	if err != nil {
 		return fmt.Errorf("cannot set VPN connections through firewall: %w", err)
-	}
-
-	// TODO remove elsewhere?
-	if err := c.acceptOutputThroughInterface(ctx, string(constants.TUN), false); err != nil {
-		return fmt.Errorf("cannot allow traffic through tunnel: %w", err)
 	}
 
 	c.removeConnections(ctx, connectionsToRemove, defaultInterface)
