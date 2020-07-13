@@ -102,17 +102,17 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 	if err = c.acceptOutputThroughInterface(ctx, string(constants.TUN), remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptInputFromToSubnet(ctx, localSubnet, "*", remove); err != nil {
+	if err := c.acceptInputFromSubnetToSubnet(ctx, "*", localSubnet, localSubnet, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptOutputFromToSubnet(ctx, localSubnet, "*", remove); err != nil {
+	if err := c.acceptOutputFromSubnetToSubnet(ctx, "*", localSubnet, localSubnet, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 	for _, subnet := range c.allowedSubnets {
-		if err := c.acceptInputFromToSubnet(ctx, subnet, defaultInterface, remove); err != nil {
+		if err := c.acceptInputFromSubnetToSubnet(ctx, defaultInterface, subnet, localSubnet, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
-		if err := c.acceptOutputFromToSubnet(ctx, subnet, defaultInterface, remove); err != nil {
+		if err := c.acceptOutputFromSubnetToSubnet(ctx, defaultInterface, localSubnet, subnet, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}
