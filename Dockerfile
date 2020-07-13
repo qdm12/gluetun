@@ -80,6 +80,7 @@ ENV VPNSP=pia \
     # Firewall
     FIREWALL=on \
     EXTRA_SUBNETS= \
+    FIREWALL_DEBUG=off \
     # Tinyproxy
     TINYPROXY=off \
     TINYPROXY_LOG=Info \

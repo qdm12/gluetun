@@ -11,6 +11,7 @@ import (
 type Firewall struct {
 	AllowedSubnets []net.IPNet
 	Enabled        bool
+	Debug          bool
 }
 
 func (f *Firewall) String() string {
@@ -25,6 +26,9 @@ func (f *Firewall) String() string {
 		"Firewall settings:",
 		"Allowed subnets: " + strings.Join(allowedSubnets, ", "),
 	}
+	if f.Debug {
+		settingsList = append(settingsList, "Debug: on")
+	}
 	return strings.Join(settingsList, "\n |--")
 }
 
@@ -35,6 +39,10 @@ func GetFirewallSettings(paramsReader params.Reader) (settings Firewall, err err
 		return settings, err
 	}
 	settings.Enabled, err = paramsReader.GetFirewall()
+	if err != nil {
+		return settings, err
+	}
+	settings.Debug, err = paramsReader.GetFirewallDebug()
 	if err != nil {
 		return settings, err
 	}

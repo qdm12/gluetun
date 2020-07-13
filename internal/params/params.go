@@ -41,6 +41,7 @@ type Reader interface {
 	// Firewall getters
 	GetFirewall() (enabled bool, err error)
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
+	GetFirewallDebug() (debug bool, err error)
 
 	// VPN getters
 	GetUser() (s string, err error)

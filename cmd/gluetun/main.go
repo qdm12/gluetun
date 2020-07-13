@@ -96,6 +96,11 @@ func _main(background context.Context, args []string) int {
 	err = fileManager.SetOwnership("/etc/tinyproxy", uid, gid)
 	fatalOnError(err)
 
+	if allSettings.Firewall.Debug {
+		firewallConf.SetDebug()
+		routingConf.SetDebug()
+	}
+
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()

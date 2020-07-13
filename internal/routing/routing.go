@@ -15,12 +15,14 @@ type Routing interface {
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
 	LocalSubnet() (defaultSubnet net.IPNet, err error)
 	VPNGatewayIP(defaultInterface string) (ip net.IP, err error)
+	SetDebug()
 }
 
 type routing struct {
 	commander   command.Commander
 	logger      logging.Logger
 	fileManager files.FileManager
+	debug       bool
 }
 
 // NewConfigurator creates a new Configurator instance
@@ -30,4 +32,8 @@ func NewRouting(logger logging.Logger, fileManager files.FileManager) Routing {
 		logger:      logger.WithPrefix("routing: "),
 		fileManager: fileManager,
 	}
+}
+
+func (c *routing) SetDebug() {
+	c.debug = true
 }

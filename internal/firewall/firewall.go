@@ -21,6 +21,7 @@ type Configurator interface {
 	SetAllowedPort(ctx context.Context, port uint16) error
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 	SetPortForward(ctx context.Context, port uint16) (err error)
+	SetDebug()
 }
 
 type configurator struct { //nolint:maligned
@@ -29,6 +30,7 @@ type configurator struct { //nolint:maligned
 	routing       routing.Routing
 	fileManager   files.FileManager // for custom iptables rules
 	iptablesMutex sync.Mutex
+	debug         bool
 
 	// State
 	enabled        bool
@@ -48,4 +50,8 @@ func NewConfigurator(logger logging.Logger, routing routing.Routing, fileManager
 		fileManager:  fileManager,
 		allowedPorts: make(map[uint16]struct{}),
 	}
+}
+
+func (c *configurator) SetDebug() {
+	c.debug = true
 }

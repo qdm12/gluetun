@@ -57,6 +57,9 @@ func (c *configurator) runIptablesInstructions(ctx context.Context, instructions
 func (c *configurator) runIptablesInstruction(ctx context.Context, instruction string) error {
 	c.iptablesMutex.Lock() // only one iptables command at once
 	defer c.iptablesMutex.Unlock()
+	if c.debug {
+		fmt.Printf("iptables %s\n", instruction)
+	}
 	flags := strings.Fields(instruction)
 	if output, err := c.commander.Run(ctx, "iptables", flags...); err != nil {
 		return fmt.Errorf("failed executing \"iptables %s\": %s: %w", instruction, output, err)
