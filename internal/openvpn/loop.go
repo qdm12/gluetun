@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/provider"
@@ -112,8 +111,7 @@ func (l *looper) Run(ctx context.Context, restart, portForward <-chan struct{}, 
 			}
 		}(openvpnCtx)
 
-		go l.streamMerger.Merge(openvpnCtx, stream,
-			command.MergeName("openvpn"), command.MergeColor(constants.ColorOpenvpn()))
+		go l.streamMerger.Merge(openvpnCtx, stream, command.MergeName("openvpn"))
 		waitError := make(chan error)
 		go func() {
 			err := waitFn() // blocking

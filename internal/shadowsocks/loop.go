@@ -7,7 +7,6 @@ import (
 
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
@@ -96,10 +95,8 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			l.logAndWait(ctx, err)
 			continue
 		}
-		go l.streamMerger.Merge(shadowsocksCtx, stdout,
-			command.MergeName("shadowsocks"), command.MergeColor(constants.ColorShadowsocks()))
-		go l.streamMerger.Merge(shadowsocksCtx, stderr,
-			command.MergeName("shadowsocks error"), command.MergeColor(constants.ColorShadowsocksError()))
+		go l.streamMerger.Merge(shadowsocksCtx, stdout, command.MergeName("shadowsocks"))
+		go l.streamMerger.Merge(shadowsocksCtx, stderr, command.MergeName("shadowsocks error"))
 		waitError := make(chan error)
 		go func() {
 			err := waitFn() // blocking

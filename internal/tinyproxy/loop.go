@@ -7,7 +7,6 @@ import (
 
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
@@ -90,8 +89,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			l.logAndWait(ctx, err)
 			continue
 		}
-		go l.streamMerger.Merge(tinyproxyCtx, stream,
-			command.MergeName("tinyproxy"), command.MergeColor(constants.ColorTinyproxy()))
+		go l.streamMerger.Merge(tinyproxyCtx, stream, command.MergeName("tinyproxy"))
 		waitError := make(chan error)
 		go func() {
 			err := waitFn() // blocking
