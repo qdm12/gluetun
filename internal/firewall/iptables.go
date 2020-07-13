@@ -57,6 +57,9 @@ func (c *configurator) runIptablesInstructions(ctx context.Context, instructions
 func (c *configurator) runIptablesInstruction(ctx context.Context, instruction string) error {
 	c.iptablesMutex.Lock() // only one iptables command at once
 	defer c.iptablesMutex.Unlock()
+	if c.debug {
+		fmt.Printf("iptables %s\n", instruction)
+	}
 	flags := strings.Fields(instruction)
 	if output, err := c.commander.Run(ctx, "iptables", flags...); err != nil {
 		return fmt.Errorf("failed executing \"iptables %s\": %s: %w", instruction, output, err)
@@ -109,26 +112,24 @@ func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context, defaultInte
 			appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol, connection.Protocol, connection.Port))
 }
 
-func (c *configurator) acceptInputFromToSubnet(ctx context.Context, subnet net.IPNet, intf string, remove bool) error {
-	subnetStr := subnet.String()
+func (c *configurator) acceptInputFromSubnetToSubnet(ctx context.Context, intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
 	}
 	return c.runIptablesInstruction(ctx, fmt.Sprintf(
-		"%s INPUT %s -s %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, subnetStr, subnetStr,
+		"%s INPUT %s -s %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
 	))
 }
 
 // Thanks to @npawelek
-func (c *configurator) acceptOutputFromToSubnet(ctx context.Context, subnet net.IPNet, intf string, remove bool) error {
-	subnetStr := subnet.String()
+func (c *configurator) acceptOutputFromSubnetToSubnet(ctx context.Context, intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
 	interfaceFlag := "-o " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
 	}
 	return c.runIptablesInstruction(ctx, fmt.Sprintf(
-		"%s OUTPUT %s -s %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, subnetStr, subnetStr,
+		"%s OUTPUT %s -s %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
 	))
 }
 

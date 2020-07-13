@@ -136,6 +136,24 @@ func GetCyberghostSettings(paramsReader params.Reader) (settings models.Provider
 	return settings, nil
 }
 
+// GetVyprvpnSettings obtains Vyprvpn settings from environment variables using the params package.
+func GetVyprvpnSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
+	settings.Name = constants.Vyprvpn
+	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.TargetIP, err = paramsReader.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Region, err = paramsReader.GetVyprvpnRegion()
+	if err != nil {
+		return settings, err
+	}
+	return settings, nil
+}
+
 // GetNordvpnSettings obtains NordVPN settings from environment variables using the params package.
 func GetNordvpnSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
 	settings.Name = constants.Nordvpn

@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -20,8 +21,9 @@ func main() {
 	os.Exit(_main())
 }
 
+// Find subdomains from .ovpn files contained in a .zip file
 func _main() int {
-	provider := flag.String("provider", "surfshark", "VPN provider to parse openvpn files for, can be 'surfshark'")
+	provider := flag.String("provider", "surfshark", "VPN provider to parse openvpn files for, can be 'surfshark' or 'vyprvpn")
 	flag.Parse()
 
 	var urls []string
@@ -33,6 +35,11 @@ func _main() int {
 			"https://v2uploads.zopim.io/p/2/L/p2LbwLkvfQoSdzOl6VEltzQA6StiZqrs/12500634259669c77012765139bcfe4f4c90db1e.zip",
 		}
 		suffix = ".prod.surfshark.com"
+	case "vyprvpn":
+		urls = []string{
+			"https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip",
+		}
+		suffix = ".vyprvpn.com"
 	default:
 		fmt.Printf("Provider %q is not supported\n", *provider)
 		return 1
@@ -43,31 +50,44 @@ func _main() int {
 		return 1
 	}
 
-	uniqueSubdomains := make(map[string]struct{})
-	for _, content := range contents {
+	uniqueSubdomainsToFilename := make(map[string]string)
+	for fileName, content := range contents {
 		subdomain, err := extractInformation(content, suffix)
 		if err != nil {
 			fmt.Println(err)
 			return 1
 		} else if len(subdomain) > 0 {
-			uniqueSubdomains[subdomain] = struct{}{}
+			fileName = strings.TrimSuffix(fileName, ".ovpn")
+			fileName = strings.ReplaceAll(fileName, " - ", " ")
+			uniqueSubdomainsToFilename[subdomain] = fileName
 		}
 	}
-	subdomains := make([]string, len(uniqueSubdomains))
+	type subdomainFilename struct {
+		subdomain string
+		fileName  string
+	}
+	subdomains := make([]subdomainFilename, len(uniqueSubdomainsToFilename))
 	i := 0
-	for subdomain := range uniqueSubdomains {
-		subdomains[i] = subdomain
+	for subdomain, fileName := range uniqueSubdomainsToFilename {
+		subdomains[i] = subdomainFilename{
+			subdomain: subdomain,
+			fileName:  fileName,
+		}
 		i++
 	}
 	sort.Slice(subdomains, func(i, j int) bool {
-		return subdomains[i] < subdomains[j]
+		return subdomains[i].subdomain < subdomains[j].subdomain
 	})
-	fmt.Println("Subdomains found are: ", strings.Join(subdomains, ","))
+	fmt.Println("Subdomain Filename")
+	for i := range subdomains {
+		fmt.Printf("%s %s\n", subdomains[i].subdomain, subdomains[i].fileName)
+	}
 	return 0
 }
 
-func fetchAndExtractFiles(urls ...string) (contents [][]byte, err error) {
+func fetchAndExtractFiles(urls ...string) (contents map[string][]byte, err error) {
 	client := network.NewClient(10 * time.Second)
+	contents = make(map[string][]byte)
 	for _, url := range urls {
 		zipBytes, status, err := client.GetContent(url)
 		if err != nil {
@@ -79,24 +99,30 @@ func fetchAndExtractFiles(urls ...string) (contents [][]byte, err error) {
 		if err != nil {
 			return nil, err
 		}
-		contents = append(contents, newContents...)
+		for fileName, content := range newContents {
+			contents[fileName] = content
+		}
 	}
 	return contents, nil
 }
 
-func zipExtractAll(zipBytes []byte) (contents [][]byte, err error) {
+func zipExtractAll(zipBytes []byte) (contents map[string][]byte, err error) {
 	r, err := zip.NewReader(bytes.NewReader(zipBytes), int64(len(zipBytes)))
 	if err != nil {
 		return nil, err
 	}
-	contents = make([][]byte, len(r.File))
-	for i, zf := range r.File {
+	contents = map[string][]byte{}
+	for _, zf := range r.File {
+		fileName := filepath.Base(zf.Name)
+		if !strings.HasSuffix(fileName, ".ovpn") {
+			continue
+		}
 		f, err := zf.Open()
 		if err != nil {
 			return nil, err
 		}
 		defer f.Close()
-		contents[i], err = ioutil.ReadAll(f)
+		contents[fileName], err = ioutil.ReadAll(f)
 		if err != nil {
 			return nil, err
 		}
@@ -122,5 +148,5 @@ func extractInformation(content []byte, suffix string) (subdomain string, err er
 			return strings.TrimSuffix(host, suffix), nil
 		}
 	}
-	return "", fmt.Errorf("could not find remote line")
+	return "", fmt.Errorf("could not find remote line in: %s", string(content))
 }

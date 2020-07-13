@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"regexp"
 	"strings"
 	"sync"
 	"syscall"
@@ -19,6 +18,7 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/cli"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
+	gluetunLogging "github.com/qdm12/private-internet-access-docker/internal/logging"
 	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
 	"github.com/qdm12/private-internet-access-docker/internal/publicip"
@@ -26,7 +26,6 @@ import (
 	"github.com/qdm12/private-internet-access-docker/internal/server"
 	"github.com/qdm12/private-internet-access-docker/internal/settings"
 	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
-	"github.com/qdm12/private-internet-access-docker/internal/splash"
 	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
 )
 
@@ -58,7 +57,7 @@ func _main(background context.Context, args []string) int {
 	wg := &sync.WaitGroup{}
 	fatalOnError := makeFatalOnError(logger, cancel, wg)
 	paramsReader := params.NewReader(logger)
-	fmt.Println(splash.Splash(
+	fmt.Println(gluetunLogging.Splash(
 		paramsReader.GetVersion(),
 		paramsReader.GetVcsRef(),
 		paramsReader.GetBuildDate()))
@@ -97,6 +96,11 @@ func _main(background context.Context, args []string) int {
 	err = fileManager.SetOwnership("/etc/tinyproxy", uid, gid)
 	fatalOnError(err)
 
+	if allSettings.Firewall.Debug {
+		firewallConf.SetDebug()
+		routingConf.SetDebug()
+	}
+
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()
@@ -122,6 +126,9 @@ func _main(background context.Context, args []string) int {
 		err := firewallConf.SetEnabled(ctx, true) // disabled by default
 		fatalOnError(err)
 	}
+
+	err = firewallConf.SetAllowedSubnets(ctx, allSettings.Firewall.AllowedSubnets)
+	fatalOnError(err)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
@@ -260,35 +267,24 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 	// Blocking line merging paramsReader for all programs: openvpn, tinyproxy, unbound and shadowsocks
 	logger.Info("Launching standard output merger")
 	streamMerger.CollectLines(ctx, func(line string) {
-		line = trimEventualProgramPrefix(line)
-		logger.Info(line)
+		line, level := gluetunLogging.PostProcessLine(line)
+		if line == "" {
+			return
+		}
+		switch level {
+		case logging.InfoLevel:
+			logger.Info(line)
+		case logging.WarnLevel:
+			logger.Warn(line)
+		case logging.ErrorLevel:
+			logger.Error(line)
+		}
 		if strings.Contains(line, "Initialization Sequence Completed") {
 			signalConnected()
 		}
 	}, func(err error) {
 		logger.Warn(err)
 	})
-}
-
-func trimEventualProgramPrefix(s string) string {
-	switch {
-	case strings.HasPrefix(s, "unbound: "):
-		prefixRegex := regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:0\] `)
-		prefix := prefixRegex.FindString(s)
-		return fmt.Sprintf("unbound: %s", s[len(prefix):])
-	case strings.HasPrefix(s, "shadowsocks: "):
-		prefixRegex := regexp.MustCompile(`shadowsocks:[ ]+2[0-9]{3}\-[0-1][0-9]\-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] `)
-		prefix := prefixRegex.FindString(s)
-		return fmt.Sprintf("shadowsocks: %s", s[len(prefix):])
-	case strings.HasPrefix(s, "tinyproxy: "):
-		logLevelRegex := regexp.MustCompile(`INFO|CONNECT|NOTICE|WARNING|ERROR|CRITICAL`)
-		logLevel := logLevelRegex.FindString(s)
-		prefixRegex := regexp.MustCompile(`tinyproxy: (INFO|CONNECT|NOTICE|WARNING|ERROR|CRITICAL)[ ]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] \[[0-9]+\]: `)
-		prefix := prefixRegex.FindString(s)
-		return fmt.Sprintf("tinyproxy: %s %s", logLevel, s[len(prefix):])
-	default:
-		return s
-	}
 }
 
 func onConnected(allSettings settings.Settings, logger logging.Logger, routingConf routing.Routing,

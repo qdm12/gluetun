@@ -34,3 +34,8 @@ func (r *reader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
 	}
 	return extraSubnets, nil
 }
+
+// GetFirewallDebug obtains if the firewall should run in debug verbose mode from the environment variable FIREWALL_DEBUG
+func (r *reader) GetFirewallDebug() (debug bool, err error) {
+	return r.envParams.GetOnOff("FIREWALL_DEBUG", libparams.Default("off"))
+}

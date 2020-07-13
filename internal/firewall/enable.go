@@ -48,7 +48,6 @@ func (c *configurator) disable(ctx context.Context) (err error) {
 	if err = c.setAllPolicies(ctx, "ACCEPT"); err != nil {
 		return fmt.Errorf("cannot disable firewall: %w", err)
 	}
-	// TODO routes?
 	return nil
 }
 
@@ -72,7 +71,6 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 
-	fmt.Println(1)
 	if err = c.setAllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
@@ -104,17 +102,17 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 	if err = c.acceptOutputThroughInterface(ctx, string(constants.TUN), remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptInputFromToSubnet(ctx, localSubnet, "*", remove); err != nil {
+	if err := c.acceptInputFromSubnetToSubnet(ctx, "*", localSubnet, localSubnet, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptOutputFromToSubnet(ctx, localSubnet, "*", remove); err != nil {
+	if err := c.acceptOutputFromSubnetToSubnet(ctx, "*", localSubnet, localSubnet, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 	for _, subnet := range c.allowedSubnets {
-		if err := c.acceptInputFromToSubnet(ctx, subnet, defaultInterface, remove); err != nil {
+		if err := c.acceptInputFromSubnetToSubnet(ctx, defaultInterface, subnet, localSubnet, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
-		if err := c.acceptOutputFromToSubnet(ctx, subnet, defaultInterface, remove); err != nil {
+		if err := c.acceptOutputFromSubnetToSubnet(ctx, defaultInterface, localSubnet, subnet, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}

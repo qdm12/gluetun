@@ -16,6 +16,9 @@ func (r *routing) AddRouteVia(ctx context.Context, subnet net.IPNet, defaultGate
 	} else if exists {
 		return nil
 	}
+	if r.debug {
+		fmt.Printf("ip route add %s via %s dev %s\n", subnetStr, defaultGateway, defaultInterface)
+	}
 	output, err := r.commander.Run(ctx, "ip", "route", "add", subnetStr, "via", defaultGateway.String(), "dev", defaultInterface)
 	if err != nil {
 		return fmt.Errorf("cannot add route for %s via %s %s %s: %s: %w", subnetStr, defaultGateway, "dev", defaultInterface, output, err)
@@ -31,6 +34,9 @@ func (r *routing) DeleteRouteVia(ctx context.Context, subnet net.IPNet) (err err
 		return err
 	} else if !exists { // thanks to @npawelek https://github.com/npawelek
 		return nil
+	}
+	if r.debug {
+		fmt.Printf("ip route del %s\n", subnetStr)
 	}
 	output, err := r.commander.Run(ctx, "ip", "route", "del", subnetStr)
 	if err != nil {

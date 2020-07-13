@@ -18,7 +18,7 @@ func main() {
 
 func _main(ctx context.Context) int {
 	resolverAddress := flag.String("resolver", "1.1.1.1", "DNS Resolver IP address to use")
-	provider := flag.String("provider", "pia", "VPN provider to resolve for, 'pia', 'windscribe' or 'cyberghost'")
+	provider := flag.String("provider", "pia", "VPN provider to resolve for, 'pia', 'windscribe', 'cyberghost' or 'vyprvpn'")
 	region := flag.String("region", "all", "Comma separated list of VPN provider region names to resolve for, use 'all' to resolve all")
 	flag.Parse()
 
@@ -40,6 +40,9 @@ func _main(ctx context.Context) int {
 	case "cyberghost":
 		domain = "cg-dialup.net"
 		servers = cyberghostServers()
+	case "vyprvpn":
+		domain = "vyprvpn.com"
+		servers = vyprvpnServers()
 	default:
 		fmt.Printf("Provider %q is not supported\n", *provider)
 		return 1
@@ -126,6 +129,11 @@ func formatLine(provider string, s server, ips []net.IP) string {
 		return fmt.Sprintf(
 			"{Region: %q, Group: %q, IPs: []net.IP{%s}},",
 			s.region, s.group, ipString,
+		)
+	case "vyprvpn":
+		return fmt.Sprintf(
+			"{Region: %q, IPs: []net.IP{%s}},",
+			s.region, ipString,
 		)
 	}
 	return ""
@@ -659,5 +667,83 @@ func cyberghostServers() []server {
 		{subdomain: "97-1-ve", region: "Venezuela", group: "Premium TCP Europe"},
 		{subdomain: "95-1-vn", region: "Vietnam", group: "Premium UDP Asia"},
 		{subdomain: "96-1-vn", region: "Vietnam", group: "Premium TCP Asia"},
+	}
+}
+
+func vyprvpnServers() []server {
+	return []server{
+		{subdomain: "ae1", region: "Dubai"},
+		{subdomain: "ar1", region: "Argentina"},
+		{subdomain: "at1", region: "Austria"},
+		{subdomain: "au1", region: "Australia Sydney"},
+		{subdomain: "au2", region: "Australia Melbourne"},
+		{subdomain: "au3", region: "Australia Perth"},
+		{subdomain: "be1", region: "Belgium"},
+		{subdomain: "bg1", region: "Bulgaria"},
+		{subdomain: "bh1", region: "Bahrain"},
+		{subdomain: "br1", region: "Brazil"},
+		{subdomain: "ca1", region: "Canada"},
+		{subdomain: "ch1", region: "Switzerland"},
+		{subdomain: "co1", region: "Columbia"},
+		{subdomain: "cr1", region: "Costa Rica"},
+		{subdomain: "cz1", region: "Czech Republic"},
+		{subdomain: "de1", region: "Germany"},
+		{subdomain: "dk1", region: "Denmark"},
+		{subdomain: "dz1", region: "Algeria"},
+		{subdomain: "eg1", region: "Egypt"},
+		{subdomain: "es1", region: "Spain"},
+		{subdomain: "eu1", region: "Netherlands"},
+		{subdomain: "fi1", region: "Finland"},
+		{subdomain: "fr1", region: "France"},
+		{subdomain: "gr1", region: "Greece"},
+		{subdomain: "hk1", region: "Hong Kong"},
+		{subdomain: "id1", region: "Indonesia"},
+		{subdomain: "ie1", region: "Ireland"},
+		{subdomain: "il1", region: "Israel"},
+		{subdomain: "in1", region: "India"},
+		{subdomain: "is1", region: "Iceland"},
+		{subdomain: "it1", region: "Italy"},
+		{subdomain: "jp1", region: "Japan"},
+		{subdomain: "kr1", region: "South Korea"},
+		{subdomain: "li1", region: "Liechtenstein"},
+		{subdomain: "lt1", region: "Lithuania"},
+		{subdomain: "lu1", region: "Luxembourg"},
+		{subdomain: "lv1", region: "Latvia"},
+		{subdomain: "mh1", region: "Marshall Islands"},
+		{subdomain: "mo1", region: "Macao"},
+		{subdomain: "mv1", region: "Maldives"},
+		{subdomain: "mx1", region: "Mexico"},
+		{subdomain: "my1", region: "Malaysia"},
+		{subdomain: "no1", region: "Norway"},
+		{subdomain: "nz1", region: "New Zealand"},
+		{subdomain: "pa1", region: "Panama"},
+		{subdomain: "ph1", region: "Philippines"},
+		{subdomain: "pk1", region: "Pakistan"},
+		{subdomain: "pl1", region: "Poland"},
+		{subdomain: "pt1", region: "Portugal"},
+		{subdomain: "qa1", region: "Qatar"},
+		{subdomain: "ro1", region: "Romania"},
+		{subdomain: "ru1", region: "Russia"},
+		{subdomain: "sa1", region: "Saudi Arabia"},
+		{subdomain: "se1", region: "Sweden"},
+		{subdomain: "sg1", region: "Singapore"},
+		{subdomain: "si1", region: "Slovenia"},
+		{subdomain: "sk1", region: "Slovakia"},
+		{subdomain: "sv1", region: "El Salvador"},
+		{subdomain: "th1", region: "Thailand"},
+		{subdomain: "tr1", region: "Turkey"},
+		{subdomain: "tw1", region: "Taiwan"},
+		{subdomain: "ua1", region: "Ukraine"},
+		{subdomain: "uk1", region: "United Kingdom"},
+		{subdomain: "us1", region: "USA Los Angeles"},
+		{subdomain: "us2", region: "USA Washington DC"},
+		{subdomain: "us3", region: "USA Austin"},
+		{subdomain: "us4", region: "USA Miami"},
+		{subdomain: "us5", region: "USA New York"},
+		{subdomain: "us6", region: "USA Chicago"},
+		{subdomain: "us7", region: "USA San Francisco"},
+		{subdomain: "us8", region: "USA Seattle"},
+		{subdomain: "uy1", region: "Uruguay"},
+		{subdomain: "vn1", region: "Vietnam"},
 	}
 }
