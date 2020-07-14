@@ -40,7 +40,7 @@ func (c *cyberghost) GetOpenVPNConnections(selection models.ServerSelection) (co
 		IPs = []net.IP{selection.TargetIP}
 	}
 	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: 1443, Protocol: selection.Protocol})
+		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: 443, Protocol: selection.Protocol})
 	}
 	return connections, nil
 }
