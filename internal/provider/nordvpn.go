@@ -5,17 +5,15 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type nordvpn struct {
-	fileManager files.FileManager
-}
+type nordvpn struct{}
 
-func newNordvpn(fileManager files.FileManager) *nordvpn {
-	return &nordvpn{fileManager: fileManager}
+func newNordvpn() *nordvpn {
+	return &nordvpn{}
 }
 
 func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
@@ -44,14 +42,14 @@ func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
 }
 
-func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) { //nolint:dupl
+func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
 		auth = "sha512"
 	}
-	lines := []string{
+	lines = []string{
 		"client",
 		"dev tun",
 		"nobind",
@@ -107,9 +105,9 @@ func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		"</tls-auth>",
 		"",
 	}...)
-	return n.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return lines
 }
 
-func (n *nordvpn) GetPortForward() (port uint16, err error) {
+func (n *nordvpn) GetPortForward(client network.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for nordvpn")
 }

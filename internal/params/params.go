@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
@@ -104,20 +105,22 @@ type Reader interface {
 }
 
 type reader struct {
-	envParams libparams.EnvParams
-	logger    logging.Logger
-	verifier  verification.Verifier
-	unsetEnv  func(key string) error
+	envParams   libparams.EnvParams
+	logger      logging.Logger
+	verifier    verification.Verifier
+	unsetEnv    func(key string) error
+	fileManager files.FileManager
 }
 
 // Newreader returns a paramsReadeer object to read parameters from
 // environment variables
-func NewReader(logger logging.Logger) Reader {
+func NewReader(logger logging.Logger, fileManager files.FileManager) Reader {
 	return &reader{
-		envParams: libparams.NewEnvParams(),
-		logger:    logger,
-		verifier:  verification.NewVerifier(),
-		unsetEnv:  os.Unsetenv,
+		envParams:   libparams.NewEnvParams(),
+		logger:      logger,
+		verifier:    verification.NewVerifier(),
+		unsetEnv:    os.Unsetenv,
+		fileManager: fileManager,
 	}
 }
 

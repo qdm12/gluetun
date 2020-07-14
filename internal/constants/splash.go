@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Announcement is a message announcement
-	Announcement = "Big code refactor, things may break but I'll fix them quickly!"
+	Announcement = "Video of the Git history of Gluetun (2020 is crazy): https://youtu.be/khipOYJtGJ0"
 	// AnnouncementExpiration is the expiration date of the announcement in format yyyy-mm-dd
-	AnnouncementExpiration = "2020-06-25"
+	AnnouncementExpiration = "2020-07-30"
 )
 
 const (

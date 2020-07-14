@@ -1,6 +1,8 @@
 package params
 
 import (
+	"strings"
+
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
@@ -22,5 +24,18 @@ func (p *reader) GetCyberghostRegion() (region string, err error) {
 // GetCyberghostClientKey obtains the one line client key to use for openvpn from the
 // environment variable CLIENT_KEY
 func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
-	return p.envParams.GetEnv("CLIENT_KEY", libparams.Compulsory(), libparams.CaseSensitiveValue())
+	clientKey, err = p.envParams.GetEnv("CLIENT_KEY", libparams.CaseSensitiveValue())
+	if err != nil {
+		return "", err
+	} else if len(clientKey) > 0 {
+		return clientKey, nil
+	}
+	content, err := p.fileManager.ReadFile("/files/client.key")
+	if err != nil {
+		return "", err
+	}
+	s := string(content)
+	s = strings.ReplaceAll(s, "\n", "")
+	s = strings.ReplaceAll(s, "\r", "")
+	return s, nil
 }

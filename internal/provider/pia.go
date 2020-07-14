@@ -9,28 +9,19 @@ import (
 	"strings"
 
 	"github.com/qdm12/golibs/crypto/random"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/golibs/verification"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 type pia struct {
-	client      network.Client
-	fileManager files.FileManager
-	random      random.Random
-	verifyPort  func(port string) error
-	lookupIP    func(host string) ([]net.IP, error)
+	random random.Random
 }
 
-func newPrivateInternetAccess(client network.Client, fileManager files.FileManager) *pia {
+func newPrivateInternetAccess() *pia {
 	return &pia{
-		client:      client,
-		fileManager: fileManager,
-		random:      random.NewRandom(),
-		verifyPort:  verification.NewVerifier().VerifyPort,
-		lookupIP:    net.LookupIP}
+		random: random.NewRandom(),
+	}
 }
 
 func (p *pia) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
@@ -82,7 +73,7 @@ func (p *pia) GetOpenVPNConnections(selection models.ServerSelection) (connectio
 	return connections, nil
 }
 
-func (p *pia) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) {
+func (p *pia) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	var X509CRL, certificate string
 	if extras.EncryptionPreset == constants.PIAEncryptionPresetNormal {
 		if len(cipher) == 0 {
@@ -103,7 +94,7 @@ func (p *pia) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, 
 		X509CRL = constants.PiaX509CRLStrong
 		certificate = constants.PIACertificateStrong
 	}
-	lines := []string{
+	lines = []string{
 		"client",
 		"dev tun",
 		"nobind",
@@ -154,17 +145,17 @@ func (p *pia) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, 
 		"</ca>",
 		"",
 	}...)
-	return p.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return lines
 }
 
-func (p *pia) GetPortForward() (port uint16, err error) {
+func (p *pia) GetPortForward(client network.Client) (port uint16, err error) {
 	b, err := p.random.GenerateRandomBytes(32)
 	if err != nil {
 		return 0, err
 	}
 	clientID := hex.EncodeToString(b)
 	url := fmt.Sprintf("%s/?client_id=%s", constants.PIAPortForwardURL, clientID)
-	content, status, err := p.client.GetContent(url) // TODO add ctx
+	content, status, err := client.GetContent(url) // TODO add ctx
 	switch {
 	case err != nil:
 		return 0, err

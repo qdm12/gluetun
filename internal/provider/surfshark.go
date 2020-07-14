@@ -5,18 +5,15 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type surfshark struct {
-	fileManager files.FileManager
-	lookupIP    func(host string) ([]net.IP, error)
-}
+type surfshark struct{}
 
-func newSurfshark(fileManager files.FileManager) *surfshark {
-	return &surfshark{fileManager, net.LookupIP}
+func newSurfshark() *surfshark {
+	return &surfshark{}
 }
 
 func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
@@ -57,14 +54,14 @@ func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (con
 	return connections, nil
 }
 
-func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) { //nolint:dupl
+func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
 		auth = "SHA512"
 	}
-	lines := []string{
+	lines = []string{
 		"client",
 		"dev tun",
 		"nobind",
@@ -119,9 +116,9 @@ func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity,
 		"</tls-auth>",
 		"",
 	}...)
-	return s.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return lines
 }
 
-func (s *surfshark) GetPortForward() (port uint16, err error) {
+func (s *surfshark) GetPortForward(client network.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for surfshark")
 }

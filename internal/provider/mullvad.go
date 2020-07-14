@@ -3,19 +3,15 @@ package provider
 import (
 	"fmt"
 
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type mullvad struct {
-	fileManager files.FileManager
-}
+type mullvad struct{}
 
-func newMullvad(fileManager files.FileManager) *mullvad {
-	return &mullvad{
-		fileManager: fileManager,
-	}
+func newMullvad() *mullvad {
+	return &mullvad{}
 }
 
 func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
@@ -44,14 +40,11 @@ func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	return connections, nil
 }
 
-func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (err error) {
-	if len(connections) == 0 {
-		return fmt.Errorf("at least one connection string is expected")
-	}
+func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
-	lines := []string{
+	lines = []string{
 		"client",
 		"dev tun",
 		"nobind",
@@ -96,9 +89,9 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		"</ca>",
 		"",
 	}...)
-	return m.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(uid, gid), files.Permissions(0400))
+	return lines
 }
 
-func (m *mullvad) GetPortForward() (port uint16, err error) {
+func (m *mullvad) GetPortForward(client network.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for mullvad")
 }
