@@ -195,17 +195,20 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | 🏁 `CLIENT_KEY` | | | Your device client key content on a single line, **see below** |
+    | 🏁 `CLIENT_KEY` | | | Your device client key content, **see below** |
     | `REGION` | `Austria` | One of the [Cyberghost countries](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#regions) | VPN server country |
     | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#server-groups) | Server group |
 
-    To make `CLIENT_KEY`, run the following using your client.key file:
+    To specify your client key, you can either:
 
-    ```sh
-    docker run -it --rm -v /yourpath/client.key:/client.key:ro qmcgaw/private-internet-access clientkey
-    ```
+    - Bind mount it at `/files/client.key`, for example with `-v /yourpath/client.key:/files/client.key:ro`
+    - Convert it to a single line value using:
 
-    And use the line produced as the environment variable `CLIENT_KEY`
+        ```sh
+        docker run -it --rm -v /yourpath/client.key:/files/client.key:ro qmcgaw/private-internet-access clientkey
+        ```
+
+        And use the line produced as the value for the environment variable `CLIENT_KEY`.
 
 - VyprVPN
 

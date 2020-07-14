@@ -16,7 +16,7 @@ import (
 
 func ClientKey(args []string) error {
 	flagSet := flag.NewFlagSet("clientkey", flag.ExitOnError)
-	filepath := flagSet.String("path", "/client.key", "file path to the client.key file")
+	filepath := flagSet.String("path", "/files/client.key", "file path to the client.key file")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
@@ -27,6 +27,7 @@ func ClientKey(args []string) error {
 	}
 	s := string(data)
 	s = strings.ReplaceAll(s, "\n", "")
+	s = strings.ReplaceAll(s, "\r", "")
 	s = strings.TrimPrefix(s, "-----BEGIN PRIVATE KEY-----")
 	s = strings.TrimSuffix(s, "-----END PRIVATE KEY-----")
 	fmt.Println(s)
@@ -48,7 +49,7 @@ func OpenvpnConfig() error {
 	if err != nil {
 		return err
 	}
-	paramsReader := params.NewReader(logger)
+	paramsReader := params.NewReader(logger, files.NewFileManager())
 	allSettings, err := settings.GetAllSettings(paramsReader)
 	if err != nil {
 		return err

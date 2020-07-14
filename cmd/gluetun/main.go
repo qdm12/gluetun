@@ -58,11 +58,6 @@ func _main(background context.Context, args []string) int {
 	logger := createLogger()
 	wg := &sync.WaitGroup{}
 	fatalOnError := makeFatalOnError(logger, cancel, wg)
-	paramsReader := params.NewReader(logger)
-	fmt.Println(gluetunLogging.Splash(
-		paramsReader.GetVersion(),
-		paramsReader.GetVcsRef(),
-		paramsReader.GetBuildDate()))
 
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
@@ -75,6 +70,12 @@ func _main(background context.Context, args []string) int {
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()
+
+	paramsReader := params.NewReader(logger, fileManager)
+	fmt.Println(gluetunLogging.Splash(
+		paramsReader.GetVersion(),
+		paramsReader.GetVcsRef(),
+		paramsReader.GetBuildDate()))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
 		"OpenVPN":     ovpnConf.Version,
