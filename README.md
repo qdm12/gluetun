@@ -219,7 +219,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | `Austria` | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
-    | `NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
+    | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
 
 - NordVPN
 
