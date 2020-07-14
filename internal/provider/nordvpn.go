@@ -16,19 +16,59 @@ func newNordvpn() *nordvpn {
 	return &nordvpn{}
 }
 
-func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
-	var IP net.IP
+func findServers(selection models.ServerSelection) (servers []models.NordvpnServer) {
 	for _, server := range constants.NordvpnServers() {
 		if strings.EqualFold(server.Region, selection.Region) {
-			IP = server.IP
-			break
+			if (selection.Protocol == constants.TCP && !server.TCP) || (selection.Protocol == constants.UDP && !server.UDP) {
+				continue
+			}
+			if selection.Number > 0 && server.Number == selection.Number {
+				return []models.NordvpnServer{server}
+			}
+			servers = append(servers, server)
 		}
 	}
-	if IP == nil {
-		return nil, fmt.Errorf("no IP found for server %q", selection.Region)
+	return servers
+}
+
+func extractIPsFromServers(servers []models.NordvpnServer) (ips []net.IP) {
+	ips = make([]net.IP, len(servers))
+	for i := range servers {
+		ips[i] = servers[i].IP
 	}
-	if selection.TargetIP != nil && !selection.TargetIP.Equal(IP) {
-		return nil, fmt.Errorf("target IP address %s does not match IP address %s", selection.TargetIP, IP)
+	return ips
+}
+
+func targetIPInIps(targetIP net.IP, ips []net.IP) error {
+	for i := range ips {
+		if targetIP.Equal(ips[i]) {
+			return nil
+		}
+	}
+	ipsString := make([]string, len(ips))
+	for i := range ips {
+		ipsString[i] = ips[i].String()
+	}
+	return fmt.Errorf("target IP address %s not found in IP addresses %s", targetIP, strings.Join(ipsString, ", "))
+}
+
+func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
+	servers := findServers(selection)
+	ips := extractIPsFromServers(servers)
+	if len(ips) == 0 {
+		if selection.Number > 0 {
+			return nil, fmt.Errorf("no IP found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
+		}
+		return nil, fmt.Errorf("no IP found for region %q, protocol %s", selection.Region, selection.Protocol)
+	}
+	var IP net.IP
+	if selection.TargetIP != nil {
+		if err := targetIPInIps(selection.TargetIP, ips); err != nil {
+			return nil, err
+		}
+		IP = selection.TargetIP
+	} else {
+		IP = ips[0]
 	}
 	var port uint16
 	switch {

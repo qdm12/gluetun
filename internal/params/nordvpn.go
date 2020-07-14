@@ -1,11 +1,22 @@
 package params
 
 import (
+	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
-// GetNordvpnRegion obtains the region (server name) for the NordVPN server from the
+// GetNordvpnRegion obtains the region (country) for the NordVPN server from the
 // environment variable REGION
 func (r *reader) GetNordvpnRegion() (region string, err error) {
 	return r.envParams.GetValueIfInside("REGION", constants.NordvpnRegionChoices())
+}
+
+// GetNordvpnRegion obtains the server number (optional) for the NordVPN server from the
+// environment variable SERVER_NUMBER
+func (r *reader) GetNordvpnNumber() (number uint16, err error) {
+	n, err := r.envParams.GetEnvIntRange("SERVER_NUMBER", 0, 65535, libparams.Default("0"))
+	if err != nil {
+		return 0, err
+	}
+	return uint16(n), nil
 }

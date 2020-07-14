@@ -14,12 +14,12 @@ type ProviderSettings struct {
 	PortForwarding     PortForwarding
 }
 
-type ServerSelection struct {
+type ServerSelection struct { //nolint:maligned
 	// Common
 	Protocol NetworkProtocol
 	TargetIP net.IP
 
-	// Cyberghost, PIA, Surfshark, Windscribe
+	// Cyberghost, PIA, Surfshark, Windscribe, Vyprvpn, NordVPN
 	Region string
 
 	// Cyberghost
@@ -36,6 +36,9 @@ type ServerSelection struct {
 
 	// PIA
 	EncryptionPreset string
+
+	// NordVPN
+	Number uint16
 }
 
 type ExtraConfigOptions struct {
@@ -61,6 +64,14 @@ func (p *ProviderSettings) String() string {
 		fmt.Sprintf("%s settings:", strings.Title(string(p.Name))),
 		"Network protocol: " + string(p.ServerSelection.Protocol),
 	}
+	customPort := ""
+	if p.ServerSelection.CustomPort > 0 {
+		customPort = fmt.Sprintf("%d", p.ServerSelection.CustomPort)
+	}
+	number := ""
+	if p.ServerSelection.Number > 0 {
+		number = fmt.Sprintf("%d", p.ServerSelection.Number)
+	}
 	switch strings.ToLower(string(p.Name)) {
 	case "private internet access":
 		settingsList = append(settingsList,
@@ -73,12 +84,12 @@ func (p *ProviderSettings) String() string {
 			"Country: "+p.ServerSelection.Country,
 			"City: "+p.ServerSelection.City,
 			"ISP: "+p.ServerSelection.ISP,
-			"Custom port: "+string(p.ServerSelection.CustomPort),
+			"Custom port: "+customPort,
 		)
 	case "windscribe":
 		settingsList = append(settingsList,
 			"Region: "+p.ServerSelection.Region,
-			"Custom port: "+string(p.ServerSelection.CustomPort),
+			"Custom port: "+customPort,
 		)
 	case "surfshark":
 		settingsList = append(settingsList,
@@ -97,6 +108,7 @@ func (p *ProviderSettings) String() string {
 	case "nordvpn":
 		settingsList = append(settingsList,
 			"Region: "+p.ServerSelection.Region,
+			"Number: "+number,
 		)
 	default:
 		settingsList = append(settingsList,

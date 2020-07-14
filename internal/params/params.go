@@ -83,6 +83,7 @@ type Reader interface {
 
 	// NordVPN getters
 	GetNordvpnRegion() (region string, err error)
+	GetNordvpnNumber() (number uint16, err error)
 
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)

@@ -169,5 +169,9 @@ func GetNordvpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 	if err != nil {
 		return settings, err
 	}
+	settings.ServerSelection.Number, err = paramsReader.GetNordvpnNumber()
+	if err != nil {
+		return settings, err
+	}
 	return settings, nil
 }

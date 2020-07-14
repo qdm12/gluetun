@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -33,8 +34,8 @@ func _main() int {
 		}
 		for _, server := range servers {
 			fmt.Printf(
-				"{Region: %q, IP: net.IP{%s}},\n",
-				server.Region, strings.ReplaceAll(server.IP.String(), ".", ", "),
+				"{Region: %q, Number: %d, TCP: %t, UDP: %t, IP: net.IP{%s}},\n",
+				server.Region, server.Number, server.TCP, server.UDP, strings.ReplaceAll(server.IP.String(), ".", ", "),
 			)
 		}
 		fmt.Print("\n\n")
@@ -58,6 +59,7 @@ func nordvpn(client network.Client) (servers []models.NordvpnServer, ignoredServ
 	response := []struct {
 		IPAddress string `json:"ip_address"`
 		Name      string `json:"name"`
+		Country   string `json:"country"`
 		Features  struct {
 			UDP bool `json:"openvpn_udp"`
 			TCP bool `json:"openvpn_tcp"`
@@ -68,21 +70,37 @@ func nordvpn(client network.Client) (servers []models.NordvpnServer, ignoredServ
 	}
 
 	for _, element := range response {
-		if !element.Features.TCP || !element.Features.UDP {
+		if !element.Features.TCP && !element.Features.UDP {
 			ignoredServers = append(ignoredServers, element.Name)
 		}
 		ip := net.ParseIP(element.IPAddress)
 		if ip == nil {
 			return nil, nil, fmt.Errorf("IP address %q is not valid for server %q", element.IPAddress, element.Name)
 		}
+		i := strings.IndexRune(element.Name, '#')
+		if i < 0 {
+			return nil, nil, fmt.Errorf("No ID in server name %q", element.Name)
+		}
+		idString := element.Name[i+1:]
+		idUint64, err := strconv.ParseUint(idString, 10, 16)
+		if err != nil {
+			return nil, nil, fmt.Errorf("Bad ID in server name %q", element.Name)
+		}
+		id := uint16(idUint64)
 		server := models.NordvpnServer{
-			Region: element.Name,
+			Region: element.Country,
+			Number: id,
 			IP:     ip,
+			TCP:    element.Features.TCP,
+			UDP:    element.Features.UDP,
 		}
 		servers = append(servers, server)
 	}
 	sort.Slice(servers, func(i, j int) bool {
-		return servers[i].Region == servers[j].Region
+		if servers[i].Region == servers[j].Region {
+			return servers[i].Number < servers[j].Number
+		}
+		return servers[i].Region < servers[j].Region
 	})
 	return servers, ignoredServers, nil
 }
