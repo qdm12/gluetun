@@ -13,8 +13,9 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup)
-	RunRestartTicker(ctx context.Context, restart chan<- struct{})
+	Run(ctx context.Context, wg *sync.WaitGroup)
+	RunRestartTicker(ctx context.Context)
+	Restart()
 }
 
 type looper struct {
@@ -24,6 +25,7 @@ type looper struct {
 	streamMerger command.StreamMerger
 	uid          int
 	gid          int
+	restart      chan struct{}
 }
 
 func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
@@ -35,8 +37,11 @@ func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 		uid:          uid,
 		gid:          gid,
 		streamMerger: streamMerger,
+		restart:      make(chan struct{}),
 	}
 }
+
+func (l *looper) Restart() { l.restart <- struct{}{} }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Warn(err)
@@ -46,12 +51,12 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	<-ctx.Done()
 }
 
-func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup) {
+func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
 	l.fallbackToUnencryptedDNS()
 	select {
-	case <-restart:
+	case <-l.restart:
 	case <-ctx.Done():
 		return
 	}
@@ -65,7 +70,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 		if !l.settings.Enabled {
 			// wait for another restart signal to recheck if it is enabled
 			select {
-			case <-restart:
+			case <-l.restart:
 			case <-ctx.Done():
 				unboundCancel()
 				return
@@ -127,7 +132,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			<-waitError
 			close(waitError)
 			return
-		case <-restart: // triggered restart
+		case <-l.restart: // triggered restart
 			l.logger.Info("restarting")
 			// unboundCancel occurs next loop run when the setup is complete
 			triggeredRestart = true
@@ -172,7 +177,7 @@ func (l *looper) fallbackToUnencryptedDNS() {
 	l.logger.Error("no ipv4 DNS address found for providers %s", l.settings.Providers)
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context, restart chan<- struct{}) {
+func (l *looper) RunRestartTicker(ctx context.Context) {
 	if l.settings.UpdatePeriod == 0 {
 		return
 	}
@@ -183,7 +188,7 @@ func (l *looper) RunRestartTicker(ctx context.Context, restart chan<- struct{}) 
 			ticker.Stop()
 			return
 		case <-ticker.C:
-			restart <- struct{}{}
+			l.restart <- struct{}{}
 		}
 	}
 }

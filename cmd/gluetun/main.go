@@ -117,14 +117,6 @@ func _main(background context.Context, args []string) int {
 	defer close(connectedCh)
 	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
 
-	// TODO replace these with methods on loopers and pass loopers around
-	restartOpenvpn := make(chan struct{})
-	portForward := make(chan struct{})
-	restartUnbound := make(chan struct{})
-	restartPublicIP := make(chan struct{})
-	restartTinyproxy := make(chan struct{})
-	restartShadowsocks := make(chan struct{})
-
 	if allSettings.Firewall.Enabled {
 		err := firewallConf.SetEnabled(ctx, true) // disabled by default
 		fatalOnError(err)
@@ -135,28 +127,34 @@ func _main(background context.Context, args []string) int {
 
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
+	restartOpenvpn := openvpnLooper.Restart
+	portForward := openvpnLooper.PortForward
 	// wait for restartOpenvpn
-	go openvpnLooper.Run(ctx, restartOpenvpn, portForward, wg)
+	go openvpnLooper.Run(ctx, wg)
 
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, uid, gid)
+	restartUnbound := unboundLooper.Restart
 	// wait for restartUnbound
-	go unboundLooper.Run(ctx, restartUnbound, wg)
+	go unboundLooper.Run(ctx, wg)
 
 	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, uid, gid)
-	go publicIPLooper.Run(ctx, restartPublicIP)
-	go publicIPLooper.RunRestartTicker(ctx, restartPublicIP)
+	restartPublicIP := publicIPLooper.Restart
+	go publicIPLooper.Run(ctx)
+	go publicIPLooper.RunRestartTicker(ctx)
 
 	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid)
-	go tinyproxyLooper.Run(ctx, restartTinyproxy, wg)
+	restartTinyproxy := tinyproxyLooper.Restart
+	go tinyproxyLooper.Run(ctx, wg)
 
 	shadowsocksLooper := shadowsocks.NewLooper(shadowsocksConf, firewallConf, allSettings.ShadowSocks, allSettings.DNS, logger, streamMerger, uid, gid)
-	go shadowsocksLooper.Run(ctx, restartShadowsocks, wg)
+	restartShadowsocks := shadowsocksLooper.Restart
+	go shadowsocksLooper.Run(ctx, wg)
 
 	if allSettings.TinyProxy.Enabled {
-		restartTinyproxy <- struct{}{}
+		restartTinyproxy()
 	}
 	if allSettings.ShadowSocks.Enabled {
-		restartShadowsocks <- struct{}{}
+		restartShadowsocks()
 	}
 
 	go func() {
@@ -170,7 +168,7 @@ func _main(background context.Context, args []string) int {
 			case <-connectedCh: // blocks until openvpn is connected
 				restartTickerCancel()
 				restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
-				go unboundLooper.RunRestartTicker(restartTickerContext, restartUnbound)
+				go unboundLooper.RunRestartTicker(restartTickerContext)
 				onConnected(allSettings, logger, routingConf, portForward, restartUnbound, restartPublicIP)
 			}
 		}
@@ -180,7 +178,7 @@ func _main(background context.Context, args []string) int {
 	go httpServer.Run(ctx, wg)
 
 	// Start openvpn for the first time
-	restartOpenvpn <- struct{}{}
+	restartOpenvpn()
 
 	signalsCh := make(chan os.Signal, 1)
 	signal.Notify(signalsCh,
@@ -291,14 +289,12 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 }
 
 func onConnected(allSettings settings.Settings, logger logging.Logger, routingConf routing.Routing,
-	portForward, restartUnbound, restartPublicIP chan<- struct{},
+	portForward, restartUnbound, restartPublicIP func(),
 ) {
-	restartUnbound <- struct{}{}
-	restartPublicIP <- struct{}{}
+	restartUnbound()
+	restartPublicIP()
 	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
-		time.AfterFunc(5*time.Second, func() {
-			portForward <- struct{}{}
-		})
+		time.AfterFunc(5*time.Second, portForward)
 	}
 	defaultInterface, _, err := routingConf.DefaultRoute()
 	if err != nil {

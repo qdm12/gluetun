@@ -11,8 +11,9 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, restart <-chan struct{})
-	RunRestartTicker(ctx context.Context, restart chan<- struct{})
+	Run(ctx context.Context)
+	RunRestartTicker(ctx context.Context)
+	Restart()
 }
 
 type looper struct {
@@ -22,6 +23,7 @@ type looper struct {
 	ipStatusFilepath models.Filepath
 	uid              int
 	gid              int
+	restart          chan struct{}
 }
 
 func NewLooper(client network.Client, logger logging.Logger, fileManager files.FileManager,
@@ -33,8 +35,11 @@ func NewLooper(client network.Client, logger logging.Logger, fileManager files.F
 		ipStatusFilepath: ipStatusFilepath,
 		uid:              uid,
 		gid:              gid,
+		restart:          make(chan struct{}),
 	}
 }
+
+func (l *looper) Restart() { l.restart <- struct{}{} }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
@@ -44,9 +49,9 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	<-ctx.Done()
 }
 
-func (l *looper) Run(ctx context.Context, restart <-chan struct{}) {
+func (l *looper) Run(ctx context.Context) {
 	select {
-	case <-restart:
+	case <-l.restart:
 	case <-ctx.Done():
 		return
 	}
@@ -69,7 +74,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}) {
 			continue
 		}
 		select {
-		case <-restart: // triggered restart
+		case <-l.restart: // triggered restart
 		case <-ctx.Done():
 			l.logger.Warn("context canceled: exiting loop")
 			return
@@ -77,7 +82,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}) {
 	}
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context, restart chan<- struct{}) {
+func (l *looper) RunRestartTicker(ctx context.Context) {
 	ticker := time.NewTicker(time.Hour)
 	for {
 		select {
@@ -85,7 +90,7 @@ func (l *looper) RunRestartTicker(ctx context.Context, restart chan<- struct{}) 
 			ticker.Stop()
 			return
 		case <-ticker.C:
-			restart <- struct{}{}
+			l.restart <- struct{}{}
 		}
 	}
 }

@@ -17,11 +17,11 @@ type Server interface {
 type server struct {
 	address        string
 	logger         logging.Logger
-	restartOpenvpn chan<- struct{}
-	restartUnbound chan<- struct{}
+	restartOpenvpn func()
+	restartUnbound func()
 }
 
-func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound chan<- struct{}) Server {
+func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound func()) Server {
 	return &server{
 		address:        address,
 		logger:         logger.WithPrefix("http server: "),
@@ -58,9 +58,9 @@ func (s *server) makeHandler() http.HandlerFunc {
 		case http.MethodGet:
 			switch r.RequestURI {
 			case "/openvpn/actions/restart":
-				s.restartOpenvpn <- struct{}{}
+				s.restartOpenvpn()
 			case "/unbound/actions/restart":
-				s.restartUnbound <- struct{}{}
+				s.restartUnbound()
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}

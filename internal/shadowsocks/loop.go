@@ -12,7 +12,8 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup)
+	Run(ctx context.Context, wg *sync.WaitGroup)
+	Restart()
 }
 
 type looper struct {
@@ -24,6 +25,7 @@ type looper struct {
 	streamMerger command.StreamMerger
 	uid          int
 	gid          int
+	restart      chan struct{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -45,14 +47,17 @@ func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings s
 		streamMerger: streamMerger,
 		uid:          uid,
 		gid:          gid,
+		restart:      make(chan struct{}),
 	}
 }
 
-func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.WaitGroup) {
+func (l *looper) Restart() { l.restart <- struct{}{} }
+
+func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
 	select {
-	case <-restart:
+	case <-l.restart:
 	case <-ctx.Done():
 		return
 	}
@@ -109,7 +114,7 @@ func (l *looper) Run(ctx context.Context, restart <-chan struct{}, wg *sync.Wait
 			<-waitError
 			close(waitError)
 			return
-		case <-restart: // triggered restart
+		case <-l.restart: // triggered restart
 			l.logger.Info("restarting")
 			shadowsocksCancel()
 			<-waitError
