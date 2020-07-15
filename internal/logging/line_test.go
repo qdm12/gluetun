@@ -80,6 +80,26 @@ func Test_PostProcessLine(t *testing.T) {
 			"tinyproxy: BLABLA      Jul 12 23:07:25 [32]: Reloading config file",
 			"tinyproxy: Reloading config file",
 			logging.ErrorLevel},
+		"openvpn unknown": {
+			"openvpn: message",
+			"openvpn: message",
+			logging.InfoLevel},
+		"openvpn note": {
+			"openvpn: NOTE: message",
+			"openvpn: message",
+			logging.InfoLevel},
+		"openvpn warning": {
+			"openvpn: WARNING: message",
+			"openvpn: message",
+			logging.WarnLevel},
+		"openvpn options error": {
+			"openvpn: Options error: message",
+			"openvpn: message",
+			logging.ErrorLevel},
+		"openvpn ignored message": {
+			"openvpn: NOTE: UID/GID downgrade will be delayed because of --client, --pull, or --up-delay",
+			"",
+			""},
 	}
 	for name, tc := range tests {
 		tc := tc

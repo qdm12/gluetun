@@ -26,6 +26,28 @@ var regularExpressions = struct { //nolint:gochecknoglobals
 func PostProcessLine(s string) (filtered string, level logging.Level) {
 	switch {
 	case strings.HasPrefix(s, "openvpn: "):
+		for _, ignored := range []string{
+			"openvpn: WARNING: you are using user/group/chroot/setcon without persist-tun -- this may cause restarts to fail",
+			"openvpn: NOTE: UID/GID downgrade will be delayed because of --client, --pull, or --up-delay",
+		} {
+			if s == ignored {
+				return "", ""
+			}
+		}
+		switch {
+		case strings.HasPrefix(s, "openvpn: NOTE: "):
+			filtered = strings.TrimPrefix(s, "openvpn: NOTE: ")
+			filtered = "openvpn: " + filtered
+			return filtered, logging.InfoLevel
+		case strings.HasPrefix(s, "openvpn: WARNING: "):
+			filtered = strings.TrimPrefix(s, "openvpn: WARNING: ")
+			filtered = "openvpn: " + filtered
+			return filtered, logging.WarnLevel
+		case strings.HasPrefix(s, "openvpn: Options error: "):
+			filtered = strings.TrimPrefix(s, "openvpn: Options error: ")
+			filtered = "openvpn: " + filtered
+			return filtered, logging.ErrorLevel
+		}
 		filtered = constants.ColorOpenvpn().Sprintf(s)
 		return filtered, logging.InfoLevel
 	case strings.HasPrefix(s, "unbound: "):
