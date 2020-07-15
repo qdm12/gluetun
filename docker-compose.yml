@@ -15,50 +15,25 @@ services:
     environment:
       # More variables are available, see the readme table
       - VPNSP=private internet access
-      - PROTOCOL=udp
-      - OPENVPN_VERBOSITY=1
-      - OPENVPN_ROOT=no
-      - OPENVPN_TARGET_IP=
+
+      # Timezone for accurate logs times
       - TZ=
 
-      # PIA, Windscribe, Surfshark and Cyberghost only
-      - REGION=Austria
+      # All VPN providers
       - USER=js89ds7
+
+      # All VPN providers but Mullvad
       - PASSWORD=8fd9s239G
 
-      # PIA only
-      - PIA_ENCRYPTION=strong
-      - PORT_FORWARDING=off
+      # Cyberghost only
+      - CLIENT_KEY=
+
+      # All VPN providers but Mullvad
+      - REGION=Austria
 
       # Mullvad only
       - COUNTRY=Sweden
-      - CITY=
-      - ISP=
 
-      # Mullvad and Windscribe only
-      - PORT=
-
-      # Cyberghost only
-      - CYBERGHOST_GROUP=Premium UDP Europe
-      - CLIENT_KEY=
-
-      # DNS over TLS
-      - DOT=on
-      - DOT_PROVIDERS=cloudflare
-      - DOT_IPV6=off
-      - DOT_VERBOSITY=1
-      - BLOCK_MALICIOUS=on
-      - BLOCK_SURVEILLANCE=off
-      - BLOCK_ADS=off
-      - UNBLOCK=
-      - DNS_UPDATE_PERIOD=24h
-      # Firewall
+      # Allow for example your LAN, set to: 192.168.1.0/24
       - EXTRA_SUBNETS=
-      # Shadowsocks
-      - SHADOWSOCKS=off
-      - SHADOWSOCKS_PASSWORD=
-      # Tinyproxy
-      - TINYPROXY=off
-      - TINYPROXY_USER=
-      - TINYPROXY_PASSWORD=
     restart: always

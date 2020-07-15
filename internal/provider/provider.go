@@ -27,6 +27,8 @@ func New(provider models.VPNProvider) Provider {
 		return newCyberghost()
 	case constants.Vyprvpn:
 		return newVyprvpn()
+	case constants.Nordvpn:
+		return newNordvpn()
 	default:
 		return nil // should never occur
 	}

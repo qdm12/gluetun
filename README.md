@@ -1,6 +1,8 @@
 # Gluetun VPN client
 
-*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access, Mullvad, Windscribe, Surfshark and Cyberghost VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and Tinyproxy*
+*Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
+Mullvad, Windscribe, Surfshark Cyberghost and NordVPN VPN servers, using Go, OpenVPN,
+iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 **ANNOUNCEMENT**: *[Video of the Git history of Gluetun](https://youtu.be/khipOYJtGJ0)*
 
@@ -33,7 +35,8 @@
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark** and **Cyberghost** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe**,
+  **Surfshark**, **Cyberghost** and **NordVPN** servers
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
@@ -90,9 +93,9 @@
             [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
         - Surfshark: **username** and **password** ([sign up](https://order.surfshark.com/))
-        - Cyberghost: **username**, **password** and **device client key file**
-          ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
+        - Cyberghost: **username**, **password** and **device client key file** ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
         - Vyprvpn: **username** and **password**
+        - NordVPN: **username** and **password**
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
@@ -118,7 +121,6 @@
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
     - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
-    - Pass additional arguments to *openvpn* using Docker's command function (commands after the image name)
 
     **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
 
@@ -142,7 +144,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn` | VPN Service Provider |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn` | VPN Service Provider |
 | `IP_STATUS_FILE` | `/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
@@ -210,13 +212,22 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
         And use the line produced as the value for the environment variable `CLIENT_KEY`.
 
-- VyprVPN
+- NordVPN
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | `Austria` | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
+    | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
+
+- NordVPN
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `REGION` | `Austria` (wrong) | One of the NordVPN server name, i.e. `Cyprus #12` | VPN server name |
 
 ### DNS over TLS
 

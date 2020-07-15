@@ -17,6 +17,8 @@ const (
 	Cyberghost models.VPNProvider = "cyberghost"
 	// Vyprvpn is a VPN provider
 	Vyprvpn models.VPNProvider = "vyprvpn"
+	// NordVPN is a VPN provider
+	Nordvpn models.VPNProvider = "nordvpn"
 )
 
 const (

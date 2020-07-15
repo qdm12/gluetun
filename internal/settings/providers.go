@@ -153,3 +153,25 @@ func GetVyprvpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 	}
 	return settings, nil
 }
+
+// GetNordvpnSettings obtains NordVPN settings from environment variables using the params package.
+func GetNordvpnSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
+	settings.Name = constants.Nordvpn
+	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.TargetIP, err = paramsReader.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Region, err = paramsReader.GetNordvpnRegion()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Number, err = paramsReader.GetNordvpnNumber()
+	if err != nil {
+		return settings, err
+	}
+	return settings, nil
+}

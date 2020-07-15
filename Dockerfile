@@ -42,7 +42,7 @@ ENV VPNSP=pia \
     UID=1000 \
     GID=1000 \
     IP_STATUS_FILE="/ip" \
-    # PIA, Windscribe, Surfshark and Cyberghost only
+    # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN only
     USER= \
     PASSWORD= \
     REGION="Austria" \
@@ -58,6 +58,8 @@ ENV VPNSP=pia \
     PORT= \
     # Cyberghost only
     CYBERGHOST_GROUP="Premium UDP Europe" \
+    # NordVPN only
+    SERVER_NUMBER= \
     # Openvpn
     OPENVPN_CIPHER= \
     OPENVPN_AUTH= \

@@ -16,7 +16,7 @@ func newSurfshark() *surfshark {
 	return &surfshark{}
 }
 
-func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
+func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
 	var IPs []net.IP
 	for _, server := range constants.SurfsharkServers() {
 		if strings.EqualFold(server.Region, selection.Region) {
@@ -54,7 +54,7 @@ func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (con
 	return connections, nil
 }
 
-func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}

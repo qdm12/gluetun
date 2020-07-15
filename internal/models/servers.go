@@ -36,3 +36,11 @@ type VyprvpnServer struct {
 	Region string
 	IPs    []net.IP
 }
+
+type NordvpnServer struct { //nolint:maligned
+	Region string
+	Number uint16
+	IP     net.IP
+	TCP    bool
+	UDP    bool
+}
