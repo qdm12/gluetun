@@ -25,6 +25,8 @@ type looper struct {
 	uid          int
 	gid          int
 	restart      chan struct{}
+	start        chan struct{}
+	stop         chan struct{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -46,23 +48,49 @@ func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings s
 		uid:          uid,
 		gid:          gid,
 		restart:      make(chan struct{}),
+		start:        make(chan struct{}),
+		stop:         make(chan struct{}),
 	}
 }
 
 func (l *looper) Restart() { l.restart <- struct{}{} }
+func (l *looper) Start()   { l.start <- struct{}{} }
+func (l *looper) Stop()    { l.stop <- struct{}{} }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
-	select {
-	case <-l.restart:
-	case <-ctx.Done():
-		return
+	waitForStart := true
+	for waitForStart {
+		select {
+		case <-l.stop:
+			l.logger.Info("not started yet")
+		case <-l.start:
+			waitForStart = false
+		case <-l.restart:
+			waitForStart = false
+		case <-ctx.Done():
+			return
+		}
 	}
 	defer l.logger.Warn("loop exited")
 
 	var previousPort uint16
 	for ctx.Err() == nil {
+		for !l.settings.Enabled {
+			// wait for a signal to re-enable
+			select {
+			case <-l.stop:
+				l.logger.Info("already disabled")
+			case <-l.restart:
+				l.settings.Enabled = true
+			case <-l.start:
+				l.settings.Enabled = true
+			case <-ctx.Done():
+				return
+			}
+		}
+
 		err := l.conf.MakeConf(
 			l.settings.LogLevel,
 			l.settings.Port,
@@ -100,22 +128,36 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			err := waitFn() // blocking
 			waitError <- err
 		}()
-		select {
-		case <-ctx.Done():
-			l.logger.Warn("context canceled: exiting loop")
-			tinyproxyCancel()
-			<-waitError
-			close(waitError)
-			return
-		case <-l.restart: // triggered restart
-			l.logger.Info("restarting")
-			tinyproxyCancel()
-			<-waitError
-			close(waitError)
-		case err := <-waitError: // unexpected error
-			tinyproxyCancel()
-			close(waitError)
-			l.logAndWait(ctx, err)
+		stayHere := true
+		for stayHere {
+			select {
+			case <-ctx.Done():
+				l.logger.Warn("context canceled: exiting loop")
+				tinyproxyCancel()
+				<-waitError
+				close(waitError)
+				return
+			case <-l.restart: // triggered restart
+				l.logger.Info("restarting")
+				tinyproxyCancel()
+				<-waitError
+				close(waitError)
+				stayHere = false
+			case <-l.start:
+				l.logger.Info("already started")
+			case <-l.stop:
+				l.logger.Info("stopping")
+				tinyproxyCancel()
+				<-waitError
+				close(waitError)
+				l.settings.Enabled = false
+				stayHere = false
+			case err := <-waitError: // unexpected error
+				tinyproxyCancel()
+				close(waitError)
+				l.logAndWait(ctx, err)
+			}
 		}
+		tinyproxyCancel() // repetition for linter only
 	}
 }
