@@ -35,8 +35,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe**,
-  **Surfshark**, **Cyberghost** and **NordVPN** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn** and **NordVPN** servers
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
