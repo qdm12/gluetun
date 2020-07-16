@@ -1,7 +1,7 @@
 # Gluetun VPN client
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
-Mullvad, Windscribe, Surfshark Cyberghost and NordVPN VPN servers, using Go, OpenVPN,
+Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN and NordVPN VPN servers, using Go, OpenVPN,
 iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 **ANNOUNCEMENT**: *[Video of the Git history of Gluetun](https://youtu.be/khipOYJtGJ0)*
@@ -46,33 +46,15 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - [Connect LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7 🎆
 
-### Private Internet Access
+### VPN provider specifics
 
-- Pick the [region](https://www.privateinternetaccess.com/pages/network/)
-- Pick the level of encryption
-- Enable port forwarding
-
-### Mullvad
-
-- Pick the [country, city and ISP](https://mullvad.net/en/servers/#openvpn)
-- Pick the port to use (i.e. `53` (udp) or `80` (tcp))
-
-### Windscribe
-
-- Pick the [region](https://windscribe.com/status)
-- Pick the port to use
-
-### Surfshark
-
-- Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
-
-### Cyberghost
-
-- Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost)
-
-### Vyprvpn
-
-- Pick the [region](https://www.vyprvpn.com/server-locations)
+- **Private Internet Access**: pick the [region](https://www.privateinternetaccess.com/pages/network/), the level of encryption and enable port forwarding
+- **Mullvad**: Pick the [country, city and ISP](https://mullvad.net/en/servers/#openvpn) and optionally a custom port to use (i.e. `53` (udp) or `80` (tcp))
+- **Windscribe**: Pick the [region](https://windscribe.com/status), and optionally a custom port to use
+- **Surfshark**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
+- **Cyberghost**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost) and server group.
+- **VyprVPN**: Pick the [region](https://www.vyprvpn.com/server-locations), port forwarding works by default
+- **NordVPN**: Pick the region and optionally the server number
 
 ### Extra niche features
 
@@ -211,14 +193,13 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
         And use the line produced as the value for the environment variable `CLIENT_KEY`.
 
-- NordVPN
+- Vyprvpn
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | `Austria` | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
-    | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
 
 - NordVPN
 
@@ -226,7 +207,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | 🏁 `REGION` | `Austria` (wrong) | One of the NordVPN server name, i.e. `Cyprus #12` | VPN server name |
+    | 🏁 `REGION` | `Austria` (wrong) | One of the NordVPN server country, i.e. `Switzerland` | VPN server country |
+    | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
 
 ### DNS over TLS
 
