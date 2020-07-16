@@ -21,12 +21,15 @@ type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	Restart()
 	PortForward()
+	GetSettings() (settings settings.OpenVPN)
+	SetSettings(settings settings.OpenVPN)
 }
 
 type looper struct {
 	// Variable parameters
-	provider models.VPNProvider
-	settings settings.OpenVPN
+	provider      models.VPNProvider
+	settings      settings.OpenVPN
+	settingsMutex sync.RWMutex
 	// Fixed parameters
 	uid int
 	gid int
@@ -69,6 +72,18 @@ func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
 func (l *looper) Restart()     { l.restart <- struct{}{} }
 func (l *looper) PortForward() { l.portForwardSignals <- struct{}{} }
 
+func (l *looper) GetSettings() (settings settings.OpenVPN) {
+	l.settingsMutex.RLock()
+	defer l.settingsMutex.RUnlock()
+	return l.settings
+}
+
+func (l *looper) SetSettings(settings settings.OpenVPN) {
+	l.settingsMutex.Lock()
+	defer l.settingsMutex.Unlock()
+	l.settings = settings
+}
+
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
@@ -80,23 +95,24 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
+		settings := l.GetSettings()
 		providerConf := provider.New(l.provider)
-		connections, err := providerConf.GetOpenVPNConnections(l.settings.Provider.ServerSelection)
+		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
 		l.fatalOnError(err)
 		lines := providerConf.BuildConf(
 			connections,
-			l.settings.Verbosity,
+			settings.Verbosity,
 			l.uid,
 			l.gid,
-			l.settings.Root,
-			l.settings.Cipher,
-			l.settings.Auth,
-			l.settings.Provider.ExtraConfigOptions,
+			settings.Root,
+			settings.Cipher,
+			settings.Auth,
+			settings.Provider.ExtraConfigOptions,
 		)
 		err = l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400))
 		l.fatalOnError(err)
 
-		err = l.conf.WriteAuthFile(l.settings.User, l.settings.Password, l.uid, l.gid)
+		err = l.conf.WriteAuthFile(settings.User, settings.Password, l.uid, l.gid)
 		l.fatalOnError(err)
 
 		if err := l.fw.SetVPNConnections(ctx, connections); err != nil {
@@ -158,7 +174,8 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 }
 
 func (l *looper) portForward(ctx context.Context, providerConf provider.Provider, client network.Client) {
-	if !l.settings.Provider.PortForwarding.Enabled {
+	settings := l.GetSettings()
+	if !settings.Provider.PortForwarding.Enabled {
 		return
 	}
 	var port uint16
@@ -175,7 +192,7 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 		l.logger.Info("port forwarded is %d", port)
 	}
 
-	filepath := l.settings.Provider.PortForwarding.Filepath
+	filepath := settings.Provider.PortForwarding.Filepath
 	l.logger.Info("writing forwarded port to %s", filepath)
 	err = l.fileManager.WriteLinesToFile(
 		string(filepath), []string{fmt.Sprintf("%d", port)},
