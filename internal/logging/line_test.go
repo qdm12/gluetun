@@ -100,6 +100,10 @@ func Test_PostProcessLine(t *testing.T) {
 			"openvpn: NOTE: UID/GID downgrade will be delayed because of --client, --pull, or --up-delay",
 			"",
 			""},
+		"openvpn success": {
+			"openvpn: Initialization Sequence Completed",
+			"openvpn: Initialization Sequence Completed",
+			logging.InfoLevel},
 	}
 	for name, tc := range tests {
 		tc := tc

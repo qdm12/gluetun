@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
@@ -38,18 +39,23 @@ func PostProcessLine(s string) (filtered string, level logging.Level) {
 		case strings.HasPrefix(s, "openvpn: NOTE: "):
 			filtered = strings.TrimPrefix(s, "openvpn: NOTE: ")
 			filtered = "openvpn: " + filtered
-			return filtered, logging.InfoLevel
+			level = logging.InfoLevel
 		case strings.HasPrefix(s, "openvpn: WARNING: "):
 			filtered = strings.TrimPrefix(s, "openvpn: WARNING: ")
 			filtered = "openvpn: " + filtered
-			return filtered, logging.WarnLevel
+			level = logging.WarnLevel
 		case strings.HasPrefix(s, "openvpn: Options error: "):
 			filtered = strings.TrimPrefix(s, "openvpn: Options error: ")
 			filtered = "openvpn: " + filtered
-			return filtered, logging.ErrorLevel
+			level = logging.ErrorLevel
+		case s == "openvpn: Initialization Sequence Completed":
+			return color.HiGreenString(s), logging.InfoLevel
+		default:
+			filtered = s
+			level = logging.InfoLevel
 		}
-		filtered = constants.ColorOpenvpn().Sprintf(s)
-		return filtered, logging.InfoLevel
+		filtered = constants.ColorOpenvpn().Sprintf(filtered)
+		return filtered, level
 	case strings.HasPrefix(s, "unbound: "):
 		prefix := regularExpressions.unboundPrefix.FindString(s)
 		filtered = s[len(prefix):]
