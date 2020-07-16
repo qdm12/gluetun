@@ -125,24 +125,22 @@ func (l *looper) Run(ctx context.Context) {
 }
 
 func (l *looper) RunRestartTicker(ctx context.Context) {
+	ticker := time.NewTicker(time.Hour)
 	period := l.GetPeriod()
-	var ticker *time.Ticker = nil
 	if period > 0 {
 		ticker = time.NewTicker(period)
+	} else {
+		ticker.Stop()
 	}
 	for {
 		select {
 		case <-ctx.Done():
-			if ticker != nil {
-				ticker.Stop()
-			}
+			ticker.Stop()
 			return
 		case <-ticker.C:
 			l.restart <- struct{}{}
 		case <-l.updateTicker:
-			if ticker != nil {
-				ticker.Stop()
-			}
+			ticker.Stop()
 			ticker = time.NewTicker(l.GetPeriod())
 		}
 	}

@@ -23,19 +23,17 @@ type Looper interface {
 }
 
 type looper struct {
-	conf             Configurator
-	settings         settings.DNS
-	settingsMutex    sync.RWMutex
-	logger           logging.Logger
-	streamMerger     command.StreamMerger
-	uid              int
-	gid              int
-	restart          chan struct{}
-	start            chan struct{}
-	stop             chan struct{}
-	updateTicker     chan struct{}
-	tickerReady      bool
-	tickerReadyMutex sync.Mutex
+	conf          Configurator
+	settings      settings.DNS
+	settingsMutex sync.RWMutex
+	logger        logging.Logger
+	streamMerger  command.StreamMerger
+	uid           int
+	gid           int
+	restart       chan struct{}
+	start         chan struct{}
+	stop          chan struct{}
+	updateTicker  chan struct{}
 }
 
 func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
@@ -253,27 +251,22 @@ func (l *looper) fallbackToUnencryptedDNS() {
 }
 
 func (l *looper) RunRestartTicker(ctx context.Context) {
-	l.tickerReadyMutex.Lock()
-	l.tickerReady = true
-	l.tickerReadyMutex.Unlock()
-	var ticker *time.Ticker = nil
+	ticker := time.NewTicker(time.Hour)
 	settings := l.GetSettings()
 	if settings.UpdatePeriod > 0 {
 		ticker = time.NewTicker(settings.UpdatePeriod)
+	} else {
+		ticker.Stop()
 	}
 	for {
 		select {
 		case <-ctx.Done():
-			if ticker != nil {
-				ticker.Stop()
-			}
+			ticker.Stop()
 			return
 		case <-ticker.C:
 			l.restart <- struct{}{}
 		case <-l.updateTicker:
-			if ticker != nil {
-				ticker.Stop()
-			}
+			ticker.Stop()
 			period := l.GetSettings().UpdatePeriod
 			ticker = time.NewTicker(period)
 		}
