@@ -14,19 +14,24 @@ import (
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	Restart()
+	Start()
+	Stop()
+	GetSettings() (settings settings.TinyProxy)
+	SetSettings(settings settings.TinyProxy)
 }
 
 type looper struct {
-	conf         Configurator
-	firewallConf firewall.Configurator
-	settings     settings.TinyProxy
-	logger       logging.Logger
-	streamMerger command.StreamMerger
-	uid          int
-	gid          int
-	restart      chan struct{}
-	start        chan struct{}
-	stop         chan struct{}
+	conf          Configurator
+	firewallConf  firewall.Configurator
+	settings      settings.TinyProxy
+	settingsMutex sync.RWMutex
+	logger        logging.Logger
+	streamMerger  command.StreamMerger
+	uid           int
+	gid           int
+	restart       chan struct{}
+	start         chan struct{}
+	stop          chan struct{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -53,6 +58,30 @@ func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings s
 	}
 }
 
+func (l *looper) GetSettings() (settings settings.TinyProxy) {
+	l.settingsMutex.RLock()
+	defer l.settingsMutex.RUnlock()
+	return l.settings
+}
+
+func (l *looper) SetSettings(settings settings.TinyProxy) {
+	l.settingsMutex.Lock()
+	defer l.settingsMutex.Unlock()
+	l.settings = settings
+}
+
+func (l *looper) isEnabled() bool {
+	l.settingsMutex.RLock()
+	defer l.settingsMutex.RUnlock()
+	return l.settings.Enabled
+}
+
+func (l *looper) setEnabled(enabled bool) {
+	l.settingsMutex.Lock()
+	defer l.settingsMutex.Unlock()
+	l.settings.Enabled = enabled
+}
+
 func (l *looper) Restart() { l.restart <- struct{}{} }
 func (l *looper) Start()   { l.start <- struct{}{} }
 func (l *looper) Stop()    { l.stop <- struct{}{} }
@@ -77,27 +106,22 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	var previousPort uint16
 	for ctx.Err() == nil {
-		for !l.settings.Enabled {
+		for !l.isEnabled() {
 			// wait for a signal to re-enable
 			select {
 			case <-l.stop:
 				l.logger.Info("already disabled")
 			case <-l.restart:
-				l.settings.Enabled = true
+				l.setEnabled(true)
 			case <-l.start:
-				l.settings.Enabled = true
+				l.setEnabled(true)
 			case <-ctx.Done():
 				return
 			}
 		}
 
-		err := l.conf.MakeConf(
-			l.settings.LogLevel,
-			l.settings.Port,
-			l.settings.User,
-			l.settings.Password,
-			l.uid,
-			l.gid)
+		settings := l.GetSettings()
+		err := l.conf.MakeConf(settings.LogLevel, settings.Port, settings.User, settings.Password, l.uid, l.gid)
 		if err != nil {
 			l.logAndWait(ctx, err)
 			continue
@@ -109,11 +133,11 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				continue
 			}
 		}
-		if err := l.firewallConf.SetAllowedPort(ctx, l.settings.Port); err != nil {
+		if err := l.firewallConf.SetAllowedPort(ctx, settings.Port); err != nil {
 			l.logger.Error(err)
 			continue
 		}
-		previousPort = l.settings.Port
+		previousPort = settings.Port
 
 		tinyproxyCtx, tinyproxyCancel := context.WithCancel(context.Background())
 		stream, waitFn, err := l.conf.Start(tinyproxyCtx)
@@ -150,7 +174,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				tinyproxyCancel()
 				<-waitError
 				close(waitError)
-				l.settings.Enabled = false
+				l.setEnabled(false)
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				tinyproxyCancel()
