@@ -31,9 +31,7 @@ type looper struct {
 	gid              int
 	restart          chan struct{}
 	stop             chan struct{}
-	updateTimer      chan struct{}
-	tickerReady      bool
-	tickerReadyMutex sync.Mutex
+	updateTicker     chan struct{}
 }
 
 func NewLooper(client network.Client, logger logging.Logger, fileManager files.FileManager,
@@ -48,7 +46,7 @@ func NewLooper(client network.Client, logger logging.Logger, fileManager files.F
 		gid:              gid,
 		restart:          make(chan struct{}),
 		stop:             make(chan struct{}),
-		updateTimer:      make(chan struct{}),
+		updateTicker:     make(chan struct{}),
 	}
 }
 
@@ -62,16 +60,10 @@ func (l *looper) GetPeriod() (period time.Duration) {
 }
 
 func (l *looper) SetPeriod(period time.Duration) {
-	l.tickerReadyMutex.Lock()
-	defer l.tickerReadyMutex.Unlock()
-	if !l.tickerReady {
-		l.logger.Error("cannot set period before ticker is started!")
-		return
-	}
 	l.periodMutex.Lock()
-	defer l.periodMutex.Unlock()
 	l.period = period
-	l.updateTimer <- struct{}{}
+	l.periodMutex.Unlock()
+	l.updateTicker <- struct{}{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -133,19 +125,24 @@ func (l *looper) Run(ctx context.Context) {
 }
 
 func (l *looper) RunRestartTicker(ctx context.Context) {
-	l.tickerReadyMutex.Lock()
-	l.tickerReady = true
-	l.tickerReadyMutex.Unlock()
-	ticker := time.NewTicker(l.GetPeriod())
+	period := l.GetPeriod()
+	var ticker *time.Ticker = nil
+	if period > 0 {
+		ticker = time.NewTicker(period)
+	}
 	for {
 		select {
 		case <-ctx.Done():
-			ticker.Stop()
+			if ticker != nil {
+				ticker.Stop()
+			}
 			return
 		case <-ticker.C:
 			l.restart <- struct{}{}
-		case <-l.updateTimer:
-			ticker.Stop()
+		case <-l.updateTicker:
+			if ticker != nil {
+				ticker.Stop()
+			}
 			ticker = time.NewTicker(l.GetPeriod())
 		}
 	}
