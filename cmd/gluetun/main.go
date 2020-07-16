@@ -137,10 +137,12 @@ func _main(background context.Context, args []string) int {
 	// wait for restartUnbound
 	go unboundLooper.Run(ctx, wg)
 
-	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, uid, gid)
+	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, allSettings.PublicIPPeriod, uid, gid)
 	restartPublicIP := publicIPLooper.Restart
+	setPublicIPPeriod := publicIPLooper.SetPeriod
 	go publicIPLooper.Run(ctx)
 	go publicIPLooper.RunRestartTicker(ctx)
+	setPublicIPPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
 	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid)
 	restartTinyproxy := tinyproxyLooper.Restart

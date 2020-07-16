@@ -99,6 +99,9 @@ type Reader interface {
 	GetTinyProxyUser() (user string, err error)
 	GetTinyProxyPassword() (password string, err error)
 
+	// Public IP getters
+	GetPublicIPPeriod() (period time.Duration, err error)
+
 	// Version getters
 	GetVersion() string
 	GetBuildDate() string

@@ -2,6 +2,7 @@ package settings
 
 import (
 	"strings"
+	"time"
 
 	"github.com/qdm12/private-internet-access-docker/internal/models"
 	"github.com/qdm12/private-internet-access-docker/internal/params"
@@ -9,13 +10,14 @@ import (
 
 // Settings contains all settings for the program to run
 type Settings struct {
-	VPNSP       models.VPNProvider
-	OpenVPN     OpenVPN
-	System      System
-	DNS         DNS
-	Firewall    Firewall
-	TinyProxy   TinyProxy
-	ShadowSocks ShadowSocks
+	VPNSP          models.VPNProvider
+	OpenVPN        OpenVPN
+	System         System
+	DNS            DNS
+	Firewall       Firewall
+	TinyProxy      TinyProxy
+	ShadowSocks    ShadowSocks
+	PublicIPPeriod time.Duration
 }
 
 func (s *Settings) String() string {
@@ -27,6 +29,7 @@ func (s *Settings) String() string {
 		s.Firewall.String(),
 		s.TinyProxy.String(),
 		s.ShadowSocks.String(),
+		"Public IP check period: " + s.PublicIPPeriod.String(),
 		"", // new line at the end
 	}, "\n")
 }
@@ -59,6 +62,10 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 		return settings, err
 	}
 	settings.System, err = GetSystemSettings(paramsReader)
+	if err != nil {
+		return settings, err
+	}
+	settings.PublicIPPeriod, err = paramsReader.GetPublicIPPeriod()
 	if err != nil {
 		return settings, err
 	}

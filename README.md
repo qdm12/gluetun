@@ -288,6 +288,12 @@ That one is important if you want to connect to the container from your LAN for 
 | `UID` | `1000` | | User ID to run as non root and for ownership of files written |
 | `GID` | `1000` | | Group ID to run as non root and for ownership of files written |
 
+### Other
+
+| Variable | Default | Choices | Description |
+| --- | --- | --- | --- |
+| `PUBLICIP_PERIOD` | `12h` | Valid duration | Period to check for public IP address. Set to `0` to disable. |
+
 ## Connect to it
 
 There are various ways to achieve this, depending on your use case.
