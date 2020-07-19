@@ -23,13 +23,16 @@ type Looper interface {
 	PortForward()
 	GetSettings() (settings settings.OpenVPN)
 	SetSettings(settings settings.OpenVPN)
+	GetPortForwarded() (portForwarded uint16)
 }
 
 type looper struct {
 	// Variable parameters
-	provider      models.VPNProvider
-	settings      settings.OpenVPN
-	settingsMutex sync.RWMutex
+	provider           models.VPNProvider
+	settings           settings.OpenVPN
+	settingsMutex      sync.RWMutex
+	portForwarded      uint16
+	portForwardedMutex sync.RWMutex
 	// Fixed parameters
 	uid int
 	gid int
@@ -187,10 +190,13 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 		port, err = providerConf.GetPortForward(client)
 		if err != nil {
 			l.logAndWait(ctx, err)
-			continue
 		}
-		l.logger.Info("port forwarded is %d", port)
 	}
+
+	l.logger.Info("port forwarded is %d", port)
+	l.portForwardedMutex.Lock()
+	l.portForwarded = port
+	l.portForwardedMutex.Unlock()
 
 	filepath := settings.Provider.PortForwarding.Filepath
 	l.logger.Info("writing forwarded port to %s", filepath)
@@ -205,4 +211,10 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 	if err := l.fw.SetPortForward(ctx, port); err != nil {
 		l.logger.Error(err)
 	}
+}
+
+func (l *looper) GetPortForwarded() (portForwarded uint16) {
+	l.portForwardedMutex.RLock()
+	defer l.portForwardedMutex.RUnlock()
+	return l.portForwarded
 }

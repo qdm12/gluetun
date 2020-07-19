@@ -377,6 +377,7 @@ A built-in HTTP server listens on port `8000` to modify the state of the contain
 
 - `http://<your-docker-host-ip>:8000/openvpn/actions/restart` restarts the openvpn process
 - `http://<your-docker-host-ip>:8000/unbound/actions/restart` re-downloads the DNS files (crypto and block lists) and restarts the unbound process
+- `http://<your-docker-host-ip>:8000/openvpn/portforwarded` to get your port forwarded as JSON. You can use **jq** to parse JSON on linux.
 
 ## Development and contributing
 

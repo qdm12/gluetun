@@ -15,18 +15,21 @@ type Server interface {
 }
 
 type server struct {
-	address        string
-	logger         logging.Logger
-	restartOpenvpn func()
-	restartUnbound func()
+	address          string
+	logger           logging.Logger
+	restartOpenvpn   func()
+	restartUnbound   func()
+	getPortForwarded func() uint16
 }
 
-func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound func()) Server {
+func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound func(),
+	getPortForwarded func() uint16) Server {
 	return &server{
-		address:        address,
-		logger:         logger.WithPrefix("http server: "),
-		restartOpenvpn: restartOpenvpn,
-		restartUnbound: restartUnbound,
+		address:          address,
+		logger:           logger.WithPrefix("http server: "),
+		restartOpenvpn:   restartOpenvpn,
+		restartUnbound:   restartUnbound,
+		getPortForwarded: getPortForwarded,
 	}
 }
 
@@ -61,6 +64,8 @@ func (s *server) makeHandler() http.HandlerFunc {
 				s.restartOpenvpn()
 			case "/unbound/actions/restart":
 				s.restartUnbound()
+			case "/openvpn/portforwarded":
+				s.handleGetPortForwarded(w)
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}
