@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
 type Server interface {
@@ -15,21 +16,23 @@ type Server interface {
 }
 
 type server struct {
-	address          string
-	logger           logging.Logger
-	restartOpenvpn   func()
-	restartUnbound   func()
-	getPortForwarded func() uint16
+	address            string
+	logger             logging.Logger
+	restartOpenvpn     func()
+	restartUnbound     func()
+	getOpenvpnSettings func() settings.OpenVPN
+	getPortForwarded   func() uint16
 }
 
 func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound func(),
-	getPortForwarded func() uint16) Server {
+	getOpenvpnSettings func() settings.OpenVPN, getPortForwarded func() uint16) Server {
 	return &server{
-		address:          address,
-		logger:           logger.WithPrefix("http server: "),
-		restartOpenvpn:   restartOpenvpn,
-		restartUnbound:   restartUnbound,
-		getPortForwarded: getPortForwarded,
+		address:            address,
+		logger:             logger.WithPrefix("http server: "),
+		restartOpenvpn:     restartOpenvpn,
+		restartUnbound:     restartUnbound,
+		getOpenvpnSettings: getOpenvpnSettings,
+		getPortForwarded:   getPortForwarded,
 	}
 }
 
@@ -66,6 +69,8 @@ func (s *server) makeHandler() http.HandlerFunc {
 				s.restartUnbound()
 			case "/openvpn/portforwarded":
 				s.handleGetPortForwarded(w)
+			case "/openvpn/settings":
+				s.handleGetOpenvpnSettings(w)
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}

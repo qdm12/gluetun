@@ -129,6 +129,7 @@ func _main(background context.Context, args []string) int {
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
 	restartOpenvpn := openvpnLooper.Restart
 	portForward := openvpnLooper.PortForward
+	getOpenvpnSettings := openvpnLooper.GetSettings
 	getPortForwarded := openvpnLooper.GetPortForwarded
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
@@ -177,7 +178,7 @@ func _main(background context.Context, args []string) int {
 		}
 	}()
 
-	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound, getPortForwarded)
+	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound, getOpenvpnSettings, getPortForwarded)
 	go httpServer.Run(ctx, wg)
 
 	// Start openvpn for the first time

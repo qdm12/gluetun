@@ -8,48 +8,48 @@ import (
 
 // ProviderSettings contains settings specific to a VPN provider
 type ProviderSettings struct {
-	Name               VPNProvider
-	ServerSelection    ServerSelection
-	ExtraConfigOptions ExtraConfigOptions
-	PortForwarding     PortForwarding
+	Name               VPNProvider        `json:"name"`
+	ServerSelection    ServerSelection    `json:"serverSelection"`
+	ExtraConfigOptions ExtraConfigOptions `json:"extraConfig"`
+	PortForwarding     PortForwarding     `json:"portForwarding"`
 }
 
 type ServerSelection struct { //nolint:maligned
 	// Common
-	Protocol NetworkProtocol
-	TargetIP net.IP
+	Protocol NetworkProtocol `json:"networkProtocol"`
+	TargetIP net.IP          `json:"targetIP,omitempty"`
 
 	// Cyberghost, PIA, Surfshark, Windscribe, Vyprvpn, NordVPN
-	Region string
+	Region string `json:"region"`
 
 	// Cyberghost
-	Group string
+	Group string `json:"group"`
 
 	// Mullvad
-	Country string
-	City    string
-	ISP     string
-	Owned   bool
+	Country string `json:"country"`
+	City    string `json:"city"`
+	ISP     string `json:"isp"`
+	Owned   bool   `json:"owned"`
 
 	// Mullvad, Windscribe
-	CustomPort uint16
-
-	// PIA
-	EncryptionPreset string
+	CustomPort uint16 `json:"customPort"`
 
 	// NordVPN
-	Number uint16
+	Number uint16 `json:"number"`
+
+	// PIA
+	EncryptionPreset string `json:"encryptionPreset"`
 }
 
 type ExtraConfigOptions struct {
-	ClientKey        string // Cyberghost
-	EncryptionPreset string // PIA
+	ClientKey        string `json:"-"`                // Cyberghost
+	EncryptionPreset string `json:"encryptionPreset"` // PIA
 }
 
 // PortForwarding contains settings for port forwarding
 type PortForwarding struct {
-	Enabled  bool
-	Filepath Filepath
+	Enabled  bool     `json:"enabled"`
+	Filepath Filepath `json:"filepath"`
 }
 
 func (p *PortForwarding) String() string {

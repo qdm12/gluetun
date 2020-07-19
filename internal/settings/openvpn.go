@@ -11,13 +11,13 @@ import (
 
 // OpenVPN contains settings to configure the OpenVPN client
 type OpenVPN struct {
-	User      string
-	Password  string
-	Verbosity int
-	Root      bool
-	Cipher    string
-	Auth      string
-	Provider  models.ProviderSettings
+	User      string                  `json:"user"`
+	Password  string                  `json:"-"`
+	Verbosity int                     `json:"verbosity"`
+	Root      bool                    `json:"runAsRoot"`
+	Cipher    string                  `json:"cipher"`
+	Auth      string                  `json:"auth"`
+	Provider  models.ProviderSettings `json:"provider"`
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions

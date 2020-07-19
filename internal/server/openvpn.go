@@ -21,3 +21,16 @@ func (s *server) handleGetPortForwarded(w http.ResponseWriter) {
 	}
 }
 
+func (s *server) handleGetOpenvpnSettings(w http.ResponseWriter) {
+	settings := s.getOpenvpnSettings()
+	data, err := json.Marshal(settings)
+	if err != nil {
+		s.logger.Warn(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if _, err := w.Write(data); err != nil {
+		s.logger.Warn(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
