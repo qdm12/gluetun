@@ -144,6 +144,18 @@ func (c *configurator) acceptInputToPort(ctx context.Context, intf string, proto
 	)
 }
 
+// For port forwarding, intf should be tun0
+func (c *configurator) redirectPortToPort(ctx context.Context, src, dst uint16, intf string, remove bool) error {
+	interfaceFlag := "-i " + intf
+	if intf == "*" { // all interfaces
+		interfaceFlag = ""
+	}
+	return c.runIptablesInstructions(ctx, []string{
+		fmt.Sprintf("-t nat %s PREROUTING %s -p tcp --dport %d -j REDIRECT --to-port %d", appendOrDelete(remove), interfaceFlag, src, dst),
+		fmt.Sprintf("-t nat %s PREROUTING %s -p udp --dport %d -j REDIRECT --to-port %d", appendOrDelete(remove), interfaceFlag, src, dst),
+	})
+}
+
 func (c *configurator) runUserPostRules(ctx context.Context, filepath string, remove bool) error {
 	exists, err := c.fileManager.FileExists(filepath)
 	if err != nil {

@@ -94,6 +94,9 @@ func (c *configurator) SetPortForward(ctx context.Context, port uint16) (err err
 		if err := c.acceptInputToPort(ctx, tun, constants.UDP, c.portForwarded, true); err != nil {
 			return fmt.Errorf("cannot remove outdated port forward rule from firewall: %w", err)
 		}
+		if err := c.redirectPortToPort(ctx, c.portForwarded, 9000, string(constants.TUN), true); err != nil {
+			return fmt.Errorf("cannot remove outdated port forward rule from firewall: %w", err)
+		}
 	}
 
 	if port == 0 { // not changing port
@@ -106,6 +109,9 @@ func (c *configurator) SetPortForward(ctx context.Context, port uint16) (err err
 	}
 	if err := c.acceptInputToPort(ctx, tun, constants.UDP, port, false); err != nil {
 		return fmt.Errorf("cannot accept port forwarded through firewall: %w", err)
+	}
+	if err := c.redirectPortToPort(ctx, c.portForwarded, 9000, string(constants.TUN), false); err != nil {
+		return fmt.Errorf("cannot redirect port forwarded to port 9000: %w", err)
 	}
 	return nil
 }

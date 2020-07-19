@@ -142,7 +142,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | `Austria` | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
-    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server |
+    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server. You can listen on port `9000` for it |
     | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
 
 - Mullvad
@@ -365,11 +365,11 @@ There are various ways to achieve this, depending on your use case.
 
 ## Private Internet Access port forwarding
 
-Note that [not all regions support port forwarding](https://www.privateinternetaccess.com/helpdesk/kb/articles/how-do-i-enable-port-forwarding-on-my-vpn).
+The following applies when `PORT_FORWARDING=on` is set.
 
-When `PORT_FORWARDING=on`, a port will be forwarded on the VPN server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
-
-It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
+- Note that [not all regions support port forwarding](https://www.privateinternetaccess.com/helpdesk/kb/articles/how-do-i-enable-port-forwarding-on-my-vpn).
+- Whatever port forwarded number you obtain, you can listen on port `9000` thanks to a port redirection (for tcp and udp). That should fit most use cases such as torrent clients.
+- The VPN server forwarded port is written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`. It can be useful to mount this file as a volume to read it from other containers to automate things.
 
 ## HTTP control server
 
