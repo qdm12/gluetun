@@ -88,7 +88,7 @@ printf " * Encryption: $ENCRYPTION\n"
 printf " * Protocol: $PROTOCOL\n"
 printf "Local network parameters:\n"
 printf " * Web UI port: $WEBUI_PORT\n"
-printf " * Addning PIA DNS Servers\n"
+printf " * Adding PIA DNS Servers\n"
 cat /dev/null > /etc/resolv.conf
 for name_server in $(echo $DNS_SERVERS | sed "s/,/ /g")
 do
