@@ -12,9 +12,7 @@ func (c *configurator) SetAllowedSubnets(ctx context.Context, subnets []net.IPNe
 
 	if !c.enabled {
 		c.logger.Info("firewall disabled, only updating allowed subnets internal list and updating routes")
-		if err := c.updateSubnetRoutes(ctx, c.allowedSubnets, subnets); err != nil {
-			return err
-		}
+		c.updateSubnetRoutes(ctx, c.allowedSubnets, subnets)
 		c.allowedSubnets = make([]net.IPNet, len(subnets))
 		copy(c.allowedSubnets, subnets)
 		return nil
@@ -28,17 +26,8 @@ func (c *configurator) SetAllowedSubnets(ctx context.Context, subnets []net.IPNe
 		return nil
 	}
 
-	defaultInterface, defaultGateway, err := c.routing.DefaultRoute()
-	if err != nil {
-		return fmt.Errorf("cannot set allowed subnets through firewall: %w", err)
-	}
-	localSubnet, err := c.routing.LocalSubnet()
-	if err != nil {
-		return fmt.Errorf("cannot set allowed subnets through firewall: %w", err)
-	}
-
-	c.removeSubnets(ctx, subnetsToRemove, defaultInterface, localSubnet)
-	if err := c.addSubnets(ctx, subnetsToAdd, defaultInterface, defaultGateway, localSubnet); err != nil {
+	c.removeSubnets(ctx, subnetsToRemove, c.defaultInterface, c.localSubnet)
+	if err := c.addSubnets(ctx, subnetsToAdd, c.defaultInterface, c.defaultGateway, c.localSubnet); err != nil {
 		return fmt.Errorf("cannot set allowed subnets through firewall: %w", err)
 	}
 
@@ -135,15 +124,12 @@ func (c *configurator) addSubnets(ctx context.Context, subnets []net.IPNet, defa
 	return nil
 }
 
-func (c *configurator) updateSubnetRoutes(ctx context.Context, oldSubnets, newSubnets []net.IPNet) error {
+// updateSubnetRoutes does not return an error in order to try to run as many route commands as possible
+func (c *configurator) updateSubnetRoutes(ctx context.Context, oldSubnets, newSubnets []net.IPNet) {
 	subnetsToAdd := findSubnetsToAdd(oldSubnets, newSubnets)
 	subnetsToRemove := findSubnetsToRemove(oldSubnets, newSubnets)
 	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
-		return nil
-	}
-	defaultInterface, defaultGateway, err := c.routing.DefaultRoute()
-	if err != nil {
-		return err
+		return
 	}
 	for _, subnet := range subnetsToRemove {
 		if err := c.routing.DeleteRouteVia(ctx, subnet); err != nil {
@@ -151,9 +137,8 @@ func (c *configurator) updateSubnetRoutes(ctx context.Context, oldSubnets, newSu
 		}
 	}
 	for _, subnet := range subnetsToAdd {
-		if err := c.routing.AddRouteVia(ctx, subnet, defaultGateway, defaultInterface); err != nil {
+		if err := c.routing.AddRouteVia(ctx, subnet, c.defaultGateway, c.defaultInterface); err != nil {
 			c.logger.Error("cannot add route for subnet: %s", err)
 		}
 	}
-	return nil
 }

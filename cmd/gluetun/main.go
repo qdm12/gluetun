@@ -104,6 +104,18 @@ func _main(background context.Context, args []string) int {
 		routingConf.SetDebug()
 	}
 
+	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
+	if err != nil {
+		fatalOnError(err)
+	}
+
+	localSubnet, err := routingConf.LocalSubnet()
+	if err != nil {
+		fatalOnError(err)
+	}
+
+	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet)
+
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()

@@ -22,15 +22,21 @@ type Configurator interface {
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 	SetPortForward(ctx context.Context, port uint16) (err error)
 	SetDebug()
+	// SetNetworkInformation is meant to be called only once
+	SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet)
 }
 
 type configurator struct { //nolint:maligned
-	commander     command.Commander
-	logger        logging.Logger
-	routing       routing.Routing
-	fileManager   files.FileManager // for custom iptables rules
-	iptablesMutex sync.Mutex
-	debug         bool
+	commander        command.Commander
+	logger           logging.Logger
+	routing          routing.Routing
+	fileManager      files.FileManager // for custom iptables rules
+	iptablesMutex    sync.Mutex
+	debug            bool
+	defaultInterface string
+	defaultGateway   net.IP
+	localSubnet      net.IPNet
+	networkInfoMutex sync.Mutex
 
 	// State
 	enabled        bool
@@ -54,4 +60,12 @@ func NewConfigurator(logger logging.Logger, routing routing.Routing, fileManager
 
 func (c *configurator) SetDebug() {
 	c.debug = true
+}
+
+func (c *configurator) SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet) {
+	c.networkInfoMutex.Lock()
+	defer c.networkInfoMutex.Unlock()
+	c.defaultInterface = defaultInterface
+	c.defaultGateway = defaultGateway
+	c.localSubnet = localSubnet
 }
