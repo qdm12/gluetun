@@ -1,0 +1,17 @@
+version: '3'
+services: 
+    pia-qbittorrent:
+        image: crazyquark/pia-qbittorrent
+        container_name: pia-qbittorrent
+        cap_add: 
+            - NET_ADMIN
+        environment:
+            - REGION=Netherlands
+            - USER=
+            - PASSWORD=
+        volumes:
+            - ./config:/config
+            - /storage/_completed:/downloads
+        ports:
+            - "8888:8888"
+        restart: unless-stopped
