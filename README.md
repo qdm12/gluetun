@@ -22,6 +22,7 @@
 <details><summary>Click to show base components</summary><p>
 
 - [Ubuntu 18.04](https://ubuntu.com) for a base image
+- [Alpine 3.12.0](https://alpinelinux.org/) for a base image
 - [OpenVPN 2.4.4](https://packages.ubuntu.com/bionic/openvpn) to tunnel to PIA servers
 - [IPtables 1.6.1](https://packages.ubuntu.com/bionic/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 
