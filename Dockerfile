@@ -82,6 +82,7 @@ ENV VPNSP=pia \
     # Firewall
     FIREWALL=on \
     EXTRA_SUBNETS= \
+    FIREWALL_VPN_INPUT_PORTS= \
     FIREWALL_DEBUG=off \
     # Tinyproxy
     TINYPROXY=off \

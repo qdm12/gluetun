@@ -16,6 +16,7 @@ import (
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/alpine"
 	"github.com/qdm12/private-internet-access-docker/internal/cli"
+	"github.com/qdm12/private-internet-access-docker/internal/constants"
 	"github.com/qdm12/private-internet-access-docker/internal/dns"
 	"github.com/qdm12/private-internet-access-docker/internal/firewall"
 	gluetunLogging "github.com/qdm12/private-internet-access-docker/internal/logging"
@@ -136,6 +137,11 @@ func _main(background context.Context, args []string) int {
 
 	err = firewallConf.SetAllowedSubnets(ctx, allSettings.Firewall.AllowedSubnets)
 	fatalOnError(err)
+
+	for _, vpnPort := range allSettings.Firewall.VPNInputPorts {
+		err = firewallConf.SetAllowedPort(ctx, vpnPort, string(constants.TUN))
+		fatalOnError(err)
+	}
 
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)

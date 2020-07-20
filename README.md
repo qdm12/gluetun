@@ -53,7 +53,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - **Windscribe**: Pick the [region](https://windscribe.com/status), and optionally a custom port to use
 - **Surfshark**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
 - **Cyberghost**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost) and server group.
-- **VyprVPN**: Pick the [region](https://www.vyprvpn.com/server-locations), port forwarding works by default
+- **VyprVPN**: Pick the [region](https://www.vyprvpn.com/server-locations), port forwarding works by default (see `FIREWALL_VPN_INPUT_PORTS` though)
 - **NordVPN**: Pick the region and optionally the server number
 
 ### Extra niche features
@@ -240,6 +240,7 @@ That one is important if you want to connect to the container from your LAN for 
 | --- | --- | --- | --- |
 | `FIREWALL` | `on` | `on` or `off` | Turn on or off the container built-in firewall. You should use it for **debugging purposes** only. |
 | `EXTRA_SUBNETS` | | i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28` | Comma separated subnets allowed in the container firewall |
+| `FIREWALL_VPN_INPUT_PORTS` | | i.e. `1000,8080` | Comma separated list of ports to allow from the VPN server side (useful for **vyprvpn** port forwarding) |
 | `FIREWALL_DEBUG` | `off` | `on` or `off` | Prints every firewall related command. You should use it for **debugging purposes** only. |
 
 ### Shadowsocks

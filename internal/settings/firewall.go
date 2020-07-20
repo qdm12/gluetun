@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"fmt"
 	"net"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 // Firewall contains settings to customize the firewall operation
 type Firewall struct {
 	AllowedSubnets []net.IPNet
+	VPNInputPorts  []uint16
 	Enabled        bool
 	Debug          bool
 }
@@ -22,9 +24,15 @@ func (f *Firewall) String() string {
 	if !f.Enabled {
 		return "Firewall settings: disabled"
 	}
+	vpnInputPorts := make([]string, len(f.VPNInputPorts))
+	for i, port := range f.VPNInputPorts {
+		vpnInputPorts[i] = fmt.Sprintf("%d", port)
+	}
+
 	settingsList := []string{
 		"Firewall settings:",
 		"Allowed subnets: " + strings.Join(allowedSubnets, ", "),
+		"VPN input ports: " + strings.Join(vpnInputPorts, ", "),
 	}
 	if f.Debug {
 		settingsList = append(settingsList, "Debug: on")
@@ -35,6 +43,10 @@ func (f *Firewall) String() string {
 // GetFirewallSettings obtains firewall settings from environment variables using the params package.
 func GetFirewallSettings(paramsReader params.Reader) (settings Firewall, err error) {
 	settings.AllowedSubnets, err = paramsReader.GetExtraSubnets()
+	if err != nil {
+		return settings, err
+	}
+	settings.VPNInputPorts, err = paramsReader.GetVPNInputPorts()
 	if err != nil {
 		return settings, err
 	}
