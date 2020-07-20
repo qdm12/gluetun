@@ -50,7 +50,7 @@
 
 1. <details><summary>Requirements</summary><p>
 
-    - A Private Internet Access **username** and **password** - [Sign up](https://www.privateinternetaccess.com/pages/buy-vpn/)
+    - A Private Internet Access **username** and **password** - [Sign up referral link](http://www.privateinternetaccess.com/pages/buy-a-vpn/1218buyavpn?invite=U2FsdGVkX1-Ki-3bKiIknvTQB1F-2Tz79e8QkNeh5Zc%2CbPOXkZjc102Clh5ih5-Pa_TYyTU)
     - External firewall requirements, if you have one
         - Allow outbound TCP 853 to 1.1.1.1 to allow Unbound to resolve the PIA domain name at start. You can then block it once the container is started.
         - For UDP strong encryption, allow outbound UDP 1197
@@ -65,7 +65,7 @@
 1. Launch the container with:
 
     ```bash
-    docker run -d --init --name=pia --cap-add=NET_ADMIN-v /My/Downloads/Folder/:/downloads \
+    docker run -d --init --name=pia --cap-add=NET_ADMIN -v /My/Downloads/Folder/:/downloads \
     -p 8888:8888 -e REGION="Netherlands" -e USER=xxxxxxx -e PASSWORD=xxxxxxxx \
     j4ym0/pia-qbittorrent
     ```
@@ -122,4 +122,4 @@ Default Password: adminadmin
 
 ## License
 
-This repository is under an [MIT license](https://github.com/qdm12/private-internet-access-docker/master/license)
+This repository is under an [MIT license](https://github.com/j4ym0/pia-qbittorrent-docker/master/license)
