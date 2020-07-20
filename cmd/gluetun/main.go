@@ -158,11 +158,11 @@ func _main(background context.Context, args []string) int {
 	go publicIPLooper.RunRestartTicker(ctx)
 	setPublicIPPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
-	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid)
+	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
 	restartTinyproxy := tinyproxyLooper.Restart
 	go tinyproxyLooper.Run(ctx, wg)
 
-	shadowsocksLooper := shadowsocks.NewLooper(shadowsocksConf, firewallConf, allSettings.ShadowSocks, allSettings.DNS, logger, streamMerger, uid, gid)
+	shadowsocksLooper := shadowsocks.NewLooper(shadowsocksConf, firewallConf, allSettings.ShadowSocks, allSettings.DNS, logger, streamMerger, uid, gid, defaultInterface)
 	restartShadowsocks := shadowsocksLooper.Restart
 	go shadowsocksLooper.Run(ctx, wg)
 

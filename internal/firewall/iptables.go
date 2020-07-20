@@ -134,14 +134,15 @@ func (c *configurator) acceptOutputFromSubnetToSubnet(ctx context.Context, intf 
 }
 
 // Used for port forwarding, with intf set to tun
-func (c *configurator) acceptInputToPort(ctx context.Context, intf string, protocol models.NetworkProtocol, port uint16, remove bool) error {
+func (c *configurator) acceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
 	}
-	return c.runIptablesInstruction(ctx,
-		fmt.Sprintf("%s INPUT %s -p %s --dport %d -j ACCEPT", appendOrDelete(remove), interfaceFlag, protocol, port),
-	)
+	return c.runIptablesInstructions(ctx, []string{
+		fmt.Sprintf("%s INPUT %s -p tcp --dport %d -j ACCEPT", appendOrDelete(remove), interfaceFlag, port),
+		fmt.Sprintf("%s INPUT %s -p udp --dport %d -j ACCEPT", appendOrDelete(remove), interfaceFlag, port),
+	})
 }
 
 func (c *configurator) runUserPostRules(ctx context.Context, filepath string, remove bool) error {

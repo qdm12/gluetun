@@ -21,17 +21,18 @@ type Looper interface {
 }
 
 type looper struct {
-	conf          Configurator
-	firewallConf  firewall.Configurator
-	settings      settings.TinyProxy
-	settingsMutex sync.RWMutex
-	logger        logging.Logger
-	streamMerger  command.StreamMerger
-	uid           int
-	gid           int
-	restart       chan struct{}
-	start         chan struct{}
-	stop          chan struct{}
+	conf             Configurator
+	firewallConf     firewall.Configurator
+	settings         settings.TinyProxy
+	settingsMutex    sync.RWMutex
+	logger           logging.Logger
+	streamMerger     command.StreamMerger
+	uid              int
+	gid              int
+	defaultInterface string
+	restart          chan struct{}
+	start            chan struct{}
+	stop             chan struct{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -43,18 +44,19 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 }
 
 func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings settings.TinyProxy,
-	logger logging.Logger, streamMerger command.StreamMerger, uid, gid int) Looper {
+	logger logging.Logger, streamMerger command.StreamMerger, uid, gid int, defaultInterface string) Looper {
 	return &looper{
-		conf:         conf,
-		firewallConf: firewallConf,
-		settings:     settings,
-		logger:       logger.WithPrefix("tinyproxy: "),
-		streamMerger: streamMerger,
-		uid:          uid,
-		gid:          gid,
-		restart:      make(chan struct{}),
-		start:        make(chan struct{}),
-		stop:         make(chan struct{}),
+		conf:             conf,
+		firewallConf:     firewallConf,
+		settings:         settings,
+		logger:           logger.WithPrefix("tinyproxy: "),
+		streamMerger:     streamMerger,
+		uid:              uid,
+		gid:              gid,
+		defaultInterface: defaultInterface,
+		restart:          make(chan struct{}),
+		start:            make(chan struct{}),
+		stop:             make(chan struct{}),
 	}
 }
 
@@ -133,7 +135,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				continue
 			}
 		}
-		if err := l.firewallConf.SetAllowedPort(ctx, settings.Port); err != nil {
+		if err := l.firewallConf.SetAllowedPort(ctx, settings.Port, l.defaultInterface); err != nil {
 			l.logger.Error(err)
 			continue
 		}

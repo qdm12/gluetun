@@ -18,9 +18,8 @@ type Configurator interface {
 	SetEnabled(ctx context.Context, enabled bool) (err error)
 	SetVPNConnections(ctx context.Context, connections []models.OpenVPNConnection) (err error)
 	SetAllowedSubnets(ctx context.Context, subnets []net.IPNet) (err error)
-	SetAllowedPort(ctx context.Context, port uint16) error
+	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
-	SetPortForward(ctx context.Context, port uint16) (err error)
 	SetDebug()
 	// SetNetworkInformation is meant to be called only once
 	SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet)
@@ -39,22 +38,21 @@ type configurator struct { //nolint:maligned
 	networkInfoMutex sync.Mutex
 
 	// State
-	enabled        bool
-	vpnConnections []models.OpenVPNConnection
-	allowedSubnets []net.IPNet
-	allowedPorts   map[uint16]struct{}
-	portForwarded  uint16
-	stateMutex     sync.Mutex
+	enabled           bool
+	vpnConnections    []models.OpenVPNConnection
+	allowedSubnets    []net.IPNet
+	allowedInputPorts map[uint16]string // port to interface mapping
+	stateMutex        sync.Mutex
 }
 
 // NewConfigurator creates a new Configurator instance
 func NewConfigurator(logger logging.Logger, routing routing.Routing, fileManager files.FileManager) Configurator {
 	return &configurator{
-		commander:    command.NewCommander(),
-		logger:       logger.WithPrefix("firewall: "),
-		routing:      routing,
-		fileManager:  fileManager,
-		allowedPorts: make(map[uint16]struct{}),
+		commander:         command.NewCommander(),
+		logger:            logger.WithPrefix("firewall: "),
+		routing:           routing,
+		fileManager:       fileManager,
+		allowedInputPorts: make(map[uint16]string),
 	}
 }
 

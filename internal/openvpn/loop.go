@@ -195,6 +195,12 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 
 	l.logger.Info("port forwarded is %d", port)
 	l.portForwardedMutex.Lock()
+	if err := l.fw.RemoveAllowedPort(ctx, l.portForwarded); err != nil {
+		l.logger.Error(err)
+	}
+	if err := l.fw.SetAllowedPort(ctx, port, string(constants.TUN)); err != nil {
+		l.logger.Error(err)
+	}
 	l.portForwarded = port
 	l.portForwardedMutex.Unlock()
 
@@ -205,10 +211,6 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 		files.Ownership(l.uid, l.gid), files.Permissions(0400),
 	)
 	if err != nil {
-		l.logger.Error(err)
-	}
-
-	if err := l.fw.SetPortForward(ctx, port); err != nil {
 		l.logger.Error(err)
 	}
 }

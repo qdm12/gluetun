@@ -114,22 +114,8 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 		}
 	}
 
-	for port := range c.allowedPorts {
-		// TODO restrict interface
-		if err := c.acceptInputToPort(ctx, "*", constants.TCP, port, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-		if err := c.acceptInputToPort(ctx, "*", constants.UDP, port, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-	}
-
-	if c.portForwarded > 0 {
-		const tun = string(constants.TUN)
-		if err := c.acceptInputToPort(ctx, tun, constants.TCP, c.portForwarded, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-		if err := c.acceptInputToPort(ctx, tun, constants.UDP, c.portForwarded, remove); err != nil {
+	for port, intf := range c.allowedInputPorts {
+		if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}
