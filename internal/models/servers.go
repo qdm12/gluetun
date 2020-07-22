@@ -44,3 +44,10 @@ type NordvpnServer struct { //nolint:maligned
 	TCP    bool
 	UDP    bool
 }
+
+type PurevpnServer struct {
+	Region  string
+	Country string
+	City    string
+	IPs     []net.IP
+}
