@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"time"
 
@@ -30,8 +31,8 @@ func _main() int {
 		}
 		for _, server := range servers {
 			fmt.Printf(
-				"{region: %q, country: %s, city: %s, subdomain: %s},\n",
-				server.region, server.country, server.city, server.subdomain,
+				"{subdomain: %q, region: %q, country: %q, city: %q},\n",
+				server.subdomain, server.region, server.country, server.city,
 			)
 		}
 		fmt.Print("\n\n")
@@ -82,6 +83,15 @@ func purevpn(client network.Client) (servers []purevpnServer, warnings []string,
 	if err := json.Unmarshal([]byte(s), &data); err != nil {
 		return nil, nil, err
 	}
+	sort.Slice(data, func(i, j int) bool {
+		if data[i].Region == data[j].Region {
+			if data[i].Country == data[j].Country {
+				return data[i].City < data[j].City
+			}
+			return data[i].Country < data[j].Country
+		}
+		return data[i].Region < data[j].Region
+	})
 	for i := range data {
 		if data[i].UDP == "" && data[i].TCP == "" {
 			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP and UDP for openvpn", data[i].Region, data[i].Country, data[i].City))
