@@ -125,7 +125,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn` | VPN Service Provider |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
 | `IP_STATUS_FILE` | `/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
@@ -209,6 +209,17 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `PASSWORD` | | | Your password |
     | 🏁 `REGION` | `Austria` (wrong) | One of the NordVPN server country, i.e. `Switzerland` | VPN server country |
     | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
+
+- PureVPN
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your user ID |
+    | 🏁 `REGION` | `Austria` (wrong) | One of the [PureVPN regions](https://support.purevpn.com/vpn-servers) | VPN server region |
+    | `COUNTRY` | | One of the [PureVPN countries](https://support.purevpn.com/vpn-servers) | VPN server country |
+    | `CITY` | | One of the [PureVPN cities](https://support.purevpn.com/vpn-servers) | VPN server city |
+
+    Note that you can specify only `CITY` or only `REGION` or only `COUNTRY` or a mix of them.
 
 ### DNS over TLS
 
