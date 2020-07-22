@@ -19,6 +19,8 @@ const (
 	Vyprvpn models.VPNProvider = "vyprvpn"
 	// NordVPN is a VPN provider
 	Nordvpn models.VPNProvider = "nordvpn"
+	// PureVPN is a VPN provider
+	Purevpn models.VPNProvider = "purevpn"
 )
 
 const (
