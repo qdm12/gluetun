@@ -25,11 +25,13 @@ type ServerSelection struct { //nolint:maligned
 	// Cyberghost
 	Group string `json:"group"`
 
-	// Mullvad
+	// Mullvad, PureVPN
 	Country string `json:"country"`
 	City    string `json:"city"`
-	ISP     string `json:"isp"`
-	Owned   bool   `json:"owned"`
+
+	// Mullvad
+	ISP   string `json:"isp"`
+	Owned bool   `json:"owned"`
 
 	// Mullvad, Windscribe
 	CustomPort uint16 `json:"customPort"`
@@ -109,6 +111,12 @@ func (p *ProviderSettings) String() string {
 		settingsList = append(settingsList,
 			"Region: "+p.ServerSelection.Region,
 			"Number: "+number,
+		)
+	case "purevpn":
+		settingsList = append(settingsList,
+			"Region: "+p.ServerSelection.Region,
+			"Country: "+p.ServerSelection.Country,
+			"City: "+p.ServerSelection.City,
 		)
 	default:
 		settingsList = append(settingsList,
