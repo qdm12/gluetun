@@ -42,7 +42,7 @@ ENV VPNSP=pia \
     UID=1000 \
     GID=1000 \
     IP_STATUS_FILE="/ip" \
-    # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN only
+    # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
     USER= \
     PASSWORD= \
     REGION="Austria" \
@@ -50,9 +50,10 @@ ENV VPNSP=pia \
     PIA_ENCRYPTION=strong \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
-    # Mullvad only
+    # Mullvad and PureVPN only
     COUNTRY=Sweden \
     CITY= \
+    # Mullvad only
     ISP= \
     # Mullvad and Windscribe only
     PORT= \

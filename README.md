@@ -1,7 +1,7 @@
 # Gluetun VPN client
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
-Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN and NordVPN VPN servers, using Go, OpenVPN,
+Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN,
 iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 **ANNOUNCEMENT**: *[Video of the Git history of Gluetun](https://youtu.be/khipOYJtGJ0)*
@@ -35,7 +35,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn** and **NordVPN** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
@@ -55,6 +55,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - **Cyberghost**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost) and server group.
 - **VyprVPN**: Pick the [region](https://www.vyprvpn.com/server-locations), port forwarding works by default (see `FIREWALL_VPN_INPUT_PORTS` though)
 - **NordVPN**: Pick the region and optionally the server number
+- **PureVPN**: Pick the region, and optionally the country and city
 
 ### Extra niche features
 
@@ -77,6 +78,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
         - Cyberghost: **username**, **password** and **device client key file** ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
         - Vyprvpn: **username** and **password**
         - NordVPN: **username** and **password**
+        - PureVPN: **username** and **password**
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
 
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
