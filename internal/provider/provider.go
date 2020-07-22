@@ -29,6 +29,8 @@ func New(provider models.VPNProvider) Provider {
 		return newVyprvpn()
 	case constants.Nordvpn:
 		return newNordvpn()
+	case constants.Purevpn:
+		return newPurevpn()
 	default:
 		return nil // should never occur
 	}
