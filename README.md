@@ -1,4 +1,4 @@
-# Private Internet Access Client (qBittorrent+OpenVPN+Iptables+DNS over TLS on ubuntu)
+# Private Internet Access Client (qBittorrent+OpenVPN+Iptables+DNS over TLS on alpine/ubuntu)
 
 <p align="center">
   <a href="https://hub.docker.com/r/j4ym0/pia-qbittorrent">
