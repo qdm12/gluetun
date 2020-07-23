@@ -14,11 +14,31 @@ func newMullvad() *mullvad {
 	return &mullvad{}
 }
 
+func (m *mullvad) filterServers(country, city, isp string) (servers []models.MullvadServer) {
+	allServers := constants.MullvadServers()
+	for i, server := range allServers {
+		if len(country) == 0 {
+			server.Country = ""
+		}
+		if len(city) == 0 {
+			server.City = ""
+		}
+		if len(isp) == 0 {
+			server.ISP = ""
+		}
+		if server.Country == country && server.City == city && server.ISP == isp {
+			servers = append(servers, allServers[i])
+		}
+	}
+	return servers
+}
+
 func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
-	servers := constants.MullvadServerFilter(selection.Country, selection.City, selection.ISP)
+	servers := m.filterServers(selection.Country, selection.City, selection.ISP)
 	if len(servers) == 0 {
 		return nil, fmt.Errorf("no server found for country %q, city %q and ISP %q", selection.Country, selection.City, selection.ISP)
 	}
+
 	for _, server := range servers {
 		port := server.DefaultPort
 		if selection.CustomPort > 0 {
@@ -34,9 +54,15 @@ func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (conne
 			}
 		}
 	}
+
 	if selection.TargetIP != nil {
 		return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 	}
+
+	if len(connections) > 64 {
+		connections = connections[:64]
+	}
+
 	return connections, nil
 }
 

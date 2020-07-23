@@ -13,7 +13,7 @@ const (
 
 func MullvadCountryChoices() (choices []string) {
 	uniqueChoices := map[string]struct{}{}
-	for _, server := range mullvadServers() {
+	for _, server := range MullvadServers() {
 		uniqueChoices[server.Country] = struct{}{}
 	}
 	for choice := range uniqueChoices {
@@ -27,7 +27,7 @@ func MullvadCountryChoices() (choices []string) {
 
 func MullvadCityChoices() (choices []string) {
 	uniqueChoices := map[string]struct{}{}
-	for _, server := range mullvadServers() {
+	for _, server := range MullvadServers() {
 		uniqueChoices[server.City] = struct{}{}
 	}
 	for choice := range uniqueChoices {
@@ -41,7 +41,7 @@ func MullvadCityChoices() (choices []string) {
 
 func MullvadISPChoices() (choices []string) {
 	uniqueChoices := map[string]struct{}{}
-	for _, server := range mullvadServers() {
+	for _, server := range MullvadServers() {
 		uniqueChoices[server.ISP] = struct{}{}
 	}
 	for choice := range uniqueChoices {
@@ -53,25 +53,7 @@ func MullvadISPChoices() (choices []string) {
 	return choices
 }
 
-func MullvadServerFilter(country, city, isp string) (servers []models.MullvadServer) {
-	for _, server := range mullvadServers() {
-		if len(country) == 0 {
-			server.Country = ""
-		}
-		if len(city) == 0 {
-			server.City = ""
-		}
-		if len(isp) == 0 {
-			server.ISP = ""
-		}
-		if server.Country == country && server.City == city && server.ISP == isp {
-			servers = append(servers, server)
-		}
-	}
-	return servers
-}
-
-func mullvadServers() []models.MullvadServer {
+func MullvadServers() []models.MullvadServer {
 	return []models.MullvadServer{
 		{
 			Country:     "united arab emirates",
