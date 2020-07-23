@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -14,8 +15,9 @@ func newPurevpn() *purevpn {
 	return &purevpn{}
 }
 
-func filterPurevpnServers(region, country, city string) (servers []models.PurevpnServer) {
-	for _, server := range constants.PurevpnServers() {
+func (p *purevpn) filterServers(region, country, city string) (servers []models.PurevpnServer) {
+	allServers := constants.PurevpnServers()
+	for i, server := range allServers {
 		if len(region) == 0 {
 			server.Region = ""
 		}
@@ -25,18 +27,21 @@ func filterPurevpnServers(region, country, city string) (servers []models.Purevp
 		if len(city) == 0 {
 			server.City = ""
 		}
-		if server.Region == region && server.Country == country && server.City == city {
-			servers = append(servers, server)
+		if strings.EqualFold(server.Region, region) &&
+			strings.EqualFold(server.Country, country) &&
+			strings.EqualFold(server.City, city) {
+			servers = append(servers, allServers[i])
 		}
 	}
 	return servers
 }
 
 func (p *purevpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
-	servers := filterPurevpnServers(selection.Region, selection.Country, selection.City)
+	servers := p.filterServers(selection.Region, selection.Country, selection.City)
 	if len(servers) == 0 {
 		return nil, fmt.Errorf("no server found for region %q, country %q and city %q", selection.Region, selection.Country, selection.City)
 	}
+
 	var port uint16
 	switch {
 	case selection.Protocol == constants.UDP:
@@ -46,6 +51,7 @@ func (p *purevpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	default:
 		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
+
 	for _, server := range servers {
 		for _, IP := range server.IPs {
 			if selection.TargetIP != nil {
@@ -57,9 +63,15 @@ func (p *purevpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 			}
 		}
 	}
+
 	if selection.TargetIP != nil {
 		return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 	}
+
+	if len(connections) > 64 {
+		connections = connections[:64]
+	}
+
 	return connections, nil
 }
 

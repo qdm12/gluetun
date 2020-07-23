@@ -7,17 +7,20 @@ import (
 // GetPurevpnRegion obtains the region (continent) for the PureVPN server from the
 // environment variable REGION
 func (r *reader) GetPurevpnRegion() (region string, err error) {
-	return r.envParams.GetValueIfInside("REGION", constants.PurevpnRegionChoices())
+	choices := append(constants.PurevpnRegionChoices(), "")
+	return r.envParams.GetValueIfInside("REGION", choices)
 }
 
 // GetPurevpnCountry obtains the country for the PureVPN server from the
 // environment variable COUNTRY
 func (r *reader) GetPurevpnCountry() (country string, err error) {
-	return r.envParams.GetValueIfInside("COUNTRY", constants.PurevpnCountryChoices())
+	choices := append(constants.PurevpnCountryChoices(), "")
+	return r.envParams.GetValueIfInside("COUNTRY", choices)
 }
 
 // GetPurevpnCity obtains the city for the PureVPN server from the
 // environment variable CITY
 func (r *reader) GetPurevpnCity() (city string, err error) {
-	return r.envParams.GetValueIfInside("CITY", constants.PurevpnCityChoices())
+	choices := append(constants.PurevpnCityChoices(), "")
+	return r.envParams.GetValueIfInside("CITY", choices)
 }
