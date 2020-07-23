@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -26,7 +27,9 @@ func (m *mullvad) filterServers(country, city, isp string) (servers []models.Mul
 		if len(isp) == 0 {
 			server.ISP = ""
 		}
-		if server.Country == country && server.City == city && server.ISP == isp {
+		if strings.EqualFold(server.Country, country) &&
+			strings.EqualFold(server.City, city) &&
+			strings.EqualFold(server.ISP, isp) {
 			servers = append(servers, allServers[i])
 		}
 	}
