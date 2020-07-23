@@ -101,7 +101,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		settings := l.GetSettings()
 		providerConf := provider.New(l.provider)
 		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
-		l.fatalOnError(err)
+		if err != nil {
+			l.fatalOnError(err)
+			return
+		}
 		lines := providerConf.BuildConf(
 			connections,
 			settings.Verbosity,
@@ -112,14 +115,19 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			settings.Auth,
 			settings.Provider.ExtraConfigOptions,
 		)
-		err = l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400))
-		l.fatalOnError(err)
+		if err := l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400)); err != nil {
+			l.fatalOnError(err)
+			return
+		}
 
-		err = l.conf.WriteAuthFile(settings.User, settings.Password, l.uid, l.gid)
-		l.fatalOnError(err)
+		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.uid, l.gid); err != nil {
+			l.fatalOnError(err)
+			return
+		}
 
 		if err := l.fw.SetVPNConnections(ctx, connections); err != nil {
 			l.fatalOnError(err)
+			return
 		}
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
