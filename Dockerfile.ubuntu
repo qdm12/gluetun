@@ -1,5 +1,5 @@
 # Latest version of ubuntu
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ENV USER= \
     PASSWORD= \
@@ -28,21 +28,20 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install --no-install-recommends -y apt-utils software-properties-common && \
     apt-get install --no-install-recommends -y unzip build-essential pkg-config automake libtool git zlib1g-dev libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev libssl-dev libgeoip-dev curl cmake qtbase5-dev qttools5-dev-tools libqt5svg5-dev && \
-	apt-get install --no-install-recommends -y ca-certificates openvpn openvpn-systemd-resolved wget ca-certificates iptables dnsutils iputils-ping net-tools ack && \
-	LIBTORRENT_URL=$(curl -sSL https://api.github.com/repos/arvidn/libtorrent/tags | grep tarball_url | head -n 1 | cut -d '"' -f 4) && \
-	mkdir /tmp/libtorrent && \
-  curl -sSL https://api.github.com/repos/arvidn/libtorrent/tarball/libtorrent_1_2_7 | tar xzC /tmp/libtorrent && \
-	cd /tmp/libtorrent/*lib* && \
-	mkdir -p cmake-build-dir/release && \
-	cd cmake-build-dir/release && \
-	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=14 -G "Unix Makefiles" ../.. && \
-	make install && \
-	mkdir /tmp/qbittorrent && \
-	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.2.5 | tar xzC /tmp/qbittorrent && \
-	cd /tmp/qbittorrent/*qbittorrent* && \
-	./configure --disable-gui CXXFLAGS="-std=c++14" && \
-	make -j$(nproc) && \
-	make install && \
+  	apt-get install --no-install-recommends -y ca-certificates openvpn openvpn-systemd-resolved wget ca-certificates iptables dnsutils iputils-ping net-tools ack && \
+  	mkdir /tmp/libtorrent && \
+    curl -sSL https://api.github.com/repos/arvidn/libtorrent/tarball/libtorrent_1_2_7 | tar xzC /tmp/libtorrent && \
+  	cd /tmp/libtorrent/*lib* && \
+  	mkdir -p cmake-build-dir/release && \
+  	cd cmake-build-dir/release && \
+  	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=14 -G "Unix Makefiles" ../.. && \
+  	make install && \
+  	mkdir /tmp/qbittorrent && \
+  	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.2.5 | tar xzC /tmp/qbittorrent && \
+  	cd /tmp/qbittorrent/*qbittorrent* && \
+  	./configure --disable-gui CXXFLAGS="-std=c++14" && \
+  	make -j$(nproc) && \
+  	make install && \
     wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
     https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
