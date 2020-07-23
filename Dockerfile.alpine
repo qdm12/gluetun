@@ -30,11 +30,11 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
 	LIBTORRENT_URL=$(curl -sSL https://api.github.com/repos/arvidn/libtorrent/tags | grep tarball_url | head -n 1 | cut -d '"' -f 4) && \
 	mkdir /tmp/libtorrent && \
-	curl -sSL https://api.github.com/repos/arvidn/libtorrent/tarball/libtorrent_1_1_12 | tar xzC /tmp/libtorrent && \
+  curl -sSL https://api.github.com/repos/arvidn/libtorrent/tarball/libtorrent_1_2_7 | tar xzC /tmp/libtorrent && \
 	cd /tmp/libtorrent/*lib* && \
-	mkdir build && \
-	cd build && \
-	cmake .. && \
+	mkdir -p cmake-build-dir/release && \
+	cd cmake-build-dir/release && \
+	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=14 -G "Unix Makefiles" ../.. && \
 	make install && \
 	mkdir /tmp/qbittorrent && \
 	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.2.5 | tar xzC /tmp/qbittorrent && \
