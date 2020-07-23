@@ -136,13 +136,15 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 | `OPENVPN_CIPHER` | | i.e. `aes-256-gcm` | Specify a custom cipher to use. It will also set `ncp-disable` if using AES GCM for PIA |
 | `OPENVPN_AUTH` | | i.e. `sha256` | Specify a custom auth algorithm to use |
 
+*For all providers below, server location parameters are all optional. By default a random server is picked using the filter settings provided.*
+
 - Private Internet Access
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `REGION` | `Austria` | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
+    | `REGION` | | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
     | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server |
     | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
@@ -152,7 +154,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your user ID |
-    | `COUNTRY` | `Sweden` | One of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) | VPN server country |
+    | `COUNTRY` | | One of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) | VPN server country |
     | `CITY` | | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) | VPN server city |
     | `ISP` | | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) | VPN server ISP |
     | `PORT` | | `80` or `443` for TCP; or `53` for UDP. Leave blank for default Mullvad server port | Custom VPN port to use |
@@ -163,7 +165,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `REGION` | `Austria` | One of the [Windscribe regions](https://windscribe.com/status) | VPN server region |
+    | `REGION` | | One of the [Windscribe regions](https://windscribe.com/status) | VPN server region |
     | `PORT` | | One from the [this list of ports](https://windscribe.com/getconfig/openvpn) | Custom VPN port to use |
 
 - Surfshark
@@ -172,7 +174,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your **service** username, found at the bottom of the [manual setup page](https://account.surfshark.com/setup/manual) |
     | 🏁 `PASSWORD` | | | Your **service** password |
-    | `REGION` | `Austria` | One of the [Surfshark regions (subdomains)](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
+    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
 
 - Cyberghost
 
@@ -181,7 +183,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | 🏁 `CLIENT_KEY` | | | Your device client key content, **see below** |
-    | `REGION` | `Austria` | One of the [Cyberghost countries](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#regions) | VPN server country |
+    | `REGION` | | One of the [Cyberghost countries](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#regions) | VPN server country |
     | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#server-groups) | Server group |
 
     To specify your client key, you can either:
@@ -201,7 +203,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `REGION` | `Austria` | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
+    | `REGION` | | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
 
 - NordVPN
 
@@ -209,7 +211,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | 🏁 `REGION` | `Austria` (wrong) | One of the NordVPN server country, i.e. `Switzerland` | VPN server country |
+    | `REGION` | | One of the NordVPN server country, i.e. `Switzerland` | VPN server country |
     | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
 
 - PureVPN

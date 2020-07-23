@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"net"
 	"net/http"
 	"strings"
 
@@ -24,29 +23,24 @@ func newPrivateInternetAccess() *pia {
 	}
 }
 
-func (p *pia) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
-	var IPs []net.IP
+func (p *pia) filterServers(region string) (servers []models.PIAServer) {
+	if len(region) == 0 {
+		return constants.PIAServers()
+	}
 	for _, server := range constants.PIAServers() {
-		if strings.EqualFold(server.Region, selection.Region) {
-			IPs = server.IPs
+		if strings.EqualFold(server.Region, region) {
+			return []models.PIAServer{server}
 		}
 	}
-	if len(IPs) == 0 {
-		return nil, fmt.Errorf("no IP found for region %q", selection.Region)
+	return nil
+}
+
+func (p *pia) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
+	servers := p.filterServers(selection.Region)
+	if len(servers) == 0 {
+		return nil, fmt.Errorf("no server found for region %q", selection.Region)
 	}
-	if selection.TargetIP != nil {
-		found := false
-		for i := range IPs {
-			if IPs[i].Equal(selection.TargetIP) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
-		}
-		IPs = []net.IP{selection.TargetIP}
-	}
+
 	var port uint16
 	switch selection.Protocol {
 	case constants.TCP:
@@ -67,9 +61,27 @@ func (p *pia) GetOpenVPNConnections(selection models.ServerSelection) (connectio
 	if port == 0 {
 		return nil, fmt.Errorf("combination of protocol %q and encryption %q does not yield any port number", selection.Protocol, selection.EncryptionPreset)
 	}
-	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+
+	for _, server := range servers {
+		for _, IP := range server.IPs {
+			if selection.TargetIP != nil {
+				if selection.TargetIP.Equal(IP) {
+					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+				}
+			} else {
+				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			}
+		}
 	}
+
+	if selection.TargetIP != nil {
+		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+	}
+
+	if len(connections) > 64 {
+		connections = connections[:64]
+	}
+
 	return connections, nil
 }
 
