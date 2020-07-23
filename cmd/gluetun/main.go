@@ -57,8 +57,8 @@ func _main(background context.Context, args []string) int {
 	ctx, cancel := context.WithCancel(background)
 	defer cancel()
 	logger := createLogger()
-	wg := &sync.WaitGroup{}
-	fatalOnError := makeFatalOnError(logger, cancel, wg)
+
+	fatalOnError := makeFatalOnError(logger, cancel)
 
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
@@ -142,6 +142,8 @@ func _main(background context.Context, args []string) int {
 		err = firewallConf.SetAllowedPort(ctx, vpnPort, string(constants.TUN))
 		fatalOnError(err)
 	}
+
+	wg := &sync.WaitGroup{}
 
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
@@ -249,18 +251,11 @@ func _main(background context.Context, args []string) int {
 	return 0
 }
 
-func makeFatalOnError(logger logging.Logger, cancel context.CancelFunc, wg *sync.WaitGroup) func(err error) {
+func makeFatalOnError(logger logging.Logger, cancel context.CancelFunc) func(err error) {
 	return func(err error) {
 		if err != nil {
 			logger.Error(err)
 			cancel()
-			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-			go func() {
-				wg.Wait()
-				cancel()
-			}()
-			<-ctx.Done() // either timeout or wait group completed
-			os.Exit(1)
 		}
 	}
 }

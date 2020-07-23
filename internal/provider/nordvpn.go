@@ -2,6 +2,7 @@ package provider
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/golibs/network"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -29,7 +30,7 @@ func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, 
 		} else if protocol == constants.UDP && !server.UDP {
 			continue
 		}
-		if server.Region == region && server.Number == number {
+		if strings.EqualFold(server.Region, region) && server.Number == number {
 			servers = append(servers, allServers[i])
 		}
 	}
