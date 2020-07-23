@@ -2,7 +2,6 @@ package params
 
 import (
 	"fmt"
-	"math/rand"
 
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/private-internet-access-docker/internal/constants"
@@ -60,9 +59,5 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 // environment variable REGION
 func (r *reader) GetPIARegion() (region string, err error) {
 	choices := append(constants.PIAGeoChoices(), "")
-	s, err := r.envParams.GetValueIfInside("REGION", choices)
-	if len(s) == 0 { // Suggestion by @rorph https://github.com/rorph
-		s = choices[rand.Int()%len(choices)] //nolint:gosec
-	}
-	return s, err
+	return r.envParams.GetValueIfInside("REGION", choices)
 }

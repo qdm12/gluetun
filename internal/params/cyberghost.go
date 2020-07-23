@@ -10,14 +10,15 @@ import (
 // GetCyberghostGroup obtains the server group for the Cyberghost server from the
 // environment variable CYBERGHOST_GROUP
 func (p *reader) GetCyberghostGroup() (group string, err error) {
-	s, err := p.envParams.GetValueIfInside("CYBERGHOST_GROUP", constants.CyberghostGroupChoices())
+	s, err := p.envParams.GetValueIfInside("CYBERGHOST_GROUP", constants.CyberghostGroupChoices(), libparams.Default("Premium UDP Europe"))
 	return s, err
 }
 
 // GetCyberghostRegion obtains the country name for the Cyberghost server from the
 // environment variable REGION
 func (p *reader) GetCyberghostRegion() (region string, err error) {
-	s, err := p.envParams.GetValueIfInside("REGION", constants.CyberghostRegionChoices())
+	choices := append(constants.CyberghostRegionChoices(), "")
+	s, err := p.envParams.GetValueIfInside("REGION", choices)
 	return s, err
 }
 
