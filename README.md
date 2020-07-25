@@ -20,22 +20,11 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 [![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Join Slack channel](https://img.shields.io/badge/slack-@qdm12-yellow.svg?logo=slack)](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
 
-<details><summary>Click to show base components</summary><p>
-
-- [Alpine 3.12](https://alpinelinux.org) for a tiny image (37MB of packages, 6.7MB of Go binary and 5.6MB for Alpine)
-- [OpenVPN 2.4.9](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to your VPN provider servers
-- [IPtables 1.8.4](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
-- [Unbound 1.10.1](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
-- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS`, `BLOCK_SURVEILLANCE` and `BLOCK_ADS` environment variables)
-- [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/tinyproxy)
-- [Shadowsocks 3.3.4](https://pkgs.alpinelinux.org/package/edge/testing/x86/shadowsocks-libev)
-
-</p></details>
-
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
 - Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
+- Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
@@ -45,20 +34,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - [Connect other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - [Connect LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7 🎆
-
-### VPN provider specifics
-
-- **Private Internet Access**: pick the [region](https://www.privateinternetaccess.com/pages/network/), the level of encryption and enable port forwarding
-- **Mullvad**: Pick the [country, city and ISP](https://mullvad.net/en/servers/#openvpn) and optionally a custom port to use (i.e. `53` (udp) or `80` (tcp))
-- **Windscribe**: Pick the [region](https://windscribe.com/status), and optionally a custom port to use
-- **Surfshark**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
-- **Cyberghost**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost) and server group.
-- **VyprVPN**: Pick the [region](https://www.vyprvpn.com/server-locations), port forwarding works by default (see `FIREWALL_VPN_INPUT_PORTS` though)
-- **NordVPN**: Pick the region and optionally the server number
-- **PureVPN**: Pick the region, and optionally the country and city
-
-### Extra niche features
-
+- VPN server side port forwarding for Private Internet Access and Vyprvpn
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
 - Subprograms all drop root privileges once launched
 - Subprograms output streams are all merged together
@@ -67,23 +43,10 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 ## Setup
 
 1. Requirements
-    - A VPN account with one of the service providers:
-        - Private Internet Access: **username** and **password** ([sign up](https://www.privateinternetaccess.com/pages/buy-vpn/))
-        - Mullvad: user ID ([sign up](https://mullvad.net/en/account/))
-        - Windscribe: **username** and **password** | Signup up using my affiliate link below
-
-            [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
-
-        - Surfshark: **username** and **password** ([sign up](https://order.surfshark.com/))
-        - Cyberghost: **username**, **password** and **device client key file** ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
-        - Vyprvpn: **username** and **password**
-        - NordVPN: **username** and **password**
-        - PureVPN: **username** and **password**
+    - A VPN account with one of the service providers supported
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
-
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
     - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#synology)
-
 1. Launch the container with:
 
     ```bash
@@ -382,17 +345,13 @@ There are various ways to achieve this, depending on your use case.
 Note that [not all regions support port forwarding](https://www.privateinternetaccess.com/helpdesk/kb/articles/how-do-i-enable-port-forwarding-on-my-vpn).
 
 When `PORT_FORWARDING=on`, a port will be forwarded on the VPN server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
-
 It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
+
+You can also use the HTTP control server (see below) to get the port forwarded.
 
 ## HTTP control server
 
-A built-in HTTP server listens on port `8000` to modify the state of the container. You have the following routes available:
-
-- `http://<your-docker-host-ip>:8000/openvpn/actions/restart` restarts the openvpn process
-- `http://<your-docker-host-ip>:8000/unbound/actions/restart` re-downloads the DNS files (crypto and block lists) and restarts the unbound process
-- `http://<your-docker-host-ip>:8000/openvpn/portforwarded` to get your port forwarded as JSON. You can use **jq** to parse JSON on linux.
-- `http://<your-docker-host-ip>:8000/openvpn/settings` to get your openvpn settings as a JSON object.
+See [its Wiki page](https://github.com/qdm12/private-internet-access-docker/wiki/HTTP-control-server)
 
 ## Development and contributing
 
