@@ -42,7 +42,7 @@ ENV VPNSP=pia \
     UID=1000 \
     GID=1000 \
     IP_STATUS_FILE="/ip" \
-    # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN only
+    # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
     USER= \
     PASSWORD= \
     REGION= \
@@ -50,9 +50,10 @@ ENV VPNSP=pia \
     PIA_ENCRYPTION=strong \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
-    # Mullvad only
+    # Mullvad and PureVPN only
     COUNTRY= \
     CITY= \
+    # Mullvad only
     ISP= \
     # Mullvad and Windscribe only
     PORT= \
@@ -100,7 +101,7 @@ ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=10m --timeout=10s --start-period=30s --retries=2 CMD /entrypoint healthcheck
 RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound tinyproxy tzdata && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+    echo "http://nl.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
     apk add -q --progress --no-cache --update shadowsocks-libev && \
     rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/tinyproxy/tinyproxy.conf && \
     deluser openvpn && \

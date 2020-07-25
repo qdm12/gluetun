@@ -175,3 +175,29 @@ func GetNordvpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 	}
 	return settings, nil
 }
+
+// GetPurevpnSettings obtains Purevpn settings from environment variables using the params package.
+func GetPurevpnSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
+	settings.Name = constants.Mullvad
+	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.TargetIP, err = paramsReader.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Region, err = paramsReader.GetPurevpnRegion()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Country, err = paramsReader.GetPurevpnCountry()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.City, err = paramsReader.GetPurevpnCity()
+	if err != nil {
+		return settings, err
+	}
+	return settings, nil
+}
