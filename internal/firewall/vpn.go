@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 func (c *configurator) SetVPNConnections(ctx context.Context, connections []models.OpenVPNConnection) (err error) {

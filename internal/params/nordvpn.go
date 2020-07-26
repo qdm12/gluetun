@@ -1,8 +1,8 @@
 package params
 
 import (
+	"github.com/qdm12/gluetun/internal/constants"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 // GetNordvpnRegion obtains the region (country) for the NordVPN server from the

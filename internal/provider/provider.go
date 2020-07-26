@@ -1,9 +1,9 @@
 package provider
 
 import (
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // Provider contains methods to read and modify the openvpn configuration to connect as a client

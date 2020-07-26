@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
 type Server interface {

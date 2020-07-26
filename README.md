@@ -6,15 +6,15 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 **ANNOUNCEMENT**: *[Video of the Git history of Gluetun](https://youtu.be/khipOYJtGJ0)*
 
-<img height="250" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
+<img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
-[![Build status](https://github.com/qdm12/private-internet-access-docker/workflows/Buildx%20latest/badge.svg)](https://github.com/qdm12/private-internet-access-docker/actions?query=workflow%3A%22Buildx+latest%22)
+[![Build status](https://github.com/qdm12/gluetun/workflows/Buildx%20latest/badge.svg)](https://github.com/qdm12/gluetun/actions?query=workflow%3A%22Buildx+latest%22)
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 [![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
-[![GitHub issues](https://img.shields.io/github/issues/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
+[![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 
 [![Image size](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
@@ -31,8 +31,8 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
 - Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
 - Built in HTTP proxy (Tinyproxy, tunnels TCP)
-- [Connect other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- [Connect LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+- [Connect other containers to it](https://github.com/qdm12/gluetun#connect-to-it)
+- [Connect LAN devices to it](https://github.com/qdm12/gluetun#connect-to-it)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7 🎆
 - VPN server side port forwarding for Private Internet Access and Vyprvpn
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
@@ -44,9 +44,9 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 1. Requirements
     - A VPN account with one of the service providers supported
-    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
+    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/gluetun/blob/master/doc/firewall.md)
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#synology)
+    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#synology)
 1. Launch the container with:
 
     ```bash
@@ -55,7 +55,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
     qmcgaw/private-internet-access
     ```
 
-    or use [docker-compose.yml](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml) with:
+    or use [docker-compose.yml](https://github.com/qdm12/gluetun/blob/master/docker-compose.yml) with:
 
     ```bash
     docker-compose up -d
@@ -68,9 +68,9 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
     - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
 
-    **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
+    **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/gluetun/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
 
-1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. See the [wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#use-a-release-tag) for more information on other tags available.
+1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. See the [wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#use-a-release-tag) for more information on other tags available.
 
 ## Testing
 
@@ -80,7 +80,7 @@ Check the VPN IP address matches your expectations
 docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo.io
 ```
 
-Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Testing)
+Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Testing)
 
 ## Environment variables
 
@@ -137,7 +137,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your **service** username, found at the bottom of the [manual setup page](https://account.surfshark.com/setup/manual) |
     | 🏁 `PASSWORD` | | | Your **service** password |
-    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
+    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/gluetun/wiki/surfshark) | VPN server region |
 
 - Cyberghost
 
@@ -146,8 +146,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | 🏁 `CLIENT_KEY` | | | Your device client key content, **see below** |
-    | `REGION` | | One of the [Cyberghost countries](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#regions) | VPN server country |
-    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#server-groups) | Server group |
+    | `REGION` | | One of the [Cyberghost countries](https://github.com/qdm12/gluetun/wiki/Cyberghost#regions) | VPN server country |
+    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/gluetun/wiki/Cyberghost#server-groups) | Server group |
 
     To specify your client key, you can either:
 
@@ -351,28 +351,28 @@ You can also use the HTTP control server (see below) to get the port forwarded.
 
 ## HTTP control server
 
-See [its Wiki page](https://github.com/qdm12/private-internet-access-docker/wiki/HTTP-control-server)
+See [its Wiki page](https://github.com/qdm12/gluetun/wiki/HTTP-control-server)
 
 ## Development and contributing
 
-- Contribute with code: see [the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Contributing).
-- [The list of existing contributors 👍](https://github.com/qdm12/private-internet-access-docker/blob/master/.github/CONTRIBUTING.md#Contributors)
-- [Github workflows](https://github.com/qdm12/private-internet-access-docker/actions) to know what's building
-- [List of issues and feature requests](https://github.com/qdm12/private-internet-access-docker/issues)
+- Contribute with code: see [the Wiki](https://github.com/qdm12/gluetun/wiki/Contributing).
+- [The list of existing contributors 👍](https://github.com/qdm12/gluetun/blob/master/.github/CONTRIBUTING.md#Contributors)
+- [Github workflows](https://github.com/qdm12/gluetun/actions) to know what's building
+- [List of issues and feature requests](https://github.com/qdm12/gluetun/issues)
 
 ## License
 
-This repository is under an [MIT license](https://github.com/qdm12/private-internet-access-docker/master/license)
+This repository is under an [MIT license](https://github.com/qdm12/gluetun/master/license)
 
 ## Support
 
 Sponsor me on [Github](https://github.com/sponsors/qdm12), donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw) or subscribe to a VPN provider through one of my affiliate links:
 
-[![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
-[![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
+[![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
+[![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
 
-[![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
+[![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
-Feel also free to have a look at [the Kanban board](https://github.com/qdm12/private-internet-access-docker/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
+Feel also free to have a look at [the Kanban board](https://github.com/qdm12/gluetun/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
 
 Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez and A. Cooper for supporting me financially 🥇👍

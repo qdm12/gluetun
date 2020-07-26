@@ -1,4 +1,4 @@
-module github.com/qdm12/private-internet-access-docker
+module github.com/qdm12/gluetun
 
 go 1.14
 

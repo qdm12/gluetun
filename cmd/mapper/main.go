@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 func main() {

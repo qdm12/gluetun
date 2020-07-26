@@ -5,11 +5,11 @@ import (
 	"net"
 	"sync"
 
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/routing"
 )
 
 // Configurator allows to change firewall rules and modify network routes

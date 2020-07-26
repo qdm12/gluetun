@@ -3,8 +3,8 @@ package params
 import (
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 // GetCyberghostGroup obtains the server group for the Cyberghost server from the

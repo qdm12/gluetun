@@ -5,11 +5,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // Reader contains methods to obtain parameters

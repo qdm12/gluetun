@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/files"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 func (c *configurator) MakeConf(port uint16, password, method, nameserver string, uid, gid int) (err error) {

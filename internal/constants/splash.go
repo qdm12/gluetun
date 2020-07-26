@@ -9,5 +9,5 @@ const (
 
 const (
 	// IssueLink is the link for users to use to create issues
-	IssueLink = "https://github.com/qdm12/private-internet-access-docker/issues/new"
+	IssueLink = "https://github.com/qdm12/gluetun/issues/new"
 )

@@ -28,9 +28,9 @@ LABEL \
     org.opencontainers.image.created=$BUILD_DATE \
     org.opencontainers.image.version=$VERSION \
     org.opencontainers.image.revision=$VCS_REF \
-    org.opencontainers.image.url="https://github.com/qdm12/private-internet-access-docker" \
-    org.opencontainers.image.documentation="https://github.com/qdm12/private-internet-access-docker" \
-    org.opencontainers.image.source="https://github.com/qdm12/private-internet-access-docker" \
+    org.opencontainers.image.url="https://github.com/qdm12/gluetun" \
+    org.opencontainers.image.documentation="https://github.com/qdm12/gluetun" \
+    org.opencontainers.image.source="https://github.com/qdm12/gluetun" \
     org.opencontainers.image.title="VPN client for PIA, Mullvad, Windscribe, Surfshark and Cyberghost" \
     org.opencontainers.image.description="VPN client to tunnel to PIA, Mullvad, Windscribe, Surfshark and Cyberghost servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
 ENV VPNSP=pia \

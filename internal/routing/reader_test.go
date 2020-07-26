@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/files/mock_files"
 	"github.com/qdm12/golibs/logging/mock_logging"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 const exampleRouteData = `Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT                                                       

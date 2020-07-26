@@ -5,11 +5,11 @@ import (
 	"io"
 	"net"
 
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
 type Configurator interface {

@@ -1,7 +1,7 @@
 package params
 
 import (
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 // GetPurevpnRegion obtains the region (continent) for the PureVPN server from the

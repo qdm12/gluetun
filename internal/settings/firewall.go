@@ -5,7 +5,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/gluetun/internal/params"
 )
 
 // Firewall contains settings to customize the firewall operation

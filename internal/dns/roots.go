@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/files"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 func (c *configurator) DownloadRootHints(uid, gid int) error {

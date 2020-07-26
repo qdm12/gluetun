@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error) {

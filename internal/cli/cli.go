@@ -7,11 +7,11 @@ import (
 
 	"net"
 
+	"github.com/qdm12/gluetun/internal/params"
+	"github.com/qdm12/gluetun/internal/provider"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
-	"github.com/qdm12/private-internet-access-docker/internal/provider"
-	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
 func ClientKey(args []string) error {

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/params"
 )
 
 // Settings contains all settings for the program to run

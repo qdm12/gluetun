@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func parseRoutingTable(data []byte) (entries []routingEntry, err error) {

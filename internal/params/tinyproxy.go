@@ -3,8 +3,8 @@ package params
 import (
 	"strconv"
 
+	"github.com/qdm12/gluetun/internal/models"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // GetTinyProxy obtains if TinyProxy is on from the environment variable

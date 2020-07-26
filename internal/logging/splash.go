@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/kyokomi/emoji"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 // Splash returns the welcome spash message
