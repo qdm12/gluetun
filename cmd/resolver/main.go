@@ -249,6 +249,7 @@ func piaServers() []server {
 		{subdomain: "us-atlanta", region: "US Atlanta"},
 		{subdomain: "us-california", region: "US California"},
 		{subdomain: "us-chicago", region: "US Chicago"},
+		{subdomain: "us-dallas", region: "US Dallas"},
 		{subdomain: "us-denver", region: "US Denver"},
 		{subdomain: "us-east", region: "US East"},
 		{subdomain: "us-florida", region: "US Florida"},
