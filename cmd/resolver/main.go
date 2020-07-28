@@ -225,7 +225,6 @@ func piaServers() []server {
 		{subdomain: "denmark", region: "Denmark"},
 		{subdomain: "fi", region: "Finlan"},
 		{subdomain: "france", region: "France"},
-		{subdomain: "hk", region: "Hong Kong"},
 		{subdomain: "hungary", region: "Hungary"},
 		{subdomain: "in", region: "India"},
 		{subdomain: "ireland", region: "Ireland"},
@@ -258,7 +257,6 @@ func piaServers() []server {
 		{subdomain: "us-newyorkcity", region: "US New York City"},
 		{subdomain: "us-seattle", region: "US Seattle"},
 		{subdomain: "us-siliconvalley", region: "US Silicon Valley"},
-		{subdomain: "us-texas", region: "US Texas"},
 		{subdomain: "us-washingtondc", region: "US Washington DC"},
 		{subdomain: "us-west", region: "US West"},
 	}
