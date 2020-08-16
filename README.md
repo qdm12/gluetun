@@ -227,7 +227,7 @@ That one is important if you want to connect to the container from your LAN for 
 | `SHADOWSOCKS_LOG` | `off` | `on`, `off` | Enable logging |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` | Internal port number for Shadowsocks to listen on |
 | `SHADOWSOCKS_PASSWORD` | |  | Password to use to connect to Shadowsocks |
-| `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | One of [these ciphers](https://shadowsocks.org/en/config/quick-guide.html) | Method to use for Shadowsocks |
+| `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | `chacha20-ietf-poly1305`, `aes-128-gcm`, `aes-256-gcm` | Method to use for Shadowsocks |
 
 ### Tinyproxy
 
