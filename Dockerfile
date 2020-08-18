@@ -41,7 +41,7 @@ ENV VPNSP=pia \
     TZ= \
     UID=1000 \
     GID=1000 \
-    IP_STATUS_FILE="/ip" \
+    IP_STATUS_FILE="/tmp/gluetun/ip" \
     # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
     USER= \
     PASSWORD= \
@@ -49,7 +49,7 @@ ENV VPNSP=pia \
     # PIA only
     PIA_ENCRYPTION=strong \
     PORT_FORWARDING=off \
-    PORT_FORWARDING_STATUS_FILE="/forwarded_port" \
+    PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # Mullvad and PureVPN only
     COUNTRY= \
     CITY= \
