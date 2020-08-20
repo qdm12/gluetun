@@ -69,7 +69,6 @@ func _main(background context.Context, args []string) int {
 	routingConf := routing.NewRouting(logger, fileManager)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
-	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()
 
 	paramsReader := params.NewReader(logger, fileManager)
@@ -79,11 +78,10 @@ func _main(background context.Context, args []string) int {
 		paramsReader.GetBuildDate()))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
-		"OpenVPN":     ovpnConf.Version,
-		"Unbound":     dnsConf.Version,
-		"IPtables":    firewallConf.Version,
-		"TinyProxy":   tinyProxyConf.Version,
-		"ShadowSocks": shadowsocksConf.Version,
+		"OpenVPN":   ovpnConf.Version,
+		"Unbound":   dnsConf.Version,
+		"IPtables":  firewallConf.Version,
+		"TinyProxy": tinyProxyConf.Version,
 	})
 
 	allSettings, err := settings.GetAllSettings(paramsReader)
@@ -170,7 +168,7 @@ func _main(background context.Context, args []string) int {
 	restartTinyproxy := tinyproxyLooper.Restart
 	go tinyproxyLooper.Run(ctx, wg)
 
-	shadowsocksLooper := shadowsocks.NewLooper(shadowsocksConf, firewallConf, allSettings.ShadowSocks, allSettings.DNS, logger, streamMerger, uid, gid, defaultInterface)
+	shadowsocksLooper := shadowsocks.NewLooper(firewallConf, allSettings.ShadowSocks, logger, defaultInterface)
 	restartShadowsocks := shadowsocksLooper.Restart
 	go shadowsocksLooper.Run(ctx, wg)
 
