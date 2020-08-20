@@ -91,7 +91,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
 | 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
-| `IP_STATUS_FILE` | `/ip` | Any filepath | Filepath to store the public IP address assigned |
+| `IP_STATUS_FILE` | `/tmp/gluetun/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
 | `OPENVPN_ROOT` | `no` | `yes` or `no` | Run OpenVPN as root |
@@ -110,7 +110,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | `REGION` | | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
     | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server |
-    | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
+    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
 
 - Mullvad
 

@@ -27,7 +27,7 @@ func (r *reader) GetPortForwarding() (activated bool, err error) {
 // GetPortForwardingStatusFilepath obtains the port forwarding status file path
 // from the environment variable PORT_FORWARDING_STATUS_FILE
 func (r *reader) GetPortForwardingStatusFilepath() (filepath models.Filepath, err error) {
-	filepathStr, err := r.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/forwarded_port"), libparams.CaseSensitiveValue())
+	filepathStr, err := r.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/tmp/gluetun/forwarded_port"), libparams.CaseSensitiveValue())
 	return models.Filepath(filepathStr), err
 }
 

@@ -23,6 +23,6 @@ func (r *reader) GetTimezone() (timezone string, err error) {
 // GetIPStatusFilepath obtains the IP status file path
 // from the environment variable IP_STATUS_FILE
 func (r *reader) GetIPStatusFilepath() (filepath models.Filepath, err error) {
-	filepathStr, err := r.envParams.GetPath("IP_STATUS_FILE", libparams.Default("/ip"), libparams.CaseSensitiveValue())
+	filepathStr, err := r.envParams.GetPath("IP_STATUS_FILE", libparams.Default("/tmp/gluetun/ip"), libparams.CaseSensitiveValue())
 	return models.Filepath(filepathStr), err
 }
