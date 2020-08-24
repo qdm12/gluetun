@@ -120,7 +120,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | `COUNTRY` | | One of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) | VPN server country |
     | `CITY` | | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) | VPN server city |
     | `ISP` | | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) | VPN server ISP |
-    | `PORT` | | `80` or `443` for TCP; or `53` for UDP. Leave blank for default Mullvad server port | Custom VPN port to use |
+    | `PORT` | | `80`, `443` or `1401` for TCP; `53`, `1194`, `1195`, `1196`, `1197`, `1300`, `1301`, `1302`, `1303` or `1400` for UDP. Defaults to TCP `443` and UDP `1194` | Custom VPN port to use |
 
 - Windscribe
 

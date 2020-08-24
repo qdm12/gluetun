@@ -42,8 +42,13 @@ func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (conne
 		return nil, fmt.Errorf("no server found for country %q, city %q and ISP %q", selection.Country, selection.City, selection.ISP)
 	}
 
+	var defaultPort uint16 = 1194
+	if selection.Protocol == constants.TCP {
+		defaultPort = 443
+	}
+
 	for _, server := range servers {
-		port := server.DefaultPort
+		port := defaultPort
 		if selection.CustomPort > 0 {
 			port = selection.CustomPort
 		}

@@ -1,6 +1,8 @@
 package settings
 
 import (
+	"fmt"
+
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/params"
@@ -66,6 +68,19 @@ func GetMullvadSettings(paramsReader params.Reader) (settings models.ProviderSet
 	settings.ServerSelection.CustomPort, err = paramsReader.GetMullvadPort()
 	if err != nil {
 		return settings, err
+	}
+	if settings.ServerSelection.Protocol == constants.TCP {
+		switch settings.ServerSelection.CustomPort {
+		case 0, 80, 443, 1401:
+		default:
+			return settings, fmt.Errorf("port %d is not valid for TCP protocol", settings.ServerSelection.CustomPort)
+		}
+	} else {
+		switch settings.ServerSelection.CustomPort {
+		case 0, 53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400:
+		default:
+			return settings, fmt.Errorf("port %d is not valid for UDP protocol", settings.ServerSelection.CustomPort)
+		}
 	}
 	return settings, nil
 }

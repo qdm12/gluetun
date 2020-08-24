@@ -8,12 +8,11 @@ type PIAServer struct {
 }
 
 type MullvadServer struct {
-	IPs         []net.IP
-	Country     string
-	City        string
-	ISP         string
-	Owned       bool
-	DefaultPort uint16
+	IPs     []net.IP
+	Country string
+	City    string
+	ISP     string
+	Owned   bool
 }
 
 type WindscribeServer struct {
