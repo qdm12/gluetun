@@ -3,50 +3,50 @@ package models
 import "net"
 
 type PIAServer struct {
-	IPs    []net.IP
-	Region string
+	IPs    []net.IP `json:"ips"`
+	Region string   `json:"region"`
 }
 
 type MullvadServer struct {
-	IPs     []net.IP
-	Country string
-	City    string
-	ISP     string
-	Owned   bool
+	IPs     []net.IP `json:"ips"`
+	Country string   `json:"country"`
+	City    string   `json:"city"`
+	ISP     string   `json:"isp"`
+	Owned   bool     `json:"owned"`
 }
 
 type WindscribeServer struct {
-	Region string
-	IPs    []net.IP
+	Region string   `json:"region"`
+	IPs    []net.IP `json:"ips"`
 }
 
 type SurfsharkServer struct {
-	Region string
-	IPs    []net.IP
+	Region string   `json:"region"`
+	IPs    []net.IP `json:"ips"`
 }
 
 type CyberghostServer struct {
-	Region string
-	Group  string
-	IPs    []net.IP
+	Region string   `json:"region"`
+	Group  string   `json:"group"`
+	IPs    []net.IP `json:"ips"`
 }
 
 type VyprvpnServer struct {
-	Region string
-	IPs    []net.IP
+	Region string   `json:"region"`
+	IPs    []net.IP `json:"ips"`
 }
 
 type NordvpnServer struct { //nolint:maligned
-	Region string
-	Number uint16
-	IP     net.IP
-	TCP    bool
-	UDP    bool
+	Region string `json:"region"`
+	Number uint16 `json:"number"`
+	IP     net.IP `json:"ip"`
+	TCP    bool   `json:"tcp"`
+	UDP    bool   `json:"udp"`
 }
 
 type PurevpnServer struct {
-	Region  string
-	Country string
-	City    string
-	IPs     []net.IP
+	Region  string   `json:"region"`
+	Country string   `json:"country"`
+	City    string   `json:"city"`
+	IPs     []net.IP `json:"ips"`
 }
