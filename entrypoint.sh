@@ -5,7 +5,7 @@ exitOnError(){
   status=$1
   message=$2
   [ "$message" != "" ] || message="Undefined error"
-  if [[ $status != 0 || $message == *"connection timed out"* ]]; then
+  if [ $status != 0 ]; then
     printf "[ERROR] $message, with status $status\n"
     exit $status
   fi
@@ -153,6 +153,10 @@ printf " * Domain: $PIADOMAIN\n"
 printf "[INFO] Detecting IP addresses corresponding to $PIADOMAIN...\n"
 VPNIPS=$(dig $PIADOMAIN +short | grep '^[.0-9]*$')
 exitOnError $?
+if [ "$VPNIPS" = "" ]; then
+  print " Unable to connect to $PIADOMAIN"
+  exit 3
+fi
 for ip in $VPNIPS; do
   printf "   $ip\n";
 done
