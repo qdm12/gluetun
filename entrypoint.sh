@@ -5,7 +5,7 @@ exitOnError(){
   status=$1
   message=$2
   [ "$message" != "" ] || message="Undefined error"
-  if [ $status != 0 ]; then
+  if [ $status != 0 || $message == *"connection timed out"*]; then
     printf "[ERROR] $message, with status $status\n"
     exit $status
   fi
@@ -95,7 +95,6 @@ do
 	echo " * * Adding $name_server to resolv.conf"
 	echo "nameserver $name_server" >> /etc/resolv.conf
 done
-printf "DONE\n"
 
 
 #####################################################
