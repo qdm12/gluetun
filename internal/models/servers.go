@@ -1,52 +1,54 @@
 package models
 
-import "net"
-
-type PIAServer struct {
-	IPs    []net.IP `json:"ips"`
-	Region string   `json:"region"`
+type AllServers struct {
+	Version    uint16            `json:"version"`
+	Cyberghost CyberghostServers `json:"cyberghost"`
+	Mullvad    MullvadServers    `json:"mullvad"`
+	Nordvpn    NordvpnServers    `json:"nordvpn"`
+	Pia        PiaServers        `json:"pia"`
+	Purevpn    PurevpnServers    `json:"purevpn"`
+	Surfshark  SurfsharkServers  `json:"surfshark"`
+	Vyprvpn    VyprvpnServers    `json:"vyprvpn"`
+	Windscribe WindscribeServers `json:"windscribe"`
 }
 
-type MullvadServer struct {
-	IPs     []net.IP `json:"ips"`
-	Country string   `json:"country"`
-	City    string   `json:"city"`
-	ISP     string   `json:"isp"`
-	Owned   bool     `json:"owned"`
+type CyberghostServers struct {
+	Version   uint16             `json:"version"`
+	Timestamp int                `json:"timestamp"`
+	Servers   []CyberghostServer `json:"servers"`
 }
-
-type WindscribeServer struct {
-	Region string   `json:"region"`
-	IPs    []net.IP `json:"ips"`
+type MullvadServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int             `json:"timestamp"`
+	Servers   []MullvadServer `json:"servers"`
 }
-
-type SurfsharkServer struct {
-	Region string   `json:"region"`
-	IPs    []net.IP `json:"ips"`
+type NordvpnServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int             `json:"timestamp"`
+	Servers   []NordvpnServer `json:"servers"`
 }
-
-type CyberghostServer struct {
-	Region string   `json:"region"`
-	Group  string   `json:"group"`
-	IPs    []net.IP `json:"ips"`
+type PiaServers struct {
+	Version   uint16      `json:"version"`
+	Timestamp int         `json:"timestamp"`
+	Servers   []PIAServer `json:"servers"`
 }
-
-type VyprvpnServer struct {
-	Region string   `json:"region"`
-	IPs    []net.IP `json:"ips"`
+type PurevpnServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int             `json:"timestamp"`
+	Servers   []PurevpnServer `json:"purevpn"`
 }
-
-type NordvpnServer struct { //nolint:maligned
-	Region string `json:"region"`
-	Number uint16 `json:"number"`
-	IP     net.IP `json:"ip"`
-	TCP    bool   `json:"tcp"`
-	UDP    bool   `json:"udp"`
+type SurfsharkServers struct {
+	Version   uint16            `json:"version"`
+	Timestamp int               `json:"timestamp"`
+	Servers   []SurfsharkServer `json:"servers"`
 }
-
-type PurevpnServer struct {
-	Region  string   `json:"region"`
-	Country string   `json:"country"`
-	City    string   `json:"city"`
-	IPs     []net.IP `json:"ips"`
+type VyprvpnServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int             `json:"timestamp"`
+	Servers   []VyprvpnServer `json:"servers"`
+}
+type WindscribeServers struct {
+	Version   uint16             `json:"version"`
+	Timestamp int                `json:"timestamp"`
+	Servers   []WindscribeServer `json:"servers"`
 }
