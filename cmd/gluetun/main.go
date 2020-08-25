@@ -61,13 +61,6 @@ func _main(background context.Context, args []string) int {
 
 	fatalOnError := makeFatalOnError(logger, cancel)
 
-	storage := storage.New()
-	allServers, err := storage.SyncServers(constants.GetAllServers())
-	if err != nil {
-		logger.Error(err)
-		return 1
-	}
-
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
 	fileManager := files.NewFileManager()
@@ -95,6 +88,13 @@ func _main(background context.Context, args []string) int {
 	allSettings, err := settings.GetAllSettings(paramsReader)
 	fatalOnError(err)
 	logger.Info(allSettings.String())
+
+	storage := storage.New(logger)
+	allServers, err := storage.SyncServers(constants.GetAllServers())
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 
 	// Should never change
 	uid, gid := allSettings.System.UID, allSettings.System.GID

@@ -56,7 +56,7 @@ func OpenvpnConfig() error {
 	if err != nil {
 		return err
 	}
-	allServers, err := storage.New().SyncServers(constants.GetAllServers())
+	allServers, err := storage.New(logger).SyncServers(constants.GetAllServers())
 	if err != nil {
 		return err
 	}

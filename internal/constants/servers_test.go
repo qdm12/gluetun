@@ -34,7 +34,7 @@ func Test_versions(t *testing.T) {
 	assert.Equal(t, "7yfMpHwzRpEngA/6nYsNag", digestServerModelVersion(t, models.WindscribeServer{}, allServers.Windscribe.Version))
 }
 
-func digestServersTimestamp(t *testing.T, servers interface{}, timestamp int) string { //nolint:unparam
+func digestServersTimestamp(t *testing.T, servers interface{}, timestamp int64) string { //nolint:unparam
 	bytes, err := json.Marshal(servers)
 	if err != nil {
 		t.Fatal(err)

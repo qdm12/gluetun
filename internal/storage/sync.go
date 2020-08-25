@@ -13,6 +13,17 @@ const (
 	jsonFilepath = "/gluetun/servers.json"
 )
 
+func countServers(allServers models.AllServers) int {
+	return len(allServers.Cyberghost.Servers) +
+		len(allServers.Mullvad.Servers) +
+		len(allServers.Nordvpn.Servers) +
+		len(allServers.Pia.Servers) +
+		len(allServers.Purevpn.Servers) +
+		len(allServers.Surfshark.Servers) +
+		len(allServers.Vyprvpn.Servers) +
+		len(allServers.Windscribe.Servers)
+}
+
 func (s *storage) SyncServers(hardcodedServers models.AllServers) (allServers models.AllServers, err error) {
 	// Eventually read file
 	var serversOnFile models.AllServers
@@ -27,7 +38,9 @@ func (s *storage) SyncServers(hardcodedServers models.AllServers) (allServers mo
 	}
 
 	// Merge data from file and hardcoded
-	allServers = mergeServers(hardcodedServers, serversOnFile)
+	s.logger.Info("Merging by most recent %d hardcoded servers and %d servers read from %s",
+		countServers(hardcodedServers), countServers(serversOnFile), jsonFilepath)
+	allServers = s.mergeServers(hardcodedServers, serversOnFile)
 
 	// Eventually write file
 	if reflect.DeepEqual(serversOnFile, allServers) {
