@@ -104,5 +104,6 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables i
     rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/tinyproxy/tinyproxy.conf && \
     deluser openvpn && \
     deluser tinyproxy && \
-    deluser unbound
+    deluser unbound && \
+    mkdir /gluetun
 COPY --from=builder /tmp/gobuild/entrypoint /entrypoint
