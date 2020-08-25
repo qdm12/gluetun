@@ -9,10 +9,14 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type nordvpn struct{}
+type nordvpn struct {
+	servers []models.NordvpnServer
+}
 
-func newNordvpn() *nordvpn {
-	return &nordvpn{}
+func newNordvpn(servers []models.NordvpnServer) *nordvpn {
+	return &nordvpn{
+		servers: servers,
+	}
 }
 
 func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, number uint16) (servers []models.NordvpnServer) {

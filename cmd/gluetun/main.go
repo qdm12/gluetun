@@ -23,6 +23,7 @@ import (
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
+	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tinyproxy"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
@@ -59,6 +60,13 @@ func _main(background context.Context, args []string) int {
 	logger := createLogger()
 
 	fatalOnError := makeFatalOnError(logger, cancel)
+
+	storage := storage.New()
+	allServers, err := storage.SyncServers(constants.GetAllServers())
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
@@ -143,7 +151,7 @@ func _main(background context.Context, args []string) int {
 
 	wg := &sync.WaitGroup{}
 
-	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
+	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
 	restartOpenvpn := openvpnLooper.Restart
 	portForward := openvpnLooper.PortForward

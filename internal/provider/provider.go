@@ -13,24 +13,24 @@ type Provider interface {
 	GetPortForward(client network.Client) (port uint16, err error)
 }
 
-func New(provider models.VPNProvider) Provider {
+func New(provider models.VPNProvider, allServers models.AllServers) Provider {
 	switch provider {
 	case constants.PrivateInternetAccess:
-		return newPrivateInternetAccess()
+		return newPrivateInternetAccess(allServers.Pia.Servers)
 	case constants.Mullvad:
-		return newMullvad()
+		return newMullvad(allServers.Mullvad.Servers)
 	case constants.Windscribe:
-		return newWindscribe()
+		return newWindscribe(allServers.Windscribe.Servers)
 	case constants.Surfshark:
-		return newSurfshark()
+		return newSurfshark(allServers.Surfshark.Servers)
 	case constants.Cyberghost:
-		return newCyberghost()
+		return newCyberghost(allServers.Cyberghost.Servers)
 	case constants.Vyprvpn:
-		return newVyprvpn()
+		return newVyprvpn(allServers.Vyprvpn.Servers)
 	case constants.Nordvpn:
-		return newNordvpn()
+		return newNordvpn(allServers.Nordvpn.Servers)
 	case constants.Purevpn:
-		return newPurevpn()
+		return newPurevpn(allServers.Purevpn.Servers)
 	default:
 		return nil // should never occur
 	}

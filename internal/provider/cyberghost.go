@@ -9,10 +9,14 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type cyberghost struct{}
+type cyberghost struct {
+	servers []models.CyberghostServer
+}
 
-func newCyberghost() *cyberghost {
-	return &cyberghost{}
+func newCyberghost(servers []models.CyberghostServer) *cyberghost {
+	return &cyberghost{
+		servers: servers,
+	}
 }
 
 func (c *cyberghost) filterServers(region, group string) (servers []models.CyberghostServer) {

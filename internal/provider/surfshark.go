@@ -9,10 +9,14 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type surfshark struct{}
+type surfshark struct {
+	servers []models.SurfsharkServer
+}
 
-func newSurfshark() *surfshark {
-	return &surfshark{}
+func newSurfshark(servers []models.SurfsharkServer) *surfshark {
+	return &surfshark{
+		servers: servers,
+	}
 }
 
 func (s *surfshark) filterServers(region string) (servers []models.SurfsharkServer) {

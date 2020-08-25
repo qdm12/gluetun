@@ -34,8 +34,9 @@ type looper struct {
 	portForwarded      uint16
 	portForwardedMutex sync.RWMutex
 	// Fixed parameters
-	uid int
-	gid int
+	uid        int
+	gid        int
+	allServers models.AllServers
 	// Configurators
 	conf Configurator
 	fw   firewall.Configurator
@@ -51,7 +52,7 @@ type looper struct {
 }
 
 func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
-	uid, gid int,
+	uid, gid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator,
 	logger logging.Logger, client network.Client, fileManager files.FileManager,
 	streamMerger command.StreamMerger, fatalOnError func(err error)) Looper {
@@ -60,6 +61,7 @@ func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
 		settings:           settings,
 		uid:                uid,
 		gid:                gid,
+		allServers:         allServers,
 		conf:               conf,
 		fw:                 fw,
 		logger:             logger.WithPrefix("openvpn: "),
@@ -99,7 +101,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
-		providerConf := provider.New(l.provider)
+		providerConf := provider.New(l.provider, l.allServers)
 		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
 		if err != nil {
 			l.fatalOnError(err)

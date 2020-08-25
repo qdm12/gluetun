@@ -9,10 +9,14 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type vyprvpn struct{}
+type vyprvpn struct {
+	servers []models.VyprvpnServer
+}
 
-func newVyprvpn() *vyprvpn {
-	return &vyprvpn{}
+func newVyprvpn(servers []models.VyprvpnServer) *vyprvpn {
+	return &vyprvpn{
+		servers: servers,
+	}
 }
 
 func (v *vyprvpn) filterServers(region string) (servers []models.VyprvpnServer) {
