@@ -23,6 +23,7 @@ import (
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
+	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tinyproxy"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
@@ -88,6 +89,14 @@ func _main(background context.Context, args []string) int {
 	fatalOnError(err)
 	logger.Info(allSettings.String())
 
+	// TODO run this in a loop or in openvpn to reload from file without restarting
+	storage := storage.New(logger)
+	allServers, err := storage.SyncServers(constants.GetAllServers())
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
+
 	// Should never change
 	uid, gid := allSettings.System.UID, allSettings.System.GID
 
@@ -143,7 +152,7 @@ func _main(background context.Context, args []string) int {
 
 	wg := &sync.WaitGroup{}
 
-	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
+	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
 		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
 	restartOpenvpn := openvpnLooper.Restart
 	portForward := openvpnLooper.PortForward

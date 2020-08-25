@@ -9,10 +9,14 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type purevpn struct{}
+type purevpn struct {
+	servers []models.PurevpnServer
+}
 
-func newPurevpn() *purevpn {
-	return &purevpn{}
+func newPurevpn(servers []models.PurevpnServer) *purevpn {
+	return &purevpn{
+		servers: servers,
+	}
 }
 
 func (p *purevpn) filterServers(region, country, city string) (servers []models.PurevpnServer) {

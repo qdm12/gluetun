@@ -9,10 +9,14 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type windscribe struct{}
+type windscribe struct {
+	servers []models.WindscribeServer
+}
 
-func newWindscribe() *windscribe {
-	return &windscribe{}
+func newWindscribe(servers []models.WindscribeServer) *windscribe {
+	return &windscribe{
+		servers: servers,
+	}
 }
 
 func (w *windscribe) filterServers(region string) (servers []models.WindscribeServer) {

@@ -14,12 +14,14 @@ import (
 )
 
 type pia struct {
-	random random.Random
+	random  random.Random
+	servers []models.PIAServer
 }
 
-func newPrivateInternetAccess() *pia {
+func newPrivateInternetAccess(servers []models.PIAServer) *pia {
 	return &pia{
-		random: random.NewRandom(),
+		random:  random.NewRandom(),
+		servers: servers,
 	}
 }
 

@@ -52,6 +52,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
     ```bash
     docker run -d --name gluetun --cap-add=NET_ADMIN \
     -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
+    -v /yourpath:/gluetun \
     qmcgaw/private-internet-access
     ```
 

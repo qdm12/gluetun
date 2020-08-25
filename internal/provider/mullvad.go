@@ -9,10 +9,14 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type mullvad struct{}
+type mullvad struct {
+	servers []models.MullvadServer
+}
 
-func newMullvad() *mullvad {
-	return &mullvad{}
+func newMullvad(servers []models.MullvadServer) *mullvad {
+	return &mullvad{
+		servers: servers,
+	}
 }
 
 func (m *mullvad) filterServers(country, city, isp string) (servers []models.MullvadServer) {
