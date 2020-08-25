@@ -89,6 +89,7 @@ func _main(background context.Context, args []string) int {
 	fatalOnError(err)
 	logger.Info(allSettings.String())
 
+	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storage := storage.New(logger)
 	allServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
