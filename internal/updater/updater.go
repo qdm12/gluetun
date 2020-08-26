@@ -15,14 +15,14 @@ type Updater interface {
 type updater struct {
 	storage storage.Storage
 	timeNow func() time.Time
-	printf  func(format string, a ...interface{}) (n int, err error)
+	println func(s string)
 }
 
 func New(storage storage.Storage) Updater {
 	return &updater{
 		storage: storage,
 		timeNow: time.Now,
-		printf:  fmt.Printf,
+		println: func(s string) { fmt.Println(s) },
 	}
 }
 
@@ -40,7 +40,7 @@ func (u *updater) UpdateServers(options Options) error {
 			return fmt.Errorf("cannot update PIA servers: %w", err)
 		}
 		if options.Stdout {
-			u.printf(stringifyPIAServers(servers))
+			u.println(stringifyPIAServers(servers))
 		}
 		allServers.Pia.Timestamp = u.timeNow().Unix()
 		allServers.Pia.Servers = servers
@@ -53,7 +53,7 @@ func (u *updater) UpdateServers(options Options) error {
 			return fmt.Errorf("cannot update PIA old servers: %w", err)
 		}
 		if options.Stdout {
-			u.printf(stringifyPIAOldServers(servers))
+			u.println(stringifyPIAOldServers(servers))
 		}
 		allServers.PiaOld.Timestamp = u.timeNow().Unix()
 		allServers.PiaOld.Servers = servers
