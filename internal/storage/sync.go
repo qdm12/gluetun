@@ -46,7 +46,7 @@ func (s *storage) SyncServers(hardcodedServers models.AllServers, write bool) (a
 	if !write || reflect.DeepEqual(serversOnFile, allServers) {
 		return allServers, nil
 	}
-	return allServers, s.flushToFile(allServers)
+	return allServers, s.FlushToFile(allServers)
 }
 
 func (s *storage) readFromFile() (servers models.AllServers, err error) {
@@ -60,7 +60,7 @@ func (s *storage) readFromFile() (servers models.AllServers, err error) {
 	return servers, nil
 }
 
-func (s *storage) flushToFile(servers models.AllServers) error {
+func (s *storage) FlushToFile(servers models.AllServers) error {
 	bytes, err := json.MarshalIndent(servers, "", "  ")
 	if err != nil {
 		return fmt.Errorf("cannot write to file: %w", err)
