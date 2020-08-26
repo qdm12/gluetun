@@ -34,7 +34,8 @@ func (u *updater) UpdateServers(options Options) error {
 	}
 
 	if options.PIA {
-		servers, err := findPIANewServers()
+		const newServers = true
+		servers, err := findPIAServers(newServers)
 		if err != nil {
 			return fmt.Errorf("cannot update PIA servers: %w", err)
 		}

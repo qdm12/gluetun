@@ -7,9 +7,16 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func findPIANewServers() (servers []models.PIAServer, err error) {
-	const url = "https://www.privateinternetaccess.com/openvpn/openvpn-ip-nextgen.zip"
-	contents, err := fetchAndExtractFiles(url)
+func findPIAServers(new bool) (servers []models.PIAServer, err error) {
+	zipURL := "https://www.privateinternetaccess.com/openvpn/openvpn-ip.zip"
+	if new {
+		zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn-ip-nextgen.zip"
+	}
+	return findPIAServersFromURL(zipURL)
+}
+
+func findPIAServersFromURL(zipURL string) (servers []models.PIAServer, err error) {
+	contents, err := fetchAndExtractFiles(zipURL)
 	if err != nil {
 		return nil, err
 	}
