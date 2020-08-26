@@ -24,7 +24,7 @@ func countServers(allServers models.AllServers) int {
 		len(allServers.Windscribe.Servers)
 }
 
-func (s *storage) SyncServers(hardcodedServers models.AllServers) (allServers models.AllServers, err error) {
+func (s *storage) SyncServers(hardcodedServers models.AllServers, write bool) (allServers models.AllServers, err error) {
 	// Eventually read file
 	var serversOnFile models.AllServers
 	_, err = s.osStat(jsonFilepath)
@@ -43,7 +43,7 @@ func (s *storage) SyncServers(hardcodedServers models.AllServers) (allServers mo
 	allServers = s.mergeServers(hardcodedServers, serversOnFile)
 
 	// Eventually write file
-	if reflect.DeepEqual(serversOnFile, allServers) {
+	if !write || reflect.DeepEqual(serversOnFile, allServers) {
 		return allServers, nil
 	}
 	return allServers, s.flushToFile(allServers)
