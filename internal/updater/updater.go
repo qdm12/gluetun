@@ -46,6 +46,19 @@ func (u *updater) UpdateServers(options Options) error {
 		allServers.Pia.Servers = servers
 	}
 
+	if options.PIAold {
+		const newServers = false
+		servers, err := findPIAServers(newServers)
+		if err != nil {
+			return fmt.Errorf("cannot update PIA old servers: %w", err)
+		}
+		if options.Stdout {
+			u.printf(stringifyPIAOldServers(servers))
+		}
+		allServers.PiaOld.Timestamp = u.timeNow().Unix()
+		allServers.PiaOld.Servers = servers
+	}
+
 	if options.File {
 		if err := u.storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("cannot update servers: %w", err)
