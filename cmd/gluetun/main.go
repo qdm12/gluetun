@@ -36,7 +36,7 @@ func main() {
 	os.Exit(_main(ctx, os.Args))
 }
 
-func _main(background context.Context, args []string) int {
+func _main(background context.Context, args []string) int { //nolint:gocognit,gocyclo
 	if len(args) > 1 { // cli operation
 		var err error
 		switch args[1] {
@@ -60,8 +60,6 @@ func _main(background context.Context, args []string) int {
 	ctx, cancel := context.WithCancel(background)
 	defer cancel()
 	logger := createLogger()
-
-	fatalOnError := makeFatalOnError(logger, cancel)
 
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
@@ -88,7 +86,10 @@ func _main(background context.Context, args []string) int {
 	})
 
 	allSettings, err := settings.GetAllSettings(paramsReader)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 	logger.Info(allSettings.String())
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
@@ -104,11 +105,20 @@ func _main(background context.Context, args []string) int {
 	uid, gid := allSettings.System.UID, allSettings.System.GID
 
 	err = alpineConf.CreateUser("nonrootuser", uid)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 	err = fileManager.SetOwnership("/etc/unbound", uid, gid)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 	err = fileManager.SetOwnership("/etc/tinyproxy", uid, gid)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 
 	if allSettings.Firewall.Debug {
 		firewallConf.SetDebug()
@@ -117,12 +127,14 @@ func _main(background context.Context, args []string) int {
 
 	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
 	if err != nil {
-		fatalOnError(err)
+		logger.Error(err)
+		return 1
 	}
 
 	localSubnet, err := routingConf.LocalSubnet()
 	if err != nil {
-		fatalOnError(err)
+		logger.Error(err)
+		return 1
 	}
 
 	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet)
@@ -130,7 +142,10 @@ func _main(background context.Context, args []string) int {
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()
-		fatalOnError(err)
+		if err != nil {
+			logger.Error(err)
+			return 1
+		}
 	}
 
 	connectedCh := make(chan struct{})
@@ -138,25 +153,35 @@ func _main(background context.Context, args []string) int {
 		connectedCh <- struct{}{}
 	}
 	defer close(connectedCh)
-	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
 
 	if allSettings.Firewall.Enabled {
 		err := firewallConf.SetEnabled(ctx, true) // disabled by default
-		fatalOnError(err)
+		if err != nil {
+			logger.Error(err)
+			return 1
+		}
 	}
 
 	err = firewallConf.SetAllowedSubnets(ctx, allSettings.Firewall.AllowedSubnets)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 
 	for _, vpnPort := range allSettings.Firewall.VPNInputPorts {
 		err = firewallConf.SetAllowedPort(ctx, vpnPort, string(constants.TUN))
-		fatalOnError(err)
+		if err != nil {
+			logger.Error(err)
+			return 1
+		}
 	}
 
 	wg := &sync.WaitGroup{}
 
+	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
+
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
-		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
+		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, cancel)
 	restartOpenvpn := openvpnLooper.Restart
 	portForward := openvpnLooper.PortForward
 	getOpenvpnSettings := openvpnLooper.GetSettings
@@ -259,15 +284,6 @@ func _main(background context.Context, args []string) int {
 	}
 	logger.Info("Shutdown successful")
 	return 0
-}
-
-func makeFatalOnError(logger logging.Logger, cancel context.CancelFunc) func(err error) {
-	return func(err error) {
-		if err != nil {
-			logger.Error(err)
-			cancel()
-		}
-	}
 }
 
 func createLogger() logging.Logger {
