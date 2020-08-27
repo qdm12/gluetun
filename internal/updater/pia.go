@@ -47,9 +47,9 @@ func stringifyPIAServers(servers []models.PIAServer) (s string) {
 	s = "func PIAServers() []models.PIAServer {\n"
 	s += "	return []models.PIAServer{\n"
 	for _, server := range servers {
-		s += server.String() + ",\n"
+		s += "		" + server.String() + ",\n"
 	}
-	s += "	}"
+	s += "	}\n"
 	s += "}"
 	return s
 }
@@ -58,9 +58,9 @@ func stringifyPIAOldServers(servers []models.PIAServer) (s string) {
 	s = "func PIAOldServers() []models.PIAServer {\n"
 	s += "	return []models.PIAServer{\n"
 	for _, server := range servers {
-		s += server.String() + ",\n"
+		s += "		" + server.String() + ",\n"
 	}
-	s += "	}"
+	s += "	}\n"
 	s += "}"
 	return s
 }
