@@ -12,6 +12,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/storage"
+	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 )
@@ -76,5 +77,30 @@ func OpenvpnConfig() error {
 		allSettings.OpenVPN.Provider.ExtraConfigOptions,
 	)
 	fmt.Println(strings.Join(lines, "\n"))
+	return nil
+}
+
+func Update(args []string) error {
+	var options updater.Options
+	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
+	flagSet.BoolVar(&options.File, "file", false, "Write results to /gluetun/servers.json (for end users)")
+	flagSet.BoolVar(&options.Stdout, "stdout", false, "Write results to console to modify the program (for maintainers)")
+	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
+	flagSet.BoolVar(&options.PIAold, "piaold", false, "Update Private Internet Access pre-summer 2020 servers")
+	if err := flagSet.Parse(args); err != nil {
+		return err
+	}
+	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
+	if err != nil {
+		return err
+	}
+	if !options.File && !options.Stdout {
+		return fmt.Errorf("at least one of -file or -stdout must be specified")
+	}
+	storage := storage.New(logger)
+	updater := updater.New(storage)
+	if err := updater.UpdateServers(options); err != nil {
+		return err
+	}
 	return nil
 }
