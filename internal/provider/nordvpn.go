@@ -20,8 +20,7 @@ func newNordvpn(servers []models.NordvpnServer) *nordvpn {
 }
 
 func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, number uint16) (servers []models.NordvpnServer) {
-	allServers := constants.NordvpnServers()
-	for i, server := range allServers {
+	for i, server := range n.servers {
 		if len(region) == 0 {
 			server.Region = ""
 		}
@@ -35,7 +34,7 @@ func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, 
 			continue
 		}
 		if strings.EqualFold(server.Region, region) && server.Number == number {
-			servers = append(servers, allServers[i])
+			servers = append(servers, n.servers[i])
 		}
 	}
 	return servers

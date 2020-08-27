@@ -21,9 +21,9 @@ func newVyprvpn(servers []models.VyprvpnServer) *vyprvpn {
 
 func (v *vyprvpn) filterServers(region string) (servers []models.VyprvpnServer) {
 	if len(region) == 0 {
-		return constants.VyprvpnServers()
+		return v.servers
 	}
-	for _, server := range constants.VyprvpnServers() {
+	for _, server := range v.servers {
 		if strings.EqualFold(server.Region, region) {
 			return []models.VyprvpnServer{server}
 		}

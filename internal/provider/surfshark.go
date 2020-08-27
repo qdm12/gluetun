@@ -21,9 +21,9 @@ func newSurfshark(servers []models.SurfsharkServer) *surfshark {
 
 func (s *surfshark) filterServers(region string) (servers []models.SurfsharkServer) {
 	if len(region) == 0 {
-		return constants.SurfsharkServers()
+		return s.servers
 	}
-	for _, server := range constants.SurfsharkServers() {
+	for _, server := range s.servers {
 		if strings.EqualFold(server.Region, region) {
 			return []models.SurfsharkServer{server}
 		}

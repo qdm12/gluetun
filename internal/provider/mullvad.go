@@ -20,8 +20,7 @@ func newMullvad(servers []models.MullvadServer) *mullvad {
 }
 
 func (m *mullvad) filterServers(country, city, isp string) (servers []models.MullvadServer) {
-	allServers := constants.MullvadServers()
-	for i, server := range allServers {
+	for i, server := range m.servers {
 		if len(country) == 0 {
 			server.Country = ""
 		}
@@ -34,7 +33,7 @@ func (m *mullvad) filterServers(country, city, isp string) (servers []models.Mul
 		if strings.EqualFold(server.Country, country) &&
 			strings.EqualFold(server.City, city) &&
 			strings.EqualFold(server.ISP, isp) {
-			servers = append(servers, allServers[i])
+			servers = append(servers, m.servers[i])
 		}
 	}
 	return servers

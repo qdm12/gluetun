@@ -20,8 +20,7 @@ func newCyberghost(servers []models.CyberghostServer) *cyberghost {
 }
 
 func (c *cyberghost) filterServers(region, group string) (servers []models.CyberghostServer) {
-	allServers := constants.CyberghostServers()
-	for i, server := range allServers {
+	for i, server := range c.servers {
 		if len(region) == 0 {
 			server.Region = ""
 		}
@@ -29,7 +28,7 @@ func (c *cyberghost) filterServers(region, group string) (servers []models.Cyber
 			server.Group = ""
 		}
 		if strings.EqualFold(server.Region, region) && strings.EqualFold(server.Group, group) {
-			servers = append(servers, allServers[i])
+			servers = append(servers, c.servers[i])
 		}
 	}
 	return servers
