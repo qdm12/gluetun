@@ -62,3 +62,10 @@ func (r *reader) GetPIARegion() (region string, err error) {
 	choices := append(constants.PIAGeoChoices(), "")
 	return r.envParams.GetValueIfInside("REGION", choices)
 }
+
+// GetPIAOldRegion obtains the region for the PIA server from the
+// environment variable REGION
+func (r *reader) GetPIAOldRegion() (region string, err error) {
+	choices := append(constants.PIAOldGeoChoices(), "")
+	return r.envParams.GetValueIfInside("REGION", choices)
+}

@@ -49,7 +49,7 @@ func GetPIAOldSettings(paramsReader params.Reader) (settings models.ProviderSett
 	}
 	settings.ServerSelection.EncryptionPreset = encryptionPreset
 	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
-	settings.ServerSelection.Region, err = paramsReader.GetPIARegion()
+	settings.ServerSelection.Region, err = paramsReader.GetPIAOldRegion()
 	if err != nil {
 		return settings, err
 	}

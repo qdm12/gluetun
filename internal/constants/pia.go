@@ -113,6 +113,15 @@ func PIAServers() []models.PIAServer {
 	}
 }
 
+func PIAOldGeoChoices() (choices []string) {
+	servers := PIAOldServers()
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].Region
+	}
+	return choices
+}
+
 func PIAOldServers() []models.PIAServer {
 	return []models.PIAServer{
 		{Region: "AU Melbourne", IPs: []net.IP{{43, 250, 204, 97}}},
