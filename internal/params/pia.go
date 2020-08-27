@@ -10,6 +10,7 @@ import (
 
 // GetPortForwarding obtains if port forwarding on the VPN provider server
 // side is enabled or not from the environment variable PORT_FORWARDING
+// Only valid for older PIA servers for now
 func (r *reader) GetPortForwarding() (activated bool, err error) {
 	s, err := r.envParams.GetEnv("PORT_FORWARDING", libparams.Default("off"))
 	if err != nil {
