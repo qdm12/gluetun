@@ -26,7 +26,7 @@ func findPIAServersFromURL(zipURL string) (servers []models.PIAServer, err error
 			return nil, fmt.Errorf("cannot find any remote lines in %s", fileName)
 		}
 		IPs := extractIPsFromRemoteLines(remoteLines)
-		if len(remoteLines) == 0 {
+		if len(IPs) == 0 {
 			return nil, fmt.Errorf("cannot find any IP addresses in %s", fileName)
 		}
 		region := strings.TrimSuffix(fileName, ".ovpn")

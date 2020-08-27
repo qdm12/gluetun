@@ -17,8 +17,8 @@ func extractRemoteLinesFromOpenvpn(content []byte) (remoteLines []string) {
 
 func extractIPsFromRemoteLines(remoteLines []string) (ips []net.IP) {
 	for _, remoteLine := range remoteLines {
-		remoteLine = strings.TrimPrefix(remoteLine, "remote ")
-		ip := net.ParseIP(remoteLine)
+		fields := strings.Fields(remoteLine)
+		ip := net.ParseIP(fields[1])
 		if ip == nil { // not an IP address
 			continue
 		}
