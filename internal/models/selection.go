@@ -75,11 +75,16 @@ func (p *ProviderSettings) String() string {
 		number = fmt.Sprintf("%d", p.ServerSelection.Number)
 	}
 	switch strings.ToLower(string(p.Name)) {
-	case "private internet access":
+	case "private internet access old":
 		settingsList = append(settingsList,
 			"Region: "+p.ServerSelection.Region,
 			"Encryption preset: "+p.ExtraConfigOptions.EncryptionPreset,
 			"Port forwarding: "+p.PortForwarding.String(),
+		)
+	case "private internet access":
+		settingsList = append(settingsList,
+			"Region: "+p.ServerSelection.Region,
+			"Encryption preset: "+p.ExtraConfigOptions.EncryptionPreset,
 		)
 	case "mullvad":
 		settingsList = append(settingsList,
