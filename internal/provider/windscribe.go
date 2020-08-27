@@ -21,9 +21,9 @@ func newWindscribe(servers []models.WindscribeServer) *windscribe {
 
 func (w *windscribe) filterServers(region string) (servers []models.WindscribeServer) {
 	if len(region) == 0 {
-		return constants.WindscribeServers()
+		return w.servers
 	}
-	for _, server := range constants.WindscribeServers() {
+	for _, server := range w.servers {
 		if strings.EqualFold(server.Region, region) {
 			return []models.WindscribeServer{server}
 		}

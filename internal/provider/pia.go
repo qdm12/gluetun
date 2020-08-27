@@ -27,9 +27,9 @@ func newPrivateInternetAccess(servers []models.PIAServer) *pia {
 
 func (p *pia) filterServers(region string) (servers []models.PIAServer) {
 	if len(region) == 0 {
-		return constants.PIAServers()
+		return p.servers
 	}
-	for _, server := range constants.PIAServers() {
+	for _, server := range p.servers {
 		if strings.EqualFold(server.Region, region) {
 			return []models.PIAServer{server}
 		}

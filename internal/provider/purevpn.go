@@ -20,8 +20,7 @@ func newPurevpn(servers []models.PurevpnServer) *purevpn {
 }
 
 func (p *purevpn) filterServers(region, country, city string) (servers []models.PurevpnServer) {
-	allServers := constants.PurevpnServers()
-	for i, server := range allServers {
+	for i, server := range p.servers {
 		if len(region) == 0 {
 			server.Region = ""
 		}
@@ -34,7 +33,7 @@ func (p *purevpn) filterServers(region, country, city string) (servers []models.
 		if strings.EqualFold(server.Region, region) &&
 			strings.EqualFold(server.Country, country) &&
 			strings.EqualFold(server.City, city) {
-			servers = append(servers, allServers[i])
+			servers = append(servers, p.servers[i])
 		}
 	}
 	return servers
