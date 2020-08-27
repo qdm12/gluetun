@@ -28,12 +28,6 @@ func _main(ctx context.Context) int {
 	var domain string
 	var servers []server
 	switch *provider {
-	case "pia":
-		domain = "privateinternetaccess.com"
-		servers = piaServers()
-	case "pia-nextgen":
-		domain = "privacy.network"
-		servers = piaNextgenServers()
 	case "windscribe":
 		domain = "windscribe.com"
 		servers = windscribeServers()
@@ -210,108 +204,6 @@ type server struct {
 	group     string // only for cyberghost
 	country   string // only for purevpn
 	city      string // only for purevpn
-}
-
-func piaServers() []server {
-	return []server{
-		{subdomain: "au-melbourne", region: "AU Melbourne"},
-		{subdomain: "au-perth", region: "AU Perth"},
-		{subdomain: "au-sydney", region: "AU Sydney"},
-		{subdomain: "austria", region: "Austria"},
-		{subdomain: "belgium", region: "Belgium"},
-		{subdomain: "ca-montreal", region: "CA Montreal"},
-		{subdomain: "ca-toronto", region: "CA Toronto"},
-		{subdomain: "ca-vancouver", region: "CA Vancouver"},
-		{subdomain: "czech", region: "Czech Republic"},
-		{subdomain: "de-berlin", region: "DE Berlin"},
-		{subdomain: "de-frankfurt", region: "DE Frankfurt"},
-		{subdomain: "denmark", region: "Denmark"},
-		{subdomain: "fi", region: "Finlan"},
-		{subdomain: "france", region: "France"},
-		{subdomain: "hungary", region: "Hungary"},
-		{subdomain: "in", region: "India"},
-		{subdomain: "ireland", region: "Ireland"},
-		{subdomain: "israel", region: "Israel"},
-		{subdomain: "italy", region: "Italy"},
-		{subdomain: "japan", region: "Japan"},
-		{subdomain: "lu", region: "Luxembourg"},
-		{subdomain: "mexico", region: "Mexico"},
-		{subdomain: "nl", region: "Netherlands"},
-		{subdomain: "nz", region: "New Zealand"},
-		{subdomain: "no", region: "Norway"},
-		{subdomain: "poland", region: "Poland"},
-		{subdomain: "ro", region: "Romania"},
-		{subdomain: "sg", region: "Singapore"},
-		{subdomain: "spain", region: "Spain"},
-		{subdomain: "sweden", region: "Sweden"},
-		{subdomain: "swiss", region: "Switzerland"},
-		{subdomain: "ae", region: "UAE"},
-		{subdomain: "uk-london", region: "UK London"},
-		{subdomain: "uk-manchester", region: "UK Manchester"},
-		{subdomain: "uk-southampton", region: "UK Southampton"},
-		{subdomain: "us-atlanta", region: "US Atlanta"},
-		{subdomain: "us-california", region: "US California"},
-		{subdomain: "us-chicago", region: "US Chicago"},
-		{subdomain: "us-dallas", region: "US Dallas"},
-		{subdomain: "us-denver", region: "US Denver"},
-		{subdomain: "us-east", region: "US East"},
-		{subdomain: "us-florida", region: "US Florida"},
-		{subdomain: "us-houston", region: "US Houston"},
-		{subdomain: "us-lasvegas", region: "US Las Vegas"},
-		{subdomain: "us-newyorkcity", region: "US New York City"},
-		{subdomain: "us-seattle", region: "US Seattle"},
-		{subdomain: "us-siliconvalley", region: "US Silicon Valley"},
-		{subdomain: "us-washingtondc", region: "US Washington DC"},
-		{subdomain: "us-west", region: "US West"},
-	}
-}
-
-func piaNextgenServers() []server {
-	return []server{
-		{subdomain: "aus-melbourne", region: "AU Melbourne"},
-		{subdomain: "aus-perth", region: "AU Perth"},
-		{subdomain: "au-sydney", region: "AU Sydney"},
-		{subdomain: "austria", region: "Austria"},
-		{subdomain: "brussels", region: "Belgium"},
-		{subdomain: "ca-montreal", region: "CA Montreal"},
-		{subdomain: "ca-toronto", region: "CA Toronto"},
-		{subdomain: "czech", region: "Czech Republic"},
-		{subdomain: "de-berlin", region: "DE Berlin"},
-		{subdomain: "de-frankfurt", region: "DE Frankfurt"},
-		{subdomain: "denmark", region: "Denmark"},
-		{subdomain: "fi", region: "Finland"},
-		{subdomain: "france", region: "France"},
-		{subdomain: "hungary", region: "Hungary"},
-		{subdomain: "in", region: "India"},
-		{subdomain: "ireland", region: "Ireland"},
-		{subdomain: "israel", region: "Israel"},
-		{subdomain: "italy", region: "Italy"},
-		{subdomain: "japan", region: "Japan"},
-		{subdomain: "lu", region: "Luxembourg"},
-		{subdomain: "mexico", region: "Mexico"},
-		{subdomain: "nl-amsterdam", region: "Netherlands"},
-		{subdomain: "nz", region: "New Zealand"},
-		{subdomain: "no", region: "Norway"},
-		{subdomain: "poland", region: "Poland"},
-		{subdomain: "ro", region: "Romania"},
-		{subdomain: "sg", region: "Singapore"},
-		{subdomain: "spain", region: "Spain"},
-		{subdomain: "sweden", region: "Sweden"},
-		{subdomain: "swiss", region: "Switzerland"},
-		{subdomain: "ae", region: "UAE"},
-		{subdomain: "uk-london", region: "UK London"},
-		{subdomain: "uk-manchester", region: "UK Manchester"},
-		{subdomain: "us-atlanta", region: "US Atlanta"},
-		{subdomain: "us-california", region: "US California"},
-		{subdomain: "us-chicago", region: "US Chicago"},
-		{subdomain: "us-denver", region: "US Denver"},
-		{subdomain: "us-florida", region: "US Florida"},
-		{subdomain: "us-houston", region: "US Houston"},
-		{subdomain: "us-seattle", region: "US Seattle"},
-		{subdomain: "us-siliconvalley", region: "US Silicon Valley"},
-		{subdomain: "us-washingtondc", region: "US Washington DC"},
-		{subdomain: "us3", region: "US West"},
-	}
 }
 
 func windscribeServers() []server {
