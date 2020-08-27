@@ -45,7 +45,7 @@ type looper struct {
 	client       network.Client
 	fileManager  files.FileManager
 	streamMerger command.StreamMerger
-	fatalOnError func(err error)
+	cancel       context.CancelFunc
 	// Internal channels
 	restart            chan struct{}
 	portForwardSignals chan struct{}
@@ -55,7 +55,7 @@ func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
 	uid, gid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator,
 	logger logging.Logger, client network.Client, fileManager files.FileManager,
-	streamMerger command.StreamMerger, fatalOnError func(err error)) Looper {
+	streamMerger command.StreamMerger, cancel context.CancelFunc) Looper {
 	return &looper{
 		provider:           provider,
 		settings:           settings,
@@ -68,7 +68,7 @@ func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
 		client:             client,
 		fileManager:        fileManager,
 		streamMerger:       streamMerger,
-		fatalOnError:       fatalOnError,
+		cancel:             cancel,
 		restart:            make(chan struct{}),
 		portForwardSignals: make(chan struct{}),
 	}
@@ -104,7 +104,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		providerConf := provider.New(l.provider, l.allServers)
 		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
 		if err != nil {
-			l.fatalOnError(err)
+			l.logger.Error(err)
+			l.cancel()
 			return
 		}
 		lines := providerConf.BuildConf(
@@ -118,17 +119,20 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			settings.Provider.ExtraConfigOptions,
 		)
 		if err := l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400)); err != nil {
-			l.fatalOnError(err)
+			l.logger.Error(err)
+			l.cancel()
 			return
 		}
 
 		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.uid, l.gid); err != nil {
-			l.fatalOnError(err)
+			l.logger.Error(err)
+			l.cancel()
 			return
 		}
 
 		if err := l.fw.SetVPNConnections(ctx, connections); err != nil {
-			l.fatalOnError(err)
+			l.logger.Error(err)
+			l.cancel()
 			return
 		}
 
