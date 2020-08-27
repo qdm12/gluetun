@@ -2,6 +2,7 @@ package updater
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -36,6 +37,9 @@ func findPIAServersFromURL(zipURL string) (servers []models.PIAServer, err error
 		}
 		servers = append(servers, server)
 	}
+	sort.Slice(servers, func(i, j int) bool {
+		return servers[i].Region < servers[j].Region
+	})
 	return servers, nil
 }
 
