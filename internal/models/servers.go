@@ -5,6 +5,7 @@ type AllServers struct {
 	Cyberghost CyberghostServers `json:"cyberghost"`
 	Mullvad    MullvadServers    `json:"mullvad"`
 	Nordvpn    NordvpnServers    `json:"nordvpn"`
+	PiaOld     PiaServers        `json:"piaOld"`
 	Pia        PiaServers        `json:"pia"`
 	Purevpn    PurevpnServers    `json:"purevpn"`
 	Surfshark  SurfsharkServers  `json:"surfshark"`

@@ -46,6 +46,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 			err = cli.ClientKey(args[2:])
 		case "openvpnconfig":
 			err = cli.OpenvpnConfig()
+		case "update":
+			err = cli.Update(args[2:])
 		default:
 			err = fmt.Errorf("command %q is unknown", args[1])
 		}
@@ -92,7 +94,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storage := storage.New(logger)
-	allServers, err := storage.SyncServers(constants.GetAllServers())
+	const updateServerFile = true
+	allServers, err := storage.SyncServers(constants.GetAllServers(), updateServerFile)
 	if err != nil {
 		logger.Error(err)
 		return 1

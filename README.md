@@ -4,7 +4,7 @@
 Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN,
 iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *[Video of the Git history of Gluetun](https://youtu.be/khipOYJtGJ0)*
+**ANNOUNCEMENT**: *Support for newer Private Internet Access servers*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
@@ -23,7 +23,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
+- Supports **Private Internet Access** (new and old), **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
 - Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
@@ -91,7 +91,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `private internet access old`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
 | `IP_STATUS_FILE` | `/tmp/gluetun/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
@@ -110,8 +110,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
-    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server |
-    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
+    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server **for old only** |
+    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number **for old only** |
 
 - Mullvad
 

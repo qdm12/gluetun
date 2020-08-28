@@ -1,10 +1,26 @@
 package models
 
-import "net"
+import (
+	"fmt"
+	"net"
+	"strings"
+)
+
+func stringifyIPs(ips []net.IP) string {
+	ipStrings := make([]string, len(ips))
+	for i := range ips {
+		ipStrings[i] = fmt.Sprintf("{%s}", strings.ReplaceAll(ips[i].String(), ".", ", "))
+	}
+	return strings.Join(ipStrings, ", ")
+}
 
 type PIAServer struct {
 	IPs    []net.IP `json:"ips"`
 	Region string   `json:"region"`
+}
+
+func (p *PIAServer) String() string {
+	return fmt.Sprintf("{Region: %q, IPs: []net.IP{%s}}", p.Region, stringifyIPs(p.IPs))
 }
 
 type MullvadServer struct {

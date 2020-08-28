@@ -29,6 +29,30 @@ func GetPIASettings(paramsReader params.Reader) (settings models.ProviderSetting
 	if err != nil {
 		return settings, err
 	}
+	return settings, nil
+}
+
+// GetPIAOldSettings obtains PIA settings for the older PIA servers (pre summer 2020) from environment variables using the params package.
+func GetPIAOldSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
+	settings.Name = constants.PrivateInternetAccessOld
+	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.TargetIP, err = paramsReader.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
+	encryptionPreset, err := paramsReader.GetPIAEncryptionPreset()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.EncryptionPreset = encryptionPreset
+	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
+	settings.ServerSelection.Region, err = paramsReader.GetPIAOldRegion()
+	if err != nil {
+		return settings, err
+	}
 	settings.PortForwarding.Enabled, err = paramsReader.GetPortForwarding()
 	if err != nil {
 		return settings, err

@@ -10,6 +10,7 @@ import (
 
 // GetPortForwarding obtains if port forwarding on the VPN provider server
 // side is enabled or not from the environment variable PORT_FORWARDING
+// Only valid for older PIA servers for now
 func (r *reader) GetPortForwarding() (activated bool, err error) {
 	s, err := r.envParams.GetEnv("PORT_FORWARDING", libparams.Default("off"))
 	if err != nil {
@@ -59,5 +60,12 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 // environment variable REGION
 func (r *reader) GetPIARegion() (region string, err error) {
 	choices := append(constants.PIAGeoChoices(), "")
+	return r.envParams.GetValueIfInside("REGION", choices)
+}
+
+// GetPIAOldRegion obtains the region for the PIA server from the
+// environment variable REGION
+func (r *reader) GetPIAOldRegion() (region string, err error) {
+	choices := append(constants.PIAOldGeoChoices(), "")
 	return r.envParams.GetValueIfInside("REGION", choices)
 }

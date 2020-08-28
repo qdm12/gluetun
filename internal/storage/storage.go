@@ -9,7 +9,8 @@ import (
 )
 
 type Storage interface {
-	SyncServers(hardcodedServers models.AllServers) (allServers models.AllServers, err error)
+	SyncServers(hardcodedServers models.AllServers, write bool) (allServers models.AllServers, err error)
+	FlushToFile(servers models.AllServers) error
 }
 
 type storage struct {
