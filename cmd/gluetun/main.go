@@ -31,6 +31,13 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
+//nolint:gochecknoglobals
+var (
+	version   = "unknown"
+	commit    = "unknown"
+	buildDate = "an unknown date"
+)
+
 func main() {
 	ctx := context.Background()
 	os.Exit(_main(ctx, os.Args))
@@ -73,10 +80,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	streamMerger := command.NewStreamMerger()
 
 	paramsReader := params.NewReader(logger, fileManager)
-	fmt.Println(gluetunLogging.Splash(
-		paramsReader.GetVersion(),
-		paramsReader.GetVcsRef(),
-		paramsReader.GetBuildDate()))
+	fmt.Println(gluetunLogging.Splash(version, commit, buildDate))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
 		"OpenVPN":   ovpnConf.Version,

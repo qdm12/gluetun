@@ -108,11 +108,6 @@ type Reader interface {
 
 	// Public IP getters
 	GetPublicIPPeriod() (period time.Duration, err error)
-
-	// Version getters
-	GetVersion() string
-	GetBuildDate() string
-	GetVcsRef() string
 }
 
 type reader struct {

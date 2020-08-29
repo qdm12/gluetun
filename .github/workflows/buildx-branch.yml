@@ -42,7 +42,7 @@ jobs:
             --progress plain \
             --platform=linux/amd64 \
             --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-            --build-arg VCS_REF=`git rev-parse --short HEAD` \
+            --build-arg COMMIT=`git rev-parse --short HEAD` \
             --build-arg VERSION=${GITHUB_REF##*/} \
             -t qmcgaw/private-internet-access:${GITHUB_REF##*/} \
             --push \
