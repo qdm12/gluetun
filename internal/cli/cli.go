@@ -3,7 +3,9 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"strings"
+	"time"
 
 	"net"
 
@@ -87,6 +89,7 @@ func Update(args []string) error {
 	flagSet.BoolVar(&options.Stdout, "stdout", false, "Write results to console to modify the program (for maintainers)")
 	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
 	flagSet.BoolVar(&options.PIAold, "piaold", false, "Update Private Internet Access pre-summer 2020 servers")
+	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
@@ -97,8 +100,9 @@ func Update(args []string) error {
 	if !options.File && !options.Stdout {
 		return fmt.Errorf("at least one of -file or -stdout must be specified")
 	}
+	httpClient := &http.Client{Timeout: 10 * time.Second}
 	storage := storage.New(logger)
-	updater := updater.New(storage)
+	updater := updater.New(storage, httpClient)
 	if err := updater.UpdateServers(options); err != nil {
 		return err
 	}

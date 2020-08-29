@@ -20,6 +20,7 @@ func WindscribeRegionChoices() (choices []string) {
 	return choices
 }
 
+//nolint:dupl
 func WindscribeServers() []models.WindscribeServer {
 	return []models.WindscribeServer{
 		{Region: "Albania", IPs: []net.IP{{31, 171, 152, 179}}},
