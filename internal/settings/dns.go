@@ -31,10 +31,6 @@ type DNS struct {
 }
 
 func (d *DNS) String() string {
-	const (
-		enabled  = "enabled"
-		disabled = "disabled"
-	)
 	if !d.Enabled {
 		return fmt.Sprintf("DNS over TLS disabled, using plaintext DNS %s", d.PlaintextAddress)
 	}

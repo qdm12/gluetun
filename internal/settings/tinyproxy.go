@@ -21,9 +21,9 @@ func (t *TinyProxy) String() string {
 	if !t.Enabled {
 		return "TinyProxy settings: disabled"
 	}
-	auth := "disabled"
+	auth := disabled
 	if t.User != "" {
-		auth = "enabled"
+		auth = enabled
 	}
 	settingsList := []string{
 		fmt.Sprintf("Port: %d", t.Port),

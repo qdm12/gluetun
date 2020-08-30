@@ -20,9 +20,9 @@ func (s *ShadowSocks) String() string {
 	if !s.Enabled {
 		return "ShadowSocks settings: disabled"
 	}
-	log := "disabled"
+	log := disabled
 	if s.Log {
-		log = "enabled"
+		log = enabled
 	}
 	settingsList := []string{
 		"ShadowSocks settings:",

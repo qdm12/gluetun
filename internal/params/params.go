@@ -108,6 +108,8 @@ type Reader interface {
 
 	// Public IP getters
 	GetPublicIPPeriod() (period time.Duration, err error)
+
+	GetVersionInformation() (enabled bool, err error)
 }
 
 type reader struct {
@@ -137,4 +139,8 @@ func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
 		s = "private internet access"
 	}
 	return models.VPNProvider(s), err
+}
+
+func (r *reader) GetVersionInformation() (enabled bool, err error) {
+	return r.envParams.GetOnOff("VERSION_INFORMATION", libparams.Default("on"))
 }

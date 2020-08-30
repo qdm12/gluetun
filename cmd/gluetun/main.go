@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
@@ -25,6 +26,7 @@ import (
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tinyproxy"
+	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
@@ -220,6 +222,18 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		restartShadowsocks()
 	}
 
+	versionInformation := func() {
+		if !allSettings.VersionInformation {
+			return
+		}
+		client := &http.Client{Timeout: 5 * time.Second}
+		message, err := versionpkg.GetMessage(version, commit, client)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		logger.Info(message)
+	}
 	go func() {
 		var restartTickerContext context.Context
 		var restartTickerCancel context.CancelFunc = func() {}
@@ -232,7 +246,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 				restartTickerCancel()
 				restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 				go unboundLooper.RunRestartTicker(restartTickerContext)
-				onConnected(allSettings, logger, routingConf, portForward, restartUnbound, restartPublicIP)
+				onConnected(allSettings, logger, routingConf, portForward, restartUnbound, restartPublicIP, versionInformation)
 			}
 		}
 	}()
@@ -336,7 +350,7 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 }
 
 func onConnected(allSettings settings.Settings, logger logging.Logger, routingConf routing.Routing,
-	portForward, restartUnbound, restartPublicIP func(),
+	portForward, restartUnbound, restartPublicIP, versionInformation func(),
 ) {
 	restartUnbound()
 	restartPublicIP()
@@ -354,4 +368,5 @@ func onConnected(allSettings settings.Settings, logger logging.Logger, routingCo
 			logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
 		}
 	}
+	versionInformation()
 }
