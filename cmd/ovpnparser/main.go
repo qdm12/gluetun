@@ -23,7 +23,7 @@ func main() {
 
 // Find subdomains from .ovpn files contained in a .zip file
 func _main() int {
-	provider := flag.String("provider", "surfshark", "VPN provider to parse openvpn files for, can be 'surfshark' or 'vyprvpn")
+	provider := flag.String("provider", "surfshark", "VPN provider to parse openvpn files for, can be 'surfshark'")
 	flag.Parse()
 
 	var urls []string
@@ -35,11 +35,6 @@ func _main() int {
 			"https://v2uploads.zopim.io/p/2/L/p2LbwLkvfQoSdzOl6VEltzQA6StiZqrs/12500634259669c77012765139bcfe4f4c90db1e.zip",
 		}
 		suffix = ".prod.surfshark.com"
-	case "vyprvpn":
-		urls = []string{
-			"https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip",
-		}
-		suffix = ".vyprvpn.com"
 	default:
 		fmt.Printf("Provider %q is not supported\n", *provider)
 		return 1
