@@ -51,6 +51,10 @@ type VyprvpnServer struct {
 	IPs    []net.IP `json:"ips"`
 }
 
+func (s *VyprvpnServer) String() string {
+	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
+}
+
 type NordvpnServer struct { //nolint:maligned
 	Region string `json:"region"`
 	Number uint16 `json:"number"`

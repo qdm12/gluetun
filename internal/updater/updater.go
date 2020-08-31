@@ -1,6 +1,7 @@
 package updater
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -10,71 +11,91 @@ import (
 )
 
 type Updater interface {
-	UpdateServers(options Options) error
+	UpdateServers(ctx context.Context) error
 }
 
 type updater struct {
-	storage storage.Storage
-	timeNow func() time.Time
-	println func(s string)
-	httpGet func(url string) (resp *http.Response, err error)
+	options  Options
+	storage  storage.Storage
+	timeNow  func() time.Time
+	println  func(s string)
+	httpGet  func(url string) (resp *http.Response, err error)
+	lookupIP lookupIPFunc
 }
 
-func New(storage storage.Storage, httpClient *http.Client) Updater {
+func New(options Options, storage storage.Storage, httpClient *http.Client) Updater {
+	if len(options.DNSAddress) == 0 {
+		options.DNSAddress = "1.1.1.1"
+	}
+	resolver := newResolver(options.DNSAddress)
 	return &updater{
-		storage: storage,
-		timeNow: time.Now,
-		println: func(s string) { fmt.Println(s) },
-		httpGet: httpClient.Get,
+		storage:  storage,
+		timeNow:  time.Now,
+		println:  func(s string) { fmt.Println(s) },
+		httpGet:  httpClient.Get,
+		lookupIP: newLookupIP(resolver),
+		options:  options,
 	}
 }
 
-func (u *updater) UpdateServers(options Options) error {
+func (u *updater) UpdateServers(ctx context.Context) error {
 	const writeSync = false
 	allServers, err := u.storage.SyncServers(constants.GetAllServers(), writeSync)
 	if err != nil {
 		return fmt.Errorf("cannot update servers: %w", err)
 	}
 
-	if options.PIA {
+	if u.options.PIA {
 		const newServers = true
 		servers, err := findPIAServers(newServers)
 		if err != nil {
 			return fmt.Errorf("cannot update PIA servers: %w", err)
 		}
-		if options.Stdout {
+		if u.options.Stdout {
 			u.println(stringifyPIAServers(servers))
 		}
 		allServers.Pia.Timestamp = u.timeNow().Unix()
 		allServers.Pia.Servers = servers
 	}
 
-	if options.PIAold {
+	if u.options.PIAold {
 		const newServers = false
 		servers, err := findPIAServers(newServers)
 		if err != nil {
 			return fmt.Errorf("cannot update PIA old servers: %w", err)
 		}
-		if options.Stdout {
+		if u.options.Stdout {
 			u.println(stringifyPIAOldServers(servers))
 		}
 		allServers.PiaOld.Timestamp = u.timeNow().Unix()
 		allServers.PiaOld.Servers = servers
 	}
 
-	if options.Mullvad {
+	if u.options.Mullvad {
 		servers, err := u.findMullvadServers()
 		if err != nil {
 			return fmt.Errorf("cannot update Mullvad servers: %w", err)
 		}
-		if options.Stdout {
+		if u.options.Stdout {
 			u.println(stringifyMullvadServers(servers))
 		}
 		allServers.Mullvad.Timestamp = u.timeNow().Unix()
 		allServers.Mullvad.Servers = servers
 	}
 
-	if options.File {
+	if u.options.Vyprvpn {
+		servers, err := findVyprvpnServers(ctx, u.lookupIP)
+		if err != nil {
+			return fmt.Errorf("cannot update Vyprvpn servers: %w", err)
+		}
+		if u.options.Stdout {
+			u.println(stringifyVyprvpnServers(servers))
+		}
+		allServers.Vyprvpn.Timestamp = u.timeNow().Unix()
+		allServers.Vyprvpn.Servers = servers
+	}
+
+	if u.options.File {
 		if err := u.storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("cannot update servers: %w", err)
 		}
