@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"sync"
 	"time"
@@ -22,6 +23,7 @@ type server struct {
 	restartUnbound     func()
 	getOpenvpnSettings func() settings.OpenVPN
 	getPortForwarded   func() uint16
+	lookupIP           func(host string) ([]net.IP, error)
 }
 
 func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound func(),
@@ -33,6 +35,7 @@ func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound f
 		restartUnbound:     restartUnbound,
 		getOpenvpnSettings: getOpenvpnSettings,
 		getPortForwarded:   getPortForwarded,
+		lookupIP:           net.LookupIP,
 	}
 }
 
@@ -71,6 +74,8 @@ func (s *server) makeHandler() http.HandlerFunc {
 				s.handleGetPortForwarded(w)
 			case "/openvpn/settings":
 				s.handleGetOpenvpnSettings(w)
+			case "/health":
+				s.handleHealth(w)
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}

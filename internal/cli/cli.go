@@ -3,11 +3,10 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
-
-	"net"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/params"
@@ -40,13 +39,20 @@ func ClientKey(args []string) error {
 }
 
 func HealthCheck() error {
-	ips, err := net.LookupIP("github.com")
+	client := &http.Client{Timeout: time.Second}
+	response, err := client.Get("http://localhost:8000/health")
 	if err != nil {
-		return fmt.Errorf("cannot resolve github.com (%s)", err)
-	} else if len(ips) == 0 {
-		return fmt.Errorf("resolved no IP addresses for github.com")
+		return err
 	}
-	return nil
+	defer response.Body.Close()
+	if response.StatusCode == http.StatusOK {
+		return nil
+	}
+	b, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	return fmt.Errorf("HTTP status code %s with message: %s", response.Status, string(b))
 }
 
 func OpenvpnConfig() error {
