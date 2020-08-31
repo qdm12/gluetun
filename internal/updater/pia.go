@@ -33,7 +33,7 @@ func findPIAServersFromURL(zipURL string) (servers []models.PIAServer, err error
 		region := strings.TrimSuffix(fileName, ".ovpn")
 		server := models.PIAServer{
 			Region: region,
-			IPs:    IPs,
+			IPs:    uniqueSortedIPs(IPs),
 		}
 		servers = append(servers, server)
 	}

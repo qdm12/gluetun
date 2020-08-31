@@ -66,6 +66,8 @@ func (u *updater) findMullvadServers() (servers []models.MullvadServer, err erro
 		}
 	}
 	for _, server := range serversByKey {
+		server.IPs = uniqueSortedIPs(server.IPs)
+		server.IPsV6 = uniqueSortedIPs(server.IPsV6)
 		servers = append(servers, server)
 	}
 	sort.Slice(servers, func(i, j int) bool {
