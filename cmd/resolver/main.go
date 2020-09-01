@@ -107,11 +107,6 @@ func formatLine(provider string, s server, ips []net.IP) string {
 	}
 	ipString := strings.Join(ipStrings, ", ")
 	switch provider {
-	case "pia":
-		return fmt.Sprintf(
-			"{Region: %q, IPs: []net.IP{%s}},",
-			s.region, ipString,
-		)
 	case "windscribe":
 		return fmt.Sprintf(
 			"{Region: %q, IPs: []net.IP{%s}},",
@@ -126,11 +121,6 @@ func formatLine(provider string, s server, ips []net.IP) string {
 		return fmt.Sprintf(
 			"{Region: %q, Group: %q, IPs: []net.IP{%s}},",
 			s.region, s.group, ipString,
-		)
-	case "vyprvpn":
-		return fmt.Sprintf(
-			"{Region: %q, IPs: []net.IP{%s}},",
-			s.region, ipString,
 		)
 	case "purevpn":
 		return fmt.Sprintf(
