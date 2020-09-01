@@ -40,6 +40,10 @@ type SurfsharkServer struct {
 	IPs    []net.IP `json:"ips"`
 }
 
+func (s *SurfsharkServer) String() string {
+	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
+}
+
 type CyberghostServer struct {
 	Region string   `json:"region"`
 	Group  string   `json:"group"`

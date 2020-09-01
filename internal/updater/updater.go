@@ -95,6 +95,18 @@ func (u *updater) UpdateServers(ctx context.Context) error {
 		allServers.Vyprvpn.Servers = servers
 	}
 
+	if u.options.Surfshark {
+		servers, err := findSurfsharkServers(ctx, u.lookupIP)
+		if err != nil {
+			return fmt.Errorf("cannot update Surfshark servers: %w", err)
+		}
+		if u.options.Stdout {
+			u.println(stringifySurfsharkServers(servers))
+		}
+		allServers.Surfshark.Timestamp = u.timeNow().Unix()
+		allServers.Surfshark.Servers = servers
+	}
+
 	if u.options.File {
 		if err := u.storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("cannot update servers: %w", err)

@@ -30,3 +30,14 @@ func newLookupIP(r *net.Resolver) lookupIPFunc {
 		return ips, nil
 	}
 }
+
+func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string, n int) (ips []net.IP, err error) {
+	for i := 0; i < n; i++ {
+		newIPs, err := lookupIP(ctx, host)
+		if err != nil {
+			return nil, err
+		}
+		ips = append(ips, newIPs...)
+	}
+	return uniqueSortedIPs(ips), nil
+}

@@ -97,6 +97,7 @@ func Update(args []string) error {
 	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
 	flagSet.BoolVar(&options.PIAold, "piaold", false, "Update Private Internet Access pre-summer 2020 servers")
 	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
+	flagSet.BoolVar(&options.Surfshark, "surfshark", false, "Update Surfshark servers")
 	flagSet.StringVar(&options.DNSAddress, "dns", "1.1.1.1", "DNS resolver address to use")
 	if err := flagSet.Parse(args); err != nil {
 		return err
