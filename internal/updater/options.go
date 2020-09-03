@@ -6,6 +6,7 @@ type Options struct {
 	Mullvad    bool
 	Vyprvpn    bool
 	Surfshark  bool
+	Nordvpn    bool
 	File       bool // update JSON file (user side)
 	Stdout     bool // update constants file (maintainer side)
 	DNSAddress string

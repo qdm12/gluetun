@@ -107,6 +107,22 @@ func (u *updater) UpdateServers(ctx context.Context) error {
 		allServers.Surfshark.Servers = servers
 	}
 
+	if u.options.Nordvpn {
+		// TODO support servers offering only TCP or only UDP
+		servers, ignoredServers, err := u.findNordvpnServers()
+		for _, serverName := range ignoredServers {
+			u.println(fmt.Sprintf("ignored server %q because it does not support both UDP and TCP", serverName))
+		}
+		if err != nil {
+			return fmt.Errorf("cannot update Nordvpn servers: %w", err)
+		}
+		if u.options.Stdout {
+			u.println(stringifyNordvpnServers(servers))
+		}
+		allServers.Nordvpn.Timestamp = u.timeNow().Unix()
+		allServers.Nordvpn.Servers = servers
+	}
+
 	if u.options.File {
 		if err := u.storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("cannot update servers: %w", err)

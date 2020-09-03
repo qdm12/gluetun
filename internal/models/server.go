@@ -67,6 +67,11 @@ type NordvpnServer struct { //nolint:maligned
 	UDP    bool   `json:"udp"`
 }
 
+func (s *NordvpnServer) String() string {
+	return fmt.Sprintf("{Region: %q, Number: %d, TCP: %t, UDP: %t, IP: %s}",
+		s.Region, s.Number, s.TCP, s.UDP, goStringifyIP(s.IP))
+}
+
 type PurevpnServer struct {
 	Region  string   `json:"region"`
 	Country string   `json:"country"`
