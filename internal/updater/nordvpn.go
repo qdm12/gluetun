@@ -13,7 +13,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) findNordvpnServers() (servers []models.NordvpnServer, ignoredServers []string, err error) {
+func (u *updater) findNordvpnServers() (servers []models.NordvpnServer, warnings []string, err error) {
 	const url = "https://nordvpn.com/api/server"
 	response, err := u.httpGet(url)
 	if err != nil {
@@ -39,10 +39,17 @@ func (u *updater) findNordvpnServers() (servers []models.NordvpnServer, ignoredS
 	if err := json.Unmarshal(bytes, &data); err != nil {
 		return nil, nil, err
 	}
+	sort.Slice(data, func(i, j int) bool {
+		if data[i].Country == data[j].Country {
+			return data[i].Name < data[j].Name
+		}
+		return data[i].Country < data[j].Country
+	})
 
 	for _, jsonServer := range data {
 		if !jsonServer.Features.TCP && !jsonServer.Features.UDP {
-			ignoredServers = append(ignoredServers, jsonServer.Name)
+			warnings = append(warnings, fmt.Sprintf("server %q does not support TCP and UDP for openvpn", jsonServer.Name))
+			continue
 		}
 		ip := net.ParseIP(jsonServer.IPAddress)
 		if ip == nil || ip.To4() == nil {
@@ -66,13 +73,7 @@ func (u *updater) findNordvpnServers() (servers []models.NordvpnServer, ignoredS
 		}
 		servers = append(servers, server)
 	}
-	sort.Slice(servers, func(i, j int) bool {
-		if servers[i].Region == servers[j].Region {
-			return servers[i].Number < servers[j].Number
-		}
-		return servers[i].Region < servers[j].Region
-	})
-	return servers, ignoredServers, nil
+	return servers, warnings, nil
 }
 
 //nolint:goconst

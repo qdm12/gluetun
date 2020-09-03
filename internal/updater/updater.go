@@ -38,6 +38,7 @@ func New(options Options, storage storage.Storage, httpClient *http.Client) Upda
 	}
 }
 
+// TODO parallelize DNS resolution
 func (u *updater) UpdateServers(ctx context.Context) error {
 	const writeSync = false
 	allServers, err := u.storage.SyncServers(constants.GetAllServers(), writeSync)
@@ -109,9 +110,9 @@ func (u *updater) UpdateServers(ctx context.Context) error {
 
 	if u.options.Nordvpn {
 		// TODO support servers offering only TCP or only UDP
-		servers, ignoredServers, err := u.findNordvpnServers()
-		for _, serverName := range ignoredServers {
-			u.println(fmt.Sprintf("ignored server %q because it does not support both UDP and TCP", serverName))
+		servers, warnings, err := u.findNordvpnServers()
+		for _, warning := range warnings {
+			u.println(warning)
 		}
 		if err != nil {
 			return fmt.Errorf("cannot update Nordvpn servers: %w", err)
