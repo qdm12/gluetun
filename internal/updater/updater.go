@@ -123,6 +123,22 @@ func (u *updater) UpdateServers(ctx context.Context) error {
 		allServers.Nordvpn.Servers = servers
 	}
 
+	if u.options.Purevpn {
+		// TODO support servers offering only TCP or only UDP
+		servers, warnings, err := u.findPurevpnServers(ctx)
+		for _, warning := range warnings {
+			u.println(warning)
+		}
+		if err != nil {
+			return fmt.Errorf("cannot update Purevpn servers: %w", err)
+		}
+		if u.options.Stdout {
+			u.println(stringifyPurevpnServers(servers))
+		}
+		allServers.Purevpn.Timestamp = u.timeNow().Unix()
+		allServers.Purevpn.Servers = servers
+	}
+
 	if u.options.File {
 		if err := u.storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("cannot update servers: %w", err)

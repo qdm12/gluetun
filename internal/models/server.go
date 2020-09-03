@@ -79,6 +79,11 @@ type PurevpnServer struct {
 	IPs     []net.IP `json:"ips"`
 }
 
+func (s *PurevpnServer) String() string {
+	return fmt.Sprintf("{Region: %q, Country: %q, City: %q, IPs: %s}",
+		s.Region, s.Country, s.City, goStringifyIPs(s.IPs))
+}
+
 func goStringifyIP(ip net.IP) string {
 	s := fmt.Sprintf("%#v", ip)
 	s = strings.TrimSuffix(strings.TrimPrefix(s, "net.IP{"), "}")
