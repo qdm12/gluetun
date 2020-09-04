@@ -1,9 +1,11 @@
 package settings
 
 import (
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"fmt"
+
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/params"
 )
 
 // GetPIASettings obtains PIA settings from environment variables using the params package.
@@ -24,6 +26,30 @@ func GetPIASettings(paramsReader params.Reader) (settings models.ProviderSetting
 	settings.ServerSelection.EncryptionPreset = encryptionPreset
 	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
 	settings.ServerSelection.Region, err = paramsReader.GetPIARegion()
+	if err != nil {
+		return settings, err
+	}
+	return settings, nil
+}
+
+// GetPIAOldSettings obtains PIA settings for the older PIA servers (pre summer 2020) from environment variables using the params package.
+func GetPIAOldSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
+	settings.Name = constants.PrivateInternetAccessOld
+	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.TargetIP, err = paramsReader.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
+	encryptionPreset, err := paramsReader.GetPIAEncryptionPreset()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.EncryptionPreset = encryptionPreset
+	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
+	settings.ServerSelection.Region, err = paramsReader.GetPIAOldRegion()
 	if err != nil {
 		return settings, err
 	}
@@ -66,6 +92,19 @@ func GetMullvadSettings(paramsReader params.Reader) (settings models.ProviderSet
 	settings.ServerSelection.CustomPort, err = paramsReader.GetMullvadPort()
 	if err != nil {
 		return settings, err
+	}
+	if settings.ServerSelection.Protocol == constants.TCP {
+		switch settings.ServerSelection.CustomPort {
+		case 0, 80, 443, 1401:
+		default:
+			return settings, fmt.Errorf("port %d is not valid for TCP protocol", settings.ServerSelection.CustomPort)
+		}
+	} else {
+		switch settings.ServerSelection.CustomPort {
+		case 0, 53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400:
+		default:
+			return settings, fmt.Errorf("port %d is not valid for UDP protocol", settings.ServerSelection.CustomPort)
+		}
 	}
 	return settings, nil
 }
@@ -170,6 +209,32 @@ func GetNordvpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 		return settings, err
 	}
 	settings.ServerSelection.Number, err = paramsReader.GetNordvpnNumber()
+	if err != nil {
+		return settings, err
+	}
+	return settings, nil
+}
+
+// GetPurevpnSettings obtains Purevpn settings from environment variables using the params package.
+func GetPurevpnSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
+	settings.Name = constants.Mullvad
+	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.TargetIP, err = paramsReader.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Region, err = paramsReader.GetPurevpnRegion()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Country, err = paramsReader.GetPurevpnCountry()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.City, err = paramsReader.GetPurevpnCity()
 	if err != nil {
 		return settings, err
 	}

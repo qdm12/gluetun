@@ -1,63 +1,40 @@
 # Gluetun VPN client
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
-Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN and NordVPN VPN servers, using Go, OpenVPN,
+Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN,
 iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *[Video of the Git history of Gluetun](https://youtu.be/khipOYJtGJ0)*
+**ANNOUNCEMENT**: *Support for newer Private Internet Access servers*
 
-<img height="250" src="https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/title.svg?sanitize=true">
+<img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
-[![Build status](https://github.com/qdm12/private-internet-access-docker/workflows/Buildx%20latest/badge.svg)](https://github.com/qdm12/private-internet-access-docker/actions?query=workflow%3A%22Buildx+latest%22)
+[![Build status](https://github.com/qdm12/gluetun/workflows/Buildx%20latest/badge.svg)](https://github.com/qdm12/gluetun/actions?query=workflow%3A%22Buildx+latest%22)
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 [![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
-[![GitHub issues](https://img.shields.io/github/issues/qdm12/private-internet-access-docker.svg)](https://github.com/qdm12/private-internet-access-docker/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
+[![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 
 [![Image size](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Join Slack channel](https://img.shields.io/badge/slack-@qdm12-yellow.svg?logo=slack)](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
 
-<details><summary>Click to show base components</summary><p>
-
-- [Alpine 3.12](https://alpinelinux.org) for a tiny image (37MB of packages, 6.7MB of Go binary and 5.6MB for Alpine)
-- [OpenVPN 2.4.9](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/openvpn) to tunnel to your VPN provider servers
-- [IPtables 1.8.4](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
-- [Unbound 1.10.1](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/unbound) configured with Cloudflare's [1.1.1.1](https://1.1.1.1) DNS over TLS (configurable with 5 different providers)
-- [Files and blocking lists built periodically](https://github.com/qdm12/updated/tree/master/files) used with Unbound (see `BLOCK_MALICIOUS`, `BLOCK_SURVEILLANCE` and `BLOCK_ADS` environment variables)
-- [TinyProxy 1.10.0](https://pkgs.alpinelinux.org/package/v3.11/main/x86_64/tinyproxy)
-- [Shadowsocks 3.3.4](https://pkgs.alpinelinux.org/package/edge/testing/x86/shadowsocks-libev)
-
-</p></details>
-
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn** and **NordVPN** servers
+- Supports **Private Internet Access** (new and old), **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
+- Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
 - Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
 - Built in HTTP proxy (Tinyproxy, tunnels TCP)
-- [Connect other containers to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
-- [Connect LAN devices to it](https://github.com/qdm12/private-internet-access-docker#connect-to-it)
+- [Connect other containers to it](https://github.com/qdm12/gluetun#connect-to-it)
+- [Connect LAN devices to it](https://github.com/qdm12/gluetun#connect-to-it)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7 🎆
-
-### VPN provider specifics
-
-- **Private Internet Access**: pick the [region](https://www.privateinternetaccess.com/pages/network/), the level of encryption and enable port forwarding
-- **Mullvad**: Pick the [country, city and ISP](https://mullvad.net/en/servers/#openvpn) and optionally a custom port to use (i.e. `53` (udp) or `80` (tcp))
-- **Windscribe**: Pick the [region](https://windscribe.com/status), and optionally a custom port to use
-- **Surfshark**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Surfshark) or a multi hop region name
-- **Cyberghost**: Pick the [region](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost) and server group.
-- **VyprVPN**: Pick the [region](https://www.vyprvpn.com/server-locations), port forwarding works by default
-- **NordVPN**: Pick the region and optionally the server number
-
-### Extra niche features
-
+- VPN server side port forwarding for Private Internet Access and Vyprvpn
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
 - Subprograms all drop root privileges once launched
 - Subprograms output streams are all merged together
@@ -66,31 +43,20 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 ## Setup
 
 1. Requirements
-    - A VPN account with one of the service providers:
-        - Private Internet Access: **username** and **password** ([sign up](https://www.privateinternetaccess.com/pages/buy-vpn/))
-        - Mullvad: user ID ([sign up](https://mullvad.net/en/account/))
-        - Windscribe: **username** and **password** | Signup up using my affiliate link below
-
-            [![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
-
-        - Surfshark: **username** and **password** ([sign up](https://order.surfshark.com/))
-        - Cyberghost: **username**, **password** and **device client key file** ([sign up](https://www.cyberghostvpn.com/en_US/buy/cyberghost-vpn-4))
-        - Vyprvpn: **username** and **password**
-        - NordVPN: **username** and **password**
-    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/firewall.md)
-
+    - A VPN account with one of the service providers supported
+    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/gluetun/blob/master/doc/firewall.md)
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#synology)
-
+    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#synology)
 1. Launch the container with:
 
     ```bash
     docker run -d --name gluetun --cap-add=NET_ADMIN \
     -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
+    -v /yourpath:/gluetun \
     qmcgaw/private-internet-access
     ```
 
-    or use [docker-compose.yml](https://github.com/qdm12/private-internet-access-docker/blob/master/docker-compose.yml) with:
+    or use [docker-compose.yml](https://github.com/qdm12/gluetun/blob/master/docker-compose.yml) with:
 
     ```bash
     docker-compose up -d
@@ -103,9 +69,9 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
     - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
 
-    **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/private-internet-access-docker/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
+    **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/gluetun/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
 
-1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. See the [wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Common-issues#use-a-release-tag) for more information on other tags available.
+1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. See the [wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#use-a-release-tag) for more information on other tags available.
 
 ## Testing
 
@@ -115,7 +81,7 @@ Check the VPN IP address matches your expectations
 docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo.io
 ```
 
-Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Testing)
+Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Testing)
 
 ## Environment variables
 
@@ -125,8 +91,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn` | VPN Service Provider |
-| `IP_STATUS_FILE` | `/ip` | Any filepath | Filepath to store the public IP address assigned |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `private internet access old`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
+| `IP_STATUS_FILE` | `/tmp/gluetun/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
 | `OPENVPN_ROOT` | `no` | `yes` or `no` | Run OpenVPN as root |
@@ -134,26 +100,28 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
 | `OPENVPN_CIPHER` | | i.e. `aes-256-gcm` | Specify a custom cipher to use. It will also set `ncp-disable` if using AES GCM for PIA |
 | `OPENVPN_AUTH` | | i.e. `sha256` | Specify a custom auth algorithm to use |
 
+*For all providers below, server location parameters are all optional. By default a random server is picked using the filter settings provided.*
+
 - Private Internet Access
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `REGION` | `Austria` | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
+    | `REGION` | | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
-    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server. You can listen on port `9000` for it |
-    | `PORT_FORWARDING_STATUS_FILE` | `/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
+    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server **for old only**. You can listen on port `9000` for it |
+    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number **for old only** |
 
 - Mullvad
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your user ID |
-    | `COUNTRY` | `Sweden` | One of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) | VPN server country |
+    | `COUNTRY` | | One of the [Mullvad countries](https://mullvad.net/en/servers/#openvpn) | VPN server country |
     | `CITY` | | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) | VPN server city |
     | `ISP` | | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) | VPN server ISP |
-    | `PORT` | | `80` or `443` for TCP; or `53` for UDP. Leave blank for default Mullvad server port | Custom VPN port to use |
+    | `PORT` | | `80`, `443` or `1401` for TCP; `53`, `1194`, `1195`, `1196`, `1197`, `1300`, `1301`, `1302`, `1303` or `1400` for UDP. Defaults to TCP `443` and UDP `1194` | Custom VPN port to use |
 
 - Windscribe
 
@@ -161,7 +129,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `REGION` | `Austria` | One of the [Windscribe regions](https://windscribe.com/status) | VPN server region |
+    | `REGION` | | One of the [Windscribe regions](https://windscribe.com/status) | VPN server region |
     | `PORT` | | One from the [this list of ports](https://windscribe.com/getconfig/openvpn) | Custom VPN port to use |
 
 - Surfshark
@@ -170,7 +138,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your **service** username, found at the bottom of the [manual setup page](https://account.surfshark.com/setup/manual) |
     | 🏁 `PASSWORD` | | | Your **service** password |
-    | `REGION` | `Austria` | One of the [Surfshark regions (subdomains)](https://github.com/qdm12/private-internet-access-docker/wiki/surfshark) | VPN server region |
+    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/gluetun/wiki/surfshark) | VPN server region |
 
 - Cyberghost
 
@@ -179,8 +147,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | 🏁 `CLIENT_KEY` | | | Your device client key content, **see below** |
-    | `REGION` | `Austria` | One of the [Cyberghost countries](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#regions) | VPN server country |
-    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/private-internet-access-docker/wiki/Cyberghost#server-groups) | Server group |
+    | `REGION` | | One of the [Cyberghost countries](https://github.com/qdm12/gluetun/wiki/Cyberghost#regions) | VPN server country |
+    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/gluetun/wiki/Cyberghost#server-groups) | Server group |
 
     To specify your client key, you can either:
 
@@ -199,7 +167,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `REGION` | `Austria` | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
+    | `REGION` | | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
 
 - NordVPN
 
@@ -207,8 +175,17 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/private-internet-
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | 🏁 `REGION` | `Austria` (wrong) | One of the NordVPN server country, i.e. `Switzerland` | VPN server country |
+    | `REGION` | | One of the NordVPN server country, i.e. `Switzerland` | VPN server country |
     | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
+
+- PureVPN
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your user ID |
+    | 🏁 `REGION` | | One of the [PureVPN regions](https://support.purevpn.com/vpn-servers) | VPN server region |
+    | `COUNTRY` | | One of the [PureVPN countries](https://support.purevpn.com/vpn-servers) | VPN server country |
+    | `CITY` | | One of the [PureVPN cities](https://support.purevpn.com/vpn-servers) | VPN server city |
 
 ### DNS over TLS
 
@@ -240,6 +217,7 @@ That one is important if you want to connect to the container from your LAN for 
 | --- | --- | --- | --- |
 | `FIREWALL` | `on` | `on` or `off` | Turn on or off the container built-in firewall. You should use it for **debugging purposes** only. |
 | `EXTRA_SUBNETS` | | i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28` | Comma separated subnets allowed in the container firewall |
+| `FIREWALL_VPN_INPUT_PORTS` | | i.e. `1000,8080` | Comma separated list of ports to allow from the VPN server side (useful for **vyprvpn** port forwarding) |
 | `FIREWALL_DEBUG` | `off` | `on` or `off` | Prints every firewall related command. You should use it for **debugging purposes** only. |
 
 ### Shadowsocks
@@ -250,7 +228,7 @@ That one is important if you want to connect to the container from your LAN for 
 | `SHADOWSOCKS_LOG` | `off` | `on`, `off` | Enable logging |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` | Internal port number for Shadowsocks to listen on |
 | `SHADOWSOCKS_PASSWORD` | |  | Password to use to connect to Shadowsocks |
-| `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | One of [these ciphers](https://shadowsocks.org/en/config/quick-guide.html) | Method to use for Shadowsocks |
+| `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | `chacha20-ietf-poly1305`, `aes-128-gcm`, `aes-256-gcm` | Method to use for Shadowsocks |
 
 ### Tinyproxy
 
@@ -275,6 +253,7 @@ That one is important if you want to connect to the container from your LAN for 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
 | `PUBLICIP_PERIOD` | `12h` | Valid duration | Period to check for public IP address. Set to `0` to disable. |
+| `VERSION_INFORMATION` | `on` | `on`, `off` | Logs a message indicating if a newer version is available once the VPN is connected |
 
 ## Connect to it
 
@@ -371,33 +350,32 @@ The following applies when `PORT_FORWARDING=on` is set.
 - Whatever port forwarded number you obtain, you can listen on port `9000` thanks to a port redirection (for tcp and udp). That should fit most use cases such as torrent clients.
 - The VPN server forwarded port is written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`. It can be useful to mount this file as a volume to read it from other containers to automate things.
 
+You can also use the HTTP control server (see below) to get the port forwarded.
+
 ## HTTP control server
 
-A built-in HTTP server listens on port `8000` to modify the state of the container. You have the following routes available:
-
-- `http://<your-docker-host-ip>:8000/openvpn/actions/restart` restarts the openvpn process
-- `http://<your-docker-host-ip>:8000/unbound/actions/restart` re-downloads the DNS files (crypto and block lists) and restarts the unbound process
+See [its Wiki page](https://github.com/qdm12/gluetun/wiki/HTTP-control-server)
 
 ## Development and contributing
 
-- Contribute with code: see [the Wiki](https://github.com/qdm12/private-internet-access-docker/wiki/Contributing).
-- [The list of existing contributors 👍](https://github.com/qdm12/private-internet-access-docker/blob/master/.github/CONTRIBUTING.md#Contributors)
-- [Github workflows](https://github.com/qdm12/private-internet-access-docker/actions) to know what's building
-- [List of issues and feature requests](https://github.com/qdm12/private-internet-access-docker/issues)
+- Contribute with code: see [the Wiki](https://github.com/qdm12/gluetun/wiki/Contributing).
+- [The list of existing contributors 👍](https://github.com/qdm12/gluetun/blob/master/.github/CONTRIBUTING.md#Contributors)
+- [Github workflows](https://github.com/qdm12/gluetun/actions) to know what's building
+- [List of issues and feature requests](https://github.com/qdm12/gluetun/issues)
 
 ## License
 
-This repository is under an [MIT license](https://github.com/qdm12/private-internet-access-docker/master/license)
+This repository is under an [MIT license](https://github.com/qdm12/gluetun/master/license)
 
 ## Support
 
 Sponsor me on [Github](https://github.com/sponsors/qdm12), donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw) or subscribe to a VPN provider through one of my affiliate links:
 
-[![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
-[![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
+[![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
+[![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
 
-[![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/private-internet-access-docker/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
+[![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
 
-Feel also free to have a look at [the Kanban board](https://github.com/qdm12/private-internet-access-docker/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
+Feel also free to have a look at [the Kanban board](https://github.com/qdm12/gluetun/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
 
 Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez and A. Cooper for supporting me financially 🥇👍

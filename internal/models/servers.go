@@ -1,46 +1,55 @@
 package models
 
-import "net"
-
-type PIAServer struct {
-	IPs    []net.IP
-	Region string
+type AllServers struct {
+	Version    uint16            `json:"version"`
+	Cyberghost CyberghostServers `json:"cyberghost"`
+	Mullvad    MullvadServers    `json:"mullvad"`
+	Nordvpn    NordvpnServers    `json:"nordvpn"`
+	PiaOld     PiaServers        `json:"piaOld"`
+	Pia        PiaServers        `json:"pia"`
+	Purevpn    PurevpnServers    `json:"purevpn"`
+	Surfshark  SurfsharkServers  `json:"surfshark"`
+	Vyprvpn    VyprvpnServers    `json:"vyprvpn"`
+	Windscribe WindscribeServers `json:"windscribe"`
 }
 
-type MullvadServer struct {
-	IPs         []net.IP
-	Country     string
-	City        string
-	ISP         string
-	Owned       bool
-	DefaultPort uint16
+type CyberghostServers struct {
+	Version   uint16             `json:"version"`
+	Timestamp int64              `json:"timestamp"`
+	Servers   []CyberghostServer `json:"servers"`
 }
-
-type WindscribeServer struct {
-	Region string
-	IPs    []net.IP
+type MullvadServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int64           `json:"timestamp"`
+	Servers   []MullvadServer `json:"servers"`
 }
-
-type SurfsharkServer struct {
-	Region string
-	IPs    []net.IP
+type NordvpnServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int64           `json:"timestamp"`
+	Servers   []NordvpnServer `json:"servers"`
 }
-
-type CyberghostServer struct {
-	Region string
-	Group  string
-	IPs    []net.IP
+type PiaServers struct {
+	Version   uint16      `json:"version"`
+	Timestamp int64       `json:"timestamp"`
+	Servers   []PIAServer `json:"servers"`
 }
-
-type VyprvpnServer struct {
-	Region string
-	IPs    []net.IP
+type PurevpnServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int64           `json:"timestamp"`
+	Servers   []PurevpnServer `json:"purevpn"`
 }
-
-type NordvpnServer struct { //nolint:maligned
-	Region string
-	Number uint16
-	IP     net.IP
-	TCP    bool
-	UDP    bool
+type SurfsharkServers struct {
+	Version   uint16            `json:"version"`
+	Timestamp int64             `json:"timestamp"`
+	Servers   []SurfsharkServer `json:"servers"`
+}
+type VyprvpnServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int64           `json:"timestamp"`
+	Servers   []VyprvpnServer `json:"servers"`
+}
+type WindscribeServers struct {
+	Version   uint16             `json:"version"`
+	Timestamp int64              `json:"timestamp"`
+	Servers   []WindscribeServer `json:"servers"`
 }

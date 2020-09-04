@@ -2,13 +2,14 @@ package shadowsocks
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
-	"github.com/qdm12/golibs/command"
+	"github.com/qdm12/gluetun/internal/firewall"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/firewall"
-	"github.com/qdm12/private-internet-access-docker/internal/settings"
+	shadowsockslib "github.com/qdm12/ss-server/pkg"
 )
 
 type Looper interface {
@@ -21,18 +22,14 @@ type Looper interface {
 }
 
 type looper struct {
-	conf          Configurator
-	firewallConf  firewall.Configurator
-	settings      settings.ShadowSocks
-	settingsMutex sync.RWMutex
-	dnsSettings   settings.DNS // TODO
-	logger        logging.Logger
-	streamMerger  command.StreamMerger
-	uid           int
-	gid           int
-	restart       chan struct{}
-	start         chan struct{}
-	stop          chan struct{}
+	firewallConf     firewall.Configurator
+	settings         settings.ShadowSocks
+	settingsMutex    sync.RWMutex
+	logger           logging.Logger
+	defaultInterface string
+	restart          chan struct{}
+	start            chan struct{}
+	stop             chan struct{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -43,20 +40,16 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	<-ctx.Done()
 }
 
-func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings settings.ShadowSocks, dnsSettings settings.DNS,
-	logger logging.Logger, streamMerger command.StreamMerger, uid, gid int) Looper {
+func NewLooper(firewallConf firewall.Configurator, settings settings.ShadowSocks,
+	logger logging.Logger, defaultInterface string) Looper {
 	return &looper{
-		conf:         conf,
-		firewallConf: firewallConf,
-		settings:     settings,
-		dnsSettings:  dnsSettings,
-		logger:       logger.WithPrefix("shadowsocks: "),
-		streamMerger: streamMerger,
-		uid:          uid,
-		gid:          gid,
-		restart:      make(chan struct{}),
-		start:        make(chan struct{}),
-		stop:         make(chan struct{}),
+		firewallConf:     firewallConf,
+		settings:         settings,
+		logger:           logger.WithPrefix("shadowsocks: "),
+		defaultInterface: defaultInterface,
+		restart:          make(chan struct{}),
+		start:            make(chan struct{}),
+		stop:             make(chan struct{}),
 	}
 }
 
@@ -124,12 +117,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			}
 		}
 
-		nameserver := l.dnsSettings.PlaintextAddress.String()
-		if l.dnsSettings.Enabled {
-			nameserver = "127.0.0.1"
-		}
 		settings := l.GetSettings()
-		err := l.conf.MakeConf(settings.Port, settings.Password, settings.Method, nameserver, l.uid, l.gid)
+		server, err := shadowsockslib.NewServer(settings.Method, settings.Password, adaptLogger(l.logger, settings.Log))
 		if err != nil {
 			l.logAndWait(ctx, err)
 			continue
@@ -141,26 +130,23 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				continue
 			}
 		}
-		if err := l.firewallConf.SetAllowedPort(ctx, settings.Port); err != nil {
+		if err := l.firewallConf.SetAllowedPort(ctx, settings.Port, l.defaultInterface); err != nil {
 			l.logger.Error(err)
 			continue
 		}
 		previousPort = settings.Port
 
 		shadowsocksCtx, shadowsocksCancel := context.WithCancel(context.Background())
-		stdout, stderr, waitFn, err := l.conf.Start(shadowsocksCtx, "0.0.0.0", settings.Port, settings.Password, settings.Log)
+
+		waitError := make(chan error)
+		go func() {
+			waitError <- server.Listen(shadowsocksCtx, fmt.Sprintf("0.0.0.0:%d", settings.Port))
+		}()
 		if err != nil {
 			shadowsocksCancel()
 			l.logAndWait(ctx, err)
 			continue
 		}
-		go l.streamMerger.Merge(shadowsocksCtx, stdout, command.MergeName("shadowsocks"))
-		go l.streamMerger.Merge(shadowsocksCtx, stderr, command.MergeName("shadowsocks error"))
-		waitError := make(chan error)
-		go func() {
-			err := waitFn() // blocking
-			waitError <- err
-		}()
 
 		stayHere := true
 		for stayHere {

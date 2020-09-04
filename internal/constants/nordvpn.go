@@ -3,7 +3,7 @@ package constants
 import (
 	"net"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 const (

@@ -3,8 +3,8 @@ package openvpn
 import (
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/files"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) error {

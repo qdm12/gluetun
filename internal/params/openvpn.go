@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/qdm12/gluetun/internal/models"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // GetUser obtains the user to use to connect to the VPN servers

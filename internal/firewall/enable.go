@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error) {
@@ -62,15 +62,6 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 }
 
 func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocognit
-	defaultInterface, defaultGateway, err := c.routing.DefaultRoute()
-	if err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
-	}
-	localSubnet, err := c.routing.LocalSubnet()
-	if err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
-	}
-
 	if err = c.setAllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
@@ -95,50 +86,36 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 	for _, conn := range c.vpnConnections {
-		if err = c.acceptOutputTrafficToVPN(ctx, defaultInterface, conn, remove); err != nil {
+		if err = c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, conn, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}
 	if err = c.acceptOutputThroughInterface(ctx, string(constants.TUN), remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptInputFromSubnetToSubnet(ctx, "*", localSubnet, localSubnet, remove); err != nil {
+	if err := c.acceptInputFromSubnetToSubnet(ctx, "*", c.localSubnet, c.localSubnet, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptOutputFromSubnetToSubnet(ctx, "*", localSubnet, localSubnet, remove); err != nil {
+	if err := c.acceptOutputFromSubnetToSubnet(ctx, "*", c.localSubnet, c.localSubnet, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 	for _, subnet := range c.allowedSubnets {
-		if err := c.acceptInputFromSubnetToSubnet(ctx, defaultInterface, subnet, localSubnet, remove); err != nil {
+		if err := c.acceptInputFromSubnetToSubnet(ctx, c.defaultInterface, subnet, c.localSubnet, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
-		if err := c.acceptOutputFromSubnetToSubnet(ctx, defaultInterface, localSubnet, subnet, remove); err != nil {
+		if err := c.acceptOutputFromSubnetToSubnet(ctx, c.defaultInterface, c.localSubnet, subnet, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}
 	// Re-ensure all routes exist
 	for _, subnet := range c.allowedSubnets {
-		if err := c.routing.AddRouteVia(ctx, subnet, defaultGateway, defaultInterface); err != nil {
+		if err := c.routing.AddRouteVia(ctx, subnet, c.defaultGateway, c.defaultInterface); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}
 
-	for port := range c.allowedPorts {
-		// TODO restrict interface
-		if err := c.acceptInputToPort(ctx, "*", constants.TCP, port, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-		if err := c.acceptInputToPort(ctx, "*", constants.UDP, port, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-	}
-
-	if c.portForwarded > 0 {
-		const tun = string(constants.TUN)
-		if err := c.acceptInputToPort(ctx, tun, constants.TCP, c.portForwarded, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-		if err := c.acceptInputToPort(ctx, tun, constants.UDP, c.portForwarded, remove); err != nil {
+	for port, intf := range c.allowedInputPorts {
+		if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}

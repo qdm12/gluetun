@@ -1,8 +1,8 @@
 package params
 
 import (
+	"github.com/qdm12/gluetun/internal/models"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // GetUID obtains the user ID to use from the environment variable UID
@@ -23,6 +23,6 @@ func (r *reader) GetTimezone() (timezone string, err error) {
 // GetIPStatusFilepath obtains the IP status file path
 // from the environment variable IP_STATUS_FILE
 func (r *reader) GetIPStatusFilepath() (filepath models.Filepath, err error) {
-	filepathStr, err := r.envParams.GetPath("IP_STATUS_FILE", libparams.Default("/ip"), libparams.CaseSensitiveValue())
+	filepathStr, err := r.envParams.GetPath("IP_STATUS_FILE", libparams.Default("/tmp/gluetun/ip"), libparams.CaseSensitiveValue())
 	return models.Filepath(filepathStr), err
 }

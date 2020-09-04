@@ -2,74 +2,50 @@ package provider
 
 import (
 	"fmt"
-	"net"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type nordvpn struct{}
-
-func newNordvpn() *nordvpn {
-	return &nordvpn{}
+type nordvpn struct {
+	servers []models.NordvpnServer
 }
 
-func findServers(selection models.ServerSelection) (servers []models.NordvpnServer) {
-	for _, server := range constants.NordvpnServers() {
-		if strings.EqualFold(server.Region, selection.Region) {
-			if (selection.Protocol == constants.TCP && !server.TCP) || (selection.Protocol == constants.UDP && !server.UDP) {
-				continue
-			}
-			if selection.Number > 0 && server.Number == selection.Number {
-				return []models.NordvpnServer{server}
-			}
-			servers = append(servers, server)
+func newNordvpn(servers []models.NordvpnServer) *nordvpn {
+	return &nordvpn{
+		servers: servers,
+	}
+}
+
+func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, number uint16) (servers []models.NordvpnServer) {
+	for i, server := range n.servers {
+		if len(region) == 0 {
+			server.Region = ""
+		}
+		if number == 0 {
+			server.Number = 0
+		}
+
+		if protocol == constants.TCP && !server.TCP {
+			continue
+		} else if protocol == constants.UDP && !server.UDP {
+			continue
+		}
+		if strings.EqualFold(server.Region, region) && server.Number == number {
+			servers = append(servers, n.servers[i])
 		}
 	}
 	return servers
 }
 
-func extractIPsFromServers(servers []models.NordvpnServer) (ips []net.IP) {
-	ips = make([]net.IP, len(servers))
-	for i := range servers {
-		ips[i] = servers[i].IP
-	}
-	return ips
-}
-
-func targetIPInIps(targetIP net.IP, ips []net.IP) error {
-	for i := range ips {
-		if targetIP.Equal(ips[i]) {
-			return nil
-		}
-	}
-	ipsString := make([]string, len(ips))
-	for i := range ips {
-		ipsString[i] = ips[i].String()
-	}
-	return fmt.Errorf("target IP address %s not found in IP addresses %s", targetIP, strings.Join(ipsString, ", "))
-}
-
 func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
-	servers := findServers(selection)
-	ips := extractIPsFromServers(servers)
-	if len(ips) == 0 {
-		if selection.Number > 0 {
-			return nil, fmt.Errorf("no IP found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
-		}
-		return nil, fmt.Errorf("no IP found for region %q, protocol %s", selection.Region, selection.Protocol)
+	servers := n.filterServers(selection.Region, selection.Protocol, selection.Number)
+	if len(servers) == 0 {
+		return nil, fmt.Errorf("no server found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
 	}
-	var IP net.IP
-	if selection.TargetIP != nil {
-		if err := targetIPInIps(selection.TargetIP, ips); err != nil {
-			return nil, err
-		}
-		IP = selection.TargetIP
-	} else {
-		IP = ips[0]
-	}
+
 	var port uint16
 	switch {
 	case selection.Protocol == constants.UDP:
@@ -79,7 +55,26 @@ func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	default:
 		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
-	return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+
+	for _, server := range servers {
+		if selection.TargetIP != nil {
+			if selection.TargetIP.Equal(server.IP) {
+				return []models.OpenVPNConnection{{IP: server.IP, Port: port, Protocol: selection.Protocol}}, nil
+			}
+		} else {
+			connections = append(connections, models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol})
+		}
+	}
+
+	if selection.TargetIP != nil {
+		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+	}
+
+	if len(connections) > 64 {
+		connections = connections[:64]
+	}
+
+	return connections, nil
 }
 
 func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
@@ -97,7 +92,6 @@ func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		"remote-cert-tls server",
 
 		// Nordvpn specific
-		"resolv-retry infinite",
 		"tun-mtu 1500",
 		"tun-mtu-extra 32",
 		"mssfix 1450",

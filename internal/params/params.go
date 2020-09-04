@@ -5,11 +5,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // Reader contains methods to obtain parameters
@@ -42,6 +42,7 @@ type Reader interface {
 	// Firewall getters
 	GetFirewall() (enabled bool, err error)
 	GetExtraSubnets() (extraSubnets []net.IPNet, err error)
+	GetVPNInputPorts() (ports []uint16, err error)
 	GetFirewallDebug() (debug bool, err error)
 
 	// VPN getters
@@ -59,6 +60,7 @@ type Reader interface {
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
 	GetPIAEncryptionPreset() (preset string, err error)
 	GetPIARegion() (region string, err error)
+	GetPIAOldRegion() (region string, err error)
 
 	// Mullvad getters
 	GetMullvadCountry() (country string, err error)
@@ -85,6 +87,11 @@ type Reader interface {
 	GetNordvpnRegion() (region string, err error)
 	GetNordvpnNumber() (number uint16, err error)
 
+	// PureVPN getters
+	GetPurevpnRegion() (region string, err error)
+	GetPurevpnCountry() (country string, err error)
+	GetPurevpnCity() (city string, err error)
+
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
 	GetShadowSocksLog() (activated bool, err error)
@@ -102,10 +109,7 @@ type Reader interface {
 	// Public IP getters
 	GetPublicIPPeriod() (period time.Duration, err error)
 
-	// Version getters
-	GetVersion() string
-	GetBuildDate() string
-	GetVcsRef() string
+	GetVersionInformation() (enabled bool, err error)
 }
 
 type reader struct {
@@ -130,9 +134,13 @@ func NewReader(logger logging.Logger, fileManager files.FileManager) Reader {
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
 func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
-	s, err := r.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "mullvad", "windscribe", "surfshark", "cyberghost", "vyprvpn", "nordvpn"})
+	s, err := r.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "private internet access old", "mullvad", "windscribe", "surfshark", "cyberghost", "vyprvpn", "nordvpn", "purevpn"})
 	if s == "pia" {
 		s = "private internet access"
 	}
 	return models.VPNProvider(s), err
+}
+
+func (r *reader) GetVersionInformation() (enabled bool, err error) {
+	return r.envParams.GetOnOff("VERSION_INFORMATION", libparams.Default("on"))
 }

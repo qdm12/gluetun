@@ -4,23 +4,33 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/params"
+)
+
+const (
+	enabled  = "enabled"
+	disabled = "disabled"
 )
 
 // Settings contains all settings for the program to run
 type Settings struct {
-	VPNSP          models.VPNProvider
-	OpenVPN        OpenVPN
-	System         System
-	DNS            DNS
-	Firewall       Firewall
-	TinyProxy      TinyProxy
-	ShadowSocks    ShadowSocks
-	PublicIPPeriod time.Duration
+	VPNSP              models.VPNProvider
+	OpenVPN            OpenVPN
+	System             System
+	DNS                DNS
+	Firewall           Firewall
+	TinyProxy          TinyProxy
+	ShadowSocks        ShadowSocks
+	PublicIPPeriod     time.Duration
+	VersionInformation bool
 }
 
 func (s *Settings) String() string {
+	versionInformation := disabled
+	if s.VersionInformation {
+		versionInformation = enabled
+	}
 	return strings.Join([]string{
 		"Settings summary below:",
 		s.OpenVPN.String(),
@@ -30,6 +40,7 @@ func (s *Settings) String() string {
 		s.TinyProxy.String(),
 		s.ShadowSocks.String(),
 		"Public IP check period: " + s.PublicIPPeriod.String(),
+		"Version information: " + versionInformation,
 		"", // new line at the end
 	}, "\n")
 }
@@ -66,6 +77,10 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 		return settings, err
 	}
 	settings.PublicIPPeriod, err = paramsReader.GetPublicIPPeriod()
+	if err != nil {
+		return settings, err
+	}
+	settings.VersionInformation, err = paramsReader.GetVersionInformation()
 	if err != nil {
 		return settings, err
 	}

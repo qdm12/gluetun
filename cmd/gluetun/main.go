@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"strings"
@@ -10,23 +11,33 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/alpine"
+	"github.com/qdm12/gluetun/internal/cli"
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/dns"
+	"github.com/qdm12/gluetun/internal/firewall"
+	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
+	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/params"
+	"github.com/qdm12/gluetun/internal/publicip"
+	"github.com/qdm12/gluetun/internal/routing"
+	"github.com/qdm12/gluetun/internal/server"
+	"github.com/qdm12/gluetun/internal/settings"
+	"github.com/qdm12/gluetun/internal/shadowsocks"
+	"github.com/qdm12/gluetun/internal/storage"
+	"github.com/qdm12/gluetun/internal/tinyproxy"
+	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/alpine"
-	"github.com/qdm12/private-internet-access-docker/internal/cli"
-	"github.com/qdm12/private-internet-access-docker/internal/dns"
-	"github.com/qdm12/private-internet-access-docker/internal/firewall"
-	gluetunLogging "github.com/qdm12/private-internet-access-docker/internal/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/openvpn"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
-	"github.com/qdm12/private-internet-access-docker/internal/publicip"
-	"github.com/qdm12/private-internet-access-docker/internal/routing"
-	"github.com/qdm12/private-internet-access-docker/internal/server"
-	"github.com/qdm12/private-internet-access-docker/internal/settings"
-	"github.com/qdm12/private-internet-access-docker/internal/shadowsocks"
-	"github.com/qdm12/private-internet-access-docker/internal/tinyproxy"
+)
+
+//nolint:gochecknoglobals
+var (
+	version   = "unknown"
+	commit    = "unknown"
+	buildDate = "an unknown date"
 )
 
 func main() {
@@ -34,7 +45,7 @@ func main() {
 	os.Exit(_main(ctx, os.Args))
 }
 
-func _main(background context.Context, args []string) int {
+func _main(background context.Context, args []string) int { //nolint:gocognit,gocyclo
 	if len(args) > 1 { // cli operation
 		var err error
 		switch args[1] {
@@ -44,6 +55,8 @@ func _main(background context.Context, args []string) int {
 			err = cli.ClientKey(args[2:])
 		case "openvpnconfig":
 			err = cli.OpenvpnConfig()
+		case "update":
+			err = cli.Update(args[2:])
 		default:
 			err = fmt.Errorf("command %q is unknown", args[1])
 		}
@@ -56,8 +69,6 @@ func _main(background context.Context, args []string) int {
 	ctx, cancel := context.WithCancel(background)
 	defer cancel()
 	logger := createLogger()
-	wg := &sync.WaitGroup{}
-	fatalOnError := makeFatalOnError(logger, cancel, wg)
 
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
@@ -68,46 +79,79 @@ func _main(background context.Context, args []string) int {
 	routingConf := routing.NewRouting(logger, fileManager)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
-	shadowsocksConf := shadowsocks.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()
 
 	paramsReader := params.NewReader(logger, fileManager)
-	fmt.Println(gluetunLogging.Splash(
-		paramsReader.GetVersion(),
-		paramsReader.GetVcsRef(),
-		paramsReader.GetBuildDate()))
+	fmt.Println(gluetunLogging.Splash(version, commit, buildDate))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
-		"OpenVPN":     ovpnConf.Version,
-		"Unbound":     dnsConf.Version,
-		"IPtables":    firewallConf.Version,
-		"TinyProxy":   tinyProxyConf.Version,
-		"ShadowSocks": shadowsocksConf.Version,
+		"OpenVPN":   ovpnConf.Version,
+		"Unbound":   dnsConf.Version,
+		"IPtables":  firewallConf.Version,
+		"TinyProxy": tinyProxyConf.Version,
 	})
 
 	allSettings, err := settings.GetAllSettings(paramsReader)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 	logger.Info(allSettings.String())
+
+	// TODO run this in a loop or in openvpn to reload from file without restarting
+	storage := storage.New(logger)
+	const updateServerFile = true
+	allServers, err := storage.SyncServers(constants.GetAllServers(), updateServerFile)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 
 	// Should never change
 	uid, gid := allSettings.System.UID, allSettings.System.GID
 
 	err = alpineConf.CreateUser("nonrootuser", uid)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 	err = fileManager.SetOwnership("/etc/unbound", uid, gid)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 	err = fileManager.SetOwnership("/etc/tinyproxy", uid, gid)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 
 	if allSettings.Firewall.Debug {
 		firewallConf.SetDebug()
 		routingConf.SetDebug()
 	}
 
+	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
+
+	localSubnet, err := routingConf.LocalSubnet()
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
+
+	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet)
+
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()
-		fatalOnError(err)
+		if err != nil {
+			logger.Error(err)
+			return 1
+		}
 	}
 
 	connectedCh := make(chan struct{})
@@ -115,20 +159,39 @@ func _main(background context.Context, args []string) int {
 		connectedCh <- struct{}{}
 	}
 	defer close(connectedCh)
-	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
 
 	if allSettings.Firewall.Enabled {
 		err := firewallConf.SetEnabled(ctx, true) // disabled by default
-		fatalOnError(err)
+		if err != nil {
+			logger.Error(err)
+			return 1
+		}
 	}
 
 	err = firewallConf.SetAllowedSubnets(ctx, allSettings.Firewall.AllowedSubnets)
-	fatalOnError(err)
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
 
-	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid,
-		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, fatalOnError)
+	for _, vpnPort := range allSettings.Firewall.VPNInputPorts {
+		err = firewallConf.SetAllowedPort(ctx, vpnPort, string(constants.TUN))
+		if err != nil {
+			logger.Error(err)
+			return 1
+		}
+	}
+
+	wg := &sync.WaitGroup{}
+
+	go collectStreamLines(ctx, streamMerger, logger, signalConnected)
+
+	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
+		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, cancel)
 	restartOpenvpn := openvpnLooper.Restart
 	portForward := openvpnLooper.PortForward
+	getOpenvpnSettings := openvpnLooper.GetSettings
+	getPortForwarded := openvpnLooper.GetPortForwarded
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
 
@@ -144,11 +207,11 @@ func _main(background context.Context, args []string) int {
 	go publicIPLooper.RunRestartTicker(ctx)
 	setPublicIPPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
-	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid)
+	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
 	restartTinyproxy := tinyproxyLooper.Restart
 	go tinyproxyLooper.Run(ctx, wg)
 
-	shadowsocksLooper := shadowsocks.NewLooper(shadowsocksConf, firewallConf, allSettings.ShadowSocks, allSettings.DNS, logger, streamMerger, uid, gid)
+	shadowsocksLooper := shadowsocks.NewLooper(firewallConf, allSettings.ShadowSocks, logger, defaultInterface)
 	restartShadowsocks := shadowsocksLooper.Restart
 	go shadowsocksLooper.Run(ctx, wg)
 
@@ -159,6 +222,18 @@ func _main(background context.Context, args []string) int {
 		restartShadowsocks()
 	}
 
+	versionInformation := func() {
+		if !allSettings.VersionInformation {
+			return
+		}
+		client := &http.Client{Timeout: 5 * time.Second}
+		message, err := versionpkg.GetMessage(version, commit, client)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		logger.Info(message)
+	}
 	go func() {
 		var restartTickerContext context.Context
 		var restartTickerCancel context.CancelFunc = func() {}
@@ -171,12 +246,12 @@ func _main(background context.Context, args []string) int {
 				restartTickerCancel()
 				restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 				go unboundLooper.RunRestartTicker(restartTickerContext)
-				onConnected(allSettings, logger, routingConf, portForward, restartUnbound, restartPublicIP)
+				onConnected(allSettings, logger, routingConf, portForward, restartUnbound, restartPublicIP, versionInformation)
 			}
 		}
 	}()
 
-	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound)
+	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound, getOpenvpnSettings, getPortForwarded)
 	go httpServer.Run(ctx, wg)
 
 	// Start openvpn for the first time
@@ -229,22 +304,6 @@ func _main(background context.Context, args []string) int {
 	return 0
 }
 
-func makeFatalOnError(logger logging.Logger, cancel context.CancelFunc, wg *sync.WaitGroup) func(err error) {
-	return func(err error) {
-		if err != nil {
-			logger.Error(err)
-			cancel()
-			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-			go func() {
-				wg.Wait()
-				cancel()
-			}()
-			<-ctx.Done() // either timeout or wait group completed
-			os.Exit(1)
-		}
-	}
-}
-
 func createLogger() logging.Logger {
 	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
 	if err != nil {
@@ -291,7 +350,7 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 }
 
 func onConnected(allSettings settings.Settings, logger logging.Logger, routingConf routing.Routing,
-	portForward, restartUnbound, restartPublicIP func(),
+	portForward, restartUnbound, restartPublicIP, versionInformation func(),
 ) {
 	restartUnbound()
 	restartPublicIP()
@@ -309,4 +368,5 @@ func onConnected(allSettings settings.Settings, logger logging.Logger, routingCo
 			logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
 		}
 	}
+	versionInformation()
 }

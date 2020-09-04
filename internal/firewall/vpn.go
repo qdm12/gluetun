@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 func (c *configurator) SetVPNConnections(ctx context.Context, connections []models.OpenVPNConnection) (err error) {
@@ -26,13 +26,8 @@ func (c *configurator) SetVPNConnections(ctx context.Context, connections []mode
 		return nil
 	}
 
-	defaultInterface, _, err := c.routing.DefaultRoute()
-	if err != nil {
-		return fmt.Errorf("cannot set VPN connections through firewall: %w", err)
-	}
-
-	c.removeConnections(ctx, connectionsToRemove, defaultInterface)
-	if err := c.addConnections(ctx, connectionsToAdd, defaultInterface); err != nil {
+	c.removeConnections(ctx, connectionsToRemove, c.defaultInterface)
+	if err := c.addConnections(ctx, connectionsToAdd, c.defaultInterface); err != nil {
 		return fmt.Errorf("cannot set VPN connections through firewall: %w", err)
 	}
 

@@ -2,25 +2,56 @@ package provider
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type mullvad struct{}
+type mullvad struct {
+	servers []models.MullvadServer
+}
 
-func newMullvad() *mullvad {
-	return &mullvad{}
+func newMullvad(servers []models.MullvadServer) *mullvad {
+	return &mullvad{
+		servers: servers,
+	}
+}
+
+func (m *mullvad) filterServers(country, city, isp string) (servers []models.MullvadServer) {
+	for i, server := range m.servers {
+		if len(country) == 0 {
+			server.Country = ""
+		}
+		if len(city) == 0 {
+			server.City = ""
+		}
+		if len(isp) == 0 {
+			server.ISP = ""
+		}
+		if strings.EqualFold(server.Country, country) &&
+			strings.EqualFold(server.City, city) &&
+			strings.EqualFold(server.ISP, isp) {
+			servers = append(servers, m.servers[i])
+		}
+	}
+	return servers
 }
 
 func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
-	servers := constants.MullvadServerFilter(selection.Country, selection.City, selection.ISP)
+	servers := m.filterServers(selection.Country, selection.City, selection.ISP)
 	if len(servers) == 0 {
 		return nil, fmt.Errorf("no server found for country %q, city %q and ISP %q", selection.Country, selection.City, selection.ISP)
 	}
+
+	var defaultPort uint16 = 1194
+	if selection.Protocol == constants.TCP {
+		defaultPort = 443
+	}
+
 	for _, server := range servers {
-		port := server.DefaultPort
+		port := defaultPort
 		if selection.CustomPort > 0 {
 			port = selection.CustomPort
 		}
@@ -34,9 +65,15 @@ func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (conne
 			}
 		}
 	}
+
 	if selection.TargetIP != nil {
 		return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 	}
+
+	if len(connections) > 64 {
+		connections = connections[:64]
+	}
+
 	return connections, nil
 }
 

@@ -3,7 +3,7 @@ package constants
 import (
 	"net"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 const (
@@ -20,6 +20,7 @@ func WindscribeRegionChoices() (choices []string) {
 	return choices
 }
 
+//nolint:dupl
 func WindscribeServers() []models.WindscribeServer {
 	return []models.WindscribeServer{
 		{Region: "Albania", IPs: []net.IP{{31, 171, 152, 179}}},

@@ -6,15 +6,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/firewall"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/firewall"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/provider"
-	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
 type Looper interface {
@@ -23,16 +23,20 @@ type Looper interface {
 	PortForward()
 	GetSettings() (settings settings.OpenVPN)
 	SetSettings(settings settings.OpenVPN)
+	GetPortForwarded() (portForwarded uint16)
 }
 
 type looper struct {
 	// Variable parameters
-	provider      models.VPNProvider
-	settings      settings.OpenVPN
-	settingsMutex sync.RWMutex
+	provider           models.VPNProvider
+	settings           settings.OpenVPN
+	settingsMutex      sync.RWMutex
+	portForwarded      uint16
+	portForwardedMutex sync.RWMutex
 	// Fixed parameters
-	uid int
-	gid int
+	uid        int
+	gid        int
+	allServers models.AllServers
 	// Configurators
 	conf Configurator
 	fw   firewall.Configurator
@@ -41,29 +45,30 @@ type looper struct {
 	client       network.Client
 	fileManager  files.FileManager
 	streamMerger command.StreamMerger
-	fatalOnError func(err error)
+	cancel       context.CancelFunc
 	// Internal channels
 	restart            chan struct{}
 	portForwardSignals chan struct{}
 }
 
 func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
-	uid, gid int,
+	uid, gid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator,
 	logger logging.Logger, client network.Client, fileManager files.FileManager,
-	streamMerger command.StreamMerger, fatalOnError func(err error)) Looper {
+	streamMerger command.StreamMerger, cancel context.CancelFunc) Looper {
 	return &looper{
 		provider:           provider,
 		settings:           settings,
 		uid:                uid,
 		gid:                gid,
+		allServers:         allServers,
 		conf:               conf,
 		fw:                 fw,
 		logger:             logger.WithPrefix("openvpn: "),
 		client:             client,
 		fileManager:        fileManager,
 		streamMerger:       streamMerger,
-		fatalOnError:       fatalOnError,
+		cancel:             cancel,
 		restart:            make(chan struct{}),
 		portForwardSignals: make(chan struct{}),
 	}
@@ -96,9 +101,13 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
-		providerConf := provider.New(l.provider)
+		providerConf := provider.New(l.provider, l.allServers)
 		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
-		l.fatalOnError(err)
+		if err != nil {
+			l.logger.Error(err)
+			l.cancel()
+			return
+		}
 		lines := providerConf.BuildConf(
 			connections,
 			settings.Verbosity,
@@ -109,14 +118,22 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			settings.Auth,
 			settings.Provider.ExtraConfigOptions,
 		)
-		err = l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400))
-		l.fatalOnError(err)
+		if err := l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400)); err != nil {
+			l.logger.Error(err)
+			l.cancel()
+			return
+		}
 
-		err = l.conf.WriteAuthFile(settings.User, settings.Password, l.uid, l.gid)
-		l.fatalOnError(err)
+		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.uid, l.gid); err != nil {
+			l.logger.Error(err)
+			l.cancel()
+			return
+		}
 
 		if err := l.fw.SetVPNConnections(ctx, connections); err != nil {
-			l.fatalOnError(err)
+			l.logger.Error(err)
+			l.cancel()
+			return
 		}
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
@@ -187,10 +204,31 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 		port, err = providerConf.GetPortForward(client)
 		if err != nil {
 			l.logAndWait(ctx, err)
-			continue
 		}
-		l.logger.Info("port forwarded is %d", port)
 	}
+
+	l.logger.Info("port forwarded is %d", port)
+	l.portForwardedMutex.Lock()
+
+	previousPort := l.portForwarded
+	if err := l.fw.RemoveAllowedPort(ctx, previousPort); err != nil {
+		l.logger.Error(err)
+	}
+	if err := l.fw.RemoveVPNPortRedirection(ctx, previousPort); err != nil {
+		l.logger.Error(err)
+	}
+
+	const tun = string(constants.TUN)
+	if err := l.fw.SetAllowedPort(ctx, port, tun); err != nil {
+		l.logger.Error(err)
+	}
+	const redirectionPort = 9000
+	if err := l.fw.SetVPNPortRedirection(ctx, port, redirectionPort); err != nil {
+		l.logger.Error(err)
+	}
+
+	l.portForwarded = port
+	l.portForwardedMutex.Unlock()
 
 	filepath := settings.Provider.PortForwarding.Filepath
 	l.logger.Info("writing forwarded port to %s", filepath)
@@ -201,8 +239,10 @@ func (l *looper) portForward(ctx context.Context, providerConf provider.Provider
 	if err != nil {
 		l.logger.Error(err)
 	}
+}
 
-	if err := l.fw.SetPortForward(ctx, port); err != nil {
-		l.logger.Error(err)
-	}
+func (l *looper) GetPortForwarded() (portForwarded uint16) {
+	l.portForwardedMutex.RLock()
+	defer l.portForwardedMutex.RUnlock()
+	return l.portForwarded
 }

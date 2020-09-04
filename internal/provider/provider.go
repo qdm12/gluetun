@@ -1,9 +1,9 @@
 package provider
 
 import (
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // Provider contains methods to read and modify the openvpn configuration to connect as a client
@@ -13,22 +13,26 @@ type Provider interface {
 	GetPortForward(client network.Client) (port uint16, err error)
 }
 
-func New(provider models.VPNProvider) Provider {
+func New(provider models.VPNProvider, allServers models.AllServers) Provider {
 	switch provider {
 	case constants.PrivateInternetAccess:
-		return newPrivateInternetAccess()
+		return newPrivateInternetAccess(allServers.Pia.Servers)
+	case constants.PrivateInternetAccessOld:
+		return newPrivateInternetAccess(allServers.PiaOld.Servers)
 	case constants.Mullvad:
-		return newMullvad()
+		return newMullvad(allServers.Mullvad.Servers)
 	case constants.Windscribe:
-		return newWindscribe()
+		return newWindscribe(allServers.Windscribe.Servers)
 	case constants.Surfshark:
-		return newSurfshark()
+		return newSurfshark(allServers.Surfshark.Servers)
 	case constants.Cyberghost:
-		return newCyberghost()
+		return newCyberghost(allServers.Cyberghost.Servers)
 	case constants.Vyprvpn:
-		return newVyprvpn()
+		return newVyprvpn(allServers.Vyprvpn.Servers)
 	case constants.Nordvpn:
-		return newNordvpn()
+		return newNordvpn(allServers.Nordvpn.Servers)
+	case constants.Purevpn:
+		return newPurevpn(allServers.Purevpn.Servers)
 	default:
 		return nil // should never occur
 	}

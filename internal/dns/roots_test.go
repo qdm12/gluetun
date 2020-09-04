@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func Test_DownloadRootHints(t *testing.T) { //nolint:dupl

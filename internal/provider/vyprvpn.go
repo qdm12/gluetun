@@ -2,43 +2,41 @@ package provider
 
 import (
 	"fmt"
-	"net"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type vyprvpn struct{}
-
-func newVyprvpn() *vyprvpn {
-	return &vyprvpn{}
+type vyprvpn struct {
+	servers []models.VyprvpnServer
 }
 
-func (s *vyprvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
-	var IPs []net.IP
-	for _, server := range constants.VyprvpnServers() {
-		if strings.EqualFold(server.Region, selection.Region) {
-			IPs = server.IPs
+func newVyprvpn(servers []models.VyprvpnServer) *vyprvpn {
+	return &vyprvpn{
+		servers: servers,
+	}
+}
+
+func (v *vyprvpn) filterServers(region string) (servers []models.VyprvpnServer) {
+	if len(region) == 0 {
+		return v.servers
+	}
+	for _, server := range v.servers {
+		if strings.EqualFold(server.Region, region) {
+			return []models.VyprvpnServer{server}
 		}
 	}
-	if len(IPs) == 0 {
-		return nil, fmt.Errorf("no IP found for region %q", selection.Region)
+	return nil
+}
+
+func (v *vyprvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
+	servers := v.filterServers(selection.Region)
+	if len(servers) == 0 {
+		return nil, fmt.Errorf("no server found for region %q", selection.Region)
 	}
-	if selection.TargetIP != nil {
-		found := false
-		for i := range IPs {
-			if IPs[i].Equal(selection.TargetIP) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
-		}
-		IPs = []net.IP{selection.TargetIP}
-	}
+
 	var port uint16
 	switch {
 	case selection.Protocol == constants.TCP:
@@ -48,13 +46,31 @@ func (s *vyprvpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	default:
 		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
-	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+
+	for _, server := range servers {
+		for _, IP := range server.IPs {
+			if selection.TargetIP != nil {
+				if selection.TargetIP.Equal(IP) {
+					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+				}
+			} else {
+				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			}
+		}
 	}
+
+	if selection.TargetIP != nil {
+		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+	}
+
+	if len(connections) > 64 {
+		connections = connections[:64]
+	}
+
 	return connections, nil
 }
 
-func (s *vyprvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (v *vyprvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -105,6 +121,6 @@ func (s *vyprvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 	return lines
 }
 
-func (s *vyprvpn) GetPortForward(client network.Client) (port uint16, err error) {
+func (v *vyprvpn) GetPortForward(client network.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for vyprvpn")
 }

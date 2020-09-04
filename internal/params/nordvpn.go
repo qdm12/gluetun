@@ -1,14 +1,15 @@
 package params
 
 import (
+	"github.com/qdm12/gluetun/internal/constants"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 // GetNordvpnRegion obtains the region (country) for the NordVPN server from the
 // environment variable REGION
 func (r *reader) GetNordvpnRegion() (region string, err error) {
-	return r.envParams.GetValueIfInside("REGION", constants.NordvpnRegionChoices())
+	choices := append(constants.NordvpnRegionChoices(), "")
+	return r.envParams.GetValueIfInside("REGION", choices)
 }
 
 // GetNordvpnRegion obtains the server number (optional) for the NordVPN server from the

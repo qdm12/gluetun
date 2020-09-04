@@ -45,6 +45,3 @@ run:
     - .devcontainer
     - .github
     - postgres
-
-service:
-  golangci-lint-version: 1.27.x # use the fixed version to not introduce new linters unexpectedly

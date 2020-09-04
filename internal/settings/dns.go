@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/params"
 )
 
 // DNS contains settings to configure Unbound for DNS over TLS operation
@@ -31,10 +31,6 @@ type DNS struct {
 }
 
 func (d *DNS) String() string {
-	const (
-		enabled  = "enabled"
-		disabled = "disabled"
-	)
 	if !d.Enabled {
 		return fmt.Sprintf("DNS over TLS disabled, using plaintext DNS %s", d.PlaintextAddress)
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 	"golang.org/x/sys/unix"
 )
 

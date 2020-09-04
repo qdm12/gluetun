@@ -1,12 +1,14 @@
 package constants
 
 import (
-	"github.com/qdm12/private-internet-access-docker/internal/models"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 const (
 	// PrivateInternetAccess is a VPN provider
 	PrivateInternetAccess models.VPNProvider = "private internet access"
+	// PrivateInternetAccessOld is the pre summer 2020 PIA provider
+	PrivateInternetAccessOld models.VPNProvider = "private internet access old"
 	// Mullvad is a VPN provider
 	Mullvad models.VPNProvider = "mullvad"
 	// Windscribe is a VPN provider
@@ -19,6 +21,8 @@ const (
 	Vyprvpn models.VPNProvider = "vyprvpn"
 	// NordVPN is a VPN provider
 	Nordvpn models.VPNProvider = "nordvpn"
+	// PureVPN is a VPN provider
+	Purevpn models.VPNProvider = "purevpn"
 )
 
 const (

@@ -3,16 +3,16 @@ package params
 import (
 	"fmt"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
 // GetWindscribeRegion obtains the region for the Windscribe server from the
 // environment variable REGION
 func (r *reader) GetWindscribeRegion() (region string, err error) {
-	s, err := r.envParams.GetValueIfInside("REGION", constants.WindscribeRegionChoices())
-	return s, err
+	choices := append(constants.WindscribeRegionChoices(), "")
+	return r.envParams.GetValueIfInside("REGION", choices)
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the

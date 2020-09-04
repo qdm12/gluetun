@@ -18,7 +18,7 @@ func main() {
 
 func _main(ctx context.Context) int {
 	resolverAddress := flag.String("resolver", "1.1.1.1", "DNS Resolver IP address to use")
-	provider := flag.String("provider", "pia", "VPN provider to resolve for, 'pia', 'windscribe', 'cyberghost' or 'vyprvpn'")
+	provider := flag.String("provider", "pia", "VPN provider to resolve for, 'pia', 'windscribe', 'cyberghost', 'vyprvpn' or 'purevpn'")
 	region := flag.String("region", "all", "Comma separated list of VPN provider region names to resolve for, use 'all' to resolve all")
 	flag.Parse()
 
@@ -28,9 +28,6 @@ func _main(ctx context.Context) int {
 	var domain string
 	var servers []server
 	switch *provider {
-	case "pia":
-		domain = "privateinternetaccess.com"
-		servers = piaServers()
 	case "windscribe":
 		domain = "windscribe.com"
 		servers = windscribeServers()
@@ -43,6 +40,9 @@ func _main(ctx context.Context) int {
 	case "vyprvpn":
 		domain = "vyprvpn.com"
 		servers = vyprvpnServers()
+	case "purevpn":
+		domain = "pointtoserver.com"
+		servers = purevpnServers()
 	default:
 		fmt.Printf("Provider %q is not supported\n", *provider)
 		return 1
@@ -135,6 +135,11 @@ func formatLine(provider string, s server, ips []net.IP) string {
 			"{Region: %q, IPs: []net.IP{%s}},",
 			s.region, ipString,
 		)
+	case "purevpn":
+		return fmt.Sprintf(
+			"{Region: %q, Country: %q, City: %q, IPs: []net.IP{%s}},",
+			s.region, s.country, s.city, ipString,
+		)
 	}
 	return ""
 }
@@ -197,61 +202,8 @@ type server struct {
 	subdomain string
 	region    string
 	group     string // only for cyberghost
-}
-
-func piaServers() []server {
-	return []server{
-		{subdomain: "au-melbourne", region: "AU Melbourne"},
-		{subdomain: "au-perth", region: "AU Perth"},
-		{subdomain: "au-sydney", region: "AU Sydney"},
-		{subdomain: "austria", region: "Austria"},
-		{subdomain: "belgium", region: "Belgium"},
-		{subdomain: "ca-montreal", region: "CA Montreal"},
-		{subdomain: "ca-toronto", region: "CA Toronto"},
-		{subdomain: "ca-vancouver", region: "CA Vancouver"},
-		{subdomain: "czech", region: "Czech Republic"},
-		{subdomain: "de-berlin", region: "DE Berlin"},
-		{subdomain: "de-frankfurt", region: "DE Frankfurt"},
-		{subdomain: "denmark", region: "Denmark"},
-		{subdomain: "fi", region: "Finlan"},
-		{subdomain: "france", region: "France"},
-		{subdomain: "hk", region: "Hong Kong"},
-		{subdomain: "hungary", region: "Hungary"},
-		{subdomain: "in", region: "India"},
-		{subdomain: "ireland", region: "Ireland"},
-		{subdomain: "israel", region: "Israel"},
-		{subdomain: "italy", region: "Italy"},
-		{subdomain: "japan", region: "Japan"},
-		{subdomain: "lu", region: "Luxembourg"},
-		{subdomain: "mexico", region: "Mexico"},
-		{subdomain: "nl", region: "Netherlands"},
-		{subdomain: "nz", region: "New Zealand"},
-		{subdomain: "no", region: "Norway"},
-		{subdomain: "poland", region: "Poland"},
-		{subdomain: "ro", region: "Romania"},
-		{subdomain: "sg", region: "Singapore"},
-		{subdomain: "spain", region: "Spain"},
-		{subdomain: "sweden", region: "Sweden"},
-		{subdomain: "swiss", region: "Switzerland"},
-		{subdomain: "ae", region: "UAE"},
-		{subdomain: "uk-london", region: "UK London"},
-		{subdomain: "uk-manchester", region: "UK Manchester"},
-		{subdomain: "uk-southampton", region: "UK Southampton"},
-		{subdomain: "us-atlanta", region: "US Atlanta"},
-		{subdomain: "us-california", region: "US California"},
-		{subdomain: "us-chicago", region: "US Chicago"},
-		{subdomain: "us-denver", region: "US Denver"},
-		{subdomain: "us-east", region: "US East"},
-		{subdomain: "us-florida", region: "US Florida"},
-		{subdomain: "us-houston", region: "US Houston"},
-		{subdomain: "us-lasvegas", region: "US Las Vegas"},
-		{subdomain: "us-newyorkcity", region: "US New York City"},
-		{subdomain: "us-seattle", region: "US Seattle"},
-		{subdomain: "us-siliconvalley", region: "US Silicon Valley"},
-		{subdomain: "us-texas", region: "US Texas"},
-		{subdomain: "us-washingtondc", region: "US Washington DC"},
-		{subdomain: "us-west", region: "US West"},
-	}
+	country   string // only for purevpn
+	city      string // only for purevpn
 }
 
 func windscribeServers() []server {
@@ -746,4 +698,165 @@ func vyprvpnServers() []server {
 		{subdomain: "uy1", region: "Uruguay"},
 		{subdomain: "vn1", region: "Vietnam"},
 	}
+}
+
+func purevpnServers() []server {
+	servers := []server{
+		{subdomain: "vlus-dz1-ovpn", region: "Africa", country: "Algeria", city: "Algiers"},
+		{subdomain: "vlus-ao1-ovpn", region: "Africa", country: "Angola", city: "Benguela"},
+		{subdomain: "vleu-cv-ovpn", region: "Africa", country: "Cape Verde", city: "Praia"},
+		{subdomain: "vlus-eg1-ovpn", region: "Africa", country: "Egypt", city: "Cairo"},
+		{subdomain: "et1-ovpn", region: "Africa", country: "Ethiopia", city: "Addis Ababa"},
+		{subdomain: "gh1-ovpn", region: "Africa", country: "Ghana", city: "Accra"},
+		{subdomain: "ke1-ovpn", region: "Africa", country: "Kenya", city: "Mombasa"},
+		{subdomain: "vlus-mg1-ovpn", region: "Africa", country: "Madagascar", city: "Antananarivo"},
+		{subdomain: "vlus-mr1-ovpn", region: "Africa", country: "Mauritania", city: "Nouakchott"},
+		{subdomain: "mu1-ovpn", region: "Africa", country: "Mauritius", city: "Port Louis"},
+		{subdomain: "ma1-ovpn", region: "Africa", country: "Morocco", city: "Rabat"},
+		{subdomain: "vlus-ne1-ovpn", region: "Africa", country: "Niger", city: "Niamey"},
+		{subdomain: "ng1-ovpn", region: "Africa", country: "Nigeria", city: "Suleja"},
+		{subdomain: "vlus-sn1-ovpn", region: "Africa", country: "Senegal", city: "Dakar"},
+		{subdomain: "sc1-ovpn", region: "Africa", country: "Seychelles", city: "Victoria"},
+		{subdomain: "za2-ovpn", region: "Africa", country: "South Africa", city: "Johannesburg"},
+		{subdomain: "vlus-tz1-ovpn", region: "Africa", country: "Tanzania", city: "Dar Es Salaam"},
+		{subdomain: "vlus-tn1-ovpn", region: "Africa", country: "Tunisia", city: "Tunis"},
+		{subdomain: "vlus-af1-ovpn", region: "Asia", country: "Afghanistan", city: "Kabul"},
+		{subdomain: "sg2-ovpn", region: "Asia", country: "Armenia", city: "Singapore"},
+		{subdomain: "az1-ovpn", region: "Asia", country: "Azerbaijan", city: "Baku"},
+		{subdomain: "vlus-bd1-ovpn", region: "Asia", country: "Bangladesh", city: "Dhaka"},
+		{subdomain: "bn2-ovpn", region: "Asia", country: "Brunei Darussalam", city: "Bandar Seri Begawan"},
+		{subdomain: "kh1-ovpn", region: "Asia", country: "Cambodia", city: "Phnom Penh"},
+		{subdomain: "hk2-ovpn", region: "Asia", country: "Hong Kong (SAR)", city: "Hong Kong"},
+		{subdomain: "in2-ovpn", region: "Asia", country: "India", city: "Chennai"},
+		{subdomain: "idn1-ovpn", region: "Asia", country: "Indonesia", city: "Jakarta"},
+		{subdomain: "jp-tk1-ovpn", region: "Asia", country: "Japan", city: "Tokyo"},
+		{subdomain: "vlus-kz1-ovpn", region: "Asia", country: "Kazakhstan", city: "Almaty"},
+		{subdomain: "kr2-ovpn", region: "Asia", country: "Korea, South", city: "Seoul"},
+		{subdomain: "vlus-kg1-ovpn", region: "Asia", country: "Kyrgyzstan", city: "Bishkek"},
+		{subdomain: "vlus-la1-ovpn", region: "Asia", country: "Laos", city: "Vientiane"},
+		{subdomain: "mo1-ovpn", region: "Asia", country: "Macao", city: "Beyrouth"},
+		{subdomain: "my2-ovpn", region: "Asia", country: "Malaysia", city: "Johor Baharu"},
+		{subdomain: "my-kl2-ovpn", region: "Asia", country: "Malaysia", city: "Kuala Lumpur"},
+		{subdomain: "vlus-mn1-ovpn", region: "Asia", country: "Mongolia", city: "Ulaanbaatar"},
+		{subdomain: "pk1-ovpn", region: "Asia", country: "Pakistan", city: "Islamabad"},
+		{subdomain: "vlus-pg1-ovpn", region: "Asia", country: "Papua New Guinea", city: "Port Moresby"},
+		{subdomain: "vlap-ph2-ovpn", region: "Asia", country: "Philippines", city: "Manila"},
+		{subdomain: "vlus-lk1-ovpn", region: "Asia", country: "Sri Lanka", city: "Colombo"},
+		{subdomain: "tw2-ovpn", region: "Asia", country: "Taiwan", city: "Taipei"},
+		{subdomain: "vlus-tj-ovpn", region: "Asia", country: "Tajikistan", city: "Dushanbe"},
+		{subdomain: "vlap-th2-ovpn", region: "Asia", country: "Thailand", city: "Bangkok"},
+		{subdomain: "tr2-ovpn", region: "Asia", country: "Turkey", city: "Istanbul"},
+		{subdomain: "vlus-tm1-ovpn", region: "Asia", country: "Turkmenistan", city: "Ashgabat"},
+		{subdomain: "vlus-uz-ovpn", region: "Asia", country: "Uzbekistan", city: "Tashkent"},
+		{subdomain: "vlap-vn2-ovpn", region: "Asia", country: "Vietnam", city: "Hanoi"},
+		{subdomain: "al1-ovpn", region: "Europe", country: "Albania", city: "Tirane"},
+		{subdomain: "vleu-am1-ovpn", region: "Europe", country: "Armenia", city: "Yerevan"},
+		{subdomain: "at2-ovpn", region: "Europe", country: "Austria", city: "Vienna"},
+		{subdomain: "vleu-be2-ovpn", region: "Europe", country: "Belgium", city: "Brussels"},
+		{subdomain: "ba1-ovpn", region: "Europe", country: "Bosnia and Herzegovina", city: "Sarajevo"},
+		{subdomain: "bg2-ovpn", region: "Europe", country: "Bulgaria", city: "Sofia"},
+		{subdomain: "vlus-hr1-ovpn", region: "Europe", country: "Croatia", city: "Zagreb"},
+		{subdomain: "cy1-ovpn", region: "Europe", country: "Cyprus", city: "Nicosia"},
+		{subdomain: "dk2-ovpn", region: "Europe", country: "Denmark", city: "Copenhagen"},
+		{subdomain: "ee1-ovpn", region: "Europe", country: "Estonia", city: "Tallinn"},
+		{subdomain: "fr2-ovpn", region: "Europe", country: "France", city: "Paris"},
+		{subdomain: "vlus-ge1-ovpn", region: "Europe", country: "Georgia", city: "Tbilisi"},
+		{subdomain: "de2-ovpn", region: "Europe", country: "Germany", city: "Frankfurt"},
+		{subdomain: "de2-ovpn", region: "Europe", country: "Germany", city: "Munich"},
+		{subdomain: "de-ao1-ovpn", region: "Europe", country: "Germany", city: "Nuremberg"},
+		{subdomain: "gr2-ovpn", region: "Europe", country: "Greece", city: "Thessaloniki"},
+		{subdomain: "hu2-ovpn", region: "Europe", country: "Hungary", city: "Budapest"},
+		{subdomain: "is1-ovpn", region: "Europe", country: "Iceland", city: "Reykjavik"},
+		{subdomain: "ie2-ovpn", region: "Europe", country: "Ireland", city: "Dublin"},
+		{subdomain: "im1-ovpn", region: "Europe", country: "Isle of Man", city: "Onchan"},
+		{subdomain: "vlus-it1-ovpn", region: "Europe", country: "Italy", city: "Milano"},
+		{subdomain: "lv1-ovpn", region: "Europe", country: "Latvia", city: "RIGA"},
+		{subdomain: "li1-ovpn", region: "Europe", country: "Liechtenstein", city: "Vaduz"},
+		{subdomain: "lt1-ovpn", region: "Europe", country: "Lithuania", city: "Vilnius"},
+		{subdomain: "lu2-ovpn", region: "Europe", country: "Luxembourg", city: "Luxembourg"},
+		{subdomain: "mt1-ovpn", region: "Europe", country: "Malta", city: "Sliema"},
+		{subdomain: "mn1-ovpn", region: "Europe", country: "Monaco", city: "Monaco"},
+		{subdomain: "vleu-me1-ovpn", region: "Europe", country: "Montenegro", city: "Podgorica"},
+		{subdomain: "nl2-ovpn", region: "Europe", country: "Netherlands", city: "Amsterdam"},
+		{subdomain: "vleu-no2-ovpn", region: "Europe", country: "Norway", city: "Oslo"},
+		{subdomain: "pl2-ovpn", region: "Europe", country: "Poland", city: "Warsaw"},
+		{subdomain: "pt2-ovpn", region: "Europe", country: "Portugal", city: "Lisbon"},
+		{subdomain: "ro2-ovpn", region: "Europe", country: "Romania", city: "Bucharest"},
+		{subdomain: "rs2-ovpn", region: "Europe", country: "Serbia", city: "Niš"},
+		{subdomain: "sk1-ovpn", region: "Europe", country: "Slovakia", city: "Bratislava"},
+		{subdomain: "si1-ovpn", region: "Europe", country: "Slovenia", city: "Ljubljana"},
+		{subdomain: "es-ovpn", region: "Europe", country: "Spain", city: "Barcelona"},
+		{subdomain: "vlus-se1-ovpn", region: "Europe", country: "Sweden", city: "Stockholm"},
+		{subdomain: "ch2-ovpn", region: "Europe", country: "Switzerland", city: "Zurich"},
+		{subdomain: "ukg2-ovpn", region: "Europe", country: "United Kingdom", city: "Gosport"},
+		{subdomain: "ukl2-ovpn", region: "Europe", country: "United Kingdom", city: "London"},
+		{subdomain: "ukm2-ovpn", region: "Europe", country: "United Kingdom", city: "Maidenhead"},
+		{subdomain: "vlus-uk-man1-ovpn", region: "Europe", country: "United Kingdom", city: "Manchester"},
+		{subdomain: "bh-ovpn", region: "Middle East", country: "Bahrain", city: "Manama"},
+		{subdomain: "vlus-jo1-ovpn", region: "Middle East", country: "Jordan", city: "Amman"},
+		{subdomain: "vlus-kw1-ovpn", region: "Middle East", country: "Kuwait", city: "Kuwait"},
+		{subdomain: "om1-ovpn", region: "Middle East", country: "Oman", city: "Salalah"},
+		{subdomain: "qa1-ovpn", region: "Middle East", country: "Qatar", city: "Doha"},
+		{subdomain: "sa1-ovpn", region: "Middle East", country: "Saudi Arabia", city: "Jeddah"},
+		{subdomain: "ae2-ovpn", region: "Middle East", country: "United Arab Emirates", city: "Dubai"},
+		{subdomain: "aw1-ovpn", region: "North America", country: "Aruba", city: "Oranjestad"},
+		{subdomain: "vleu-bb-ovpn", region: "North America", country: "Barbados", city: "Bridgetown"},
+		{subdomain: "bz1-ovpn", region: "North America", country: "Belize", city: "Belmopan"},
+		{subdomain: "vleu-bm-ovpn", region: "North America", country: "Bermuda", city: "Hamilton"},
+		{subdomain: "caq1-ovpn", region: "North America", country: "Canada", city: "Montreal"},
+		{subdomain: "cato-ovpn", region: "North America", country: "Canada", city: "Toronto"},
+		{subdomain: "cav2-ovpn", region: "North America", country: "Canada", city: "Vancouver"},
+		{subdomain: "vleu-ky-ovpn", region: "North America", country: "Cayman Islands", city: "George Town"},
+		{subdomain: "vlus-cr1-ovpn", region: "North America", country: "Costa Rica", city: "San Jose"},
+		{subdomain: "vleu-dm-ovpn", region: "North America", country: "Dominica", city: "Roseau"},
+		{subdomain: "vleu-do-ovpn", region: "North America", country: "Dominican Republic", city: "Santo Domingo"},
+		{subdomain: "vleu-sv-ovpn", region: "North America", country: "El Salvador", city: "San Salvador"},
+		{subdomain: "vleu-gd-ovpn", region: "North America", country: "Grenada", city: "St George's"},
+		{subdomain: "vleu-gt-ovpn", region: "North America", country: "Guatemala", city: "Guatemala"},
+		{subdomain: "vleu-ht1-ovpn", region: "North America", country: "Haiti", city: "PORT-AU-PRINCE"},
+		{subdomain: "vleu-hn-ovpn", region: "North America", country: "Honduras", city: "TEGUCIGALPA"},
+		{subdomain: "jm1-ovpn", region: "North America", country: "Jamaica", city: "Kingston"},
+		{subdomain: "vlus-mx2-ovpn", region: "North America", country: "Mexico", city: "Mexico City"},
+		{subdomain: "vleu-ms-ovpn", region: "North America", country: "Montserrat", city: "plymouth"},
+		{subdomain: "pr1-ovpn", region: "North America", country: "Puerto Rico", city: "San Juan"},
+		{subdomain: "vleu-lc-ovpn", region: "North America", country: "Saint Lucia", city: "Castries"},
+		{subdomain: "bs1-ovpn", region: "North America", country: "The Bahamas", city: "Freeport"},
+		{subdomain: "vleu-tt-ovpn", region: "North America", country: "Trinidad and Tobago", city: "Port of Spain"},
+		{subdomain: "vleu-tc-ovpn", region: "North America", country: "Turks and Caicos Islands", city: "Balfour Town"},
+		{subdomain: "usva-ovpn", region: "North America", country: "United States", city: "Ashburn"},
+		{subdomain: "usil2-ovpn", region: "North America", country: "United States", city: "Chicago"},
+		{subdomain: "usoh1-ovpn", region: "North America", country: "United States", city: "Columbus"},
+		{subdomain: "usga2-ovpn", region: "North America", country: "United States", city: "Georgia"},
+		{subdomain: "ustx2-ovpn", region: "North America", country: "United States", city: "Houston"},
+		{subdomain: "usla2-ovpn", region: "North America", country: "United States", city: "Los Angeles"},
+		{subdomain: "usfl2-ovpn", region: "North America", country: "United States", city: "Miami"},
+		{subdomain: "usnj2-ovpn", region: "North America", country: "United States", city: "New Jersey"},
+		{subdomain: "usny2-ovpn", region: "North America", country: "United States", city: "New York"},
+		{subdomain: "usphx2-ovpn", region: "North America", country: "United States", city: "Phoenix"},
+		{subdomain: "usut2-ovpn", region: "North America", country: "United States", city: "Salt Lake City"},
+		{subdomain: "ussf2-ovpn", region: "North America", country: "United States", city: "San Francisco"},
+		{subdomain: "ussa-ovpn", region: "North America", country: "United States", city: "Seattle"},
+		{subdomain: "uswdc2-ovpn", region: "North America", country: "United States", city: "Washington, D.C."},
+		{subdomain: "au-bn-ovpn", region: "Oceania", country: "Australia", city: "Brisbane"},
+		{subdomain: "au-me1-ovpn", region: "Oceania", country: "Australia", city: "Melbourne"},
+		{subdomain: "au2-pe-ovpn", region: "Oceania", country: "Australia", city: "Perth"},
+		{subdomain: "au-sd2-ovpn", region: "Oceania", country: "Australia", city: "Sydney"},
+		{subdomain: "nz2-ovpn", region: "Oceania", country: "New Zealand", city: "Auckland"},
+		{subdomain: "vlus-ar1-ovpn", region: "South America", country: "Argentina", city: "Buenos Aires"},
+		{subdomain: "vleu-bo-ovpn", region: "South America", country: "Bolivia", city: "Sucre"},
+		{subdomain: "br2-ovpn", region: "South America", country: "Brazil", city: "Sao Paulo"},
+		{subdomain: "vg1-ovpn", region: "South America", country: "British Virgin Island", city: "Road Town"},
+		{subdomain: "vlbr-cl-ovpn", region: "South America", country: "Chile", city: "Santiago"},
+		{subdomain: "co1-ovpn", region: "South America", country: "Colombia", city: "Bogota"},
+		{subdomain: "ec1-ovpn", region: "South America", country: "Ecuador", city: "Quito"},
+		{subdomain: "vleu-gy-ovpn", region: "South America", country: "Guyana", city: "Georgetown"},
+		{subdomain: "pa2-ovpn", region: "South America", country: "Panama", city: "Panama City"},
+		{subdomain: "vleu-py-ovpn", region: "South America", country: "Paraguay", city: "Asuncion"},
+		{subdomain: "pe1-ovpn", region: "South America", country: "Peru", city: "Lima"},
+		{subdomain: "vleu-sr-ovpn", region: "South America", country: "Suriname", city: "Paramaribo"},
+	}
+	for i := range servers {
+		servers[i].subdomain += "-udp"
+	}
+	return servers
 }

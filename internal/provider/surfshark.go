@@ -2,43 +2,41 @@ package provider
 
 import (
 	"fmt"
-	"net"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
 )
 
-type surfshark struct{}
+type surfshark struct {
+	servers []models.SurfsharkServer
+}
 
-func newSurfshark() *surfshark {
-	return &surfshark{}
+func newSurfshark(servers []models.SurfsharkServer) *surfshark {
+	return &surfshark{
+		servers: servers,
+	}
+}
+
+func (s *surfshark) filterServers(region string) (servers []models.SurfsharkServer) {
+	if len(region) == 0 {
+		return s.servers
+	}
+	for _, server := range s.servers {
+		if strings.EqualFold(server.Region, region) {
+			return []models.SurfsharkServer{server}
+		}
+	}
+	return nil
 }
 
 func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
-	var IPs []net.IP
-	for _, server := range constants.SurfsharkServers() {
-		if strings.EqualFold(server.Region, selection.Region) {
-			IPs = server.IPs
-		}
+	servers := s.filterServers(selection.Region)
+	if len(servers) == 0 {
+		return nil, fmt.Errorf("no server found for region %q", selection.Region)
 	}
-	if len(IPs) == 0 {
-		return nil, fmt.Errorf("no IP found for region %q", selection.Region)
-	}
-	if selection.TargetIP != nil {
-		found := false
-		for i := range IPs {
-			if IPs[i].Equal(selection.TargetIP) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
-		}
-		IPs = []net.IP{selection.TargetIP}
-	}
+
 	var port uint16
 	switch {
 	case selection.Protocol == constants.TCP:
@@ -48,9 +46,27 @@ func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (con
 	default:
 		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
-	for _, IP := range IPs {
-		connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+
+	for _, server := range servers {
+		for _, IP := range server.IPs {
+			if selection.TargetIP != nil {
+				if selection.TargetIP.Equal(IP) {
+					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+				}
+			} else {
+				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			}
+		}
 	}
+
+	if selection.TargetIP != nil {
+		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+	}
+
+	if len(connections) > 64 {
+		connections = connections[:64]
+	}
+
 	return connections, nil
 }
 

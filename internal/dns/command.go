@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func (c *configurator) Start(ctx context.Context, verbosityDetailsLevel uint8) (stdout io.ReadCloser, waitFn func() error, err error) {

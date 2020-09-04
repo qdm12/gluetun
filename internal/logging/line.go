@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 var regularExpressions = struct { //nolint:gochecknoglobals

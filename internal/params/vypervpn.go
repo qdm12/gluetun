@@ -1,11 +1,12 @@
 package params
 
 import (
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 // GetVyprvpnRegion obtains the region for the Vyprvpn server from the
 // environment variable REGION
 func (r *reader) GetVyprvpnRegion() (region string, err error) {
-	return r.envParams.GetValueIfInside("REGION", constants.VyprvpnRegionChoices())
+	choices := append(constants.VyprvpnRegionChoices(), "")
+	return r.envParams.GetValueIfInside("REGION", choices)
 }

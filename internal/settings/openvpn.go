@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/params"
 )
 
 // OpenVPN contains settings to configure the OpenVPN client
 type OpenVPN struct {
-	User      string
-	Password  string
-	Verbosity int
-	Root      bool
-	Cipher    string
-	Auth      string
-	Provider  models.ProviderSettings
+	User      string                  `json:"user"`
+	Password  string                  `json:"-"`
+	Verbosity int                     `json:"verbosity"`
+	Root      bool                    `json:"runAsRoot"`
+	Cipher    string                  `json:"cipher"`
+	Auth      string                  `json:"auth"`
+	Provider  models.ProviderSettings `json:"provider"`
 }
 
 // GetOpenVPNSettings obtains the OpenVPN settings using the params functions
@@ -54,6 +54,8 @@ func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvid
 	switch vpnProvider {
 	case constants.PrivateInternetAccess:
 		settings.Provider, err = GetPIASettings(paramsReader)
+	case constants.PrivateInternetAccessOld:
+		settings.Provider, err = GetPIAOldSettings(paramsReader)
 	case constants.Mullvad:
 		settings.Provider, err = GetMullvadSettings(paramsReader)
 	case constants.Windscribe:
@@ -66,6 +68,8 @@ func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvid
 		settings.Provider, err = GetVyprvpnSettings(paramsReader)
 	case constants.Nordvpn:
 		settings.Provider, err = GetNordvpnSettings(paramsReader)
+	case constants.Purevpn:
+		settings.Provider, err = GetPurevpnSettings(paramsReader)
 	default:
 		err = fmt.Errorf("VPN service provider %q is not valid", vpnProvider)
 	}

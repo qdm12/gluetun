@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/models"
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/params"
 )
 
 // TinyProxy contains settings to configure TinyProxy
@@ -21,9 +21,9 @@ func (t *TinyProxy) String() string {
 	if !t.Enabled {
 		return "TinyProxy settings: disabled"
 	}
-	auth := "disabled"
+	auth := disabled
 	if t.User != "" {
-		auth = "enabled"
+		auth = enabled
 	}
 	settingsList := []string{
 		fmt.Sprintf("Port: %d", t.Port),

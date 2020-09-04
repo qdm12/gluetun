@@ -5,7 +5,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 // UseDNSInternally is to change the Go program DNS only

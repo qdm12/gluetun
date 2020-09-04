@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/qdm12/private-internet-access-docker/internal/params"
+	"github.com/qdm12/gluetun/internal/params"
 )
 
 // ShadowSocks contains settings to configure the Shadowsocks server
@@ -20,9 +20,9 @@ func (s *ShadowSocks) String() string {
 	if !s.Enabled {
 		return "ShadowSocks settings: disabled"
 	}
-	log := "disabled"
+	log := disabled
 	if s.Log {
-		log = "enabled"
+		log = enabled
 	}
 	settingsList := []string{
 		"ShadowSocks settings:",

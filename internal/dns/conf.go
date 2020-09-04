@@ -6,11 +6,11 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
-	"github.com/qdm12/private-internet-access-docker/internal/settings"
 )
 
 func (c *configurator) MakeUnboundConf(settings settings.DNS, uid, gid int) (err error) {

@@ -1,8 +1,8 @@
 package params
 
 import (
+	"github.com/qdm12/gluetun/internal/constants"
 	libparams "github.com/qdm12/golibs/params"
-	"github.com/qdm12/private-internet-access-docker/internal/constants"
 )
 
 // GetMullvadCountry obtains the country for the Mullvad server from the
