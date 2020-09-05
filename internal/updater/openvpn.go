@@ -26,3 +26,14 @@ func extractIPsFromRemoteLines(remoteLines []string) (ips []net.IP) {
 	}
 	return ips
 }
+
+func extractHostnamesFromRemoteLines(remoteLines []string) (hostnames []string) {
+	for _, remoteLine := range remoteLines {
+		fields := strings.Fields(remoteLine)
+		if len(fields[1]) == 0 {
+			continue
+		}
+		hostnames = append(hostnames, fields[1])
+	}
+	return hostnames
+}

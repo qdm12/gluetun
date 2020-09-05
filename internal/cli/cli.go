@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -93,9 +94,15 @@ func Update(args []string) error {
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&options.File, "file", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&options.Stdout, "stdout", false, "Write results to console to modify the program (for maintainers)")
+	flagSet.StringVar(&options.DNSAddress, "dns", "1.1.1.1", "DNS resolver address to use")
+	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
+	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
+	flagSet.BoolVar(&options.Nordvpn, "nordvpn", false, "Update Nordvpn servers")
 	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
 	flagSet.BoolVar(&options.PIAold, "piaold", false, "Update Private Internet Access pre-summer 2020 servers")
-	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
+	flagSet.BoolVar(&options.Purevpn, "purevpn", false, "Update Purevpn servers")
+	flagSet.BoolVar(&options.Surfshark, "surfshark", false, "Update Surfshark servers")
+	flagSet.BoolVar(&options.Windscribe, "windscribe", false, "Update Windscribe servers")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
@@ -106,10 +113,11 @@ func Update(args []string) error {
 	if !options.File && !options.Stdout {
 		return fmt.Errorf("at least one of -file or -stdout must be specified")
 	}
+	ctx := context.Background()
 	httpClient := &http.Client{Timeout: 10 * time.Second}
 	storage := storage.New(logger)
-	updater := updater.New(storage, httpClient)
-	if err := updater.UpdateServers(options); err != nil {
+	updater := updater.New(options, storage, httpClient)
+	if err := updater.UpdateServers(ctx); err != nil {
 		return err
 	}
 	return nil
