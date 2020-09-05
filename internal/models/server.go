@@ -54,6 +54,10 @@ type CyberghostServer struct {
 	IPs    []net.IP `json:"ips"`
 }
 
+func (s *CyberghostServer) String() string {
+	return fmt.Sprintf("{Region: %q, Group: %q, IPs: %s}", s.Region, s.Group, goStringifyIPs(s.IPs))
+}
+
 type VyprvpnServer struct {
 	Region string   `json:"region"`
 	IPs    []net.IP `json:"ips"`

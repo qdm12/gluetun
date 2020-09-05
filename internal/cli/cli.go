@@ -101,6 +101,7 @@ func Update(args []string) error {
 	flagSet.BoolVar(&options.Nordvpn, "nordvpn", false, "Update Nordvpn servers")
 	flagSet.BoolVar(&options.Purevpn, "purevpn", false, "Update Purevpn servers")
 	flagSet.BoolVar(&options.Windscribe, "windscribe", false, "Update Windscribe servers")
+	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
 	flagSet.StringVar(&options.DNSAddress, "dns", "1.1.1.1", "DNS resolver address to use")
 	if err := flagSet.Parse(args); err != nil {
 		return err

@@ -9,6 +9,7 @@ type Options struct {
 	Nordvpn    bool
 	Purevpn    bool
 	Windscribe bool
+	Cyberghost bool
 	File       bool // update JSON file (user side)
 	Stdout     bool // update constants file (maintainer side)
 	DNSAddress string

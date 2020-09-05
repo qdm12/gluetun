@@ -149,6 +149,15 @@ func (u *updater) UpdateServers(ctx context.Context) error {
 		allServers.Windscribe.Servers = servers
 	}
 
+	if u.options.Cyberghost {
+		servers := u.findCyberghostServers(ctx)
+		if u.options.Stdout {
+			u.println(stringifyCyberghostServers(servers))
+		}
+		allServers.Cyberghost.Timestamp = u.timeNow().Unix()
+		allServers.Cyberghost.Servers = servers
+	}
+
 	if u.options.File {
 		if err := u.storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("cannot update servers: %w", err)
