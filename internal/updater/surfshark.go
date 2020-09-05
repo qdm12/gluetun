@@ -10,6 +10,19 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
+func (u *updater) updateSurfshark(ctx context.Context) (err error) {
+	servers, err := findSurfsharkServers(ctx, u.lookupIP)
+	if err != nil {
+		return fmt.Errorf("cannot update Surfshark servers: %w", err)
+	}
+	if u.options.Stdout {
+		u.println(stringifySurfsharkServers(servers))
+	}
+	u.servers.Surfshark.Timestamp = u.timeNow().Unix()
+	u.servers.Surfshark.Servers = servers
+	return nil
+}
+
 func findSurfsharkServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.SurfsharkServer, err error) {
 	const zipURL = "https://account.surfshark.com/api/v1/server/configurations"
 	contents, err := fetchAndExtractFiles(zipURL)

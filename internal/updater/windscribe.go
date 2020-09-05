@@ -7,14 +7,23 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) findWindscribeServers(ctx context.Context) (servers []models.WindscribeServer) {
+func (u *updater) updateWindscribe(ctx context.Context) {
+	servers := findWindscribeServers(ctx, u.lookupIP)
+	if u.options.Stdout {
+		u.println(stringifyWindscribeServers(servers))
+	}
+	u.servers.Windscribe.Timestamp = u.timeNow().Unix()
+	u.servers.Windscribe.Servers = servers
+}
+
+func findWindscribeServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.WindscribeServer) {
 	allCountryCodes := getCountryCodes()
 	windscribeCountryCodes := getWindscribeSubdomainToRegion()
 	possibleCountryCodes := mergeCountryCodes(windscribeCountryCodes, allCountryCodes)
 	const domain = "windscribe.com"
 	for countryCode, region := range possibleCountryCodes {
 		host := countryCode + "." + domain
-		ips, err := resolveRepeat(ctx, u.lookupIP, host, 2)
+		ips, err := resolveRepeat(ctx, lookupIP, host, 2)
 		if err != nil || len(ips) == 0 {
 			continue
 		}

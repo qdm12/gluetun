@@ -13,9 +13,25 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) findNordvpnServers() (servers []models.NordvpnServer, warnings []string, err error) {
+func (u *updater) updateNordvpn() (err error) {
+	servers, warnings, err := findNordvpnServers(u.httpGet)
+	for _, warning := range warnings {
+		u.println(warning)
+	}
+	if err != nil {
+		return fmt.Errorf("cannot update Nordvpn servers: %w", err)
+	}
+	if u.options.Stdout {
+		u.println(stringifyNordvpnServers(servers))
+	}
+	u.servers.Nordvpn.Timestamp = u.timeNow().Unix()
+	u.servers.Nordvpn.Servers = servers
+	return nil
+}
+
+func findNordvpnServers(httpGet httpGetFunc) (servers []models.NordvpnServer, warnings []string, err error) {
 	const url = "https://nordvpn.com/api/server"
-	response, err := u.httpGet(url)
+	response, err := httpGet(url)
 	if err != nil {
 		return nil, nil, err
 	}

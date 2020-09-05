@@ -12,9 +12,26 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) findPurevpnServers(ctx context.Context) (servers []models.PurevpnServer, warnings []string, err error) {
+func (u *updater) updatePurevpn(ctx context.Context) (err error) {
+	servers, warnings, err := findPurevpnServers(ctx, u.httpGet, u.lookupIP)
+	for _, warning := range warnings {
+		u.println(warning)
+	}
+	if err != nil {
+		return fmt.Errorf("cannot update Purevpn servers: %w", err)
+	}
+	if u.options.Stdout {
+		u.println(stringifyPurevpnServers(servers))
+	}
+	u.servers.Purevpn.Timestamp = u.timeNow().Unix()
+	u.servers.Purevpn.Servers = servers
+	return nil
+}
+
+func findPurevpnServers(ctx context.Context, httpGet httpGetFunc, lookupIP lookupIPFunc) (
+	servers []models.PurevpnServer, warnings []string, err error) {
 	const url = "https://support.purevpn.com/vpn-servers"
-	response, err := u.httpGet(url)
+	response, err := httpGet(url)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -69,7 +86,7 @@ func (u *updater) findPurevpnServers(ctx context.Context) (servers []models.Pure
 		}
 		host := jsonServer.UDP
 		const repetition = 3
-		IPs, err := resolveRepeat(ctx, u.lookupIP, host, repetition)
+		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
 		if err != nil {
 			warnings = append(warnings, err.Error())
 			continue

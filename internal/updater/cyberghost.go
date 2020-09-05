@@ -8,7 +8,16 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) findCyberghostServers(ctx context.Context) (servers []models.CyberghostServer) {
+func (u *updater) updateCyberghost(ctx context.Context) {
+	servers := findCyberghostServers(ctx, u.lookupIP)
+	if u.options.Stdout {
+		u.println(stringifyCyberghostServers(servers))
+	}
+	u.servers.Cyberghost.Timestamp = u.timeNow().Unix()
+	u.servers.Cyberghost.Servers = servers
+}
+
+func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.CyberghostServer) {
 	groups := getCyberghostGroups()
 	allCountryCodes := getCountryCodes()
 	cyberghostCountryCodes := getCyberghostSubdomainToRegion()
@@ -22,7 +31,7 @@ func (u *updater) findCyberghostServers(ctx context.Context) (servers []models.C
 			go func(groupName, groupID, region, countryCode string) {
 				host := fmt.Sprintf("%s-%s.cg-dialup.net", groupID, countryCode)
 				guard <- struct{}{}
-				IPs, err := resolveRepeat(ctx, u.lookupIP, host, 2)
+				IPs, err := resolveRepeat(ctx, lookupIP, host, 2)
 				if err != nil {
 					IPs = nil
 				}

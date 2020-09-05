@@ -8,12 +8,32 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func findPIAServers(new bool) (servers []models.PIAServer, err error) {
-	zipURL := "https://www.privateinternetaccess.com/openvpn/openvpn-ip.zip"
-	if new {
-		zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn-ip-nextgen.zip"
+func (u *updater) updatePIA() (err error) {
+	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn-ip-nextgen.zip"
+	servers, err := findPIAServersFromURL(zipURL)
+	if err != nil {
+		return fmt.Errorf("cannot update PIA servers: %w", err)
 	}
-	return findPIAServersFromURL(zipURL)
+	if u.options.Stdout {
+		u.println(stringifyPIAServers(servers))
+	}
+	u.servers.Pia.Timestamp = u.timeNow().Unix()
+	u.servers.Pia.Servers = servers
+	return nil
+}
+
+func (u *updater) updatePIAOld() (err error) {
+	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn-ip.zip"
+	servers, err := findPIAServersFromURL(zipURL)
+	if err != nil {
+		return fmt.Errorf("cannot update old PIA servers: %w", err)
+	}
+	if u.options.Stdout {
+		u.println(stringifyPIAOldServers(servers))
+	}
+	u.servers.PiaOld.Timestamp = u.timeNow().Unix()
+	u.servers.PiaOld.Servers = servers
+	return nil
 }
 
 func findPIAServersFromURL(zipURL string) (servers []models.PIAServer, err error) {

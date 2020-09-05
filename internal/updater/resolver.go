@@ -15,8 +15,6 @@ func newResolver(resolverAddress string) *net.Resolver {
 	}
 }
 
-type lookupIPFunc func(ctx context.Context, host string) (ips []net.IP, err error)
-
 func newLookupIP(r *net.Resolver) lookupIPFunc {
 	return func(ctx context.Context, host string) (ips []net.IP, err error) {
 		addresses, err := r.LookupIPAddr(ctx, host)

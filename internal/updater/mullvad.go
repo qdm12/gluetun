@@ -11,9 +11,22 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) findMullvadServers() (servers []models.MullvadServer, err error) {
+func (u *updater) updateMullvad() (err error) {
+	servers, err := findMullvadServers(u.httpGet)
+	if err != nil {
+		return fmt.Errorf("cannot update Mullvad servers: %w", err)
+	}
+	if u.options.Stdout {
+		u.println(stringifyMullvadServers(servers))
+	}
+	u.servers.Mullvad.Timestamp = u.timeNow().Unix()
+	u.servers.Mullvad.Servers = servers
+	return nil
+}
+
+func findMullvadServers(httpGet httpGetFunc) (servers []models.MullvadServer, err error) {
 	const url = "https://api.mullvad.net/www/relays/openvpn/"
-	response, err := u.httpGet(url)
+	response, err := httpGet(url)
 	if err != nil {
 		return nil, err
 	}

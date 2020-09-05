@@ -1,6 +1,6 @@
 package updater
 
-func getCountryCodes() map[string]string {
+func getCountryCodes() map[string]string { //nolint:dupl
 	return map[string]string{
 		"af": "Afghanistan",
 		"ax": "Aland Islands",

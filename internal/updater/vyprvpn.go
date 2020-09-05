@@ -10,6 +10,19 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
+func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
+	servers, err := findVyprvpnServers(ctx, u.lookupIP)
+	if err != nil {
+		return fmt.Errorf("cannot update Vyprvpn servers: %w", err)
+	}
+	if u.options.Stdout {
+		u.println(stringifyVyprvpnServers(servers))
+	}
+	u.servers.Vyprvpn.Timestamp = u.timeNow().Unix()
+	u.servers.Vyprvpn.Servers = servers
+	return nil
+}
+
 func findVyprvpnServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.VyprvpnServer, err error) {
 	const zipURL = "https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip"
 	contents, err := fetchAndExtractFiles(zipURL)
