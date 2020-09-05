@@ -35,6 +35,10 @@ type WindscribeServer struct {
 	IPs    []net.IP `json:"ips"`
 }
 
+func (s *WindscribeServer) String() string {
+	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
+}
+
 type SurfsharkServer struct {
 	Region string   `json:"region"`
 	IPs    []net.IP `json:"ips"`

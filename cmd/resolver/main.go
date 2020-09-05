@@ -28,9 +28,6 @@ func _main(ctx context.Context) int {
 	var domain string
 	var servers []server
 	switch *provider {
-	case "windscribe":
-		domain = "windscribe.com"
-		servers = windscribeServers()
 	case "cyberghost":
 		domain = "cg-dialup.net"
 		servers = cyberghostServers()
@@ -111,11 +108,6 @@ func formatLine(provider string, s server, ips []net.IP) string {
 			"{Region: %q, Group: %q, IPs: []net.IP{%s}},",
 			s.region, s.group, ipString,
 		)
-	case "purevpn":
-		return fmt.Sprintf(
-			"{Region: %q, Country: %q, City: %q, IPs: []net.IP{%s}},",
-			s.region, s.country, s.city, ipString,
-		)
 	}
 	return ""
 }
@@ -178,82 +170,6 @@ type server struct {
 	subdomain string
 	region    string
 	group     string // only for cyberghost
-	country   string // only for purevpn
-	city      string // only for purevpn
-}
-
-func windscribeServers() []server {
-	return []server{
-		{subdomain: "al", region: "Albania"},
-		{subdomain: "ar", region: "Argentina"},
-		{subdomain: "au", region: "Australia"},
-		{subdomain: "at", region: "Austria"},
-		{subdomain: "az", region: "Azerbaijan"},
-		{subdomain: "be", region: "Belgium"},
-		{subdomain: "ba", region: "Bosnia"},
-		{subdomain: "br", region: "Brazil"},
-		{subdomain: "bg", region: "Bulgaria"},
-		{subdomain: "ca", region: "Canada East"},
-		{subdomain: "ca-west", region: "Canada West"},
-		{subdomain: "co", region: "Colombia"},
-		{subdomain: "hr", region: "Croatia"},
-		{subdomain: "cy", region: "Cyprus"},
-		{subdomain: "cz", region: "Czech republic"},
-		{subdomain: "dk", region: "Denmark"},
-		{subdomain: "ee", region: "Estonia"},
-		{subdomain: "aq", region: "Fake antarctica"},
-		{subdomain: "fi", region: "Finland"},
-		{subdomain: "fr", region: "France"},
-		{subdomain: "ge", region: "Georgia"},
-		{subdomain: "de", region: "Germany"},
-		{subdomain: "gr", region: "Greece"},
-		{subdomain: "hk", region: "Hong kong"},
-		{subdomain: "hu", region: "Hungary"},
-		{subdomain: "is", region: "Iceland"},
-		{subdomain: "in", region: "India"},
-		{subdomain: "id", region: "Indonesia"},
-		{subdomain: "ie", region: "Ireland"},
-		{subdomain: "il", region: "Israel"},
-		{subdomain: "it", region: "Italy"},
-		{subdomain: "jp", region: "Japan"},
-		{subdomain: "lv", region: "Latvia"},
-		{subdomain: "lt", region: "Lithuania"},
-		{subdomain: "mk", region: "Macedonia"},
-		{subdomain: "my", region: "Malaysia"},
-		{subdomain: "mx", region: "Mexico"},
-		{subdomain: "md", region: "Moldova"},
-		{subdomain: "nl", region: "Netherlands"},
-		{subdomain: "nz", region: "New zealand"},
-		{subdomain: "no", region: "Norway"},
-		{subdomain: "ph", region: "Philippines"},
-		{subdomain: "pl", region: "Poland"},
-		{subdomain: "pt", region: "Portugal"},
-		{subdomain: "ro", region: "Romania"},
-		{subdomain: "ru", region: "Russia"},
-		{subdomain: "rs", region: "Serbia"},
-		{subdomain: "sg", region: "Singapore"},
-		{subdomain: "sk", region: "Slovakia"},
-		{subdomain: "si", region: "Slovenia"},
-		{subdomain: "za", region: "South Africa"},
-		{subdomain: "kr", region: "South Korea"},
-		{subdomain: "es", region: "Spain"},
-		{subdomain: "se", region: "Sweden"},
-		{subdomain: "ch", region: "Switzerland"},
-		{subdomain: "th", region: "Thailand"},
-		{subdomain: "tn", region: "Tunisia"},
-		{subdomain: "tr", region: "Turkey"},
-		{subdomain: "ua", region: "Ukraine"},
-		{subdomain: "ae", region: "United Arab Emirates"},
-		{subdomain: "uk", region: "United Kingdom"},
-		{subdomain: "us-central", region: "US Central"},
-		{subdomain: "us-east", region: "US East"},
-		{subdomain: "us-west", region: "US West"},
-		{subdomain: "vn", region: "Vietnam"},
-		{subdomain: "wf-ca", region: "Windflix CA"},
-		{subdomain: "wf-jp", region: "Windflix JP"},
-		{subdomain: "wf-uk", region: "Windflix UK"},
-		{subdomain: "wf-us", region: "Windflix US"},
-	}
 }
 
 func cyberghostServers() []server {

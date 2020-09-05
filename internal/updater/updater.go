@@ -140,6 +140,15 @@ func (u *updater) UpdateServers(ctx context.Context) error {
 		allServers.Purevpn.Servers = servers
 	}
 
+	if u.options.Windscribe {
+		servers := u.findWindscribeServers(ctx)
+		if u.options.Stdout {
+			u.println(stringifyWindscribeServers(servers))
+		}
+		allServers.Windscribe.Timestamp = u.timeNow().Unix()
+		allServers.Windscribe.Servers = servers
+	}
+
 	if u.options.File {
 		if err := u.storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("cannot update servers: %w", err)
