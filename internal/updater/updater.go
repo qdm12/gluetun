@@ -53,6 +53,23 @@ func (u *updater) UpdateServers(ctx context.Context) (err error) {
 		return fmt.Errorf("cannot update servers: %w", err)
 	}
 
+	if u.options.Cyberghost {
+		u.updateCyberghost(ctx)
+	}
+
+	if u.options.Mullvad {
+		if err := u.updateMullvad(); err != nil {
+			return err
+		}
+	}
+
+	if u.options.Nordvpn {
+		// TODO support servers offering only TCP or only UDP
+		if err := u.updateNordvpn(); err != nil {
+			return err
+		}
+	}
+
 	if u.options.PIA {
 		if err := u.updatePIA(); err != nil {
 			return err
@@ -65,14 +82,9 @@ func (u *updater) UpdateServers(ctx context.Context) (err error) {
 		}
 	}
 
-	if u.options.Mullvad {
-		if err := u.updateMullvad(); err != nil {
-			return err
-		}
-	}
-
-	if u.options.Vyprvpn {
-		if err := u.updateVyprvpn(ctx); err != nil {
+	if u.options.Purevpn {
+		// TODO support servers offering only TCP or only UDP
+		if err := u.updatePurevpn(ctx); err != nil {
 			return err
 		}
 	}
@@ -83,26 +95,14 @@ func (u *updater) UpdateServers(ctx context.Context) (err error) {
 		}
 	}
 
-	if u.options.Nordvpn {
-		// TODO support servers offering only TCP or only UDP
-		if err := u.updateNordvpn(); err != nil {
-			return err
-		}
-	}
-
-	if u.options.Purevpn {
-		// TODO support servers offering only TCP or only UDP
-		if err := u.updatePurevpn(ctx); err != nil {
+	if u.options.Vyprvpn {
+		if err := u.updateVyprvpn(ctx); err != nil {
 			return err
 		}
 	}
 
 	if u.options.Windscribe {
 		u.updateWindscribe(ctx)
-	}
-
-	if u.options.Cyberghost {
-		u.updateCyberghost(ctx)
 	}
 
 	if u.options.File {
