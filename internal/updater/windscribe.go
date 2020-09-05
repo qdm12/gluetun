@@ -2,6 +2,7 @@ package updater
 
 import (
 	"context"
+	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -22,6 +23,9 @@ func (u *updater) findWindscribeServers(ctx context.Context) (servers []models.W
 			IPs:    ips,
 		})
 	}
+	sort.Slice(servers, func(i, j int) bool {
+		return servers[i].Region < servers[j].Region
+	})
 	return servers
 }
 
