@@ -44,7 +44,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 1. Requirements
     - A VPN account with one of the service providers supported
-    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/gluetun/blob/master/doc/firewall.md)
+    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/gluetun/wiki/External-firewall-requirements)
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
     - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#synology)
 1. Launch the container with:
