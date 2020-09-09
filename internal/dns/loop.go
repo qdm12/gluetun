@@ -141,7 +141,8 @@ func (l *looper) waitForSubsequentStart(ctx context.Context, unboundCancel conte
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
-	l.fallbackToUnencryptedDNS()
+	const fallback = false
+	l.useUnencryptedDNS(fallback)
 	l.waitForFirstStart(ctx)
 	if ctx.Err() != nil {
 		return
@@ -182,7 +183,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		stream, waitFn, err := l.conf.Start(unboundCtx, settings.VerbosityDetailsLevel)
 		if err != nil {
 			unboundCancel()
-			l.fallbackToUnencryptedDNS()
+			const fallback = true
+			l.useUnencryptedDNS(fallback)
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -195,7 +197,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		}
 		if err := l.conf.WaitForUnbound(); err != nil {
 			unboundCancel()
-			l.fallbackToUnencryptedDNS()
+			const fallback = true
+			l.useUnencryptedDNS(fallback)
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -204,6 +207,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			err := waitFn() // blocking
 			waitError <- err
 		}()
+		l.logger.Info("DNS over TLS is ready")
 
 		stayHere := true
 		for stayHere {
@@ -231,7 +235,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case err := <-waitError: // unexpected error
 				close(waitError)
 				unboundCancel()
-				l.fallbackToUnencryptedDNS()
+				const fallback = true
+				l.useUnencryptedDNS(fallback)
 				l.logAndWait(ctx, err)
 				stayHere = false
 			}
@@ -240,13 +245,17 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	unboundCancel()
 }
 
-func (l *looper) fallbackToUnencryptedDNS() {
+func (l *looper) useUnencryptedDNS(fallback bool) {
 	settings := l.GetSettings()
 
 	// Try with user provided plaintext ip address
 	targetIP := settings.PlaintextAddress
 	if targetIP != nil {
-		l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
+		if fallback {
+			l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
+		} else {
+			l.logger.Info("using plaintext DNS at address %s", targetIP)
+		}
 		l.conf.UseDNSInternally(targetIP)
 		if err := l.conf.UseDNSSystemWide(targetIP, settings.KeepNameserver); err != nil {
 			l.logger.Error(err)
