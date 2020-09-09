@@ -4,7 +4,7 @@
 Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN,
 iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *Support for newer Private Internet Access servers*
+**ANNOUNCEMENT**: *Youtube videos added*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
@@ -19,6 +19,12 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 [![Image size](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Join Slack channel](https://img.shields.io/badge/slack-@qdm12-yellow.svg?logo=slack)](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
+
+## Videos
+
+1. [**Introduction**](https://youtu.be/3jIbU6J2Hs0)
+1. [**Connect a container**](https://youtu.be/mH7J_2JKNK0)
+1. [**Connect LAN devices**](https://youtu.be/qvjrM15Y0uk)
 
 ## Features
 
