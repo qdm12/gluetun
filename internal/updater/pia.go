@@ -1,7 +1,9 @@
 package updater
 
 import (
+	"context"
 	"fmt"
+	"net"
 	"sort"
 	"strings"
 
@@ -10,45 +12,19 @@ import (
 
 func (u *updater) updatePIA() (err error) {
 	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn-ip-nextgen.zip"
-	servers, err := findPIAServersFromURL(zipURL)
-	if err != nil {
-		return fmt.Errorf("cannot update PIA servers: %w", err)
-	}
-	if u.options.Stdout {
-		u.println(stringifyPIAServers(servers))
-	}
-	u.servers.Pia.Timestamp = u.timeNow().Unix()
-	u.servers.Pia.Servers = servers
-	return nil
-}
-
-func (u *updater) updatePIAOld() (err error) {
-	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn-ip.zip"
-	servers, err := findPIAServersFromURL(zipURL)
-	if err != nil {
-		return fmt.Errorf("cannot update old PIA servers: %w", err)
-	}
-	if u.options.Stdout {
-		u.println(stringifyPIAOldServers(servers))
-	}
-	u.servers.PiaOld.Timestamp = u.timeNow().Unix()
-	u.servers.PiaOld.Servers = servers
-	return nil
-}
-
-func findPIAServersFromURL(zipURL string) (servers []models.PIAServer, err error) {
 	contents, err := fetchAndExtractFiles(zipURL)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	servers := make([]models.PIAServer, 0, len(contents))
 	for fileName, content := range contents {
 		remoteLines := extractRemoteLinesFromOpenvpn(content)
 		if len(remoteLines) == 0 {
-			return nil, fmt.Errorf("cannot find any remote lines in %s", fileName)
+			return fmt.Errorf("cannot find any remote lines in %s", fileName)
 		}
 		IPs := extractIPsFromRemoteLines(remoteLines)
 		if len(IPs) == 0 {
-			return nil, fmt.Errorf("cannot find any IP addresses in %s", fileName)
+			return fmt.Errorf("cannot find any IP addresses in %s", fileName)
 		}
 		region := strings.TrimSuffix(fileName, ".ovpn")
 		server := models.PIAServer{
@@ -60,7 +36,54 @@ func findPIAServersFromURL(zipURL string) (servers []models.PIAServer, err error
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
-	return servers, nil
+	if u.options.Stdout {
+		u.println(stringifyPIAServers(servers))
+	}
+	u.servers.Pia.Timestamp = u.timeNow().Unix()
+	u.servers.Pia.Servers = servers
+	return nil
+}
+
+func (u *updater) updatePIAOld(ctx context.Context) (err error) {
+	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn.zip"
+	contents, err := fetchAndExtractFiles(zipURL)
+	if err != nil {
+		return err
+	}
+	servers := make([]models.PIAServer, 0, len(contents))
+	for fileName, content := range contents {
+		remoteLines := extractRemoteLinesFromOpenvpn(content)
+		if len(remoteLines) == 0 {
+			return fmt.Errorf("cannot find any remote lines in %s", fileName)
+		}
+		hosts := extractHostnamesFromRemoteLines(remoteLines)
+		if len(hosts) == 0 {
+			return fmt.Errorf("cannot find any hosts in %s", fileName)
+		}
+		var IPs []net.IP
+		for _, host := range hosts {
+			newIPs, err := resolveRepeat(ctx, u.lookupIP, host, 3)
+			if err != nil {
+				return err
+			}
+			IPs = append(IPs, newIPs...)
+		}
+		region := strings.TrimSuffix(fileName, ".ovpn")
+		server := models.PIAServer{
+			Region: region,
+			IPs:    uniqueSortedIPs(IPs),
+		}
+		servers = append(servers, server)
+	}
+	sort.Slice(servers, func(i, j int) bool {
+		return servers[i].Region < servers[j].Region
+	})
+	if u.options.Stdout {
+		u.println(stringifyPIAOldServers(servers))
+	}
+	u.servers.PiaOld.Timestamp = u.timeNow().Unix()
+	u.servers.PiaOld.Servers = servers
+	return nil
 }
 
 func stringifyPIAServers(servers []models.PIAServer) (s string) {

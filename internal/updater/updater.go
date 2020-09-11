@@ -77,7 +77,7 @@ func (u *updater) UpdateServers(ctx context.Context) (err error) {
 	}
 
 	if u.options.PIAold {
-		if err := u.updatePIAOld(); err != nil {
+		if err := u.updatePIAOld(ctx); err != nil {
 			return err
 		}
 	}
