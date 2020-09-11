@@ -27,7 +27,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		PiaOld: models.PiaServers{
 			Version:   1,
-			Timestamp: 1599323261,
+			Timestamp: 1599786395,
 			Servers:   PIAOldServers(),
 		},
 		Purevpn: models.PurevpnServers{
