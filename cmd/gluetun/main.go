@@ -197,7 +197,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
 
-	updaterOptions := updater.NewOptions(allSettings.DNS.PlaintextAddress.String())
+	updaterOptions := updater.NewOptions("127.0.0.1")
 	updaterLooper := updater.NewLooper(updaterOptions, allSettings.UpdaterPeriod, allServers, storage, openvpnLooper.SetAllServers, httpClient, logger)
 	wg.Add(1)
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
