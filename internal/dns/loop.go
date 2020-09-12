@@ -139,7 +139,6 @@ func (l *looper) waitForSubsequentStart(ctx context.Context, unboundCancel conte
 }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
 	defer wg.Done()
 	const fallback = false
 	l.useUnencryptedDNS(fallback)

@@ -194,6 +194,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	portForward := openvpnLooper.PortForward
 	getOpenvpnSettings := openvpnLooper.GetSettings
 	getPortForwarded := openvpnLooper.GetPortForwarded
+	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
 
@@ -205,7 +206,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, uid, gid)
 	restartUnbound := unboundLooper.Restart
-	// wait for restartUnbound
+	wg.Add(1)
+	// wait for restartUnbound or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(ctx, wg)
 
 	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, allSettings.PublicIPPeriod, uid, gid)
@@ -217,10 +219,12 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
 	restartTinyproxy := tinyproxyLooper.Restart
+	wg.Add(1)
 	go tinyproxyLooper.Run(ctx, wg)
 
 	shadowsocksLooper := shadowsocks.NewLooper(firewallConf, allSettings.ShadowSocks, logger, defaultInterface)
 	restartShadowsocks := shadowsocksLooper.Restart
+	wg.Add(1)
 	go shadowsocksLooper.Run(ctx, wg)
 
 	if allSettings.TinyProxy.Enabled {
@@ -241,6 +245,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		}
 		logger.Info(message)
 	}
+	wg.Add(1)
 	go func() {
 		var restartTickerContext context.Context
 		var restartTickerCancel context.CancelFunc = func() {}
@@ -261,6 +266,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound, updaterLooper.Restart,
 		getOpenvpnSettings, getPortForwarded)
+	wg.Add(1)
 	go httpServer.Run(ctx, wg)
 
 	// Start openvpn for the first time

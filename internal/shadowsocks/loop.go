@@ -82,7 +82,6 @@ func (l *looper) setEnabled(enabled bool) {
 }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
 	defer wg.Done()
 	waitForStart := true
 	for waitForStart {

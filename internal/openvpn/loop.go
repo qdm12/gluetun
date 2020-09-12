@@ -98,7 +98,6 @@ func (l *looper) SetAllServers(allServers models.AllServers) {
 }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
 	defer wg.Done()
 	select {
 	case <-l.restart:
