@@ -154,6 +154,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			continue
 		}
 
+		// Needs the stream line from main.go to know when the tunnel is up
 		go func(ctx context.Context) {
 			for {
 				select {

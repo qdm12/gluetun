@@ -6,7 +6,7 @@ import (
 )
 
 func (s *server) handleGetPortForwarded(w http.ResponseWriter) {
-	port := s.getPortForwarded()
+	port := s.openvpnLooper.GetPortForwarded()
 	data, err := json.Marshal(struct {
 		Port uint16 `json:"port"`
 	}{port})
@@ -22,7 +22,7 @@ func (s *server) handleGetPortForwarded(w http.ResponseWriter) {
 }
 
 func (s *server) handleGetOpenvpnSettings(w http.ResponseWriter) {
-	settings := s.getOpenvpnSettings()
+	settings := s.openvpnLooper.GetSettings()
 	data, err := json.Marshal(settings)
 	if err != nil {
 		s.logger.Warn(err)
