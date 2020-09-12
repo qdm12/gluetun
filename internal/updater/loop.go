@@ -39,6 +39,7 @@ func NewLooper(options Options, period time.Duration, currentServers models.AllS
 	return &looper{
 		period:        period,
 		updater:       New(options, client, currentServers, loggerWithPrefix),
+		storage:       storage,
 		setAllServers: setAllServers,
 		logger:        loggerWithPrefix,
 		restart:       make(chan struct{}),
