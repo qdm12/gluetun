@@ -26,6 +26,7 @@ import (
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tinyproxy"
+	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
@@ -70,6 +71,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	defer cancel()
 	logger := createLogger()
 
+	httpClient := &http.Client{Timeout: 15 * time.Second}
 	client := network.NewClient(15 * time.Second)
 	// Create configurators
 	fileManager := files.NewFileManager()
@@ -195,6 +197,12 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
 
+	updaterOptions := updater.NewOptions(allSettings.DNS.PlaintextAddress.String())
+	updaterLooper := updater.NewLooper(updaterOptions, allSettings.UpdaterPeriod, allServers, storage, openvpnLooper.SetAllServers, httpClient, logger)
+	wg.Add(1)
+	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
+	go updaterLooper.Run(ctx, wg)
+
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, uid, gid)
 	restartUnbound := unboundLooper.Restart
 	// wait for restartUnbound
@@ -226,8 +234,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		if !allSettings.VersionInformation {
 			return
 		}
-		client := &http.Client{Timeout: 5 * time.Second}
-		message, err := versionpkg.GetMessage(version, commit, client)
+		message, err := versionpkg.GetMessage(version, commit, httpClient)
 		if err != nil {
 			logger.Error(err)
 			return
@@ -246,12 +253,14 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 				restartTickerCancel()
 				restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 				go unboundLooper.RunRestartTicker(restartTickerContext)
+				go updaterLooper.RunRestartTicker(ctx)
 				onConnected(allSettings, logger, routingConf, portForward, restartUnbound, restartPublicIP, versionInformation)
 			}
 		}
 	}()
 
-	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound, getOpenvpnSettings, getPortForwarded)
+	httpServer := server.New("0.0.0.0:8000", logger, restartOpenvpn, restartUnbound, updaterLooper.Restart,
+		getOpenvpnSettings, getPortForwarded)
 	go httpServer.Run(ctx, wg)
 
 	// Start openvpn for the first time

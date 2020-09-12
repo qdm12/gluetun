@@ -10,7 +10,22 @@ type Options struct {
 	Surfshark  bool
 	Vyprvpn    bool
 	Windscribe bool
-	File       bool // update JSON file (user side)
-	Stdout     bool // update constants file (maintainer side)
+	Stdout     bool // in order to update constants file (maintainer side)
 	DNSAddress string
+}
+
+func NewOptions(dnsAddress string) Options {
+	return Options{
+		Cyberghost: true,
+		Mullvad:    true,
+		Nordvpn:    true,
+		PIA:        true,
+		PIAold:     true,
+		Purevpn:    true,
+		Surfshark:  true,
+		Vyprvpn:    true,
+		Windscribe: true,
+		Stdout:     false,
+		DNSAddress: dnsAddress,
+	}
 }

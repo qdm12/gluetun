@@ -24,6 +24,7 @@ type Looper interface {
 	GetSettings() (settings settings.OpenVPN)
 	SetSettings(settings settings.OpenVPN)
 	GetPortForwarded() (portForwarded uint16)
+	SetAllServers(allServers models.AllServers)
 }
 
 type looper struct {
@@ -33,10 +34,11 @@ type looper struct {
 	settingsMutex      sync.RWMutex
 	portForwarded      uint16
 	portForwardedMutex sync.RWMutex
+	allServers         models.AllServers
+	allServersMutex    sync.RWMutex
 	// Fixed parameters
-	uid        int
-	gid        int
-	allServers models.AllServers
+	uid int
+	gid int
 	// Configurators
 	conf Configurator
 	fw   firewall.Configurator
@@ -89,6 +91,12 @@ func (l *looper) SetSettings(settings settings.OpenVPN) {
 	l.settings = settings
 }
 
+func (l *looper) SetAllServers(allServers models.AllServers) {
+	l.allServersMutex.Lock()
+	defer l.allServersMutex.Unlock()
+	l.allServers = allServers
+}
+
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
@@ -101,7 +109,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
+		l.allServersMutex.RLock()
 		providerConf := provider.New(l.provider, l.allServers)
+		l.allServersMutex.RUnlock()
 		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
 		if err != nil {
 			l.logger.Error(err)

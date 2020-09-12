@@ -260,6 +260,7 @@ That one is important if you want to connect to the container from your LAN for 
 | --- | --- | --- | --- |
 | `PUBLICIP_PERIOD` | `12h` | Valid duration | Period to check for public IP address. Set to `0` to disable. |
 | `VERSION_INFORMATION` | `on` | `on`, `off` | Logs a message indicating if a newer version is available once the VPN is connected |
+| `UPDATER_PERIOD` | `0` | Valid duration string such as `24h` | Period to update all VPN servers information in memory and to /gluetun/servers.json. This does a burst of DNS requests using the plaintext DNS specified. Set to `0` to disable. |
 
 ## Connect to it
 
