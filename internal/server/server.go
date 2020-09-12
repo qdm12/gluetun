@@ -42,7 +42,6 @@ func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound, 
 }
 
 func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
 	server := http.Server{Addr: s.address, Handler: s.makeHandler()}
 	go func() {
 		defer wg.Done()

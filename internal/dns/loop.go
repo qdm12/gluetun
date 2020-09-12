@@ -14,7 +14,7 @@ import (
 
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
-	RunRestartTicker(ctx context.Context)
+	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	Restart()
 	Start()
 	Stop()
@@ -139,7 +139,6 @@ func (l *looper) waitForSubsequentStart(ctx context.Context, unboundCancel conte
 }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
 	defer wg.Done()
 	const fallback = false
 	l.useUnencryptedDNS(fallback)
@@ -282,7 +281,8 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 	l.logger.Error("no ipv4 DNS address found for providers %s", settings.Providers)
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context) {
+func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
 	ticker := time.NewTicker(time.Hour)
 	settings := l.GetSettings()
 	if settings.UpdatePeriod > 0 {
