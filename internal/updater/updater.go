@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/logging"
 )
 
 type Updater interface {
@@ -21,18 +22,20 @@ type updater struct {
 	servers models.AllServers
 
 	// Functions for tests
+	logger   logging.Logger
 	timeNow  func() time.Time
 	println  func(s string)
 	httpGet  httpGetFunc
 	lookupIP lookupIPFunc
 }
 
-func New(options Options, httpClient *http.Client, currentServers models.AllServers) Updater {
+func New(options Options, httpClient *http.Client, currentServers models.AllServers, logger logging.Logger) Updater {
 	if len(options.DNSAddress) == 0 {
 		options.DNSAddress = "1.1.1.1"
 	}
 	resolver := newResolver(options.DNSAddress)
 	return &updater{
+		logger:   logger,
 		timeNow:  time.Now,
 		println:  func(s string) { fmt.Println(s) },
 		httpGet:  httpClient.Get,
@@ -50,45 +53,45 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 
 	if u.options.Mullvad {
 		if err := u.updateMullvad(); err != nil {
-			return allServers, err
+			u.logger.Error(err)
 		}
 	}
 
 	if u.options.Nordvpn {
 		// TODO support servers offering only TCP or only UDP
 		if err := u.updateNordvpn(); err != nil {
-			return allServers, err
+			u.logger.Error(err)
 		}
 	}
 
 	if u.options.PIA {
 		if err := u.updatePIA(); err != nil {
-			return allServers, err
+			u.logger.Error(err)
 		}
 	}
 
 	if u.options.PIAold {
 		if err := u.updatePIAOld(ctx); err != nil {
-			return allServers, err
+			u.logger.Error(err)
 		}
 	}
 
 	if u.options.Purevpn {
 		// TODO support servers offering only TCP or only UDP
 		if err := u.updatePurevpn(ctx); err != nil {
-			return allServers, err
+			u.logger.Error(err)
 		}
 	}
 
 	if u.options.Surfshark {
 		if err := u.updateSurfshark(ctx); err != nil {
-			return allServers, err
+			u.logger.Error(err)
 		}
 	}
 
 	if u.options.Vyprvpn {
 		if err := u.updateVyprvpn(ctx); err != nil {
-			return allServers, err
+			u.logger.Error(err)
 		}
 	}
 

@@ -11,6 +11,7 @@ type Options struct {
 	Vyprvpn    bool
 	Windscribe bool
 	Stdout     bool // in order to update constants file (maintainer side)
+	Verbose    bool
 	DNSAddress string
 }
 
@@ -26,6 +27,7 @@ func NewOptions(dnsAddress string) Options {
 		Vyprvpn:    true,
 		Windscribe: true,
 		Stdout:     false,
+		Verbose:    false,
 		DNSAddress: dnsAddress,
 	}
 }

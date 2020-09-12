@@ -35,11 +35,12 @@ type looper struct {
 func NewLooper(options Options, period time.Duration, currentServers models.AllServers,
 	storage storage.Storage, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger logging.Logger) Looper {
+	loggerWithPrefix := logger.WithPrefix("updater: ")
 	return &looper{
 		period:        period,
-		updater:       New(options, client, currentServers),
+		updater:       New(options, client, currentServers, loggerWithPrefix),
 		setAllServers: setAllServers,
-		logger:        logger.WithPrefix("updater: "),
+		logger:        loggerWithPrefix,
 		restart:       make(chan struct{}),
 		stop:          make(chan struct{}),
 		updateTicker:  make(chan struct{}),
@@ -74,6 +75,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	select {
 	case <-l.restart:
+		l.logger.Info("starting...")
 	case <-ctx.Done():
 		return
 	}

@@ -14,8 +14,10 @@ import (
 
 func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 	servers, warnings, err := findPurevpnServers(ctx, u.httpGet, u.lookupIP)
-	for _, warning := range warnings {
-		u.println(warning)
+	if u.options.Verbose {
+		for _, warning := range warnings {
+			u.logger.Warn("PureVPN: %s", warning)
+		}
 	}
 	if err != nil {
 		return fmt.Errorf("cannot update Purevpn servers: %w", err)
