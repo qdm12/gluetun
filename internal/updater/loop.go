@@ -13,7 +13,7 @@ import (
 
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
-	RunRestartTicker(ctx context.Context)
+	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	Restart()
 	Stop()
 	GetPeriod() (period time.Duration)
@@ -123,7 +123,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	}
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context) {
+func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
 	ticker := time.NewTicker(time.Hour)
 	period := l.GetPeriod()
 	if period > 0 {

@@ -213,8 +213,10 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, allSettings.PublicIPPeriod, uid, gid)
 	restartPublicIP := publicIPLooper.Restart
 	setPublicIPPeriod := publicIPLooper.SetPeriod
-	go publicIPLooper.Run(ctx)
-	go publicIPLooper.RunRestartTicker(ctx)
+	wg.Add(1)
+	go publicIPLooper.Run(ctx, wg)
+	wg.Add(1)
+	go publicIPLooper.RunRestartTicker(ctx, wg)
 	setPublicIPPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
 	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
@@ -247,18 +249,24 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	}
 	wg.Add(1)
 	go func() {
+		defer wg.Done()
+		tickerWg := &sync.WaitGroup{}
+		// for linters only
 		var restartTickerContext context.Context
 		var restartTickerCancel context.CancelFunc = func() {}
 		for {
 			select {
 			case <-ctx.Done():
-				restartTickerCancel()
+				restartTickerCancel() // for linters only
+				tickerWg.Wait()
 				return
 			case <-connectedCh: // blocks until openvpn is connected
-				restartTickerCancel()
+				restartTickerCancel() // stop previous restart tickers
+				tickerWg.Wait()
 				restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
-				go unboundLooper.RunRestartTicker(restartTickerContext)
-				go updaterLooper.RunRestartTicker(ctx)
+				tickerWg.Add(2)
+				go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
+				go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
 				onConnected(allSettings, logger, routingConf, portForward, restartUnbound, restartPublicIP, versionInformation)
 			}
 		}
