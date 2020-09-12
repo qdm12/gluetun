@@ -101,6 +101,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		servers, err := l.updater.UpdateServers(ctx)
 		if err != nil {
+			if ctx.Err() != nil {
+				return
+			}
 			l.logAndWait(ctx, err)
 			continue
 		}
