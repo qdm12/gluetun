@@ -90,9 +90,10 @@ func OpenvpnConfig() error {
 }
 
 func Update(args []string) error {
-	var options updater.Options
+	options := updater.Options{CLI: true}
+	var flushToFile bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
-	flagSet.BoolVar(&options.File, "file", false, "Write results to /gluetun/servers.json (for end users)")
+	flagSet.BoolVar(&flushToFile, "file", true, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&options.Stdout, "stdout", false, "Write results to console to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "1.1.1.1", "DNS resolver address to use")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
@@ -110,15 +111,27 @@ func Update(args []string) error {
 	if err != nil {
 		return err
 	}
-	if !options.File && !options.Stdout {
+	if !flushToFile && !options.Stdout {
 		return fmt.Errorf("at least one of -file or -stdout must be specified")
 	}
 	ctx := context.Background()
 	httpClient := &http.Client{Timeout: 10 * time.Second}
 	storage := storage.New(logger)
-	updater := updater.New(options, storage, httpClient)
-	if err := updater.UpdateServers(ctx); err != nil {
+	const writeSync = false
+	currentServers, err := storage.SyncServers(constants.GetAllServers(), writeSync)
+	if err != nil {
+		return fmt.Errorf("cannot update servers: %w", err)
+	}
+	updater := updater.New(options, httpClient, currentServers, logger)
+	allServers, err := updater.UpdateServers(ctx)
+	if err != nil {
 		return err
 	}
+	if flushToFile {
+		if err := storage.FlushToFile(allServers); err != nil {
+			return fmt.Errorf("cannot update servers: %w", err)
+		}
+	}
+
 	return nil
 }

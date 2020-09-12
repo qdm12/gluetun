@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Announcement is a message announcement
-	Announcement = "Persistent server IP addresses at /gluetun/servers.json, please BIND MOUNT"
+	Announcement = "Update servers information see https://github.com/qdm12/gluetun/wiki/Update-servers-information"
 	// AnnouncementExpiration is the expiration date of the announcement in format yyyy-mm-dd
-	AnnouncementExpiration = "2020-09-30"
+	AnnouncementExpiration = "2020-10-10"
 )
 
 const (

@@ -2,26 +2,34 @@ package updater
 
 import (
 	"context"
+	"fmt"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) updateWindscribe(ctx context.Context) {
-	servers := findWindscribeServers(ctx, u.lookupIP)
+func (u *updater) updateWindscribe(ctx context.Context) (err error) {
+	servers, err := findWindscribeServers(ctx, u.lookupIP)
+	if err != nil {
+		return fmt.Errorf("cannot update Windscribe servers: %w", err)
+	}
 	if u.options.Stdout {
 		u.println(stringifyWindscribeServers(servers))
 	}
 	u.servers.Windscribe.Timestamp = u.timeNow().Unix()
 	u.servers.Windscribe.Servers = servers
+	return nil
 }
 
-func findWindscribeServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.WindscribeServer) {
+func findWindscribeServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.WindscribeServer, err error) {
 	allCountryCodes := getCountryCodes()
 	windscribeCountryCodes := getWindscribeSubdomainToRegion()
 	possibleCountryCodes := mergeCountryCodes(windscribeCountryCodes, allCountryCodes)
 	const domain = "windscribe.com"
 	for countryCode, region := range possibleCountryCodes {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 		host := countryCode + "." + domain
 		ips, err := resolveRepeat(ctx, lookupIP, host, 2)
 		if err != nil || len(ips) == 0 {
@@ -35,7 +43,7 @@ func findWindscribeServers(ctx context.Context, lookupIP lookupIPFunc) (servers 
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
-	return servers
+	return servers, nil
 }
 
 func mergeCountryCodes(base, extend map[string]string) (merged map[string]string) {

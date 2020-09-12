@@ -30,6 +30,9 @@ func findSurfsharkServers(ctx context.Context, lookupIP lookupIPFunc) (servers [
 		return nil, err
 	}
 	for fileName, content := range contents {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 		if strings.HasSuffix(fileName, "_tcp.ovpn") {
 			continue // only parse UDP files
 		}

@@ -8,53 +8,46 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) updateCyberghost(ctx context.Context) {
-	servers := findCyberghostServers(ctx, u.lookupIP)
+func (u *updater) updateCyberghost(ctx context.Context) (err error) {
+	servers, err := findCyberghostServers(ctx, u.lookupIP)
+	if err != nil {
+		return err
+	}
 	if u.options.Stdout {
 		u.println(stringifyCyberghostServers(servers))
 	}
 	u.servers.Cyberghost.Timestamp = u.timeNow().Unix()
 	u.servers.Cyberghost.Servers = servers
+	return nil
 }
 
-func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.CyberghostServer) {
+func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.CyberghostServer, err error) {
 	groups := getCyberghostGroups()
 	allCountryCodes := getCountryCodes()
 	cyberghostCountryCodes := getCyberghostSubdomainToRegion()
 	possibleCountryCodes := mergeCountryCodes(cyberghostCountryCodes, allCountryCodes)
 
-	resultsChannel := make(chan models.CyberghostServer)
-	const maxGoroutines = 10
-	guard := make(chan struct{}, maxGoroutines)
 	for groupID, groupName := range groups {
 		for countryCode, region := range possibleCountryCodes {
-			go func(groupName, groupID, region, countryCode string) {
-				host := fmt.Sprintf("%s-%s.cg-dialup.net", groupID, countryCode)
-				guard <- struct{}{}
-				IPs, err := resolveRepeat(ctx, lookupIP, host, 2)
-				if err != nil {
-					IPs = nil
-				}
-				<-guard
-				resultsChannel <- models.CyberghostServer{
-					Region: region,
-					Group:  groupName,
-					IPs:    IPs,
-				}
-			}(groupName, groupID, region, countryCode)
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+			host := fmt.Sprintf("%s-%s.cg-dialup.net", groupID, countryCode)
+			IPs, err := resolveRepeat(ctx, lookupIP, host, 2)
+			if err != nil || len(IPs) == 0 {
+				continue
+			}
+			servers = append(servers, models.CyberghostServer{
+				Region: region,
+				Group:  groupName,
+				IPs:    IPs,
+			})
 		}
-	}
-	for i := 0; i < len(groups)*len(possibleCountryCodes); i++ {
-		server := <-resultsChannel
-		if server.IPs == nil {
-			continue
-		}
-		servers = append(servers, server)
 	}
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
-	return servers
+	return servers, nil
 }
 
 //nolint:goconst

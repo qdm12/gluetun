@@ -110,6 +110,8 @@ type Reader interface {
 	GetPublicIPPeriod() (period time.Duration, err error)
 
 	GetVersionInformation() (enabled bool, err error)
+
+	GetUpdaterPeriod() (period time.Duration, err error)
 }
 
 type reader struct {

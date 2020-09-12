@@ -52,6 +52,9 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 	}
 	servers := make([]models.PIAServer, 0, len(contents))
 	for fileName, content := range contents {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
 		remoteLines := extractRemoteLinesFromOpenvpn(content)
 		if len(remoteLines) == 0 {
 			return fmt.Errorf("cannot find any remote lines in %s", fileName)

@@ -21,18 +21,20 @@ type server struct {
 	logger             logging.Logger
 	restartOpenvpn     func()
 	restartUnbound     func()
+	restartUpdater     func()
 	getOpenvpnSettings func() settings.OpenVPN
 	getPortForwarded   func() uint16
 	lookupIP           func(host string) ([]net.IP, error)
 }
 
-func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound func(),
+func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound, restartUpdater func(),
 	getOpenvpnSettings func() settings.OpenVPN, getPortForwarded func() uint16) Server {
 	return &server{
 		address:            address,
 		logger:             logger.WithPrefix("http server: "),
 		restartOpenvpn:     restartOpenvpn,
 		restartUnbound:     restartUnbound,
+		restartUpdater:     restartUpdater,
 		getOpenvpnSettings: getOpenvpnSettings,
 		getPortForwarded:   getPortForwarded,
 		lookupIP:           net.LookupIP,
@@ -76,6 +78,8 @@ func (s *server) makeHandler() http.HandlerFunc {
 				s.handleGetOpenvpnSettings(w)
 			case "/health":
 				s.handleHealth(w)
+			case "/updater/restart":
+				s.restartUpdater()
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}
