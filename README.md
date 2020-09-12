@@ -53,11 +53,13 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
     - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/gluetun/wiki/External-firewall-requirements)
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
     - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#synology)
+1. For **Mullvad** only, see [**this**](https://github.com/qdm12/gluetun/wiki/Common-issues#ipv6-does-not-work).
 1. Launch the container with:
 
     ```bash
     docker run -d --name gluetun --cap-add=NET_ADMIN \
-    -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
+    -e VPNSP="private internet access" -e REGION="CA Montreal" \
+    -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     -v /yourpath:/gluetun \
     qmcgaw/private-internet-access
     ```
