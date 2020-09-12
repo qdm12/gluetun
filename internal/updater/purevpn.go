@@ -14,7 +14,7 @@ import (
 
 func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 	servers, warnings, err := findPurevpnServers(ctx, u.httpGet, u.lookupIP)
-	if u.options.Verbose {
+	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("PureVPN: %s", warning)
 		}

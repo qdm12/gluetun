@@ -15,7 +15,7 @@ import (
 
 func (u *updater) updateNordvpn() (err error) {
 	servers, warnings, err := findNordvpnServers(u.httpGet)
-	if u.options.Verbose {
+	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Nordvpn: %s", warning)
 		}
