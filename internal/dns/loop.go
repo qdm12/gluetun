@@ -13,7 +13,7 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func())
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	Restart()
 	Start()
@@ -93,7 +93,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	<-ctx.Done()
 }
 
-func (l *looper) waitForFirstStart(ctx context.Context) {
+func (l *looper) waitForFirstStart(ctx context.Context, signalDNSReady func()) {
 	for {
 		select {
 		case <-l.stop:
@@ -103,6 +103,7 @@ func (l *looper) waitForFirstStart(ctx context.Context) {
 			if l.isEnabled() {
 				return
 			}
+			signalDNSReady()
 			l.logger.Info("not restarting because disabled")
 		case <-l.start:
 			l.setEnabled(true)
@@ -138,11 +139,11 @@ func (l *looper) waitForSubsequentStart(ctx context.Context, unboundCancel conte
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
+func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func()) {
 	defer wg.Done()
 	const fallback = false
 	l.useUnencryptedDNS(fallback)
-	l.waitForFirstStart(ctx)
+	l.waitForFirstStart(ctx, signalDNSReady)
 	if ctx.Err() != nil {
 		return
 	}
@@ -207,6 +208,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			waitError <- err
 		}()
 		l.logger.Info("DNS over TLS is ready")
+		signalDNSReady()
 
 		stayHere := true
 		for stayHere {
