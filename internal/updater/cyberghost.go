@@ -8,16 +8,20 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) updateCyberghost(ctx context.Context) {
-	servers := findCyberghostServers(ctx, u.lookupIP)
+func (u *updater) updateCyberghost(ctx context.Context) (err error) {
+	servers, err := findCyberghostServers(ctx, u.lookupIP)
+	if err != nil {
+		return err
+	}
 	if u.options.Stdout {
 		u.println(stringifyCyberghostServers(servers))
 	}
 	u.servers.Cyberghost.Timestamp = u.timeNow().Unix()
 	u.servers.Cyberghost.Servers = servers
+	return nil
 }
 
-func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.CyberghostServer) {
+func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.CyberghostServer, err error) {
 	groups := getCyberghostGroups()
 	allCountryCodes := getCountryCodes()
 	cyberghostCountryCodes := getCyberghostSubdomainToRegion()
@@ -25,6 +29,9 @@ func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers 
 
 	for groupID, groupName := range groups {
 		for countryCode, region := range possibleCountryCodes {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
 			host := fmt.Sprintf("%s-%s.cg-dialup.net", groupID, countryCode)
 			IPs, err := resolveRepeat(ctx, lookupIP, host, 2)
 			if err != nil || len(IPs) == 0 {
@@ -40,7 +47,7 @@ func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers 
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
-	return servers
+	return servers, nil
 }
 
 //nolint:goconst

@@ -30,6 +30,9 @@ func findVyprvpnServers(ctx context.Context, lookupIP lookupIPFunc) (servers []m
 		return nil, err
 	}
 	for fileName, content := range contents {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 		remoteLines := extractRemoteLinesFromOpenvpn(content)
 		if len(remoteLines) == 0 {
 			return nil, fmt.Errorf("cannot find any remote lines in %s", fileName)

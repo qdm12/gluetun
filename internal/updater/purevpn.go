@@ -78,6 +78,9 @@ func findPurevpnServers(ctx context.Context, httpGet httpGetFunc, lookupIP looku
 		return data[i].Region < data[j].Region
 	})
 	for _, jsonServer := range data {
+		if err := ctx.Err(); err != nil {
+			return nil, warnings, err
+		}
 		if jsonServer.UDP == "" && jsonServer.TCP == "" {
 			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP and UDP for openvpn", jsonServer.Region, jsonServer.Country, jsonServer.City))
 			continue

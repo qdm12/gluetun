@@ -46,14 +46,22 @@ func New(options Options, httpClient *http.Client, currentServers models.AllServ
 }
 
 // TODO parallelize DNS resolution
-func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) {
+func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) { //nolint:gocognit
 	if u.options.Cyberghost {
-		u.updateCyberghost(ctx)
+		if err := u.updateCyberghost(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
+			u.logger.Error(err)
+		}
 	}
 
 	if u.options.Mullvad {
 		if err := u.updateMullvad(); err != nil {
 			u.logger.Error(err)
+		}
+		if err := ctx.Err(); err != nil {
+			return allServers, err
 		}
 	}
 
@@ -62,16 +70,25 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		if err := u.updateNordvpn(); err != nil {
 			u.logger.Error(err)
 		}
+		if err := ctx.Err(); err != nil {
+			return allServers, err
+		}
 	}
 
 	if u.options.PIA {
 		if err := u.updatePIA(); err != nil {
 			u.logger.Error(err)
 		}
+		if ctx.Err() != nil {
+			return allServers, ctx.Err()
+		}
 	}
 
 	if u.options.PIAold {
 		if err := u.updatePIAOld(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
 			u.logger.Error(err)
 		}
 	}
@@ -79,24 +96,38 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Purevpn {
 		// TODO support servers offering only TCP or only UDP
 		if err := u.updatePurevpn(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
 			u.logger.Error(err)
 		}
 	}
 
 	if u.options.Surfshark {
 		if err := u.updateSurfshark(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
 			u.logger.Error(err)
 		}
 	}
 
 	if u.options.Vyprvpn {
 		if err := u.updateVyprvpn(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
 			u.logger.Error(err)
 		}
 	}
 
 	if u.options.Windscribe {
-		u.updateWindscribe(ctx)
+		if err := u.updateWindscribe(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
+			u.logger.Error(err)
+		}
 	}
 
 	return u.servers, nil
