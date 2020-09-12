@@ -292,7 +292,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 			shutdownErrorsCount++
 		}
 	}
-	waiting, waited := context.WithTimeout(context.Background(), time.Second)
+	const shutdownGracePeriod = 5 * time.Second
+	waiting, waited := context.WithTimeout(context.Background(), shutdownGracePeriod)
 	go func() {
 		defer waited()
 		wg.Wait()
