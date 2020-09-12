@@ -48,6 +48,7 @@ func New(options Options, httpClient *http.Client, currentServers models.AllServ
 // TODO parallelize DNS resolution
 func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) { //nolint:gocognit
 	if u.options.Cyberghost {
+		u.logger.Info("updating Cyberghost servers...")
 		if err := u.updateCyberghost(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
@@ -57,6 +58,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.Mullvad {
+		u.logger.Info("updating Mullvad servers...")
 		if err := u.updateMullvad(); err != nil {
 			u.logger.Error(err)
 		}
@@ -67,6 +69,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 
 	if u.options.Nordvpn {
 		// TODO support servers offering only TCP or only UDP
+		u.logger.Info("updating NordVPN servers...")
 		if err := u.updateNordvpn(); err != nil {
 			u.logger.Error(err)
 		}
@@ -76,6 +79,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.PIA {
+		u.logger.Info("updating Private Internet Access (v4) servers...")
 		if err := u.updatePIA(); err != nil {
 			u.logger.Error(err)
 		}
@@ -85,6 +89,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.PIAold {
+		u.logger.Info("updating Private Internet Access old (v3) servers...")
 		if err := u.updatePIAOld(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
@@ -94,6 +99,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.Purevpn {
+		u.logger.Info("updating PureVPN servers...")
 		// TODO support servers offering only TCP or only UDP
 		if err := u.updatePurevpn(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
@@ -104,6 +110,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.Surfshark {
+		u.logger.Info("updating Surfshark servers...")
 		if err := u.updateSurfshark(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
@@ -113,6 +120,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.Vyprvpn {
+		u.logger.Info("updating Vyprvpn servers...")
 		if err := u.updateVyprvpn(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
@@ -122,6 +130,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.Windscribe {
+		u.logger.Info("updating Windscribe servers...")
 		if err := u.updateWindscribe(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
