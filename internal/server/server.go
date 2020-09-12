@@ -69,8 +69,10 @@ func (s *server) makeHandler() http.HandlerFunc {
 			switch r.RequestURI {
 			case "/openvpn/actions/restart":
 				s.restartOpenvpn()
+				w.WriteHeader(http.StatusOK)
 			case "/unbound/actions/restart":
 				s.restartUnbound()
+				w.WriteHeader(http.StatusOK)
 			case "/openvpn/portforwarded":
 				s.handleGetPortForwarded(w)
 			case "/openvpn/settings":
@@ -79,6 +81,7 @@ func (s *server) makeHandler() http.HandlerFunc {
 				s.handleHealth(w)
 			case "/updater/restart":
 				s.restartUpdater()
+				w.WriteHeader(http.StatusOK)
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}
