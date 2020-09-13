@@ -11,7 +11,12 @@ import (
 )
 
 func (u *updater) updateSurfshark(ctx context.Context) (err error) {
-	servers, err := findSurfsharkServers(ctx, u.lookupIP)
+	servers, warnings, err := findSurfsharkServers(ctx, u.lookupIP)
+	if u.options.CLI {
+		for _, warning := range warnings {
+			u.logger.Warn("Surfshark: %s", warning)
+		}
+	}
 	if err != nil {
 		return fmt.Errorf("cannot update Surfshark servers: %w", err)
 	}
@@ -23,51 +28,54 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 	return nil
 }
 
-func findSurfsharkServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.SurfsharkServer, err error) {
-	const zipURL = "https://account.surfshark.com/api/v1/server/configurations"
+func findSurfsharkServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.SurfsharkServer, warnings []string, err error) {
+	const zipURL = "https://my.surfshark.com/vpn/api/v1/server/configurations"
 	contents, err := fetchAndExtractFiles(zipURL)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	mapping := surfsharkSubdomainToRegion()
 	for fileName, content := range contents {
 		if err := ctx.Err(); err != nil {
-			return nil, err
+			return nil, warnings, err
 		}
 		if strings.HasSuffix(fileName, "_tcp.ovpn") {
 			continue // only parse UDP files
 		}
 		remoteLines := extractRemoteLinesFromOpenvpn(content)
 		if len(remoteLines) == 0 {
-			return nil, fmt.Errorf("cannot find any remote lines in %s", fileName)
+			return nil, warnings, fmt.Errorf("cannot find any remote lines in %s", fileName)
 		}
 		hosts := extractHostnamesFromRemoteLines(remoteLines)
 		if len(hosts) == 0 {
-			return nil, fmt.Errorf("cannot find any hosts in %s", fileName)
+			return nil, warnings, fmt.Errorf("cannot find any hosts in %s", fileName)
+		} else if len(hosts) > 1 {
+			warning := fmt.Sprintf("more than one host in %q, only taking first one %q into account", fileName, hosts[0])
+			warnings = append(warnings, warning)
 		}
-		var IPs []net.IP
-		var region string
-		for _, host := range hosts {
-			if net.ParseIP(host) != nil {
-				// only a few IP addresses, no idea for what region
-				// ignore them
-				continue
-			}
-			const repetition = 3
-			newIPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
-			if err != nil {
-				return nil, err
-			}
-			IPs = append(IPs, newIPs...)
-			if region == "" {
-				subdomain := strings.TrimSuffix(host, ".prod.surfshark.com")
-				region = surfsharkSubdomainToRegion(subdomain)
-			}
+		host := hosts[0]
+		if net.ParseIP(host) != nil {
+			warning := fmt.Sprintf("ignoring IP address host %q in %q", host, fileName)
+			warnings = append(warnings, warning)
+			continue
 		}
-		if len(IPs) == 0 {
-			continue // only IPs, no hostnames found
+		const repetition = 5
+		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
+		if err != nil {
+			return nil, warnings, err
+		} else if len(IPs) == 0 {
+			warning := fmt.Sprintf("no IP address found for host %q", host)
+			warnings = append(warnings, warning)
+			continue
 		}
-		if region == "" { // region not found in mapping
+		subdomain := strings.TrimSuffix(host, ".prod.surfshark.com")
+		region, ok := mapping[subdomain]
+		if ok {
+			delete(mapping, subdomain)
+		} else {
 			region = strings.TrimSuffix(hosts[0], ".prod.surfshark.com")
+			warning := fmt.Sprintf("subdomain %q not found in Surfshark mapping", subdomain)
+			warnings = append(warnings, warning)
 		}
 		server := models.SurfsharkServer{
 			Region: region,
@@ -75,10 +83,45 @@ func findSurfsharkServers(ctx context.Context, lookupIP lookupIPFunc) (servers [
 		}
 		servers = append(servers, server)
 	}
+
+	// process entries in mapping that were not in zip file
+	remainingServers, newWarnings, err := getRemainingServers(ctx, mapping, lookupIP)
+	warnings = append(warnings, newWarnings...)
+	if err != nil {
+		return nil, warnings, err
+	}
+	servers = append(servers, remainingServers...)
+
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
-	return servers, nil
+	return servers, warnings, nil
+}
+func getRemainingServers(ctx context.Context, mapping map[string]string, lookupIP lookupIPFunc) (
+	servers []models.SurfsharkServer, warnings []string, err error) {
+	for subdomain, region := range mapping {
+		if err := ctx.Err(); err != nil {
+			return servers, warnings, err
+		}
+		host := subdomain + ".prod.surfshark.com"
+		const repetition = 3
+		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
+		if err != nil {
+			warning := fmt.Sprintf("subdomain %q for region %q from mapping: %s", subdomain, region, err)
+			warnings = append(warnings, warning)
+			continue
+		} else if len(IPs) == 0 {
+			warning := fmt.Sprintf("subdomain %q for region %q from mapping did not resolve to any IP address", subdomain, region)
+			warnings = append(warnings, warning)
+			continue
+		}
+		server := models.SurfsharkServer{
+			Region: region,
+			IPs:    uniqueSortedIPs(IPs),
+		}
+		servers = append(servers, server)
+	}
+	return servers, warnings, nil
 }
 
 func stringifySurfsharkServers(servers []models.SurfsharkServer) (s string) {
@@ -92,7 +135,7 @@ func stringifySurfsharkServers(servers []models.SurfsharkServer) (s string) {
 	return s
 }
 
-func surfsharkSubdomainToRegion(subdomain string) (region string) {
+func surfsharkSubdomainToRegion() (mapping map[string]string) {
 	return map[string]string{
 		"ae-dub":       "United Arab Emirates",
 		"al-tia":       "Albania",
@@ -248,5 +291,9 @@ func surfsharkSubdomainToRegion(subdomain string) (region string) {
 		"ar-bua":       "Argentina Buenos Aires",
 		"tr-ist":       "Turkey Istanbul",
 		"mx-mex":       "Mexico City Mexico",
-	}[subdomain]
+		"ca-tor-mp001": "Canada Toronto mp001",
+		"de-fra-mp001": "Germany Frankfurt mp001",
+		"nl-ams-mp001": "Netherlands Amsterdam mp001",
+		"us-sfo-mp001": "US San Francisco mp001",
+	}
 }

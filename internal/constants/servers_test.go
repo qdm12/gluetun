@@ -53,7 +53,7 @@ func Test_timestamps(t *testing.T) {
 	assert.Equal(t, "hAjEIo6FIrUsJuRmKOKPzA", digestServersTimestamp(t, allServers.Pia.Servers, allServers.Pia.Timestamp))
 	assert.Equal(t, "uiMp4IqH7NmvCIQ7gvR05Q", digestServersTimestamp(t, allServers.PiaOld.Servers, allServers.PiaOld.Timestamp))
 	assert.Equal(t, "kwJdVWTiBOspfrRwZIA+Sg", digestServersTimestamp(t, allServers.Purevpn.Servers, allServers.Purevpn.Timestamp))
-	assert.Equal(t, "2rceMJexUNMv0VIqme34iA", digestServersTimestamp(t, allServers.Surfshark.Servers, allServers.Surfshark.Timestamp))
+	assert.Equal(t, "q28ju2KJqLhrggJTTjXSiw", digestServersTimestamp(t, allServers.Surfshark.Servers, allServers.Surfshark.Timestamp))
 	assert.Equal(t, "KdIQWi2tYUM4aMXvWfVBEg", digestServersTimestamp(t, allServers.Vyprvpn.Servers, allServers.Vyprvpn.Timestamp))
 	assert.Equal(t, "faQUVtOnLMVezN0giHSz3Q", digestServersTimestamp(t, allServers.Windscribe.Servers, allServers.Windscribe.Timestamp))
 }
