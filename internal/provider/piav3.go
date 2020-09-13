@@ -13,19 +13,19 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-type pia struct {
+type piaV3 struct {
 	random  random.Random
 	servers []models.PIAServer
 }
 
-func newPrivateInternetAccess(servers []models.PIAServer) *pia {
-	return &pia{
+func newPrivateInternetAccessV3(servers []models.PIAServer) *piaV3 {
+	return &piaV3{
 		random:  random.NewRandom(),
 		servers: servers,
 	}
 }
 
-func (p *pia) filterServers(region string) (servers []models.PIAServer) {
+func (p *piaV3) filterServers(region string) (servers []models.PIAServer) {
 	if len(region) == 0 {
 		return p.servers
 	}
@@ -37,7 +37,7 @@ func (p *pia) filterServers(region string) (servers []models.PIAServer) {
 	return nil
 }
 
-func (p *pia) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
+func (p *piaV3) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
 	servers := p.filterServers(selection.Region)
 	if len(servers) == 0 {
 		return nil, fmt.Errorf("no server found for region %q", selection.Region)
@@ -87,7 +87,7 @@ func (p *pia) GetOpenVPNConnections(selection models.ServerSelection) (connectio
 	return connections, nil
 }
 
-func (p *pia) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (p *piaV3) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	var X509CRL, certificate string
 	if extras.EncryptionPreset == constants.PIAEncryptionPresetNormal {
 		if len(cipher) == 0 {
@@ -162,7 +162,7 @@ func (p *pia) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, 
 	return lines
 }
 
-func (p *pia) GetPortForward(client network.Client) (port uint16, err error) {
+func (p *piaV3) GetPortForward(client network.Client) (port uint16, err error) {
 	b, err := p.random.GenerateRandomBytes(32)
 	if err != nil {
 		return 0, err
