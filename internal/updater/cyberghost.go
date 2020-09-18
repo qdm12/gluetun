@@ -49,6 +49,9 @@ func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers 
 		}
 		servers = append(servers, server)
 	}
+	if err := ctx.Err(); err != nil {
+		return servers, err
+	}
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
