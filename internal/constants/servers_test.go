@@ -48,7 +48,7 @@ func Test_timestamps(t *testing.T) {
 	t.Parallel()
 	allServers := GetAllServers()
 	assert.Equal(t, "EFMpdq2b9COLevjXmje5zg", digestServersTimestamp(t, allServers.Cyberghost.Servers, allServers.Cyberghost.Timestamp))
-	assert.Equal(t, "6VjgHtTZOz+TDKpiQOweLA", digestServersTimestamp(t, allServers.Mullvad.Servers, allServers.Mullvad.Timestamp))
+	assert.Equal(t, "EU4fTzD7jWC9N5kmN5bOEg", digestServersTimestamp(t, allServers.Mullvad.Servers, allServers.Mullvad.Timestamp))
 	assert.Equal(t, "OLI62FoTf2wis25Nw4FLpg", digestServersTimestamp(t, allServers.Nordvpn.Servers, allServers.Nordvpn.Timestamp))
 	assert.Equal(t, "hAjEIo6FIrUsJuRmKOKPzA", digestServersTimestamp(t, allServers.Pia.Servers, allServers.Pia.Timestamp))
 	assert.Equal(t, "uiMp4IqH7NmvCIQ7gvR05Q", digestServersTimestamp(t, allServers.PiaOld.Servers, allServers.PiaOld.Timestamp))

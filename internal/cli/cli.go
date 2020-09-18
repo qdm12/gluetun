@@ -93,7 +93,7 @@ func Update(args []string) error {
 	options := updater.Options{CLI: true}
 	var flushToFile bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
-	flagSet.BoolVar(&flushToFile, "file", true, "Write results to /gluetun/servers.json (for end users)")
+	flagSet.BoolVar(&flushToFile, "file", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&options.Stdout, "stdout", false, "Write results to console to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "1.1.1.1", "DNS resolver address to use")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")

@@ -12,7 +12,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Mullvad: models.MullvadServers{
 			Version:   1,
-			Timestamp: 1599323261,
+			Timestamp: 1600438544,
 			Servers:   MullvadServers(),
 		},
 		Nordvpn: models.NordvpnServers{
