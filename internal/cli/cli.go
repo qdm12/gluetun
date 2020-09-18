@@ -103,6 +103,7 @@ func Update(args []string) error {
 	flagSet.BoolVar(&options.PIAold, "piaold", false, "Update Private Internet Access pre-summer 2020 servers")
 	flagSet.BoolVar(&options.Purevpn, "purevpn", false, "Update Purevpn servers")
 	flagSet.BoolVar(&options.Surfshark, "surfshark", false, "Update Surfshark servers")
+	flagSet.BoolVar(&options.Vyprvpn, "vyprvpn", false, "Update Vyprvpn servers")
 	flagSet.BoolVar(&options.Windscribe, "windscribe", false, "Update Windscribe servers")
 	if err := flagSet.Parse(args); err != nil {
 		return err
