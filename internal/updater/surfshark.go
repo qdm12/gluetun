@@ -2,7 +2,9 @@ package updater
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"sort"
 	"strings"
@@ -11,7 +13,7 @@ import (
 )
 
 func (u *updater) updateSurfshark(ctx context.Context) (err error) {
-	servers, warnings, err := findSurfsharkServers(ctx, u.lookupIP)
+	servers, warnings, err := findSurfsharkServersFromZip(ctx, u.lookupIP)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Surfshark: %s", warning)
@@ -28,7 +30,47 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 	return nil
 }
 
-func findSurfsharkServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.SurfsharkServer, warnings []string, err error) {
+//nolint:deadcode,unused
+func findSurfsharkServersFromAPI(ctx context.Context, lookupIP lookupIPFunc, httpGet httpGetFunc) (servers []models.SurfsharkServer, warnings []string, err error) {
+	const url = "https://my.surfshark.com/vpn/api/v1/server/clusters"
+	response, err := httpGet(url)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer response.Body.Close()
+	b, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, nil, err
+	}
+	var jsonServers []struct {
+		Host     string `json:"connectionName"`
+		Country  string `json:"country"`
+		Location string `json:"location"`
+	}
+	if err := json.Unmarshal(b, &jsonServers); err != nil {
+		return nil, nil, err
+	}
+	for _, jsonServer := range jsonServers {
+		host := jsonServer.Host
+		const repetition = 5
+		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
+		if err != nil {
+			return nil, warnings, err
+		} else if len(IPs) == 0 {
+			warning := fmt.Sprintf("no IP address found for host %q", host)
+			warnings = append(warnings, warning)
+			continue
+		}
+		server := models.SurfsharkServer{
+			Region: jsonServer.Country + " " + jsonServer.Location,
+			IPs:    uniqueSortedIPs(IPs),
+		}
+		servers = append(servers, server)
+	}
+	return servers, warnings, nil
+}
+
+func findSurfsharkServersFromZip(ctx context.Context, lookupIP lookupIPFunc) (servers []models.SurfsharkServer, warnings []string, err error) {
 	const zipURL = "https://my.surfshark.com/vpn/api/v1/server/configurations"
 	contents, err := fetchAndExtractFiles(zipURL)
 	if err != nil {
@@ -97,6 +139,7 @@ func findSurfsharkServers(ctx context.Context, lookupIP lookupIPFunc) (servers [
 	})
 	return servers, warnings, nil
 }
+
 func getRemainingServers(ctx context.Context, mapping map[string]string, lookupIP lookupIPFunc) (
 	servers []models.SurfsharkServer, warnings []string, err error) {
 	for subdomain, region := range mapping {
