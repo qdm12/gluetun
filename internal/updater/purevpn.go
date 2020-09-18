@@ -90,7 +90,7 @@ func findPurevpnServers(ctx context.Context, httpGet httpGetFunc, lookupIP looku
 			continue
 		}
 		host := jsonServer.UDP
-		const repetition = 3
+		const repetition = 5
 		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
 		if err != nil {
 			warnings = append(warnings, err.Error())
