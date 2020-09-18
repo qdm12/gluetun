@@ -6,6 +6,7 @@ import (
 	"net"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -50,11 +51,21 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
+	const maxGoroutines = 10
+	guard := make(chan struct{}, maxGoroutines)
+	errors := make(chan error)
+	serversCh := make(chan models.PIAServer)
 	servers := make([]models.PIAServer, 0, len(contents))
+	ctx, cancel := context.WithCancel(ctx)
+	wg := &sync.WaitGroup{}
+	defer func() {
+		cancel()
+		wg.Wait()
+		defer close(guard)
+		defer close(errors)
+		defer close(serversCh)
+	}()
 	for fileName, content := range contents {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
 		remoteLines := extractRemoteLinesFromOpenvpn(content)
 		if len(remoteLines) == 0 {
 			return fmt.Errorf("cannot find any remote lines in %s", fileName)
@@ -63,20 +74,19 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 		if len(hosts) == 0 {
 			return fmt.Errorf("cannot find any hosts in %s", fileName)
 		}
-		var IPs []net.IP
-		for _, host := range hosts {
-			newIPs, err := resolveRepeat(ctx, u.lookupIP, host, 3)
-			if err != nil {
-				return err
-			}
-			IPs = append(IPs, newIPs...)
-		}
 		region := strings.TrimSuffix(fileName, ".ovpn")
-		server := models.PIAServer{
-			Region: region,
-			IPs:    uniqueSortedIPs(IPs),
+		guard <- struct{}{}
+		wg.Add(1)
+		go resolvePIAHostname(ctx, wg, region, hosts, u.lookupIP, errors, serversCh)
+		<-guard
+	}
+	for range contents {
+		select {
+		case err := <-errors:
+			return err
+		case server := <-serversCh:
+			servers = append(servers, server)
 		}
-		servers = append(servers, server)
 	}
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
@@ -87,6 +97,27 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 	u.servers.PiaOld.Timestamp = u.timeNow().Unix()
 	u.servers.PiaOld.Servers = servers
 	return nil
+}
+
+func resolvePIAHostname(ctx context.Context, wg *sync.WaitGroup,
+	region string, hosts []string, lookupIP lookupIPFunc,
+	errors chan<- error, serversCh chan<- models.PIAServer) {
+	defer wg.Done()
+	var IPs []net.IP //nolint:prealloc
+	// usually one single host in this case
+	// so no need to run in goroutines the for loop below
+	for _, host := range hosts {
+		newIPs, err := resolveRepeat(ctx, lookupIP, host, 3)
+		if err != nil {
+			errors <- err
+			return
+		}
+		IPs = append(IPs, newIPs...)
+	}
+	serversCh <- models.PIAServer{
+		Region: region,
+		IPs:    uniqueSortedIPs(IPs),
+	}
 }
 
 func stringifyPIAServers(servers []models.PIAServer) (s string) {
