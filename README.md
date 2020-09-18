@@ -35,7 +35,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
-- Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
+- Built in Shadowsocks proxy (protocol based on SOCKS5 with an encryption layer, tunnels TCP+UDP)
 - Built in HTTP proxy (Tinyproxy, tunnels TCP)
 - [Connect other containers to it](https://github.com/qdm12/gluetun#connect-to-it)
 - [Connect LAN devices to it](https://github.com/qdm12/gluetun#connect-to-it)
@@ -74,7 +74,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
     - Change the many [environment variables](#environment-variables) available
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
-    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
+    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the Shadowsocks proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
     - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
 
     **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/gluetun/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
@@ -232,7 +232,7 @@ That one is important if you want to connect to the container from your LAN for 
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| `SHADOWSOCKS` | `off` | `on`, `off` | Enable the internal SOCKS5 proxy Shadowsocks |
+| `SHADOWSOCKS` | `off` | `on`, `off` | Enable the internal Shadowsocks proxy |
 | `SHADOWSOCKS_LOG` | `off` | `on`, `off` | Enable logging |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` | Internal port number for Shadowsocks to listen on |
 | `SHADOWSOCKS_PASSWORD` | |  | Password to use to connect to Shadowsocks |
@@ -295,9 +295,9 @@ There are various ways to achieve this, depending on your use case.
     1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs
 
     </p></details>
-- <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
+- <details><summary>Connect LAN devices through the built-in *Shadowsocks* proxy (per app, system wide, etc.)</summary><p>
 
-    1. Setup a SOCKS5 proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
+    1. Setup a Shadowsocks proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
         - **note** some clients do not tunnel UDP so your DNS queries will be done locally and not through Gluetun and its built in DNS over TLS
         - Clients that support such UDP tunneling are, as far as I know:
             - iOS: Potatso Lite
@@ -306,7 +306,7 @@ There are various ways to achieve this, depending on your use case.
     1. Ensure the Gluetun container is launched with:
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
-    1. With your SOCKS5 proxy client
+    1. With your Shadowsocks proxy client
         - Enter the Docker host (i.e. `192.168.1.10`) as the server IP
         - Enter port TCP (and UDP, if available) `8388` as the server port
         - Use the password you have set with `SHADOWSOCKS_PASSWORD`
