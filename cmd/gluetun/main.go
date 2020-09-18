@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -327,8 +326,15 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 		case logging.ErrorLevel:
 			logger.Error(line)
 		}
-		if strings.Contains(line, "Initialization Sequence Completed") {
+		switch {
+		case line == "openvpn: Initialization Sequence Completed":
 			signalTunnelReady()
+		case line == "openvpn: TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)":
+			logger.Warn("This means that either...")
+			logger.Warn("1. The VPN server IP address you are trying to connect to is no longer valid, see https://github.com/qdm12/gluetun/wiki/Update-servers-information")
+			logger.Warn("2. The VPN server crashed, try changing region")
+			logger.Warn("3. Your Internet connection is not working, ensure it works")
+			logger.Warn("Feel free to create an issue at https://github.com/qdm12/gluetun/issues/new/choose")
 		}
 	}, func(err error) {
 		logger.Warn(err)
