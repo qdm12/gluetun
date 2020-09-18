@@ -43,7 +43,8 @@ func findVyprvpnServers(ctx context.Context, lookupIP lookupIPFunc) (servers []m
 		}
 		var IPs []net.IP
 		for _, host := range hosts {
-			newIPs, err := lookupIP(ctx, host)
+			const repetitions = 1
+			newIPs, err := resolveRepeat(ctx, lookupIP, host, repetitions)
 			if err != nil {
 				return nil, err
 			}

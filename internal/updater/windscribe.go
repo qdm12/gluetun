@@ -31,7 +31,8 @@ func findWindscribeServers(ctx context.Context, lookupIP lookupIPFunc) (servers 
 			return nil, err
 		}
 		host := countryCode + "." + domain
-		ips, err := resolveRepeat(ctx, lookupIP, host, 2)
+		const repetitions = 5
+		ips, err := resolveRepeat(ctx, lookupIP, host, repetitions)
 		if err != nil || len(ips) == 0 {
 			continue
 		}

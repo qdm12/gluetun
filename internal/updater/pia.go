@@ -107,7 +107,8 @@ func resolvePIAHostname(ctx context.Context, wg *sync.WaitGroup,
 	// usually one single host in this case
 	// so no need to run in goroutines the for loop below
 	for _, host := range hosts {
-		newIPs, err := resolveRepeat(ctx, lookupIP, host, 3)
+		const repetition = 5
+		newIPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
 		if err != nil {
 			errors <- err
 			return
