@@ -189,7 +189,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
-		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, cancel)
+		ovpnConf, firewallConf, logger, httpClient, fileManager, streamMerger, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)

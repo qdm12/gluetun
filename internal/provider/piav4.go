@@ -1,14 +1,10 @@
 package provider
 
 import (
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 type piaV4 struct {
@@ -29,6 +25,6 @@ func (p *piaV4) BuildConf(connections []models.OpenVPNConnection, verbosity, uid
 	return buildPIAConf(connections, verbosity, root, cipher, auth, extras)
 }
 
-func (p *piaV4) GetPortForward(client network.Client) (port uint16, err error) {
+func (p *piaV4) GetPortForward(client *http.Client) (port uint16, err error) {
 	return 0, fmt.Errorf("not implemented")
 }

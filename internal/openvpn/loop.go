@@ -3,6 +3,7 @@ package openvpn
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sync"
 	"time"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 )
 
 type Looper interface {
@@ -44,7 +44,7 @@ type looper struct {
 	fw   firewall.Configurator
 	// Other objects
 	logger       logging.Logger
-	client       network.Client
+	client       *http.Client
 	fileManager  files.FileManager
 	streamMerger command.StreamMerger
 	cancel       context.CancelFunc
@@ -56,7 +56,7 @@ type looper struct {
 func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
 	uid, gid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator,
-	logger logging.Logger, client network.Client, fileManager files.FileManager,
+	logger logging.Logger, client *http.Client, fileManager files.FileManager,
 	streamMerger command.StreamMerger, cancel context.CancelFunc) Looper {
 	return &looper{
 		provider:           provider,
@@ -200,7 +200,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	<-ctx.Done()
 }
 
-func (l *looper) portForward(ctx context.Context, providerConf provider.Provider, client network.Client) {
+func (l *looper) portForward(ctx context.Context, providerConf provider.Provider, client *http.Client) {
 	settings := l.GetSettings()
 	if !settings.Provider.PortForwarding.Enabled {
 		return

@@ -4,12 +4,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/crypto/random"
-	"github.com/qdm12/golibs/network"
 )
 
 type piaV3 struct {
@@ -32,26 +32,31 @@ func (p *piaV3) BuildConf(connections []models.OpenVPNConnection, verbosity, uid
 	return buildPIAConf(connections, verbosity, root, cipher, auth, extras)
 }
 
-func (p *piaV3) GetPortForward(client network.Client) (port uint16, err error) {
+func (p *piaV3) GetPortForward(client *http.Client) (port uint16, err error) {
 	b, err := p.random.GenerateRandomBytes(32)
 	if err != nil {
 		return 0, err
 	}
 	clientID := hex.EncodeToString(b)
 	url := fmt.Sprintf("%s/?client_id=%s", constants.PIAPortForwardURL, clientID)
-	content, status, err := client.GetContent(url) // TODO add ctx
-	switch {
-	case err != nil:
+	response, err := client.Get(url) // TODO add ctx
+	if err != nil {
 		return 0, err
-	case status != http.StatusOK:
-		return 0, fmt.Errorf("status is %d for %s; does your PIA server support port forwarding?", status, url)
-	case len(content) == 0:
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("%s for %s; does your PIA server support port forwarding?", response.Status, url)
+	}
+	b, err = ioutil.ReadAll(response.Body)
+	if err != nil {
+		return 0, err
+	} else if len(b) == 0 {
 		return 0, fmt.Errorf("port forwarding is already activated on this connection, has expired, or you are not connected to a PIA region that supports port forwarding")
 	}
 	body := struct {
 		Port uint16 `json:"port"`
 	}{}
-	if err := json.Unmarshal(content, &body); err != nil {
+	if err := json.Unmarshal(b, &body); err != nil {
 		return 0, fmt.Errorf("port forwarding response: %w", err)
 	}
 	return body.Port, nil

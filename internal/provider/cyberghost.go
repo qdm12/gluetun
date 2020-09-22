@@ -2,11 +2,11 @@ package provider
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 type cyberghost struct {
@@ -135,6 +135,6 @@ func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity
 	return lines
 }
 
-func (c *cyberghost) GetPortForward(client network.Client) (port uint16, err error) {
+func (c *cyberghost) GetPortForward(client *http.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for cyberghost")
 }

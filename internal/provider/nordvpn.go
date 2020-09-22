@@ -2,11 +2,11 @@ package provider
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 type nordvpn struct {
@@ -142,6 +142,6 @@ func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 	return lines
 }
 
-func (n *nordvpn) GetPortForward(client network.Client) (port uint16, err error) {
+func (n *nordvpn) GetPortForward(client *http.Client) (port uint16, err error) {
 	panic("port forwarding is not supported for nordvpn")
 }
