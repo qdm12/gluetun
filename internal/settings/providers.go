@@ -106,6 +106,10 @@ func GetMullvadSettings(paramsReader params.Reader) (settings models.ProviderSet
 			return settings, fmt.Errorf("port %d is not valid for UDP protocol", settings.ServerSelection.CustomPort)
 		}
 	}
+	settings.ExtraConfigOptions.OpenVPNIPv6, err = paramsReader.GetOpenVPNIPv6()
+	if err != nil {
+		return settings, err
+	}
 	return settings, nil
 }
 

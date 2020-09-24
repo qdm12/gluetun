@@ -94,7 +94,6 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
-		"tun-ipv6",
 		"fast-io",
 		"script-security 2",
 
@@ -111,6 +110,12 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", connections[0].Protocol),
 		fmt.Sprintf("cipher %s", cipher),
+	}
+	if extras.OpenVPNIPv6 {
+		lines = append(lines, "tun-ipv6")
+	} else {
+		lines = append(lines, `pull-filter ignore "route-ipv6"`)
+		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")

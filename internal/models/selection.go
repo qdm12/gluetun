@@ -46,6 +46,7 @@ type ServerSelection struct { //nolint:maligned
 type ExtraConfigOptions struct {
 	ClientKey        string `json:"-"`                // Cyberghost
 	EncryptionPreset string `json:"encryptionPreset"` // PIA
+	OpenVPNIPv6      bool   `json:"openvpnIPv6"`      // Mullvad
 }
 
 // PortForwarding contains settings for port forwarding
@@ -74,6 +75,10 @@ func (p *ProviderSettings) String() string {
 	if p.ServerSelection.Number > 0 {
 		number = fmt.Sprintf("%d", p.ServerSelection.Number)
 	}
+	ipv6 := "off"
+	if p.ExtraConfigOptions.OpenVPNIPv6 {
+		ipv6 = "on"
+	}
 	switch strings.ToLower(string(p.Name)) {
 	case "private internet access old":
 		settingsList = append(settingsList,
@@ -92,6 +97,7 @@ func (p *ProviderSettings) String() string {
 			"City: "+p.ServerSelection.City,
 			"ISP: "+p.ServerSelection.ISP,
 			"Custom port: "+customPort,
+			"IPv6: "+ipv6,
 		)
 	case "windscribe":
 		settingsList = append(settingsList,
