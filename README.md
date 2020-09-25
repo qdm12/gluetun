@@ -4,7 +4,7 @@
 Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN,
 iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *Youtube videos added*
+**ANNOUNCEMENT**: *Github Wiki reworked*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
@@ -48,12 +48,8 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 ## Setup
 
-1. Requirements
-    - A VPN account with one of the service providers supported
-    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/gluetun/wiki/External-firewall-requirements)
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#synology)
-1. For **Mullvad** only, see [**this**](https://github.com/qdm12/gluetun/wiki/Common-issues#ipv6-does-not-work).
+    - [Synology users Wiki page](https://github.com/qdm12/gluetun/wiki/Synology-setup)
 1. Launch the container with:
 
     ```bash
@@ -89,7 +85,7 @@ Check the VPN IP address matches your expectations
 docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo.io
 ```
 
-Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Testing)
+▶ [Testing Wiki page](https://github.com/qdm12/gluetun/wiki/Testing-the-setup)
 
 ## Environment variables
 
@@ -146,7 +142,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your **service** username, found at the bottom of the [manual setup page](https://account.surfshark.com/setup/manual) |
     | 🏁 `PASSWORD` | | | Your **service** password |
-    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/gluetun/wiki/surfshark) | VPN server region |
+    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/gluetun/wiki/Surfshark-Servers) | VPN server region |
 
 - Cyberghost
 
@@ -155,8 +151,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | 🏁 `CLIENT_KEY` | | | Your device client key content, **see below** |
-    | `REGION` | | One of the [Cyberghost countries](https://github.com/qdm12/gluetun/wiki/Cyberghost#regions) | VPN server country |
-    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/gluetun/wiki/Cyberghost#server-groups) | Server group |
+    | `REGION` | | One of the Cyberghost regions, [Wiki page](https://github.com/qdm12/gluetun/wiki/Cyberghost-Servers) | VPN server country |
+    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the server groups (see above Wiki page) | Server group |
 
     To specify your client key, you can either:
 
@@ -362,11 +358,11 @@ You can also use the HTTP control server (see below) to get the port forwarded.
 
 ## HTTP control server
 
-See [its Wiki page](https://github.com/qdm12/gluetun/wiki/HTTP-control-server)
+[Wiki page](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server)
 
 ## Development and contributing
 
-- Contribute with code: see [the Wiki](https://github.com/qdm12/gluetun/wiki/Contributing).
+- Contribute with code: start with [this Wiki page](https://github.com/qdm12/gluetun/wiki/Developement-setup)
 - [The list of existing contributors 👍](https://github.com/qdm12/gluetun/blob/master/.github/CONTRIBUTING.md#Contributors)
 - [Github workflows](https://github.com/qdm12/gluetun/actions) to know what's building
 - [List of issues and feature requests](https://github.com/qdm12/gluetun/issues)
