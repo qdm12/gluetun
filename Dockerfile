@@ -43,6 +43,7 @@ ENV VPNSP=pia \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_ROOT=no \
     OPENVPN_TARGET_IP= \
+    OPENVPN_IPV6=off \
     TZ= \
     UID=1000 \
     GID=1000 \

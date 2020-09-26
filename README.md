@@ -103,6 +103,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 | `OPENVPN_TARGET_IP` | | Valid IP address | Specify a target VPN server (or gateway) IP address to use |
 | `OPENVPN_CIPHER` | | i.e. `aes-256-gcm` | Specify a custom cipher to use. It will also set `ncp-disable` if using AES GCM for PIA |
 | `OPENVPN_AUTH` | | i.e. `sha256` | Specify a custom auth algorithm to use |
+| `OPENVPN_IPV6` | `off` | `on`, `off` | Enable tunneling of IPv6 (only for Mullvad) |
 
 *For all providers below, server location parameters are all optional. By default a random server is picked using the filter settings provided.*
 
@@ -126,6 +127,8 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | `CITY` | | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) | VPN server city |
     | `ISP` | | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) | VPN server ISP |
     | `PORT` | | `80`, `443` or `1401` for TCP; `53`, `1194`, `1195`, `1196`, `1197`, `1300`, `1301`, `1302`, `1303` or `1400` for UDP. Defaults to TCP `443` and UDP `1194` | Custom VPN port to use |
+
+    💡 [Mullvad IPv6 Wiki page](https://github.com/qdm12/gluetun/wiki/Mullvad-IPv6)
 
 - Windscribe
 
