@@ -77,8 +77,7 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 		region := strings.TrimSuffix(fileName, ".ovpn")
 		guard <- struct{}{}
 		wg.Add(1)
-		go resolvePIAHostname(ctx, wg, region, hosts, u.lookupIP, errors, serversCh)
-		<-guard
+		go resolvePIAHostname(ctx, wg, region, hosts, u.lookupIP, errors, serversCh, guard)
 	}
 	for range contents {
 		select {
@@ -101,8 +100,11 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 
 func resolvePIAHostname(ctx context.Context, wg *sync.WaitGroup,
 	region string, hosts []string, lookupIP lookupIPFunc,
-	errors chan<- error, serversCh chan<- models.PIAServer) {
-	defer wg.Done()
+	errors chan<- error, serversCh chan<- models.PIAServer, guard chan<- struct{}) {
+	defer func() {
+		guard <- struct{}{}
+		wg.Done()
+	}()
 	var IPs []net.IP //nolint:prealloc
 	// usually one single host in this case
 	// so no need to run in goroutines the for loop below
