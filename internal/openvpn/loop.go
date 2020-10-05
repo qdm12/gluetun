@@ -109,7 +109,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
 		l.allServersMutex.RLock()
-		providerConf := provider.New(l.provider, l.allServers)
+		providerConf := provider.New(l.provider, l.allServers, getVPNGateway, l.fileManager, l.logger)
 		l.allServersMutex.RUnlock()
 		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
 		if err != nil {
