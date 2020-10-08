@@ -21,7 +21,7 @@ import (
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	Restart()
-	PortForward()
+	PortForward(vpnGatewayIP net.IP)
 	GetSettings() (settings settings.OpenVPN)
 	SetSettings(settings settings.OpenVPN)
 	GetPortForwarded() (portForwarded uint16)
@@ -52,7 +52,7 @@ type looper struct {
 	cancel           context.CancelFunc
 	// Internal channels
 	restart            chan struct{}
-	portForwardSignals chan struct{}
+	portForwardSignals chan net.IP
 }
 
 func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
@@ -76,12 +76,12 @@ func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
 		streamMerger:       streamMerger,
 		cancel:             cancel,
 		restart:            make(chan struct{}),
-		portForwardSignals: make(chan struct{}),
+		portForwardSignals: make(chan net.IP),
 	}
 }
 
-func (l *looper) Restart()     { l.restart <- struct{}{} }
-func (l *looper) PortForward() { l.portForwardSignals <- struct{}{} }
+func (l *looper) Restart()                        { l.restart <- struct{}{} }
+func (l *looper) PortForward(vpnGatewayIP net.IP) { l.portForwardSignals <- vpnGatewayIP }
 
 func (l *looper) GetSettings() (settings settings.OpenVPN) {
 	l.settingsMutex.RLock()
@@ -158,19 +158,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			continue
 		}
 
-		var vpnGatewayIP net.IP
-		defaultInterface, _, err := l.routing.DefaultRoute()
-		if err != nil {
-			l.logger.Warn(err)
-		} else {
-			vpnGatewayIP, err = l.routing.VPNGatewayIP(defaultInterface)
-			if err != nil {
-				l.logger.Warn(err)
-			} else {
-				l.logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
-			}
-		}
-
 		// Needs the stream line from main.go to know when the tunnel is up
 		go func(ctx context.Context) {
 			for {
@@ -178,7 +165,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				// TODO have a way to disable pf with a context
 				case <-ctx.Done():
 					return
-				case <-l.portForwardSignals:
+				case vpnGatewayIP := <-l.portForwardSignals:
 					wg.Add(1)
 					go l.portForward(ctx, wg, providerConf, l.client, vpnGatewayIP)
 				}
