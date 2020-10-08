@@ -85,6 +85,7 @@ func (p *ProviderSettings) String() string {
 		settingsList = append(settingsList,
 			"Region: "+p.ServerSelection.Region,
 			"Encryption preset: "+p.ExtraConfigOptions.EncryptionPreset,
+			"Port forwarding: "+p.PortForwarding.String(),
 		)
 	case "mullvad":
 		settingsList = append(settingsList,
