@@ -70,7 +70,7 @@ func OpenvpnConfig() error {
 	if err != nil {
 		return err
 	}
-	providerConf := provider.New(allSettings.OpenVPN.Provider.Name, allServers, allSettings.OpenVPN.User, allSettings.OpenVPN.Password)
+	providerConf := provider.New(allSettings.OpenVPN.Provider.Name, allServers)
 	connections, err := providerConf.GetOpenVPNConnections(allSettings.OpenVPN.Provider.ServerSelection)
 	if err != nil {
 		return err

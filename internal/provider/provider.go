@@ -1,9 +1,12 @@
 package provider
 
 import (
+	"context"
+	"net"
 	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
@@ -13,15 +16,17 @@ import (
 type Provider interface {
 	GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error)
 	BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string)
-	GetPortForward(client *http.Client) (port uint16, err error)
+	PortForward(ctx context.Context, client *http.Client,
+		fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+		syncState func(port uint16) (pfFilepath models.Filepath))
 }
 
-func New(provider models.VPNProvider, allServers models.AllServers, getVPNGateway getVPNGatewayFunc, fileManager files.FileManager, logger logging.Logger) Provider {
+func New(provider models.VPNProvider, allServers models.AllServers) Provider {
 	switch provider {
 	case constants.PrivateInternetAccess:
 		return newPrivateInternetAccessV3(allServers.Pia.Servers)
 	case constants.PrivateInternetAccessOld:
-		return newPrivateInternetAccessV4(allServers.PiaOld.Servers, getVPNGateway, fileManager, logger)
+		return newPrivateInternetAccessV4(allServers.PiaOld.Servers)
 	case constants.Mullvad:
 		return newMullvad(allServers.Mullvad.Servers)
 	case constants.Windscribe:

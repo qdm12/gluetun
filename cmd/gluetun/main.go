@@ -189,7 +189,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
-		ovpnConf, firewallConf, logger, httpClient, fileManager, streamMerger, cancel)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, fileManager, streamMerger, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
@@ -360,17 +360,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			if portForwardingEnabled {
 				time.AfterFunc(5*time.Second, startPortForward)
-			}
-			defaultInterface, _, err := routing.DefaultRoute()
-			if err != nil {
-				logger.Warn(err)
-			} else {
-				vpnGatewayIP, err := routing.VPNGatewayIP(defaultInterface)
-				if err != nil {
-					logger.Warn(err)
-				} else {
-					logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
-				}
+				// TODO make instantaneous once v3 go out of service
 			}
 		case <-dnsReadyCh:
 			publicIPLooper.Restart() // TODO do not restart if disabled

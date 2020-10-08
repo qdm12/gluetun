@@ -5,39 +5,30 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 )
 
-type getVPNGatewayFunc func() (gateway net.IP, err error)
-
 type piaV4 struct {
-	servers       []models.PIAServer
-	getVPNGateway getVPNGatewayFunc
-	fileManager   files.FileManager
-	logger        logging.Logger
-	timeNow       func() time.Time
+	servers []models.PIAServer
+	timeNow func() time.Time
 }
 
-func newPrivateInternetAccessV4(servers []models.PIAServer, getVPNGateway getVPNGatewayFunc, fileManager files.FileManager, logger logging.Logger) *piaV4 {
+func newPrivateInternetAccessV4(servers []models.PIAServer) *piaV4 {
 	return &piaV4{
-		servers:       servers,
-		getVPNGateway: getVPNGateway,
-		fileManager:   fileManager,
-		logger:        logger,
-		timeNow:       time.Now,
+		servers: servers,
+		timeNow: time.Now,
 	}
 }
 
@@ -49,43 +40,63 @@ func (p *piaV4) BuildConf(connections []models.OpenVPNConnection, verbosity, uid
 	return buildPIAConf(connections, verbosity, root, cipher, auth, extras)
 }
 
-func (p *piaV4) GetPortForward(ctx context.Context, wg *sync.WaitGroup, client *http.Client) (port uint16, err error) {
-	defer wg.Done()
-	gateway, err := p.getVPNGateway()
+func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
+	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+	syncState func(port uint16) (pfFilepath models.Filepath)) {
+	if gateway == nil {
+		pfLogger.Error("VPN gateway IP address was not found, cannot do anything")
+		return
+	}
+	defer pfLogger.Warn("loop exited")
+	data, err := readPIAPortForwardData(fileManager)
 	if err != nil {
-		return 0, fmt.Errorf("cannot obtain VPN gateway: %w", err)
+		pfLogger.Error(err)
 	}
+	dataFound := data.Port > 0
+	durationToExpiration := data.Expiration.Sub(p.timeNow())
+	expired := durationToExpiration <= 0
 
-	data, readErr := readPIAPortForwardData(p.fileManager)
-	if errors.Is(readErr, errPIAPortForwardFileNotExists) {
-		data, err = p.refreshPortForwardData(client, gateway)
-		if err != nil {
-			return 0, err
-		}
-	} else if readErr != nil {
-		return 0, readErr
-	}
-	now := p.timeNow()
-	durationToExpiration := data.Expiration.Sub(now)
-	if durationToExpiration <= 0 {
-		p.logger.Warn("Forward port has expired on %s, getting another one", data.Expiration)
-		data, err = p.refreshPortForwardData(client, gateway)
-		if err != nil {
-			return 0, err
+	if dataFound {
+		pfLogger.Info("Found persistent forwarded port data for port %d", data.Port)
+		if expired {
+			pfLogger.Warn("Forwarded port data expired on %s, getting another one", data.Expiration)
+		} else {
+			pfLogger.Info("Forwarded port data expires in %s", durationToExpiration)
 		}
 	}
-	if err := bindPIAPort(client, gateway, data); err != nil {
-		p.logger.Error(err)
+
+	if !dataFound || expired {
+		tryUntilSuccessful(ctx, pfLogger, func() error {
+			data, err = refreshPIAPortForwardData(client, gateway, fileManager)
+			return err
+		})
+		if ctx.Err() != nil {
+			return
+		}
+		durationToExpiration = data.Expiration.Sub(p.timeNow())
+	}
+	pfLogger.Info("Port forwarded is %d expiring in %s", data.Port, durationToExpiration)
+
+	// First time binding
+	tryUntilSuccessful(ctx, pfLogger, func() error {
+		return bindPIAPort(client, gateway, data)
+	})
+	if ctx.Err() != nil {
+		return
 	}
 
-	wg.Add(1)
-	go p.maintainPortForwarding(ctx, wg, durationToExpiration, client, gateway, data)
+	filepath := syncState(data.Port)
+	pfLogger.Info("Writing port to %s", filepath)
+	if err := fileManager.WriteToFile(
+		string(filepath), []byte(fmt.Sprintf("%d", data.Port)),
+		files.Permissions(0666),
+	); err != nil {
+		pfLogger.Error(err)
+	}
 
-	return data.Port, nil
-}
-
-func (p *piaV4) maintainPortForwarding(ctx context.Context, wg *sync.WaitGroup, durationToExpiration time.Duration, client *http.Client, gateway net.IP, data piaPortForwardData) {
-	defer wg.Done()
+	if err := fw.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
+		pfLogger.Error(err)
+	}
 
 	expiryTimer := time.NewTimer(durationToExpiration)
 	defer expiryTimer.Stop()
@@ -96,27 +107,53 @@ func (p *piaV4) maintainPortForwarding(ctx context.Context, wg *sync.WaitGroup, 
 	for {
 		select {
 		case <-ctx.Done():
+			removeCtx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			if err := fw.RemoveAllowedPort(removeCtx, data.Port); err != nil {
+				pfLogger.Error(err)
+			}
 			return
 		case <-keepAliveTicker.C:
 			if err := bindPIAPort(client, gateway, data); err != nil {
-				p.logger.Error(err)
+				pfLogger.Error(err)
 			}
 		case <-expiryTimer.C:
-			p.logger.Warn("Forward port has expired on %s, getting another one", data.Expiration)
-			data, err := p.refreshPortForwardData(client, gateway)
-			if err != nil {
-				p.logger.Error(err)
+			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration)
+			oldPort := data.Port
+			for {
+				data, err = refreshPIAPortForwardData(client, gateway, fileManager)
+				if err != nil {
+					pfLogger.Error(err)
+					continue
+				}
+				break
 			}
-			now := p.timeNow()
-			durationToExpiration := data.Expiration.Sub(now)
+			if err := fw.RemoveAllowedPort(ctx, oldPort); err != nil {
+				pfLogger.Error(err)
+			}
+			if err := fw.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
+				pfLogger.Error(err)
+			}
+			filepath := syncState(data.Port)
+			pfLogger.Info("Writing port to %s", filepath)
+			if err := fileManager.WriteToFile(
+				string(filepath), []byte(fmt.Sprintf("%d", data.Port)),
+				files.Permissions(0666),
+			); err != nil {
+				pfLogger.Error(err)
+			}
+			durationToExpiration := data.Expiration.Sub(p.timeNow())
 			expiryTimer.Reset(durationToExpiration)
-			// TODO send port in channel for firewall or move firewall changes here (better?)
+			if err := bindPIAPort(client, gateway, data); err != nil {
+				pfLogger.Error(err)
+			}
+			keepAliveTicker.Reset(keepAlivePeriod)
 		}
 	}
 }
 
-func (p *piaV4) refreshPortForwardData(client *http.Client, gateway net.IP) (data piaPortForwardData, err error) {
-	data.Token, err = fetchPIAToken(p.fileManager, client)
+func refreshPIAPortForwardData(client *http.Client, gateway net.IP, fileManager files.FileManager) (data piaPortForwardData, err error) {
+	data.Token, err = fetchPIAToken(fileManager, client)
 	if err != nil {
 		return data, err
 	}
@@ -124,7 +161,7 @@ func (p *piaV4) refreshPortForwardData(client *http.Client, gateway net.IP) (dat
 	if err != nil {
 		return data, err
 	}
-	if err := p.writePortForwardData(data); err != nil {
+	if err := writePIAPortForwardData(fileManager, data); err != nil {
 		return data, err
 	}
 	return data, nil
@@ -143,15 +180,13 @@ type piaPortForwardData struct {
 	Expiration time.Time `json:"expires_at"`
 }
 
-var errPIAPortForwardFileNotExists = errors.New("PIA port forward data file does not exist")
-
 func readPIAPortForwardData(fileManager files.FileManager) (data piaPortForwardData, err error) {
 	const filepath = string(constants.PIAPortForward)
 	exists, err := fileManager.FileExists(filepath)
 	if err != nil {
 		return data, err
 	} else if !exists {
-		return data, errPIAPortForwardFileNotExists
+		return data, nil
 	}
 	b, err := fileManager.ReadFile(filepath)
 	if err != nil {
@@ -163,12 +198,12 @@ func readPIAPortForwardData(fileManager files.FileManager) (data piaPortForwardD
 	return data, nil
 }
 
-func (p *piaV4) writePortForwardData(data piaPortForwardData) (err error) {
+func writePIAPortForwardData(fileManager files.FileManager, data piaPortForwardData) (err error) {
 	b, err := json.Marshal(&data)
 	if err != nil {
 		return fmt.Errorf("cannot encode output data: %w", err)
 	}
-	err = p.fileManager.WriteToFile(string(constants.PIAPortForward), b)
+	err = fileManager.WriteToFile(string(constants.PIAPortForward), b)
 	if err != nil {
 		return fmt.Errorf("cannot persist port forwarding information to file: %w", err)
 	}
