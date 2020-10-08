@@ -40,6 +40,7 @@ func (p *piaV4) BuildConf(connections []models.OpenVPNConnection, verbosity, uid
 	return buildPIAConf(connections, verbosity, root, cipher, auth, extras)
 }
 
+//nolint:gocognit
 func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
@@ -223,7 +224,11 @@ func unpackPIAPayload(payload string) (port uint16, token string, expiration tim
 }
 
 func packPIAPayload(port uint16, token string, expiration time.Time) (payload string, err error) {
-	var payloadData piaPayload
+	payloadData := piaPayload{
+		Token:      token,
+		Port:       port,
+		Expiration: expiration,
+	}
 	b, err := json.Marshal(&payloadData)
 	if err != nil {
 		return "", fmt.Errorf("cannot serialize payload data: %w", err)

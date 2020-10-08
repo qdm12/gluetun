@@ -231,7 +231,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	wg.Add(1)
 	go routeReadyEvents(ctx, wg, tunnelReadyCh, dnsReadyCh,
-		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
+		unboundLooper, updaterLooper, publicIPLooper, logger, httpClient,
 		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
 	)
 
@@ -337,7 +337,7 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 
 func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dnsReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
-	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
+	logger logging.Logger, httpClient *http.Client,
 	versionInformation, portForwardingEnabled bool, startPortForward func()) {
 	defer wg.Done()
 	tickerWg := &sync.WaitGroup{}
