@@ -80,8 +80,8 @@ func NewLooper(provider models.VPNProvider, settings settings.OpenVPN,
 	}
 }
 
-func (l *looper) Restart()                        { l.restart <- struct{}{} }
-func (l *looper) PortForward(vpnGatewayIP net.IP) { l.portForwardSignals <- vpnGatewayIP }
+func (l *looper) Restart()                      { l.restart <- struct{}{} }
+func (l *looper) PortForward(vpnGateway net.IP) { l.portForwardSignals <- vpnGateway }
 
 func (l *looper) GetSettings() (settings settings.OpenVPN) {
 	l.settingsMutex.RLock()
@@ -165,9 +165,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				// TODO have a way to disable pf with a context
 				case <-ctx.Done():
 					return
-				case vpnGatewayIP := <-l.portForwardSignals:
+				case gateway := <-l.portForwardSignals:
 					wg.Add(1)
-					go l.portForward(ctx, wg, providerConf, l.client, vpnGatewayIP)
+					go l.portForward(ctx, wg, providerConf, l.client, gateway)
 				}
 			}
 		}(openvpnCtx)

@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -15,6 +15,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
+	gluetunLog "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
@@ -60,10 +61,17 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	if dataFound {
 		pfLogger.Info("Found persistent forwarded port data for port %d", data.Port)
 		if expired {
-			pfLogger.Warn("Forwarded port data expired on %s, getting another one", data.Expiration)
+			pfLogger.Warn("Forwarded port data expired on %s, getting another one", data.Expiration.Format(time.RFC1123))
 		} else {
-			pfLogger.Info("Forwarded port data expires in %s", durationToExpiration)
+			pfLogger.Info("Forwarded port data expires in %s", gluetunLog.FormatDuration(durationToExpiration))
 		}
+	}
+	client = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true, //nolint:gosec
+			},
+		}, // TODO use custom certificate from PIA and use client passed as argument
 	}
 
 	if !dataFound || expired {
@@ -76,7 +84,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 		}
 		durationToExpiration = data.Expiration.Sub(p.timeNow())
 	}
-	pfLogger.Info("Port forwarded is %d expiring in %s", data.Port, durationToExpiration)
+	pfLogger.Info("Port forwarded is %d expiring in %s", data.Port, gluetunLog.FormatDuration(durationToExpiration))
 
 	// First time binding
 	tryUntilSuccessful(ctx, pfLogger, func() error {
@@ -119,7 +127,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 				pfLogger.Error(err)
 			}
 		case <-expiryTimer.C:
-			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration)
+			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration.Format(time.RFC1123))
 			oldPort := data.Port
 			for {
 				data, err = refreshPIAPortForwardData(client, gateway, fileManager)
@@ -129,6 +137,8 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 				}
 				break
 			}
+			durationToExpiration := data.Expiration.Sub(p.timeNow())
+			pfLogger.Info("Port forwarded is %d expiring in %s", data.Port, gluetunLog.FormatDuration(durationToExpiration))
 			if err := fw.RemoveAllowedPort(ctx, oldPort); err != nil {
 				pfLogger.Error(err)
 			}
@@ -143,12 +153,11 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			); err != nil {
 				pfLogger.Error(err)
 			}
-			durationToExpiration := data.Expiration.Sub(p.timeNow())
-			expiryTimer.Reset(durationToExpiration)
 			if err := bindPIAPort(client, gateway, data); err != nil {
 				pfLogger.Error(err)
 			}
 			keepAliveTicker.Reset(keepAlivePeriod)
+			expiryTimer.Reset(durationToExpiration)
 		}
 	}
 }
@@ -156,14 +165,14 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 func refreshPIAPortForwardData(client *http.Client, gateway net.IP, fileManager files.FileManager) (data piaPortForwardData, err error) {
 	data.Token, err = fetchPIAToken(fileManager, client)
 	if err != nil {
-		return data, err
+		return data, fmt.Errorf("cannot obtain token: %w", err)
 	}
 	data.Port, data.Signature, data.Expiration, err = fetchPIAPortForwardData(client, gateway, data.Token)
 	if err != nil {
-		return data, err
+		return data, fmt.Errorf("cannot obtain port forwarding data: %w", err)
 	}
 	if err := writePIAPortForwardData(fileManager, data); err != nil {
-		return data, err
+		return data, fmt.Errorf("cannot persist port forwarding information to file: %w", err)
 	}
 	return data, nil
 }
@@ -202,11 +211,11 @@ func readPIAPortForwardData(fileManager files.FileManager) (data piaPortForwardD
 func writePIAPortForwardData(fileManager files.FileManager, data piaPortForwardData) (err error) {
 	b, err := json.Marshal(&data)
 	if err != nil {
-		return fmt.Errorf("cannot encode output data: %w", err)
+		return fmt.Errorf("cannot encode data: %w", err)
 	}
 	err = fileManager.WriteToFile(string(constants.PIAPortForward), b)
 	if err != nil {
-		return fmt.Errorf("cannot persist port forwarding information to file: %w", err)
+		return err
 	}
 	return nil
 }
@@ -242,16 +251,13 @@ func fetchPIAToken(fileManager files.FileManager, client *http.Client) (token st
 	if err != nil {
 		return "", fmt.Errorf("cannot get Openvpn credentials: %w", err)
 	}
-	const url = "https://www.privateinternetaccess.com/api/client/v2/token"
-	data := struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}{username, password}
-	b, err := json.Marshal(data)
-	if err != nil {
-		return "", err
+	url := url.URL{
+		Scheme: "https",
+		User:   url.UserPassword(username, password),
+		Host:   "10.0.0.1",
+		Path:   "/authv3/generateToken",
 	}
-	request, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(b))
+	request, err := http.NewRequest(http.MethodGet, url.String(), nil)
 	if err != nil {
 		return "", err
 	}
@@ -260,11 +266,13 @@ func fetchPIAToken(fileManager files.FileManager, client *http.Client) (token st
 		return "", err
 	}
 	defer response.Body.Close()
+	b, err := ioutil.ReadAll(response.Body)
 	if response.StatusCode != http.StatusOK {
-		return "", fmt.Errorf(response.Status)
-	}
-	b, err = ioutil.ReadAll(response.Body)
-	if err != nil {
+		shortenMessage := string(b)
+		shortenMessage = strings.ReplaceAll(shortenMessage, "\n", "")
+		shortenMessage = strings.ReplaceAll(shortenMessage, "  ", " ")
+		return "", fmt.Errorf("%s: response received: %q", response.Status, shortenMessage)
+	} else if err != nil {
 		return "", err
 	}
 	var result struct {
@@ -272,8 +280,7 @@ func fetchPIAToken(fileManager files.FileManager, client *http.Client) (token st
 	}
 	if err := json.Unmarshal(b, &result); err != nil {
 		return "", err
-	}
-	if len(result.Token) == 0 {
+	} else if len(result.Token) == 0 {
 		return "", fmt.Errorf("token is empty")
 	}
 	return result.Token, nil
@@ -319,7 +326,7 @@ func fetchPIAPortForwardData(client *http.Client, gateway net.IP, token string) 
 		Signature string `json:"signature"`
 	}
 	if err := json.Unmarshal(b, &data); err != nil {
-		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %w", err)
+		return 0, "", expiration, fmt.Errorf("cannot decode received data: %w", err)
 	} else if data.Status != "OK" {
 		return 0, "", expiration, fmt.Errorf("response received from PIA has status %s", data.Status)
 	}
@@ -362,7 +369,7 @@ func bindPIAPort(client *http.Client, gateway net.IP, data piaPortForwardData) (
 	if err := json.Unmarshal(b, &responseData); err != nil {
 		return fmt.Errorf("cannot bind port: %w", err)
 	} else if responseData.Status != "OK" {
-		return fmt.Errorf("response received from PIA has status %s", responseData.Status)
+		return fmt.Errorf("response received from PIA: %s (%s)", responseData.Status, responseData.Message)
 	}
 	return nil
 }

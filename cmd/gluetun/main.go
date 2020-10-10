@@ -336,10 +336,11 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 	})
 }
 
+//nolint:gocognit
 func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dnsReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
 	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
-	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGatewayIP net.IP)) {
+	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
 	defer wg.Done()
 	tickerWg := &sync.WaitGroup{}
 	// for linters only
@@ -359,16 +360,15 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			tickerWg.Add(2)
 			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
-			var vpnGatewayIP net.IP
 			defaultInterface, _, err := routing.DefaultRoute()
 			if err != nil {
 				logger.Warn(err)
 			} else {
-				vpnGatewayIP, err = routing.VPNGatewayIP(defaultInterface)
+				vpnDestination, err := routing.VPNDestinationIP(defaultInterface)
 				if err != nil {
 					logger.Warn(err)
 				} else {
-					logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
+					logger.Info("VPN routing IP address: %s", vpnDestination)
 				}
 			}
 			if portForwardingEnabled {
@@ -382,8 +382,13 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 					}
 					continue
 				case <-timer.C:
-					// vpnGatewayIP required only for PIA v4
-					startPortForward(vpnGatewayIP)
+					// vpnGateway required only for PIA v4
+					vpnGateway, err := routing.VPNLocalGatewayIP()
+					if err != nil {
+						logger.Error(err)
+					}
+					logger.Info("VPN gateway IP address: %s", vpnGateway)
+					startPortForward(vpnGateway)
 				}
 			}
 		case <-dnsReadyCh:
