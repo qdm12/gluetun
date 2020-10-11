@@ -203,6 +203,9 @@ func refreshPIAPortForwardData(client *http.Client, gateway net.IP, fileManager 
 	}
 	data.Port, data.Signature, data.Expiration, err = fetchPIAPortForwardData(client, gateway, data.Token)
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "connection refused") {
+			return data, fmt.Errorf("cannot obtain port forwarding data: connection was refused, are you sure the region you are using supports port forwarding ;)")
+		}
 		return data, fmt.Errorf("cannot obtain port forwarding data: %w", err)
 	}
 	if err := writePIAPortForwardData(fileManager, data); err != nil {
