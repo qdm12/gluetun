@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -46,7 +47,12 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
 	if gateway == nil {
-		pfLogger.Error("VPN gateway IP address was not found, cannot do anything")
+		pfLogger.Error("aborting because: VPN gateway IP address was not found")
+		return
+	}
+	client, err := newPIAv4HTTPClient()
+	if err != nil {
+		pfLogger.Error("aborting because: %s", err)
 		return
 	}
 	defer pfLogger.Warn("loop exited")
@@ -65,13 +71,6 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 		} else {
 			pfLogger.Info("Forwarded port data expires in %s", gluetunLog.FormatDuration(durationToExpiration))
 		}
-	}
-	client = &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true, //nolint:gosec
-			},
-		}, // TODO use custom certificate from PIA and use client passed as argument
 	}
 
 	if !dataFound || expired {
@@ -160,6 +159,41 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			expiryTimer.Reset(durationToExpiration)
 		}
 	}
+}
+
+func newPIAv4HTTPClient() (client *http.Client, err error) {
+	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
+	if err != nil {
+		return nil, fmt.Errorf("cannot decode PIA root certificate: %w", err)
+	}
+	certificate, err := x509.ParseCertificate(certificateBytes)
+	if err != nil {
+		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
+	}
+	rootCAs := x509.NewCertPool()
+	rootCAs.AddCert(certificate)
+	TLSClientConfig := &tls.Config{
+		RootCAs:            rootCAs,
+		MinVersion:         tls.VersionTLS12,
+		InsecureSkipVerify: true, //nolint:gosec
+	} // TODO fix and remove InsecureSkipVerify
+	transport := http.Transport{
+		TLSClientConfig: TLSClientConfig,
+		Proxy:           http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+	const httpTimeout = 5 * time.Second
+	client = &http.Client{Transport: &transport, Timeout: httpTimeout}
+	return client, nil
 }
 
 func refreshPIAPortForwardData(client *http.Client, gateway net.IP, fileManager files.FileManager) (data piaPortForwardData, err error) {
