@@ -118,8 +118,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
-    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server **for old only** |
-    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number **for old only** |
+    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server |
+    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
 
 - Mullvad
 
