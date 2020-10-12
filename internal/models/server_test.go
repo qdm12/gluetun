@@ -7,18 +7,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_PIAServer_String(t *testing.T) {
+func Test_PIAOldServer_String(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		server PIAServer
+		server PIAOldServer
 		s      string
 	}{
 		"no ips": {
-			server: PIAServer{Region: "a b"},
+			server: PIAOldServer{Region: "a b"},
 			s:      `{Region: "a b", IPs: []net.IP{}}`,
 		},
 		"with ips": {
-			server: PIAServer{Region: "a b", IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
+			server: PIAOldServer{Region: "a b", IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
 			s:      `{Region: "a b", IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}}`,
 		},
 	}

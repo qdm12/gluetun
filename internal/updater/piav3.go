@@ -11,40 +11,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) updatePIA() (err error) {
-	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn-ip-nextgen.zip"
-	contents, err := fetchAndExtractFiles(zipURL)
-	if err != nil {
-		return err
-	}
-	servers := make([]models.PIAServer, 0, len(contents))
-	for fileName, content := range contents {
-		remoteLines := extractRemoteLinesFromOpenvpn(content)
-		if len(remoteLines) == 0 {
-			return fmt.Errorf("cannot find any remote lines in %s", fileName)
-		}
-		IPs := extractIPsFromRemoteLines(remoteLines)
-		if len(IPs) == 0 {
-			return fmt.Errorf("cannot find any IP addresses in %s", fileName)
-		}
-		region := strings.TrimSuffix(fileName, ".ovpn")
-		server := models.PIAServer{
-			Region: region,
-			IPs:    uniqueSortedIPs(IPs),
-		}
-		servers = append(servers, server)
-	}
-	sort.Slice(servers, func(i, j int) bool {
-		return servers[i].Region < servers[j].Region
-	})
-	if u.options.Stdout {
-		u.println(stringifyPIAServers(servers))
-	}
-	u.servers.Pia.Timestamp = u.timeNow().Unix()
-	u.servers.Pia.Servers = servers
-	return nil
-}
-
 func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn.zip"
 	contents, err := fetchAndExtractFiles(zipURL)
@@ -54,8 +20,8 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 	const maxGoroutines = 10
 	guard := make(chan struct{}, maxGoroutines)
 	errors := make(chan error)
-	serversCh := make(chan models.PIAServer)
-	servers := make([]models.PIAServer, 0, len(contents))
+	serversCh := make(chan models.PIAOldServer)
+	servers := make([]models.PIAOldServer, 0, len(contents))
 	ctx, cancel := context.WithCancel(ctx)
 	wg := &sync.WaitGroup{}
 	defer func() {
@@ -76,7 +42,7 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 		}
 		region := strings.TrimSuffix(fileName, ".ovpn")
 		wg.Add(1)
-		go resolvePIAHostname(ctx, wg, region, hosts, u.lookupIP, errors, serversCh, guard)
+		go resolvePIAv3Hostname(ctx, wg, region, hosts, u.lookupIP, errors, serversCh, guard)
 	}
 	for range contents {
 		select {
@@ -97,9 +63,9 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 	return nil
 }
 
-func resolvePIAHostname(ctx context.Context, wg *sync.WaitGroup,
+func resolvePIAv3Hostname(ctx context.Context, wg *sync.WaitGroup,
 	region string, hosts []string, lookupIP lookupIPFunc,
-	errors chan<- error, serversCh chan<- models.PIAServer, guard chan struct{}) {
+	errors chan<- error, serversCh chan<- models.PIAOldServer, guard chan struct{}) {
 	guard <- struct{}{}
 	defer func() {
 		<-guard
@@ -117,26 +83,15 @@ func resolvePIAHostname(ctx context.Context, wg *sync.WaitGroup,
 		}
 		IPs = append(IPs, newIPs...)
 	}
-	serversCh <- models.PIAServer{
+	serversCh <- models.PIAOldServer{
 		Region: region,
 		IPs:    uniqueSortedIPs(IPs),
 	}
 }
 
-func stringifyPIAServers(servers []models.PIAServer) (s string) {
-	s = "func PIAServers() []models.PIAServer {\n"
-	s += "	return []models.PIAServer{\n"
-	for _, server := range servers {
-		s += "		" + server.String() + ",\n"
-	}
-	s += "	}\n"
-	s += "}"
-	return s
-}
-
-func stringifyPIAOldServers(servers []models.PIAServer) (s string) {
-	s = "func PIAOldServers() []models.PIAServer {\n"
-	s += "	return []models.PIAServer{\n"
+func stringifyPIAOldServers(servers []models.PIAOldServer) (s string) {
+	s = "func PIAOldServers() []models.PIAOldServer {\n"
+	s += "	return []models.PIAOldServer{\n"
 	for _, server := range servers {
 		s += "		" + server.String() + ",\n"
 	}
