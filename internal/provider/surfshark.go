@@ -40,11 +40,6 @@ func (s *surfshark) filterServers(region string) (servers []models.SurfsharkServ
 }
 
 func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
-	servers := s.filterServers(selection.Region)
-	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
-	}
-
 	var port uint16
 	switch {
 	case selection.Protocol == constants.TCP:
@@ -55,16 +50,19 @@ func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (conn
 		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 
+	if selection.TargetIP != nil {
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+	}
+
+	servers := s.filterServers(selection.Region)
+	if len(servers) == 0 {
+		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+	}
+
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			if selection.TargetIP != nil {
-				if selection.TargetIP.Equal(IP) {
-					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
-				}
-			} else {
-				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-			}
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
 		}
 	}
 

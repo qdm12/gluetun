@@ -40,11 +40,6 @@ func (w *windscribe) filterServers(region string) (servers []models.WindscribeSe
 }
 
 func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
-	servers := w.filterServers(selection.Region)
-	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
-	}
-
 	var port uint16
 	switch {
 	case selection.CustomPort > 0:
@@ -57,21 +52,20 @@ func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (con
 		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 
+	if selection.TargetIP != nil {
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+	}
+
+	servers := w.filterServers(selection.Region)
+	if len(servers) == 0 {
+		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+	}
+
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			if selection.TargetIP != nil {
-				if selection.TargetIP.Equal(IP) {
-					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
-				}
-			} else {
-				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-			}
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
 		}
-	}
-
-	if selection.TargetIP != nil {
-		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
 	}
 
 	return pickRandomConnection(connections, w.randSource), nil

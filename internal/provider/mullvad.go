@@ -48,35 +48,29 @@ func (m *mullvad) filterServers(country, city, isp string) (servers []models.Mul
 }
 
 func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+	var defaultPort uint16 = 1194
+	if selection.Protocol == constants.TCP {
+		defaultPort = 443
+	}
+	port := defaultPort
+	if selection.CustomPort > 0 {
+		port = selection.CustomPort
+	}
+
+	if selection.TargetIP != nil {
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+	}
+
 	servers := m.filterServers(selection.Country, selection.City, selection.ISP)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for country %q, city %q and ISP %q", selection.Country, selection.City, selection.ISP)
 	}
 
-	var defaultPort uint16 = 1194
-	if selection.Protocol == constants.TCP {
-		defaultPort = 443
-	}
-
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
-		port := defaultPort
-		if selection.CustomPort > 0 {
-			port = selection.CustomPort
-		}
 		for _, IP := range server.IPs {
-			if selection.TargetIP != nil {
-				if selection.TargetIP.Equal(IP) {
-					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
-				}
-			} else {
-				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-			}
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
 		}
-	}
-
-	if selection.TargetIP != nil {
-		return connection, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 	}
 
 	return pickRandomConnection(connections, m.randSource), nil

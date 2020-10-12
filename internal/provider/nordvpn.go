@@ -49,11 +49,6 @@ func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, 
 }
 
 func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
-	servers := n.filterServers(selection.Region, selection.Protocol, selection.Number)
-	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
-	}
-
 	var port uint16
 	switch {
 	case selection.Protocol == constants.UDP:
@@ -64,19 +59,18 @@ func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (connec
 		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 
-	var connections []models.OpenVPNConnection
-	for _, server := range servers {
-		if selection.TargetIP != nil {
-			if selection.TargetIP.Equal(server.IP) {
-				return models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol}, nil
-			}
-		} else {
-			connections = append(connections, models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol})
-		}
+	if selection.TargetIP != nil {
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	if selection.TargetIP != nil {
-		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+	servers := n.filterServers(selection.Region, selection.Protocol, selection.Number)
+	if len(servers) == 0 {
+		return connection, fmt.Errorf("no server found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
+	}
+
+	connections := make([]models.OpenVPNConnection, len(servers))
+	for i := range servers {
+		connections = append(connections, models.OpenVPNConnection{IP: servers[i].IP, Port: port, Protocol: selection.Protocol})
 	}
 
 	return pickRandomConnection(connections, n.randSource), nil

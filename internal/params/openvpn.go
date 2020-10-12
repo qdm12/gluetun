@@ -53,9 +53,8 @@ func (r *reader) GetOpenVPNRoot() (root bool, err error) {
 	return r.envParams.GetYesNo("OPENVPN_ROOT", libparams.Default("no"))
 }
 
-// GetTargetIP obtains the IP address to choose from the list of IP addresses
-// available for a particular region, from the environment variable
-// OPENVPN_TARGET_IP
+// GetTargetIP obtains the IP address to override over the list of IP addresses filtered
+// from the environment variable OPENVPN_TARGET_IP
 func (r *reader) GetTargetIP() (ip net.IP, err error) {
 	s, err := r.envParams.GetEnv("OPENVPN_TARGET_IP")
 	if len(s) == 0 {

@@ -38,11 +38,6 @@ func newPrivateInternetAccessV4(servers []models.PIAServer, timeNow timeNowFunc)
 }
 
 func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
-	servers := filterPIAServers(p.servers, selection.Region)
-	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
-	}
-
 	var port uint16
 	switch selection.Protocol {
 	case constants.TCP:
@@ -64,6 +59,15 @@ func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 		return connection, fmt.Errorf("combination of protocol %q and encryption %q does not yield any port number", selection.Protocol, selection.EncryptionPreset)
 	}
 
+	if selection.TargetIP != nil {
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+	}
+
+	servers := filterPIAServers(p.servers, selection.Region)
+	if len(servers) == 0 {
+		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+	}
+
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		IPs := server.OpenvpnUDP.IPs
@@ -71,18 +75,8 @@ func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 			IPs = server.OpenvpnTCP.IPs
 		}
 		for _, IP := range IPs {
-			if selection.TargetIP != nil {
-				if selection.TargetIP.Equal(IP) {
-					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
-				}
-			} else {
-				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-			}
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
 		}
-	}
-
-	if selection.TargetIP != nil {
-		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
 	}
 
 	return pickRandomConnection(connections, p.randSource), nil
