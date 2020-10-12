@@ -1,12 +1,17 @@
 package provider
 
 import (
+	"context"
 	"fmt"
+	"net"
+	"net/http"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
+	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/logging"
 )
 
 type vyprvpn struct {
@@ -121,6 +126,8 @@ func (v *vyprvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 	return lines
 }
 
-func (v *vyprvpn) GetPortForward(client network.Client) (port uint16, err error) {
+func (v *vyprvpn) PortForward(ctx context.Context, client *http.Client,
+	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+	syncState func(port uint16) (pfFilepath models.Filepath)) {
 	panic("port forwarding is not supported for vyprvpn")
 }

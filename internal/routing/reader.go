@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/golibs/files"
 )
 
 func parseRoutingTable(data []byte) (entries []routingEntry, err error) {
@@ -23,12 +24,16 @@ func parseRoutingTable(data []byte) (entries []routingEntry, err error) {
 	return entries, nil
 }
 
-func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
-	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
+func getRoutingEntries(fileManager files.FileManager) (entries []routingEntry, err error) {
+	data, err := fileManager.ReadFile(string(constants.NetRoute))
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
-	entries, err := parseRoutingTable(data)
+	return parseRoutingTable(data)
+}
+
+func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
+	entries, err := getRoutingEntries(r.fileManager)
 	if err != nil {
 		return "", nil, err
 	}
@@ -52,11 +57,7 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 }
 
 func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
-	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
-	if err != nil {
-		return defaultSubnet, err
-	}
-	entries, err := parseRoutingTable(data)
+	entries, err := getRoutingEntries(r.fileManager)
 	if err != nil {
 		return defaultSubnet, err
 	}
@@ -79,11 +80,7 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 }
 
 func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
-	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
-	if err != nil {
-		return false, fmt.Errorf("cannot check route existence: %w", err)
-	}
-	entries, err := parseRoutingTable(data)
+	entries, err := getRoutingEntries(r.fileManager)
 	if err != nil {
 		return false, fmt.Errorf("cannot check route existence: %w", err)
 	}
@@ -96,12 +93,8 @@ func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
 	return false, nil
 }
 
-func (r *routing) VPNGatewayIP(defaultInterface string) (ip net.IP, err error) {
-	data, err := r.fileManager.ReadFile(string(constants.NetRoute))
-	if err != nil {
-		return nil, fmt.Errorf("cannot find VPN gateway IP address: %w", err)
-	}
-	entries, err := parseRoutingTable(data)
+func (r *routing) VPNDestinationIP(defaultInterface string) (ip net.IP, err error) {
+	entries, err := getRoutingEntries(r.fileManager)
 	if err != nil {
 		return nil, fmt.Errorf("cannot find VPN gateway IP address: %w", err)
 	}
@@ -113,6 +106,20 @@ func (r *routing) VPNGatewayIP(defaultInterface string) (ip net.IP, err error) {
 		}
 	}
 	return nil, fmt.Errorf("cannot find VPN gateway IP address from ip routes")
+}
+
+func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {
+	entries, err := getRoutingEntries(r.fileManager)
+	if err != nil {
+		return nil, fmt.Errorf("cannot find VPN local gateway IP address: %w", err)
+	}
+	for _, entry := range entries {
+		if entry.iface == string(constants.TUN) &&
+			entry.destination.Equal(net.IP{0, 0, 0, 0}) {
+			return entry.gateway, nil
+		}
+	}
+	return nil, fmt.Errorf("cannot find VPN local gateway IP address from ip routes")
 }
 
 func ipIsPrivate(ip net.IP) bool {

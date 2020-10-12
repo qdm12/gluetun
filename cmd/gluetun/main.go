@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -188,7 +189,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
-		ovpnConf, firewallConf, logger, client, fileManager, streamMerger, cancel)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, fileManager, streamMerger, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
@@ -341,10 +342,11 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 	})
 }
 
+//nolint:gocognit
 func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dnsReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
 	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
-	versionInformation, portForwardingEnabled bool, startPortForward func()) {
+	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
 	defer wg.Done()
 	tickerWg := &sync.WaitGroup{}
 	// for linters only
@@ -364,18 +366,35 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			tickerWg.Add(2)
 			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
-			if portForwardingEnabled {
-				time.AfterFunc(5*time.Second, startPortForward)
-			}
 			defaultInterface, _, err := routing.DefaultRoute()
 			if err != nil {
 				logger.Warn(err)
 			} else {
-				vpnGatewayIP, err := routing.VPNGatewayIP(defaultInterface)
+				vpnDestination, err := routing.VPNDestinationIP(defaultInterface)
 				if err != nil {
 					logger.Warn(err)
 				} else {
-					logger.Info("Gateway VPN IP address: %s", vpnGatewayIP)
+					logger.Info("VPN routing IP address: %s", vpnDestination)
+				}
+			}
+			if portForwardingEnabled {
+				// TODO make instantaneous once v3 go out of service
+				const waitDuration = 5 * time.Second
+				timer := time.NewTimer(waitDuration)
+				select {
+				case <-ctx.Done():
+					if !timer.Stop() {
+						<-timer.C
+					}
+					continue
+				case <-timer.C:
+					// vpnGateway required only for PIA v4
+					vpnGateway, err := routing.VPNLocalGatewayIP()
+					if err != nil {
+						logger.Error(err)
+					}
+					logger.Info("VPN gateway IP address: %s", vpnGateway)
+					startPortForward(vpnGateway)
 				}
 			}
 		case <-dnsReadyCh:
