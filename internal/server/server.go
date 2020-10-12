@@ -8,7 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/settings"
+	"github.com/qdm12/gluetun/internal/dns"
+	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -17,30 +19,26 @@ type Server interface {
 }
 
 type server struct {
-	address            string
-	logger             logging.Logger
-	restartOpenvpn     func()
-	restartUnbound     func()
-	getOpenvpnSettings func() settings.OpenVPN
-	getPortForwarded   func() uint16
-	lookupIP           func(host string) ([]net.IP, error)
+	address       string
+	logger        logging.Logger
+	openvpnLooper openvpn.Looper
+	unboundLooper dns.Looper
+	updaterLooper updater.Looper
+	lookupIP      func(host string) ([]net.IP, error)
 }
 
-func New(address string, logger logging.Logger, restartOpenvpn, restartUnbound func(),
-	getOpenvpnSettings func() settings.OpenVPN, getPortForwarded func() uint16) Server {
+func New(address string, logger logging.Logger, openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
 	return &server{
-		address:            address,
-		logger:             logger.WithPrefix("http server: "),
-		restartOpenvpn:     restartOpenvpn,
-		restartUnbound:     restartUnbound,
-		getOpenvpnSettings: getOpenvpnSettings,
-		getPortForwarded:   getPortForwarded,
-		lookupIP:           net.LookupIP,
+		address:       address,
+		logger:        logger.WithPrefix("http server: "),
+		openvpnLooper: openvpnLooper,
+		unboundLooper: unboundLooper,
+		updaterLooper: updaterLooper,
+		lookupIP:      net.LookupIP,
 	}
 }
 
 func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
 	server := http.Server{Addr: s.address, Handler: s.makeHandler()}
 	go func() {
 		defer wg.Done()
@@ -67,15 +65,20 @@ func (s *server) makeHandler() http.HandlerFunc {
 		case http.MethodGet:
 			switch r.RequestURI {
 			case "/openvpn/actions/restart":
-				s.restartOpenvpn()
+				s.openvpnLooper.Restart()
+				w.WriteHeader(http.StatusOK)
 			case "/unbound/actions/restart":
-				s.restartUnbound()
+				s.unboundLooper.Restart()
+				w.WriteHeader(http.StatusOK)
 			case "/openvpn/portforwarded":
 				s.handleGetPortForwarded(w)
 			case "/openvpn/settings":
 				s.handleGetOpenvpnSettings(w)
 			case "/health":
 				s.handleHealth(w)
+			case "/updater/restart":
+				s.updaterLooper.Restart()
+				w.WriteHeader(http.StatusOK)
 			default:
 				routeDoesNotExist(s.logger, w, r)
 			}

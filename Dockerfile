@@ -4,12 +4,12 @@ ARG GO_VERSION=1.15
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS builder
 RUN apk --update add git
 ENV CGO_ENABLED=0
-ARG GOLANGCI_LINT_VERSION=v1.30.0
+ARG GOLANGCI_LINT_VERSION=v1.31.0
 RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s ${GOLANGCI_LINT_VERSION}
 WORKDIR /tmp/gobuild
 COPY .golangci.yml .
 COPY go.mod go.sum ./
-RUN go mod download 2>&1
+RUN go mod download
 ARG VERSION=unknown
 ARG BUILD_DATE="an unknown date"
 ARG COMMIT=unknown
@@ -18,10 +18,10 @@ COPY internal/ ./internal/
 RUN go test ./...
 RUN golangci-lint run --timeout=10m
 RUN go build -trimpath -ldflags="-s -w \
-    -X 'main.version=$VERSION' \
-    -X 'main.buildDate=$BUILD_DATE' \
-    -X 'main.commit=$COMMIT' \
-    " -o entrypoint main.go
+-X 'main.version=$VERSION' \
+-X 'main.buildDate=$BUILD_DATE' \
+-X 'main.commit=$COMMIT' \
+" -o entrypoint main.go
 
 FROM alpine:${ALPINE_VERSION}
 ARG VERSION=unknown
@@ -43,6 +43,7 @@ ENV VPNSP=pia \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_ROOT=no \
     OPENVPN_TARGET_IP= \
+    OPENVPN_IPV6=off \
     TZ= \
     UID=1000 \
     GID=1000 \
@@ -101,7 +102,8 @@ ENV VPNSP=pia \
     SHADOWSOCKS_LOG=off \
     SHADOWSOCKS_PORT=8388 \
     SHADOWSOCKS_PASSWORD= \
-    SHADOWSOCKS_METHOD=chacha20-ietf-poly1305
+    SHADOWSOCKS_METHOD=chacha20-ietf-poly1305 \
+    UPDATER_PERIOD=0
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=10m --timeout=10s --start-period=30s --retries=2 CMD /entrypoint healthcheck

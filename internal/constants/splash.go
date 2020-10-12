@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Announcement is a message announcement
-	Announcement = "Persistent server IP addresses at /gluetun/servers.json, please BIND MOUNT"
+	Announcement = "Port forwarding is working for PIA v4 servers"
 	// AnnouncementExpiration is the expiration date of the announcement in format yyyy-mm-dd
-	AnnouncementExpiration = "2020-09-30"
+	AnnouncementExpiration = "2020-11-15"
 )
 
 const (

@@ -54,6 +54,7 @@ type Reader interface {
 	GetTargetIP() (ip net.IP, err error)
 	GetOpenVPNCipher() (cipher string, err error)
 	GetOpenVPNAuth() (auth string, err error)
+	GetOpenVPNIPv6() (tunnel bool, err error)
 
 	// PIA getters
 	GetPortForwarding() (activated bool, err error)
@@ -110,6 +111,8 @@ type Reader interface {
 	GetPublicIPPeriod() (period time.Duration, err error)
 
 	GetVersionInformation() (enabled bool, err error)
+
+	GetUpdaterPeriod() (period time.Duration, err error)
 }
 
 type reader struct {

@@ -14,7 +14,8 @@ type Routing interface {
 	DeleteRouteVia(ctx context.Context, subnet net.IPNet) (err error)
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
 	LocalSubnet() (defaultSubnet net.IPNet, err error)
-	VPNGatewayIP(defaultInterface string) (ip net.IP, err error)
+	VPNDestinationIP(defaultInterface string) (ip net.IP, err error)
+	VPNLocalGatewayIP() (ip net.IP, err error)
 	SetDebug()
 }
 

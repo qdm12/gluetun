@@ -291,7 +291,7 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 	}
 }
 
-func Test_VPNGatewayIP(t *testing.T) {
+func Test_VPNDestinationIP(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
 		defaultInterface string
@@ -334,7 +334,7 @@ eth0   x
 			filemanager.EXPECT().ReadFile(string(constants.NetRoute)).
 				Return(tc.data, tc.readErr).Times(1)
 			r := &routing{fileManager: filemanager}
-			ip, err := r.VPNGatewayIP(tc.defaultInterface)
+			ip, err := r.VPNDestinationIP(tc.defaultInterface)
 			if tc.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, tc.err.Error(), err.Error())

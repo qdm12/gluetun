@@ -8,11 +8,32 @@ import (
 )
 
 type PIAServer struct {
+	Region      string           `json:"region"`
+	PortForward bool             `json:"port_forward"`
+	OpenvpnUDP  PIAServerOpenvpn `json:"openvpn_udp"`
+	OpenvpnTCP  PIAServerOpenvpn `json:"openvpn_tcp"`
+}
+
+type PIAServerOpenvpn struct {
+	IPs []net.IP `json:"ips"`
+	CN  string   `json:"cn"`
+}
+
+func (p *PIAServerOpenvpn) String() string {
+	return fmt.Sprintf("models.PIAServerOpenvpn{CN: %q, IPs: %s}", p.CN, goStringifyIPs(p.IPs))
+}
+
+func (p *PIAServer) String() string {
+	return fmt.Sprintf("{Region: %q, PortForward: %t, OpenvpnUDP: %s, OpenvpnTCP: %s}",
+		p.Region, p.PortForward, p.OpenvpnUDP.String(), p.OpenvpnTCP.String())
+}
+
+type PIAOldServer struct {
 	IPs    []net.IP `json:"ips"`
 	Region string   `json:"region"`
 }
 
-func (p *PIAServer) String() string {
+func (p *PIAOldServer) String() string {
 	return fmt.Sprintf("{Region: %q, IPs: %s}", p.Region, goStringifyIPs(p.IPs))
 }
 
@@ -35,9 +56,17 @@ type WindscribeServer struct {
 	IPs    []net.IP `json:"ips"`
 }
 
+func (s *WindscribeServer) String() string {
+	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
+}
+
 type SurfsharkServer struct {
 	Region string   `json:"region"`
 	IPs    []net.IP `json:"ips"`
+}
+
+func (s *SurfsharkServer) String() string {
+	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
 }
 
 type CyberghostServer struct {
@@ -46,9 +75,17 @@ type CyberghostServer struct {
 	IPs    []net.IP `json:"ips"`
 }
 
+func (s *CyberghostServer) String() string {
+	return fmt.Sprintf("{Region: %q, Group: %q, IPs: %s}", s.Region, s.Group, goStringifyIPs(s.IPs))
+}
+
 type VyprvpnServer struct {
 	Region string   `json:"region"`
 	IPs    []net.IP `json:"ips"`
+}
+
+func (s *VyprvpnServer) String() string {
+	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
 }
 
 type NordvpnServer struct { //nolint:maligned
@@ -59,11 +96,21 @@ type NordvpnServer struct { //nolint:maligned
 	UDP    bool   `json:"udp"`
 }
 
+func (s *NordvpnServer) String() string {
+	return fmt.Sprintf("{Region: %q, Number: %d, TCP: %t, UDP: %t, IP: %s}",
+		s.Region, s.Number, s.TCP, s.UDP, goStringifyIP(s.IP))
+}
+
 type PurevpnServer struct {
 	Region  string   `json:"region"`
 	Country string   `json:"country"`
 	City    string   `json:"city"`
 	IPs     []net.IP `json:"ips"`
+}
+
+func (s *PurevpnServer) String() string {
+	return fmt.Sprintf("{Region: %q, Country: %q, City: %q, IPs: %s}",
+		s.Region, s.Country, s.City, goStringifyIPs(s.IPs))
 }
 
 func goStringifyIP(ip net.IP) string {

@@ -19,7 +19,7 @@ func Test_OpenVPN_JSON(t *testing.T) {
 	}
 	data, err := json.Marshal(in)
 	require.NoError(t, err)
-	assert.Equal(t, `{"user":"","verbosity":0,"runAsRoot":true,"cipher":"","auth":"","provider":{"name":"name","serverSelection":{"networkProtocol":"","region":"","group":"","country":"","city":"","isp":"","owned":false,"customPort":0,"number":0,"encryptionPreset":""},"extraConfig":{"encryptionPreset":""},"portForwarding":{"enabled":false,"filepath":""}}}`, string(data))
+	assert.Equal(t, `{"user":"","verbosity":0,"runAsRoot":true,"cipher":"","auth":"","provider":{"name":"name","serverSelection":{"networkProtocol":"","region":"","group":"","country":"","city":"","isp":"","owned":false,"customPort":0,"number":0,"encryptionPreset":""},"extraConfig":{"encryptionPreset":"","openvpnIPv6":false},"portForwarding":{"enabled":false,"filepath":""}}}`, string(data))
 	var out OpenVPN
 	err = json.Unmarshal(data, &out)
 	require.NoError(t, err)

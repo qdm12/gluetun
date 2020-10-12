@@ -36,9 +36,16 @@ func (s *storage) mergeServers(hardcoded, persistent models.AllServers) (merged 
 	}
 	merged.Pia = hardcoded.Pia
 	if persistent.Pia.Timestamp > hardcoded.Pia.Timestamp {
-		s.logger.Info("Using Private Internet Access servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Pia.Timestamp, hardcoded.Pia.Timestamp))
-		merged.Pia = persistent.Pia
+		versionDiff := hardcoded.Pia.Version - persistent.Pia.Version
+		if versionDiff > 0 {
+			s.logger.Info("Private Internet Access servers from file discarded because they are %d versions behind",
+				versionDiff)
+			merged.Pia = hardcoded.Pia
+		} else {
+			s.logger.Info("Using Private Internet Access servers from file (%s more recent)",
+				getUnixTimeDifference(persistent.Pia.Timestamp, hardcoded.Pia.Timestamp))
+			merged.Pia = persistent.Pia
+		}
 	}
 	merged.PiaOld = hardcoded.PiaOld
 	if persistent.PiaOld.Timestamp > hardcoded.PiaOld.Timestamp {

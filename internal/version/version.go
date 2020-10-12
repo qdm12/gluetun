@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/qdm12/gluetun/internal/logging"
 )
 
 // GetMessage returns a message for the user describing if there is a newer version
@@ -30,33 +32,10 @@ func GetMessage(version, commitShort string, client *http.Client) (message strin
 	if tagName == version {
 		return fmt.Sprintf("You are running the latest release %s", version), nil
 	}
-	timeSinceRelease := formatDuration(time.Since(releaseTime))
+	timeSinceRelease := logging.FormatDuration(time.Since(releaseTime))
 	return fmt.Sprintf("There is a new release %s (%s) created %s ago",
 			tagName, name, timeSinceRelease),
 		nil
-}
-
-func formatDuration(duration time.Duration) string {
-	switch {
-	case duration < time.Minute:
-		seconds := int(duration.Round(time.Second).Seconds())
-		if seconds < 2 {
-			return fmt.Sprintf("%d second", seconds)
-		}
-		return fmt.Sprintf("%d seconds", seconds)
-	case duration <= time.Hour:
-		minutes := int(duration.Round(time.Minute).Minutes())
-		if minutes == 1 {
-			return "1 minute"
-		}
-		return fmt.Sprintf("%d minutes", minutes)
-	case duration < 48*time.Hour:
-		hours := int(duration.Truncate(time.Hour).Hours())
-		return fmt.Sprintf("%d hours", hours)
-	default:
-		days := int(duration.Truncate(time.Hour).Hours() / 24)
-		return fmt.Sprintf("%d days", days)
-	}
 }
 
 func getLatestRelease(client *http.Client) (tagName, name string, time time.Time, err error) {

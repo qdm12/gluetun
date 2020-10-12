@@ -81,3 +81,9 @@ func (r *reader) GetOpenVPNCipher() (cipher string, err error) {
 func (r *reader) GetOpenVPNAuth() (auth string, err error) {
 	return r.envParams.GetEnv("OPENVPN_AUTH")
 }
+
+// GetOpenVPNIPv6 obtains if ipv6 should be tunneled through the
+// openvpn tunnel from the environment variable OPENVPN_IPV6
+func (r *reader) GetOpenVPNIPv6() (ipv6 bool, err error) {
+	return r.envParams.GetOnOff("OPENVPN_IPV6", libparams.Default("off"))
+}

@@ -1,14 +1,14 @@
-package publicip
+package updater
 
 import (
 	"context"
+	"net/http"
 	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 )
 
 type Looper interface {
@@ -21,32 +21,30 @@ type Looper interface {
 }
 
 type looper struct {
-	period           time.Duration
-	periodMutex      sync.RWMutex
-	getter           IPGetter
-	logger           logging.Logger
-	fileManager      files.FileManager
-	ipStatusFilepath models.Filepath
-	uid              int
-	gid              int
-	restart          chan struct{}
-	stop             chan struct{}
-	updateTicker     chan struct{}
+	period        time.Duration
+	periodMutex   sync.RWMutex
+	updater       Updater
+	storage       storage.Storage
+	setAllServers func(allServers models.AllServers)
+	logger        logging.Logger
+	restart       chan struct{}
+	stop          chan struct{}
+	updateTicker  chan struct{}
 }
 
-func NewLooper(client network.Client, logger logging.Logger, fileManager files.FileManager,
-	ipStatusFilepath models.Filepath, period time.Duration, uid, gid int) Looper {
+func NewLooper(options Options, period time.Duration, currentServers models.AllServers,
+	storage storage.Storage, setAllServers func(allServers models.AllServers),
+	client *http.Client, logger logging.Logger) Looper {
+	loggerWithPrefix := logger.WithPrefix("updater: ")
 	return &looper{
-		period:           period,
-		getter:           NewIPGetter(client),
-		logger:           logger.WithPrefix("ip getter: "),
-		fileManager:      fileManager,
-		ipStatusFilepath: ipStatusFilepath,
-		uid:              uid,
-		gid:              gid,
-		restart:          make(chan struct{}),
-		stop:             make(chan struct{}),
-		updateTicker:     make(chan struct{}),
+		period:        period,
+		updater:       New(options, client, currentServers, loggerWithPrefix),
+		storage:       storage,
+		setAllServers: setAllServers,
+		logger:        loggerWithPrefix,
+		restart:       make(chan struct{}),
+		stop:          make(chan struct{}),
+		updateTicker:  make(chan struct{}),
 	}
 }
 
@@ -68,8 +66,8 @@ func (l *looper) SetPeriod(period time.Duration) {
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	l.logger.Info("retrying in 5 seconds")
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	l.logger.Info("retrying in 5 minutes")
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel() // just for the linter
 	<-ctx.Done()
 }
@@ -78,6 +76,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	select {
 	case <-l.restart:
+		l.logger.Info("starting...")
 	case <-ctx.Done():
 		return
 	}
@@ -100,21 +99,20 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		// Enabled and has a period set
 
-		ip, err := l.getter.Get()
+		servers, err := l.updater.UpdateServers(ctx)
 		if err != nil {
+			if ctx.Err() != nil {
+				return
+			}
 			l.logAndWait(ctx, err)
 			continue
 		}
-		l.logger.Info("Public IP address is %s", ip)
-		err = l.fileManager.WriteLinesToFile(
-			string(l.ipStatusFilepath),
-			[]string{ip.String()},
-			files.Ownership(l.uid, l.gid),
-			files.Permissions(0600))
-		if err != nil {
-			l.logAndWait(ctx, err)
-			continue
+		l.setAllServers(servers)
+		if err := l.storage.FlushToFile(servers); err != nil {
+			l.logger.Error(err)
 		}
+		l.logger.Info("Updated servers information")
+
 		select {
 		case <-l.restart: // triggered restart
 		case <-l.stop:

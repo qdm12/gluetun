@@ -13,8 +13,8 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
-	RunRestartTicker(ctx context.Context)
+	Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func())
+	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	Restart()
 	Start()
 	Stop()
@@ -93,7 +93,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	<-ctx.Done()
 }
 
-func (l *looper) waitForFirstStart(ctx context.Context) {
+func (l *looper) waitForFirstStart(ctx context.Context, signalDNSReady func()) {
 	for {
 		select {
 		case <-l.stop:
@@ -103,6 +103,7 @@ func (l *looper) waitForFirstStart(ctx context.Context) {
 			if l.isEnabled() {
 				return
 			}
+			signalDNSReady()
 			l.logger.Info("not restarting because disabled")
 		case <-l.start:
 			l.setEnabled(true)
@@ -138,11 +139,11 @@ func (l *looper) waitForSubsequentStart(ctx context.Context, unboundCancel conte
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	wg.Add(1)
+func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func()) {
 	defer wg.Done()
-	l.fallbackToUnencryptedDNS()
-	l.waitForFirstStart(ctx)
+	const fallback = false
+	l.useUnencryptedDNS(fallback)
+	l.waitForFirstStart(ctx, signalDNSReady)
 	if ctx.Err() != nil {
 		return
 	}
@@ -182,7 +183,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		stream, waitFn, err := l.conf.Start(unboundCtx, settings.VerbosityDetailsLevel)
 		if err != nil {
 			unboundCancel()
-			l.fallbackToUnencryptedDNS()
+			const fallback = true
+			l.useUnencryptedDNS(fallback)
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -195,7 +197,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		}
 		if err := l.conf.WaitForUnbound(); err != nil {
 			unboundCancel()
-			l.fallbackToUnencryptedDNS()
+			const fallback = true
+			l.useUnencryptedDNS(fallback)
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -204,6 +207,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			err := waitFn() // blocking
 			waitError <- err
 		}()
+		l.logger.Info("DNS over TLS is ready")
+		signalDNSReady()
 
 		stayHere := true
 		for stayHere {
@@ -231,7 +236,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case err := <-waitError: // unexpected error
 				close(waitError)
 				unboundCancel()
-				l.fallbackToUnencryptedDNS()
+				const fallback = true
+				l.useUnencryptedDNS(fallback)
 				l.logAndWait(ctx, err)
 				stayHere = false
 			}
@@ -240,13 +246,17 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	unboundCancel()
 }
 
-func (l *looper) fallbackToUnencryptedDNS() {
+func (l *looper) useUnencryptedDNS(fallback bool) {
 	settings := l.GetSettings()
 
 	// Try with user provided plaintext ip address
 	targetIP := settings.PlaintextAddress
 	if targetIP != nil {
-		l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
+		if fallback {
+			l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
+		} else {
+			l.logger.Info("using plaintext DNS at address %s", targetIP)
+		}
 		l.conf.UseDNSInternally(targetIP)
 		if err := l.conf.UseDNSSystemWide(targetIP, settings.KeepNameserver); err != nil {
 			l.logger.Error(err)
@@ -273,7 +283,8 @@ func (l *looper) fallbackToUnencryptedDNS() {
 	l.logger.Error("no ipv4 DNS address found for providers %s", settings.Providers)
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context) {
+func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
 	ticker := time.NewTicker(time.Hour)
 	settings := l.GetSettings()
 	if settings.UpdatePeriod > 0 {

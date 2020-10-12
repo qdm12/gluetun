@@ -1,12 +1,17 @@
 package provider
 
 import (
+	"context"
 	"fmt"
+	"net"
+	"net/http"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
+	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/golibs/logging"
 )
 
 type mullvad struct {
@@ -94,7 +99,6 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
-		"tun-ipv6",
 		"fast-io",
 		"script-security 2",
 
@@ -111,6 +115,12 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", connections[0].Protocol),
 		fmt.Sprintf("cipher %s", cipher),
+	}
+	if extras.OpenVPNIPv6 {
+		lines = append(lines, "tun-ipv6")
+	} else {
+		lines = append(lines, `pull-filter ignore "route-ipv6"`)
+		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
@@ -129,6 +139,8 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 	return lines
 }
 
-func (m *mullvad) GetPortForward(client network.Client) (port uint16, err error) {
+func (m *mullvad) PortForward(ctx context.Context, client *http.Client,
+	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+	syncState func(port uint16) (pfFilepath models.Filepath)) {
 	panic("port forwarding is not supported for mullvad")
 }

@@ -1,7 +1,6 @@
 package updater
 
 import (
-	"net"
 	"strings"
 )
 
@@ -15,14 +14,13 @@ func extractRemoteLinesFromOpenvpn(content []byte) (remoteLines []string) {
 	return remoteLines
 }
 
-func extractIPsFromRemoteLines(remoteLines []string) (ips []net.IP) {
+func extractHostnamesFromRemoteLines(remoteLines []string) (hostnames []string) {
 	for _, remoteLine := range remoteLines {
 		fields := strings.Fields(remoteLine)
-		ip := net.ParseIP(fields[1])
-		if ip == nil { // not an IP address
+		if len(fields[1]) == 0 {
 			continue
 		}
-		ips = append(ips, ip)
+		hostnames = append(hostnames, fields[1])
 	}
-	return ips
+	return hostnames
 }

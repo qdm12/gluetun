@@ -4,7 +4,7 @@
 Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN,
 iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
-**ANNOUNCEMENT**: *Support for newer Private Internet Access servers*
+**ANNOUNCEMENT**: *Github Wiki reworked*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
@@ -20,6 +20,12 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 [![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
 [![Join Slack channel](https://img.shields.io/badge/slack-@qdm12-yellow.svg?logo=slack)](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
 
+## Videos
+
+1. [**Introduction**](https://youtu.be/3jIbU6J2Hs0)
+1. [**Connect a container**](https://youtu.be/mH7J_2JKNK0)
+1. [**Connect LAN devices**](https://youtu.be/qvjrM15Y0uk)
+
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
@@ -29,7 +35,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
-- Built in SOCKS5 proxy (Shadowsocks, tunnels TCP+UDP)
+- Built in Shadowsocks proxy (protocol based on SOCKS5 with an encryption layer, tunnels TCP+UDP)
 - Built in HTTP proxy (Tinyproxy, tunnels TCP)
 - [Connect other containers to it](https://github.com/qdm12/gluetun#connect-to-it)
 - [Connect LAN devices to it](https://github.com/qdm12/gluetun#connect-to-it)
@@ -42,16 +48,14 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
 ## Setup
 
-1. Requirements
-    - A VPN account with one of the service providers supported
-    - If you have a host or router firewall, please refer [to the firewall documentation](https://github.com/qdm12/gluetun/blob/master/doc/firewall.md)
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-    - *Synology users*: please read [this part of the Wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#synology)
+    - [Synology users Wiki page](https://github.com/qdm12/gluetun/wiki/Synology-setup)
 1. Launch the container with:
 
     ```bash
     docker run -d --name gluetun --cap-add=NET_ADMIN \
-    -e REGION="CA Montreal" -e USER=js89ds7 -e PASSWORD=8fd9s239G \
+    -e VPNSP="private internet access" -e REGION="CA Montreal" \
+    -e USER=js89ds7 -e PASSWORD=8fd9s239G \
     -v /yourpath:/gluetun \
     qmcgaw/private-internet-access
     ```
@@ -66,7 +70,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 
     - Change the many [environment variables](#environment-variables) available
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
-    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the SOCKS5 proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
+    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the Shadowsocks proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
     - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
 
     **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/gluetun/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
@@ -81,7 +85,7 @@ Check the VPN IP address matches your expectations
 docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo.io
 ```
 
-Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Testing)
+▶ [Testing Wiki page](https://github.com/qdm12/gluetun/wiki/Testing-the-setup)
 
 ## Environment variables
 
@@ -99,6 +103,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
 | `OPENVPN_TARGET_IP` | | Valid IP address | Specify a target VPN server (or gateway) IP address to use |
 | `OPENVPN_CIPHER` | | i.e. `aes-256-gcm` | Specify a custom cipher to use. It will also set `ncp-disable` if using AES GCM for PIA |
 | `OPENVPN_AUTH` | | i.e. `sha256` | Specify a custom auth algorithm to use |
+| `OPENVPN_IPV6` | `off` | `on`, `off` | Enable tunneling of IPv6 (only for Mullvad) |
 
 *For all providers below, server location parameters are all optional. By default a random server is picked using the filter settings provided.*
 
@@ -110,8 +115,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
-    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server **for old only**. You can listen on port `9000` for it |
-    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number **for old only** |
+    | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server. You can listen on port `9000` for it. |
+    | `PORT_FORWARDING_STATUS_FILE` | `/tmp/gluetun/forwarded_port` | Any filepath | Filepath to store the forwarded port number |
 
 - Mullvad
 
@@ -122,6 +127,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | `CITY` | | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) | VPN server city |
     | `ISP` | | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) | VPN server ISP |
     | `PORT` | | `80`, `443` or `1401` for TCP; `53`, `1194`, `1195`, `1196`, `1197`, `1300`, `1301`, `1302`, `1303` or `1400` for UDP. Defaults to TCP `443` and UDP `1194` | Custom VPN port to use |
+
+    💡 [Mullvad IPv6 Wiki page](https://github.com/qdm12/gluetun/wiki/Mullvad-IPv6)
 
 - Windscribe
 
@@ -138,7 +145,7 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your **service** username, found at the bottom of the [manual setup page](https://account.surfshark.com/setup/manual) |
     | 🏁 `PASSWORD` | | | Your **service** password |
-    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/gluetun/wiki/surfshark) | VPN server region |
+    | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/gluetun/wiki/Surfshark-Servers) | VPN server region |
 
 - Cyberghost
 
@@ -147,8 +154,8 @@ Want more testing? ▶ [see the Wiki](https://github.com/qdm12/gluetun/wiki/Test
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | 🏁 `CLIENT_KEY` | | | Your device client key content, **see below** |
-    | `REGION` | | One of the [Cyberghost countries](https://github.com/qdm12/gluetun/wiki/Cyberghost#regions) | VPN server country |
-    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the [server groups](https://github.com/qdm12/gluetun/wiki/Cyberghost#server-groups) | Server group |
+    | `REGION` | | One of the Cyberghost regions, [Wiki page](https://github.com/qdm12/gluetun/wiki/Cyberghost-Servers) | VPN server country |
+    | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the server groups (see above Wiki page) | Server group |
 
     To specify your client key, you can either:
 
@@ -224,7 +231,7 @@ That one is important if you want to connect to the container from your LAN for 
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| `SHADOWSOCKS` | `off` | `on`, `off` | Enable the internal SOCKS5 proxy Shadowsocks |
+| `SHADOWSOCKS` | `off` | `on`, `off` | Enable the internal Shadowsocks proxy |
 | `SHADOWSOCKS_LOG` | `off` | `on`, `off` | Enable logging |
 | `SHADOWSOCKS_PORT` | `8388` | `1024` to `65535` | Internal port number for Shadowsocks to listen on |
 | `SHADOWSOCKS_PASSWORD` | |  | Password to use to connect to Shadowsocks |
@@ -254,6 +261,7 @@ That one is important if you want to connect to the container from your LAN for 
 | --- | --- | --- | --- |
 | `PUBLICIP_PERIOD` | `12h` | Valid duration | Period to check for public IP address. Set to `0` to disable. |
 | `VERSION_INFORMATION` | `on` | `on`, `off` | Logs a message indicating if a newer version is available once the VPN is connected |
+| `UPDATER_PERIOD` | `0` | Valid duration string such as `24h` | Period to update all VPN servers information in memory and to /gluetun/servers.json. Set to `0` to disable. This does a burst of DNS over TLS requests, which may be blocked if you set `BLOCK_MALICIOUS=on` for example. |
 
 ## Connect to it
 
@@ -286,9 +294,9 @@ There are various ways to achieve this, depending on your use case.
     1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs
 
     </p></details>
-- <details><summary>Connect LAN devices through the built-in SOCKS5 proxy *Shadowsocks* (per app, system wide, etc.)</summary><p>
+- <details><summary>Connect LAN devices through the built-in *Shadowsocks* proxy (per app, system wide, etc.)</summary><p>
 
-    1. Setup a SOCKS5 proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
+    1. Setup a Shadowsocks proxy client, there is a list of [ShadowSocks clients for **all platforms**](https://shadowsocks.org/en/download/clients.html)
         - **note** some clients do not tunnel UDP so your DNS queries will be done locally and not through Gluetun and its built in DNS over TLS
         - Clients that support such UDP tunneling are, as far as I know:
             - iOS: Potatso Lite
@@ -297,7 +305,7 @@ There are various ways to achieve this, depending on your use case.
     1. Ensure the Gluetun container is launched with:
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
         - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
-    1. With your SOCKS5 proxy client
+    1. With your Shadowsocks proxy client
         - Enter the Docker host (i.e. `192.168.1.10`) as the server IP
         - Enter port TCP (and UDP, if available) `8388` as the server port
         - Use the password you have set with `SHADOWSOCKS_PASSWORD`
@@ -354,11 +362,11 @@ You can also use the HTTP control server (see below) to get the port forwarded.
 
 ## HTTP control server
 
-See [its Wiki page](https://github.com/qdm12/gluetun/wiki/HTTP-control-server)
+[Wiki page](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server)
 
 ## Development and contributing
 
-- Contribute with code: see [the Wiki](https://github.com/qdm12/gluetun/wiki/Contributing).
+- Contribute with code: start with [this Wiki page](https://github.com/qdm12/gluetun/wiki/Developement-setup)
 - [The list of existing contributors 👍](https://github.com/qdm12/gluetun/blob/master/.github/CONTRIBUTING.md#Contributors)
 - [Github workflows](https://github.com/qdm12/gluetun/actions) to know what's building
 - [List of issues and feature requests](https://github.com/qdm12/gluetun/issues)
