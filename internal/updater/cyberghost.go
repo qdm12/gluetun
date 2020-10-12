@@ -38,7 +38,6 @@ func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers 
 			}
 			const domain = "cg-dialup.net"
 			host := fmt.Sprintf("%s-%s.%s", groupID, countryCode, domain)
-			guard <- struct{}{}
 			go tryCyberghostHostname(ctx, lookupIP, host, groupName, region, results, guard)
 		}
 	}
@@ -60,9 +59,10 @@ func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers 
 
 func tryCyberghostHostname(ctx context.Context, lookupIP lookupIPFunc,
 	host, groupName, region string,
-	results chan<- models.CyberghostServer, guard chan<- struct{}) {
+	results chan<- models.CyberghostServer, guard chan struct{}) {
+	guard <- struct{}{}
 	defer func() {
-		guard <- struct{}{}
+		<-guard
 	}()
 	IPs, err := resolveRepeat(ctx, lookupIP, host, 2)
 	if err != nil || len(IPs) == 0 {

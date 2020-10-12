@@ -75,7 +75,6 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 			return fmt.Errorf("cannot find any hosts in %s", fileName)
 		}
 		region := strings.TrimSuffix(fileName, ".ovpn")
-		guard <- struct{}{}
 		wg.Add(1)
 		go resolvePIAHostname(ctx, wg, region, hosts, u.lookupIP, errors, serversCh, guard)
 	}
@@ -100,9 +99,10 @@ func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 
 func resolvePIAHostname(ctx context.Context, wg *sync.WaitGroup,
 	region string, hosts []string, lookupIP lookupIPFunc,
-	errors chan<- error, serversCh chan<- models.PIAServer, guard chan<- struct{}) {
+	errors chan<- error, serversCh chan<- models.PIAServer, guard chan struct{}) {
+	guard <- struct{}{}
 	defer func() {
-		guard <- struct{}{}
+		<-guard
 		wg.Done()
 	}()
 	var IPs []net.IP //nolint:prealloc
