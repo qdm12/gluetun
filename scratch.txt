@@ -1,0 +1,24 @@
+$ piactl disconnect
+
+$ ip route
+
+default via 192.168.1.1 dev wlp4s0 proto dhcp metric 20600 
+169.254.0.0/16 dev wlp4s0 scope link metric 1000 
+192.168.1.0/24 dev wlp4s0 proto kernel scope link src 192.168.1.100 metric 600 
+
+$ piactl connect # us-california
+
+$ ip route
+
+0.0.0.0/1 via 10.49.10.5 dev tun0 
+default via 192.168.1.1 dev wlp4s0 proto dhcp metric 20600 
+10.49.10.1 via 10.49.10.5 dev tun0 
+10.49.10.5 dev tun0 proto kernel scope link src 10.49.10.6 
+91.207.175.242 via 192.168.1.1 dev wlp4s0 
+128.0.0.0/1 via 10.49.10.5 dev tun0 
+169.254.0.0/16 dev wlp4s0 scope link metric 1000 
+192.168.1.0/24 dev wlp4s0 proto kernel scope link src 192.168.1.100 metric 600 
+
+
+
+docker run -it --rm --cap-add=NET_ADMIN -e USER=p3649545 -e PASSWORD="V3Qop4r@7DSt6=H-|1.o" test
