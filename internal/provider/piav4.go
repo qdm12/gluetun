@@ -24,9 +24,11 @@ import (
 )
 
 type piaV4 struct {
-	servers    []models.PIAServer
-	timeNow    timeNowFunc
-	randSource rand.Source
+	servers        []models.PIAServer
+	timeNow        timeNowFunc
+	randSource     rand.Source
+	activeServer   models.PIAServer
+	activeProtocol models.NetworkProtocol
 }
 
 func newPrivateInternetAccessV4(servers []models.PIAServer, timeNow timeNowFunc) *piaV4 {
@@ -79,7 +81,29 @@ func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 		}
 	}
 
-	return pickRandomConnection(connections, p.randSource), nil
+	connection = pickRandomConnection(connections, p.randSource)
+
+	// Reverse lookup server from picked connection
+	found := false
+	for _, server := range servers {
+		IPs := server.OpenvpnUDP.IPs
+		if selection.Protocol == constants.TCP {
+			IPs = server.OpenvpnTCP.IPs
+		}
+		for _, IP := range IPs {
+			if connection.IP.Equal(IP) {
+				p.activeServer = server
+				found = true
+				break
+			}
+		}
+		if found {
+			break
+		}
+	}
+	p.activeProtocol = selection.Protocol
+
+	return connection, nil
 }
 
 func (p *piaV4) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
@@ -90,6 +114,10 @@ func (p *piaV4) BuildConf(connection models.OpenVPNConnection, verbosity, uid, g
 func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
+	if !p.activeServer.PortForward {
+		pfLogger.Error("The server %s does not support port forwarding", p.activeServer.Region)
+		return
+	}
 	if gateway == nil {
 		pfLogger.Error("aborting because: VPN gateway IP address was not found")
 		return
@@ -259,9 +287,6 @@ func refreshPIAPortForwardData(client *http.Client, gateway net.IP, fileManager 
 	}
 	data.Port, data.Signature, data.Expiration, err = fetchPIAPortForwardData(client, gateway, data.Token)
 	if err != nil {
-		if strings.HasSuffix(err.Error(), "connection refused") {
-			return data, fmt.Errorf("cannot obtain port forwarding data: connection was refused, are you sure the region you are using supports port forwarding ;)")
-		}
 		return data, fmt.Errorf("cannot obtain port forwarding data: %w", err)
 	}
 	if err := writePIAPortForwardData(fileManager, data); err != nil {
