@@ -63,6 +63,7 @@ func (u *updater) updatePIA() (err error) {
 			if udpServer.IP != nil {
 				server.OpenvpnUDP.IPs = append(server.OpenvpnUDP.IPs, udpServer.IP)
 			}
+			server.OpenvpnUDP.CN = udpServer.CN
 		}
 		for _, tcpServer := range region.Servers.TCP {
 			if len(server.OpenvpnTCP.CN) > 0 && server.OpenvpnTCP.CN != tcpServer.CN {
@@ -71,9 +72,7 @@ func (u *updater) updatePIA() (err error) {
 			if tcpServer.IP != nil {
 				server.OpenvpnTCP.IPs = append(server.OpenvpnTCP.IPs, tcpServer.IP)
 			}
-		}
-		if server.OpenvpnTCP.CN != server.OpenvpnUDP.CN {
-			return fmt.Errorf("not the same: %q, %q", server.OpenvpnTCP.CN, server.OpenvpnUDP.CN)
+			server.OpenvpnTCP.CN = tcpServer.CN
 		}
 		servers = append(servers, server)
 	}

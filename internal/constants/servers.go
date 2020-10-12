@@ -22,7 +22,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Pia: models.PiaServers{
 			Version:   2,
-			Timestamp: 1602523433,
+			Timestamp: 1602531173,
 			Servers:   PIAServers(),
 		},
 		PiaOld: models.PiaOldServers{
