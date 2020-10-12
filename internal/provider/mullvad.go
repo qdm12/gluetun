@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -15,12 +16,14 @@ import (
 )
 
 type mullvad struct {
-	servers []models.MullvadServer
+	servers    []models.MullvadServer
+	randSource rand.Source
 }
 
-func newMullvad(servers []models.MullvadServer) *mullvad {
+func newMullvad(servers []models.MullvadServer, timeNow timeNowFunc) *mullvad {
 	return &mullvad{
-		servers: servers,
+		servers:    servers,
+		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
@@ -44,10 +47,10 @@ func (m *mullvad) filterServers(country, city, isp string) (servers []models.Mul
 	return servers
 }
 
-func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
+func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
 	servers := m.filterServers(selection.Country, selection.City, selection.ISP)
 	if len(servers) == 0 {
-		return nil, fmt.Errorf("no server found for country %q, city %q and ISP %q", selection.Country, selection.City, selection.ISP)
+		return connection, fmt.Errorf("no server found for country %q, city %q and ISP %q", selection.Country, selection.City, selection.ISP)
 	}
 
 	var defaultPort uint16 = 1194
@@ -55,6 +58,7 @@ func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (conne
 		defaultPort = 443
 	}
 
+	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		port := defaultPort
 		if selection.CustomPort > 0 {
@@ -63,7 +67,7 @@ func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (conne
 		for _, IP := range server.IPs {
 			if selection.TargetIP != nil {
 				if selection.TargetIP.Equal(IP) {
-					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
 				}
 			} else {
 				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
@@ -72,17 +76,13 @@ func (m *mullvad) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	}
 
 	if selection.TargetIP != nil {
-		return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
+		return connection, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 	}
 
-	if len(connections) > 64 {
-		connections = connections[:64]
-	}
-
-	return connections, nil
+	return pickRandomConnection(connections, m.randSource), nil
 }
 
-func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (m *mullvad) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -113,7 +113,8 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", connections[0].Protocol),
+		fmt.Sprintf("proto %s", connection.Protocol),
+		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 	}
 	if extras.OpenVPNIPv6 {
@@ -124,9 +125,6 @@ func (m *mullvad) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
-	}
-	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP, connection.Port))
 	}
 	lines = append(lines, []string{
 		"<ca>",

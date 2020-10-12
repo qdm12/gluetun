@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -13,37 +14,83 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/crypto/random"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 )
 
 type piaV3 struct {
-	random  random.Random
-	servers []models.PIAOldServer
+	servers    []models.PIAOldServer
+	randSource rand.Source
 }
 
-func newPrivateInternetAccessV3(servers []models.PIAOldServer) *piaV3 {
+func newPrivateInternetAccessV3(servers []models.PIAOldServer, timeNow timeNowFunc) *piaV3 {
 	return &piaV3{
-		random:  random.NewRandom(),
-		servers: servers,
+		servers:    servers,
+		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
-func (p *piaV3) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
-	return getPIAOldOpenVPNConnections(p.servers, selection)
+func (p *piaV3) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+	servers := filterPIAOldServers(p.servers, selection.Region)
+	if len(servers) == 0 {
+		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+	}
+
+	var port uint16
+	switch selection.Protocol {
+	case constants.TCP:
+		switch selection.EncryptionPreset {
+		case constants.PIAEncryptionPresetNormal:
+			port = 502
+		case constants.PIAEncryptionPresetStrong:
+			port = 501
+		}
+	case constants.UDP:
+		switch selection.EncryptionPreset {
+		case constants.PIAEncryptionPresetNormal:
+			port = 1198
+		case constants.PIAEncryptionPresetStrong:
+			port = 1197
+		}
+	}
+	if port == 0 {
+		return connection, fmt.Errorf("combination of protocol %q and encryption %q does not yield any port number", selection.Protocol, selection.EncryptionPreset)
+	}
+
+	var connections []models.OpenVPNConnection
+	for _, server := range servers {
+		for _, IP := range server.IPs {
+			if selection.TargetIP != nil {
+				if selection.TargetIP.Equal(IP) {
+					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
+				}
+			} else {
+				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			}
+		}
+	}
+
+	if selection.TargetIP != nil {
+		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+	}
+
+	return pickRandomConnection(connections, p.randSource), nil
 }
 
-func (p *piaV3) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
-	return buildPIAConf(connections, verbosity, root, cipher, auth, extras)
+func (p *piaV3) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+	return buildPIAConf(connection, verbosity, root, cipher, auth, extras)
 }
 
 func (p *piaV3) PortForward(ctx context.Context, client *http.Client,
 	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
-	b, err := p.random.GenerateRandomBytes(32)
+	b := make([]byte, 32)
+	n, err := rand.New(p.randSource).Read(b) //nolint:gosec
 	if err != nil {
 		pfLogger.Error(err)
+		return
+	} else if n != 32 {
+		pfLogger.Error("only read %d bytes instead of 32", n)
 		return
 	}
 	clientID := hex.EncodeToString(b)
@@ -104,54 +151,4 @@ func filterPIAOldServers(servers []models.PIAOldServer, region string) (filtered
 		}
 	}
 	return nil
-}
-
-func getPIAOldOpenVPNConnections(allServers []models.PIAOldServer, selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
-	servers := filterPIAOldServers(allServers, selection.Region)
-	if len(servers) == 0 {
-		return nil, fmt.Errorf("no server found for region %q", selection.Region)
-	}
-
-	var port uint16
-	switch selection.Protocol {
-	case constants.TCP:
-		switch selection.EncryptionPreset {
-		case constants.PIAEncryptionPresetNormal:
-			port = 502
-		case constants.PIAEncryptionPresetStrong:
-			port = 501
-		}
-	case constants.UDP:
-		switch selection.EncryptionPreset {
-		case constants.PIAEncryptionPresetNormal:
-			port = 1198
-		case constants.PIAEncryptionPresetStrong:
-			port = 1197
-		}
-	}
-	if port == 0 {
-		return nil, fmt.Errorf("combination of protocol %q and encryption %q does not yield any port number", selection.Protocol, selection.EncryptionPreset)
-	}
-
-	for _, server := range servers {
-		for _, IP := range server.IPs {
-			if selection.TargetIP != nil {
-				if selection.TargetIP.Equal(IP) {
-					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
-				}
-			} else {
-				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-			}
-		}
-	}
-
-	if selection.TargetIP != nil {
-		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
-	}
-
-	if len(connections) > 64 {
-		connections = connections[:64]
-	}
-
-	return connections, nil
 }

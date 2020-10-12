@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -15,12 +16,14 @@ import (
 )
 
 type surfshark struct {
-	servers []models.SurfsharkServer
+	servers    []models.SurfsharkServer
+	randSource rand.Source
 }
 
-func newSurfshark(servers []models.SurfsharkServer) *surfshark {
+func newSurfshark(servers []models.SurfsharkServer, timeNow timeNowFunc) *surfshark {
 	return &surfshark{
-		servers: servers,
+		servers:    servers,
+		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
@@ -36,10 +39,10 @@ func (s *surfshark) filterServers(region string) (servers []models.SurfsharkServ
 	return nil
 }
 
-func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
+func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
 	servers := s.filterServers(selection.Region)
 	if len(servers) == 0 {
-		return nil, fmt.Errorf("no server found for region %q", selection.Region)
+		return connection, fmt.Errorf("no server found for region %q", selection.Region)
 	}
 
 	var port uint16
@@ -49,14 +52,15 @@ func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (con
 	case selection.Protocol == constants.UDP:
 		port = 1194
 	default:
-		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
+		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 
+	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
 			if selection.TargetIP != nil {
 				if selection.TargetIP.Equal(IP) {
-					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
 				}
 			} else {
 				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
@@ -65,17 +69,13 @@ func (s *surfshark) GetOpenVPNConnections(selection models.ServerSelection) (con
 	}
 
 	if selection.TargetIP != nil {
-		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
 	}
 
-	if len(connections) > 64 {
-		connections = connections[:64]
-	}
-
-	return connections, nil
+	return pickRandomConnection(connections, s.randSource), nil
 }
 
-func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
+func (s *surfshark) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -112,15 +112,13 @@ func (s *surfshark) BuildConf(connections []models.OpenVPNConnection, verbosity,
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", connections[0].Protocol),
+		fmt.Sprintf("proto %s", connection.Protocol),
+		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 		fmt.Sprintf("auth %s", auth),
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
-	}
-	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP, connection.Port))
 	}
 	lines = append(lines, []string{
 		"<ca>",

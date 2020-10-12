@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -15,12 +16,14 @@ import (
 )
 
 type nordvpn struct {
-	servers []models.NordvpnServer
+	servers    []models.NordvpnServer
+	randSource rand.Source
 }
 
-func newNordvpn(servers []models.NordvpnServer) *nordvpn {
+func newNordvpn(servers []models.NordvpnServer, timeNow timeNowFunc) *nordvpn {
 	return &nordvpn{
-		servers: servers,
+		servers:    servers,
+		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
@@ -45,10 +48,10 @@ func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, 
 	return servers
 }
 
-func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
+func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
 	servers := n.filterServers(selection.Region, selection.Protocol, selection.Number)
 	if len(servers) == 0 {
-		return nil, fmt.Errorf("no server found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
+		return connection, fmt.Errorf("no server found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
 	}
 
 	var port uint16
@@ -58,13 +61,14 @@ func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	case selection.Protocol == constants.TCP:
 		port = 443
 	default:
-		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
+		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 
+	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		if selection.TargetIP != nil {
 			if selection.TargetIP.Equal(server.IP) {
-				return []models.OpenVPNConnection{{IP: server.IP, Port: port, Protocol: selection.Protocol}}, nil
+				return models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol}, nil
 			}
 		} else {
 			connections = append(connections, models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol})
@@ -72,17 +76,13 @@ func (n *nordvpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	}
 
 	if selection.TargetIP != nil {
-		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
 	}
 
-	if len(connections) > 64 {
-		connections = connections[:64]
-	}
-
-	return connections, nil
+	return pickRandomConnection(connections, n.randSource), nil
 }
 
-func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
+func (n *nordvpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -119,15 +119,13 @@ func (n *nordvpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
+		fmt.Sprintf("proto %s", string(connection.Protocol)),
+		fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 		fmt.Sprintf("auth %s", auth),
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
-	}
-	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port))
 	}
 	lines = append(lines, []string{
 		"<ca>",

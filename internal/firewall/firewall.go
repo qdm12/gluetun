@@ -16,7 +16,7 @@ import (
 type Configurator interface {
 	Version(ctx context.Context) (string, error)
 	SetEnabled(ctx context.Context, enabled bool) (err error)
-	SetVPNConnections(ctx context.Context, connections []models.OpenVPNConnection) (err error)
+	SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error)
 	SetAllowedSubnets(ctx context.Context, subnets []net.IPNet) (err error)
 	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
@@ -39,7 +39,7 @@ type configurator struct { //nolint:maligned
 
 	// State
 	enabled           bool
-	vpnConnections    []models.OpenVPNConnection
+	vpnConnection     models.OpenVPNConnection
 	allowedSubnets    []net.IPNet
 	allowedInputPorts map[uint16]string // port to interface mapping
 	stateMutex        sync.Mutex
