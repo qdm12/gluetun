@@ -122,7 +122,11 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 		pfLogger.Error("aborting because: VPN gateway IP address was not found")
 		return
 	}
-	client, err := newPIAv4HTTPClient()
+	commonName := p.activeServer.OpenvpnUDP.CN
+	if p.activeProtocol == constants.TCP {
+		commonName = p.activeServer.OpenvpnTCP.CN
+	}
+	client, err := newPIAv4HTTPClient(commonName)
 	if err != nil {
 		pfLogger.Error("aborting because: %s", err)
 		return
@@ -245,7 +249,7 @@ func filterPIAServers(servers []models.PIAServer, region string) (filtered []mod
 	return nil
 }
 
-func newPIAv4HTTPClient() (client *http.Client, err error) {
+func newPIAv4HTTPClient(commonName string) (client *http.Client, err error) {
 	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
 	if err != nil {
 		return nil, fmt.Errorf("cannot decode PIA root certificate: %w", err)
@@ -254,13 +258,16 @@ func newPIAv4HTTPClient() (client *http.Client, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
 	}
+	certificate.Subject.CommonName = commonName
+	certificate.Issuer.CommonName = commonName
+	certificate.DNSNames = []string{commonName}
+	certificate.IPAddresses = []net.IP{{10, 0, 0, 1}}
 	rootCAs := x509.NewCertPool()
 	rootCAs.AddCert(certificate)
 	TLSClientConfig := &tls.Config{
-		RootCAs:            rootCAs,
-		MinVersion:         tls.VersionTLS12,
-		InsecureSkipVerify: true, //nolint:gosec
-	} // TODO fix and remove InsecureSkipVerify
+		RootCAs:    rootCAs,
+		MinVersion: tls.VersionTLS12,
+	}
 	transport := http.Transport{
 		TLSClientConfig: TLSClientConfig,
 		Proxy:           http.ProxyFromEnvironment,
