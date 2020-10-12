@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -15,12 +16,14 @@ import (
 )
 
 type cyberghost struct {
-	servers []models.CyberghostServer
+	servers    []models.CyberghostServer
+	randSource rand.Source
 }
 
-func newCyberghost(servers []models.CyberghostServer) *cyberghost {
+func newCyberghost(servers []models.CyberghostServer, timeNow timeNowFunc) *cyberghost {
 	return &cyberghost{
-		servers: servers,
+		servers:    servers,
+		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
@@ -39,17 +42,18 @@ func (c *cyberghost) filterServers(region, group string) (servers []models.Cyber
 	return servers
 }
 
-func (c *cyberghost) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
+func (c *cyberghost) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
 	servers := c.filterServers(selection.Region, selection.Group)
 	if len(servers) == 0 {
-		return nil, fmt.Errorf("no server found for region %q and group %q", selection.Region, selection.Group)
+		return connection, fmt.Errorf("no server found for region %q and group %q", selection.Region, selection.Group)
 	}
 
+	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
 			if selection.TargetIP != nil {
 				if selection.TargetIP.Equal(IP) {
-					return []models.OpenVPNConnection{{IP: IP, Port: 443, Protocol: selection.Protocol}}, nil
+					return models.OpenVPNConnection{IP: IP, Port: 443, Protocol: selection.Protocol}, nil
 				}
 			} else {
 				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: 443, Protocol: selection.Protocol})
@@ -58,17 +62,13 @@ func (c *cyberghost) GetOpenVPNConnections(selection models.ServerSelection) (co
 	}
 
 	if selection.TargetIP != nil {
-		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
 	}
 
-	if len(connections) > 64 {
-		connections = connections[:64]
-	}
-
-	return connections, nil
+	return pickRandomConnection(connections, c.randSource), nil
 }
 
-func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -102,7 +102,8 @@ func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", connections[0].Protocol),
+		fmt.Sprintf("proto %s", connection.Protocol),
+		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 		fmt.Sprintf("auth %s", auth),
 	}
@@ -111,9 +112,6 @@ func (c *cyberghost) BuildConf(connections []models.OpenVPNConnection, verbosity
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
-	}
-	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP, connection.Port))
 	}
 	lines = append(lines, []string{
 		"<ca>",

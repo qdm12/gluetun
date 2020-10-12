@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func buildPIAConf(connections []models.OpenVPNConnection, verbosity int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func buildPIAConf(connection models.OpenVPNConnection, verbosity int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	var X509CRL, certificate string
 	if extras.EncryptionPreset == constants.PIAEncryptionPresetNormal {
 		if len(cipher) == 0 {
@@ -52,7 +52,8 @@ func buildPIAConf(connections []models.OpenVPNConnection, verbosity int, root bo
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", connections[0].Protocol),
+		fmt.Sprintf("proto %s", connection.Protocol),
+		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 		fmt.Sprintf("auth %s", auth),
 	}
@@ -61,9 +62,6 @@ func buildPIAConf(connections []models.OpenVPNConnection, verbosity int, root bo
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
-	}
-	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP, connection.Port))
 	}
 	lines = append(lines, []string{
 		"<crl-verify>",

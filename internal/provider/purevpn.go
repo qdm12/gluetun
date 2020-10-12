@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -15,12 +16,14 @@ import (
 )
 
 type purevpn struct {
-	servers []models.PurevpnServer
+	servers    []models.PurevpnServer
+	randSource rand.Source
 }
 
-func newPurevpn(servers []models.PurevpnServer) *purevpn {
+func newPurevpn(servers []models.PurevpnServer, timeNow timeNowFunc) *purevpn {
 	return &purevpn{
-		servers: servers,
+		servers:    servers,
+		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
@@ -44,10 +47,10 @@ func (p *purevpn) filterServers(region, country, city string) (servers []models.
 	return servers
 }
 
-func (p *purevpn) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) { //nolint:dupl
+func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
 	servers := p.filterServers(selection.Region, selection.Country, selection.City)
 	if len(servers) == 0 {
-		return nil, fmt.Errorf("no server found for region %q, country %q and city %q", selection.Region, selection.Country, selection.City)
+		return connection, fmt.Errorf("no server found for region %q, country %q and city %q", selection.Region, selection.Country, selection.City)
 	}
 
 	var port uint16
@@ -57,14 +60,15 @@ func (p *purevpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	case selection.Protocol == constants.TCP:
 		port = 80
 	default:
-		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
+		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 
+	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
 			if selection.TargetIP != nil {
 				if IP.Equal(selection.TargetIP) {
-					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
 				}
 			} else {
 				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
@@ -73,17 +77,13 @@ func (p *purevpn) GetOpenVPNConnections(selection models.ServerSelection) (conne
 	}
 
 	if selection.TargetIP != nil {
-		return nil, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
+		return connection, fmt.Errorf("target IP address %q not found in IP addresses", selection.TargetIP)
 	}
 
-	if len(connections) > 64 {
-		connections = connections[:64]
-	}
-
-	return connections, nil
+	return pickRandomConnection(connections, p.randSource), nil
 }
 
-func (p *purevpn) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
+func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -114,14 +114,12 @@ func (p *purevpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", string(connections[0].Protocol)),
+		fmt.Sprintf("proto %s", string(connection.Protocol)),
+		fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
-	}
-	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port))
 	}
 	lines = append(lines, []string{
 		"<ca>",
@@ -156,7 +154,7 @@ func (p *purevpn) BuildConf(connections []models.OpenVPNConnection, verbosity, u
 	if len(auth) > 0 {
 		lines = append(lines, "auth "+auth)
 	}
-	if connections[0].Protocol == constants.UDP {
+	if connection.Protocol == constants.UDP {
 		lines = append(lines, "explicit-exit-notify")
 	}
 	return lines

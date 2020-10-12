@@ -85,8 +85,8 @@ func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocogn
 	if err = c.acceptEstablishedRelatedTraffic(ctx, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	for _, conn := range c.vpnConnections {
-		if err = c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, conn, remove); err != nil {
+	if c.vpnConnection.IP != nil {
+		if err = c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, c.vpnConnection, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -15,12 +16,14 @@ import (
 )
 
 type windscribe struct {
-	servers []models.WindscribeServer
+	servers    []models.WindscribeServer
+	randSource rand.Source
 }
 
-func newWindscribe(servers []models.WindscribeServer) *windscribe {
+func newWindscribe(servers []models.WindscribeServer, timeNow timeNowFunc) *windscribe {
 	return &windscribe{
-		servers: servers,
+		servers:    servers,
+		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
@@ -36,10 +39,10 @@ func (w *windscribe) filterServers(region string) (servers []models.WindscribeSe
 	return nil
 }
 
-func (w *windscribe) GetOpenVPNConnections(selection models.ServerSelection) (connections []models.OpenVPNConnection, err error) {
+func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
 	servers := w.filterServers(selection.Region)
 	if len(servers) == 0 {
-		return nil, fmt.Errorf("no server found for region %q", selection.Region)
+		return connection, fmt.Errorf("no server found for region %q", selection.Region)
 	}
 
 	var port uint16
@@ -51,14 +54,15 @@ func (w *windscribe) GetOpenVPNConnections(selection models.ServerSelection) (co
 	case selection.Protocol == constants.UDP:
 		port = 443
 	default:
-		return nil, fmt.Errorf("protocol %q is unknown", selection.Protocol)
+		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
 	}
 
+	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
 			if selection.TargetIP != nil {
 				if selection.TargetIP.Equal(IP) {
-					return []models.OpenVPNConnection{{IP: IP, Port: port, Protocol: selection.Protocol}}, nil
+					return models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol}, nil
 				}
 			} else {
 				connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
@@ -67,17 +71,13 @@ func (w *windscribe) GetOpenVPNConnections(selection models.ServerSelection) (co
 	}
 
 	if selection.TargetIP != nil {
-		return nil, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
+		return connection, fmt.Errorf("target IP %s not found in IP addresses", selection.TargetIP)
 	}
 
-	if len(connections) > 64 {
-		connections = connections[:64]
-	}
-
-	return connections, nil
+	return pickRandomConnection(connections, w.randSource), nil
 }
 
-func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (w *windscribe) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -107,7 +107,8 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", connections[0].Protocol),
+		fmt.Sprintf("proto %s", connection.Protocol),
+		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 		fmt.Sprintf("auth %s", auth),
 	}
@@ -116,9 +117,6 @@ func (w *windscribe) BuildConf(connections []models.OpenVPNConnection, verbosity
 	}
 	if !root {
 		lines = append(lines, "user nonrootuser")
-	}
-	for _, connection := range connections {
-		lines = append(lines, fmt.Sprintf("remote %s %d", connection.IP, connection.Port))
 	}
 	lines = append(lines, []string{
 		"<ca>",

@@ -113,16 +113,16 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
 		l.allServersMutex.RLock()
-		providerConf := provider.New(l.provider, l.allServers)
+		providerConf := provider.New(l.provider, l.allServers, time.Now)
 		l.allServersMutex.RUnlock()
-		connections, err := providerConf.GetOpenVPNConnections(settings.Provider.ServerSelection)
+		connection, err := providerConf.GetOpenVPNConnection(settings.Provider.ServerSelection)
 		if err != nil {
 			l.logger.Error(err)
 			l.cancel()
 			return
 		}
 		lines := providerConf.BuildConf(
-			connections,
+			connection,
 			settings.Verbosity,
 			l.uid,
 			l.gid,
@@ -143,7 +143,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		}
 
-		if err := l.fw.SetVPNConnections(ctx, connections); err != nil {
+		if err := l.fw.SetVPNConnection(ctx, connection); err != nil {
 			l.logger.Error(err)
 			l.cancel()
 			return
