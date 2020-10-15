@@ -12,6 +12,7 @@ import (
 type Firewall struct {
 	AllowedSubnets []net.IPNet
 	VPNInputPorts  []uint16
+	InputPorts     []uint16
 	Enabled        bool
 	Debug          bool
 }
@@ -28,11 +29,16 @@ func (f *Firewall) String() string {
 	for i, port := range f.VPNInputPorts {
 		vpnInputPorts[i] = fmt.Sprintf("%d", port)
 	}
+	inputPorts := make([]string, len(f.InputPorts))
+	for i, port := range f.InputPorts {
+		inputPorts[i] = fmt.Sprintf("%d", port)
+	}
 
 	settingsList := []string{
 		"Firewall settings:",
 		"Allowed subnets: " + strings.Join(allowedSubnets, ", "),
 		"VPN input ports: " + strings.Join(vpnInputPorts, ", "),
+		"Input ports: " + strings.Join(inputPorts, ", "),
 	}
 	if f.Debug {
 		settingsList = append(settingsList, "Debug: on")
@@ -47,6 +53,10 @@ func GetFirewallSettings(paramsReader params.Reader) (settings Firewall, err err
 		return settings, err
 	}
 	settings.VPNInputPorts, err = paramsReader.GetVPNInputPorts()
+	if err != nil {
+		return settings, err
+	}
+	settings.InputPorts, err = paramsReader.GetInputPorts()
 	if err != nil {
 		return settings, err
 	}

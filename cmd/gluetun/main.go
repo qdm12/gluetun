@@ -185,6 +185,14 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		}
 	}
 
+	for _, port := range allSettings.Firewall.InputPorts {
+		err = firewallConf.SetAllowedPort(ctx, port, defaultInterface)
+		if err != nil {
+			logger.Error(err)
+			return 1
+		}
+	}
+
 	wg := &sync.WaitGroup{}
 
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
