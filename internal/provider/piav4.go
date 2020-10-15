@@ -151,11 +151,9 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	}
 
 	expiryTimer := time.NewTimer(durationToExpiration)
-	defer expiryTimer.Stop()
 	const keepAlivePeriod = 15 * time.Minute
-	keepAliveTicker := time.NewTicker(keepAlivePeriod)
-	defer keepAliveTicker.Stop()
-
+	// Timer behaving as a ticker
+	keepAliveTimer := time.NewTimer(keepAlivePeriod)
 	for {
 		select {
 		case <-ctx.Done():
@@ -164,11 +162,18 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			if err := fw.RemoveAllowedPort(removeCtx, data.Port); err != nil {
 				pfLogger.Error(err)
 			}
+			if !keepAliveTimer.Stop() {
+				<-keepAliveTimer.C
+			}
+			if !expiryTimer.Stop() {
+				<-expiryTimer.C
+			}
 			return
-		case <-keepAliveTicker.C:
+		case <-keepAliveTimer.C:
 			if err := bindPIAPort(client, gateway, data); err != nil {
 				pfLogger.Error(err)
 			}
+			keepAliveTimer.Reset(keepAlivePeriod)
 		case <-expiryTimer.C:
 			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration.Format(time.RFC1123))
 			oldPort := data.Port
@@ -199,7 +204,10 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			if err := bindPIAPort(client, gateway, data); err != nil {
 				pfLogger.Error(err)
 			}
-			keepAliveTicker.Reset(keepAlivePeriod)
+			if !keepAliveTimer.Stop() {
+				<-keepAliveTimer.C
+			}
+			keepAliveTimer.Reset(keepAlivePeriod)
 			expiryTimer.Reset(durationToExpiration)
 		}
 	}

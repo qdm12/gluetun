@@ -34,6 +34,8 @@ type looper struct {
 	start         chan struct{}
 	stop          chan struct{}
 	updateTicker  chan struct{}
+	timeNow       func() time.Time
+	timeSince     func(time.Time) time.Duration
 }
 
 func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
@@ -49,6 +51,8 @@ func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 		start:        make(chan struct{}),
 		stop:         make(chan struct{}),
 		updateTicker: make(chan struct{}),
+		timeNow:      time.Now,
+		timeSince:    time.Since,
 	}
 }
 
@@ -285,24 +289,45 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 
 func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	ticker := time.NewTicker(time.Hour)
+	// Timer that acts as a ticker
+	timer := time.NewTimer(time.Hour)
+	timer.Stop()
+	timerIsStopped := true
 	settings := l.GetSettings()
 	if settings.UpdatePeriod > 0 {
-		ticker = time.NewTicker(settings.UpdatePeriod)
-	} else {
-		ticker.Stop()
+		timer.Reset(settings.UpdatePeriod)
+		timerIsStopped = false
 	}
+	lastTick := time.Unix(0, 0)
 	for {
 		select {
 		case <-ctx.Done():
-			ticker.Stop()
+			if !timerIsStopped && !timer.Stop() {
+				<-timer.C
+			}
 			return
-		case <-ticker.C:
+		case <-timer.C:
+			lastTick = l.timeNow()
 			l.restart <- struct{}{}
+			settings := l.GetSettings()
+			timer.Reset(settings.UpdatePeriod)
 		case <-l.updateTicker:
-			ticker.Stop()
-			period := l.GetSettings().UpdatePeriod
-			ticker = time.NewTicker(period)
+			if !timer.Stop() {
+				<-timer.C
+			}
+			timerIsStopped = true
+			settings := l.GetSettings()
+			newUpdatePeriod := settings.UpdatePeriod
+			if newUpdatePeriod == 0 {
+				continue
+			}
+			var waited time.Duration
+			if lastTick.UnixNano() != 0 {
+				waited = l.timeSince(lastTick)
+			}
+			leftToWait := newUpdatePeriod - waited
+			timer.Reset(leftToWait)
+			timerIsStopped = false
 		}
 	}
 }

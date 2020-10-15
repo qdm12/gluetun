@@ -32,6 +32,8 @@ type looper struct {
 	restart          chan struct{}
 	stop             chan struct{}
 	updateTicker     chan struct{}
+	timeNow          func() time.Time
+	timeSince        func(time.Time) time.Duration
 }
 
 func NewLooper(client network.Client, logger logging.Logger, fileManager files.FileManager,
@@ -47,6 +49,8 @@ func NewLooper(client network.Client, logger logging.Logger, fileManager files.F
 		restart:          make(chan struct{}),
 		stop:             make(chan struct{}),
 		updateTicker:     make(chan struct{}),
+		timeNow:          time.Now,
+		timeSince:        time.Since,
 	}
 }
 
@@ -127,23 +131,42 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	ticker := time.NewTicker(time.Hour)
+	timer := time.NewTimer(time.Hour)
+	timer.Stop() // 1 hour, cannot be a race condition
+	timerIsStopped := true
 	period := l.GetPeriod()
 	if period > 0 {
-		ticker = time.NewTicker(period)
-	} else {
-		ticker.Stop()
+		timer.Reset(period)
+		timerIsStopped = false
 	}
+	lastTick := time.Unix(0, 0)
 	for {
 		select {
 		case <-ctx.Done():
-			ticker.Stop()
+			if !timerIsStopped && !timer.Stop() {
+				<-timer.C
+			}
 			return
-		case <-ticker.C:
+		case <-timer.C:
+			lastTick = l.timeNow()
 			l.restart <- struct{}{}
+			timer.Reset(l.GetPeriod())
 		case <-l.updateTicker:
-			ticker.Stop()
-			ticker = time.NewTicker(l.GetPeriod())
+			if !timer.Stop() {
+				<-timer.C
+			}
+			timerIsStopped = true
+			period := l.GetPeriod()
+			if period == 0 {
+				continue
+			}
+			var waited time.Duration
+			if lastTick.UnixNano() > 0 {
+				waited = l.timeSince(lastTick)
+			}
+			leftToWait := period - waited
+			timer.Reset(leftToWait)
+			timerIsStopped = false
 		}
 	}
 }
