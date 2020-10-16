@@ -113,4 +113,6 @@ RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables i
     deluser tinyproxy && \
     deluser unbound && \
     mkdir /gluetun
+# TODO remove once SAN is added to PIA servers certificates, see https://github.com/pia-foss/manual-connections/issues/10
+ENV GODEBUG=x509ignoreCN=0
 COPY --from=builder /tmp/gobuild/entrypoint /entrypoint
