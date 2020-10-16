@@ -352,10 +352,10 @@ There are various ways to achieve this, depending on your use case.
 
 ## Private Internet Access port forwarding
 
-Note that [not all regions support port forwarding](https://www.privateinternetaccess.com/helpdesk/kb/articles/how-do-i-enable-port-forwarding-on-my-vpn).
-
-When `PORT_FORWARDING=on`, a port will be forwarded on the VPN server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/forwarded_port`.
+When `PORT_FORWARDING=on`, a port will be forwarded on the VPN server side and written to the file specified by `PORT_FORWARDING_STATUS_FILE=/tmp/gluetun/forwarded_port`.
 It can be useful to mount this file as a volume to read it from other containers, for example to configure a torrenting client.
+
+For `VPNSP=private internet access` (default), you will keep the same forwarded port for 60 days as long as you bind mount the `/gluetun` directory.
 
 You can also use the HTTP control server (see below) to get the port forwarded.
 
