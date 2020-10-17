@@ -60,7 +60,9 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 func (s *server) makeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s.logger.Info("HTTP %s %s", r.Method, r.RequestURI)
+		if r.Method != http.MethodGet || r.RequestURI != "/health" {
+			s.logger.Info("HTTP %s %s", r.Method, r.RequestURI)
+		}
 		switch r.Method {
 		case http.MethodGet:
 			switch r.RequestURI {
