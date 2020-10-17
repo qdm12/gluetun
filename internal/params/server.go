@@ -11,3 +11,7 @@ func (r *reader) GetControlServerPort() (port uint16, err error) {
 	}
 	return uint16(n), nil
 }
+
+func (r *reader) GetControlServerLog() (enabled bool, err error) {
+	return r.envParams.GetOnOff("HTTP_CONTROL_SERVER_LOG", libparams.Default("on"))
+}

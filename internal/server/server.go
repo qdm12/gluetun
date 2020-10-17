@@ -20,6 +20,7 @@ type Server interface {
 
 type server struct {
 	address       string
+	logging       bool
 	logger        logging.Logger
 	openvpnLooper openvpn.Looper
 	unboundLooper dns.Looper
@@ -27,9 +28,10 @@ type server struct {
 	lookupIP      func(host string) ([]net.IP, error)
 }
 
-func New(address string, logger logging.Logger, openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
+func New(address string, logging bool, logger logging.Logger, openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
 	return &server{
 		address:       address,
+		logging:       logging,
 		logger:        logger.WithPrefix("http server: "),
 		openvpnLooper: openvpnLooper,
 		unboundLooper: unboundLooper,
@@ -60,7 +62,7 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 func (s *server) makeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet || r.RequestURI != "/health" {
+		if s.logging && (r.Method != http.MethodGet || r.RequestURI != "/health") {
 			s.logger.Info("HTTP %s %s", r.Method, r.RequestURI)
 		}
 		switch r.Method {

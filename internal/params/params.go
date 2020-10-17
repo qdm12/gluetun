@@ -112,6 +112,7 @@ type Reader interface {
 
 	// Control server
 	GetControlServerPort() (port uint16, err error)
+	GetControlServerLog() (enabled bool, err error)
 
 	GetVersionInformation() (enabled bool, err error)
 
