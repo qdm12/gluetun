@@ -1,10 +1,13 @@
 package version
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"golang.org/x/net/context/ctxhttp"
 )
 
 type githubRelease struct {
@@ -23,9 +26,9 @@ type githubCommit struct {
 	}
 }
 
-func getGithubReleases(client *http.Client) (releases []githubRelease, err error) {
+func getGithubReleases(ctx context.Context, client *http.Client) (releases []githubRelease, err error) {
 	const url = "https://api.github.com/repos/qdm12/gluetun/releases"
-	response, err := client.Get(url)
+	response, err := ctxhttp.Get(ctx, client, url)
 	if err != nil {
 		return nil, err
 	}
@@ -40,9 +43,9 @@ func getGithubReleases(client *http.Client) (releases []githubRelease, err error
 	return releases, nil
 }
 
-func getGithubCommits(client *http.Client) (commits []githubCommit, err error) {
+func getGithubCommits(ctx context.Context, client *http.Client) (commits []githubCommit, err error) {
 	const url = "https://api.github.com/repos/qdm12/gluetun/commits"
-	response, err := client.Get(url)
+	response, err := ctxhttp.Get(ctx, client, url)
 	if err != nil {
 		return nil, err
 	}

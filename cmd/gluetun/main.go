@@ -52,7 +52,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		var err error
 		switch args[1] {
 		case "healthcheck":
-			err = cli.HealthCheck()
+			client := &http.Client{Timeout: time.Second}
+			err = cli.HealthCheck(background, client)
 		case "clientkey":
 			err = cli.ClientKey(args[2:])
 		case "openvpnconfig":
@@ -403,7 +404,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			if !versionInformation {
 				break
 			}
-			message, err := versionpkg.GetMessage(version, commit, httpClient)
+			message, err := versionpkg.GetMessage(ctx, version, commit, httpClient)
 			if err != nil {
 				logger.Error(err)
 				break

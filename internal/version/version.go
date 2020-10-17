@@ -1,6 +1,7 @@
 package version
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -10,10 +11,10 @@ import (
 
 // GetMessage returns a message for the user describing if there is a newer version
 // available. It should only be called once the tunnel is established.
-func GetMessage(version, commitShort string, client *http.Client) (message string, err error) {
+func GetMessage(ctx context.Context, version, commitShort string, client *http.Client) (message string, err error) {
 	if version == "latest" {
 		// Find # of commits between current commit and latest commit
-		commitsSince, err := getCommitsSince(client, commitShort)
+		commitsSince, err := getCommitsSince(ctx, client, commitShort)
 		if err != nil {
 			return "", fmt.Errorf("cannot get version information: %w", err)
 		} else if commitsSince == 0 {
@@ -25,7 +26,7 @@ func GetMessage(version, commitShort string, client *http.Client) (message strin
 		}
 		return fmt.Sprintf("You are running %d %s behind the most recent %s", commitsSince, commits, version), nil
 	}
-	tagName, name, releaseTime, err := getLatestRelease(client)
+	tagName, name, releaseTime, err := getLatestRelease(ctx, client)
 	if err != nil {
 		return "", fmt.Errorf("cannot get version information: %w", err)
 	}
@@ -38,8 +39,8 @@ func GetMessage(version, commitShort string, client *http.Client) (message strin
 		nil
 }
 
-func getLatestRelease(client *http.Client) (tagName, name string, time time.Time, err error) {
-	releases, err := getGithubReleases(client)
+func getLatestRelease(ctx context.Context, client *http.Client) (tagName, name string, time time.Time, err error) {
+	releases, err := getGithubReleases(ctx, client)
 	if err != nil {
 		return "", "", time, err
 	}
@@ -52,8 +53,8 @@ func getLatestRelease(client *http.Client) (tagName, name string, time time.Time
 	return "", "", time, fmt.Errorf("no releases found")
 }
 
-func getCommitsSince(client *http.Client, commitShort string) (n int, err error) {
-	commits, err := getGithubCommits(client)
+func getCommitsSince(ctx context.Context, client *http.Client, commitShort string) (n int, err error) {
+	commits, err := getGithubCommits(ctx, client)
 	if err != nil {
 		return 0, err
 	}
