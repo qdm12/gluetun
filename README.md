@@ -255,6 +255,12 @@ That one is important if you want to connect to the container from your LAN for 
 | `UID` | `1000` | | User ID to run as non root and for ownership of files written |
 | `GID` | `1000` | | Group ID to run as non root and for ownership of files written |
 
+### HTTP Control server
+
+| Variable | Default | Choices | Description |
+| --- | --- | --- | --- |
+| `HTTP_CONTROL_SERVER_PORT` | `8000` | `1` to `65535` | Listening port for the HTTP control server |
+
 ### Other
 
 | Variable | Default | Choices | Description |

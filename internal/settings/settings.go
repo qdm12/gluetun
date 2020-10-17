@@ -26,6 +26,7 @@ type Settings struct {
 	PublicIPPeriod     time.Duration
 	UpdaterPeriod      time.Duration
 	VersionInformation bool
+	ControlServer      ControlServer
 }
 
 func (s *Settings) String() string {
@@ -45,6 +46,7 @@ func (s *Settings) String() string {
 		s.Firewall.String(),
 		s.TinyProxy.String(),
 		s.ShadowSocks.String(),
+		s.ControlServer.String(),
 		"Public IP check period: " + s.PublicIPPeriod.String(), // TODO print disabled if 0
 		"Version information: " + versionInformation,
 		updaterLine,
@@ -92,6 +94,10 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 		return settings, err
 	}
 	settings.UpdaterPeriod, err = paramsReader.GetUpdaterPeriod()
+	if err != nil {
+		return settings, err
+	}
+	settings.ControlServer, err = GetControlServerSettings(paramsReader)
 	if err != nil {
 		return settings, err
 	}

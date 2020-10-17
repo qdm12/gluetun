@@ -236,8 +236,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
 		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
 	)
-
-	httpServer := server.New("0.0.0.0:8000", logger, openvpnLooper, unboundLooper, updaterLooper)
+	controlServerAddress := fmt.Sprintf("0.0.0.0:%d", allSettings.ControlServer.Port)
+	httpServer := server.New(controlServerAddress, logger, openvpnLooper, unboundLooper, updaterLooper)
 	wg.Add(1)
 	go httpServer.Run(ctx, wg)
 

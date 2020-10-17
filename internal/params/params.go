@@ -110,6 +110,9 @@ type Reader interface {
 	// Public IP getters
 	GetPublicIPPeriod() (period time.Duration, err error)
 
+	// Control server
+	GetControlServerPort() (port uint16, err error)
+
 	GetVersionInformation() (enabled bool, err error)
 
 	GetUpdaterPeriod() (period time.Duration, err error)
