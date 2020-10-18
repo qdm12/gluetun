@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	libparams "github.com/qdm12/golibs/params"
 )
 
 // GetNordvpnRegions obtains the regions (countries) for the NordVPN server from the
@@ -22,7 +21,7 @@ func (r *reader) GetNordvpnNumbers() (numbers []uint16, err error) {
 	for i := range possibilities {
 		possibilities[i] = fmt.Sprintf("%d", i)
 	}
-	values, err := r.envParams.GetCSVInPossibilities("SERVER_NUMBER", possibilities, libparams.Default("0"))
+	values, err := r.envParams.GetCSVInPossibilities("SERVER_NUMBER", possibilities)
 	if err != nil {
 		return nil, err
 	}

@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -27,25 +26,16 @@ func newMullvad(servers []models.MullvadServer, timeNow timeNowFunc) *mullvad {
 	}
 }
 
-func (m *mullvad) filterServers(country, city, isp string, owned bool) (servers []models.MullvadServer) {
-	for i, server := range m.servers {
-		if len(country) == 0 {
-			server.Country = ""
-		}
-		if len(city) == 0 {
-			server.City = ""
-		}
-		if len(isp) == 0 {
-			server.ISP = ""
-		}
-		if !owned {
-			server.Owned = false
-		}
-		if strings.EqualFold(server.Country, country) &&
-			strings.EqualFold(server.City, city) &&
-			strings.EqualFold(server.ISP, isp) &&
-			server.Owned == owned {
-			servers = append(servers, m.servers[i])
+func (m *mullvad) filterServers(countries, cities, isps []string, owned bool) (servers []models.MullvadServer) {
+	for _, server := range m.servers {
+		switch {
+		case
+			filterByPossibilities(server.Country, countries),
+			filterByPossibilities(server.City, cities),
+			filterByPossibilities(server.ISP, isps),
+			owned && !server.Owned:
+		default:
+			servers = append(servers, server)
 		}
 	}
 	return servers
@@ -65,9 +55,10 @@ func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (connec
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := m.filterServers(selection.Country, selection.City, selection.ISP, selection.Owned)
+	servers := m.filterServers(selection.Countries, selection.Cities, selection.ISPs, selection.Owned)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for country %q, city %q, ISP %q and owned %t", selection.Country, selection.City, selection.ISP, selection.Owned)
+		return connection, fmt.Errorf("no server found for countries %s, cities %s, ISPs %s and owned %t",
+			commaJoin(selection.Countries), commaJoin(selection.Cities), commaJoin(selection.ISPs), selection.Owned)
 	}
 
 	var connections []models.OpenVPNConnection

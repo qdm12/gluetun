@@ -91,6 +91,8 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 
 **TLDR**; only set the 🏁 marked environment variables to get started.
 
+💡 For all server filtering options such as `REGION`, you can have multiple values separated by a comma, i.e. `Germany,Singapore`
+
 ### VPN
 
 | Variable | Default | Choices | Description |

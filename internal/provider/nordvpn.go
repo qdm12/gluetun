@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -27,22 +26,21 @@ func newNordvpn(servers []models.NordvpnServer, timeNow timeNowFunc) *nordvpn {
 	}
 }
 
-func (n *nordvpn) filterServers(region string, protocol models.NetworkProtocol, number uint16) (servers []models.NordvpnServer) {
-	for i, server := range n.servers {
-		if len(region) == 0 {
-			server.Region = ""
-		}
-		if number == 0 {
-			server.Number = 0
-		}
-
-		if protocol == constants.TCP && !server.TCP {
-			continue
-		} else if protocol == constants.UDP && !server.UDP {
-			continue
-		}
-		if strings.EqualFold(server.Region, region) && server.Number == number {
-			servers = append(servers, n.servers[i])
+func (n *nordvpn) filterServers(regions []string, protocol models.NetworkProtocol, numbers []uint16) (servers []models.NordvpnServer) {
+	numbersStr := make([]string, len(numbers))
+	for i := range numbers {
+		numbersStr[i] = fmt.Sprintf("%d", numbers[i])
+	}
+	for _, server := range n.servers {
+		numberStr := fmt.Sprintf("%d", server.Number)
+		switch {
+		case
+			protocol == constants.TCP && !server.TCP,
+			protocol == constants.UDP && !server.UDP,
+			filterByPossibilities(server.Region, regions),
+			filterByPossibilities(numberStr, numbersStr):
+		default:
+			servers = append(servers, server)
 		}
 	}
 	return servers
@@ -63,9 +61,9 @@ func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (connec
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := n.filterServers(selection.Region, selection.Protocol, selection.Number)
+	servers := n.filterServers(selection.Regions, selection.Protocol, selection.Numbers)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q, protocol %s and number %d", selection.Region, selection.Protocol, selection.Number)
+		return connection, fmt.Errorf("no server found for region %s, protocol %s and numbers %v", commaJoin(selection.Regions), selection.Protocol, selection.Numbers)
 	}
 
 	connections := make([]models.OpenVPNConnection, len(servers))

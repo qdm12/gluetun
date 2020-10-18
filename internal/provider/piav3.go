@@ -9,7 +9,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -57,9 +56,9 @@ func (p *piaV3) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := filterPIAOldServers(p.servers, selection.Region)
+	servers := filterPIAOldServers(p.servers, selection.Regions)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+		return connection, fmt.Errorf("no server found for regions %s", commaJoin(selection.Regions))
 	}
 
 	var connections []models.OpenVPNConnection
@@ -136,14 +135,13 @@ func (p *piaV3) PortForward(ctx context.Context, client *http.Client,
 	}
 }
 
-func filterPIAOldServers(servers []models.PIAOldServer, region string) (filtered []models.PIAOldServer) {
-	if len(region) == 0 {
-		return servers
-	}
+func filterPIAOldServers(servers []models.PIAOldServer, regions []string) (filtered []models.PIAOldServer) {
 	for _, server := range servers {
-		if strings.EqualFold(server.Region, region) {
-			return []models.PIAOldServer{server}
+		switch {
+		case filterByPossibilities(server.Region, regions):
+		default:
+			servers = append(servers, server)
 		}
 	}
-	return nil
+	return servers
 }

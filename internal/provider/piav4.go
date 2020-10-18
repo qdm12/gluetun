@@ -66,9 +66,9 @@ func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := filterPIAServers(p.servers, selection.Region)
+	servers := filterPIAServers(p.servers, selection.Regions)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
 	}
 
 	var connections []models.OpenVPNConnection
@@ -246,16 +246,15 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	}
 }
 
-func filterPIAServers(servers []models.PIAServer, region string) (filtered []models.PIAServer) {
-	if len(region) == 0 {
-		return servers
-	}
+func filterPIAServers(servers []models.PIAServer, regions []string) (filtered []models.PIAServer) {
 	for _, server := range servers {
-		if strings.EqualFold(server.Region, region) {
-			return []models.PIAServer{server}
+		switch {
+		case filterByPossibilities(server.Region, regions):
+		default:
+			servers = append(servers, server)
 		}
 	}
-	return nil
+	return servers
 }
 
 func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {

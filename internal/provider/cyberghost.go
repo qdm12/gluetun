@@ -27,16 +27,13 @@ func newCyberghost(servers []models.CyberghostServer, timeNow timeNowFunc) *cybe
 	}
 }
 
-func (c *cyberghost) filterServers(region, group string) (servers []models.CyberghostServer) {
-	for i, server := range c.servers {
-		if len(region) == 0 {
-			server.Region = ""
-		}
-		if len(group) == 0 {
-			server.Group = ""
-		}
-		if strings.EqualFold(server.Region, region) && strings.EqualFold(server.Group, group) {
-			servers = append(servers, c.servers[i])
+func (c *cyberghost) filterServers(regions []string, group string) (servers []models.CyberghostServer) {
+	for _, server := range c.servers {
+		switch {
+		case len(group) > 0 && group != server.Group,
+			filterByPossibilities(server.Region, regions):
+		default:
+			servers = append(servers, server)
 		}
 	}
 	return servers
@@ -47,9 +44,9 @@ func (c *cyberghost) GetOpenVPNConnection(selection models.ServerSelection) (con
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: 443, Protocol: selection.Protocol}, nil
 	}
 
-	servers := c.filterServers(selection.Region, selection.Group)
+	servers := c.filterServers(selection.Regions, selection.Group)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q and group %q", selection.Region, selection.Group)
+		return connection, fmt.Errorf("no server found for regions %s and group %q", commaJoin(selection.Regions), selection.Group)
 	}
 
 	var connections []models.OpenVPNConnection
