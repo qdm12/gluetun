@@ -25,7 +25,7 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 
 func findVyprvpnServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.VyprvpnServer, err error) {
 	const zipURL = "https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip"
-	contents, err := fetchAndExtractFiles(zipURL)
+	contents, err := fetchAndExtractFiles(ctx, zipURL)
 	if err != nil {
 		return nil, err
 	}

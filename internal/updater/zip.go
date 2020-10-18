@@ -3,6 +3,7 @@ package updater
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -13,11 +14,11 @@ import (
 	"github.com/qdm12/golibs/network"
 )
 
-func fetchAndExtractFiles(urls ...string) (contents map[string][]byte, err error) {
+func fetchAndExtractFiles(ctx context.Context, urls ...string) (contents map[string][]byte, err error) {
 	client := network.NewClient(10 * time.Second)
 	contents = make(map[string][]byte)
 	for _, url := range urls {
-		zipBytes, status, err := client.GetContent(url)
+		zipBytes, status, err := client.Get(ctx, url)
 		if err != nil {
 			return nil, err
 		} else if status != http.StatusOK {

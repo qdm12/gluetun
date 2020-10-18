@@ -72,7 +72,7 @@ func findSurfsharkServersFromAPI(ctx context.Context, lookupIP lookupIPFunc, htt
 
 func findSurfsharkServersFromZip(ctx context.Context, lookupIP lookupIPFunc) (servers []models.SurfsharkServer, warnings []string, err error) {
 	const zipURL = "https://my.surfshark.com/vpn/api/v1/server/configurations"
-	contents, err := fetchAndExtractFiles(zipURL)
+	contents, err := fetchAndExtractFiles(ctx, zipURL)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -164,15 +164,15 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 		settings := l.GetSettings()
 
 		// Setup
-		if err := l.conf.DownloadRootHints(l.uid, l.gid); err != nil {
+		if err := l.conf.DownloadRootHints(ctx, l.uid, l.gid); err != nil {
 			l.logAndWait(ctx, err)
 			continue
 		}
-		if err := l.conf.DownloadRootKey(l.uid, l.gid); err != nil {
+		if err := l.conf.DownloadRootKey(ctx, l.uid, l.gid); err != nil {
 			l.logAndWait(ctx, err)
 			continue
 		}
-		if err := l.conf.MakeUnboundConf(settings, l.uid, l.gid); err != nil {
+		if err := l.conf.MakeUnboundConf(ctx, settings, l.uid, l.gid); err != nil {
 			l.logAndWait(ctx, err)
 			continue
 		}

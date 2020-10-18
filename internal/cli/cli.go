@@ -58,7 +58,7 @@ func HealthCheck(ctx context.Context, client *http.Client) error {
 }
 
 func OpenvpnConfig() error {
-	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
+	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel)
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func Update(args []string) error {
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
-	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
+	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel)
 	if err != nil {
 		return err
 	}

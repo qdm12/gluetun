@@ -104,7 +104,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		// Enabled and has a period set
 
-		ip, err := l.getter.Get()
+		ip, err := l.getter.Get(ctx)
 		if err != nil {
 			l.logAndWait(ctx, err)
 			continue

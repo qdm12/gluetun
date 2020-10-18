@@ -1,6 +1,7 @@
 package publicip
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"net"
@@ -11,7 +12,7 @@ import (
 )
 
 type IPGetter interface {
-	Get() (ip net.IP, err error)
+	Get(ctx context.Context) (ip net.IP, err error)
 }
 
 type ipGetter struct {
@@ -26,7 +27,7 @@ func NewIPGetter(client network.Client) IPGetter {
 	}
 }
 
-func (i *ipGetter) Get() (ip net.IP, err error) {
+func (i *ipGetter) Get(ctx context.Context) (ip net.IP, err error) {
 	urls := []string{
 		"https://ifconfig.me/ip",
 		"http://ip1.dynupdate.no-ip.com:8245",
@@ -38,7 +39,7 @@ func (i *ipGetter) Get() (ip net.IP, err error) {
 		"https://ipinfo.io/ip",
 	}
 	url := urls[i.randIntn(len(urls))]
-	content, status, err := i.client.GetContent(url, network.UseRandomUserAgent())
+	content, status, err := i.client.Get(ctx, url, network.UseRandomUserAgent())
 	if err != nil {
 		return nil, err
 	} else if status != http.StatusOK {

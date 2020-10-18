@@ -294,7 +294,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 }
 
 func createLogger() logging.Logger {
-	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel, -1)
+	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel)
 	if err != nil {
 		panic(err)
 	}
