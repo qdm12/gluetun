@@ -20,24 +20,24 @@ type ServerSelection struct { //nolint:maligned
 	TargetIP net.IP          `json:"targetIP,omitempty"`
 
 	// Cyberghost, PIA, Surfshark, Windscribe, Vyprvpn, NordVPN
-	Region string `json:"region"`
+	Regions []string `json:"regions"`
 
 	// Cyberghost
 	Group string `json:"group"`
 
 	// Mullvad, PureVPN
-	Country string `json:"country"`
-	City    string `json:"city"`
+	Countries []string `json:"countries"`
+	Cities    []string `json:"cities"`
 
 	// Mullvad
-	ISP   string `json:"isp"`
-	Owned bool   `json:"owned"`
+	ISPs  []string `json:"isps"`
+	Owned bool     `json:"owned"`
 
 	// Mullvad, Windscribe
 	CustomPort uint16 `json:"customPort"`
 
 	// NordVPN
-	Number uint16 `json:"number"`
+	Numbers []uint16 `json:"numbers"`
 
 	// PIA
 	EncryptionPreset string `json:"encryptionPreset"`
