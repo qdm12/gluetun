@@ -71,9 +71,9 @@ func (p *ProviderSettings) String() string {
 	if p.ServerSelection.CustomPort > 0 {
 		customPort = fmt.Sprintf("%d", p.ServerSelection.CustomPort)
 	}
-	number := ""
-	if p.ServerSelection.Number > 0 {
-		number = fmt.Sprintf("%d", p.ServerSelection.Number)
+	numbers := make([]string, len(p.ServerSelection.Numbers))
+	for i, number := range p.ServerSelection.Numbers {
+		numbers[i] = fmt.Sprintf("%d", number)
 	}
 	ipv6 := "off"
 	if p.ExtraConfigOptions.OpenVPNIPv6 {
@@ -82,53 +82,53 @@ func (p *ProviderSettings) String() string {
 	switch strings.ToLower(string(p.Name)) {
 	case "private internet access old":
 		settingsList = append(settingsList,
-			"Region: "+p.ServerSelection.Region,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
 			"Encryption preset: "+p.ExtraConfigOptions.EncryptionPreset,
 			"Port forwarding: "+p.PortForwarding.String(),
 		)
 	case "private internet access":
 		settingsList = append(settingsList,
-			"Region: "+p.ServerSelection.Region,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
 			"Encryption preset: "+p.ExtraConfigOptions.EncryptionPreset,
 			"Port forwarding: "+p.PortForwarding.String(),
 		)
 	case "mullvad":
 		settingsList = append(settingsList,
-			"Country: "+p.ServerSelection.Country,
-			"City: "+p.ServerSelection.City,
-			"ISP: "+p.ServerSelection.ISP,
+			"Countries: "+commaJoin(p.ServerSelection.Countries),
+			"Cities: "+commaJoin(p.ServerSelection.Cities),
+			"ISPs: "+commaJoin(p.ServerSelection.ISPs),
 			"Custom port: "+customPort,
 			"IPv6: "+ipv6,
 		)
 	case "windscribe":
 		settingsList = append(settingsList,
-			"Region: "+p.ServerSelection.Region,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
 			"Custom port: "+customPort,
 		)
 	case "surfshark":
 		settingsList = append(settingsList,
-			"Region: "+p.ServerSelection.Region,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
 		)
 	case "cyberghost":
 		settingsList = append(settingsList,
 			"ClientKey: [redacted]",
 			"Group: "+p.ServerSelection.Group,
-			"Region: "+p.ServerSelection.Region,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
 		)
 	case "vyprvpn":
 		settingsList = append(settingsList,
-			"Region: "+p.ServerSelection.Region,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
 		)
 	case "nordvpn":
 		settingsList = append(settingsList,
-			"Region: "+p.ServerSelection.Region,
-			"Number: "+number,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
+			"Numbers: "+commaJoin(numbers),
 		)
 	case "purevpn":
 		settingsList = append(settingsList,
-			"Region: "+p.ServerSelection.Region,
-			"Country: "+p.ServerSelection.Country,
-			"City: "+p.ServerSelection.City,
+			"Regions: "+commaJoin(p.ServerSelection.Regions),
+			"Countries: "+commaJoin(p.ServerSelection.Countries),
+			"Cities: "+commaJoin(p.ServerSelection.Cities),
 		)
 	default:
 		settingsList = append(settingsList,
@@ -141,4 +141,8 @@ func (p *ProviderSettings) String() string {
 		)
 	}
 	return strings.Join(settingsList, "\n |--")
+}
+
+func commaJoin(slice []string) string {
+	return strings.Join(slice, ", ")
 }
