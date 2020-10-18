@@ -68,6 +68,7 @@ type Reader interface {
 	GetMullvadCity() (country string, err error)
 	GetMullvadISP() (country string, err error)
 	GetMullvadPort() (port uint16, err error)
+	GetMullvadOwned() (owned bool, err error)
 
 	// Windscribe getters
 	GetWindscribeRegion() (country string, err error)

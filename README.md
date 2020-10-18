@@ -127,6 +127,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | `CITY` | | One of the [Mullvad cities](https://mullvad.net/en/servers/#openvpn) | VPN server city |
     | `ISP` | | One of the [Mullvad ISP](https://mullvad.net/en/servers/#openvpn) | VPN server ISP |
     | `PORT` | | `80`, `443` or `1401` for TCP; `53`, `1194`, `1195`, `1196`, `1197`, `1300`, `1301`, `1302`, `1303` or `1400` for UDP. Defaults to TCP `443` and UDP `1194` | Custom VPN port to use |
+    | `OWNED` | `no` | `yes` or `no` | If the VPN server is owned by Mullvad |
 
     💡 [Mullvad IPv6 Wiki page](https://github.com/qdm12/gluetun/wiki/Mullvad-IPv6)
 

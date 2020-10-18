@@ -32,3 +32,9 @@ func (r *reader) GetMullvadPort() (port uint16, err error) {
 	n, err := r.envParams.GetEnvIntRange("PORT", 0, 65535, libparams.Default("0"))
 	return uint16(n), err
 }
+
+// GetMullvadOwned obtains if the server should be owned by Mullvad or not from the
+// environment variable OWNED
+func (r *reader) GetMullvadOwned() (owned bool, err error) {
+	return r.envParams.GetYesNo("OWNED", libparams.Default("no"))
+}
