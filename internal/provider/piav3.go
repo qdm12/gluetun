@@ -140,8 +140,8 @@ func filterPIAOldServers(servers []models.PIAOldServer, regions []string) (filte
 		switch {
 		case filterByPossibilities(server.Region, regions):
 		default:
-			servers = append(servers, server)
+			filtered = append(filtered, server)
 		}
 	}
-	return servers
+	return filtered
 }

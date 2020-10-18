@@ -251,10 +251,10 @@ func filterPIAServers(servers []models.PIAServer, regions []string) (filtered []
 		switch {
 		case filterByPossibilities(server.Region, regions):
 		default:
-			servers = append(servers, server)
+			filtered = append(filtered, server)
 		}
 	}
-	return servers
+	return filtered
 }
 
 func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
@@ -266,6 +266,7 @@ func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
 	}
+	// certificate.DNSNames = []string{serverName, "10.0.0.1"}
 	rootCAs := x509.NewCertPool()
 	rootCAs.AddCert(certificate)
 	TLSClientConfig := &tls.Config{
@@ -384,7 +385,7 @@ func fetchPIAToken(fileManager files.FileManager, client *http.Client) (token st
 	url := url.URL{
 		Scheme: "https",
 		User:   url.UserPassword(username, password),
-		Host:   "10.0.0.1",
+		Host:   "185.216.33.146",
 		Path:   "/authv3/generateToken",
 	}
 	request, err := http.NewRequest(http.MethodGet, url.String(), nil)
