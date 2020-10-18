@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -27,16 +26,16 @@ func newSurfshark(servers []models.SurfsharkServer, timeNow timeNowFunc) *surfsh
 	}
 }
 
-func (s *surfshark) filterServers(region string) (servers []models.SurfsharkServer) {
-	if len(region) == 0 {
-		return s.servers
-	}
+func (s *surfshark) filterServers(regions []string) (servers []models.SurfsharkServer) {
 	for _, server := range s.servers {
-		if strings.EqualFold(server.Region, region) {
-			return []models.SurfsharkServer{server}
+		switch {
+		case
+			filterByPossibilities(server.Region, regions):
+		default:
+			servers = append(servers, server)
 		}
 	}
-	return nil
+	return servers
 }
 
 func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
@@ -54,9 +53,9 @@ func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (conn
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := s.filterServers(selection.Region)
+	servers := s.filterServers(selection.Regions)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
 	}
 
 	var connections []models.OpenVPNConnection

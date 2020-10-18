@@ -61,6 +61,7 @@ ENV VPNSP=pia \
     CITY= \
     # Mullvad only
     ISP= \
+    OWNED=no \
     # Mullvad and Windscribe only
     PORT= \
     # Cyberghost only

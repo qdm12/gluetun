@@ -14,12 +14,11 @@ func (p *reader) GetCyberghostGroup() (group string, err error) {
 	return s, err
 }
 
-// GetCyberghostRegion obtains the country name for the Cyberghost server from the
+// GetCyberghostRegions obtains the country names for the Cyberghost servers from the
 // environment variable REGION
-func (p *reader) GetCyberghostRegion() (region string, err error) {
+func (p *reader) GetCyberghostRegions() (regions []string, err error) {
 	choices := append(constants.CyberghostRegionChoices(), "")
-	s, err := p.envParams.GetValueIfInside("REGION", choices)
-	return s, err
+	return p.envParams.GetCSVInPossibilities("REGION", choices)
 }
 
 // GetCyberghostClientKey obtains the one line client key to use for openvpn from the

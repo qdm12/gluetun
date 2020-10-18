@@ -34,7 +34,7 @@ func getPIASettings(paramsReader params.Reader, name models.VPNProvider) (settin
 	}
 	settings.ServerSelection.EncryptionPreset = encryptionPreset
 	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
-	settings.ServerSelection.Region, err = paramsReader.GetPIARegion()
+	settings.ServerSelection.Regions, err = paramsReader.GetPIARegions()
 	if err != nil {
 		return settings, err
 	}
@@ -62,15 +62,15 @@ func GetMullvadSettings(paramsReader params.Reader) (settings models.ProviderSet
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Country, err = paramsReader.GetMullvadCountry()
+	settings.ServerSelection.Countries, err = paramsReader.GetMullvadCountries()
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.City, err = paramsReader.GetMullvadCity()
+	settings.ServerSelection.Cities, err = paramsReader.GetMullvadCities()
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.ISP, err = paramsReader.GetMullvadISP()
+	settings.ServerSelection.ISPs, err = paramsReader.GetMullvadISPs()
 	if err != nil {
 		return settings, err
 	}
@@ -91,6 +91,10 @@ func GetMullvadSettings(paramsReader params.Reader) (settings models.ProviderSet
 			return settings, fmt.Errorf("port %d is not valid for UDP protocol", settings.ServerSelection.CustomPort)
 		}
 	}
+	settings.ServerSelection.Owned, err = paramsReader.GetMullvadOwned()
+	if err != nil {
+		return settings, err
+	}
 	settings.ExtraConfigOptions.OpenVPNIPv6, err = paramsReader.GetOpenVPNIPv6()
 	if err != nil {
 		return settings, err
@@ -109,7 +113,7 @@ func GetWindscribeSettings(paramsReader params.Reader) (settings models.Provider
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Region, err = paramsReader.GetWindscribeRegion()
+	settings.ServerSelection.Regions, err = paramsReader.GetWindscribeRegions()
 	if err != nil {
 		return settings, err
 	}
@@ -131,7 +135,7 @@ func GetSurfsharkSettings(paramsReader params.Reader) (settings models.ProviderS
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Region, err = paramsReader.GetSurfsharkRegion()
+	settings.ServerSelection.Regions, err = paramsReader.GetSurfsharkRegions()
 	if err != nil {
 		return settings, err
 	}
@@ -157,7 +161,7 @@ func GetCyberghostSettings(paramsReader params.Reader) (settings models.Provider
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Region, err = paramsReader.GetCyberghostRegion()
+	settings.ServerSelection.Regions, err = paramsReader.GetCyberghostRegions()
 	if err != nil {
 		return settings, err
 	}
@@ -175,7 +179,7 @@ func GetVyprvpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Region, err = paramsReader.GetVyprvpnRegion()
+	settings.ServerSelection.Regions, err = paramsReader.GetVyprvpnRegions()
 	if err != nil {
 		return settings, err
 	}
@@ -193,11 +197,11 @@ func GetNordvpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Region, err = paramsReader.GetNordvpnRegion()
+	settings.ServerSelection.Regions, err = paramsReader.GetNordvpnRegions()
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Number, err = paramsReader.GetNordvpnNumber()
+	settings.ServerSelection.Numbers, err = paramsReader.GetNordvpnNumbers()
 	if err != nil {
 		return settings, err
 	}
@@ -215,15 +219,15 @@ func GetPurevpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Region, err = paramsReader.GetPurevpnRegion()
+	settings.ServerSelection.Regions, err = paramsReader.GetPurevpnRegions()
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Country, err = paramsReader.GetPurevpnCountry()
+	settings.ServerSelection.Countries, err = paramsReader.GetPurevpnCountries()
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.City, err = paramsReader.GetPurevpnCity()
+	settings.ServerSelection.Cities, err = paramsReader.GetPurevpnCities()
 	if err != nil {
 		return settings, err
 	}

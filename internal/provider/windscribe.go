@@ -27,16 +27,16 @@ func newWindscribe(servers []models.WindscribeServer, timeNow timeNowFunc) *wind
 	}
 }
 
-func (w *windscribe) filterServers(region string) (servers []models.WindscribeServer) {
-	if len(region) == 0 {
-		return w.servers
-	}
+func (w *windscribe) filterServers(regions []string) (servers []models.WindscribeServer) {
 	for _, server := range w.servers {
-		if strings.EqualFold(server.Region, region) {
-			return []models.WindscribeServer{server}
+		switch {
+		case
+			filterByPossibilities(server.Region, regions):
+		default:
+			servers = append(servers, server)
 		}
 	}
-	return nil
+	return servers
 }
 
 func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
@@ -56,9 +56,9 @@ func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (con
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := w.filterServers(selection.Region)
+	servers := w.filterServers(selection.Regions)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
 	}
 
 	var connections []models.OpenVPNConnection

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -34,4 +35,20 @@ func tryUntilSuccessful(ctx context.Context, logger logging.Logger, fn func() er
 
 func pickRandomConnection(connections []models.OpenVPNConnection, source rand.Source) models.OpenVPNConnection {
 	return connections[rand.New(source).Intn(len(connections))] //nolint:gosec
+}
+
+func filterByPossibilities(value string, possibilities []string) (filtered bool) {
+	if len(possibilities) == 0 {
+		return false
+	}
+	for _, possibility := range possibilities {
+		if strings.EqualFold(value, possibility) {
+			return false
+		}
+	}
+	return true
+}
+
+func commaJoin(slice []string) string {
+	return strings.Join(slice, ",")
 }

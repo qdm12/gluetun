@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -27,16 +26,16 @@ func newVyprvpn(servers []models.VyprvpnServer, timeNow timeNowFunc) *vyprvpn {
 	}
 }
 
-func (v *vyprvpn) filterServers(region string) (servers []models.VyprvpnServer) {
-	if len(region) == 0 {
-		return v.servers
-	}
+func (v *vyprvpn) filterServers(regions []string) (servers []models.VyprvpnServer) {
 	for _, server := range v.servers {
-		if strings.EqualFold(server.Region, region) {
-			return []models.VyprvpnServer{server}
+		switch {
+		case
+			filterByPossibilities(server.Region, regions):
+		default:
+			servers = append(servers, server)
 		}
 	}
-	return nil
+	return servers
 }
 
 func (v *vyprvpn) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
@@ -54,9 +53,9 @@ func (v *vyprvpn) GetOpenVPNConnection(selection models.ServerSelection) (connec
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := v.filterServers(selection.Region)
+	servers := v.filterServers(selection.Regions)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q", selection.Region)
+		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
 	}
 
 	var connections []models.OpenVPNConnection

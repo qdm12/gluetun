@@ -61,38 +61,39 @@ type Reader interface {
 	GetPortForwarding() (activated bool, err error)
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
 	GetPIAEncryptionPreset() (preset string, err error)
-	GetPIARegion() (region string, err error)
-	GetPIAOldRegion() (region string, err error)
+	GetPIARegions() (regions []string, err error)
+	GetPIAOldRegions() (regions []string, err error)
 
 	// Mullvad getters
-	GetMullvadCountry() (country string, err error)
-	GetMullvadCity() (country string, err error)
-	GetMullvadISP() (country string, err error)
+	GetMullvadCountries() (countries []string, err error)
+	GetMullvadCities() (cities []string, err error)
+	GetMullvadISPs() (ips []string, err error)
 	GetMullvadPort() (port uint16, err error)
+	GetMullvadOwned() (owned bool, err error)
 
 	// Windscribe getters
-	GetWindscribeRegion() (country string, err error)
+	GetWindscribeRegions() (countries []string, err error)
 	GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error)
 
 	// Surfshark getters
-	GetSurfsharkRegion() (country string, err error)
+	GetSurfsharkRegions() (countries []string, err error)
 
 	// Cyberghost getters
 	GetCyberghostGroup() (group string, err error)
-	GetCyberghostRegion() (region string, err error)
+	GetCyberghostRegions() (regions []string, err error)
 	GetCyberghostClientKey() (clientKey string, err error)
 
 	// Vyprvpn getters
-	GetVyprvpnRegion() (region string, err error)
+	GetVyprvpnRegions() (regions []string, err error)
 
 	// NordVPN getters
-	GetNordvpnRegion() (region string, err error)
-	GetNordvpnNumber() (number uint16, err error)
+	GetNordvpnRegions() (regions []string, err error)
+	GetNordvpnNumbers() (numbers []uint16, err error)
 
 	// PureVPN getters
-	GetPurevpnRegion() (region string, err error)
-	GetPurevpnCountry() (country string, err error)
-	GetPurevpnCity() (city string, err error)
+	GetPurevpnRegions() (regions []string, err error)
+	GetPurevpnCountries() (countries []string, err error)
+	GetPurevpnCities() (cities []string, err error)
 
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)

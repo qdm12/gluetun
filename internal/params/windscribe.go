@@ -8,11 +8,11 @@ import (
 	libparams "github.com/qdm12/golibs/params"
 )
 
-// GetWindscribeRegion obtains the region for the Windscribe server from the
+// GetWindscribeRegions obtains the regions for the Windscribe servers from the
 // environment variable REGION
-func (r *reader) GetWindscribeRegion() (region string, err error) {
+func (r *reader) GetWindscribeRegions() (regions []string, err error) {
 	choices := append(constants.WindscribeRegionChoices(), "")
-	return r.envParams.GetValueIfInside("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", choices)
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the

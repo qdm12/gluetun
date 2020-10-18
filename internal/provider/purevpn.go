@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -27,21 +26,15 @@ func newPurevpn(servers []models.PurevpnServer, timeNow timeNowFunc) *purevpn {
 	}
 }
 
-func (p *purevpn) filterServers(region, country, city string) (servers []models.PurevpnServer) {
-	for i, server := range p.servers {
-		if len(region) == 0 {
-			server.Region = ""
-		}
-		if len(country) == 0 {
-			server.Country = ""
-		}
-		if len(city) == 0 {
-			server.City = ""
-		}
-		if strings.EqualFold(server.Region, region) &&
-			strings.EqualFold(server.Country, country) &&
-			strings.EqualFold(server.City, city) {
-			servers = append(servers, p.servers[i])
+func (p *purevpn) filterServers(regions, countries, cities []string) (servers []models.PurevpnServer) {
+	for _, server := range p.servers {
+		switch {
+		case
+			filterByPossibilities(server.Region, regions),
+			filterByPossibilities(server.Country, countries),
+			filterByPossibilities(server.City, cities):
+		default:
+			servers = append(servers, server)
 		}
 	}
 	return servers
@@ -62,9 +55,10 @@ func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (connec
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := p.filterServers(selection.Region, selection.Country, selection.City)
+	servers := p.filterServers(selection.Regions, selection.Countries, selection.Cities)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %q, country %q and city %q", selection.Region, selection.Country, selection.City)
+		return connection, fmt.Errorf("no server found for regions %s, countries %s and cities %s",
+			commaJoin(selection.Regions), commaJoin(selection.Countries), commaJoin(selection.Cities))
 	}
 
 	var connections []models.OpenVPNConnection
