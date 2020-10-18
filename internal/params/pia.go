@@ -56,16 +56,16 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 		libparams.Default(constants.PIAEncryptionPresetStrong))
 }
 
-// GetPIARegion obtains the region for the PIA server from the
+// GetPIARegions obtains the regions for the PIA servers from the
 // environment variable REGION
-func (r *reader) GetPIARegion() (region string, err error) {
+func (r *reader) GetPIARegions() (regions []string, err error) {
 	choices := append(constants.PIAGeoChoices(), "")
-	return r.envParams.GetValueIfInside("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", choices)
 }
 
-// GetPIAOldRegion obtains the region for the PIA server from the
+// GetPIAOldRegions obtains the regions for the PIA servers from the
 // environment variable REGION
-func (r *reader) GetPIAOldRegion() (region string, err error) {
+func (r *reader) GetPIAOldRegions() (regions []string, err error) {
 	choices := append(constants.PIAOldGeoChoices(), "")
-	return r.envParams.GetValueIfInside("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", choices)
 }

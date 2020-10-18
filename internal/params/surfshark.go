@@ -4,9 +4,9 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-// GetSurfsharkRegion obtains the region for the Surfshark server from the
+// GetSurfsharkRegions obtains the regions for the Surfshark servers from the
 // environment variable REGION
-func (r *reader) GetSurfsharkRegion() (region string, err error) {
+func (r *reader) GetSurfsharkRegions() (regions []string, err error) {
 	choices := append(constants.SurfsharkRegionChoices(), "")
-	return r.envParams.GetValueIfInside("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", choices)
 }

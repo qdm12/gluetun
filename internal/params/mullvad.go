@@ -5,25 +5,25 @@ import (
 	libparams "github.com/qdm12/golibs/params"
 )
 
-// GetMullvadCountry obtains the country for the Mullvad server from the
+// GetMullvadCountries obtains the countries for the Mullvad servers from the
 // environment variable COUNTRY
-func (r *reader) GetMullvadCountry() (country string, err error) {
+func (r *reader) GetMullvadCountries() (countries []string, err error) {
 	choices := append(constants.MullvadCountryChoices(), "")
-	return r.envParams.GetValueIfInside("COUNTRY", choices)
+	return r.envParams.GetCSVInPossibilities("COUNTRY", choices)
 }
 
-// GetMullvadCity obtains the city for the Mullvad server from the
+// GetMullvadCity obtains the cities for the Mullvad servers from the
 // environment variable CITY
-func (r *reader) GetMullvadCity() (country string, err error) {
+func (r *reader) GetMullvadCities() (cities []string, err error) {
 	choices := append(constants.MullvadCityChoices(), "")
-	return r.envParams.GetValueIfInside("CITY", choices)
+	return r.envParams.GetCSVInPossibilities("CITY", choices)
 }
 
-// GetMullvadISP obtains the ISP for the Mullvad server from the
+// GetMullvadISPs obtains the ISPs for the Mullvad servers from the
 // environment variable ISP
-func (r *reader) GetMullvadISP() (isp string, err error) {
+func (r *reader) GetMullvadISPs() (isps []string, err error) {
 	choices := append(constants.MullvadISPChoices(), "")
-	return r.envParams.GetValueIfInside("ISP", choices)
+	return r.envParams.GetCSVInPossibilities("ISP", choices)
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the
