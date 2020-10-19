@@ -133,6 +133,8 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 
     💡 [Mullvad IPv6 Wiki page](https://github.com/qdm12/gluetun/wiki/Mullvad-IPv6)
 
+    For **port forwarding**, obtain a port from [here](https://mullvad.net/en/account/#/ports) and add it to `FIREWALL_VPN_INPUT_PORTS`
+
 - Windscribe
 
     | Variable | Default | Choices | Description |
@@ -178,6 +180,8 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
     | `REGION` | | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
+
+    For **port forwarding**, add a port you want to be accessible to `FIREWALL_VPN_INPUT_PORTS`
 
 - NordVPN
 
