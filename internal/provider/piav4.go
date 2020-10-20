@@ -391,7 +391,7 @@ func fetchPIAToken(ctx context.Context, fileManager files.FileManager, client *h
 	url := url.URL{
 		Scheme: "https",
 		User:   url.UserPassword(username, password),
-		Host:   "185.216.33.146",
+		Host:   "10.0.0.1",
 		Path:   "/authv3/generateToken",
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
