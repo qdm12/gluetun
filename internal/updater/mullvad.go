@@ -1,18 +1,19 @@
 package updater
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/network"
 )
 
-func (u *updater) updateMullvad() (err error) {
-	servers, err := findMullvadServers(u.httpGet)
+func (u *updater) updateMullvad(ctx context.Context) (err error) {
+	servers, err := findMullvadServers(ctx, u.client)
 	if err != nil {
 		return fmt.Errorf("cannot update Mullvad servers: %w", err)
 	}
@@ -24,19 +25,14 @@ func (u *updater) updateMullvad() (err error) {
 	return nil
 }
 
-func findMullvadServers(httpGet httpGetFunc) (servers []models.MullvadServer, err error) {
+func findMullvadServers(ctx context.Context, client network.Client) (servers []models.MullvadServer, err error) {
 	const url = "https://api.mullvad.net/www/relays/openvpn/"
-	response, err := httpGet(url)
+	bytes, status, err := client.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(response.Status)
-	}
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("HTTP status code %d", status)
 	}
 	var data []struct {
 		Country  string `json:"country_name"`
@@ -89,7 +85,6 @@ func findMullvadServers(httpGet httpGetFunc) (servers []models.MullvadServer, er
 	return servers, nil
 }
 
-//nolint:goconst
 func stringifyMullvadServers(servers []models.MullvadServer) (s string) {
 	s = "func MullvadServers() []models.MullvadServer {\n"
 	s += "	return []models.MullvadServer{\n"

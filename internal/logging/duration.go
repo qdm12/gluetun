@@ -9,7 +9,8 @@ func FormatDuration(duration time.Duration) string {
 	switch {
 	case duration < time.Minute:
 		seconds := int(duration.Round(time.Second).Seconds())
-		if seconds < 2 {
+		const two = 2
+		if seconds < two {
 			return fmt.Sprintf("%d second", seconds)
 		}
 		return fmt.Sprintf("%d seconds", seconds)
@@ -23,7 +24,8 @@ func FormatDuration(duration time.Duration) string {
 		hours := int(duration.Truncate(time.Hour).Hours())
 		return fmt.Sprintf("%d hours", hours)
 	default:
-		days := int(duration.Truncate(time.Hour).Hours() / 24)
+		const hoursInDay = 24
+		days := int(duration.Truncate(time.Hour).Hours() / hoursInDay)
 		return fmt.Sprintf("%d days", days)
 	}
 }

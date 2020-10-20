@@ -4,16 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updatePurevpn(ctx context.Context) (err error) {
-	servers, warnings, err := findPurevpnServers(ctx, u.httpGet, u.lookupIP)
+	servers, warnings, err := findPurevpnServers(ctx, u.client, u.lookupIP)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("PureVPN: %s", warning)
@@ -30,20 +30,15 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 	return nil
 }
 
-func findPurevpnServers(ctx context.Context, httpGet httpGetFunc, lookupIP lookupIPFunc) (
+func findPurevpnServers(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
 	servers []models.PurevpnServer, warnings []string, err error) {
 	const url = "https://support.purevpn.com/vpn-servers"
-	response, err := httpGet(url)
+	bytes, status, err := client.Get(ctx, url)
 	if err != nil {
 		return nil, nil, err
 	}
-	defer response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf(response.Status)
-	}
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, nil, err
+	if status != http.StatusOK {
+		return nil, nil, fmt.Errorf("HTTP status code %d", status)
 	}
 	const jsonPrefix = "<script>var servers = "
 	const jsonSuffix = "</script>"
@@ -82,11 +77,13 @@ func findPurevpnServers(ctx context.Context, httpGet httpGetFunc, lookupIP looku
 			return nil, warnings, err
 		}
 		if jsonServer.UDP == "" && jsonServer.TCP == "" {
-			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP and UDP for openvpn", jsonServer.Region, jsonServer.Country, jsonServer.City))
+			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP and UDP for openvpn",
+				jsonServer.Region, jsonServer.Country, jsonServer.City))
 			continue
 		}
 		if jsonServer.UDP == "" || jsonServer.TCP == "" {
-			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP or UDP for openvpn", jsonServer.Region, jsonServer.Country, jsonServer.City))
+			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP or UDP for openvpn",
+				jsonServer.Region, jsonServer.Country, jsonServer.City))
 			continue
 		}
 		host := jsonServer.UDP

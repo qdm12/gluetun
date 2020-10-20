@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/params"
 )
 
-// TinyProxy contains settings to configure TinyProxy
+// TinyProxy contains settings to configure TinyProxy.
 type TinyProxy struct {
 	User     string
 	Password string

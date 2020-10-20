@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/params"
 )
 
-// OpenVPN contains settings to configure the OpenVPN client
+// OpenVPN contains settings to configure the OpenVPN client.
 type OpenVPN struct {
 	User      string                  `json:"user"`
 	Password  string                  `json:"-"`
@@ -20,7 +20,7 @@ type OpenVPN struct {
 	Provider  models.ProviderSettings `json:"provider"`
 }
 
-// GetOpenVPNSettings obtains the OpenVPN settings using the params functions
+// GetOpenVPNSettings obtains the OpenVPN settings using the params functions.
 func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvider) (settings OpenVPN, err error) {
 	settings.User, err = paramsReader.GetUser()
 	if err != nil {

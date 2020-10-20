@@ -25,7 +25,8 @@ func countServers(allServers models.AllServers) int {
 		len(allServers.Windscribe.Servers)
 }
 
-func (s *storage) SyncServers(hardcodedServers models.AllServers, write bool) (allServers models.AllServers, err error) {
+func (s *storage) SyncServers(hardcodedServers models.AllServers, write bool) (
+	allServers models.AllServers, err error) {
 	// Eventually read file
 	var serversOnFile models.AllServers
 	_, err = s.osStat(jsonFilepath)

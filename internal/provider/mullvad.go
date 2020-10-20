@@ -41,7 +41,8 @@ func (m *mullvad) filterServers(countries, cities, isps []string, owned bool) (s
 	return servers
 }
 
-func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
 	var defaultPort uint16 = 1194
 	if selection.Protocol == constants.TCP {
 		defaultPort = 443
@@ -71,7 +72,8 @@ func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (connec
 	return pickRandomConnection(connections, m.randSource), nil
 }
 
-func (m *mullvad) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (m *mullvad) BuildConf(connection models.OpenVPNConnection,
+	verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}

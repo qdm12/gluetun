@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// ProviderSettings contains settings specific to a VPN provider
+// ProviderSettings contains settings specific to a VPN provider.
 type ProviderSettings struct {
 	Name               VPNProvider        `json:"name"`
 	ServerSelection    ServerSelection    `json:"serverSelection"`
@@ -14,7 +14,7 @@ type ProviderSettings struct {
 	PortForwarding     PortForwarding     `json:"portForwarding"`
 }
 
-type ServerSelection struct { //nolint:maligned
+type ServerSelection struct {
 	// Common
 	Protocol NetworkProtocol `json:"networkProtocol"`
 	TargetIP net.IP          `json:"targetIP,omitempty"`
@@ -49,7 +49,7 @@ type ExtraConfigOptions struct {
 	OpenVPNIPv6      bool   `json:"openvpnIPv6"`      // Mullvad
 }
 
-// PortForwarding contains settings for port forwarding
+// PortForwarding contains settings for port forwarding.
 type PortForwarding struct {
 	Enabled  bool     `json:"enabled"`
 	Filepath Filepath `json:"filepath"`

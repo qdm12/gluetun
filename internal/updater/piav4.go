@@ -2,9 +2,9 @@ package updater
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"sort"
@@ -13,18 +13,14 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *updater) updatePIA() (err error) {
+func (u *updater) updatePIA(ctx context.Context) (err error) {
 	const url = "https://serverlist.piaservers.net/vpninfo/servers/v4"
-	response, err := u.httpGet(url)
+	b, status, err := u.client.Get(ctx, url)
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return err
-	} else if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("%s: %s", response.Status, strings.ReplaceAll(string(b), "\n", ""))
+	if status != http.StatusOK {
+		return fmt.Errorf("HTTP status code %d: %s", status, strings.ReplaceAll(string(b), "\n", ""))
 	}
 
 	// remove key/signature at the bottom
@@ -58,7 +54,8 @@ func (u *updater) updatePIA() (err error) {
 		}
 		for _, udpServer := range region.Servers.UDP {
 			if len(server.OpenvpnUDP.CN) > 0 && server.OpenvpnUDP.CN != udpServer.CN {
-				return fmt.Errorf("CN is different for UDP for region %q: %q and %q", region.Name, server.OpenvpnUDP.CN, udpServer.CN)
+				return fmt.Errorf("CN is different for UDP for region %q: %q and %q",
+					region.Name, server.OpenvpnUDP.CN, udpServer.CN)
 			}
 			if udpServer.IP != nil {
 				server.OpenvpnUDP.IPs = append(server.OpenvpnUDP.IPs, udpServer.IP)
@@ -67,7 +64,8 @@ func (u *updater) updatePIA() (err error) {
 		}
 		for _, tcpServer := range region.Servers.TCP {
 			if len(server.OpenvpnTCP.CN) > 0 && server.OpenvpnTCP.CN != tcpServer.CN {
-				return fmt.Errorf("CN is different for TCP for region %q: %q and %q", region.Name, server.OpenvpnTCP.CN, tcpServer.CN)
+				return fmt.Errorf("CN is different for TCP for region %q: %q and %q",
+					region.Name, server.OpenvpnTCP.CN, tcpServer.CN)
 			}
 			if tcpServer.IP != nil {
 				server.OpenvpnTCP.IPs = append(server.OpenvpnTCP.IPs, tcpServer.IP)

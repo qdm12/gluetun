@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
+	"net/http"
 	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updateSurfshark(ctx context.Context) (err error) {
-	servers, warnings, err := findSurfsharkServersFromZip(ctx, u.lookupIP)
+	servers, warnings, err := findSurfsharkServersFromZip(ctx, u.client, u.lookupIP)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Surfshark: %s", warning)
@@ -31,16 +32,14 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 }
 
 //nolint:deadcode,unused
-func findSurfsharkServersFromAPI(ctx context.Context, lookupIP lookupIPFunc, httpGet httpGetFunc) (servers []models.SurfsharkServer, warnings []string, err error) {
+func findSurfsharkServersFromAPI(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
+	servers []models.SurfsharkServer, warnings []string, err error) {
 	const url = "https://my.surfshark.com/vpn/api/v1/server/clusters"
-	response, err := httpGet(url)
+	b, status, err := client.Get(ctx, url)
 	if err != nil {
 		return nil, nil, err
-	}
-	defer response.Body.Close()
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, nil, err
+	} else if status != http.StatusOK {
+		return nil, nil, fmt.Errorf("HTTP status code %d", status)
 	}
 	var jsonServers []struct {
 		Host     string `json:"connectionName"`
@@ -70,9 +69,10 @@ func findSurfsharkServersFromAPI(ctx context.Context, lookupIP lookupIPFunc, htt
 	return servers, warnings, nil
 }
 
-func findSurfsharkServersFromZip(ctx context.Context, lookupIP lookupIPFunc) (servers []models.SurfsharkServer, warnings []string, err error) {
+func findSurfsharkServersFromZip(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
+	servers []models.SurfsharkServer, warnings []string, err error) {
 	const zipURL = "https://my.surfshark.com/vpn/api/v1/server/configurations"
-	contents, err := fetchAndExtractFiles(ctx, zipURL)
+	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -154,7 +154,8 @@ func getRemainingServers(ctx context.Context, mapping map[string]string, lookupI
 			warnings = append(warnings, warning)
 			continue
 		} else if len(IPs) == 0 {
-			warning := fmt.Sprintf("subdomain %q for region %q from mapping did not resolve to any IP address", subdomain, region)
+			warning := fmt.Sprintf("subdomain %q for region %q from mapping did not resolve to any IP address",
+				subdomain, region)
 			warnings = append(warnings, warning)
 			continue
 		}

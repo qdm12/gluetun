@@ -8,7 +8,7 @@ import (
 )
 
 // GetTinyProxy obtains if TinyProxy is on from the environment variable
-// TINYPROXY, and using PROXY as a retro-compatibility name
+// TINYPROXY, and using PROXY as a retro-compatibility name.
 func (r *reader) GetTinyProxy() (activated bool, err error) {
 	// Retro-compatibility
 	s, err := r.envParams.GetEnv("PROXY")
@@ -22,23 +22,27 @@ func (r *reader) GetTinyProxy() (activated bool, err error) {
 }
 
 // GetTinyProxyLog obtains the TinyProxy log level from the environment variable
-// TINYPROXY_LOG, and using PROXY_LOG_LEVEL as a retro-compatibility name
+// TINYPROXY_LOG, and using PROXY_LOG_LEVEL as a retro-compatibility name.
 func (r *reader) GetTinyProxyLog() (models.TinyProxyLogLevel, error) {
 	// Retro-compatibility
 	s, err := r.envParams.GetEnv("PROXY_LOG_LEVEL")
 	if err != nil {
 		return models.TinyProxyLogLevel(s), err
 	} else if len(s) != 0 {
-		r.logger.Warn("You are using the old environment variable PROXY_LOG_LEVEL, please consider changing it to TINYPROXY_LOG")
-		s, err = r.envParams.GetValueIfInside("PROXY_LOG_LEVEL", []string{"Info", "Connect", "Notice", "Warning", "Error", "Critical"}, libparams.Compulsory())
+		r.logger.Warn("You are using the old environment variable PROXY_LOG_LEVEL, please consider changing it to TINYPROXY_LOG") //nolint:lll
+		s, err = r.envParams.GetValueIfInside("PROXY_LOG_LEVEL",
+			[]string{"Info", "Connect", "Notice", "Warning", "Error", "Critical"},
+			libparams.Compulsory())
 		return models.TinyProxyLogLevel(s), err
 	}
-	s, err = r.envParams.GetValueIfInside("TINYPROXY_LOG", []string{"Info", "Connect", "Notice", "Warning", "Error", "Critical"}, libparams.Default("Connect"))
+	s, err = r.envParams.GetValueIfInside("TINYPROXY_LOG",
+		[]string{"Info", "Connect", "Notice", "Warning", "Error", "Critical"},
+		libparams.Default("Connect"))
 	return models.TinyProxyLogLevel(s), err
 }
 
 // GetTinyProxyPort obtains the TinyProxy listening port from the environment variable
-// TINYPROXY_PORT, and using PROXY_PORT as a retro-compatibility name
+// TINYPROXY_PORT, and using PROXY_PORT as a retro-compatibility name.
 func (r *reader) GetTinyProxyPort() (port uint16, err error) {
 	// Retro-compatibility
 	portStr, err := r.envParams.GetEnv("PROXY_PORT")
@@ -61,7 +65,7 @@ func (r *reader) GetTinyProxyPort() (port uint16, err error) {
 }
 
 // GetTinyProxyUser obtains the TinyProxy server user from the environment variable
-// TINYPROXY_USER, and using PROXY_USER as a retro-compatibility name
+// TINYPROXY_USER, and using PROXY_USER as a retro-compatibility name.
 func (r *reader) GetTinyProxyUser() (user string, err error) {
 	defer func() {
 		unsetErr := r.unsetEnv("PROXY_USER")
@@ -88,7 +92,7 @@ func (r *reader) GetTinyProxyUser() (user string, err error) {
 }
 
 // GetTinyProxyPassword obtains the TinyProxy server password from the environment variable
-// TINYPROXY_PASSWORD, and using PROXY_PASSWORD as a retro-compatibility name
+// TINYPROXY_PASSWORD, and using PROXY_PASSWORD as a retro-compatibility name.
 func (r *reader) GetTinyProxyPassword() (password string, err error) {
 	defer func() {
 		unsetErr := r.unsetEnv("PROXY_PASSWORD")
@@ -109,7 +113,7 @@ func (r *reader) GetTinyProxyPassword() (password string, err error) {
 		return password, err
 	}
 	if len(password) != 0 {
-		r.logger.Warn("You are using the old environment variable PROXY_PASSWORD, please consider changing it to TINYPROXY_PASSWORD")
+		r.logger.Warn("You are using the old environment variable PROXY_PASSWORD, please consider changing it to TINYPROXY_PASSWORD") //nolint:lll
 		return password, nil
 	}
 	return r.envParams.GetEnv("TINYPROXY_PASSWORD", libparams.CaseSensitiveValue())

@@ -11,7 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/params"
 )
 
-// DNS contains settings to configure Unbound for DNS over TLS operation
+// DNS contains settings to configure Unbound for DNS over TLS operation.
 type DNS struct {
 	Enabled               bool
 	KeepNameserver        bool

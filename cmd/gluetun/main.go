@@ -73,8 +73,9 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	defer cancel()
 	logger := createLogger()
 
-	httpClient := &http.Client{Timeout: 15 * time.Second}
-	client := network.NewClient(15 * time.Second)
+	const clientTimeout = 15 * time.Second
+	httpClient := &http.Client{Timeout: clientTimeout}
+	client := network.NewClient(clientTimeout)
 	// Create configurators
 	fileManager := files.NewFileManager()
 	alpineConf := alpine.NewConfigurator(fileManager)
@@ -205,7 +206,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go openvpnLooper.Run(ctx, wg)
 
 	updaterOptions := updater.NewOptions("127.0.0.1")
-	updaterLooper := updater.NewLooper(updaterOptions, allSettings.UpdaterPeriod, allServers, storage, openvpnLooper.SetAllServers, httpClient, logger)
+	updaterLooper := updater.NewLooper(updaterOptions, allSettings.UpdaterPeriod,
+		allServers, storage, openvpnLooper.SetAllServers, httpClient, logger)
 	wg.Add(1)
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
 	go updaterLooper.Run(ctx, wg)
@@ -215,14 +217,16 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(ctx, wg, signalDNSReady)
 
-	publicIPLooper := publicip.NewLooper(client, logger, fileManager, allSettings.System.IPStatusFilepath, allSettings.PublicIPPeriod, uid, gid)
+	publicIPLooper := publicip.NewLooper(client, logger, fileManager,
+		allSettings.System.IPStatusFilepath, allSettings.PublicIPPeriod, uid, gid)
 	wg.Add(1)
 	go publicIPLooper.Run(ctx, wg)
 	wg.Add(1)
 	go publicIPLooper.RunRestartTicker(ctx, wg)
 	publicIPLooper.SetPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
-	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf, allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
+	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf,
+		allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
 	restartTinyproxy := tinyproxyLooper.Restart
 	wg.Add(1)
 	go tinyproxyLooper.Run(ctx, wg)
@@ -246,7 +250,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	)
 	controlServerAddress := fmt.Sprintf("0.0.0.0:%d", allSettings.ControlServer.Port)
 	controlServerLogging := allSettings.ControlServer.Log
-	httpServer := server.New(controlServerAddress, controlServerLogging, logger, openvpnLooper, unboundLooper, updaterLooper)
+	httpServer := server.New(controlServerAddress, controlServerLogging,
+		logger, openvpnLooper, unboundLooper, updaterLooper)
 	wg.Add(1)
 	go httpServer.Run(ctx, wg)
 
@@ -309,8 +314,10 @@ func createLogger() logging.Logger {
 	return logger
 }
 
-func printVersions(ctx context.Context, logger logging.Logger, versionFunctions map[string]func(ctx context.Context) (string, error)) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+func printVersions(ctx context.Context, logger logging.Logger,
+	versionFunctions map[string]func(ctx context.Context) (string, error)) {
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	for name, f := range versionFunctions {
 		version, err := f(ctx)
@@ -322,7 +329,9 @@ func printVersions(ctx context.Context, logger logging.Logger, versionFunctions 
 	}
 }
 
-func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, logger logging.Logger, signalTunnelReady func()) {
+//nolint:lll
+func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger,
+	logger logging.Logger, signalTunnelReady func()) {
 	// Blocking line merging paramsReader for all programs: openvpn, tinyproxy, unbound and shadowsocks
 	logger.Info("Launching standard output merger")
 	streamMerger.CollectLines(ctx, func(line string) {
@@ -331,6 +340,8 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger, 
 			return
 		}
 		switch level {
+		case logging.DebugLevel:
+			logger.Debug(line)
 		case logging.InfoLevel:
 			logger.Info(line)
 		case logging.WarnLevel:
@@ -374,7 +385,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			restartTickerCancel() // stop previous restart tickers
 			tickerWg.Wait()
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
-			tickerWg.Add(2)
+			tickerWg.Add(2) //nolint:gomnd
 			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			defaultInterface, _, err := routing.DefaultRoute()

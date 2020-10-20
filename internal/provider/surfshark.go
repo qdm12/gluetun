@@ -38,7 +38,8 @@ func (s *surfshark) filterServers(regions []string) (servers []models.SurfsharkS
 	return servers
 }
 
-func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
+func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {
 	case selection.Protocol == constants.TCP:
@@ -72,7 +73,8 @@ func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (conn
 	return pickRandomConnection(connections, s.randSource), nil
 }
 
-func (s *surfshark) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
+func (s *surfshark) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}

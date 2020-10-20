@@ -117,7 +117,8 @@ func Update(args []string) error {
 		return fmt.Errorf("at least one of -file or -stdout must be specified")
 	}
 	ctx := context.Background()
-	httpClient := &http.Client{Timeout: 10 * time.Second}
+	const clientTimeout = 10 * time.Second
+	httpClient := &http.Client{Timeout: clientTimeout}
 	storage := storage.New(logger)
 	const writeSync = false
 	currentServers, err := storage.SyncServers(constants.GetAllServers(), writeSync)

@@ -13,7 +13,7 @@ import (
 
 func (u *updater) updatePIAOld(ctx context.Context) (err error) {
 	const zipURL = "https://www.privateinternetaccess.com/openvpn/openvpn.zip"
-	contents, err := fetchAndExtractFiles(ctx, zipURL)
+	contents, err := fetchAndExtractFiles(ctx, u.client, zipURL)
 	if err != nil {
 		return err
 	}

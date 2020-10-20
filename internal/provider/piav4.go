@@ -40,7 +40,8 @@ func newPrivateInternetAccessV4(servers []models.PIAServer, timeNow timeNowFunc)
 	}
 }
 
-func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch selection.Protocol {
 	case constants.TCP:
@@ -59,7 +60,9 @@ func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 		}
 	}
 	if port == 0 {
-		return connection, fmt.Errorf("combination of protocol %q and encryption %q does not yield any port number", selection.Protocol, selection.EncryptionPreset)
+		return connection, fmt.Errorf(
+			"combination of protocol %q and encryption %q does not yield any port number",
+			selection.Protocol, selection.EncryptionPreset)
 	}
 
 	if selection.TargetIP != nil {
@@ -107,7 +110,8 @@ func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 	return connection, nil
 }
 
-func (p *piaV4) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (p *piaV4) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	return buildPIAConf(connection, verbosity, root, cipher, auth, extras)
 }
 
@@ -174,7 +178,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	pfLogger.Info("Writing port to %s", filepath)
 	if err := fileManager.WriteToFile(
 		string(filepath), []byte(fmt.Sprintf("%d", data.Port)),
-		files.Permissions(0666),
+		files.Permissions(constants.AllReadWritePermissions),
 	); err != nil {
 		pfLogger.Error(err)
 	}
@@ -230,7 +234,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			pfLogger.Info("Writing port to %s", filepath)
 			if err := fileManager.WriteToFile(
 				string(filepath), []byte(fmt.Sprintf("%d", data.Port)),
-				files.Permissions(0666),
+				files.Permissions(constants.AllReadWritePermissions),
 			); err != nil {
 				pfLogger.Error(err)
 			}
@@ -274,6 +278,7 @@ func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
 		MinVersion: tls.VersionTLS12,
 		ServerName: serverName,
 	}
+	//nolint:gomnd
 	transport := http.Transport{
 		TLSClientConfig: TLSClientConfig,
 		Proxy:           http.ProxyFromEnvironment,
@@ -293,8 +298,9 @@ func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
 	return client, nil
 }
 
-func refreshPIAPortForwardData(ctx context.Context, client *http.Client, gateway net.IP, fileManager files.FileManager) (data piaPortForwardData, err error) {
-	data.Token, err = fetchPIAToken(fileManager, client)
+func refreshPIAPortForwardData(ctx context.Context, client *http.Client,
+	gateway net.IP, fileManager files.FileManager) (data piaPortForwardData, err error) {
+	data.Token, err = fetchPIAToken(ctx, fileManager, client)
 	if err != nil {
 		return data, fmt.Errorf("cannot obtain token: %w", err)
 	}
@@ -377,7 +383,7 @@ func packPIAPayload(port uint16, token string, expiration time.Time) (payload st
 	return payload, nil
 }
 
-func fetchPIAToken(fileManager files.FileManager, client *http.Client) (token string, err error) {
+func fetchPIAToken(ctx context.Context, fileManager files.FileManager, client *http.Client) (token string, err error) {
 	username, password, err := getOpenvpnCredentials(fileManager)
 	if err != nil {
 		return "", fmt.Errorf("cannot get Openvpn credentials: %w", err)
@@ -388,7 +394,7 @@ func fetchPIAToken(fileManager files.FileManager, client *http.Client) (token st
 		Host:   "185.216.33.146",
 		Path:   "/authv3/generateToken",
 	}
-	request, err := http.NewRequest(http.MethodGet, url.String(), nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return "", err
 	}
@@ -423,14 +429,16 @@ func getOpenvpnCredentials(fileManager files.FileManager) (username, password st
 		return "", "", fmt.Errorf("cannot read openvpn auth file: %w", err)
 	}
 	lines := strings.Split(string(authData), "\n")
-	if len(lines) < 2 {
+	const minLines = 2
+	if len(lines) < minLines {
 		return "", "", fmt.Errorf("not enough lines (%d) in openvpn auth file", len(lines))
 	}
 	username, password = lines[0], lines[1]
 	return username, password, nil
 }
 
-func fetchPIAPortForwardData(ctx context.Context, client *http.Client, gateway net.IP, token string) (port uint16, signature string, expiration time.Time, err error) {
+func fetchPIAPortForwardData(ctx context.Context, client *http.Client, gateway net.IP, token string) (
+	port uint16, signature string, expiration time.Time, err error) {
 	queryParams := url.Values{}
 	queryParams.Add("token", token)
 	url := url.URL{

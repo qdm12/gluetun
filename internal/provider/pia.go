@@ -8,26 +8,26 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func buildPIAConf(connection models.OpenVPNConnection, verbosity int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func buildPIAConf(connection models.OpenVPNConnection, verbosity int, root bool, cipher, auth string,
+	extras models.ExtraConfigOptions) (lines []string) {
 	var X509CRL, certificate string
+	var defaultCipher, defaultAuth string
 	if extras.EncryptionPreset == constants.PIAEncryptionPresetNormal {
-		if len(cipher) == 0 {
-			cipher = "aes-128-cbc"
-		}
-		if len(auth) == 0 {
-			auth = "sha1"
-		}
+		defaultCipher = "aes-128-cbc"
+		defaultAuth = "sha1"
 		X509CRL = constants.PiaX509CRLNormal
 		certificate = constants.PIACertificateNormal
 	} else { // strong encryption
-		if len(cipher) == 0 {
-			cipher = aes256cbc
-		}
-		if len(auth) == 0 {
-			auth = "sha256"
-		}
+		defaultCipher = aes256cbc
+		defaultAuth = "sha256"
 		X509CRL = constants.PiaX509CRLStrong
 		certificate = constants.PIACertificateStrong
+	}
+	if len(cipher) == 0 {
+		cipher = defaultCipher
+	}
+	if len(auth) == 0 {
+		auth = defaultAuth
 	}
 	lines = []string{
 		"client",

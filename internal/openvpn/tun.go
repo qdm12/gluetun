@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// CheckTUN checks the tunnel device is present and accessible
+// CheckTUN checks the tunnel device is present and accessible.
 func (c *configurator) CheckTUN() error {
 	c.logger.Info("checking for device %s", constants.TunnelDevice)
 	f, err := c.openFile(string(constants.TunnelDevice), os.O_RDWR, 0)
@@ -26,7 +26,11 @@ func (c *configurator) CreateTUN() error {
 	if err := c.fileManager.CreateDir("/dev/net"); err != nil {
 		return err
 	}
-	dev := c.mkDev(10, 200)
+	const (
+		major = 10
+		minor = 200
+	)
+	dev := c.mkDev(major, minor)
 	if err := c.mkNod(string(constants.TunnelDevice), unix.S_IFCHR, int(dev)); err != nil {
 		return err
 	}

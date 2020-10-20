@@ -9,13 +9,13 @@ import (
 	libparams "github.com/qdm12/golibs/params"
 )
 
-// GetFirewall obtains if the firewall should be enabled from the environment variable FIREWALL
+// GetFirewall obtains if the firewall should be enabled from the environment variable FIREWALL.
 func (r *reader) GetFirewall() (enabled bool, err error) {
 	return r.envParams.GetOnOff("FIREWALL", libparams.Default("on"))
 }
 
 // GetExtraSubnets obtains the CIDR subnets from the comma separated list of the
-// environment variable EXTRA_SUBNETS
+// environment variable EXTRA_SUBNETS.
 func (r *reader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
 	s, err := r.envParams.GetEnv("EXTRA_SUBNETS")
 	if err != nil {
@@ -37,7 +37,7 @@ func (r *reader) GetExtraSubnets() (extraSubnets []net.IPNet, err error) {
 }
 
 // GetAllowedVPNInputPorts obtains a list of input ports to allow from the
-// VPN server side in the firewall, from the environment variable FIREWALL_VPN_INPUT_PORTS
+// VPN server side in the firewall, from the environment variable FIREWALL_VPN_INPUT_PORTS.
 func (r *reader) GetVPNInputPorts() (ports []uint16, err error) {
 	s, err := r.envParams.GetEnv("FIREWALL_VPN_INPUT_PORTS", libparams.Default(""))
 	if err != nil {
@@ -61,7 +61,7 @@ func (r *reader) GetVPNInputPorts() (ports []uint16, err error) {
 }
 
 // GetInputPorts obtains a list of input ports to allow through the
-// default interface in the firewall, from the environment variable FIREWALL_INPUT_PORTS
+// default interface in the firewall, from the environment variable FIREWALL_INPUT_PORTS.
 func (r *reader) GetInputPorts() (ports []uint16, err error) {
 	s, err := r.envParams.GetEnv("FIREWALL_INPUT_PORTS", libparams.Default(""))
 	if err != nil {
@@ -84,7 +84,8 @@ func (r *reader) GetInputPorts() (ports []uint16, err error) {
 	return ports, nil
 }
 
-// GetFirewallDebug obtains if the firewall should run in debug verbose mode from the environment variable FIREWALL_DEBUG
+// GetFirewallDebug obtains if the firewall should run in debug verbose mode
+// from the environment variable FIREWALL_DEBUG.
 func (r *reader) GetFirewallDebug() (debug bool, err error) {
 	return r.envParams.GetOnOff("FIREWALL_DEBUG", libparams.Default("off"))
 }

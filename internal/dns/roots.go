@@ -21,7 +21,7 @@ func (c *configurator) DownloadRootHints(ctx context.Context, uid, gid int) erro
 		string(constants.RootHints),
 		content,
 		files.Ownership(uid, gid),
-		files.Permissions(0400))
+		files.Permissions(constants.UserReadPermission))
 }
 
 func (c *configurator) DownloadRootKey(ctx context.Context, uid, gid int) error {
@@ -36,5 +36,5 @@ func (c *configurator) DownloadRootKey(ctx context.Context, uid, gid int) error 
 		string(constants.RootKey),
 		content,
 		files.Ownership(uid, gid),
-		files.Permissions(0400))
+		files.Permissions(constants.UserReadPermission))
 }

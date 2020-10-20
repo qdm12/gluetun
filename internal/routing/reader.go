@@ -2,9 +2,8 @@ package routing
 
 import (
 	"bytes"
-	"net"
-
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -37,7 +36,8 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 	if err != nil {
 		return "", nil, err
 	}
-	if len(entries) < 2 {
+	const minEntries = 2
+	if len(entries) < minEntries {
 		return "", nil, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
 	}
 	var defaultRouteEntry routingEntry
@@ -61,7 +61,8 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	if err != nil {
 		return defaultSubnet, err
 	}
-	if len(entries) < 2 {
+	const minEntries = 2
+	if len(entries) < minEntries {
 		return defaultSubnet, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
 	}
 	var localSubnetEntry routingEntry

@@ -12,7 +12,7 @@ import (
 	"github.com/qdm12/golibs/verification"
 )
 
-// Reader contains methods to obtain parameters
+// Reader contains methods to obtain parameters.
 type Reader interface {
 	GetVPNSP() (vpnServiceProvider models.VPNProvider, err error)
 
@@ -130,7 +130,7 @@ type reader struct {
 }
 
 // Newreader returns a paramsReadeer object to read parameters from
-// environment variables
+// environment variables.
 func NewReader(logger logging.Logger, fileManager files.FileManager) Reader {
 	return &reader{
 		envParams:   libparams.NewEnvParams(),
@@ -141,9 +141,15 @@ func NewReader(logger logging.Logger, fileManager files.FileManager) Reader {
 	}
 }
 
-// GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP
+// GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP.
 func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
-	s, err := r.envParams.GetValueIfInside("VPNSP", []string{"pia", "private internet access", "private internet access old", "mullvad", "windscribe", "surfshark", "cyberghost", "vyprvpn", "nordvpn", "purevpn"})
+	s, err := r.envParams.GetValueIfInside(
+		"VPNSP",
+		[]string{
+			"pia", "private internet access", "private internet access old",
+			"mullvad", "windscribe", "surfshark", "cyberghost",
+			"vyprvpn", "nordvpn", "purevpn",
+		})
 	if s == "pia" {
 		s = "private internet access"
 	}

@@ -63,6 +63,7 @@ func Test_DeleteRouteVia(t *testing.T) {
 			commander.EXPECT().Run(ctx, "ip", "route", "del", subnetStr).
 				Return(tc.runOutput, tc.runErr).Times(1)
 			fileManager := mock_files.NewMockFileManager(mockCtrl)
+			//nolint:lll
 			routesData := []byte(`Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT
 eth0   0002A8C0  0100000A  0003   0 0 0  00FFFFFF   0 0  0
 `)

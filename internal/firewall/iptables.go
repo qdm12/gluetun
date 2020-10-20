@@ -32,14 +32,15 @@ func flipRule(rule string) string {
 	return rule
 }
 
-// Version obtains the version of the installed iptables
+// Version obtains the version of the installed iptables.
 func (c *configurator) Version(ctx context.Context) (string, error) {
 	output, err := c.commander.Run(ctx, "iptables", "--version")
 	if err != nil {
 		return "", err
 	}
 	words := strings.Fields(output)
-	if len(words) < 2 {
+	const minWords = 2
+	if len(words) < minWords {
 		return "", fmt.Errorf("iptables --version: output is too short: %q", output)
 	}
 	return words[1], nil
@@ -106,34 +107,39 @@ func (c *configurator) acceptEstablishedRelatedTraffic(ctx context.Context, remo
 	})
 }
 
-func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context, defaultInterface string, connection models.OpenVPNConnection, remove bool) error {
+func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
+	defaultInterface string, connection models.OpenVPNConnection, remove bool) error {
 	return c.runIptablesInstruction(ctx,
 		fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 			appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol, connection.Protocol, connection.Port))
 }
 
-func (c *configurator) acceptInputFromSubnetToSubnet(ctx context.Context, intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
+func (c *configurator) acceptInputFromSubnetToSubnet(ctx context.Context,
+	intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
 	}
 	return c.runIptablesInstruction(ctx, fmt.Sprintf(
-		"%s INPUT %s -s %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
+		"%s INPUT %s -s %s -d %s -j ACCEPT",
+		appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
 	))
 }
 
-// Thanks to @npawelek
-func (c *configurator) acceptOutputFromSubnetToSubnet(ctx context.Context, intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
+// Thanks to @npawelek.
+func (c *configurator) acceptOutputFromSubnetToSubnet(ctx context.Context,
+	intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
 	interfaceFlag := "-o " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
 	}
 	return c.runIptablesInstruction(ctx, fmt.Sprintf(
-		"%s OUTPUT %s -s %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
+		"%s OUTPUT %s -s %s -d %s -j ACCEPT",
+		appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
 	))
 }
 
-// Used for port forwarding, with intf set to tun
+// Used for port forwarding, with intf set to tun.
 func (c *configurator) acceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces

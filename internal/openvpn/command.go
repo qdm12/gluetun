@@ -22,7 +22,8 @@ func (c *configurator) Version(ctx context.Context) (string, error) {
 	}
 	firstLine := strings.Split(output, "\n")[0]
 	words := strings.Fields(firstLine)
-	if len(words) < 2 {
+	const minWords = 2
+	if len(words) < minWords {
 		return "", fmt.Errorf("openvpn --version: first line is too short: %q", firstLine)
 	}
 	return words[1], nil

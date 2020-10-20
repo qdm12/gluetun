@@ -1,9 +1,9 @@
 package updater
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"sort"
@@ -11,10 +11,11 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/network"
 )
 
-func (u *updater) updateNordvpn() (err error) {
-	servers, warnings, err := findNordvpnServers(u.httpGet)
+func (u *updater) updateNordvpn(ctx context.Context) (err error) {
+	servers, warnings, err := findNordvpnServers(ctx, u.client)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Nordvpn: %s", warning)
@@ -31,19 +32,15 @@ func (u *updater) updateNordvpn() (err error) {
 	return nil
 }
 
-func findNordvpnServers(httpGet httpGetFunc) (servers []models.NordvpnServer, warnings []string, err error) {
+func findNordvpnServers(ctx context.Context, client network.Client) (
+	servers []models.NordvpnServer, warnings []string, err error) {
 	const url = "https://nordvpn.com/api/server"
-	response, err := httpGet(url)
+	bytes, status, err := client.Get(ctx, url)
 	if err != nil {
 		return nil, nil, err
 	}
-	defer response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf(response.Status)
-	}
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, nil, err
+	if status != http.StatusOK {
+		return nil, nil, fmt.Errorf("HTTP status code %d", status)
 	}
 	var data []struct {
 		IPAddress string `json:"ip_address"`
@@ -71,7 +68,9 @@ func findNordvpnServers(httpGet httpGetFunc) (servers []models.NordvpnServer, wa
 		}
 		ip := net.ParseIP(jsonServer.IPAddress)
 		if ip == nil || ip.To4() == nil {
-			return nil, nil, fmt.Errorf("IP address %q is not a valid IPv4 address for server %q", jsonServer.IPAddress, jsonServer.Name)
+			return nil, nil,
+				fmt.Errorf("IP address %q is not a valid IPv4 address for server %q",
+					jsonServer.IPAddress, jsonServer.Name)
 		}
 		i := strings.IndexRune(jsonServer.Name, '#')
 		if i < 0 {
@@ -94,7 +93,6 @@ func findNordvpnServers(httpGet httpGetFunc) (servers []models.NordvpnServer, wa
 	return servers, warnings, nil
 }
 
-//nolint:goconst
 func stringifyNordvpnServers(servers []models.NordvpnServer) (s string) {
 	s = "func NordvpnServers() []models.NordvpnServer {\n"
 	s += "	return []models.NordvpnServer{\n"

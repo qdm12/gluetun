@@ -39,6 +39,7 @@ func (w *windscribe) filterServers(regions []string) (servers []models.Windscrib
 	return servers
 }
 
+//nolint:lll
 func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {
@@ -71,7 +72,8 @@ func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (con
 	return pickRandomConnection(connections, w.randSource), nil
 }
 
-func (w *windscribe) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (w *windscribe) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int,
+	root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}

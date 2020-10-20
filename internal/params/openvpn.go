@@ -8,7 +8,7 @@ import (
 	libparams "github.com/qdm12/golibs/params"
 )
 
-// GetUser obtains the user to use to connect to the VPN servers
+// GetUser obtains the user to use to connect to the VPN servers.
 func (r *reader) GetUser() (s string, err error) {
 	defer func() {
 		unsetenvErr := r.unsetEnv("USER")
@@ -19,7 +19,7 @@ func (r *reader) GetUser() (s string, err error) {
 	return r.envParams.GetEnv("USER", libparams.CaseSensitiveValue(), libparams.Compulsory())
 }
 
-// GetPassword obtains the password to use to connect to the VPN servers
+// GetPassword obtains the password to use to connect to the VPN servers.
 func (r *reader) GetPassword(required bool) (s string, err error) {
 	defer func() {
 		unsetenvErr := r.unsetEnv("PASSWORD")
@@ -35,26 +35,26 @@ func (r *reader) GetPassword(required bool) (s string, err error) {
 }
 
 // GetNetworkProtocol obtains the network protocol to use to connect to the
-// VPN servers from the environment variable PROTOCOL
+// VPN servers from the environment variable PROTOCOL.
 func (r *reader) GetNetworkProtocol() (protocol models.NetworkProtocol, err error) {
 	s, err := r.envParams.GetValueIfInside("PROTOCOL", []string{"tcp", "udp"}, libparams.Default("udp"))
 	return models.NetworkProtocol(s), err
 }
 
 // GetOpenVPNVerbosity obtains the verbosity level for verbosity between 0 and 6
-// from the environment variable OPENVPN_VERBOSITY
+// from the environment variable OPENVPN_VERBOSITY.
 func (r *reader) GetOpenVPNVerbosity() (verbosity int, err error) {
 	return r.envParams.GetEnvIntRange("OPENVPN_VERBOSITY", 0, 6, libparams.Default("1"))
 }
 
 // GetOpenVPNRoot obtains if openvpn should be run as root
-// from the environment variable OPENVPN_ROOT
+// from the environment variable OPENVPN_ROOT.
 func (r *reader) GetOpenVPNRoot() (root bool, err error) {
 	return r.envParams.GetYesNo("OPENVPN_ROOT", libparams.Default("no"))
 }
 
 // GetTargetIP obtains the IP address to override over the list of IP addresses filtered
-// from the environment variable OPENVPN_TARGET_IP
+// from the environment variable OPENVPN_TARGET_IP.
 func (r *reader) GetTargetIP() (ip net.IP, err error) {
 	s, err := r.envParams.GetEnv("OPENVPN_TARGET_IP")
 	if len(s) == 0 {
@@ -70,19 +70,19 @@ func (r *reader) GetTargetIP() (ip net.IP, err error) {
 }
 
 // GetOpenVPNCipher obtains a custom cipher to use with OpenVPN
-// from the environment variable OPENVPN_CIPHER
+// from the environment variable OPENVPN_CIPHER.
 func (r *reader) GetOpenVPNCipher() (cipher string, err error) {
 	return r.envParams.GetEnv("OPENVPN_CIPHER")
 }
 
 // GetOpenVPNAuth obtains a custom auth algorithm to use with OpenVPN
-// from the environment variable OPENVPN_AUTH
+// from the environment variable OPENVPN_AUTH.
 func (r *reader) GetOpenVPNAuth() (auth string, err error) {
 	return r.envParams.GetEnv("OPENVPN_AUTH")
 }
 
 // GetOpenVPNIPv6 obtains if ipv6 should be tunneled through the
-// openvpn tunnel from the environment variable OPENVPN_IPV6
+// openvpn tunnel from the environment variable OPENVPN_IPV6.
 func (r *reader) GetOpenVPNIPv6() (ipv6 bool, err error) {
 	return r.envParams.GetOnOff("OPENVPN_IPV6", libparams.Default("off"))
 }

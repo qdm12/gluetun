@@ -28,7 +28,8 @@ type server struct {
 	lookupIP      func(host string) ([]net.IP, error)
 }
 
-func New(address string, logging bool, logger logging.Logger, openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
+func New(address string, logging bool, logger logging.Logger,
+	openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
 	return &server{
 		address:       address,
 		logging:       logging,
@@ -47,7 +48,8 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 		<-ctx.Done()
 		s.logger.Warn("context canceled: exiting loop")
 		defer s.logger.Warn("loop exited")
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		const shutdownGraceDuration = 2 * time.Second
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
 			s.logger.Error("failed shutting down: %s", err)

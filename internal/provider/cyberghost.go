@@ -39,27 +39,31 @@ func (c *cyberghost) filterServers(regions []string, group string) (servers []mo
 	return servers
 }
 
-func (c *cyberghost) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+func (c *cyberghost) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
+	const httpsPort = 443
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: 443, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: httpsPort, Protocol: selection.Protocol}, nil
 	}
 
 	servers := c.filterServers(selection.Regions, selection.Group)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for regions %s and group %q", commaJoin(selection.Regions), selection.Group)
+		return connection,
+			fmt.Errorf("no server found for regions %s and group %q", commaJoin(selection.Regions), selection.Group)
 	}
 
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: 443, Protocol: selection.Protocol})
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: httpsPort, Protocol: selection.Protocol})
 		}
 	}
 
 	return pickRandomConnection(connections, c.randSource), nil
 }
 
-func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity,
+	uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}

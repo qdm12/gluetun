@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/files/mock_files"
 	"github.com/qdm12/golibs/logging/mock_logging"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+//nolint:lll
 const exampleRouteData = `Iface   Destination     Gateway         Flags   RefCnt  Use     Metric  Mask            MTU     Window  IRTT                                                       
 tun0    00000000        050A030A        0003    0       0       0       00000080        0       0       0                                                                               
 eth0    00000000        010011AC        0003    0       0       0       00000000        0       0       0                                                                               
@@ -24,6 +24,7 @@ tun0    00000080        050A030A        0003    0       0       0       00000080
 eth0    000011AC        00000000        0001    0       0       0       0000FFFF        0       0       0
 `
 
+//nolint:lll
 func Test_parseRoutingTable(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
@@ -96,6 +97,7 @@ eth0   x  0100000A  0003   0 0 0  00FFFFFF   0 0  0
 	}
 }
 
+//nolint:lll
 func Test_DefaultRoute(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
@@ -164,6 +166,7 @@ eth0    000011AC        00000000        0001    0       0       0       0000FFFF
 	}
 }
 
+//nolint:lll
 func Test_LocalSubnet(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
@@ -229,6 +232,7 @@ eth0    000011AC        10000000        0001    0       0       0       0000FFFF
 	}
 }
 
+//nolint:lll
 func Test_routeExists(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
@@ -291,6 +295,7 @@ eth0    0002A8C0        0100000A        0003    0       0       0       00FFFFFF
 	}
 }
 
+//nolint:lll
 func Test_VPNDestinationIP(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {

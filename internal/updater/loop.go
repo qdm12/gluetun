@@ -70,10 +70,16 @@ func (l *looper) SetPeriod(period time.Duration) {
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	l.logger.Info("retrying in 5 minutes")
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
-	defer cancel() // just for the linter
-	<-ctx.Done()
+	const waitTime = 5 * time.Minute
+	l.logger.Info("retrying in %s", waitTime)
+	timer := time.NewTimer(waitTime)
+	select {
+	case <-timer.C:
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
+	}
 }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {

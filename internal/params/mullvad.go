@@ -6,35 +6,35 @@ import (
 )
 
 // GetMullvadCountries obtains the countries for the Mullvad servers from the
-// environment variable COUNTRY
+// environment variable COUNTRY.
 func (r *reader) GetMullvadCountries() (countries []string, err error) {
 	choices := append(constants.MullvadCountryChoices(), "")
 	return r.envParams.GetCSVInPossibilities("COUNTRY", choices)
 }
 
 // GetMullvadCity obtains the cities for the Mullvad servers from the
-// environment variable CITY
+// environment variable CITY.
 func (r *reader) GetMullvadCities() (cities []string, err error) {
 	choices := append(constants.MullvadCityChoices(), "")
 	return r.envParams.GetCSVInPossibilities("CITY", choices)
 }
 
 // GetMullvadISPs obtains the ISPs for the Mullvad servers from the
-// environment variable ISP
+// environment variable ISP.
 func (r *reader) GetMullvadISPs() (isps []string, err error) {
 	choices := append(constants.MullvadISPChoices(), "")
 	return r.envParams.GetCSVInPossibilities("ISP", choices)
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the
-// environment variable PORT
+// environment variable PORT.
 func (r *reader) GetMullvadPort() (port uint16, err error) {
 	n, err := r.envParams.GetEnvIntRange("PORT", 0, 65535, libparams.Default("0"))
 	return uint16(n), err
 }
 
 // GetMullvadOwned obtains if the server should be owned by Mullvad or not from the
-// environment variable OWNED
+// environment variable OWNED.
 func (r *reader) GetMullvadOwned() (owned bool, err error) {
 	return r.envParams.GetYesNo("OWNED", libparams.Default("no"))
 }

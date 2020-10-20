@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/network"
 )
 
 type Updater interface {
@@ -25,8 +26,8 @@ type updater struct {
 	logger   logging.Logger
 	timeNow  func() time.Time
 	println  func(s string)
-	httpGet  httpGetFunc
 	lookupIP lookupIPFunc
+	client   network.Client
 }
 
 func New(options Options, httpClient *http.Client, currentServers models.AllServers, logger logging.Logger) Updater {
@@ -34,18 +35,19 @@ func New(options Options, httpClient *http.Client, currentServers models.AllServ
 		options.DNSAddress = "1.1.1.1"
 	}
 	resolver := newResolver(options.DNSAddress)
+	const clientTimeout = 10 * time.Second
 	return &updater{
 		logger:   logger,
 		timeNow:  time.Now,
 		println:  func(s string) { fmt.Println(s) },
-		httpGet:  httpClient.Get,
 		lookupIP: newLookupIP(resolver),
+		client:   network.NewClient(clientTimeout),
 		options:  options,
 		servers:  currentServers,
 	}
 }
 
-// TODO parallelize DNS resolution
+// TODO parallelize DNS resolution.
 func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) { //nolint:gocognit
 	if u.options.Cyberghost {
 		u.logger.Info("updating Cyberghost servers...")
@@ -59,7 +61,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 
 	if u.options.Mullvad {
 		u.logger.Info("updating Mullvad servers...")
-		if err := u.updateMullvad(); err != nil {
+		if err := u.updateMullvad(ctx); err != nil {
 			u.logger.Error(err)
 		}
 		if err := ctx.Err(); err != nil {
@@ -70,7 +72,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Nordvpn {
 		// TODO support servers offering only TCP or only UDP
 		u.logger.Info("updating NordVPN servers...")
-		if err := u.updateNordvpn(); err != nil {
+		if err := u.updateNordvpn(ctx); err != nil {
 			u.logger.Error(err)
 		}
 		if err := ctx.Err(); err != nil {
@@ -80,7 +82,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 
 	if u.options.PIA {
 		u.logger.Info("updating Private Internet Access (v4) servers...")
-		if err := u.updatePIA(); err != nil {
+		if err := u.updatePIA(ctx); err != nil {
 			u.logger.Error(err)
 		}
 		if ctx.Err() != nil {

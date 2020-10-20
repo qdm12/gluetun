@@ -13,7 +13,8 @@ func GetPIASettings(paramsReader params.Reader) (settings models.ProviderSetting
 	return getPIASettings(paramsReader, constants.PrivateInternetAccess)
 }
 
-// GetPIAOldSettings obtains PIA settings for the older PIA servers (pre summer 2020) from environment variables using the params package.
+// GetPIAOldSettings obtains PIA settings for the older PIA servers (pre summer 2020)
+// from environment variables using the params package.
 func GetPIAOldSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
 	return getPIASettings(paramsReader, constants.PrivateInternetAccessOld)
 }
@@ -80,13 +81,13 @@ func GetMullvadSettings(paramsReader params.Reader) (settings models.ProviderSet
 	}
 	if settings.ServerSelection.Protocol == constants.TCP {
 		switch settings.ServerSelection.CustomPort {
-		case 0, 80, 443, 1401:
+		case 0, 80, 443, 1401: //nolint:gomnd
 		default:
 			return settings, fmt.Errorf("port %d is not valid for TCP protocol", settings.ServerSelection.CustomPort)
 		}
 	} else {
 		switch settings.ServerSelection.CustomPort {
-		case 0, 53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400:
+		case 0, 53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400: //nolint:gomnd
 		default:
 			return settings, fmt.Errorf("port %d is not valid for UDP protocol", settings.ServerSelection.CustomPort)
 		}

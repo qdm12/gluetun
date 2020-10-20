@@ -6,6 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
+//nolint:lll
 const (
 	PIAEncryptionPresetNormal = "normal"
 	PIAEncryptionPresetStrong = "strong"
@@ -24,6 +25,7 @@ func PIAGeoChoices() (choices []string) {
 	return choices
 }
 
+//nolint:lll
 func PIAServers() []models.PIAServer {
 	return []models.PIAServer{
 		{Region: "AU Melbourne", PortForward: true, OpenvpnUDP: models.PIAServerOpenvpn{CN: "melbourne405", IPs: []net.IP{{103, 2, 198, 108}}}, OpenvpnTCP: models.PIAServerOpenvpn{CN: "melbourne405", IPs: []net.IP{{103, 2, 198, 103}}}},
@@ -133,6 +135,7 @@ func PIAOldGeoChoices() (choices []string) {
 	return choices
 }
 
+//nolint:lll
 func PIAOldServers() []models.PIAOldServer {
 	return []models.PIAOldServer{
 		{Region: "AU Melbourne", IPs: []net.IP{{27, 50, 82, 131}, {43, 250, 204, 105}, {43, 250, 204, 107}, {43, 250, 204, 109}, {43, 250, 204, 111}, {43, 250, 204, 113}, {43, 250, 204, 115}, {43, 250, 204, 117}, {43, 250, 204, 119}, {43, 250, 204, 123}, {43, 250, 204, 125}}},

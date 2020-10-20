@@ -124,7 +124,7 @@ func (c *configurator) addSubnets(ctx context.Context, subnets []net.IPNet, defa
 	return nil
 }
 
-// updateSubnetRoutes does not return an error in order to try to run as many route commands as possible
+// updateSubnetRoutes does not return an error in order to try to run as many route commands as possible.
 func (c *configurator) updateSubnetRoutes(ctx context.Context, oldSubnets, newSubnets []net.IPNet) {
 	subnetsToAdd := findSubnetsToAdd(oldSubnets, newSubnets)
 	subnetsToRemove := findSubnetsToRemove(oldSubnets, newSubnets)

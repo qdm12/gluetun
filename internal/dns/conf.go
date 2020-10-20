@@ -24,11 +24,13 @@ func (c *configurator) MakeUnboundConf(ctx context.Context, settings settings.DN
 		string(constants.UnboundConf),
 		lines,
 		files.Ownership(uid, gid),
-		files.Permissions(0400))
+		files.Permissions(constants.UserReadPermission))
 }
 
-// MakeUnboundConf generates an Unbound configuration from the user provided settings
-func generateUnboundConf(ctx context.Context, settings settings.DNS, client network.Client, logger logging.Logger) (lines []string, warnings []error) {
+// MakeUnboundConf generates an Unbound configuration from the user provided settings.
+func generateUnboundConf(ctx context.Context, settings settings.DNS,
+	client network.Client, logger logging.Logger) (
+	lines []string, warnings []error) {
 	doIPv6 := "no"
 	if settings.IPv6 {
 		doIPv6 = "yes"

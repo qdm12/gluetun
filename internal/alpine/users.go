@@ -5,7 +5,7 @@ import (
 	"os/user"
 )
 
-// CreateUser creates a user in Alpine with the given UID
+// CreateUser creates a user in Alpine with the given UID.
 func (c *configurator) CreateUser(username string, uid int) error {
 	UIDStr := fmt.Sprintf("%d", uid)
 	u, err := c.lookupUID(UIDStr)
@@ -23,7 +23,8 @@ func (c *configurator) CreateUser(username string, uid int) error {
 	if err != nil && !unknownUsername {
 		return fmt.Errorf("cannot create user: %w", err)
 	} else if u != nil {
-		return fmt.Errorf("cannot create user: user with name %s already exists for ID %s instead of %d", username, u.Uid, uid)
+		return fmt.Errorf("cannot create user: user with name %s already exists for ID %s instead of %d",
+			username, u.Uid, uid)
 	}
 	passwd, err := c.fileManager.ReadFile("/etc/passwd")
 	if err != nil {

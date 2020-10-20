@@ -40,7 +40,8 @@ func (p *purevpn) filterServers(regions, countries, cities []string) (servers []
 	return servers
 }
 
-func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
+func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {
 	case selection.Protocol == constants.UDP:
@@ -71,7 +72,8 @@ func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (connec
 	return pickRandomConnection(connections, p.randSource), nil
 }
 
-func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
+func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}

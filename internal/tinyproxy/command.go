@@ -13,14 +13,15 @@ func (c *configurator) Start(ctx context.Context) (stdout io.ReadCloser, waitFn 
 	return stdout, waitFn, err
 }
 
-// Version obtains the version of the installed Tinyproxy server
+// Version obtains the version of the installed Tinyproxy server.
 func (c *configurator) Version(ctx context.Context) (string, error) {
 	output, err := c.commander.Run(ctx, "tinyproxy", "-v")
 	if err != nil {
 		return "", err
 	}
 	words := strings.Fields(output)
-	if len(words) < 2 {
+	const minWords = 2
+	if len(words) < minWords {
 		return "", fmt.Errorf("tinyproxy -v: output is too short: %q", output)
 	}
 	return words[1], nil

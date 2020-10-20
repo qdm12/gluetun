@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/params"
 )
 
-// System contains settings to configure system related elements
+// System contains settings to configure system related elements.
 type System struct {
 	UID              int
 	GID              int
@@ -16,7 +16,7 @@ type System struct {
 	IPStatusFilepath models.Filepath
 }
 
-// GetSystemSettings obtains the System settings using the params functions
+// GetSystemSettings obtains the System settings using the params functions.
 func GetSystemSettings(paramsReader params.Reader) (settings System, err error) {
 	settings.UID, err = paramsReader.GetUID()
 	if err != nil {

@@ -9,7 +9,8 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (c *configurator) Start(ctx context.Context, verbosityDetailsLevel uint8) (stdout io.ReadCloser, waitFn func() error, err error) {
+func (c *configurator) Start(ctx context.Context, verbosityDetailsLevel uint8) (
+	stdout io.ReadCloser, waitFn func() error, err error) {
 	c.logger.Info("starting unbound")
 	args := []string{"-d", "-c", string(constants.UnboundConf)}
 	if verbosityDetailsLevel > 0 {
@@ -28,7 +29,8 @@ func (c *configurator) Version(ctx context.Context) (version string, err error) 
 	for _, line := range strings.Split(output, "\n") {
 		if strings.Contains(line, "Version ") {
 			words := strings.Fields(line)
-			if len(words) < 2 {
+			const minWords = 2
+			if len(words) < minWords {
 				continue
 			}
 			version = words[1]

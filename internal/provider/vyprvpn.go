@@ -38,7 +38,8 @@ func (v *vyprvpn) filterServers(regions []string) (servers []models.VyprvpnServe
 	return servers
 }
 
-func (v *vyprvpn) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+func (v *vyprvpn) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {
 	case selection.Protocol == constants.TCP:
@@ -68,7 +69,8 @@ func (v *vyprvpn) GetOpenVPNConnection(selection models.ServerSelection) (connec
 	return pickRandomConnection(connections, v.randSource), nil
 }
 
-func (v *vyprvpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (v *vyprvpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int,
+	root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -86,7 +88,7 @@ func (v *vyprvpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid,
 		"comp-lzo",
 		"keepalive 10 60",
 		// "verify-x509-name lu1.vyprvpn.com name",
-		"tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
+		"tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 
 		// Added constant values
 		"auth-nocache",

@@ -1,8 +1,8 @@
 package constants
 
 import (
-	"crypto/md5" //nolint:gosec
-	"encoding/base64"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"testing"
@@ -11,49 +11,164 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func digestServerModelVersion(t *testing.T, server interface{}, version uint16) string { //nolint:unparam
+func digestServerModelVersion(t *testing.T, server interface{}, version uint16) string {
 	bytes, err := json.Marshal(server)
 	if err != nil {
 		t.Fatal(err)
 	}
 	bytes = append(bytes, []byte(fmt.Sprintf("%d", version))...)
-	arr := md5.Sum(bytes) //nolint:gosec
-	return base64.RawStdEncoding.EncodeToString(arr[:])
+	arr := sha256.Sum256(bytes)
+	hexString := hex.EncodeToString(arr[:])
+	if len(hexString) > 8 {
+		hexString = hexString[:8]
+	}
+	return hexString
 }
 
 func Test_versions(t *testing.T) {
 	t.Parallel()
 	allServers := GetAllServers()
-	assert.Equal(t, "e8eLGRpb1sNX8mDNPOjA6g", digestServerModelVersion(t, models.CyberghostServer{}, allServers.Cyberghost.Version))
-	assert.Equal(t, "4yL2lFcxXd/l1ByxBQ7d3g", digestServerModelVersion(t, models.MullvadServer{}, allServers.Mullvad.Version))
-	assert.Equal(t, "fjzfUqJH0KvetGRdZYEtOg", digestServerModelVersion(t, models.NordvpnServer{}, allServers.Nordvpn.Version))
-	assert.Equal(t, "1Ux7clCAJI6fwj0O61Dtpg", digestServerModelVersion(t, models.PIAServer{}, allServers.Pia.Version))
-	assert.Equal(t, "EZ/SBXQOCS/iJU7A9yc7vg", digestServerModelVersion(t, models.PurevpnServer{}, allServers.Purevpn.Version))
-	assert.Equal(t, "7yfMpHwzRpEngA/6nYsNag", digestServerModelVersion(t, models.SurfsharkServer{}, allServers.Surfshark.Version))
-	assert.Equal(t, "7yfMpHwzRpEngA/6nYsNag", digestServerModelVersion(t, models.VyprvpnServer{}, allServers.Vyprvpn.Version))
-	assert.Equal(t, "7yfMpHwzRpEngA/6nYsNag", digestServerModelVersion(t, models.WindscribeServer{}, allServers.Windscribe.Version))
+	const format = "you forgot to update the version for %s"
+	testCases := map[string]struct {
+		model   interface{}
+		version uint16
+		digest  string
+	}{
+		"Cyberghost": {
+			model:   models.CyberghostServer{},
+			version: allServers.Cyberghost.Version,
+			digest:  "fd6242bb",
+		},
+		"Mullvad": {
+			model:   models.MullvadServer{},
+			version: allServers.Mullvad.Version,
+			digest:  "665e9dc1",
+		},
+		"Nordvpn": {
+			model:   models.NordvpnServer{},
+			version: allServers.Nordvpn.Version,
+			digest:  "040de8d0",
+		},
+		"Private Internet Access": {
+			model:   models.PIAServer{},
+			version: allServers.Pia.Version,
+			digest:  "f1e01afe",
+		},
+		"Private Internet Access Old": {
+			model:   models.PIAOldServer{},
+			version: allServers.PiaOld.Version,
+			digest:  "4e25ce4a",
+		},
+		"Purevpn": {
+			model:   models.PurevpnServer{},
+			version: allServers.Purevpn.Version,
+			digest:  "cc1a2219",
+		},
+		"Surfshark": {
+			model:   models.SurfsharkServer{},
+			version: allServers.Surfshark.Version,
+			digest:  "042bef64",
+		},
+		"Vyprvpn": {
+			model:   models.VyprvpnServer{},
+			version: allServers.Vyprvpn.Version,
+			digest:  "042bef64",
+		},
+		"Windscribe": {
+			model:   models.WindscribeServer{},
+			version: allServers.Windscribe.Version,
+			digest:  "042bef64",
+		},
+	}
+	for name, testCase := range testCases {
+		name := name
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			digest := digestServerModelVersion(t, testCase.model, testCase.version)
+			failureMessage := fmt.Sprintf(format, name)
+			assert.Equal(t, testCase.digest, digest, failureMessage)
+		})
+	}
 }
 
-func digestServersTimestamp(t *testing.T, servers interface{}, timestamp int64) string { //nolint:unparam
+func digestServersTimestamp(t *testing.T, servers interface{}, timestamp int64) string {
 	bytes, err := json.Marshal(servers)
 	if err != nil {
 		t.Fatal(err)
 	}
 	bytes = append(bytes, []byte(fmt.Sprintf("%d", timestamp))...)
-	arr := md5.Sum(bytes) //nolint:gosec
-	return base64.RawStdEncoding.EncodeToString(arr[:])
+	arr := sha256.Sum256(bytes)
+	hexString := hex.EncodeToString(arr[:])
+	if len(hexString) > 8 {
+		hexString = hexString[:8]
+	}
+	return hexString
 }
 
 func Test_timestamps(t *testing.T) {
 	t.Parallel()
 	allServers := GetAllServers()
-	assert.Equal(t, "EFMpdq2b9COLevjXmje5zg", digestServersTimestamp(t, allServers.Cyberghost.Servers, allServers.Cyberghost.Timestamp))
-	assert.Equal(t, "EU4fTzD7jWC9N5kmN5bOEg", digestServersTimestamp(t, allServers.Mullvad.Servers, allServers.Mullvad.Timestamp))
-	assert.Equal(t, "OLI62FoTf2wis25Nw4FLpg", digestServersTimestamp(t, allServers.Nordvpn.Servers, allServers.Nordvpn.Timestamp))
-	assert.Equal(t, "beZCOXNWxzrPsUWCyQM99A", digestServersTimestamp(t, allServers.Pia.Servers, allServers.Pia.Timestamp))
-	assert.Equal(t, "e8mWsWynkSUGiJLvjALRvQ", digestServersTimestamp(t, allServers.PiaOld.Servers, allServers.PiaOld.Timestamp))
-	assert.Equal(t, "kwJdVWTiBOspfrRwZIA+Sg", digestServersTimestamp(t, allServers.Purevpn.Servers, allServers.Purevpn.Timestamp))
-	assert.Equal(t, "q28ju2KJqLhrggJTTjXSiw", digestServersTimestamp(t, allServers.Surfshark.Servers, allServers.Surfshark.Timestamp))
-	assert.Equal(t, "KdIQWi2tYUM4aMXvWfVBEg", digestServersTimestamp(t, allServers.Vyprvpn.Servers, allServers.Vyprvpn.Timestamp))
-	assert.Equal(t, "faQUVtOnLMVezN0giHSz3Q", digestServersTimestamp(t, allServers.Windscribe.Servers, allServers.Windscribe.Timestamp))
+	const format = "you forgot to update the timestamp for %s"
+	testCases := map[string]struct {
+		servers   interface{}
+		timestamp int64
+		digest    string
+	}{
+		"Cyberghost": {
+			servers:   allServers.Cyberghost.Servers,
+			timestamp: allServers.Cyberghost.Timestamp,
+			digest:    "160631de",
+		},
+		"Mullvad": {
+			servers:   allServers.Mullvad.Servers,
+			timestamp: allServers.Mullvad.Timestamp,
+			digest:    "e1fee56f",
+		},
+		"Nordvpn": {
+			servers:   allServers.Nordvpn.Servers,
+			timestamp: allServers.Nordvpn.Timestamp,
+			digest:    "9fc9a579",
+		},
+		"Private Internet Access": {
+			servers:   allServers.Pia.Servers,
+			timestamp: allServers.Pia.Timestamp,
+			digest:    "1571e777",
+		},
+		"Private Internet Access Old": {
+			servers:   allServers.PiaOld.Servers,
+			timestamp: allServers.PiaOld.Timestamp,
+			digest:    "3566a800",
+		},
+		"Purevpn": {
+			servers:   allServers.Purevpn.Servers,
+			timestamp: allServers.Purevpn.Timestamp,
+			digest:    "cdf9b708",
+		},
+		"Surfshark": {
+			servers:   allServers.Surfshark.Servers,
+			timestamp: allServers.Surfshark.Timestamp,
+			digest:    "79484811",
+		},
+		"Vyprvpn": {
+			servers:   allServers.Vyprvpn.Servers,
+			timestamp: allServers.Vyprvpn.Timestamp,
+			digest:    "1992457c",
+		},
+		"Windscribe": {
+			servers:   allServers.Windscribe.Servers,
+			timestamp: allServers.Windscribe.Timestamp,
+			digest:    "eacad593",
+		},
+	}
+	for name, testCase := range testCases {
+		name := name
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			digest := digestServersTimestamp(t, testCase.servers, testCase.timestamp)
+			failureMessage := fmt.Sprintf(format, name)
+			assert.Equal(t, testCase.digest, digest, failureMessage)
+		})
+	}
 }

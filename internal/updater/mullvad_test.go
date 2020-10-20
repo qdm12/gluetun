@@ -18,6 +18,7 @@ func Test_stringifyMullvadServers(t *testing.T) {
 		IPs:     []net.IP{{1, 1, 1, 1}},
 		IPsV6:   []net.IP{{1, 1, 1, 1}},
 	}}
+	//nolint:lll
 	expected := `
 func MullvadServers() []models.MullvadServer {
 	return []models.MullvadServer{

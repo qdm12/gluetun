@@ -37,10 +37,16 @@ type looper struct {
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	l.logger.Info("retrying in 1 minute")
-	ctx, cancel := context.WithTimeout(ctx, time.Minute)
-	defer cancel() // just for the linter
-	<-ctx.Done()
+	const waitTime = time.Minute
+	l.logger.Info("retrying in %s", waitTime)
+	timer := time.NewTimer(waitTime)
+	select {
+	case <-timer.C:
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
+	}
 }
 
 func NewLooper(conf Configurator, firewallConf firewall.Configurator, settings settings.TinyProxy,

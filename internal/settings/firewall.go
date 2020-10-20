@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/params"
 )
 
-// Firewall contains settings to customize the firewall operation
+// Firewall contains settings to customize the firewall operation.
 type Firewall struct {
 	AllowedSubnets []net.IPNet
 	VPNInputPorts  []uint16

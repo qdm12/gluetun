@@ -51,7 +51,7 @@ func (c *configurator) disable(ctx context.Context) (err error) {
 	return nil
 }
 
-// To use in defered call when enabling the firewall
+// To use in defered call when enabling the firewall.
 func (c *configurator) fallbackToDisabled(ctx context.Context) {
 	if ctx.Err() != nil {
 		return
@@ -61,7 +61,7 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 	}
 }
 
-func (c *configurator) enable(ctx context.Context) (err error) { //nolint:gocognit
+func (c *configurator) enable(ctx context.Context) (err error) {
 	if err = c.setAllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}

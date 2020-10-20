@@ -30,7 +30,8 @@ func newPrivateInternetAccessV3(servers []models.PIAOldServer, timeNow timeNowFu
 	}
 }
 
-func (p *piaV3) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+func (p *piaV3) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch selection.Protocol {
 	case constants.TCP:
@@ -49,7 +50,9 @@ func (p *piaV3) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 		}
 	}
 	if port == 0 {
-		return connection, fmt.Errorf("combination of protocol %q and encryption %q does not yield any port number", selection.Protocol, selection.EncryptionPreset)
+		return connection, fmt.Errorf(
+			"combination of protocol %q and encryption %q does not yield any port number",
+			selection.Protocol, selection.EncryptionPreset)
 	}
 
 	if selection.TargetIP != nil {
@@ -71,20 +74,22 @@ func (p *piaV3) GetOpenVPNConnection(selection models.ServerSelection) (connecti
 	return pickRandomConnection(connections, p.randSource), nil
 }
 
-func (p *piaV3) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (p *piaV3) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int,
+	root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	return buildPIAConf(connection, verbosity, root, cipher, auth, extras)
 }
 
 func (p *piaV3) PortForward(ctx context.Context, client *http.Client,
 	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
-	b := make([]byte, 32)
+	const uuidLength = 32
+	b := make([]byte, uuidLength)
 	n, err := rand.New(p.randSource).Read(b) //nolint:gosec
 	if err != nil {
 		pfLogger.Error(err)
 		return
-	} else if n != 32 {
-		pfLogger.Error("only read %d bytes instead of 32", n)
+	} else if n != uuidLength {
+		pfLogger.Error("only read %d bytes instead of %d", n, uuidLength)
 		return
 	}
 	clientID := hex.EncodeToString(b)
@@ -96,7 +101,7 @@ func (p *piaV3) PortForward(ctx context.Context, client *http.Client,
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		pfLogger.Error(fmt.Errorf("%s for %s; does your PIA server support port forwarding?", response.Status, url))
+		pfLogger.Error("%s for %s; does your PIA server support port forwarding?", response.Status, url)
 		return
 	}
 	b, err = ioutil.ReadAll(response.Body)
@@ -104,14 +109,14 @@ func (p *piaV3) PortForward(ctx context.Context, client *http.Client,
 		pfLogger.Error(err)
 		return
 	} else if len(b) == 0 {
-		pfLogger.Error(fmt.Errorf("port forwarding is already activated on this connection, has expired, or you are not connected to a PIA region that supports port forwarding"))
+		pfLogger.Error("port forwarding is already activated on this connection, has expired, or you are not connected to a PIA region that supports port forwarding") //nolint:lll
 		return
 	}
 	body := struct {
 		Port uint16 `json:"port"`
 	}{}
 	if err := json.Unmarshal(b, &body); err != nil {
-		pfLogger.Error(fmt.Errorf("port forwarding response: %w", err))
+		pfLogger.Error("port forwarding response: %s", err)
 		return
 	}
 	port := body.Port
@@ -120,7 +125,7 @@ func (p *piaV3) PortForward(ctx context.Context, client *http.Client,
 	pfLogger.Info("Writing port to %s", filepath)
 	if err := fileManager.WriteToFile(
 		string(filepath), []byte(fmt.Sprintf("%d", port)),
-		files.Permissions(0666),
+		files.Permissions(constants.AllReadWritePermissions),
 	); err != nil {
 		pfLogger.Error(err)
 	}

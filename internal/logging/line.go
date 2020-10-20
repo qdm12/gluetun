@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
+//nolint:lll
 var regularExpressions = struct { //nolint:gochecknoglobals
 	unboundPrefix          *regexp.Regexp
 	shadowsocksPrefix      *regexp.Regexp

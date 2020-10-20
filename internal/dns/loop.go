@@ -92,9 +92,15 @@ func (l *looper) setEnabled(enabled bool) {
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Warn(err)
 	l.logger.Info("attempting restart in 10 seconds")
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	<-ctx.Done()
+	const waitDuration = 10 * time.Second
+	timer := time.NewTimer(waitDuration)
+	select {
+	case <-timer.C:
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
+	}
 }
 
 func (l *looper) waitForFirstStart(ctx context.Context, signalDNSReady func()) {

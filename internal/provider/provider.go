@@ -12,10 +12,11 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-// Provider contains methods to read and modify the openvpn configuration to connect as a client
+// Provider contains methods to read and modify the openvpn configuration to connect as a client.
 type Provider interface {
 	GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error)
-	BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string)
+	BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int,
+		root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string)
 	PortForward(ctx context.Context, client *http.Client,
 		fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 		syncState func(port uint16) (pfFilepath models.Filepath))

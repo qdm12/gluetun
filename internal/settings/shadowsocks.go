@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/params"
 )
 
-// ShadowSocks contains settings to configure the Shadowsocks server
+// ShadowSocks contains settings to configure the Shadowsocks server.
 type ShadowSocks struct {
 	Method   string
 	Password string

@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/params"
 )
 
-// ControlServer contains settings to customize the control server operation
+// ControlServer contains settings to customize the control server operation.
 type ControlServer struct {
 	Port uint16
 	Log  bool
@@ -22,7 +22,8 @@ func (c *ControlServer) String() string {
 	return strings.Join(settingsList, "\n |--")
 }
 
-// GetControlServerSettings obtains the HTTP control server settings from environment variables using the params package.
+// GetControlServerSettings obtains the HTTP control server settings from
+// environment variables using the params package.
 func GetControlServerSettings(paramsReader params.Reader) (settings ControlServer, err error) {
 	settings.Port, err = paramsReader.GetControlServerPort()
 	if err != nil {

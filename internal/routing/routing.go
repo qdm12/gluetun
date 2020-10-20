@@ -26,7 +26,7 @@ type routing struct {
 	debug       bool
 }
 
-// NewConfigurator creates a new Configurator instance
+// NewConfigurator creates a new Configurator instance.
 func NewRouting(logger logging.Logger, fileManager files.FileManager) Routing {
 	return &routing{
 		commander:   command.NewCommander(),

@@ -2,12 +2,12 @@ package routing
 
 import (
 	"context"
-	"net"
-
 	"fmt"
+	"net"
 )
 
-func (r *routing) AddRouteVia(ctx context.Context, subnet net.IPNet, defaultGateway net.IP, defaultInterface string) error {
+func (r *routing) AddRouteVia(ctx context.Context,
+	subnet net.IPNet, defaultGateway net.IP, defaultInterface string) error {
 	subnetStr := subnet.String()
 	r.logger.Info("adding %s as route via %s %s", subnetStr, defaultGateway, defaultInterface)
 	exists, err := r.routeExists(subnet)
@@ -19,9 +19,11 @@ func (r *routing) AddRouteVia(ctx context.Context, subnet net.IPNet, defaultGate
 	if r.debug {
 		fmt.Printf("ip route add %s via %s dev %s\n", subnetStr, defaultGateway, defaultInterface)
 	}
-	output, err := r.commander.Run(ctx, "ip", "route", "add", subnetStr, "via", defaultGateway.String(), "dev", defaultInterface)
+	output, err := r.commander.Run(ctx,
+		"ip", "route", "add", subnetStr, "via", defaultGateway.String(), "dev", defaultInterface)
 	if err != nil {
-		return fmt.Errorf("cannot add route for %s via %s %s %s: %s: %w", subnetStr, defaultGateway, "dev", defaultInterface, output, err)
+		return fmt.Errorf("cannot add route for %s via %s %s %s: %s: %w",
+			subnetStr, defaultGateway, "dev", defaultInterface, output, err)
 	}
 	return nil
 }

@@ -9,16 +9,18 @@ import (
 	"github.com/qdm12/golibs/files"
 )
 
-func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) error {
+func (c *configurator) MakeConf(logLevel models.TinyProxyLogLevel,
+	port uint16, user, password string, uid, gid int) error {
 	c.logger.Info("generating tinyproxy configuration file")
 	lines := generateConf(logLevel, port, user, password, uid, gid)
 	return c.fileManager.WriteLinesToFile(string(constants.TinyProxyConf),
 		lines,
 		files.Ownership(uid, gid),
-		files.Permissions(0400))
+		files.Permissions(constants.UserReadPermission))
 }
 
-func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) (lines []string) {
+func generateConf(logLevel models.TinyProxyLogLevel, port uint16, user, password string, uid, gid int) (
+	lines []string) {
 	confMapping := map[string]string{
 		"User":                fmt.Sprintf("%d", uid),
 		"Group":               fmt.Sprintf("%d", gid),

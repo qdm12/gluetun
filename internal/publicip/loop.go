@@ -72,10 +72,16 @@ func (l *looper) SetPeriod(period time.Duration) {
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	l.logger.Info("retrying in 5 seconds")
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel() // just for the linter
-	<-ctx.Done()
+	const waitTime = 5 * time.Second
+	l.logger.Info("retrying in %s", waitTime)
+	timer := time.NewTimer(waitTime)
+	select {
+	case <-timer.C:
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
+	}
 }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
@@ -110,11 +116,12 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			continue
 		}
 		l.logger.Info("Public IP address is %s", ip)
+		const userReadWritePermissions = 0600
 		err = l.fileManager.WriteLinesToFile(
 			string(l.ipStatusFilepath),
 			[]string{ip.String()},
 			files.Ownership(l.uid, l.gid),
-			files.Permissions(0600))
+			files.Permissions(userReadWritePermissions))
 		if err != nil {
 			l.logAndWait(ctx, err)
 			continue

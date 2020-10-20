@@ -131,7 +131,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			settings.Auth,
 			settings.Provider.ExtraConfigOptions,
 		)
-		if err := l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines, files.Ownership(l.uid, l.gid), files.Permissions(0400)); err != nil {
+		if err := l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines,
+			files.Ownership(l.uid, l.gid), files.Permissions(constants.UserReadPermission)); err != nil {
 			l.logger.Error(err)
 			l.cancel()
 			return
@@ -200,14 +201,20 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	l.logger.Info("retrying in 30 seconds")
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel() // just for the linter
-	<-ctx.Done()
+	const waitTime = 30 * time.Second
+	l.logger.Info("retrying in %s", waitTime)
+	timer := time.NewTimer(waitTime)
+	select {
+	case <-timer.C:
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
+	}
 }
 
 // portForward is a blocking operation which may or may not be infinite.
-// You should therefore always call it in a goroutine
+// You should therefore always call it in a goroutine.
 func (l *looper) portForward(ctx context.Context, wg *sync.WaitGroup,
 	providerConf provider.Provider, client *http.Client, gateway net.IP) {
 	defer wg.Done()

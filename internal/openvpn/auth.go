@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/golibs/files"
 )
 
-// WriteAuthFile writes the OpenVPN auth file to disk with the right permissions
+// WriteAuthFile writes the OpenVPN auth file to disk with the right permissions.
 func (c *configurator) WriteAuthFile(user, password string, uid, gid int) error {
 	exists, err := c.fileManager.FileExists(string(constants.OpenVPNAuthConf))
 	if err != nil {
@@ -27,5 +27,5 @@ func (c *configurator) WriteAuthFile(user, password string, uid, gid int) error 
 		string(constants.OpenVPNAuthConf),
 		[]string{user, password},
 		files.Ownership(uid, gid),
-		files.Permissions(0400))
+		files.Permissions(constants.UserReadPermission))
 }

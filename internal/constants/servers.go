@@ -3,6 +3,7 @@ package constants
 import "github.com/qdm12/gluetun/internal/models"
 
 func GetAllServers() (allServers models.AllServers) {
+	//nolint:gomnd
 	return models.AllServers{
 		Version: 1, // used for migration of the top level scheme
 		Cyberghost: models.CyberghostServers{

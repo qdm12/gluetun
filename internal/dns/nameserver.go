@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-// UseDNSInternally is to change the Go program DNS only
+// UseDNSInternally is to change the Go program DNS only.
 func (c *configurator) UseDNSInternally(ip net.IP) {
 	c.logger.Info("using DNS address %s internally", ip.String())
 	net.DefaultResolver = &net.Resolver{
@@ -20,7 +20,7 @@ func (c *configurator) UseDNSInternally(ip net.IP) {
 	}
 }
 
-// UseDNSSystemWide changes the nameserver to use for DNS system wide
+// UseDNSSystemWide changes the nameserver to use for DNS system wide.
 func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	c.logger.Info("using DNS address %s system wide", ip.String())
 	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))

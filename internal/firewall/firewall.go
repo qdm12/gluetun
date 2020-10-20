@@ -12,7 +12,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-// Configurator allows to change firewall rules and modify network routes
+// Configurator allows to change firewall rules and modify network routes.
 type Configurator interface {
 	Version(ctx context.Context) (string, error)
 	SetEnabled(ctx context.Context, enabled bool) (err error)
@@ -45,7 +45,7 @@ type configurator struct { //nolint:maligned
 	stateMutex        sync.Mutex
 }
 
-// NewConfigurator creates a new Configurator instance
+// NewConfigurator creates a new Configurator instance.
 func NewConfigurator(logger logging.Logger, routing routing.Routing, fileManager files.FileManager) Configurator {
 	return &configurator{
 		commander:         command.NewCommander(),

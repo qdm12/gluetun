@@ -14,7 +14,7 @@ const (
 	disabled = "disabled"
 )
 
-// Settings contains all settings for the program to run
+// Settings contains all settings for the program to run.
 type Settings struct {
 	VPNSP              models.VPNProvider
 	OpenVPN            OpenVPN

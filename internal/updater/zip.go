@@ -9,13 +9,12 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/qdm12/golibs/network"
 )
 
-func fetchAndExtractFiles(ctx context.Context, urls ...string) (contents map[string][]byte, err error) {
-	client := network.NewClient(10 * time.Second)
+func fetchAndExtractFiles(ctx context.Context, client network.Client, urls ...string) (
+	contents map[string][]byte, err error) {
 	contents = make(map[string][]byte)
 	for _, url := range urls {
 		zipBytes, status, err := client.Get(ctx, url)

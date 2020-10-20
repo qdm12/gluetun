@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+//nolint:lll
 func Test_parseRoutingEntry(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {

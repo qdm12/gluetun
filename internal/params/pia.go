@@ -10,7 +10,7 @@ import (
 
 // GetPortForwarding obtains if port forwarding on the VPN provider server
 // side is enabled or not from the environment variable PORT_FORWARDING
-// Only valid for older PIA servers for now
+// Only valid for older PIA servers for now.
 func (r *reader) GetPortForwarding() (activated bool, err error) {
 	s, err := r.envParams.GetEnv("PORT_FORWARDING", libparams.Default("off"))
 	if err != nil {
@@ -26,15 +26,18 @@ func (r *reader) GetPortForwarding() (activated bool, err error) {
 }
 
 // GetPortForwardingStatusFilepath obtains the port forwarding status file path
-// from the environment variable PORT_FORWARDING_STATUS_FILE
+// from the environment variable PORT_FORWARDING_STATUS_FILE.
 func (r *reader) GetPortForwardingStatusFilepath() (filepath models.Filepath, err error) {
-	filepathStr, err := r.envParams.GetPath("PORT_FORWARDING_STATUS_FILE", libparams.Default("/tmp/gluetun/forwarded_port"), libparams.CaseSensitiveValue())
+	filepathStr, err := r.envParams.GetPath(
+		"PORT_FORWARDING_STATUS_FILE",
+		libparams.Default("/tmp/gluetun/forwarded_port"),
+		libparams.CaseSensitiveValue())
 	return models.Filepath(filepathStr), err
 }
 
 // GetPIAEncryptionPreset obtains the encryption level for the PIA connection
 // from the environment variable PIA_ENCRYPTION, and using ENCRYPTION for
-// retro compatibility
+// retro compatibility.
 func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 	// Retro-compatibility
 	s, err := r.envParams.GetValueIfInside("ENCRYPTION", []string{
@@ -57,14 +60,14 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 }
 
 // GetPIARegions obtains the regions for the PIA servers from the
-// environment variable REGION
+// environment variable REGION.
 func (r *reader) GetPIARegions() (regions []string, err error) {
 	choices := append(constants.PIAGeoChoices(), "")
 	return r.envParams.GetCSVInPossibilities("REGION", choices)
 }
 
 // GetPIAOldRegions obtains the regions for the PIA servers from the
-// environment variable REGION
+// environment variable REGION.
 func (r *reader) GetPIAOldRegions() (regions []string, err error) {
 	choices := append(constants.PIAOldGeoChoices(), "")
 	return r.envParams.GetCSVInPossibilities("REGION", choices)

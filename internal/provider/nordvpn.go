@@ -26,7 +26,8 @@ func newNordvpn(servers []models.NordvpnServer, timeNow timeNowFunc) *nordvpn {
 	}
 }
 
-func (n *nordvpn) filterServers(regions []string, protocol models.NetworkProtocol, numbers []uint16) (servers []models.NordvpnServer) {
+func (n *nordvpn) filterServers(regions []string, protocol models.NetworkProtocol, numbers []uint16) (
+	servers []models.NordvpnServer) {
 	numbersStr := make([]string, len(numbers))
 	for i := range numbers {
 		numbersStr[i] = fmt.Sprintf("%d", numbers[i])
@@ -46,7 +47,8 @@ func (n *nordvpn) filterServers(regions []string, protocol models.NetworkProtoco
 	return servers
 }
 
-func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) { //nolint:dupl
+func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {
 	case selection.Protocol == constants.UDP:
@@ -63,18 +65,21 @@ func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (connec
 
 	servers := n.filterServers(selection.Regions, selection.Protocol, selection.Numbers)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %s, protocol %s and numbers %v", commaJoin(selection.Regions), selection.Protocol, selection.Numbers)
+		return connection, fmt.Errorf("no server found for region %s, protocol %s and numbers %v",
+			commaJoin(selection.Regions), selection.Protocol, selection.Numbers)
 	}
 
 	connections := make([]models.OpenVPNConnection, len(servers))
 	for i := range servers {
-		connections = append(connections, models.OpenVPNConnection{IP: servers[i].IP, Port: port, Protocol: selection.Protocol})
+		connection := models.OpenVPNConnection{IP: servers[i].IP, Port: port, Protocol: selection.Protocol}
+		connections = append(connections, connection)
 	}
 
 	return pickRandomConnection(connections, n.randSource), nil
 }
 
-func (n *nordvpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) { //nolint:dupl
+func (n *nordvpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}

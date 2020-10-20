@@ -7,7 +7,7 @@ import (
 )
 
 // GetPublicIPPeriod obtains the period to fetch the IP address periodically.
-// Set to 0 to disable
+// Set to 0 to disable.
 func (r *reader) GetPublicIPPeriod() (period time.Duration, err error) {
 	s, err := r.envParams.GetEnv("PUBLICIP_PERIOD", libparams.Default("12h"))
 	if err != nil {

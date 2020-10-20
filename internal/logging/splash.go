@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-// Splash returns the welcome spash message
+// Splash returns the welcome spash message.
 func Splash(version, commit, buildDate string) string {
 	lines := title()
 	lines = append(lines, "")
