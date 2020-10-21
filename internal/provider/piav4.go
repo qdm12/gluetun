@@ -268,23 +268,24 @@ func newPIAv4HTTPClient() (client *http.Client, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
 	}
-	rootCAs := x509.NewCertPool()
-	rootCAs.AddCert(certificate)
+	defaultHTTPTransport := http.DefaultTransport.(*http.Transport)
+	transport := defaultHTTPTransport.Clone()
+	transport.TLSClientConfig = defaultHTTPTransport.TLSClientConfig.Clone()
+	if transport.TLSClientConfig.RootCAs == nil {
+		transport.TLSClientConfig.RootCAs = x509.NewCertPool()
+	}
+	transport.TLSClientConfig.RootCAs.AddCert(certificate)
 	const (
 		dialerTimeout   = 10 * time.Second
 		dialerKeepAlive = 10 * time.Second
 	)
 	dialer := &net.Dialer{Timeout: dialerTimeout, KeepAlive: dialerKeepAlive}
-	defaultHTTPTransport := http.DefaultTransport.(*http.Transport)
-	transport := defaultHTTPTransport.Clone()
 	transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
 		if value := ctx.Value(ipKey); value != nil {
 			addr = value.(string)
 		}
 		return dialer.DialContext(ctx, network, addr)
 	}
-	transport.TLSClientConfig = defaultHTTPTransport.TLSClientConfig.Clone()
-	transport.TLSClientConfig.RootCAs.AddCert(certificate)
 	return &http.Client{
 		Transport: transport,
 		Timeout:   dialerTimeout,
