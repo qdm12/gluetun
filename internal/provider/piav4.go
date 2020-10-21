@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"crypto/tls"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
@@ -21,7 +20,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 type piaV4 struct {
@@ -127,11 +125,11 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 		pfLogger.Error("aborting because: VPN gateway IP address was not found")
 		return
 	}
-	commonName := p.activeServer.OpenvpnUDP.CN
+	serverName := p.activeServer.OpenvpnUDP.CN
 	if p.activeProtocol == constants.TCP {
-		commonName = p.activeServer.OpenvpnTCP.CN
+		serverName = p.activeServer.OpenvpnTCP.CN
 	}
-	client, err := newPIAv4HTTPClient(commonName)
+	client, err := newPIAv4HTTPClient()
 	if err != nil {
 		pfLogger.Error("aborting because: %s", err)
 		return
@@ -156,7 +154,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 
 	if !dataFound || expired {
 		tryUntilSuccessful(ctx, pfLogger, func() error {
-			data, err = refreshPIAPortForwardData(ctx, client, gateway, fileManager)
+			data, err = refreshPIAPortForwardData(ctx, client, gateway, serverName, fileManager)
 			return err
 		})
 		if ctx.Err() != nil {
@@ -168,7 +166,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 
 	// First time binding
 	tryUntilSuccessful(ctx, pfLogger, func() error {
-		return bindPIAPort(ctx, client, gateway, data)
+		return bindPIAPort(ctx, client, gateway, serverName, data)
 	})
 	if ctx.Err() != nil {
 		return
@@ -207,7 +205,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			}
 			return
 		case <-keepAliveTimer.C:
-			if err := bindPIAPort(ctx, client, gateway, data); err != nil {
+			if err := bindPIAPort(ctx, client, gateway, serverName, data); err != nil {
 				pfLogger.Error(err)
 			}
 			keepAliveTimer.Reset(keepAlivePeriod)
@@ -215,7 +213,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration.Format(time.RFC1123))
 			oldPort := data.Port
 			for {
-				data, err = refreshPIAPortForwardData(ctx, client, gateway, fileManager)
+				data, err = refreshPIAPortForwardData(ctx, client, gateway, serverName, fileManager)
 				if err != nil {
 					pfLogger.Error(err)
 					continue
@@ -238,7 +236,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 			); err != nil {
 				pfLogger.Error(err)
 			}
-			if err := bindPIAPort(ctx, client, gateway, data); err != nil {
+			if err := bindPIAPort(ctx, client, gateway, serverName, data); err != nil {
 				pfLogger.Error(err)
 			}
 			if !keepAliveTimer.Stop() {
@@ -261,7 +259,7 @@ func filterPIAServers(servers []models.PIAServer, regions []string) (filtered []
 	return filtered
 }
 
-func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
+func newPIAv4HTTPClient() (client *http.Client, err error) {
 	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
 	if err != nil {
 		return nil, fmt.Errorf("cannot decode PIA root certificate: %w", err)
@@ -270,41 +268,36 @@ func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
 	}
-	// certificate.DNSNames = []string{serverName, "10.0.0.1"}
 	rootCAs := x509.NewCertPool()
 	rootCAs.AddCert(certificate)
-	TLSClientConfig := &tls.Config{
-		RootCAs:    rootCAs,
-		MinVersion: tls.VersionTLS12,
-		ServerName: serverName,
+	const (
+		dialerTimeout   = 10 * time.Second
+		dialerKeepAlive = 10 * time.Second
+	)
+	dialer := &net.Dialer{Timeout: dialerTimeout, KeepAlive: dialerKeepAlive}
+	defaultHTTPTransport := http.DefaultTransport.(*http.Transport)
+	transport := defaultHTTPTransport.Clone()
+	transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+		if value := ctx.Value(ipKey); value != nil {
+			addr = value.(string)
+		}
+		return dialer.DialContext(ctx, network, addr)
 	}
-	//nolint:gomnd
-	transport := http.Transport{
-		TLSClientConfig: TLSClientConfig,
-		Proxy:           http.ProxyFromEnvironment,
-		DialContext: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-			DualStack: true,
-		}).DialContext,
-		ForceAttemptHTTP2:     true,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	}
-	const httpTimeout = 5 * time.Second
-	client = &http.Client{Transport: &transport, Timeout: httpTimeout}
-	return client, nil
+	transport.TLSClientConfig = defaultHTTPTransport.TLSClientConfig.Clone()
+	transport.TLSClientConfig.RootCAs.AddCert(certificate)
+	return &http.Client{
+		Transport: transport,
+		Timeout:   dialerTimeout,
+	}, nil
 }
 
 func refreshPIAPortForwardData(ctx context.Context, client *http.Client,
-	gateway net.IP, fileManager files.FileManager) (data piaPortForwardData, err error) {
-	data.Token, err = fetchPIAToken(ctx, fileManager, client)
+	gateway net.IP, serverName string, fileManager files.FileManager) (data piaPortForwardData, err error) {
+	data.Token, err = fetchPIAToken(ctx, fileManager, serverName, client)
 	if err != nil {
 		return data, fmt.Errorf("cannot obtain token: %w", err)
 	}
-	data.Port, data.Signature, data.Expiration, err = fetchPIAPortForwardData(ctx, client, gateway, data.Token)
+	data.Port, data.Signature, data.Expiration, err = fetchPIAPortForwardData(ctx, client, gateway, serverName, data.Token)
 	if err != nil {
 		return data, fmt.Errorf("cannot obtain port forwarding data: %w", err)
 	}
@@ -383,7 +376,8 @@ func packPIAPayload(port uint16, token string, expiration time.Time) (payload st
 	return payload, nil
 }
 
-func fetchPIAToken(ctx context.Context, fileManager files.FileManager, client *http.Client) (token string, err error) {
+func fetchPIAToken(ctx context.Context, fileManager files.FileManager,
+	serverName string, client *http.Client) (token string, err error) {
 	username, password, err := getOpenvpnCredentials(fileManager)
 	if err != nil {
 		return "", fmt.Errorf("cannot get Openvpn credentials: %w", err)
@@ -391,9 +385,10 @@ func fetchPIAToken(ctx context.Context, fileManager files.FileManager, client *h
 	url := url.URL{
 		Scheme: "https",
 		User:   url.UserPassword(username, password),
-		Host:   "10.0.0.1",
+		Host:   serverName,
 		Path:   "/authv3/generateToken",
 	}
+	ctx = context.WithValue(ctx, ipKey, "10.0.0.1")
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return "", err
@@ -437,17 +432,23 @@ func getOpenvpnCredentials(fileManager files.FileManager) (username, password st
 	return username, password, nil
 }
 
-func fetchPIAPortForwardData(ctx context.Context, client *http.Client, gateway net.IP, token string) (
+func fetchPIAPortForwardData(ctx context.Context, client *http.Client,
+	gateway net.IP, serverName, token string) (
 	port uint16, signature string, expiration time.Time, err error) {
 	queryParams := url.Values{}
 	queryParams.Add("token", token)
 	url := url.URL{
 		Scheme:   "https",
-		Host:     net.JoinHostPort(gateway.String(), "19999"),
+		Host:     net.JoinHostPort(serverName, "19999"),
 		Path:     "/getSignature",
 		RawQuery: queryParams.Encode(),
 	}
-	response, err := ctxhttp.Get(ctx, client, url.String())
+	ctx = context.WithValue(ctx, ipKey, gateway.String())
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return 0, "", expiration, err
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %w", err)
 	}
@@ -474,7 +475,8 @@ func fetchPIAPortForwardData(ctx context.Context, client *http.Client, gateway n
 	return port, data.Signature, expiration, err
 }
 
-func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data piaPortForwardData) (err error) {
+func bindPIAPort(ctx context.Context, client *http.Client,
+	gateway net.IP, serverName string, data piaPortForwardData) (err error) {
 	payload, err := packPIAPayload(data.Port, data.Token, data.Expiration)
 	if err != nil {
 		return err
@@ -484,12 +486,17 @@ func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data 
 	queryParams.Add("signature", data.Signature)
 	url := url.URL{
 		Scheme:   "https",
-		Host:     net.JoinHostPort(gateway.String(), "19999"),
+		Host:     net.JoinHostPort(serverName, "19999"),
 		Path:     "/bindPort",
 		RawQuery: queryParams.Encode(),
 	}
+	ctx = context.WithValue(ctx, ipKey, gateway.String())
 
-	response, err := ctxhttp.Get(ctx, client, url.String())
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return fmt.Errorf("cannot bind port: %w", err)
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		return fmt.Errorf("cannot bind port: %w", err)
 	}
