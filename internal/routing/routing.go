@@ -5,7 +5,6 @@ import (
 	"net"
 
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -14,24 +13,22 @@ type Routing interface {
 	DeleteRouteVia(ctx context.Context, subnet net.IPNet) (err error)
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
 	LocalSubnet() (defaultSubnet net.IPNet, err error)
-	VPNDestinationIP(defaultInterface string) (ip net.IP, err error)
+	VPNDestinationIP() (ip net.IP, err error)
 	VPNLocalGatewayIP() (ip net.IP, err error)
 	SetDebug()
 }
 
 type routing struct {
-	commander   command.Commander
-	logger      logging.Logger
-	fileManager files.FileManager
-	debug       bool
+	commander command.Commander
+	logger    logging.Logger
+	debug     bool
 }
 
 // NewConfigurator creates a new Configurator instance.
-func NewRouting(logger logging.Logger, fileManager files.FileManager) Routing {
+func NewRouting(logger logging.Logger) Routing {
 	return &routing{
-		commander:   command.NewCommander(),
-		logger:      logger.WithPrefix("routing: "),
-		fileManager: fileManager,
+		commander: command.NewCommander(),
+		logger:    logger.WithPrefix("routing: "),
 	}
 }
 

@@ -364,7 +364,6 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger,
 	})
 }
 
-//nolint:gocognit
 func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dnsReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
 	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
@@ -388,16 +387,11 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			tickerWg.Add(2) //nolint:gomnd
 			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
-			defaultInterface, _, err := routing.DefaultRoute()
+			vpnDestination, err := routing.VPNDestinationIP()
 			if err != nil {
 				logger.Warn(err)
 			} else {
-				vpnDestination, err := routing.VPNDestinationIP(defaultInterface)
-				if err != nil {
-					logger.Warn(err)
-				} else {
-					logger.Info("VPN routing IP address: %s", vpnDestination)
-				}
+				logger.Info("VPN routing IP address: %s", vpnDestination)
 			}
 			if portForwardingEnabled {
 				// TODO make instantaneous once v3 go out of service
