@@ -5,8 +5,8 @@ services:
     image: qmcgaw/godevcontainer
     volumes:
       - ../:/workspace
-      - ~/.ssh:/home/vscode/.ssh:ro
-      - ~/.ssh:/root/.ssh:ro
+      - ~/.ssh:/home/vscode/.ssh
+      - ~/.ssh:/root/.ssh
       - /var/run/docker.sock:/var/run/docker.sock
     cap_add:
       - SYS_PTRACE
