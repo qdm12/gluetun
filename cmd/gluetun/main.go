@@ -81,7 +81,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	alpineConf := alpine.NewConfigurator(fileManager)
 	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
-	routingConf := routing.NewRouting(logger, fileManager)
+	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, fileManager)
 	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()

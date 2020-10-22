@@ -60,19 +60,6 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	return defaultSubnet, fmt.Errorf("cannot find default subnet in %d routes", len(routes))
 }
 
-func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
-	if err != nil {
-		return false, fmt.Errorf("cannot list routes: %w", err)
-	}
-	for _, route := range routes {
-		if route.Dst != nil && route.Dst.String() == subnet.String() {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
 func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
