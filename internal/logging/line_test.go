@@ -104,6 +104,10 @@ func Test_PostProcessLine(t *testing.T) {
 			"openvpn: Initialization Sequence Completed",
 			"openvpn: Initialization Sequence Completed",
 			logging.InfoLevel},
+		"openvpn auth failed": {
+			"openvpn: AUTH: Received control message: AUTH_FAILED",
+			"openvpn: AUTH: Received control message: AUTH_FAILED\n\n  (IF YOU ARE USING PIA V4 servers, MAYBE CHECK OUT https://github.com/qdm12/gluetun/issues/265)\n", //nolint:lll
+			logging.ErrorLevel},
 	}
 	for name, tc := range tests {
 		tc := tc
