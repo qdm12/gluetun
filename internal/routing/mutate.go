@@ -1,48 +1,45 @@
 package routing
 
 import (
-	"context"
 	"fmt"
 	"net"
+
+	"github.com/vishvananda/netlink"
 )
 
-func (r *routing) AddRouteVia(ctx context.Context,
-	subnet net.IPNet, defaultGateway net.IP, defaultInterface string) error {
-	subnetStr := subnet.String()
-	r.logger.Info("adding %s as route via %s %s", subnetStr, defaultGateway, defaultInterface)
-	exists, err := r.routeExists(subnet)
-	if err != nil {
-		return err
-	} else if exists {
-		return nil
-	}
+func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface string) error {
+	destinationStr := destination.String()
+	r.logger.Info("adding route for %s", destinationStr)
 	if r.debug {
-		fmt.Printf("ip route add %s via %s dev %s\n", subnetStr, defaultGateway, defaultInterface)
+		fmt.Printf("ip route add %s via %s dev %s\n", destinationStr, gateway, iface)
 	}
-	output, err := r.commander.Run(ctx,
-		"ip", "route", "add", subnetStr, "via", defaultGateway.String(), "dev", defaultInterface)
+
+	link, err := netlink.LinkByName(iface)
 	if err != nil {
-		return fmt.Errorf("cannot add route for %s via %s %s %s: %s: %w",
-			subnetStr, defaultGateway, "dev", defaultInterface, output, err)
+		return fmt.Errorf("cannot add route for %s: %w", destinationStr, err)
+	}
+	route := netlink.Route{
+		Dst:       &destination,
+		Gw:        gateway,
+		LinkIndex: link.Attrs().Index,
+	}
+	if err := netlink.RouteReplace(&route); err != nil {
+		return fmt.Errorf("cannot add route for %s: %w", destinationStr, err)
 	}
 	return nil
 }
 
-func (r *routing) DeleteRouteVia(ctx context.Context, subnet net.IPNet) (err error) {
-	subnetStr := subnet.String()
-	r.logger.Info("deleting route for %s", subnetStr)
-	exists, err := r.routeExists(subnet)
-	if err != nil {
-		return err
-	} else if !exists { // thanks to @npawelek https://github.com/npawelek
-		return nil
-	}
+func (r *routing) DeleteRouteVia(destination net.IPNet) (err error) {
+	destinationStr := destination.String()
+	r.logger.Info("deleting route for %s", destinationStr)
 	if r.debug {
-		fmt.Printf("ip route del %s\n", subnetStr)
+		fmt.Printf("ip route del %s\n", destinationStr)
 	}
-	output, err := r.commander.Run(ctx, "ip", "route", "del", subnetStr)
-	if err != nil {
-		return fmt.Errorf("cannot delete route for %s: %s: %w", subnetStr, output, err)
+	route := netlink.Route{
+		Dst: &destination,
+	}
+	if err := netlink.RouteDel(&route); err != nil {
+		return fmt.Errorf("cannot delete route for %s: %w", destinationStr, err)
 	}
 	return nil
 }

@@ -4,120 +4,105 @@ import (
 	"bytes"
 	"fmt"
 	"net"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/files"
+	"github.com/vishvananda/netlink"
 )
 
-func parseRoutingTable(data []byte) (entries []routingEntry, err error) {
-	lines := strings.Split(strings.TrimSuffix(string(data), "\n"), "\n")
-	lines = lines[1:]
-	entries = make([]routingEntry, len(lines))
-	for i := range lines {
-		entries[i], err = parseRoutingEntry(lines[i])
-		if err != nil {
-			return nil, fmt.Errorf("line %d in %s: %w", i+1, constants.NetRoute, err)
-		}
-	}
-	return entries, nil
-}
-
-func getRoutingEntries(fileManager files.FileManager) (entries []routingEntry, err error) {
-	data, err := fileManager.ReadFile(string(constants.NetRoute))
-	if err != nil {
-		return nil, err
-	}
-	return parseRoutingTable(data)
-}
-
 func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
-	entries, err := getRoutingEntries(r.fileManager)
+	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return "", nil, err
+		return "", nil, fmt.Errorf("cannot list routes: %w", err)
 	}
-	const minEntries = 2
-	if len(entries) < minEntries {
-		return "", nil, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
-	}
-	var defaultRouteEntry routingEntry
-	for _, entry := range entries {
-		if entry.mask.String() == "00000000" {
-			defaultRouteEntry = entry
-			break
+	for _, route := range routes {
+		if route.Dst == nil {
+			defaultGateway = route.Gw
+			linkIndex := route.LinkIndex
+			link, err := netlink.LinkByIndex(linkIndex)
+			if err != nil {
+				return "", nil, fmt.Errorf("cannot obtain link with index %d for default route: %w", linkIndex, err)
+			}
+			attributes := link.Attrs()
+			defaultInterface = attributes.Name
+			r.logger.Info("default route found: interface %s, gateway %s", defaultInterface, defaultGateway.String())
+			return defaultInterface, defaultGateway, nil
 		}
 	}
-	if defaultRouteEntry.iface == "" {
-		return "", nil, fmt.Errorf("cannot find default route")
-	}
-	defaultInterface = defaultRouteEntry.iface
-	defaultGateway = defaultRouteEntry.gateway
-	r.logger.Info("default route found: interface %s, gateway %s", defaultInterface, defaultGateway.String())
-	return defaultInterface, defaultGateway, nil
+	return "", nil, fmt.Errorf("cannot find default route in %d routes", len(routes))
 }
 
 func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
-	entries, err := getRoutingEntries(r.fileManager)
+	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return defaultSubnet, err
+		return defaultSubnet, fmt.Errorf("cannot find local subnet: %w", err)
 	}
-	const minEntries = 2
-	if len(entries) < minEntries {
-		return defaultSubnet, fmt.Errorf("not enough entries (%d) found in %s", len(entries), constants.NetRoute)
-	}
-	var localSubnetEntry routingEntry
-	for _, entry := range entries {
-		if entry.gateway.Equal(net.IP{0, 0, 0, 0}) && !strings.HasPrefix(entry.iface, "tun") {
-			localSubnetEntry = entry
+
+	defaultLinkIndex := -1
+	for _, route := range routes {
+		if route.Dst == nil {
+			defaultLinkIndex = route.LinkIndex
 			break
 		}
 	}
-	if localSubnetEntry.iface == "" {
-		return defaultSubnet, fmt.Errorf("cannot find local subnet route")
+	if defaultLinkIndex == -1 {
+		return defaultSubnet, fmt.Errorf("cannot find local subnet: cannot find default link")
 	}
-	defaultSubnet = net.IPNet{IP: localSubnetEntry.destination, Mask: localSubnetEntry.mask}
-	r.logger.Info("local subnet found: %s", defaultSubnet.String())
-	return defaultSubnet, nil
+
+	for _, route := range routes {
+		if route.Gw != nil || route.LinkIndex != defaultLinkIndex {
+			continue
+		}
+		defaultSubnet = *route.Dst
+		r.logger.Info("local subnet found: %s", defaultSubnet.String())
+		return defaultSubnet, nil
+	}
+
+	return defaultSubnet, fmt.Errorf("cannot find default subnet in %d routes", len(routes))
 }
 
-func (r *routing) routeExists(subnet net.IPNet) (exists bool, err error) {
-	entries, err := getRoutingEntries(r.fileManager)
+func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
+	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return false, fmt.Errorf("cannot check route existence: %w", err)
+		return nil, fmt.Errorf("cannot find VPN destination IP: %w", err)
 	}
-	for _, entry := range entries {
-		entrySubnet := net.IPNet{IP: entry.destination, Mask: entry.mask}
-		if entrySubnet.String() == subnet.String() {
-			return true, nil
-		}
-	}
-	return false, nil
-}
 
-func (r *routing) VPNDestinationIP(defaultInterface string) (ip net.IP, err error) {
-	entries, err := getRoutingEntries(r.fileManager)
-	if err != nil {
-		return nil, fmt.Errorf("cannot find VPN gateway IP address: %w", err)
-	}
-	for _, entry := range entries {
-		if entry.iface == defaultInterface &&
-			!ipIsPrivate(entry.destination) &&
-			bytes.Equal(entry.mask, net.IPMask{255, 255, 255, 255}) {
-			return entry.destination, nil
+	defaultLinkIndex := -1
+	for _, route := range routes {
+		if route.Dst == nil {
+			defaultLinkIndex = route.LinkIndex
+			break
 		}
 	}
-	return nil, fmt.Errorf("cannot find VPN gateway IP address from ip routes")
+	if defaultLinkIndex == -1 {
+		return nil, fmt.Errorf("cannot find VPN destination IP: cannot find default link")
+	}
+
+	for _, route := range routes {
+		if route.LinkIndex == defaultLinkIndex &&
+			route.Dst != nil &&
+			!ipIsPrivate(route.Dst.IP) &&
+			bytes.Equal(route.Dst.Mask, net.IPMask{255, 255, 255, 255}) {
+			return route.Dst.IP, nil
+		}
+	}
+	return nil, fmt.Errorf("cannot find VPN destination IP address from ip routes")
 }
 
 func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {
-	entries, err := getRoutingEntries(r.fileManager)
+	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("cannot find VPN local gateway IP address: %w", err)
+		return nil, fmt.Errorf("cannot find VPN local gateway IP: %w", err)
 	}
-	for _, entry := range entries {
-		if entry.iface == string(constants.TUN) &&
-			entry.destination.Equal(net.IP{0, 0, 0, 0}) {
-			return entry.gateway, nil
+	for _, route := range routes {
+		link, err := netlink.LinkByIndex(route.LinkIndex)
+		if err != nil {
+			return nil, fmt.Errorf("cannot find VPN local gateway IP: %w", err)
+		}
+		interfaceName := link.Attrs().Name
+		if interfaceName == string(constants.TUN) &&
+			route.Dst != nil &&
+			route.Dst.IP.Equal(net.IP{0, 0, 0, 0}) {
+			return route.Gw, nil
 		}
 	}
 	return nil, fmt.Errorf("cannot find VPN local gateway IP address from ip routes")
