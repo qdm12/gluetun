@@ -389,7 +389,7 @@ func fetchPIAToken(ctx context.Context, fileManager files.FileManager,
 		Host:   serverName,
 		Path:   "/authv3/generateToken",
 	}
-	ctx = context.WithValue(ctx, ipKey, "10.0.0.1")
+	ctx = context.WithValue(ctx, ipKey, "10.0.0.1:443")
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return "", err
@@ -444,7 +444,8 @@ func fetchPIAPortForwardData(ctx context.Context, client *http.Client,
 		Path:     "/getSignature",
 		RawQuery: queryParams.Encode(),
 	}
-	ctx = context.WithValue(ctx, ipKey, gateway.String())
+	ipValue := net.JoinHostPort(gateway.String(), "19999")
+	ctx = context.WithValue(ctx, ipKey, ipValue)
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		return 0, "", expiration, err
@@ -491,7 +492,8 @@ func bindPIAPort(ctx context.Context, client *http.Client,
 		Path:     "/bindPort",
 		RawQuery: queryParams.Encode(),
 	}
-	ctx = context.WithValue(ctx, ipKey, gateway.String())
+	ipValue := net.JoinHostPort(gateway.String(), "19999")
+	ctx = context.WithValue(ctx, ipKey, ipValue)
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
