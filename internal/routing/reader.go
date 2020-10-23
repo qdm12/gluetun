@@ -60,6 +60,26 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	return defaultSubnet, fmt.Errorf("cannot find default subnet in %d routes", len(routes))
 }
 
+func (r *routing) AssignedIP(interfaceName string) (ip net.IP, err error) {
+	iface, err := net.InterfaceByName(interfaceName)
+	if err != nil {
+		return nil, err
+	}
+	addresses, err := iface.Addrs()
+	if err != nil {
+		return nil, err
+	}
+	for _, address := range addresses {
+		switch value := address.(type) {
+		case *net.IPAddr:
+			return value.IP, nil
+		case *net.IPNet:
+			return value.IP, nil
+		}
+	}
+	return nil, fmt.Errorf("IP address not found in addresses of interface %s", interfaceName)
+}
+
 func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
