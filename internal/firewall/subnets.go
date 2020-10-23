@@ -116,7 +116,7 @@ func (c *configurator) addSubnets(ctx context.Context, subnets []net.IPNet, defa
 		if err := c.acceptOutputFromSubnetToSubnet(ctx, defaultInterface, localSubnet, subnet, remove); err != nil {
 			return fmt.Errorf("cannot add allowed subnet through firewall: %w", err)
 		}
-		if err := c.routing.AddRouteVia(subnet, defaultGateway, defaultInterface); err != nil {
+		if err := c.routing.AddRouteVia(subnet, defaultGateway, defaultInterface, 0); err != nil {
 			return fmt.Errorf("cannot add route for allowed subnet: %w", err)
 		}
 		c.allowedSubnets = append(c.allowedSubnets, subnet)
@@ -137,7 +137,7 @@ func (c *configurator) updateSubnetRoutes(oldSubnets, newSubnets []net.IPNet) {
 		}
 	}
 	for _, subnet := range subnetsToAdd {
-		if err := c.routing.AddRouteVia(subnet, c.defaultGateway, c.defaultInterface); err != nil {
+		if err := c.routing.AddRouteVia(subnet, c.defaultGateway, c.defaultInterface, 0); err != nil {
 			c.logger.Error("cannot add route for subnet: %s", err)
 		}
 	}

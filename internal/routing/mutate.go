@@ -7,7 +7,7 @@ import (
 	"github.com/vishvananda/netlink"
 )
 
-func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface string) error {
+func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
 	destinationStr := destination.String()
 	r.logger.Info("adding route for %s", destinationStr)
 	if r.debug {
@@ -22,6 +22,7 @@ func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface strin
 		Dst:       &destination,
 		Gw:        gateway,
 		LinkIndex: link.Attrs().Index,
+		Table:     table,
 	}
 	if err := netlink.RouteReplace(&route); err != nil {
 		return fmt.Errorf("cannot add route for %s: %w", destinationStr, err)

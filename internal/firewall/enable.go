@@ -109,7 +109,7 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 	}
 	// Re-ensure all routes exist
 	for _, subnet := range c.allowedSubnets {
-		if err := c.routing.AddRouteVia(subnet, c.defaultGateway, c.defaultInterface); err != nil {
+		if err := c.routing.AddRouteVia(subnet, c.defaultGateway, c.defaultInterface, 0); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}
