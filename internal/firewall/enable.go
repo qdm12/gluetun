@@ -99,20 +99,6 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 	if err := c.acceptOutputFromSubnetToSubnet(ctx, "*", c.localSubnet, c.localSubnet, remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	for _, subnet := range c.allowedSubnets {
-		if err := c.acceptInputFromSubnetToSubnet(ctx, c.defaultInterface, subnet, c.localSubnet, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-		if err := c.acceptOutputFromSubnetToSubnet(ctx, c.defaultInterface, c.localSubnet, subnet, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-	}
-	// Re-ensure all routes exist
-	for _, subnet := range c.allowedSubnets {
-		if err := c.routing.AddRouteVia(subnet, c.defaultGateway, c.defaultInterface, 0); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err)
-		}
-	}
 
 	for port, intf := range c.allowedInputPorts {
 		if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {

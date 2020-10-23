@@ -173,12 +173,6 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		}
 	}
 
-	err = firewallConf.SetAllowedSubnets(ctx, allSettings.Firewall.AllowedSubnets)
-	if err != nil {
-		logger.Error(err)
-		return 1
-	}
-
 	for _, vpnPort := range allSettings.Firewall.VPNInputPorts {
 		err = firewallConf.SetAllowedPort(ctx, vpnPort, string(constants.TUN))
 		if err != nil {
