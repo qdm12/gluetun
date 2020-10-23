@@ -31,7 +31,7 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 	return "", nil, fmt.Errorf("cannot find default route in %d routes", len(routes))
 }
 
-func (r *routing) DefaultIP() (ip net.IP, err error) {
+func (r *routing) defaultIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get default IP address: %w", err)
@@ -52,7 +52,7 @@ func (r *routing) DefaultIP() (ip net.IP, err error) {
 		return nil, fmt.Errorf("cannot find default link name in %d routes", len(routes))
 	}
 
-	return r.AssignedIP(defaultLinkName)
+	return r.assignedIP(defaultLinkName)
 }
 
 func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
@@ -84,7 +84,7 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	return defaultSubnet, fmt.Errorf("cannot find default subnet in %d routes", len(routes))
 }
 
-func (r *routing) AssignedIP(interfaceName string) (ip net.IP, err error) {
+func (r *routing) assignedIP(interfaceName string) (ip net.IP, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
 		return nil, err

@@ -8,7 +8,7 @@ import (
 	"github.com/vishvananda/netlink"
 )
 
-func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
+func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
 	destinationStr := destination.String()
 	r.logger.Info("adding route for %s", destinationStr)
 	if r.debug {
@@ -31,7 +31,7 @@ func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface strin
 	return nil
 }
 
-func (r *routing) DeleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error) {
+func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error) {
 	destinationStr := destination.String()
 	r.logger.Info("deleting route for %s", destinationStr)
 	if r.debug {
@@ -54,7 +54,7 @@ func (r *routing) DeleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 	return nil
 }
 
-func (r *routing) AddIPRule(src net.IP, table, priority int) error {
+func (r *routing) addIPRule(src net.IP, table, priority int) error {
 	rule := netlink.NewRule()
 	rule.Src = netlink.NewIPNet(src)
 	rule.Priority = priority

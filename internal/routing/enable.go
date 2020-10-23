@@ -16,7 +16,7 @@ const (
 )
 
 func (r *routing) Setup() (err error) {
-	defaultIP, err := r.DefaultIP()
+	defaultIP, err := r.defaultIP()
 	if err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
@@ -33,17 +33,17 @@ func (r *routing) Setup() (err error) {
 			r.logger.Error(err)
 		}
 	}()
-	if err := r.AddIPRule(defaultIP, table, priority); err != nil {
+	if err := r.addIPRule(defaultIP, table, priority); err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
-	if err := r.AddRouteVia(net.IPNet{}, defaultGateway, defaultInterfaceName, table); err != nil {
+	if err := r.addRouteVia(net.IPNet{}, defaultGateway, defaultInterfaceName, table); err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
 	return nil
 }
 
 func (r *routing) TearDown() error {
-	defaultIP, err := r.DefaultIP()
+	defaultIP, err := r.defaultIP()
 	if err != nil {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}
@@ -52,7 +52,7 @@ func (r *routing) TearDown() error {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}
 
-	if err := r.DeleteRouteVia(net.IPNet{}, defaultGateway, defaultInterfaceName, table); err != nil {
+	if err := r.deleteRouteVia(net.IPNet{}, defaultGateway, defaultInterfaceName, table); err != nil {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}
 	if err := r.deleteIPRule(defaultIP, table, priority); err != nil {
