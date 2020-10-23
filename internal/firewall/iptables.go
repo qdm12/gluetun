@@ -94,6 +94,16 @@ func (c *configurator) acceptInputThroughInterface(ctx context.Context, intf str
 	))
 }
 
+func (c *configurator) acceptInputToSubnet(ctx context.Context, intf string, destination net.IPNet, remove bool) error {
+	interfaceFlag := "-i " + intf
+	if intf == "*" { // all interfaces
+		interfaceFlag = ""
+	}
+	return c.runIptablesInstruction(ctx, fmt.Sprintf(
+		"%s INPUT %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, destination.String(),
+	))
+}
+
 func (c *configurator) acceptOutputThroughInterface(ctx context.Context, intf string, remove bool) error {
 	return c.runIptablesInstruction(ctx, fmt.Sprintf(
 		"%s OUTPUT -o %s -j ACCEPT", appendOrDelete(remove), intf,
