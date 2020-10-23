@@ -7,6 +7,7 @@ import (
 )
 
 type Routing interface {
+	AddIPRule(src net.IP, table, priority int) error
 	AddRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error
 	DeleteRouteVia(destination net.IPNet) (err error)
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)

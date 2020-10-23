@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"bytes"
 	"fmt"
 	"net"
 
@@ -43,4 +44,27 @@ func (r *routing) DeleteRouteVia(destination net.IPNet) (err error) {
 		return fmt.Errorf("cannot delete route for %s: %w", destinationStr, err)
 	}
 	return nil
+}
+
+func (r *routing) AddIPRule(src net.IP, table, priority int) error {
+	rule := netlink.NewRule()
+	rule.Src = netlink.NewIPNet(src)
+	rule.Priority = 100
+	rule.Table = 200
+
+	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
+	if err != nil {
+		return fmt.Errorf("cannot add ip rule: %w", err)
+	}
+	for _, existingRule := range rules {
+		if existingRule.Src != nil &&
+			existingRule.Src.IP.Equal(rule.Src.IP) &&
+			bytes.Equal(existingRule.Src.Mask, rule.Src.Mask) &&
+			existingRule.Priority == rule.Priority &&
+			existingRule.Table == rule.Table {
+			return nil // already exists
+		}
+	}
+
+	return netlink.RuleAdd(rule)
 }
