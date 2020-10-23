@@ -76,3 +76,25 @@ func (r *routing) AddIPRule(src net.IP, table, priority int) error {
 
 	return netlink.RuleAdd(rule)
 }
+
+func (r *routing) deleteIPRule(src net.IP, table, priority int) error {
+	rule := netlink.NewRule()
+	rule.Src = netlink.NewIPNet(src)
+	rule.Priority = priority
+	rule.Table = table
+
+	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
+	if err != nil {
+		return fmt.Errorf("cannot add ip rule: %w", err)
+	}
+	for _, existingRule := range rules {
+		if existingRule.Src != nil &&
+			existingRule.Src.IP.Equal(rule.Src.IP) &&
+			bytes.Equal(existingRule.Src.Mask, rule.Src.Mask) &&
+			existingRule.Priority == rule.Priority &&
+			existingRule.Table == rule.Table {
+			return netlink.RuleDel(rule)
+		}
+	}
+	return nil
+}
