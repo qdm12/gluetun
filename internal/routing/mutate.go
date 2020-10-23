@@ -12,7 +12,7 @@ func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface strin
 	destinationStr := destination.String()
 	r.logger.Info("adding route for %s", destinationStr)
 	if r.debug {
-		fmt.Printf("ip route add %s via %s dev %s\n", destinationStr, gateway, iface)
+		fmt.Printf("ip route replace %s via %s dev %s\n", destinationStr, gateway, iface)
 	}
 
 	link, err := netlink.LinkByName(iface)
@@ -57,8 +57,8 @@ func (r *routing) DeleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 func (r *routing) AddIPRule(src net.IP, table, priority int) error {
 	rule := netlink.NewRule()
 	rule.Src = netlink.NewIPNet(src)
-	rule.Priority = 100
-	rule.Table = 200
+	rule.Priority = priority
+	rule.Table = table
 
 	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
