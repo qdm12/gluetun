@@ -7,6 +7,8 @@ import (
 )
 
 type Routing interface {
+	Setup() (err error)
+	TearDown() error
 	AddIPRule(src net.IP, table, priority int) error
 	AddRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error
 	DeleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error)
