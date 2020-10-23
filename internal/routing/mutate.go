@@ -31,14 +31,22 @@ func (r *routing) AddRouteVia(destination net.IPNet, gateway net.IP, iface strin
 	return nil
 }
 
-func (r *routing) DeleteRouteVia(destination net.IPNet) (err error) {
+func (r *routing) DeleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error) {
 	destinationStr := destination.String()
 	r.logger.Info("deleting route for %s", destinationStr)
 	if r.debug {
-		fmt.Printf("ip route del %s\n", destinationStr)
+		fmt.Printf("ip route delete %s via %s dev %s\n", destinationStr, gateway, iface)
+	}
+
+	link, err := netlink.LinkByName(iface)
+	if err != nil {
+		return fmt.Errorf("cannot delete route for %s: %w", destinationStr, err)
 	}
 	route := netlink.Route{
-		Dst: &destination,
+		Dst:       &destination,
+		Gw:        gateway,
+		LinkIndex: link.Attrs().Index,
+		Table:     table,
 	}
 	if err := netlink.RouteDel(&route); err != nil {
 		return fmt.Errorf("cannot delete route for %s: %w", destinationStr, err)
