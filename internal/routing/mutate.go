@@ -12,7 +12,7 @@ func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 	destinationStr := destination.String()
 	r.logger.Info("adding route for %s", destinationStr)
 	if r.debug {
-		fmt.Printf("ip route replace %s via %s dev %s\n", destinationStr, gateway, iface)
+		fmt.Printf("ip route replace %s via %s dev %s table %d\n", destinationStr, gateway, iface, table)
 	}
 
 	link, err := netlink.LinkByName(iface)
@@ -35,7 +35,7 @@ func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 	destinationStr := destination.String()
 	r.logger.Info("deleting route for %s", destinationStr)
 	if r.debug {
-		fmt.Printf("ip route delete %s via %s dev %s\n", destinationStr, gateway, iface)
+		fmt.Printf("ip route delete %s via %s dev %s table %d\n", destinationStr, gateway, iface, table)
 	}
 
 	link, err := netlink.LinkByName(iface)
@@ -55,6 +55,11 @@ func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 }
 
 func (r *routing) addIPRule(src net.IP, table, priority int) error {
+	if r.debug {
+		fmt.Printf("ip rule add from %s lookup %d pref %d\n",
+			src, table, priority)
+	}
+
 	rule := netlink.NewRule()
 	rule.Src = netlink.NewIPNet(src)
 	rule.Priority = priority
@@ -78,6 +83,11 @@ func (r *routing) addIPRule(src net.IP, table, priority int) error {
 }
 
 func (r *routing) deleteIPRule(src net.IP, table, priority int) error {
+	if r.debug {
+		fmt.Printf("ip rule del from %s lookup %d pref %d\n",
+			src, table, priority)
+	}
+
 	rule := netlink.NewRule()
 	rule.Src = netlink.NewIPNet(src)
 	rule.Priority = priority
