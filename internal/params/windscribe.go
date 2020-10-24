@@ -11,8 +11,7 @@ import (
 // GetWindscribeRegions obtains the regions for the Windscribe servers from the
 // environment variable REGION.
 func (r *reader) GetWindscribeRegions() (regions []string, err error) {
-	choices := append(constants.WindscribeRegionChoices(), "")
-	return r.envParams.GetCSVInPossibilities("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", constants.WindscribeRegionChoices())
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the

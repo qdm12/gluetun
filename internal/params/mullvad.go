@@ -8,22 +8,19 @@ import (
 // GetMullvadCountries obtains the countries for the Mullvad servers from the
 // environment variable COUNTRY.
 func (r *reader) GetMullvadCountries() (countries []string, err error) {
-	choices := append(constants.MullvadCountryChoices(), "")
-	return r.envParams.GetCSVInPossibilities("COUNTRY", choices)
+	return r.envParams.GetCSVInPossibilities("COUNTRY", constants.MullvadCountryChoices())
 }
 
 // GetMullvadCity obtains the cities for the Mullvad servers from the
 // environment variable CITY.
 func (r *reader) GetMullvadCities() (cities []string, err error) {
-	choices := append(constants.MullvadCityChoices(), "")
-	return r.envParams.GetCSVInPossibilities("CITY", choices)
+	return r.envParams.GetCSVInPossibilities("CITY", constants.MullvadCityChoices())
 }
 
 // GetMullvadISPs obtains the ISPs for the Mullvad servers from the
 // environment variable ISP.
 func (r *reader) GetMullvadISPs() (isps []string, err error) {
-	choices := append(constants.MullvadISPChoices(), "")
-	return r.envParams.GetCSVInPossibilities("ISP", choices)
+	return r.envParams.GetCSVInPossibilities("ISP", constants.MullvadISPChoices())
 }
 
 // GetMullvadPort obtains the port to reach the Mullvad server on from the

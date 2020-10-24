@@ -7,20 +7,17 @@ import (
 // GetPurevpnRegions obtains the regions (continents) for the PureVPN servers from the
 // environment variable REGION.
 func (r *reader) GetPurevpnRegions() (regions []string, err error) {
-	choices := append(constants.PurevpnRegionChoices(), "")
-	return r.envParams.GetCSVInPossibilities("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", constants.PurevpnRegionChoices())
 }
 
 // GetPurevpnCountries obtains the countries for the PureVPN servers from the
 // environment variable COUNTRY.
 func (r *reader) GetPurevpnCountries() (countries []string, err error) {
-	choices := append(constants.PurevpnCountryChoices(), "")
-	return r.envParams.GetCSVInPossibilities("COUNTRY", choices)
+	return r.envParams.GetCSVInPossibilities("COUNTRY", constants.PurevpnCountryChoices())
 }
 
 // GetPurevpnCities obtains the cities for the PureVPN servers from the
 // environment variable CITY.
 func (r *reader) GetPurevpnCities() (cities []string, err error) {
-	choices := append(constants.PurevpnCityChoices(), "")
-	return r.envParams.GetCSVInPossibilities("CITY", choices)
+	return r.envParams.GetCSVInPossibilities("CITY", constants.PurevpnCityChoices())
 }

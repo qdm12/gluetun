@@ -42,8 +42,7 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 	// Retro-compatibility
 	s, err := r.envParams.GetValueIfInside("ENCRYPTION", []string{
 		constants.PIAEncryptionPresetNormal,
-		constants.PIAEncryptionPresetStrong,
-		""})
+		constants.PIAEncryptionPresetStrong})
 	if err != nil {
 		return "", err
 	} else if len(s) != 0 {
@@ -62,13 +61,11 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 // GetPIARegions obtains the regions for the PIA servers from the
 // environment variable REGION.
 func (r *reader) GetPIARegions() (regions []string, err error) {
-	choices := append(constants.PIAGeoChoices(), "")
-	return r.envParams.GetCSVInPossibilities("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", constants.PIAGeoChoices())
 }
 
 // GetPIAOldRegions obtains the regions for the PIA servers from the
 // environment variable REGION.
 func (r *reader) GetPIAOldRegions() (regions []string, err error) {
-	choices := append(constants.PIAOldGeoChoices(), "")
-	return r.envParams.GetCSVInPossibilities("REGION", choices)
+	return r.envParams.GetCSVInPossibilities("REGION", constants.PIAOldGeoChoices())
 }

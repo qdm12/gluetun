@@ -149,7 +149,7 @@ func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
 			"pia", "private internet access", "private internet access old",
 			"mullvad", "windscribe", "surfshark", "cyberghost",
 			"vyprvpn", "nordvpn", "purevpn",
-		})
+		}, libparams.Default("private internet access"))
 	if s == "pia" {
 		s = "private internet access"
 	}
