@@ -18,6 +18,7 @@ import (
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/healthcheck"
+	"github.com/qdm12/gluetun/internal/httpproxy"
 	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/params"
@@ -243,6 +244,11 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	wg.Add(1)
 	go publicIPLooper.RunRestartTicker(ctx, wg)
 	publicIPLooper.SetPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
+
+	// TODO loop
+	httpProxy := httpproxy.New(ctx, "0.0.0.0:8001", logger, httpClient, false, true)
+	wg.Add(1)
+	go httpProxy.Run(ctx, wg)
 
 	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf,
 		allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
