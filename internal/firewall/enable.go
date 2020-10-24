@@ -93,12 +93,6 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 	if err = c.acceptOutputThroughInterface(ctx, string(constants.TUN), remove); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
-	if err := c.acceptInputFromSubnetToSubnet(ctx, "*", c.localSubnet, c.localSubnet, remove); err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
-	}
-	if err := c.acceptOutputFromSubnetToSubnet(ctx, "*", c.localSubnet, c.localSubnet, remove); err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
-	}
 
 	// Allows packets from any IP address to go through eth0 / local network
 	// to reach Gluetun.
