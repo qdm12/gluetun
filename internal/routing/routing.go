@@ -7,8 +7,8 @@ import (
 )
 
 type Routing interface {
-	AddRouteVia(destination net.IPNet, gateway net.IP, iface string) error
-	DeleteRouteVia(destination net.IPNet) (err error)
+	Setup() (err error)
+	TearDown() error
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
 	LocalSubnet() (defaultSubnet net.IPNet, err error)
 	VPNDestinationIP() (ip net.IP, err error)

@@ -35,7 +35,4 @@ services:
 
       # Mullvad only
       - COUNTRY=Sweden
-
-      # Allow for example your LAN, set to: 192.168.1.0/24
-      - EXTRA_SUBNETS=
     restart: always

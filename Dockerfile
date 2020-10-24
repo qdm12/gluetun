@@ -89,7 +89,6 @@ ENV VPNSP=pia \
     DNS_KEEP_NAMESERVER=off \
     # Firewall
     FIREWALL=on \
-    EXTRA_SUBNETS= \
     FIREWALL_VPN_INPUT_PORTS= \
     FIREWALL_INPUT_PORTS= \
     FIREWALL_DEBUG=off \

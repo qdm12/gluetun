@@ -150,6 +150,16 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet)
 
+	if err := routingConf.Setup(); err != nil {
+		logger.Error(err)
+		return 1
+	}
+	defer func() {
+		if err := routingConf.TearDown(); err != nil {
+			logger.Error(err)
+		}
+	}()
+
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()
@@ -173,12 +183,6 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		}
 	}
 
-	err = firewallConf.SetAllowedSubnets(ctx, allSettings.Firewall.AllowedSubnets)
-	if err != nil {
-		logger.Error(err)
-		return 1
-	}
-
 	for _, vpnPort := range allSettings.Firewall.VPNInputPorts {
 		err = firewallConf.SetAllowedPort(ctx, vpnPort, string(constants.TUN))
 		if err != nil {
@@ -193,7 +197,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 			logger.Error(err)
 			return 1
 		}
-	}
+	} // TODO move inside firewall?
 
 	wg := &sync.WaitGroup{}
 

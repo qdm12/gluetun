@@ -94,6 +94,16 @@ func (c *configurator) acceptInputThroughInterface(ctx context.Context, intf str
 	))
 }
 
+func (c *configurator) acceptInputToSubnet(ctx context.Context, intf string, destination net.IPNet, remove bool) error {
+	interfaceFlag := "-i " + intf
+	if intf == "*" { // all interfaces
+		interfaceFlag = ""
+	}
+	return c.runIptablesInstruction(ctx, fmt.Sprintf(
+		"%s INPUT %s -d %s -j ACCEPT", appendOrDelete(remove), interfaceFlag, destination.String(),
+	))
+}
+
 func (c *configurator) acceptOutputThroughInterface(ctx context.Context, intf string, remove bool) error {
 	return c.runIptablesInstruction(ctx, fmt.Sprintf(
 		"%s OUTPUT -o %s -j ACCEPT", appendOrDelete(remove), intf,
@@ -112,31 +122,6 @@ func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
 	return c.runIptablesInstruction(ctx,
 		fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 			appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol, connection.Protocol, connection.Port))
-}
-
-func (c *configurator) acceptInputFromSubnetToSubnet(ctx context.Context,
-	intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
-	interfaceFlag := "-i " + intf
-	if intf == "*" { // all interfaces
-		interfaceFlag = ""
-	}
-	return c.runIptablesInstruction(ctx, fmt.Sprintf(
-		"%s INPUT %s -s %s -d %s -j ACCEPT",
-		appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
-	))
-}
-
-// Thanks to @npawelek.
-func (c *configurator) acceptOutputFromSubnetToSubnet(ctx context.Context,
-	intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
-	interfaceFlag := "-o " + intf
-	if intf == "*" { // all interfaces
-		interfaceFlag = ""
-	}
-	return c.runIptablesInstruction(ctx, fmt.Sprintf(
-		"%s OUTPUT %s -s %s -d %s -j ACCEPT",
-		appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
-	))
 }
 
 // Used for port forwarding, with intf set to tun.
