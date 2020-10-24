@@ -69,8 +69,8 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
     Note that you can:
 
     - Change the many [environment variables](#environment-variables) available
-    - Use `-p 8888:8888/tcp` to access the HTTP web proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
-    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the Shadowsocks proxy (and put your LAN in `EXTRA_SUBNETS` environment variable, in example `192.168.1.0/24`)
+    - Use `-p 8888:8888/tcp` to access the HTTP web proxy
+    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the Shadowsocks proxy
     - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
 
     **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/gluetun/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
@@ -230,7 +230,6 @@ That one is important if you want to connect to the container from your LAN for 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
 | `FIREWALL` | `on` | `on` or `off` | Turn on or off the container built-in firewall. You should use it for **debugging purposes** only. |
-| `EXTRA_SUBNETS` | | i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28` | Comma separated subnets allowed in the container firewall |
 | `FIREWALL_VPN_INPUT_PORTS` | | i.e. `1000,8080` | Comma separated list of ports to allow from the VPN server side (useful for **vyprvpn** port forwarding) |
 | `FIREWALL_INPUT_PORTS` | | i.e. `1000,8000` | Comma separated list of ports to allow through the default interface. This seems needed for Kubernetes sidecars. |
 | `FIREWALL_DEBUG` | `off` | `on` or `off` | Prints every firewall related command. You should use it for **debugging purposes** only. |
@@ -304,7 +303,6 @@ There are various ways to achieve this, depending on your use case.
     1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
     1. Ensure the Gluetun container is launched with:
         - port `8888` published `-p 8888:8888/tcp`
-        - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `TINYPROXY_USER` and `TINYPROXY_PASSWORD`.
     1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs
 
@@ -319,7 +317,6 @@ There are various ways to achieve this, depending on your use case.
             - Android: Shadowsocks by Max Lv
     1. Ensure the Gluetun container is launched with:
         - port `8388` published `-p 8388:8388/tcp -p 8388:8388/udp`
-        - your LAN subnet, i.e. `192.168.1.0/24`, set as `-e EXTRA_SUBNETS=192.168.1.0/24`
     1. With your Shadowsocks proxy client
         - Enter the Docker host (i.e. `192.168.1.10`) as the server IP
         - Enter port TCP (and UDP, if available) `8388` as the server port

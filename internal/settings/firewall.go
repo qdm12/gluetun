@@ -2,7 +2,6 @@ package settings
 
 import (
 	"fmt"
-	"net"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/params"
@@ -10,18 +9,13 @@ import (
 
 // Firewall contains settings to customize the firewall operation.
 type Firewall struct {
-	AllowedSubnets []net.IPNet
-	VPNInputPorts  []uint16
-	InputPorts     []uint16
-	Enabled        bool
-	Debug          bool
+	VPNInputPorts []uint16
+	InputPorts    []uint16
+	Enabled       bool
+	Debug         bool
 }
 
 func (f *Firewall) String() string {
-	allowedSubnets := make([]string, len(f.AllowedSubnets))
-	for i := range f.AllowedSubnets {
-		allowedSubnets[i] = f.AllowedSubnets[i].String()
-	}
 	if !f.Enabled {
 		return "Firewall settings: disabled"
 	}
@@ -36,7 +30,6 @@ func (f *Firewall) String() string {
 
 	settingsList := []string{
 		"Firewall settings:",
-		"Allowed subnets: " + strings.Join(allowedSubnets, ", "),
 		"VPN input ports: " + strings.Join(vpnInputPorts, ", "),
 		"Input ports: " + strings.Join(inputPorts, ", "),
 	}
@@ -48,10 +41,6 @@ func (f *Firewall) String() string {
 
 // GetFirewallSettings obtains firewall settings from environment variables using the params package.
 func GetFirewallSettings(paramsReader params.Reader) (settings Firewall, err error) {
-	settings.AllowedSubnets, err = paramsReader.GetExtraSubnets()
-	if err != nil {
-		return settings, err
-	}
 	settings.VPNInputPorts, err = paramsReader.GetVPNInputPorts()
 	if err != nil {
 		return settings, err
