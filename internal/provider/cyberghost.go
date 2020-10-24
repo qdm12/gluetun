@@ -91,7 +91,6 @@ func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity,
 		"mute-replay-warnings",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
-		"remote-random",
 		"suppress-timestamps",
 
 		// Modified variables

@@ -105,7 +105,6 @@ func (s *surfshark) BuildConf(connection models.OpenVPNConnection, verbosity, ui
 		"mute-replay-warnings",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
 		"auth-retry nointeract",
-		"remote-random",
 		"suppress-timestamps",
 
 		// Modified variables
