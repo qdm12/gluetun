@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
@@ -68,7 +69,7 @@ func findMullvadServers(ctx context.Context, client network.Client) (servers []m
 				IPs:     []net.IP{ipv4},
 				IPsV6:   []net.IP{ipv6},
 				Country: jsonServer.Country,
-				City:    jsonServer.City,
+				City:    strings.ReplaceAll(jsonServer.City, ",", ""),
 				ISP:     jsonServer.Provider,
 				Owned:   jsonServer.Owned,
 			}
