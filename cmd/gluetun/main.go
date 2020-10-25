@@ -251,19 +251,17 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	wg.Add(1)
 	go httpProxy.Run(ctx, wg)
 
-	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf,
-		allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
-	restartTinyproxy := tinyproxyLooper.Restart
+	httpProxyLooper := httpproxy.NewLooper(httpClient, logger, allSettings.HTTPProxy)
 	wg.Add(1)
-	go tinyproxyLooper.Run(ctx, wg)
+	go httpProxyLooper.Run(ctx, wg)
 
 	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger, defaultInterface)
 	restartShadowsocks := shadowsocksLooper.Restart
 	wg.Add(1)
 	go shadowsocksLooper.Run(ctx, wg)
 
-	if allSettings.TinyProxy.Enabled {
-		restartTinyproxy()
+	if allSettings.HTTPProxy.Enabled {
+		httpProxyLooper.Restart()
 	}
 	if allSettings.ShadowSocks.Enabled {
 		restartShadowsocks()
