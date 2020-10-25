@@ -21,7 +21,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 type piaV4 struct {
@@ -447,7 +446,11 @@ func fetchPIAPortForwardData(ctx context.Context, client *http.Client, gateway n
 		Path:     "/getSignature",
 		RawQuery: queryParams.Encode(),
 	}
-	response, err := ctxhttp.Get(ctx, client, url.String())
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %w", err)
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %w", err)
 	}
@@ -489,7 +492,11 @@ func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data 
 		RawQuery: queryParams.Encode(),
 	}
 
-	response, err := ctxhttp.Get(ctx, client, url.String())
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	if err != nil {
+		return fmt.Errorf("cannot bind port: %w", err)
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		return fmt.Errorf("cannot bind port: %w", err)
 	}

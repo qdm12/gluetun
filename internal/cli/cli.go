@@ -17,7 +17,6 @@ import (
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 func ClientKey(args []string) error {
@@ -42,7 +41,11 @@ func ClientKey(args []string) error {
 
 func HealthCheck(ctx context.Context, client *http.Client) error {
 	const url = "http://localhost:8000/health"
-	response, err := ctxhttp.Get(ctx, client, url)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return err
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		return err
 	}

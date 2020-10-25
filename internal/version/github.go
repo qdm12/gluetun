@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"golang.org/x/net/context/ctxhttp"
 )
 
 type githubRelease struct {
@@ -28,7 +26,11 @@ type githubCommit struct {
 
 func getGithubReleases(ctx context.Context, client *http.Client) (releases []githubRelease, err error) {
 	const url = "https://api.github.com/repos/qdm12/gluetun/releases"
-	response, err := ctxhttp.Get(ctx, client, url)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +47,11 @@ func getGithubReleases(ctx context.Context, client *http.Client) (releases []git
 
 func getGithubCommits(ctx context.Context, client *http.Client) (commits []githubCommit, err error) {
 	const url = "https://api.github.com/repos/qdm12/gluetun/commits"
-	response, err := ctxhttp.Get(ctx, client, url)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
 	}

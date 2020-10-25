@@ -15,7 +15,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 type piaV3 struct {
@@ -94,7 +93,12 @@ func (p *piaV3) PortForward(ctx context.Context, client *http.Client,
 	}
 	clientID := hex.EncodeToString(b)
 	url := fmt.Sprintf("%s/?client_id=%s", constants.PIAPortForwardURL, clientID)
-	response, err := ctxhttp.Get(ctx, client, url)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		pfLogger.Error(err)
+		return
+	}
+	response, err := client.Do(request)
 	if err != nil {
 		pfLogger.Error(err)
 		return
