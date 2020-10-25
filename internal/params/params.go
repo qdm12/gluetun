@@ -102,12 +102,13 @@ type Reader interface {
 	GetShadowSocksPassword() (password string, err error)
 	GetShadowSocksMethod() (method string, err error)
 
-	// Tinyproxy getters
-	GetTinyProxy() (activated bool, err error)
-	GetTinyProxyLog() (models.TinyProxyLogLevel, error)
-	GetTinyProxyPort() (port uint16, err error)
-	GetTinyProxyUser() (user string, err error)
-	GetTinyProxyPassword() (password string, err error)
+	// HTTP proxy getters
+	GetHTTPProxy() (activated bool, err error)
+	GetHTTPProxyLog() (log bool, err error)
+	GetHTTPProxyPort() (port uint16, err error)
+	GetHTTPProxyUser() (user string, err error)
+	GetHTTPProxyPassword() (password string, err error)
+	GetHTTPProxyStealth() (stealth bool, err error)
 
 	// Public IP getters
 	GetPublicIPPeriod() (period time.Duration, err error)
@@ -139,6 +140,13 @@ func NewReader(logger logging.Logger, fileManager files.FileManager) Reader {
 		unsetEnv:    os.Unsetenv,
 		fileManager: fileManager,
 	}
+}
+
+func (r *reader) onRetroActive(oldKey, newKey string) {
+	r.logger.Warn(
+		"You are using the old environment variable %s, please consider changing it to %s",
+		oldKey, newKey,
+	)
 }
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP.
