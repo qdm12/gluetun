@@ -36,7 +36,8 @@ func (r *routing) Setup() (err error) {
 	if err := r.addIPRule(defaultIP, table, priority); err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
-	if err := r.addRouteVia(net.IPNet{}, defaultGateway, defaultInterfaceName, table); err != nil {
+	defaultDestination := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
+	if err := r.addRouteVia(defaultDestination, defaultGateway, defaultInterfaceName, table); err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
 	return nil
@@ -52,7 +53,8 @@ func (r *routing) TearDown() error {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}
 
-	if err := r.deleteRouteVia(net.IPNet{}, defaultGateway, defaultInterfaceName, table); err != nil {
+	defaultNet := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
+	if err := r.deleteRouteVia(defaultNet, defaultGateway, defaultInterfaceName, table); err != nil {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}
 	if err := r.deleteIPRule(defaultIP, table, priority); err != nil {
