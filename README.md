@@ -1,8 +1,7 @@
 # Gluetun VPN client
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
-Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN,
-iptables, DNS over TLS, ShadowSocks and Tinyproxy*
+Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 **ANNOUNCEMENT**: *Github Wiki reworked*
 
@@ -36,7 +35,7 @@ iptables, DNS over TLS, ShadowSocks and Tinyproxy*
 - Choose the vpn network protocol, `udp` or `tcp`
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
 - Built in Shadowsocks proxy (protocol based on SOCKS5 with an encryption layer, tunnels TCP+UDP)
-- Built in HTTP proxy (Tinyproxy, tunnels TCP)
+- Built in HTTP proxy (tunnels HTTP and HTTPS through TCP)
 - [Connect other containers to it](https://github.com/qdm12/gluetun#connect-to-it)
 - [Connect LAN devices to it](https://github.com/qdm12/gluetun#connect-to-it)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7 🎆
@@ -243,15 +242,16 @@ None of the following values are required.
 | `SHADOWSOCKS_PASSWORD` | |  | Password to use to connect to Shadowsocks |
 | `SHADOWSOCKS_METHOD` | `chacha20-ietf-poly1305` | `chacha20-ietf-poly1305`, `aes-128-gcm`, `aes-256-gcm` | Method to use for Shadowsocks |
 
-### Tinyproxy
+### HTTP proxy
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| `TINYPROXY` | `off` | `on`, `off` | Enable the internal HTTP proxy tinyproxy |
-| `TINYPROXY_LOG` | `Info` | `Info`, `Connect`, `Notice`, `Warning`, `Error`, `Critical` | Tinyproxy log level |
-| `TINYPROXY_PORT` | `8888` | `1024` to `65535` | Internal port number for Tinyproxy to listen on |
-| `TINYPROXY_USER` | | | Username to use to connect to Tinyproxy |
-| `TINYPROXY_PASSWORD` | | | Password to use to connect to Tinyproxy |
+| `HTTPPROXY` | `off` | `on`, `off` | Enable the internal HTTP proxy |
+| `HTTPPROXY_LOG` | `off` | `on` or `off` | Logs every tunnel requests |
+| `HTTPPROXY_PORT` | `8888` | `1024` to `65535` | Internal port number for the HTTP proxy to listen on |
+| `HTTPPROXY_USER` | | | Username to use to connect to the HTTP proxy |
+| `HTTPPROXY_PASSWORD` | | | Password to use to connect to the HTTP proxy |
+| `HTTPPROXY_STEALTH` | `off` | `on` or `off` | Stealth mode means HTTP proxy headers are not added to your requests |
 
 ### System
 
@@ -295,15 +295,15 @@ There are various ways to achieve this, depending on your use case.
     Add `network_mode: "container:gluetun"` to your *docker-compose.yml*, provided Gluetun is already running
 
     </p></details>
-- <details><summary>Connect LAN devices through the built-in HTTP proxy *Tinyproxy* (i.e. with Chrome, Kodi, etc.)</summary><p>
+- <details><summary>Connect LAN devices through the built-in HTTP proxy (i.e. with Chrome, Kodi, etc.)</summary><p>
 
-    You might want to use Shadowsocks instead which tunnels UDP as well as TCP, whereas Tinyproxy only tunnels TCP.
+    You might want to use Shadowsocks instead which tunnels UDP as well as TCP, whereas the HTTP proxy only tunnels TCP.
 
     1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
     1. Ensure the Gluetun container is launched with:
         - port `8888` published `-p 8888:8888/tcp`
-    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `TINYPROXY_USER` and `TINYPROXY_PASSWORD`.
-    1. If you set `TINYPROXY_LOG` to `Info`, more information will be logged in the Docker logs
+    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `HTTPPROXY_USER` and `HTTPPROXY_PASSWORD`.
+    1. If you set `HTTPPROXY_LOG` to `on`, more information will be logged in the Docker logs
 
     </p></details>
 - <details><summary>Connect LAN devices through the built-in *Shadowsocks* proxy (per app, system wide, etc.)</summary><p>
