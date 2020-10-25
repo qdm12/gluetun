@@ -36,22 +36,6 @@ func Test_PostProcessLine(t *testing.T) {
 			"unbound: [1594595249] unbound[75:0] BLA: init module 0: validator",
 			"unbound: BLA: init module 0: validator",
 			logging.ErrorLevel},
-		"shadowsocks stdout info": {
-			"shadowsocks:  2020-07-12 23:07:25 INFO: UDP relay enabled",
-			"shadowsocks: UDP relay enabled",
-			logging.InfoLevel},
-		"shadowsocks stdout other": {
-			"shadowsocks:  2020-07-12 23:07:25 BLABLA: UDP relay enabled",
-			"shadowsocks: BLABLA: UDP relay enabled",
-			logging.WarnLevel},
-		"shadowsocks stderr": {
-			"shadowsocks error:  2020-07-12 23:07:25 Some error",
-			"shadowsocks: Some error",
-			logging.ErrorLevel},
-		"shadowsocks stderr unable to resolve muted": {
-			"shadowsocks error:  2020-07-12 23:07:25 ERROR: unable to resolve",
-			"",
-			logging.ErrorLevel},
 		"tinyproxy info": {
 			"tinyproxy: INFO      Jul 12 23:07:25 [32]: Reloading config file",
 			"tinyproxy: Reloading config file",

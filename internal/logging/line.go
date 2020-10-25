@@ -12,17 +12,13 @@ import (
 
 //nolint:lll
 var regularExpressions = struct { //nolint:gochecknoglobals
-	unboundPrefix          *regexp.Regexp
-	shadowsocksPrefix      *regexp.Regexp
-	shadowsocksErrorPrefix *regexp.Regexp
-	tinyproxyLoglevel      *regexp.Regexp
-	tinyproxyPrefix        *regexp.Regexp
+	unboundPrefix     *regexp.Regexp
+	tinyproxyLoglevel *regexp.Regexp
+	tinyproxyPrefix   *regexp.Regexp
 }{
-	unboundPrefix:          regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:0\] `),
-	shadowsocksPrefix:      regexp.MustCompile(`shadowsocks:[ ]+2[0-9]{3}\-[0-1][0-9]\-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] `),
-	shadowsocksErrorPrefix: regexp.MustCompile(`shadowsocks error:[ ]+2[0-9]{3}\-[0-1][0-9]\-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] `),
-	tinyproxyLoglevel:      regexp.MustCompile(`INFO|CONNECT|NOTICE|WARNING|ERROR|CRITICAL`),
-	tinyproxyPrefix:        regexp.MustCompile(`tinyproxy: .+[ ]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] \[[0-9]+\]: `),
+	unboundPrefix:     regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:0\] `),
+	tinyproxyLoglevel: regexp.MustCompile(`INFO|CONNECT|NOTICE|WARNING|ERROR|CRITICAL`),
+	tinyproxyPrefix:   regexp.MustCompile(`tinyproxy: .+[ ]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] \[[0-9]+\]: `),
 }
 
 func PostProcessLine(s string) (filtered string, level logging.Level) {
@@ -82,29 +78,6 @@ func PostProcessLine(s string) (filtered string, level logging.Level) {
 		filtered = fmt.Sprintf("unbound: %s", filtered)
 		filtered = constants.ColorUnbound().Sprintf(filtered)
 		return filtered, level
-	case strings.HasPrefix(s, "shadowsocks: "):
-		prefix := regularExpressions.shadowsocksPrefix.FindString(s)
-		filtered = s[len(prefix):]
-		switch {
-		case strings.HasPrefix(filtered, "INFO: "):
-			level = logging.InfoLevel
-			filtered = strings.TrimPrefix(filtered, "INFO: ")
-		default:
-			level = logging.WarnLevel
-		}
-		filtered = fmt.Sprintf("shadowsocks: %s", filtered)
-		filtered = constants.ColorShadowsocks().Sprintf(filtered)
-		return filtered, level
-	case strings.HasPrefix(s, "shadowsocks error: "):
-		if strings.Contains(s, "ERROR: unable to resolve") { // caused by DNS blocking
-			return "", logging.ErrorLevel
-		}
-		prefix := regularExpressions.shadowsocksErrorPrefix.FindString(s)
-		filtered = s[len(prefix):]
-		filtered = strings.TrimPrefix(filtered, "ERROR: ")
-		filtered = fmt.Sprintf("shadowsocks: %s", filtered)
-		filtered = constants.ColorShadowsocksError().Sprintf(filtered)
-		return filtered, logging.ErrorLevel
 	case strings.HasPrefix(s, "tinyproxy: "):
 		logLevel := regularExpressions.tinyproxyLoglevel.FindString(s)
 		prefix := regularExpressions.tinyproxyPrefix.FindString(s)

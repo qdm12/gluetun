@@ -10,14 +10,6 @@ func ColorTinyproxy() *color.Color {
 	return color.New(color.FgHiGreen)
 }
 
-func ColorShadowsocks() *color.Color {
-	return color.New(color.FgHiYellow)
-}
-
-func ColorShadowsocksError() *color.Color {
-	return color.New(color.FgHiRed)
-}
-
 func ColorOpenvpn() *color.Color {
 	return color.New(color.FgHiMagenta)
 }
