@@ -2,8 +2,11 @@ package httpproxy
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"strings"
 )
 
 func (h *handler) handleHTTP(responseWriter http.ResponseWriter, request *http.Request) {
@@ -56,4 +59,16 @@ func (h *handler) handleHTTP(responseWriter http.ResponseWriter, request *http.R
 	if _, err := io.Copy(responseWriter, response.Body); err != nil {
 		h.logger.Error("%s %s: body copy error: %s", request.RemoteAddr, request.URL, err)
 	}
+}
+
+func setForwardedHeaders(request *http.Request) {
+	clientIP, _, err := net.SplitHostPort(request.RemoteAddr)
+	if err != nil {
+		return
+	}
+	// keep existing proxy headers
+	if prior, ok := request.Header["X-Forwarded-For"]; ok {
+		clientIP = fmt.Sprintf("%s,%s", strings.Join(prior, ", "), clientIP)
+	}
+	request.Header.Set("X-Forwarded-For", clientIP)
 }

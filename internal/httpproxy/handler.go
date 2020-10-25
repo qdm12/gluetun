@@ -2,10 +2,7 @@ package httpproxy
 
 import (
 	"context"
-	"fmt"
-	"net"
 	"net/http"
-	"strings"
 	"sync"
 	"time"
 
@@ -44,18 +41,6 @@ func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Re
 	default:
 		h.handleHTTP(responseWriter, request)
 	}
-}
-
-func setForwardedHeaders(request *http.Request) {
-	clientIP, _, err := net.SplitHostPort(request.RemoteAddr)
-	if err != nil {
-		return
-	}
-	// keep existing proxy headers
-	if prior, ok := request.Header["X-Forwarded-For"]; ok {
-		clientIP = fmt.Sprintf("%s,%s", strings.Join(prior, ", "), clientIP)
-	}
-	request.Header.Set("X-Forwarded-For", clientIP)
 }
 
 // http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html
