@@ -1,6 +1,7 @@
 package httpproxy
 
 import (
+	"context"
 	"io"
 	"net"
 	"net/http"
@@ -8,7 +9,8 @@ import (
 )
 
 func (h *handler) handleHTTPS(responseWriter http.ResponseWriter, request *http.Request) {
-	destinationConn, err := net.DialTimeout("tcp", request.Host, h.relayTimeout)
+	dialer := net.Dialer{Timeout: h.relayTimeout}
+	destinationConn, err := dialer.DialContext(h.ctx, "tcp", request.Host)
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusServiceUnavailable)
 		return
@@ -35,14 +37,23 @@ func (h *handler) handleHTTPS(responseWriter http.ResponseWriter, request *http.
 		h.logger.Info("%s <-> %s", request.RemoteAddr, request.Host)
 	}
 
-	ctx := h.ctx
-	wg := h.wg
-	destinationCtxConn := newContextConn(ctx, destinationConn)
-	clientCtxConn := newContextConn(ctx, clientConnection)
+	h.wg.Add(1)
+	ctx, cancel := context.WithCancel(h.ctx)
 	const transferGoroutines = 2
-	h.wg.Add(transferGoroutines)
-	go transfer(destinationCtxConn, clientCtxConn, wg)
-	go transfer(clientCtxConn, destinationCtxConn, wg)
+	wg := &sync.WaitGroup{}
+	wg.Add(transferGoroutines)
+	go func() { // trigger cleanup when done
+		wg.Wait()
+		cancel()
+	}()
+	go func() { // cleanup
+		<-ctx.Done()
+		destinationConn.Close()
+		clientConnection.Close()
+		h.wg.Done()
+	}()
+	go transfer(destinationConn, clientConnection, wg)
+	go transfer(clientConnection, destinationConn, wg)
 }
 
 func transfer(destination io.WriteCloser, source io.ReadCloser, wg *sync.WaitGroup) {
