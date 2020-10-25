@@ -7,7 +7,7 @@ services:
       - NET_ADMIN
     network_mode: bridge
     ports:
-      - 8888:8888/tcp # Tinyproxy
+      - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
       - 8000:8000/tcp # Built-in HTTP control server
