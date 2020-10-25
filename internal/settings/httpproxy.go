@@ -8,7 +8,7 @@ import (
 )
 
 // HTTPProxy contains settings to configure the HTTP proxy.
-type HTTPProxy struct {
+type HTTPProxy struct { //nolint:maligned
 	Enabled  bool
 	Port     uint16
 	User     string
