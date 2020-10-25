@@ -11,7 +11,7 @@ import (
 
 func newHandler(ctx context.Context, wg *sync.WaitGroup,
 	client *http.Client, logger logging.Logger,
-	stealth, verbose bool) http.Handler {
+	stealth, verbose bool, username, password string) http.Handler {
 	const relayTimeout = 10 * time.Second
 	return &handler{
 		ctx:          ctx,
@@ -21,20 +21,25 @@ func newHandler(ctx context.Context, wg *sync.WaitGroup,
 		relayTimeout: relayTimeout,
 		verbose:      verbose,
 		stealth:      stealth,
+		username:     username,
+		password:     password,
 	}
 }
 
 type handler struct {
-	ctx          context.Context
-	wg           *sync.WaitGroup
-	client       *http.Client
-	logger       logging.Logger
-	relayTimeout time.Duration
-	verbose      bool
-	stealth      bool
+	ctx                context.Context
+	wg                 *sync.WaitGroup
+	client             *http.Client
+	logger             logging.Logger
+	relayTimeout       time.Duration
+	verbose, stealth   bool
+	username, password string
 }
 
 func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+	if len(h.username) > 0 && !isAuthorized(responseWriter, request, h.username, h.password) {
+		return
+	}
 	switch request.Method {
 	case http.MethodConnect:
 		h.handleHTTPS(responseWriter, request)

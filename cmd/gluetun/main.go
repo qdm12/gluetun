@@ -162,6 +162,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		return 1
 	}
 	defer func() {
+		routingConf.SetVerbose(false)
 		if err := routingConf.TearDown(); err != nil {
 			logger.Error(err)
 		}
@@ -246,7 +247,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	publicIPLooper.SetPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
 	// TODO loop
-	httpProxy := httpproxy.New(ctx, "0.0.0.0:8001", logger, httpClient, false, true)
+	httpProxy := httpproxy.New(ctx, "0.0.0.0:8001", logger, httpClient, false, true, "user", "password")
 	wg.Add(1)
 	go httpProxy.Run(ctx, wg)
 

@@ -22,12 +22,12 @@ type server struct {
 
 func New(ctx context.Context, address string,
 	logger logging.Logger, client *http.Client,
-	stealth, verbose bool) Server {
+	stealth, verbose bool, username, password string) Server {
 	proxyLogger := logger.WithPrefix("http proxy: ")
 	wg := &sync.WaitGroup{}
 	return &server{
 		address:    address,
-		handler:    newHandler(ctx, wg, client, proxyLogger, stealth, verbose),
+		handler:    newHandler(ctx, wg, client, proxyLogger, stealth, verbose, username, password),
 		logger:     proxyLogger,
 		internalWG: wg,
 	}
