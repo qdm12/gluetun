@@ -123,11 +123,6 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		logger.Error(err)
 		return 1
 	}
-	err = fileManager.SetOwnership("/etc/tinyproxy", uid, gid)
-	if err != nil {
-		logger.Error(err)
-		return 1
-	}
 
 	if allSettings.Firewall.Debug {
 		firewallConf.SetDebug()
@@ -358,7 +353,7 @@ func printVersions(ctx context.Context, logger logging.Logger,
 //nolint:lll
 func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger,
 	logger logging.Logger, signalTunnelReady func()) {
-	// Blocking line merging paramsReader for all programs: openvpn, tinyproxy, unbound and shadowsocks
+	// Blocking line merging paramsReader for openvpn and unbound
 	logger.Info("Launching standard output merger")
 	streamMerger.CollectLines(ctx, func(line string) {
 		line, level := gluetunLogging.PostProcessLine(line)

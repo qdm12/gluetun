@@ -36,34 +36,6 @@ func Test_PostProcessLine(t *testing.T) {
 			"unbound: [1594595249] unbound[75:0] BLA: init module 0: validator",
 			"unbound: BLA: init module 0: validator",
 			logging.ErrorLevel},
-		"tinyproxy info": {
-			"tinyproxy: INFO      Jul 12 23:07:25 [32]: Reloading config file",
-			"tinyproxy: Reloading config file",
-			logging.InfoLevel},
-		"tinyproxy connect": {
-			"tinyproxy: CONNECT      Jul 12 23:07:25 [32]: Reloading config file",
-			"tinyproxy: Reloading config file",
-			logging.InfoLevel},
-		"tinyproxy notice": {
-			"tinyproxy: NOTICE      Jul 12 23:07:25 [32]: Reloading config file",
-			"tinyproxy: Reloading config file",
-			logging.InfoLevel},
-		"tinyproxy warning": {
-			"tinyproxy: WARNING      Jul 12 23:07:25 [32]: Reloading config file",
-			"tinyproxy: Reloading config file",
-			logging.WarnLevel},
-		"tinyproxy error": {
-			"tinyproxy: ERROR      Jul 12 23:07:25 [32]: Reloading config file",
-			"tinyproxy: Reloading config file",
-			logging.ErrorLevel},
-		"tinyproxy critical": {
-			"tinyproxy: CRITICAL      Jul 12 23:07:25 [32]: Reloading config file",
-			"tinyproxy: Reloading config file",
-			logging.ErrorLevel},
-		"tinyproxy unknown": {
-			"tinyproxy: BLABLA      Jul 12 23:07:25 [32]: Reloading config file",
-			"tinyproxy: Reloading config file",
-			logging.ErrorLevel},
 		"openvpn unknown": {
 			"openvpn: message",
 			"openvpn: message",

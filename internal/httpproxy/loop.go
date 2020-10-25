@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
@@ -28,20 +27,6 @@ type looper struct {
 	restart       chan struct{}
 	start         chan struct{}
 	stop          chan struct{}
-}
-
-func (l *looper) logAndWait(ctx context.Context, err error) {
-	l.logger.Error(err)
-	const waitTime = time.Minute
-	l.logger.Info("retrying in %s", waitTime)
-	timer := time.NewTimer(waitTime)
-	select {
-	case <-timer.C:
-	case <-ctx.Done():
-		if !timer.Stop() {
-			<-timer.C
-		}
-	}
 }
 
 func NewLooper(client *http.Client, logger logging.Logger,
