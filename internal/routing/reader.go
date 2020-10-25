@@ -24,7 +24,9 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 			}
 			attributes := link.Attrs()
 			defaultInterface = attributes.Name
-			r.logger.Info("default route found: interface %s, gateway %s", defaultInterface, defaultGateway.String())
+			if r.verbose {
+				r.logger.Info("default route found: interface %s, gateway %s", defaultInterface, defaultGateway.String())
+			}
 			return defaultInterface, defaultGateway, nil
 		}
 	}
@@ -77,7 +79,9 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 			continue
 		}
 		defaultSubnet = *route.Dst
-		r.logger.Info("local subnet found: %s", defaultSubnet.String())
+		if r.verbose {
+			r.logger.Info("local subnet found: %s", defaultSubnet.String())
+		}
 		return defaultSubnet, nil
 	}
 

@@ -10,7 +10,9 @@ import (
 
 func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
 	destinationStr := destination.String()
-	r.logger.Info("adding route for %s", destinationStr)
+	if r.verbose {
+		r.logger.Info("adding route for %s", destinationStr)
+	}
 	if r.debug {
 		fmt.Printf("ip route replace %s via %s dev %s table %d\n", destinationStr, gateway, iface, table)
 	}
@@ -33,7 +35,9 @@ func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 
 func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error) {
 	destinationStr := destination.String()
-	r.logger.Info("deleting route for %s", destinationStr)
+	if r.verbose {
+		r.logger.Info("deleting route for %s", destinationStr)
+	}
 	if r.debug {
 		fmt.Printf("ip route delete %s via %s dev %s table %d\n", destinationStr, gateway, iface, table)
 	}
