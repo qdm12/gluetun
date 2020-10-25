@@ -28,7 +28,6 @@ import (
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/gluetun/internal/tinyproxy"
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
@@ -84,17 +83,15 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, fileManager)
-	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()
 
 	paramsReader := params.NewReader(logger, fileManager)
 	fmt.Println(gluetunLogging.Splash(version, commit, buildDate))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
-		"OpenVPN":   ovpnConf.Version,
-		"Unbound":   dnsConf.Version,
-		"IPtables":  firewallConf.Version,
-		"TinyProxy": tinyProxyConf.Version,
+		"OpenVPN":  ovpnConf.Version,
+		"Unbound":  dnsConf.Version,
+		"IPtables": firewallConf.Version,
 	})
 
 	allSettings, err := settings.GetAllSettings(paramsReader)
