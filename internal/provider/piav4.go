@@ -292,7 +292,7 @@ func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
 	}
-	const httpTimeout = 5 * time.Second
+	const httpTimeout = 30 * time.Second
 	client = &http.Client{Transport: &transport, Timeout: httpTimeout}
 	return client, nil
 }
