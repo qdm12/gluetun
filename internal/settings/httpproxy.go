@@ -19,7 +19,7 @@ type HTTPProxy struct { //nolint:maligned
 
 func (h *HTTPProxy) String() string {
 	if !h.Enabled {
-		return "HTTPProxy settings: disabled"
+		return "HTTP Proxy settings: disabled"
 	}
 	auth, log, stealth := disabled, disabled, disabled
 	if h.User != "" {
@@ -32,12 +32,13 @@ func (h *HTTPProxy) String() string {
 		stealth = enabled
 	}
 	settingsList := []string{
+		"HTTP proxy settings:",
 		fmt.Sprintf("Port: %d", h.Port),
 		"Authentication: " + auth,
 		"Stealth: " + stealth,
 		"Log: " + log,
 	}
-	return "HTTP proxy settings:\n" + strings.Join(settingsList, "\n |--")
+	return strings.Join(settingsList, "\n |--")
 }
 
 // GetHTTPProxySettings obtains HTTPProxy settings from environment variables using the params package.
