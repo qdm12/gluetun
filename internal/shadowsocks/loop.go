@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	shadowsockslib "github.com/qdm12/ss-server/pkg"
@@ -22,7 +21,6 @@ type Looper interface {
 }
 
 type looper struct {
-	firewallConf     firewall.Configurator
 	settings         settings.ShadowSocks
 	settingsMutex    sync.RWMutex
 	logger           logging.Logger
@@ -46,10 +44,8 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func NewLooper(firewallConf firewall.Configurator, settings settings.ShadowSocks,
-	logger logging.Logger, defaultInterface string) Looper {
+func NewLooper(settings settings.ShadowSocks, logger logging.Logger, defaultInterface string) Looper {
 	return &looper{
-		firewallConf:     firewallConf,
 		settings:         settings,
 		logger:           logger.WithPrefix("shadowsocks: "),
 		defaultInterface: defaultInterface,
@@ -106,7 +102,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	l.setEnabled(true)
 
-	var previousPort uint16
 	for ctx.Err() == nil {
 		for !l.isEnabled() {
 			// wait for a signal to re-enable
@@ -128,18 +123,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			l.logAndWait(ctx, err)
 			continue
 		}
-
-		if previousPort > 0 {
-			if err := l.firewallConf.RemoveAllowedPort(ctx, previousPort); err != nil {
-				l.logger.Error(err)
-				continue
-			}
-		}
-		if err := l.firewallConf.SetAllowedPort(ctx, settings.Port, l.defaultInterface); err != nil {
-			l.logger.Error(err)
-			continue
-		}
-		previousPort = settings.Port
 
 		shadowsocksCtx, shadowsocksCancel := context.WithCancel(context.Background())
 

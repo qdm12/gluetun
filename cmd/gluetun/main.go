@@ -235,7 +235,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	wg.Add(1)
 	go tinyproxyLooper.Run(ctx, wg)
 
-	shadowsocksLooper := shadowsocks.NewLooper(firewallConf, allSettings.ShadowSocks, logger, defaultInterface)
+	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger, defaultInterface)
 	restartShadowsocks := shadowsocksLooper.Restart
 	wg.Add(1)
 	go shadowsocksLooper.Run(ctx, wg)
