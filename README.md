@@ -297,12 +297,13 @@ There are various ways to achieve this, depending on your use case.
     </p></details>
 - <details><summary>Connect LAN devices through the built-in HTTP proxy (i.e. with Chrome, Kodi, etc.)</summary><p>
 
-    You might want to use Shadowsocks instead which tunnels UDP as well as TCP, whereas the HTTP proxy only tunnels TCP.
+    ⚠️ You might want to use Shadowsocks instead which tunnels UDP as well as TCP and does not leak your credentials.
+    The HTTP proxy will not encrypt your username and password every time you send a request to the HTTP proxy server.
 
-    1. Setup a HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
+    1. Setup an HTTP proxy client, such as [SwitchyOmega for Chrome](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif?hl=en)
     1. Ensure the Gluetun container is launched with:
         - port `8888` published `-p 8888:8888/tcp`
-    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `HTTPPROXY_USER` and `HTTPPROXY_PASSWORD`.
+    1. With your HTTP proxy client, connect to the Docker host (i.e. `192.168.1.10`) on port `8888`. You need to enter your credentials if you set them with `HTTPPROXY_USER` and `HTTPPROXY_PASSWORD`. Note that Chrome does not support authentication.
     1. If you set `HTTPPROXY_LOG` to `on`, more information will be logged in the Docker logs
 
     </p></details>
