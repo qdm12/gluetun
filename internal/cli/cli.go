@@ -4,12 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/params"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/settings"
@@ -39,25 +39,14 @@ func ClientKey(args []string) error {
 	return nil
 }
 
-func HealthCheck(ctx context.Context, client *http.Client) error {
-	const url = "http://localhost:8000/health"
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return err
-	}
-	response, err := client.Do(request)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-	if response.StatusCode == http.StatusOK {
-		return nil
-	}
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return err
-	}
-	return fmt.Errorf("HTTP status code %s with message: %s", response.Status, string(b))
+func HealthCheck(ctx context.Context) error {
+	const timeout = 3 * time.Second
+	httpClient := &http.Client{Timeout: timeout}
+	healthchecker := healthcheck.NewChecker(httpClient)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	const url = "http://" + constants.HealthcheckAddress
+	return healthchecker.Check(ctx, url)
 }
 
 func OpenvpnConfig() error {

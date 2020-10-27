@@ -64,9 +64,7 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 func (s *server) makeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if s.logging && (r.Method != http.MethodGet || r.RequestURI != "/health") {
-			s.logger.Info("HTTP %s %s", r.Method, r.RequestURI)
-		}
+		s.logger.Info("HTTP %s %s", r.Method, r.RequestURI)
 		switch r.Method {
 		case http.MethodGet:
 			switch r.RequestURI {
@@ -80,8 +78,6 @@ func (s *server) makeHandler() http.HandlerFunc {
 				s.handleGetPortForwarded(w)
 			case "/openvpn/settings":
 				s.handleGetOpenvpnSettings(w)
-			case "/health":
-				s.handleHealth(w)
 			case "/updater/restart":
 				s.updaterLooper.Restart()
 				w.WriteHeader(http.StatusOK)

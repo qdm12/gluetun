@@ -17,6 +17,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
+	"github.com/qdm12/gluetun/internal/healthcheck"
 	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/params"
@@ -52,8 +53,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		var err error
 		switch args[1] {
 		case "healthcheck":
-			client := &http.Client{Timeout: time.Second}
-			err = cli.HealthCheck(background, client)
+			err = cli.HealthCheck(background)
 		case "clientkey":
 			err = cli.ClientKey(args[2:])
 		case "openvpnconfig":
@@ -258,6 +258,11 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		logger, openvpnLooper, unboundLooper, updaterLooper)
 	wg.Add(1)
 	go httpServer.Run(ctx, wg)
+
+	healthcheckServer := healthcheck.NewServer(
+		constants.HealthcheckAddress, logger)
+	wg.Add(1)
+	go healthcheckServer.Run(ctx, wg)
 
 	// Start openvpn for the first time
 	openvpnLooper.Restart()
