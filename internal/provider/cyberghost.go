@@ -30,7 +30,7 @@ func newCyberghost(servers []models.CyberghostServer, timeNow timeNowFunc) *cybe
 func (c *cyberghost) filterServers(regions []string, group string) (servers []models.CyberghostServer) {
 	for _, server := range c.servers {
 		switch {
-		case len(group) > 0 && group != server.Group,
+		case len(group) > 0 && !strings.EqualFold(group, server.Group),
 			filterByPossibilities(server.Region, regions):
 		default:
 			servers = append(servers, server)
