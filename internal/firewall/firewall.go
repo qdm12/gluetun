@@ -18,10 +18,11 @@ type Configurator interface {
 	SetEnabled(ctx context.Context, enabled bool) (err error)
 	SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error)
 	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
+	SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error)
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 	SetDebug()
 	// SetNetworkInformation is meant to be called only once
-	SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet)
+	SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet, localIP net.IP)
 }
 
 type configurator struct { //nolint:maligned
@@ -34,11 +35,13 @@ type configurator struct { //nolint:maligned
 	defaultInterface string
 	defaultGateway   net.IP
 	localSubnet      net.IPNet
+	localIP          net.IP
 	networkInfoMutex sync.Mutex
 
 	// State
 	enabled           bool
 	vpnConnection     models.OpenVPNConnection
+	outboundSubnets   []net.IPNet
 	allowedInputPorts map[uint16]string // port to interface mapping
 	stateMutex        sync.Mutex
 }
@@ -58,10 +61,12 @@ func (c *configurator) SetDebug() {
 	c.debug = true
 }
 
-func (c *configurator) SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet) {
+func (c *configurator) SetNetworkInformation(
+	defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet, localIP net.IP) {
 	c.networkInfoMutex.Lock()
 	defer c.networkInfoMutex.Unlock()
 	c.defaultInterface = defaultInterface
 	c.defaultGateway = defaultGateway
 	c.localSubnet = localSubnet
+	c.localIP = localIP
 }

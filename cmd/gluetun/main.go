@@ -148,7 +148,13 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		return 1
 	}
 
-	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet)
+	defaultIP, err := routingConf.DefaultIP()
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
+
+	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
 		logger.Error(err)
@@ -159,6 +165,15 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 			logger.Error(err)
 		}
 	}()
+
+	if err := firewallConf.SetOutboundSubnets(ctx, allSettings.Firewall.OutboundSubnets); err != nil {
+		logger.Error(err)
+		return 1
+	}
+	if err := routingConf.SetOutboundRoutes(allSettings.Firewall.OutboundSubnets); err != nil {
+		logger.Error(err)
+		return 1
+	}
 
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)

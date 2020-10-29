@@ -223,9 +223,7 @@ None of the following values are required.
 | `DNS_PLAINTEXT_ADDRESS` | `1.1.1.1` | Any IP address | IP address to use as DNS resolver if `DOT` is `off` |
 | `DNS_KEEP_NAMESERVER` | `off` | `on` or `off` | Keep the nameservers in /etc/resolv.conf untouched, but disabled DNS blocking features |
 
-### Firewall
-
-That one is important if you want to connect to the container from your LAN for example, using Shadowsocks or Tinyproxy.
+### Firewall and routing
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
@@ -233,6 +231,7 @@ That one is important if you want to connect to the container from your LAN for 
 | `FIREWALL_VPN_INPUT_PORTS` | | i.e. `1000,8080` | Comma separated list of ports to allow from the VPN server side (useful for **vyprvpn** port forwarding) |
 | `FIREWALL_INPUT_PORTS` | | i.e. `1000,8000` | Comma separated list of ports to allow through the default interface. This seems needed for Kubernetes sidecars. |
 | `FIREWALL_DEBUG` | `off` | `on` or `off` | Prints every firewall related command. You should use it for **debugging purposes** only. |
+| `FIREWALL_OUTBOUND_SUBNETS` | | i.e. `192.168.1.0/24,192.168.10.121,10.0.0.5/28` | Comma separated subnets that Gluetun and the containers sharing its network stack are allowed to access. This involves firewall and routing modifications. |
 
 ### Shadowsocks
 

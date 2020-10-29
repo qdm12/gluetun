@@ -16,7 +16,7 @@ const (
 )
 
 func (r *routing) Setup() (err error) {
-	defaultIP, err := r.defaultIP()
+	defaultIP, err := r.DefaultIP()
 	if err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
@@ -40,11 +40,19 @@ func (r *routing) Setup() (err error) {
 	if err := r.addRouteVia(defaultDestination, defaultGateway, defaultInterfaceName, table); err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
+
+	r.stateMutex.RLock()
+	outboundSubnets := r.outboundSubnets
+	r.stateMutex.RUnlock()
+	if err := r.setOutboundRoutes(outboundSubnets, defaultInterfaceName, defaultGateway); err != nil {
+		return fmt.Errorf("%s: %w", ErrSetup, err)
+	}
+
 	return nil
 }
 
 func (r *routing) TearDown() error {
-	defaultIP, err := r.defaultIP()
+	defaultIP, err := r.DefaultIP()
 	if err != nil {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}
@@ -60,5 +68,10 @@ func (r *routing) TearDown() error {
 	if err := r.deleteIPRule(defaultIP, table, priority); err != nil {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}
+
+	if err := r.setOutboundRoutes(nil, defaultInterfaceName, defaultGateway); err != nil {
+		return fmt.Errorf("%s: %w", ErrSetup, err)
+	}
+
 	return nil
 }
