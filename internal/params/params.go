@@ -159,3 +159,10 @@ func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
 func (r *reader) GetVersionInformation() (enabled bool, err error) {
 	return r.envParams.GetOnOff("VERSION_INFORMATION", libparams.Default("on"))
 }
+
+func (r *reader) onRetroActive(oldKey, newKey string) {
+	r.logger.Warn(
+		"You are using the old environment variable %s, please consider changing it to %s",
+		oldKey, newKey,
+	)
+}

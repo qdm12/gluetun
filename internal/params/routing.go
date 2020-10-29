@@ -4,13 +4,19 @@ import (
 	"fmt"
 	"net"
 	"strings"
+
+	libparams "github.com/qdm12/golibs/params"
 )
 
 // GetOutboundSubnets obtains the CIDR subnets from the comma separated list of the
 // environment variable FIREWALL_OUTBOUND_SUBNETS.
 func (r *reader) GetOutboundSubnets() (outboundSubnets []net.IPNet, err error) {
 	const key = "FIREWALL_OUTBOUND_SUBNETS"
-	s, err := r.envParams.GetEnv(key)
+	retroOption := libparams.RetroKeys(
+		[]string{"EXTRA_SUBNETS"},
+		r.onRetroActive,
+	)
+	s, err := r.envParams.GetEnv(key, retroOption)
 	if err != nil {
 		return nil, err
 	} else if s == "" {
