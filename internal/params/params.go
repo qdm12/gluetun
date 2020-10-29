@@ -142,13 +142,6 @@ func NewReader(logger logging.Logger, fileManager files.FileManager) Reader {
 	}
 }
 
-func (r *reader) onRetroActive(oldKey, newKey string) {
-	r.logger.Warn(
-		"You are using the old environment variable %s, please consider changing it to %s",
-		oldKey, newKey,
-	)
-}
-
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP.
 func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
 	s, err := r.envParams.GetValueIfInside(
