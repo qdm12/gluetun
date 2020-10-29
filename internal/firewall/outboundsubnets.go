@@ -36,7 +36,7 @@ func (c *configurator) SetOutboundSubnets(ctx context.Context, subnets []net.IPN
 func (c *configurator) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet) {
 	const remove = true
 	for _, subnet := range subnets {
-		if err := c.acceptOutputFromSubnetToSubnet(ctx, c.defaultInterface, subnet, c.localSubnet, remove); err != nil {
+		if err := c.acceptOutputFromSubnetToSubnet(ctx, c.defaultInterface, c.localSubnet, subnet, remove); err != nil {
 			c.logger.Error("cannot remove outdated outbound subnet through firewall: %s", err)
 			continue
 		}
