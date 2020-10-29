@@ -16,7 +16,7 @@ const (
 )
 
 func (r *routing) Setup() (err error) {
-	defaultIP, err := r.defaultIP()
+	defaultIP, err := r.DefaultIP()
 	if err != nil {
 		return fmt.Errorf("%s: %w", ErrSetup, err)
 	}
@@ -52,7 +52,7 @@ func (r *routing) Setup() (err error) {
 }
 
 func (r *routing) TearDown() error {
-	defaultIP, err := r.defaultIP()
+	defaultIP, err := r.DefaultIP()
 	if err != nil {
 		return fmt.Errorf("%s: %w", ErrTeardown, err)
 	}

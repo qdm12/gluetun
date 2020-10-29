@@ -95,8 +95,8 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 	}
 
 	for _, subnet := range c.outboundSubnets {
-		if err := c.acceptOutputFromSubnetToSubnet(ctx, c.defaultInterface, c.localSubnet, subnet, remove); err != nil {
-			return fmt.Errorf("cannot enable firewall: %w", err) // further restrict localSubnet above
+		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subnet, remove); err != nil {
+			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
 	}
 

@@ -125,15 +125,15 @@ func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
 }
 
 // Thanks to @npawelek.
-func (c *configurator) acceptOutputFromSubnetToSubnet(ctx context.Context,
-	intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
+func (c *configurator) acceptOutputFromIPToSubnet(ctx context.Context,
+	intf string, sourceIP net.IP, destinationSubnet net.IPNet, remove bool) error {
 	interfaceFlag := "-o " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
 	}
 	return c.runIptablesInstruction(ctx, fmt.Sprintf(
 		"%s OUTPUT %s -s %s -d %s -j ACCEPT",
-		appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
+		appendOrDelete(remove), interfaceFlag, sourceIP.String(), destinationSubnet.String(),
 	))
 }
 

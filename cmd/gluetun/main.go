@@ -148,7 +148,13 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		return 1
 	}
 
-	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet)
+	defaultIP, err := routingConf.DefaultIP()
+	if err != nil {
+		logger.Error(err)
+		return 1
+	}
+
+	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
 		logger.Error(err)

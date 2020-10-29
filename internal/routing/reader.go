@@ -33,7 +33,7 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 	return "", nil, fmt.Errorf("cannot find default route in %d routes", len(routes))
 }
 
-func (r *routing) defaultIP() (ip net.IP, err error) {
+func (r *routing) DefaultIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get default IP address: %w", err)
