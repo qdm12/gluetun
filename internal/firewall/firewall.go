@@ -18,6 +18,7 @@ type Configurator interface {
 	SetEnabled(ctx context.Context, enabled bool) (err error)
 	SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error)
 	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
+	SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error)
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 	SetDebug()
 	// SetNetworkInformation is meant to be called only once
@@ -39,6 +40,7 @@ type configurator struct { //nolint:maligned
 	// State
 	enabled           bool
 	vpnConnection     models.OpenVPNConnection
+	outboundSubnets   []net.IPNet
 	allowedInputPorts map[uint16]string // port to interface mapping
 	stateMutex        sync.Mutex
 }

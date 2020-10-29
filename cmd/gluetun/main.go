@@ -160,6 +160,15 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		}
 	}()
 
+	if err := firewallConf.SetOutboundSubnets(ctx, allSettings.Firewall.OutboundSubnets); err != nil {
+		logger.Error(err)
+		return 1
+	}
+	if err := routingConf.SetOutboundRoutes(allSettings.Firewall.OutboundSubnets); err != nil {
+		logger.Error(err)
+		return 1
+	}
+
 	if err := ovpnConf.CheckTUN(); err != nil {
 		logger.Warn(err)
 		err = ovpnConf.CreateTUN()

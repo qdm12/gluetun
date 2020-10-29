@@ -124,6 +124,19 @@ func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
 			appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol, connection.Protocol, connection.Port))
 }
 
+// Thanks to @npawelek.
+func (c *configurator) acceptOutputFromSubnetToSubnet(ctx context.Context,
+	intf string, sourceSubnet, destinationSubnet net.IPNet, remove bool) error {
+	interfaceFlag := "-o " + intf
+	if intf == "*" { // all interfaces
+		interfaceFlag = ""
+	}
+	return c.runIptablesInstruction(ctx, fmt.Sprintf(
+		"%s OUTPUT %s -s %s -d %s -j ACCEPT",
+		appendOrDelete(remove), interfaceFlag, sourceSubnet.String(), destinationSubnet.String(),
+	))
+}
+
 // Used for port forwarding, with intf set to tun.
 func (c *configurator) acceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error {
 	interfaceFlag := "-i " + intf

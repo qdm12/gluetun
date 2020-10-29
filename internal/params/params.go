@@ -43,6 +43,7 @@ type Reader interface {
 	GetFirewall() (enabled bool, err error)
 	GetVPNInputPorts() (ports []uint16, err error)
 	GetInputPorts() (ports []uint16, err error)
+	GetOutboundSubnets() (outboundSubnets []net.IPNet, err error)
 	GetFirewallDebug() (debug bool, err error)
 
 	// VPN getters
