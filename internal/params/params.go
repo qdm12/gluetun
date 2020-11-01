@@ -73,6 +73,8 @@ type Reader interface {
 
 	// Windscribe getters
 	GetWindscribeRegions() (countries []string, err error)
+	GetWindscribeCities() (cities []string, err error)
+	GetWindscribeHostnames() (hostnames []string, err error)
 	GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error)
 
 	// Surfshark getters

@@ -77,7 +77,7 @@ func Test_versions(t *testing.T) {
 		"Windscribe": {
 			model:   models.WindscribeServer{},
 			version: allServers.Windscribe.Version,
-			digest:  "042bef64",
+			digest:  "6e3ca639",
 		},
 	}
 	for name, testCase := range testCases {
@@ -158,7 +158,7 @@ func Test_timestamps(t *testing.T) {
 		"Windscribe": {
 			servers:   allServers.Windscribe.Servers,
 			timestamp: allServers.Windscribe.Timestamp,
-			digest:    "eacad593",
+			digest:    "fd87502e",
 		},
 	}
 	for name, testCase := range testCases {

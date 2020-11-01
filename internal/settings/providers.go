@@ -118,6 +118,14 @@ func GetWindscribeSettings(paramsReader params.Reader) (settings models.Provider
 	if err != nil {
 		return settings, err
 	}
+	settings.ServerSelection.Cities, err = paramsReader.GetWindscribeCities()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Hostnames, err = paramsReader.GetWindscribeHostnames()
+	if err != nil {
+		return settings, err
+	}
 	settings.ServerSelection.CustomPort, err = paramsReader.GetWindscribePort(settings.ServerSelection.Protocol)
 	if err != nil {
 		return settings, err

@@ -52,12 +52,15 @@ func (s *MullvadServer) String() string {
 }
 
 type WindscribeServer struct {
-	Region string   `json:"region"`
-	IPs    []net.IP `json:"ips"`
+	Region   string `json:"region"`
+	City     string `json:"city"`
+	Hostname string `json:"hostname"`
+	IP       net.IP `json:"ip"`
 }
 
 func (s *WindscribeServer) String() string {
-	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Region: %q, City: %q, Hostname: %q, IP: %s}",
+		s.Region, s.City, s.Hostname, goStringifyIP(s.IP))
 }
 
 type SurfsharkServer struct {

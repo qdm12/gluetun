@@ -73,9 +73,14 @@ func (s *storage) mergeServers(hardcoded, persistent models.AllServers) (merged 
 	}
 	merged.Windscribe = hardcoded.Windscribe
 	if persistent.Windscribe.Timestamp > hardcoded.Windscribe.Timestamp {
-		s.logger.Info("Using Windscribe servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Windscribe.Timestamp, hardcoded.Windscribe.Timestamp))
-		merged.Windscribe = persistent.Windscribe
+		if hardcoded.Windscribe.Version == 2 && persistent.Windscribe.Version == 1 {
+			s.logger.Info("Windscribe servers from file discarded because they are one version behind")
+			merged.Windscribe = hardcoded.Windscribe
+		} else {
+			s.logger.Info("Using Windscribe servers from file (%s more recent)",
+				getUnixTimeDifference(persistent.Windscribe.Timestamp, hardcoded.Windscribe.Timestamp))
+			merged.Windscribe = persistent.Windscribe
+		}
 	}
 	return merged
 }

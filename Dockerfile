@@ -58,7 +58,10 @@ ENV VPNSP=pia \
     PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # Mullvad and PureVPN only
     COUNTRY= \
+    # Mullvad, PureVPN, Windscribe only
     CITY= \
+    # Windscribe only
+    HOSTNAME= \
     # Mullvad only
     ISP= \
     OWNED=no \

@@ -27,11 +27,13 @@ func newWindscribe(servers []models.WindscribeServer, timeNow timeNowFunc) *wind
 	}
 }
 
-func (w *windscribe) filterServers(regions []string) (servers []models.WindscribeServer) {
+func (w *windscribe) filterServers(regions, cities, hostnames []string) (servers []models.WindscribeServer) {
 	for _, server := range w.servers {
 		switch {
 		case
-			filterByPossibilities(server.Region, regions):
+			filterByPossibilities(server.Region, regions),
+			filterByPossibilities(server.City, cities),
+			filterByPossibilities(server.Hostname, hostnames):
 		default:
 			servers = append(servers, server)
 		}
@@ -57,16 +59,14 @@ func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (con
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := w.filterServers(selection.Regions)
+	servers := w.filterServers(selection.Regions, selection.Cities, selection.Hostnames)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
 	}
 
-	var connections []models.OpenVPNConnection
+	connections := make([]models.OpenVPNConnection, len(servers))
 	for _, server := range servers {
-		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-		}
+		connections = append(connections, models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol})
 	}
 
 	return pickRandomConnection(connections, w.randSource), nil
