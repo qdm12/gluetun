@@ -93,12 +93,12 @@ ENV VPNSP=pia \
     FIREWALL_INPUT_PORTS= \
     FIREWALL_OUTBOUND_SUBNETS= \
     FIREWALL_DEBUG=off \
-    # Tinyproxy
-    TINYPROXY=off \
-    TINYPROXY_LOG=Info \
-    TINYPROXY_PORT=8888 \
-    TINYPROXY_USER= \
-    TINYPROXY_PASSWORD= \
+    # HTTP proxy
+    HTTPPROXY= \
+    HTTPPROXY_LOG=off \
+    HTTPPROXY_PORT=8888 \
+    HTTPPROXY_USER= \
+    HTTPPROXY_PASSWORD= \
     # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
@@ -109,10 +109,9 @@ ENV VPNSP=pia \
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=10m --timeout=10s --start-period=30s --retries=2 CMD /entrypoint healthcheck
-RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound tinyproxy tzdata && \
-    rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/tinyproxy/tinyproxy.conf && \
+RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
+    rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* && \
     deluser openvpn && \
-    deluser tinyproxy && \
     deluser unbound && \
     mkdir /gluetun
 # TODO remove once SAN is added to PIA servers certificates, see https://github.com/pia-foss/manual-connections/issues/10

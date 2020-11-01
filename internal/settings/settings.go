@@ -21,7 +21,7 @@ type Settings struct {
 	System             System
 	DNS                DNS
 	Firewall           Firewall
-	TinyProxy          TinyProxy
+	HTTPProxy          HTTPProxy
 	ShadowSocks        ShadowSocks
 	PublicIPPeriod     time.Duration
 	UpdaterPeriod      time.Duration
@@ -44,7 +44,7 @@ func (s *Settings) String() string {
 		s.System.String(),
 		s.DNS.String(),
 		s.Firewall.String(),
-		s.TinyProxy.String(),
+		s.HTTPProxy.String(),
 		s.ShadowSocks.String(),
 		s.ControlServer.String(),
 		"Public IP check period: " + s.PublicIPPeriod.String(), // TODO print disabled if 0
@@ -73,7 +73,7 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.TinyProxy, err = GetTinyProxySettings(paramsReader)
+	settings.HTTPProxy, err = GetHTTPProxySettings(paramsReader)
 	if err != nil {
 		return settings, err
 	}

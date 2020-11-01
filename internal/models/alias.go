@@ -16,8 +16,6 @@ type (
 	URL string
 	// Filepath is a local filesytem file path.
 	Filepath string
-	// TinyProxyLogLevel is the log level for TinyProxy.
-	TinyProxyLogLevel string
 	// VPNProvider is the name of the VPN provider to be used.
 	VPNProvider string
 	// NetworkProtocol contains the network protocol to be used to communicate with the VPN servers.

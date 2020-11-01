@@ -12,13 +12,9 @@ import (
 
 //nolint:lll
 var regularExpressions = struct { //nolint:gochecknoglobals
-	unboundPrefix     *regexp.Regexp
-	tinyproxyLoglevel *regexp.Regexp
-	tinyproxyPrefix   *regexp.Regexp
+	unboundPrefix *regexp.Regexp
 }{
-	unboundPrefix:     regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:0\] `),
-	tinyproxyLoglevel: regexp.MustCompile(`INFO|CONNECT|NOTICE|WARNING|ERROR|CRITICAL`),
-	tinyproxyPrefix:   regexp.MustCompile(`tinyproxy: .+[ ]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9] \[[0-9]+\]: `),
+	unboundPrefix: regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:0\] `),
 }
 
 func PostProcessLine(s string) (filtered string, level logging.Level) {
@@ -78,21 +74,6 @@ func PostProcessLine(s string) (filtered string, level logging.Level) {
 		filtered = fmt.Sprintf("unbound: %s", filtered)
 		filtered = constants.ColorUnbound().Sprintf(filtered)
 		return filtered, level
-	case strings.HasPrefix(s, "tinyproxy: "):
-		logLevel := regularExpressions.tinyproxyLoglevel.FindString(s)
-		prefix := regularExpressions.tinyproxyPrefix.FindString(s)
-		filtered = fmt.Sprintf("tinyproxy: %s", s[len(prefix):])
-		filtered = constants.ColorTinyproxy().Sprintf(filtered)
-		switch logLevel {
-		case "INFO", "CONNECT", "NOTICE":
-			return filtered, logging.InfoLevel
-		case "WARNING":
-			return filtered, logging.WarnLevel
-		case "ERROR", "CRITICAL":
-			return filtered, logging.ErrorLevel
-		default:
-			return filtered, logging.ErrorLevel
-		}
 	}
 	return s, logging.InfoLevel
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/healthcheck"
+	"github.com/qdm12/gluetun/internal/httpproxy"
 	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/params"
@@ -27,7 +28,6 @@ import (
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/gluetun/internal/tinyproxy"
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
@@ -83,17 +83,15 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	dnsConf := dns.NewConfigurator(logger, client, fileManager)
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, fileManager)
-	tinyProxyConf := tinyproxy.NewConfigurator(fileManager, logger)
 	streamMerger := command.NewStreamMerger()
 
 	paramsReader := params.NewReader(logger, fileManager)
 	fmt.Println(gluetunLogging.Splash(version, commit, buildDate))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
-		"OpenVPN":   ovpnConf.Version,
-		"Unbound":   dnsConf.Version,
-		"IPtables":  firewallConf.Version,
-		"TinyProxy": tinyProxyConf.Version,
+		"OpenVPN":  ovpnConf.Version,
+		"Unbound":  dnsConf.Version,
+		"IPtables": firewallConf.Version,
 	})
 
 	allSettings, err := settings.GetAllSettings(paramsReader)
@@ -121,11 +119,6 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		return 1
 	}
 	err = fileManager.SetOwnership("/etc/unbound", uid, gid)
-	if err != nil {
-		logger.Error(err)
-		return 1
-	}
-	err = fileManager.SetOwnership("/etc/tinyproxy", uid, gid)
 	if err != nil {
 		logger.Error(err)
 		return 1
@@ -161,6 +154,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		return 1
 	}
 	defer func() {
+		routingConf.SetVerbose(false)
 		if err := routingConf.TearDown(); err != nil {
 			logger.Error(err)
 		}
@@ -244,19 +238,17 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go publicIPLooper.RunRestartTicker(ctx, wg)
 	publicIPLooper.SetPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
-	tinyproxyLooper := tinyproxy.NewLooper(tinyProxyConf, firewallConf,
-		allSettings.TinyProxy, logger, streamMerger, uid, gid, defaultInterface)
-	restartTinyproxy := tinyproxyLooper.Restart
+	httpProxyLooper := httpproxy.NewLooper(httpClient, logger, allSettings.HTTPProxy)
 	wg.Add(1)
-	go tinyproxyLooper.Run(ctx, wg)
+	go httpProxyLooper.Run(ctx, wg)
 
 	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger, defaultInterface)
 	restartShadowsocks := shadowsocksLooper.Restart
 	wg.Add(1)
 	go shadowsocksLooper.Run(ctx, wg)
 
-	if allSettings.TinyProxy.Enabled {
-		restartTinyproxy()
+	if allSettings.HTTPProxy.Enabled {
+		httpProxyLooper.Restart()
 	}
 	if allSettings.ShadowSocks.Enabled {
 		restartShadowsocks()
@@ -356,7 +348,7 @@ func printVersions(ctx context.Context, logger logging.Logger,
 //nolint:lll
 func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger,
 	logger logging.Logger, signalTunnelReady func()) {
-	// Blocking line merging paramsReader for all programs: openvpn, tinyproxy, unbound and shadowsocks
+	// Blocking line merging paramsReader for openvpn and unbound
 	logger.Info("Launching standard output merger")
 	streamMerger.CollectLines(ctx, func(line string) {
 		line, level := gluetunLogging.PostProcessLine(line)

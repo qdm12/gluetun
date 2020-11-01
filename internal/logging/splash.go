@@ -27,7 +27,7 @@ func title() []string {
 		"================ Gluetun ================",
 		"=========================================",
 		"==== A mix of OpenVPN, DNS over TLS, ====",
-		"======= Shadowsocks and Tinyproxy =======",
+		"======= Shadowsocks and HTTP proxy ======",
 		"========= all glued up with Go ==========",
 		"=========================================",
 		"=========== For tunneling to ============",
