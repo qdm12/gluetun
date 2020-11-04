@@ -3,12 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/dns"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
@@ -22,22 +22,22 @@ type server struct {
 	address       string
 	logging       bool
 	logger        logging.Logger
+	buildInfo     models.BuildInformation
 	openvpnLooper openvpn.Looper
 	unboundLooper dns.Looper
 	updaterLooper updater.Looper
-	lookupIP      func(host string) ([]net.IP, error)
 }
 
-func New(address string, logging bool, logger logging.Logger,
+func New(address string, logging bool, logger logging.Logger, buildInfo models.BuildInformation,
 	openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
 	return &server{
 		address:       address,
 		logging:       logging,
 		logger:        logger.WithPrefix("http server: "),
+		buildInfo:     buildInfo,
 		openvpnLooper: openvpnLooper,
 		unboundLooper: unboundLooper,
 		updaterLooper: updaterLooper,
-		lookupIP:      net.LookupIP,
 	}
 }
 
@@ -68,6 +68,9 @@ func (s *server) makeHandler() http.HandlerFunc {
 		switch r.Method {
 		case http.MethodGet:
 			switch r.RequestURI {
+			case "/version":
+				s.handleGetVersion(w)
+				w.WriteHeader(http.StatusOK)
 			case "/openvpn/actions/restart":
 				s.openvpnLooper.Restart()
 				w.WriteHeader(http.StatusOK)

@@ -7,31 +7,33 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/logging"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 // GetMessage returns a message for the user describing if there is a newer version
 // available. It should only be called once the tunnel is established.
-func GetMessage(ctx context.Context, version, commitShort string, client *http.Client) (message string, err error) {
-	if version == "latest" {
+func GetMessage(ctx context.Context, buildInfo models.BuildInformation,
+	client *http.Client) (message string, err error) {
+	if buildInfo.Version == "latest" {
 		// Find # of commits between current commit and latest commit
-		commitsSince, err := getCommitsSince(ctx, client, commitShort)
+		commitsSince, err := getCommitsSince(ctx, client, buildInfo.Commit)
 		if err != nil {
 			return "", fmt.Errorf("cannot get version information: %w", err)
 		} else if commitsSince == 0 {
-			return fmt.Sprintf("You are running on the bleeding edge of %s!", version), nil
+			return fmt.Sprintf("You are running on the bleeding edge of %s!", buildInfo.Version), nil
 		}
 		commits := "commits"
 		if commitsSince == 1 {
 			commits = "commit"
 		}
-		return fmt.Sprintf("You are running %d %s behind the most recent %s", commitsSince, commits, version), nil
+		return fmt.Sprintf("You are running %d %s behind the most recent %s", commitsSince, commits, buildInfo.Version), nil
 	}
 	tagName, name, releaseTime, err := getLatestRelease(ctx, client)
 	if err != nil {
 		return "", fmt.Errorf("cannot get version information: %w", err)
 	}
-	if tagName == version {
-		return fmt.Sprintf("You are running the latest release %s", version), nil
+	if tagName == buildInfo.Version {
+		return fmt.Sprintf("You are running the latest release %s", buildInfo.Version), nil
 	}
 	timeSinceRelease := logging.FormatDuration(time.Since(releaseTime))
 	return fmt.Sprintf("There is a new release %s (%s) created %s ago",

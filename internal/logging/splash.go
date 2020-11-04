@@ -7,13 +7,15 @@ import (
 
 	"github.com/kyokomi/emoji"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 // Splash returns the welcome spash message.
-func Splash(version, commit, buildDate string) string {
+func Splash(buildInfo models.BuildInformation) string {
 	lines := title()
 	lines = append(lines, "")
-	lines = append(lines, fmt.Sprintf("Running version %s built on %s (commit %s)", version, buildDate, commit))
+	lines = append(lines, fmt.Sprintf("Running version %s built on %s (commit %s)",
+		buildInfo.Version, buildInfo.BuildDate, buildInfo.Commit))
 	lines = append(lines, "")
 	lines = append(lines, announcement()...)
 	lines = append(lines, "")

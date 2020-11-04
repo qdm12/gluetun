@@ -20,6 +20,7 @@ import (
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/httpproxy"
 	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/params"
 	"github.com/qdm12/gluetun/internal/publicip"
@@ -37,11 +38,11 @@ import (
 )
 
 //nolint:gochecknoglobals
-var (
-	version   = "unknown"
-	commit    = "unknown"
-	buildDate = "an unknown date"
-)
+var buildInfo = models.BuildInformation{
+	Version:   "unknown",
+	Commit:    "unknown",
+	BuildDate: "an unknown date",
+}
 
 func main() {
 	ctx := context.Background()
@@ -86,7 +87,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	streamMerger := command.NewStreamMerger()
 
 	paramsReader := params.NewReader(logger, fileManager)
-	fmt.Println(gluetunLogging.Splash(version, commit, buildDate))
+	fmt.Println(gluetunLogging.Splash(buildInfo))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
 		"OpenVPN":  ovpnConf.Version,
@@ -262,7 +263,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	controlServerAddress := fmt.Sprintf("0.0.0.0:%d", allSettings.ControlServer.Port)
 	controlServerLogging := allSettings.ControlServer.Log
 	httpServer := server.New(controlServerAddress, controlServerLogging,
-		logger, openvpnLooper, unboundLooper, updaterLooper)
+		logger, buildInfo, openvpnLooper, unboundLooper, updaterLooper)
 	wg.Add(1)
 	go httpServer.Run(ctx, wg)
 
@@ -434,7 +435,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			if !versionInformation {
 				break
 			}
-			message, err := versionpkg.GetMessage(ctx, version, commit, httpClient)
+			message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
 			if err != nil {
 				logger.Error(err)
 				break
