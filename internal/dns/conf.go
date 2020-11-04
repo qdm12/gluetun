@@ -66,7 +66,7 @@ func generateUnboundConf(ctx context.Context, settings settings.DNS,
 		// Network
 		"do-ip4":    "yes",
 		"do-ip6":    doIPv6,
-		"interface": "127.0.0.1",
+		"interface": "0.0.0.0",
 		"port":      "53",
 		// Other
 		"username": "\"nonrootuser\"",

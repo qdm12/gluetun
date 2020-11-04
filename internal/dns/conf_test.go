@@ -54,7 +54,7 @@ server:
   harden-referral-path: yes
   hide-identity: yes
   hide-version: yes
-  interface: 127.0.0.1
+  interface: 0.0.0.0
   key-cache-size: 16m
   key-cache-slabs: 4
   msg-cache-size: 4m

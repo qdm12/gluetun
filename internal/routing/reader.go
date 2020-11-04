@@ -128,7 +128,7 @@ func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 	for _, route := range routes {
 		if route.LinkIndex == defaultLinkIndex &&
 			route.Dst != nil &&
-			!ipIsPrivate(route.Dst.IP) &&
+			!IPIsPrivate(route.Dst.IP) &&
 			bytes.Equal(route.Dst.Mask, net.IPMask{255, 255, 255, 255}) {
 			return route.Dst.IP, nil
 		}
@@ -156,7 +156,7 @@ func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {
 	return nil, fmt.Errorf("cannot find VPN local gateway IP address from ip routes")
 }
 
-func ipIsPrivate(ip net.IP) bool {
+func IPIsPrivate(ip net.IP) bool {
 	if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
 		return true
 	}
