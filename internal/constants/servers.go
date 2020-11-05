@@ -31,6 +31,11 @@ func GetAllServers() (allServers models.AllServers) {
 			Timestamp: 1599323261,
 			Servers:   PurevpnServers(),
 		},
+		Privado: models.PrivadoServers{
+			Version:   1,
+			Timestamp: 1604546335,
+			Servers:   PrivadoServers(),
+		},
 		Surfshark: models.SurfsharkServers{
 			Version:   1,
 			Timestamp: 1599957644,
