@@ -54,6 +54,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Pia.Version,
 			digest:  "f1e01afe",
 		},
+		"Privado": {
+			model:   models.PrivadoServer{},
+			version: allServers.Privado.Version,
+			digest:  "fe0569b9",
+		},
 		"Purevpn": {
 			model:   models.PurevpnServer{},
 			version: allServers.Purevpn.Version,

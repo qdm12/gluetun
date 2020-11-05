@@ -6,6 +6,7 @@ type AllServers struct {
 	Mullvad    MullvadServers    `json:"mullvad"`
 	Nordvpn    NordvpnServers    `json:"nordvpn"`
 	Pia        PiaServers        `json:"pia"`
+	Privado    PrivadoServers    `json:"privado"`
 	Purevpn    PurevpnServers    `json:"purevpn"`
 	Surfshark  SurfsharkServers  `json:"surfshark"`
 	Vyprvpn    VyprvpnServers    `json:"vyprvpn"`
@@ -31,6 +32,11 @@ type PiaServers struct {
 	Version   uint16      `json:"version"`
 	Timestamp int64       `json:"timestamp"`
 	Servers   []PIAServer `json:"servers"`
+}
+type PrivadoServers struct {
+	Version   uint16          `json:"version"`
+	Timestamp int64           `json:"timestamp"`
+	Servers   []PrivadoServer `json:"servers"`
 }
 type PurevpnServers struct {
 	Version   uint16          `json:"version"`
