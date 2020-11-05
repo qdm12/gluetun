@@ -35,7 +35,7 @@ type PiaServers struct {
 type PurevpnServers struct {
 	Version   uint16          `json:"version"`
 	Timestamp int64           `json:"timestamp"`
-	Servers   []PurevpnServer `json:"purevpn"`
+	Servers   []PurevpnServer `json:"servers"`
 }
 type SurfsharkServers struct {
 	Version   uint16            `json:"version"`
