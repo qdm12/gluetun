@@ -134,13 +134,15 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 
     For **port forwarding**, obtain a port from [here](https://mullvad.net/en/account/#/ports) and add it to `FIREWALL_VPN_INPUT_PORTS`
 
-- Windscribe
+- Windscribe (see [this](https://github.com/qdm12/gluetun/blob/master/internal/constants/windscribe.go#L43) for the choices of regions, cities and hostnames)
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `REGION` | | One of the [Windscribe regions](https://windscribe.com/status) | VPN server region |
+    | `REGION` | | | Comma separated list of regions to choose the VPN server |
+    | `CITY` | | | Comma separated list of cities to choose the VPN server |
+    | `HOSTNAME` | | | Comma separated list of hostnames to choose the VPN server |
     | `PORT` | | One from the [this list of ports](https://windscribe.com/getconfig/openvpn) | Custom VPN port to use |
 
 - Surfshark

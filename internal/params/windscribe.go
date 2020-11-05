@@ -14,7 +14,19 @@ func (r *reader) GetWindscribeRegions() (regions []string, err error) {
 	return r.envParams.GetCSVInPossibilities("REGION", constants.WindscribeRegionChoices())
 }
 
-// GetMullvadPort obtains the port to reach the Mullvad server on from the
+// GetWindscribeCities obtains the cities for the Windscribe servers from the
+// environment variable CITY.
+func (r *reader) GetWindscribeCities() (cities []string, err error) {
+	return r.envParams.GetCSVInPossibilities("CITY", constants.WindscribeCityChoices())
+}
+
+// GetWindscribeHostnames obtains the hostnames for the Windscribe servers from the
+// environment variable HOSTNAME.
+func (r *reader) GetWindscribeHostnames() (hostnames []string, err error) {
+	return r.envParams.GetCSVInPossibilities("HOSTNAME", constants.WindscribeHostnameChoices())
+}
+
+// GetWindscribePort obtains the port to reach the Windscribe server on from the
 // environment variable PORT.
 //nolint:gomnd
 func (r *reader) GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error) {
