@@ -60,12 +60,16 @@ func findPrivadoServersFromZip(ctx context.Context, client network.Client, looku
 		}
 		const repetition = 1
 		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
-		if err != nil {
+		switch {
+		case err != nil:
 			return nil, warnings, err
-		} else if len(IPs) == 0 {
+		case len(IPs) == 0:
 			warning := fmt.Sprintf("no IP address found for host %q", host)
 			warnings = append(warnings, warning)
 			continue
+		case len(IPs) > 1:
+			warning := fmt.Sprintf("more than one IP address found for host %q", host)
+			warnings = append(warnings, warning)
 		}
 		subdomain := strings.TrimSuffix(host, ".vpn.privado.io")
 		parts := strings.Split(subdomain, "-")
@@ -85,7 +89,7 @@ func findPrivadoServersFromZip(ctx context.Context, client network.Client, looku
 		server := models.PrivadoServer{
 			City:   city,
 			Number: uint16(serverNumberInt),
-			IPs:    uniqueSortedIPs(IPs),
+			IP:     IPs[0],
 		}
 		servers = append(servers, server)
 	}
