@@ -21,6 +21,8 @@ const (
 	Nordvpn models.VPNProvider = "nordvpn"
 	// PureVPN is a VPN provider.
 	Purevpn models.VPNProvider = "purevpn"
+	// Privado is a VPN provider.
+	Privado models.VPNProvider = "privado"
 )
 
 const (

@@ -232,3 +232,25 @@ func GetPurevpnSettings(paramsReader params.Reader) (settings models.ProviderSet
 	}
 	return settings, nil
 }
+
+// GetPrivadoSettings obtains Privado settings from environment variables using the params package.
+func GetPrivadoSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
+	settings.Name = constants.Privado
+	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.TargetIP, err = paramsReader.GetTargetIP()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Cities, err = paramsReader.GetPrivadoCities()
+	if err != nil {
+		return settings, err
+	}
+	settings.ServerSelection.Numbers, err = paramsReader.GetPrivadoNumbers()
+	if err != nil {
+		return settings, err
+	}
+	return settings, nil
+}
