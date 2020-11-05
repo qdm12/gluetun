@@ -54,11 +54,6 @@ func Test_versions(t *testing.T) {
 			version: allServers.Pia.Version,
 			digest:  "f1e01afe",
 		},
-		"Private Internet Access Old": {
-			model:   models.PIAOldServer{},
-			version: allServers.PiaOld.Version,
-			digest:  "4e25ce4a",
-		},
 		"Purevpn": {
 			model:   models.PurevpnServer{},
 			version: allServers.Purevpn.Version,
@@ -134,11 +129,6 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.Pia.Servers,
 			timestamp: allServers.Pia.Timestamp,
 			digest:    "1571e777",
-		},
-		"Private Internet Access Old": {
-			servers:   allServers.PiaOld.Servers,
-			timestamp: allServers.PiaOld.Timestamp,
-			digest:    "3566a800",
 		},
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,

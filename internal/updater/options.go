@@ -5,7 +5,6 @@ type Options struct {
 	Mullvad    bool
 	Nordvpn    bool
 	PIA        bool
-	PIAold     bool
 	Purevpn    bool
 	Surfshark  bool
 	Vyprvpn    bool
@@ -21,7 +20,6 @@ func NewOptions(dnsAddress string) Options {
 		Mullvad:    true,
 		Nordvpn:    true,
 		PIA:        true,
-		PIAold:     true,
 		Purevpn:    true,
 		Surfshark:  true,
 		Vyprvpn:    true,

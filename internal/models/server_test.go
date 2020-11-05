@@ -7,31 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_PIAOldServer_String(t *testing.T) {
-	t.Parallel()
-	testCases := map[string]struct {
-		server PIAOldServer
-		s      string
-	}{
-		"no ips": {
-			server: PIAOldServer{Region: "a b"},
-			s:      `{Region: "a b", IPs: []net.IP{}}`,
-		},
-		"with ips": {
-			server: PIAOldServer{Region: "a b", IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
-			s:      `{Region: "a b", IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}}`,
-		},
-	}
-	for name, testCase := range testCases {
-		testCase := testCase
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			s := testCase.server.String()
-			assert.Equal(t, testCase.s, s)
-		})
-	}
-}
-
 func Test_MullvadServer_String(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {

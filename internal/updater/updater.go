@@ -90,16 +90,6 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
-	if u.options.PIAold {
-		u.logger.Info("updating Private Internet Access old (v3) servers...")
-		if err := u.updatePIAOld(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err)
-		}
-	}
-
 	if u.options.Purevpn {
 		u.logger.Info("updating PureVPN servers...")
 		// TODO support servers offering only TCP or only UDP

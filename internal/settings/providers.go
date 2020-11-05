@@ -10,17 +10,7 @@ import (
 
 // GetPIASettings obtains PIA settings from environment variables using the params package.
 func GetPIASettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
-	return getPIASettings(paramsReader, constants.PrivateInternetAccess)
-}
-
-// GetPIAOldSettings obtains PIA settings for the older PIA servers (pre summer 2020)
-// from environment variables using the params package.
-func GetPIAOldSettings(paramsReader params.Reader) (settings models.ProviderSettings, err error) {
-	return getPIASettings(paramsReader, constants.PrivateInternetAccessOld)
-}
-
-func getPIASettings(paramsReader params.Reader, name models.VPNProvider) (settings models.ProviderSettings, err error) {
-	settings.Name = name
+	settings.Name = constants.PrivateInternetAccess
 	settings.ServerSelection.Protocol, err = paramsReader.GetNetworkProtocol()
 	if err != nil {
 		return settings, err

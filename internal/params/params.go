@@ -62,7 +62,6 @@ type Reader interface {
 	GetPortForwardingStatusFilepath() (filepath models.Filepath, err error)
 	GetPIAEncryptionPreset() (preset string, err error)
 	GetPIARegions() (regions []string, err error)
-	GetPIAOldRegions() (regions []string, err error)
 
 	// Mullvad getters
 	GetMullvadCountries() (countries []string, err error)

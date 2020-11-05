@@ -63,9 +63,3 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 func (r *reader) GetPIARegions() (regions []string, err error) {
 	return r.envParams.GetCSVInPossibilities("REGION", constants.PIAGeoChoices())
 }
-
-// GetPIAOldRegions obtains the regions for the PIA servers from the
-// environment variable REGION.
-func (r *reader) GetPIAOldRegions() (regions []string, err error) {
-	return r.envParams.GetCSVInPossibilities("REGION", constants.PIAOldGeoChoices())
-}

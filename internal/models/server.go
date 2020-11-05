@@ -28,15 +28,6 @@ func (p *PIAServer) String() string {
 		p.Region, p.PortForward, p.OpenvpnUDP.String(), p.OpenvpnTCP.String())
 }
 
-type PIAOldServer struct {
-	IPs    []net.IP `json:"ips"`
-	Region string   `json:"region"`
-}
-
-func (p *PIAOldServer) String() string {
-	return fmt.Sprintf("{Region: %q, IPs: %s}", p.Region, goStringifyIPs(p.IPs))
-}
-
 type MullvadServer struct {
 	IPs     []net.IP `json:"ips"`
 	IPsV6   []net.IP `json:"ipsv6"`

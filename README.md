@@ -28,7 +28,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN serv
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access** (new and old), **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
 - Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
@@ -96,7 +96,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `private internet access old`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
 | `IP_STATUS_FILE` | `/tmp/gluetun/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |

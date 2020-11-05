@@ -54,8 +54,6 @@ func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvid
 	switch vpnProvider {
 	case constants.PrivateInternetAccess:
 		settings.Provider, err = GetPIASettings(paramsReader)
-	case constants.PrivateInternetAccessOld:
-		settings.Provider, err = GetPIAOldSettings(paramsReader)
 	case constants.Mullvad:
 		settings.Provider, err = GetMullvadSettings(paramsReader)
 	case constants.Windscribe:

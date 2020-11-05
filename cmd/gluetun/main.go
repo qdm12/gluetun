@@ -411,24 +411,13 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 				logger.Info("VPN routing IP address: %s", vpnDestination)
 			}
 			if portForwardingEnabled {
-				// TODO make instantaneous once v3 go out of service
-				const waitDuration = 5 * time.Second
-				timer := time.NewTimer(waitDuration)
-				select {
-				case <-ctx.Done():
-					if !timer.Stop() {
-						<-timer.C
-					}
-					continue
-				case <-timer.C:
-					// vpnGateway required only for PIA v4
-					vpnGateway, err := routing.VPNLocalGatewayIP()
-					if err != nil {
-						logger.Error(err)
-					}
-					logger.Info("VPN gateway IP address: %s", vpnGateway)
-					startPortForward(vpnGateway)
+				// vpnGateway required only for PIA v4
+				vpnGateway, err := routing.VPNLocalGatewayIP()
+				if err != nil {
+					logger.Error(err)
 				}
+				logger.Info("VPN gateway IP address: %s", vpnGateway)
+				startPortForward(vpnGateway)
 			}
 		case <-dnsReadyCh:
 			publicIPLooper.Restart() // TODO do not restart if disabled

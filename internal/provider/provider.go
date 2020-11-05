@@ -26,8 +26,6 @@ func New(provider models.VPNProvider, allServers models.AllServers, timeNow time
 	switch provider {
 	case constants.PrivateInternetAccess:
 		return newPrivateInternetAccessV4(allServers.Pia.Servers, timeNow)
-	case constants.PrivateInternetAccessOld:
-		return newPrivateInternetAccessV3(allServers.PiaOld.Servers, timeNow)
 	case constants.Mullvad:
 		return newMullvad(allServers.Mullvad.Servers, timeNow)
 	case constants.Windscribe:

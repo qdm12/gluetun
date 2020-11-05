@@ -5,7 +5,6 @@ type AllServers struct {
 	Cyberghost CyberghostServers `json:"cyberghost"`
 	Mullvad    MullvadServers    `json:"mullvad"`
 	Nordvpn    NordvpnServers    `json:"nordvpn"`
-	PiaOld     PiaOldServers     `json:"piaOld"`
 	Pia        PiaServers        `json:"pia"`
 	Purevpn    PurevpnServers    `json:"purevpn"`
 	Surfshark  SurfsharkServers  `json:"surfshark"`
@@ -27,11 +26,6 @@ type NordvpnServers struct {
 	Version   uint16          `json:"version"`
 	Timestamp int64           `json:"timestamp"`
 	Servers   []NordvpnServer `json:"servers"`
-}
-type PiaOldServers struct {
-	Version   uint16         `json:"version"`
-	Timestamp int64          `json:"timestamp"`
-	Servers   []PIAOldServer `json:"servers"`
 }
 type PiaServers struct {
 	Version   uint16      `json:"version"`
