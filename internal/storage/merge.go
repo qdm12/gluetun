@@ -47,6 +47,12 @@ func (s *storage) mergeServers(hardcoded, persistent models.AllServers) (merged 
 			merged.Pia = persistent.Pia
 		}
 	}
+	merged.Privado = hardcoded.Privado
+	if persistent.Privado.Timestamp > hardcoded.Privado.Timestamp {
+		s.logger.Info("Using Privado servers from file (%s more recent)",
+			getUnixTimeDifference(persistent.Privado.Timestamp, hardcoded.Privado.Timestamp))
+		merged.Privado = persistent.Privado
+	}
 	merged.Purevpn = hardcoded.Purevpn
 	if persistent.Purevpn.Timestamp > hardcoded.Purevpn.Timestamp {
 		s.logger.Info("Using Purevpn servers from file (%s more recent)",
