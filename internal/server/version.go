@@ -5,15 +5,15 @@ import (
 	"net/http"
 )
 
-func (s *server) handleGetVersion(w http.ResponseWriter) {
-	data, err := json.Marshal(s.buildInfo)
+func (h *handler) getVersion(w http.ResponseWriter) {
+	data, err := json.Marshal(h.buildInfo)
 	if err != nil {
-		s.logger.Warn(err)
+		h.logger.Warn(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if _, err := w.Write(data); err != nil {
-		s.logger.Warn(err)
+		h.logger.Warn(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

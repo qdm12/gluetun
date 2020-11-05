@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -19,30 +18,24 @@ type Server interface {
 }
 
 type server struct {
-	address       string
-	logging       bool
-	logger        logging.Logger
-	buildInfo     models.BuildInformation
-	openvpnLooper openvpn.Looper
-	unboundLooper dns.Looper
-	updaterLooper updater.Looper
+	address string
+	logger  logging.Logger
+	handler http.Handler
 }
 
 func New(address string, logging bool, logger logging.Logger, buildInfo models.BuildInformation,
 	openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
+	serverLogger := logger.WithPrefix("http server: ")
+	handler := newHandler(serverLogger, logging, buildInfo, openvpnLooper, unboundLooper, updaterLooper)
 	return &server{
-		address:       address,
-		logging:       logging,
-		logger:        logger.WithPrefix("http server: "),
-		buildInfo:     buildInfo,
-		openvpnLooper: openvpnLooper,
-		unboundLooper: unboundLooper,
-		updaterLooper: updaterLooper,
+		address: address,
+		logger:  serverLogger,
+		handler: handler,
 	}
 }
 
 func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
-	server := http.Server{Addr: s.address, Handler: s.makeHandler()}
+	server := http.Server{Addr: s.address, Handler: s.handler}
 	go func() {
 		defer wg.Done()
 		<-ctx.Done()
@@ -59,44 +52,5 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 	err := server.ListenAndServe()
 	if err != nil && ctx.Err() != context.Canceled {
 		s.logger.Error(err)
-	}
-}
-
-func (s *server) makeHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		s.logger.Info("HTTP %s %s", r.Method, r.RequestURI)
-		switch r.Method {
-		case http.MethodGet:
-			switch r.RequestURI {
-			case "/version":
-				s.handleGetVersion(w)
-				w.WriteHeader(http.StatusOK)
-			case "/openvpn/actions/restart":
-				s.openvpnLooper.Restart()
-				w.WriteHeader(http.StatusOK)
-			case "/unbound/actions/restart":
-				s.unboundLooper.Restart()
-				w.WriteHeader(http.StatusOK)
-			case "/openvpn/portforwarded":
-				s.handleGetPortForwarded(w)
-			case "/openvpn/settings":
-				s.handleGetOpenvpnSettings(w)
-			case "/updater/restart":
-				s.updaterLooper.Restart()
-				w.WriteHeader(http.StatusOK)
-			default:
-				routeDoesNotExist(s.logger, w, r)
-			}
-		default:
-			routeDoesNotExist(s.logger, w, r)
-		}
-	}
-}
-
-func routeDoesNotExist(logger logging.Logger, w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusBadRequest)
-	_, err := w.Write([]byte(fmt.Sprintf("Nothing here for %s %s", r.Method, r.RequestURI)))
-	if err != nil {
-		logger.Error(err)
 	}
 }
