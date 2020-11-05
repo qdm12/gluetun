@@ -202,6 +202,15 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | `COUNTRY` | | One of the [PureVPN countries](https://support.purevpn.com/vpn-servers) | VPN server country |
     | `CITY` | | One of the [PureVPN cities](https://support.purevpn.com/vpn-servers) | VPN server city |
 
+- Privado
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | `CITY` | | One of the Privado city codes, i.e. `ams` | VPN server city |
+    | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `2` for `sof-002` |
+
 ### DNS over TLS
 
 None of the following values are required.
