@@ -40,6 +40,8 @@ func New(provider models.VPNProvider, allServers models.AllServers, timeNow time
 		return newNordvpn(allServers.Nordvpn.Servers, timeNow)
 	case constants.Purevpn:
 		return newPurevpn(allServers.Purevpn.Servers, timeNow)
+	case constants.Privado:
+		return newPrivado(allServers.Privado.Servers, timeNow)
 	default:
 		return nil // should never occur
 	}
