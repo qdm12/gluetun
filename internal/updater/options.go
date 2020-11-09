@@ -5,6 +5,7 @@ type Options struct {
 	Mullvad    bool
 	Nordvpn    bool
 	PIA        bool
+	Privado    bool
 	Purevpn    bool
 	Surfshark  bool
 	Vyprvpn    bool

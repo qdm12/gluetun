@@ -90,6 +90,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
+	if u.options.Privado {
+		u.logger.Info("updating Privado servers...")
+		if err := u.updatePrivado(ctx); err != nil {
+			u.logger.Error(err)
+		}
+		if ctx.Err() != nil {
+			return allServers, ctx.Err()
+		}
+	}
+
 	if u.options.Purevpn {
 		u.logger.Info("updating PureVPN servers...")
 		// TODO support servers offering only TCP or only UDP

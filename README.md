@@ -1,7 +1,7 @@
 # Gluetun VPN client
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
-Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
+Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 **ANNOUNCEMENT**: *Github Wiki reworked*
 
@@ -28,7 +28,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN and PureVPN VPN serv
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN** and **PureVPN** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN**, **PureVPN** and **Privado** servers
 - Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
@@ -96,7 +96,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
-| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn` | VPN Service Provider |
+| 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn`, `privado` | VPN Service Provider |
 | `IP_STATUS_FILE` | `/tmp/gluetun/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
@@ -201,6 +201,15 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | 🏁 `REGION` | | One of the [PureVPN regions](https://support.purevpn.com/vpn-servers) | VPN server region |
     | `COUNTRY` | | One of the [PureVPN countries](https://support.purevpn.com/vpn-servers) | VPN server country |
     | `CITY` | | One of the [PureVPN cities](https://support.purevpn.com/vpn-servers) | VPN server city |
+
+- Privado
+
+    | Variable | Default | Choices | Description |
+    | --- | --- | --- | --- |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | `CITY` | | One of the Privado city codes, i.e. `ams` | VPN server city |
+    | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `2` for `sof-002` |
 
 ### DNS over TLS
 

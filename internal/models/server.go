@@ -107,6 +107,17 @@ func (s *PurevpnServer) String() string {
 		s.Region, s.Country, s.City, goStringifyIPs(s.IPs))
 }
 
+type PrivadoServer struct {
+	IP     net.IP `json:"ip"`
+	City   string `json:"city"`
+	Number uint16 `json:"number"`
+}
+
+func (s *PrivadoServer) String() string {
+	return fmt.Sprintf("{City: %q, Number: %d, IP: %s}",
+		s.City, s.Number, goStringifyIP(s.IP))
+}
+
 func goStringifyIP(ip net.IP) string {
 	s := fmt.Sprintf("%#v", ip)
 	s = strings.TrimSuffix(strings.TrimPrefix(s, "net.IP{"), "}")

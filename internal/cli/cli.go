@@ -93,6 +93,7 @@ func Update(args []string) error {
 	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
 	flagSet.BoolVar(&options.Nordvpn, "nordvpn", false, "Update Nordvpn servers")
 	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
+	flagSet.BoolVar(&options.Privado, "privado", false, "Update Privado servers")
 	flagSet.BoolVar(&options.Purevpn, "purevpn", false, "Update Purevpn servers")
 	flagSet.BoolVar(&options.Surfshark, "surfshark", false, "Update Surfshark servers")
 	flagSet.BoolVar(&options.Vyprvpn, "vyprvpn", false, "Update Vyprvpn servers")

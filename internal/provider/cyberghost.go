@@ -68,7 +68,7 @@ func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity,
 		cipher = aes256cbc
 	}
 	if len(auth) == 0 {
-		auth = "SHA256"
+		auth = sha256
 	}
 	lines = []string{
 		"client",

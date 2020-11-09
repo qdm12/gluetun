@@ -130,6 +130,11 @@ func (p *ProviderSettings) String() string {
 			"Countries: "+commaJoin(p.ServerSelection.Countries),
 			"Cities: "+commaJoin(p.ServerSelection.Cities),
 		)
+	case "privado":
+		settingsList = append(settingsList,
+			"Cities: "+commaJoin(p.ServerSelection.Cities),
+			"Server numbers: "+commaJoin(numbers),
+		)
 	default:
 		settingsList = append(settingsList,
 			"<Missing String method, please implement me!>",
