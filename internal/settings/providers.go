@@ -244,11 +244,7 @@ func GetPrivadoSettings(paramsReader params.Reader) (settings models.ProviderSet
 	if err != nil {
 		return settings, err
 	}
-	settings.ServerSelection.Cities, err = paramsReader.GetPrivadoCities()
-	if err != nil {
-		return settings, err
-	}
-	settings.ServerSelection.Numbers, err = paramsReader.GetPrivadoNumbers()
+	settings.ServerSelection.Hostnames, err = paramsReader.GetPrivadoHostnames()
 	if err != nil {
 		return settings, err
 	}

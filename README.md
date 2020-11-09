@@ -208,8 +208,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | --- | --- | --- | --- |
     | 🏁 `USER` | | | Your username |
     | 🏁 `PASSWORD` | | | Your password |
-    | `CITY` | | One of the Privado city codes, i.e. `ams` | VPN server city |
-    | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `2` for `sof-002` |
+    | `HOSTNAME` | | [One of the Privado hostname](internal/constants/privado.go#L26), i.e. `ams-001.vpn.privado.io` | VPN server hostname |
 
 ### DNS over TLS
 

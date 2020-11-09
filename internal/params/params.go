@@ -92,8 +92,7 @@ type Reader interface {
 	GetNordvpnNumbers() (numbers []uint16, err error)
 
 	// Privado getters
-	GetPrivadoCities() (regions []string, err error)
-	GetPrivadoNumbers() (numbers []uint16, err error)
+	GetPrivadoHostnames() (hostnames []string, err error)
 
 	// PureVPN getters
 	GetPurevpnRegions() (regions []string, err error)

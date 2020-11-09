@@ -108,14 +108,13 @@ func (s *PurevpnServer) String() string {
 }
 
 type PrivadoServer struct {
-	IP     net.IP `json:"ip"`
-	City   string `json:"city"`
-	Number uint16 `json:"number"`
+	IP       net.IP `json:"ip"`
+	Hostname string `json:"hostname"`
 }
 
 func (s *PrivadoServer) String() string {
-	return fmt.Sprintf("{City: %q, Number: %d, IP: %s}",
-		s.City, s.Number, goStringifyIP(s.IP))
+	return fmt.Sprintf("{Hostname: %q, IP: %s}",
+		s.Hostname, goStringifyIP(s.IP))
 }
 
 func goStringifyIP(ip net.IP) string {

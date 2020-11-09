@@ -26,36 +26,15 @@ func newPrivado(servers []models.PrivadoServer, timeNow timeNowFunc) *privado {
 	}
 }
 
-func (s *privado) filterServers(cities []string, numbers []uint16) (servers []models.PrivadoServer) {
-	numbersStr := make([]string, len(numbers))
-	for i := range numbers {
-		numbersStr[i] = fmt.Sprintf("%d", numbers[i])
-	}
+func (s *privado) filterServers(hostnames []string) (servers []models.PrivadoServer) {
 	for _, server := range s.servers {
-		numberStr := fmt.Sprintf("%d", server.Number)
 		switch {
-		case
-			filterByPossibilities(server.City, cities),
-			filterByPossibilities(numberStr, numbersStr):
+		case filterByPossibilities(server.Hostname, hostnames):
 		default:
 			servers = append(servers, server)
 		}
 	}
 	return servers
-}
-
-func makePrivadoHostname(city string, number uint16) string {
-	numberString := ""
-	const ten, hundred = 10, 100
-	switch {
-	case number < ten:
-		numberString = fmt.Sprintf("00%d", number)
-	case number < hundred:
-		numberString = fmt.Sprintf("0%d", number)
-	default:
-		numberString = fmt.Sprintf("%d", number)
-	}
-	return fmt.Sprintf("%s-%s.vpn.privado.io", city, numberString)
 }
 
 func (s *privado) GetOpenVPNConnection(selection models.ServerSelection) (
@@ -71,7 +50,7 @@ func (s *privado) GetOpenVPNConnection(selection models.ServerSelection) (
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := s.filterServers(selection.Cities, selection.Numbers)
+	servers := s.filterServers(selection.Hostnames)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for cities %s and server numbers %v",
 			commaJoin(selection.Cities), selection.Numbers)
@@ -83,7 +62,7 @@ func (s *privado) GetOpenVPNConnection(selection models.ServerSelection) (
 			IP:       servers[i].IP,
 			Port:     port,
 			Protocol: selection.Protocol,
-			Hostname: makePrivadoHostname(servers[i].City, servers[i].Number),
+			Hostname: servers[i].Hostname,
 		}
 		connections = append(connections, connection)
 	}

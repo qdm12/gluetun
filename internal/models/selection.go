@@ -27,7 +27,7 @@ type ServerSelection struct {
 
 	Countries []string `json:"countries"` // Mullvad, PureVPN
 	Cities    []string `json:"cities"`    // Mullvad, PureVPN, Windscribe
-	Hostnames []string `json:"hostnames"` // Windscribe
+	Hostnames []string `json:"hostnames"` // Windscribe, Privado
 
 	// Mullvad
 	ISPs  []string `json:"isps"`
