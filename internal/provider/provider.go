@@ -25,7 +25,7 @@ type Provider interface {
 func New(provider models.VPNProvider, allServers models.AllServers, timeNow timeNowFunc) Provider {
 	switch provider {
 	case constants.PrivateInternetAccess:
-		return newPrivateInternetAccessV4(allServers.Pia.Servers, timeNow)
+		return newPrivateInternetAccess(allServers.Pia.Servers, timeNow)
 	case constants.Mullvad:
 		return newMullvad(allServers.Mullvad.Servers, timeNow)
 	case constants.Windscribe:

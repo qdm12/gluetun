@@ -415,7 +415,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 				logger.Info("VPN routing IP address: %s", vpnDestination)
 			}
 			if portForwardingEnabled {
-				// vpnGateway required only for PIA v4
+				// vpnGateway required only for PIA
 				vpnGateway, err := routing.VPNLocalGatewayIP()
 				if err != nil {
 					logger.Error(err)

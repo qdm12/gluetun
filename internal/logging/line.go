@@ -44,7 +44,7 @@ func PostProcessLine(s string) (filtered string, level logging.Level) {
 		case s == "openvpn: Initialization Sequence Completed":
 			return color.HiGreenString(s), logging.InfoLevel
 		case s == "openvpn: AUTH: Received control message: AUTH_FAILED":
-			filtered = s + "\n\n  (IF YOU ARE USING PIA V4 servers, MAYBE CHECK OUT https://github.com/qdm12/gluetun/issues/265)\n" //nolint:lll
+			filtered = s + "\n\n  (IF YOU ARE USING PIA servers, MAYBE CHECK OUT https://github.com/qdm12/gluetun/issues/265)\n" //nolint:lll
 			level = logging.ErrorLevel
 		default:
 			filtered = s

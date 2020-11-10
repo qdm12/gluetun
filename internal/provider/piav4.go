@@ -23,7 +23,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-type piaV4 struct {
+type pia struct {
 	servers        []models.PIAServer
 	timeNow        timeNowFunc
 	randSource     rand.Source
@@ -31,15 +31,15 @@ type piaV4 struct {
 	activeProtocol models.NetworkProtocol
 }
 
-func newPrivateInternetAccessV4(servers []models.PIAServer, timeNow timeNowFunc) *piaV4 {
-	return &piaV4{
+func newPrivateInternetAccess(servers []models.PIAServer, timeNow timeNowFunc) *pia {
+	return &pia{
 		servers:    servers,
 		timeNow:    timeNow,
 		randSource: rand.NewSource(timeNow().UnixNano()),
 	}
 }
 
-func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (
+func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch selection.Protocol {
@@ -109,13 +109,80 @@ func (p *piaV4) GetOpenVPNConnection(selection models.ServerSelection) (
 	return connection, nil
 }
 
-func (p *piaV4) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+func (p *pia) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
 	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
-	return buildPIAConf(connection, verbosity, root, cipher, auth, extras)
+	var X509CRL, certificate string
+	var defaultCipher, defaultAuth string
+	if extras.EncryptionPreset == constants.PIAEncryptionPresetNormal {
+		defaultCipher = "aes-128-cbc"
+		defaultAuth = "sha1"
+		X509CRL = constants.PiaX509CRLNormal
+		certificate = constants.PIACertificateNormal
+	} else { // strong encryption
+		defaultCipher = aes256cbc
+		defaultAuth = "sha256"
+		X509CRL = constants.PiaX509CRLStrong
+		certificate = constants.PIACertificateStrong
+	}
+	if len(cipher) == 0 {
+		cipher = defaultCipher
+	}
+	if len(auth) == 0 {
+		auth = defaultAuth
+	}
+	lines = []string{
+		"client",
+		"dev tun",
+		"nobind",
+		"persist-key",
+		"remote-cert-tls server",
+
+		// PIA specific
+		"ping 300", // Ping every 5 minutes to prevent a timeout error
+		"reneg-sec 0",
+		"compress", // allow PIA server to choose the compression to use
+
+		// Added constant values
+		"auth-nocache",
+		"mute-replay-warnings",
+		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
+		"auth-retry nointeract",
+		"suppress-timestamps",
+
+		// Modified variables
+		fmt.Sprintf("verb %d", verbosity),
+		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
+		fmt.Sprintf("proto %s", connection.Protocol),
+		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
+		fmt.Sprintf("cipher %s", cipher),
+		fmt.Sprintf("auth %s", auth),
+	}
+	if strings.HasSuffix(cipher, "-gcm") {
+		lines = append(lines, "ncp-disable")
+	}
+	if !root {
+		lines = append(lines, "user nonrootuser")
+	}
+	lines = append(lines, []string{
+		"<crl-verify>",
+		"-----BEGIN X509 CRL-----",
+		X509CRL,
+		"-----END X509 CRL-----",
+		"</crl-verify>",
+	}...)
+	lines = append(lines, []string{
+		"<ca>",
+		"-----BEGIN CERTIFICATE-----",
+		certificate,
+		"-----END CERTIFICATE-----",
+		"</ca>",
+		"",
+	}...)
+	return lines
 }
 
 //nolint:gocognit
-func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
+func (p *pia) PortForward(ctx context.Context, client *http.Client,
 	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
 	if !p.activeServer.PortForward {
@@ -130,7 +197,7 @@ func (p *piaV4) PortForward(ctx context.Context, client *http.Client,
 	if p.activeProtocol == constants.TCP {
 		commonName = p.activeServer.OpenvpnTCP.CN
 	}
-	client, err := newPIAv4HTTPClient(commonName)
+	client, err := newPIAHTTPClient(commonName)
 	if err != nil {
 		pfLogger.Error("aborting because: %s", err)
 		return
@@ -260,7 +327,7 @@ func filterPIAServers(servers []models.PIAServer, regions []string) (filtered []
 	return filtered
 }
 
-func newPIAv4HTTPClient(serverName string) (client *http.Client, err error) {
+func newPIAHTTPClient(serverName string) (client *http.Client, err error) {
 	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
 	if err != nil {
 		return nil, fmt.Errorf("cannot decode PIA root certificate: %w", err)

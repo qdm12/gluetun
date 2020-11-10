@@ -81,7 +81,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	if u.options.PIA {
-		u.logger.Info("updating Private Internet Access (v4) servers...")
+		u.logger.Info("updating Private Internet Access servers...")
 		if err := u.updatePIA(ctx); err != nil {
 			u.logger.Error(err)
 		}

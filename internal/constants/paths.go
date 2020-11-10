@@ -15,7 +15,7 @@ const (
 	OpenVPNAuthConf models.Filepath = "/etc/openvpn/auth.conf"
 	// OpenVPNConf is the file path to the OpenVPN client configuration file.
 	OpenVPNConf models.Filepath = "/etc/openvpn/target.ovpn"
-	// PIAPortForward is the file path to the port forwarding JSON information for PIA v4 servers.
+	// PIAPortForward is the file path to the port forwarding JSON information for PIA servers.
 	PIAPortForward models.Filepath = "/gluetun/piaportforward.json"
 	// TunnelDevice is the file path to tun device.
 	TunnelDevice models.Filepath = "/dev/net/tun"
