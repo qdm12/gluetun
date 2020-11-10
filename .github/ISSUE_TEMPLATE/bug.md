@@ -7,49 +7,31 @@ assignees: qdm12
 
 ---
 
-**TLDR**: *Describe your issue in a one liner here*
+**Host OS** (approximate answer is fine too): Ubuntu 18
 
-1. Is this urgent?
+**Is this urgent?**: No
 
-    - [ ] Yes
-    - [x] No
+**What VPN provider are you using**:
 
-2. What VPN service provider are you using?
+**What are you using to run your container?**: Docker Compose
 
-    - [x] PIA
-    - [ ] Mullvad
-    - [ ] Windscribe
-    - [ ] Surfshark
-    - [ ] Cyberghost
+**What is the version of the program** (See the line at the top of your logs)
 
-3. What's the version of the program?
+```
+Running version latest built on 2020-03-13T01:30:06Z (commit d0f678c)
+```
 
-    **See the line at the top of your logs**
+**What's the problem** 🤔
 
-    `Running version latest built on 2020-03-13T01:30:06Z (commit d0f678c)`
+That feature doesn't work
 
-4. What are you using to run the container?
+**Share your logs...**
 
-    - [ ] Docker run
-    - [x] Docker Compose
-    - [ ] Kubernetes
-    - [ ] Docker stack
-    - [ ] Docker swarm
-    - [ ] Podman
-    - [ ] Other:
-
-5. Extra information
-
-Logs:
+...*careful to remove i.e. token information with PIA port forwarding*
 
 ```log
 
-```
-
-Configuration file:
-
-```yml
+PASTE YOUR LOGS
+IN THERE
 
 ```
-
-Host OS:
