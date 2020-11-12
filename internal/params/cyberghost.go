@@ -30,12 +30,19 @@ func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
 	} else if len(clientKey) > 0 {
 		return clientKey, nil
 	}
-	content, err := p.fileManager.ReadFile("/files/client.key")
+	content, err := p.fileManager.ReadFile(string(constants.ClientKey))
 	if err != nil {
 		return "", err
 	}
-	s := string(content)
+	clientKey = extractClientKey(content)
+	return clientKey, nil
+}
+
+func extractClientKey(b []byte) (b64Key string) {
+	s := string(b)
 	s = strings.ReplaceAll(s, "\n", "")
 	s = strings.ReplaceAll(s, "\r", "")
-	return s, nil
+	s = strings.TrimPrefix(s, "-----BEGIN PRIVATE KEY-----")
+	s = strings.TrimSuffix(s, "-----END PRIVATE KEY-----")
+	return s
 }

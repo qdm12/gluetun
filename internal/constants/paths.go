@@ -25,4 +25,6 @@ const (
 	RootHints models.Filepath = "/etc/unbound/root.hints"
 	// RootKey is the filepath to the root.key file used by Unbound.
 	RootKey models.Filepath = "/etc/unbound/root.key"
+	// Client key filepath, used by Cyberghost.
+	ClientKey models.Filepath = "/gluetun/client.key"
 )
