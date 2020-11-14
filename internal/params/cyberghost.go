@@ -1,7 +1,6 @@
 package params
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strings"
 
@@ -48,9 +47,6 @@ func extractClientKey(b []byte) (b64Key string, err error) {
 	if len(s) == 0 {
 		return "", fmt.Errorf("client key is empty")
 	}
-	if _, err := base64.RawStdEncoding.DecodeString(s); err != nil {
-		return "", fmt.Errorf("client key cannot be read: %w", err)
-	}
 	return s, nil
 }
 
@@ -71,10 +67,7 @@ func extractClientCertificate(b []byte) (b64Key string, err error) {
 	s = strings.TrimPrefix(s, "-----BEGIN CERTIFICATE-----")
 	s = strings.TrimSuffix(s, "-----END CERTIFICATE-----")
 	if len(s) == 0 {
-		return "", fmt.Errorf("client key is empty")
-	}
-	if _, err := base64.RawStdEncoding.DecodeString(s); err != nil {
-		return "", fmt.Errorf("client key cannot be read: %w", err)
+		return "", fmt.Errorf("client certificate is empty")
 	}
 	return s, nil
 }
