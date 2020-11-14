@@ -1,6 +1,8 @@
 package params
 
 import (
+	"encoding/base64"
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -34,17 +36,22 @@ func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
 	if err != nil {
 		return "", err
 	}
-	clientKey = extractClientKey(content)
-	return clientKey, nil
+	return extractClientKey(content)
 }
 
-func extractClientKey(b []byte) (b64Key string) {
+func extractClientKey(b []byte) (b64Key string, err error) {
 	s := string(b)
 	s = strings.ReplaceAll(s, "\n", "")
 	s = strings.ReplaceAll(s, "\r", "")
 	s = strings.TrimPrefix(s, "-----BEGIN PRIVATE KEY-----")
 	s = strings.TrimSuffix(s, "-----END PRIVATE KEY-----")
-	return s
+	if len(s) == 0 {
+		return "", fmt.Errorf("client key is empty")
+	}
+	if _, err := base64.RawStdEncoding.DecodeString(s); err != nil {
+		return "", fmt.Errorf("client key cannot be read: %w", err)
+	}
+	return s, nil
 }
 
 // GetCyberghostClientCertificate obtains the client certificate to use for openvpn from the
@@ -54,15 +61,20 @@ func (p *reader) GetCyberghostClientCertificate() (clientCertificate string, err
 	if err != nil {
 		return "", err
 	}
-	clientCertificate = extractClientCertificate(content)
-	return clientCertificate, nil
+	return extractClientCertificate(content)
 }
 
-func extractClientCertificate(b []byte) (b64Key string) {
+func extractClientCertificate(b []byte) (b64Key string, err error) {
 	s := string(b)
 	s = strings.ReplaceAll(s, "\n", "")
 	s = strings.ReplaceAll(s, "\r", "")
 	s = strings.TrimPrefix(s, "-----BEGIN CERTIFICATE-----")
 	s = strings.TrimSuffix(s, "-----END CERTIFICATE-----")
-	return s
+	if len(s) == 0 {
+		return "", fmt.Errorf("client key is empty")
+	}
+	if _, err := base64.RawStdEncoding.DecodeString(s); err != nil {
+		return "", fmt.Errorf("client key cannot be read: %w", err)
+	}
+	return s, nil
 }
