@@ -1,6 +1,7 @@
 package params
 
 import (
+	"encoding/pem"
 	"fmt"
 	"strings"
 
@@ -38,15 +39,16 @@ func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
 	return extractClientKey(content)
 }
 
-func extractClientKey(b []byte) (b64Key string, err error) {
-	s := string(b)
+func extractClientKey(b []byte) (key string, err error) {
+	pemBlock, _ := pem.Decode(b)
+	if pemBlock == nil {
+		return "", fmt.Errorf("cannot decode PEM block from client key")
+	}
+	parsedBytes := pem.EncodeToMemory(pemBlock)
+	s := string(parsedBytes)
 	s = strings.ReplaceAll(s, "\n", "")
-	s = strings.ReplaceAll(s, "\r", "")
 	s = strings.TrimPrefix(s, "-----BEGIN PRIVATE KEY-----")
 	s = strings.TrimSuffix(s, "-----END PRIVATE KEY-----")
-	if len(s) == 0 {
-		return "", fmt.Errorf("client key is empty")
-	}
 	return s, nil
 }
 
@@ -60,14 +62,15 @@ func (p *reader) GetCyberghostClientCertificate() (clientCertificate string, err
 	return extractClientCertificate(content)
 }
 
-func extractClientCertificate(b []byte) (b64Key string, err error) {
-	s := string(b)
+func extractClientCertificate(b []byte) (certificate string, err error) {
+	pemBlock, _ := pem.Decode(b)
+	if pemBlock == nil {
+		return "", fmt.Errorf("cannot decode PEM block from client certificate")
+	}
+	parsedBytes := pem.EncodeToMemory(pemBlock)
+	s := string(parsedBytes)
 	s = strings.ReplaceAll(s, "\n", "")
-	s = strings.ReplaceAll(s, "\r", "")
 	s = strings.TrimPrefix(s, "-----BEGIN CERTIFICATE-----")
 	s = strings.TrimSuffix(s, "-----END CERTIFICATE-----")
-	if len(s) == 0 {
-		return "", fmt.Errorf("client certificate is empty")
-	}
 	return s, nil
 }
