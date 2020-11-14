@@ -44,9 +44,10 @@ type ServerSelection struct {
 }
 
 type ExtraConfigOptions struct {
-	ClientKey        string `json:"-"`                // Cyberghost
-	EncryptionPreset string `json:"encryptionPreset"` // PIA
-	OpenVPNIPv6      bool   `json:"openvpnIPv6"`      // Mullvad
+	ClientCertificate string `json:"-"`                // Cyberghost
+	ClientKey         string `json:"-"`                // Cyberghost
+	EncryptionPreset  string `json:"encryptionPreset"` // PIA
+	OpenVPNIPv6       bool   `json:"openvpnIPv6"`      // Mullvad
 }
 
 // PortForwarding contains settings for port forwarding.
@@ -111,7 +112,8 @@ func (p *ProviderSettings) String() string {
 		)
 	case "cyberghost":
 		settingsList = append(settingsList,
-			"ClientKey: [redacted]",
+			"Client key: [redacted]",
+			"Client certificate: [redacted]",
 			"Group: "+p.ServerSelection.Group,
 			"Regions: "+commaJoin(p.ServerSelection.Regions),
 		)

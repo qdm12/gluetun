@@ -83,6 +83,7 @@ type Reader interface {
 	GetCyberghostGroup() (group string, err error)
 	GetCyberghostRegions() (regions []string, err error)
 	GetCyberghostClientKey() (clientKey string, err error)
+	GetCyberghostClientCertificate() (clientCertificate string, err error)
 
 	// Vyprvpn getters
 	GetVyprvpnRegions() (regions []string, err error)

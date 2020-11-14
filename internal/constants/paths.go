@@ -27,4 +27,6 @@ const (
 	RootKey models.Filepath = "/etc/unbound/root.key"
 	// Client key filepath, used by Cyberghost.
 	ClientKey models.Filepath = "/gluetun/client.key"
+	// Client certificate filepath, used by Cyberghost.
+	ClientCertificate models.Filepath = "/gluetun/client.crt"
 )
