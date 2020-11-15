@@ -4,6 +4,13 @@ linters-settings:
   misspell:
     locale: US
 
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - dupl
+        - maligned
+
 linters:
   disable-all: true
   enable:
@@ -57,4 +64,4 @@ run:
   skip-dirs:
     - .devcontainer
     - .github
-    - postgres
+    - doc
