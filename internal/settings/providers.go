@@ -156,7 +156,7 @@ func GetCyberghostSettings(paramsReader params.Reader) (settings models.Provider
 	if err != nil {
 		return settings, err
 	}
-	settings.ExtraConfigOptions.ClientKey, err = paramsReader.GetCyberghostClientCertificate()
+	settings.ExtraConfigOptions.ClientCertificate, err = paramsReader.GetCyberghostClientCertificate()
 	if err != nil {
 		return settings, err
 	}
