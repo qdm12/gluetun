@@ -140,7 +140,7 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid
 		// PIA specific
 		"ping 300", // Ping every 5 minutes to prevent a timeout error
 		"reneg-sec 0",
-		"compress", // allow PIA server to choose the compression to use
+		// "compress", // allow PIA server to choose the compression to use
 
 		// Added constant values
 		"auth-nocache",
