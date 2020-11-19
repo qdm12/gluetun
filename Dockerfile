@@ -113,7 +113,7 @@ ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=10m --timeout=10s --start-period=30s --retries=2 CMD /entrypoint healthcheck
 RUN apk add -q --progress --no-cache --update ca-certificates iptables ip6tables unbound tzdata && \
-    apk add -q --progress --no-cache --update --repository http://dl-cdn.alpinelinux.org/alpine/v3.11/main openvpn=2.4.8-r1 && \
+    apk add -q --progress --no-cache --update --repository http://dl-cdn.alpinelinux.org/alpine/v3.5/main openvpn=2.3.18-r0 && \
     rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* && \
     deluser openvpn && \
     deluser unbound && \
