@@ -7,6 +7,9 @@ import (
 )
 
 func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http.Request) (authorized bool) {
+	if len(h.username) == 0 || (request.Method != "CONNECT" && !request.URL.IsAbs()) {
+		return true
+	}
 	basicAuth := request.Header.Get("Proxy-Authorization")
 	if len(basicAuth) == 0 {
 		h.logger.Info("Proxy-Authorization header not found from %s", request.RemoteAddr)
