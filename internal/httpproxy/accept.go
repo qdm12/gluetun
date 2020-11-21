@@ -6,7 +6,7 @@ import (
 )
 
 func isAccepted(responseWriter http.ResponseWriter, request *http.Request) bool {
-	// Not compatible with HTTP < 1.0 or HTTP > 2.0
+	// Not compatible with HTTP < 1.0 or HTTP >= 2.0 (see https://github.com/golang/go/issues/14797#issuecomment-196103814)
 	const (
 		minimalMajorVersion = 1
 		minimalMinorVersion = 0
