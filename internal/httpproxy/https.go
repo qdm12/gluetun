@@ -9,7 +9,7 @@ import (
 )
 
 func (h *handler) handleHTTPS(responseWriter http.ResponseWriter, request *http.Request) {
-	dialer := net.Dialer{Timeout: h.relayTimeout}
+	dialer := net.Dialer{}
 	destinationConn, err := dialer.DialContext(h.ctx, "tcp", request.Host)
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusServiceUnavailable)

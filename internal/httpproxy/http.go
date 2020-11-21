@@ -1,7 +1,6 @@
 package httpproxy
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"net"
@@ -18,9 +17,7 @@ func (h *handler) handleHTTP(responseWriter http.ResponseWriter, request *http.R
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(h.ctx, h.relayTimeout)
-	defer cancel()
-	request = request.WithContext(ctx)
+	request = request.WithContext(h.ctx)
 
 	request.RequestURI = ""
 

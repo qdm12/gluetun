@@ -9,20 +9,18 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func newHandler(ctx context.Context, wg *sync.WaitGroup,
-	client *http.Client, logger logging.Logger,
+func newHandler(ctx context.Context, wg *sync.WaitGroup, logger logging.Logger,
 	stealth, verbose bool, username, password string) http.Handler {
-	const relayTimeout = 10 * time.Second
+	const httpTimeout = 24 * time.Hour
 	return &handler{
-		ctx:          ctx,
-		wg:           wg,
-		client:       client,
-		logger:       logger,
-		relayTimeout: relayTimeout,
-		verbose:      verbose,
-		stealth:      stealth,
-		username:     username,
-		password:     password,
+		ctx:      ctx,
+		wg:       wg,
+		client:   &http.Client{Timeout: httpTimeout},
+		logger:   logger,
+		verbose:  verbose,
+		stealth:  stealth,
+		username: username,
+		password: password,
 	}
 }
 
@@ -31,7 +29,6 @@ type handler struct {
 	wg                 *sync.WaitGroup
 	client             *http.Client
 	logger             logging.Logger
-	relayTimeout       time.Duration
 	verbose, stealth   bool
 	username, password string
 }

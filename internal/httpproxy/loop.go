@@ -3,7 +3,6 @@ package httpproxy
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/settings"
@@ -20,7 +19,6 @@ type Looper interface {
 }
 
 type looper struct {
-	client        *http.Client
 	settings      settings.HTTPProxy
 	settingsMutex sync.RWMutex
 	logger        logging.Logger
@@ -29,10 +27,8 @@ type looper struct {
 	stop          chan struct{}
 }
 
-func NewLooper(client *http.Client, logger logging.Logger,
-	settings settings.HTTPProxy) Looper {
+func NewLooper(logger logging.Logger, settings settings.HTTPProxy) Looper {
 	return &looper{
-		client:   client,
 		settings: settings,
 		logger:   logger.WithPrefix("http proxy: "),
 		restart:  make(chan struct{}),
@@ -104,7 +100,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		settings := l.GetSettings()
 		address := fmt.Sprintf("0.0.0.0:%d", settings.Port)
 
-		server := New(ctx, address, l.logger, l.client, settings.Stealth, settings.Log, settings.User, settings.Password)
+		server := New(ctx, address, l.logger, settings.Stealth, settings.Log, settings.User, settings.Password)
 
 		runCtx, runCancel := context.WithCancel(context.Background())
 		runWg := &sync.WaitGroup{}

@@ -243,7 +243,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go publicIPLooper.RunRestartTicker(ctx, wg)
 	publicIPLooper.SetPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
-	httpProxyLooper := httpproxy.NewLooper(httpClient, logger, allSettings.HTTPProxy)
+	httpProxyLooper := httpproxy.NewLooper(logger, allSettings.HTTPProxy)
 	wg.Add(1)
 	go httpProxyLooper.Run(ctx, wg)
 

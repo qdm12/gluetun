@@ -20,13 +20,12 @@ type server struct {
 	internalWG *sync.WaitGroup
 }
 
-func New(ctx context.Context, address string,
-	logger logging.Logger, client *http.Client,
+func New(ctx context.Context, address string, logger logging.Logger,
 	stealth, verbose bool, username, password string) Server {
 	wg := &sync.WaitGroup{}
 	return &server{
 		address:    address,
-		handler:    newHandler(ctx, wg, client, logger, stealth, verbose, username, password),
+		handler:    newHandler(ctx, wg, logger, stealth, verbose, username, password),
 		logger:     logger,
 		internalWG: wg,
 	}
