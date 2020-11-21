@@ -41,6 +41,9 @@ func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Re
 		h.logger.Info("%s unauthorized", request.RemoteAddr)
 		return
 	}
+	request.Header.Del("Proxy-Connection")
+	request.Header.Del("Proxy-Authenticate")
+	request.Header.Del("Proxy-Authorization")
 	switch request.Method {
 	case http.MethodConnect:
 		h.handleHTTPS(responseWriter, request)
