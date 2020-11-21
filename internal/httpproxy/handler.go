@@ -34,6 +34,9 @@ type handler struct {
 }
 
 func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+	if !isAccepted(responseWriter, request) {
+		return
+	}
 	if len(h.username) > 0 && !isAuthorized(responseWriter, request, h.username, h.password) {
 		h.logger.Info("%s unauthorized", request.RemoteAddr)
 		return
