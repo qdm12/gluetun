@@ -107,6 +107,22 @@ Default Password: adminadmin
     docker build -t j4ym0/pia-qbittorrent https://github.com/j4ym0/pia-qbittorrent-docker.git
     ```
 
+- clone the repository and build:
+
+    ```bash
+    git clone https://github.com/j4ym0/pia-qbittorrent-docker.git
+    cd pia-qbittorrent-docker
+    docker build -t j4ym0/pia-qbittorrent .
+    ```
+
+- Using docker compose:
+
+  ```bash
+    git clone https://github.com/j4ym0/pia-qbittorrent-docker.git
+    cd pia-qbittorrent-docker
+    docker-compose up -d
+  ```
+
 - The download and unziping of PIA openvpn files is done at build for the ones not able to download the zip files
 - Checksums for PIA openvpn zip files are not used as these files change often (but HTTPS is used)
 - PIA Nextgen servers are used
