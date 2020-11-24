@@ -133,7 +133,7 @@ fi
 IP=$(ifconfig)
 printf "$ip"
 printf "[INFO] Reading OpenVPN configuration...\n"
-CONNECTIONSTRING=$(ack 'privateinternetaccess.com' "/openvpn/nextgen/$REGION.ovpn")
+CONNECTIONSTRING=$(ack 'privacy.network' "/openvpn/nextgen/$REGION.ovpn")
 exitOnError $?
 PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
 if [ "$PORT" = "" ]; then
