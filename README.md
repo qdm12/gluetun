@@ -101,7 +101,7 @@ Default Password: adminadmin
 
 - You can review the code which essential consists in the [Dockerfile](https://github.com/j4ym0/pia-qbittorrent-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/j4ym0/pia-qbittorrent-docker/blob/master/entrypoint.sh)
 - Any issues please raise them!!
-- Build the images yourself:
+- Build the images straight from git:
 
     ```bash
     docker build -t j4ym0/pia-qbittorrent https://github.com/j4ym0/pia-qbittorrent-docker.git
