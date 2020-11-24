@@ -3,8 +3,6 @@ FROM ubuntu:20.04
 
 ENV USER= \
     PASSWORD= \
-    ENCRYPTION=strong \
-    PROTOCOL=udp \
     REGION="Netherlands" \
     WEBUI_PORT=8888 \
     DNS_SERVERS=209.222.18.222,209.222.18.218
@@ -43,15 +41,9 @@ RUN apt-get update && \
   	./configure --disable-gui CXXFLAGS="-std=c++14" && \
   	make -j$(nproc) && \
   	make install && \
-    wget -q https://www.privateinternetaccess.com/openvpn/openvpn.zip \
-    https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip \
-    https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip \
-    https://www.privateinternetaccess.com/openvpn/openvpn-strong-tcp.zip && \
-    mkdir -p /openvpn/target && \
-    unzip -q openvpn.zip -d /openvpn/udp-normal && \
-    unzip -q openvpn-strong.zip -d /openvpn/udp-strong && \
-    unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
-    unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
+    curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn-nextgen.zip -o openvpn-nextgen.zip && \
+  	mkdir -p /openvpn/target && \
+  	unzip -q openvpn-nextgen.zip -d /openvpn/nextgen && \
     apt-get purge -y -qq unzip software-properties-common wget apt-utils build-essential pkg-config automake libtool git zlib1g-dev libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev libssl-dev libgeoip-dev curl cmake qtbase5-dev qttools5-dev-tools libqt5svg5-dev && \
     apt-get clean -qq && \
     apt-get autoclean -qq && \

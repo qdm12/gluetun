@@ -3,8 +3,6 @@ FROM alpine:3.12.0
 
 ENV USER= \
     PASSWORD= \
-    ENCRYPTION=strong \
-    PROTOCOL=udp \
     REGION="Netherlands" \
     WEBUI_PORT=8888 \
     DNS_SERVERS=209.222.18.222,209.222.18.218
@@ -44,15 +42,9 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${LD_LIBRARY_PATH} && \
 	mkdir /tmp/openvpn && \
 	cd /tmp/openvpn && \
-	curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn.zip -o openvpn.zip && \
-	curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn-strong.zip -o openvpn-strong.zip && \
-	curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn-tcp.zip -o openvpn-tcp.zip && \
-	curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn-strong-tcp.zip -o openvpn-strong-tcp.zip && \
+	curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn-nextgen.zip -o openvpn-nextgen.zip && \
 	mkdir -p /openvpn/target && \
-	unzip -q openvpn.zip -d /openvpn/udp-normal && \
-	unzip -q openvpn-strong.zip -d /openvpn/udp-strong && \
-	unzip -q openvpn-tcp.zip -d /openvpn/tcp-normal && \
-	unzip -q openvpn-strong-tcp.zip -d /openvpn/tcp-strong && \
+	unzip -q openvpn-nextgen.zip -d /openvpn/nextgen && \
 	apk del --purge .build-deps && \
 	cd / && \
 	rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/* /usr/include/*
