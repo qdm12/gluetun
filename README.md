@@ -100,7 +100,7 @@ Default Password: adminadmin
 ## For the paranoids
 
 - You can review the code which essential consists in the [Dockerfile](https://github.com/j4ym0/pia-qbittorrent-docker/blob/master/Dockerfile) and [entrypoint.sh](https://github.com/j4ym0/pia-qbittorrent-docker/blob/master/entrypoint.sh)
-- Any issues please rais them!!
+- Any issues please raise them!!
 - Build the images yourself:
 
     ```bash
