@@ -41,7 +41,7 @@ RUN apt-get update && \
   	./configure --disable-gui CXXFLAGS="-std=c++14" && \
   	make -j$(nproc) && \
   	make install && \
-    curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn-nextgen.zip -o openvpn-nextgen.zip && \
+    curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn.zip -o openvpn-nextgen.zip && \
   	mkdir -p /openvpn/target && \
   	unzip -q openvpn-nextgen.zip -d /openvpn/nextgen && \
     apt-get purge -y -qq unzip software-properties-common wget apt-utils build-essential pkg-config automake libtool git zlib1g-dev libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev libssl-dev libgeoip-dev curl cmake qtbase5-dev qttools5-dev-tools libqt5svg5-dev && \
