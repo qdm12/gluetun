@@ -34,10 +34,15 @@ type handler struct {
 }
 
 func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
-	if len(h.username) > 0 && !isAuthorized(responseWriter, request, h.username, h.password) {
-		h.logger.Info("%s unauthorized", request.RemoteAddr)
+	if !h.isAccepted(responseWriter, request) {
 		return
 	}
+	if !h.isAuthorized(responseWriter, request) {
+		return
+	}
+	request.Header.Del("Proxy-Connection")
+	request.Header.Del("Proxy-Authenticate")
+	request.Header.Del("Proxy-Authorization")
 	switch request.Method {
 	case http.MethodConnect:
 		h.handleHTTPS(responseWriter, request)
