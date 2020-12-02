@@ -35,7 +35,7 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=14 -G "Unix Makefiles" ../.. && \
 	make install && \
 	mkdir /tmp/qbittorrent && \
-	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.0.1 | tar xzC /tmp/qbittorrent && \
+	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.1 | tar xzC /tmp/qbittorrent && \
 	cd /tmp/qbittorrent/*qbittorrent* && \
 	PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig ./configure --disable-gui && \
 	make install && \
