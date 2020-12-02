@@ -34,7 +34,7 @@ type handler struct {
 }
 
 func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
-	if !isAccepted(responseWriter, request) {
+	if !h.isAccepted(responseWriter, request) {
 		return
 	}
 	if !h.isAuthorized(responseWriter, request) {
