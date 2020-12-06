@@ -278,7 +278,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
-	_ = openvpnLooper.SetStatus(constants.Running) // TODO option to disable with variable
+	_, _ = openvpnLooper.SetStatus(constants.Running) // TODO option to disable with variable
 
 	signalsCh := make(chan os.Signal, 1)
 	signal.Notify(signalsCh,
