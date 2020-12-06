@@ -2,16 +2,17 @@ package updater
 
 import (
 	"fmt"
+	"reflect"
 	"sync"
-	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/settings"
 )
 
 type state struct {
 	status   models.LoopStatus
-	period   time.Duration
+	settings settings.Updater
 	statusMu sync.RWMutex
 	periodMu sync.RWMutex
 }
@@ -68,15 +69,20 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 	}
 }
 
-func (l *looper) GetPeriod() (period time.Duration) {
+func (l *looper) GetSettings() (settings settings.Updater) {
 	l.state.periodMu.RLock()
 	defer l.state.periodMu.RUnlock()
-	return l.state.period
+	return l.state.settings
 }
 
-func (l *looper) SetPeriod(period time.Duration) {
+func (l *looper) SetSettings(settings settings.Updater) (outcome string) {
 	l.state.periodMu.Lock()
 	defer l.state.periodMu.Unlock()
-	l.state.period = period
+	settingsUnchanged := reflect.DeepEqual(settings, l.state.settings)
+	if settingsUnchanged {
+		return "settings left unchanged"
+	}
+	l.state.settings = settings
 	l.updateTicker <- struct{}{}
+	return "settings updated"
 }

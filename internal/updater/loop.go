@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/golibs/logging"
 )
@@ -17,8 +18,8 @@ type Looper interface {
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
-	GetPeriod() (period time.Duration)
-	SetPeriod(period time.Duration)
+	GetSettings() (settings settings.Updater)
+	SetSettings(settings settings.Updater) (outcome string)
 }
 
 type looper struct {
@@ -40,16 +41,16 @@ type looper struct {
 	timeSince func(time.Time) time.Duration
 }
 
-func NewLooper(options Options, period time.Duration, currentServers models.AllServers,
+func NewLooper(settings settings.Updater, currentServers models.AllServers,
 	storage storage.Storage, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger logging.Logger) Looper {
 	loggerWithPrefix := logger.WithPrefix("updater: ")
 	return &looper{
 		state: state{
-			status: constants.Stopped,
-			period: period,
+			status:   constants.Stopped,
+			settings: settings,
 		},
-		updater:       New(options, client, currentServers, loggerWithPrefix),
+		updater:       New(settings, client, currentServers, loggerWithPrefix),
 		storage:       storage,
 		setAllServers: setAllServers,
 		logger:        loggerWithPrefix,
@@ -153,7 +154,7 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 	timer := time.NewTimer(time.Hour)
 	timer.Stop()
 	timerIsStopped := true
-	if period := l.GetPeriod(); period > 0 {
+	if period := l.GetSettings().Period; period > 0 {
 		timerIsStopped = false
 		timer.Reset(period)
 	}
@@ -168,13 +169,13 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 		case <-timer.C:
 			lastTick = l.timeNow()
 			l.start <- struct{}{}
-			timer.Reset(l.GetPeriod())
+			timer.Reset(l.GetSettings().Period)
 		case <-l.updateTicker:
 			if !timerIsStopped && !timer.Stop() {
 				<-timer.C
 			}
 			timerIsStopped = true
-			period := l.GetPeriod()
+			period := l.GetSettings().Period
 			if period == 0 {
 				continue
 			}

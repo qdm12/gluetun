@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -24,7 +23,7 @@ type Settings struct {
 	HTTPProxy          HTTPProxy
 	ShadowSocks        ShadowSocks
 	PublicIPPeriod     time.Duration
-	UpdaterPeriod      time.Duration
+	Updater            Updater
 	VersionInformation bool
 	ControlServer      ControlServer
 }
@@ -33,10 +32,6 @@ func (s *Settings) String() string {
 	versionInformation := disabled
 	if s.VersionInformation {
 		versionInformation = enabled
-	}
-	updaterLine := "Updater: disabled"
-	if s.UpdaterPeriod > 0 {
-		updaterLine = fmt.Sprintf("Updater period: %s", s.UpdaterPeriod)
 	}
 	return strings.Join([]string{
 		"Settings summary below:",
@@ -47,9 +42,9 @@ func (s *Settings) String() string {
 		s.HTTPProxy.String(),
 		s.ShadowSocks.String(),
 		s.ControlServer.String(),
+		s.Updater.String(),
 		"Public IP check period: " + s.PublicIPPeriod.String(), // TODO print disabled if 0
 		"Version information: " + versionInformation,
-		updaterLine,
 		"", // new line at the end
 	}, "\n")
 }
@@ -93,7 +88,7 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.UpdaterPeriod, err = paramsReader.GetUpdaterPeriod()
+	settings.Updater, err = GetUpdaterSettings(paramsReader)
 	if err != nil {
 		return settings, err
 	}
