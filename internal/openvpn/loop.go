@@ -140,8 +140,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			openvpnCancel()
 			if !crashed {
 				l.running <- constants.Crashed
+				crashed = true
 			}
-			crashed = true
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -169,8 +169,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		if !crashed {
 			l.running <- constants.Running
+			crashed = false
+		} else {
+			l.state.setStatusWithLock(constants.Running)
 		}
-		crashed = false
 
 		stayHere := true
 		for stayHere {
@@ -193,9 +195,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case err := <-waitError: // unexpected error
 				openvpnCancel()
 				close(waitError)
-				l.state.statusMu.Lock()
-				l.state.status = constants.Crashed
-				l.state.statusMu.Unlock()
+				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
 				crashed = true
 				stayHere = false

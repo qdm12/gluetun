@@ -21,6 +21,12 @@ type state struct {
 	portForwardedMu sync.RWMutex
 }
 
+func (s *state) setStatusWithLock(status models.LoopStatus) {
+	s.statusMu.Lock()
+	defer s.statusMu.Unlock()
+	s.status = status
+}
+
 func (s *state) getSettingsAndServers() (settings settings.OpenVPN, allServers models.AllServers) {
 	s.settingsMu.RLock()
 	s.allServersMu.RLock()
@@ -51,8 +57,10 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
 		l.state.status = constants.Starting
+		l.state.statusMu.Unlock()
 		l.start <- struct{}{}
 		newStatus := <-l.running
+		l.state.statusMu.Lock()
 		l.state.status = newStatus
 		return newStatus.String(), nil
 	case constants.Stopped:
@@ -63,8 +71,10 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
 		l.state.status = constants.Stopping
+		l.state.statusMu.Unlock()
 		l.stop <- struct{}{}
 		<-l.stopped
+		l.state.statusMu.Lock()
 		l.state.status = constants.Stopped
 		return status.String(), nil
 	default:
@@ -81,15 +91,15 @@ func (l *looper) GetSettings() (settings settings.OpenVPN) {
 
 func (l *looper) SetSettings(settings settings.OpenVPN) (outcome string) {
 	l.state.settingsMu.Lock()
-	settingsChanged := !reflect.DeepEqual(l.state.settings, settings)
-	if settingsChanged {
-		l.state.settings = settings
-		_, _ = l.SetStatus(constants.Stopped)
-		outcome, _ = l.SetStatus(constants.Running)
-		return outcome
+	settingsUnchanged := reflect.DeepEqual(l.state.settings, settings)
+	if settingsUnchanged {
+		l.state.settingsMu.Unlock()
+		return "settings left unchanged"
 	}
-	l.state.settingsMu.Unlock()
-	return "settings left unchanged"
+	l.state.settings = settings
+	_, _ = l.SetStatus(constants.Stopped)
+	outcome, _ = l.SetStatus(constants.Running)
+	return outcome
 }
 
 func (l *looper) GetServers() (servers models.AllServers) {

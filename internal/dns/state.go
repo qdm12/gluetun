@@ -43,8 +43,10 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
 		l.state.status = constants.Starting
+		l.state.statusMu.Unlock()
 		l.start <- struct{}{}
 		newStatus := <-l.running
+		l.state.statusMu.Lock()
 		l.state.status = newStatus
 		return newStatus.String(), nil
 	case constants.Stopped:
@@ -55,8 +57,10 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
 		l.state.status = constants.Stopping
+		l.state.statusMu.Unlock()
 		l.stop <- struct{}{}
 		<-l.stopped
+		l.state.statusMu.Lock()
 		l.state.status = constants.Stopped
 		return status.String(), nil
 	default:

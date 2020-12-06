@@ -128,8 +128,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 		if err := l.conf.WaitForUnbound(); err != nil {
 			if !crashed {
 				l.running <- constants.Crashed
+				crashed = true
 			}
-			crashed = true
 			unboundCancel()
 			const fallback = true
 			l.useUnencryptedDNS(fallback)
@@ -146,8 +146,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 		l.logger.Info("DNS over TLS is ready")
 		if !crashed {
 			l.running <- constants.Running
+			crashed = false
+		} else {
+			l.state.setStatusWithLock(constants.Running)
 		}
-		crashed = false
 		signalDNSReady()
 
 		stayHere := true
