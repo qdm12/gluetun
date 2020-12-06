@@ -402,7 +402,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			tickerWg.Wait()
 			return
 		case <-tunnelReadyCh: // blocks until openvpn is connected
-			unboundLooper.Restart()
+			_, _ = unboundLooper.SetStatus(constants.Running)
 			restartTickerCancel() // stop previous restart tickers
 			tickerWg.Wait()
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)

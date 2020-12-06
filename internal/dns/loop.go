@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
@@ -15,78 +16,49 @@ import (
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func())
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
-	Restart()
-	Start()
-	Stop()
+	GetStatus() (status models.LoopStatus)
+	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetSettings() (settings settings.DNS)
-	SetSettings(settings settings.DNS)
+	SetSettings(settings settings.DNS) (outcome string)
 }
 
 type looper struct {
-	conf          Configurator
-	settings      settings.DNS
-	settingsMutex sync.RWMutex
-	logger        logging.Logger
-	streamMerger  command.StreamMerger
-	uid           int
-	gid           int
-	restart       chan struct{}
-	start         chan struct{}
-	stop          chan struct{}
-	updateTicker  chan struct{}
-	timeNow       func() time.Time
-	timeSince     func(time.Time) time.Duration
+	state        state
+	conf         Configurator
+	logger       logging.Logger
+	streamMerger command.StreamMerger
+	uid          int
+	gid          int
+	loopLock     sync.Mutex
+	start        chan struct{}
+	running      chan models.LoopStatus
+	stop         chan struct{}
+	stopped      chan struct{}
+	updateTicker chan struct{}
+	timeNow      func() time.Time
+	timeSince    func(time.Time) time.Duration
 }
 
 func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 	streamMerger command.StreamMerger, uid, gid int) Looper {
 	return &looper{
+		state: state{
+			status:   constants.Stopped,
+			settings: settings,
+		},
 		conf:         conf,
-		settings:     settings,
 		logger:       logger.WithPrefix("dns over tls: "),
 		uid:          uid,
 		gid:          gid,
 		streamMerger: streamMerger,
-		restart:      make(chan struct{}),
 		start:        make(chan struct{}),
+		running:      make(chan models.LoopStatus),
 		stop:         make(chan struct{}),
+		stopped:      make(chan struct{}),
 		updateTicker: make(chan struct{}),
 		timeNow:      time.Now,
 		timeSince:    time.Since,
 	}
-}
-
-func (l *looper) Restart() { l.restart <- struct{}{} }
-func (l *looper) Start()   { l.start <- struct{}{} }
-func (l *looper) Stop()    { l.stop <- struct{}{} }
-
-func (l *looper) GetSettings() (settings settings.DNS) {
-	l.settingsMutex.RLock()
-	defer l.settingsMutex.RUnlock()
-	return l.settings
-}
-
-func (l *looper) SetSettings(settings settings.DNS) {
-	l.settingsMutex.Lock()
-	defer l.settingsMutex.Unlock()
-	updatePeriodDiffers := l.settings.UpdatePeriod != settings.UpdatePeriod
-	l.settings = settings
-	l.settingsMutex.Unlock()
-	if updatePeriodDiffers {
-		l.updateTicker <- struct{}{}
-	}
-}
-
-func (l *looper) isEnabled() bool {
-	l.settingsMutex.RLock()
-	defer l.settingsMutex.RUnlock()
-	return l.settings.Enabled
-}
-
-func (l *looper) setEnabled(enabled bool) {
-	l.settingsMutex.Lock()
-	defer l.settingsMutex.Unlock()
-	l.settings.Enabled = enabled
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -103,96 +75,42 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) waitForFirstStart(ctx context.Context, signalDNSReady func()) {
-	for {
-		select {
-		case <-l.stop:
-			l.setEnabled(false)
-			l.logger.Info("not started yet")
-		case <-l.restart:
-			if l.isEnabled() {
-				return
-			}
-			signalDNSReady()
-			l.logger.Info("not restarting because disabled")
-		case <-l.start:
-			l.setEnabled(true)
-			return
-		case <-ctx.Done():
-			return
-		}
-	}
-}
-
-func (l *looper) waitForSubsequentStart(ctx context.Context, unboundCancel context.CancelFunc) {
-	if l.isEnabled() {
-		return
-	}
-	for {
-		// wait for a signal to re-enable
-		select {
-		case <-l.stop:
-			l.logger.Info("already disabled")
-		case <-l.restart:
-			if !l.isEnabled() {
-				l.logger.Info("not restarting because disabled")
-			} else {
-				return
-			}
-		case <-l.start:
-			l.setEnabled(true)
-			return
-		case <-ctx.Done():
-			unboundCancel()
-			return
-		}
-	}
-}
-
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func()) {
 	defer wg.Done()
+
 	const fallback = false
-	l.useUnencryptedDNS(fallback)
-	l.waitForFirstStart(ctx, signalDNSReady)
-	if ctx.Err() != nil {
+	l.useUnencryptedDNS(fallback) // TODO remove? Use default DNS by default for Docker resolution?
+
+	select {
+	case <-l.start:
+	case <-ctx.Done():
 		return
 	}
+
 	defer l.logger.Warn("loop exited")
 
-	var unboundCtx context.Context
-	var unboundCancel context.CancelFunc = func() {}
-	var waitError chan error
-	triggeredRestart := false
-	l.setEnabled(true)
-	for ctx.Err() == nil {
-		l.waitForSubsequentStart(ctx, unboundCancel)
+	for {
+		err := l.updateFiles(ctx)
+		if err == nil {
+			break
+		}
+		l.state.setStatusWithLock(constants.Crashed)
+		l.logAndWait(ctx, err)
+	}
 
+	crashed := false
+
+	for ctx.Err() == nil {
 		settings := l.GetSettings()
 
-		// Setup
-		if err := l.conf.DownloadRootHints(ctx, l.uid, l.gid); err != nil {
-			l.logAndWait(ctx, err)
-			continue
-		}
-		if err := l.conf.DownloadRootKey(ctx, l.uid, l.gid); err != nil {
-			l.logAndWait(ctx, err)
-			continue
-		}
-		if err := l.conf.MakeUnboundConf(ctx, settings, l.uid, l.gid); err != nil {
-			l.logAndWait(ctx, err)
-			continue
-		}
-
-		if triggeredRestart {
-			triggeredRestart = false
-			unboundCancel()
-			<-waitError
-			close(waitError)
-		}
-		unboundCtx, unboundCancel = context.WithCancel(context.Background())
+		unboundCtx, unboundCancel := context.WithCancel(context.Background())
 		stream, waitFn, err := l.conf.Start(unboundCtx, settings.VerbosityDetailsLevel)
 		if err != nil {
 			unboundCancel()
+			if !crashed {
+				l.running <- constants.Crashed
+			}
+			crashed = true
 			const fallback = true
 			l.useUnencryptedDNS(fallback)
 			l.logAndWait(ctx, err)
@@ -201,23 +119,35 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 
 		// Started successfully
 		go l.streamMerger.Merge(unboundCtx, stream, command.MergeName("unbound"))
+
 		l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                                                  // use Unbound
 		if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}, settings.KeepNameserver); err != nil { // use Unbound
 			l.logger.Error(err)
 		}
+
 		if err := l.conf.WaitForUnbound(); err != nil {
+			if !crashed {
+				l.running <- constants.Crashed
+			}
+			crashed = true
 			unboundCancel()
 			const fallback = true
 			l.useUnencryptedDNS(fallback)
 			l.logAndWait(ctx, err)
 			continue
 		}
-		waitError = make(chan error)
+
+		waitError := make(chan error)
 		go func() {
 			err := waitFn() // blocking
 			waitError <- err
 		}()
+
 		l.logger.Info("DNS over TLS is ready")
+		if !crashed {
+			l.running <- constants.Running
+		}
+		crashed = false
 		signalDNSReady()
 
 		stayHere := true
@@ -229,31 +159,29 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 				<-waitError
 				close(waitError)
 				return
-			case <-l.restart: // triggered restart
-				l.logger.Info("restarting")
-				// unboundCancel occurs next loop run when the setup is complete
-				triggeredRestart = true
-				stayHere = false
-			case <-l.start:
-				l.logger.Info("already started")
 			case <-l.stop:
 				l.logger.Info("stopping")
+				const fallback = false
+				l.useUnencryptedDNS(fallback)
 				unboundCancel()
 				<-waitError
 				close(waitError)
-				l.setEnabled(false)
+				l.stopped <- struct{}{}
+			case <-l.start:
+				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
-				close(waitError)
 				unboundCancel()
+				close(waitError)
+				l.state.setStatusWithLock(constants.Crashed)
 				const fallback = true
 				l.useUnencryptedDNS(fallback)
 				l.logAndWait(ctx, err)
 				stayHere = false
 			}
 		}
+		unboundCancel()
 	}
-	unboundCancel()
 }
 
 func (l *looper) useUnencryptedDNS(fallback bool) {
@@ -314,7 +242,20 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		case <-timer.C:
 			lastTick = l.timeNow()
-			l.restart <- struct{}{}
+
+			status := l.GetStatus()
+			if status == constants.Running {
+				if err := l.updateFiles(ctx); err != nil {
+					l.state.setStatusWithLock(constants.Crashed)
+					l.logger.Error(err)
+					l.logger.Warn("skipping Unbound restart due to failed files update")
+					continue
+				}
+			}
+
+			_, _ = l.SetStatus(constants.Stopped)
+			_, _ = l.SetStatus(constants.Running)
+
 			settings := l.GetSettings()
 			timer.Reset(settings.UpdatePeriod)
 		case <-l.updateTicker:
@@ -336,4 +277,18 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 			timerIsStopped = false
 		}
 	}
+}
+
+func (l *looper) updateFiles(ctx context.Context) (err error) {
+	if err := l.conf.DownloadRootHints(ctx, l.uid, l.gid); err != nil {
+		return err
+	}
+	if err := l.conf.DownloadRootKey(ctx, l.uid, l.gid); err != nil {
+		return err
+	}
+	settings := l.GetSettings()
+	if err := l.conf.MakeUnboundConf(ctx, settings, l.uid, l.gid); err != nil {
+		return err
+	}
+	return nil
 }
