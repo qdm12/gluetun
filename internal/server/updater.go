@@ -2,9 +2,13 @@
 package server
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
 )
@@ -41,35 +45,42 @@ func (h *updaterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *updaterHandler) getStatus(w http.ResponseWriter) {
-	// status := h.looper.GetStatus()
-	// encoder := json.NewEncoder(w)
-	// data := statusWrapper{Status: string(status)}
-	// if err := encoder.Encode(data); err != nil {
-	// 	h.logger.Warn(err)
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	return
-	// }
+	status := h.looper.GetStatus()
+	encoder := json.NewEncoder(w)
+	data := statusWrapper{Status: string(status)}
+	if err := encoder.Encode(data); err != nil {
+		h.logger.Warn(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *updaterHandler) setStatus(w http.ResponseWriter, r *http.Request) {
-	// decoder := json.NewDecoder(r.Body)
-	// var data statusWrapper
-	// if err := decoder.Decode(&data); err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-	// status := models.LoopStatus(data.Status)
-	// switch status {
-	// case constants.Stopped, constants.Running:
-	// default:
-	// 	errString := fmt.Sprintf(
-	// 		"invalid openvpn status %q: possible values are: %s, %s",
-	// 		status, constants.Stopped, constants.Running)
-	// 	http.Error(w, errString, http.StatusBadRequest)
-	// 	return
-	// }
-	// message := h.looper.SetStatus(status)
-	// if _, err := w.Write([]byte(message)); err != nil {
-	// 	h.logger.Warn(err)
-	// }
+	decoder := json.NewDecoder(r.Body)
+	var data statusWrapper
+	if err := decoder.Decode(&data); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	status := models.LoopStatus(data.Status)
+	switch status {
+	case constants.Running:
+	default:
+		errString := fmt.Sprintf(
+			"invalid openvpn status %q: can only be %s",
+			status, constants.Running)
+		http.Error(w, errString, http.StatusBadRequest)
+		return
+	}
+	outcome, err := h.looper.SetStatus(status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	encoder := json.NewEncoder(w)
+	if err := encoder.Encode(outcomeWrapper{Outcome: outcome}); err != nil {
+		h.logger.Warn(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 }

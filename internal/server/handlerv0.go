@@ -56,13 +56,11 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/openvpn/settings":
 		http.Redirect(w, r, "/v1/openvpn/settings", http.StatusPermanentRedirect)
 	case "/updater/restart":
-		// message := h.updater.SetStatus(constants.Stopped)
-		// h.logger.Info("updater: %s", message)
-		// message = h.updater.SetStatus(constants.Running)
-		// h.logger.Info("updater: %s", message)
-		// if _, err := w.Write([]byte("updater restarted, please consider using the /v1/ API in the future.")); err != nil {
-		// 	h.logger.Warn(err)
-		// }
+		outcome, _ := h.updater.SetStatus(constants.Running)
+		h.logger.Info("updater: %s", outcome)
+		if _, err := w.Write([]byte("updater restarted, please consider using the /v1/ API in the future.")); err != nil {
+			h.logger.Warn(err)
+		}
 	default:
 		http.Error(w, "unversioned API: requested URI not found", http.StatusNotFound)
 	}

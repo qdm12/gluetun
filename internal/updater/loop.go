@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/golibs/logging"
@@ -14,24 +15,26 @@ import (
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
-	Restart()
-	Stop()
+	GetStatus() (status models.LoopStatus)
+	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetPeriod() (period time.Duration)
 	SetPeriod(period time.Duration)
 }
 
 type looper struct {
-	period        time.Duration
-	periodMutex   sync.RWMutex
+	state state
+	// Objects
 	updater       Updater
 	storage       storage.Storage
 	setAllServers func(allServers models.AllServers)
 	logger        logging.Logger
-	restart       chan struct{}
-	stop          chan struct{}
-	updateTicker  chan struct{}
-	timeNow       func() time.Time
-	timeSince     func(time.Time) time.Duration
+	// Internal channels and locks
+	loopLock     sync.Mutex
+	start        chan struct{}
+	updateTicker chan struct{}
+	// Mock functions
+	timeNow   func() time.Time
+	timeSince func(time.Time) time.Duration
 }
 
 func NewLooper(options Options, period time.Duration, currentServers models.AllServers,
@@ -39,33 +42,19 @@ func NewLooper(options Options, period time.Duration, currentServers models.AllS
 	client *http.Client, logger logging.Logger) Looper {
 	loggerWithPrefix := logger.WithPrefix("updater: ")
 	return &looper{
-		period:        period,
+		state: state{
+			status: constants.Stopped,
+			period: period,
+		},
 		updater:       New(options, client, currentServers, loggerWithPrefix),
 		storage:       storage,
 		setAllServers: setAllServers,
 		logger:        loggerWithPrefix,
-		restart:       make(chan struct{}),
-		stop:          make(chan struct{}),
+		start:         make(chan struct{}),
 		updateTicker:  make(chan struct{}),
 		timeNow:       time.Now,
 		timeSince:     time.Since,
 	}
-}
-
-func (l *looper) Restart() { l.restart <- struct{}{} }
-func (l *looper) Stop()    { l.stop <- struct{}{} }
-
-func (l *looper) GetPeriod() (period time.Duration) {
-	l.periodMutex.RLock()
-	defer l.periodMutex.RUnlock()
-	return l.period
-}
-
-func (l *looper) SetPeriod(period time.Duration) {
-	l.periodMutex.Lock()
-	l.period = period
-	l.periodMutex.Unlock()
-	l.updateTicker <- struct{}{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -84,51 +73,45 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
+	crashed := false
 	select {
-	case <-l.restart:
-		l.logger.Info("starting...")
+	case <-l.start:
 	case <-ctx.Done():
 		return
 	}
 	defer l.logger.Warn("loop exited")
 
-	enabled := true
-
 	for ctx.Err() == nil {
-		for !enabled {
-			// wait for a signal to re-enable
-			select {
-			case <-l.stop:
-				l.logger.Info("already disabled")
-			case <-l.restart:
-				enabled = true
-			case <-ctx.Done():
-				return
-			}
+		if !crashed {
+			l.state.setStatusWithLock(constants.Running)
 		}
 
-		// Enabled and has a period set
-
 		servers, err := l.updater.UpdateServers(ctx)
+
 		if err != nil {
+			crashed = true
+			l.state.setStatusWithLock(constants.Crashed)
 			if ctx.Err() != nil {
 				return
 			}
 			l.logAndWait(ctx, err)
 			continue
 		}
+		crashed = false
+
 		l.setAllServers(servers)
 		if err := l.storage.FlushToFile(servers); err != nil {
 			l.logger.Error(err)
 		}
 		l.logger.Info("Updated servers information")
+		l.state.setStatusWithLock(constants.Completed)
 
 		select {
-		case <-l.restart: // triggered restart
-		case <-l.stop:
-			enabled = false
 		case <-ctx.Done():
+			l.logger.Warn("context canceled: exiting loop")
 			return
+		case <-l.start:
+			l.logger.Info("starting")
 		}
 	}
 }
@@ -152,7 +135,7 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		case <-timer.C:
 			lastTick = l.timeNow()
-			l.restart <- struct{}{}
+			l.start <- struct{}{}
 			timer.Reset(l.GetPeriod())
 		case <-l.updateTicker:
 			if !timerIsStopped && !timer.Stop() {
