@@ -31,6 +31,7 @@ type looper struct {
 	// Internal channels and locks
 	loopLock     sync.Mutex
 	start        chan struct{}
+	running      chan models.LoopStatus
 	updateTicker chan struct{}
 	// Mock functions
 	timeNow   func() time.Time
@@ -51,6 +52,7 @@ func NewLooper(options Options, period time.Duration, currentServers models.AllS
 		setAllServers: setAllServers,
 		logger:        loggerWithPrefix,
 		start:         make(chan struct{}),
+		running:       make(chan models.LoopStatus),
 		updateTicker:  make(chan struct{}),
 		timeNow:       time.Now,
 		timeSince:     time.Since,
@@ -82,36 +84,56 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
+		updateCtx, updateCancel := context.WithCancel(ctx)
+		defer updateCancel()
+		serversCh := make(chan models.AllServers)
+		errorCh := make(chan error)
+		go func() {
+			servers, err := l.updater.UpdateServers(updateCtx)
+			if err != nil {
+				errorCh <- err
+				return
+			}
+			serversCh <- servers
+		}()
+
 		if !crashed {
+			l.running <- constants.Running
+			crashed = false
+		} else {
 			l.state.setStatusWithLock(constants.Running)
 		}
 
-		servers, err := l.updater.UpdateServers(ctx)
-
-		if err != nil {
-			crashed = true
-			l.state.setStatusWithLock(constants.Crashed)
-			if ctx.Err() != nil {
+		stayHere := true
+		for stayHere {
+			select {
+			case <-ctx.Done():
+				l.logger.Warn("context canceled: exiting loop")
+				updateCancel()
 				return
+			case <-l.start:
+				l.logger.Info("starting")
+				updateCancel()
+				stayHere = false
+			case servers := <-serversCh:
+				updateCancel()
+				close(errorCh)
+				close(serversCh)
+				l.setAllServers(servers)
+				if err := l.storage.FlushToFile(servers); err != nil {
+					l.logger.Error(err)
+				}
+				l.state.setStatusWithLock(constants.Completed)
+				l.logger.Info("Updated servers information")
+			case err := <-errorCh:
+				updateCancel()
+				close(errorCh)
+				close(serversCh)
+				l.state.setStatusWithLock(constants.Crashed)
+				l.logAndWait(ctx, err)
+				crashed = true
+				stayHere = false
 			}
-			l.logAndWait(ctx, err)
-			continue
-		}
-		crashed = false
-
-		l.setAllServers(servers)
-		if err := l.storage.FlushToFile(servers); err != nil {
-			l.logger.Error(err)
-		}
-		l.logger.Info("Updated servers information")
-		l.state.setStatusWithLock(constants.Completed)
-
-		select {
-		case <-ctx.Done():
-			l.logger.Warn("context canceled: exiting loop")
-			return
-		case <-l.start:
-			l.logger.Info("starting")
 		}
 	}
 }

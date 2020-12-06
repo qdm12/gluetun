@@ -36,13 +36,18 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 	switch status {
 	case constants.Running:
 		switch existingStatus {
-		case constants.Running, constants.Crashed:
+		case constants.Starting, constants.Running, constants.Crashed:
 			return fmt.Sprintf("already %s", existingStatus), nil
 		}
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
+		l.state.status = constants.Starting
+		l.state.statusMu.Unlock()
 		l.start <- struct{}{}
-		return status.String(), nil
+		newStatus := <-l.running
+		l.state.statusMu.Lock()
+		l.state.status = newStatus
+		return newStatus.String(), nil
 	default:
 		return "", fmt.Errorf("status %q can only be %q",
 			status, constants.Running)
