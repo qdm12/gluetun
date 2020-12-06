@@ -36,7 +36,7 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 	switch status {
 	case constants.Running:
 		switch existingStatus {
-		case constants.Starting, constants.Running, constants.Crashed:
+		case constants.Starting, constants.Running, constants.Stopping, constants.Crashed:
 			return fmt.Sprintf("already %s", existingStatus), nil
 		}
 		l.loopLock.Lock()
@@ -48,9 +48,23 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.state.statusMu.Lock()
 		l.state.status = newStatus
 		return newStatus.String(), nil
+	case constants.Stopped:
+		switch existingStatus {
+		case constants.Stopped, constants.Stopping, constants.Starting, constants.Crashed:
+			return fmt.Sprintf("already %s", existingStatus), nil
+		}
+		l.loopLock.Lock()
+		defer l.loopLock.Unlock()
+		l.state.status = constants.Stopping
+		l.state.statusMu.Unlock()
+		l.stop <- struct{}{}
+		<-l.stopped
+		l.state.statusMu.Lock()
+		l.state.status = status
+		return status.String(), nil
 	default:
-		return "", fmt.Errorf("status %q can only be %q",
-			status, constants.Running)
+		return "", fmt.Errorf("status %q can only be %q or %q",
+			status, constants.Running, constants.Stopped)
 	}
 }
 

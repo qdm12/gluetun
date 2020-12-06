@@ -32,6 +32,8 @@ type looper struct {
 	loopLock     sync.Mutex
 	start        chan struct{}
 	running      chan models.LoopStatus
+	stop         chan struct{}
+	stopped      chan struct{}
 	updateTicker chan struct{}
 	// Mock functions
 	timeNow   func() time.Time
@@ -53,6 +55,8 @@ func NewLooper(options Options, period time.Duration, currentServers models.AllS
 		logger:        loggerWithPrefix,
 		start:         make(chan struct{}),
 		running:       make(chan models.LoopStatus),
+		stop:          make(chan struct{}),
+		stopped:       make(chan struct{}),
 		updateTicker:  make(chan struct{}),
 		timeNow:       time.Now,
 		timeSince:     time.Since,
@@ -115,6 +119,12 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.logger.Info("starting")
 				updateCancel()
 				stayHere = false
+			case <-l.stop:
+				l.logger.Info("stopping")
+				updateCancel()
+				<-errorCh
+				close(errorCh)
+				l.stopped <- struct{}{}
 			case servers := <-serversCh:
 				updateCancel()
 				close(errorCh)

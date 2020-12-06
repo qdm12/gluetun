@@ -56,7 +56,9 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/openvpn/settings":
 		http.Redirect(w, r, "/v1/openvpn/settings", http.StatusPermanentRedirect)
 	case "/updater/restart":
-		outcome, _ := h.updater.SetStatus(constants.Running)
+		outcome, _ := h.updater.SetStatus(constants.Stopped)
+		h.logger.Info("updater: %s", outcome)
+		outcome, _ = h.updater.SetStatus(constants.Running)
 		h.logger.Info("updater: %s", outcome)
 		if _, err := w.Write([]byte("updater restarted, please consider using the /v1/ API in the future.")); err != nil {
 			h.logger.Warn(err)

@@ -3,12 +3,9 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
 )
@@ -62,14 +59,9 @@ func (h *updaterHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	status := models.LoopStatus(data.Status)
-	switch status {
-	case constants.Running:
-	default:
-		errString := fmt.Sprintf(
-			"invalid openvpn status %q: can only be %s",
-			status, constants.Running)
-		http.Error(w, errString, http.StatusBadRequest)
+	status, err := data.getStatus()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	outcome, err := h.looper.SetStatus(status)
