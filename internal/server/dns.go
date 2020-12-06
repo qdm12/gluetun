@@ -2,6 +2,7 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 
@@ -39,35 +40,37 @@ func (h *dnsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *dnsHandler) getStatus(w http.ResponseWriter) {
-	// status := h.looper.GetStatus()
-	// encoder := json.NewEncoder(w)
-	// data := statusWrapper{Status: string(status)}
-	// if err := encoder.Encode(data); err != nil {
-	// 	h.logger.Warn(err)
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	return
-	// }
+	status := h.looper.GetStatus()
+	encoder := json.NewEncoder(w)
+	data := statusWrapper{Status: string(status)}
+	if err := encoder.Encode(data); err != nil {
+		h.logger.Warn(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *dnsHandler) setStatus(w http.ResponseWriter, r *http.Request) {
-	// decoder := json.NewDecoder(r.Body)
-	// var data statusWrapper
-	// if err := decoder.Decode(&data); err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-	// status := models.LoopStatus(data.Status)
-	// switch status {
-	// case constants.Stopped, constants.Running:
-	// default:
-	// 	errString := fmt.Sprintf(
-	// 		"invalid openvpn status %q: possible values are: %s, %s",
-	// 		status, constants.Stopped, constants.Running)
-	// 	http.Error(w, errString, http.StatusBadRequest)
-	// 	return
-	// }
-	// message := h.looper.SetStatus(status)
-	// if _, err := w.Write([]byte(message)); err != nil {
-	// 	h.logger.Warn(err)
-	// }
+	decoder := json.NewDecoder(r.Body)
+	var data statusWrapper
+	if err := decoder.Decode(&data); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	status, err := data.getStatus()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	outcome, err := h.looper.SetStatus(status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	encoder := json.NewEncoder(w)
+	if err := encoder.Encode(outcomeWrapper{Outcome: outcome}); err != nil {
+		h.logger.Warn(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 }

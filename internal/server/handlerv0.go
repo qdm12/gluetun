@@ -44,13 +44,13 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.logger.Warn(err)
 		}
 	case "/unbound/actions/restart":
-		// message := h.dns.SetStatus(constants.Stopped)
-		// h.logger.Info("dns: %s", message)
-		// message = h.dns.SetStatus(constants.Running)
-		// h.logger.Info("dns: %s", message)
-		// if _, err := w.Write([]byte("dns restarted, please consider using the /v1/ API in the future.")); err != nil {
-		// 	h.logger.Warn(err)
-		// }
+		outcome, _ := h.dns.SetStatus(constants.Stopped)
+		h.logger.Info("dns: %s", outcome)
+		outcome, _ = h.dns.SetStatus(constants.Running)
+		h.logger.Info("dns: %s", outcome)
+		if _, err := w.Write([]byte("dns restarted, please consider using the /v1/ API in the future.")); err != nil {
+			h.logger.Warn(err)
+		}
 	case "/openvpn/portforwarded":
 		http.Redirect(w, r, "/v1/openvpn/portforwarded", http.StatusPermanentRedirect)
 	case "/openvpn/settings":
