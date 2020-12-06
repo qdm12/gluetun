@@ -115,6 +115,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case <-ctx.Done():
 				l.logger.Warn("context canceled: exiting loop")
 				updateCancel()
+				close(errorCh)
 				return
 			case <-l.start:
 				l.logger.Info("starting")
@@ -124,11 +125,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.logger.Info("stopping")
 				updateCancel()
 				<-errorCh
-				close(errorCh)
 				l.stopped <- struct{}{}
 			case servers := <-serversCh:
 				updateCancel()
-				close(errorCh)
 				close(serversCh)
 				l.setAllServers(servers)
 				if err := l.storage.FlushToFile(servers); err != nil {
@@ -138,7 +137,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.logger.Info("Updated servers information")
 			case err := <-errorCh:
 				updateCancel()
-				close(errorCh)
 				close(serversCh)
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
@@ -146,6 +144,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				stayHere = false
 			}
 		}
+		close(errorCh)
 	}
 }
 

@@ -73,7 +73,7 @@ func (h *openvpnHandler) getStatus(w http.ResponseWriter) {
 	}
 }
 
-func (h *openvpnHandler) setStatus(w http.ResponseWriter, r *http.Request) {
+func (h *openvpnHandler) setStatus(w http.ResponseWriter, r *http.Request) { //nolint:dupl
 	decoder := json.NewDecoder(r.Body)
 	var data statusWrapper
 	if err := decoder.Decode(&data); err != nil {

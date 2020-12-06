@@ -187,20 +187,19 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.logger.Info("stopping")
 				openvpnCancel()
 				<-waitError
-				close(waitError)
 				l.stopped <- struct{}{}
 			case <-l.start:
 				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				openvpnCancel()
-				close(waitError)
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
 				crashed = true
 				stayHere = false
 			}
 		}
+		close(waitError)
 		openvpnCancel() // just for the linter
 	}
 }

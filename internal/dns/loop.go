@@ -89,7 +89,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 
 	defer l.logger.Warn("loop exited")
 
-	for {
+	for ctx.Err() == nil {
 		err := l.updateFiles(ctx)
 		if err == nil {
 			break
@@ -167,14 +167,12 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 				l.useUnencryptedDNS(fallback)
 				unboundCancel()
 				<-waitError
-				close(waitError)
 				l.stopped <- struct{}{}
 			case <-l.start:
 				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				unboundCancel()
-				close(waitError)
 				l.state.setStatusWithLock(constants.Crashed)
 				const fallback = true
 				l.useUnencryptedDNS(fallback)
@@ -182,6 +180,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 				stayHere = false
 			}
 		}
+		close(waitError)
 		unboundCancel()
 	}
 }
@@ -209,7 +208,11 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 		data := constants.DNSProviderMapping()[provider]
 		for _, targetIP = range data.IPs {
 			if targetIP.To4() != nil {
-				l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
+				if fallback {
+					l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
+				} else {
+					l.logger.Info("using plaintext DNS at address %s", targetIP)
+				}
 				l.conf.UseDNSInternally(targetIP)
 				if err := l.conf.UseDNSSystemWide(targetIP, settings.KeepNameserver); err != nil {
 					l.logger.Error(err)
