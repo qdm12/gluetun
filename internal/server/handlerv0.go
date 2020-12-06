@@ -36,10 +36,10 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/version":
 		http.Redirect(w, r, "/v1/version", http.StatusPermanentRedirect)
 	case "/openvpn/actions/restart":
-		message := h.openvpn.SetStatus(constants.Stopped)
-		h.logger.Info("openvpn: %s", message)
-		message = h.openvpn.SetStatus(constants.Running)
-		h.logger.Info("openvpn: %s", message)
+		outcome, _ := h.openvpn.SetStatus(constants.Stopped)
+		h.logger.Info("openvpn: %s", outcome)
+		outcome, _ = h.openvpn.SetStatus(constants.Running)
+		h.logger.Info("openvpn: %s", outcome)
 		if _, err := w.Write([]byte("openvpn restarted, please consider using the /v1/ API in the future.")); err != nil {
 			h.logger.Warn(err)
 		}

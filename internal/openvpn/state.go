@@ -37,7 +37,7 @@ func (l *looper) GetStatus() (status models.LoopStatus) {
 	return l.state.status
 }
 
-func (l *looper) SetStatus(status models.LoopStatus) (message string) {
+func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error) {
 	l.state.statusMu.Lock()
 	defer l.state.statusMu.Unlock()
 	existingStatus := l.state.status
@@ -46,7 +46,7 @@ func (l *looper) SetStatus(status models.LoopStatus) (message string) {
 	case constants.Running:
 		switch existingStatus {
 		case constants.Starting, constants.Running, constants.Stopping, constants.Crashed:
-			return fmt.Sprintf("already %s", existingStatus)
+			return fmt.Sprintf("already %s", existingStatus), nil
 		}
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
@@ -54,11 +54,11 @@ func (l *looper) SetStatus(status models.LoopStatus) (message string) {
 		l.start <- struct{}{}
 		newStatus := <-l.running
 		l.state.status = newStatus
-		return string(newStatus)
+		return newStatus.String(), nil
 	case constants.Stopped:
 		switch existingStatus {
 		case constants.Starting, constants.Stopping, constants.Stopped, constants.Crashed:
-			return fmt.Sprintf("already %s", existingStatus)
+			return fmt.Sprintf("already %s", existingStatus), nil
 		}
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
@@ -66,9 +66,9 @@ func (l *looper) SetStatus(status models.LoopStatus) (message string) {
 		l.stop <- struct{}{}
 		<-l.stopped
 		l.state.status = constants.Stopped
-		return "stopped"
+		return status.String(), nil
 	default:
-		return fmt.Sprintf("status %q can only be %q or %q",
+		return "", fmt.Errorf("status %q can only be %q or %q",
 			status, constants.Running, constants.Stopped)
 	}
 }
@@ -79,16 +79,17 @@ func (l *looper) GetSettings() (settings settings.OpenVPN) {
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings settings.OpenVPN) {
+func (l *looper) SetSettings(settings settings.OpenVPN) (outcome string) {
 	l.state.settingsMu.Lock()
 	settingsChanged := !reflect.DeepEqual(l.state.settings, settings)
 	if settingsChanged {
 		l.state.settings = settings
-		_ = l.SetStatus(constants.Stopped)
-		_ = l.SetStatus(constants.Running)
-		return
+		_, _ = l.SetStatus(constants.Stopped)
+		outcome, _ = l.SetStatus(constants.Running)
+		return outcome
 	}
 	l.state.settingsMu.Unlock()
+	return "settings left unchanged"
 }
 
 func (l *looper) GetServers() (servers models.AllServers) {

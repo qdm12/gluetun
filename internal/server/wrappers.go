@@ -26,3 +26,7 @@ func (sw *statusWrapper) getStatus() (status models.LoopStatus, err error) {
 type portWrapper struct {
 	Port uint16 `json:"port"`
 }
+
+type outcomeWrapper struct {
+	Outcome string `json:"outcome"`
+}

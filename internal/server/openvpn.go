@@ -85,9 +85,16 @@ func (h *openvpnHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	message := h.looper.SetStatus(status)
-	if _, err := w.Write([]byte(message)); err != nil {
+	outcome, err := h.looper.SetStatus(status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	encoder := json.NewEncoder(w)
+	if err := encoder.Encode(outcomeWrapper{Outcome: outcome}); err != nil {
 		h.logger.Warn(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 }
 

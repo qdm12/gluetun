@@ -21,9 +21,9 @@ import (
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	GetStatus() (status models.LoopStatus)
-	SetStatus(status models.LoopStatus) (message string)
+	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetSettings() (settings settings.OpenVPN)
-	SetSettings(settings settings.OpenVPN)
+	SetSettings(settings settings.OpenVPN) (outcome string)
 	GetServers() (servers models.AllServers)
 	SetServers(servers models.AllServers)
 	GetPortForwarded() (port uint16)

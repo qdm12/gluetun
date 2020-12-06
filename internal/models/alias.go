@@ -24,6 +24,10 @@ type (
 	LoopStatus string
 )
 
+func (ls LoopStatus) String() string {
+	return string(ls)
+}
+
 func marshalJSONString(s string) (data []byte, err error) {
 	return []byte(fmt.Sprintf("%q", s)), nil
 }
