@@ -87,7 +87,7 @@ func (l *looper) PortForward(vpnGateway net.IP) { l.portForwardSignals <- vpnGat
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	triggeredStart := true
+	crashed := false
 	select {
 	case <-l.start:
 	case <-ctx.Done():
@@ -138,10 +138,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		stream, waitFn, err := l.conf.Start(openvpnCtx)
 		if err != nil {
 			openvpnCancel()
-			if triggeredStart {
-				triggeredStart = false
+			if !crashed {
 				l.running <- constants.Crashed
 			}
+			crashed = true
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -167,10 +167,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			waitError <- err
 		}()
 
-		if triggeredStart {
-			triggeredStart = false
+		if !crashed {
 			l.running <- constants.Running
 		}
+		crashed = false
 
 		stayHere := true
 		for stayHere {
@@ -189,7 +189,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.stopped <- struct{}{}
 			case <-l.start:
 				l.logger.Info("starting")
-				triggeredStart = true
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				openvpnCancel()
@@ -198,7 +197,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.state.status = constants.Crashed
 				l.state.statusMu.Unlock()
 				l.logAndWait(ctx, err)
-				triggeredStart = false
+				crashed = true
 				stayHere = false
 			}
 		}
