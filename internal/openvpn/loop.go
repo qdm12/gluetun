@@ -46,10 +46,11 @@ type looper struct {
 	streamMerger     command.StreamMerger
 	cancel           context.CancelFunc
 	// Internal channels and locks
-	loopLock               sync.Mutex
-	running, stop, stopped chan struct{}
-	start                  chan struct{}
-	portForwardSignals     chan net.IP
+	loopLock           sync.Mutex
+	running            chan models.LoopStatus
+	stop, stopped      chan struct{}
+	start              chan struct{}
+	portForwardSignals chan net.IP
 }
 
 func NewLooper(settings settings.OpenVPN,
@@ -75,7 +76,7 @@ func NewLooper(settings settings.OpenVPN,
 		streamMerger:       streamMerger,
 		cancel:             cancel,
 		start:              make(chan struct{}),
-		running:            make(chan struct{}),
+		running:            make(chan models.LoopStatus),
 		stop:               make(chan struct{}),
 		stopped:            make(chan struct{}),
 		portForwardSignals: make(chan net.IP),
@@ -137,6 +138,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		stream, waitFn, err := l.conf.Start(openvpnCtx)
 		if err != nil {
 			openvpnCancel()
+			if triggeredStart {
+				triggeredStart = false
+				l.running <- constants.Crashed
+			}
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -164,7 +169,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		if triggeredStart {
 			triggeredStart = false
-			l.running <- struct{}{}
+			l.running <- constants.Running
 		}
 
 		stayHere := true
@@ -189,6 +194,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case err := <-waitError: // unexpected error
 				openvpnCancel()
 				close(waitError)
+				l.state.statusMu.Lock()
+				l.state.status = constants.Crashed
+				l.state.statusMu.Unlock()
 				l.logAndWait(ctx, err)
 				triggeredStart = false
 				stayHere = false

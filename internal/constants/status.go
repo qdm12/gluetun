@@ -9,4 +9,5 @@ const (
 	Running  models.LoopStatus = "running"
 	Stopping models.LoopStatus = "stopping"
 	Stopped  models.LoopStatus = "stopped"
+	Crashed  models.LoopStatus = "crashed"
 )

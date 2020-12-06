@@ -45,19 +45,19 @@ func (l *looper) SetStatus(status models.LoopStatus) (message string) {
 	switch status {
 	case constants.Running:
 		switch existingStatus {
-		case constants.Starting, constants.Running, constants.Stopping:
+		case constants.Starting, constants.Running, constants.Stopping, constants.Crashed:
 			return fmt.Sprintf("already %s", existingStatus)
 		}
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
 		l.state.status = constants.Starting
 		l.start <- struct{}{}
-		<-l.running
-		l.state.status = constants.Running
-		return "running"
+		newStatus := <-l.running
+		l.state.status = newStatus
+		return string(newStatus)
 	case constants.Stopped:
 		switch existingStatus {
-		case constants.Starting, constants.Stopping, constants.Stopped:
+		case constants.Starting, constants.Stopping, constants.Stopped, constants.Crashed:
 			return fmt.Sprintf("already %s", existingStatus)
 		}
 		l.loopLock.Lock()
