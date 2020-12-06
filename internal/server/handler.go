@@ -1,8 +1,8 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/models"
@@ -17,54 +17,33 @@ func newHandler(logger logging.Logger, logging bool,
 	unboundLooper dns.Looper,
 	updaterLooper updater.Looper,
 ) http.Handler {
-	return &handler{
-		logger:        logger,
-		logging:       logging,
-		buildInfo:     buildInfo,
-		openvpnLooper: openvpnLooper,
-		unboundLooper: unboundLooper,
-		updaterLooper: updaterLooper,
-	}
+	handler := &handler{}
+
+	openvpn := newOpenvpnHandler(openvpnLooper, logger)
+	dns := newDNSHandler(unboundLooper, logger)
+	updater := newUpdaterHandler(updaterLooper, logger)
+
+	handler.v0 = newHandlerV0(logger, openvpnLooper, unboundLooper, updaterLooper)
+	handler.v1 = newHandlerV1(logger, buildInfo, openvpn, dns, updater)
+
+	handlerWithLog := withLogMiddleware(handler, logger, logging)
+	handler.setLogEnabled = handlerWithLog.setEnabled
+
+	return handlerWithLog
 }
 
 type handler struct {
-	logger        logging.Logger
-	logging       bool
-	buildInfo     models.BuildInformation
-	openvpnLooper openvpn.Looper
-	unboundLooper dns.Looper
-	updaterLooper updater.Looper
+	v0            http.Handler
+	v1            http.Handler
+	setLogEnabled func(enabled bool)
 }
 
-func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
-	if h.logging {
-		h.logger.Info("HTTP %s %s", request.Method, request.RequestURI)
+func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	r.RequestURI = strings.TrimSuffix(r.RequestURI, "/")
+	if !strings.HasPrefix(r.RequestURI, "/v1/") && r.RequestURI != "/v1" {
+		h.v0.ServeHTTP(w, r)
+		return
 	}
-	switch request.Method {
-	case http.MethodGet:
-		switch request.RequestURI {
-		case "/version":
-			h.getVersion(responseWriter)
-			responseWriter.WriteHeader(http.StatusOK)
-		case "/openvpn/actions/restart":
-			h.openvpnLooper.Restart()
-			responseWriter.WriteHeader(http.StatusOK)
-		case "/unbound/actions/restart":
-			h.unboundLooper.Restart()
-			responseWriter.WriteHeader(http.StatusOK)
-		case "/openvpn/portforwarded":
-			h.getPortForwarded(responseWriter)
-		case "/openvpn/settings":
-			h.getOpenvpnSettings(responseWriter)
-		case "/updater/restart":
-			h.updaterLooper.Restart()
-			responseWriter.WriteHeader(http.StatusOK)
-		default:
-			errString := fmt.Sprintf("Nothing here for %s %s", request.Method, request.RequestURI)
-			http.Error(responseWriter, errString, http.StatusBadRequest)
-		}
-	default:
-		errString := fmt.Sprintf("Nothing here for %s %s", request.Method, request.RequestURI)
-		http.Error(responseWriter, errString, http.StatusBadRequest)
-	}
+	r.RequestURI = strings.TrimPrefix(r.RequestURI, "/v1")
+	h.v1.ServeHTTP(w, r)
 }

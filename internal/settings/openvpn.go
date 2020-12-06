@@ -12,7 +12,7 @@ import (
 // OpenVPN contains settings to configure the OpenVPN client.
 type OpenVPN struct {
 	User      string                  `json:"user"`
-	Password  string                  `json:"-"`
+	Password  string                  `json:"password"`
 	Verbosity int                     `json:"verbosity"`
 	Root      bool                    `json:"runAsRoot"`
 	Cipher    string                  `json:"cipher"`
