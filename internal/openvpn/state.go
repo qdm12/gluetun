@@ -45,24 +45,20 @@ func (l *looper) SetStatus(status models.LoopStatus) (message string) {
 	switch status {
 	case constants.Running:
 		switch existingStatus {
-		case constants.Starting:
-			return "already starting"
-		case constants.Running:
-			return "already running"
+		case constants.Starting, constants.Running, constants.Stopping:
+			return fmt.Sprintf("already %s", existingStatus)
 		}
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
 		l.state.status = constants.Starting
-		l.start <- existingStatus
+		l.start <- struct{}{}
 		<-l.running
 		l.state.status = constants.Running
 		return "running"
 	case constants.Stopped:
 		switch existingStatus {
-		case constants.Stopping:
-			return "already stopping"
-		case constants.Stopped:
-			return "already stopped"
+		case constants.Starting, constants.Stopping, constants.Stopped:
+			return fmt.Sprintf("already %s", existingStatus)
 		}
 		l.loopLock.Lock()
 		defer l.loopLock.Unlock()
@@ -88,16 +84,8 @@ func (l *looper) SetSettings(settings settings.OpenVPN) {
 	settingsChanged := !reflect.DeepEqual(l.state.settings, settings)
 	if settingsChanged {
 		l.state.settings = settings
-		l.loopLock.Lock()
-		defer l.loopLock.Unlock()
-		l.state.statusMu.Lock()
-		defer l.state.statusMu.Unlock()
-		existingStatus := l.state.status
-		l.state.status = constants.Starting
-		l.start <- existingStatus
-		l.state.settingsMu.Unlock() // unlocks to allow the loop to read settings at restart
-		<-l.running
-		l.state.status = constants.Running
+		_ = l.SetStatus(constants.Stopped)
+		_ = l.SetStatus(constants.Running)
 		return
 	}
 	l.state.settingsMu.Unlock()

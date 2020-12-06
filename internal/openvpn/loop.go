@@ -48,7 +48,7 @@ type looper struct {
 	// Internal channels and locks
 	loopLock               sync.Mutex
 	running, stop, stopped chan struct{}
-	start                  chan models.LoopStatus
+	start                  chan struct{}
 	portForwardSignals     chan net.IP
 }
 
@@ -74,7 +74,7 @@ func NewLooper(settings settings.OpenVPN,
 		fileManager:        fileManager,
 		streamMerger:       streamMerger,
 		cancel:             cancel,
-		start:              make(chan models.LoopStatus),
+		start:              make(chan struct{}),
 		running:            make(chan struct{}),
 		stop:               make(chan struct{}),
 		stopped:            make(chan struct{}),
@@ -182,13 +182,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				<-waitError
 				close(waitError)
 				l.stopped <- struct{}{}
-			case existingStatus := <-l.start:
+			case <-l.start:
 				l.logger.Info("starting")
-				if existingStatus != constants.Stopped { // stop it before restart
-					openvpnCancel()
-					<-waitError
-					close(waitError)
-				}
 				triggeredStart = true
 				stayHere = false
 			case err := <-waitError: // unexpected error
