@@ -1,10 +1,10 @@
 name: labels
 on:
   push:
-    branches: ["master"]
+    branches: [master]
     paths:
-      - '.github/labels.yml'
-      - '.github/workflows/labels.yml'
+      - .github/labels.yml
+      - .github/workflows/labels.yml
 jobs:
   labeler:
     runs-on: ubuntu-latest
