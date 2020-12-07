@@ -9,15 +9,15 @@ import (
 // ProviderSettings contains settings specific to a VPN provider.
 type ProviderSettings struct {
 	Name               VPNProvider        `json:"name"`
-	ServerSelection    ServerSelection    `json:"serverSelection"`
-	ExtraConfigOptions ExtraConfigOptions `json:"extraConfig"`
-	PortForwarding     PortForwarding     `json:"portForwarding"`
+	ServerSelection    ServerSelection    `json:"server_selection"`
+	ExtraConfigOptions ExtraConfigOptions `json:"extra_config"`
+	PortForwarding     PortForwarding     `json:"port_forwarding"`
 }
 
 type ServerSelection struct {
 	// Common
-	Protocol NetworkProtocol `json:"networkProtocol"`
-	TargetIP net.IP          `json:"targetIP,omitempty"`
+	Protocol NetworkProtocol `json:"network_protocol"`
+	TargetIP net.IP          `json:"target_ip,omitempty"`
 
 	// Cyberghost, PIA, Surfshark, Windscribe, Vyprvpn, NordVPN
 	Regions []string `json:"regions"`
@@ -34,20 +34,20 @@ type ServerSelection struct {
 	Owned bool     `json:"owned"`
 
 	// Mullvad, Windscribe
-	CustomPort uint16 `json:"customPort"`
+	CustomPort uint16 `json:"custom_port"`
 
 	// NordVPN
 	Numbers []uint16 `json:"numbers"`
 
 	// PIA
-	EncryptionPreset string `json:"encryptionPreset"`
+	EncryptionPreset string `json:"encryption_preset"`
 }
 
 type ExtraConfigOptions struct {
-	ClientCertificate string `json:"-"`                // Cyberghost
-	ClientKey         string `json:"-"`                // Cyberghost
-	EncryptionPreset  string `json:"encryptionPreset"` // PIA
-	OpenVPNIPv6       bool   `json:"openvpnIPv6"`      // Mullvad
+	ClientCertificate string `json:"-"`                 // Cyberghost
+	ClientKey         string `json:"-"`                 // Cyberghost
+	EncryptionPreset  string `json:"encryption_preset"` // PIA
+	OpenVPNIPv6       bool   `json:"openvpn_ipv6"`      // Mullvad
 }
 
 // PortForwarding contains settings for port forwarding.

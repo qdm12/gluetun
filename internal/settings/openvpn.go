@@ -14,7 +14,7 @@ type OpenVPN struct {
 	User      string                  `json:"user"`
 	Password  string                  `json:"password"`
 	Verbosity int                     `json:"verbosity"`
-	Root      bool                    `json:"runAsRoot"`
+	Root      bool                    `json:"run_as_root"`
 	Cipher    string                  `json:"cipher"`
 	Auth      string                  `json:"auth"`
 	Provider  models.ProviderSettings `json:"provider"`
