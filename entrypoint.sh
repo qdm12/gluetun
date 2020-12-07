@@ -76,7 +76,7 @@ elif [ $WEBUI_PORT -gt 65535 ]; then
   exit 1
 fi
 
-
+$REGION = $(echo "$REGION" | tr '[:upper:]' '[:lower:]')
 ############################################
 # SHOW PARAMETERS
 ############################################
