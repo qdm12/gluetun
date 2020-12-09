@@ -42,6 +42,9 @@ exitIfNotIn(){
 # link the lib for qbittorrent for alpine
 export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${LD_LIBRARY_PATH}
 
+# convert vpn to lower case for dir
+$REGION = $(echo "$REGION" | tr '[:upper:]' '[:lower:]')
+
 printf " =========================================\n"
 printf " ============== qBittorrent ==============\n"
 printf " =================== + ===================\n"
@@ -76,7 +79,6 @@ elif [ $WEBUI_PORT -gt 65535 ]; then
   exit 1
 fi
 
-$REGION = $(echo "$REGION" | tr '[:upper:]' '[:lower:]')
 ############################################
 # SHOW PARAMETERS
 ############################################
