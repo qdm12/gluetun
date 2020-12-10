@@ -153,7 +153,7 @@ printf "[INFO] Detecting IP addresses corresponding to $PIADOMAIN...\n"
 VPNIPS=$(dig $PIADOMAIN +short | grep '^[.0-9]*$')
 exitOnError $?
 if [ "$VPNIPS" = "" ]; then
-  print " Unable to connect to $PIADOMAIN"
+  printf " Unable to connect to $PIADOMAIN"
   exit 3
 fi
 for ip in $VPNIPS; do
