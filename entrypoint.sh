@@ -43,7 +43,7 @@ exitIfNotIn(){
 export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${LD_LIBRARY_PATH}
 
 # convert vpn to lower case for dir
-$REGION = $(echo "$REGION" | tr '[:upper:]' '[:lower:]')
+server=$(echo "$REGION" | tr '[:upper:]' '[:lower:]')
 
 printf " =========================================\n"
 printf " ============== qBittorrent ==============\n"
@@ -63,8 +63,8 @@ printf " =========================================\n"
 ############################################
 exitIfUnset USER
 exitIfUnset PASSWORD
-cat "/openvpn/nextgen/$REGION.ovpn" &> /dev/null
-exitOnError $? "/openvpn/nextgen/$REGION.ovpn is not accessible"
+cat "/openvpn/nextgen/$server.ovpn" &> /dev/null
+exitOnError $? "/openvpn/nextgen/$server.ovpn is not accessible"
 if [ -z $WEBUI_PORT ]; then
   WEBUI_PORT=8888
 fi
@@ -84,7 +84,7 @@ fi
 ############################################
 printf "\n"
 printf "OpenVPN parameters:\n"
-printf " * Region: $REGION\n"
+printf " * Region: $server\n"
 printf "Local network parameters:\n"
 printf " * Web UI port: $WEBUI_PORT\n"
 printf " * Adding PIA DNS Servers\n"
@@ -135,16 +135,16 @@ fi
 IP=$(ifconfig)
 printf "$ip"
 printf "[INFO] Reading OpenVPN configuration...\n"
-CONNECTIONSTRING=$(ack 'privacy.network' "/openvpn/nextgen/$REGION.ovpn")
+CONNECTIONSTRING=$(ack 'privacy.network' "/openvpn/nextgen/$server.ovpn")
 exitOnError $?
 PORT=$(echo $CONNECTIONSTRING | cut -d' ' -f3)
 if [ "$PORT" = "" ]; then
-  printf "[ERROR] Port not found in /openvpn/nextgen/$REGION.ovpn\n"
+  printf "[ERROR] Port not found in /openvpn/nextgen/$server.ovpn\n"
   exit 1
 fi
 PIADOMAIN=$(echo $CONNECTIONSTRING | cut -d' ' -f2)
 if [ "$PIADOMAIN" = "" ]; then
-  printf "[ERROR] Domain not found in /openvpn/nextgen/$REGION.ovpn\n"
+  printf "[ERROR] Domain not found in /openvpn/nextgen/$server.ovpn\n"
   exit 1
 fi
 printf " * Port: $PORT\n"
@@ -171,8 +171,8 @@ cp -f *.crt "$TARGET_PATH"
 exitOnError $? "Cannot copy crt file to $TARGET_PATH"
 cp -f *.pem "$TARGET_PATH"
 exitOnError $? "Cannot copy pem file to $TARGET_PATH"
-cp -f "$REGION.ovpn" "$TARGET_PATH/config.ovpn"
-exitOnError $? "Cannot copy $REGION.ovpn file to $TARGET_PATH"
+cp -f "$server.ovpn" "$TARGET_PATH/config.ovpn"
+exitOnError $? "Cannot copy $server.ovpn file to $TARGET_PATH"
 sed -i "/$CONNECTIONSTRING/d" "$TARGET_PATH/config.ovpn"
 exitOnError $? "Cannot delete '$CONNECTIONSTRING' from $TARGET_PATH/config.ovpn"
 sed -i '/resolv-retry/d' "$TARGET_PATH/config.ovpn"
