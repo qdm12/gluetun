@@ -6,7 +6,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/golibs/logging"
 )
@@ -14,58 +16,52 @@ import (
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
-	Restart()
-	Stop()
-	GetPeriod() (period time.Duration)
-	SetPeriod(period time.Duration)
+	GetStatus() (status models.LoopStatus)
+	SetStatus(status models.LoopStatus) (outcome string, err error)
+	GetSettings() (settings settings.Updater)
+	SetSettings(settings settings.Updater) (outcome string)
 }
 
 type looper struct {
-	period        time.Duration
-	periodMutex   sync.RWMutex
+	state state
+	// Objects
 	updater       Updater
 	storage       storage.Storage
 	setAllServers func(allServers models.AllServers)
 	logger        logging.Logger
-	restart       chan struct{}
-	stop          chan struct{}
-	updateTicker  chan struct{}
-	timeNow       func() time.Time
-	timeSince     func(time.Time) time.Duration
+	// Internal channels and locks
+	loopLock     sync.Mutex
+	start        chan struct{}
+	running      chan models.LoopStatus
+	stop         chan struct{}
+	stopped      chan struct{}
+	updateTicker chan struct{}
+	// Mock functions
+	timeNow   func() time.Time
+	timeSince func(time.Time) time.Duration
 }
 
-func NewLooper(options Options, period time.Duration, currentServers models.AllServers,
+func NewLooper(settings settings.Updater, currentServers models.AllServers,
 	storage storage.Storage, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger logging.Logger) Looper {
 	loggerWithPrefix := logger.WithPrefix("updater: ")
 	return &looper{
-		period:        period,
-		updater:       New(options, client, currentServers, loggerWithPrefix),
+		state: state{
+			status:   constants.Stopped,
+			settings: settings,
+		},
+		updater:       New(settings, client, currentServers, loggerWithPrefix),
 		storage:       storage,
 		setAllServers: setAllServers,
 		logger:        loggerWithPrefix,
-		restart:       make(chan struct{}),
+		start:         make(chan struct{}),
+		running:       make(chan models.LoopStatus),
 		stop:          make(chan struct{}),
+		stopped:       make(chan struct{}),
 		updateTicker:  make(chan struct{}),
 		timeNow:       time.Now,
 		timeSince:     time.Since,
 	}
-}
-
-func (l *looper) Restart() { l.restart <- struct{}{} }
-func (l *looper) Stop()    { l.stop <- struct{}{} }
-
-func (l *looper) GetPeriod() (period time.Duration) {
-	l.periodMutex.RLock()
-	defer l.periodMutex.RUnlock()
-	return l.period
-}
-
-func (l *looper) SetPeriod(period time.Duration) {
-	l.periodMutex.Lock()
-	l.period = period
-	l.periodMutex.Unlock()
-	l.updateTicker <- struct{}{}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -84,52 +80,71 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
+	crashed := false
 	select {
-	case <-l.restart:
-		l.logger.Info("starting...")
+	case <-l.start:
 	case <-ctx.Done():
 		return
 	}
 	defer l.logger.Warn("loop exited")
 
-	enabled := true
-
 	for ctx.Err() == nil {
-		for !enabled {
-			// wait for a signal to re-enable
+		updateCtx, updateCancel := context.WithCancel(ctx)
+		defer updateCancel()
+		serversCh := make(chan models.AllServers)
+		errorCh := make(chan error)
+		go func() {
+			servers, err := l.updater.UpdateServers(updateCtx)
+			if err != nil {
+				errorCh <- err
+				return
+			}
+			serversCh <- servers
+		}()
+
+		if !crashed {
+			l.running <- constants.Running
+			crashed = false
+		} else {
+			l.state.setStatusWithLock(constants.Running)
+		}
+
+		stayHere := true
+		for stayHere {
 			select {
-			case <-l.stop:
-				l.logger.Info("already disabled")
-			case <-l.restart:
-				enabled = true
 			case <-ctx.Done():
+				l.logger.Warn("context canceled: exiting loop")
+				updateCancel()
+				close(errorCh)
 				return
+			case <-l.start:
+				l.logger.Info("starting")
+				updateCancel()
+				stayHere = false
+			case <-l.stop:
+				l.logger.Info("stopping")
+				updateCancel()
+				<-errorCh
+				l.stopped <- struct{}{}
+			case servers := <-serversCh:
+				updateCancel()
+				close(serversCh)
+				l.setAllServers(servers)
+				if err := l.storage.FlushToFile(servers); err != nil {
+					l.logger.Error(err)
+				}
+				l.state.setStatusWithLock(constants.Completed)
+				l.logger.Info("Updated servers information")
+			case err := <-errorCh:
+				updateCancel()
+				close(serversCh)
+				l.state.setStatusWithLock(constants.Crashed)
+				l.logAndWait(ctx, err)
+				crashed = true
+				stayHere = false
 			}
 		}
-
-		// Enabled and has a period set
-
-		servers, err := l.updater.UpdateServers(ctx)
-		if err != nil {
-			if ctx.Err() != nil {
-				return
-			}
-			l.logAndWait(ctx, err)
-			continue
-		}
-		l.setAllServers(servers)
-		if err := l.storage.FlushToFile(servers); err != nil {
-			l.logger.Error(err)
-		}
-		l.logger.Info("Updated servers information")
-
-		select {
-		case <-l.restart: // triggered restart
-		case <-l.stop:
-			enabled = false
-		case <-ctx.Done():
-			return
-		}
+		close(errorCh)
 	}
 }
 
@@ -138,7 +153,7 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 	timer := time.NewTimer(time.Hour)
 	timer.Stop()
 	timerIsStopped := true
-	if period := l.GetPeriod(); period > 0 {
+	if period := l.GetSettings().Period; period > 0 {
 		timerIsStopped = false
 		timer.Reset(period)
 	}
@@ -152,14 +167,14 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		case <-timer.C:
 			lastTick = l.timeNow()
-			l.restart <- struct{}{}
-			timer.Reset(l.GetPeriod())
+			l.start <- struct{}{}
+			timer.Reset(l.GetSettings().Period)
 		case <-l.updateTicker:
 			if !timerIsStopped && !timer.Stop() {
 				<-timer.C
 			}
 			timerIsStopped = true
-			period := l.GetPeriod()
+			period := l.GetSettings().Period
 			if period == 0 {
 				continue
 			}

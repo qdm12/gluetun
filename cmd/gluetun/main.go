@@ -217,15 +217,14 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
 
-	openvpnLooper := openvpn.NewLooper(allSettings.VPNSP, allSettings.OpenVPN, uid, gid, allServers,
+	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, uid, gid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, fileManager, streamMerger, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
 
-	updaterOptions := updater.NewOptions("127.0.0.1")
-	updaterLooper := updater.NewLooper(updaterOptions, allSettings.UpdaterPeriod,
-		allServers, storage, openvpnLooper.SetAllServers, httpClient, logger)
+	updaterLooper := updater.NewLooper(allSettings.Updater,
+		allServers, storage, openvpnLooper.SetServers, httpClient, logger)
 	wg.Add(1)
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
 	go updaterLooper.Run(ctx, wg)
@@ -276,8 +275,9 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	wg.Add(1)
 	go healthcheckServer.Run(ctx, wg)
 
-	// Start openvpn for the first time
-	openvpnLooper.Restart()
+	// Start openvpn for the first time in a blocking call
+	// until openvpn is launched
+	_, _ = openvpnLooper.SetStatus(constants.Running) // TODO option to disable with variable
 
 	signalsCh := make(chan os.Signal, 1)
 	signal.Notify(signalsCh,
@@ -401,7 +401,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 			tickerWg.Wait()
 			return
 		case <-tunnelReadyCh: // blocks until openvpn is connected
-			unboundLooper.Restart()
+			_, _ = unboundLooper.SetStatus(constants.Running)
 			restartTickerCancel() // stop previous restart tickers
 			tickerWg.Wait()
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)

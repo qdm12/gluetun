@@ -130,8 +130,8 @@ func (r *reader) GetDNSOverTLSPrivateAddresses() (privateAddresses []string, err
 	return privateAddresses, nil
 }
 
-// GetDNSOverTLSIPv6 obtains if Unbound should resolve ipv6 addresses using ipv6 DNS over TLS
-//  servers from the environment variable DOT_IPV6.
+// GetDNSOverTLSIPv6 obtains if Unbound should resolve ipv6 addresses using
+// ipv6 DNS over TLS from the environment variable DOT_IPV6.
 func (r *reader) GetDNSOverTLSIPv6() (ipv6 bool, err error) {
 	return r.envParams.GetOnOff("DOT_IPV6", libparams.Default("off"))
 }

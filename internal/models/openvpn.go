@@ -1,6 +1,8 @@
 package models
 
-import "net"
+import (
+	"net"
+)
 
 type OpenVPNConnection struct {
 	IP       net.IP

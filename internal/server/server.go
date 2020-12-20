@@ -23,7 +23,8 @@ type server struct {
 	handler http.Handler
 }
 
-func New(address string, logging bool, logger logging.Logger, buildInfo models.BuildInformation,
+func New(address string, logging bool, logger logging.Logger,
+	buildInfo models.BuildInformation,
 	openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
 	serverLogger := logger.WithPrefix("http server: ")
 	handler := newHandler(serverLogger, logging, buildInfo, openvpnLooper, unboundLooper, updaterLooper)

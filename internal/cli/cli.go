@@ -83,7 +83,7 @@ func OpenvpnConfig() error {
 }
 
 func Update(args []string) error {
-	options := updater.Options{CLI: true}
+	options := settings.Updater{CLI: true}
 	var flushToFile bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&flushToFile, "file", false, "Write results to /gluetun/servers.json (for end users)")

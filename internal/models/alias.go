@@ -20,7 +20,13 @@ type (
 	VPNProvider string
 	// NetworkProtocol contains the network protocol to be used to communicate with the VPN servers.
 	NetworkProtocol string
+	// Loop status such as stopped or running.
+	LoopStatus string
 )
+
+func (ls LoopStatus) String() string {
+	return string(ls)
+}
 
 func marshalJSONString(s string) (data []byte, err error) {
 	return []byte(fmt.Sprintf("%q", s)), nil
