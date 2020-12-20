@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/openvpn"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -38,15 +37,6 @@ func (h *openvpnHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			h.getSettings(w)
-		case http.MethodPut:
-			h.setSettings(w, r)
-		default:
-			http.Error(w, "", http.StatusNotFound)
-		}
-	case "/servers":
-		switch r.Method {
-		case http.MethodGet:
-			h.getServers(w)
 		default:
 			http.Error(w, "", http.StatusNotFound)
 		}
@@ -104,27 +94,6 @@ func (h *openvpnHandler) getSettings(w http.ResponseWriter) {
 	settings.Password = "redacted"
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(settings); err != nil {
-		h.logger.Warn(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-}
-
-func (h *openvpnHandler) setSettings(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var settings settings.OpenVPN
-	if err := decoder.Decode(&settings); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	h.looper.SetSettings(settings)
-	w.WriteHeader(http.StatusOK)
-}
-
-func (h *openvpnHandler) getServers(w http.ResponseWriter) {
-	servers := h.looper.GetServers()
-	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(servers); err != nil {
 		h.logger.Warn(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
