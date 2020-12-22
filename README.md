@@ -192,8 +192,9 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
-    | 🏁 `USER` | | | Your user ID |
-    | 🏁 `REGION` | | One of the [PureVPN regions](https://support.purevpn.com/vpn-servers) | VPN server region |
+    | 🏁 `USER` | | | Your username |
+    | 🏁 `PASSWORD` | | | Your password |
+    | `REGION` | | One of the [PureVPN regions](https://support.purevpn.com/vpn-servers) | VPN server region |
     | `COUNTRY` | | One of the [PureVPN countries](https://support.purevpn.com/vpn-servers) | VPN server country |
     | `CITY` | | One of the [PureVPN cities](https://support.purevpn.com/vpn-servers) | VPN server city |
 
