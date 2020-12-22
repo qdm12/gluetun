@@ -97,7 +97,7 @@ func DNSProviderMapping() map[models.DNSProvider]models.DNSProviderData {
 	}
 }
 
-// Block lists URLs
+// Block lists URLs.
 //nolint:lll
 const (
 	AdsBlockListHostnamesURL          models.URL = "https://raw.githubusercontent.com/qdm12/files/master/ads-hostnames.updated"

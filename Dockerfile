@@ -4,7 +4,7 @@ ARG GO_VERSION=1.15
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS builder
 RUN apk --update add git
 ENV CGO_ENABLED=0
-ARG GOLANGCI_LINT_VERSION=v1.31.0
+ARG GOLANGCI_LINT_VERSION=v1.33.0
 RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s ${GOLANGCI_LINT_VERSION}
 WORKDIR /tmp/gobuild
 COPY .golangci.yml .
@@ -18,10 +18,10 @@ COPY internal/ ./internal/
 RUN go test ./...
 RUN golangci-lint run --timeout=10m
 RUN go build -trimpath -ldflags="-s -w \
--X 'main.version=$VERSION' \
--X 'main.buildDate=$BUILD_DATE' \
--X 'main.commit=$COMMIT' \
-" -o entrypoint main.go
+    -X 'main.version=$VERSION' \
+    -X 'main.buildDate=$BUILD_DATE' \
+    -X 'main.commit=$COMMIT' \
+    " -o entrypoint main.go
 
 FROM alpine:${ALPINE_VERSION}
 ARG VERSION=unknown
