@@ -117,5 +117,5 @@ func (l *looper) SetServers(servers models.AllServers) {
 func (l *looper) GetPortForwarded() (port uint16) {
 	l.state.portForwardedMu.RLock()
 	defer l.state.portForwardedMu.RUnlock()
-	return port
+	return l.state.portForwarded
 }
