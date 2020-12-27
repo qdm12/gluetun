@@ -70,7 +70,7 @@ func (s *privado) GetOpenVPNConnection(selection models.ServerSelection) (
 	return pickRandomConnection(connections, s.randSource), nil
 }
 
-func (s *privado) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+func (s *privado) BuildConf(connection models.OpenVPNConnection, verbosity int, username string, root bool,
 	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
@@ -104,7 +104,7 @@ func (s *privado) BuildConf(connection models.OpenVPNConnection, verbosity, uid,
 		fmt.Sprintf("auth %s", auth),
 	}
 	if !root {
-		lines = append(lines, "user nonrootuser")
+		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
 		"<ca>",

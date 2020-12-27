@@ -118,7 +118,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	// Should never change
 	uid, gid := allSettings.System.UID, allSettings.System.GID
 
-	err = alpineConf.CreateUser("nonrootuser", uid)
+	const defaultUsername = "nonrootuser"
+	nonRootUsername, err := alpineConf.CreateUser(defaultUsername, uid)
 	if err != nil {
 		logger.Error(err)
 		return 1
@@ -217,7 +218,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
 
-	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, uid, gid, allServers,
+	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, uid, gid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, fileManager, streamMerger, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
@@ -229,7 +230,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
 	go updaterLooper.Run(ctx, wg)
 
-	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, uid, gid)
+	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, nonRootUsername, uid, gid)
 	wg.Add(1)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(ctx, wg, signalDNSReady)

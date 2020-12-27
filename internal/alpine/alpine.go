@@ -7,7 +7,7 @@ import (
 )
 
 type Configurator interface {
-	CreateUser(username string, uid int) error
+	CreateUser(username string, uid int) (createdUsername string, err error)
 }
 
 type configurator struct {

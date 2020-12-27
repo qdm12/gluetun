@@ -41,7 +41,7 @@ func Test_generateUnboundConf(t *testing.T) {
 	logger := mock_logging.NewMockLogger(mockCtrl)
 	logger.EXPECT().Info("%d hostnames blocked overall", 2).Times(1)
 	logger.EXPECT().Info("%d IP addresses blocked overall", 3).Times(1)
-	lines, warnings := generateUnboundConf(ctx, settings, client, logger)
+	lines, warnings := generateUnboundConf(ctx, settings, "nonrootuser", client, logger)
 	require.Len(t, warnings, 0)
 	expected := `
 server:

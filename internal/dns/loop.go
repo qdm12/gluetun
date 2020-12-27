@@ -27,6 +27,7 @@ type looper struct {
 	conf         Configurator
 	logger       logging.Logger
 	streamMerger command.StreamMerger
+	username     string
 	uid          int
 	gid          int
 	loopLock     sync.Mutex
@@ -40,7 +41,7 @@ type looper struct {
 }
 
 func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
-	streamMerger command.StreamMerger, uid, gid int) Looper {
+	streamMerger command.StreamMerger, username string, uid, gid int) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
@@ -48,6 +49,7 @@ func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 		},
 		conf:         conf,
 		logger:       logger.WithPrefix("dns over tls: "),
+		username:     username,
 		uid:          uid,
 		gid:          gid,
 		streamMerger: streamMerger,
@@ -292,7 +294,7 @@ func (l *looper) updateFiles(ctx context.Context) (err error) {
 		return err
 	}
 	settings := l.GetSettings()
-	if err := l.conf.MakeUnboundConf(ctx, settings, l.uid, l.gid); err != nil {
+	if err := l.conf.MakeUnboundConf(ctx, settings, l.username, l.uid, l.gid); err != nil {
 		return err
 	}
 	return nil

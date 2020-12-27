@@ -33,8 +33,9 @@ type Looper interface {
 type looper struct {
 	state state
 	// Fixed parameters
-	uid int
-	gid int
+	username string
+	uid      int
+	gid      int
 	// Configurators
 	conf    Configurator
 	fw      firewall.Configurator
@@ -54,7 +55,7 @@ type looper struct {
 }
 
 func NewLooper(settings settings.OpenVPN,
-	uid, gid int, allServers models.AllServers,
+	username string, uid, gid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.Logger, client *http.Client, fileManager files.FileManager,
 	streamMerger command.StreamMerger, cancel context.CancelFunc) Looper {
@@ -64,6 +65,7 @@ func NewLooper(settings settings.OpenVPN,
 			settings:   settings,
 			allServers: allServers,
 		},
+		username:           username,
 		uid:                uid,
 		gid:                gid,
 		conf:               conf,
@@ -107,8 +109,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		lines := providerConf.BuildConf(
 			connection,
 			settings.Verbosity,
-			l.uid,
-			l.gid,
+			l.username,
 			settings.Root,
 			settings.Cipher,
 			settings.Auth,

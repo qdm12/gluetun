@@ -73,7 +73,7 @@ func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (
 }
 
 func (m *mullvad) BuildConf(connection models.OpenVPNConnection,
-	verbosity, uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+	verbosity int, username string, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -114,7 +114,7 @@ func (m *mullvad) BuildConf(connection models.OpenVPNConnection,
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 	if !root {
-		lines = append(lines, "user nonrootuser")
+		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
 		"<ca>",

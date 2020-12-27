@@ -72,7 +72,7 @@ func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (
 	return pickRandomConnection(connections, p.randSource), nil
 }
 
-func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity int, username string, root bool,
 	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
@@ -108,7 +108,7 @@ func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity, uid,
 		fmt.Sprintf("cipher %s", cipher),
 	}
 	if !root {
-		lines = append(lines, "user nonrootuser")
+		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
 		"<ca>",

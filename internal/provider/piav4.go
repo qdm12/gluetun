@@ -109,7 +109,7 @@ func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
 	return connection, nil
 }
 
-func (p *pia) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+func (p *pia) BuildConf(connection models.OpenVPNConnection, verbosity int, username string, root bool,
 	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	var X509CRL, certificate string
 	var defaultCipher, defaultAuth string
@@ -161,7 +161,7 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid
 		lines = append(lines, "ncp-disable")
 	}
 	if !root {
-		lines = append(lines, "user nonrootuser")
+		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
 		"<crl-verify>",

@@ -71,8 +71,7 @@ func OpenvpnConfig() error {
 	lines := providerConf.BuildConf(
 		connection,
 		allSettings.OpenVPN.Verbosity,
-		allSettings.System.UID,
-		allSettings.System.GID,
+		"nonroortuser",
 		allSettings.OpenVPN.Root,
 		allSettings.OpenVPN.Cipher,
 		allSettings.OpenVPN.Auth,

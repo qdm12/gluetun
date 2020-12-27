@@ -73,7 +73,7 @@ func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (
 	return pickRandomConnection(connections, s.randSource), nil
 }
 
-func (s *surfshark) BuildConf(connection models.OpenVPNConnection, verbosity, uid, gid int, root bool,
+func (s *surfshark) BuildConf(connection models.OpenVPNConnection, verbosity int, username string, root bool,
 	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
@@ -117,7 +117,7 @@ func (s *surfshark) BuildConf(connection models.OpenVPNConnection, verbosity, ui
 		fmt.Sprintf("auth %s", auth),
 	}
 	if !root {
-		lines = append(lines, "user nonrootuser")
+		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
 		"<ca>",

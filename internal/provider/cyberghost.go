@@ -62,8 +62,8 @@ func (c *cyberghost) GetOpenVPNConnection(selection models.ServerSelection) (
 	return pickRandomConnection(connections, c.randSource), nil
 }
 
-func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity,
-	uid, gid int, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
+func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity int,
+	username string, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
 	if len(cipher) == 0 {
 		cipher = aes256cbc
 	}
@@ -105,7 +105,7 @@ func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity,
 		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")
 	}
 	if !root {
-		lines = append(lines, "user nonrootuser")
+		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
 		"<ca>",
