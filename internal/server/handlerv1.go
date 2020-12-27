@@ -11,13 +11,14 @@ import (
 )
 
 func newHandlerV1(logger logging.Logger, buildInfo models.BuildInformation,
-	openvpn, dns, updater http.Handler) http.Handler {
+	openvpn, dns, updater, publicip http.Handler) http.Handler {
 	return &handlerV1{
 		logger:    logger,
 		buildInfo: buildInfo,
 		openvpn:   openvpn,
 		dns:       dns,
 		updater:   updater,
+		publicip:  publicip,
 	}
 }
 
@@ -27,6 +28,7 @@ type handlerV1 struct {
 	openvpn   http.Handler
 	dns       http.Handler
 	updater   http.Handler
+	publicip  http.Handler
 }
 
 func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +41,8 @@ func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.dns.ServeHTTP(w, r)
 	case strings.HasPrefix(r.RequestURI, "/updater"):
 		h.updater.ServeHTTP(w, r)
+	case strings.HasPrefix(r.RequestURI, "/publicip"):
+		h.publicip.ServeHTTP(w, r)
 	default:
 		errString := fmt.Sprintf("%s %s not found", r.Method, r.RequestURI)
 		http.Error(w, errString, http.StatusNotFound)

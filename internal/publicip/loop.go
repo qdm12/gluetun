@@ -2,6 +2,7 @@ package publicip
 
 import (
 	"context"
+	"net"
 	"sync"
 	"time"
 
@@ -18,6 +19,7 @@ type Looper interface {
 	Stop()
 	GetPeriod() (period time.Duration)
 	SetPeriod(period time.Duration)
+	GetPublicIP() (publicIP net.IP)
 }
 
 type looper struct {
@@ -26,6 +28,8 @@ type looper struct {
 	getter           IPGetter
 	logger           logging.Logger
 	fileManager      files.FileManager
+	ipMutex          sync.RWMutex
+	ip               net.IP
 	ipStatusFilepath models.Filepath
 	uid              int
 	gid              int
@@ -115,6 +119,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			l.logAndWait(ctx, err)
 			continue
 		}
+		l.setPublicIP(ip)
 		l.logger.Info("Public IP address is %s", ip)
 		const userReadWritePermissions = 0600
 		err = l.fileManager.WriteLinesToFile(

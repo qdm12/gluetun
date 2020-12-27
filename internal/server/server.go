@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
 )
@@ -25,9 +26,11 @@ type server struct {
 
 func New(address string, logging bool, logger logging.Logger,
 	buildInfo models.BuildInformation,
-	openvpnLooper openvpn.Looper, unboundLooper dns.Looper, updaterLooper updater.Looper) Server {
+	openvpnLooper openvpn.Looper, unboundLooper dns.Looper,
+	updaterLooper updater.Looper, publicIPLooper publicip.Looper) Server {
 	serverLogger := logger.WithPrefix("http server: ")
-	handler := newHandler(serverLogger, logging, buildInfo, openvpnLooper, unboundLooper, updaterLooper)
+	handler := newHandler(serverLogger, logging, buildInfo,
+		openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
 	return &server{
 		address: address,
 		logger:  serverLogger,

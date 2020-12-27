@@ -267,7 +267,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	controlServerAddress := fmt.Sprintf("0.0.0.0:%d", allSettings.ControlServer.Port)
 	controlServerLogging := allSettings.ControlServer.Log
 	httpServer := server.New(controlServerAddress, controlServerLogging,
-		logger, buildInfo, openvpnLooper, unboundLooper, updaterLooper)
+		logger, buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
 	wg.Add(1)
 	go httpServer.Run(ctx, wg)
 
