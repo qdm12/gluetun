@@ -97,7 +97,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
 | 🏁 `VPNSP` | `private internet access` | `private internet access`, `mullvad`, `windscribe`, `surfshark`, `vyprvpn`, `nordvpn`, `purevpn`, `privado` | VPN Service Provider |
-| `IP_STATUS_FILE` | `/tmp/gluetun/ip` | Any filepath | Filepath to store the public IP address assigned |
+| `PUBLICIP_FILE` | `/tmp/gluetun/ip` | Any filepath | Filepath to store the public IP address assigned |
 | `PROTOCOL` | `udp` | `udp` or `tcp` | Network protocol to use |
 | `OPENVPN_VERBOSITY` | `1` | `0` to `6` | Openvpn verbosity level |
 | `OPENVPN_ROOT` | `no` | `yes` or `no` | Run OpenVPN as root |

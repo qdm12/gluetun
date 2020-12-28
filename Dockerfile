@@ -47,7 +47,7 @@ ENV VPNSP=pia \
     TZ= \
     UID=1000 \
     GID=1000 \
-    IP_STATUS_FILE="/tmp/gluetun/ip" \
+    PUBLICIP_FILE="/tmp/gluetun/ip" \
     # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
     USER= \
     PASSWORD= \

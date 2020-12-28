@@ -235,13 +235,12 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(ctx, wg, signalDNSReady)
 
-	publicIPLooper := publicip.NewLooper(client, logger, fileManager,
-		allSettings.System.IPStatusFilepath, allSettings.PublicIPPeriod, uid, gid)
+	publicIPLooper := publicip.NewLooper(
+		client, logger, fileManager, allSettings.PublicIP, uid, gid)
 	wg.Add(1)
 	go publicIPLooper.Run(ctx, wg)
 	wg.Add(1)
 	go publicIPLooper.RunRestartTicker(ctx, wg)
-	publicIPLooper.SetPeriod(allSettings.PublicIPPeriod) // call after RunRestartTicker
 
 	httpProxyLooper := httpproxy.NewLooper(logger, allSettings.HTTPProxy)
 	wg.Add(1)
@@ -293,11 +292,6 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		cancel()
 	case <-ctx.Done():
 		logger.Warn("context canceled, shutting down")
-	}
-	logger.Info("Clearing ip status file %s", allSettings.System.IPStatusFilepath)
-	if err := fileManager.Remove(string(allSettings.System.IPStatusFilepath)); err != nil {
-		logger.Error(err)
-		shutdownErrorsCount++
 	}
 	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
 		logger.Info("Clearing forwarded port status file %s", allSettings.OpenVPN.Provider.PortForwarding.Filepath)
@@ -425,7 +419,8 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dn
 				startPortForward(vpnGateway)
 			}
 		case <-dnsReadyCh:
-			publicIPLooper.Restart() // TODO do not restart if disabled
+			// Runs the Public IP getter job once
+			_, _ = publicIPLooper.SetStatus(constants.Running)
 			if !versionInformation {
 				break
 			}

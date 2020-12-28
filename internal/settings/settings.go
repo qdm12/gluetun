@@ -2,7 +2,6 @@ package settings
 
 import (
 	"strings"
-	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/params"
@@ -22,8 +21,8 @@ type Settings struct {
 	Firewall           Firewall
 	HTTPProxy          HTTPProxy
 	ShadowSocks        ShadowSocks
-	PublicIPPeriod     time.Duration
 	Updater            Updater
+	PublicIP           PublicIP
 	VersionInformation bool
 	ControlServer      ControlServer
 }
@@ -43,7 +42,7 @@ func (s *Settings) String() string {
 		s.ShadowSocks.String(),
 		s.ControlServer.String(),
 		s.Updater.String(),
-		"Public IP check period: " + s.PublicIPPeriod.String(), // TODO print disabled if 0
+		s.PublicIP.String(),
 		"Version information: " + versionInformation,
 		"", // new line at the end
 	}, "\n")
@@ -80,7 +79,7 @@ func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.PublicIPPeriod, err = paramsReader.GetPublicIPPeriod()
+	settings.PublicIP, err = getPublicIPSettings(paramsReader)
 	if err != nil {
 		return settings, err
 	}

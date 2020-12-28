@@ -37,7 +37,7 @@ type Reader interface {
 	GetUID() (uid int, err error)
 	GetGID() (gid int, err error)
 	GetTimezone() (timezone string, err error)
-	GetIPStatusFilepath() (filepath models.Filepath, err error)
+	GetPublicIPFilepath() (filepath models.Filepath, err error)
 
 	// Firewall getters
 	GetFirewall() (enabled bool, err error)
