@@ -128,7 +128,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.stopped <- struct{}{}
 			case servers := <-serversCh:
 				updateCancel()
-				close(serversCh)
 				l.setAllServers(servers)
 				if err := l.storage.FlushToFile(servers); err != nil {
 					l.logger.Error(err)
