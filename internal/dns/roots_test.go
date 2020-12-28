@@ -54,10 +54,10 @@ func Test_DownloadRootHints(t *testing.T) { //nolint:dupl
 			defer mockCtrl.Finish()
 			ctx := context.Background()
 			logger := mock_logging.NewMockLogger(mockCtrl)
-			logger.EXPECT().Info("downloading root hints from %s", constants.NamedRootURL).Times(1)
+			logger.EXPECT().Info("downloading root hints from %s", constants.NamedRootURL)
 			client := mock_network.NewMockClient(mockCtrl)
 			client.EXPECT().Get(ctx, string(constants.NamedRootURL)).
-				Return(tc.content, tc.status, tc.clientErr).Times(1)
+				Return(tc.content, tc.status, tc.clientErr)
 			fileManager := mock_files.NewMockFileManager(mockCtrl)
 			if tc.clientErr == nil && tc.status == http.StatusOK {
 				fileManager.EXPECT().WriteToFile(
@@ -65,7 +65,7 @@ func Test_DownloadRootHints(t *testing.T) { //nolint:dupl
 					tc.content,
 					gomock.AssignableToTypeOf(files.Ownership(0, 0)),
 					gomock.AssignableToTypeOf(files.Ownership(0, 0))).
-					Return(tc.writeErr).Times(1)
+					Return(tc.writeErr)
 			}
 			c := &configurator{logger: logger, client: client, fileManager: fileManager}
 			err := c.DownloadRootHints(ctx, 1000, 1000)
@@ -117,10 +117,10 @@ func Test_DownloadRootKey(t *testing.T) { //nolint:dupl
 			defer mockCtrl.Finish()
 			ctx := context.Background()
 			logger := mock_logging.NewMockLogger(mockCtrl)
-			logger.EXPECT().Info("downloading root key from %s", constants.RootKeyURL).Times(1)
+			logger.EXPECT().Info("downloading root key from %s", constants.RootKeyURL)
 			client := mock_network.NewMockClient(mockCtrl)
 			client.EXPECT().Get(ctx, string(constants.RootKeyURL)).
-				Return(tc.content, tc.status, tc.clientErr).Times(1)
+				Return(tc.content, tc.status, tc.clientErr)
 			fileManager := mock_files.NewMockFileManager(mockCtrl)
 			if tc.clientErr == nil && tc.status == http.StatusOK {
 				fileManager.EXPECT().WriteToFile(
@@ -128,7 +128,7 @@ func Test_DownloadRootKey(t *testing.T) { //nolint:dupl
 					tc.content,
 					gomock.AssignableToTypeOf(files.Ownership(0, 0)),
 					gomock.AssignableToTypeOf(files.Ownership(0, 0)),
-				).Return(tc.writeErr).Times(1)
+				).Return(tc.writeErr)
 			}
 			c := &configurator{logger: logger, client: client, fileManager: fileManager}
 			err := c.DownloadRootKey(ctx, 1000, 1001)

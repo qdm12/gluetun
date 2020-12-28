@@ -35,12 +35,12 @@ func Test_generateUnboundConf(t *testing.T) {
 	ctx := context.Background()
 	client := mock_network.NewMockClient(mockCtrl)
 	client.EXPECT().Get(ctx, string(constants.MaliciousBlockListHostnamesURL)).
-		Return([]byte("b\na\nc"), 200, nil).Times(1)
+		Return([]byte("b\na\nc"), 200, nil)
 	client.EXPECT().Get(ctx, string(constants.MaliciousBlockListIPsURL)).
-		Return([]byte("c\nd\n"), 200, nil).Times(1)
+		Return([]byte("c\nd\n"), 200, nil)
 	logger := mock_logging.NewMockLogger(mockCtrl)
-	logger.EXPECT().Info("%d hostnames blocked overall", 2).Times(1)
-	logger.EXPECT().Info("%d IP addresses blocked overall", 3).Times(1)
+	logger.EXPECT().Info("%d hostnames blocked overall", 2)
+	logger.EXPECT().Info("%d IP addresses blocked overall", 3)
 	lines, warnings := generateUnboundConf(ctx, settings, "nonrootuser", client, logger)
 	require.Len(t, warnings, 0)
 	expected := `
@@ -238,21 +238,21 @@ func Test_buildBlocked(t *testing.T) {
 			client := mock_network.NewMockClient(mockCtrl)
 			if tc.malicious.blocked {
 				client.EXPECT().Get(ctx, string(constants.MaliciousBlockListHostnamesURL)).
-					Return(tc.malicious.content, 200, tc.malicious.clientErr).Times(1)
+					Return(tc.malicious.content, 200, tc.malicious.clientErr)
 				client.EXPECT().Get(ctx, string(constants.MaliciousBlockListIPsURL)).
-					Return(tc.malicious.content, 200, tc.malicious.clientErr).Times(1)
+					Return(tc.malicious.content, 200, tc.malicious.clientErr)
 			}
 			if tc.ads.blocked {
 				client.EXPECT().Get(ctx, string(constants.AdsBlockListHostnamesURL)).
-					Return(tc.ads.content, 200, tc.ads.clientErr).Times(1)
+					Return(tc.ads.content, 200, tc.ads.clientErr)
 				client.EXPECT().Get(ctx, string(constants.AdsBlockListIPsURL)).
-					Return(tc.ads.content, 200, tc.ads.clientErr).Times(1)
+					Return(tc.ads.content, 200, tc.ads.clientErr)
 			}
 			if tc.surveillance.blocked {
 				client.EXPECT().Get(ctx, string(constants.SurveillanceBlockListHostnamesURL)).
-					Return(tc.surveillance.content, 200, tc.surveillance.clientErr).Times(1)
+					Return(tc.surveillance.content, 200, tc.surveillance.clientErr)
 				client.EXPECT().Get(ctx, string(constants.SurveillanceBlockListIPsURL)).
-					Return(tc.surveillance.content, 200, tc.surveillance.clientErr).Times(1)
+					Return(tc.surveillance.content, 200, tc.surveillance.clientErr)
 			}
 			hostnamesLines, ipsLines, errs := buildBlocked(ctx, client,
 				tc.malicious.blocked, tc.ads.blocked, tc.surveillance.blocked,
@@ -291,7 +291,7 @@ func Test_getList(t *testing.T) {
 			ctx := context.Background()
 			client := mock_network.NewMockClient(mockCtrl)
 			client.EXPECT().Get(ctx, "irrelevant_url").
-				Return(tc.content, tc.status, tc.clientErr).Times(1)
+				Return(tc.content, tc.status, tc.clientErr)
 			results, err := getList(ctx, client, "irrelevant_url")
 			if tc.err != nil {
 				require.Error(t, err)
@@ -397,15 +397,15 @@ func Test_buildBlockedHostnames(t *testing.T) {
 			client := mock_network.NewMockClient(mockCtrl)
 			if tc.malicious.blocked {
 				client.EXPECT().Get(ctx, string(constants.MaliciousBlockListHostnamesURL)).
-					Return(tc.malicious.content, 200, tc.malicious.clientErr).Times(1)
+					Return(tc.malicious.content, 200, tc.malicious.clientErr)
 			}
 			if tc.ads.blocked {
 				client.EXPECT().Get(ctx, string(constants.AdsBlockListHostnamesURL)).
-					Return(tc.ads.content, 200, tc.ads.clientErr).Times(1)
+					Return(tc.ads.content, 200, tc.ads.clientErr)
 			}
 			if tc.surveillance.blocked {
 				client.EXPECT().Get(ctx, string(constants.SurveillanceBlockListHostnamesURL)).
-					Return(tc.surveillance.content, 200, tc.surveillance.clientErr).Times(1)
+					Return(tc.surveillance.content, 200, tc.surveillance.clientErr)
 			}
 			lines, errs := buildBlockedHostnames(ctx, client,
 				tc.malicious.blocked, tc.ads.blocked,
@@ -515,15 +515,15 @@ func Test_buildBlockedIPs(t *testing.T) {
 			client := mock_network.NewMockClient(mockCtrl)
 			if tc.malicious.blocked {
 				client.EXPECT().Get(ctx, string(constants.MaliciousBlockListIPsURL)).
-					Return(tc.malicious.content, 200, tc.malicious.clientErr).Times(1)
+					Return(tc.malicious.content, 200, tc.malicious.clientErr)
 			}
 			if tc.ads.blocked {
 				client.EXPECT().Get(ctx, string(constants.AdsBlockListIPsURL)).
-					Return(tc.ads.content, 200, tc.ads.clientErr).Times(1)
+					Return(tc.ads.content, 200, tc.ads.clientErr)
 			}
 			if tc.surveillance.blocked {
 				client.EXPECT().Get(ctx, string(constants.SurveillanceBlockListIPsURL)).
-					Return(tc.surveillance.content, 200, tc.surveillance.clientErr).Times(1)
+					Return(tc.surveillance.content, 200, tc.surveillance.clientErr)
 			}
 			lines, errs := buildBlockedIPs(ctx, client,
 				tc.malicious.blocked, tc.ads.blocked,

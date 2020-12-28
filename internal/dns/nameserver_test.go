@@ -51,13 +51,13 @@ func Test_UseDNSSystemWide(t *testing.T) {
 			defer mockCtrl.Finish()
 			fileManager := mock_files.NewMockFileManager(mockCtrl)
 			fileManager.EXPECT().ReadFile(string(constants.ResolvConf)).
-				Return(tc.data, tc.readErr).Times(1)
+				Return(tc.data, tc.readErr)
 			if tc.readErr == nil {
 				fileManager.EXPECT().WriteToFile(string(constants.ResolvConf), tc.writtenData).
-					Return(tc.writeErr).Times(1)
+					Return(tc.writeErr)
 			}
 			logger := mock_logging.NewMockLogger(mockCtrl)
-			logger.EXPECT().Info("using DNS address %s system wide", "127.0.0.1").Times(1)
+			logger.EXPECT().Info("using DNS address %s system wide", "127.0.0.1")
 			c := &configurator{
 				fileManager: fileManager,
 				logger:      logger,

@@ -18,10 +18,10 @@ func Test_Start(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	logger := mock_logging.NewMockLogger(mockCtrl)
-	logger.EXPECT().Info("starting unbound").Times(1)
+	logger.EXPECT().Info("starting unbound")
 	commander := mock_command.NewMockCommander(mockCtrl)
 	commander.EXPECT().Start(context.Background(), "unbound", "-d", "-c", string(constants.UnboundConf), "-vv").
-		Return(nil, nil, nil, nil).Times(1)
+		Return(nil, nil, nil, nil)
 	c := &configurator{commander: commander, logger: logger}
 	stdout, waitFn, err := c.Start(context.Background(), 2)
 	assert.Nil(t, stdout)
@@ -57,7 +57,7 @@ func Test_Version(t *testing.T) {
 			defer mockCtrl.Finish()
 			commander := mock_command.NewMockCommander(mockCtrl)
 			commander.EXPECT().Run(context.Background(), "unbound", "-V").
-				Return(tc.runOutput, tc.runErr).Times(1)
+				Return(tc.runOutput, tc.runErr)
 			c := &configurator{commander: commander}
 			version, err := c.Version(context.Background())
 			if tc.err != nil {
