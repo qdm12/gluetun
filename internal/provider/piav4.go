@@ -469,19 +469,18 @@ func fetchPIAToken(ctx context.Context, openFile os.OpenFileFunc,
 		return "", err
 	}
 	defer response.Body.Close()
-	b, err := ioutil.ReadAll(response.Body)
 	if response.StatusCode != http.StatusOK {
+		b, _ := ioutil.ReadAll(response.Body)
 		shortenMessage := string(b)
 		shortenMessage = strings.ReplaceAll(shortenMessage, "\n", "")
 		shortenMessage = strings.ReplaceAll(shortenMessage, "  ", " ")
 		return "", fmt.Errorf("%s: response received: %q", response.Status, shortenMessage)
-	} else if err != nil {
-		return "", err
 	}
+	decoder := json.NewDecoder(response.Body)
 	var result struct {
 		Token string `json:"token"`
 	}
-	if err := json.Unmarshal(b, &result); err != nil {
+	if err := decoder.Decode(&result); err != nil {
 		return "", err
 	} else if len(result.Token) == 0 {
 		return "", fmt.Errorf("token is empty")
@@ -534,16 +533,13 @@ func fetchPIAPortForwardData(ctx context.Context, client *http.Client, gateway n
 	if response.StatusCode != http.StatusOK {
 		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %s", response.Status)
 	}
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %w", err)
-	}
+	decoder := json.NewDecoder(response.Body)
 	var data struct {
 		Status    string `json:"status"`
 		Payload   string `json:"payload"`
 		Signature string `json:"signature"`
 	}
-	if err := json.Unmarshal(b, &data); err != nil {
+	if err := decoder.Decode(&data); err != nil {
 		return 0, "", expiration, fmt.Errorf("cannot decode received data: %w", err)
 	} else if data.Status != "OK" {
 		return 0, "", expiration, fmt.Errorf("response received from PIA has status %s", data.Status)
@@ -580,15 +576,13 @@ func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data 
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf("cannot bind port: %s", response.Status)
 	}
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return fmt.Errorf("cannot bind port: %w", err)
-	}
+
+	decoder := json.NewDecoder(response.Body)
 	var responseData struct {
 		Status  string `json:"status"`
 		Message string `json:"message"`
 	}
-	if err := json.Unmarshal(b, &responseData); err != nil {
+	if err := decoder.Decode(&responseData); err != nil {
 		return fmt.Errorf("cannot bind port: %w", err)
 	} else if responseData.Status != "OK" {
 		return fmt.Errorf("response received from PIA: %s (%s)", responseData.Status, responseData.Message)

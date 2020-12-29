@@ -50,13 +50,9 @@ func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handlerV1) getVersion(w http.ResponseWriter) {
-	data, err := json.Marshal(h.buildInfo)
-	if err != nil {
+	encoder := json.NewEncoder(w)
+	if err := encoder.Encode(h.buildInfo); err != nil {
 		h.logger.Warn(err)
 		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	if _, err := w.Write(data); err != nil {
-		h.logger.Warn(err)
 	}
 }

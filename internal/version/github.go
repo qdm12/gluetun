@@ -3,7 +3,6 @@ package version
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -35,11 +34,8 @@ func getGithubReleases(ctx context.Context, client *http.Client) (releases []git
 		return nil, err
 	}
 	defer response.Body.Close()
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(b, &releases); err != nil {
+	decoder := json.NewDecoder(response.Body)
+	if err := decoder.Decode(&releases); err != nil {
 		return nil, err
 	}
 	return releases, nil
@@ -56,11 +52,8 @@ func getGithubCommits(ctx context.Context, client *http.Client) (commits []githu
 		return nil, err
 	}
 	defer response.Body.Close()
-	b, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(b, &commits); err != nil {
+	decoder := json.NewDecoder(response.Body)
+	if err := decoder.Decode(&commits); err != nil {
 		return nil, err
 	}
 	return commits, nil
