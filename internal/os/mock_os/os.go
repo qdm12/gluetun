@@ -105,17 +105,3 @@ func (mr *MockOSMockRecorder) Stat(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stat", reflect.TypeOf((*MockOS)(nil).Stat), arg0)
 }
-
-// Unsetenv mocks base method
-func (m *MockOS) Unsetenv(arg0 string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Unsetenv", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Unsetenv indicates an expected call of Unsetenv
-func (mr *MockOSMockRecorder) Unsetenv(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Unsetenv", reflect.TypeOf((*MockOS)(nil).Unsetenv), arg0)
-}

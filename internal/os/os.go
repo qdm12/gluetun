@@ -9,7 +9,6 @@ type OS interface {
 	MkdirAll(name string, perm FileMode) error
 	Remove(name string) error
 	Chown(name string, uid int, gid int) error
-	Unsetenv(key string) error
 	Stat(name string) (nativeos.FileInfo, error)
 }
 
@@ -30,9 +29,6 @@ func (o *os) Remove(name string) error {
 }
 func (o *os) Chown(name string, uid, gid int) error {
 	return nativeos.Chown(name, uid, gid)
-}
-func (o *os) Unsetenv(key string) error {
-	return nativeos.Unsetenv(key)
 }
 func (o *os) Stat(name string) (nativeos.FileInfo, error) {
 	return nativeos.Stat(name)
