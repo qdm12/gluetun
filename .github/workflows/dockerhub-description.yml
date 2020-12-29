@@ -12,8 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@v2.1.0
-        env:
-          DOCKERHUB_USERNAME: qmcgaw
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-          DOCKERHUB_REPOSITORY: qmcgaw/gluetun
+        uses: peter-evans/dockerhub-description@v2.4.1
+        with:
+          username: qmcgaw
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: qmcgaw/gluetun
+          short-description: Lightweight Swiss-knife VPN client to connect to several VPN providers
+          readme-filepath: README.md
