@@ -26,14 +26,8 @@ func (p *reader) GetCyberghostRegions() (regions []string, err error) {
 }
 
 // GetCyberghostClientKey obtains the one line client key to use for openvpn from the
-// environment variable CLIENT_KEY or from the file at /gluetun/client.key.
+// file at /gluetun/client.key.
 func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
-	clientKey, err = p.envParams.GetEnv("CLIENT_KEY", libparams.CaseSensitiveValue())
-	if err != nil {
-		return "", err
-	} else if len(clientKey) > 0 {
-		return clientKey, nil
-	}
 	const filepath = string(constants.ClientKey)
 	file, err := p.os.OpenFile(filepath, os.O_RDONLY, 0)
 	if err != nil {
