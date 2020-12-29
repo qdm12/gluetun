@@ -41,25 +41,28 @@ import (
 
 //nolint:gochecknoglobals
 var (
-	buildInfo models.BuildInformation
 	version   = "unknown"
 	commit    = "unknown"
 	buildDate = "an unknown date"
 )
 
 func main() {
-	buildInfo.Version = version
-	buildInfo.Commit = commit
-	buildInfo.BuildDate = buildDate
+	buildInfo := models.BuildInformation{
+		Version:   version,
+		Commit:    commit,
+		BuildDate: buildDate,
+	}
 	ctx := context.Background()
 	args := nativeos.Args
 	os := os.New()
 	osUser := user.New()
-	nativeos.Exit(_main(ctx, args, os, osUser))
+	unix := unix.New()
+	nativeos.Exit(_main(ctx, buildInfo, args, os, osUser, unix))
 }
 
 //nolint:gocognit,gocyclo
-func _main(background context.Context, args []string, os os.OS, osUser user.OSUser) int {
+func _main(background context.Context, buildInfo models.BuildInformation,
+	args []string, os os.OS, osUser user.OSUser, unix unix.Unix) int {
 	if len(args) > 1 { // cli operation
 		var err error
 		switch args[1] {
@@ -89,7 +92,6 @@ func _main(background context.Context, args []string, os os.OS, osUser user.OSUs
 	client := network.NewClient(clientTimeout)
 	// Create configurators
 	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
-	unix := unix.New()
 	ovpnConf := openvpn.NewConfigurator(logger, os, unix)
 	dnsConf := dns.NewConfigurator(logger, client, os.OpenFile)
 	routingConf := routing.NewRouting(logger)
@@ -274,7 +276,7 @@ func _main(background context.Context, args []string, os os.OS, osUser user.OSUs
 	}
 
 	wg.Add(1)
-	go routeReadyEvents(ctx, wg, tunnelReadyCh, dnsReadyCh,
+	go routeReadyEvents(ctx, wg, buildInfo, tunnelReadyCh, dnsReadyCh,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
 		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
 	)
@@ -395,7 +397,8 @@ func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger,
 	})
 }
 
-func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, tunnelReadyCh, dnsReadyCh <-chan struct{},
+func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.BuildInformation,
+	tunnelReadyCh, dnsReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
 	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
 	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
