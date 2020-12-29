@@ -9,10 +9,11 @@ import (
 )
 
 // GetUser obtains the user to use to connect to the VPN servers.
-func (r *reader) GetUser() (s string, err error) {
-	return r.envParams.GetEnv("USER",
+func (r *reader) GetUser() (user string, err error) {
+	return r.envParams.GetEnv("OPENVPN_USER",
 		libparams.CaseSensitiveValue(),
 		libparams.Compulsory(),
+		libparams.RetroKeys([]string{"USER"}, r.onRetroActive),
 		libparams.Unset())
 }
 

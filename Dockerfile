@@ -49,7 +49,7 @@ ENV VPNSP=pia \
     PGID= \
     PUBLICIP_FILE="/tmp/gluetun/ip" \
     # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
-    USER= \
+    OPENVPN_USER= \
     PASSWORD= \
     REGION= \
     # PIA only

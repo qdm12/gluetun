@@ -22,7 +22,7 @@ services:
       - TZ=
 
       # All VPN providers
-      - USER=js89ds7
+      - OPENVPN_USER=js89ds7
 
       # All VPN providers but Mullvad
       - PASSWORD=8fd9s239G
