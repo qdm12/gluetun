@@ -20,7 +20,6 @@ func PrivadoHostnameChoices() (choices []string) {
 	return choices
 }
 
-//nolint:gomnd
 func PrivadoServers() []models.PrivadoServer {
 	return []models.PrivadoServer{
 		{Hostname: "akl-001.vpn.privado.io", IP: net.IP{23, 254, 104, 114}},
