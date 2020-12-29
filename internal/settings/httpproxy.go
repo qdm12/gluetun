@@ -8,11 +8,11 @@ import (
 )
 
 // HTTPProxy contains settings to configure the HTTP proxy.
-type HTTPProxy struct { //nolint:maligned
-	Enabled  bool
-	Port     uint16
+type HTTPProxy struct {
 	User     string
 	Password string
+	Port     uint16
+	Enabled  bool
 	Stealth  bool
 	Log      bool
 }
