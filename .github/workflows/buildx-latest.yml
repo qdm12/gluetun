@@ -31,4 +31,5 @@ jobs:
             -t qmcgaw/private-internet-access:latest \
             --push \
             .
-      - run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I= || exit 0
+      - run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I=
+        continue-on-error: true
