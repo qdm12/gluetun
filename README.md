@@ -21,13 +21,18 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
 
 [![Image size](https://images.microbadger.com/badges/image/qmcgaw/gluetun.svg)](https://microbadger.com/images/qmcgaw/gluetun)
 [![Image version](https://images.microbadger.com/badges/version/qmcgaw/gluetun.svg)](https://microbadger.com/images/qmcgaw/gluetun)
-[![Join Slack channel](https://img.shields.io/badge/slack-@qdm12-yellow.svg?logo=slack)](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
 
-## Videos
+## Quick links
 
-1. [**Introduction**](https://youtu.be/3jIbU6J2Hs0)
-1. [**Connect a container**](https://youtu.be/mH7J_2JKNK0)
-1. [**Connect LAN devices**](https://youtu.be/qvjrM15Y0uk)
+- Problem or suggestion?
+  - [Start a discussion](https://github.com/qdm12/gluetun/discussions)
+  - [Create an issue](https://github.com/qdm12/gluetun/issues)
+  - [Check the Wiki](https://github.com/qdm12/gluetun/wiki)
+  - [Join the Slack channel](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
+- Happy?
+  - Sponsor me on [github.com/sponsors/qdm12](https://github.com/sponsors/qdm12)
+  - Donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw)
+  - Drop me [an email](mailto:quentin.mcgaw@gmail.com)
 
 ## Features
 
@@ -97,7 +102,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
 
 **TLDR**; only set the 🏁 marked environment variables to get started.
 
-💡 For all server filtering options such as `REGION`, you can have multiple values separated by a comma, i.e. `Germany,Singapore`
+💡 For all server filtering options such as `REGION`, you can have multiple values separated by a comma, i.e. `REGION=Germany,Singapore`
 
 ### VPN
 
@@ -422,13 +427,11 @@ This repository is under an [MIT license](https://github.com/qdm12/gluetun/maste
 
 ## Support
 
-Sponsor me on [Github](https://github.com/sponsors/qdm12), donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw) or subscribe to a VPN provider through one of my affiliate links:
+- Sponsor me on [Github](https://github.com/sponsors/qdm12) or donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw)
 
-[![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
-[![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
+  [![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
+  [![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
 
-[![https://windscribe.com/?affid=mh7nyafu](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/windscribe.jpg)](https://windscribe.com/?affid=mh7nyafu)
-
-Feel also free to have a look at [the Kanban board](https://github.com/qdm12/gluetun/projects/1) and [contribute](#Development-and-contributing) to the code or the issues discussion.
-
-Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez and A. Cooper for supporting me financially 🥇👍
+- Have a look at [the Kanban board](https://github.com/qdm12/gluetun/projects/1) and [contribute](#Development-and-contributing) to the code
+- Contribute to the issues and discussions on Github
+- Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez, A. Cooper and **others** for supporting me financially 🥇👍
