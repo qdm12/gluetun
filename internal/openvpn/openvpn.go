@@ -5,9 +5,9 @@ import (
 	"io"
 
 	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"golang.org/x/sys/unix"
 )
 
 type Configurator interface {
@@ -22,16 +22,14 @@ type configurator struct {
 	logger    logging.Logger
 	commander command.Commander
 	os        os.OS
-	mkDev     func(major uint32, minor uint32) uint64
-	mkNod     func(path string, mode uint32, dev int) error
+	unix      unix.Unix
 }
 
-func NewConfigurator(logger logging.Logger, os os.OS) Configurator {
+func NewConfigurator(logger logging.Logger, os os.OS, unix unix.Unix) Configurator {
 	return &configurator{
 		logger:    logger.WithPrefix("openvpn configurator: "),
 		commander: command.NewCommander(),
 		os:        os,
-		mkDev:     unix.Mkdev,
-		mkNod:     unix.Mknod,
+		unix:      unix,
 	}
 }

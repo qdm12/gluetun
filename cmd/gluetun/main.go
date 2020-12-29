@@ -30,6 +30,7 @@ import (
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
+	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
@@ -86,7 +87,8 @@ func _main(background context.Context, args []string, os os.OS) int {
 	client := network.NewClient(clientTimeout)
 	// Create configurators
 	alpineConf := alpine.NewConfigurator(os.OpenFile)
-	ovpnConf := openvpn.NewConfigurator(logger, os)
+	unix := unix.New()
+	ovpnConf := openvpn.NewConfigurator(logger, os, unix)
 	dnsConf := dns.NewConfigurator(logger, client, os.OpenFile)
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)

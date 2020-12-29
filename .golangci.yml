@@ -14,7 +14,10 @@ issues:
       linters:
         - gochecknoglobals
       text: IsNotExist is a global variable
-
+    - path: internal/unix/constants\.go
+      linters:
+        - golint
+      text: don't use ALL_CAPS in Go names; use CamelCase
 linters:
   disable-all: true
   enable:

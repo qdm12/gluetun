@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"golang.org/x/sys/unix"
+	"github.com/qdm12/gluetun/internal/unix"
 )
 
 // CheckTUN checks the tunnel device is present and accessible.
@@ -31,8 +31,8 @@ func (c *configurator) CreateTUN() error {
 		major = 10
 		minor = 200
 	)
-	dev := c.mkDev(major, minor)
-	if err := c.mkNod(string(constants.TunnelDevice), unix.S_IFCHR, int(dev)); err != nil {
+	dev := c.unix.Mkdev(major, minor)
+	if err := c.unix.Mknod(string(constants.TunnelDevice), unix.S_IFCHR, int(dev)); err != nil {
 		return err
 	}
 
