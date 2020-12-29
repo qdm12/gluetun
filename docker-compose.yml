@@ -25,7 +25,7 @@ services:
       - OPENVPN_USER=js89ds7
 
       # All VPN providers but Mullvad
-      - PASSWORD=8fd9s239G
+      - OPENVPN_PASSWORD=8fd9s239G
 
       # Cyberghost only
       - CLIENT_KEY=

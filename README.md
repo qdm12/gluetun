@@ -113,7 +113,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your password |
     | `REGION` | | One of the [PIA regions](https://www.privateinternetaccess.com/pages/network/) | VPN server region |
     | `PIA_ENCRYPTION` | `strong` | `normal`, `strong` | Encryption preset |
     | `PORT_FORWARDING` | `off` | `on`, `off` | Enable port forwarding on the VPN server |
@@ -139,7 +139,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your password |
     | `REGION` | | | Comma separated list of regions to choose the VPN server |
     | `CITY` | | | Comma separated list of cities to choose the VPN server |
     | `HOSTNAME` | | | Comma separated list of hostnames to choose the VPN server |
@@ -150,7 +150,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your **service** username, found at the bottom of the [manual setup page](https://account.surfshark.com/setup/manual) |
-    | 🏁 `PASSWORD` | | | Your **service** password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your **service** password |
     | `REGION` | | One of the [Surfshark regions](https://github.com/qdm12/gluetun/wiki/Surfshark-Servers) | VPN server region |
 
 - Cyberghost
@@ -158,7 +158,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your password |
     | 🏁 | | | **See additional setup steps below** |
     | `REGION` | | One of the Cyberghost regions, [Wiki page](https://github.com/qdm12/gluetun/wiki/Cyberghost-Servers) | VPN server country |
     | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the server groups (see above Wiki page) | Server group |
@@ -174,7 +174,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your password |
     | `REGION` | | One of the [VyprVPN regions](https://www.vyprvpn.com/server-locations) | VPN server region |
 
     For **port forwarding**, add a port you want to be accessible to `FIREWALL_VPN_INPUT_PORTS`
@@ -184,7 +184,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your password |
     | `REGION` | | One of the NordVPN server country, i.e. `Switzerland` | VPN server country |
     | `SERVER_NUMBER` | | Server integer number | Optional server number. For example `251` for `Italy #251` |
 
@@ -193,7 +193,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your password |
     | `REGION` | | One of the [PureVPN regions](https://support.purevpn.com/vpn-servers) | VPN server region |
     | `COUNTRY` | | One of the [PureVPN countries](https://support.purevpn.com/vpn-servers) | VPN server country |
     | `CITY` | | One of the [PureVPN cities](https://support.purevpn.com/vpn-servers) | VPN server city |
@@ -203,7 +203,7 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | Variable | Default | Choices | Description |
     | --- | --- | --- | --- |
     | 🏁 `OPENVPN_USER` | | | Your username |
-    | 🏁 `PASSWORD` | | | Your password |
+    | 🏁 `OPENVPN_PASSWORD` | | | Your password |
     | `HOSTNAME` | | [One of the Privado hostname](internal/constants/privado.go#L26), i.e. `ams-001.vpn.privado.io` | VPN server hostname |
 
 ### DNS over TLS
@@ -352,7 +352,7 @@ There are various ways to achieve this, depending on your use case.
           - NET_ADMIN
         environment:
           - OPENVPN_USER=js89ds7
-          - PASSWORD=8fd9s239G
+          - OPENVPN_PASSWORD=8fd9s239G
         ports:
           - 8000:8000/tcp
           - 9000:9000/tcp

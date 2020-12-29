@@ -19,11 +19,15 @@ func (r *reader) GetUser() (user string, err error) {
 
 // GetPassword obtains the password to use to connect to the VPN servers.
 func (r *reader) GetPassword(required bool) (s string, err error) {
-	options := []libparams.GetEnvSetter{libparams.CaseSensitiveValue(), libparams.Unset()}
+	options := []libparams.GetEnvSetter{
+		libparams.CaseSensitiveValue(),
+		libparams.Unset(),
+		libparams.RetroKeys([]string{"PASSWORD"}, r.onRetroActive),
+	}
 	if required {
 		options = append(options, libparams.Compulsory())
 	}
-	return r.envParams.GetEnv("PASSWORD", options...)
+	return r.envParams.GetEnv("OPENVPN_PASSWORD", options...)
 }
 
 // GetNetworkProtocol obtains the network protocol to use to connect to the
