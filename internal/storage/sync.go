@@ -2,6 +2,7 @@ package storage
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -9,8 +10,9 @@ import (
 	"github.com/qdm12/gluetun/internal/os"
 )
 
-const (
-	jsonFilepath = "/gluetun/servers.json"
+var (
+	ErrCannotReadFile  = errors.New("cannot read servers from file")
+	ErrCannotWriteFile = errors.New("cannot write servers to file")
 )
 
 func countServers(allServers models.AllServers) int {
@@ -25,38 +27,54 @@ func countServers(allServers models.AllServers) int {
 		len(allServers.Windscribe.Servers)
 }
 
-func (s *storage) SyncServers(hardcodedServers models.AllServers, write bool) (
+func (s *storage) SyncServers(hardcodedServers models.AllServers) (
 	allServers models.AllServers, err error) {
-	// Eventually read file
-	var serversOnFile models.AllServers
-	file, err := s.os.OpenFile(jsonFilepath, os.O_RDONLY, 0)
-	if err != nil && !os.IsNotExist(err) {
-		return allServers, err
-	}
-	if err == nil {
-		var serversOnFile models.AllServers
-		decoder := json.NewDecoder(file)
-		if err := decoder.Decode(&serversOnFile); err != nil {
-			_ = file.Close()
-			return allServers, err
-		}
-		return allServers, file.Close()
+	serversOnFile, err := s.readFromFile(s.filepath)
+	if err != nil {
+		return allServers, fmt.Errorf("%w: %s", ErrCannotReadFile, err)
 	}
 
-	// Merge data from file and hardcoded
-	s.logger.Info("Merging by most recent %d hardcoded servers and %d servers read from %s",
-		countServers(hardcodedServers), countServers(serversOnFile), jsonFilepath)
-	allServers = s.mergeServers(hardcodedServers, serversOnFile)
+	hardcodedCount := countServers(hardcodedServers)
+	countOnFile := countServers(serversOnFile)
+
+	if countOnFile == 0 {
+		s.logger.Info("creating %s with %d hardcoded servers", s.filepath, hardcodedCount)
+		allServers = hardcodedServers
+	} else {
+		s.logger.Info(
+			"merging by most recent %d hardcoded servers and %d servers read from %s",
+			hardcodedCount, countOnFile, s.filepath)
+		allServers = s.mergeServers(hardcodedServers, serversOnFile)
+	}
 
 	// Eventually write file
-	if !write || reflect.DeepEqual(serversOnFile, allServers) {
+	if s.filepath == "" || reflect.DeepEqual(serversOnFile, allServers) {
 		return allServers, nil
 	}
-	return allServers, s.FlushToFile(allServers)
+
+	if err := s.FlushToFile(allServers); err != nil {
+		return allServers, fmt.Errorf("%w: %s", ErrCannotWriteFile, err)
+	}
+	return allServers, nil
+}
+
+func (s *storage) readFromFile(filepath string) (servers models.AllServers, err error) {
+	file, err := s.os.OpenFile(filepath, os.O_RDONLY, 0)
+	if os.IsNotExist(err) {
+		return servers, nil
+	} else if err != nil {
+		return servers, err
+	}
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&servers); err != nil {
+		_ = file.Close()
+		return servers, err
+	}
+	return servers, file.Close()
 }
 
 func (s *storage) FlushToFile(servers models.AllServers) error {
-	file, err := s.os.OpenFile(jsonFilepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := s.os.OpenFile(s.filepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
@@ -64,7 +82,7 @@ func (s *storage) FlushToFile(servers models.AllServers) error {
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(servers); err != nil {
 		_ = file.Close()
-		return fmt.Errorf("cannot write to file: %w", err)
+		return err
 	}
 	return file.Close()
 }

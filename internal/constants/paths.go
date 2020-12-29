@@ -29,4 +29,6 @@ const (
 	ClientKey models.Filepath = "/gluetun/client.key"
 	// Client certificate filepath, used by Cyberghost.
 	ClientCertificate models.Filepath = "/gluetun/client.crt"
+	// Servers information filepath.
+	ServersData = "/gluetun/servers.json"
 )

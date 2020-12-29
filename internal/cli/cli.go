@@ -70,7 +70,8 @@ func OpenvpnConfig(os os.OS) error {
 	if err != nil {
 		return err
 	}
-	allServers, err := storage.New(logger, os).SyncServers(constants.GetAllServers(), false)
+	allServers, err := storage.New(logger, os, constants.ServersData).
+		SyncServers(constants.GetAllServers())
 	if err != nil {
 		return err
 	}
@@ -121,9 +122,8 @@ func Update(args []string, os os.OS) error {
 	ctx := context.Background()
 	const clientTimeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
-	storage := storage.New(logger, os)
-	const writeSync = false
-	currentServers, err := storage.SyncServers(constants.GetAllServers(), writeSync)
+	storage := storage.New(logger, os, constants.ServersData)
+	currentServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
 		return fmt.Errorf("cannot update servers: %w", err)
 	}

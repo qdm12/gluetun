@@ -7,18 +7,21 @@ import (
 )
 
 type Storage interface {
-	SyncServers(hardcodedServers models.AllServers, write bool) (allServers models.AllServers, err error)
+	// Passing an empty filepath disables writing to a file
+	SyncServers(hardcodedServers models.AllServers) (allServers models.AllServers, err error)
 	FlushToFile(servers models.AllServers) error
 }
 
 type storage struct {
-	os     os.OS
-	logger logging.Logger
+	os       os.OS
+	logger   logging.Logger
+	filepath string
 }
 
-func New(logger logging.Logger, os os.OS) Storage {
+func New(logger logging.Logger, os os.OS, filepath string) Storage {
 	return &storage{
-		os:     os,
-		logger: logger.WithPrefix("storage: "),
+		os:       os,
+		logger:   logger.WithPrefix("storage: "),
+		filepath: filepath,
 	}
 }

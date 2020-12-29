@@ -14,80 +14,119 @@ func getUnixTimeDifference(unix1, unix2 int64) (difference time.Duration) {
 	return difference.Truncate(time.Second)
 }
 
-func (s *storage) mergeServers(hardcoded, persistent models.AllServers) (merged models.AllServers) {
-	merged.Version = hardcoded.Version
-	merged.Cyberghost = hardcoded.Cyberghost
-	if persistent.Cyberghost.Timestamp > hardcoded.Cyberghost.Timestamp {
-		s.logger.Info("Using Cyberghost servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Cyberghost.Timestamp, hardcoded.Cyberghost.Timestamp))
-		merged.Cyberghost = persistent.Cyberghost
+func (s *storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
+	return models.AllServers{
+		Version:    hardcoded.Version,
+		Cyberghost: s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
+		Mullvad:    s.mergeMullvad(hardcoded.Mullvad, persisted.Mullvad),
+		Nordvpn:    s.mergeNordVPN(hardcoded.Nordvpn, persisted.Nordvpn),
+		Pia:        s.mergePIA(hardcoded.Pia, persisted.Pia),
+		Privado:    s.mergePrivado(hardcoded.Privado, persisted.Privado),
+		Purevpn:    s.mergePureVPN(hardcoded.Purevpn, persisted.Purevpn),
+		Surfshark:  s.mergeSurfshark(hardcoded.Surfshark, persisted.Surfshark),
+		Vyprvpn:    s.mergeVyprvpn(hardcoded.Vyprvpn, persisted.Vyprvpn),
+		Windscribe: s.mergeWindscribe(hardcoded.Windscribe, persisted.Windscribe),
 	}
-	merged.Mullvad = hardcoded.Mullvad
-	if persistent.Mullvad.Timestamp > hardcoded.Mullvad.Timestamp {
-		s.logger.Info("Using Mullvad servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Mullvad.Timestamp, hardcoded.Mullvad.Timestamp))
-		merged.Mullvad = persistent.Mullvad
-	}
-	merged.Nordvpn = hardcoded.Nordvpn
-	if persistent.Nordvpn.Timestamp > hardcoded.Nordvpn.Timestamp {
-		s.logger.Info("Using Nordvpn servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Nordvpn.Timestamp, hardcoded.Nordvpn.Timestamp))
-		merged.Nordvpn = persistent.Nordvpn
-	}
-	merged.Pia = hardcoded.Pia
-	if persistent.Pia.Timestamp > hardcoded.Pia.Timestamp {
-		versionDiff := hardcoded.Pia.Version - persistent.Pia.Version
-		if versionDiff > 0 {
-			s.logger.Info("Private Internet Access servers from file discarded because they are %d versions behind",
-				versionDiff)
-			merged.Pia = hardcoded.Pia
-		} else {
-			s.logger.Info("Using Private Internet Access servers from file (%s more recent)",
-				getUnixTimeDifference(persistent.Pia.Timestamp, hardcoded.Pia.Timestamp))
-			merged.Pia = persistent.Pia
-		}
-	}
+}
 
-	merged.Privado = hardcoded.Privado
-	versionDiff := int(persistent.Privado.Version) - int(hardcoded.Privado.Version)
-	switch {
-	case versionDiff > 0:
-		s.logger.Info("Using Privado servers from file (%d version(s) more recent)", versionDiff)
-		merged.Privado = persistent.Privado
-	case persistent.Privado.Timestamp > hardcoded.Privado.Timestamp:
-		s.logger.Info("Using Privado servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Privado.Timestamp, hardcoded.Privado.Timestamp))
-		merged.Privado = persistent.Privado
+func (s *storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers) models.CyberghostServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
 	}
+	s.logger.Info("Using Cyberghost servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
 
-	merged.Purevpn = hardcoded.Purevpn
-	if persistent.Purevpn.Timestamp > hardcoded.Purevpn.Timestamp {
-		s.logger.Info("Using Purevpn servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Purevpn.Timestamp, hardcoded.Purevpn.Timestamp))
-		merged.Purevpn = persistent.Purevpn
+func (s *storage) mergeMullvad(hardcoded, persisted models.MullvadServers) models.MullvadServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
 	}
-	merged.Surfshark = hardcoded.Surfshark
-	if persistent.Surfshark.Timestamp > hardcoded.Surfshark.Timestamp {
-		s.logger.Info("Using Surfshark servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Surfshark.Timestamp, hardcoded.Surfshark.Timestamp))
-		merged.Surfshark = persistent.Surfshark
+	s.logger.Info("Using Mullvad servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) models.NordvpnServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
 	}
-	merged.Vyprvpn = hardcoded.Vyprvpn
-	if persistent.Vyprvpn.Timestamp > hardcoded.Vyprvpn.Timestamp {
-		s.logger.Info("Using Vyprvpn servers from file (%s more recent)",
-			getUnixTimeDifference(persistent.Vyprvpn.Timestamp, hardcoded.Vyprvpn.Timestamp))
-		merged.Vyprvpn = persistent.Vyprvpn
+	s.logger.Info("Using NordVPN servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
 	}
-	merged.Windscribe = hardcoded.Windscribe
-	if persistent.Windscribe.Timestamp > hardcoded.Windscribe.Timestamp {
-		if hardcoded.Windscribe.Version == 2 && persistent.Windscribe.Version == 1 {
-			s.logger.Info("Windscribe servers from file discarded because they are one version behind")
-			merged.Windscribe = hardcoded.Windscribe
-		} else {
-			s.logger.Info("Using Windscribe servers from file (%s more recent)",
-				getUnixTimeDifference(persistent.Windscribe.Timestamp, hardcoded.Windscribe.Timestamp))
-			merged.Windscribe = persistent.Windscribe
-		}
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logger.Info(
+			"PIA servers from file discarded because they are %d versions behind",
+			versionDiff)
+		return hardcoded
 	}
-	return merged
+	s.logger.Info("Using PIA servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergePrivado(hardcoded, persisted models.PrivadoServers) models.PrivadoServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logger.Info(
+			"Privado servers from file discarded because they are %d versions behind",
+			versionDiff)
+		return hardcoded
+	}
+	s.logger.Info("Using Privado servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergePureVPN(hardcoded, persisted models.PurevpnServers) models.PurevpnServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	s.logger.Info("Using PureVPN servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergeSurfshark(hardcoded, persisted models.SurfsharkServers) models.SurfsharkServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	s.logger.Info("Using Surfshark servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergeVyprvpn(hardcoded, persisted models.VyprvpnServers) models.VyprvpnServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	s.logger.Info("Using VyprVPN servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergeWindscribe(hardcoded, persisted models.WindscribeServers) models.WindscribeServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logger.Info(
+			"Windscribe servers from file discarded because they are %d versions behind",
+			versionDiff)
+		return hardcoded
+	}
+	s.logger.Info("Using Windscribe servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
 }

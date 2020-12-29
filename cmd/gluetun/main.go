@@ -122,9 +122,8 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	}
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
-	storage := storage.New(logger, os)
-	const updateServerFile = true
-	allServers, err := storage.SyncServers(constants.GetAllServers(), updateServerFile)
+	storage := storage.New(logger, os, constants.ServersData)
+	allServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
 		logger.Error(err)
 		return 1
