@@ -53,6 +53,7 @@ type looper struct {
 	stop, stopped      chan struct{}
 	start              chan struct{}
 	portForwardSignals chan net.IP
+	crashed            bool
 }
 
 func NewLooper(settings settings.OpenVPN,
@@ -88,9 +89,15 @@ func NewLooper(settings settings.OpenVPN,
 
 func (l *looper) PortForward(vpnGateway net.IP) { l.portForwardSignals <- vpnGateway }
 
+func (l *looper) signalCrashedStatus() {
+	if !l.crashed {
+		l.crashed = true
+		l.running <- constants.Crashed
+	}
+}
+
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	crashed := false
 	select {
 	case <-l.start:
 	case <-ctx.Done():
@@ -104,6 +111,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		connection, err := providerConf.GetOpenVPNConnection(settings.Provider.ServerSelection)
 		if err != nil {
 			l.logger.Error(err)
+			l.signalCrashedStatus()
 			l.cancel()
 			return
 		}
@@ -119,18 +127,21 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
 			l.logger.Error(err)
+			l.signalCrashedStatus()
 			l.cancel()
 			return
 		}
 
 		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.puid, l.pgid); err != nil {
 			l.logger.Error(err)
+			l.signalCrashedStatus()
 			l.cancel()
 			return
 		}
 
 		if err := l.fw.SetVPNConnection(ctx, connection); err != nil {
 			l.logger.Error(err)
+			l.signalCrashedStatus()
 			l.cancel()
 			return
 		}
@@ -140,10 +151,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		stream, waitFn, err := l.conf.Start(openvpnCtx)
 		if err != nil {
 			openvpnCancel()
-			if !crashed {
-				l.running <- constants.Crashed
-				crashed = true
-			}
+			l.signalCrashedStatus()
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -169,11 +177,11 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			waitError <- err
 		}()
 
-		if !crashed {
-			l.running <- constants.Running
-			crashed = false
-		} else {
+		if l.crashed {
+			l.crashed = false
 			l.state.setStatusWithLock(constants.Running)
+		} else {
+			l.running <- constants.Running
 		}
 
 		stayHere := true
@@ -197,7 +205,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				openvpnCancel()
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
-				crashed = true
+				l.crashed = true
 				stayHere = false
 			}
 		}
