@@ -49,26 +49,28 @@ func (r *reader) GetHTTPProxyPort() (port uint16, err error) {
 	return r.envParams.GetPort("HTTPPROXY_PORT", retroKeysOption, libparams.Default("8888"))
 }
 
-// GetHTTPProxyUser obtains the HTTP proxy server user from the environment variable
-// HTTPPROXY_USER, and using TINYPROXY_USER and PROXY_USER as retro-compatibility names.
+// GetHTTPProxyUser obtains the HTTP proxy server user.
+// It first tries to use the HTTPPROXY_USER environment variable (easier for the end user)
+// and then tries to read from the secret file httpproxy_user if nothing was found.
 func (r *reader) GetHTTPProxyUser() (user string, err error) {
-	retroKeysOption := libparams.RetroKeys(
+	const compulsory = false
+	return r.getFromEnvOrSecretFile(
+		"HTTPPROXY_USER",
+		compulsory,
 		[]string{"TINYPROXY_USER", "PROXY_USER"},
-		r.onRetroActive,
 	)
-	return r.envParams.GetEnv("HTTPPROXY_USER",
-		retroKeysOption, libparams.CaseSensitiveValue(), libparams.Unset())
 }
 
-// GetHTTPProxyPassword obtains the HTTP proxy server password from the environment variable
-// HTTPPROXY_PASSWORD, and using TINYPROXY_PASSWORD and PROXY_PASSWORD as retro-compatibility names.
+// GetHTTPProxyPassword obtains the HTTP proxy server password.
+// It first tries to use the HTTPPROXY_PASSWORD environment variable (easier for the end user)
+// and then tries to read from the secret file httpproxy_password if nothing was found.
 func (r *reader) GetHTTPProxyPassword() (password string, err error) {
-	retroKeysOption := libparams.RetroKeys(
+	const compulsory = false
+	return r.getFromEnvOrSecretFile(
+		"HTTPPROXY_USER",
+		compulsory,
 		[]string{"TINYPROXY_PASSWORD", "PROXY_PASSWORD"},
-		r.onRetroActive,
 	)
-	return r.envParams.GetEnv("HTTPPROXY_PASSWORD",
-		retroKeysOption, libparams.CaseSensitiveValue(), libparams.Unset())
 }
 
 // GetHTTPProxyStealth obtains the HTTP proxy server stealth mode

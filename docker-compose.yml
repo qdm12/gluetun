@@ -14,25 +14,18 @@ services:
     # command:
     volumes:
       - /yourpath:/gluetun
+    secrets:
+      - openvpn_user
+      - openvpn_password
     environment:
       # More variables are available, see the readme table
       - VPNSP=private internet access
-
       # Timezone for accurate logs times
       - TZ=
-
-      # All VPN providers
-      - OPENVPN_USER=js89ds7
-
-      # All VPN providers but Mullvad
-      - OPENVPN_PASSWORD=8fd9s239G
-
-      # Cyberghost only
-      - CLIENT_KEY=
-
-      # All VPN providers but Mullvad
-      - REGION=Austria
-
-      # Mullvad only
-      - COUNTRY=Sweden
     restart: always
+
+secrets:
+  openvpn_user:
+    file: ./openvpn_user
+  openvpn_password:
+    file: ./openvpn_password

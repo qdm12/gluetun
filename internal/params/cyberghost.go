@@ -3,8 +3,6 @@ package params
 import (
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -25,23 +23,15 @@ func (p *reader) GetCyberghostRegions() (regions []string, err error) {
 	return p.envParams.GetCSVInPossibilities("REGION", constants.CyberghostRegionChoices())
 }
 
-// GetCyberghostClientKey obtains the one line client key to use for openvpn from the
-// file at /gluetun/client.key.
+// GetCyberghostClientKey obtains the client key to use for openvpn
+// from the secret file /run/secrets/openvpn_clientkey or from the file
+// /gluetun/client.key.
 func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
-	const filepath = string(constants.ClientKey)
-	file, err := p.os.OpenFile(filepath, os.O_RDONLY, 0)
+	b, err := p.getFromFileOrSecretFile("OPENVPN_CLIENTKEY", string(constants.ClientKey))
 	if err != nil {
 		return "", err
 	}
-	content, err := ioutil.ReadAll(file)
-	if err != nil {
-		_ = file.Close()
-		return "", err
-	}
-	if err := file.Close(); err != nil {
-		return "", err
-	}
-	return extractClientKey(content)
+	return extractClientKey(b)
 }
 
 func extractClientKey(b []byte) (key string, err error) {
@@ -57,23 +47,15 @@ func extractClientKey(b []byte) (key string, err error) {
 	return s, nil
 }
 
-// GetCyberghostClientCertificate obtains the client certificate to use for openvpn from the
-// file at /gluetun/client.crt.
+// GetCyberghostClientCertificate obtains the client certificate to use for openvpn
+// from the secret file /run/secrets/openvpn_clientcrt or from the file
+// /gluetun/client.crt.
 func (p *reader) GetCyberghostClientCertificate() (clientCertificate string, err error) {
-	const filepath = string(constants.ClientCertificate)
-	file, err := p.os.OpenFile(filepath, os.O_RDONLY, 0)
+	b, err := p.getFromFileOrSecretFile("OPENVPN_CLIENTCRT", string(constants.ClientCertificate))
 	if err != nil {
 		return "", err
 	}
-	content, err := ioutil.ReadAll(file)
-	if err != nil {
-		_ = file.Close()
-		return "", err
-	}
-	if err := file.Close(); err != nil {
-		return "", err
-	}
-	return extractClientCertificate(content)
+	return extractClientCertificate(b)
 }
 
 func extractClientCertificate(b []byte) (certificate string, err error) {

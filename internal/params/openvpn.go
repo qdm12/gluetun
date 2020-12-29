@@ -9,23 +9,19 @@ import (
 )
 
 // GetUser obtains the user to use to connect to the VPN servers.
+// It first tries to use the OPENVPN_USER environment variable (easier for the end user)
+// and then tries to read from the secret file openvpn_user if nothing was found.
 func (r *reader) GetUser() (user string, err error) {
-	return r.envParams.GetEnv("OPENVPN_USER",
-		libparams.CaseSensitiveValue(),
-		libparams.Compulsory(),
-		libparams.RetroKeys([]string{"USER"}, r.onRetroActive),
-		libparams.Unset())
+	const compulsory = true
+	return r.getFromEnvOrSecretFile("OPENVPN_USER", compulsory, []string{"USER"})
 }
 
 // GetPassword obtains the password to use to connect to the VPN servers.
+// It first tries to use the OPENVPN_PASSWORD environment variable (easier for the end user)
+// and then tries to read from the secret file openvpn_password if nothing was found.
 func (r *reader) GetPassword() (s string, err error) {
-	options := []libparams.GetEnvSetter{
-		libparams.CaseSensitiveValue(),
-		libparams.Unset(),
-		libparams.Compulsory(),
-		libparams.RetroKeys([]string{"PASSWORD"}, r.onRetroActive),
-	}
-	return r.envParams.GetEnv("OPENVPN_PASSWORD", options...)
+	const compulsory = true
+	return r.getFromEnvOrSecretFile("OPENVPN_PASSWORD", compulsory, []string{"PASSWORD"})
 }
 
 // GetNetworkProtocol obtains the network protocol to use to connect to the

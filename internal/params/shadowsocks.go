@@ -32,10 +32,12 @@ func (r *reader) GetShadowSocksPort() (port uint16, err error) {
 	return uint16(portUint64), err
 }
 
-// GetShadowSocksPassword obtains the ShadowSocks server password from the environment variable
-// SHADOWSOCKS_PASSWORD.
+// GetShadowSocksPassword obtains the ShadowSocks server password.
+// It first tries to use the SHADOWSOCKS_PASSWORD environment variable (easier for the end user)
+// and then tries to read from the secret file shadowsocks_password if nothing was found.
 func (r *reader) GetShadowSocksPassword() (password string, err error) {
-	return r.envParams.GetEnv("SHADOWSOCKS_PASSWORD", libparams.CaseSensitiveValue(), libparams.Unset())
+	const compulsory = false
+	return r.getFromEnvOrSecretFile("SHADOWSOCKS_PASSWORD", compulsory, nil)
 }
 
 // GetShadowSocksMethod obtains the ShadowSocks method to use from the environment variable

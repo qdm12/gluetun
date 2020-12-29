@@ -54,7 +54,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
     ```bash
     docker run -d --name gluetun --cap-add=NET_ADMIN \
     -e VPNSP="private internet access" -e REGION="CA Montreal" \
-    -e OPENVPN_USER=js89ds7 -e PASSWORD=8fd9s239G \
+    -e OPENVPN_USER=js89ds7 -e OPENVPN_PASSWORD=8fd9s239G \
     -v /yourpath:/gluetun \
     qmcgaw/private-internet-access
     ```
@@ -62,6 +62,8 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
     or use [docker-compose.yml](https://github.com/qdm12/gluetun/blob/master/docker-compose.yml) with:
 
     ```bash
+    echo "your openvpn username" > openvpn_user
+    echo "your openvpn password" > openvpn_password
     docker-compose up -d
     ```
 
@@ -71,6 +73,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
     - Use `-p 8888:8888/tcp` to access the HTTP web proxy
     - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the Shadowsocks proxy
     - Use `-p 8000:8000/tcp` to access the [HTTP control server](#HTTP-control-server) built-in
+    - Use [Docker secrets](#Docker-secrets) to read your credentials instead of environment variables
 
     **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/gluetun/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
 
@@ -163,7 +166,9 @@ docker run --rm --network=container:gluetun alpine:3.12 wget -qO- https://ipinfo
     | `REGION` | | One of the Cyberghost regions, [Wiki page](https://github.com/qdm12/gluetun/wiki/Cyberghost-Servers) | VPN server country |
     | `CYBERGHOST_GROUP` | `Premium UDP Europe` | One of the server groups (see above Wiki page) | Server group |
 
-    **Additional setup steps**: Bind mount your `client.key` file to `/gluetun/client.key` and your `client.crt` file to `/gluetun/client.crt`. For example, you can use with your `docker run` command:
+    **Additional setup steps**: If you use docker Swarm or docker-compose, you should use the [Docker secrets](#Docker-secrets) `openvpn_clientkey` and `openvpn_clientcrt`.
+
+    Otherwise, bind mount your `client.key` and `client.crt` files with, for example:
 
     ```sh
     -v /yourpath/client.key:/gluetun/client.key:ro -v /yourpath/client.crt:/gluetun/client.crt:ro
@@ -281,6 +286,25 @@ None of the following values are required.
 | `PUBLICIP_PERIOD` | `12h` | Valid duration | Period to check for public IP address. Set to `0` to disable. |
 | `VERSION_INFORMATION` | `on` | `on`, `off` | Logs a message indicating if a newer version is available once the VPN is connected |
 | `UPDATER_PERIOD` | `0` | Valid duration string such as `24h` | Period to update all VPN servers information in memory and to /gluetun/servers.json. Set to `0` to disable. This does a burst of DNS over TLS requests, which may be blocked if you set `BLOCK_MALICIOUS=on` for example. |
+
+## Docker secrets
+
+If you use Docker Compose or Docker Swarm, you can optionally use [Docker secret files](https://docs.docker.com/engine/swarm/secrets/) for all sensitive values such as your Openvpn credentials, instead of using environment variables.
+
+The following secrets can be used:
+
+- `openvpn_user`
+- `openvpn_password`
+- `openvpn_clientkey`
+- `openvpn_clientcrt`
+- `httpproxy_username`
+- `httpproxy_password`
+- `shadowsocks_password`
+
+By default, `openvpn_user` and `openvpn_password` are set in [docker-compose.yml](docker-compose.yml)
+
+Note that you can change the secret file path in the container by changing the environment variable in the form `<capitalizedSecretName>_SECRETFILE`.
+For example, `OPENVPN_PASSWORD_SECRETFILE` defaults to `/run/secrets/openvpn_password` which you can change.
 
 ## Connect to it
 

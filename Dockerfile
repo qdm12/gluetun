@@ -51,6 +51,8 @@ ENV VPNSP=pia \
     # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
     OPENVPN_USER= \
     OPENVPN_PASSWORD= \
+    USER_SECRETFILE=/run/secrets/openvpn_user \
+    PASSWORD_SECRETFILE=/run/secrets/openvpn_password \
     REGION= \
     # PIA only
     PIA_ENCRYPTION=strong \
@@ -69,6 +71,8 @@ ENV VPNSP=pia \
     PORT= \
     # Cyberghost only
     CYBERGHOST_GROUP="Premium UDP Europe" \
+    OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
+    OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
     # NordVPN only
     SERVER_NUMBER= \
     # Openvpn
@@ -102,11 +106,14 @@ ENV VPNSP=pia \
     HTTPPROXY_PORT=8888 \
     HTTPPROXY_USER= \
     HTTPPROXY_PASSWORD= \
+    HTTPPROXY_USER_SECRETFILE=/run/secrets/httpproxy_user \
+    HTTPPROXY_PASSWORD_SECRETFILE=/run/secrets/httpproxy_password \
     # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
     SHADOWSOCKS_PORT=8388 \
     SHADOWSOCKS_PASSWORD= \
+    SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
     SHADOWSOCKS_METHOD=chacha20-ietf-poly1305 \
     UPDATER_PERIOD=0
 ENTRYPOINT ["/entrypoint"]
