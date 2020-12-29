@@ -23,6 +23,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/gluetun/internal/os/user"
 	"github.com/qdm12/gluetun/internal/params"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
@@ -53,11 +54,12 @@ func main() {
 	ctx := context.Background()
 	args := nativeos.Args
 	os := os.New()
-	nativeos.Exit(_main(ctx, args, os))
+	osUser := user.New()
+	nativeos.Exit(_main(ctx, args, os, osUser))
 }
 
 //nolint:gocognit,gocyclo
-func _main(background context.Context, args []string, os os.OS) int {
+func _main(background context.Context, args []string, os os.OS, osUser user.OSUser) int {
 	if len(args) > 1 { // cli operation
 		var err error
 		switch args[1] {
@@ -86,7 +88,7 @@ func _main(background context.Context, args []string, os os.OS) int {
 	httpClient := &http.Client{Timeout: clientTimeout}
 	client := network.NewClient(clientTimeout)
 	// Create configurators
-	alpineConf := alpine.NewConfigurator(os.OpenFile)
+	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
 	unix := unix.New()
 	ovpnConf := openvpn.NewConfigurator(logger, os, unix)
 	dnsConf := dns.NewConfigurator(logger, client, os.OpenFile)

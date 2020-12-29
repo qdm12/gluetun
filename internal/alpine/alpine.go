@@ -1,9 +1,8 @@
 package alpine
 
 import (
-	"os/user"
-
 	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/gluetun/internal/os/user"
 )
 
 type Configurator interface {
@@ -11,15 +10,13 @@ type Configurator interface {
 }
 
 type configurator struct {
-	openFile   os.OpenFileFunc
-	lookupUID  func(uid string) (*user.User, error)
-	lookupUser func(username string) (*user.User, error)
+	openFile os.OpenFileFunc
+	osUser   user.OSUser
 }
 
-func NewConfigurator(openFile os.OpenFileFunc) Configurator {
+func NewConfigurator(openFile os.OpenFileFunc, osUser user.OSUser) Configurator {
 	return &configurator{
-		openFile:   openFile,
-		lookupUID:  user.LookupId,
-		lookupUser: user.Lookup,
+		openFile: openFile,
+		osUser:   osUser,
 	}
 }

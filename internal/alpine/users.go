@@ -9,7 +9,7 @@ import (
 // CreateUser creates a user in Alpine with the given UID.
 func (c *configurator) CreateUser(username string, uid int) (createdUsername string, err error) {
 	UIDStr := fmt.Sprintf("%d", uid)
-	u, err := c.lookupUID(UIDStr)
+	u, err := c.osUser.LookupID(UIDStr)
 	_, unknownUID := err.(user.UnknownUserIdError)
 	if err != nil && !unknownUID {
 		return "", fmt.Errorf("cannot create user: %w", err)
@@ -19,7 +19,7 @@ func (c *configurator) CreateUser(username string, uid int) (createdUsername str
 		}
 		return u.Username, nil
 	}
-	u, err = c.lookupUser(username)
+	u, err = c.osUser.Lookup(username)
 	_, unknownUsername := err.(user.UnknownUserError)
 	if err != nil && !unknownUsername {
 		return "", fmt.Errorf("cannot create user: %w", err)
