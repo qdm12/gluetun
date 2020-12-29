@@ -8,15 +8,19 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
 [![Build status](https://github.com/qdm12/gluetun/workflows/Buildx%20latest/badge.svg)](https://github.com/qdm12/gluetun/actions?query=workflow%3A%22Buildx+latest%22)
+
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
 [![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/gluetun.svg)](https://hub.docker.com/r/qmcgaw/gluetun)
+[![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/gluetun.svg)](https://hub.docker.com/r/qmcgaw/gluetun)
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 [![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 
-[![Image size](https://images.microbadger.com/badges/image/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
-[![Image version](https://images.microbadger.com/badges/version/qmcgaw/private-internet-access.svg)](https://microbadger.com/images/qmcgaw/private-internet-access)
+[![Image size](https://images.microbadger.com/badges/image/qmcgaw/gluetun.svg)](https://microbadger.com/images/qmcgaw/gluetun)
+[![Image version](https://images.microbadger.com/badges/version/qmcgaw/gluetun.svg)](https://microbadger.com/images/qmcgaw/gluetun)
 [![Join Slack channel](https://img.shields.io/badge/slack-@qdm12-yellow.svg?logo=slack)](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
 
 ## Videos
@@ -56,7 +60,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
     -e VPNSP="private internet access" -e REGION="CA Montreal" \
     -e OPENVPN_USER=js89ds7 -e OPENVPN_PASSWORD=8fd9s239G \
     -v /yourpath:/gluetun \
-    qmcgaw/private-internet-access
+    qmcgaw/gluetun
     ```
 
     or use [docker-compose.yml](https://github.com/qdm12/gluetun/blob/master/docker-compose.yml) with:
@@ -77,7 +81,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
 
     **If you encounter an issue with the tun device not being available, see [the FAQ](https://github.com/qdm12/gluetun/blob/master/doc/faq.md#how-to-fix-openvpn-failing-to-start)**
 
-1. You can update the image with `docker pull qmcgaw/private-internet-access:latest`. See the [wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#use-a-release-tag) for more information on other tags available.
+1. You can update the image with `docker pull qmcgaw/gluetun:latest`. See the [wiki](https://github.com/qdm12/gluetun/wiki/Common-issues#use-a-release-tag) for more information on other tags available.
 
 ## Testing
 
@@ -370,7 +374,7 @@ There are various ways to achieve this, depending on your use case.
     version: '3.7'
     services:
       gluetun:
-        image: qmcgaw/private-internet-access
+        image: qmcgaw/gluetun
         container_name: gluetun
         cap_add:
           - NET_ADMIN

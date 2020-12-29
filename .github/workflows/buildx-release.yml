@@ -29,6 +29,7 @@ jobs:
             --build-arg COMMIT=`git rev-parse --short HEAD` \
             --build-arg VERSION=${GITHUB_REF##*/} \
             -t qmcgaw/private-internet-access:${GITHUB_REF##*/} \
+            -t qmcgaw/gluetun:${GITHUB_REF##*/} \
             --push \
             .
       - run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I=

@@ -16,4 +16,4 @@ jobs:
         env:
           DOCKERHUB_USERNAME: qmcgaw
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-          DOCKERHUB_REPOSITORY: qmcgaw/private-internet-access
+          DOCKERHUB_REPOSITORY: qmcgaw/gluetun
