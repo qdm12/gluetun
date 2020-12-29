@@ -2,6 +2,7 @@ package alpine
 
 import (
 	"fmt"
+	"os"
 	"os/user"
 )
 
@@ -26,14 +27,15 @@ func (c *configurator) CreateUser(username string, uid int) (createdUsername str
 		return "", fmt.Errorf("cannot create user: user with name %s already exists for ID %s instead of %d",
 			username, u.Uid, uid)
 	}
-	passwd, err := c.fileManager.ReadFile("/etc/passwd")
+	file, err := c.openFile("/etc/passwd", os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return "", fmt.Errorf("cannot create user: %w", err)
 	}
-	passwd = append(passwd, []byte(fmt.Sprintf("%s:x:%d:::/dev/null:/sbin/nologin\n", username, uid))...)
-
-	if err := c.fileManager.WriteToFile("/etc/passwd", passwd); err != nil {
-		return "", fmt.Errorf("cannot create user: %w", err)
+	s := fmt.Sprintf("%s:x:%d:::/dev/null:/sbin/nologin\n", username, uid)
+	_, err = file.WriteString(s)
+	if err != nil {
+		_ = file.Close()
+		return "", err
 	}
-	return username, nil
+	return username, file.Close()
 }

@@ -19,7 +19,7 @@ import (
 	"github.com/qdm12/gluetun/internal/firewall"
 	gluetunLog "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -183,7 +183,7 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection, verbosity int, user
 
 //nolint:gocognit
 func (p *pia) PortForward(ctx context.Context, client *http.Client,
-	fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+	openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
 	if !p.activeServer.PortForward {
 		pfLogger.Error("The server %s does not support port forwarding", p.activeServer.Region)
@@ -203,7 +203,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 		return
 	}
 	defer pfLogger.Warn("loop exited")
-	data, err := readPIAPortForwardData(fileManager)
+	data, err := readPIAPortForwardData(openFile)
 	if err != nil {
 		pfLogger.Error(err)
 	}
@@ -222,7 +222,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 
 	if !dataFound || expired {
 		tryUntilSuccessful(ctx, pfLogger, func() error {
-			data, err = refreshPIAPortForwardData(ctx, client, gateway, fileManager)
+			data, err = refreshPIAPortForwardData(ctx, client, gateway, openFile)
 			return err
 		})
 		if ctx.Err() != nil {
@@ -240,12 +240,9 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 		return
 	}
 
-	filepath := syncState(data.Port)
+	filepath := string(syncState(data.Port))
 	pfLogger.Info("Writing port to %s", filepath)
-	if err := fileManager.WriteToFile(
-		string(filepath), []byte(fmt.Sprintf("%d", data.Port)),
-		files.Permissions(constants.AllReadWritePermissions),
-	); err != nil {
+	if err := writePortForwardedToFile(openFile, filepath, data.Port); err != nil {
 		pfLogger.Error(err)
 	}
 
@@ -281,7 +278,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration.Format(time.RFC1123))
 			oldPort := data.Port
 			for {
-				data, err = refreshPIAPortForwardData(ctx, client, gateway, fileManager)
+				data, err = refreshPIAPortForwardData(ctx, client, gateway, openFile)
 				if err != nil {
 					pfLogger.Error(err)
 					continue
@@ -298,10 +295,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			}
 			filepath := syncState(data.Port)
 			pfLogger.Info("Writing port to %s", filepath)
-			if err := fileManager.WriteToFile(
-				string(filepath), []byte(fmt.Sprintf("%d", data.Port)),
-				files.Permissions(constants.AllReadWritePermissions),
-			); err != nil {
+			if err := writePortForwardedToFile(openFile, string(filepath), data.Port); err != nil {
 				pfLogger.Error(err)
 			}
 			if err := bindPIAPort(ctx, client, gateway, data); err != nil {
@@ -365,8 +359,8 @@ func newPIAHTTPClient(serverName string) (client *http.Client, err error) {
 }
 
 func refreshPIAPortForwardData(ctx context.Context, client *http.Client,
-	gateway net.IP, fileManager files.FileManager) (data piaPortForwardData, err error) {
-	data.Token, err = fetchPIAToken(ctx, fileManager, client)
+	gateway net.IP, openFile os.OpenFileFunc) (data piaPortForwardData, err error) {
+	data.Token, err = fetchPIAToken(ctx, openFile, client)
 	if err != nil {
 		return data, fmt.Errorf("cannot obtain token: %w", err)
 	}
@@ -374,7 +368,7 @@ func refreshPIAPortForwardData(ctx context.Context, client *http.Client,
 	if err != nil {
 		return data, fmt.Errorf("cannot obtain port forwarding data: %w", err)
 	}
-	if err := writePIAPortForwardData(fileManager, data); err != nil {
+	if err := writePIAPortForwardData(openFile, data); err != nil {
 		return data, fmt.Errorf("cannot persist port forwarding information to file: %w", err)
 	}
 	return data, nil
@@ -393,34 +387,39 @@ type piaPortForwardData struct {
 	Expiration time.Time `json:"expires_at"`
 }
 
-func readPIAPortForwardData(fileManager files.FileManager) (data piaPortForwardData, err error) {
+func readPIAPortForwardData(openFile os.OpenFileFunc) (data piaPortForwardData, err error) {
 	const filepath = string(constants.PIAPortForward)
-	exists, err := fileManager.FileExists(filepath)
-	if err != nil {
-		return data, err
-	} else if !exists {
+	file, err := openFile(filepath, os.O_RDONLY, 0)
+	if os.IsNotExist(err) {
 		return data, nil
+	} else if err != nil {
+		return data, err
 	}
-	b, err := fileManager.ReadFile(filepath)
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&data)
 	if err != nil {
+		_ = file.Close()
 		return data, err
 	}
-	if err := json.Unmarshal(b, &data); err != nil {
-		return data, err
-	}
-	return data, nil
+	return data, file.Close()
 }
 
-func writePIAPortForwardData(fileManager files.FileManager, data piaPortForwardData) (err error) {
-	b, err := json.Marshal(&data)
-	if err != nil {
-		return fmt.Errorf("cannot encode data: %w", err)
-	}
-	err = fileManager.WriteToFile(string(constants.PIAPortForward), b)
+func writePIAPortForwardData(openFile os.OpenFileFunc, data piaPortForwardData) (err error) {
+	const filepath = string(constants.PIAPortForward)
+	file, err := openFile(filepath,
+		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
+		0644)
 	if err != nil {
 		return err
 	}
-	return nil
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(data)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+	return file.Close()
 }
 
 func unpackPIAPayload(payload string) (port uint16, token string, expiration time.Time, err error) {
@@ -449,8 +448,9 @@ func packPIAPayload(port uint16, token string, expiration time.Time) (payload st
 	return payload, nil
 }
 
-func fetchPIAToken(ctx context.Context, fileManager files.FileManager, client *http.Client) (token string, err error) {
-	username, password, err := getOpenvpnCredentials(fileManager)
+func fetchPIAToken(ctx context.Context, openFile os.OpenFileFunc,
+	client *http.Client) (token string, err error) {
+	username, password, err := getOpenvpnCredentials(openFile)
 	if err != nil {
 		return "", fmt.Errorf("cannot get Openvpn credentials: %w", err)
 	}
@@ -489,10 +489,19 @@ func fetchPIAToken(ctx context.Context, fileManager files.FileManager, client *h
 	return result.Token, nil
 }
 
-func getOpenvpnCredentials(fileManager files.FileManager) (username, password string, err error) {
-	authData, err := fileManager.ReadFile(string(constants.OpenVPNAuthConf))
+func getOpenvpnCredentials(openFile os.OpenFileFunc) (username, password string, err error) {
+	const filepath = string(constants.OpenVPNAuthConf)
+	file, err := openFile(filepath, os.O_RDONLY, 0)
 	if err != nil {
-		return "", "", fmt.Errorf("cannot read openvpn auth file: %w", err)
+		return "", "", fmt.Errorf("cannot read openvpn auth file: %s", err)
+	}
+	authData, err := ioutil.ReadAll(file)
+	if err != nil {
+		_ = file.Close()
+		return "", "", fmt.Errorf("cannot read openvpn auth file: %s", err)
+	}
+	if err := file.Close(); err != nil {
+		return "", "", err
 	}
 	lines := strings.Split(string(authData), "\n")
 	const minLines = 2
@@ -585,4 +594,18 @@ func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data 
 		return fmt.Errorf("response received from PIA: %s (%s)", responseData.Status, responseData.Message)
 	}
 	return nil
+}
+
+func writePortForwardedToFile(openFile os.OpenFileFunc,
+	filepath string, port uint16) (err error) {
+	file, err := openFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	_, err = file.Write([]byte(fmt.Sprintf("%d", port)))
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+	return file.Close()
 }

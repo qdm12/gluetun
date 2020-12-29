@@ -8,8 +8,8 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/settings"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 )
@@ -27,9 +27,9 @@ type Looper interface {
 type looper struct {
 	state state
 	// Objects
-	getter      IPGetter
-	logger      logging.Logger
-	fileManager files.FileManager
+	getter IPGetter
+	logger logging.Logger
+	os     os.OS
 	// Fixed settings
 	uid int
 	gid int
@@ -45,8 +45,9 @@ type looper struct {
 	timeSince func(time.Time) time.Duration
 }
 
-func NewLooper(client network.Client, logger logging.Logger, fileManager files.FileManager,
-	settings settings.PublicIP, uid, gid int) Looper {
+func NewLooper(client network.Client, logger logging.Logger,
+	settings settings.PublicIP, uid, gid int,
+	os os.OS) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
@@ -55,7 +56,7 @@ func NewLooper(client network.Client, logger logging.Logger, fileManager files.F
 		// Objects
 		getter:       NewIPGetter(client),
 		logger:       logger.WithPrefix("ip getter: "),
-		fileManager:  fileManager,
+		os:           os,
 		uid:          uid,
 		gid:          gid,
 		start:        make(chan struct{}),
@@ -125,7 +126,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				close(errorCh)
 				filepath := l.GetSettings().IPFilepath
 				l.logger.Info("Removing ip file %s", filepath)
-				if err := l.fileManager.Remove(string(filepath)); err != nil {
+				if err := l.os.Remove(string(filepath)); err != nil {
 					l.logger.Error(err)
 				}
 				return
@@ -142,12 +143,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				getCancel()
 				l.state.setPublicIP(ip)
 				l.logger.Info("Public IP address is %s", ip)
-				const userReadWritePermissions = 0600
-				err := l.fileManager.WriteLinesToFile(
-					string(l.state.settings.IPFilepath),
-					[]string{ip.String()},
-					files.Ownership(l.uid, l.gid),
-					files.Permissions(userReadWritePermissions))
+				filepath := string(l.state.settings.IPFilepath)
+				err := persistPublicIP(l.os.OpenFile, filepath, ip.String(), l.uid, l.gid)
 				if err != nil {
 					l.logger.Error(err)
 				}

@@ -1,31 +1,68 @@
 package openvpn
 
 import (
+	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/files"
 )
 
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions.
 func (c *configurator) WriteAuthFile(user, password string, uid, gid int) error {
-	exists, err := c.fileManager.FileExists(string(constants.OpenVPNAuthConf))
-	if err != nil {
+	const filepath = string(constants.OpenVPNAuthConf)
+	file, err := c.os.OpenFile(filepath, os.O_RDONLY, 0)
+
+	if err != nil && !os.IsNotExist(err) {
 		return err
-	} else if exists {
-		data, err := c.fileManager.ReadFile(string(constants.OpenVPNAuthConf))
+	}
+
+	if os.IsNotExist(err) {
+		file, err = c.os.OpenFile(filepath, os.O_WRONLY|os.O_CREATE, 0400)
 		if err != nil {
 			return err
 		}
-		lines := strings.Split(string(data), "\n")
-		if len(lines) > 1 && lines[0] == user && lines[1] == password {
-			return nil
+		_, err = file.WriteString(user + "\n" + password)
+		if err != nil {
+			_ = file.Close()
+			return err
 		}
-		c.logger.Info("username and password changed", constants.OpenVPNAuthConf)
+		err = file.Chown(uid, gid)
+		if err != nil {
+			_ = file.Close()
+			return err
+		}
+		return file.Close()
 	}
-	return c.fileManager.WriteLinesToFile(
-		string(constants.OpenVPNAuthConf),
-		[]string{user, password},
-		files.Ownership(uid, gid),
-		files.Permissions(constants.UserReadPermission))
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+	if err := file.Close(); err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(data), "\n")
+	if len(lines) > 1 && lines[0] == user && lines[1] == password {
+		return nil
+	}
+
+	c.logger.Info("username and password changed in %s", constants.OpenVPNAuthConf)
+	file, err = c.os.OpenFile(filepath, os.O_TRUNC|os.O_WRONLY, 0400)
+	if err != nil {
+		return err
+	}
+	_, err = file.WriteString(user + "\n" + password)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+	err = file.Chown(uid, gid)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+	return file.Close()
 }

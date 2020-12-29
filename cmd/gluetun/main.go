@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
+	nativeos "os"
 	"os/signal"
 	"strings"
 	"sync"
@@ -22,6 +22,7 @@ import (
 	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/params"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
@@ -32,7 +33,6 @@ import (
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 )
@@ -50,21 +50,24 @@ func main() {
 	buildInfo.Commit = commit
 	buildInfo.BuildDate = buildDate
 	ctx := context.Background()
-	os.Exit(_main(ctx, os.Args))
+	args := nativeos.Args
+	os := os.New()
+	nativeos.Exit(_main(ctx, args, os))
 }
 
-func _main(background context.Context, args []string) int { //nolint:gocognit,gocyclo
+//nolint:gocognit,gocyclo
+func _main(background context.Context, args []string, os os.OS) int {
 	if len(args) > 1 { // cli operation
 		var err error
 		switch args[1] {
 		case "healthcheck":
 			err = cli.HealthCheck(background)
 		case "clientkey":
-			err = cli.ClientKey(args[2:])
+			err = cli.ClientKey(args[2:], os.OpenFile)
 		case "openvpnconfig":
-			err = cli.OpenvpnConfig()
+			err = cli.OpenvpnConfig(os)
 		case "update":
-			err = cli.Update(args[2:])
+			err = cli.Update(args[2:], os)
 		default:
 			err = fmt.Errorf("command %q is unknown", args[1])
 		}
@@ -82,15 +85,14 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	httpClient := &http.Client{Timeout: clientTimeout}
 	client := network.NewClient(clientTimeout)
 	// Create configurators
-	fileManager := files.NewFileManager()
-	alpineConf := alpine.NewConfigurator(fileManager)
-	ovpnConf := openvpn.NewConfigurator(logger, fileManager)
-	dnsConf := dns.NewConfigurator(logger, client, fileManager)
+	alpineConf := alpine.NewConfigurator(os.OpenFile)
+	ovpnConf := openvpn.NewConfigurator(logger, os)
+	dnsConf := dns.NewConfigurator(logger, client, os.OpenFile)
 	routingConf := routing.NewRouting(logger)
-	firewallConf := firewall.NewConfigurator(logger, routingConf, fileManager)
+	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)
 	streamMerger := command.NewStreamMerger()
 
-	paramsReader := params.NewReader(logger, fileManager)
+	paramsReader := params.NewReader(logger, os)
 	fmt.Println(gluetunLogging.Splash(buildInfo))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
@@ -106,8 +108,17 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	}
 	logger.Info(allSettings.String())
 
+	if err := os.MkdirAll("/tmp/gluetun", 0644); err != nil {
+		logger.Error(err)
+		return 1
+	}
+	if err := os.MkdirAll("/gluetun", 0644); err != nil {
+		logger.Error(err)
+		return 1
+	}
+
 	// TODO run this in a loop or in openvpn to reload from file without restarting
-	storage := storage.New(logger)
+	storage := storage.New(logger, os)
 	const updateServerFile = true
 	allServers, err := storage.SyncServers(constants.GetAllServers(), updateServerFile)
 	if err != nil {
@@ -124,8 +135,8 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 		logger.Error(err)
 		return 1
 	}
-	err = fileManager.SetOwnership("/etc/unbound", uid, gid)
-	if err != nil {
+
+	if err := os.Chown("/etc/unbound", uid, gid); err != nil {
 		logger.Error(err)
 		return 1
 	}
@@ -219,7 +230,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, uid, gid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, fileManager, streamMerger, cancel)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, streamMerger, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
@@ -236,7 +247,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	go unboundLooper.Run(ctx, wg, signalDNSReady)
 
 	publicIPLooper := publicip.NewLooper(
-		client, logger, fileManager, allSettings.PublicIP, uid, gid)
+		client, logger, allSettings.PublicIP, uid, gid, os)
 	wg.Add(1)
 	go publicIPLooper.Run(ctx, wg)
 	wg.Add(1)
@@ -279,11 +290,11 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	// until openvpn is launched
 	_, _ = openvpnLooper.SetStatus(constants.Running) // TODO option to disable with variable
 
-	signalsCh := make(chan os.Signal, 1)
+	signalsCh := make(chan nativeos.Signal, 1)
 	signal.Notify(signalsCh,
 		syscall.SIGINT,
 		syscall.SIGTERM,
-		os.Interrupt,
+		nativeos.Interrupt,
 	)
 	shutdownErrorsCount := 0
 	select {
@@ -295,7 +306,7 @@ func _main(background context.Context, args []string) int { //nolint:gocognit,go
 	}
 	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
 		logger.Info("Clearing forwarded port status file %s", allSettings.OpenVPN.Provider.PortForwarding.Filepath)
-		if err := fileManager.Remove(string(allSettings.OpenVPN.Provider.PortForwarding.Filepath)); err != nil {
+		if err := os.Remove(string(allSettings.OpenVPN.Provider.PortForwarding.Filepath)); err != nil {
 			logger.Error(err)
 			shutdownErrorsCount++
 		}

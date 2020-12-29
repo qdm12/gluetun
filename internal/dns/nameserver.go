@@ -2,10 +2,12 @@ package dns
 
 import (
 	"context"
+	"io/ioutil"
 	"net"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/os"
 )
 
 // UseDNSInternally is to change the Go program DNS only.
@@ -23,8 +25,14 @@ func (c *configurator) UseDNSInternally(ip net.IP) {
 // UseDNSSystemWide changes the nameserver to use for DNS system wide.
 func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	c.logger.Info("using DNS address %s system wide", ip.String())
-	data, err := c.fileManager.ReadFile(string(constants.ResolvConf))
+	const filepath = string(constants.ResolvConf)
+	file, err := c.openFile(filepath, os.O_RDWR, 0644)
 	if err != nil {
+		return err
+	}
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		_ = file.Close()
 		return err
 	}
 	s := strings.TrimSuffix(string(data), "\n")
@@ -44,6 +52,11 @@ func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	if !found {
 		lines = append(lines, "nameserver "+ip.String())
 	}
-	data = []byte(strings.Join(lines, "\n"))
-	return c.fileManager.WriteToFile(string(constants.ResolvConf), data)
+	s = strings.Join(lines, "\n")
+	_, err = file.WriteString(s)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+	return file.Close()
 }

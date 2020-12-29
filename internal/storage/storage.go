@@ -1,10 +1,8 @@
 package storage
 
 import (
-	"io/ioutil"
-	"os"
-
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -14,17 +12,13 @@ type Storage interface {
 }
 
 type storage struct {
-	osStat    func(name string) (os.FileInfo, error)
-	readFile  func(filename string) (data []byte, err error)
-	writeFile func(filename string, data []byte, perm os.FileMode) error
-	logger    logging.Logger
+	os     os.OS
+	logger logging.Logger
 }
 
-func New(logger logging.Logger) Storage {
+func New(logger logging.Logger, os os.OS) Storage {
 	return &storage{
-		osStat:    os.Stat,
-		readFile:  ioutil.ReadFile,
-		writeFile: ioutil.WriteFile,
-		logger:    logger.WithPrefix("storage: "),
+		os:     os,
+		logger: logger.WithPrefix("storage: "),
 	}
 }

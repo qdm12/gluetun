@@ -6,9 +6,9 @@ import (
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -29,7 +29,7 @@ type configurator struct { //nolint:maligned
 	commander        command.Commander
 	logger           logging.Logger
 	routing          routing.Routing
-	fileManager      files.FileManager // for custom iptables rules
+	openFile         os.OpenFileFunc // for custom iptables rules
 	iptablesMutex    sync.Mutex
 	debug            bool
 	defaultInterface string
@@ -47,12 +47,12 @@ type configurator struct { //nolint:maligned
 }
 
 // NewConfigurator creates a new Configurator instance.
-func NewConfigurator(logger logging.Logger, routing routing.Routing, fileManager files.FileManager) Configurator {
+func NewConfigurator(logger logging.Logger, routing routing.Routing, openFile os.OpenFileFunc) Configurator {
 	return &configurator{
 		commander:         command.NewCommander(),
 		logger:            logger.WithPrefix("firewall: "),
 		routing:           routing,
-		fileManager:       fileManager,
+		openFile:          openFile,
 		allowedInputPorts: make(map[uint16]string),
 	}
 }

@@ -11,7 +11,7 @@ import (
 // GetUser obtains the user to use to connect to the VPN servers.
 func (r *reader) GetUser() (s string, err error) {
 	defer func() {
-		unsetenvErr := r.unsetEnv("USER")
+		unsetenvErr := r.os.Unsetenv("USER")
 		if err == nil {
 			err = unsetenvErr
 		}
@@ -22,7 +22,7 @@ func (r *reader) GetUser() (s string, err error) {
 // GetPassword obtains the password to use to connect to the VPN servers.
 func (r *reader) GetPassword(required bool) (s string, err error) {
 	defer func() {
-		unsetenvErr := r.unsetEnv("PASSWORD")
+		unsetenvErr := r.os.Unsetenv("PASSWORD")
 		if err == nil {
 			err = unsetenvErr
 		}

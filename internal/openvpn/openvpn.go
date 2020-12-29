@@ -3,10 +3,9 @@ package openvpn
 import (
 	"context"
 	"io"
-	"os"
 
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"golang.org/x/sys/unix"
 )
@@ -20,21 +19,19 @@ type Configurator interface {
 }
 
 type configurator struct {
-	fileManager files.FileManager
-	logger      logging.Logger
-	commander   command.Commander
-	openFile    func(name string, flag int, perm os.FileMode) (*os.File, error)
-	mkDev       func(major uint32, minor uint32) uint64
-	mkNod       func(path string, mode uint32, dev int) error
+	logger    logging.Logger
+	commander command.Commander
+	os        os.OS
+	mkDev     func(major uint32, minor uint32) uint64
+	mkNod     func(path string, mode uint32, dev int) error
 }
 
-func NewConfigurator(logger logging.Logger, fileManager files.FileManager) Configurator {
+func NewConfigurator(logger logging.Logger, os os.OS) Configurator {
 	return &configurator{
-		fileManager: fileManager,
-		logger:      logger.WithPrefix("openvpn configurator: "),
-		commander:   command.NewCommander(),
-		openFile:    os.OpenFile,
-		mkDev:       unix.Mkdev,
-		mkNod:       unix.Mknod,
+		logger:    logger.WithPrefix("openvpn configurator: "),
+		commander: command.NewCommander(),
+		os:        os,
+		mkDev:     unix.Mkdev,
+		mkNod:     unix.Mknod,
 	}
 }

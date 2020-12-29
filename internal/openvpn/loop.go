@@ -4,17 +4,18 @@ import (
 	"context"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -43,7 +44,7 @@ type looper struct {
 	// Other objects
 	logger, pfLogger logging.Logger
 	client           *http.Client
-	fileManager      files.FileManager
+	openFile         os.OpenFileFunc
 	streamMerger     command.StreamMerger
 	cancel           context.CancelFunc
 	// Internal channels and locks
@@ -57,7 +58,7 @@ type looper struct {
 func NewLooper(settings settings.OpenVPN,
 	username string, uid, gid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
-	logger logging.Logger, client *http.Client, fileManager files.FileManager,
+	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,
 	streamMerger command.StreamMerger, cancel context.CancelFunc) Looper {
 	return &looper{
 		state: state{
@@ -74,7 +75,7 @@ func NewLooper(settings settings.OpenVPN,
 		logger:             logger.WithPrefix("openvpn: "),
 		pfLogger:           logger.WithPrefix("port forwarding: "),
 		client:             client,
-		fileManager:        fileManager,
+		openFile:           openFile,
 		streamMerger:       streamMerger,
 		cancel:             cancel,
 		start:              make(chan struct{}),
@@ -115,8 +116,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			settings.Auth,
 			settings.Provider.ExtraConfigOptions,
 		)
-		if err := l.fileManager.WriteLinesToFile(string(constants.OpenVPNConf), lines,
-			files.Ownership(l.uid, l.gid), files.Permissions(constants.UserReadPermission)); err != nil {
+
+		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
 			l.logger.Error(err)
 			l.cancel()
 			return
@@ -239,6 +240,22 @@ func (l *looper) portForward(ctx context.Context, wg *sync.WaitGroup,
 		return settings.Provider.PortForwarding.Filepath
 	}
 	providerConf.PortForward(ctx,
-		client, l.fileManager, l.pfLogger,
+		client, l.openFile, l.pfLogger,
 		gateway, l.fw, syncState)
+}
+
+func writeOpenvpnConf(lines []string, openFile os.OpenFileFunc) error {
+	const filepath = string(constants.OpenVPNConf)
+	file, err := openFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	_, err = file.WriteString(strings.Join(lines, "\n"))
+	if err != nil {
+		return err
+	}
+	if err := file.Close(); err != nil {
+		return err
+	}
+	return nil
 }

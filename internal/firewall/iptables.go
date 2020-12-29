@@ -3,7 +3,9 @@ package firewall
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net"
+	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -150,14 +152,18 @@ func (c *configurator) acceptInputToPort(ctx context.Context, intf string, port 
 }
 
 func (c *configurator) runUserPostRules(ctx context.Context, filepath string, remove bool) error {
-	exists, err := c.fileManager.FileExists(filepath)
-	if err != nil {
-		return err
-	} else if !exists {
+	file, err := c.openFile(filepath, os.O_RDONLY, 0)
+	if os.IsNotExist(err) {
 		return nil
+	} else if err != nil {
+		return err
 	}
-	b, err := c.fileManager.ReadFile(filepath)
+	b, err := ioutil.ReadAll(file)
 	if err != nil {
+		_ = file.Close()
+		return err
+	}
+	if err := file.Close(); err != nil {
 		return err
 	}
 	lines := strings.Split(string(b), "\n")

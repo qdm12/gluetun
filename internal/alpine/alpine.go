@@ -3,7 +3,7 @@ package alpine
 import (
 	"os/user"
 
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/gluetun/internal/os"
 )
 
 type Configurator interface {
@@ -11,15 +11,15 @@ type Configurator interface {
 }
 
 type configurator struct {
-	fileManager files.FileManager
-	lookupUID   func(uid string) (*user.User, error)
-	lookupUser  func(username string) (*user.User, error)
+	openFile   os.OpenFileFunc
+	lookupUID  func(uid string) (*user.User, error)
+	lookupUser func(username string) (*user.User, error)
 }
 
-func NewConfigurator(fileManager files.FileManager) Configurator {
+func NewConfigurator(openFile os.OpenFileFunc) Configurator {
 	return &configurator{
-		fileManager: fileManager,
-		lookupUID:   user.LookupId,
-		lookupUser:  user.Lookup,
+		openFile:   openFile,
+		lookupUID:  user.LookupId,
+		lookupUser: user.Lookup,
 	}
 }

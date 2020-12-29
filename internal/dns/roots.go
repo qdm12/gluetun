@@ -4,37 +4,46 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/files"
 )
 
 func (c *configurator) DownloadRootHints(ctx context.Context, uid, gid int) error {
-	c.logger.Info("downloading root hints from %s", constants.NamedRootURL)
-	content, status, err := c.client.Get(ctx, string(constants.NamedRootURL))
-	if err != nil {
-		return err
-	} else if status != http.StatusOK {
-		return fmt.Errorf("HTTP status code is %d for %s", status, constants.NamedRootURL)
-	}
-	return c.fileManager.WriteToFile(
-		string(constants.RootHints),
-		content,
-		files.Ownership(uid, gid),
-		files.Permissions(constants.UserReadPermission))
+	return c.downloadAndSave(ctx, "root hints",
+		string(constants.NamedRootURL), string(constants.RootHints), uid, gid)
 }
 
 func (c *configurator) DownloadRootKey(ctx context.Context, uid, gid int) error {
-	c.logger.Info("downloading root key from %s", constants.RootKeyURL)
-	content, status, err := c.client.Get(ctx, string(constants.RootKeyURL))
+	return c.downloadAndSave(ctx, "root key",
+		string(constants.RootKeyURL), string(constants.RootKey), uid, gid)
+}
+
+func (c *configurator) downloadAndSave(ctx context.Context, logName, url, filepath string, uid, gid int) error {
+	c.logger.Info("downloading %s from %s", logName, url)
+	content, status, err := c.client.Get(ctx, url)
 	if err != nil {
 		return err
 	} else if status != http.StatusOK {
-		return fmt.Errorf("HTTP status code is %d for %s", status, constants.RootKeyURL)
+		return fmt.Errorf("HTTP status code is %d for %s", status, url)
 	}
-	return c.fileManager.WriteToFile(
-		string(constants.RootKey),
-		content,
-		files.Ownership(uid, gid),
-		files.Permissions(constants.UserReadPermission))
+
+	file, err := c.openFile(filepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0400)
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Write(content)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+
+	err = file.Chown(uid, gid)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+
+	return file.Close()
 }

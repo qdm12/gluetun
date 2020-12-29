@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/files"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -18,7 +18,7 @@ type Provider interface {
 	BuildConf(connection models.OpenVPNConnection, verbosity int, username string,
 		root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string)
 	PortForward(ctx context.Context, client *http.Client,
-		fileManager files.FileManager, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+		openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 		syncState func(port uint16) (pfFilepath models.Filepath))
 }
 

@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/settings"
-	"github.com/qdm12/golibs/files"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 )
@@ -21,11 +21,29 @@ func (c *configurator) MakeUnboundConf(ctx context.Context, settings settings.DN
 	for _, warning := range warnings {
 		c.logger.Warn(warning)
 	}
-	return c.fileManager.WriteLinesToFile(
-		string(constants.UnboundConf),
-		lines,
-		files.Ownership(uid, gid),
-		files.Permissions(constants.UserReadPermission))
+
+	const filepath = string(constants.UnboundConf)
+	file, err := c.openFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0400)
+	if err != nil {
+		return err
+	}
+
+	_, err = file.WriteString(strings.Join(lines, "\n"))
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+
+	if err := file.Chown(uid, gid); err != nil {
+		_ = file.Close()
+		return err
+	}
+
+	if err := file.Close(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings.

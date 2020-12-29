@@ -36,7 +36,7 @@ func (r *reader) GetShadowSocksPort() (port uint16, err error) {
 // SHADOWSOCKS_PASSWORD.
 func (r *reader) GetShadowSocksPassword() (password string, err error) {
 	defer func() {
-		unsetErr := r.unsetEnv("SHADOWSOCKS_PASSWORD")
+		unsetErr := r.os.Unsetenv("SHADOWSOCKS_PASSWORD")
 		if err == nil {
 			err = unsetErr
 		}

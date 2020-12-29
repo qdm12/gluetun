@@ -3,6 +3,8 @@ package params
 import (
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -32,8 +34,17 @@ func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
 	} else if len(clientKey) > 0 {
 		return clientKey, nil
 	}
-	content, err := p.fileManager.ReadFile(string(constants.ClientKey))
+	const filepath = string(constants.ClientKey)
+	file, err := p.os.OpenFile(filepath, os.O_RDONLY, 0)
 	if err != nil {
+		return "", err
+	}
+	content, err := ioutil.ReadAll(file)
+	if err != nil {
+		_ = file.Close()
+		return "", err
+	}
+	if err := file.Close(); err != nil {
 		return "", err
 	}
 	return extractClientKey(content)
@@ -55,8 +66,17 @@ func extractClientKey(b []byte) (key string, err error) {
 // GetCyberghostClientCertificate obtains the client certificate to use for openvpn from the
 // file at /gluetun/client.crt.
 func (p *reader) GetCyberghostClientCertificate() (clientCertificate string, err error) {
-	content, err := p.fileManager.ReadFile(string(constants.ClientCertificate))
+	const filepath = string(constants.ClientCertificate)
+	file, err := p.os.OpenFile(filepath, os.O_RDONLY, 0)
 	if err != nil {
+		return "", err
+	}
+	content, err := ioutil.ReadAll(file)
+	if err != nil {
+		_ = file.Close()
+		return "", err
+	}
+	if err := file.Close(); err != nil {
 		return "", err
 	}
 	return extractClientCertificate(content)
