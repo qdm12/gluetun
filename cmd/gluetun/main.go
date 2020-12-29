@@ -56,12 +56,14 @@ func main() {
 	os := os.New()
 	osUser := user.New()
 	unix := unix.New()
-	nativeos.Exit(_main(ctx, buildInfo, args, os, osUser, unix))
+	cli := cli.New()
+	nativeos.Exit(_main(ctx, buildInfo, args, os, osUser, unix, cli))
 }
 
 //nolint:gocognit,gocyclo
 func _main(background context.Context, buildInfo models.BuildInformation,
-	args []string, os os.OS, osUser user.OSUser, unix unix.Unix) int {
+	args []string, os os.OS, osUser user.OSUser, unix unix.Unix,
+	cli cli.CLI) int {
 	if len(args) > 1 { // cli operation
 		var err error
 		switch args[1] {
