@@ -3,7 +3,7 @@
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
 Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
-**ANNOUNCEMENT**: *Github Wiki reworked*
+**ANNOUNCEMENT**: *New Docker image name `qmcgaw/gluetun`*
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 

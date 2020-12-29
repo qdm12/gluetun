@@ -2,9 +2,9 @@ package constants
 
 const (
 	// Announcement is a message announcement.
-	Announcement = "Support for Privado"
+	Announcement = "New Docker image qmcgaw/gluetun"
 	// AnnouncementExpiration is the expiration date of the announcement in format yyyy-mm-dd.
-	AnnouncementExpiration = "2020-11-25"
+	AnnouncementExpiration = "2021-01-20"
 )
 
 const (
