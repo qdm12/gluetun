@@ -31,7 +31,6 @@ func Test_generateUnboundConf(t *testing.T) {
 		IPv6:               true,
 	}
 	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
 	ctx := context.Background()
 	client := mock_network.NewMockClient(mockCtrl)
 	client.EXPECT().Get(ctx, string(constants.MaliciousBlockListHostnamesURL)).
@@ -233,7 +232,6 @@ func Test_buildBlocked(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
-			defer mockCtrl.Finish()
 			ctx := context.Background()
 			client := mock_network.NewMockClient(mockCtrl)
 			if tc.malicious.blocked {
@@ -287,7 +285,6 @@ func Test_getList(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
-			defer mockCtrl.Finish()
 			ctx := context.Background()
 			client := mock_network.NewMockClient(mockCtrl)
 			client.EXPECT().Get(ctx, "irrelevant_url").
@@ -392,7 +389,6 @@ func Test_buildBlockedHostnames(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
-			defer mockCtrl.Finish()
 			ctx := context.Background()
 			client := mock_network.NewMockClient(mockCtrl)
 			if tc.malicious.blocked {
@@ -510,7 +506,6 @@ func Test_buildBlockedIPs(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
-			defer mockCtrl.Finish()
 			ctx := context.Background()
 			client := mock_network.NewMockClient(mockCtrl)
 			if tc.malicious.blocked {

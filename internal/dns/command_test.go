@@ -16,7 +16,6 @@ import (
 func Test_Start(t *testing.T) {
 	t.Parallel()
 	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
 	logger := mock_logging.NewMockLogger(mockCtrl)
 	logger.EXPECT().Info("starting unbound")
 	commander := mock_command.NewMockCommander(mockCtrl)
@@ -54,7 +53,6 @@ func Test_Version(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
-			defer mockCtrl.Finish()
 			commander := mock_command.NewMockCommander(mockCtrl)
 			commander.EXPECT().Run(context.Background(), "unbound", "-V").
 				Return(tc.runOutput, tc.runErr)

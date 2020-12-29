@@ -70,7 +70,6 @@ func Test_downloadAndSave(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
-			defer mockCtrl.Finish()
 
 			ctx := context.Background()
 			logger := mock_logging.NewMockLogger(mockCtrl)

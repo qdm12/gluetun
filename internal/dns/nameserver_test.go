@@ -56,7 +56,6 @@ func Test_UseDNSSystemWide(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			mockCtrl := gomock.NewController(t)
-			defer mockCtrl.Finish()
 
 			file := mock_os.NewMockFile(mockCtrl)
 			if tc.openErr == nil {
