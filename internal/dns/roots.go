@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
@@ -21,11 +22,19 @@ func (c *configurator) DownloadRootKey(ctx context.Context, uid, gid int) error 
 
 func (c *configurator) downloadAndSave(ctx context.Context, logName, url, filepath string, uid, gid int) error {
 	c.logger.Info("downloading %s from %s", logName, url)
-	content, status, err := c.client.Get(ctx, url)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
-	} else if status != http.StatusOK {
-		return fmt.Errorf("HTTP status code is %d for %s", status, url)
+	}
+
+	response, err := c.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("%w from %s: %s", ErrBadStatusCode, url, response.Status)
 	}
 
 	file, err := c.openFile(filepath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0400)
@@ -33,7 +42,7 @@ func (c *configurator) downloadAndSave(ctx context.Context, logName, url, filepa
 		return err
 	}
 
-	_, err = file.Write(content)
+	_, err = io.Copy(file, response.Body)
 	if err != nil {
 		_ = file.Close()
 		return err

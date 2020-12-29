@@ -3,6 +3,7 @@ package publicip
 import (
 	"context"
 	"net"
+	"net/http"
 	"sync"
 	"time"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 )
 
 type Looper interface {
@@ -45,7 +45,7 @@ type looper struct {
 	timeSince func(time.Time) time.Duration
 }
 
-func NewLooper(client network.Client, logger logging.Logger,
+func NewLooper(client *http.Client, logger logging.Logger,
 	settings settings.PublicIP, uid, gid int,
 	os os.OS) Looper {
 	return &looper{

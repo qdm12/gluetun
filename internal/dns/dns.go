@@ -4,12 +4,12 @@ import (
 	"context"
 	"io"
 	"net"
+	"net/http"
 
 	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 )
 
 type Configurator interface {
@@ -25,17 +25,17 @@ type Configurator interface {
 
 type configurator struct {
 	logger    logging.Logger
-	client    network.Client
+	client    *http.Client
 	openFile  os.OpenFileFunc
 	commander command.Commander
 	lookupIP  func(host string) ([]net.IP, error)
 }
 
-func NewConfigurator(logger logging.Logger, client network.Client,
+func NewConfigurator(logger logging.Logger, httpClient *http.Client,
 	openFile os.OpenFileFunc) Configurator {
 	return &configurator{
 		logger:    logger.WithPrefix("dns configurator: "),
-		client:    client,
+		client:    httpClient,
 		openFile:  openFile,
 		commander: command.NewCommander(),
 		lookupIP:  net.LookupIP,

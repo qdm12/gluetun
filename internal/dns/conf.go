@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"sort"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 )
 
 func (c *configurator) MakeUnboundConf(ctx context.Context, settings settings.DNS,
@@ -48,7 +48,7 @@ func (c *configurator) MakeUnboundConf(ctx context.Context, settings settings.DN
 
 // MakeUnboundConf generates an Unbound configuration from the user provided settings.
 func generateUnboundConf(ctx context.Context, settings settings.DNS, username string,
-	client network.Client, logger logging.Logger) (
+	client *http.Client, logger logging.Logger) (
 	lines []string, warnings []error) {
 	doIPv6 := "no"
 	if settings.IPv6 {
@@ -151,7 +151,7 @@ func generateUnboundConf(ctx context.Context, settings settings.DNS, username st
 	return lines, warnings
 }
 
-func buildBlocked(ctx context.Context, client network.Client, blockMalicious, blockAds, blockSurveillance bool,
+func buildBlocked(ctx context.Context, client *http.Client, blockMalicious, blockAds, blockSurveillance bool,
 	allowedHostnames, privateAddresses []string) (hostnamesLines, ipsLines []string, errs []error) {
 	chHostnames := make(chan []string)
 	chIPs := make(chan []string)
@@ -181,13 +181,27 @@ func buildBlocked(ctx context.Context, client network.Client, blockMalicious, bl
 	return hostnamesLines, ipsLines, errs
 }
 
-func getList(ctx context.Context, client network.Client, url string) (results []string, err error) {
-	content, status, err := client.Get(ctx, url)
+func getList(ctx context.Context, client *http.Client, url string) (results []string, err error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
-	} else if status != http.StatusOK {
-		return nil, fmt.Errorf("HTTP status code is %d and not 200", status)
 	}
+
+	response, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w from %s: %s", ErrBadStatusCode, url, response.Status)
+	}
+
+	content, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrCannotReadBody, err)
+	}
+
 	results = strings.Split(string(content), "\n")
 
 	// remove empty lines
@@ -206,7 +220,7 @@ func getList(ctx context.Context, client network.Client, url string) (results []
 	return results, nil
 }
 
-func buildBlockedHostnames(ctx context.Context, client network.Client, blockMalicious, blockAds, blockSurveillance bool,
+func buildBlockedHostnames(ctx context.Context, client *http.Client, blockMalicious, blockAds, blockSurveillance bool,
 	allowedHostnames []string) (lines []string, errs []error) {
 	chResults := make(chan []string)
 	chError := make(chan error)
@@ -258,7 +272,7 @@ func buildBlockedHostnames(ctx context.Context, client network.Client, blockMali
 	return lines, errs
 }
 
-func buildBlockedIPs(ctx context.Context, client network.Client, blockMalicious, blockAds, blockSurveillance bool,
+func buildBlockedIPs(ctx context.Context, client *http.Client, blockMalicious, blockAds, blockSurveillance bool,
 	privateAddresses []string) (lines []string, errs []error) {
 	chResults := make(chan []string)
 	chError := make(chan error)

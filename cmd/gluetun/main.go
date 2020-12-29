@@ -36,7 +36,6 @@ import (
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 )
 
 //nolint:gochecknoglobals
@@ -89,11 +88,10 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
-	client := network.NewClient(clientTimeout)
 	// Create configurators
 	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
 	ovpnConf := openvpn.NewConfigurator(logger, os, unix)
-	dnsConf := dns.NewConfigurator(logger, client, os.OpenFile)
+	dnsConf := dns.NewConfigurator(logger, httpClient, os.OpenFile)
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)
 	streamMerger := command.NewStreamMerger()
@@ -253,7 +251,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	go unboundLooper.Run(ctx, wg, signalDNSReady)
 
 	publicIPLooper := publicip.NewLooper(
-		client, logger, allSettings.PublicIP, uid, gid, os)
+		httpClient, logger, allSettings.PublicIP, uid, gid, os)
 	wg.Add(1)
 	go publicIPLooper.Run(ctx, wg)
 	wg.Add(1)
