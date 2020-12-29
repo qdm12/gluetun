@@ -28,12 +28,13 @@ func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvid
 	}
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
 	settings.User = strings.ReplaceAll(settings.User, " ", "")
-	isMullvad := vpnProvider == constants.Mullvad
-	settings.Password, err = paramsReader.GetPassword(!isMullvad)
-	if err != nil {
-		return settings, err
-	} else if isMullvad {
+	if vpnProvider == constants.Mullvad {
 		settings.Password = "m"
+	} else {
+		settings.Password, err = paramsReader.GetPassword()
+		if err != nil {
+			return settings, err
+		}
 	}
 	settings.Verbosity, err = paramsReader.GetOpenVPNVerbosity()
 	if err != nil {

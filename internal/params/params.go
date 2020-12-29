@@ -47,7 +47,7 @@ type Reader interface {
 
 	// VPN getters
 	GetUser() (s string, err error)
-	GetPassword(required bool) (s string, err error)
+	GetPassword() (s string, err error)
 	GetNetworkProtocol() (protocol models.NetworkProtocol, err error)
 	GetOpenVPNVerbosity() (verbosity int, err error)
 	GetOpenVPNRoot() (root bool, err error)
