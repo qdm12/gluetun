@@ -96,7 +96,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		go func() {
 			servers, err := l.updater.UpdateServers(updateCtx)
 			if err != nil {
-				errorCh <- err
+				if updateCtx.Err() == nil {
+					errorCh <- err
+				}
 				return
 			}
 			serversCh <- servers

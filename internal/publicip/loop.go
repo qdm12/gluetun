@@ -104,7 +104,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		go func() {
 			ip, err := l.getter.Get(getCtx)
 			if err != nil {
-				errorCh <- err
+				if getCtx.Err() == nil {
+					errorCh <- err
+				}
 				return
 			}
 			ipCh <- ip
