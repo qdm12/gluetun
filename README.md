@@ -264,8 +264,8 @@ None of the following values are required.
 | Variable | Default | Choices | Description |
 | --- | --- | --- | --- |
 | `TZ` | | i.e. `Europe/London` | Specify a timezone to use to have correct log times |
-| `UID` | `1000` | | User ID to run as non root and for ownership of files written |
-| `GID` | `1000` | | Group ID to run as non root and for ownership of files written |
+| `PUID` | `1000` | | User ID to run as non root and for ownership of files written |
+| `PGID` | `1000` | | Group ID to run as non root and for ownership of files written |
 
 ### HTTP Control server
 
