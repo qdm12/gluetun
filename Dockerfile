@@ -45,8 +45,8 @@ ENV VPNSP=pia \
     OPENVPN_TARGET_IP= \
     OPENVPN_IPV6=off \
     TZ= \
-    UID=1000 \
-    GID=1000 \
+    PUID= \
+    PGID= \
     PUBLICIP_FILE="/tmp/gluetun/ip" \
     # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
     USER= \

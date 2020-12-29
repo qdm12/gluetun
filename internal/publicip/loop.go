@@ -31,8 +31,8 @@ type looper struct {
 	logger logging.Logger
 	os     os.OS
 	// Fixed settings
-	uid int
-	gid int
+	puid int
+	pgid int
 	// Internal channels and locks
 	loopLock     sync.Mutex
 	start        chan struct{}
@@ -46,7 +46,7 @@ type looper struct {
 }
 
 func NewLooper(client *http.Client, logger logging.Logger,
-	settings settings.PublicIP, uid, gid int,
+	settings settings.PublicIP, puid, pgid int,
 	os os.OS) Looper {
 	return &looper{
 		state: state{
@@ -57,8 +57,8 @@ func NewLooper(client *http.Client, logger logging.Logger,
 		getter:       NewIPGetter(client),
 		logger:       logger.WithPrefix("ip getter: "),
 		os:           os,
-		uid:          uid,
-		gid:          gid,
+		puid:         puid,
+		pgid:         pgid,
 		start:        make(chan struct{}),
 		running:      make(chan models.LoopStatus),
 		stop:         make(chan struct{}),
@@ -144,7 +144,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.state.setPublicIP(ip)
 				l.logger.Info("Public IP address is %s", ip)
 				filepath := string(l.state.settings.IPFilepath)
-				err := persistPublicIP(l.os.OpenFile, filepath, ip.String(), l.uid, l.gid)
+				err := persistPublicIP(l.os.OpenFile, filepath, ip.String(), l.puid, l.pgid)
 				if err != nil {
 					l.logger.Error(err)
 				}

@@ -131,16 +131,19 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	}
 
 	// Should never change
-	uid, gid := allSettings.System.UID, allSettings.System.GID
+	puid, pgid := allSettings.System.PUID, allSettings.System.PGID
 
 	const defaultUsername = "nonrootuser"
-	nonRootUsername, err := alpineConf.CreateUser(defaultUsername, uid)
+	nonRootUsername, err := alpineConf.CreateUser(defaultUsername, puid)
 	if err != nil {
 		logger.Error(err)
 		return 1
 	}
+	if nonRootUsername != defaultUsername {
+		logger.Info("using existing username %s corresponding to user id %d", nonRootUsername, puid)
+	}
 
-	if err := os.Chown("/etc/unbound", uid, gid); err != nil {
+	if err := os.Chown("/etc/unbound", puid, pgid); err != nil {
 		logger.Error(err)
 		return 1
 	}
@@ -233,7 +236,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 
 	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady)
 
-	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, uid, gid, allServers,
+	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, streamMerger, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
@@ -245,13 +248,13 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
 	go updaterLooper.Run(ctx, wg)
 
-	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, nonRootUsername, uid, gid)
+	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, nonRootUsername, puid, pgid)
 	wg.Add(1)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(ctx, wg, signalDNSReady)
 
 	publicIPLooper := publicip.NewLooper(
-		httpClient, logger, allSettings.PublicIP, uid, gid, os)
+		httpClient, logger, allSettings.PublicIP, puid, pgid, os)
 	wg.Add(1)
 	go publicIPLooper.Run(ctx, wg)
 	wg.Add(1)

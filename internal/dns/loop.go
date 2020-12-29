@@ -28,8 +28,8 @@ type looper struct {
 	logger       logging.Logger
 	streamMerger command.StreamMerger
 	username     string
-	uid          int
-	gid          int
+	puid         int
+	pgid         int
 	loopLock     sync.Mutex
 	start        chan struct{}
 	running      chan models.LoopStatus
@@ -41,7 +41,7 @@ type looper struct {
 }
 
 func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
-	streamMerger command.StreamMerger, username string, uid, gid int) Looper {
+	streamMerger command.StreamMerger, username string, puid, pgid int) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
@@ -50,8 +50,8 @@ func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 		conf:         conf,
 		logger:       logger.WithPrefix("dns over tls: "),
 		username:     username,
-		uid:          uid,
-		gid:          gid,
+		puid:         puid,
+		pgid:         pgid,
 		streamMerger: streamMerger,
 		start:        make(chan struct{}),
 		running:      make(chan models.LoopStatus),
@@ -287,14 +287,14 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func (l *looper) updateFiles(ctx context.Context) (err error) {
-	if err := l.conf.DownloadRootHints(ctx, l.uid, l.gid); err != nil {
+	if err := l.conf.DownloadRootHints(ctx, l.puid, l.pgid); err != nil {
 		return err
 	}
-	if err := l.conf.DownloadRootKey(ctx, l.uid, l.gid); err != nil {
+	if err := l.conf.DownloadRootKey(ctx, l.puid, l.pgid); err != nil {
 		return err
 	}
 	settings := l.GetSettings()
-	if err := l.conf.MakeUnboundConf(ctx, settings, l.username, l.uid, l.gid); err != nil {
+	if err := l.conf.MakeUnboundConf(ctx, settings, l.username, l.puid, l.pgid); err != nil {
 		return err
 	}
 	return nil

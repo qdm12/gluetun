@@ -15,7 +15,7 @@ import (
 )
 
 func (c *configurator) MakeUnboundConf(ctx context.Context, settings settings.DNS,
-	username string, uid, gid int) (err error) {
+	username string, puid, pgid int) (err error) {
 	c.logger.Info("generating Unbound configuration")
 	lines, warnings := generateUnboundConf(ctx, settings, username, c.client, c.logger)
 	for _, warning := range warnings {
@@ -34,7 +34,7 @@ func (c *configurator) MakeUnboundConf(ctx context.Context, settings settings.DN
 		return err
 	}
 
-	if err := file.Chown(uid, gid); err != nil {
+	if err := file.Chown(puid, pgid); err != nil {
 		_ = file.Close()
 		return err
 	}

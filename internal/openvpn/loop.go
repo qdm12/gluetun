@@ -35,8 +35,8 @@ type looper struct {
 	state state
 	// Fixed parameters
 	username string
-	uid      int
-	gid      int
+	puid     int
+	pgid     int
 	// Configurators
 	conf    Configurator
 	fw      firewall.Configurator
@@ -56,7 +56,7 @@ type looper struct {
 }
 
 func NewLooper(settings settings.OpenVPN,
-	username string, uid, gid int, allServers models.AllServers,
+	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,
 	streamMerger command.StreamMerger, cancel context.CancelFunc) Looper {
@@ -67,8 +67,8 @@ func NewLooper(settings settings.OpenVPN,
 			allServers: allServers,
 		},
 		username:           username,
-		uid:                uid,
-		gid:                gid,
+		puid:               puid,
+		pgid:               pgid,
 		conf:               conf,
 		fw:                 fw,
 		routing:            routing,
@@ -123,7 +123,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		}
 
-		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.uid, l.gid); err != nil {
+		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.puid, l.pgid); err != nil {
 			l.logger.Error(err)
 			l.cancel()
 			return

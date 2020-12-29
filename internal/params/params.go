@@ -33,8 +33,8 @@ type Reader interface {
 	GetDNSKeepNameserver() (on bool, err error)
 
 	// System
-	GetUID() (uid int, err error)
-	GetGID() (gid int, err error)
+	GetPUID() (puid int, err error)
+	GetPGID() (pgid int, err error)
 	GetTimezone() (timezone string, err error)
 	GetPublicIPFilepath() (filepath models.Filepath, err error)
 

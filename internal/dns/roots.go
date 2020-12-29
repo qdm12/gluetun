@@ -10,17 +10,17 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (c *configurator) DownloadRootHints(ctx context.Context, uid, gid int) error {
+func (c *configurator) DownloadRootHints(ctx context.Context, puid, pgid int) error {
 	return c.downloadAndSave(ctx, "root hints",
-		string(constants.NamedRootURL), string(constants.RootHints), uid, gid)
+		string(constants.NamedRootURL), string(constants.RootHints), puid, pgid)
 }
 
-func (c *configurator) DownloadRootKey(ctx context.Context, uid, gid int) error {
+func (c *configurator) DownloadRootKey(ctx context.Context, puid, pgid int) error {
 	return c.downloadAndSave(ctx, "root key",
-		string(constants.RootKeyURL), string(constants.RootKey), uid, gid)
+		string(constants.RootKeyURL), string(constants.RootKey), puid, pgid)
 }
 
-func (c *configurator) downloadAndSave(ctx context.Context, logName, url, filepath string, uid, gid int) error {
+func (c *configurator) downloadAndSave(ctx context.Context, logName, url, filepath string, puid, pgid int) error {
 	c.logger.Info("downloading %s from %s", logName, url)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *configurator) downloadAndSave(ctx context.Context, logName, url, filepa
 		return err
 	}
 
-	err = file.Chown(uid, gid)
+	err = file.Chown(puid, pgid)
 	if err != nil {
 		_ = file.Close()
 		return err

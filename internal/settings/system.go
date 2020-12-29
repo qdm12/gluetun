@@ -9,18 +9,18 @@ import (
 
 // System contains settings to configure system related elements.
 type System struct {
-	UID      int
-	GID      int
+	PUID     int
+	PGID     int
 	Timezone string
 }
 
 // GetSystemSettings obtains the System settings using the params functions.
 func GetSystemSettings(paramsReader params.Reader) (settings System, err error) {
-	settings.UID, err = paramsReader.GetUID()
+	settings.PUID, err = paramsReader.GetPUID()
 	if err != nil {
 		return settings, err
 	}
-	settings.GID, err = paramsReader.GetGID()
+	settings.PGID, err = paramsReader.GetPGID()
 	if err != nil {
 		return settings, err
 	}
@@ -34,8 +34,8 @@ func GetSystemSettings(paramsReader params.Reader) (settings System, err error) 
 func (s *System) String() string {
 	settingsList := []string{
 		"System settings:",
-		fmt.Sprintf("User ID: %d", s.UID),
-		fmt.Sprintf("Group ID: %d", s.GID),
+		fmt.Sprintf("Process user ID: %d", s.PUID),
+		fmt.Sprintf("Process group ID: %d", s.PGID),
 		fmt.Sprintf("Timezone: %s", s.Timezone),
 	}
 	return strings.Join(settingsList, "\n|--")

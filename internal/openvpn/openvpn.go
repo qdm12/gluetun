@@ -12,7 +12,7 @@ import (
 
 type Configurator interface {
 	Version(ctx context.Context) (string, error)
-	WriteAuthFile(user, password string, uid, gid int) error
+	WriteAuthFile(user, password string, puid, pgid int) error
 	CheckTUN() error
 	CreateTUN() error
 	Start(ctx context.Context) (stdout io.ReadCloser, waitFn func() error, err error)
