@@ -134,8 +134,7 @@ func (p *ProviderSettings) String() string {
 		)
 	case "privado":
 		settingsList = append(settingsList,
-			"Cities: "+commaJoin(p.ServerSelection.Cities),
-			"Server numbers: "+commaJoin(numbers),
+			"Hostnames: "+commaJoin(p.ServerSelection.Hostnames),
 		)
 	default:
 		settingsList = append(settingsList,
