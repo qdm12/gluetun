@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"errors"
 	"net"
 	"sync"
 	"time"
@@ -95,70 +96,30 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 
 	defer l.logger.Warn("loop exited")
 
-	for ctx.Err() == nil {
-		err := l.updateFiles(ctx)
-		if err == nil {
-			break
-		}
-		l.state.setStatusWithLock(constants.Crashed)
-		l.logAndWait(ctx, err)
-	}
-
 	crashed := false
 	l.backoffTime = defaultBackoffTime
 
 	for ctx.Err() == nil {
-		settings := l.GetSettings()
-
-		unboundCtx, unboundCancel := context.WithCancel(context.Background())
-		stream, waitFn, err := l.conf.Start(unboundCtx, settings.VerbosityDetailsLevel)
-		if err != nil {
-			unboundCancel()
-			if !crashed {
-				l.running <- constants.Crashed
-			}
-			crashed = true
-			const fallback = true
-			l.useUnencryptedDNS(fallback)
-			l.logAndWait(ctx, err)
-			continue
-		}
-
-		// Started successfully
-		go l.streamMerger.Merge(unboundCtx, stream, command.MergeName("unbound"))
-
-		l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                                                  // use Unbound
-		if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}, settings.KeepNameserver); err != nil { // use Unbound
-			l.logger.Error(err)
-		}
-
-		if err := l.conf.WaitForUnbound(); err != nil {
-			if !crashed {
-				l.running <- constants.Crashed
-				crashed = true
-			}
-			unboundCancel()
-			const fallback = true
-			l.useUnencryptedDNS(fallback)
-			l.logAndWait(ctx, err)
-			continue
-		}
-
+		// Upper scope variables for Unbound only
+		var unboundCancel context.CancelFunc = func() {}
 		waitError := make(chan error)
-		go func() {
-			err := waitFn() // blocking
-			waitError <- err
-		}()
 
-		l.logger.Info("ready")
-		if !crashed {
-			l.running <- constants.Running
-			crashed = false
-		} else {
-			l.backoffTime = defaultBackoffTime
-			l.state.setStatusWithLock(constants.Running)
+		for ctx.Err() == nil && l.GetSettings().Enabled {
+			var err error
+			unboundCancel, err = l.setupUnbound(ctx, crashed, waitError)
+			if err != nil {
+				if !errors.Is(err, errUpdateFiles) {
+					const fallback = true
+					l.useUnencryptedDNS(fallback)
+				}
+				l.logAndWait(ctx, err)
+			}
+			break
 		}
-		signalDNSReady()
+		if !l.GetSettings().Enabled {
+			const fallback = false
+			l.useUnencryptedDNS(fallback)
+		}
 
 		stayHere := true
 		for stayHere {
@@ -191,6 +152,62 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 		close(waitError)
 		unboundCancel()
 	}
+}
+
+var errUpdateFiles = errors.New("cannot update files")
+
+// Returning cancel == nil signals we want to re-run setupUnbound
+// Returning err == errUpdateFiles signals we should not fall back
+// on the plaintext DNS as DOT is still up and running.
+func (l *looper) setupUnbound(ctx context.Context,
+	previousCrashed bool, waitError chan<- error) (cancel context.CancelFunc, err error) {
+	err = l.updateFiles(ctx)
+	if err != nil {
+		l.state.setStatusWithLock(constants.Crashed)
+		return nil, errUpdateFiles
+	}
+
+	settings := l.GetSettings()
+
+	unboundCtx, cancel := context.WithCancel(context.Background())
+	stream, waitFn, err := l.conf.Start(unboundCtx, settings.VerbosityDetailsLevel)
+	if err != nil {
+		cancel()
+		if !previousCrashed {
+			l.running <- constants.Crashed
+		}
+		return nil, err
+	}
+
+	// Started successfully
+	go l.streamMerger.Merge(unboundCtx, stream, command.MergeName("unbound"))
+
+	l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                                                  // use Unbound
+	if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}, settings.KeepNameserver); err != nil { // use Unbound
+		l.logger.Error(err)
+	}
+
+	if err := l.conf.WaitForUnbound(); err != nil {
+		if !previousCrashed {
+			l.running <- constants.Crashed
+		}
+		cancel()
+		return nil, err
+	}
+
+	go func() {
+		err := waitFn() // blocking
+		waitError <- err
+	}()
+
+	l.logger.Info("ready")
+	if !previousCrashed {
+		l.running <- constants.Running
+	} else {
+		l.backoffTime = defaultBackoffTime
+		l.state.setStatusWithLock(constants.Running)
+	}
+	return cancel, nil
 }
 
 func (l *looper) useUnencryptedDNS(fallback bool) {
