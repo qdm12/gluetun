@@ -21,14 +21,13 @@ type Looper interface {
 }
 
 type looper struct {
-	settings         settings.ShadowSocks
-	settingsMutex    sync.RWMutex
-	logger           logging.Logger
-	defaultInterface string
-	restart          chan struct{}
-	start            chan struct{}
-	stop             chan struct{}
-	backoffTime      time.Duration
+	settings      settings.ShadowSocks
+	settingsMutex sync.RWMutex
+	logger        logging.Logger
+	restart       chan struct{}
+	start         chan struct{}
+	stop          chan struct{}
+	backoffTime   time.Duration
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
@@ -47,15 +46,14 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(settings settings.ShadowSocks, logger logging.Logger, defaultInterface string) Looper {
+func NewLooper(settings settings.ShadowSocks, logger logging.Logger) Looper {
 	return &looper{
-		settings:         settings,
-		logger:           logger.WithPrefix("shadowsocks: "),
-		defaultInterface: defaultInterface,
-		restart:          make(chan struct{}),
-		start:            make(chan struct{}),
-		stop:             make(chan struct{}),
-		backoffTime:      defaultBackoffTime,
+		settings:    settings,
+		logger:      logger.WithPrefix("shadowsocks: "),
+		restart:     make(chan struct{}),
+		start:       make(chan struct{}),
+		stop:        make(chan struct{}),
+		backoffTime: defaultBackoffTime,
 	}
 }
 

@@ -265,7 +265,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	wg.Add(1)
 	go httpProxyLooper.Run(ctx, wg)
 
-	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger, defaultInterface)
+	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger)
 	restartShadowsocks := shadowsocksLooper.Restart
 	wg.Add(1)
 	go shadowsocksLooper.Run(ctx, wg)
