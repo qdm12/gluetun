@@ -10,7 +10,7 @@ import (
 )
 
 func (c *cli) HealthCheck(ctx context.Context) error {
-	const timeout = 3 * time.Second
+	const timeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: timeout}
 	healthchecker := healthcheck.NewChecker(httpClient)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
