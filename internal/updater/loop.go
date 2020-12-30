@@ -94,10 +94,13 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	for ctx.Err() == nil {
 		updateCtx, updateCancel := context.WithCancel(ctx)
-		defer updateCancel()
+
 		serversCh := make(chan models.AllServers)
 		errorCh := make(chan error)
+		runWg := &sync.WaitGroup{}
+		runWg.Add(1)
 		go func() {
+			defer runWg.Done()
 			servers, err := l.updater.UpdateServers(updateCtx)
 			if err != nil {
 				if updateCtx.Err() == nil {
@@ -122,33 +125,37 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case <-ctx.Done():
 				l.logger.Warn("context canceled: exiting loop")
 				updateCancel()
+				runWg.Wait()
 				close(errorCh)
 				return
 			case <-l.start:
 				l.logger.Info("starting")
 				updateCancel()
+				runWg.Wait()
 				stayHere = false
 			case <-l.stop:
 				l.logger.Info("stopping")
 				updateCancel()
+				runWg.Wait()
 				l.stopped <- struct{}{}
 			case servers := <-serversCh:
-				updateCancel()
 				l.setAllServers(servers)
 				if err := l.storage.FlushToFile(servers); err != nil {
 					l.logger.Error(err)
 				}
+				runWg.Wait()
 				l.state.setStatusWithLock(constants.Completed)
 				l.logger.Info("Updated servers information")
 			case err := <-errorCh:
-				updateCancel()
 				close(serversCh)
+				runWg.Wait()
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
 				crashed = true
 				stayHere = false
 			}
 		}
+		updateCancel()
 		close(errorCh)
 	}
 }
