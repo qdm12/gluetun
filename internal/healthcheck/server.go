@@ -25,7 +25,7 @@ func NewServer(address string, logger logging.Logger) Server {
 	return &server{
 		address: address,
 		logger:  logger.WithPrefix("healthcheck: "),
-		handler: newHandler(logger, &net.Resolver{}),
+		handler: newHandler(logger, net.DefaultResolver),
 	}
 }
 
