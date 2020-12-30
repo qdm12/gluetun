@@ -54,6 +54,12 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	crashed := false
 
+	if l.GetSettings().Enabled {
+		go func() {
+			_, _ = l.SetStatus(constants.Running)
+		}()
+	}
+
 	select {
 	case <-l.start:
 	case <-ctx.Done():
@@ -74,6 +80,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		errorCh := make(chan error)
 		go server.Run(runCtx, runWg, errorCh)
 
+		// TODO stable timer, check Shadowsocks
 		if !crashed {
 			l.running <- constants.Running
 			crashed = false

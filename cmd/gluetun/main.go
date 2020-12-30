@@ -269,10 +269,6 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	wg.Add(1)
 	go shadowsocksLooper.Run(ctx, wg)
 
-	if allSettings.HTTPProxy.Enabled {
-		_, _ = httpProxyLooper.SetStatus(constants.Running)
-	}
-
 	wg.Add(1)
 	go routeReadyEvents(ctx, wg, buildInfo, tunnelReadyCh, dnsReadyCh,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
