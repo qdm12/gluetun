@@ -4,109 +4,83 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 )
 
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
-	Restart()
-	Start()
-	Stop()
+	SetStatus(status models.LoopStatus) (outcome string, err error)
+	GetStatus() (status models.LoopStatus)
 	GetSettings() (settings settings.HTTPProxy)
-	SetSettings(settings settings.HTTPProxy)
+	SetSettings(settings settings.HTTPProxy) (outcome string)
 }
 
 type looper struct {
-	settings      settings.HTTPProxy
-	settingsMutex sync.RWMutex
-	logger        logging.Logger
-	restart       chan struct{}
+	state state
+	// Other objects
+	logger logging.Logger
+	// Internal channels and locks
+	loopLock      sync.Mutex
+	running       chan models.LoopStatus
+	stop, stopped chan struct{}
 	start         chan struct{}
-	stop          chan struct{}
+	backoffTime   time.Duration
 }
+
+const defaultBackoffTime = 10 * time.Second
 
 func NewLooper(logger logging.Logger, settings settings.HTTPProxy) Looper {
 	return &looper{
-		settings: settings,
-		logger:   logger.WithPrefix("http proxy: "),
-		restart:  make(chan struct{}),
-		start:    make(chan struct{}),
-		stop:     make(chan struct{}),
+		state: state{
+			status:   constants.Stopped,
+			settings: settings,
+		},
+		logger:      logger.WithPrefix("http proxy: "),
+		start:       make(chan struct{}),
+		running:     make(chan models.LoopStatus),
+		stop:        make(chan struct{}),
+		stopped:     make(chan struct{}),
+		backoffTime: defaultBackoffTime,
 	}
 }
-
-func (l *looper) GetSettings() (settings settings.HTTPProxy) {
-	l.settingsMutex.RLock()
-	defer l.settingsMutex.RUnlock()
-	return l.settings
-}
-
-func (l *looper) SetSettings(settings settings.HTTPProxy) {
-	l.settingsMutex.Lock()
-	defer l.settingsMutex.Unlock()
-	l.settings = settings
-}
-
-func (l *looper) isEnabled() bool {
-	l.settingsMutex.RLock()
-	defer l.settingsMutex.RUnlock()
-	return l.settings.Enabled
-}
-
-func (l *looper) setEnabled(enabled bool) {
-	l.settingsMutex.Lock()
-	defer l.settingsMutex.Unlock()
-	l.settings.Enabled = enabled
-}
-
-func (l *looper) Restart() { l.restart <- struct{}{} }
-func (l *looper) Start()   { l.start <- struct{}{} }
-func (l *looper) Stop()    { l.stop <- struct{}{} }
 
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	waitForStart := true
-	for waitForStart {
-		select {
-		case <-l.stop:
-			l.logger.Info("not started yet")
-		case <-l.start:
-			waitForStart = false
-		case <-l.restart:
-			waitForStart = false
-		case <-ctx.Done():
-			return
-		}
+
+	crashed := false
+
+	select {
+	case <-l.start:
+	case <-ctx.Done():
+		return
 	}
+
 	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
-		for !l.isEnabled() {
-			// wait for a signal to re-enable
-			select {
-			case <-l.stop:
-				l.logger.Info("already disabled")
-			case <-l.restart:
-				l.setEnabled(true)
-			case <-l.start:
-				l.setEnabled(true)
-			case <-ctx.Done():
-				return
-			}
-		}
+		runCtx, runCancel := context.WithCancel(ctx)
 
 		settings := l.GetSettings()
-		address := fmt.Sprintf("0.0.0.0:%d", settings.Port)
+		address := fmt.Sprintf(":%d", settings.Port)
+		server := New(runCtx, address, l.logger, settings.Stealth, settings.Log, settings.User, settings.Password)
 
-		server := New(ctx, address, l.logger, settings.Stealth, settings.Log, settings.User, settings.Password)
-
-		runCtx, runCancel := context.WithCancel(context.Background())
 		runWg := &sync.WaitGroup{}
 		runWg.Add(1)
-		// TODO crashed channel
-		go server.Run(runCtx, runWg)
+		errorCh := make(chan error)
+		go server.Run(runCtx, runWg, errorCh)
+
+		if !crashed {
+			l.running <- constants.Running
+			crashed = false
+		} else {
+			l.backoffTime = defaultBackoffTime
+			l.state.setStatusWithLock(constants.Running)
+		}
 
 		stayHere := true
 		for stayHere {
@@ -116,21 +90,38 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				runCancel()
 				runWg.Wait()
 				return
-			case <-l.restart: // triggered restart
-				l.logger.Info("restarting")
+			case <-l.start:
+				l.logger.Info("starting")
 				runCancel()
 				runWg.Wait()
 				stayHere = false
-			case <-l.start:
-				l.logger.Info("already started")
 			case <-l.stop:
 				l.logger.Info("stopping")
 				runCancel()
 				runWg.Wait()
-				l.setEnabled(false)
+				l.stopped <- struct{}{}
+			case err := <-errorCh:
+				runWg.Wait()
+				l.state.setStatusWithLock(constants.Crashed)
+				l.logAndWait(ctx, err)
+				crashed = true
 				stayHere = false
 			}
 		}
 		runCancel() // repetition for linter only
+	}
+}
+
+func (l *looper) logAndWait(ctx context.Context, err error) {
+	l.logger.Error(err)
+	l.logger.Info("retrying in %s", l.backoffTime)
+	timer := time.NewTimer(l.backoffTime)
+	l.backoffTime *= 2
+	select {
+	case <-timer.C:
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
 	}
 }
