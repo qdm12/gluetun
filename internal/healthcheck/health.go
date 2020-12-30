@@ -2,8 +2,46 @@ package healthcheck
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
+	"sync"
+	"time"
+)
+
+func (s *server) runHealthcheckLoop(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for {
+		err := healthCheck(ctx, s.resolver)
+		s.handler.setErr(err)
+		if err != nil { // try again after 1 second
+			timer := time.NewTimer(time.Second)
+			select {
+			case <-ctx.Done():
+				if !timer.Stop() {
+					<-timer.C
+				}
+				return
+			case <-timer.C:
+			}
+			continue
+		}
+		// Success, check again in 10 minutes
+		const period = 10 * time.Minute
+		timer := time.NewTimer(period)
+		select {
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			return
+		case <-timer.C:
+		}
+	}
+}
+
+var (
+	errNoIPResolved = errors.New("no IP address resolved")
 )
 
 func healthCheck(ctx context.Context, resolver *net.Resolver) (err error) {
@@ -12,9 +50,9 @@ func healthCheck(ctx context.Context, resolver *net.Resolver) (err error) {
 	ips, err := resolver.LookupIP(ctx, "ip", domainToResolve)
 	switch {
 	case err != nil:
-		return fmt.Errorf("cannot resolve github.com: %s", err)
+		return err
 	case len(ips) == 0:
-		return fmt.Errorf("resolved no IP addresses for %s", domainToResolve)
+		return fmt.Errorf("%w for %s", errNoIPResolved, domainToResolve)
 	default:
 		return nil
 	}

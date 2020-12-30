@@ -16,26 +16,36 @@ type Server interface {
 }
 
 type server struct {
-	address string
-	logger  logging.Logger
-	handler http.Handler
+	address  string
+	logger   logging.Logger
+	handler  *handler
+	resolver *net.Resolver
 }
 
 func NewServer(address string, logger logging.Logger) Server {
+	healthcheckLogger := logger.WithPrefix("healthcheck: ")
 	return &server{
-		address: address,
-		logger:  logger.WithPrefix("healthcheck: "),
-		handler: newHandler(logger, net.DefaultResolver),
+		address:  address,
+		logger:   healthcheckLogger,
+		handler:  newHandler(healthcheckLogger),
+		resolver: net.DefaultResolver,
 	}
 }
 
 func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	internalWg := &sync.WaitGroup{}
+	internalWg.Add(1)
+	go s.runHealthcheckLoop(ctx, internalWg)
+
 	server := http.Server{
 		Addr:    s.address,
 		Handler: s.handler,
 	}
+	internalWg.Add(1)
 	go func() {
-		defer wg.Done()
+		defer internalWg.Done()
 		<-ctx.Done()
 		s.logger.Warn("context canceled: shutting down server")
 		defer s.logger.Warn("server shut down")
@@ -46,9 +56,12 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 			s.logger.Error("failed shutting down: %s", err)
 		}
 	}()
+
 	s.logger.Info("listening on %s", s.address)
 	err := server.ListenAndServe()
 	if err != nil && !errors.Is(ctx.Err(), context.Canceled) {
 		s.logger.Error(err)
 	}
+
+	internalWg.Wait()
 }
