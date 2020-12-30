@@ -145,7 +145,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 			waitError <- err
 		}()
 
-		l.logger.Info("DNS over TLS is ready")
+		l.logger.Info("ready")
 		if !crashed {
 			l.running <- constants.Running
 			crashed = false
