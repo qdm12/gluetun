@@ -92,6 +92,8 @@ func (l *looper) SetSettings(settings settings.DNS) (outcome string) {
 		return "update period changed"
 	}
 	_, _ = l.SetStatus(constants.Stopped)
-	outcome, _ = l.SetStatus(constants.Running)
+	if settings.Enabled {
+		outcome, _ = l.SetStatus(constants.Running)
+	}
 	return outcome
 }
