@@ -131,7 +131,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case <-l.stop:
 				l.logger.Info("stopping")
 				updateCancel()
-				<-errorCh
 				l.stopped <- struct{}{}
 			case servers := <-serversCh:
 				updateCancel()
