@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	shadowsockslib "github.com/qdm12/ss-server/pkg"
@@ -13,20 +15,21 @@ import (
 
 type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
-	Restart()
-	Start()
-	Stop()
+	SetStatus(status models.LoopStatus) (outcome string, err error)
+	GetStatus() (status models.LoopStatus)
 	GetSettings() (settings settings.ShadowSocks)
-	SetSettings(settings settings.ShadowSocks)
+	SetSettings(settings settings.ShadowSocks) (outcome string)
 }
 
 type looper struct {
-	settings      settings.ShadowSocks
-	settingsMutex sync.RWMutex
-	logger        logging.Logger
-	restart       chan struct{}
+	state state
+	// Other objects
+	logger logging.Logger
+	// Internal channels and locks
+	loopLock      sync.Mutex
+	running       chan models.LoopStatus
+	stop, stopped chan struct{}
 	start         chan struct{}
-	stop          chan struct{}
 	backoffTime   time.Duration
 }
 
@@ -48,91 +51,55 @@ const defaultBackoffTime = 10 * time.Second
 
 func NewLooper(settings settings.ShadowSocks, logger logging.Logger) Looper {
 	return &looper{
-		settings:    settings,
+		state: state{
+			status:   constants.Stopped,
+			settings: settings,
+		},
 		logger:      logger.WithPrefix("shadowsocks: "),
-		restart:     make(chan struct{}),
 		start:       make(chan struct{}),
+		running:     make(chan models.LoopStatus),
 		stop:        make(chan struct{}),
+		stopped:     make(chan struct{}),
 		backoffTime: defaultBackoffTime,
 	}
 }
 
-func (l *looper) Restart() { l.restart <- struct{}{} }
-func (l *looper) Start()   { l.start <- struct{}{} }
-func (l *looper) Stop()    { l.stop <- struct{}{} }
-
-func (l *looper) GetSettings() (settings settings.ShadowSocks) {
-	l.settingsMutex.RLock()
-	defer l.settingsMutex.RUnlock()
-	return l.settings
-}
-
-func (l *looper) SetSettings(settings settings.ShadowSocks) {
-	l.settingsMutex.Lock()
-	defer l.settingsMutex.Unlock()
-	l.settings = settings
-}
-
-func (l *looper) isEnabled() bool {
-	l.settingsMutex.RLock()
-	defer l.settingsMutex.RUnlock()
-	return l.settings.Enabled
-}
-
-func (l *looper) setEnabled(enabled bool) {
-	l.settingsMutex.Lock()
-	defer l.settingsMutex.Unlock()
-	l.settings.Enabled = enabled
-}
-
 func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
-	waitForStart := true
-	for waitForStart {
-		select {
-		case <-l.stop:
-			l.logger.Info("not started yet")
-		case <-l.start:
-			waitForStart = false
-		case <-l.restart:
-			waitForStart = false
-		case <-ctx.Done():
-			return
-		}
+
+	crashed := false
+
+	if l.GetSettings().Enabled {
+		go func() {
+			_, _ = l.SetStatus(constants.Running)
+		}()
 	}
+
+	select {
+	case <-l.start:
+	case <-ctx.Done():
+		return
+	}
+
 	defer l.logger.Warn("loop exited")
 
-	l.setEnabled(true)
-
 	for ctx.Err() == nil {
-		for !l.isEnabled() {
-			// wait for a signal to re-enable
-			select {
-			case <-l.stop:
-				l.logger.Info("already disabled")
-			case <-l.restart:
-				l.setEnabled(true)
-			case <-l.start:
-				l.setEnabled(true)
-			case <-ctx.Done():
-				return
-			}
-		}
-
 		settings := l.GetSettings()
 		server, err := shadowsockslib.NewServer(settings.Method, settings.Password, adaptLogger(l.logger, settings.Log))
 		if err != nil {
+			crashed = true
 			l.logAndWait(ctx, err)
 			continue
 		}
 
-		shadowsocksCtx, shadowsocksCancel := context.WithCancel(context.Background())
+		shadowsocksCtx, shadowsocksCancel := context.WithCancel(ctx)
 
 		waitError := make(chan error)
 		go func() {
 			waitError <- server.Listen(shadowsocksCtx, fmt.Sprintf("0.0.0.0:%d", settings.Port))
 		}()
 		if err != nil {
+			crashed = true
 			shadowsocksCancel()
 			l.logAndWait(ctx, err)
 			continue
@@ -150,26 +117,32 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				close(waitError)
 				return
 			case <-isStableTimer.C:
-				l.backoffTime = defaultBackoffTime
-			case <-l.restart: // triggered restart
-				l.logger.Info("restarting")
+				if !crashed {
+					l.running <- constants.Running
+					crashed = false
+				} else {
+					l.backoffTime = defaultBackoffTime
+					l.state.setStatusWithLock(constants.Running)
+				}
+			case <-l.start:
+				l.logger.Info("starting")
 				shadowsocksCancel()
 				<-waitError
 				close(waitError)
 				stayHere = false
-			case <-l.start:
-				l.logger.Info("already started")
 			case <-l.stop:
 				l.logger.Info("stopping")
 				shadowsocksCancel()
 				<-waitError
 				close(waitError)
-				l.setEnabled(false)
-				stayHere = false
+				l.stopped <- struct{}{}
 			case err := <-waitError: // unexpected error
 				shadowsocksCancel()
 				close(waitError)
+				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
+				crashed = true
+				stayHere = false
 			}
 		}
 		shadowsocksCancel() // repetition for linter only

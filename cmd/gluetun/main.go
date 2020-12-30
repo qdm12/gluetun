@@ -266,15 +266,11 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	go httpProxyLooper.Run(ctx, wg)
 
 	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger)
-	restartShadowsocks := shadowsocksLooper.Restart
 	wg.Add(1)
 	go shadowsocksLooper.Run(ctx, wg)
 
 	if allSettings.HTTPProxy.Enabled {
 		_, _ = httpProxyLooper.SetStatus(constants.Running)
-	}
-	if allSettings.ShadowSocks.Enabled {
-		restartShadowsocks()
 	}
 
 	wg.Add(1)
