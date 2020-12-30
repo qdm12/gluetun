@@ -7,20 +7,20 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
-[![Build status](https://github.com/qdm12/gluetun/workflows/Buildx%20latest/badge.svg)](https://github.com/qdm12/gluetun/actions?query=workflow%3A%22Buildx+latest%22)
+[![Size](https://img.shields.io/docker/image-size/qmcgaw/gluetun?sort=semver&label=Last%20released%20image)](https://hub.docker.com/r/qmcgaw/gluetun/tags?page=1&ordering=last_updated)
+[![Size](https://img.shields.io/docker/image-size/qmcgaw/gluetun/latest?label=Latest%20image)](https://hub.docker.com/r/qmcgaw/gluetun/tags)
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
-[![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/private-internet-access)
-
 [![Docker Pulls](https://img.shields.io/docker/pulls/qmcgaw/gluetun.svg)](https://hub.docker.com/r/qmcgaw/gluetun)
-[![Docker Stars](https://img.shields.io/docker/stars/qmcgaw/gluetun.svg)](https://hub.docker.com/r/qmcgaw/gluetun)
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
-[![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
+![Last release](https://img.shields.io/github/release/qdm12/gluetun?label=Last%20release)
+![Last Docker tag](https://img.shields.io/docker/v/qmcgaw/gluetun?sort=semver&label=Last%20Docker%20tag)
+![GitHub Release Date](https://img.shields.io/github/release-date/qdm12/gluetun?label=Last%20release%20date)
 
-[![Image size](https://images.microbadger.com/badges/image/qmcgaw/gluetun.svg)](https://microbadger.com/images/qmcgaw/gluetun)
-[![Image version](https://images.microbadger.com/badges/version/qmcgaw/gluetun.svg)](https://microbadger.com/images/qmcgaw/gluetun)
+![Commits since release](https://img.shields.io/github/commits-since/qdm12/gluetun/latest?sort=semver)
+[![GitHub last commit](https://img.shields.io/github/last-commit/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/commits)
+
+[![Lines of code](https://img.shields.io/tokei/lines/github/qdm12/gluetun)](https://github.com/qdm12/gluetun)
 
 ## Quick links
 
@@ -423,7 +423,7 @@ You can also use the HTTP control server (see below) to get the port forwarded.
 
 ## License
 
-This repository is under an [MIT license](https://github.com/qdm12/gluetun/master/license)
+[![MIT](https://img.shields.io/github/license/qdm12/gluetun)](https://github.com/qdm12/gluetun/master/license)
 
 ## Support
 
@@ -435,3 +435,24 @@ This repository is under an [MIT license](https://github.com/qdm12/gluetun/maste
 - Have a look at [the Kanban board](https://github.com/qdm12/gluetun/projects/1) and [contribute](#Development-and-contributing) to the code
 - Contribute to the issues and discussions on Github
 - Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez, A. Cooper and **others** for supporting me financially 🥇👍
+
+## Metadata
+
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/commits)
+[![GitHub closed PRs](https://img.shields.io/github/issues-pr-closed/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/pulls?q=is%3Apr+is%3Aclosed)
+
+[![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues?q=is%3Aissue+is%3Aclosed)
+
+![GitHub stars](https://img.shields.io/github/stars/qdm12/gluetun?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/qdm12/gluetun?style=social)
+![Contributors](https://img.shields.io/github/contributors/qdm12/gluetun)
+![GitHub forks](https://img.shields.io/github/forks/qdm12/gluetun?style=social)
+
+![Code size](https://img.shields.io/github/languages/code-size/qdm12/gluetun)
+![GitHub repo size](https://img.shields.io/github/repo-size/qdm12/gluetun)
+
+[![dockeri.co](https://dockeri.co/image/qmcgaw/gluetun)](https://hub.docker.com/r/qmcgaw/gluetun)
+
+![Docker Layers for latest](https://img.shields.io/microbadger/layers/qmcgaw/gluetun/latest?label=Docker%20image%20layers)
+![Go version](https://img.shields.io/github/go-mod/go-version/qdm12/gluetun)
