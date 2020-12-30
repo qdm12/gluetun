@@ -35,8 +35,8 @@ LABEL \
     org.opencontainers.image.url="https://github.com/qdm12/gluetun" \
     org.opencontainers.image.documentation="https://github.com/qdm12/gluetun" \
     org.opencontainers.image.source="https://github.com/qdm12/gluetun" \
-    org.opencontainers.image.title="VPN client for PIA, Mullvad, Windscribe, Surfshark and Cyberghost" \
-    org.opencontainers.image.description="VPN client to tunnel to PIA, Mullvad, Windscribe, Surfshark and Cyberghost servers using OpenVPN, IPtables, DNS over TLS and Alpine Linux"
+    org.opencontainers.image.title="VPN swiss-knife like client for multiple VPN providers" \
+    org.opencontainers.image.description="VPN swiss-knife like client to tunnel to multiple VPN servers using OpenVPN, IPtables, DNS over TLS, Shadowsocks, an HTTP proxy and Alpine Linux"
 ENV VPNSP=pia \
     VERSION_INFORMATION=on \
     PROTOCOL=udp \
