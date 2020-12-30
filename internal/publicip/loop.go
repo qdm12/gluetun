@@ -40,10 +40,13 @@ type looper struct {
 	stop         chan struct{}
 	stopped      chan struct{}
 	updateTicker chan struct{}
+	backoffTime  time.Duration
 	// Mock functions
 	timeNow   func() time.Time
 	timeSince func(time.Time) time.Duration
 }
+
+const defaultBackoffTime = 5 * time.Second
 
 func NewLooper(client *http.Client, logger logging.Logger,
 	settings settings.PublicIP, puid, pgid int,
@@ -64,6 +67,7 @@ func NewLooper(client *http.Client, logger logging.Logger,
 		stop:         make(chan struct{}),
 		stopped:      make(chan struct{}),
 		updateTicker: make(chan struct{}),
+		backoffTime:  defaultBackoffTime,
 		timeNow:      time.Now,
 		timeSince:    time.Since,
 	}
@@ -71,9 +75,9 @@ func NewLooper(client *http.Client, logger logging.Logger,
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	const waitTime = 5 * time.Second
-	l.logger.Info("retrying in %s", waitTime)
-	timer := time.NewTimer(waitTime)
+	l.logger.Info("retrying in %s", l.backoffTime)
+	timer := time.NewTimer(l.backoffTime)
+	l.backoffTime *= 2
 	select {
 	case <-timer.C:
 	case <-ctx.Done():
@@ -116,6 +120,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			l.running <- constants.Running
 			crashed = false
 		} else {
+			l.backoffTime = defaultBackoffTime
 			l.state.setStatusWithLock(constants.Running)
 		}
 

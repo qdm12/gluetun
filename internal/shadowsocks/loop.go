@@ -28,13 +28,14 @@ type looper struct {
 	restart          chan struct{}
 	start            chan struct{}
 	stop             chan struct{}
+	backoffTime      time.Duration
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	const waitTime = time.Minute
-	l.logger.Info("retrying in %s", waitTime)
-	timer := time.NewTimer(waitTime)
+	l.logger.Info("retrying in %s", l.backoffTime)
+	timer := time.NewTimer(l.backoffTime)
+	l.backoffTime *= 2
 	select {
 	case <-timer.C:
 	case <-ctx.Done():
@@ -44,6 +45,8 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
+const defaultBackoffTime = 10 * time.Second
+
 func NewLooper(settings settings.ShadowSocks, logger logging.Logger, defaultInterface string) Looper {
 	return &looper{
 		settings:         settings,
@@ -52,6 +55,7 @@ func NewLooper(settings settings.ShadowSocks, logger logging.Logger, defaultInte
 		restart:          make(chan struct{}),
 		start:            make(chan struct{}),
 		stop:             make(chan struct{}),
+		backoffTime:      defaultBackoffTime,
 	}
 }
 
@@ -136,6 +140,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			continue
 		}
 
+		isStableTimer := time.NewTimer(time.Second)
+
 		stayHere := true
 		for stayHere {
 			select {
@@ -145,6 +151,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				<-waitError
 				close(waitError)
 				return
+			case <-isStableTimer.C:
+				l.backoffTime = defaultBackoffTime
 			case <-l.restart: // triggered restart
 				l.logger.Info("restarting")
 				shadowsocksCancel()
@@ -167,5 +175,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			}
 		}
 		shadowsocksCancel() // repetition for linter only
+		if !isStableTimer.Stop() {
+			<-isStableTimer.C
+		}
 	}
 }

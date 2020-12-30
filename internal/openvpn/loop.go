@@ -54,7 +54,10 @@ type looper struct {
 	start              chan struct{}
 	portForwardSignals chan net.IP
 	crashed            bool
+	backoffTime        time.Duration
 }
+
+const defaultBackoffTime = 15 * time.Second
 
 func NewLooper(settings settings.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
@@ -84,6 +87,7 @@ func NewLooper(settings settings.OpenVPN,
 		stop:               make(chan struct{}),
 		stopped:            make(chan struct{}),
 		portForwardSignals: make(chan net.IP),
+		backoffTime:        defaultBackoffTime,
 	}
 }
 
@@ -179,6 +183,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		if l.crashed {
 			l.crashed = false
+			l.backoffTime = defaultBackoffTime
 			l.state.setStatusWithLock(constants.Running)
 		} else {
 			l.running <- constants.Running
@@ -216,9 +221,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	const waitTime = 30 * time.Second
-	l.logger.Info("retrying in %s", waitTime)
-	timer := time.NewTimer(waitTime)
+	l.logger.Info("retrying in %s", l.backoffTime)
+	timer := time.NewTimer(l.backoffTime)
+	l.backoffTime *= 2
 	select {
 	case <-timer.C:
 	case <-ctx.Done():

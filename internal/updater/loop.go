@@ -36,10 +36,13 @@ type looper struct {
 	stop         chan struct{}
 	stopped      chan struct{}
 	updateTicker chan struct{}
+	backoffTime  time.Duration
 	// Mock functions
 	timeNow   func() time.Time
 	timeSince func(time.Time) time.Duration
 }
+
+const defaultBackoffTime = 5 * time.Second
 
 func NewLooper(settings settings.Updater, currentServers models.AllServers,
 	storage storage.Storage, setAllServers func(allServers models.AllServers),
@@ -61,14 +64,15 @@ func NewLooper(settings settings.Updater, currentServers models.AllServers,
 		updateTicker:  make(chan struct{}),
 		timeNow:       time.Now,
 		timeSince:     time.Since,
+		backoffTime:   defaultBackoffTime,
 	}
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err)
-	const waitTime = 5 * time.Minute
-	l.logger.Info("retrying in %s", waitTime)
-	timer := time.NewTimer(waitTime)
+	l.logger.Info("retrying in %s", l.backoffTime)
+	timer := time.NewTimer(l.backoffTime)
+	l.backoffTime *= 2
 	select {
 	case <-timer.C:
 	case <-ctx.Done():
@@ -108,6 +112,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			l.running <- constants.Running
 			crashed = false
 		} else {
+			l.backoffTime = defaultBackoffTime
 			l.state.setStatusWithLock(constants.Running)
 		}
 

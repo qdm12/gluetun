@@ -36,9 +36,12 @@ type looper struct {
 	stop         chan struct{}
 	stopped      chan struct{}
 	updateTicker chan struct{}
+	backoffTime  time.Duration
 	timeNow      func() time.Time
 	timeSince    func(time.Time) time.Duration
 }
+
+const defaultBackoffTime = 10 * time.Second
 
 func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 	streamMerger command.StreamMerger, username string, puid, pgid int) Looper {
@@ -58,6 +61,7 @@ func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 		stop:         make(chan struct{}),
 		stopped:      make(chan struct{}),
 		updateTicker: make(chan struct{}),
+		backoffTime:  defaultBackoffTime,
 		timeNow:      time.Now,
 		timeSince:    time.Since,
 	}
@@ -65,9 +69,9 @@ func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	l.logger.Warn(err)
-	l.logger.Info("attempting restart in 10 seconds")
-	const waitDuration = 10 * time.Second
-	timer := time.NewTimer(waitDuration)
+	l.logger.Info("attempting restart in %s", l.backoffTime)
+	timer := time.NewTimer(l.backoffTime)
+	l.backoffTime *= 2
 	select {
 	case <-timer.C:
 	case <-ctx.Done():
@@ -101,6 +105,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 	}
 
 	crashed := false
+	l.backoffTime = defaultBackoffTime
 
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
@@ -150,6 +155,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 			l.running <- constants.Running
 			crashed = false
 		} else {
+			l.backoffTime = defaultBackoffTime
 			l.state.setStatusWithLock(constants.Running)
 		}
 		signalDNSReady()

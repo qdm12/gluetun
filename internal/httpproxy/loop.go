@@ -105,6 +105,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		runCtx, runCancel := context.WithCancel(context.Background())
 		runWg := &sync.WaitGroup{}
 		runWg.Add(1)
+		// TODO crashed channel
 		go server.Run(runCtx, runWg)
 
 		stayHere := true
