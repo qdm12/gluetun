@@ -86,6 +86,7 @@ func (l *looper) SetSettings(settings settings.DNS) (outcome string) {
 	tempSettings.UpdatePeriod = settings.UpdatePeriod
 	onlyUpdatePeriodChanged := reflect.DeepEqual(tempSettings, settings)
 	l.state.settings = settings
+	l.state.settingsMu.Unlock()
 	if onlyUpdatePeriodChanged {
 		l.updateTicker <- struct{}{}
 		return "update period changed"
