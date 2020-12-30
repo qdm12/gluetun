@@ -26,7 +26,7 @@ func (c *configurator) UseDNSInternally(ip net.IP) {
 func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	c.logger.Info("using DNS address %s system wide", ip.String())
 	const filepath = string(constants.ResolvConf)
-	file, err := c.openFile(filepath, os.O_RDWR, 0644)
+	file, err := c.openFile(filepath, os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	if !found {
 		lines = append(lines, "nameserver "+ip.String())
 	}
-	s = strings.Join(lines, "\n")
+	s = strings.Join(lines, "\n") + "\n"
 	_, err = file.WriteString(s)
 	if err != nil {
 		_ = file.Close()

@@ -27,7 +27,7 @@ func Test_UseDNSSystemWide(t *testing.T) {
 		err         error
 	}{
 		"no data": {
-			writtenData: "nameserver 127.0.0.1",
+			writtenData: "nameserver 127.0.0.1\n",
 		},
 		"open error": {
 			openErr: fmt.Errorf("error"),
@@ -38,17 +38,17 @@ func Test_UseDNSSystemWide(t *testing.T) {
 			err:     fmt.Errorf("error"),
 		},
 		"write error": {
-			writtenData: "nameserver 127.0.0.1",
+			writtenData: "nameserver 127.0.0.1\n",
 			writeErr:    fmt.Errorf("error"),
 			err:         fmt.Errorf("error"),
 		},
 		"lines without nameserver": {
 			data:        []byte("abc\ndef\n"),
-			writtenData: "abc\ndef\nnameserver 127.0.0.1",
+			writtenData: "abc\ndef\nnameserver 127.0.0.1\n",
 		},
 		"lines with nameserver": {
 			data:        []byte("abc\nnameserver abc def\ndef\n"),
-			writtenData: "abc\nnameserver 127.0.0.1\ndef",
+			writtenData: "abc\nnameserver 127.0.0.1\ndef\n",
 		},
 	}
 	for name, tc := range tests {
@@ -83,7 +83,7 @@ func Test_UseDNSSystemWide(t *testing.T) {
 
 			openFile := func(name string, flag int, perm os.FileMode) (os.File, error) {
 				assert.Equal(t, string(constants.ResolvConf), name)
-				assert.Equal(t, os.O_RDWR, flag)
+				assert.Equal(t, os.O_RDWR|os.O_TRUNC, flag)
 				assert.Equal(t, os.FileMode(0644), perm)
 				return file, tc.openErr
 			}
