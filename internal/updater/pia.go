@@ -14,7 +14,7 @@ import (
 )
 
 func (u *updater) updatePIA(ctx context.Context) (err error) {
-	const url = "https://serverlist.piaservers.net/vpninfo/servers/v4"
+	const url = "https://serverlist.piaservers.net/vpninfo/servers/v5"
 	b, status, err := u.client.Get(ctx, url)
 	if err != nil {
 		return err
