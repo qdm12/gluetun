@@ -76,29 +76,28 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
     docker-compose up -d
     ```
 
-1. Note that you can:
+    You should probably check the many [environment variables](https://github.com/qdm12/gluetun/wiki/Environment-variables) available to adapt the container to your needs.
 
-    - Change the many [environment variables](https://github.com/qdm12/gluetun/wiki/Environment-variables) available
-    - Use `-p 8888:8888/tcp` to access the HTTP web proxy
-    - Use `-p 8388:8388/tcp -p 8388:8388/udp` to access the Shadowsocks proxy
-    - Use `-p 8000:8000/tcp` to access the [HTTP control server](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server) built-in
-    - Use [Docker secrets](https://github.com/qdm12/gluetun/wiki/Docker-secrets) to read your credentials instead of environment variables
+## Further setup
 
-1. (Optional) [Test your setup](https://github.com/qdm12/gluetun/wiki/Test-your-setup)
-1. [How to connect other containers and devices to Gluetun](https://github.com/qdm12/gluetun/wiki/Connect-to-gluetun)
-1. [VPN server side port forwarding](https://github.com/qdm12/gluetun/wiki/Port-forwarding)
-1. [HTTP control server](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server) to automate things, restart Openvpn etc.
-1. You can update the image with `docker pull qmcgaw/gluetun:latest`. See the [Wiki](https://github.com/qdm12/gluetun/wiki/Docker-image-tags) for Docker tags available.
+The following points are all optional but should give you insights on all the possibilities with this container.
+
+- Use [Docker secrets](https://github.com/qdm12/gluetun/wiki/Docker-secrets) to read your credentials instead of environment variables
+- [Test your setup](https://github.com/qdm12/gluetun/wiki/Test-your-setup)
+- [How to connect other containers and devices to Gluetun](https://github.com/qdm12/gluetun/wiki/Connect-to-gluetun)
+- [VPN server side port forwarding](https://github.com/qdm12/gluetun/wiki/Port-forwarding)
+- [HTTP control server](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server) to automate things, restart Openvpn etc.
+- Update the image with `docker pull qmcgaw/gluetun:latest`. See this [Wiki document](https://github.com/qdm12/gluetun/wiki/Docker-image-tags) for Docker tags available.
 
 ## Development
 
-- 💻 [Contribute with code](https://github.com/qdm12/gluetun/wiki/Developement) ([existing contributors 👍](https://github.com/qdm12/gluetun/blob/master/.github/CONTRIBUTING.md#Contributors))
+- 💻 [Contribute with code](https://github.com/qdm12/gluetun/wiki/Development) ([existing contributors 👍](https://github.com/qdm12/gluetun/blob/master/.github/CONTRIBUTING.md#Contributors))
 - [List of issues and feature requests](https://github.com/qdm12/gluetun/issues)
 - [Kanban board](https://github.com/qdm12/gluetun/projects/1)
 
 ## License
 
-[![MIT](https://img.shields.io/github/license/qdm12/gluetun)](https://github.com/qdm12/gluetun/master/license)
+[![MIT](https://img.shields.io/github/license/qdm12/gluetun)](https://github.com/qdm12/gluetun/master/LICENSE)
 
 ## Support
 
