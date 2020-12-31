@@ -444,6 +444,7 @@ You can also use the HTTP control server (see below) to get the port forwarded.
 [![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues?q=is%3Aissue+is%3Aclosed)
 
+![Visitors count](https://visitor-badge.laobi.icu/badge?page_id=gluetun.readme)
 ![GitHub stars](https://img.shields.io/github/stars/qdm12/gluetun?style=social)
 ![GitHub watchers](https://img.shields.io/github/watchers/qdm12/gluetun?style=social)
 ![Contributors](https://img.shields.io/github/contributors/qdm12/gluetun)
