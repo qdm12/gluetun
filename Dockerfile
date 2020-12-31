@@ -63,7 +63,7 @@ ENV VPNSP=pia \
     # Mullvad, PureVPN, Windscribe only
     CITY= \
     # Windscribe only
-    HOSTNAME= \
+    SERVER_HOSTNAME= \
     # Mullvad only
     ISP= \
     OWNED=no \

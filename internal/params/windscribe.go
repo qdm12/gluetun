@@ -21,9 +21,12 @@ func (r *reader) GetWindscribeCities() (cities []string, err error) {
 }
 
 // GetWindscribeHostnames obtains the hostnames for the Windscribe servers from the
-// environment variable HOSTNAME.
+// environment variable SERVER_HOSTNAME.
 func (r *reader) GetWindscribeHostnames() (hostnames []string, err error) {
-	return r.envParams.GetCSVInPossibilities("HOSTNAME", constants.WindscribeHostnameChoices())
+	return r.envParams.GetCSVInPossibilities("SERVER_HOSTNAME",
+		constants.WindscribeHostnameChoices(),
+		libparams.RetroKeys([]string{"HOSTNAME"}, r.onRetroActive),
+	)
 }
 
 // GetWindscribePort obtains the port to reach the Windscribe server on from the
