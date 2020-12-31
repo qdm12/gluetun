@@ -138,7 +138,7 @@ func Test_timestamps(t *testing.T) {
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,
 			timestamp: allServers.Purevpn.Timestamp,
-			digest:    "cdf9b708",
+			digest:    "8abe18d4",
 		},
 		"Privado": {
 			servers:   allServers.Privado.Servers,
