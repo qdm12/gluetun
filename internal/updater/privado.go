@@ -3,7 +3,6 @@ package updater
 import (
 	"context"
 	"fmt"
-	"net"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -39,22 +38,12 @@ func findPrivadoServersFromZip(ctx context.Context, client network.Client, looku
 		if err := ctx.Err(); err != nil {
 			return nil, warnings, err
 		}
-		remoteLines := extractRemoteLinesFromOpenvpn(content)
-		if len(remoteLines) == 0 {
-			return nil, warnings, fmt.Errorf("cannot find any remote lines in %s", fileName)
-		}
-		hostnames := extractHostnamesFromRemoteLines(remoteLines)
-		if len(hostnames) == 0 {
-			return nil, warnings, fmt.Errorf("cannot find any hosts in %s", fileName)
-		} else if len(hostnames) > 1 {
-			warning := fmt.Sprintf("more than one host in %q, only taking first one %q into account", fileName, hostnames[0])
+		hostname, warning, err := extractHostFromOVPN(content)
+		if len(warning) > 0 {
 			warnings = append(warnings, warning)
 		}
-		hostname := hostnames[0]
-		if net.ParseIP(hostname) != nil {
-			warning := fmt.Sprintf("ignoring IP address host %q in %s", hostname, fileName)
-			warnings = append(warnings, warning)
-			continue
+		if err != nil {
+			return nil, warnings, fmt.Errorf("%w in %q", err, fileName)
 		}
 		const repetition = 1
 		IPs, err := resolveRepeat(ctx, lookupIP, hostname, repetition)

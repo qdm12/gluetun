@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net"
 	"net/http"
 	"sort"
 	"strings"
@@ -84,22 +83,12 @@ func findSurfsharkServersFromZip(ctx context.Context, client network.Client, loo
 		if strings.HasSuffix(fileName, "_tcp.ovpn") {
 			continue // only parse UDP files
 		}
-		remoteLines := extractRemoteLinesFromOpenvpn(content)
-		if len(remoteLines) == 0 {
-			return nil, warnings, fmt.Errorf("cannot find any remote lines in %s", fileName)
-		}
-		hosts := extractHostnamesFromRemoteLines(remoteLines)
-		if len(hosts) == 0 {
-			return nil, warnings, fmt.Errorf("cannot find any hosts in %s", fileName)
-		} else if len(hosts) > 1 {
-			warning := fmt.Sprintf("more than one host in %q, only taking first one %q into account", fileName, hosts[0])
+		host, warning, err := extractHostFromOVPN(content)
+		if len(warning) > 0 {
 			warnings = append(warnings, warning)
 		}
-		host := hosts[0]
-		if net.ParseIP(host) != nil {
-			warning := fmt.Sprintf("ignoring IP address host %q in %q", host, fileName)
-			warnings = append(warnings, warning)
-			continue
+		if err != nil {
+			return nil, warnings, fmt.Errorf("%w in %s", err, fileName)
 		}
 		const repetition = 5
 		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
@@ -115,7 +104,7 @@ func findSurfsharkServersFromZip(ctx context.Context, client network.Client, loo
 		if ok {
 			delete(mapping, subdomain)
 		} else {
-			region = strings.TrimSuffix(hosts[0], ".prod.surfshark.com")
+			region = strings.TrimSuffix(host, ".prod.surfshark.com")
 			warning := fmt.Sprintf("subdomain %q not found in Surfshark mapping", subdomain)
 			warnings = append(warnings, warning)
 		}

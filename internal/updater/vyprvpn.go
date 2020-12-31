@@ -3,7 +3,6 @@ package updater
 import (
 	"context"
 	"fmt"
-	"net"
 	"sort"
 	"strings"
 
@@ -12,7 +11,12 @@ import (
 )
 
 func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
-	servers, err := findVyprvpnServers(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findVyprvpnServers(ctx, u.client, u.lookupIP)
+	if u.options.CLI {
+		for _, warning := range warnings {
+			u.logger.Warn("Privado: %s", warning)
+		}
+	}
 	if err != nil {
 		return fmt.Errorf("cannot update Vyprvpn servers: %w", err)
 	}
@@ -25,32 +29,27 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 }
 
 func findVyprvpnServers(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
-	servers []models.VyprvpnServer, err error) {
+	servers []models.VyprvpnServer, warnings []string, err error) {
 	const zipURL = "https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	for fileName, content := range contents {
 		if err := ctx.Err(); err != nil {
-			return nil, err
+			return nil, warnings, err
 		}
-		remoteLines := extractRemoteLinesFromOpenvpn(content)
-		if len(remoteLines) == 0 {
-			return nil, fmt.Errorf("cannot find any remote lines in %s", fileName)
+		host, warning, err := extractHostFromOVPN(content)
+		if len(warning) > 0 {
+			warnings = append(warnings, warning)
 		}
-		hosts := extractHostnamesFromRemoteLines(remoteLines)
-		if len(hosts) == 0 {
-			return nil, fmt.Errorf("cannot find any hosts in %s", fileName)
+		if err != nil {
+			return nil, warnings, fmt.Errorf("%w in %s", err, fileName)
 		}
-		var IPs []net.IP
-		for _, host := range hosts {
-			const repetitions = 1
-			newIPs, err := resolveRepeat(ctx, lookupIP, host, repetitions)
-			if err != nil {
-				return nil, err
-			}
-			IPs = append(IPs, newIPs...)
+		const repetitions = 1
+		IPs, err := resolveRepeat(ctx, lookupIP, host, repetitions)
+		if err != nil {
+			return nil, warnings, err
 		}
 		region := strings.TrimSuffix(fileName, ".ovpn")
 		region = strings.ReplaceAll(region, " - ", " ")
@@ -63,7 +62,7 @@ func findVyprvpnServers(ctx context.Context, client network.Client, lookupIP loo
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
-	return servers, nil
+	return servers, warnings, nil
 }
 
 func stringifyVyprvpnServers(servers []models.VyprvpnServer) (s string) {
