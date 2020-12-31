@@ -62,7 +62,7 @@ func Test_versions(t *testing.T) {
 		"Purevpn": {
 			model:   models.PurevpnServer{},
 			version: allServers.Purevpn.Version,
-			digest:  "cc1a2219",
+			digest:  "ada45379",
 		},
 		"Surfshark": {
 			model:   models.SurfsharkServer{},

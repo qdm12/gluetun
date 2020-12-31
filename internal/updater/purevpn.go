@@ -2,9 +2,7 @@ package updater
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"sort"
 	"strings"
 
@@ -32,74 +30,72 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 
 func findPurevpnServers(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
 	servers []models.PurevpnServer, warnings []string, err error) {
-	const url = "https://support.purevpn.com/vpn-servers"
-	bytes, status, err := client.Get(ctx, url)
+	const zipURL = "https://s3-us-west-1.amazonaws.com/heartbleed/windows/New+OVPN+Files.zip"
+	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
 	if err != nil {
 		return nil, nil, err
 	}
-	if status != http.StatusOK {
-		return nil, nil, fmt.Errorf("HTTP status code %d", status)
-	}
-	const jsonPrefix = "<script>var servers = "
-	const jsonSuffix = "</script>"
-	s := string(bytes)
-	jsonPrefixIndex := strings.Index(s, jsonPrefix)
-	if jsonPrefixIndex == -1 {
-		return nil, nil, fmt.Errorf("cannot find %q in html", jsonPrefix)
-	}
-	s = s[jsonPrefixIndex+len(jsonPrefix):]
-	endIndex := strings.Index(s, jsonSuffix)
-	if endIndex == -1 {
-		return nil, nil, fmt.Errorf("cannot find %q after %q in html", jsonSuffix, jsonPrefix)
-	}
-	s = s[:endIndex]
-	var data []struct {
-		Region  string `json:"region_name"`
-		Country string `json:"country_name"`
-		City    string `json:"city_name"`
-		TCP     string `json:"tcp"`
-		UDP     string `json:"udp"`
-	}
-	if err := json.Unmarshal([]byte(s), &data); err != nil {
-		return nil, nil, err
-	}
-	sort.Slice(data, func(i, j int) bool {
-		if data[i].Region == data[j].Region {
-			if data[i].Country == data[j].Country {
-				return data[i].City < data[j].City
-			}
-			return data[i].Country < data[j].Country
-		}
-		return data[i].Region < data[j].Region
-	})
-	for _, jsonServer := range data {
+	uniqueServers := map[string]models.PurevpnServer{}
+	for fileName, content := range contents {
 		if err := ctx.Err(); err != nil {
 			return nil, warnings, err
 		}
-		if jsonServer.UDP == "" && jsonServer.TCP == "" {
-			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP and UDP for openvpn",
-				jsonServer.Region, jsonServer.Country, jsonServer.City))
-			continue
+		if strings.HasSuffix(fileName, "-tcp.ovpn") {
+			continue // only parse UDP files
 		}
-		if jsonServer.UDP == "" || jsonServer.TCP == "" {
-			warnings = append(warnings, fmt.Sprintf("server %s %s %s does not support TCP or UDP for openvpn",
-				jsonServer.Region, jsonServer.Country, jsonServer.City))
-			continue
+		host, warning, err := extractHostFromOVPN(content)
+		if len(warning) > 0 {
+			warnings = append(warnings, warning)
 		}
-		host := jsonServer.UDP
+		if err != nil {
+			return nil, warnings, fmt.Errorf("%w in %q", err, fileName)
+		}
 		const repetition = 5
 		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
-		if err != nil {
-			warnings = append(warnings, err.Error())
+		switch {
+		case err != nil:
+			return nil, warnings, err
+		case len(IPs) == 0:
+			warning := fmt.Sprintf("no IP address found for host %q", host)
+			warnings = append(warnings, warning)
 			continue
 		}
-		servers = append(servers, models.PurevpnServer{
-			Region:  jsonServer.Region,
-			Country: jsonServer.Country,
-			City:    jsonServer.City,
-			IPs:     IPs,
-		})
+		country, region, city, err := getIPInfo(ctx, client, IPs[0])
+		if err != nil {
+			return nil, warnings, err
+		}
+		key := country + region + city
+		server, ok := uniqueServers[key]
+		if ok {
+			server.IPs = append(server.IPs, IPs...)
+		} else {
+			server = models.PurevpnServer{
+				Country: country,
+				Region:  region,
+				City:    city,
+				IPs:     IPs,
+			}
+		}
+		uniqueServers[key] = server
 	}
+
+	servers = make([]models.PurevpnServer, len(uniqueServers))
+	i := 0
+	for _, server := range uniqueServers {
+		servers[i] = server
+		i++
+	}
+
+	sort.Slice(servers, func(i, j int) bool {
+		if servers[i].Country == servers[j].Country {
+			if servers[i].Region == servers[j].Region {
+				return servers[i].City < servers[j].City
+			}
+			return servers[i].Region < servers[j].Region
+		}
+		return servers[i].Country < servers[j].Country
+	})
+
 	return servers, warnings, nil
 }
 

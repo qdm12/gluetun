@@ -96,15 +96,15 @@ func (s *NordvpnServer) String() string {
 }
 
 type PurevpnServer struct {
-	Region  string   `json:"region"`
 	Country string   `json:"country"`
+	Region  string   `json:"region"`
 	City    string   `json:"city"`
 	IPs     []net.IP `json:"ips"`
 }
 
 func (s *PurevpnServer) String() string {
-	return fmt.Sprintf("{Region: %q, Country: %q, City: %q, IPs: %s}",
-		s.Region, s.Country, s.City, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Country: %q, Region: %q, City: %q, IPs: %s}",
+		s.Country, s.Region, s.City, goStringifyIPs(s.IPs))
 }
 
 type PrivadoServer struct {
