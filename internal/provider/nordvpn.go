@@ -115,7 +115,7 @@ func (n *nordvpn) BuildConf(connection models.OpenVPNConnection, verbosity int, 
 		// Modified variables
 		fmt.Sprintf("verb %d", verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
-		fmt.Sprintf("proto %s", string(connection.Protocol)),
+		fmt.Sprintf("proto %s", connection.Protocol),
 		fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port),
 		fmt.Sprintf("cipher %s", cipher),
 		fmt.Sprintf("auth %s", auth),
