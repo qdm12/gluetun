@@ -1,7 +1,7 @@
 ---
 name: Help
 about: Ask for help
-title: 'Help: ...'
+title: 'Help: FILL THIS TEXT!'
 labels: ":pray: help wanted"
 assignees:
 
