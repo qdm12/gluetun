@@ -55,6 +55,7 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 	}
 
 	value = string(b)
+	value = strings.TrimSuffix(value, "\n")
 	if compulsory && len(value) == 0 {
 		return "", ErrSecretFileIsEmpty
 	}
