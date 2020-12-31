@@ -64,7 +64,7 @@ func (s *privado) GetOpenVPNConnection(selection models.ServerSelection) (
 			Protocol: selection.Protocol,
 			Hostname: servers[i].Hostname,
 		}
-		connections = append(connections, connection)
+		connections[i] = connection
 	}
 
 	return pickRandomConnection(connections, s.randSource), nil
