@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"reflect"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -68,6 +69,9 @@ func (s *storage) readFromFile(filepath string) (servers models.AllServers, err 
 	decoder := json.NewDecoder(file)
 	if err := decoder.Decode(&servers); err != nil {
 		_ = file.Close()
+		if errors.Is(err, io.EOF) {
+			return servers, nil
+		}
 		return servers, err
 	}
 	return servers, file.Close()
