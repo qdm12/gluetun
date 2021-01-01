@@ -19,8 +19,6 @@ const (
 	CleanBrowsing models.DNSProvider = "cleanbrowsing"
 	// SecureDNS is a DNS over TLS provider.
 	SecureDNS models.DNSProvider = "securedns"
-	// LibreDNS is a DNS over TLS provider.
-	LibreDNS models.DNSProvider = "libredns"
 )
 
 // DNSProviderMapping returns a constant mapping of dns provider name
@@ -88,11 +86,6 @@ func DNSProviderMapping() map[models.DNSProvider]models.DNSProviderData {
 			SupportsTLS:  true,
 			SupportsIPv6: true,
 			Host:         models.DNSHost("dot.securedns.eu"),
-		},
-		LibreDNS: {
-			IPs:         []net.IP{{116, 203, 115, 192}},
-			SupportsTLS: true,
-			Host:        models.DNSHost("dot.libredns.gr"),
 		},
 	}
 }
