@@ -28,7 +28,7 @@ func (r *reader) GetDNSOverTLSProviders() (providers []models.DNSProvider, err e
 		provider := models.DNSProvider(word)
 		switch provider {
 		case constants.Cloudflare, constants.Google, constants.Quad9,
-			constants.Quadrant, constants.CleanBrowsing, constants.SecureDNS:
+			constants.Quadrant, constants.CleanBrowsing:
 			providers = append(providers, provider)
 		default:
 			return nil, fmt.Errorf("DNS over TLS provider %q is not valid", provider)

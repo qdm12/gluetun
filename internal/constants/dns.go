@@ -17,8 +17,6 @@ const (
 	Quadrant models.DNSProvider = "quadrant"
 	// CleanBrowsing is a DNS over TLS provider.
 	CleanBrowsing models.DNSProvider = "cleanbrowsing"
-	// SecureDNS is a DNS over TLS provider.
-	SecureDNS models.DNSProvider = "securedns"
 )
 
 // DNSProviderMapping returns a constant mapping of dns provider name
@@ -77,15 +75,6 @@ func DNSProviderMapping() map[models.DNSProvider]models.DNSProviderData {
 			SupportsTLS:  true,
 			SupportsIPv6: true,
 			Host:         models.DNSHost("security-filter-dns.cleanbrowsing.org"),
-		},
-		SecureDNS: {
-			IPs: []net.IP{
-				{146, 185, 167, 43},
-				{0x2a, 0x3, 0xb0, 0xc0, 0x0, 0x0, 0x10, 0x10, 0x0, 0x0, 0x0, 0x0, 0xe, 0x9a, 0x30, 0x1},
-			},
-			SupportsTLS:  true,
-			SupportsIPv6: true,
-			Host:         models.DNSHost("dot.securedns.eu"),
 		},
 	}
 }
