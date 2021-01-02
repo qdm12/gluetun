@@ -109,7 +109,11 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 		var unboundCancel context.CancelFunc = func() {}
 		waitError := make(chan error)
 
-		for ctx.Err() == nil && l.GetSettings().Enabled {
+		for l.GetSettings().Enabled {
+			if ctx.Err() != nil {
+				l.logger.Warn("context canceled: exiting loop")
+				return
+			}
 			var err error
 			unboundCancel, err = l.setupUnbound(ctx, crashed, waitError)
 			if err != nil {
@@ -118,6 +122,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 					l.useUnencryptedDNS(fallback)
 				}
 				l.logAndWait(ctx, err)
+				continue
 			}
 			break
 		}
@@ -315,11 +320,13 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func (l *looper) updateFiles(ctx context.Context) (err error) {
+	l.logger.Info("downloading DNS over TLS cryptographic files")
 	if err := l.conf.SetupFiles(ctx); err != nil {
 		return err
 	}
 	settings := l.GetSettings()
 
+	l.logger.Info("downloading hostnames and IP block lists")
 	hostnameLines, ipLines, errs := l.conf.BuildBlocked(ctx, l.client,
 		settings.BlockMalicious, settings.BlockAds, settings.BlockSurveillance,
 		settings.Unbound.BlockedHostnames, settings.Unbound.BlockedIPs,
