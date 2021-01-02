@@ -6,38 +6,28 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
+	unboundmodels "github.com/qdm12/dns/pkg/models"
+	unbound "github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/params"
 )
 
 // DNS contains settings to configure Unbound for DNS over TLS operation.
-type DNS struct {
-	Enabled               bool
-	KeepNameserver        bool
-	Providers             []models.DNSProvider
-	PlaintextAddress      net.IP
-	AllowedHostnames      []string
-	PrivateAddresses      []string
-	Caching               bool
-	BlockMalicious        bool
-	BlockSurveillance     bool
-	BlockAds              bool
-	VerbosityLevel        uint8
-	VerbosityDetailsLevel uint8
-	ValidationLogLevel    uint8
-	IPv6                  bool
-	UpdatePeriod          time.Duration
+type DNS struct { //nolint:maligned
+	Enabled           bool
+	PlaintextAddress  net.IP
+	KeepNameserver    bool
+	BlockMalicious    bool
+	BlockAds          bool
+	BlockSurveillance bool
+	UpdatePeriod      time.Duration
+	Unbound           unboundmodels.Settings
 }
 
 func (d *DNS) String() string {
 	if !d.Enabled {
 		return fmt.Sprintf("DNS over TLS disabled, using plaintext DNS %s", d.PlaintextAddress)
 	}
-	caching, blockMalicious, blockSurveillance, blockAds, ipv6 := disabled, disabled, disabled, disabled, disabled
-	if d.Caching {
-		caching = enabled
-	}
+	blockMalicious, blockSurveillance, blockAds := disabled, disabled, disabled
 	if d.BlockMalicious {
 		blockMalicious = enabled
 	}
@@ -46,13 +36,6 @@ func (d *DNS) String() string {
 	}
 	if d.BlockAds {
 		blockAds = enabled
-	}
-	if d.IPv6 {
-		ipv6 = enabled
-	}
-	providersStr := make([]string, len(d.Providers))
-	for i := range d.Providers {
-		providersStr[i] = string(d.Providers[i])
 	}
 	update := "deactivated"
 	if d.UpdatePeriod > 0 {
@@ -63,20 +46,13 @@ func (d *DNS) String() string {
 		keepNameserver = "yes"
 	}
 	settingsList := []string{
-		"DNS over TLS settings:",
-		"DNS over TLS provider:\n  |--" + strings.Join(providersStr, "\n  |--"),
-		"Caching: " + caching,
+		"DNS settings:",
 		"Block malicious: " + blockMalicious,
 		"Block surveillance: " + blockSurveillance,
 		"Block ads: " + blockAds,
-		"Allowed hostnames:\n  |--" + strings.Join(d.AllowedHostnames, "\n  |--"),
-		"Private addresses:\n  |--" + strings.Join(d.PrivateAddresses, "\n  |--"),
-		"Verbosity level: " + fmt.Sprintf("%d/5", d.VerbosityLevel),
-		"Verbosity details level: " + fmt.Sprintf("%d/4", d.VerbosityDetailsLevel),
-		"Validation log level: " + fmt.Sprintf("%d/2", d.ValidationLogLevel),
-		"IPv6 resolution: " + ipv6,
 		"Update: " + update,
 		"Keep nameserver (disabled blocking): " + keepNameserver,
+		"Unbound settings: " + "\n   |--" + strings.Join(d.Unbound.Lines(), "\n   |--"),
 	}
 	return strings.Join(settingsList, "\n |--")
 }
@@ -87,22 +63,18 @@ func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
 	if err != nil {
 		return settings, err
 	}
-	if !settings.Enabled {
-		settings.PlaintextAddress, err = paramsReader.GetDNSPlaintext()
-		return settings, err
-	}
-	settings.Providers, err = paramsReader.GetDNSOverTLSProviders()
+
+	// Plain DNS settings
+	settings.PlaintextAddress, err = paramsReader.GetDNSPlaintext()
 	if err != nil {
 		return settings, err
 	}
-	settings.AllowedHostnames, err = paramsReader.GetDNSUnblockedHostnames()
+	settings.KeepNameserver, err = paramsReader.GetDNSKeepNameserver()
 	if err != nil {
 		return settings, err
 	}
-	settings.Caching, err = paramsReader.GetDNSOverTLSCaching()
-	if err != nil {
-		return settings, err
-	}
+
+	// DNS over TLS external settings
 	settings.BlockMalicious, err = paramsReader.GetDNSMaliciousBlocking()
 	if err != nil {
 		return settings, err
@@ -115,50 +87,71 @@ func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
 	if err != nil {
 		return settings, err
 	}
-	settings.VerbosityLevel, err = paramsReader.GetDNSOverTLSVerbosity()
-	if err != nil {
-		return settings, err
-	}
-	settings.VerbosityDetailsLevel, err = paramsReader.GetDNSOverTLSVerbosityDetails()
-	if err != nil {
-		return settings, err
-	}
-	settings.ValidationLogLevel, err = paramsReader.GetDNSOverTLSValidationLogLevel()
-	if err != nil {
-		return settings, err
-	}
-	settings.PrivateAddresses, err = paramsReader.GetDNSOverTLSPrivateAddresses()
-	if err != nil {
-		return settings, err
-	}
-	settings.IPv6, err = paramsReader.GetDNSOverTLSIPv6()
-	if err != nil {
-		return settings, err
-	}
 	settings.UpdatePeriod, err = paramsReader.GetDNSUpdatePeriod()
 	if err != nil {
 		return settings, err
 	}
-	settings.KeepNameserver, err = paramsReader.GetDNSKeepNameserver()
+
+	// Unbound specific settings
+	settings.Unbound, err = getUnboundSettings(paramsReader)
 	if err != nil {
 		return settings, err
 	}
 
 	// Consistency check
 	IPv6Support := false
-	for _, provider := range settings.Providers {
-		providerData, ok := constants.DNSProviderMapping()[provider]
+	for _, provider := range settings.Unbound.Providers {
+		providerData, ok := unbound.GetProviderData(provider)
 		switch {
 		case !ok:
 			return settings, fmt.Errorf("DNS provider %q does not have associated data", provider)
-		case !providerData.SupportsTLS:
+		case providerData.SupportsTLS:
 			return settings, fmt.Errorf("DNS provider %q does not support DNS over TLS", provider)
 		case providerData.SupportsIPv6:
 			IPv6Support = true
 		}
 	}
-	if settings.IPv6 && !IPv6Support {
+	if settings.Unbound.IPv6 && !IPv6Support {
 		return settings, fmt.Errorf("None of the DNS over TLS provider(s) set support IPv6")
+	}
+	return settings, nil
+}
+
+func getUnboundSettings(reader params.Reader) (settings unboundmodels.Settings, err error) {
+	settings.Providers, err = reader.GetDNSOverTLSProviders()
+	if err != nil {
+		return settings, err
+	}
+	settings.ListeningPort = 53
+	settings.Caching, err = reader.GetDNSOverTLSCaching()
+	if err != nil {
+		return settings, err
+	}
+	settings.IPv4 = true
+	settings.IPv6, err = reader.GetDNSOverTLSIPv6()
+	if err != nil {
+		return settings, err
+	}
+	settings.VerbosityLevel, err = reader.GetDNSOverTLSVerbosity()
+	if err != nil {
+		return settings, err
+	}
+	settings.VerbosityDetailsLevel, err = reader.GetDNSOverTLSVerbosityDetails()
+	if err != nil {
+		return settings, err
+	}
+	settings.ValidationLogLevel, err = reader.GetDNSOverTLSValidationLogLevel()
+	if err != nil {
+		return settings, err
+	}
+	settings.BlockedHostnames = []string{}
+	settings.BlockedIPs, err = reader.GetDNSOverTLSPrivateAddresses()
+	if err != nil {
+		return settings, err
+	}
+	settings.AllowedHostnames, err = reader.GetDNSUnblockedHostnames()
+	if err != nil {
+		return settings, err
 	}
 	return settings, nil
 }

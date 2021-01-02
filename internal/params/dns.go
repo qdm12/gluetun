@@ -6,8 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
+	dns "github.com/qdm12/dns/pkg/unbound"
 	libparams "github.com/qdm12/golibs/params"
 )
 
@@ -19,20 +18,17 @@ func (r *reader) GetDNSOverTLS() (DNSOverTLS bool, err error) { //nolint:gocriti
 
 // GetDNSOverTLSProviders obtains the DNS over TLS providers to use
 // from the environment variable DOT_PROVIDERS.
-func (r *reader) GetDNSOverTLSProviders() (providers []models.DNSProvider, err error) {
+func (r *reader) GetDNSOverTLSProviders() (providers []string, err error) {
 	s, err := r.envParams.GetEnv("DOT_PROVIDERS", libparams.Default("cloudflare"))
 	if err != nil {
 		return nil, err
 	}
-	for _, word := range strings.Split(s, ",") {
-		provider := models.DNSProvider(word)
-		switch provider {
-		case constants.Cloudflare, constants.Google, constants.Quad9,
-			constants.Quadrant, constants.CleanBrowsing:
-			providers = append(providers, provider)
-		default:
+	for _, provider := range strings.Split(s, ",") {
+		_, ok := dns.GetProviderData(provider)
+		if !ok {
 			return nil, fmt.Errorf("DNS over TLS provider %q is not valid", provider)
 		}
+		providers = append(providers, provider)
 	}
 	return providers, nil
 }

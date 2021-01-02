@@ -17,7 +17,7 @@ type Reader interface {
 
 	// DNS over TLS getters
 	GetDNSOverTLS() (DNSOverTLS bool, err error)
-	GetDNSOverTLSProviders() (providers []models.DNSProvider, err error)
+	GetDNSOverTLSProviders() (providers []string, err error)
 	GetDNSOverTLSCaching() (caching bool, err error)
 	GetDNSOverTLSVerbosity() (verbosityLevel uint8, err error)
 	GetDNSOverTLSVerbosityDetails() (verbosityDetailsLevel uint8, err error)

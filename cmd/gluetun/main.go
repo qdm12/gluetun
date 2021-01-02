@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -36,6 +37,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/os/user"
+	"github.com/qdm12/updated/pkg/dnscrypto"
 )
 
 //nolint:gochecknoglobals
@@ -93,7 +95,8 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	// Create configurators
 	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
 	ovpnConf := openvpn.NewConfigurator(logger, os, unix)
-	dnsConf := dns.NewConfigurator(logger, httpClient, os.OpenFile)
+	dnsCrypto := dnscrypto.New(httpClient, "", "")
+	dnsConf := unbound.NewConfigurator(logger, os.OpenFile, dnsCrypto, "/etc/unbound")
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)
 	streamMerger := command.NewStreamMerger()
@@ -249,7 +252,8 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
 	go updaterLooper.Run(ctx, wg)
 
-	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, logger, streamMerger, nonRootUsername, puid, pgid)
+	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
+		logger, streamMerger, nonRootUsername, puid, pgid)
 	wg.Add(1)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(ctx, wg, signalDNSReady)

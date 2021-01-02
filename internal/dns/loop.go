@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"net"
+	"net/http"
 	"sync"
 	"time"
 
+	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/settings"
@@ -25,7 +27,8 @@ type Looper interface {
 
 type looper struct {
 	state        state
-	conf         Configurator
+	conf         unbound.Configurator
+	client       *http.Client
 	logger       logging.Logger
 	streamMerger command.StreamMerger
 	username     string
@@ -44,14 +47,16 @@ type looper struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(conf Configurator, settings settings.DNS, logger logging.Logger,
-	streamMerger command.StreamMerger, username string, puid, pgid int) Looper {
+func NewLooper(conf unbound.Configurator, settings settings.DNS, client *http.Client,
+	logger logging.Logger, streamMerger command.StreamMerger,
+	username string, puid, pgid int) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
 		},
 		conf:         conf,
+		client:       client,
 		logger:       logger.WithPrefix("dns over tls: "),
 		username:     username,
 		puid:         puid,
@@ -170,7 +175,7 @@ func (l *looper) setupUnbound(ctx context.Context,
 	settings := l.GetSettings()
 
 	unboundCtx, cancel := context.WithCancel(context.Background())
-	stream, waitFn, err := l.conf.Start(unboundCtx, settings.VerbosityDetailsLevel)
+	stream, waitFn, err := l.conf.Start(unboundCtx, settings.Unbound.VerbosityDetailsLevel)
 	if err != nil {
 		cancel()
 		if !previousCrashed {
@@ -187,7 +192,7 @@ func (l *looper) setupUnbound(ctx context.Context,
 		l.logger.Error(err)
 	}
 
-	if err := l.conf.WaitForUnbound(); err != nil {
+	if err := l.conf.WaitForUnbound(ctx); err != nil {
 		if !previousCrashed {
 			l.running <- constants.Crashed
 		}
@@ -229,8 +234,8 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 	}
 
 	// Try with any IPv4 address from the providers chosen
-	for _, provider := range settings.Providers {
-		data := constants.DNSProviderMapping()[provider]
+	for _, provider := range settings.Unbound.Providers {
+		data, _ := unbound.GetProviderData(provider)
 		for _, targetIP = range data.IPs {
 			if targetIP.To4() != nil {
 				if fallback {
@@ -248,7 +253,7 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 	}
 
 	// No IPv4 address found
-	l.logger.Error("no ipv4 DNS address found for providers %s", settings.Providers)
+	l.logger.Error("no ipv4 DNS address found for providers %s", settings.Unbound.Providers)
 }
 
 func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
@@ -310,14 +315,22 @@ func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
 }
 
 func (l *looper) updateFiles(ctx context.Context) (err error) {
-	if err := l.conf.DownloadRootHints(ctx, l.puid, l.pgid); err != nil {
-		return err
-	}
-	if err := l.conf.DownloadRootKey(ctx, l.puid, l.pgid); err != nil {
+	if err := l.conf.SetupFiles(ctx); err != nil {
 		return err
 	}
 	settings := l.GetSettings()
-	if err := l.conf.MakeUnboundConf(ctx, settings, l.username, l.puid, l.pgid); err != nil {
+
+	hostnameLines, ipLines, errs := l.conf.BuildBlocked(ctx, l.client,
+		settings.BlockMalicious, settings.BlockAds, settings.BlockSurveillance,
+		settings.Unbound.BlockedHostnames, settings.Unbound.BlockedIPs,
+		settings.Unbound.AllowedHostnames)
+	for _, err := range errs {
+		l.logger.Warn(err)
+	}
+
+	if err := l.conf.MakeUnboundConf(
+		settings.Unbound, hostnameLines, ipLines,
+		l.username, l.puid, l.pgid); err != nil {
 		return err
 	}
 	return nil
