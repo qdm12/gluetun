@@ -5,7 +5,7 @@ FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS builder
 RUN apk --update add git
 ENV CGO_ENABLED=0
 ARG GOLANGCI_LINT_VERSION=v1.34.1
-RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s ${GOLANGCI_LINT_VERSION}
+RUN [ "$(uname -m)" != "x86_64" ] || wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s ${GOLANGCI_LINT_VERSION}
 WORKDIR /tmp/gobuild
 COPY .golangci.yml .
 COPY go.mod go.sum ./
@@ -15,8 +15,8 @@ ARG BUILD_DATE="an unknown date"
 ARG COMMIT=unknown
 COPY cmd/gluetun/main.go .
 COPY internal/ ./internal/
-RUN go test ./...
-RUN golangci-lint run --timeout=10m
+RUN [ "$(uname -m)" != "x86_64" ] || go test ./...
+RUN [ "$(uname -m)" != "x86_64" ] || golangci-lint run --timeout=10m
 RUN go build -trimpath -ldflags="-s -w \
     -X 'main.version=$VERSION' \
     -X 'main.buildDate=$BUILD_DATE' \
