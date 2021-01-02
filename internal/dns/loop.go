@@ -126,6 +126,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 			l.useUnencryptedDNS(fallback)
 		}
 
+		signalDNSReady()
+
 		stayHere := true
 		for stayHere {
 			select {
