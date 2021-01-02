@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/golibs/os"
 )
 
 func (c *cli) ClientKey(args []string, openFile os.OpenFileFunc) error {

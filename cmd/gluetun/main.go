@@ -22,8 +22,6 @@ import (
 	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
-	"github.com/qdm12/gluetun/internal/os"
-	"github.com/qdm12/gluetun/internal/os/user"
 	"github.com/qdm12/gluetun/internal/params"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
@@ -36,6 +34,8 @@ import (
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
+	"github.com/qdm12/golibs/os/user"
 )
 
 //nolint:gochecknoglobals

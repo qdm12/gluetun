@@ -19,8 +19,8 @@ import (
 	"github.com/qdm12/gluetun/internal/firewall"
 	gluetunLog "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
 )
 
 type pia struct {

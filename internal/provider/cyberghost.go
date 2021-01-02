@@ -11,8 +11,8 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
 )
 
 type cyberghost struct {

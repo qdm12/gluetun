@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/golibs/os"
 )
 
 var (

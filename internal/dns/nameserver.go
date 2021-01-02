@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/golibs/os"
 )
 
 // UseDNSInternally is to change the Go program DNS only.

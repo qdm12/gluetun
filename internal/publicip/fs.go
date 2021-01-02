@@ -1,6 +1,6 @@
 package publicip
 
-import "github.com/qdm12/gluetun/internal/os"
+import "github.com/qdm12/golibs/os"
 
 func persistPublicIP(openFile os.OpenFileFunc,
 	filepath string, content string, puid, pgid int) error {

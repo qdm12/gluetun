@@ -6,10 +6,10 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
 )
 
 type Configurator interface {

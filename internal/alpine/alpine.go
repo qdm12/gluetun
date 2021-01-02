@@ -1,8 +1,8 @@
 package alpine
 
 import (
-	"github.com/qdm12/gluetun/internal/os"
-	"github.com/qdm12/gluetun/internal/os/user"
+	"github.com/qdm12/golibs/os"
+	"github.com/qdm12/golibs/os/user"
 )
 
 type Configurator interface {

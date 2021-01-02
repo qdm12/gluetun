@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
 )
 
 func (c *configurator) MakeUnboundConf(ctx context.Context, settings settings.DNS,

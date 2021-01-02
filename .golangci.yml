@@ -10,10 +10,6 @@ issues:
       linters:
         - dupl
         - maligned
-    - path: internal/os/alias\.go
-      linters:
-        - gochecknoglobals
-      text: IsNotExist is a global variable
     - path: internal/unix/constants\.go
       linters:
         - golint

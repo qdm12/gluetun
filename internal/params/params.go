@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/os"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
 	libparams "github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
 )

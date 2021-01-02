@@ -11,9 +11,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/os"
-	"github.com/qdm12/gluetun/internal/os/mock_os"
 	"github.com/qdm12/golibs/logging/mock_logging"
+	"github.com/qdm12/golibs/os"
+	"github.com/qdm12/golibs/os/mock_os"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

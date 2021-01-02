@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 
-	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/golibs/os"
 )
 
 type CLI interface {

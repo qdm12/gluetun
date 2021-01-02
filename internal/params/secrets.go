@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/os"
+	"github.com/qdm12/golibs/os"
 	libparams "github.com/qdm12/golibs/params"
 )
 
