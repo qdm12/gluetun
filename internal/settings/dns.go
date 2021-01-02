@@ -105,7 +105,7 @@ func GetDNSSettings(paramsReader params.Reader) (settings DNS, err error) {
 		switch {
 		case !ok:
 			return settings, fmt.Errorf("DNS provider %q does not have associated data", provider)
-		case providerData.SupportsTLS:
+		case !providerData.SupportsTLS:
 			return settings, fmt.Errorf("DNS provider %q does not support DNS over TLS", provider)
 		case providerData.SupportsIPv6:
 			IPv6Support = true
