@@ -96,7 +96,9 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
 	ovpnConf := openvpn.NewConfigurator(logger, os, unix)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
-	dnsConf := unbound.NewConfigurator(logger, os.OpenFile, dnsCrypto, "/etc/unbound")
+	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
+	dnsConf := unbound.NewConfigurator(logger, os.OpenFile, dnsCrypto,
+		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)
 	streamMerger := command.NewStreamMerger()
