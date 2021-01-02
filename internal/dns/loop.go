@@ -104,7 +104,11 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 		var unboundCancel context.CancelFunc = func() {}
 		waitError := make(chan error)
 
-		for ctx.Err() == nil && l.GetSettings().Enabled {
+		for l.GetSettings().Enabled {
+			if ctx.Err() != nil {
+				l.logger.Warn("context canceled: exiting loop")
+				return
+			}
 			var err error
 			unboundCancel, err = l.setupUnbound(ctx, crashed, waitError)
 			if err != nil {
@@ -113,6 +117,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 					l.useUnencryptedDNS(fallback)
 				}
 				l.logAndWait(ctx, err)
+				continue
 			}
 			break
 		}
