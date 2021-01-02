@@ -12,8 +12,15 @@ import (
 func (s *server) runHealthcheckLoop(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {
+		previousErr := s.handler.getErr()
+
 		err := healthCheck(ctx, s.resolver)
 		s.handler.setErr(err)
+
+		if previousErr != nil && err == nil {
+			s.logger.Info("passed")
+		}
+
 		if err != nil { // try again after 1 second
 			timer := time.NewTimer(time.Second)
 			select {
