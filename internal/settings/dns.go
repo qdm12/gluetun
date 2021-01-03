@@ -24,37 +24,59 @@ type DNS struct { //nolint:maligned
 }
 
 func (d *DNS) String() string {
+	return strings.Join(d.lines(), "\n")
+}
+
+func (d *DNS) lines() (lines []string) {
 	if !d.Enabled {
-		return fmt.Sprintf("DNS over TLS disabled, using plaintext DNS %s", d.PlaintextAddress)
+		return []string{"DNS over TLS disabled, using plaintext DNS " + d.PlaintextAddress.String()}
 	}
-	blockMalicious, blockSurveillance, blockAds := disabled, disabled, disabled
+
+	const prefix = " |--"
+
+	lines = append(lines, "DNS settings:")
+
+	lines = append(lines, prefix+"Unbound:")
+	for _, line := range d.Unbound.Lines() {
+		indent := "   " + prefix
+		if strings.HasPrefix(line, prefix) {
+			indent = "      "
+		}
+		lines = append(lines, indent+line)
+	}
+
+	blockMalicious := disabled
 	if d.BlockMalicious {
 		blockMalicious = enabled
 	}
-	if d.BlockSurveillance {
-		blockSurveillance = enabled
-	}
+	lines = append(lines, prefix+"Block malicious: "+blockMalicious)
+
+	blockAds := disabled
 	if d.BlockAds {
 		blockAds = enabled
 	}
+	lines = append(lines, prefix+"Block ads: "+blockAds)
+
+	blockSurveillance := disabled
+	if d.BlockSurveillance {
+		blockSurveillance = enabled
+	}
+	lines = append(lines, prefix+"Block surveillance: "+blockSurveillance)
+
 	update := "deactivated"
 	if d.UpdatePeriod > 0 {
-		update = fmt.Sprintf("every %s", d.UpdatePeriod)
+		update = "every " + d.UpdatePeriod.String()
 	}
+	lines = append(lines, prefix+"Update: "+update)
+
 	keepNameserver := "no"
 	if d.KeepNameserver {
 		keepNameserver = "yes"
 	}
-	settingsList := []string{
-		"DNS settings:",
-		"Block malicious: " + blockMalicious,
-		"Block surveillance: " + blockSurveillance,
-		"Block ads: " + blockAds,
-		"Update: " + update,
-		"Keep nameserver (disabled blocking): " + keepNameserver,
-		"Unbound settings: " + "\n   |--" + strings.Join(d.Unbound.Lines(), "\n   |--"),
-	}
-	return strings.Join(settingsList, "\n |--")
+	lines = append(lines,
+		prefix+"Keep nameserver (disabled blocking): "+keepNameserver)
+
+	return lines
 }
 
 // GetDNSSettings obtains DNS over TLS settings from environment variables using the params package.
