@@ -35,23 +35,20 @@ func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 		_ = file.Close()
 		return err
 	}
+
 	s := strings.TrimSuffix(string(data), "\n")
-	lines := strings.Split(s, "\n")
-	if len(lines) == 1 && lines[0] == "" {
-		lines = nil
+
+	lines := []string{
+		"nameserver " + ip.String(),
 	}
-	found := false
-	if !keepNameserver { // default
-		for i := range lines {
-			if strings.HasPrefix(lines[i], "nameserver ") {
-				lines[i] = "nameserver " + ip.String()
-				found = true
-			}
+	for _, line := range strings.Split(s, "\n") {
+		if line == "" ||
+			(!keepNameserver && strings.HasPrefix(line, "nameserver ")) {
+			continue
 		}
+		lines = append(lines, line)
 	}
-	if !found {
-		lines = append(lines, "nameserver "+ip.String())
-	}
+
 	s = strings.Join(lines, "\n") + "\n"
 	_, err = file.WriteString(s)
 	if err != nil {
