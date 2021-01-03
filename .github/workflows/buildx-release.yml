@@ -32,5 +32,3 @@ jobs:
             -t qmcgaw/gluetun:${GITHUB_REF##*/} \
             --push \
             .
-      - run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I=
-        continue-on-error: true
