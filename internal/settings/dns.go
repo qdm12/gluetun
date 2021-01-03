@@ -153,5 +153,15 @@ func getUnboundSettings(reader params.Reader) (settings unboundmodels.Settings, 
 	if err != nil {
 		return settings, err
 	}
+	settings.AccessControl.Allowed = []net.IPNet{
+		{
+			IP:   net.IPv4zero,
+			Mask: net.IPv4Mask(0, 0, 0, 0),
+		},
+		{
+			IP:   net.IPv6zero,
+			Mask: net.IPMask{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		},
+	}
 	return settings, nil
 }
