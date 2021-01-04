@@ -85,8 +85,11 @@ func main() {
 	case signal := <-signalsCh:
 		logger.Warn("Caught OS signal %s, shutting down", signal)
 	case err := <-errorCh:
-		logger.Error(err)
 		close(errorCh)
+		if err == nil { // expected exit such as healthcheck
+			nativeos.Exit(0)
+		}
+		logger.Error(err)
 	}
 
 	cancel()
