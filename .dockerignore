@@ -1,7 +1,6 @@
 .devcontainer
 .git
 .github
-.vscode
 cmd
 !cmd/gluetun
 doc
