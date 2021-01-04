@@ -232,9 +232,8 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	tunnelReadyCh, dnsReadyCh := make(chan struct{}), make(chan struct{})
-	signalTunnelReady := func() { tunnelReadyCh <- struct{}{} }
-	signalDNSReady := func() { dnsReadyCh <- struct{}{} }
+	tunnelReadyCh := make(chan struct{})
+	dnsReadyCh := make(chan struct{})
 	defer close(tunnelReadyCh)
 	defer close(dnsReadyCh)
 
@@ -262,7 +261,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	wg := &sync.WaitGroup{}
 
 	wg.Add(1)
-	go collectStreamLines(ctx, wg, streamMerger, logger, signalTunnelReady)
+	go collectStreamLines(ctx, wg, streamMerger, logger, tunnelReadyCh)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, streamMerger, cancel)
@@ -280,7 +279,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 		logger, streamMerger, nonRootUsername, puid, pgid)
 	wg.Add(1)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
-	go unboundLooper.Run(ctx, wg, signalDNSReady)
+	go unboundLooper.Run(ctx, wg, dnsReadyCh)
 
 	publicIPLooper := publicip.NewLooper(
 		httpClient, logger, allSettings.PublicIP, puid, pgid, os)
@@ -349,7 +348,7 @@ func printVersions(ctx context.Context, logger logging.Logger,
 
 func collectStreamLines(ctx context.Context, wg *sync.WaitGroup,
 	streamMerger command.StreamMerger,
-	logger logging.Logger, signalTunnelReady func()) {
+	logger logging.Logger, tunnelReadyCh chan<- struct{}) {
 	defer wg.Done()
 	// Blocking line merging paramsReader for openvpn and unbound
 	logger.Info("Launching standard output merger")
@@ -370,10 +369,10 @@ func collectStreamLines(ctx context.Context, wg *sync.WaitGroup,
 		}
 		switch {
 		case strings.Contains(line, "Initialization Sequence Completed"):
-			signalTunnelReady()
-		case strings.Contains(line, "TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)"):
+			tunnelReadyCh <- struct{}{}
+		case strings.Contains(line, "TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)"): //nolint:lll
 			logger.Warn("This means that either...")
-			logger.Warn("1. The VPN server IP address you are trying to connect to is no longer valid, see https://github.com/qdm12/gluetun/wiki/Update-servers-information")
+			logger.Warn("1. The VPN server IP address you are trying to connect to is no longer valid, see https://github.com/qdm12/gluetun/wiki/Update-servers-information") //nolint:lll
 			logger.Warn("2. The VPN server crashed, try changing region")
 			logger.Warn("3. Your Internet connection is not working, ensure it works")
 			logger.Warn("Feel free to create an issue at https://github.com/qdm12/gluetun/issues/new/choose")

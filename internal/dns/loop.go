@@ -17,7 +17,7 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func())
+	Run(ctx context.Context, wg *sync.WaitGroup, dnsReadyCh chan<- struct{})
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
@@ -87,7 +87,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady func()) {
+func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, dnsReadyCh chan<- struct{}) {
 	defer wg.Done()
 
 	const fallback = false
@@ -131,7 +131,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, signalDNSReady fun
 			l.useUnencryptedDNS(fallback)
 		}
 
-		signalDNSReady()
+		dnsReadyCh <- struct{}{}
 
 		stayHere := true
 		for stayHere {
