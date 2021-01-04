@@ -13,7 +13,7 @@ import (
 var regularExpressions = struct { //nolint:gochecknoglobals
 	unboundPrefix *regexp.Regexp
 }{
-	unboundPrefix: regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:0\] `),
+	unboundPrefix: regexp.MustCompile(`unbound: \[[0-9]{10}\] unbound\[[0-9]+:[0|1]\] `),
 }
 
 func PostProcessLine(s string) (filtered string, level logging.Level) {
