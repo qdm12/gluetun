@@ -261,7 +261,8 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 
 	wg := &sync.WaitGroup{}
 
-	go collectStreamLines(ctx, streamMerger, logger, signalTunnelReady) // TODO waitgroup
+	wg.Add(1)
+	go collectStreamLines(ctx, wg, streamMerger, logger, signalTunnelReady)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, streamMerger, cancel)
@@ -346,9 +347,10 @@ func printVersions(ctx context.Context, logger logging.Logger,
 	}
 }
 
-//nolint:lll
-func collectStreamLines(ctx context.Context, streamMerger command.StreamMerger,
+func collectStreamLines(ctx context.Context, wg *sync.WaitGroup,
+	streamMerger command.StreamMerger,
 	logger logging.Logger, signalTunnelReady func()) {
+	defer wg.Done()
 	// Blocking line merging paramsReader for openvpn and unbound
 	logger.Info("Launching standard output merger")
 	streamMerger.CollectLines(ctx, func(line string) {
