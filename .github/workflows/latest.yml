@@ -41,7 +41,7 @@ jobs:
       - name: Docker buildx
         run: |
           docker buildx build \
-            --platform=linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7 \
+            --platform=linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/s390x,linux/ppc64le \
             --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
             --build-arg COMMIT=`git rev-parse --short HEAD` \
             --build-arg VERSION=latest \
