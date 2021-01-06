@@ -9,10 +9,7 @@ jobs:
   labeler:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Labeler
-        if: success()
-        uses: crazy-max/ghaction-github-labeler@v3.1.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - uses: crazy-max/ghaction-github-labeler@v3
+        with:
+          yaml-file: .github/labels.yml

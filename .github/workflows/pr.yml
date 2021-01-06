@@ -1,4 +1,4 @@
-name: pull request
+name: Pull request
 on:
   pull_request:
     branches: [master]
@@ -34,7 +34,17 @@ jobs:
     needs: [test, lint]
     steps:
       - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - name: Dockerhub login
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u qmcgaw --password-stdin 2>&1
       - name: Docker build
-        env:
-          DOCKER_BUILDKIT: "1"
-        run: docker build .
+        run: |
+          docker buildx build \
+            --platform=linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/s390x,linux/ppc64le \
+            --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+            --build-arg COMMIT=`git rev-parse --short HEAD` \
+            --build-arg VERSION="branch-${GITHUB_REF##*/}" \
+            -t qmcgaw/gluetun:branch-${GITHUB_REF##*/} \
+            --push \
+            .

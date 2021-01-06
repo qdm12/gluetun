@@ -1,0 +1,40 @@
+name: Pull request
+on:
+  pull_request_target:
+    branches: [master]
+    paths:
+      - .github/workflows/pr-fork.yml
+      - cmd/**
+      - internal/**
+      - .dockerignore
+      - .golangci.yml
+      - Dockerfile
+      - go.mod
+      - go.sum
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - env:
+          DOCKER_BUILDKIT: "1"
+        run: docker build --target test .
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - env:
+          DOCKER_BUILDKIT: "1"
+        run: docker build --target lint .
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker build
+        env:
+          DOCKER_BUILDKIT: "1"
+        run: docker build .

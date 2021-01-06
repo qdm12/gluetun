@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@v2.4.1
+        uses: peter-evans/dockerhub-description@v2
         with:
           username: qmcgaw
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
