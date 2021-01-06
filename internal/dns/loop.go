@@ -92,6 +92,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, dnsReadyCh chan<- 
 
 	const fallback = false
 	l.useUnencryptedDNS(fallback) // TODO remove? Use default DNS by default for Docker resolution?
+	// TODO this one is kept if DNS_KEEP_NAMESERVER=on and should be replaced
 
 	select {
 	case <-l.start:
