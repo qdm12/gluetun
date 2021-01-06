@@ -5,3 +5,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: "daily"
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: "daily"
