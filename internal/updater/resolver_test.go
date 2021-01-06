@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -53,11 +54,14 @@ func Test_resolveRepeat(t *testing.T) {
 			}
 			const host = "blabla"
 			i := 0
+			mutex := &sync.Mutex{}
 			lookupIP := func(ctx context.Context, argHost string) (
 				ips []net.IP, err error) {
 				assert.Equal(t, host, argHost)
+				mutex.Lock()
 				result := testCase.lookupIPResult[i]
 				i++
+				mutex.Unlock()
 				return result, testCase.err
 			}
 
