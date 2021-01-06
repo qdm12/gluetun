@@ -26,13 +26,16 @@ func (c *configurator) UseDNSInternally(ip net.IP) {
 func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	c.logger.Info("using DNS address %s system wide", ip.String())
 	const filepath = string(constants.ResolvConf)
-	file, err := c.openFile(filepath, os.O_RDWR|os.O_TRUNC, 0644)
+	file, err := c.openFile(filepath, os.O_RDONLY, 0)
 	if err != nil {
 		return err
 	}
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
 		_ = file.Close()
+		return err
+	}
+	if err := file.Close(); err != nil {
 		return err
 	}
 
@@ -50,6 +53,11 @@ func (c *configurator) UseDNSSystemWide(ip net.IP, keepNameserver bool) error {
 	}
 
 	s = strings.Join(lines, "\n") + "\n"
+
+	file, err = c.openFile(filepath, os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
 	_, err = file.WriteString(s)
 	if err != nil {
 		_ = file.Close()
