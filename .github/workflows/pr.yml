@@ -42,7 +42,7 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
-    if: "github.event_name == pull_request_target"
+    if: github.event_name == 'pull_request_target'
     needs: [test, lint]
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
 
   docker-buildx:
     runs-on: ubuntu-latest
-    if: "github.event_name == pull_request"
+    if: github.event_name == 'pull_request'
     needs: [test, lint]
     steps:
       - uses: actions/checkout@v2
