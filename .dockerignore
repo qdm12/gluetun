@@ -1,10 +1,9 @@
 .devcontainer
 .git
 .github
-cmd
-!cmd/gluetun
 doc
 docker-compose.yml
+Dockerfile
 LICENSE
 README.md
 title.svg
