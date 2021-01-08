@@ -49,5 +49,5 @@ jobs:
             -t qmcgaw/gluetun:latest \
             --push \
             .
-      - run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/private-internet-access/tQFy7AxtSUNANPe6aoVChYdsI_I=
+      - run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/gluetun/l-keGI7p4IhX4QuIDMFYKhsZ1L0=
         continue-on-error: true
