@@ -89,25 +89,9 @@ The following points are all optional but should give you insights on all the po
 - [HTTP control server](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server) to automate things, restart Openvpn etc.
 - Update the image with `docker pull qmcgaw/gluetun:latest`. See this [Wiki document](https://github.com/qdm12/gluetun/wiki/Docker-image-tags) for Docker tags available.
 
-## Development
-
-- 💻 [Contribute with code](https://github.com/qdm12/gluetun/wiki/Development) ([existing contributors 👍](https://github.com/qdm12/gluetun/blob/master/.github/CONTRIBUTING.md#Contributors))
-- [List of issues and feature requests](https://github.com/qdm12/gluetun/issues)
-- [Kanban board](https://github.com/qdm12/gluetun/projects/1)
-
 ## License
 
 [![MIT](https://img.shields.io/github/license/qdm12/gluetun)](https://github.com/qdm12/gluetun/master/LICENSE)
-
-## Support
-
-- Sponsor me on [Github](https://github.com/sponsors/qdm12) or donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw)
-
-  [![https://github.com/sponsors/qdm12](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/sponsors.jpg)](https://github.com/sponsors/qdm12)
-  [![https://www.paypal.me/qmcgaw](https://raw.githubusercontent.com/qdm12/gluetun/master/doc/paypal.jpg)](https://www.paypal.me/qmcgaw)
-
-- Contribute to the issues and discussions on Github
-- Many thanks to @Frepke, @Ralph521, G. Mendez, M. Otmar Weber, J. Perez, A. Cooper and **others** for supporting me financially 🥇👍
 
 ## Metadata
 
