@@ -7,5 +7,5 @@ import (
 // GetVyprvpnRegions obtains the regions for the Vyprvpn servers from the
 // environment variable REGION.
 func (r *reader) GetVyprvpnRegions() (regions []string, err error) {
-	return r.envParams.GetCSVInPossibilities("REGION", constants.VyprvpnRegionChoices())
+	return r.env.CSVInside("REGION", constants.VyprvpnRegionChoices())
 }

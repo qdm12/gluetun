@@ -10,7 +10,7 @@ import (
 // GetNordvpnRegions obtains the regions (countries) for the NordVPN server from the
 // environment variable REGION.
 func (r *reader) GetNordvpnRegions() (regions []string, err error) {
-	return r.envParams.GetCSVInPossibilities("REGION", constants.NordvpnRegionChoices())
+	return r.env.CSVInside("REGION", constants.NordvpnRegionChoices())
 }
 
 // GetNordvpnRegion obtains the server numbers (optional) for the NordVPN servers from the
@@ -21,7 +21,7 @@ func (r *reader) GetNordvpnNumbers() (numbers []uint16, err error) {
 		possibilities[i] = fmt.Sprintf("%d", i)
 	}
 	possibilities[65536] = ""
-	values, err := r.envParams.GetCSVInPossibilities("SERVER_NUMBER", possibilities)
+	values, err := r.env.CSVInside("SERVER_NUMBER", possibilities)
 	if err != nil {
 		return nil, err
 	}

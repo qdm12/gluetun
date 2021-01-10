@@ -8,7 +8,7 @@ import (
 // GetPrivadoHostnames obtains the hostnames for the Privado server from the
 // environment variable SERVER_HOSTNAME.
 func (r *reader) GetPrivadoHostnames() (hosts []string, err error) {
-	return r.envParams.GetCSVInPossibilities("SERVER_HOSTNAME",
+	return r.env.CSVInside("SERVER_HOSTNAME",
 		constants.PrivadoHostnameChoices(),
 		libparams.RetroKeys([]string{"HOSTNAME"}, r.onRetroActive))
 }

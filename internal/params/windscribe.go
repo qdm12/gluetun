@@ -11,19 +11,19 @@ import (
 // GetWindscribeRegions obtains the regions for the Windscribe servers from the
 // environment variable REGION.
 func (r *reader) GetWindscribeRegions() (regions []string, err error) {
-	return r.envParams.GetCSVInPossibilities("REGION", constants.WindscribeRegionChoices())
+	return r.env.CSVInside("REGION", constants.WindscribeRegionChoices())
 }
 
 // GetWindscribeCities obtains the cities for the Windscribe servers from the
 // environment variable CITY.
 func (r *reader) GetWindscribeCities() (cities []string, err error) {
-	return r.envParams.GetCSVInPossibilities("CITY", constants.WindscribeCityChoices())
+	return r.env.CSVInside("CITY", constants.WindscribeCityChoices())
 }
 
 // GetWindscribeHostnames obtains the hostnames for the Windscribe servers from the
 // environment variable SERVER_HOSTNAME.
 func (r *reader) GetWindscribeHostnames() (hostnames []string, err error) {
-	return r.envParams.GetCSVInPossibilities("SERVER_HOSTNAME",
+	return r.env.CSVInside("SERVER_HOSTNAME",
 		constants.WindscribeHostnameChoices(),
 		libparams.RetroKeys([]string{"HOSTNAME"}, r.onRetroActive),
 	)
@@ -33,7 +33,7 @@ func (r *reader) GetWindscribeHostnames() (hostnames []string, err error) {
 // environment variable PORT.
 //nolint:gomnd
 func (r *reader) GetWindscribePort(protocol models.NetworkProtocol) (port uint16, err error) {
-	n, err := r.envParams.GetEnvIntRange("PORT", 0, 65535, libparams.Default("0"))
+	n, err := r.env.IntRange("PORT", 0, 65535, libparams.Default("0"))
 	if err != nil {
 		return 0, err
 	}

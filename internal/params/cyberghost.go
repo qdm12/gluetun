@@ -11,23 +11,23 @@ import (
 
 // GetCyberghostGroup obtains the server group for the Cyberghost server from the
 // environment variable CYBERGHOST_GROUP.
-func (p *reader) GetCyberghostGroup() (group string, err error) {
-	s, err := p.envParams.GetValueIfInside("CYBERGHOST_GROUP",
+func (r *reader) GetCyberghostGroup() (group string, err error) {
+	s, err := r.env.Inside("CYBERGHOST_GROUP",
 		constants.CyberghostGroupChoices(), libparams.Default("Premium UDP Europe"))
 	return s, err
 }
 
 // GetCyberghostRegions obtains the country names for the Cyberghost servers from the
 // environment variable REGION.
-func (p *reader) GetCyberghostRegions() (regions []string, err error) {
-	return p.envParams.GetCSVInPossibilities("REGION", constants.CyberghostRegionChoices())
+func (r *reader) GetCyberghostRegions() (regions []string, err error) {
+	return r.env.CSVInside("REGION", constants.CyberghostRegionChoices())
 }
 
 // GetCyberghostClientKey obtains the client key to use for openvpn
 // from the secret file /run/secrets/openvpn_clientkey or from the file
 // /gluetun/client.key.
-func (p *reader) GetCyberghostClientKey() (clientKey string, err error) {
-	b, err := p.getFromFileOrSecretFile("OPENVPN_CLIENTKEY", string(constants.ClientKey))
+func (r *reader) GetCyberghostClientKey() (clientKey string, err error) {
+	b, err := r.getFromFileOrSecretFile("OPENVPN_CLIENTKEY", string(constants.ClientKey))
 	if err != nil {
 		return "", err
 	}
@@ -50,8 +50,8 @@ func extractClientKey(b []byte) (key string, err error) {
 // GetCyberghostClientCertificate obtains the client certificate to use for openvpn
 // from the secret file /run/secrets/openvpn_clientcrt or from the file
 // /gluetun/client.crt.
-func (p *reader) GetCyberghostClientCertificate() (clientCertificate string, err error) {
-	b, err := p.getFromFileOrSecretFile("OPENVPN_CLIENTCRT", string(constants.ClientCertificate))
+func (r *reader) GetCyberghostClientCertificate() (clientCertificate string, err error) {
+	b, err := r.getFromFileOrSecretFile("OPENVPN_CLIENTCRT", string(constants.ClientCertificate))
 	if err != nil {
 		return "", err
 	}

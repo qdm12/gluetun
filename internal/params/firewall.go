@@ -10,13 +10,13 @@ import (
 
 // GetFirewall obtains if the firewall should be enabled from the environment variable FIREWALL.
 func (r *reader) GetFirewall() (enabled bool, err error) {
-	return r.envParams.GetOnOff("FIREWALL", libparams.Default("on"))
+	return r.env.OnOff("FIREWALL", libparams.Default("on"))
 }
 
 // GetAllowedVPNInputPorts obtains a list of input ports to allow from the
 // VPN server side in the firewall, from the environment variable FIREWALL_VPN_INPUT_PORTS.
 func (r *reader) GetVPNInputPorts() (ports []uint16, err error) {
-	s, err := r.envParams.GetEnv("FIREWALL_VPN_INPUT_PORTS", libparams.Default(""))
+	s, err := r.env.Get("FIREWALL_VPN_INPUT_PORTS", libparams.Default(""))
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (r *reader) GetVPNInputPorts() (ports []uint16, err error) {
 // GetInputPorts obtains a list of input ports to allow through the
 // default interface in the firewall, from the environment variable FIREWALL_INPUT_PORTS.
 func (r *reader) GetInputPorts() (ports []uint16, err error) {
-	s, err := r.envParams.GetEnv("FIREWALL_INPUT_PORTS", libparams.Default(""))
+	s, err := r.env.Get("FIREWALL_INPUT_PORTS", libparams.Default(""))
 	if err != nil {
 		return nil, err
 	}
@@ -64,5 +64,5 @@ func (r *reader) GetInputPorts() (ports []uint16, err error) {
 // GetFirewallDebug obtains if the firewall should run in debug verbose mode
 // from the environment variable FIREWALL_DEBUG.
 func (r *reader) GetFirewallDebug() (debug bool, err error) {
-	return r.envParams.GetOnOff("FIREWALL_DEBUG", libparams.Default("off"))
+	return r.env.OnOff("FIREWALL_DEBUG", libparams.Default("off"))
 }

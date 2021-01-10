@@ -10,7 +10,7 @@ import (
 // GetPublicIPPeriod obtains the period to fetch the IP address periodically.
 // Set to 0 to disable.
 func (r *reader) GetPublicIPPeriod() (period time.Duration, err error) {
-	s, err := r.envParams.GetEnv("PUBLICIP_PERIOD", libparams.Default("12h"))
+	s, err := r.env.Get("PUBLICIP_PERIOD", libparams.Default("12h"))
 	if err != nil {
 		return 0, err
 	}
@@ -21,7 +21,7 @@ func (r *reader) GetPublicIPPeriod() (period time.Duration, err error) {
 // from the environment variable PUBLICIP_FILE with retro-compatible
 // environment variable IP_STATUS_FILE.
 func (r *reader) GetPublicIPFilepath() (filepath models.Filepath, err error) {
-	filepathStr, err := r.envParams.GetPath("PUBLICIP_FILE",
+	filepathStr, err := r.env.Path("PUBLICIP_FILE",
 		libparams.RetroKeys([]string{"IP_STATUS_FILE"}, r.onRetroActive),
 		libparams.Default("/tmp/gluetun/ip"), libparams.CaseSensitiveValue())
 	return models.Filepath(filepathStr), err

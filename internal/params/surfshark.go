@@ -7,5 +7,5 @@ import (
 // GetSurfsharkRegions obtains the regions for the Surfshark servers from the
 // environment variable REGION.
 func (r *reader) GetSurfsharkRegions() (regions []string, err error) {
-	return r.envParams.GetCSVInPossibilities("REGION", constants.SurfsharkRegionChoices())
+	return r.env.CSVInside("REGION", constants.SurfsharkRegionChoices())
 }

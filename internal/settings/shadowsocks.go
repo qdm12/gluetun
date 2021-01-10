@@ -35,26 +35,26 @@ func (s *ShadowSocks) String() string {
 }
 
 // GetShadowSocksSettings obtains ShadowSocks settings from environment variables using the params package.
-func GetShadowSocksSettings(paramsReader params.Reader) (settings ShadowSocks, err error) {
+func GetShadowSocksSettings(paramsReader params.Reader) (settings ShadowSocks, warning string, err error) {
 	settings.Enabled, err = paramsReader.GetShadowSocks()
 	if err != nil || !settings.Enabled {
-		return settings, err
-	}
-	settings.Port, err = paramsReader.GetShadowSocksPort()
-	if err != nil {
-		return settings, err
+		return settings, "", err
 	}
 	settings.Password, err = paramsReader.GetShadowSocksPassword()
 	if err != nil {
-		return settings, err
+		return settings, "", err
 	}
 	settings.Log, err = paramsReader.GetShadowSocksLog()
 	if err != nil {
-		return settings, err
+		return settings, "", err
 	}
 	settings.Method, err = paramsReader.GetShadowSocksMethod()
 	if err != nil {
-		return settings, err
+		return settings, "", err
 	}
-	return settings, nil
+	settings.Port, warning, err = paramsReader.GetShadowSocksPort()
+	if err != nil {
+		return settings, warning, err
+	}
+	return settings, warning, nil
 }

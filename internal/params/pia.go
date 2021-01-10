@@ -12,7 +12,7 @@ import (
 // side is enabled or not from the environment variable PORT_FORWARDING
 // Only valid for older PIA servers for now.
 func (r *reader) GetPortForwarding() (activated bool, err error) {
-	s, err := r.envParams.GetEnv("PORT_FORWARDING", libparams.Default("off"))
+	s, err := r.env.Get("PORT_FORWARDING", libparams.Default("off"))
 	if err != nil {
 		return false, err
 	}
@@ -28,7 +28,7 @@ func (r *reader) GetPortForwarding() (activated bool, err error) {
 // GetPortForwardingStatusFilepath obtains the port forwarding status file path
 // from the environment variable PORT_FORWARDING_STATUS_FILE.
 func (r *reader) GetPortForwardingStatusFilepath() (filepath models.Filepath, err error) {
-	filepathStr, err := r.envParams.GetPath(
+	filepathStr, err := r.env.Path(
 		"PORT_FORWARDING_STATUS_FILE",
 		libparams.Default("/tmp/gluetun/forwarded_port"),
 		libparams.CaseSensitiveValue())
@@ -40,7 +40,7 @@ func (r *reader) GetPortForwardingStatusFilepath() (filepath models.Filepath, er
 // retro compatibility.
 func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 	// Retro-compatibility
-	s, err := r.envParams.GetValueIfInside("ENCRYPTION", []string{
+	s, err := r.env.Inside("ENCRYPTION", []string{
 		constants.PIAEncryptionPresetNormal,
 		constants.PIAEncryptionPresetStrong})
 	if err != nil {
@@ -49,7 +49,7 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 		r.logger.Warn("You are using the old environment variable ENCRYPTION, please consider changing it to PIA_ENCRYPTION")
 		return s, nil
 	}
-	return r.envParams.GetValueIfInside(
+	return r.env.Inside(
 		"PIA_ENCRYPTION",
 		[]string{
 			constants.PIAEncryptionPresetNormal,
@@ -61,5 +61,5 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 // GetPIARegions obtains the regions for the PIA servers from the
 // environment variable REGION.
 func (r *reader) GetPIARegions() (regions []string, err error) {
-	return r.envParams.GetCSVInPossibilities("REGION", constants.PIAGeoChoices())
+	return r.env.CSVInside("REGION", constants.PIAGeoChoices())
 }

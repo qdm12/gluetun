@@ -20,7 +20,7 @@ func (c *cli) OpenvpnConfig(os os.OS) error {
 		return err
 	}
 	paramsReader := params.NewReader(logger, os)
-	allSettings, err := settings.GetAllSettings(paramsReader)
+	allSettings, _, err := settings.GetAllSettings(paramsReader)
 	if err != nil {
 		return err
 	}

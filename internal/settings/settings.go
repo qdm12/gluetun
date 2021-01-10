@@ -50,50 +50,64 @@ func (s *Settings) String() string {
 
 // GetAllSettings obtains all settings for the program and returns an error as soon
 // as an error is encountered reading them.
-func GetAllSettings(paramsReader params.Reader) (settings Settings, err error) {
+func GetAllSettings(paramsReader params.Reader) (settings Settings, warnings []string, err error) {
 	settings.VPNSP, err = paramsReader.GetVPNSP()
 	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
 	settings.OpenVPN, err = GetOpenVPNSettings(paramsReader, settings.VPNSP)
 	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
 	settings.DNS, err = GetDNSSettings(paramsReader)
 	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
 	settings.Firewall, err = GetFirewallSettings(paramsReader)
 	if err != nil {
-		return settings, err
-	}
-	settings.HTTPProxy, err = GetHTTPProxySettings(paramsReader)
-	if err != nil {
-		return settings, err
-	}
-	settings.ShadowSocks, err = GetShadowSocksSettings(paramsReader)
-	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
 	settings.System, err = GetSystemSettings(paramsReader)
 	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
 	settings.PublicIP, err = getPublicIPSettings(paramsReader)
 	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
 	settings.VersionInformation, err = paramsReader.GetVersionInformation()
 	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
 	settings.Updater, err = GetUpdaterSettings(paramsReader)
 	if err != nil {
-		return settings, err
+		return settings, nil, err
 	}
-	settings.ControlServer, err = GetControlServerSettings(paramsReader)
+
+	var warning string
+	settings.HTTPProxy, warning, err = GetHTTPProxySettings(paramsReader)
+	if warning != "" {
+		warnings = append(warnings, warning)
+	}
 	if err != nil {
-		return settings, err
+		return settings, warnings, err
 	}
-	return settings, nil
+
+	settings.ShadowSocks, warning, err = GetShadowSocksSettings(paramsReader)
+	if warning != "" {
+		warnings = append(warnings, warning)
+	}
+	if err != nil {
+		return settings, warnings, err
+	}
+
+	settings.ControlServer, warning, err = GetControlServerSettings(paramsReader)
+	if warning != "" {
+		warnings = append(warnings, warning)
+	}
+	if err != nil {
+		return settings, warnings, err
+	}
+
+	return settings, warnings, nil
 }

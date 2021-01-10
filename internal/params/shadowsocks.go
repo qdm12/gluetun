@@ -1,35 +1,25 @@
 package params
 
 import (
-	"strconv"
-
 	libparams "github.com/qdm12/golibs/params"
 )
 
 // GetShadowSocks obtains if ShadowSocks is on from the environment variable
 // SHADOWSOCKS.
 func (r *reader) GetShadowSocks() (activated bool, err error) {
-	return r.envParams.GetOnOff("SHADOWSOCKS", libparams.Default("off"))
+	return r.env.OnOff("SHADOWSOCKS", libparams.Default("off"))
 }
 
 // GetShadowSocksLog obtains the ShadowSocks log level from the environment variable
 // SHADOWSOCKS_LOG.
 func (r *reader) GetShadowSocksLog() (activated bool, err error) {
-	return r.envParams.GetOnOff("SHADOWSOCKS_LOG", libparams.Default("off"))
+	return r.env.OnOff("SHADOWSOCKS_LOG", libparams.Default("off"))
 }
 
 // GetShadowSocksPort obtains the ShadowSocks listening port from the environment variable
 // SHADOWSOCKS_PORT.
-func (r *reader) GetShadowSocksPort() (port uint16, err error) {
-	portStr, err := r.envParams.GetEnv("SHADOWSOCKS_PORT", libparams.Default("8388"))
-	if err != nil {
-		return 0, err
-	}
-	if err := r.verifier.VerifyPort(portStr); err != nil {
-		return 0, err
-	}
-	portUint64, err := strconv.ParseUint(portStr, 10, 16)
-	return uint16(portUint64), err
+func (r *reader) GetShadowSocksPort() (port uint16, warning string, err error) {
+	return r.env.ListeningPort("SHADOWSOCKS_PORT", libparams.Default("8388"))
 }
 
 // GetShadowSocksPassword obtains the ShadowSocks server password.
@@ -43,5 +33,5 @@ func (r *reader) GetShadowSocksPassword() (password string, err error) {
 // GetShadowSocksMethod obtains the ShadowSocks method to use from the environment variable
 // SHADOWSOCKS_METHOD.
 func (r *reader) GetShadowSocksMethod() (method string, err error) {
-	return r.envParams.GetEnv("SHADOWSOCKS_METHOD", libparams.Default("chacha20-ietf-poly1305"))
+	return r.env.Get("SHADOWSOCKS_METHOD", libparams.Default("chacha20-ietf-poly1305"))
 }

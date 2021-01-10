@@ -13,18 +13,18 @@ func (r *reader) GetHTTPProxy() (enabled bool, err error) {
 		[]string{"TINYPROXY", "PROXY"},
 		r.onRetroActive,
 	)
-	return r.envParams.GetOnOff("HTTPPROXY", retroKeysOption, libparams.Default("off"))
+	return r.env.OnOff("HTTPPROXY", retroKeysOption, libparams.Default("off"))
 }
 
 // GetHTTPProxyLog obtains the if http proxy requests should be logged from
 // the environment variable HTTPPROXY_LOG, and using PROXY_LOG_LEVEL and
 // TINYPROXY_LOG as retro-compatibility names.
 func (r *reader) GetHTTPProxyLog() (log bool, err error) {
-	s, _ := r.envParams.GetEnv("HTTPPROXY_LOG")
+	s, _ := r.env.Get("HTTPPROXY_LOG")
 	if len(s) == 0 {
-		s, _ = r.envParams.GetEnv("PROXY_LOG_LEVEL")
+		s, _ = r.env.Get("PROXY_LOG_LEVEL")
 		if len(s) == 0 {
-			s, _ = r.envParams.GetEnv("TINYPROXY_LOG")
+			s, _ = r.env.Get("TINYPROXY_LOG")
 			if len(s) == 0 {
 				return false, nil // default log disabled
 			}
@@ -36,17 +36,17 @@ func (r *reader) GetHTTPProxyLog() (log bool, err error) {
 			return false, nil
 		}
 	}
-	return r.envParams.GetOnOff("HTTPPROXY_LOG", libparams.Default("off"))
+	return r.env.OnOff("HTTPPROXY_LOG", libparams.Default("off"))
 }
 
 // GetHTTPProxyPort obtains the HTTP proxy listening port from the environment variable
 // HTTPPROXY_PORT, and using PROXY_PORT and TINYPROXY_PORT as retro-compatibility names.
-func (r *reader) GetHTTPProxyPort() (port uint16, err error) {
+func (r *reader) GetHTTPProxyPort() (port uint16, warning string, err error) {
 	retroKeysOption := libparams.RetroKeys(
 		[]string{"TINYPROXY_PORT", "PROXY_PORT"},
 		r.onRetroActive,
 	)
-	return r.envParams.GetPort("HTTPPROXY_PORT", retroKeysOption, libparams.Default("8888"))
+	return r.env.ListeningPort("HTTPPROXY_PORT", retroKeysOption, libparams.Default("8888"))
 }
 
 // GetHTTPProxyUser obtains the HTTP proxy server user.
@@ -76,5 +76,5 @@ func (r *reader) GetHTTPProxyPassword() (password string, err error) {
 // GetHTTPProxyStealth obtains the HTTP proxy server stealth mode
 // from the environment variable HTTPPROXY_STEALTH.
 func (r *reader) GetHTTPProxyStealth() (stealth bool, err error) {
-	return r.envParams.GetOnOff("HTTPPROXY_STEALTH", libparams.Default("off"))
+	return r.env.OnOff("HTTPPROXY_STEALTH", libparams.Default("off"))
 }

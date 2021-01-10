@@ -19,19 +19,19 @@ var (
 )
 
 func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKeys []string) (value string, err error) {
-	envOptions := []libparams.GetEnvSetter{
+	envOptions := []libparams.OptionSetter{
 		libparams.Compulsory(), // to fallback on file reading
 		libparams.CaseSensitiveValue(),
 		libparams.Unset(),
 		libparams.RetroKeys(retroKeys, r.onRetroActive),
 	}
-	value, envErr := r.envParams.GetEnv(envKey, envOptions...)
+	value, envErr := r.env.Get(envKey, envOptions...)
 	if envErr == nil {
 		return value, nil
 	}
 
 	defaultSecretFile := "/run/secrets/" + strings.ToLower(envKey)
-	filepath, err := r.envParams.GetEnv(envKey+"_SECRETFILE",
+	filepath, err := r.env.Get(envKey+"_SECRETFILE",
 		libparams.CaseSensitiveValue(),
 		libparams.Default(defaultSecretFile),
 	)
@@ -67,7 +67,7 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 func (r *reader) getFromFileOrSecretFile(secretName, filepath string) (
 	b []byte, err error) {
 	defaultSecretFile := "/run/secrets/" + strings.ToLower(secretName)
-	secretFilepath, err := r.envParams.GetEnv(strings.ToUpper(secretName)+"_SECRETFILE",
+	secretFilepath, err := r.env.Get(strings.ToUpper(secretName)+"_SECRETFILE",
 		libparams.CaseSensitiveValue(),
 		libparams.Default(defaultSecretFile),
 	)

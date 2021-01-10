@@ -16,7 +16,7 @@ func (r *reader) GetOutboundSubnets() (outboundSubnets []net.IPNet, err error) {
 		[]string{"EXTRA_SUBNETS"},
 		r.onRetroActive,
 	)
-	s, err := r.envParams.GetEnv(key, retroOption)
+	s, err := r.env.Get(key, retroOption)
 	if err != nil {
 		return nil, err
 	} else if s == "" {

@@ -152,7 +152,10 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 		"IPtables": firewallConf.Version,
 	})
 
-	allSettings, err := settings.GetAllSettings(paramsReader)
+	allSettings, warnings, err := settings.GetAllSettings(paramsReader)
+	for _, warning := range warnings {
+		logger.Warn(warning)
+	}
 	if err != nil {
 		return err
 	}

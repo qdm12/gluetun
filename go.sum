@@ -97,6 +97,8 @@ github.com/qdm12/dns v1.4.0-rc4/go.mod h1:JhUKBhuDRYBUQ2XwW/jbeWx/qS0sSJjIFjGTCF
 github.com/qdm12/golibs v0.0.0-20201227203847-2fd99ffdfdba/go.mod h1:pikkTN7g7zRuuAnERwqW1yAFq6pYmxrxpjiwGvb0Ysc=
 github.com/qdm12/golibs v0.0.0-20210102020307-17bc97def973 h1:5YeJALmDjvg2wSi6XB8MpQQekbT/eBnwGahJrh01HHQ=
 github.com/qdm12/golibs v0.0.0-20210102020307-17bc97def973/go.mod h1:pikkTN7g7zRuuAnERwqW1yAFq6pYmxrxpjiwGvb0Ysc=
+github.com/qdm12/golibs v0.0.0-20210110211000-0a3a4541ae09 h1:zP+ZRwV3GldgTWFgKNBQ2zoFA8mIczb+fvTvrX8LZRo=
+github.com/qdm12/golibs v0.0.0-20210110211000-0a3a4541ae09/go.mod h1:pikkTN7g7zRuuAnERwqW1yAFq6pYmxrxpjiwGvb0Ysc=
 github.com/qdm12/ss-server v0.1.0 h1:WV9MkHCDEWRwe4WpnYFeR/zcZAxYoTbfntLDnw9AQ50=
 github.com/qdm12/ss-server v0.1.0/go.mod h1:ABVUkxubboL3vqBkOwDV9glX1/x7SnYrckBe5d+M/zw=
 github.com/qdm12/updated v0.0.0-20210102005021-dd457d77f94a h1:gkyP+gMEeBgMgyRYGrVNcoy6cL1065IvXsyfB6xboIc=

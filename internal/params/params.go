@@ -102,14 +102,14 @@ type Reader interface {
 	// Shadowsocks getters
 	GetShadowSocks() (activated bool, err error)
 	GetShadowSocksLog() (activated bool, err error)
-	GetShadowSocksPort() (port uint16, err error)
+	GetShadowSocksPort() (port uint16, warning string, err error)
 	GetShadowSocksPassword() (password string, err error)
 	GetShadowSocksMethod() (method string, err error)
 
 	// HTTP proxy getters
 	GetHTTPProxy() (activated bool, err error)
 	GetHTTPProxyLog() (log bool, err error)
-	GetHTTPProxyPort() (port uint16, err error)
+	GetHTTPProxyPort() (port uint16, warning string, err error)
 	GetHTTPProxyUser() (user string, err error)
 	GetHTTPProxyPassword() (password string, err error)
 	GetHTTPProxyStealth() (stealth bool, err error)
@@ -118,7 +118,7 @@ type Reader interface {
 	GetPublicIPPeriod() (period time.Duration, err error)
 
 	// Control server
-	GetControlServerPort() (port uint16, err error)
+	GetControlServerPort() (port uint16, warning string, err error)
 	GetControlServerLog() (enabled bool, err error)
 
 	GetVersionInformation() (enabled bool, err error)
@@ -127,26 +127,26 @@ type Reader interface {
 }
 
 type reader struct {
-	envParams libparams.EnvParams
-	logger    logging.Logger
-	verifier  verification.Verifier
-	os        os.OS
+	env    libparams.Env
+	logger logging.Logger
+	regex  verification.Regex
+	os     os.OS
 }
 
 // Newreader returns a paramsReadeer object to read parameters from
 // environment variables.
 func NewReader(logger logging.Logger, os os.OS) Reader {
 	return &reader{
-		envParams: libparams.NewEnvParams(),
-		logger:    logger,
-		verifier:  verification.NewVerifier(),
-		os:        os,
+		env:    libparams.NewEnv(),
+		logger: logger,
+		regex:  verification.NewRegex(),
+		os:     os,
 	}
 }
 
 // GetVPNSP obtains the VPN service provider to use from the environment variable VPNSP.
 func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
-	s, err := r.envParams.GetValueIfInside(
+	s, err := r.env.Inside(
 		"VPNSP",
 		[]string{
 			"pia", "private internet access",
@@ -160,7 +160,7 @@ func (r *reader) GetVPNSP() (vpnServiceProvider models.VPNProvider, err error) {
 }
 
 func (r *reader) GetVersionInformation() (enabled bool, err error) {
-	return r.envParams.GetOnOff("VERSION_INFORMATION", libparams.Default("on"))
+	return r.env.OnOff("VERSION_INFORMATION", libparams.Default("on"))
 }
 
 func (r *reader) onRetroActive(oldKey, newKey string) {

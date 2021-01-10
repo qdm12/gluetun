@@ -24,14 +24,14 @@ func (c *ControlServer) String() string {
 
 // GetControlServerSettings obtains the HTTP control server settings from
 // environment variables using the params package.
-func GetControlServerSettings(paramsReader params.Reader) (settings ControlServer, err error) {
-	settings.Port, err = paramsReader.GetControlServerPort()
-	if err != nil {
-		return settings, err
-	}
+func GetControlServerSettings(paramsReader params.Reader) (settings ControlServer, warning string, err error) {
 	settings.Log, err = paramsReader.GetControlServerLog()
 	if err != nil {
-		return settings, err
+		return settings, "", err
 	}
-	return settings, nil
+	settings.Port, warning, err = paramsReader.GetControlServerPort()
+	if err != nil {
+		return settings, warning, err
+	}
+	return settings, warning, nil
 }
