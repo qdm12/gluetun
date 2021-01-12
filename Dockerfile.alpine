@@ -28,7 +28,7 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
 	LIBTORRENT_URL=$(curl -sSL https://api.github.com/repos/arvidn/libtorrent/tags | grep tarball_url | head -n 1 | cut -d '"' -f 4) && \
 	mkdir /tmp/libtorrent && \
-  curl -sSL https://api.github.com/repos/arvidn/libtorrent/tarball/libtorrent_1_2_11 | tar xzC /tmp/libtorrent && \
+  curl -sSL https://github.com/arvidn/libtorrent/archive/v1.2.12.tar.gz | tar xzC /tmp/libtorrent && \
 	cd /tmp/libtorrent/*lib* && \
 	mkdir -p cmake-build-dir/release && \
 	cd cmake-build-dir/release && \
