@@ -99,6 +99,9 @@ func (p *purevpn) BuildConf(connection models.OpenVPNConnection,
 		"route 0.0.0.0 0.0.0.0",
 		"script-security 2",
 
+		"ping 10",
+		"ping-exit 60",
+
 		// Added constant values
 		"auth-nocache",
 		"mute-replay-warnings",
