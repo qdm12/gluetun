@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -116,6 +117,9 @@ func (m *mullvad) BuildConf(connection models.OpenVPNConnection,
 	}
 	if !settings.Root {
 		lines = append(lines, "user "+username)
+	}
+	if settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 	lines = append(lines, []string{
 		"<ca>",

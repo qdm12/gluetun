@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -163,6 +164,9 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection,
 	}
 	if !settings.Root {
 		lines = append(lines, "user "+username)
+	}
+	if settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 	lines = append(lines, []string{
 		"<crl-verify>",

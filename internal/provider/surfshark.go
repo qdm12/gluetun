@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -82,6 +83,12 @@ func (s *surfshark) BuildConf(connection models.OpenVPNConnection,
 	if len(settings.Auth) == 0 {
 		settings.Auth = "SHA512"
 	}
+
+	const defaultMSSFix = 1450
+	if settings.MSSFix == 0 {
+		settings.MSSFix = defaultMSSFix
+	}
+
 	lines = []string{
 		"client",
 		"dev tun",
@@ -92,7 +99,7 @@ func (s *surfshark) BuildConf(connection models.OpenVPNConnection,
 		// Surfshark specific
 		"tun-mtu 1500",
 		"tun-mtu-extra 32",
-		"mssfix 1450",
+		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"ping 15",
 		"ping-restart 60",
 		"ping-timer-rem",

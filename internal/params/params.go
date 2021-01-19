@@ -55,6 +55,7 @@ type Reader interface {
 	GetOpenVPNCipher() (cipher string, err error)
 	GetOpenVPNAuth() (auth string, err error)
 	GetOpenVPNIPv6() (tunnel bool, err error)
+	GetOpenVPNMSSFix() (mssFix uint16, err error)
 
 	// PIA getters
 	GetPortForwarding() (activated bool, err error)

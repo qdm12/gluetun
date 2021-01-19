@@ -76,3 +76,11 @@ func (r *reader) GetOpenVPNAuth() (auth string, err error) {
 func (r *reader) GetOpenVPNIPv6() (ipv6 bool, err error) {
 	return r.env.OnOff("OPENVPN_IPV6", libparams.Default("off"))
 }
+
+func (r *reader) GetOpenVPNMSSFix() (mssFix uint16, err error) {
+	n, err := r.env.IntRange("OPENVPN_MSSFIX", 0, 10000, libparams.Default("0"))
+	if err != nil {
+		return 0, err
+	}
+	return uint16(n), nil
+}

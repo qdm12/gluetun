@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -113,6 +114,9 @@ func (w *windscribe) BuildConf(connection models.OpenVPNConnection,
 	}
 	if !settings.Root {
 		lines = append(lines, "user "+username)
+	}
+	if settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 	lines = append(lines, []string{
 		"<ca>",

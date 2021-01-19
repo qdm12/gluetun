@@ -14,6 +14,7 @@ type OpenVPN struct {
 	User      string                  `json:"user"`
 	Password  string                  `json:"password"`
 	Verbosity int                     `json:"verbosity"`
+	MSSFix    uint16                  `json:"mssfix"`
 	Root      bool                    `json:"run_as_root"`
 	Cipher    string                  `json:"cipher"`
 	Auth      string                  `json:"auth"`
@@ -49,6 +50,10 @@ func GetOpenVPNSettings(paramsReader params.Reader, vpnProvider models.VPNProvid
 		return settings, err
 	}
 	settings.Auth, err = paramsReader.GetOpenVPNAuth()
+	if err != nil {
+		return settings, err
+	}
+	settings.MSSFix, err = paramsReader.GetOpenVPNMSSFix()
 	if err != nil {
 		return settings, err
 	}

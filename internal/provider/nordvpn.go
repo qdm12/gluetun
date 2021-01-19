@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -87,6 +88,11 @@ func (n *nordvpn) BuildConf(connection models.OpenVPNConnection,
 	if len(settings.Auth) == 0 {
 		settings.Auth = "sha512"
 	}
+
+	const defaultMSSFix = 1450
+	if settings.MSSFix == 0 {
+		settings.MSSFix = defaultMSSFix
+	}
 	lines = []string{
 		"client",
 		"dev tun",
@@ -97,7 +103,7 @@ func (n *nordvpn) BuildConf(connection models.OpenVPNConnection,
 		// Nordvpn specific
 		"tun-mtu 1500",
 		"tun-mtu-extra 32",
-		"mssfix 1450",
+		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"ping 15",
 		"ping-restart 0",
 		"ping-timer-rem",
