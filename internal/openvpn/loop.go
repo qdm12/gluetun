@@ -119,15 +119,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			l.cancel()
 			return
 		}
-		lines := providerConf.BuildConf(
-			connection,
-			settings.Verbosity,
-			l.username,
-			settings.Root,
-			settings.Cipher,
-			settings.Auth,
-			settings.Provider.ExtraConfigOptions,
-		)
+		lines := providerConf.BuildConf(connection, l.username, settings)
 
 		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
 			l.logger.Error(err)

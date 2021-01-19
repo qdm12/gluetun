@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -72,10 +73,10 @@ func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (
 	return pickRandomConnection(connections, p.randSource), nil
 }
 
-func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity int, username string, root bool,
-	cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
-	if len(cipher) == 0 {
-		cipher = aes256cbc
+func (p *purevpn) BuildConf(connection models.OpenVPNConnection,
+	username string, settings settings.OpenVPN) (lines []string) {
+	if len(settings.Cipher) == 0 {
+		settings.Cipher = aes256cbc
 	}
 	lines = []string{
 		"client",
@@ -101,13 +102,13 @@ func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity int, 
 		"suppress-timestamps",
 
 		// Modified variables
-		fmt.Sprintf("verb %d", verbosity),
+		fmt.Sprintf("verb %d", settings.Verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", connection.Protocol),
 		fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port),
-		fmt.Sprintf("cipher %s", cipher),
+		fmt.Sprintf("cipher %s", settings.Cipher),
 	}
-	if !root {
+	if !settings.Root {
 		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
@@ -140,8 +141,8 @@ func (p *purevpn) BuildConf(connection models.OpenVPNConnection, verbosity int, 
 		"</tls-auth>",
 		"",
 	}...)
-	if len(auth) > 0 {
-		lines = append(lines, "auth "+auth)
+	if len(settings.Auth) > 0 {
+		lines = append(lines, "auth "+settings.Auth)
 	}
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "explicit-exit-notify")

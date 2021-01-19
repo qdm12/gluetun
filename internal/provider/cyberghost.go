@@ -11,6 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -62,13 +63,13 @@ func (c *cyberghost) GetOpenVPNConnection(selection models.ServerSelection) (
 	return pickRandomConnection(connections, c.randSource), nil
 }
 
-func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity int,
-	username string, root bool, cipher, auth string, extras models.ExtraConfigOptions) (lines []string) {
-	if len(cipher) == 0 {
-		cipher = aes256cbc
+func (c *cyberghost) BuildConf(connection models.OpenVPNConnection,
+	username string, settings settings.OpenVPN) (lines []string) {
+	if len(settings.Cipher) == 0 {
+		settings.Cipher = aes256cbc
 	}
-	if len(auth) == 0 {
-		auth = sha256
+	if len(settings.Auth) == 0 {
+		settings.Auth = sha256
 	}
 	lines = []string{
 		"client",
@@ -94,17 +95,17 @@ func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity in
 		"suppress-timestamps",
 
 		// Modified variables
-		fmt.Sprintf("verb %d", verbosity),
+		fmt.Sprintf("verb %d", settings.Verbosity),
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", connection.Protocol),
 		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
-		fmt.Sprintf("cipher %s", cipher),
-		fmt.Sprintf("auth %s", auth),
+		fmt.Sprintf("cipher %s", settings.Cipher),
+		fmt.Sprintf("auth %s", settings.Auth),
 	}
-	if strings.HasSuffix(cipher, "-gcm") {
+	if strings.HasSuffix(settings.Cipher, "-gcm") {
 		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")
 	}
-	if !root {
+	if !settings.Root {
 		lines = append(lines, "user "+username)
 	}
 	lines = append(lines, []string{
@@ -117,14 +118,14 @@ func (c *cyberghost) BuildConf(connection models.OpenVPNConnection, verbosity in
 	lines = append(lines, []string{
 		"<cert>",
 		"-----BEGIN CERTIFICATE-----",
-		extras.ClientCertificate,
+		settings.Provider.ExtraConfigOptions.ClientCertificate,
 		"-----END CERTIFICATE-----",
 		"</cert>",
 	}...)
 	lines = append(lines, []string{
 		"<key>",
 		"-----BEGIN PRIVATE KEY-----",
-		extras.ClientKey,
+		settings.Provider.ExtraConfigOptions.ClientKey,
 		"-----END PRIVATE KEY-----",
 		"</key>",
 		"",

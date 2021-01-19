@@ -34,15 +34,7 @@ func (c *cli) OpenvpnConfig(os os.OS) error {
 	if err != nil {
 		return err
 	}
-	lines := providerConf.BuildConf(
-		connection,
-		allSettings.OpenVPN.Verbosity,
-		"nonroortuser",
-		allSettings.OpenVPN.Root,
-		allSettings.OpenVPN.Cipher,
-		allSettings.OpenVPN.Auth,
-		allSettings.OpenVPN.Provider.ExtraConfigOptions,
-	)
+	lines := providerConf.BuildConf(connection, "nonroortuser", allSettings.OpenVPN)
 	fmt.Println(strings.Join(lines, "\n"))
 	return nil
 }
