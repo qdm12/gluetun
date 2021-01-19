@@ -411,7 +411,8 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.
 			restartTickerCancel() // stop previous restart tickers
 			tickerWg.Wait()
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
-			tickerWg.Add(2) //nolint:gomnd
+			//nolint:gomnd
+			tickerWg.Add(2)
 			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			vpnDestination, err := routing.VPNDestinationIP()
