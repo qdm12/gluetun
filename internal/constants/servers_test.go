@@ -128,7 +128,7 @@ func Test_timestamps(t *testing.T) {
 		"Nordvpn": {
 			servers:   allServers.Nordvpn.Servers,
 			timestamp: allServers.Nordvpn.Timestamp,
-			digest:    "9fc9a579",
+			digest:    "5f70b19b",
 		},
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,

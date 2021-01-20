@@ -18,7 +18,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Nordvpn: models.NordvpnServers{
 			Version:   1,
-			Timestamp: 1599323261,
+			Timestamp: 1611096594,
 			Servers:   NordvpnServers(),
 		},
 		Pia: models.PiaServers{
