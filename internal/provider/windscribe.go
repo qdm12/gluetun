@@ -97,6 +97,7 @@ func (w *windscribe) BuildConf(connection models.OpenVPNConnection,
 		"comp-lzo",
 		"key-direction 1",
 		"script-security 2",
+		"reneg-sec 0",
 
 		// Added constant values
 		"auth-nocache",
