@@ -138,9 +138,11 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
+		"ping 10",
+		"ping-exit 60",
+		"ping-timer-rem",
 
 		// PIA specific
-		"ping 300", // Ping every 5 minutes to prevent a timeout error
 		"reneg-sec 0",
 		"compress", // allow PIA server to choose the compression to use
 

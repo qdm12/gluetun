@@ -85,10 +85,11 @@ func (m *mullvad) BuildConf(connection models.OpenVPNConnection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
+		"ping 10",
+		"ping-exit 60",
+		"ping-timer-rem",
 
 		// Mullvad specific
-		"ping 10",
-		"ping-restart 60",
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",

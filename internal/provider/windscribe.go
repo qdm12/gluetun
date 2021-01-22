@@ -88,6 +88,9 @@ func (w *windscribe) BuildConf(connection models.OpenVPNConnection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
+		"ping 10",
+		"ping-exit 60",
+		"ping-timer-rem",
 
 		// Windscribe specific
 		"comp-lzo",

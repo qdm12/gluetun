@@ -85,10 +85,12 @@ func (v *vyprvpn) BuildConf(connection models.OpenVPNConnection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
+		"ping 10",
+		"ping-exit 60",
+		"ping-timer-rem",
 
 		// Vyprvpn specific
 		"comp-lzo",
-		"keepalive 10 60",
 		// "verify-x509-name lu1.vyprvpn.com name",
 		"tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 
