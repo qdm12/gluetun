@@ -12,9 +12,12 @@ COPY cmd/ ./cmd/
 COPY internal/ ./internal/
 
 FROM --platform=$BUILDPLATFORM base AS test
+# Note on the go race detector:
+# - we use golang:1.15-alpine and not golang:1.15-alpine3.12 to have the race detector fixed
+# - we set CGO_ENABLED=1 to have it enabled
+# - we install g++ to support the race detector
 ENV CGO_ENABLED=1
-RUN apk --update add g++
-RUN go test -race ./...
+RUN apk --update --no-cache add g++
 
 FROM --platform=$BUILDPLATFORM base AS lint
 ARG GOLANGCI_LINT_VERSION=v1.34.1
