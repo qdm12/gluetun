@@ -88,6 +88,7 @@ func (p *purevpn) BuildConf(connection models.OpenVPNConnection,
 		"ping 10",
 		"ping-exit 60",
 		"ping-timer-rem",
+		"tls-exit",
 
 		// Purevpn specific
 		"key-direction 1",

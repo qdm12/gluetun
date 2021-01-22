@@ -88,6 +88,7 @@ func (v *vyprvpn) BuildConf(connection models.OpenVPNConnection,
 		"ping 10",
 		"ping-exit 60",
 		"ping-timer-rem",
+		"tls-exit",
 
 		// Vyprvpn specific
 		"comp-lzo",

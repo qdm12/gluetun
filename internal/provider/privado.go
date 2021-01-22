@@ -88,6 +88,7 @@ func (s *privado) BuildConf(connection models.OpenVPNConnection,
 		"ping 10",
 		"ping-exit 60",
 		"ping-timer-rem",
+		"tls-exit",
 
 		// Privado specific
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",

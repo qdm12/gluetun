@@ -102,6 +102,7 @@ func (n *nordvpn) BuildConf(connection models.OpenVPNConnection,
 		"ping 10",
 		"ping-exit 60",
 		"ping-timer-rem",
+		"tls-exit",
 
 		// Nordvpn specific
 		"tun-mtu 1500",
