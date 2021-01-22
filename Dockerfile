@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.12
+ARG ALPINE_VERSION=3.13
 ARG GO_VERSION=1.15
 ARG BUILDPLATFORM=linux/amd64
 
@@ -13,7 +13,6 @@ COPY internal/ ./internal/
 
 FROM --platform=$BUILDPLATFORM base AS test
 # Note on the go race detector:
-# - we use golang:1.15-alpine and not golang:1.15-alpine3.12 to have the race detector fixed
 # - we set CGO_ENABLED=1 to have it enabled
 # - we install g++ to support the race detector
 ENV CGO_ENABLED=1
