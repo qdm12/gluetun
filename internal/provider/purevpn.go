@@ -96,7 +96,6 @@ func (p *purevpn) BuildConf(connection models.OpenVPNConnection,
 		"cipher AES-256-CBC",
 		"route-method exe",
 		"route-delay 0",
-		"route 0.0.0.0 0.0.0.0",
 		"script-security 2",
 
 		"ping 10",
