@@ -11,18 +11,6 @@ on:
       - Dockerfile
       - go.mod
       - go.sum
-  release:
-    types: [published]
-    paths:
-      - .github/workflows/build.yml
-      - cmd/**
-      - internal/**
-      - pkg/**
-      - .dockerignore
-      - .golangci.yml
-      - Dockerfile
-      - go.mod
-      - go.sum
 
 jobs:
   verify:
@@ -60,8 +48,6 @@ jobs:
         run: docker build .
 
   publish:
-    if: github.event_name == 'release' ||
-      github.event_name == 'push'
     needs: [verify]
     runs-on: ubuntu-latest
     steps:
@@ -81,18 +67,18 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
         run: |
           BRANCH=${GITHUB_REF#refs/heads/}
+          TAG=${GITHUB_REF#refs/tags/}
           echo ::set-output name=commit::$(git rev-parse --short HEAD)
           echo ::set-output name=build_date::$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          echo ::set-output name=version::${GITHUB_REF#refs/heads/}
-          if [ "$EVENT_NAME" = "push" ] && [ "$BRANCH" != "main" ]; then
-            echo ::set-output name=version::$BRANCH
-            echo ::set-output name=platforms::linux/amd64
-          elif [ "$EVENT_NAME" = "push" ] && [ "$BRANCH" = "main" ]; then
+          if [ "$TAG" != "$GITHUB_REF" ]; then
+            echo ::set-output name=version::$TAG
+            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/s390x,linux/ppc64le
+          elif [ "$BRANCH" = "master" ]; then
             echo ::set-output name=version::latest
             echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/s390x,linux/ppc64le
           else
-            echo ::set-output name=version::${GITHUB_REF#refs/tags/}
-            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/s390x,linux/ppc64le
+            echo ::set-output name=version::$BRANCH
+            echo ::set-output name=platforms::linux/amd64
           fi
 
       - name: Build and push final image
@@ -108,7 +94,7 @@ jobs:
             qmcgaw/private-internet-access:${{ steps.vars.outputs.version }}
           push: true
 
-      - if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+      - if: github.event_name == 'push' && github.event.ref == 'refs/heads/master'
         name: Microbadger hook
         run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/gluetun/l-keGI7p4IhX4QuIDMFYKhsZ1L0=
         continue-on-error: true
