@@ -39,12 +39,11 @@ func New(address string, logging bool, logger logging.Logger,
 }
 
 func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
 	server := http.Server{Addr: s.address, Handler: s.handler}
 	go func() {
-		defer wg.Done()
 		<-ctx.Done()
-		s.logger.Warn("context canceled: exiting loop")
-		defer s.logger.Warn("loop exited")
+		s.logger.Warn("context canceled: shutting down")
 		const shutdownGraceDuration = 2 * time.Second
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
@@ -57,4 +56,5 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 	if err != nil && ctx.Err() != context.Canceled {
 		s.logger.Error(err)
 	}
+	s.logger.Warn("shut down")
 }

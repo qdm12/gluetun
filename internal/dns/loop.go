@@ -110,6 +110,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup, dnsReadyCh chan<- 
 
 		for l.GetSettings().Enabled {
 			if ctx.Err() != nil {
+				if !crashed {
+					l.running <- constants.Stopped
+				}
 				l.logger.Warn("context canceled: exiting loop")
 				return
 			}
