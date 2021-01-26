@@ -8,7 +8,8 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (c *configurator) Start(ctx context.Context) (stdoutLines, stderrLines chan string, waitError chan error, err error) {
+func (c *configurator) Start(ctx context.Context) (
+	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	c.logger.Info("starting openvpn")
 	return c.commander.Start(ctx, "openvpn", "--config", string(constants.OpenVPNConf))
 }
