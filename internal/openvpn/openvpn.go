@@ -2,7 +2,6 @@ package openvpn
 
 import (
 	"context"
-	"io"
 
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/golibs/command"
@@ -15,7 +14,8 @@ type Configurator interface {
 	WriteAuthFile(user, password string, puid, pgid int) error
 	CheckTUN() error
 	CreateTUN() error
-	Start(ctx context.Context) (stdout io.ReadCloser, waitFn func() error, err error)
+	Start(ctx context.Context) (stdoutLines, stderrLines chan string,
+		waitError chan error, err error)
 }
 
 type configurator struct {

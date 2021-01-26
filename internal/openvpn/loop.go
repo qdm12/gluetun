@@ -14,7 +14,6 @@ import (
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/settings"
-	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -45,7 +44,7 @@ type looper struct {
 	logger, pfLogger logging.Logger
 	client           *http.Client
 	openFile         os.OpenFileFunc
-	streamMerger     command.StreamMerger
+	tunnelReady      chan<- struct{}
 	cancel           context.CancelFunc
 	// Internal channels and locks
 	loopLock           sync.Mutex
@@ -63,7 +62,7 @@ func NewLooper(settings settings.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,
-	streamMerger command.StreamMerger, cancel context.CancelFunc) Looper {
+	tunnelReady chan<- struct{}, cancel context.CancelFunc) Looper {
 	return &looper{
 		state: state{
 			status:     constants.Stopped,
@@ -80,7 +79,7 @@ func NewLooper(settings settings.OpenVPN,
 		pfLogger:           logger.WithPrefix("port forwarding: "),
 		client:             client,
 		openFile:           openFile,
-		streamMerger:       streamMerger,
+		tunnelReady:        tunnelReady,
 		cancel:             cancel,
 		start:              make(chan struct{}),
 		running:            make(chan models.LoopStatus),
@@ -144,13 +143,16 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
 
-		stream, waitFn, err := l.conf.Start(openvpnCtx)
+		stdoutLines, stderrLines, waitError, err := l.conf.Start(openvpnCtx)
 		if err != nil {
 			openvpnCancel()
 			l.signalCrashedStatus()
 			l.logAndWait(ctx, err)
 			continue
 		}
+
+		wg.Add(1)
+		go l.collectLines(wg, stdoutLines, stderrLines)
 
 		// Needs the stream line from main.go to know when the tunnel is up
 		go func(ctx context.Context) {
@@ -165,13 +167,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				}
 			}
 		}(openvpnCtx)
-
-		go l.streamMerger.Merge(openvpnCtx, stream, command.MergeName("openvpn"))
-		waitError := make(chan error)
-		go func() {
-			err := waitFn() // blocking
-			waitError <- err
-		}()
 
 		if l.crashed {
 			l.crashed = false
@@ -189,6 +184,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				openvpnCancel()
 				<-waitError
 				close(waitError)
+				close(stdoutLines)
+				close(stderrLines)
 				return
 			case <-l.stop:
 				l.logger.Info("stopping")
@@ -207,6 +204,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			}
 		}
 		close(waitError)
+		close(stdoutLines)
+		close(stderrLines)
 		openvpnCancel() // just for the linter
 	}
 }

@@ -3,16 +3,14 @@ package openvpn
 import (
 	"context"
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (c *configurator) Start(ctx context.Context) (stdout io.ReadCloser, waitFn func() error, err error) {
+func (c *configurator) Start(ctx context.Context) (stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	c.logger.Info("starting openvpn")
-	stdout, _, waitFn, err = c.commander.Start(ctx, "openvpn", "--config", string(constants.OpenVPNConf))
-	return stdout, waitFn, err
+	return c.commander.Start(ctx, "openvpn", "--config", string(constants.OpenVPNConf))
 }
 
 func (c *configurator) Version(ctx context.Context) (string, error) {

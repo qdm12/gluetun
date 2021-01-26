@@ -7,7 +7,6 @@ import (
 	"net/http"
 	nativeos "os"
 	"os/signal"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -33,7 +32,6 @@ import (
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
-	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/os/user"
@@ -141,7 +139,6 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)
-	streamMerger := command.NewStreamMerger()
 
 	paramsReader := params.NewReader(logger, os)
 	fmt.Println(gluetunLogging.Splash(buildInfo))
@@ -266,11 +263,8 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 
 	wg := &sync.WaitGroup{}
 
-	wg.Add(1)
-	go collectStreamLines(ctx, wg, streamMerger, logger, tunnelReadyCh)
-
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, streamMerger, cancel)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
@@ -282,7 +276,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	go updaterLooper.Run(ctx, wg)
 
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
-		logger, streamMerger, nonRootUsername, puid, pgid)
+		logger, nonRootUsername, puid, pgid)
 	wg.Add(1)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(ctx, wg, dnsReadyCh)
@@ -350,42 +344,6 @@ func printVersions(ctx context.Context, logger logging.Logger,
 			logger.Info("%s version: %s", name, version)
 		}
 	}
-}
-
-func collectStreamLines(ctx context.Context, wg *sync.WaitGroup,
-	streamMerger command.StreamMerger,
-	logger logging.Logger, tunnelReadyCh chan<- struct{}) {
-	defer wg.Done()
-	// Blocking line merging paramsReader for openvpn and unbound
-	logger.Info("Launching standard output merger")
-	streamMerger.CollectLines(ctx, func(line string) {
-		line, level := gluetunLogging.PostProcessLine(line)
-		if line == "" {
-			return
-		}
-		switch level {
-		case logging.DebugLevel:
-			logger.Debug(line)
-		case logging.InfoLevel:
-			logger.Info(line)
-		case logging.WarnLevel:
-			logger.Warn(line)
-		case logging.ErrorLevel:
-			logger.Error(line)
-		}
-		switch {
-		case strings.Contains(line, "Initialization Sequence Completed"):
-			tunnelReadyCh <- struct{}{}
-		case strings.Contains(line, "TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)"): //nolint:lll
-			logger.Warn("This means that either...")
-			logger.Warn("1. The VPN server IP address you are trying to connect to is no longer valid, see https://github.com/qdm12/gluetun/wiki/Update-servers-information") //nolint:lll
-			logger.Warn("2. The VPN server crashed, try changing region")
-			logger.Warn("3. Your Internet connection is not working, ensure it works")
-			logger.Warn("Feel free to create an issue at https://github.com/qdm12/gluetun/issues/new/choose")
-		}
-	}, func(err error) {
-		logger.Warn(err)
-	})
 }
 
 func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.BuildInformation,
