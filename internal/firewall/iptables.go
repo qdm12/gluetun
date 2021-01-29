@@ -121,6 +121,9 @@ func (c *configurator) acceptEstablishedRelatedTraffic(ctx context.Context, remo
 
 func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
 	defaultInterface string, connection models.OpenVPNConnection, remove bool) error {
+	if connection.IP == nil {
+		panic("PLEASE CREATE AN ISSUE with this log: https://github.com/qdm12/gluetun/issues")
+	}
 	return c.runIptablesInstruction(ctx,
 		fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 			appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol, connection.Protocol, connection.Port))

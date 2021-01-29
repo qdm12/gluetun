@@ -118,6 +118,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			l.cancel()
 			return
 		}
+		if connection.IP == nil {
+			panic("PLEASE CREATE AN ISSUE with this log: https://github.com/qdm12/gluetun/issues")
+		}
 		lines := providerConf.BuildConf(connection, l.username, settings)
 
 		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
