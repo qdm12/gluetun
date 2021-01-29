@@ -138,7 +138,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				}
 				return
 			case <-l.start:
-				l.logger.Info("starting")
 				getCancel()
 				stayHere = false
 			case <-l.stop:

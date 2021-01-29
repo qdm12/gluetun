@@ -236,9 +236,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	}
 
 	tunnelReadyCh := make(chan struct{})
-	dnsReadyCh := make(chan struct{})
 	defer close(tunnelReadyCh)
-	defer close(dnsReadyCh)
 
 	if allSettings.Firewall.Enabled {
 		err := firewallConf.SetEnabled(ctx, true) // disabled by default
@@ -279,7 +277,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 		logger, nonRootUsername, puid, pgid)
 	wg.Add(1)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
-	go unboundLooper.Run(ctx, wg, dnsReadyCh)
+	go unboundLooper.Run(ctx, wg)
 
 	publicIPLooper := publicip.NewLooper(
 		httpClient, logger, allSettings.PublicIP, puid, pgid, os)
@@ -297,7 +295,7 @@ func _main(background context.Context, buildInfo models.BuildInformation,
 	go shadowsocksLooper.Run(ctx, wg)
 
 	wg.Add(1)
-	go routeReadyEvents(ctx, wg, buildInfo, tunnelReadyCh, dnsReadyCh,
+	go routeReadyEvents(ctx, wg, buildInfo, tunnelReadyCh,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
 		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
 	)
@@ -347,7 +345,7 @@ func printVersions(ctx context.Context, logger logging.Logger,
 }
 
 func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.BuildInformation,
-	tunnelReadyCh, dnsReadyCh <-chan struct{},
+	tunnelReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
 	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
 	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
@@ -356,6 +354,7 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.
 	// for linters only
 	var restartTickerContext context.Context
 	var restartTickerCancel context.CancelFunc = func() {}
+	first := true
 	for {
 		select {
 		case <-ctx.Done():
@@ -363,22 +362,41 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.
 			tickerWg.Wait()
 			return
 		case <-tunnelReadyCh: // blocks until openvpn is connected
-			if unboundLooper.GetSettings().Enabled {
-				_, _ = unboundLooper.SetStatus(constants.Running)
-			}
-			restartTickerCancel() // stop previous restart tickers
-			tickerWg.Wait()
-			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
-			//nolint:gomnd
-			tickerWg.Add(2)
-			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
-			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			vpnDestination, err := routing.VPNDestinationIP()
 			if err != nil {
 				logger.Warn(err)
 			} else {
 				logger.Info("VPN routing IP address: %s", vpnDestination)
 			}
+
+			if unboundLooper.GetSettings().Enabled {
+				_, _ = unboundLooper.SetStatus(constants.Running)
+			}
+
+			restartTickerCancel() // stop previous restart tickers
+			tickerWg.Wait()
+			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
+
+			// Runs the Public IP getter job once
+			_, _ = publicIPLooper.SetStatus(constants.Running)
+			if !versionInformation {
+				break
+			}
+
+			if first {
+				first = false
+				message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
+				if err != nil {
+					logger.Error(err)
+				} else {
+					logger.Info(message)
+				}
+			}
+
+			//nolint:gomnd
+			tickerWg.Add(2)
+			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
+			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
 			if portForwardingEnabled {
 				// vpnGateway required only for PIA
 				vpnGateway, err := routing.VPNLocalGatewayIP()
@@ -388,18 +406,6 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.
 				logger.Info("VPN gateway IP address: %s", vpnGateway)
 				startPortForward(vpnGateway)
 			}
-		case <-dnsReadyCh:
-			// Runs the Public IP getter job once
-			_, _ = publicIPLooper.SetStatus(constants.Running)
-			if !versionInformation {
-				break
-			}
-			message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
-			if err != nil {
-				logger.Error(err)
-				break
-			}
-			logger.Info(message)
 		}
 	}
 }
