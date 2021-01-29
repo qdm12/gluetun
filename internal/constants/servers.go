@@ -38,7 +38,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Surfshark: models.SurfsharkServers{
 			Version:   1,
-			Timestamp: 1599957644,
+			Timestamp: 1611928188,
 			Servers:   SurfsharkServers(),
 		},
 		Vyprvpn: models.VyprvpnServers{

@@ -33,7 +33,7 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 //nolint:deadcode,unused
 func findSurfsharkServersFromAPI(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
 	servers []models.SurfsharkServer, warnings []string, err error) {
-	const url = "https://my.surfshark.com/vpn/api/v1/server/clusters"
+	const url = "https://my.surfshark.com/vpn/api/v4/server/clusters"
 	b, status, err := client.Get(ctx, url)
 	if err != nil {
 		return nil, nil, err
@@ -88,7 +88,9 @@ func findSurfsharkServersFromZip(ctx context.Context, client network.Client, loo
 			warnings = append(warnings, warning)
 		}
 		if err != nil {
-			return nil, warnings, fmt.Errorf("%w in %s", err, fileName)
+			// treat error as warning and go to next file
+			warnings = append(warnings, err.Error()+" in "+fileName)
+			continue
 		}
 		const repetition = 5
 		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
@@ -199,6 +201,8 @@ func surfsharkSubdomainToRegion() (mapping map[string]string) {
 		"de-fra-st001": "Germany Frankfurt am Main st001",
 		"de-fra-st002": "Germany Frankfurt am Main st002",
 		"de-fra-st003": "Germany Frankfurt am Main st003",
+		"de-fra-st004": "Germany Frankfurt am Main st004",
+		"de-fra-st005": "Germany Frankfurt am Main st005",
 		"de-muc":       "Germany Munich",
 		"de-nue":       "Germany Nuremberg",
 		"de-sg":        "Germany Singapour",
@@ -235,6 +239,12 @@ func surfsharkSubdomainToRegion() (mapping map[string]string) {
 		"jp-tok-st005": "Japan Tokyo st005",
 		"jp-tok-st006": "Japan Tokyo st006",
 		"jp-tok-st007": "Japan Tokyo st007",
+		"jp-tok-st008": "Japan Tokyo st008",
+		"jp-tok-st009": "Japan Tokyo st009",
+		"jp-tok-st010": "Japan Tokyo st010",
+		"jp-tok-st011": "Japan Tokyo st011",
+		"jp-tok-st012": "Japan Tokyo st012",
+		"jp-tok-st013": "Japan Tokyo st013",
 		"kr-seo":       "Korea",
 		"kz-ura":       "Kazakhstan",
 		"lu-ste":       "Luxembourg",

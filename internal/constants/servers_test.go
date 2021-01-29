@@ -148,7 +148,7 @@ func Test_timestamps(t *testing.T) {
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,
 			timestamp: allServers.Surfshark.Timestamp,
-			digest:    "79484811",
+			digest:    "26955f20",
 		},
 		"Vyprvpn": {
 			servers:   allServers.Vyprvpn.Servers,
