@@ -39,7 +39,6 @@ func WindscribeHostnameChoices() (choices []string) {
 	return choices
 }
 
-//nolint:lll
 func WindscribeServers() []models.WindscribeServer {
 	return []models.WindscribeServer{
 		{Region: "Albania", City: "Tirana", Hostname: "al-002.whiskergalaxy.com", IP: net.IP{31, 171, 152, 179}},
