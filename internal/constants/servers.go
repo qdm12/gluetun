@@ -8,12 +8,12 @@ func GetAllServers() (allServers models.AllServers) {
 		Version: 1, // used for migration of the top level scheme
 		Cyberghost: models.CyberghostServers{
 			Version:   1,          // model version
-			Timestamp: 1599323261, // latest takes precedence
+			Timestamp: 1612031135, // latest takes precedence
 			Servers:   CyberghostServers(),
 		},
 		Mullvad: models.MullvadServers{
 			Version:   1,
-			Timestamp: 1603660367,
+			Timestamp: 1612031135,
 			Servers:   MullvadServers(),
 		},
 		Nordvpn: models.NordvpnServers{
@@ -28,27 +28,27 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Purevpn: models.PurevpnServers{
 			Version:   1,
-			Timestamp: 1609448478,
+			Timestamp: 1612031135,
 			Servers:   PurevpnServers(),
 		},
 		Privado: models.PrivadoServers{
 			Version:   2,
-			Timestamp: 1604963273,
+			Timestamp: 1612031135,
 			Servers:   PrivadoServers(),
 		},
 		Surfshark: models.SurfsharkServers{
 			Version:   1,
-			Timestamp: 1611928188,
+			Timestamp: 1612031135,
 			Servers:   SurfsharkServers(),
 		},
 		Vyprvpn: models.VyprvpnServers{
 			Version:   1,
-			Timestamp: 1599323261,
+			Timestamp: 1612031135,
 			Servers:   VyprvpnServers(),
 		},
 		Windscribe: models.WindscribeServers{
 			Version:   2,
-			Timestamp: 1604019438,
+			Timestamp: 1612031135,
 			Servers:   WindscribeServers(),
 		},
 	}
