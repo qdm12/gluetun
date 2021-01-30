@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
@@ -48,13 +49,24 @@ func findSurfsharkServersFromAPI(ctx context.Context, client network.Client, loo
 	if err := json.Unmarshal(b, &jsonServers); err != nil {
 		return nil, nil, err
 	}
+
+	hosts := make([]string, len(jsonServers))
+	for i := range jsonServers {
+		hosts[i] = jsonServers[i].Host
+	}
+
+	const repetition = 20
+	const timeBetween = time.Second
+	const failOnErr = true
+	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	for _, jsonServer := range jsonServers {
 		host := jsonServer.Host
-		const repetition = 5
-		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
-		if err != nil {
-			return nil, warnings, err
-		} else if len(IPs) == 0 {
+		IPs := hostToIPs[host]
+		if len(IPs) == 0 {
 			warning := fmt.Sprintf("no IP address found for host %q", host)
 			warnings = append(warnings, warning)
 			continue
@@ -76,10 +88,8 @@ func findSurfsharkServersFromZip(ctx context.Context, client network.Client, loo
 		return nil, nil, err
 	}
 	mapping := surfsharkSubdomainToRegion()
+	hosts := make([]string, 0, len(contents))
 	for fileName, content := range contents {
-		if err := ctx.Err(); err != nil {
-			return nil, warnings, err
-		}
 		if strings.HasSuffix(fileName, "_tcp.ovpn") {
 			continue // only parse UDP files
 		}
@@ -92,11 +102,19 @@ func findSurfsharkServersFromZip(ctx context.Context, client network.Client, loo
 			warnings = append(warnings, err.Error()+" in "+fileName)
 			continue
 		}
-		const repetition = 5
-		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
-		if err != nil {
-			return nil, warnings, err
-		} else if len(IPs) == 0 {
+		hosts = append(hosts, host)
+	}
+
+	const repetition = 20
+	const timeBetween = time.Second
+	const failOnErr = true
+	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	if err != nil {
+		return nil, warnings, err
+	}
+
+	for host, IPs := range hostToIPs {
+		if len(IPs) == 0 {
 			warning := fmt.Sprintf("no IP address found for host %q", host)
 			warnings = append(warnings, warning)
 			continue
@@ -118,11 +136,8 @@ func findSurfsharkServersFromZip(ctx context.Context, client network.Client, loo
 	}
 
 	// process entries in mapping that were not in zip file
-	remainingServers, newWarnings, err := getRemainingServers(ctx, mapping, lookupIP)
+	remainingServers, newWarnings := getRemainingServers(ctx, mapping, lookupIP)
 	warnings = append(warnings, newWarnings...)
-	if err != nil {
-		return nil, warnings, err
-	}
 	servers = append(servers, remainingServers...)
 
 	sort.Slice(servers, func(i, j int) bool {
@@ -132,31 +147,28 @@ func findSurfsharkServersFromZip(ctx context.Context, client network.Client, loo
 }
 
 func getRemainingServers(ctx context.Context, mapping map[string]string, lookupIP lookupIPFunc) (
-	servers []models.SurfsharkServer, warnings []string, err error) {
-	for subdomain, region := range mapping {
-		if err := ctx.Err(); err != nil {
-			return servers, warnings, err
-		}
-		host := subdomain + ".prod.surfshark.com"
-		const repetition = 3
-		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
-		if err != nil {
-			warning := fmt.Sprintf("subdomain %q for region %q from mapping: %s", subdomain, region, err)
-			warnings = append(warnings, warning)
-			continue
-		} else if len(IPs) == 0 {
-			warning := fmt.Sprintf("subdomain %q for region %q from mapping did not resolve to any IP address",
-				subdomain, region)
-			warnings = append(warnings, warning)
-			continue
-		}
+	servers []models.SurfsharkServer, warnings []string) {
+	hosts := make([]string, len(mapping))
+	i := 0
+	for subdomain := range mapping {
+		hosts[i] = subdomain + ".prod.surfshark.com"
+	}
+
+	const repetition = 20
+	const timeBetween = time.Second
+	const failOnErr = false
+	hostToIPs, warnings, _ := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+
+	for host, IPs := range hostToIPs {
+		subdomain := strings.TrimSuffix(host, ".prod.surfshark.com")
 		server := models.SurfsharkServer{
-			Region: region,
+			Region: mapping[subdomain],
 			IPs:    uniqueSortedIPs(IPs),
 		}
 		servers = append(servers, server)
 	}
-	return servers, warnings, nil
+
+	return servers, warnings
 }
 
 func stringifySurfsharkServers(servers []models.SurfsharkServer) (s string) {

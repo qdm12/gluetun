@@ -26,7 +26,6 @@ func Test_resolveRepeat(t *testing.T) {
 			},
 			lookupIPErr: fmt.Errorf("feeling sick"),
 			n:           1,
-			ips:         []net.IP{},
 			err:         fmt.Errorf("feeling sick"),
 		},
 		"successful": {
@@ -66,7 +65,7 @@ func Test_resolveRepeat(t *testing.T) {
 			}
 
 			ips, err := resolveRepeat(
-				context.Background(), lookupIP, host, testCase.n)
+				context.Background(), lookupIP, host, testCase.n, 0)
 			if testCase.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, testCase.err.Error(), err.Error())

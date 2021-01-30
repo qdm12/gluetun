@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/network"
@@ -35,11 +36,9 @@ func findPurevpnServers(ctx context.Context, client network.Client, lookupIP loo
 	if err != nil {
 		return nil, nil, err
 	}
-	uniqueServers := map[string]models.PurevpnServer{}
+
+	hosts := make([]string, 0, len(contents))
 	for fileName, content := range contents {
-		if err := ctx.Err(); err != nil {
-			return nil, warnings, err
-		}
 		if strings.HasSuffix(fileName, "-tcp.ovpn") {
 			continue // only parse UDP files
 		}
@@ -50,12 +49,20 @@ func findPurevpnServers(ctx context.Context, client network.Client, lookupIP loo
 		if err != nil {
 			return nil, warnings, fmt.Errorf("%w in %q", err, fileName)
 		}
-		const repetition = 5
-		IPs, err := resolveRepeat(ctx, lookupIP, host, repetition)
-		switch {
-		case err != nil:
-			return nil, warnings, err
-		case len(IPs) == 0:
+		hosts = append(hosts, host)
+	}
+
+	const repetition = 20
+	const timeBetween = time.Second
+	const failOnErr = true
+	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	if err != nil {
+		return nil, warnings, err
+	}
+
+	uniqueServers := make(map[string]models.PurevpnServer, len(hostToIPs))
+	for host, IPs := range hostToIPs {
+		if len(IPs) == 0 {
 			warning := fmt.Sprintf("no IP address found for host %q", host)
 			warnings = append(warnings, warning)
 			continue
