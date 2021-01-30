@@ -108,24 +108,24 @@ func main() {
 }
 
 //nolint:gocognit,gocyclo
-func _main(background context.Context, buildInfo models.BuildInformation,
+func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.Logger, os os.OS, osUser user.OSUser, unix unix.Unix,
 	cli cli.CLI) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
-			return cli.HealthCheck(background)
+			return cli.HealthCheck(ctx)
 		case "clientkey":
 			return cli.ClientKey(args[2:], os.OpenFile)
 		case "openvpnconfig":
 			return cli.OpenvpnConfig(os)
 		case "update":
-			return cli.Update(args[2:], os)
+			return cli.Update(ctx, args[2:], os)
 		default:
 			return fmt.Errorf("command %q is unknown", args[1])
 		}
 	}
-	ctx, cancel := context.WithCancel(background)
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	const clientTimeout = 15 * time.Second

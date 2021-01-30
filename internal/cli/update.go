@@ -15,7 +15,7 @@ import (
 	"github.com/qdm12/golibs/os"
 )
 
-func (c *cli) Update(args []string, os os.OS) error {
+func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
 	options := settings.Updater{CLI: true}
 	var flushToFile bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
@@ -41,7 +41,7 @@ func (c *cli) Update(args []string, os os.OS) error {
 	if !flushToFile && !options.Stdout {
 		return fmt.Errorf("at least one of -file or -stdout must be specified")
 	}
-	ctx := context.Background()
+
 	const clientTimeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	storage := storage.New(logger, os, constants.ServersData)
