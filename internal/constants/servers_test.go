@@ -118,17 +118,17 @@ func Test_timestamps(t *testing.T) {
 		"Cyberghost": {
 			servers:   allServers.Cyberghost.Servers,
 			timestamp: allServers.Cyberghost.Timestamp,
-			digest:    "160631de",
+			digest:    "5d3a8cbf",
 		},
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,
 			timestamp: allServers.Mullvad.Timestamp,
-			digest:    "93859652",
+			digest:    "e2e006cf",
 		},
 		"Nordvpn": {
 			servers:   allServers.Nordvpn.Servers,
 			timestamp: allServers.Nordvpn.Timestamp,
-			digest:    "5f70b19b",
+			digest:    "2296312c",
 		},
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,
@@ -138,27 +138,27 @@ func Test_timestamps(t *testing.T) {
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,
 			timestamp: allServers.Purevpn.Timestamp,
-			digest:    "8abe18d4",
+			digest:    "cd19edf5",
 		},
 		"Privado": {
 			servers:   allServers.Privado.Servers,
 			timestamp: allServers.Privado.Timestamp,
-			digest:    "df2a046d",
+			digest:    "2ac55360",
 		},
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,
 			timestamp: allServers.Surfshark.Timestamp,
-			digest:    "26955f20",
+			digest:    "1a7f38bb",
 		},
 		"Vyprvpn": {
 			servers:   allServers.Vyprvpn.Servers,
 			timestamp: allServers.Vyprvpn.Timestamp,
-			digest:    "1992457c",
+			digest:    "1753d4f8",
 		},
 		"Windscribe": {
 			servers:   allServers.Windscribe.Servers,
 			timestamp: allServers.Windscribe.Timestamp,
-			digest:    "fd87502e",
+			digest:    "4e719aa3",
 		},
 	}
 	for name, testCase := range testCases {
