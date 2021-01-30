@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -46,37 +47,40 @@ func (u *updater) updatePIA(ctx context.Context) (err error) {
 	if err := json.Unmarshal(b, &data); err != nil {
 		return err
 	}
+
 	servers := make([]models.PIAServer, 0, len(data.Regions))
 	for _, region := range data.Regions {
-		server := models.PIAServer{
-			Region:      region.Name,
-			PortForward: region.PortForward,
-		}
 		for _, udpServer := range region.Servers.UDP {
-			if len(server.OpenvpnUDP.CN) > 0 && server.OpenvpnUDP.CN != udpServer.CN {
-				return fmt.Errorf("CN is different for UDP for region %q: %q and %q",
-					region.Name, server.OpenvpnUDP.CN, udpServer.CN)
+			server := models.PIAServer{
+				Region:      region.Name,
+				ServerName:  udpServer.CN,
+				Protocol:    constants.UDP,
+				PortForward: region.PortForward,
+				IP:          udpServer.IP,
 			}
-			if udpServer.IP != nil {
-				server.OpenvpnUDP.IPs = append(server.OpenvpnUDP.IPs, udpServer.IP)
-			}
-			server.OpenvpnUDP.CN = udpServer.CN
+			servers = append(servers, server)
 		}
 		for _, tcpServer := range region.Servers.TCP {
-			if len(server.OpenvpnTCP.CN) > 0 && server.OpenvpnTCP.CN != tcpServer.CN {
-				return fmt.Errorf("CN is different for TCP for region %q: %q and %q",
-					region.Name, server.OpenvpnTCP.CN, tcpServer.CN)
+			server := models.PIAServer{
+				Region:      region.Name,
+				ServerName:  tcpServer.CN,
+				Protocol:    constants.UDP,
+				PortForward: region.PortForward,
+				IP:          tcpServer.IP,
 			}
-			if tcpServer.IP != nil {
-				server.OpenvpnTCP.IPs = append(server.OpenvpnTCP.IPs, tcpServer.IP)
-			}
-			server.OpenvpnTCP.CN = tcpServer.CN
+			servers = append(servers, server)
 		}
-		servers = append(servers, server)
 	}
 	sort.Slice(servers, func(i, j int) bool {
+		if servers[i].Region == servers[j].Region {
+			if servers[i].ServerName == servers[j].ServerName {
+				return servers[i].Protocol < servers[j].Protocol
+			}
+			return servers[i].ServerName < servers[j].ServerName
+		}
 		return servers[i].Region < servers[j].Region
 	})
+
 	if u.options.Stdout {
 		u.println(stringifyPIAServers(servers))
 	}

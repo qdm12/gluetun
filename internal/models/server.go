@@ -8,24 +8,16 @@ import (
 )
 
 type PIAServer struct {
-	Region      string           `json:"region"`
-	PortForward bool             `json:"port_forward"`
-	OpenvpnUDP  PIAServerOpenvpn `json:"openvpn_udp"`
-	OpenvpnTCP  PIAServerOpenvpn `json:"openvpn_tcp"`
-}
-
-type PIAServerOpenvpn struct {
-	IPs []net.IP `json:"ips"`
-	CN  string   `json:"cn"`
-}
-
-func (p *PIAServerOpenvpn) String() string {
-	return fmt.Sprintf("models.PIAServerOpenvpn{CN: %q, IPs: %s}", p.CN, goStringifyIPs(p.IPs))
+	Region      string          `json:"region"`
+	ServerName  string          `json:"server_name"`
+	Protocol    NetworkProtocol `json:"protocol"`
+	PortForward bool            `json:"port_forward"`
+	IP          net.IP          `json:"ip"`
 }
 
 func (p *PIAServer) String() string {
-	return fmt.Sprintf("{Region: %q, PortForward: %t, OpenvpnUDP: %s, OpenvpnTCP: %s}",
-		p.Region, p.PortForward, p.OpenvpnUDP.String(), p.OpenvpnTCP.String())
+	return fmt.Sprintf("{Region: %q, ServerName: %q, Protocol: %q, PortForward: %t, IP: %s}",
+		p.Region, p.ServerName, p.Protocol, p.PortForward, goStringifyIP(p.IP))
 }
 
 type MullvadServer struct {

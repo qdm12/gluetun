@@ -26,11 +26,10 @@ import (
 )
 
 type pia struct {
-	servers        []models.PIAServer
-	timeNow        timeNowFunc
-	randSource     rand.Source
-	activeServer   models.PIAServer
-	activeProtocol models.NetworkProtocol
+	servers      []models.PIAServer
+	timeNow      timeNowFunc
+	randSource   rand.Source
+	activeServer models.PIAServer
 }
 
 func newPrivateInternetAccess(servers []models.PIAServer, timeNow timeNowFunc) *pia {
@@ -66,47 +65,32 @@ func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
 			selection.Protocol, selection.EncryptionPreset)
 	}
 
+	servers := p.servers
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
-	}
-
-	servers := filterPIAServers(p.servers, selection.Regions)
-	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
-	}
-
-	var connections []models.OpenVPNConnection
-	for _, server := range servers {
-		IPs := server.OpenvpnUDP.IPs
-		if selection.Protocol == constants.TCP {
-			IPs = server.OpenvpnTCP.IPs
+		connection = models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}
+	} else {
+		servers := filterPIAServers(servers, selection.Regions, selection.Protocol)
+		if len(servers) == 0 {
+			return connection, fmt.Errorf("no server found for region %s and protocol %s",
+				commaJoin(selection.Regions), selection.Protocol)
 		}
-		for _, IP := range IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
-		}
-	}
 
-	connection = pickRandomConnection(connections, p.randSource)
+		var connections []models.OpenVPNConnection
+		for _, server := range servers {
+			connection := models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol}
+			connections = append(connections, connection)
+		}
+
+		connection = pickRandomConnection(connections, p.randSource)
+	}
 
 	// Reverse lookup server from picked connection
-	found := false
 	for _, server := range servers {
-		IPs := server.OpenvpnUDP.IPs
-		if selection.Protocol == constants.TCP {
-			IPs = server.OpenvpnTCP.IPs
-		}
-		for _, IP := range IPs {
-			if connection.IP.Equal(IP) {
-				p.activeServer = server
-				found = true
-				break
-			}
-		}
-		if found {
+		if connection.IP.Equal(server.IP) {
+			p.activeServer = server
 			break
 		}
 	}
-	p.activeProtocol = selection.Protocol
 
 	return connection, nil
 }
@@ -193,18 +177,17 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection,
 func (p *pia) PortForward(ctx context.Context, client *http.Client,
 	openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath models.Filepath)) {
+	commonName := p.activeServer.ServerName
 	if !p.activeServer.PortForward {
-		pfLogger.Error("The server %s does not support port forwarding", p.activeServer.Region)
+		pfLogger.Error("The server %s (region %s) does not support port forwarding",
+			commonName, p.activeServer.Region)
 		return
 	}
 	if gateway == nil {
 		pfLogger.Error("aborting because: VPN gateway IP address was not found")
 		return
 	}
-	commonName := p.activeServer.OpenvpnUDP.CN
-	if p.activeProtocol == constants.TCP {
-		commonName = p.activeServer.OpenvpnTCP.CN
-	}
+
 	client, err := newPIAHTTPClient(commonName)
 	if err != nil {
 		pfLogger.Error("aborting because: %s", err)
@@ -318,10 +301,12 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 	}
 }
 
-func filterPIAServers(servers []models.PIAServer, regions []string) (filtered []models.PIAServer) {
+func filterPIAServers(servers []models.PIAServer, regions []string, protocol models.NetworkProtocol) (
+	filtered []models.PIAServer) {
 	for _, server := range servers {
 		switch {
 		case filterByPossibilities(server.Region, regions):
+		case server.Protocol != protocol:
 		default:
 			filtered = append(filtered, server)
 		}

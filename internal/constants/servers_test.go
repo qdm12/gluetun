@@ -52,7 +52,7 @@ func Test_versions(t *testing.T) {
 		"Private Internet Access": {
 			model:   models.PIAServer{},
 			version: allServers.Pia.Version,
-			digest:  "f1e01afe",
+			digest:  "b90147aa",
 		},
 		"Privado": {
 			model:   models.PrivadoServer{},
@@ -133,7 +133,7 @@ func Test_timestamps(t *testing.T) {
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,
 			timestamp: allServers.Pia.Timestamp,
-			digest:    "d797f112",
+			digest:    "1d2938a1",
 		},
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,
