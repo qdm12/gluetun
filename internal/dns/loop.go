@@ -70,7 +70,9 @@ func NewLooper(conf unbound.Configurator, settings settings.DNS, client *http.Cl
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
-	l.logger.Warn(err)
+	if err != nil {
+		l.logger.Warn(err)
+	}
 	l.logger.Info("attempting restart in %s", l.backoffTime)
 	timer := time.NewTimer(l.backoffTime)
 	l.backoffTime *= 2
