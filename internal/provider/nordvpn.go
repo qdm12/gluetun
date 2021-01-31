@@ -73,8 +73,7 @@ func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (
 
 	connections := make([]models.OpenVPNConnection, len(servers))
 	for i := range servers {
-		connection := models.OpenVPNConnection{IP: servers[i].IP, Port: port, Protocol: selection.Protocol}
-		connections = append(connections, connection)
+		connections[i] = models.OpenVPNConnection{IP: servers[i].IP, Port: port, Protocol: selection.Protocol}
 	}
 
 	return pickRandomConnection(connections, n.randSource), nil
