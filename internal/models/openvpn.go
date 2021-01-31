@@ -5,10 +5,10 @@ import (
 )
 
 type OpenVPNConnection struct {
-	IP       net.IP
-	Port     uint16
-	Protocol NetworkProtocol
-	Hostname string // Privado for tls verification
+	IP       net.IP          `json:"ip"`
+	Port     uint16          `json:"port"`
+	Protocol NetworkProtocol `json:"protocol"`
+	Hostname string          `json:"hostname"` // Privado for tls verification
 }
 
 func (o *OpenVPNConnection) Equal(other OpenVPNConnection) bool {

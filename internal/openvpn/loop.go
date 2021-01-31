@@ -2,6 +2,8 @@ package openvpn
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
 	"strings"
@@ -119,7 +121,15 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			return
 		}
 		if connection.IP == nil {
-			panic("PLEASE CREATE AN ISSUE with this log: https://github.com/qdm12/gluetun/issues")
+			serverSelectionJSON, _ := json.Marshal(settings.Provider.ServerSelection)
+			connectionJSON, _ := json.Marshal(connection)
+			message := fmt.Sprintf(`
+			PLEASE CREATE AN ISSUE with this log: https://github.com/qdm12/gluetun/issues
+			Server selection: %s
+			AllServers count: %d
+			connection: %s
+			`, string(serverSelectionJSON), allServers.Count(), string(connectionJSON))
+			panic(message)
 		}
 		lines := providerConf.BuildConf(connection, l.username, settings)
 

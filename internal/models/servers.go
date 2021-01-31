@@ -13,6 +13,18 @@ type AllServers struct {
 	Windscribe WindscribeServers `json:"windscribe"`
 }
 
+func (a *AllServers) Count() int {
+	return len(a.Cyberghost.Servers) +
+		len(a.Mullvad.Servers) +
+		len(a.Nordvpn.Servers) +
+		len(a.Pia.Servers) +
+		len(a.Privado.Servers) +
+		len(a.Purevpn.Servers) +
+		len(a.Surfshark.Servers) +
+		len(a.Vyprvpn.Servers) +
+		len(a.Windscribe.Servers)
+}
+
 type CyberghostServers struct {
 	Version   uint16             `json:"version"`
 	Timestamp int64              `json:"timestamp"`
