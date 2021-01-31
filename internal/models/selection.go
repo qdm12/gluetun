@@ -33,7 +33,7 @@ type ServerSelection struct {
 	ISPs  []string `json:"isps"`
 	Owned bool     `json:"owned"`
 
-	// Mullvad, Windscribe
+	// Mullvad, Windscribe, PIA
 	CustomPort uint16 `json:"custom_port"`
 
 	// NordVPN
@@ -92,6 +92,7 @@ func (p *ProviderSettings) String() string {
 			"Regions: "+commaJoin(p.ServerSelection.Regions),
 			"Encryption preset: "+p.ExtraConfigOptions.EncryptionPreset,
 			"Port forwarding: "+p.PortForwarding.String(),
+			"Custom port: "+customPort,
 		)
 	case "mullvad":
 		settingsList = append(settingsList,

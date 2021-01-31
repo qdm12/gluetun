@@ -29,6 +29,10 @@ func GetPIASettings(paramsReader params.Reader) (settings models.ProviderSetting
 	if err != nil {
 		return settings, err
 	}
+	settings.ServerSelection.CustomPort, err = paramsReader.GetPIAPort()
+	if err != nil {
+		return settings, err
+	}
 	settings.PortForwarding.Enabled, err = paramsReader.GetPortForwarding()
 	if err != nil {
 		return settings, err

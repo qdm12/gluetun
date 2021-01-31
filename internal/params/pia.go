@@ -63,3 +63,10 @@ func (r *reader) GetPIAEncryptionPreset() (preset string, err error) {
 func (r *reader) GetPIARegions() (regions []string, err error) {
 	return r.env.CSVInside("REGION", constants.PIAGeoChoices())
 }
+
+// GetPIAPort obtains the port to reach the PIA server on from the
+// environment variable PORT.
+func (r *reader) GetPIAPort() (port uint16, err error) {
+	n, err := r.env.IntRange("PORT", 0, 65535, libparams.Default("0"))
+	return uint16(n), err
+}

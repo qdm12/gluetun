@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -40,29 +41,63 @@ func newPrivateInternetAccess(servers []models.PIAServer, timeNow timeNowFunc) *
 	}
 }
 
-func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
-	connection models.OpenVPNConnection, err error) {
-	var port uint16
+var (
+	ErrInvalidPort = errors.New("invalid port number")
+)
+
+func (p *pia) getPort(selection models.ServerSelection) (port uint16, err error) {
+	if selection.CustomPort == 0 {
+		switch selection.Protocol {
+		case constants.TCP:
+			switch selection.EncryptionPreset {
+			case constants.PIAEncryptionPresetNormal:
+				port = 502
+			case constants.PIAEncryptionPresetStrong:
+				port = 501
+			}
+		case constants.UDP:
+			switch selection.EncryptionPreset {
+			case constants.PIAEncryptionPresetNormal:
+				port = 1198
+			case constants.PIAEncryptionPresetStrong:
+				port = 1197
+			}
+		}
+
+		if port == 0 {
+			return 0, fmt.Errorf(
+				"%w: combination of protocol %q and encryption %q does not yield any port number",
+				ErrInvalidPort, selection.Protocol, selection.EncryptionPreset)
+		}
+		return port, nil
+	}
+
+	port = selection.CustomPort
 	switch selection.Protocol {
 	case constants.TCP:
-		switch selection.EncryptionPreset {
-		case constants.PIAEncryptionPresetNormal:
-			port = 502
-		case constants.PIAEncryptionPresetStrong:
-			port = 501
+		switch port {
+		case 80, 110, 443: //nolint:gomnd
+		default:
+			return 0, fmt.Errorf("%w: %d for protocol %s",
+				ErrInvalidPort, port, selection.Protocol)
 		}
 	case constants.UDP:
-		switch selection.EncryptionPreset {
-		case constants.PIAEncryptionPresetNormal:
-			port = 1198
-		case constants.PIAEncryptionPresetStrong:
-			port = 1197
+		switch port {
+		case 53, 1194, 1197, 1198, 8080, 9201: //nolint:gomnd
+		default:
+			return 0, fmt.Errorf("%w: %d for protocol %s",
+				ErrInvalidPort, port, selection.Protocol)
 		}
 	}
-	if port == 0 {
-		return connection, fmt.Errorf(
-			"combination of protocol %q and encryption %q does not yield any port number",
-			selection.Protocol, selection.EncryptionPreset)
+
+	return port, nil
+}
+
+func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
+	connection models.OpenVPNConnection, err error) {
+	port, err := p.getPort(selection)
+	if err != nil {
+		return connection, err
 	}
 
 	servers := p.servers
