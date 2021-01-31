@@ -65,8 +65,8 @@ func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (con
 	}
 
 	connections := make([]models.OpenVPNConnection, len(servers))
-	for _, server := range servers {
-		connections = append(connections, models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol})
+	for i := range servers {
+		connections[i] = models.OpenVPNConnection{IP: servers[i].IP, Port: port, Protocol: selection.Protocol}
 	}
 
 	return pickRandomConnection(connections, w.randSource), nil
