@@ -27,54 +27,56 @@ func (d *DNS) String() string {
 	return strings.Join(d.lines(), "\n")
 }
 
+const (
+	subIndent = " |--"
+	indent    = "    " // used if lines already contain the subIndent
+)
+
 func (d *DNS) lines() (lines []string) {
-	if !d.Enabled {
-		return []string{"DNS over TLS disabled, using plaintext DNS " + d.PlaintextAddress.String()}
+	lines = append(lines, subIndent+"DNS:")
+	if d.PlaintextAddress != nil {
+		lines = append(lines, indent+subIndent+"Plaintext address: "+d.PlaintextAddress.String())
 	}
+	keepNameserver := "no"
+	if d.KeepNameserver {
+		keepNameserver = "yes"
+	}
+	lines = append(lines,
+		indent+subIndent+"Keep nameserver (disabled blocking): "+keepNameserver)
+	if !d.Enabled {
+		lines = append(lines, indent+subIndent+"DNS over TLS: disabled")
+		return lines
+	}
+	lines = append(lines, indent+subIndent+"DNS over TLS:")
 
-	const prefix = " |--"
-
-	lines = append(lines, "DNS settings:")
-
-	lines = append(lines, prefix+"Unbound:")
+	lines = append(lines, indent+indent+subIndent+"Unbound:")
 	for _, line := range d.Unbound.Lines() {
-		indent := "   " + prefix
-		if strings.HasPrefix(line, prefix) {
-			indent = "      "
-		}
-		lines = append(lines, indent+line)
+		lines = append(lines, indent+indent+indent+line)
 	}
 
 	blockMalicious := disabled
 	if d.BlockMalicious {
 		blockMalicious = enabled
 	}
-	lines = append(lines, prefix+"Block malicious: "+blockMalicious)
+	lines = append(lines, indent+indent+subIndent+"Block malicious: "+blockMalicious)
 
 	blockAds := disabled
 	if d.BlockAds {
 		blockAds = enabled
 	}
-	lines = append(lines, prefix+"Block ads: "+blockAds)
+	lines = append(lines, indent+indent+subIndent+"Block ads: "+blockAds)
 
 	blockSurveillance := disabled
 	if d.BlockSurveillance {
 		blockSurveillance = enabled
 	}
-	lines = append(lines, prefix+"Block surveillance: "+blockSurveillance)
+	lines = append(lines, indent+indent+subIndent+"Block surveillance: "+blockSurveillance)
 
 	update := "deactivated"
 	if d.UpdatePeriod > 0 {
 		update = "every " + d.UpdatePeriod.String()
 	}
-	lines = append(lines, prefix+"Update: "+update)
-
-	keepNameserver := "no"
-	if d.KeepNameserver {
-		keepNameserver = "yes"
-	}
-	lines = append(lines,
-		prefix+"Keep nameserver (disabled blocking): "+keepNameserver)
+	lines = append(lines, indent+indent+subIndent+"Update: "+update)
 
 	return lines
 }
