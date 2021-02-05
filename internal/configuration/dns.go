@@ -24,46 +24,46 @@ type DNS struct { //nolint:maligned
 	Unbound           unboundmodels.Settings
 }
 
-func (d *DNS) String() string {
-	return strings.Join(d.lines(), "\n")
+func (settings *DNS) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (d *DNS) lines() (lines []string) {
+func (settings *DNS) lines() (lines []string) {
 	lines = append(lines, lastIndent+"DNS:")
 
-	if d.PlaintextAddress != nil {
-		lines = append(lines, indent+lastIndent+"Plaintext address: "+d.PlaintextAddress.String())
+	if settings.PlaintextAddress != nil {
+		lines = append(lines, indent+lastIndent+"Plaintext address: "+settings.PlaintextAddress.String())
 	}
 
-	if d.KeepNameserver {
+	if settings.KeepNameserver {
 		lines = append(lines, indent+lastIndent+"Keep nameserver (disabled blocking): yes")
 	}
 
-	if !d.Enabled {
+	if !settings.Enabled {
 		return lines
 	}
 
 	lines = append(lines, indent+lastIndent+"DNS over TLS:")
 
 	lines = append(lines, indent+indent+lastIndent+"Unbound:")
-	for _, line := range d.Unbound.Lines() {
+	for _, line := range settings.Unbound.Lines() {
 		lines = append(lines, indent+indent+indent+line)
 	}
 
-	if d.BlockMalicious {
+	if settings.BlockMalicious {
 		lines = append(lines, indent+indent+lastIndent+"Block malicious: enabled")
 	}
 
-	if d.BlockAds {
+	if settings.BlockAds {
 		lines = append(lines, indent+indent+lastIndent+"Block ads: enabled")
 	}
 
-	if d.BlockSurveillance {
+	if settings.BlockSurveillance {
 		lines = append(lines, indent+indent+lastIndent+"Block surveillance: enabled")
 	}
 
-	if d.UpdatePeriod > 0 {
-		lines = append(lines, indent+indent+lastIndent+"Update: every "+d.UpdatePeriod.String())
+	if settings.UpdatePeriod > 0 {
+		lines = append(lines, indent+indent+lastIndent+"Update: every "+settings.UpdatePeriod.String())
 	}
 
 	return lines

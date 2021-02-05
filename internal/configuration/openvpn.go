@@ -23,28 +23,28 @@ type OpenVPN struct {
 	Provider  Provider `json:"provider"`
 }
 
-func (o *OpenVPN) String() string {
-	return strings.Join(o.lines(), "\n")
+func (settings *OpenVPN) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (o *OpenVPN) lines() (lines []string) {
+func (settings *OpenVPN) lines() (lines []string) {
 	lines = append(lines, lastIndent+"OpenVPN:")
 
-	lines = append(lines, indent+lastIndent+"Verobisty level: "+strconv.Itoa(o.Verbosity))
+	lines = append(lines, indent+lastIndent+"Verobisty level: "+strconv.Itoa(settings.Verbosity))
 
-	if o.Root {
+	if settings.Root {
 		lines = append(lines, indent+lastIndent+"Run as root: enabled")
 	}
 
-	if len(o.Cipher) > 0 {
-		lines = append(lines, indent+lastIndent+"Custom cipher: "+o.Cipher)
+	if len(settings.Cipher) > 0 {
+		lines = append(lines, indent+lastIndent+"Custom cipher: "+settings.Cipher)
 	}
-	if len(o.Auth) > 0 {
-		lines = append(lines, indent+lastIndent+"Custom auth algorithm: "+o.Auth)
+	if len(settings.Auth) > 0 {
+		lines = append(lines, indent+lastIndent+"Custom auth algorithm: "+settings.Auth)
 	}
 
 	lines = append(lines, indent+lastIndent+"Provider:")
-	for _, line := range o.Provider.lines() {
+	for _, line := range settings.Provider.lines() {
 		lines = append(lines, indent+indent+line)
 	}
 
@@ -60,6 +60,9 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		"pia", "private internet access", "mullvad", "windscribe", "surfshark",
 		"cyberghost", "vyprvpn", "nordvpn", "purevpn", "privado"},
 		params.Default("private internet access"))
+	if err != nil {
+		return err
+	}
 	if vpnsp == "pia" { // retro compatibility
 		vpnsp = "private internet access"
 	}

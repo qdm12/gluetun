@@ -14,17 +14,17 @@ type System struct {
 	Timezone string
 }
 
-func (s *System) String() string {
-	return strings.Join(s.lines(), "\n")
+func (settings *System) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (s *System) lines() (lines []string) {
+func (settings *System) lines() (lines []string) {
 	lines = append(lines, lastIndent+"System:")
-	lines = append(lines, indent+lastIndent+"Process user ID: "+strconv.Itoa(s.PUID))
-	lines = append(lines, indent+lastIndent+"Process group ID: "+strconv.Itoa(s.PGID))
+	lines = append(lines, indent+lastIndent+"Process user ID: "+strconv.Itoa(settings.PUID))
+	lines = append(lines, indent+lastIndent+"Process group ID: "+strconv.Itoa(settings.PGID))
 
-	if len(s.Timezone) > 0 {
-		lines = append(lines, indent+lastIndent+"Timezone: "+s.Timezone)
+	if len(settings.Timezone) > 0 {
+		lines = append(lines, indent+lastIndent+"Timezone: "+settings.Timezone)
 	} else {
 		lines = append(lines, indent+lastIndent+"Timezone: NOT SET ⚠️ CAN CAUSE TIME ISSUES")
 	}

@@ -19,37 +19,37 @@ type Provider struct {
 	PortForwarding     PortForwarding     `json:"port_forwarding"`
 }
 
-func (p *Provider) lines() (lines []string) {
-	lines = append(lines, lastIndent+strings.Title(string(p.Name))+" settings:")
+func (settings *Provider) lines() (lines []string) {
+	lines = append(lines, lastIndent+strings.Title(string(settings.Name))+" settings:")
 
-	lines = append(lines, indent+lastIndent+"Network protocol: "+string(p.ServerSelection.Protocol))
+	lines = append(lines, indent+lastIndent+"Network protocol: "+string(settings.ServerSelection.Protocol))
 
-	if p.ServerSelection.TargetIP != nil {
-		lines = append(lines, indent+lastIndent+"Target IP address: "+p.ServerSelection.TargetIP.String())
+	if settings.ServerSelection.TargetIP != nil {
+		lines = append(lines, indent+lastIndent+"Target IP address: "+settings.ServerSelection.TargetIP.String())
 	}
 
 	var providerLines []string
-	switch strings.ToLower(string(p.Name)) {
+	switch strings.ToLower(string(settings.Name)) {
 	case "cyberghost":
-		providerLines = p.cyberghostLines()
+		providerLines = settings.cyberghostLines()
 	case "mullvad":
-		providerLines = p.mullvadLines()
+		providerLines = settings.mullvadLines()
 	case "private internet access":
-		providerLines = p.privateinternetaccessLines()
+		providerLines = settings.privateinternetaccessLines()
 	case "windscribe":
-		providerLines = p.windscribeLines()
+		providerLines = settings.windscribeLines()
 	case "surfshark":
-		providerLines = p.surfsharkLines()
+		providerLines = settings.surfsharkLines()
 	case "vyprvpn":
-		providerLines = p.vyprvpnLines()
+		providerLines = settings.vyprvpnLines()
 	case "nordvpn":
-		providerLines = p.nordvpnLines()
+		providerLines = settings.nordvpnLines()
 	case "purevpn":
-		providerLines = p.purevpnLines()
+		providerLines = settings.purevpnLines()
 	case "privado":
-		providerLines = p.privadoLines()
+		providerLines = settings.privadoLines()
 	default:
-		panic("Missing lines method for provider " + p.Name + "! Please create a Github issue.")
+		panic("Missing lines method for provider " + settings.Name + "! Please create a Github issue.")
 	}
 
 	for _, line := range providerLines {

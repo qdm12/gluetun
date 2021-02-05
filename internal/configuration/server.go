@@ -13,16 +13,16 @@ type ControlServer struct {
 	Log  bool
 }
 
-func (c *ControlServer) String() string {
-	return strings.Join(c.lines(), "\n")
+func (settings *ControlServer) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (c *ControlServer) lines() (lines []string) {
+func (settings *ControlServer) lines() (lines []string) {
 	lines = append(lines, lastIndent+"HTTP control server:")
 
-	lines = append(lines, indent+lastIndent+"Listening port: "+strconv.Itoa(int(c.Port)))
+	lines = append(lines, indent+lastIndent+"Listening port: "+strconv.Itoa(int(settings.Port)))
 
-	if c.Log {
+	if settings.Log {
 		lines = append(lines, indent+lastIndent+"Logging: enabled")
 	}
 

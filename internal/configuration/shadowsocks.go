@@ -16,22 +16,22 @@ type ShadowSocks struct {
 	Log      bool
 }
 
-func (s *ShadowSocks) String() string {
-	return strings.Join(s.lines(), "\n")
+func (settings *ShadowSocks) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (s *ShadowSocks) lines() (lines []string) {
-	if !s.Enabled {
+func (settings *ShadowSocks) lines() (lines []string) {
+	if !settings.Enabled {
 		return nil
 	}
 
 	lines = append(lines, lastIndent+"Shadowsocks server:")
 
-	lines = append(lines, indent+lastIndent+"Listening port: "+strconv.Itoa(int(s.Port)))
+	lines = append(lines, indent+lastIndent+"Listening port: "+strconv.Itoa(int(settings.Port)))
 
-	lines = append(lines, indent+lastIndent+"Method: "+s.Method)
+	lines = append(lines, indent+lastIndent+"Method: "+settings.Method)
 
-	if s.Log {
+	if settings.Log {
 		lines = append(lines, indent+lastIndent+"Logging: enabled")
 	}
 

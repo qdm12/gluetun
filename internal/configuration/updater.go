@@ -24,18 +24,18 @@ type Updater struct {
 	CLI    bool `json:"-"`
 }
 
-func (s *Updater) String() string {
-	return strings.Join(s.lines(), "\n")
+func (settings *Updater) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (s *Updater) lines() (lines []string) {
-	if s.Period == 0 {
+func (settings *Updater) lines() (lines []string) {
+	if settings.Period == 0 {
 		return nil
 	}
 
 	lines = append(lines, lastIndent+"Updater:")
 
-	lines = append(lines, indent+lastIndent+"Period: every "+s.Period.String())
+	lines = append(lines, indent+lastIndent+"Period: every "+settings.Period.String())
 
 	return lines
 }

@@ -13,19 +13,19 @@ type PublicIP struct {
 	IPFilepath models.Filepath `json:"ip_filepath"`
 }
 
-func (p *PublicIP) String() string {
-	return strings.Join(p.lines(), "\n")
+func (settings *PublicIP) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (p *PublicIP) lines() (lines []string) {
-	if p.Period == 0 {
+func (settings *PublicIP) lines() (lines []string) {
+	if settings.Period == 0 {
 		lines = append(lines, lastIndent+"Public IP getter: disabled")
 		return lines
 	}
 
 	lines = append(lines, lastIndent+"Public IP getter:")
-	lines = append(lines, indent+lastIndent+"Fetch period: "+p.Period.String())
-	lines = append(lines, indent+lastIndent+"IP file: "+string(p.IPFilepath))
+	lines = append(lines, indent+lastIndent+"Fetch period: "+settings.Period.String())
+	lines = append(lines, indent+lastIndent+"IP file: "+string(settings.IPFilepath))
 
 	return lines
 }
@@ -39,6 +39,9 @@ func (settings *PublicIP) read(r reader) (err error) {
 	filepathStr, err := r.env.Path("PUBLICIP_FILE", params.CaseSensitiveValue(),
 		params.Default("/tmp/gluetun/ip"),
 		params.RetroKeys([]string{"IP_STATUS_FILE"}, r.onRetroActive))
+	if err != nil {
+		return err
+	}
 	settings.IPFilepath = models.Filepath(filepathStr)
 
 	return nil

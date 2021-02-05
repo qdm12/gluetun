@@ -83,7 +83,7 @@ func readCSVIPNets(env params.Env, key string, options ...params.OptionSetter) (
 	for i, ipNetStr := range ipNetsStr {
 		_, ipNet, err := net.ParseCIDR(ipNetStr)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %q from environment variable %s: %w",
+			return nil, fmt.Errorf("%w: %q from environment variable %s: %s",
 				ErrInvalidIPNet, ipNetStr, key, err)
 		} else if ipNet == nil {
 			return nil, fmt.Errorf("%w: %q from environment variable %s: subnet is nil",

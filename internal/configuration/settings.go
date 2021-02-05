@@ -22,50 +22,50 @@ type Settings struct {
 	ControlServer      ControlServer
 }
 
-func (s *Settings) String() string {
-	return strings.Join(s.lines(), "\n")
+func (settings *Settings) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (s *Settings) lines() (lines []string) {
+func (settings *Settings) lines() (lines []string) {
 	lines = append(lines, "Settings summary below:")
 
-	for _, line := range s.OpenVPN.lines() {
+	for _, line := range settings.OpenVPN.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.DNS.lines() {
+	for _, line := range settings.DNS.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.Firewall.lines() {
+	for _, line := range settings.Firewall.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.System.lines() {
+	for _, line := range settings.System.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.HTTPProxy.lines() {
+	for _, line := range settings.HTTPProxy.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.ShadowSocks.lines() {
+	for _, line := range settings.ShadowSocks.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.ControlServer.lines() {
+	for _, line := range settings.ControlServer.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.Updater.lines() {
+	for _, line := range settings.Updater.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	for _, line := range s.PublicIP.lines() {
+	for _, line := range settings.PublicIP.lines() {
 		lines = append(lines, indent+line)
 	}
 
-	if s.VersionInformation {
+	if settings.VersionInformation {
 		lines = append(lines, indent+lastIndent+"Github version information: enabled")
 	}
 

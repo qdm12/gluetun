@@ -17,28 +17,28 @@ type HTTPProxy struct {
 	Log      bool
 }
 
-func (h *HTTPProxy) String() string {
-	return strings.Join(h.lines(), "\n")
+func (settings *HTTPProxy) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (h *HTTPProxy) lines() (lines []string) {
-	if !h.Enabled {
+func (settings *HTTPProxy) lines() (lines []string) {
+	if !settings.Enabled {
 		return nil
 	}
 
 	lines = append(lines, lastIndent+"HTTP proxy:")
 
-	lines = append(lines, indent+lastIndent+"Port: "+strconv.Itoa(int(h.Port)))
+	lines = append(lines, indent+lastIndent+"Port: "+strconv.Itoa(int(settings.Port)))
 
-	if h.User != "" {
+	if settings.User != "" {
 		lines = append(lines, indent+lastIndent+"Authentication: enabled")
 	}
 
-	if h.Log {
+	if settings.Log {
 		lines = append(lines, indent+lastIndent+"Log: enabled")
 	}
 
-	if h.Stealth {
+	if settings.Stealth {
 		lines = append(lines, indent+lastIndent+"Stealth: enabled")
 	}
 

@@ -20,24 +20,3 @@ func ipNetsToStrings(ipNets []net.IPNet) (strings []string) {
 	}
 	return strings
 }
-
-func boolToEnabled(enabled bool) string {
-	if enabled {
-		return "enabled"
-	}
-	return "disabled"
-}
-
-func boolToYes(yes bool) string {
-	if yes {
-		return "yes"
-	}
-	return "no"
-}
-
-func boolToOn(on bool) string {
-	if on {
-		return "on"
-	}
-	return "off"
-}

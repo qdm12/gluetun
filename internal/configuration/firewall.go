@@ -16,35 +16,35 @@ type Firewall struct {
 	Debug           bool
 }
 
-func (f *Firewall) String() string {
-	return strings.Join(f.lines(), "\n")
+func (settings *Firewall) String() string {
+	return strings.Join(settings.lines(), "\n")
 }
 
-func (f *Firewall) lines() (lines []string) {
-	if !f.Enabled {
+func (settings *Firewall) lines() (lines []string) {
+	if !settings.Enabled {
 		lines = append(lines, lastIndent+"Firewall: disabled ⚠️")
 		return lines
 	}
 
 	lines = append(lines, lastIndent+"Firewall:")
 
-	if f.Debug {
+	if settings.Debug {
 		lines = append(lines, indent+lastIndent+"Debug: on")
 	}
 
-	if len(f.VPNInputPorts) > 0 {
+	if len(settings.VPNInputPorts) > 0 {
 		lines = append(lines, indent+lastIndent+"VPN input ports: "+
-			strings.Join(uint16sToStrings(f.VPNInputPorts), ", "))
+			strings.Join(uint16sToStrings(settings.VPNInputPorts), ", "))
 	}
 
-	if len(f.InputPorts) > 0 {
+	if len(settings.InputPorts) > 0 {
 		lines = append(lines, indent+lastIndent+"Input ports: "+
-			strings.Join(uint16sToStrings(f.InputPorts), ", "))
+			strings.Join(uint16sToStrings(settings.InputPorts), ", "))
 	}
 
-	if len(f.OutboundSubnets) > 0 {
+	if len(settings.OutboundSubnets) > 0 {
 		lines = append(lines, indent+lastIndent+"Outbound subnets: "+
-			strings.Join(ipNetsToStrings(f.OutboundSubnets), ", "))
+			strings.Join(ipNetsToStrings(settings.OutboundSubnets), ", "))
 	}
 
 	return lines
