@@ -49,7 +49,7 @@ func (n *nordvpn) filterServers(regions []string, protocol models.NetworkProtoco
 	return servers
 }
 
-func (n *nordvpn) GetOpenVPNConnection(selection models.ServerSelection) (
+func (n *nordvpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {

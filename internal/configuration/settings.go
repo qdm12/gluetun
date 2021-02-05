@@ -72,7 +72,7 @@ func (s *Settings) lines() (lines []string) {
 	return lines
 }
 
-// GetAllSettings obtains all settings for the program and returns an error as soon
+// Read obtains all configuration options for the program and returns an error as soon
 // as an error is encountered reading them.
 func (settings *Settings) Read(env params.Env, os os.OS, logger logging.Logger) (err error) {
 	r := newReader(env, os, logger)

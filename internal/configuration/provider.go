@@ -13,10 +13,10 @@ import (
 
 // Provider contains settings specific to a VPN provider.
 type Provider struct {
-	Name               models.VPNProvider        `json:"name"`
-	ServerSelection    models.ServerSelection    `json:"server_selection"`
-	ExtraConfigOptions models.ExtraConfigOptions `json:"extra_config"`
-	PortForwarding     models.PortForwarding     `json:"port_forwarding"`
+	Name               models.VPNProvider `json:"name"`
+	ServerSelection    ServerSelection    `json:"server_selection"`
+	ExtraConfigOptions ExtraConfigOptions `json:"extra_config"`
+	PortForwarding     PortForwarding     `json:"port_forwarding"`
 }
 
 func (p *Provider) lines() (lines []string) {

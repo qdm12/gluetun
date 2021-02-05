@@ -40,7 +40,7 @@ func (v *vyprvpn) filterServers(regions []string) (servers []models.VyprvpnServe
 	return servers
 }
 
-func (v *vyprvpn) GetOpenVPNConnection(selection models.ServerSelection) (
+func (v *vyprvpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {

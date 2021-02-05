@@ -43,7 +43,7 @@ func (m *mullvad) filterServers(countries, cities, isps []string, owned bool) (s
 	return servers
 }
 
-func (m *mullvad) GetOpenVPNConnection(selection models.ServerSelection) (
+func (m *mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var defaultPort uint16 = 1194
 	if selection.Protocol == constants.TCP {

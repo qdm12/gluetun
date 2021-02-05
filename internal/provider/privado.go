@@ -39,7 +39,7 @@ func (s *privado) filterServers(hostnames []string) (servers []models.PrivadoSer
 	return servers
 }
 
-func (s *privado) GetOpenVPNConnection(selection models.ServerSelection) (
+func (s *privado) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16 = 1194
 	switch selection.Protocol {

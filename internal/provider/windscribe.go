@@ -44,7 +44,7 @@ func (w *windscribe) filterServers(regions, cities, hostnames []string) (servers
 }
 
 //nolint:lll
-func (w *windscribe) GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error) {
+func (w *windscribe) GetOpenVPNConnection(selection configuration.ServerSelection) (connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {
 	case selection.CustomPort > 0:

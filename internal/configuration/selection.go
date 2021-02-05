@@ -1,13 +1,15 @@
-package models
+package configuration
 
 import (
 	"net"
+
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 type ServerSelection struct {
 	// Common
-	Protocol NetworkProtocol `json:"network_protocol"`
-	TargetIP net.IP          `json:"target_ip,omitempty"`
+	Protocol models.NetworkProtocol `json:"network_protocol"`
+	TargetIP net.IP                 `json:"target_ip,omitempty"`
 
 	// Cyberghost, PIA, Surfshark, Windscribe, Vyprvpn, NordVPN
 	Regions []string `json:"regions"`
@@ -42,6 +44,12 @@ type ExtraConfigOptions struct {
 
 // PortForwarding contains settings for port forwarding.
 type PortForwarding struct {
-	Enabled  bool     `json:"enabled"`
-	Filepath Filepath `json:"filepath"`
+	Enabled  bool            `json:"enabled"`
+	Filepath models.Filepath `json:"filepath"`
+}
+
+func (p *PortForwarding) lines() (lines []string) {
+	return []string{
+		lastIndent + "File path: " + string(p.Filepath),
+	}
 }

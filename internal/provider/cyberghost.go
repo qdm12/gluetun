@@ -41,7 +41,7 @@ func (c *cyberghost) filterServers(regions []string, group string) (servers []mo
 	return servers
 }
 
-func (c *cyberghost) GetOpenVPNConnection(selection models.ServerSelection) (
+func (c *cyberghost) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	const httpsPort = 443
 	if selection.TargetIP != nil {

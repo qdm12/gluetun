@@ -42,7 +42,7 @@ func (p *purevpn) filterServers(regions, countries, cities []string) (servers []
 	return servers
 }
 
-func (p *purevpn) GetOpenVPNConnection(selection models.ServerSelection) (
+func (p *purevpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {

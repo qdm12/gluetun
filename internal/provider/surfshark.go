@@ -40,7 +40,7 @@ func (s *surfshark) filterServers(regions []string) (servers []models.SurfsharkS
 	return servers
 }
 
-func (s *surfshark) GetOpenVPNConnection(selection models.ServerSelection) (
+func (s *surfshark) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16
 	switch {
