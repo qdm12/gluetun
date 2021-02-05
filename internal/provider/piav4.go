@@ -17,11 +17,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	gluetunLog "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -131,7 +131,7 @@ func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
 }
 
 func (p *pia) BuildConf(connection models.OpenVPNConnection,
-	username string, settings settings.OpenVPN) (lines []string) {
+	username string, settings configuration.OpenVPN) (lines []string) {
 	var X509CRL, certificate string
 	var defaultCipher, defaultAuth string
 	if settings.Provider.ExtraConfigOptions.EncryptionPreset == constants.PIAEncryptionPresetNormal {

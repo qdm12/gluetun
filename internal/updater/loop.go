@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/golibs/logging"
 )
@@ -18,8 +18,8 @@ type Looper interface {
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
-	GetSettings() (settings settings.Updater)
-	SetSettings(settings settings.Updater) (outcome string)
+	GetSettings() (settings configuration.Updater)
+	SetSettings(settings configuration.Updater) (outcome string)
 }
 
 type looper struct {
@@ -44,7 +44,7 @@ type looper struct {
 
 const defaultBackoffTime = 5 * time.Second
 
-func NewLooper(settings settings.Updater, currentServers models.AllServers,
+func NewLooper(settings configuration.Updater, currentServers models.AllServers,
 	storage storage.Storage, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger logging.Logger) Looper {
 	loggerWithPrefix := logger.WithPrefix("updater: ")

@@ -5,14 +5,14 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 )
 
 type state struct {
 	status     models.LoopStatus
-	settings   settings.DNS
+	settings   configuration.DNS
 	statusMu   sync.RWMutex
 	settingsMu sync.RWMutex
 }
@@ -69,13 +69,13 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 	}
 }
 
-func (l *looper) GetSettings() (settings settings.DNS) {
+func (l *looper) GetSettings() (settings configuration.DNS) {
 	l.state.settingsMu.RLock()
 	defer l.state.settingsMu.RUnlock()
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings settings.DNS) (outcome string) {
+func (l *looper) SetSettings(settings configuration.DNS) (outcome string) {
 	l.state.settingsMu.Lock()
 	settingsUnchanged := reflect.DeepEqual(l.state.settings, settings)
 	if settingsUnchanged {

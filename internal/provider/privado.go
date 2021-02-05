@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -73,7 +73,7 @@ func (s *privado) GetOpenVPNConnection(selection models.ServerSelection) (
 }
 
 func (s *privado) BuildConf(connection models.OpenVPNConnection,
-	username string, settings settings.OpenVPN) (lines []string) {
+	username string, settings configuration.OpenVPN) (lines []string) {
 	if len(settings.Cipher) == 0 {
 		settings.Cipher = aes256cbc
 	}

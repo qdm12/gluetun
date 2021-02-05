@@ -5,10 +5,10 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -16,7 +16,7 @@ import (
 // Provider contains methods to read and modify the openvpn configuration to connect as a client.
 type Provider interface {
 	GetOpenVPNConnection(selection models.ServerSelection) (connection models.OpenVPNConnection, err error)
-	BuildConf(connection models.OpenVPNConnection, username string, settings settings.OpenVPN) (lines []string)
+	BuildConf(connection models.OpenVPNConnection, username string, settings configuration.OpenVPN) (lines []string)
 	PortForward(ctx context.Context, client *http.Client,
 		openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 		syncState func(port uint16) (pfFilepath models.Filepath))

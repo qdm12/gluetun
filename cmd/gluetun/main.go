@@ -14,6 +14,7 @@ import (
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -22,11 +23,9 @@ import (
 	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
-	"github.com/qdm12/gluetun/internal/params"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/unix"
@@ -35,6 +34,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/os/user"
+	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/updated/pkg/dnscrypto"
 )
 
@@ -140,7 +140,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	routingConf := routing.NewRouting(logger)
 	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)
 
-	paramsReader := params.NewReader(logger, os)
 	fmt.Println(gluetunLogging.Splash(buildInfo))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
@@ -149,10 +148,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"IPtables": firewallConf.Version,
 	})
 
-	allSettings, warnings, err := settings.GetAllSettings(paramsReader)
-	for _, warning := range warnings {
-		logger.Warn(warning)
-	}
+	var allSettings configuration.Settings
+	err := allSettings.Read(params.NewEnv(), os, logger.WithPrefix("configuration: "))
 	if err != nil {
 		return err
 	}
