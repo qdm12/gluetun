@@ -28,47 +28,18 @@ func (settings *Settings) String() string {
 
 func (settings *Settings) lines() (lines []string) {
 	lines = append(lines, "Settings summary below:")
-
-	for _, line := range settings.OpenVPN.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.DNS.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.Firewall.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.System.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.HTTPProxy.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.ShadowSocks.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.ControlServer.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.Updater.lines() {
-		lines = append(lines, indent+line)
-	}
-
-	for _, line := range settings.PublicIP.lines() {
-		lines = append(lines, indent+line)
-	}
-
+	lines = append(lines, settings.OpenVPN.lines()...)
+	lines = append(lines, settings.DNS.lines()...)
+	lines = append(lines, settings.Firewall.lines()...)
+	lines = append(lines, settings.System.lines()...)
+	lines = append(lines, settings.HTTPProxy.lines()...)
+	lines = append(lines, settings.ShadowSocks.lines()...)
+	lines = append(lines, settings.ControlServer.lines()...)
+	lines = append(lines, settings.Updater.lines()...)
+	lines = append(lines, settings.PublicIP.lines()...)
 	if settings.VersionInformation {
-		lines = append(lines, indent+lastIndent+"Github version information: enabled")
+		lines = append(lines, lastIndent+"Github version information: enabled")
 	}
-
 	return lines
 }
 
