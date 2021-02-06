@@ -1,3 +1,4 @@
+// Package dns defines interfaces to interact with DNS and DNS over TLS.
 package dns
 
 import (

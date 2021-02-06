@@ -1,3 +1,5 @@
+// Package unix defines interfaces to interact with Unix related objects.
+// Its primary use is to be used in tests.
 package unix
 
 import sysunix "golang.org/x/sys/unix"

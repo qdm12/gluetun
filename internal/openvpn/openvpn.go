@@ -1,3 +1,5 @@
+// Package openvpn defines interfaces to interact with openvpn
+// and run it in a stateful loop.
 package openvpn
 
 import (

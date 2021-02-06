@@ -1,3 +1,4 @@
+// Package alpine defines a configurator to interact with the Alpine operating system.
 package alpine
 
 import (

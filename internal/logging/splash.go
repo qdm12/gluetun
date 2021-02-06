@@ -1,3 +1,4 @@
+// Package logging defines helper functions for logging.
 package logging
 
 import (

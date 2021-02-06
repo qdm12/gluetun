@@ -1,3 +1,4 @@
+// Package httpproxy defines an interface to run an HTTP(s) proxy server.
 package httpproxy
 
 import (

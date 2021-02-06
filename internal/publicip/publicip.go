@@ -1,3 +1,4 @@
+// Package publicip defines interfaces to get your public IP address.
 package publicip
 
 import (

@@ -1,3 +1,5 @@
+// Package firewall defines a configurator used to change the state
+// of the firewall as well as do some light routing changes.
 package firewall
 
 import (

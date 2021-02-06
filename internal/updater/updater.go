@@ -1,3 +1,4 @@
+// Package updater implements update mechanisms for each VPN provider servers.
 package updater
 
 import (

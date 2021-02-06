@@ -1,3 +1,4 @@
+// Package shadowsocks defines interfaces to configure and run a Shadowsocks server.
 package shadowsocks
 
 import (
