@@ -30,7 +30,7 @@ func (settings *OpenVPN) String() string {
 func (settings *OpenVPN) lines() (lines []string) {
 	lines = append(lines, lastIndent+"OpenVPN:")
 
-	lines = append(lines, indent+lastIndent+"Verobisty level: "+strconv.Itoa(settings.Verbosity))
+	lines = append(lines, indent+lastIndent+"Verbosity level: "+strconv.Itoa(settings.Verbosity))
 
 	if settings.Root {
 		lines = append(lines, indent+lastIndent+"Run as root: enabled")

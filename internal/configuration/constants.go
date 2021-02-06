@@ -1,6 +1,6 @@
 package configuration
 
 const (
-	lastIndent = " |--"
-	indent     = "    "
+	lastIndent = "|--"
+	indent     = "   "
 )

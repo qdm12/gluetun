@@ -26,7 +26,7 @@ func (settings *System) lines() (lines []string) {
 	if len(settings.Timezone) > 0 {
 		lines = append(lines, indent+lastIndent+"Timezone: "+settings.Timezone)
 	} else {
-		lines = append(lines, indent+lastIndent+"Timezone: NOT SET ⚠️ CAN CAUSE TIME ISSUES")
+		lines = append(lines, indent+lastIndent+"Timezone: NOT SET ⚠️ - it can cause time related issues")
 	}
 	return lines
 }
