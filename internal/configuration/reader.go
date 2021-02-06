@@ -114,3 +114,16 @@ func readIP(env params.Env, key string) (ip net.IP, err error) {
 
 	return ip, nil
 }
+
+func readPortOrZero(env params.Env, key string) (port uint16, err error) {
+	s, err := env.Get(key)
+	if err != nil {
+		return 0, err
+	}
+
+	if len(s) == 0 || s == "0" {
+		return 0, nil
+	}
+
+	return env.Port(key)
+}

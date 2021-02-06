@@ -56,7 +56,7 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.CustomPort, err = r.env.Port("PORT", params.Default("0"))
+	settings.ServerSelection.CustomPort, err = readPortOrZero(r.env, "PORT")
 	if err != nil {
 		return err
 	}

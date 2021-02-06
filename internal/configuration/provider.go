@@ -49,7 +49,8 @@ func (settings *Provider) lines() (lines []string) {
 	case "windscribe":
 		providerLines = settings.windscribeLines()
 	default:
-		panic("Missing lines method for provider " + settings.Name + "! Please create a Github issue.")
+		panic(`Missing lines method for provider "` +
+			settings.Name + `"! Please create a Github issue.`)
 	}
 
 	for _, line := range providerLines {
@@ -83,7 +84,7 @@ var (
 
 func readCustomPort(env params.Env, protocol models.NetworkProtocol,
 	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
-	port, err = env.Port("PORT", params.Default("0"))
+	port, err = readPortOrZero(env, "PORT")
 	if err != nil {
 		return 0, err
 	} else if port == 0 {

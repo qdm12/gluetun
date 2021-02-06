@@ -20,10 +20,6 @@ func (settings *Provider) windscribeLines() (lines []string) {
 		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
 	}
 
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
 	lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
 
 	return lines
