@@ -34,20 +34,20 @@ func (settings *Provider) lines() (lines []string) {
 		providerLines = settings.cyberghostLines()
 	case "mullvad":
 		providerLines = settings.mullvadLines()
+	case "nordvpn":
+		providerLines = settings.nordvpnLines()
+	case "privado":
+		providerLines = settings.privadoLines()
 	case "private internet access":
 		providerLines = settings.privateinternetaccessLines()
-	case "windscribe":
-		providerLines = settings.windscribeLines()
+	case "purevpn":
+		providerLines = settings.purevpnLines()
 	case "surfshark":
 		providerLines = settings.surfsharkLines()
 	case "vyprvpn":
 		providerLines = settings.vyprvpnLines()
-	case "nordvpn":
-		providerLines = settings.nordvpnLines()
-	case "purevpn":
-		providerLines = settings.purevpnLines()
-	case "privado":
-		providerLines = settings.privadoLines()
+	case "windscribe":
+		providerLines = settings.windscribeLines()
 	default:
 		panic("Missing lines method for provider " + settings.Name + "! Please create a Github issue.")
 	}
