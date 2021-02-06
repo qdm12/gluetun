@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -16,8 +16,8 @@ type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetStatus() (status models.LoopStatus)
-	GetSettings() (settings settings.HTTPProxy)
-	SetSettings(settings settings.HTTPProxy) (outcome string)
+	GetSettings() (settings configuration.HTTPProxy)
+	SetSettings(settings configuration.HTTPProxy) (outcome string)
 }
 
 type looper struct {
@@ -34,7 +34,7 @@ type looper struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(logger logging.Logger, settings settings.HTTPProxy) Looper {
+func NewLooper(logger logging.Logger, settings configuration.HTTPProxy) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,

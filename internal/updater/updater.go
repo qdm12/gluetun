@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/network"
 )
@@ -18,7 +18,7 @@ type Updater interface {
 
 type updater struct {
 	// configuration
-	options settings.Updater
+	options configuration.Updater
 
 	// state
 	servers models.AllServers
@@ -31,7 +31,7 @@ type updater struct {
 	client   network.Client
 }
 
-func New(settings settings.Updater, httpClient *http.Client,
+func New(settings configuration.Updater, httpClient *http.Client,
 	currentServers models.AllServers, logger logging.Logger) Updater {
 	if len(settings.DNSAddress) == 0 {
 		settings.DNSAddress = "1.1.1.1"

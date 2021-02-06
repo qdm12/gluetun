@@ -6,14 +6,14 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 )
 
 type state struct {
 	status     models.LoopStatus
-	settings   settings.PublicIP
+	settings   configuration.PublicIP
 	ip         net.IP
 	statusMu   sync.RWMutex
 	settingsMu sync.RWMutex
@@ -72,13 +72,13 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 	}
 }
 
-func (l *looper) GetSettings() (settings settings.PublicIP) {
+func (l *looper) GetSettings() (settings configuration.PublicIP) {
 	l.state.settingsMu.RLock()
 	defer l.state.settingsMu.RUnlock()
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings settings.PublicIP) (outcome string) {
+func (l *looper) SetSettings(settings configuration.PublicIP) (outcome string) {
 	l.state.settingsMu.Lock()
 	defer l.state.settingsMu.Unlock()
 	settingsUnchanged := reflect.DeepEqual(settings, l.state.settings)

@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	shadowsockslib "github.com/qdm12/ss-server/pkg"
 )
@@ -17,8 +17,8 @@ type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetStatus() (status models.LoopStatus)
-	GetSettings() (settings settings.ShadowSocks)
-	SetSettings(settings settings.ShadowSocks) (outcome string)
+	GetSettings() (settings configuration.ShadowSocks)
+	SetSettings(settings configuration.ShadowSocks) (outcome string)
 }
 
 type looper struct {
@@ -51,7 +51,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(settings settings.ShadowSocks, logger logging.Logger) Looper {
+func NewLooper(settings configuration.ShadowSocks, logger logging.Logger) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,

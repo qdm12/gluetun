@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/routing"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -22,8 +22,8 @@ type Looper interface {
 	Run(ctx context.Context, wg *sync.WaitGroup)
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
-	GetSettings() (settings settings.OpenVPN)
-	SetSettings(settings settings.OpenVPN) (outcome string)
+	GetSettings() (settings configuration.OpenVPN)
+	SetSettings(settings configuration.OpenVPN) (outcome string)
 	GetServers() (servers models.AllServers)
 	SetServers(servers models.AllServers)
 	GetPortForwarded() (port uint16)
@@ -58,7 +58,7 @@ type looper struct {
 
 const defaultBackoffTime = 15 * time.Second
 
-func NewLooper(settings settings.OpenVPN,
+func NewLooper(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,

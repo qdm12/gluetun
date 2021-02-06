@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -19,8 +19,8 @@ type Looper interface {
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
-	GetSettings() (settings settings.PublicIP)
-	SetSettings(settings settings.PublicIP) (outcome string)
+	GetSettings() (settings configuration.PublicIP)
+	SetSettings(settings configuration.PublicIP) (outcome string)
 	GetPublicIP() (publicIP net.IP)
 }
 
@@ -49,7 +49,7 @@ type looper struct {
 const defaultBackoffTime = 5 * time.Second
 
 func NewLooper(client *http.Client, logger logging.Logger,
-	settings settings.PublicIP, puid, pgid int,
+	settings configuration.PublicIP, puid, pgid int,
 	os os.OS) Looper {
 	return &looper{
 		state: state{

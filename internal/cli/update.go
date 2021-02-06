@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
@@ -16,7 +16,7 @@ import (
 )
 
 func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
-	options := settings.Updater{CLI: true}
+	options := configuration.Updater{CLI: true}
 	var flushToFile bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&flushToFile, "file", false, "Write results to /gluetun/servers.json (for end users)")

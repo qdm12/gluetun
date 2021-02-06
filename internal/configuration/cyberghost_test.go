@@ -1,0 +1,175 @@
+package configuration
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func Test_extractClientKey(t *testing.T) {
+	t.Parallel()
+	const validPEM = `
+-----BEGIN PRIVATE KEY-----
+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
+zZjrL52saevO25cigVl+hxcnY8DTpbk=
+-----END PRIVATE KEY-----
+`
+	const validKeyString = "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" //nolint:lll
+	testCases := map[string]struct {
+		b   []byte
+		key string
+		err error
+	}{
+		"no input": {
+			err: fmt.Errorf("cannot decode PEM block from client key"),
+		},
+		"bad input": {
+			b:   []byte{1, 2, 3},
+			err: fmt.Errorf("cannot decode PEM block from client key"),
+		},
+		"valid key": {
+			b:   []byte(validPEM),
+			key: validKeyString,
+		},
+	}
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			key, err := extractClientKey(testCase.b)
+			if testCase.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, testCase.err.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, testCase.key, key)
+		})
+	}
+}
+
+func Test_extractClientCertificate(t *testing.T) {
+	t.Parallel()
+	const validPEM = `
+-----BEGIN CERTIFICATE-----
+MIIGrDCCBJSgAwIBAgIEAdTnfTANBgkqhkiG9w0BAQsFADB7MQswCQYDVQQGEwJS
+TzESMBAGA1UEBxMJQnVjaGFyZXN0MRgwFgYDVQQKEw9DeWJlckdob3N0IFMuQS4x
+GzAZBgNVBAMTEkN5YmVyR2hvc3QgUm9vdCBDQTEhMB8GCSqGSIb3DQEJARYSaW5m
+b0BjeWJlcmdob3N0LnJvMB4XDTIwMDcwNDE1MjkzNloXDTMwMDcwMjE1MjkzNlow
+fTELMAkGA1UEBhMCUk8xEjAQBgNVBAcMCUJ1Y2hhcmVzdDEYMBYGA1UECgwPQ3li
+ZXJHaG9zdCBTLkEuMR0wGwYDVQQDDBRjLmoua2xhdmVyQGdtYWlsLmNvbTEhMB8G
+CSqGSIb3DQEJARYSaW5mb0BjeWJlcmdob3N0LnJvMIICIjANBgkqhkiG9w0BAQEF
+AAOCAg8AMIICCgKCAgEAobp2NlGUHMNBe08YEOnVG3QJjF3ZaXbRhE/II9rmtgJT
+NZtDohGChvFlNRsExKzVrKxHCeuJkVffwzQ6fYk4/M1RdYLJUh0UVw3e4WdApw8E
+7TJZxDYm4SHQNXUvt1Rt5TjslcXxIpDZgrMSc/kHROYEL9tdgdzPZErUJehXyJPh
+EzIrzmAJh501x7WwKPz9ctSVlItyavqEWFF2vyUa6X9DYmD9mQTz5c+VXNO5DkXm
+PFBIaEVDnvFtcjGJ56yEvFnWVukL+OUX7ezowrIOFOcp9udjgpeiHq+XvsQ6ER0D
+Jt25MiEId3NjkxtZ8BitDftTcLN/kt81hWKT7adMVc3kpIZ80cxrwRCttMd7sHAz
+KI9u7pMxv10eUOsIEY87ewBe3l6KvEnjA+9uIjim6gLLebDIaEH50Ee9PzNJ8fqQ
+2u54Ab4bt00/H1sUnJ6Ss/+WsQDOK1BsPRKKcnHZntOlHrs2Tu5+txKNU2cOapI8
+SjVULUNKrRXASbpfWnLUfri/HO742bJb/TjkOJcOxta3hTPFAhaRWBusVlB41XVH
+euH5DAhugYXeSNK6/6Ul8YvKUNH/7QbxuGIGXfth19Xl4QLI1umyEjZopSlt3tOi
+O2V1soVNSQCCfxXVoCTMESMLjhkjWdmBDhdy2GTW7S4YoJfqVKiS18rYkN7I4ZMC
+AwEAAaOCATQwggEwMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgWgMDQGCWCGSAGG+EIB
+DQQnFiVDeWJlckdob3N0IEdlbmVyYXRlZCBVc2VyIENlcnRpZmljYXRlMBEGCWCG
+SAGG+EIBAQQEAwIHgDAdBgNVHQ4EFgQULwUtU5s6pL2NN9gPeEnKX0dhwiswga0G
+A1UdIwSBpTCBooAU6tdK1g/He5qzjeAoM5eHt4in9iWhf6R9MHsxCzAJBgNVBAYT
+AlJPMRIwEAYDVQQHEwlCdWNoYXJlc3QxGDAWBgNVBAoTD0N5YmVyR2hvc3QgUy5B
+LjEbMBkGA1UEAxMSQ3liZXJHaG9zdCBSb290IENBMSEwHwYJKoZIhvcNAQkBFhJp
+bmZvQGN5YmVyZ2hvc3Qucm+CCQCcVButZsQ0uzANBgkqhkiG9w0BAQsFAAOCAgEA
+ystGIMYhQWaEdTqlnLCytrr8657t+PuidZMNNIaPB3wN2Fi2xKf14DTg03mqxjmP
+Pb+f+PVNIOV5PdWD4jcQwOP1GEboGV0DFzlRGeAtDcvKwdee4oASJbZq1CETqDao
+hQTxKEWC+UBk2F36nOaEI6Sab+Mb4cR9//PAwvzOqrXuGF5NuIOX7eFtCMQSgQq6
+lRRqTQjekm0Dxigx4JA92Jo2qZRwCJ0T3IXBJGL831HCFJbDWv8PV3lsfFb/i2+v
+r54uywFQVWWp18dYi97gipfuQ4zRg2Ldx5aXSmnhhKpg5ioZvtk043QofF12YORh
+obElqavRbvvhZvlCouvcuoq9QKi7IPe5SJZkZ1X7ezMesCwBzwFpt6vRUAcslsNF
+bcYS1iSENlY/PTcDqBhbKuc9yAhq+/aUgaY/8VF5RWVzSRZufbf3BPwOkE4K0Uyb
+aobO/YX0JOkCacAD+4tdR6YSXNIMMRAOCBQvxbxFXaHzhwhzBAjdsC56FrJKwXvQ
+rRLU3tF4P0zFMeNTay8uTtUXugDK7EnklLESuYdpUJ8bUMlAUhJBi6UFI9/icMud
+xXvLRvhnBW9EtKib5JnVFUovcEUt+3EJbyst05nkL4YPjQS4TC9DHdo5SyRAy1Tp
+iOCYTbretAFZRhh6ycUN5hBeN8GMQxiMreMtDV4PEIQ=
+-----END CERTIFICATE-----
+`
+	const validCertificateString = "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" //nolint:lll
+	testCases := map[string]struct {
+		b           []byte
+		certificate string
+		err         error
+	}{
+		"no input": {
+			err: fmt.Errorf("cannot decode PEM block from client certificate"),
+		},
+		"bad input": {
+			b:   []byte{1, 2, 3},
+			err: fmt.Errorf("cannot decode PEM block from client certificate"),
+		},
+		"valid key": {
+			b:           []byte(validPEM),
+			certificate: validCertificateString,
+		},
+	}
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			certificate, err := extractClientCertificate(testCase.b)
+			if testCase.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, testCase.err.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, testCase.certificate, certificate)
+		})
+	}
+}

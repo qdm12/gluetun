@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/qdm12/dns/pkg/unbound"
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -20,8 +20,8 @@ type Looper interface {
 	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
-	GetSettings() (settings settings.DNS)
-	SetSettings(settings settings.DNS) (outcome string)
+	GetSettings() (settings configuration.DNS)
+	SetSettings(settings configuration.DNS) (outcome string)
 }
 
 type looper struct {
@@ -45,7 +45,7 @@ type looper struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(conf unbound.Configurator, settings settings.DNS, client *http.Client,
+func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *http.Client,
 	logger logging.Logger, username string, puid, pgid int) Looper {
 	return &looper{
 		state: state{

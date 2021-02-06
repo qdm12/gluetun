@@ -5,14 +5,14 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 )
 
 type state struct {
 	status          models.LoopStatus
-	settings        settings.OpenVPN
+	settings        configuration.OpenVPN
 	allServers      models.AllServers
 	portForwarded   uint16
 	statusMu        sync.RWMutex
@@ -27,7 +27,7 @@ func (s *state) setStatusWithLock(status models.LoopStatus) {
 	s.status = status
 }
 
-func (s *state) getSettingsAndServers() (settings settings.OpenVPN, allServers models.AllServers) {
+func (s *state) getSettingsAndServers() (settings configuration.OpenVPN, allServers models.AllServers) {
 	s.settingsMu.RLock()
 	s.allServersMu.RLock()
 	settings = s.settings
@@ -83,13 +83,13 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 	}
 }
 
-func (l *looper) GetSettings() (settings settings.OpenVPN) {
+func (l *looper) GetSettings() (settings configuration.OpenVPN) {
 	l.state.settingsMu.RLock()
 	defer l.state.settingsMu.RUnlock()
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings settings.OpenVPN) (outcome string) {
+func (l *looper) SetSettings(settings configuration.OpenVPN) (outcome string) {
 	l.state.settingsMu.Lock()
 	settingsUnchanged := reflect.DeepEqual(l.state.settings, settings)
 	if settingsUnchanged {

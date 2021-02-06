@@ -17,11 +17,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	gluetunLog "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/settings"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -45,7 +45,7 @@ var (
 	ErrInvalidPort = errors.New("invalid port number")
 )
 
-func (p *pia) getPort(selection models.ServerSelection) (port uint16, err error) {
+func (p *pia) getPort(selection configuration.ServerSelection) (port uint16, err error) {
 	if selection.CustomPort == 0 {
 		switch selection.Protocol {
 		case constants.TCP:
@@ -93,7 +93,7 @@ func (p *pia) getPort(selection models.ServerSelection) (port uint16, err error)
 	return port, nil
 }
 
-func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
+func (p *pia) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	port, err := p.getPort(selection)
 	if err != nil {
@@ -131,7 +131,7 @@ func (p *pia) GetOpenVPNConnection(selection models.ServerSelection) (
 }
 
 func (p *pia) BuildConf(connection models.OpenVPNConnection,
-	username string, settings settings.OpenVPN) (lines []string) {
+	username string, settings configuration.OpenVPN) (lines []string) {
 	var X509CRL, certificate string
 	var defaultCipher, defaultAuth string
 	if settings.Provider.ExtraConfigOptions.EncryptionPreset == constants.PIAEncryptionPresetNormal {
