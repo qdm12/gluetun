@@ -18,7 +18,7 @@ type (
 	VPNProvider string
 	// NetworkProtocol contains the network protocol to be used to communicate with the VPN servers.
 	NetworkProtocol string
-	// Loop status such as stopped or running.
+	// LoopStatus status such as stopped or running.
 	LoopStatus string
 )
 

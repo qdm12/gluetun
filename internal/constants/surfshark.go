@@ -22,6 +22,7 @@ func SurfsharkRegionChoices() (choices []string) {
 }
 
 //nolint:lll
+// SurfsharkServers returns a slice of all the server information for Surfshark.
 func SurfsharkServers() []models.SurfsharkServer {
 	return []models.SurfsharkServer{
 		{Region: "Albania", IPs: []net.IP{{31, 171, 153, 99}, {31, 171, 153, 131}, {31, 171, 154, 101}, {31, 171, 154, 149}, {31, 171, 154, 163}, {31, 171, 154, 165}}},

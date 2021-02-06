@@ -22,6 +22,7 @@ func NordvpnRegionChoices() (choices []string) {
 }
 
 //nolint:gomnd
+// NordvpnServers returns a slice of all the server information for Nordvpn.
 func NordvpnServers() []models.NordvpnServer {
 	return []models.NordvpnServer{
 		{Region: "Albania", Number: 20, TCP: true, UDP: true, IP: net.IP{31, 171, 152, 11}},

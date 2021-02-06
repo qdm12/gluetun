@@ -42,6 +42,7 @@ func PurevpnCityChoices() (choices []string) {
 }
 
 //nolint:lll
+// PurevpnServers returns a slice of all the server information for Purevpn.
 func PurevpnServers() []models.PurevpnServer {
 	return []models.PurevpnServer{
 		{Country: "Australia", Region: "New South Wales", City: "Sydney", IPs: []net.IP{{192, 253, 241, 4}, {43, 245, 161, 84}}},

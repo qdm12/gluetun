@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,6 +12,10 @@ import (
 	"strings"
 
 	"github.com/qdm12/golibs/network"
+)
+
+var (
+	ErrBadStatusCode = errors.New("bad HTTP status code")
 )
 
 func fetchAndExtractFiles(ctx context.Context, client network.Client, urls ...string) (
@@ -21,7 +26,7 @@ func fetchAndExtractFiles(ctx context.Context, client network.Client, urls ...st
 		if err != nil {
 			return nil, err
 		} else if status != http.StatusOK {
-			return nil, fmt.Errorf("Getting %s results in HTTP status code %d", url, status)
+			return nil, fmt.Errorf("%w: fetching url %s: %d", ErrBadStatusCode, url, status)
 		}
 		newContents, err := zipExtractAll(zipBytes)
 		if err != nil {

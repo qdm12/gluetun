@@ -34,7 +34,7 @@ type routing struct {
 	stateMutex      sync.RWMutex
 }
 
-// NewConfigurator creates a new Configurator instance.
+// NewRouting creates a new routing instance.
 func NewRouting(logger logging.Logger) Routing {
 	return &routing{
 		logger:  logger.WithPrefix("routing: "),
@@ -42,10 +42,10 @@ func NewRouting(logger logging.Logger) Routing {
 	}
 }
 
-func (c *routing) SetVerbose(verbose bool) {
-	c.verbose = verbose
+func (r *routing) SetVerbose(verbose bool) {
+	r.verbose = verbose
 }
 
-func (c *routing) SetDebug() {
-	c.debug = true
+func (r *routing) SetDebug() {
+	r.debug = true
 }

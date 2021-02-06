@@ -3,6 +3,7 @@ package updater
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -31,6 +32,11 @@ func (u *updater) updateNordvpn(ctx context.Context) (err error) {
 	u.servers.Nordvpn.Servers = servers
 	return nil
 }
+
+var (
+	ErrNoIDInServerName      = errors.New("no ID in server name")
+	ErrInvalidIDInServerName = errors.New("invalid ID in server name")
+)
 
 func findNordvpnServers(ctx context.Context, client network.Client) (
 	servers []models.NordvpnServer, warnings []string, err error) {
@@ -74,12 +80,12 @@ func findNordvpnServers(ctx context.Context, client network.Client) (
 		}
 		i := strings.IndexRune(jsonServer.Name, '#')
 		if i < 0 {
-			return nil, nil, fmt.Errorf("No ID in server name %q", jsonServer.Name)
+			return nil, nil, fmt.Errorf("%w: %s", ErrNoIDInServerName, jsonServer.Name)
 		}
 		idString := jsonServer.Name[i+1:]
 		idUint64, err := strconv.ParseUint(idString, 10, 16)
 		if err != nil {
-			return nil, nil, fmt.Errorf("Bad ID in server name %q", jsonServer.Name)
+			return nil, nil, fmt.Errorf("%w: %s", ErrInvalidIDInServerName, jsonServer.Name)
 		}
 		server := models.NordvpnServer{
 			Region: jsonServer.Country,

@@ -41,6 +41,8 @@ func CyberghostGroupChoices() (choices []string) {
 }
 
 //nolint:lll
+// CyberghostServers returns a slice with the server information for each
+// of the Cyberghost server.
 func CyberghostServers() []models.CyberghostServer {
 	return []models.CyberghostServer{
 		{Region: "Albania", Group: "Premium TCP Europe", IPs: []net.IP{{31, 171, 152, 99}, {31, 171, 152, 100}, {31, 171, 152, 101}, {31, 171, 152, 102}, {31, 171, 152, 105}, {31, 171, 152, 108}, {31, 171, 152, 132}, {31, 171, 152, 136}, {31, 171, 152, 139}, {31, 171, 152, 140}}},

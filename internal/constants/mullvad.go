@@ -55,6 +55,7 @@ func MullvadISPChoices() (choices []string) {
 }
 
 //nolint:dupl,lll
+// MullvadServers returns a slice of all the server information for Mullvad.
 func MullvadServers() []models.MullvadServer {
 	return []models.MullvadServer{
 		{Country: "Albania", City: "Tirana", ISP: "iRegister", Owned: false, IPs: []net.IP{{31, 171, 154, 210}}, IPsV6: []net.IP{{0x2a, 0x4, 0x27, 0xc0, 0xff, 0xff, 0xff, 0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1f}}},

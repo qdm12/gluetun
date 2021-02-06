@@ -26,6 +26,7 @@ func PIAGeoChoices() (choices []string) {
 }
 
 //nolint:lll
+// PIAServers returns a slice of all the server information for PIA.
 func PIAServers() []models.PIAServer {
 	return []models.PIAServer{
 		{Region: "AU Melbourne", ServerName: "melbourne402", Protocol: "udp", PortForward: true, IP: net.IP{27, 50, 74, 220}},

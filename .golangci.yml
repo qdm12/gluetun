@@ -10,10 +10,9 @@ issues:
       linters:
         - dupl
         - maligned
-    - path: internal/unix/constants\.go
+    - path: internal/server/
       linters:
-        - golint
-      text: don't use ALL_CAPS in Go names; use CamelCase
+        - dupl
 linters:
   disable-all: true
   enable:
