@@ -8,11 +8,11 @@ import (
 )
 
 type PIAServer struct {
-	Region      string          `json:"region"`
-	ServerName  string          `json:"server_name"`
-	Protocol    NetworkProtocol `json:"protocol"`
-	PortForward bool            `json:"port_forward"`
-	IP          net.IP          `json:"ip"`
+	Region      string `json:"region"`
+	ServerName  string `json:"server_name"`
+	Protocol    string `json:"protocol"`
+	PortForward bool   `json:"port_forward"`
+	IP          net.IP `json:"ip"`
 }
 
 func (p *PIAServer) String() string {

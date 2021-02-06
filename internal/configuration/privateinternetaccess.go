@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/params"
 )
 
@@ -67,12 +66,11 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 	}
 
 	if settings.PortForwarding.Enabled {
-		filepathStr, err := r.env.Path("PORT_FORWARDING_STATUS_FILE",
+		settings.PortForwarding.Filepath, err = r.env.Path("PORT_FORWARDING_STATUS_FILE",
 			params.Default("/tmp/gluetun/forwarded_port"), params.CaseSensitiveValue())
 		if err != nil {
 			return err
 		}
-		settings.PortForwarding.Filepath = models.Filepath(filepathStr)
 	}
 
 	return nil

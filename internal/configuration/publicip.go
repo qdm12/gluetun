@@ -4,13 +4,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/params"
 )
 
 type PublicIP struct {
-	Period     time.Duration   `json:"period"`
-	IPFilepath models.Filepath `json:"ip_filepath"`
+	Period     time.Duration `json:"period"`
+	IPFilepath string        `json:"ip_filepath"`
 }
 
 func (settings *PublicIP) String() string {
@@ -25,7 +24,7 @@ func (settings *PublicIP) lines() (lines []string) {
 
 	lines = append(lines, lastIndent+"Public IP getter:")
 	lines = append(lines, indent+lastIndent+"Fetch period: "+settings.Period.String())
-	lines = append(lines, indent+lastIndent+"IP file: "+string(settings.IPFilepath))
+	lines = append(lines, indent+lastIndent+"IP file: "+settings.IPFilepath)
 
 	return lines
 }
@@ -36,13 +35,12 @@ func (settings *PublicIP) read(r reader) (err error) {
 		return err
 	}
 
-	filepathStr, err := r.env.Path("PUBLICIP_FILE", params.CaseSensitiveValue(),
+	settings.IPFilepath, err = r.env.Path("PUBLICIP_FILE", params.CaseSensitiveValue(),
 		params.Default("/tmp/gluetun/ip"),
 		params.RetroKeys([]string{"IP_STATUS_FILE"}, r.onRetroActive))
 	if err != nil {
 		return err
 	}
-	settings.IPFilepath = models.Filepath(filepathStr)
 
 	return nil
 }

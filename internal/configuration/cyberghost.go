@@ -65,7 +65,7 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 }
 
 func readCyberghostClientKey(r reader) (clientKey string, err error) {
-	b, err := r.getFromFileOrSecretFile("OPENVPN_CLIENTKEY", string(constants.ClientKey))
+	b, err := r.getFromFileOrSecretFile("OPENVPN_CLIENTKEY", constants.ClientKey)
 	if err != nil {
 		return "", err
 	}
@@ -86,7 +86,7 @@ func extractClientKey(b []byte) (key string, err error) {
 }
 
 func readCyberghostClientCertificate(r reader) (clientCertificate string, err error) {
-	b, err := r.getFromFileOrSecretFile("OPENVPN_CLIENTCRT", string(constants.ClientCertificate))
+	b, err := r.getFromFileOrSecretFile("OPENVPN_CLIENTCRT", constants.ClientCertificate)
 	if err != nil {
 		return "", err
 	}

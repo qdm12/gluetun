@@ -11,7 +11,7 @@ import (
 func (c *configurator) Start(ctx context.Context) (
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	c.logger.Info("starting openvpn")
-	return c.commander.Start(ctx, "openvpn", "--config", string(constants.OpenVPNConf))
+	return c.commander.Start(ctx, "openvpn", "--config", constants.OpenVPNConf)
 }
 
 func (c *configurator) Version(ctx context.Context) (string, error) {

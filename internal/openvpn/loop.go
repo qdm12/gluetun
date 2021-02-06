@@ -237,7 +237,7 @@ func (l *looper) portForward(ctx context.Context, wg *sync.WaitGroup,
 	if !settings.Provider.PortForwarding.Enabled {
 		return
 	}
-	syncState := func(port uint16) (pfFilepath models.Filepath) {
+	syncState := func(port uint16) (pfFilepath string) {
 		l.state.portForwardedMu.Lock()
 		defer l.state.portForwardedMu.Unlock()
 		l.state.portForwarded = port
@@ -251,8 +251,7 @@ func (l *looper) portForward(ctx context.Context, wg *sync.WaitGroup,
 }
 
 func writeOpenvpnConf(lines []string, openFile os.OpenFileFunc) error {
-	const filepath = string(constants.OpenVPNConf)
-	file, err := openFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	file, err := openFile(constants.OpenVPNConf, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

@@ -128,6 +128,6 @@ func (s *privado) BuildConf(connection models.OpenVPNConnection,
 
 func (s *privado) PortForward(ctx context.Context, client *http.Client,
 	openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
-	syncState func(port uint16) (pfFilepath models.Filepath)) {
+	syncState func(port uint16) (pfFilepath string)) {
 	panic("port forwarding is not supported for privado")
 }

@@ -7,29 +7,28 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/params"
 )
 
 // Provider contains settings specific to a VPN provider.
 type Provider struct {
-	Name               models.VPNProvider `json:"name"`
+	Name               string             `json:"name"`
 	ServerSelection    ServerSelection    `json:"server_selection"`
 	ExtraConfigOptions ExtraConfigOptions `json:"extra_config"`
 	PortForwarding     PortForwarding     `json:"port_forwarding"`
 }
 
 func (settings *Provider) lines() (lines []string) {
-	lines = append(lines, lastIndent+strings.Title(string(settings.Name))+" settings:")
+	lines = append(lines, lastIndent+strings.Title(settings.Name)+" settings:")
 
-	lines = append(lines, indent+lastIndent+"Network protocol: "+string(settings.ServerSelection.Protocol))
+	lines = append(lines, indent+lastIndent+"Network protocol: "+settings.ServerSelection.Protocol)
 
 	if settings.ServerSelection.TargetIP != nil {
 		lines = append(lines, indent+lastIndent+"Target IP address: "+settings.ServerSelection.TargetIP.String())
 	}
 
 	var providerLines []string
-	switch strings.ToLower(string(settings.Name)) {
+	switch strings.ToLower(settings.Name) {
 	case "cyberghost":
 		providerLines = settings.cyberghostLines()
 	case "mullvad":
@@ -64,14 +63,8 @@ func commaJoin(slice []string) string {
 	return strings.Join(slice, ", ")
 }
 
-func readProtocol(env params.Env) (protocol models.NetworkProtocol, err error) {
-	s, err := env.Inside("PROTOCOL",
-		[]string{string(constants.TCP), string(constants.UDP)},
-		params.Default(string(constants.UDP)))
-	if err != nil {
-		return "", err
-	}
-	return models.NetworkProtocol(s), nil
+func readProtocol(env params.Env) (protocol string, err error) {
+	return env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
 }
 
 func readTargetIP(env params.Env) (targetIP net.IP, err error) {
@@ -82,7 +75,7 @@ var (
 	ErrInvalidProtocol = errors.New("invalid network protocol")
 )
 
-func readCustomPort(env params.Env, protocol models.NetworkProtocol,
+func readCustomPort(env params.Env, protocol string,
 	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "PORT")
 	if err != nil {

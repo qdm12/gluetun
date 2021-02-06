@@ -20,10 +20,10 @@ type Provider interface {
 	BuildConf(connection models.OpenVPNConnection, username string, settings configuration.OpenVPN) (lines []string)
 	PortForward(ctx context.Context, client *http.Client,
 		openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
-		syncState func(port uint16) (pfFilepath models.Filepath))
+		syncState func(port uint16) (pfFilepath string))
 }
 
-func New(provider models.VPNProvider, allServers models.AllServers, timeNow timeNowFunc) Provider {
+func New(provider string, allServers models.AllServers, timeNow timeNowFunc) Provider {
 	switch provider {
 	case constants.PrivateInternetAccess:
 		return newPrivateInternetAccess(allServers.Pia.Servers, timeNow)

@@ -1,33 +1,29 @@
 package constants
 
-import (
-	"github.com/qdm12/gluetun/internal/models"
-)
-
 const (
 	// PrivateInternetAccess is a VPN provider.
-	PrivateInternetAccess models.VPNProvider = "private internet access"
+	PrivateInternetAccess = "private internet access"
 	// Mullvad is a VPN provider.
-	Mullvad models.VPNProvider = "mullvad"
+	Mullvad = "mullvad"
 	// Windscribe is a VPN provider.
-	Windscribe models.VPNProvider = "windscribe"
+	Windscribe = "windscribe"
 	// Surfshark is a VPN provider.
-	Surfshark models.VPNProvider = "surfshark"
+	Surfshark = "surfshark"
 	// Cyberghost is a VPN provider.
-	Cyberghost models.VPNProvider = "cyberghost"
+	Cyberghost = "cyberghost"
 	// Vyprvpn is a VPN provider.
-	Vyprvpn models.VPNProvider = "vyprvpn"
+	Vyprvpn = "vyprvpn"
 	// NordVPN is a VPN provider.
-	Nordvpn models.VPNProvider = "nordvpn"
+	Nordvpn = "nordvpn"
 	// PureVPN is a VPN provider.
-	Purevpn models.VPNProvider = "purevpn"
+	Purevpn = "purevpn"
 	// Privado is a VPN provider.
-	Privado models.VPNProvider = "privado"
+	Privado = "privado"
 )
 
 const (
 	// TCP is a network protocol (reliable and slower than UDP).
-	TCP models.NetworkProtocol = "tcp"
+	TCP string = "tcp"
 	// UDP is a network protocol (unreliable and faster than TCP).
-	UDP models.NetworkProtocol = "udp"
+	UDP string = "udp"
 )

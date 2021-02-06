@@ -28,7 +28,7 @@ func newNordvpn(servers []models.NordvpnServer, timeNow timeNowFunc) *nordvpn {
 	}
 }
 
-func (n *nordvpn) filterServers(regions []string, protocol models.NetworkProtocol, numbers []uint16) (
+func (n *nordvpn) filterServers(regions []string, protocol string, numbers []uint16) (
 	servers []models.NordvpnServer) {
 	numbersStr := make([]string, len(numbers))
 	for i := range numbers {
@@ -151,6 +151,6 @@ func (n *nordvpn) BuildConf(connection models.OpenVPNConnection,
 
 func (n *nordvpn) PortForward(ctx context.Context, client *http.Client,
 	openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
-	syncState func(port uint16) (pfFilepath models.Filepath)) {
+	syncState func(port uint16) (pfFilepath string)) {
 	panic("port forwarding is not supported for nordvpn")
 }

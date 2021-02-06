@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/params"
 )
 
@@ -67,7 +66,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		vpnsp = "private internet access"
 	}
 
-	settings.Provider.Name = models.VPNProvider(vpnsp)
+	settings.Provider.Name = vpnsp
 
 	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", true, []string{"USER"})
 	if err != nil {

@@ -212,7 +212,7 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection,
 //nolint:gocognit
 func (p *pia) PortForward(ctx context.Context, client *http.Client,
 	openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
-	syncState func(port uint16) (pfFilepath models.Filepath)) {
+	syncState func(port uint16) (pfFilepath string)) {
 	commonName := p.activeServer.ServerName
 	if !p.activeServer.PortForward {
 		pfLogger.Error("The server %s (region %s) does not support port forwarding",
@@ -267,7 +267,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 		return
 	}
 
-	filepath := string(syncState(data.Port))
+	filepath := syncState(data.Port)
 	pfLogger.Info("Writing port to %s", filepath)
 	if err := writePortForwardedToFile(openFile, filepath, data.Port); err != nil {
 		pfLogger.Error(err)
@@ -322,7 +322,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			}
 			filepath := syncState(data.Port)
 			pfLogger.Info("Writing port to %s", filepath)
-			if err := writePortForwardedToFile(openFile, string(filepath), data.Port); err != nil {
+			if err := writePortForwardedToFile(openFile, filepath, data.Port); err != nil {
 				pfLogger.Error(err)
 			}
 			if err := bindPIAPort(ctx, client, gateway, data); err != nil {
@@ -337,7 +337,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 	}
 }
 
-func filterPIAServers(servers []models.PIAServer, regions []string, protocol models.NetworkProtocol) (
+func filterPIAServers(servers []models.PIAServer, regions []string, protocol string) (
 	filtered []models.PIAServer) {
 	for _, server := range servers {
 		switch {
@@ -417,8 +417,7 @@ type piaPortForwardData struct {
 }
 
 func readPIAPortForwardData(openFile os.OpenFileFunc) (data piaPortForwardData, err error) {
-	const filepath = string(constants.PIAPortForward)
-	file, err := openFile(filepath, os.O_RDONLY, 0)
+	file, err := openFile(constants.PIAPortForward, os.O_RDONLY, 0)
 	if os.IsNotExist(err) {
 		return data, nil
 	} else if err != nil {
@@ -435,8 +434,7 @@ func readPIAPortForwardData(openFile os.OpenFileFunc) (data piaPortForwardData, 
 }
 
 func writePIAPortForwardData(openFile os.OpenFileFunc, data piaPortForwardData) (err error) {
-	const filepath = string(constants.PIAPortForward)
-	file, err := openFile(filepath,
+	file, err := openFile(constants.PIAPortForward,
 		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
 		0644)
 	if err != nil {
@@ -518,8 +516,7 @@ func fetchPIAToken(ctx context.Context, openFile os.OpenFileFunc,
 }
 
 func getOpenvpnCredentials(openFile os.OpenFileFunc) (username, password string, err error) {
-	const filepath = string(constants.OpenVPNAuthConf)
-	file, err := openFile(filepath, os.O_RDONLY, 0)
+	file, err := openFile(constants.OpenVPNAuthConf, os.O_RDONLY, 0)
 	if err != nil {
 		return "", "", fmt.Errorf("cannot read openvpn auth file: %s", err)
 	}

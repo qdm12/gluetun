@@ -6,7 +6,6 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/params/mock_params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -108,7 +107,7 @@ func Test_Provider_lines(t *testing.T) {
 				},
 				PortForwarding: PortForwarding{
 					Enabled:  true,
-					Filepath: models.Filepath("/here"),
+					Filepath: string("/here"),
 				},
 			},
 			lines: []string{
@@ -207,7 +206,7 @@ func Test_readProtocol(t *testing.T) {
 	testCases := map[string]struct {
 		mockStr  string
 		mockErr  error
-		protocol models.NetworkProtocol
+		protocol string
 		err      error
 	}{
 		"error": {

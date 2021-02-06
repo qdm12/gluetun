@@ -316,7 +316,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
 		logger.Info("Clearing forwarded port status file %s", allSettings.OpenVPN.Provider.PortForwarding.Filepath)
-		if err := os.Remove(string(allSettings.OpenVPN.Provider.PortForwarding.Filepath)); err != nil {
+		if err := os.Remove(allSettings.OpenVPN.Provider.PortForwarding.Filepath); err != nil {
 			logger.Error(err)
 		}
 	}

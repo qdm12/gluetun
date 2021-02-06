@@ -12,7 +12,7 @@ import (
 
 func (c *cli) ClientKey(args []string, openFile os.OpenFileFunc) error {
 	flagSet := flag.NewFlagSet("clientkey", flag.ExitOnError)
-	filepath := flagSet.String("path", string(constants.ClientKey), "file path to the client.key file")
+	filepath := flagSet.String("path", constants.ClientKey, "file path to the client.key file")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}

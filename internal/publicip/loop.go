@@ -135,7 +135,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				close(errorCh)
 				filepath := l.GetSettings().IPFilepath
 				l.logger.Info("Removing ip file %s", filepath)
-				if err := l.os.Remove(string(filepath)); err != nil {
+				if err := l.os.Remove(filepath); err != nil {
 					l.logger.Error(err)
 				}
 				return
@@ -151,8 +151,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				getCancel()
 				l.state.setPublicIP(ip)
 				l.logger.Info("Public IP address is %s", ip)
-				filepath := string(l.state.settings.IPFilepath)
-				err := persistPublicIP(l.os.OpenFile, filepath, ip.String(), l.puid, l.pgid)
+				err := persistPublicIP(l.os.OpenFile, l.state.settings.IPFilepath,
+					ip.String(), l.puid, l.pgid)
 				if err != nil {
 					l.logger.Error(err)
 				}
