@@ -94,7 +94,7 @@ func readCustomPort(env params.Env, protocol string,
 		return 0, fmt.Errorf("%w: port %d for TCP protocol", ErrInvalidPort, port)
 	case constants.UDP:
 		for i := range allowedUDP {
-			if allowedTCP[i] == port {
+			if allowedUDP[i] == port {
 				return port, nil
 			}
 		}
