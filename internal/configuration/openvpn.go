@@ -89,7 +89,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		return err
 	}
 
-	settings.Root, err = r.env.YesNo("OPENVPN_ROOT", params.Default("no"))
+	settings.Root, err = r.env.YesNo("OPENVPN_ROOT", params.Default("yes"))
 	if err != nil {
 		return err
 	}
