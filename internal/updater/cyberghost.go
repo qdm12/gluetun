@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -23,7 +24,7 @@ func (u *updater) updateCyberghost(ctx context.Context) (err error) {
 
 func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.CyberghostServer, err error) {
 	groups := getCyberghostGroups()
-	allCountryCodes := getCountryCodes()
+	allCountryCodes := constants.CountryCodes()
 	cyberghostCountryCodes := getCyberghostSubdomainToRegion()
 	possibleCountryCodes := mergeCountryCodes(cyberghostCountryCodes, allCountryCodes)
 
@@ -115,7 +116,7 @@ func mergeCountryCodes(base, extend map[string]string) (merged map[string]string
 	return merged
 }
 
-func getCyberghostSubdomainToRegion() map[string]string { //nolint:dupl
+func getCyberghostSubdomainToRegion() map[string]string {
 	return map[string]string{
 		"af": "Afghanistan",
 		"ax": "Aland Islands",

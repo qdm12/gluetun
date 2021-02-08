@@ -28,6 +28,7 @@ type looper struct {
 	state state
 	// Objects
 	getter IPGetter
+	client *http.Client
 	logger logging.Logger
 	os     os.OS
 	// Fixed settings
@@ -57,6 +58,7 @@ func NewLooper(client *http.Client, logger logging.Logger,
 			settings: settings,
 		},
 		// Objects
+		client:       client,
 		getter:       NewIPGetter(client),
 		logger:       logger.WithPrefix("ip getter: "),
 		os:           os,
@@ -150,8 +152,17 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 			case ip := <-ipCh:
 				getCancel()
 				l.state.setPublicIP(ip)
-				l.logger.Info("Public IP address is %s", ip)
-				err := persistPublicIP(l.os.OpenFile, l.state.settings.IPFilepath,
+
+				message := "Public IP address is " + ip.String()
+				country, region, city, err := Info(ctx, l.client, ip)
+				if err != nil {
+					l.logger.Warn(err)
+				} else {
+					message += " (" + country + ", " + region + ", " + city + ")"
+				}
+				l.logger.Info(message)
+
+				err = persistPublicIP(l.os.OpenFile, l.state.settings.IPFilepath,
 					ip.String(), l.puid, l.pgid)
 				if err != nil {
 					l.logger.Error(err)

@@ -3,10 +3,13 @@ package updater
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/golibs/network"
 )
 
@@ -60,7 +63,11 @@ func findPurevpnServers(ctx context.Context, client network.Client, lookupIP loo
 			warnings = append(warnings, warning)
 			continue
 		}
-		country, region, city, err := getIPInfo(ctx, client, IPs[0])
+
+		// TODO remove once we move away from network.Client
+		const httpTimeout = 3 * time.Second
+		httpClient := &http.Client{Timeout: httpTimeout}
+		country, region, city, err := publicip.Info(ctx, httpClient, IPs[0])
 		if err != nil {
 			return nil, warnings, err
 		}
