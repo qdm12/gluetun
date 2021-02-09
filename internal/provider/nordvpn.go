@@ -98,8 +98,6 @@ func (n *nordvpn) BuildConf(connection models.OpenVPNConnection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
-		"ping 10",
-		"ping-exit 60",
 		"ping-timer-rem",
 		"tls-exit",
 
@@ -111,6 +109,8 @@ func (n *nordvpn) BuildConf(connection models.OpenVPNConnection,
 		"comp-lzo no",
 		"fast-io",
 		"key-direction 1",
+		"ping 15",
+		"ping-restart 0",
 
 		// Added constant values
 		"auth-nocache",
