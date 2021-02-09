@@ -98,6 +98,7 @@ func (w *windscribe) BuildConf(connection models.OpenVPNConnection,
 		"key-direction 1",
 		"script-security 2",
 		"reneg-sec 0",
+		"ncp-disable",
 
 		// Added constant values
 		"auth-nocache",
