@@ -29,7 +29,6 @@ func (h *handler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Re
 		return
 	}
 	if err := h.getErr(); err != nil {
-		h.logger.Error(err)
 		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
 		return
 	}

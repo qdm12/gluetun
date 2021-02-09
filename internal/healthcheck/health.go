@@ -19,7 +19,9 @@ func (s *server) runHealthcheckLoop(ctx context.Context, wg *sync.WaitGroup) {
 		s.handler.setErr(err)
 
 		if previousErr != nil && err == nil {
-			s.logger.Info("passed")
+			s.logger.Info("healthy!")
+		} else if previousErr == nil && err != nil {
+			s.logger.Info("unhealthy: " + err.Error())
 		}
 
 		if err != nil { // try again after 1 second
