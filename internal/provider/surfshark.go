@@ -96,7 +96,6 @@ func (s *surfshark) BuildConf(connection models.OpenVPNConnection,
 		"persist-key",
 		"remote-cert-tls server",
 		"ping 15",
-		"ping-exit 60",
 		"ping-timer-rem",
 		"tls-exit",
 
@@ -108,6 +107,7 @@ func (s *surfshark) BuildConf(connection models.OpenVPNConnection,
 		"fast-io",
 		"key-direction 1",
 		"script-security 2",
+		"ping-restart 0",
 
 		// Added constant values
 		"auth-nocache",
