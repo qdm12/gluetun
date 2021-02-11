@@ -34,10 +34,9 @@ func findPrivadoServersFromZip(ctx context.Context, client network.Client, looku
 	if err != nil {
 		return nil, nil, err
 	}
+
+	hosts := make([]string, 0, len(contents))
 	for fileName, content := range contents {
-		if err := ctx.Err(); err != nil {
-			return nil, warnings, err
-		}
 		hostname, warning, err := extractHostFromOVPN(content)
 		if len(warning) > 0 {
 			warnings = append(warnings, warning)
@@ -45,16 +44,23 @@ func findPrivadoServersFromZip(ctx context.Context, client network.Client, looku
 		if err != nil {
 			return nil, warnings, fmt.Errorf("%w in %q", err, fileName)
 		}
-		const repetition = 1
-		IPs, err := resolveRepeat(ctx, lookupIP, hostname, repetition)
-		switch {
-		case err != nil:
-			return nil, warnings, err
-		case len(IPs) == 0:
+		hosts = append(hosts, hostname)
+	}
+
+	const repetition = 1
+	const timeBetween = 1
+	const failOnErr = false
+	hostToIPs, newWarnings, _ := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	warnings = append(warnings, newWarnings...)
+
+	for hostname, IPs := range hostToIPs {
+		switch len(IPs) {
+		case 0:
 			warning := fmt.Sprintf("no IP address found for host %q", hostname)
 			warnings = append(warnings, warning)
 			continue
-		case len(IPs) > 1:
+		case 1:
+		default:
 			warning := fmt.Sprintf("more than one IP address found for host %q", hostname)
 			warnings = append(warnings, warning)
 		}

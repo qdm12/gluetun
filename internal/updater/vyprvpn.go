@@ -35,6 +35,8 @@ func findVyprvpnServers(ctx context.Context, client network.Client, lookupIP loo
 	if err != nil {
 		return nil, nil, err
 	}
+
+	hostToRegion := make(map[string]string, len(contents))
 	for fileName, content := range contents {
 		if err := ctx.Err(); err != nil {
 			return nil, warnings, err
@@ -46,15 +48,29 @@ func findVyprvpnServers(ctx context.Context, client network.Client, lookupIP loo
 		if err != nil {
 			return nil, warnings, fmt.Errorf("%w in %s", err, fileName)
 		}
-		const repetitions = 1
-		IPs, err := resolveRepeat(ctx, lookupIP, host, repetitions)
-		if err != nil {
-			return nil, warnings, err
-		}
 		region := strings.TrimSuffix(fileName, ".ovpn")
 		region = strings.ReplaceAll(region, " - ", " ")
+		hostToRegion[host] = region
+	}
+
+	hosts := make([]string, len(hostToRegion))
+	i := 0
+	for host := range hostToRegion {
+		hosts[i] = host
+		i++
+	}
+
+	const repetition = 1
+	const timeBetween = 1
+	const failOnErr = true
+	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	if err != nil {
+		return nil, warnings, err
+	}
+
+	for host, IPs := range hostToIPs {
 		server := models.VyprvpnServer{
-			Region: region,
+			Region: hostToRegion[host],
 			IPs:    uniqueSortedIPs(IPs),
 		}
 		servers = append(servers, server)

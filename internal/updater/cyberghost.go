@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
@@ -65,7 +66,8 @@ func tryCyberghostHostname(ctx context.Context, lookupIP lookupIPFunc,
 	defer func() {
 		<-guard
 	}()
-	IPs, err := resolveRepeat(ctx, lookupIP, host, 2)
+	const repetition = 10
+	IPs, err := resolveRepeat(ctx, lookupIP, host, repetition, time.Second)
 	if err != nil || len(IPs) == 0 {
 		results <- models.CyberghostServer{}
 		return

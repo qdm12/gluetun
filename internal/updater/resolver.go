@@ -5,14 +5,16 @@ import (
 	"context"
 	"net"
 	"sort"
+	"time"
 )
 
 func newResolver(resolverAddress string) *net.Resolver {
+	d := net.Dialer{}
+	resolverAddress = net.JoinHostPort(resolverAddress, "53")
 	return &net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-			d := net.Dialer{}
-			return d.DialContext(ctx, "udp", net.JoinHostPort(resolverAddress, "53"))
+			return d.DialContext(ctx, "udp", resolverAddress)
 		},
 	}
 }
@@ -31,35 +33,76 @@ func newLookupIP(r *net.Resolver) lookupIPFunc {
 	}
 }
 
-func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string, n int) (ips []net.IP, err error) {
-	foundIPs := make(chan []net.IP)
-	errors := make(chan error)
+func parallelResolve(ctx context.Context, lookupIP lookupIPFunc, hosts []string,
+	repetition int, timeBetween time.Duration, failOnErr bool) (
+	hostToIPs map[string][]net.IP, warnings []string, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	for i := 0; i < n; i++ {
-		go func() {
-			newIPs, err := lookupIP(ctx, host)
-			if err != nil {
-				errors <- err
-			} else {
-				foundIPs <- newIPs
-			}
-		}()
+
+	type result struct {
+		host string
+		ips  []net.IP
 	}
 
-	uniqueIPs := make(map[string]struct{})
-	for i := 0; i < n; i++ {
-		select {
-		case newIPs := <-foundIPs:
-			for _, ip := range newIPs {
-				key := ip.String()
-				uniqueIPs[key] = struct{}{}
+	results := make(chan result)
+	defer close(results)
+	errors := make(chan error)
+	defer close(errors)
+
+	for _, host := range hosts {
+		go func(host string) {
+			ips, err := resolveRepeat(ctx, lookupIP, host, repetition, timeBetween)
+			if err != nil {
+				errors <- err
+				return
 			}
+			results <- result{
+				host: host,
+				ips:  ips,
+			}
+		}(host)
+	}
+
+	hostToIPs = make(map[string][]net.IP, len(hosts))
+
+	for range hosts {
+		select {
 		case newErr := <-errors:
-			if err == nil {
+			if !failOnErr {
+				warnings = append(warnings, newErr.Error())
+			} else if err == nil {
 				err = newErr
 				cancel()
 			}
+		case r := <-results:
+			hostToIPs[r.host] = r.ips
+		}
+	}
+
+	return hostToIPs, warnings, err
+}
+
+func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string,
+	repetition int, timeBetween time.Duration) (ips []net.IP, err error) {
+	uniqueIPs := make(map[string]struct{})
+
+	for i := 0; i < repetition; i++ {
+		newIPs, err := lookupIP(ctx, host)
+		if err != nil {
+			return nil, err
+		}
+		for _, ip := range newIPs {
+			key := ip.String()
+			uniqueIPs[key] = struct{}{}
+		}
+		timer := time.NewTimer(timeBetween)
+		select {
+		case <-timer.C:
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			return nil, ctx.Err()
 		}
 	}
 
@@ -76,5 +119,5 @@ func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string, n in
 		return bytes.Compare(ips[i], ips[j]) < 1
 	})
 
-	return ips, err
+	return ips, nil
 }
