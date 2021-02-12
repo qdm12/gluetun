@@ -85,6 +85,10 @@ func (settings *Settings) Read(env params.Env, os os.OS, logger logging.Logger) 
 		return err
 	}
 
+	if ip := settings.DNS.PlaintextAddress; ip != nil {
+		settings.Updater.DNSAddress = ip.String()
+	}
+
 	if err := settings.PublicIP.read(r); err != nil {
 		return err
 	}
