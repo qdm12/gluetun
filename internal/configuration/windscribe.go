@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/params"
 )
 
 func (settings *Provider) windscribeLines() (lines []string) {
@@ -48,8 +47,7 @@ func (settings *Provider) readWindscribe(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME",
-		constants.WindscribeHostnameChoices(), params.RetroKeys([]string{"HOSTNAME"}, r.onRetroActive))
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.WindscribeHostnameChoices())
 	if err != nil {
 		return err
 	}
