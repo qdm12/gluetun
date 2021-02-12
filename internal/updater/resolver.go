@@ -86,7 +86,8 @@ func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string,
 	repetition int, timeBetween time.Duration) (ips []net.IP, err error) {
 	uniqueIPs := make(map[string]struct{})
 
-	for i := 0; i < repetition; i++ {
+	i := 0
+	for {
 		newIPs, err := lookupIP(ctx, host)
 		if err != nil {
 			return nil, err
@@ -95,6 +96,12 @@ func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string,
 			key := ip.String()
 			uniqueIPs[key] = struct{}{}
 		}
+
+		i++
+		if i == repetition {
+			break
+		}
+
 		timer := time.NewTimer(timeBetween)
 		select {
 		case <-timer.C:
