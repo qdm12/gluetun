@@ -51,7 +51,11 @@ func (settings *Updater) read(r reader) (err error) {
 	settings.Windscribe = true
 	settings.Stdout = false
 	settings.CLI = false
-	settings.DNSAddress = "127.0.0.1"
+	// use cloudflare in plaintext to not be blocked by DNS over TLS by default.
+	// If a plaintext address is set in the DNS settings, this one will be used.
+	// TODO use custom future encrypted DNS written in Go without blocking
+	// as it's too much trouble to start another parallel unbound instance for now.
+	settings.DNSAddress = "1.1.1.1"
 
 	settings.Period, err = r.env.Duration("UPDATER_PERIOD", params.Default("0"))
 	if err != nil {
