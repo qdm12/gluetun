@@ -51,7 +51,7 @@ func (settings *Updater) read(r reader) (err error) {
 	settings.Windscribe = true
 	settings.Stdout = false
 	settings.CLI = false
-	settings.DNSAddress = "127.0.0.1"
+	settings.DNSAddress = "1.1.1.1" // use cloudflare in plaintext to not be blocked by DNS over TLS
 
 	settings.Period, err = r.env.Duration("UPDATER_PERIOD", params.Default("0"))
 	if err != nil {
