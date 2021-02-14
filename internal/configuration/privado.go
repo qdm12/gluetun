@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/params"
 )
 
 func (settings *Provider) privadoLines() (lines []string) {
@@ -26,8 +25,7 @@ func (settings *Provider) readPrivado(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME",
-		constants.PrivadoHostnameChoices(), params.RetroKeys([]string{"HOSTNAME"}, r.onRetroActive))
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.PrivadoHostnameChoices())
 	if err != nil {
 		return err
 	}
