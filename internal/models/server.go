@@ -26,8 +26,8 @@ type FastestvpnServer struct {
 }
 
 func (s *FastestvpnServer) String() string {
-	return fmt.Sprintf("{Hostname: %q, UDP: %t, TCP: %t, Country: %q, IPs: %s}",
-		s.Hostname, s.UDP, s.TCP, s.Country, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Country: %q, Hostname: %q, UDP: %t, TCP: %t, IPs: %s}",
+		s.Country, s.Hostname, s.UDP, s.TCP, goStringifyIPs(s.IPs))
 }
 
 type HideMyAssServer struct {
