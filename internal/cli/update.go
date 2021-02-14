@@ -23,6 +23,7 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
 	flagSet.BoolVar(&options.Stdout, "stdout", false, "Write results to console to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
+	flagSet.BoolVar(&options.Fastestvpn, "fastestvpn", false, "Update FastestVPN servers")
 	flagSet.BoolVar(&options.HideMyAss, "hidemyass", false, "Update HideMyAss servers")
 	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
 	flagSet.BoolVar(&options.Nordvpn, "nordvpn", false, "Update Nordvpn servers")

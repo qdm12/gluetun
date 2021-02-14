@@ -11,6 +11,7 @@ type Updater struct {
 	Period     time.Duration `json:"period"`
 	DNSAddress string        `json:"dns_address"`
 	Cyberghost bool          `json:"cyberghost"`
+	Fastestvpn bool          `json:"fastestvpn"`
 	HideMyAss  bool          `json:"hidemyass"`
 	Mullvad    bool          `json:"mullvad"`
 	Nordvpn    bool          `json:"nordvpn"`

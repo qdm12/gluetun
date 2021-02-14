@@ -18,6 +18,7 @@ func (s *storage) mergeServers(hardcoded, persisted models.AllServers) models.Al
 	return models.AllServers{
 		Version:    hardcoded.Version,
 		Cyberghost: s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
+		Fastestvpn: s.mergeFastestvpn(hardcoded.Fastestvpn, persisted.Fastestvpn),
 		HideMyAss:  s.mergeHideMyAss(hardcoded.HideMyAss, persisted.HideMyAss),
 		Mullvad:    s.mergeMullvad(hardcoded.Mullvad, persisted.Mullvad),
 		Nordvpn:    s.mergeNordVPN(hardcoded.Nordvpn, persisted.Nordvpn),
@@ -37,6 +38,22 @@ func (s *storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers)
 		return hardcoded
 	}
 	s.logger.Info("Using Cyberghost servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergeFastestvpn(hardcoded, persisted models.FastestvpnServers) models.FastestvpnServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logger.Info(
+			"Fastestvpn servers from file discarded because they are %d versions behind",
+			versionDiff)
+		return hardcoded
+	}
+	s.logger.Info("Using Fastestvpn servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
 }
