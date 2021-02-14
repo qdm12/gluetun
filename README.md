@@ -47,7 +47,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
 - Built in HTTP proxy (tunnels HTTP and HTTPS through TCP)
 - [Connect other containers to it](https://github.com/qdm12/gluetun/wiki/Connect-to-gluetun)
 - [Connect LAN devices to it](https://github.com/qdm12/gluetun/wiki/Connect-to-gluetun)
-- Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, and even s390x as well as ppc64le 🎆
+- Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, and even ppc64le 🎆
 - VPN server side port forwarding for Private Internet Access and Vyprvpn
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
 - Subprograms all drop root privileges once launched

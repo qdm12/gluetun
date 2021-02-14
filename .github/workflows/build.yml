@@ -72,10 +72,10 @@ jobs:
           echo ::set-output name=build_date::$(date -u +%Y-%m-%dT%H:%M:%SZ)
           if [ "$TAG" != "$GITHUB_REF" ]; then
             echo ::set-output name=version::$TAG
-            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/s390x,linux/ppc64le
+            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le
           elif [ "$BRANCH" = "master" ]; then
             echo ::set-output name=version::latest
-            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/s390x,linux/ppc64le
+            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le
           else
             echo ::set-output name=version::$BRANCH
             echo ::set-output name=platforms::linux/amd64
