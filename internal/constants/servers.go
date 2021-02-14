@@ -11,6 +11,11 @@ func GetAllServers() (allServers models.AllServers) {
 			Timestamp: 1612031135, // latest takes precedence
 			Servers:   CyberghostServers(),
 		},
+		Fastestvpn: models.FastestvpnServers{
+			Version:   1,
+			Timestamp: 1613323814,
+			Servers:   FastestvpnServers(),
+		},
 		HideMyAss: models.HideMyAssServers{
 			Version:   1,
 			Timestamp: 1614562368,
