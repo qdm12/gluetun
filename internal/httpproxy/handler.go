@@ -13,9 +13,11 @@ func newHandler(ctx context.Context, wg *sync.WaitGroup, logger logging.Logger,
 	stealth, verbose bool, username, password string) http.Handler {
 	const httpTimeout = 24 * time.Hour
 	return &handler{
-		ctx:      ctx,
-		wg:       wg,
-		client:   &http.Client{Timeout: httpTimeout},
+		ctx: ctx,
+		wg:  wg,
+		client: &http.Client{
+			Timeout:       httpTimeout,
+			CheckRedirect: returnRedirect},
 		logger:   logger,
 		verbose:  verbose,
 		stealth:  stealth,
@@ -61,4 +63,9 @@ var hopHeaders = [...]string{ //nolint:gochecknoglobals
 	"Trailers",
 	"Transfer-Encoding",
 	"Upgrade",
+}
+
+// Do not follow redirect, but directly return the redirect response.
+func returnRedirect(req *http.Request, via []*http.Request) error {
+	return http.ErrUseLastResponse
 }
