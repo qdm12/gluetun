@@ -43,6 +43,8 @@ func (settings *Provider) lines() (lines []string) {
 		providerLines = settings.purevpnLines()
 	case "surfshark":
 		providerLines = settings.surfsharkLines()
+	case "torguard":
+		providerLines = settings.torguardLines()
 	case "vyprvpn":
 		providerLines = settings.vyprvpnLines()
 	case "windscribe":

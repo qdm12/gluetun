@@ -13,6 +13,9 @@ issues:
     - path: internal/server/
       linters:
         - dupl
+    - path: internal/configuration/
+      linters:
+        - dupl
 linters:
   disable-all: true
   enable:

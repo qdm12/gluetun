@@ -55,6 +55,18 @@ func (s *SurfsharkServer) String() string {
 	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
 }
 
+type TorguardServer struct {
+	Country  string `json:"country"`
+	City     string `json:"city"`
+	Hostname string `json:"hostname"`
+	IP       net.IP `json:"ip"`
+}
+
+func (s *TorguardServer) String() string {
+	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, IP: %s}",
+		s.Country, s.City, s.Hostname, goStringifyIP(s.IP))
+}
+
 type CyberghostServer struct {
 	Region string   `json:"region"`
 	Group  string   `json:"group"`

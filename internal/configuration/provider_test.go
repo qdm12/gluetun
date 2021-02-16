@@ -152,6 +152,24 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Regions: a, b",
 			},
 		},
+		"torguard": {
+			settings: Provider{
+				Name: constants.Torguard,
+				ServerSelection: ServerSelection{
+					Protocol:  constants.UDP,
+					Countries: []string{"a", "b"},
+					Cities:    []string{"c", "d"},
+					Hostnames: []string{"e"},
+				},
+			},
+			lines: []string{
+				"|--Torguard settings:",
+				"   |--Network protocol: udp",
+				"   |--Countries: a, b",
+				"   |--Cities: c, d",
+				"   |--Hostnames: e",
+			},
+		},
 		"vyprvpn": {
 			settings: Provider{
 				Name: constants.Vyprvpn,

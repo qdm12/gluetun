@@ -69,6 +69,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Surfshark.Version,
 			digest:  "042bef64",
 		},
+		"Torguard": {
+			model:   models.TorguardServer{},
+			version: allServers.Torguard.Version,
+			digest:  "752702f3",
+		},
 		"Vyprvpn": {
 			model:   models.VyprvpnServer{},
 			version: allServers.Vyprvpn.Version,
@@ -149,6 +154,11 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.Surfshark.Servers,
 			timestamp: allServers.Surfshark.Timestamp,
 			digest:    "1a7f38bb",
+		},
+		"Torguard": {
+			servers:   allServers.Torguard.Servers,
+			timestamp: allServers.Torguard.Timestamp,
+			digest:    "dffab93e",
 		},
 		"Vyprvpn": {
 			servers:   allServers.Vyprvpn.Servers,
