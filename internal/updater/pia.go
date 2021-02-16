@@ -64,7 +64,7 @@ func (u *updater) updatePIA(ctx context.Context) (err error) {
 			server := models.PIAServer{
 				Region:      region.Name,
 				ServerName:  tcpServer.CN,
-				Protocol:    constants.UDP,
+				Protocol:    constants.TCP,
 				PortForward: region.PortForward,
 				IP:          tcpServer.IP,
 			}
