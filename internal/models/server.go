@@ -10,14 +10,15 @@ import (
 type PIAServer struct {
 	Region      string `json:"region"`
 	ServerName  string `json:"server_name"`
-	Protocol    string `json:"protocol"`
+	TCP         bool   `json:"tcp"`
+	UDP         bool   `json:"udp"`
 	PortForward bool   `json:"port_forward"`
 	IP          net.IP `json:"ip"`
 }
 
 func (p *PIAServer) String() string {
-	return fmt.Sprintf("{Region: %q, ServerName: %q, Protocol: %q, PortForward: %t, IP: %s}",
-		p.Region, p.ServerName, p.Protocol, p.PortForward, goStringifyIP(p.IP))
+	return fmt.Sprintf("{Region: %q, ServerName: %q, TCP: %t, UDP: %t, PortForward: %t, IP: %s}",
+		p.Region, p.ServerName, p.TCP, p.UDP, p.PortForward, goStringifyIP(p.IP))
 }
 
 type MullvadServer struct {

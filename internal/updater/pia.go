@@ -10,7 +10,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -48,34 +47,62 @@ func (u *updater) updatePIA(ctx context.Context) (err error) {
 		return err
 	}
 
-	servers := make([]models.PIAServer, 0, len(data.Regions))
+	// Deduplicate servers with the same IP address
+	type NetProtocols struct {
+		tcp, udp bool
+	}
+	ipToProtocols := make(map[string]NetProtocols)
+
 	for _, region := range data.Regions {
 		for _, udpServer := range region.Servers.UDP {
+			protocols := ipToProtocols[udpServer.IP.String()]
+			protocols.udp = true
+			ipToProtocols[udpServer.IP.String()] = protocols
+		}
+		for _, tcpServer := range region.Servers.TCP {
+			protocols := ipToProtocols[tcpServer.IP.String()]
+			protocols.tcp = true
+			ipToProtocols[tcpServer.IP.String()] = protocols
+		}
+	}
+
+	servers := make([]models.PIAServer, 0, len(ipToProtocols)) // set the capacity, not the length of the slice
+	for _, region := range data.Regions {
+		for _, udpServer := range region.Servers.UDP {
+			protocols, ok := ipToProtocols[udpServer.IP.String()]
+			if !ok { // already added that IP for a server
+				continue
+			}
 			server := models.PIAServer{
 				Region:      region.Name,
 				ServerName:  udpServer.CN,
-				Protocol:    constants.UDP,
+				TCP:         protocols.tcp,
+				UDP:         protocols.udp,
 				PortForward: region.PortForward,
 				IP:          udpServer.IP,
 			}
+			delete(ipToProtocols, udpServer.IP.String())
 			servers = append(servers, server)
 		}
 		for _, tcpServer := range region.Servers.TCP {
+			protocols, ok := ipToProtocols[tcpServer.IP.String()]
+			if !ok { // already added that IP for a server
+				continue
+			}
 			server := models.PIAServer{
 				Region:      region.Name,
 				ServerName:  tcpServer.CN,
-				Protocol:    constants.TCP,
+				TCP:         protocols.tcp,
+				UDP:         protocols.udp,
 				PortForward: region.PortForward,
 				IP:          tcpServer.IP,
 			}
+			delete(ipToProtocols, tcpServer.IP.String())
 			servers = append(servers, server)
 		}
 	}
 	sort.Slice(servers, func(i, j int) bool {
 		if servers[i].Region == servers[j].Region {
-			if servers[i].ServerName == servers[j].ServerName {
-				return servers[i].Protocol < servers[j].Protocol
-			}
 			return servers[i].ServerName < servers[j].ServerName
 		}
 		return servers[i].Region < servers[j].Region

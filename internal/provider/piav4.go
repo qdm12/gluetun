@@ -341,8 +341,9 @@ func filterPIAServers(servers []models.PIAServer, regions []string, protocol str
 	filtered []models.PIAServer) {
 	for _, server := range servers {
 		switch {
-		case filterByPossibilities(server.Region, regions):
-		case server.Protocol != protocol:
+		case filterByPossibilities(server.Region, regions),
+			protocol == constants.TCP && !server.TCP,
+			protocol == constants.UDP && !server.UDP:
 		default:
 			filtered = append(filtered, server)
 		}
