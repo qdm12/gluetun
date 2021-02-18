@@ -14,7 +14,7 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 	servers, warnings, err := findVyprvpnServers(ctx, u.client, u.lookupIP)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("Privado: %s", warning)
+			u.logger.Warn("Vyprvpn: %s", warning)
 		}
 	}
 	if err != nil {

@@ -1,7 +1,7 @@
 # Gluetun VPN client
 
 *Lightweight swiss-knife-like VPN client to tunnel to Private Internet Access,
-Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
+Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN, Privado and TorGuard VPN servers, using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 **ANNOUNCEMENT**: *New Docker image name `qmcgaw/gluetun`*
 
@@ -37,7 +37,7 @@ Mullvad, Windscribe, Surfshark Cyberghost, VyprVPN, NordVPN, PureVPN and Privado
 ## Features
 
 - Based on Alpine 3.12 for a small Docker image of 52MB
-- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN**, **PureVPN** and **Privado** servers
+- Supports **Private Internet Access**, **Mullvad**, **Windscribe**, **Surfshark**, **Cyberghost**, **Vyprvpn**, **NordVPN**, **PureVPN**, **Privado** and **TorGuard** servers
 - Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours

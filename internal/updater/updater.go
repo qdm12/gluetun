@@ -50,8 +50,8 @@ func New(settings configuration.Updater, httpClient *http.Client,
 	}
 }
 
-// TODO parallelize DNS resolution.
-func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) { //nolint:gocognit
+//nolint:gocognit,gocyclo
+func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) {
 	if u.options.Cyberghost {
 		u.logger.Info("updating Cyberghost servers...")
 		if err := u.updateCyberghost(ctx); err != nil {
@@ -117,6 +117,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Surfshark {
 		u.logger.Info("updating Surfshark servers...")
 		if err := u.updateSurfshark(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
+			u.logger.Error(err)
+		}
+	}
+
+	if u.options.Torguard {
+		u.logger.Info("updating Torguard servers...")
+		if err := u.updateTorguard(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}

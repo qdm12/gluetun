@@ -17,6 +17,7 @@ type Updater struct {
 	Privado    bool          `json:"privado"`
 	Purevpn    bool          `json:"purevpn"`
 	Surfshark  bool          `json:"surfshark"`
+	Torguard   bool          `json:"torguard"`
 	Vyprvpn    bool          `json:"vyprvpn"`
 	Windscribe bool          `json:"windscribe"`
 	// The two below should be used in CLI mode only
@@ -47,6 +48,7 @@ func (settings *Updater) read(r reader) (err error) {
 	settings.PIA = true
 	settings.Purevpn = true
 	settings.Surfshark = true
+	settings.Torguard = true
 	settings.Vyprvpn = true
 	settings.Windscribe = true
 	settings.Stdout = false

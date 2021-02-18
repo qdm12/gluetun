@@ -8,7 +8,7 @@ type ServerSelection struct {
 	// Common
 	Protocol string `json:"network_protocol"`
 	TargetIP net.IP `json:"target_ip,omitempty"`
-
+	// TODO comments
 	// Cyberghost, PIA, Surfshark, Windscribe, Vyprvpn, NordVPN
 	Regions []string `json:"regions"`
 

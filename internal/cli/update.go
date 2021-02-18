@@ -29,6 +29,7 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
 	flagSet.BoolVar(&options.Privado, "privado", false, "Update Privado servers")
 	flagSet.BoolVar(&options.Purevpn, "purevpn", false, "Update Purevpn servers")
 	flagSet.BoolVar(&options.Surfshark, "surfshark", false, "Update Surfshark servers")
+	flagSet.BoolVar(&options.Torguard, "torguard", false, "Update Torguard servers")
 	flagSet.BoolVar(&options.Vyprvpn, "vyprvpn", false, "Update Vyprvpn servers")
 	flagSet.BoolVar(&options.Windscribe, "windscribe", false, "Update Windscribe servers")
 	if err := flagSet.Parse(args); err != nil {
