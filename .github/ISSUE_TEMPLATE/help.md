@@ -7,9 +7,11 @@ assignees:
 
 ---
 
+**Is this urgent?**: No
+
 **Host OS** (approximate answer is fine too): Ubuntu 18
 
-**Is this urgent?**: No
+**CPU arch** or **device name**: amd64
 
 **What VPN provider are you using**:
 
@@ -23,9 +25,7 @@ Running version latest built on 2020-03-13T01:30:06Z (commit d0f678c)
 
 That feature doesn't work
 
-**Share your logs...**
-
-...*careful to remove i.e. token information with PIA port forwarding*
+**Share your logs... (careful to remove in example tokens)**
 
 ```log
 

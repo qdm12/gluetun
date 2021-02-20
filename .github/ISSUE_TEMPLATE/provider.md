@@ -6,9 +6,11 @@ labels: ":bulb: New provider"
 
 ---
 
-1. Name of the provider:
-2. URL to Openvpn configuration files (zip, JSON, etc.):
-3. VPN server side port forwarding documentation, if available:
+One of the following is required:
 
-If 2. is not available, it's not possible to support the provider yet.
-Please instead subscribe to #223
+- Publicly accessible URL to a zip file containing the Openvpn configuration files
+- Publicly accessible URL to a structured (JSON etc.) list of servers **and attach** an example Openvpn configuration file for both TCP and UDP
+- Publicly accessible URL to the list of servers **and attach** an example Openvpn configuration file for both TCP and UDP
+
+If the list of servers requires to login **or** is hidden behind an interactive configurator,
+it's not possible to support the provider yet. Please instead subscribe to issue #223 which would solve it.
