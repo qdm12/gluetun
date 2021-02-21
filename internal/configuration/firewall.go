@@ -82,7 +82,7 @@ func (settings *Firewall) readVPNInputPorts(env params.Env) (err error) {
 }
 
 func (settings *Firewall) readInputPorts(env params.Env) (err error) {
-	settings.VPNInputPorts, err = readCSVPorts(env, "FIREWALL_INPUT_PORTS")
+	settings.InputPorts, err = readCSVPorts(env, "FIREWALL_INPUT_PORTS")
 	return err
 }
 
