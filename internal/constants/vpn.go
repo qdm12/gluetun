@@ -13,6 +13,8 @@ const (
 	Privado = "privado"
 	// PrivateInternetAccess is a VPN provider.
 	PrivateInternetAccess = "private internet access"
+	// Privatevpn is a VPN provider.
+	Privatevpn = "privatevpn"
 	// PureVPN is a VPN provider.
 	Purevpn = "purevpn"
 	// Surfshark is a VPN provider.

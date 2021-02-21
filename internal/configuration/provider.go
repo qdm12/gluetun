@@ -39,6 +39,8 @@ func (settings *Provider) lines() (lines []string) {
 		providerLines = settings.nordvpnLines()
 	case "privado":
 		providerLines = settings.privadoLines()
+	case "privatevpn":
+		providerLines = settings.privatevpnLines()
 	case "private internet access":
 		providerLines = settings.privateinternetaccessLines()
 	case "purevpn":

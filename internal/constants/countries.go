@@ -236,6 +236,7 @@ func CountryCodes() map[string]string {
 		"ua": "Ukraine",
 		"ae": "United Arab Emirates",
 		"gb": "United Kingdom",
+		"uk": "United Kingdom",
 		"um": "United States Minor Outlying Islands",
 		"us": "United States",
 		"uy": "Uruguay",

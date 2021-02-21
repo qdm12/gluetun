@@ -114,6 +114,24 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Hostnames: a, b",
 			},
 		},
+		"privatevpn": {
+			settings: Provider{
+				Name: constants.Privatevpn,
+				ServerSelection: ServerSelection{
+					Protocol:  constants.UDP,
+					Hostnames: []string{"a", "b"},
+					Countries: []string{"c", "d"},
+					Cities:    []string{"e", "f"},
+				},
+			},
+			lines: []string{
+				"|--Privatevpn settings:",
+				"   |--Network protocol: udp",
+				"   |--Countries: c, d",
+				"   |--Cities: e, f",
+				"   |--Hostnames: a, b",
+			},
+		},
 		"private internet access": {
 			settings: Provider{
 				Name: constants.PrivateInternetAccess,
