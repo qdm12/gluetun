@@ -15,13 +15,10 @@ import (
 )
 
 func (c *cli) OpenvpnConfig(os os.OS) error {
-	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel)
-	if err != nil {
-		return err
-	}
+	logger := logging.New(logging.StdLog)
 
 	var allSettings configuration.Settings
-	err = allSettings.Read(params.NewEnv(), os, logger)
+	err := allSettings.Read(params.NewEnv(), os, logger)
 	if err != nil {
 		return err
 	}

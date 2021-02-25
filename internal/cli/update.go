@@ -35,10 +35,7 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
-	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel)
-	if err != nil {
-		return err
-	}
+	logger := logging.New(logging.StdLog)
 	if !flushToFile && !options.Stdout {
 		return fmt.Errorf("at least one of -file or -stdout must be specified")
 	}

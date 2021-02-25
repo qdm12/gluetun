@@ -23,7 +23,7 @@ type server struct {
 }
 
 func NewServer(address string, logger logging.Logger) Server {
-	healthcheckLogger := logger.WithPrefix("healthcheck: ")
+	healthcheckLogger := logger.NewChild(logging.SetPrefix("healthcheck: "))
 	return &server{
 		address:  address,
 		logger:   healthcheckLogger,

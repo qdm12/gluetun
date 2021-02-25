@@ -41,7 +41,7 @@ func NewLooper(logger logging.Logger, settings configuration.HTTPProxy) Looper {
 			status:   constants.Stopped,
 			settings: settings,
 		},
-		logger:      logger.WithPrefix("http proxy: "),
+		logger:      logger.NewChild(logging.SetPrefix("http proxy: ")),
 		start:       make(chan struct{}),
 		running:     make(chan models.LoopStatus),
 		stop:        make(chan struct{}),

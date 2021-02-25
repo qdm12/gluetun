@@ -23,13 +23,13 @@ func (l *looper) collectLines(wg *sync.WaitGroup, stdout, stderr <-chan string) 
 		}
 		line, level := processLogLine(line)
 		switch level {
-		case logging.DebugLevel:
+		case logging.LevelDebug:
 			l.logger.Debug(line)
-		case logging.InfoLevel:
+		case logging.LevelInfo:
 			l.logger.Info(line)
-		case logging.WarnLevel:
+		case logging.LevelWarn:
 			l.logger.Warn(line)
-		case logging.ErrorLevel:
+		case logging.LevelError:
 			l.logger.Error(line)
 		}
 	}
@@ -43,18 +43,18 @@ func processLogLine(s string) (filtered string, level logging.Level) {
 	switch {
 	case strings.HasPrefix(filtered, "notice: "):
 		filtered = strings.TrimPrefix(filtered, "notice: ")
-		level = logging.InfoLevel
+		level = logging.LevelInfo
 	case strings.HasPrefix(filtered, "info: "):
 		filtered = strings.TrimPrefix(filtered, "info: ")
-		level = logging.InfoLevel
+		level = logging.LevelInfo
 	case strings.HasPrefix(filtered, "warn: "):
 		filtered = strings.TrimPrefix(filtered, "warn: ")
-		level = logging.WarnLevel
+		level = logging.LevelWarn
 	case strings.HasPrefix(filtered, "error: "):
 		filtered = strings.TrimPrefix(filtered, "error: ")
-		level = logging.ErrorLevel
+		level = logging.LevelError
 	default:
-		level = logging.InfoLevel
+		level = logging.LevelInfo
 	}
 	filtered = constants.ColorUnbound().Sprintf(filtered)
 	return filtered, level

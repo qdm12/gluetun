@@ -55,11 +55,7 @@ func main() {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 
-	logger, err := logging.NewLogger(logging.ConsoleEncoding, logging.InfoLevel)
-	if err != nil {
-		fmt.Println(err)
-		nativeos.Exit(1)
-	}
+	logger := logging.New(logging.StdLog)
 
 	args := nativeos.Args
 	os := os.New()
@@ -149,7 +145,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	})
 
 	var allSettings configuration.Settings
-	err := allSettings.Read(params.NewEnv(), os, logger.WithPrefix("configuration: "))
+	err := allSettings.Read(params.NewEnv(), os, logger.NewChild(logging.SetPrefix("configuration: ")))
 	if err != nil {
 		return err
 	}

@@ -55,7 +55,7 @@ func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *ht
 		},
 		conf:         conf,
 		client:       client,
-		logger:       logger.WithPrefix("dns over tls: "),
+		logger:       logger.NewChild(logging.SetPrefix("dns over tls: ")),
 		username:     username,
 		puid:         puid,
 		pgid:         pgid,

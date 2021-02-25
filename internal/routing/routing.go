@@ -37,7 +37,7 @@ type routing struct {
 // NewRouting creates a new routing instance.
 func NewRouting(logger logging.Logger) Routing {
 	return &routing{
-		logger:  logger.WithPrefix("routing: "),
+		logger:  logger.NewChild(logging.SetPrefix("routing: ")),
 		verbose: true,
 	}
 }

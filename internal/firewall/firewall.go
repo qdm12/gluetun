@@ -52,7 +52,7 @@ type configurator struct { //nolint:maligned
 func NewConfigurator(logger logging.Logger, routing routing.Routing, openFile os.OpenFileFunc) Configurator {
 	return &configurator{
 		commander:         command.NewCommander(),
-		logger:            logger.WithPrefix("firewall: "),
+		logger:            logger.NewChild(logging.SetPrefix("firewall: ")),
 		routing:           routing,
 		openFile:          openFile,
 		allowedInputPorts: make(map[uint16]string),

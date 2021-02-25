@@ -29,16 +29,16 @@ func (l *looper) collectLines(wg *sync.WaitGroup, stdout, stderr <-chan string) 
 			continue // filtered out
 		}
 		if errLine {
-			level = logging.ErrorLevel
+			level = logging.LevelError
 		}
 		switch level {
-		case logging.DebugLevel:
+		case logging.LevelDebug:
 			l.logger.Debug(line)
-		case logging.InfoLevel:
+		case logging.LevelInfo:
 			l.logger.Info(line)
-		case logging.WarnLevel:
+		case logging.LevelWarn:
 			l.logger.Warn(line)
-		case logging.ErrorLevel:
+		case logging.LevelError:
 			l.logger.Error(line)
 		}
 		if strings.Contains(line, "Initialization Sequence Completed") {
@@ -53,21 +53,21 @@ func processLogLine(s string) (filtered string, level logging.Level) {
 		"NOTE: UID/GID downgrade will be delayed because of --client, --pull, or --up-delay",
 	} {
 		if s == ignored {
-			return "", ""
+			return "", logging.LevelDebug
 		}
 	}
 	switch {
 	case strings.HasPrefix(s, "NOTE: "):
 		filtered = strings.TrimPrefix(s, "NOTE: ")
-		level = logging.InfoLevel
+		level = logging.LevelInfo
 	case strings.HasPrefix(s, "WARNING: "):
 		filtered = strings.TrimPrefix(s, "WARNING: ")
-		level = logging.WarnLevel
+		level = logging.LevelWarn
 	case strings.HasPrefix(s, "Options error: "):
 		filtered = strings.TrimPrefix(s, "Options error: ")
-		level = logging.ErrorLevel
+		level = logging.LevelError
 	case s == "Initialization Sequence Completed":
-		return color.HiGreenString(s), logging.InfoLevel
+		return color.HiGreenString(s), logging.LevelInfo
 	case s == "AUTH: Received control message: AUTH_FAILED":
 		filtered = s + `
 
@@ -76,7 +76,7 @@ Your credentials might be wrong 🤨
 💡 If you use Private Internet Access, check https://github.com/qdm12/gluetun/issues/265
 
 `
-		level = logging.ErrorLevel
+		level = logging.LevelError
 	case strings.Contains(s, "TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)"): //nolint:lll
 		filtered = s + `
 🚒🚒🚒🚒🚒🚨🚨🚨🚨🚨🚨🚒🚒🚒🚒🚒
@@ -93,7 +93,7 @@ That error usually happens because either:
 `
 	default:
 		filtered = s
-		level = logging.InfoLevel
+		level = logging.LevelInfo
 	}
 	filtered = constants.ColorOpenvpn().Sprintf(filtered)
 	return filtered, level

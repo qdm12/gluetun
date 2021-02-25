@@ -14,28 +14,28 @@ func Test_processLogLine(t *testing.T) {
 		filtered string
 		level    logging.Level
 	}{
-		"empty string":  {"", "", logging.InfoLevel},
-		"random string": {"asdasqdb", "asdasqdb", logging.InfoLevel},
+		"empty string":  {"", "", logging.LevelInfo},
+		"random string": {"asdasqdb", "asdasqdb", logging.LevelInfo},
 		"unbound notice": {
 			"[1594595249] unbound[75:0] notice: init module 0: validator",
 			"init module 0: validator",
-			logging.InfoLevel},
+			logging.LevelInfo},
 		"unbound info": {
 			"[1594595249] unbound[75:0] info: init module 0: validator",
 			"init module 0: validator",
-			logging.InfoLevel},
+			logging.LevelInfo},
 		"unbound warn": {
 			"[1594595249] unbound[75:0] warn: init module 0: validator",
 			"init module 0: validator",
-			logging.WarnLevel},
+			logging.LevelWarn},
 		"unbound error": {
 			"[1594595249] unbound[75:0] error: init module 0: validator",
 			"init module 0: validator",
-			logging.ErrorLevel},
+			logging.LevelError},
 		"unbound unknown": {
 			"[1594595249] unbound[75:0] BLA: init module 0: validator",
 			"BLA: init module 0: validator",
-			logging.InfoLevel},
+			logging.LevelInfo},
 	}
 	for name, tc := range tests {
 		tc := tc

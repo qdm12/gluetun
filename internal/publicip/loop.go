@@ -60,7 +60,7 @@ func NewLooper(client *http.Client, logger logging.Logger,
 		// Objects
 		client:       client,
 		getter:       NewIPGetter(client),
-		logger:       logger.WithPrefix("ip getter: "),
+		logger:       logger.NewChild(logging.SetPrefix("ip getter: ")),
 		os:           os,
 		puid:         puid,
 		pgid:         pgid,

@@ -47,7 +47,7 @@ const defaultBackoffTime = 5 * time.Second
 func NewLooper(settings configuration.Updater, currentServers models.AllServers,
 	storage storage.Storage, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger logging.Logger) Looper {
-	loggerWithPrefix := logger.WithPrefix("updater: ")
+	loggerWithPrefix := logger.NewChild(logging.SetPrefix("updater: "))
 	return &looper{
 		state: state{
 			status:   constants.Stopped,

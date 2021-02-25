@@ -14,36 +14,36 @@ func Test_processLogLine(t *testing.T) {
 		filtered string
 		level    logging.Level
 	}{
-		"empty string":  {"", "", logging.InfoLevel},
-		"random string": {"asdasqdb", "asdasqdb", logging.InfoLevel},
+		"empty string":  {"", "", logging.LevelInfo},
+		"random string": {"asdasqdb", "asdasqdb", logging.LevelInfo},
 		"openvpn unknown": {
 			"message",
 			"message",
-			logging.InfoLevel},
+			logging.LevelInfo},
 		"openvpn note": {
 			"NOTE: message",
 			"message",
-			logging.InfoLevel},
+			logging.LevelInfo},
 		"openvpn warning": {
 			"WARNING: message",
 			"message",
-			logging.WarnLevel},
+			logging.LevelWarn},
 		"openvpn options error": {
 			"Options error: message",
 			"message",
-			logging.ErrorLevel},
+			logging.LevelError},
 		"openvpn ignored message": {
 			"NOTE: UID/GID downgrade will be delayed because of --client, --pull, or --up-delay",
 			"",
-			""},
+			logging.LevelDebug},
 		"openvpn success": {
 			"Initialization Sequence Completed",
 			"Initialization Sequence Completed",
-			logging.InfoLevel},
+			logging.LevelInfo},
 		"openvpn auth failed": {
 			"AUTH: Received control message: AUTH_FAILED",
 			"AUTH: Received control message: AUTH_FAILED\n\nYour credentials might be wrong 🤨\n\n💡 If you use Private Internet Access, check https://github.com/qdm12/gluetun/issues/265\n\n", //nolint:lll
-			logging.ErrorLevel},
+			logging.LevelError},
 	}
 	for name, tc := range tests {
 		tc := tc
