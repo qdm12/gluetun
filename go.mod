@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/fatih/color v1.10.0
-	github.com/golang/mock v1.4.4
+	github.com/golang/mock v1.5.0
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/qdm12/dns v1.4.0
 	github.com/qdm12/golibs v0.0.0-20210215133151-c711ebd3e56a
