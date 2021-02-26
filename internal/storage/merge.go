@@ -20,8 +20,8 @@ func (s *storage) mergeServers(hardcoded, persisted models.AllServers) models.Al
 		Cyberghost: s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
 		Mullvad:    s.mergeMullvad(hardcoded.Mullvad, persisted.Mullvad),
 		Nordvpn:    s.mergeNordVPN(hardcoded.Nordvpn, persisted.Nordvpn),
-		Pia:        s.mergePIA(hardcoded.Pia, persisted.Pia),
 		Privado:    s.mergePrivado(hardcoded.Privado, persisted.Privado),
+		Pia:        s.mergePIA(hardcoded.Pia, persisted.Pia),
 		Purevpn:    s.mergePureVPN(hardcoded.Purevpn, persisted.Purevpn),
 		Surfshark:  s.mergeSurfshark(hardcoded.Surfshark, persisted.Surfshark),
 		Torguard:   s.mergeTorguard(hardcoded.Torguard, persisted.Torguard),
@@ -57,22 +57,6 @@ func (s *storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) model
 	return persisted
 }
 
-func (s *storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaServers {
-	if persisted.Timestamp <= hardcoded.Timestamp {
-		return hardcoded
-	}
-	versionDiff := hardcoded.Version - persisted.Version
-	if versionDiff > 0 {
-		s.logger.Info(
-			"PIA servers from file discarded because they are %d versions behind",
-			versionDiff)
-		return hardcoded
-	}
-	s.logger.Info("Using PIA servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
-	return persisted
-}
-
 func (s *storage) mergePrivado(hardcoded, persisted models.PrivadoServers) models.PrivadoServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
@@ -85,6 +69,22 @@ func (s *storage) mergePrivado(hardcoded, persisted models.PrivadoServers) model
 		return hardcoded
 	}
 	s.logger.Info("Using Privado servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logger.Info(
+			"PIA servers from file discarded because they are %d versions behind",
+			versionDiff)
+		return hardcoded
+	}
+	s.logger.Info("Using PIA servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
 }

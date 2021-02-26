@@ -45,6 +45,7 @@ func (settings *Updater) read(r reader) (err error) {
 	settings.Cyberghost = true
 	settings.Mullvad = true
 	settings.Nordvpn = true
+	settings.Privado = true
 	settings.PIA = true
 	settings.Purevpn = true
 	settings.Surfshark = true

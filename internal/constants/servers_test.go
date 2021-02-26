@@ -49,15 +49,15 @@ func Test_versions(t *testing.T) {
 			version: allServers.Nordvpn.Version,
 			digest:  "040de8d0",
 		},
-		"Private Internet Access": {
-			model:   models.PIAServer{},
-			version: allServers.Pia.Version,
-			digest:  "3e6066ec",
-		},
 		"Privado": {
 			model:   models.PrivadoServer{},
 			version: allServers.Privado.Version,
 			digest:  "1d5aeb23",
+		},
+		"Private Internet Access": {
+			model:   models.PIAServer{},
+			version: allServers.Pia.Version,
+			digest:  "3e6066ec",
 		},
 		"Purevpn": {
 			model:   models.PurevpnServer{},
@@ -135,6 +135,11 @@ func Test_timestamps(t *testing.T) {
 			timestamp: allServers.Nordvpn.Timestamp,
 			digest:    "2296312c",
 		},
+		"Privado": {
+			servers:   allServers.Privado.Servers,
+			timestamp: allServers.Privado.Timestamp,
+			digest:    "2ac55360",
+		},
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,
 			timestamp: allServers.Pia.Timestamp,
@@ -144,11 +149,6 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.Purevpn.Servers,
 			timestamp: allServers.Purevpn.Timestamp,
 			digest:    "cd19edf5",
-		},
-		"Privado": {
-			servers:   allServers.Privado.Servers,
-			timestamp: allServers.Privado.Timestamp,
-			digest:    "2ac55360",
 		},
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,

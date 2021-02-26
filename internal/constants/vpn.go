@@ -1,26 +1,26 @@
 package constants
 
 const (
-	// PrivateInternetAccess is a VPN provider.
-	PrivateInternetAccess = "private internet access"
-	// Mullvad is a VPN provider.
-	Mullvad = "mullvad"
-	// Windscribe is a VPN provider.
-	Windscribe = "windscribe"
-	// Surfshark is a VPN provider.
-	Surfshark = "surfshark"
 	// Cyberghost is a VPN provider.
 	Cyberghost = "cyberghost"
-	// Vyprvpn is a VPN provider.
-	Vyprvpn = "vyprvpn"
+	// Mullvad is a VPN provider.
+	Mullvad = "mullvad"
 	// NordVPN is a VPN provider.
 	Nordvpn = "nordvpn"
-	// PureVPN is a VPN provider.
-	Purevpn = "purevpn"
 	// Privado is a VPN provider.
 	Privado = "privado"
+	// PrivateInternetAccess is a VPN provider.
+	PrivateInternetAccess = "private internet access"
+	// PureVPN is a VPN provider.
+	Purevpn = "purevpn"
+	// Surfshark is a VPN provider.
+	Surfshark = "surfshark"
 	// Torguard is a VPN provider.
 	Torguard = "torguard"
+	// Vyprvpn is a VPN provider.
+	Vyprvpn = "vyprvpn"
+	// Windscribe is a VPN provider.
+	Windscribe = "windscribe"
 )
 
 const (

@@ -25,26 +25,26 @@ type Provider interface {
 
 func New(provider string, allServers models.AllServers, timeNow timeNowFunc) Provider {
 	switch provider {
-	case constants.PrivateInternetAccess:
-		return newPrivateInternetAccess(allServers.Pia.Servers, timeNow)
-	case constants.Mullvad:
-		return newMullvad(allServers.Mullvad.Servers, timeNow)
-	case constants.Windscribe:
-		return newWindscribe(allServers.Windscribe.Servers, timeNow)
-	case constants.Surfshark:
-		return newSurfshark(allServers.Surfshark.Servers, timeNow)
 	case constants.Cyberghost:
 		return newCyberghost(allServers.Cyberghost.Servers, timeNow)
-	case constants.Vyprvpn:
-		return newVyprvpn(allServers.Vyprvpn.Servers, timeNow)
+	case constants.Mullvad:
+		return newMullvad(allServers.Mullvad.Servers, timeNow)
 	case constants.Nordvpn:
 		return newNordvpn(allServers.Nordvpn.Servers, timeNow)
-	case constants.Purevpn:
-		return newPurevpn(allServers.Purevpn.Servers, timeNow)
 	case constants.Privado:
 		return newPrivado(allServers.Privado.Servers, timeNow)
+	case constants.PrivateInternetAccess:
+		return newPrivateInternetAccess(allServers.Pia.Servers, timeNow)
+	case constants.Purevpn:
+		return newPurevpn(allServers.Purevpn.Servers, timeNow)
+	case constants.Surfshark:
+		return newSurfshark(allServers.Surfshark.Servers, timeNow)
 	case constants.Torguard:
 		return newTorguard(allServers.Torguard.Servers, timeNow)
+	case constants.Vyprvpn:
+		return newVyprvpn(allServers.Vyprvpn.Servers, timeNow)
+	case constants.Windscribe:
+		return newWindscribe(allServers.Windscribe.Servers, timeNow)
 	default:
 		return nil // should never occur
 	}

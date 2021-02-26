@@ -81,9 +81,9 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
-	if u.options.PIA {
-		u.logger.Info("updating Private Internet Access servers...")
-		if err := u.updatePIA(ctx); err != nil {
+	if u.options.Privado {
+		u.logger.Info("updating Privado servers...")
+		if err := u.updatePrivado(ctx); err != nil {
 			u.logger.Error(err)
 		}
 		if ctx.Err() != nil {
@@ -91,9 +91,9 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
-	if u.options.Privado {
-		u.logger.Info("updating Privado servers...")
-		if err := u.updatePrivado(ctx); err != nil {
+	if u.options.PIA {
+		u.logger.Info("updating Private Internet Access servers...")
+		if err := u.updatePIA(ctx); err != nil {
 			u.logger.Error(err)
 		}
 		if ctx.Err() != nil {

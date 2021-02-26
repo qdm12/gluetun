@@ -56,8 +56,9 @@ var (
 
 func (settings *OpenVPN) read(r reader) (err error) {
 	vpnsp, err := r.env.Inside("VPNSP", []string{
-		"pia", "private internet access", "mullvad", "windscribe", "surfshark", "torguard",
-		"cyberghost", "vyprvpn", "nordvpn", "purevpn", "privado"},
+		"cyberghost", "mullvad", "nordvpn", "privado",
+		"pia", "private internet access", "purevpn", "surfshark",
+		"torguard", "vyprvpn", "windscribe"},
 		params.Default("private internet access"))
 	if err != nil {
 		return err
@@ -112,26 +113,26 @@ func (settings *OpenVPN) read(r reader) (err error) {
 
 	var readProvider func(r reader) error
 	switch settings.Provider.Name {
-	case constants.PrivateInternetAccess:
-		readProvider = settings.Provider.readPrivateInternetAccess
-	case constants.Mullvad:
-		readProvider = settings.Provider.readMullvad
-	case constants.Windscribe:
-		readProvider = settings.Provider.readWindscribe
-	case constants.Surfshark:
-		readProvider = settings.Provider.readSurfshark
 	case constants.Cyberghost:
 		readProvider = settings.Provider.readCyberghost
-	case constants.Vyprvpn:
-		readProvider = settings.Provider.readVyprvpn
+	case constants.Mullvad:
+		readProvider = settings.Provider.readMullvad
 	case constants.Nordvpn:
 		readProvider = settings.Provider.readNordvpn
-	case constants.Purevpn:
-		readProvider = settings.Provider.readPurevpn
 	case constants.Privado:
 		readProvider = settings.Provider.readPrivado
+	case constants.PrivateInternetAccess:
+		readProvider = settings.Provider.readPrivateInternetAccess
+	case constants.Purevpn:
+		readProvider = settings.Provider.readPurevpn
+	case constants.Surfshark:
+		readProvider = settings.Provider.readSurfshark
 	case constants.Torguard:
 		readProvider = settings.Provider.readTorguard
+	case constants.Vyprvpn:
+		readProvider = settings.Provider.readVyprvpn
+	case constants.Windscribe:
+		readProvider = settings.Provider.readWindscribe
 	default:
 		return fmt.Errorf("%w: %s", ErrInvalidVPNProvider, settings.Provider.Name)
 	}
