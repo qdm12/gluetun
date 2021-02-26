@@ -3,11 +3,11 @@ package updater
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
@@ -28,7 +28,7 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 	return nil
 }
 
-func findVyprvpnServers(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
+func findVyprvpnServers(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
 	servers []models.VyprvpnServer, warnings []string, err error) {
 	const zipURL = "https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)

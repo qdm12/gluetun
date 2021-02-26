@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updateMullvad(ctx context.Context) (err error) {
@@ -26,15 +25,25 @@ func (u *updater) updateMullvad(ctx context.Context) (err error) {
 	return nil
 }
 
-func findMullvadServers(ctx context.Context, client network.Client) (servers []models.MullvadServer, err error) {
+func findMullvadServers(ctx context.Context, client *http.Client) (servers []models.MullvadServer, err error) {
 	const url = "https://api.mullvad.net/www/relays/openvpn/"
-	bytes, status, err := client.Get(ctx, url)
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
-	if status != http.StatusOK {
-		return nil, fmt.Errorf("HTTP status code %d", status)
+
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
 	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %s for %s", ErrHTTPStatusCodeNotOK, response.Status, url)
+	}
+
+	decoder := json.NewDecoder(response.Body)
 	var data []struct {
 		Country  string `json:"country_name"`
 		City     string `json:"city_name"`
@@ -44,9 +53,14 @@ func findMullvadServers(ctx context.Context, client network.Client) (servers []m
 		IPv4     string `json:"ipv4_addr_in"`
 		IPv6     string `json:"ipv6_addr_in"`
 	}
-	if err := json.Unmarshal(bytes, &data); err != nil {
+	if err := decoder.Decode(&data); err != nil {
 		return nil, err
 	}
+
+	if err := response.Body.Close(); err != nil {
+		return nil, err
+	}
+
 	serversByKey := map[string]models.MullvadServer{}
 	for _, jsonServer := range data {
 		if !jsonServer.Active {

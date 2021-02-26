@@ -5,22 +5,39 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"sort"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 func (u *updater) updatePIA(ctx context.Context) (err error) {
 	const url = "https://serverlist.piaservers.net/vpninfo/servers/v5"
-	b, status, err := u.client.Get(ctx, url)
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
-	if status != http.StatusOK {
-		return fmt.Errorf("HTTP status code %d: %s", status, strings.ReplaceAll(string(b), "\n", ""))
+
+	response, err := u.client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("%w: %s for %s", ErrHTTPStatusCodeNotOK, response.Status, url)
+	}
+
+	b, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+
+	if err := response.Body.Close(); err != nil {
+		return err
 	}
 
 	// remove key/signature at the bottom

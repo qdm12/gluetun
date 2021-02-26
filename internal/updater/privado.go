@@ -3,10 +3,10 @@ package updater
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updatePrivado(ctx context.Context) (err error) {
@@ -27,7 +27,7 @@ func (u *updater) updatePrivado(ctx context.Context) (err error) {
 	return nil
 }
 
-func findPrivadoServersFromZip(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
+func findPrivadoServersFromZip(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
 	servers []models.PrivadoServer, warnings []string, err error) {
 	const zipURL = "https://privado.io/apps/ovpn_configs.zip"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)

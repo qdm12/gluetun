@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/network"
 )
 
 type Updater interface {
@@ -29,7 +28,7 @@ type updater struct {
 	timeNow  func() time.Time
 	println  func(s string)
 	lookupIP lookupIPFunc
-	client   network.Client
+	client   *http.Client
 }
 
 func New(settings configuration.Updater, httpClient *http.Client,
@@ -38,13 +37,12 @@ func New(settings configuration.Updater, httpClient *http.Client,
 		settings.DNSAddress = "1.1.1.1"
 	}
 	resolver := newResolver(settings.DNSAddress)
-	const clientTimeout = 10 * time.Second
 	return &updater{
 		logger:   logger,
 		timeNow:  time.Now,
 		println:  func(s string) { fmt.Println(s) },
 		lookupIP: newLookupIP(resolver),
-		client:   network.NewClient(clientTimeout),
+		client:   httpClient,
 		options:  settings,
 		servers:  currentServers,
 	}

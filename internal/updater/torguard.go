@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updateTorguard(ctx context.Context) (err error) {
@@ -30,7 +30,7 @@ func (u *updater) updateTorguard(ctx context.Context) (err error) {
 	return nil
 }
 
-func findTorguardServersFromZip(ctx context.Context, client network.Client) (
+func findTorguardServersFromZip(ctx context.Context, client *http.Client) (
 	servers []models.TorguardServer, warnings []string, err error) {
 	// Note: all servers do both TCP and UDP
 	const zipURL = "https://torguard.net/downloads/OpenVPN-TCP-Linux.zip"

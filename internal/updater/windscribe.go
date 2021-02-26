@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updateWindscribe(ctx context.Context) (err error) {
@@ -26,16 +25,27 @@ func (u *updater) updateWindscribe(ctx context.Context) (err error) {
 	return nil
 }
 
-func findWindscribeServers(ctx context.Context, client network.Client) (servers []models.WindscribeServer, err error) {
+func findWindscribeServers(ctx context.Context, client *http.Client) (servers []models.WindscribeServer, err error) {
 	const baseURL = "https://assets.windscribe.com/serverlist/mob-v2/1/"
 	cacheBreaker := time.Now().Unix()
 	url := fmt.Sprintf("%s%d", baseURL, cacheBreaker)
-	content, status, err := client.Get(ctx, url)
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
-	} else if status != http.StatusOK {
-		return nil, fmt.Errorf(http.StatusText(status))
 	}
+
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %s", ErrHTTPStatusCodeNotOK, response.Status)
+	}
+
+	decoder := json.NewDecoder(response.Body)
 	var jsonData struct {
 		Data []struct {
 			Region string `json:"name"`
@@ -48,9 +58,14 @@ func findWindscribeServers(ctx context.Context, client network.Client) (servers 
 			} `json:"groups"`
 		} `json:"data"`
 	}
-	if err := json.Unmarshal(content, &jsonData); err != nil {
+	if err := decoder.Decode(&jsonData); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrUnmarshalResponseBody, err)
+	}
+
+	if err := response.Body.Close(); err != nil {
 		return nil, err
 	}
+
 	for _, regionBlock := range jsonData.Data {
 		region := regionBlock.Region
 		for _, group := range regionBlock.Groups {

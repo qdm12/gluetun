@@ -4,31 +4,42 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
 	"strings"
-
-	"github.com/qdm12/golibs/network"
 )
 
-var (
-	ErrBadStatusCode = errors.New("bad HTTP status code")
-)
-
-func fetchAndExtractFiles(ctx context.Context, client network.Client, urls ...string) (
+func fetchAndExtractFiles(ctx context.Context, client *http.Client, urls ...string) (
 	contents map[string][]byte, err error) {
 	contents = make(map[string][]byte)
 	for _, url := range urls {
-		zipBytes, status, err := client.Get(ctx, url)
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 		if err != nil {
 			return nil, err
-		} else if status != http.StatusOK {
-			return nil, fmt.Errorf("%w: fetching url %s: %d", ErrBadStatusCode, url, status)
 		}
-		newContents, err := zipExtractAll(zipBytes)
+
+		response, err := client.Do(request)
+		if err != nil {
+			return nil, err
+		}
+		defer response.Body.Close()
+
+		if response.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("%w: %s for %s", ErrHTTPStatusCodeNotOK, response.Status, url)
+		}
+
+		b, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := response.Body.Close(); err != nil {
+			return nil, err
+		}
+
+		newContents, err := zipExtractAll(b)
 		if err != nil {
 			return nil, err
 		}

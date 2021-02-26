@@ -10,7 +10,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/publicip"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updatePurevpn(ctx context.Context) (err error) {
@@ -31,7 +30,7 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 	return nil
 }
 
-func findPurevpnServers(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
+func findPurevpnServers(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
 	servers []models.PurevpnServer, warnings []string, err error) {
 	const zipURL = "https://s3-us-west-1.amazonaws.com/heartbleed/windows/New+OVPN+Files.zip"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
@@ -70,10 +69,7 @@ func findPurevpnServers(ctx context.Context, client network.Client, lookupIP loo
 			continue
 		}
 
-		// TODO remove once we move away from network.Client
-		const httpTimeout = 3 * time.Second
-		httpClient := &http.Client{Timeout: httpTimeout}
-		country, region, city, err := publicip.Info(ctx, httpClient, IPs[0])
+		country, region, city, err := publicip.Info(ctx, client, IPs[0])
 		if err != nil {
 			return nil, warnings, err
 		}

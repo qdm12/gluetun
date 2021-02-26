@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updateNordvpn(ctx context.Context) (err error) {
@@ -38,16 +37,26 @@ var (
 	ErrInvalidIDInServerName = errors.New("invalid ID in server name")
 )
 
-func findNordvpnServers(ctx context.Context, client network.Client) (
+func findNordvpnServers(ctx context.Context, client *http.Client) (
 	servers []models.NordvpnServer, warnings []string, err error) {
 	const url = "https://nordvpn.com/api/server"
-	bytes, status, err := client.Get(ctx, url)
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	if status != http.StatusOK {
-		return nil, nil, fmt.Errorf("HTTP status code %d", status)
+
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, nil, err
 	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, nil, fmt.Errorf("%w: %s for %s", ErrHTTPStatusCodeNotOK, response.Status, url)
+	}
+
+	decoder := json.NewDecoder(response.Body)
 	var data []struct {
 		IPAddress string `json:"ip_address"`
 		Name      string `json:"name"`
@@ -57,9 +66,14 @@ func findNordvpnServers(ctx context.Context, client network.Client) (
 			TCP bool `json:"openvpn_tcp"`
 		} `json:"features"`
 	}
-	if err := json.Unmarshal(bytes, &data); err != nil {
+	if err := decoder.Decode(&data); err != nil {
 		return nil, nil, err
 	}
+
+	if err := response.Body.Close(); err != nil {
+		return nil, nil, err
+	}
+
 	sort.Slice(data, func(i, j int) bool {
 		if data[i].Country == data[j].Country {
 			return data[i].Name < data[j].Name

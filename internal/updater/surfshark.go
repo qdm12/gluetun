@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/network"
 )
 
 func (u *updater) updateSurfshark(ctx context.Context) (err error) {
@@ -32,21 +31,36 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 }
 
 //nolint:deadcode,unused
-func findSurfsharkServersFromAPI(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
+func findSurfsharkServersFromAPI(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
 	servers []models.SurfsharkServer, warnings []string, err error) {
 	const url = "https://my.surfshark.com/vpn/api/v4/server/clusters"
-	b, status, err := client.Get(ctx, url)
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, nil, err
-	} else if status != http.StatusOK {
-		return nil, nil, fmt.Errorf("HTTP status code %d", status)
 	}
+
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, nil, fmt.Errorf("%w: %s for %s", ErrHTTPStatusCodeNotOK, response.Status, url)
+	}
+
+	decoder := json.NewDecoder(response.Body)
 	var jsonServers []struct {
 		Host     string `json:"connectionName"`
 		Country  string `json:"country"`
 		Location string `json:"location"`
 	}
-	if err := json.Unmarshal(b, &jsonServers); err != nil {
+	if err := decoder.Decode(&jsonServers); err != nil {
+		return nil, nil, err
+	}
+
+	if err := response.Body.Close(); err != nil {
 		return nil, nil, err
 	}
 
@@ -80,7 +94,7 @@ func findSurfsharkServersFromAPI(ctx context.Context, client network.Client, loo
 	return servers, warnings, nil
 }
 
-func findSurfsharkServersFromZip(ctx context.Context, client network.Client, lookupIP lookupIPFunc) (
+func findSurfsharkServersFromZip(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
 	servers []models.SurfsharkServer, warnings []string, err error) {
 	const zipURL = "https://my.surfshark.com/vpn/api/v1/server/configurations"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
