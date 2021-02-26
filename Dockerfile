@@ -73,32 +73,28 @@ ENV VPNSP=pia \
     PUID= \
     PGID= \
     PUBLICIP_FILE="/tmp/gluetun/ip" \
-    # PIA, Windscribe, Surfshark, Cyberghost, Vyprvpn, NordVPN, PureVPN only
+    # VPN provider settings
     OPENVPN_USER= \
     OPENVPN_PASSWORD= \
     USER_SECRETFILE=/run/secrets/openvpn_user \
     PASSWORD_SECRETFILE=/run/secrets/openvpn_password \
     REGION= \
-    # PIA only
+    COUNTRY= \
+    CITY= \
+    PORT= \
+    SERVER_HOSTNAME= \
+    # Mullvad only:
+    ISP= \
+    OWNED=no \
+    # Private Internet Access only:
     PIA_ENCRYPTION=strong \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
-    # Mullvad and PureVPN only
-    COUNTRY= \
-    # Mullvad, PureVPN, Windscribe only
-    CITY= \
-    # Windscribe only
-    SERVER_HOSTNAME= \
-    # Mullvad only
-    ISP= \
-    OWNED=no \
-    # Mullvad and Windscribe only
-    PORT= \
-    # Cyberghost only
+    # Cyberghost only:
     CYBERGHOST_GROUP="Premium UDP Europe" \
     OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
-    # NordVPN only
+    # Nordvpn only:
     SERVER_NUMBER= \
     # Openvpn
     OPENVPN_CIPHER= \
