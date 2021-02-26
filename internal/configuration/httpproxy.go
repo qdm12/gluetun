@@ -58,7 +58,7 @@ func (settings *HTTPProxy) read(r reader) (err error) {
 		return err
 	}
 
-	settings.Password, err = r.getFromEnvOrSecretFile("HTTPPROXY_USER", false,
+	settings.Password, err = r.getFromEnvOrSecretFile("HTTPPROXY_PASSWORD", false,
 		[]string{"TINYPROXY_PASSWORD", "PROXY_PASSWORD"})
 	if err != nil {
 		return err
@@ -95,10 +95,10 @@ func (settings *HTTPProxy) readLog(r reader) error {
 
 	switch strings.ToLower(s) {
 	case "on":
-		settings.Enabled = true
+		settings.Log = true
 	// Retro compatibility
 	case "info", "connect", "notice":
-		settings.Enabled = true
+		settings.Log = true
 	}
 
 	return nil
