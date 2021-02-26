@@ -20,7 +20,7 @@ func PurevpnRegionChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Region
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func PurevpnCountryChoices() (choices []string) {
@@ -29,7 +29,7 @@ func PurevpnCountryChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Country
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func PurevpnCityChoices() (choices []string) {
@@ -38,7 +38,7 @@ func PurevpnCityChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].City
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 //nolint:lll

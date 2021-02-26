@@ -2,7 +2,6 @@ package constants
 
 import (
 	"net"
-	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -13,45 +12,30 @@ const (
 )
 
 func MullvadCountryChoices() (choices []string) {
-	uniqueChoices := map[string]struct{}{}
-	for _, server := range MullvadServers() {
-		uniqueChoices[server.Country] = struct{}{}
+	servers := MullvadServers()
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].Country
 	}
-	for choice := range uniqueChoices {
-		choices = append(choices, choice)
-	}
-	sort.Slice(choices, func(i, j int) bool {
-		return choices[i] < choices[j]
-	})
-	return choices
+	return makeUnique(choices)
 }
 
 func MullvadCityChoices() (choices []string) {
-	uniqueChoices := map[string]struct{}{}
-	for _, server := range MullvadServers() {
-		uniqueChoices[server.City] = struct{}{}
+	servers := MullvadServers()
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].City
 	}
-	for choice := range uniqueChoices {
-		choices = append(choices, choice)
-	}
-	sort.Slice(choices, func(i, j int) bool {
-		return choices[i] < choices[j]
-	})
-	return choices
+	return makeUnique(choices)
 }
 
 func MullvadISPChoices() (choices []string) {
-	uniqueChoices := map[string]struct{}{}
-	for _, server := range MullvadServers() {
-		uniqueChoices[server.ISP] = struct{}{}
+	servers := MullvadServers()
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].ISP
 	}
-	for choice := range uniqueChoices {
-		choices = append(choices, choice)
-	}
-	sort.Slice(choices, func(i, j int) bool {
-		return choices[i] < choices[j]
-	})
-	return choices
+	return makeUnique(choices)
 }
 
 //nolint:dupl,lll

@@ -18,7 +18,7 @@ func NordvpnRegionChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Region
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 //nolint:gomnd

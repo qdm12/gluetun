@@ -18,7 +18,7 @@ func WindscribeRegionChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Region
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func WindscribeCityChoices() (choices []string) {
@@ -27,7 +27,7 @@ func WindscribeCityChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].City
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func WindscribeHostnameChoices() (choices []string) {
@@ -36,7 +36,7 @@ func WindscribeHostnameChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func WindscribeServers() []models.WindscribeServer {

@@ -2,7 +2,6 @@ package constants
 
 import (
 	"net"
-	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -13,31 +12,21 @@ const (
 )
 
 func CyberghostRegionChoices() (choices []string) {
-	uniqueChoices := map[string]struct{}{}
-	for _, server := range CyberghostServers() {
-		uniqueChoices[server.Region] = struct{}{}
+	servers := CyberghostServers()
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].Region
 	}
-	for choice := range uniqueChoices {
-		choices = append(choices, choice)
-	}
-	sort.Slice(choices, func(i, j int) bool {
-		return choices[i] < choices[j]
-	})
-	return choices
+	return makeUnique(choices)
 }
 
 func CyberghostGroupChoices() (choices []string) {
-	uniqueChoices := map[string]struct{}{}
-	for _, server := range CyberghostServers() {
-		uniqueChoices[server.Group] = struct{}{}
+	servers := CyberghostServers()
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].Group
 	}
-	for choice := range uniqueChoices {
-		choices = append(choices, choice)
-	}
-	sort.Slice(choices, func(i, j int) bool {
-		return choices[i] < choices[j]
-	})
-	return choices
+	return makeUnique(choices)
 }
 
 //nolint:lll

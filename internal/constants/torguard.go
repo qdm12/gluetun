@@ -18,7 +18,7 @@ func TorguardCountryChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Country
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func TorguardCityChoices() (choices []string) {
@@ -27,7 +27,7 @@ func TorguardCityChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].City
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func TorguardHostnamesChoices() (choices []string) {
@@ -36,7 +36,7 @@ func TorguardHostnamesChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 //nolint:lll

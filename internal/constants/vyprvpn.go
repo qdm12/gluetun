@@ -17,7 +17,7 @@ func VyprvpnRegionChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Region
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func VyprvpnServers() []models.VyprvpnServer {

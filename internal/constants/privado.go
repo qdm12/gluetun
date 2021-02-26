@@ -17,7 +17,7 @@ func PrivadoHostnameChoices() (choices []string) {
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func PrivadoServers() []models.PrivadoServer {
