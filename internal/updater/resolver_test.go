@@ -20,13 +20,18 @@ func Test_resolveRepeat(t *testing.T) {
 		ips            []net.IP
 		err            error
 	}{
-		"failure": {
-			lookupIPResult: [][]net.IP{
-				{{1, 1, 1, 1}, {1, 1, 1, 2}},
-			},
-			lookupIPErr: fmt.Errorf("feeling sick"),
-			n:           1,
-			err:         fmt.Errorf("feeling sick"),
+		"failure twice": {
+			lookupIPResult: [][]net.IP{{}, {}},
+			lookupIPErr:    fmt.Errorf("feeling sick"),
+			n:              2,
+			err:            fmt.Errorf("feeling sick"),
+		},
+		"failure once": {
+			lookupIPResult: [][]net.IP{{}, {{1, 1, 1, 1}}},
+			lookupIPErr:    fmt.Errorf("feeling sick"),
+			n:              2,
+			ips:            []net.IP{{1, 1, 1, 1}},
+			err:            fmt.Errorf("feeling sick"),
 		},
 		"successful": {
 			lookupIPResult: [][]net.IP{

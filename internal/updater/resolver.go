@@ -88,9 +88,9 @@ func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string,
 
 	i := 0
 	for {
-		newIPs, err := lookupIP(ctx, host)
-		if err != nil {
-			return nil, err
+		newIPs, newErr := lookupIP(ctx, host)
+		if err == nil {
+			err = newErr // it's fine to fail some of the resolutions
 		}
 		for _, ip := range newIPs {
 			key := ip.String()
@@ -113,6 +113,10 @@ func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string,
 		}
 	}
 
+	if len(uniqueIPs) == 0 {
+		return nil, err
+	}
+
 	ips = make([]net.IP, 0, len(uniqueIPs))
 	for key := range uniqueIPs {
 		ip := net.ParseIP(key)
@@ -126,5 +130,5 @@ func resolveRepeat(ctx context.Context, lookupIP lookupIPFunc, host string,
 		return bytes.Compare(ips[i], ips[j]) < 1
 	})
 
-	return ips, nil
+	return ips, err
 }
