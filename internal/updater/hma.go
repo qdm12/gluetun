@@ -137,28 +137,18 @@ func parseHideMyAssURL(url, protocol string) (country, region, city string) {
 }
 
 func camelCaseToWords(camelCase string) (words string) {
-	allUpper := true
+	wasLowerCase := false
 	for _, r := range camelCase {
-		if !unicode.IsUpper(r) {
-			allUpper = false
-			break
-		}
-	}
-
-	if allUpper {
-		return camelCase
-	}
-
-	for i, r := range camelCase {
-		if i > 0 && unicode.IsUpper(r) {
+		if wasLowerCase && unicode.IsUpper(r) {
 			words += " "
 		}
+		wasLowerCase = unicode.IsLower(r)
 		words += string(r)
 	}
 	return words
 }
 
-var hideMyAssIndexRegex = regexp.MustCompile(`<a[ ]+href=".+">`)
+var hideMyAssIndexRegex = regexp.MustCompile(`<a[ ]+href=".+\.ovpn">.+\.ovpn</a>`)
 
 func fetchHideMyAssHTTPIndex(ctx context.Context, client *http.Client, indexURL string) (urls []string, err error) {
 	htmlCode, err := fetchFile(ctx, client, indexURL)
@@ -176,8 +166,8 @@ func fetchHideMyAssHTTPIndex(ctx context.Context, client *http.Client, indexURL 
 		if len(found) == 0 {
 			continue
 		}
-		const prefix = `href="`
-		const suffix = `">`
+		const prefix = `.ovpn">`
+		const suffix = `</a>`
 		startIndex := strings.Index(found, prefix) + len(prefix)
 		endIndex := strings.Index(found, suffix)
 		filename := found[startIndex:endIndex]
