@@ -49,13 +49,15 @@ func Test_Provider_lines(t *testing.T) {
 					Protocol:  constants.UDP,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
+					Hostnames: []string{"e", "f"},
 				},
 			},
 			lines: []string{
-				"|--HideMyAss settings:",
+				"|--Hidemyass settings:",
 				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Cities: c, d",
+				"   |--Hostnames: e, f",
 			},
 		},
 		"mullvad": {

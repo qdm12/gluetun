@@ -9,8 +9,16 @@ func (settings *Provider) hideMyAssLines() (lines []string) {
 		lines = append(lines, lastIndent+"Countries: "+commaJoin(settings.ServerSelection.Countries))
 	}
 
+	if len(settings.ServerSelection.Regions) > 0 {
+		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
+	}
+
 	if len(settings.ServerSelection.Cities) > 0 {
 		lines = append(lines, lastIndent+"Cities: "+commaJoin(settings.ServerSelection.Cities))
+	}
+
+	if len(settings.ServerSelection.Hostnames) > 0 {
+		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
 	}
 
 	return lines
@@ -34,7 +42,17 @@ func (settings *Provider) readHideMyAss(r reader) (err error) {
 		return err
 	}
 
+	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.HideMyAssCountryChoices())
+	if err != nil {
+		return err
+	}
+
 	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.HideMyAssCityChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.TorguardHostnamesChoices())
 	if err != nil {
 		return err
 	}
