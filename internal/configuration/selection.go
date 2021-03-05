@@ -15,9 +15,9 @@ type ServerSelection struct {
 	// Cyberghost
 	Group string `json:"group"`
 
-	Countries []string `json:"countries"` // Mullvad, PureVPN
-	Cities    []string `json:"cities"`    // Mullvad, PureVPN, Windscribe
-	Hostnames []string `json:"hostnames"` // Windscribe, Privado
+	Countries []string `json:"countries"` // HideMyAss, Mullvad, PureVPN
+	Cities    []string `json:"cities"`    // HideMyAss, Mullvad, PureVPN, Windscribe
+	Hostnames []string `json:"hostnames"` // HideMyAss, Windscribe, Privado
 
 	// Mullvad
 	ISPs  []string `json:"isps"`

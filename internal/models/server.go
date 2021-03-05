@@ -17,6 +17,21 @@ func (s *CyberghostServer) String() string {
 	return fmt.Sprintf("{Region: %q, Group: %q, IPs: %s}", s.Region, s.Group, goStringifyIPs(s.IPs))
 }
 
+type HideMyAssServer struct {
+	Country  string   `json:"country"`
+	Region   string   `json:"region"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	IPs      []net.IP `json:"ips"`
+}
+
+func (s *HideMyAssServer) String() string {
+	return fmt.Sprintf("{Country: %q, Region: %q, City: %q, Hostname: %q, TCP: %t, UDP: %t, IPs: %s}",
+		s.Country, s.Region, s.City, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
+}
+
 type MullvadServer struct {
 	IPs     []net.IP `json:"ips"`
 	IPsV6   []net.IP `json:"ipsv6"`

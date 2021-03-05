@@ -11,6 +11,7 @@ type Updater struct {
 	Period     time.Duration `json:"period"`
 	DNSAddress string        `json:"dns_address"`
 	Cyberghost bool          `json:"cyberghost"`
+	HideMyAss  bool          `json:"hidemyass"`
 	Mullvad    bool          `json:"mullvad"`
 	Nordvpn    bool          `json:"nordvpn"`
 	PIA        bool          `json:"pia"`
@@ -43,6 +44,7 @@ func (settings *Updater) lines() (lines []string) {
 
 func (settings *Updater) read(r reader) (err error) {
 	settings.Cyberghost = true
+	settings.HideMyAss = true
 	settings.Mullvad = true
 	settings.Nordvpn = true
 	settings.Privado = true

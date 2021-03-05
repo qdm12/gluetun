@@ -42,6 +42,22 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Client certificate is set",
 			},
 		},
+		"hidemyass": {
+			settings: Provider{
+				Name: constants.HideMyAss,
+				ServerSelection: ServerSelection{
+					Protocol:  constants.UDP,
+					Countries: []string{"a", "b"},
+					Cities:    []string{"c", "d"},
+				},
+			},
+			lines: []string{
+				"|--HideMyAss settings:",
+				"   |--Network protocol: udp",
+				"   |--Countries: a, b",
+				"   |--Cities: c, d",
+			},
+		},
 		"mullvad": {
 			settings: Provider{
 				Name: constants.Mullvad,

@@ -39,6 +39,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Cyberghost.Version,
 			digest:  "fd6242bb",
 		},
+		"HideMyAss": {
+			model:   models.HideMyAssServer{},
+			version: allServers.HideMyAss.Version,
+			digest:  "xxxxxx",
+		},
 		"Mullvad": {
 			model:   models.MullvadServer{},
 			version: allServers.Mullvad.Version,
@@ -124,6 +129,11 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.Cyberghost.Servers,
 			timestamp: allServers.Cyberghost.Timestamp,
 			digest:    "5d3a8cbf",
+		},
+		"HideMyAss": {
+			servers:   allServers.HideMyAss.Servers,
+			timestamp: allServers.HideMyAss.Timestamp,
+			digest:    "e2e006cf",
 		},
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,

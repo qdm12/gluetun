@@ -27,6 +27,8 @@ func New(provider string, allServers models.AllServers, timeNow timeNowFunc) Pro
 	switch provider {
 	case constants.Cyberghost:
 		return newCyberghost(allServers.Cyberghost.Servers, timeNow)
+	case constants.HideMyAss:
+		return newHideMyAss(allServers.HideMyAss.Servers, timeNow)
 	case constants.Mullvad:
 		return newMullvad(allServers.Mullvad.Servers, timeNow)
 	case constants.Nordvpn:

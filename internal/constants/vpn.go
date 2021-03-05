@@ -3,6 +3,8 @@ package constants
 const (
 	// Cyberghost is a VPN provider.
 	Cyberghost = "cyberghost"
+	// HideMyAss is a VPN provider.
+	HideMyAss = "hidemyass"
 	// Mullvad is a VPN provider.
 	Mullvad = "mullvad"
 	// NordVPN is a VPN provider.

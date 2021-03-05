@@ -60,6 +60,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
+	if u.options.HideMyAss {
+		u.logger.Info("updating HideMyAss servers...")
+		if err := u.updateHideMyAss(ctx); err != nil {
+			u.logger.Error(err)
+		}
+		if err := ctx.Err(); err != nil {
+			return allServers, err
+		}
+	}
+
 	if u.options.Mullvad {
 		u.logger.Info("updating Mullvad servers...")
 		if err := u.updateMullvad(ctx); err != nil {
