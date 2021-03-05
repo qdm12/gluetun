@@ -42,7 +42,7 @@ func Test_versions(t *testing.T) {
 		"HideMyAss": {
 			model:   models.HideMyAssServer{},
 			version: allServers.HideMyAss.Version,
-			digest:  "xxxxxx",
+			digest:  "a93b4057",
 		},
 		"Mullvad": {
 			model:   models.MullvadServer{},
@@ -133,7 +133,7 @@ func Test_timestamps(t *testing.T) {
 		"HideMyAss": {
 			servers:   allServers.HideMyAss.Servers,
 			timestamp: allServers.HideMyAss.Timestamp,
-			digest:    "e2e006cf",
+			digest:    "38c71676",
 		},
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,
