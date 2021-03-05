@@ -29,13 +29,16 @@ func newHideMyAss(servers []models.HideMyAssServer, timeNow timeNowFunc) *hideMy
 	}
 }
 
-func (h *hideMyAss) filterServers(countries, cities, hostnames []string) (servers []models.HideMyAssServer) {
+func (h *hideMyAss) filterServers(countries, cities, hostnames []string,
+	protocol string) (servers []models.HideMyAssServer) {
 	for _, server := range h.servers {
 		switch {
 		case
 			filterByPossibilities(server.Country, countries),
 			filterByPossibilities(server.City, cities),
-			filterByPossibilities(server.Hostname, hostnames):
+			filterByPossibilities(server.Hostname, hostnames),
+			protocol == constants.TCP && !server.TCP,
+			protocol == constants.UDP && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
@@ -76,7 +79,7 @@ func (h *hideMyAss) GetOpenVPNConnection(selection configuration.ServerSelection
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := h.filterServers(selection.Countries, selection.Cities, selection.Hostnames)
+	servers := h.filterServers(selection.Countries, selection.Cities, selection.Hostnames, selection.Protocol)
 	if len(servers) == 0 {
 		return models.OpenVPNConnection{}, h.notFoundErr(selection)
 	}
