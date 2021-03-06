@@ -20,6 +20,7 @@ type OpenVPN struct {
 	Cipher    string   `json:"cipher"`
 	Auth      string   `json:"auth"`
 	Provider  Provider `json:"provider"`
+	Config    string   `json:"custom_config"`
 }
 
 func (settings *OpenVPN) String() string {
@@ -40,6 +41,10 @@ func (settings *OpenVPN) lines() (lines []string) {
 	}
 	if len(settings.Auth) > 0 {
 		lines = append(lines, indent+lastIndent+"Custom auth algorithm: "+settings.Auth)
+	}
+
+	if len(settings.Config) > 0 {
+		lines = append(lines, indent+lastIndent+"Custom configuration: "+settings.Config)
 	}
 
 	lines = append(lines, indent+lastIndent+"Provider:")
@@ -110,6 +115,11 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		return err
 	}
 	settings.MSSFix = uint16(mssFix)
+
+	settings.Config, err = r.env.Get("OPENVPN_CUSTOM_CONFIG")
+	if err != nil {
+		return err
+	}
 
 	var readProvider func(r reader) error
 	switch settings.Provider.Name {
