@@ -31,6 +31,11 @@ func GetAllServers() (allServers models.AllServers) {
 			Timestamp: 1612031135,
 			Servers:   PrivadoServers(),
 		},
+		Privatevpn: models.PrivatevpnServers{
+			Version:   1,
+			Timestamp: 1613861528,
+			Servers:   PrivatevpnServers(),
+		},
 		Pia: models.PiaServers{
 			Version:   4,
 			Timestamp: 1613480675,

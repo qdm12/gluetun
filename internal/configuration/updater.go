@@ -16,6 +16,7 @@ type Updater struct {
 	Nordvpn    bool          `json:"nordvpn"`
 	PIA        bool          `json:"pia"`
 	Privado    bool          `json:"privado"`
+	Privatevpn bool          `json:"privatevpn"`
 	Purevpn    bool          `json:"purevpn"`
 	Surfshark  bool          `json:"surfshark"`
 	Torguard   bool          `json:"torguard"`
@@ -49,6 +50,8 @@ func (settings *Updater) read(r reader) (err error) {
 	settings.Nordvpn = true
 	settings.Privado = true
 	settings.PIA = true
+	settings.Privado = true
+	settings.Privatevpn = true
 	settings.Purevpn = true
 	settings.Surfshark = true
 	settings.Torguard = true

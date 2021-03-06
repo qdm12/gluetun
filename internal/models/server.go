@@ -137,6 +137,18 @@ func (s *WindscribeServer) String() string {
 		s.Region, s.City, s.Hostname, goStringifyIP(s.IP))
 }
 
+type PrivatevpnServer struct {
+	Country  string   `json:"country"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	IPs      []net.IP `json:"ip"`
+}
+
+func (s *PrivatevpnServer) String() string {
+	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, IPs: %s}",
+		s.Country, s.City, s.Hostname, goStringifyIPs(s.IPs))
+}
+
 func goStringifyIP(ip net.IP) string {
 	s := fmt.Sprintf("%#v", ip)
 	s = strings.TrimSuffix(strings.TrimPrefix(s, "net.IP{"), "}")

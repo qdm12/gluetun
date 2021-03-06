@@ -37,6 +37,8 @@ func New(provider string, allServers models.AllServers, timeNow timeNowFunc) Pro
 		return newPrivado(allServers.Privado.Servers, timeNow)
 	case constants.PrivateInternetAccess:
 		return newPrivateInternetAccess(allServers.Pia.Servers, timeNow)
+	case constants.Privatevpn:
+		return newPrivatevpn(allServers.Privatevpn.Servers, timeNow)
 	case constants.Purevpn:
 		return newPurevpn(allServers.Purevpn.Servers, timeNow)
 	case constants.Surfshark:
