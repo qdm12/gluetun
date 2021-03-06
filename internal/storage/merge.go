@@ -18,6 +18,7 @@ func (s *storage) mergeServers(hardcoded, persisted models.AllServers) models.Al
 	return models.AllServers{
 		Version:    hardcoded.Version,
 		Cyberghost: s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
+		HideMyAss:  s.mergeHideMyAss(hardcoded.HideMyAss, persisted.HideMyAss),
 		Mullvad:    s.mergeMullvad(hardcoded.Mullvad, persisted.Mullvad),
 		Nordvpn:    s.mergeNordVPN(hardcoded.Nordvpn, persisted.Nordvpn),
 		Privado:    s.mergePrivado(hardcoded.Privado, persisted.Privado),
@@ -35,6 +36,22 @@ func (s *storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers)
 		return hardcoded
 	}
 	s.logger.Info("Using Cyberghost servers from file (%s more recent)",
+		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	return persisted
+}
+
+func (s *storage) mergeHideMyAss(hardcoded, persisted models.HideMyAssServers) models.HideMyAssServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logger.Info(
+			"HideMyAss servers from file discarded because they are %d versions behind",
+			versionDiff)
+		return hardcoded
+	}
+	s.logger.Info("Using HideMyAss servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
 }

@@ -11,6 +11,11 @@ func GetAllServers() (allServers models.AllServers) {
 			Timestamp: 1612031135, // latest takes precedence
 			Servers:   CyberghostServers(),
 		},
+		HideMyAss: models.HideMyAssServers{
+			Version:   1,
+			Timestamp: 1614562368,
+			Servers:   HideMyAssServers(),
+		},
 		Mullvad: models.MullvadServers{
 			Version:   1,
 			Timestamp: 1612031135,

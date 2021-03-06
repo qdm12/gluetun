@@ -3,6 +3,7 @@ package models
 type AllServers struct {
 	Version    uint16            `json:"version"`
 	Cyberghost CyberghostServers `json:"cyberghost"`
+	HideMyAss  HideMyAssServers  `json:"hidemyass"`
 	Mullvad    MullvadServers    `json:"mullvad"`
 	Nordvpn    NordvpnServers    `json:"nordvpn"`
 	Privado    PrivadoServers    `json:"privado"`
@@ -16,6 +17,7 @@ type AllServers struct {
 
 func (a *AllServers) Count() int {
 	return len(a.Cyberghost.Servers) +
+		len(a.HideMyAss.Servers) +
 		len(a.Mullvad.Servers) +
 		len(a.Nordvpn.Servers) +
 		len(a.Privado.Servers) +
@@ -31,6 +33,11 @@ type CyberghostServers struct {
 	Version   uint16             `json:"version"`
 	Timestamp int64              `json:"timestamp"`
 	Servers   []CyberghostServer `json:"servers"`
+}
+type HideMyAssServers struct {
+	Version   uint16            `json:"version"`
+	Timestamp int64             `json:"timestamp"`
+	Servers   []HideMyAssServer `json:"servers"`
 }
 type MullvadServers struct {
 	Version   uint16          `json:"version"`
