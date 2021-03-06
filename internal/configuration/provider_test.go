@@ -42,6 +42,22 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Client certificate is set",
 			},
 		},
+		"fastestvpn": {
+			settings: Provider{
+				Name: constants.Fastestvpn,
+				ServerSelection: ServerSelection{
+					Protocol:  constants.UDP,
+					Hostnames: []string{"a", "b"},
+					Countries: []string{"c", "d"},
+				},
+			},
+			lines: []string{
+				"|--Fastestvpn settings:",
+				"   |--Network protocol: udp",
+				"   |--Hostnames: a, b",
+				"   |--Countries: c, d",
+			},
+		},
 		"hidemyass": {
 			settings: Provider{
 				Name: constants.HideMyAss,

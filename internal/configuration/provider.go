@@ -31,6 +31,8 @@ func (settings *Provider) lines() (lines []string) {
 	switch strings.ToLower(settings.Name) {
 	case "cyberghost":
 		providerLines = settings.cyberghostLines()
+	case "fastestvpn":
+		providerLines = settings.fastestvpnLines()
 	case "hidemyass":
 		providerLines = settings.hideMyAssLines()
 	case "mullvad":

@@ -17,6 +17,19 @@ func (s *CyberghostServer) String() string {
 	return fmt.Sprintf("{Region: %q, Group: %q, IPs: %s}", s.Region, s.Group, goStringifyIPs(s.IPs))
 }
 
+type FastestvpnServer struct {
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	Country  string   `json:"country"`
+	IPs      []net.IP `json:"ips"`
+}
+
+func (s *FastestvpnServer) String() string {
+	return fmt.Sprintf("{Country: %q, Hostname: %q, UDP: %t, TCP: %t, IPs: %s}",
+		s.Country, s.Hostname, s.UDP, s.TCP, goStringifyIPs(s.IPs))
+}
+
 type HideMyAssServer struct {
 	Country  string   `json:"country"`
 	Region   string   `json:"region"`
@@ -83,6 +96,18 @@ func (p *PIAServer) String() string {
 		p.Region, p.ServerName, p.TCP, p.UDP, p.PortForward, goStringifyIP(p.IP))
 }
 
+type PrivatevpnServer struct {
+	Country  string   `json:"country"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	IPs      []net.IP `json:"ip"`
+}
+
+func (s *PrivatevpnServer) String() string {
+	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, IPs: %s}",
+		s.Country, s.City, s.Hostname, goStringifyIPs(s.IPs))
+}
+
 type PurevpnServer struct {
 	Country string   `json:"country"`
 	Region  string   `json:"region"`
@@ -135,18 +160,6 @@ type WindscribeServer struct {
 func (s *WindscribeServer) String() string {
 	return fmt.Sprintf("{Region: %q, City: %q, Hostname: %q, IP: %s}",
 		s.Region, s.City, s.Hostname, goStringifyIP(s.IP))
-}
-
-type PrivatevpnServer struct {
-	Country  string   `json:"country"`
-	City     string   `json:"city"`
-	Hostname string   `json:"hostname"`
-	IPs      []net.IP `json:"ip"`
-}
-
-func (s *PrivatevpnServer) String() string {
-	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, IPs: %s}",
-		s.Country, s.City, s.Hostname, goStringifyIPs(s.IPs))
 }
 
 func goStringifyIP(ip net.IP) string {
