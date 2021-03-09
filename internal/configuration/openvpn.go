@@ -74,7 +74,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 
 	settings.Provider.Name = vpnsp
 
-	settings.Config, err = r.env.Get("OPENVPN_CUSTOM_CONFIG")
+	settings.Config, err = r.env.Get("OPENVPN_CUSTOM_CONFIG", params.CaseSensitiveValue())
 	if err != nil {
 		return err
 	}
