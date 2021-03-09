@@ -122,9 +122,15 @@ func extractConnectionFromLines(lines []string) (
 
 		case strings.HasPrefix(line, "remote "):
 			fields := strings.Fields(line)
-			if n := len(fields); n != 3 { //nolint:gomnd
+			n := len(fields)
+			switch n {
+			case 3: //nolint:gomnd
+			case 4: //nolint:gomnd
+				connection.Protocol = fields[3]
+				foundProto = true
+			default:
 				return connection, fmt.Errorf(
-					"%w: remote line has %d fields instead of 3: %s",
+					"%w: remote line has %d fields instead of 3 or 4: %s",
 					errExtractConnection, n, line)
 			}
 
