@@ -104,10 +104,8 @@ func modifyCustomConfig(lines []string, username string,
 var errExtractConnection = errors.New("cannot extract connection")
 
 // extractConnectionFromLines always takes the first remote line only.
-func extractConnectionFromLines(lines []string) (
+func extractConnectionFromLines(lines []string) ( //nolint:gocognit
 	connection models.OpenVPNConnection, err error) {
-	var foundProto, foundRemote bool
-
 	for _, line := range lines {
 		switch {
 		case strings.HasPrefix(line, "proto "):
@@ -118,20 +116,16 @@ func extractConnectionFromLines(lines []string) (
 					errExtractConnection, n, line)
 			}
 			connection.Protocol = fields[1]
-			foundProto = true
 
-		case strings.HasPrefix(line, "remote "):
+		// only take the first remote line
+		case strings.HasPrefix(line, "remote ") && connection.IP == nil:
 			fields := strings.Fields(line)
 			n := len(fields)
-			switch n {
-			case 3: //nolint:gomnd
-			case 4: //nolint:gomnd
-				connection.Protocol = fields[3]
-				foundProto = true
-			default:
+			//nolint:gomnd
+			if n < 2 {
 				return connection, fmt.Errorf(
-					"%w: remote line has %d fields instead of 3 or 4: %s",
-					errExtractConnection, n, line)
+					"%w: remote line has not enough fields: %s",
+					errExtractConnection, line)
 			}
 
 			host := fields[1]
@@ -145,26 +139,52 @@ func extractConnectionFromLines(lines []string) (
 				// the firewall before the VPN is up.
 			}
 
-			port, err := strconv.Atoi(fields[2])
-			if err != nil {
+			if n > 2 { //nolint:gomnd
+				port, err := strconv.Atoi(fields[2])
+				if err != nil {
+					return connection, fmt.Errorf(
+						"%w: remote line has an invalid port: %s",
+						errExtractConnection, line)
+				}
+				connection.Port = uint16(port)
+			}
+
+			if n > 3 { //nolint:gomnd
+				connection.Protocol = strings.ToLower(fields[3])
+			}
+
+			if n > 4 { //nolint:gomnd
 				return connection, fmt.Errorf(
-					"%w: remote line has an invalid port: %s",
+					"%w: remote line has too many fields: %s",
 					errExtractConnection, line)
 			}
-			connection.Port = uint16(port)
-
-			foundRemote = true
 		}
 
-		if foundProto && foundRemote {
+		if connection.Protocol != "" && connection.IP != nil {
 			break
 		}
 	}
 
-	if !foundProto {
-		return connection, fmt.Errorf("%w: proto line not found", errExtractConnection)
-	} else if !foundRemote {
+	if connection.IP == nil {
 		return connection, fmt.Errorf("%w: remote line not found", errExtractConnection)
+	}
+
+	switch connection.Protocol {
+	case "":
+		return connection, fmt.Errorf("%w: network protocol not found", errExtractConnection)
+	case "tcp", "udp":
+	default:
+		return connection, fmt.Errorf("%w: network protocol not supported: %s", errExtractConnection, connection.Protocol)
+	}
+
+	if connection.Port == 0 {
+		if connection.Protocol == "tcp" {
+			const defaultPort uint16 = 443
+			connection.Port = defaultPort
+		} else {
+			const defaultPort uint16 = 1194
+			connection.Port = defaultPort
+		}
 	}
 
 	return connection, nil
