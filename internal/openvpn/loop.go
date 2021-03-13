@@ -99,7 +99,7 @@ func (l *looper) signalCrashedStatus() {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
+func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocognit
 	defer wg.Done()
 	select {
 	case <-l.start:
@@ -110,15 +110,29 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 
 	for ctx.Err() == nil {
 		settings, allServers := l.state.getSettingsAndServers()
+
 		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
-		connection, err := providerConf.GetOpenVPNConnection(settings.Provider.ServerSelection)
-		if err != nil {
-			l.logger.Error(err)
-			l.signalCrashedStatus()
-			l.cancel()
-			return
+
+		var connection models.OpenVPNConnection
+		var lines []string
+		var err error
+		if len(settings.Config) == 0 {
+			connection, err = providerConf.GetOpenVPNConnection(settings.Provider.ServerSelection)
+			if err != nil {
+				l.logger.Error(err)
+				l.signalCrashedStatus()
+				l.cancel()
+				return
+			}
+			lines = providerConf.BuildConf(connection, l.username, settings)
+		} else {
+			lines, connection, err = l.processCustomConfig(settings)
+			if err != nil {
+				l.signalCrashedStatus()
+				l.logAndWait(ctx, err)
+				continue
+			}
 		}
-		lines := providerConf.BuildConf(connection, l.username, settings)
 
 		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
 			l.logger.Error(err)

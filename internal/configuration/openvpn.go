@@ -20,6 +20,7 @@ type OpenVPN struct {
 	Cipher    string   `json:"cipher"`
 	Auth      string   `json:"auth"`
 	Provider  Provider `json:"provider"`
+	Config    string   `json:"custom_config"`
 }
 
 func (settings *OpenVPN) String() string {
@@ -40,6 +41,10 @@ func (settings *OpenVPN) lines() (lines []string) {
 	}
 	if len(settings.Auth) > 0 {
 		lines = append(lines, indent+lastIndent+"Custom auth algorithm: "+settings.Auth)
+	}
+
+	if len(settings.Config) > 0 {
+		lines = append(lines, indent+lastIndent+"Custom configuration: "+settings.Config)
 	}
 
 	lines = append(lines, indent+lastIndent+"Provider:")
@@ -69,7 +74,14 @@ func (settings *OpenVPN) read(r reader) (err error) {
 
 	settings.Provider.Name = vpnsp
 
-	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", true, []string{"USER"})
+	settings.Config, err = r.env.Get("OPENVPN_CUSTOM_CONFIG", params.CaseSensitiveValue())
+	if err != nil {
+		return err
+	}
+
+	credentialsRequired := len(settings.Config) == 0
+
+	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", credentialsRequired, []string{"USER"})
 	if err != nil {
 		return err
 	}
@@ -79,7 +91,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 	if settings.Provider.Name == constants.Mullvad {
 		settings.Password = "m"
 	} else {
-		settings.Password, err = r.getFromEnvOrSecretFile("OPENVPN_PASSWORD", true, []string{"PASSWORD"})
+		settings.Password, err = r.getFromEnvOrSecretFile("OPENVPN_PASSWORD", credentialsRequired, []string{"PASSWORD"})
 		if err != nil {
 			return err
 		}
