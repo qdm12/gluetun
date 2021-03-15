@@ -171,7 +171,7 @@ func extractConnectionFromLines(lines []string) ( //nolint:gocognit
 
 	switch connection.Protocol {
 	case "":
-		return connection, fmt.Errorf("%w: network protocol not found", errExtractConnection)
+		connection.Protocol = "udp"
 	case "tcp", "udp":
 	default:
 		return connection, fmt.Errorf("%w: network protocol not supported: %s", errExtractConnection, connection.Protocol)
