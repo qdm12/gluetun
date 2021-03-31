@@ -36,7 +36,7 @@ RUN apt-get update && \
   	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=14 -G "Unix Makefiles" ../.. && \
   	make install && \
   	mkdir /tmp/qbittorrent && \
-  	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.4 | tar xzC /tmp/qbittorrent && \
+  	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.4.1 | tar xzC /tmp/qbittorrent && \
   	cd /tmp/qbittorrent/*qbittorrent* && \
   	./configure --disable-gui CXXFLAGS="-std=c++14" && \
   	make -j$(nproc) && \
