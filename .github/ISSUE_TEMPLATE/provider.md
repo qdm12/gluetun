@@ -13,5 +13,5 @@ One of the following is required:
 - Publicly accessible URL to the list of servers **and attach** an example Openvpn configuration file for both TCP and UDP
 
 If the list of servers requires to login **or** is hidden behind an interactive configurator,
-it's not possible to support the provider yet.
-[The Wiki](https://github.com/qdm12/gluetun/wiki/Openvpn-file) describes how to use an Openvpn configuration file.
+you can only use a custom Openvpn configuration file.
+[The Wiki](https://github.com/qdm12/gluetun/wiki/Openvpn-file) describes how to do so.
