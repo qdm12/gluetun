@@ -157,13 +157,10 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
-		"ping 10",
-		"ping-exit 60",
-		"ping-timer-rem",
-		"tls-exit",
 
 		// PIA specific
 		"reneg-sec 0",
+		"disable-occ",
 		"compress", // allow PIA server to choose the compression to use
 
 		// Added constant values
