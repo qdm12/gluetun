@@ -119,12 +119,12 @@ func (r *routing) LocalSubnets() (localSubnets []net.IPNet, err error) {
 			continue
 		}
 
-		localSubnet = *route.Dst
+		localSubnet := *route.Dst
 		if r.verbose {
 			r.logger.Info("local subnet found: %s", localSubnet.String())
 		}
 
-		append(localSubnets, localSubnet)
+		localSubnets = append(localSubnets, localSubnet)
 	}
 
 	if len(localSubnets) == 0 {
