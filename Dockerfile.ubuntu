@@ -7,10 +7,6 @@ ENV USER= \
     WEBUI_PORT=8888 \
     DNS_SERVERS=209.222.18.222,209.222.18.218
 
-
-# Start point for docker
-ENTRYPOINT /entrypoint.sh
-
 # Download Folder
 VOLUME /downloads
 
@@ -49,7 +45,13 @@ RUN apt-get update && \
     apt-get autoclean -qq && \
     rm -rf /*.zip /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
-
 COPY entrypoint.sh qBittorrent.conf /
 
 RUN chmod 500 /entrypoint.sh
+
+# Start point for docker
+ENTRYPOINT /entrypoint.sh
+
+# healthcheck
+HEALTHCHECK --interval=60s --timeout=15s --start-period=120s \
+             CMD curl -LSs 'https://api.ipify.org'

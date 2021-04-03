@@ -8,9 +8,6 @@ ENV USER= \
     DNS_SERVERS=209.222.18.222,209.222.18.218
 
 
-# Start point for docker
-ENTRYPOINT /entrypoint.sh
-
 # Download Folder
 VOLUME /downloads
 
@@ -49,8 +46,13 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	cd / && \
 	rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/* /usr/include/*
 
-
-
 COPY entrypoint.sh qBittorrent.conf /
 
 RUN chmod 500 /entrypoint.sh
+
+# Start point for docker
+ENTRYPOINT /entrypoint.sh
+
+# healthcheck
+HEALTHCHECK --interval=60s --timeout=15s --start-period=120s \
+             CMD curl -LSs 'https://api.ipify.org'

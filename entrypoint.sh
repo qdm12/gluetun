@@ -349,6 +349,5 @@ while : ; do
   if [ -z "${proc}" ]; then
     exit
   fi
-	#ifconfig $VPN_DEVICE
 	sleep 10s
 done
