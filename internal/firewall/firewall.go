@@ -24,7 +24,7 @@ type Configurator interface {
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 	SetDebug()
 	// SetNetworkInformation is meant to be called only once
-	SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet, localIP net.IP)
+	SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localSubnets []net.IPNet, localIP net.IP)
 }
 
 type configurator struct { //nolint:maligned
@@ -36,7 +36,7 @@ type configurator struct { //nolint:maligned
 	debug            bool
 	defaultInterface string
 	defaultGateway   net.IP
-	localSubnet      net.IPNet
+	localSubnets     []net.IPNet
 	localIP          net.IP
 	networkInfoMutex sync.Mutex
 
@@ -64,11 +64,11 @@ func (c *configurator) SetDebug() {
 }
 
 func (c *configurator) SetNetworkInformation(
-	defaultInterface string, defaultGateway net.IP, localSubnet net.IPNet, localIP net.IP) {
+	defaultInterface string, defaultGateway net.IP, localSubnets []net.IPNet, localIP net.IP) {
 	c.networkInfoMutex.Lock()
 	defer c.networkInfoMutex.Unlock()
 	c.defaultInterface = defaultInterface
 	c.defaultGateway = defaultGateway
-	c.localSubnet = localSubnet
+	c.localSubnets = localSubnets
 	c.localIP = localIP
 }
