@@ -89,23 +89,27 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 }
 
 func (r *routing) LocalSubnets() (localSubnets []net.IPNet, err error) {
-    links, err := netlink.LinkList()
-    if err != nil {
-        return localSubnets, fmt.Errorf("cannot find local subnet: %w", err)
-    }
+	links, err := netlink.LinkList()
+	if err != nil {
+		return localSubnets, fmt.Errorf("cannot find local subnet: %w", err)
+	}
 
-    localLinks := make(map[int]bool)
+	localLinks := make(map[int]bool)
 
-    for _, link := range links {
-        if link.Attrs().EncapType == "ether" {
-            localLinks[link.Attrs().Index] = true
-		    r.logger.Debug("local ethernet link found: %s", link.Attrs().Name)
-        }
-    }
+	for _, link := range links {
+		if link.Attrs().EncapType != "ether" {
+			continue
+		}
 
-    if len(localLinks) == 0 {
-        return localSubnets, fmt.Errorf("cannot find any local interfaces")
-    }
+		localLinks[link.Attrs().Index] = true
+		if r.verbose {
+			r.logger.Info("local ethernet link found: %s", link.Attrs().Name)
+		}
+	}
+
+	if len(localLinks) == 0 {
+		return localSubnets, fmt.Errorf("cannot find any local interfaces")
+	}
 
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
