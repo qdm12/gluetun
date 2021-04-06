@@ -9,6 +9,12 @@ import (
 	"github.com/vishvananda/netlink"
 )
 
+type LocalNetwork struct {
+	Subnet        net.IPNet
+	InterfaceName string
+	IP            net.IP
+}
+
 func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
@@ -88,10 +94,10 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	return defaultSubnet, fmt.Errorf("cannot find default subnet in %d routes", len(routes))
 }
 
-func (r *routing) LocalSubnets() (localSubnets []net.IPNet, err error) {
+func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	links, err := netlink.LinkList()
 	if err != nil {
-		return localSubnets, fmt.Errorf("cannot find local subnet: %w", err)
+		return localNetworks, fmt.Errorf("cannot find local subnet: %w", err)
 	}
 
 	localLinks := make(map[int]struct{})
@@ -108,12 +114,12 @@ func (r *routing) LocalSubnets() (localSubnets []net.IPNet, err error) {
 	}
 
 	if len(localLinks) == 0 {
-		return localSubnets, fmt.Errorf("cannot find any local interfaces")
+		return localNetworks, fmt.Errorf("cannot find any local interfaces")
 	}
 
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return localSubnets, fmt.Errorf("cannot list local routes: %w", err)
+		return localNetworks, fmt.Errorf("cannot list local routes: %w", err)
 	}
 
 	for _, route := range routes {
@@ -123,19 +129,35 @@ func (r *routing) LocalSubnets() (localSubnets []net.IPNet, err error) {
 			continue
 		}
 
-		localSubnet := *route.Dst
+		var localNet LocalNetwork
+
+		localNet.Subnet = *route.Dst
 		if r.verbose {
-			r.logger.Info("local subnet found: %s", localSubnet.String())
+			r.logger.Info("local subnet found: %s", localNet.Subnet.String())
 		}
 
-		localSubnets = append(localSubnets, localSubnet)
+		link, err := netlink.LinkByIndex(route.LinkIndex)
+		if err != nil {
+			return localNetworks, fmt.Errorf("cannot get link by index: %w", err)
+		}
+
+		localNet.InterfaceName = link.Attrs().Name
+
+		ip, err := r.assignedIP(localNet.InterfaceName)
+		if err != nil {
+			return localNetworks, fmt.Errorf("cannot get IP assigned to link: %w", err)
+		}
+
+		localNet.IP = ip
+
+		localNetworks = append(localNetworks, localNet)
 	}
 
-	if len(localSubnets) == 0 {
-		return localSubnets, fmt.Errorf("cannot find any local subnet in %d routes", len(routes))
+	if len(localNetworks) == 0 {
+		return localNetworks, fmt.Errorf("cannot find any local networks across %d routes", len(routes))
 	}
 
-	return localSubnets, nil
+	return localNetworks, nil
 }
 
 func (r *routing) assignedIP(interfaceName string) (ip net.IP, err error) {
