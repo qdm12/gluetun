@@ -116,8 +116,6 @@ func (r *routing) LocalSubnets() (localSubnets []net.IPNet, err error) {
 		return localSubnets, fmt.Errorf("cannot list local routes: %w", err)
 	}
 
-	localSubnets = make([]net.IPNet, 0)
-
 	for _, route := range routes {
 		if route.Gw != nil || route.Dst == nil {
 			continue
