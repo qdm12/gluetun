@@ -12,7 +12,7 @@ import (
 )
 
 type Server interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, healthy chan<- bool, wg *sync.WaitGroup)
 }
 
 type server struct {
@@ -32,12 +32,12 @@ func NewServer(address string, logger logging.Logger) Server {
 	}
 }
 
-func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
+func (s *server) Run(ctx context.Context, healthy chan<- bool, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	internalWg := &sync.WaitGroup{}
 	internalWg.Add(1)
-	go s.runHealthcheckLoop(ctx, internalWg)
+	go s.runHealthcheckLoop(ctx, healthy, internalWg)
 
 	server := http.Server{
 		Addr:    s.address,

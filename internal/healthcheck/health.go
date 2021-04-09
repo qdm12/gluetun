@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (s *server) runHealthcheckLoop(ctx context.Context, wg *sync.WaitGroup) {
+func (s *server) runHealthcheckLoop(ctx context.Context, healthy chan<- bool, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {
 		previousErr := s.handler.getErr()
@@ -20,8 +20,10 @@ func (s *server) runHealthcheckLoop(ctx context.Context, wg *sync.WaitGroup) {
 
 		if previousErr != nil && err == nil {
 			s.logger.Info("healthy!")
+			healthy <- true
 		} else if previousErr == nil && err != nil {
 			s.logger.Info("unhealthy: " + err.Error())
+			healthy <- false
 		}
 
 		if err != nil { // try again after 1 second

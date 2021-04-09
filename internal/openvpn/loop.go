@@ -45,6 +45,7 @@ type looper struct {
 	client           *http.Client
 	openFile         os.OpenFileFunc
 	tunnelReady      chan<- struct{}
+	healthy          <-chan bool
 	cancel           context.CancelFunc
 	// Internal channels and locks
 	loopLock           sync.Mutex
@@ -62,7 +63,7 @@ func NewLooper(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,
-	tunnelReady chan<- struct{}, cancel context.CancelFunc) Looper {
+	tunnelReady chan<- struct{}, healthy <-chan bool, cancel context.CancelFunc) Looper {
 	return &looper{
 		state: state{
 			status:     constants.Stopped,
@@ -80,6 +81,7 @@ func NewLooper(settings configuration.OpenVPN,
 		client:             client,
 		openFile:           openFile,
 		tunnelReady:        tunnelReady,
+		healthy:            healthy,
 		cancel:             cancel,
 		start:              make(chan struct{}),
 		running:            make(chan models.LoopStatus),
@@ -215,6 +217,21 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 				l.logAndWait(ctx, err)
 				l.crashed = true
 				stayHere = false
+			case healthy := <-l.healthy:
+				if healthy {
+					continue
+				}
+				// ensure it stays unhealthy for 10 seconds before restarting it
+				healthy = l.waitForHealth(ctx)
+				if healthy || ctx.Err() != nil {
+					continue
+				}
+				l.state.setStatusWithLock(constants.Stopping)
+				l.logger.Warn("unhealthy program: restarting openvpn")
+				openvpnCancel()
+				<-waitError
+				l.state.setStatusWithLock(constants.Stopped)
+				stayHere = false
 			}
 		}
 		close(waitError)
@@ -238,6 +255,24 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 			<-timer.C
 		}
 	}
+}
+
+// waitForHealth waits for a true healthy signal
+// after restarting openvpn in order to avoid restarting
+// openvpn in a loop as it requires a few seconds to connect.
+func (l *looper) waitForHealth(ctx context.Context) (healthy bool) {
+	const waitTime = 10 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, waitTime)
+	defer cancel()
+
+	for !healthy {
+		select {
+		case <-ctx.Done():
+			return false
+		case healthy = <-l.healthy:
+		}
+	}
+	return true
 }
 
 // portForward is a blocking operation which may or may not be infinite.
