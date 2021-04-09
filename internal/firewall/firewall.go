@@ -24,7 +24,8 @@ type Configurator interface {
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 	SetDebug()
 	// SetNetworkInformation is meant to be called only once
-	SetNetworkInformation(defaultInterface string, defaultGateway net.IP, localNetworks []routing.LocalNetwork, localIP net.IP)
+	SetNetworkInformation(defaultInterface string, defaultGateway net.IP,
+		localNetworks []routing.LocalNetwork, localIP net.IP)
 }
 
 type configurator struct { //nolint:maligned
