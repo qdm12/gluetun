@@ -191,7 +191,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	localSubnet, err := routingConf.LocalSubnet()
+	localNetworks, err := routingConf.LocalNetworks()
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localSubnet, defaultIP)
+	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localNetworks, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
 		return err

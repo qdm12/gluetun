@@ -94,8 +94,10 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 
-	if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, c.localSubnet, remove); err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
+	for _, network := range c.localNetworks {
+		if err := c.acceptOutputFromIPToSubnet(ctx, network.InterfaceName, network.IP, network.Subnet, remove); err != nil {
+			return fmt.Errorf("cannot enable firewall: %w", err)
+		}
 	}
 
 	for _, subnet := range c.outboundSubnets {
@@ -106,8 +108,10 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 
 	// Allows packets from any IP address to go through eth0 / local network
 	// to reach Gluetun.
-	if err := c.acceptInputToSubnet(ctx, c.defaultInterface, c.localSubnet, remove); err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
+	for _, network := range c.localNetworks {
+		if err := c.acceptInputToSubnet(ctx, network.InterfaceName, network.Subnet, remove); err != nil {
+			return fmt.Errorf("cannot enable firewall: %w", err)
+		}
 	}
 
 	for port, intf := range c.allowedInputPorts {

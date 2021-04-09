@@ -16,7 +16,7 @@ type Routing interface {
 
 	// Read only
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
-	LocalSubnet() (defaultSubnet net.IPNet, err error)
+	LocalNetworks() (localNetworks []LocalNetwork, err error)
 	DefaultIP() (defaultIP net.IP, err error)
 	VPNDestinationIP() (ip net.IP, err error)
 	VPNLocalGatewayIP() (ip net.IP, err error)
