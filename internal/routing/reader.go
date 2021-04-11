@@ -10,7 +10,7 @@ import (
 )
 
 type LocalNetwork struct {
-	Subnet        net.IPNet
+	IPNet         *net.IPNet
 	InterfaceName string
 	IP            net.IP
 }
@@ -117,7 +117,7 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		return localNetworks, fmt.Errorf("cannot find any local interfaces")
 	}
 
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := netlink.RouteList(nil, netlink.FAMILY_V4)
 	if err != nil {
 		return localNetworks, fmt.Errorf("cannot list local routes: %w", err)
 	}
@@ -131,9 +131,9 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		var localNet LocalNetwork
 
-		localNet.Subnet = *route.Dst
+		localNet.IPNet = route.Dst
 		if r.verbose {
-			r.logger.Info("local subnet found: %s", localNet.Subnet.String())
+			r.logger.Info("local ipnet found: %s", localNet.IPNet.String())
 		}
 
 		link, err := netlink.LinkByIndex(route.LinkIndex)
