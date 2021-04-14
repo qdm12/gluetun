@@ -24,15 +24,15 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	apk add --no-cache ca-certificates libressl qt5-qtbase iptables openvpn ack bind-tools python3 && \
 	if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
 	mkdir /tmp/libtorrent && \
-  curl -sSL https://github.com/arvidn/libtorrent/archive/v1.2.12.tar.gz | tar xzC /tmp/libtorrent && \
+  curl -sSL https://github.com/arvidn/libtorrent/archive/v1.2.13.tar.gz | tar xzC /tmp/libtorrent && \
 	cd /tmp/libtorrent/*lib* && \
 	mkdir -p cmake-build-dir/release && \
 	cd cmake-build-dir/release && \
 	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=14 -G "Unix Makefiles" ../.. && \
 	make install && \
 	mkdir /tmp/qbittorrent && \
-	curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.4.1 | tar xzC /tmp/qbittorrent && \
-	cd /tmp/qbittorrent/*qbittorrent* && \
+	curl -sSL https://codeload.github.com/qbittorrent/qBittorrent/tar.gz/refs/heads/master | tar xzC /tmp/qbittorrent && \
+	cd /tmp/qbittorrent/*qBittorrent* && \
 	PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig ./configure --disable-gui && \
 	make install && \
 	export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${LD_LIBRARY_PATH} && \
@@ -45,7 +45,7 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
 	cd / && \
 	rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/* /usr/include/*
 
-COPY entrypoint.sh qBittorrent.conf /
+COPY ./entrypoint.sh ./qBittorrent.conf /
 
 RUN chmod 500 /entrypoint.sh
 
