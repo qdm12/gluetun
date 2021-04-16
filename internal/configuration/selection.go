@@ -9,15 +9,16 @@ type ServerSelection struct {
 	Protocol string `json:"network_protocol"`
 	TargetIP net.IP `json:"target_ip,omitempty"`
 	// TODO comments
-	// Cyberghost, PIA, Surfshark, Windscribe, Vyprvpn, NordVPN
+	// Cyberghost, PIA, Protonvpn, Surfshark, Windscribe, Vyprvpn, NordVPN
 	Regions []string `json:"regions"`
 
 	// Cyberghost
 	Group string `json:"group"`
 
-	Countries []string `json:"countries"` // Fastestvpn, HideMyAss, Mullvad, PrivateVPN, PureVPN
-	Cities    []string `json:"cities"`    // HideMyAss, Mullvad, PrivateVPN, PureVPN, Windscribe
-	Hostnames []string `json:"hostnames"` // Fastestvpn, HideMyAss, PrivateVPN, Windscribe, Privado
+	Countries []string `json:"countries"` // Fastestvpn, HideMyAss, Mullvad, PrivateVPN, Protonvpn, PureVPN
+	Cities    []string `json:"cities"`    // HideMyAss, Mullvad, PrivateVPN, Protonvpn, PureVPN, Windscribe
+	Hostnames []string `json:"hostnames"` // Fastestvpn, HideMyAss, PrivateVPN, Windscribe, Privado, Protonvpn
+	Names     []string `json:"names"`     // Protonvpn
 
 	// Mullvad
 	ISPs  []string `json:"isps"`

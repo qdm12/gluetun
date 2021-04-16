@@ -39,6 +39,8 @@
 - name: ":cloud: PrivateVPN"
   color: "cfe8d4"
   description: ""
+- name: ":cloud: ProtonVPN"
+  color: "cfe8d4"
 - name: ":cloud: PureVPN"
   color: "cfe8d4"
   description: ""

@@ -45,6 +45,8 @@ func (settings *Provider) lines() (lines []string) {
 		providerLines = settings.privatevpnLines()
 	case "private internet access":
 		providerLines = settings.privateinternetaccessLines()
+	case "protonvpn":
+		providerLines = settings.protonvpnLines()
 	case "purevpn":
 		providerLines = settings.purevpnLines()
 	case "surfshark":
