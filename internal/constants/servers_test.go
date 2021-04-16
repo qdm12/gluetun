@@ -183,7 +183,7 @@ func Test_timestamps(t *testing.T) {
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,
 			timestamp: allServers.Surfshark.Timestamp,
-			digest:    "1a7f38bb",
+			digest:    "c090bcd9",
 		},
 		"Torguard": {
 			servers:   allServers.Torguard.Servers,

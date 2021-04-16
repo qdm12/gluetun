@@ -162,10 +162,9 @@ func findSurfsharkServersFromZip(ctx context.Context, client *http.Client, looku
 
 func getRemainingServers(ctx context.Context, mapping map[string]string, lookupIP lookupIPFunc) (
 	servers []models.SurfsharkServer, warnings []string) {
-	hosts := make([]string, len(mapping))
-	i := 0
+	hosts := make([]string, 0, len(mapping))
 	for subdomain := range mapping {
-		hosts[i] = subdomain + ".prod.surfshark.com"
+		hosts = append(hosts, subdomain+".prod.surfshark.com")
 	}
 
 	const repetition = 20

@@ -53,7 +53,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Surfshark: models.SurfsharkServers{
 			Version:   1,
-			Timestamp: 1612031135,
+			Timestamp: 1618612180,
 			Servers:   SurfsharkServers(),
 		},
 		Torguard: models.TorguardServers{
