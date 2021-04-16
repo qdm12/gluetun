@@ -131,6 +131,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
+	if u.options.Protonvpn {
+		u.logger.Info("updating Protonvpn servers...")
+		if err := u.updateProtonvpn(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
+			u.logger.Error(err)
+		}
+	}
+
 	if u.options.Purevpn {
 		u.logger.Info("updating PureVPN servers...")
 		// TODO support servers offering only TCP or only UDP

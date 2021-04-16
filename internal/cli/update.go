@@ -30,6 +30,7 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
 	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
 	flagSet.BoolVar(&options.Privado, "privado", false, "Update Privado servers")
 	flagSet.BoolVar(&options.Privatevpn, "privatevpn", false, "Update Private VPN servers")
+	flagSet.BoolVar(&options.Protonvpn, "protonvpn", false, "Update Protonvpn servers")
 	flagSet.BoolVar(&options.Purevpn, "purevpn", false, "Update Purevpn servers")
 	flagSet.BoolVar(&options.Surfshark, "surfshark", false, "Update Surfshark servers")
 	flagSet.BoolVar(&options.Torguard, "torguard", false, "Update Torguard servers")

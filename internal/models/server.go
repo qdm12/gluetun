@@ -108,6 +108,21 @@ func (s *PrivatevpnServer) String() string {
 		s.Country, s.City, s.Hostname, goStringifyIPs(s.IPs))
 }
 
+type ProtonvpnServer struct {
+	Country  string `json:"country"`
+	Region   string `json:"region"`
+	City     string `json:"city"`
+	Name     string `json:"name"`
+	Hostname string `json:"hostname"`
+	EntryIP  net.IP `json:"entry_ip"`
+	ExitIP   net.IP `json:"exit_ip"` // TODO verify it matches with public IP once connected
+}
+
+func (s *ProtonvpnServer) String() string {
+	return fmt.Sprintf("{Country: %q, Region: %q, City: %q, Name: %q, Hostname: %q, EntryIP: %s, ExitIP: %s}",
+		s.Country, s.Region, s.City, s.Name, s.Hostname, goStringifyIP(s.EntryIP), goStringifyIP(s.ExitIP))
+}
+
 type PurevpnServer struct {
 	Country string   `json:"country"`
 	Region  string   `json:"region"`
