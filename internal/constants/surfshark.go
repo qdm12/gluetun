@@ -21,7 +21,7 @@ func SurfsharkRegionChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-//nolint:lll
+//nolint:lll,dupl
 // SurfsharkServers returns a slice of all the server information for Surfshark.
 func SurfsharkServers() []models.SurfsharkServer {
 	return []models.SurfsharkServer{
