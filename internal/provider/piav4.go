@@ -246,7 +246,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 
 	if !dataFound || expired {
 		tryUntilSuccessful(ctx, pfLogger, func() error {
-			data, err = refreshPIAPortForwardData(ctx, privateIPClient, gateway, openFile)
+			data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, gateway, openFile)
 			return err
 		})
 		if ctx.Err() != nil {
@@ -305,7 +305,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration.Format(time.RFC1123))
 			oldPort := data.Port
 			for {
-				data, err = refreshPIAPortForwardData(ctx, privateIPClient, gateway, openFile)
+				data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, gateway, openFile)
 				if err != nil {
 					pfLogger.Error(err)
 					continue
@@ -382,13 +382,13 @@ func newPIAHTTPClient(parentClient *http.Client, serverName string) (client *htt
 	}, nil
 }
 
-func refreshPIAPortForwardData(ctx context.Context, client *http.Client,
+func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *http.Client,
 	gateway net.IP, openFile os.OpenFileFunc) (data piaPortForwardData, err error) {
 	data.Token, err = fetchPIAToken(ctx, openFile, client)
 	if err != nil {
 		return data, fmt.Errorf("cannot obtain token: %w", err)
 	}
-	data.Port, data.Signature, data.Expiration, err = fetchPIAPortForwardData(ctx, client, gateway, data.Token)
+	data.Port, data.Signature, data.Expiration, err = fetchPIAPortForwardData(ctx, privateIPClient, gateway, data.Token)
 	if err != nil {
 		return data, fmt.Errorf("cannot obtain port forwarding data: %w", err)
 	}
