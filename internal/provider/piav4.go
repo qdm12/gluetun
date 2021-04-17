@@ -358,8 +358,11 @@ func newPIAHTTPClient(parentClient *http.Client, serverName string) (client *htt
 		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
 	}
 
-	parentTransport := parentClient.Transport.(*http.Transport)
-	transport := parentTransport.Clone()
+	parentTransport := parentClient.Transport
+	if parentTransport == nil {
+		parentTransport = http.DefaultTransport
+	}
+	transport := parentTransport.(*http.Transport).Clone()
 
 	rootCAs := x509.NewCertPool()
 	rootCAs.AddCert(certificate)
