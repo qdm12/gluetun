@@ -453,15 +453,15 @@ func writePIAPortForwardData(openFile os.OpenFileFunc, data piaPortForwardData) 
 }
 
 func unpackPIAPayload(payload string) (port uint16, token string, expiration time.Time, err error) {
-	b, err := base64.RawStdEncoding.DecodeString(payload)
+	b, err := base64.StdEncoding.DecodeString(payload)
 	if err != nil {
 		return 0, "", expiration,
-			fmt.Errorf("cannot decode payload: payload is %s: %w", payload, err)
+			fmt.Errorf("cannot decode payload: payload is %q: %w", payload, err)
 	}
 	var payloadData piaPayload
 	if err := json.Unmarshal(b, &payloadData); err != nil {
 		return 0, "", expiration,
-			fmt.Errorf("cannot parse payload data: data is %s: %w", string(b), err)
+			fmt.Errorf("cannot parse payload data: data is %q: %w", string(b), err)
 	}
 	return payloadData.Port, payloadData.Token, payloadData.Expiration, nil
 }
@@ -476,7 +476,7 @@ func packPIAPayload(port uint16, token string, expiration time.Time) (payload st
 	if err != nil {
 		return "", fmt.Errorf("cannot serialize payload data: %w", err)
 	}
-	payload = base64.RawStdEncoding.EncodeToString(b)
+	payload = base64.StdEncoding.EncodeToString(b)
 	return payload, nil
 }
 
