@@ -221,7 +221,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 		return
 	}
 
-	client, err := newPIAHTTPClient(client, commonName)
+	privateIPClient, err := newPIAHTTPClient(client, commonName)
 	if err != nil {
 		pfLogger.Error("aborting because: %s", err)
 		return
@@ -246,7 +246,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 
 	if !dataFound || expired {
 		tryUntilSuccessful(ctx, pfLogger, func() error {
-			data, err = refreshPIAPortForwardData(ctx, client, gateway, openFile)
+			data, err = refreshPIAPortForwardData(ctx, privateIPClient, gateway, openFile)
 			return err
 		})
 		if ctx.Err() != nil {
@@ -258,7 +258,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 
 	// First time binding
 	tryUntilSuccessful(ctx, pfLogger, func() error {
-		return bindPIAPort(ctx, client, gateway, data)
+		return bindPIAPort(ctx, privateIPClient, gateway, data)
 	})
 	if ctx.Err() != nil {
 		return
@@ -294,7 +294,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			}
 			return
 		case <-keepAliveTimer.C:
-			if err := bindPIAPort(ctx, client, gateway, data); err != nil {
+			if err := bindPIAPort(ctx, privateIPClient, gateway, data); err != nil {
 				pfLogger.Error(err)
 			}
 			keepAliveTimer.Reset(keepAlivePeriod)
@@ -302,7 +302,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			pfLogger.Warn("Forward port has expired on %s, getting another one", data.Expiration.Format(time.RFC1123))
 			oldPort := data.Port
 			for {
-				data, err = refreshPIAPortForwardData(ctx, client, gateway, openFile)
+				data, err = refreshPIAPortForwardData(ctx, privateIPClient, gateway, openFile)
 				if err != nil {
 					pfLogger.Error(err)
 					continue
@@ -322,7 +322,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			if err := writePortForwardedToFile(openFile, filepath, data.Port); err != nil {
 				pfLogger.Error(err)
 			}
-			if err := bindPIAPort(ctx, client, gateway, data); err != nil {
+			if err := bindPIAPort(ctx, privateIPClient, gateway, data); err != nil {
 				pfLogger.Error(err)
 			}
 			if !keepAliveTimer.Stop() {
