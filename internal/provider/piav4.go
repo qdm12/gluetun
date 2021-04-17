@@ -221,7 +221,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 		return
 	}
 
-	privateIPClient, err := newPIAHTTPClient(client, commonName)
+	privateIPClient, err := newPIAHTTPClient(commonName)
 	if err != nil {
 		pfLogger.Error("aborting because: %s", err)
 		return
@@ -351,7 +351,7 @@ func filterPIAServers(servers []models.PIAServer, regions []string, protocol str
 	return filtered
 }
 
-func newPIAHTTPClient(parentClient *http.Client, serverName string) (client *http.Client, err error) {
+func newPIAHTTPClient(serverName string) (client *http.Client, err error) {
 	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
 	if err != nil {
 		return nil, fmt.Errorf("cannot decode PIA root certificate: %w", err)
@@ -361,12 +361,20 @@ func newPIAHTTPClient(parentClient *http.Client, serverName string) (client *htt
 		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
 	}
 
-	parentTransport := parentClient.Transport
-	if parentTransport == nil {
-		parentTransport = http.DefaultTransport
+	//nolint:gomnd
+	transport := &http.Transport{
+		// Settings taken from http.DefaultTransport
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
 	}
-	transport := parentTransport.(*http.Transport).Clone()
-
 	rootCAs := x509.NewCertPool()
 	rootCAs.AddCert(certificate)
 	transport.TLSClientConfig = &tls.Config{
