@@ -482,8 +482,8 @@ func fetchPIAToken(ctx context.Context, openFile os.OpenFileFunc,
 	url := url.URL{
 		Scheme: "https",
 		User:   url.UserPassword(username, password),
-		Host:   "10.0.0.1",
-		Path:   "/authv3/generateToken",
+		Host:   "privateinternetaccess.com",
+		Path:   "/gtoken/generateToken",
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
