@@ -481,11 +481,13 @@ func fetchPIAToken(ctx context.Context, openFile os.OpenFileFunc,
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
-		return "", err
+		return "", replaceInErr(err, map[string]string{
+			username: "<username>", password: "<password>"})
 	}
 	response, err := client.Do(request)
 	if err != nil {
-		return "", err
+		return "", replaceInErr(err, map[string]string{
+			username: "<username>", password: "<password>"})
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
@@ -541,10 +543,12 @@ func fetchPIAPortForwardData(ctx context.Context, client *http.Client, gateway n
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
+		err = replaceInErr(err, map[string]string{token: "<token>"})
 		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %w", err)
 	}
 	response, err := client.Do(request)
 	if err != nil {
+		err = replaceInErr(err, map[string]string{token: "<token>"})
 		return 0, "", expiration, fmt.Errorf("cannot obtain signature: %w", err)
 	}
 	defer response.Body.Close()
@@ -584,11 +588,17 @@ func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data 
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
-		return fmt.Errorf("cannot bind port: %w", err)
+		return fmt.Errorf("cannot bind port: %w", replaceInErr(err, map[string]string{
+			payload:        "<payload>",
+			data.Signature: "<signature>",
+		}))
 	}
 	response, err := client.Do(request)
 	if err != nil {
-		return fmt.Errorf("cannot bind port: %w", err)
+		return fmt.Errorf("cannot bind port: %w", replaceInErr(err, map[string]string{
+			payload:        "<payload>",
+			data.Signature: "<signature>",
+		}))
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
@@ -620,4 +630,13 @@ func writePortForwardedToFile(openFile os.OpenFileFunc,
 		return err
 	}
 	return file.Close()
+}
+
+// replaceInErr is used to remove sensitive information from logs.
+func replaceInErr(err error, substitutions map[string]string) error {
+	s := err.Error()
+	for old, new := range substitutions {
+		s = strings.ReplaceAll(s, old, new)
+	}
+	return errors.New(s)
 }
