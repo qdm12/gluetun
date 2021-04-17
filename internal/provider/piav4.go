@@ -221,7 +221,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 		return
 	}
 
-	client, err := newPIAHTTPClient(commonName)
+	client, err := newPIAHTTPClient(client, commonName)
 	if err != nil {
 		pfLogger.Error("aborting because: %s", err)
 		return
@@ -348,7 +348,7 @@ func filterPIAServers(servers []models.PIAServer, regions []string, protocol str
 	return filtered
 }
 
-func newPIAHTTPClient(serverName string) (client *http.Client, err error) {
+func newPIAHTTPClient(parentClient *http.Client, serverName string) (client *http.Client, err error) {
 	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
 	if err != nil {
 		return nil, fmt.Errorf("cannot decode PIA root certificate: %w", err)
@@ -357,32 +357,23 @@ func newPIAHTTPClient(serverName string) (client *http.Client, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse PIA root certificate: %w", err)
 	}
-	// certificate.DNSNames = []string{serverName, "10.0.0.1"}
+
+	parentTransport := parentClient.Transport.(*http.Transport)
+	transport := parentTransport.Clone()
+
 	rootCAs := x509.NewCertPool()
 	rootCAs.AddCert(certificate)
-	TLSClientConfig := &tls.Config{
+	transport.TLSClientConfig = &tls.Config{
 		RootCAs:    rootCAs,
 		MinVersion: tls.VersionTLS12,
 		ServerName: serverName,
 	}
-	//nolint:gomnd
-	transport := http.Transport{
-		TLSClientConfig: TLSClientConfig,
-		Proxy:           http.ProxyFromEnvironment,
-		DialContext: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-			DualStack: true,
-		}).DialContext,
-		ForceAttemptHTTP2:     true,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	}
+
 	const httpTimeout = 30 * time.Second
-	client = &http.Client{Transport: &transport, Timeout: httpTimeout}
-	return client, nil
+	return &http.Client{
+		Transport: transport,
+		Timeout:   httpTimeout,
+	}, nil
 }
 
 func refreshPIAPortForwardData(ctx context.Context, client *http.Client,
