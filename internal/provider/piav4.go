@@ -258,7 +258,10 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 
 	// First time binding
 	tryUntilSuccessful(ctx, pfLogger, func() error {
-		return bindPIAPort(ctx, privateIPClient, gateway, data)
+		if err := bindPIAPort(ctx, privateIPClient, gateway, data); err != nil {
+			return fmt.Errorf("cannot bind port: %w", err)
+		}
+		return nil
 	})
 	if ctx.Err() != nil {
 		return
@@ -295,7 +298,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 			return
 		case <-keepAliveTimer.C:
 			if err := bindPIAPort(ctx, privateIPClient, gateway, data); err != nil {
-				pfLogger.Error(err)
+				pfLogger.Error("cannot bind port: " + err.Error())
 			}
 			keepAliveTimer.Reset(keepAlivePeriod)
 		case <-expiryTimer.C:
@@ -323,7 +326,7 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 				pfLogger.Error(err)
 			}
 			if err := bindPIAPort(ctx, privateIPClient, gateway, data); err != nil {
-				pfLogger.Error(err)
+				pfLogger.Error("cannot bind port: " + err.Error())
 			}
 			if !keepAliveTimer.Stop() {
 				<-keepAliveTimer.C
@@ -588,17 +591,17 @@ func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data 
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
-		return fmt.Errorf("cannot bind port: %w", replaceInErr(err, map[string]string{
+		return replaceInErr(err, map[string]string{
 			payload:        "<payload>",
 			data.Signature: "<signature>",
-		}))
+		})
 	}
 	response, err := client.Do(request)
 	if err != nil {
-		return fmt.Errorf("cannot bind port: %w", replaceInErr(err, map[string]string{
+		return replaceInErr(err, map[string]string{
 			payload:        "<payload>",
 			data.Signature: "<signature>",
-		}))
+		})
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
@@ -611,7 +614,7 @@ func bindPIAPort(ctx context.Context, client *http.Client, gateway net.IP, data 
 		Message string `json:"message"`
 	}
 	if err := decoder.Decode(&responseData); err != nil {
-		return fmt.Errorf("cannot bind port: %w", err)
+		return err
 	} else if responseData.Status != "OK" {
 		return fmt.Errorf("response received from PIA: %s (%s)", responseData.Status, responseData.Message)
 	}
