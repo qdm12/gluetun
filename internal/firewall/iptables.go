@@ -18,6 +18,7 @@ var (
 	ErrPolicyUnknown           = errors.New("unknown policy")
 	ErrClearRules              = errors.New("cannot clear all rules")
 	ErrSetIPtablesPolicies     = errors.New("cannot set iptables policies")
+	ErrNeedIP6Tables           = errors.New("ip6tables is required, please upgrade your kernel to support it")
 )
 
 func appendOrDelete(remove bool) string {
@@ -125,6 +126,9 @@ func (c *configurator) acceptInputToSubnet(ctx context.Context, intf string, des
 	if isIP4Subnet {
 		return c.runIptablesInstruction(ctx, instruction)
 	}
+	if !c.ip6Tables {
+		return fmt.Errorf("accept input to subnet %s: %w", destination, ErrNeedIP6Tables)
+	}
 	return c.runIP6tablesInstruction(ctx, instruction)
 }
 
@@ -149,6 +153,8 @@ func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
 	isIPv4 := connection.IP.To4() != nil
 	if isIPv4 {
 		return c.runIptablesInstruction(ctx, instruction)
+	} else if !c.ip6Tables {
+		return fmt.Errorf("accept output to VPN server: %w", ErrNeedIP6Tables)
 	}
 	return c.runIP6tablesInstruction(ctx, instruction)
 }
@@ -168,6 +174,8 @@ func (c *configurator) acceptOutputFromIPToSubnet(ctx context.Context,
 
 	if doIPv4 {
 		return c.runIptablesInstruction(ctx, instruction)
+	} else if !c.ip6Tables {
+		return fmt.Errorf("accept output from %s to %s: %w", sourceIP, destinationSubnet, ErrNeedIP6Tables)
 	}
 	return c.runIP6tablesInstruction(ctx, instruction)
 }
@@ -228,9 +236,12 @@ func (c *configurator) runUserPostRules(ctx context.Context, filepath string, re
 			rule = flipRule(rule)
 		}
 
-		if ipv4 {
+		switch {
+		case ipv4:
 			err = c.runIptablesInstruction(ctx, rule)
-		} else {
+		case !c.ip6Tables:
+			err = fmt.Errorf("cannot run user ip6tables rule: %w", ErrNeedIP6Tables)
+		default: // ipv6
 			err = c.runIP6tablesInstruction(ctx, rule)
 		}
 		if err != nil {

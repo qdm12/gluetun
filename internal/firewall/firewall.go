@@ -42,6 +42,9 @@ type configurator struct { //nolint:maligned
 	localIP          net.IP
 	networkInfoMutex sync.Mutex
 
+	// Fixed state
+	ip6Tables bool
+
 	// State
 	enabled           bool
 	vpnConnection     models.OpenVPNConnection
@@ -52,12 +55,14 @@ type configurator struct { //nolint:maligned
 
 // NewConfigurator creates a new Configurator instance.
 func NewConfigurator(logger logging.Logger, routing routing.Routing, openFile os.OpenFileFunc) Configurator {
+	commander := command.NewCommander()
 	return &configurator{
-		commander:         command.NewCommander(),
+		commander:         commander,
 		logger:            logger.NewChild(logging.SetPrefix("firewall: ")),
 		routing:           routing,
 		openFile:          openFile,
 		allowedInputPorts: make(map[uint16]string),
+		ip6Tables:         ip6tablesSupported(context.Background(), commander),
 	}
 }
 
