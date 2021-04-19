@@ -15,7 +15,7 @@ var (
 )
 
 func ip6tablesSupported(ctx context.Context, commander command.Commander) (supported bool) {
-	if _, err := commander.Run(ctx, "ip6tables", "--version"); err != nil {
+	if _, err := commander.Run(ctx, "ip6tables", "-L"); err != nil {
 		return false
 	}
 	return true
