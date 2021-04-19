@@ -55,9 +55,13 @@ type looper struct {
 	portForwardSignals chan net.IP
 	crashed            bool
 	backoffTime        time.Duration
+	healthWaitTime     time.Duration
 }
 
-const defaultBackoffTime = 15 * time.Second
+const (
+	defaultBackoffTime    = 15 * time.Second
+	defaultHealthWaitTime = 6 * time.Second
+)
 
 func NewLooper(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
@@ -89,6 +93,7 @@ func NewLooper(settings configuration.OpenVPN,
 		stopped:            make(chan struct{}),
 		portForwardSignals: make(chan net.IP),
 		backoffTime:        defaultBackoffTime,
+		healthWaitTime:     defaultHealthWaitTime,
 	}
 }
 
@@ -221,7 +226,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 				if healthy {
 					continue
 				}
-				// ensure it stays unhealthy for 10 seconds before restarting it
+				// ensure it stays unhealthy for some time before restarting it
 				healthy = l.waitForHealth(ctx)
 				if healthy || ctx.Err() != nil {
 					continue
@@ -262,18 +267,29 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 // after restarting openvpn in order to avoid restarting
 // openvpn in a loop as it requires a few seconds to connect.
 func (l *looper) waitForHealth(ctx context.Context) (healthy bool) {
-	const waitTime = 10 * time.Second
-	ctx, cancel := context.WithTimeout(ctx, waitTime)
-	defer cancel()
-
-	for !healthy {
+	l.logger.Info("unhealthy program: waiting %s for it to change to healthy", l.healthWaitTime)
+	timer := time.NewTimer(l.healthWaitTime)
+	l.healthWaitTime *= 2
+	for {
 		select {
-		case <-ctx.Done():
-			return false
 		case healthy = <-l.healthy:
+			if !healthy {
+				break
+			}
+			if !timer.Stop() {
+				<-timer.C
+			}
+			l.healthWaitTime = defaultHealthWaitTime
+			return true
+		case <-timer.C:
+			return false
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			return false
 		}
 	}
-	return true
 }
 
 // portForward is a blocking operation which may or may not be infinite.
