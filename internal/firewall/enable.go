@@ -45,7 +45,10 @@ func (c *configurator) disable(ctx context.Context) (err error) {
 	if err = c.clearAllRules(ctx); err != nil {
 		return fmt.Errorf("cannot disable firewall: %w", err)
 	}
-	if err = c.setAllPolicies(ctx, "ACCEPT"); err != nil {
+	if err = c.setIPv4AllPolicies(ctx, "ACCEPT"); err != nil {
+		return fmt.Errorf("cannot disable firewall: %w", err)
+	}
+	if err = c.setIPv6AllPolicies(ctx, "ACCEPT"); err != nil {
 		return fmt.Errorf("cannot disable firewall: %w", err)
 	}
 	return nil
@@ -62,7 +65,11 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 }
 
 func (c *configurator) enable(ctx context.Context) (err error) {
-	if err = c.setAllPolicies(ctx, "DROP"); err != nil {
+	if err = c.setIPv4AllPolicies(ctx, "DROP"); err != nil {
+		return fmt.Errorf("cannot enable firewall: %w", err)
+	}
+
+	if err = c.setIPv6AllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 
