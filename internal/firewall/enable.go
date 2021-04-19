@@ -2,9 +2,16 @@ package firewall
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/constants"
+)
+
+var (
+	ErrEnable        = errors.New("failed enabling firewall")
+	ErrDisable       = errors.New("failed disabling firewall")
+	ErrUserPostRules = errors.New("cannot run user post firewall rules")
 )
 
 func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error) {
@@ -23,7 +30,7 @@ func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error)
 	if !enabled {
 		c.logger.Info("disabling...")
 		if err = c.disable(ctx); err != nil {
-			return err
+			return fmt.Errorf("%w: %s", ErrDisable, err)
 		}
 		c.enabled = false
 		c.logger.Info("disabled successfully")
@@ -33,7 +40,7 @@ func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error)
 	c.logger.Info("enabling...")
 
 	if err := c.enable(ctx); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrEnable, err)
 	}
 	c.enabled = true
 	c.logger.Info("enabled successfully")
@@ -45,7 +52,10 @@ func (c *configurator) disable(ctx context.Context) (err error) {
 	if err = c.clearAllRules(ctx); err != nil {
 		return fmt.Errorf("cannot disable firewall: %w", err)
 	}
-	if err = c.setAllPolicies(ctx, "ACCEPT"); err != nil {
+	if err = c.setIPv4AllPolicies(ctx, "ACCEPT"); err != nil {
+		return fmt.Errorf("cannot disable firewall: %w", err)
+	}
+	if err = c.setIPv6AllPolicies(ctx, "ACCEPT"); err != nil {
 		return fmt.Errorf("cannot disable firewall: %w", err)
 	}
 	return nil
@@ -56,20 +66,26 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 	if ctx.Err() != nil {
 		return
 	}
-	if err := c.SetEnabled(ctx, false); err != nil {
-		c.logger.Error(err)
+	if err := c.disable(ctx); err != nil {
+		c.logger.Error("failed reversing firewall changes: " + err.Error())
 	}
 }
 
 func (c *configurator) enable(ctx context.Context) (err error) {
-	if err = c.setAllPolicies(ctx, "DROP"); err != nil {
+	touched := false
+	if err = c.setIPv4AllPolicies(ctx, "DROP"); err != nil {
+		return fmt.Errorf("cannot enable firewall: %w", err)
+	}
+	touched = true
+
+	if err = c.setIPv6AllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
 
 	const remove = false
 
 	defer func() {
-		if err != nil {
+		if touched && err != nil {
 			c.fallbackToDisabled(ctx)
 		}
 	}()
@@ -121,7 +137,7 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 	}
 
 	if err := c.runUserPostRules(ctx, "/iptables/post-rules.txt", remove); err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
+		return fmt.Errorf("%w: %s", ErrUserPostRules, err)
 	}
 
 	return nil

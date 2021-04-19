@@ -34,6 +34,7 @@ type configurator struct { //nolint:maligned
 	routing          routing.Routing
 	openFile         os.OpenFileFunc // for custom iptables rules
 	iptablesMutex    sync.Mutex
+	ip6tablesMutex   sync.Mutex
 	debug            bool
 	defaultInterface string
 	defaultGateway   net.IP
