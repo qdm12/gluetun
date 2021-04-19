@@ -5,11 +5,21 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/qdm12/golibs/command"
 )
 
 var (
-	ErrIP6Tables = errors.New("failed ip6tables command")
+	ErrIP6Tables       = errors.New("failed ip6tables command")
+	ErrIP6NotSupported = errors.New("ip6tables not supported")
 )
+
+func ip6tablesSupported(ctx context.Context, commander command.Commander) (supported bool) {
+	if _, err := commander.Run(ctx, "ip6tables", "--version"); err != nil {
+		return false
+	}
+	return true
+}
 
 func (c *configurator) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
 	for _, instruction := range instructions {
@@ -21,6 +31,9 @@ func (c *configurator) runIP6tablesInstructions(ctx context.Context, instruction
 }
 
 func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction string) error {
+	if !c.ip6Tables {
+		return nil
+	}
 	c.ip6tablesMutex.Lock() // only one ip6tables command at once
 	defer c.ip6tablesMutex.Unlock()
 	if c.debug {
