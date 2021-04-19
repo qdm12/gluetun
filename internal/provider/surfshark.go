@@ -78,7 +78,7 @@ func (s *surfshark) GetOpenVPNConnection(selection configuration.ServerSelection
 func (s *surfshark) BuildConf(connection models.OpenVPNConnection,
 	username string, settings configuration.OpenVPN) (lines []string) {
 	if len(settings.Cipher) == 0 {
-		settings.Cipher = aes256cbc
+		settings.Cipher = aes256gcm
 	}
 	if len(settings.Auth) == 0 {
 		settings.Auth = "SHA512"
