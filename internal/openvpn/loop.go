@@ -226,6 +226,7 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 				if healthy || ctx.Err() != nil {
 					continue
 				}
+				l.crashed = true // flag as crashed
 				l.state.setStatusWithLock(constants.Stopping)
 				l.logger.Warn("unhealthy program: restarting openvpn")
 				openvpnCancel()
