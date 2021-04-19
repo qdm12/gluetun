@@ -19,7 +19,7 @@ ENV CGO_ENABLED=1
 RUN apk --update --no-cache add g++
 
 FROM --platform=$BUILDPLATFORM base AS lint
-ARG GOLANGCI_LINT_VERSION=v1.37.0
+ARG GOLANGCI_LINT_VERSION=v1.39.0
 RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
     sh -s -- -b /usr/local/bin ${GOLANGCI_LINT_VERSION}
 COPY .golangci.yml ./
