@@ -76,7 +76,6 @@ func modifyCustomConfig(lines []string, username string,
 	modified = append(modified, "mute-replay-warnings")
 	modified = append(modified, "auth-nocache")
 	modified = append(modified, "pull-filter ignore \"auth-token\"") // prevent auth failed loop
-	modified = append(modified, `pull-filter ignore "ping-restart"`)
 	modified = append(modified, "auth-retry nointeract")
 	modified = append(modified, "suppress-timestamps")
 	modified = append(modified, "auth-user-pass "+constants.OpenVPNAuthConf)

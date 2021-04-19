@@ -101,7 +101,6 @@ func (m *mullvad) BuildConf(connection models.OpenVPNConnection,
 		"mute-replay-warnings",
 		"auth-nocache",
 		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
-		`pull-filter ignore "ping-restart"`,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
