@@ -2,8 +2,13 @@ package firewall
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
+)
+
+var (
+	ErrIP6Tables = errors.New("failed ip6tables command")
 )
 
 func (c *configurator) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
@@ -23,7 +28,7 @@ func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction 
 	}
 	flags := strings.Fields(instruction)
 	if output, err := c.commander.Run(ctx, "ip6tables", flags...); err != nil {
-		return fmt.Errorf("failed executing \"ip6tables %s\": %s: %w", instruction, output, err)
+		return fmt.Errorf("%w \"ip6tables %s\": %s: %s", ErrIP6Tables, instruction, output, err)
 	}
 	return nil
 }
