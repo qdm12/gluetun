@@ -65,9 +65,11 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 }
 
 func (c *configurator) enable(ctx context.Context) (err error) {
+	touched := false
 	if err = c.setIPv4AllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
 	}
+	touched = true
 
 	if err = c.setIPv6AllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
@@ -76,7 +78,7 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 	const remove = false
 
 	defer func() {
-		if err != nil {
+		if touched && err != nil {
 			c.fallbackToDisabled(ctx)
 		}
 	}()
