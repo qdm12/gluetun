@@ -56,7 +56,7 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 	if ctx.Err() != nil {
 		return
 	}
-	if err := c.SetEnabled(ctx, false); err != nil {
+	if err := c.disable(ctx); err != nil {
 		c.logger.Error(err)
 	}
 }
