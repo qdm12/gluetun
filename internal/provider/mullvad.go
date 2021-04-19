@@ -110,7 +110,8 @@ func (m *mullvad) BuildConf(connection models.OpenVPNConnection,
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", connection.Protocol),
 		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
-		fmt.Sprintf("cipher %s", settings.Cipher),
+		"data-ciphers-fallback " + settings.Cipher,
+		"data-ciphers " + settings.Cipher,
 	}
 	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
 		lines = append(lines, "tun-ipv6")

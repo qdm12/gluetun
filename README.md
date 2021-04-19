@@ -5,7 +5,7 @@ HideMyAss, Mullvad, NordVPN, Privado, Private Internet Access, PrivateVPN,
 PureVPN, Surfshark, TorGuard, VyprVPN and Windscribe VPN servers
 using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
-**ANNOUNCEMENT**: *New Docker image name `qmcgaw/gluetun`*
+**ANNOUNCEMENT**:
 
 <img height="250" src="https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg?sanitize=true">
 
@@ -38,7 +38,7 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 ## Features
 
-- Based on Alpine 3.12 for a small Docker image of 52MB
+- Based on Alpine 3.13 for a small Docker image of 52MB
 - Supports: **Cyberghost**, **FastestVPN**, **HideMyAss**, **Mullvad**, **NordVPN**, **Privado**, **Private Internet Access**, **PrivateVPN**, **PureVPN**,  **Surfshark**, **TorGuard**, **Vyprvpn**, **Windscribe**, servers
 - Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice
@@ -60,6 +60,7 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
     - [Synology users Wiki page](https://github.com/qdm12/gluetun/wiki/Synology-setup)
+1. ⚠️ Raspberry Pi users running 32 bit systems: from image `v3.16.0` you need to do [this](https://github.com/alpinelinux/docker-alpine/issues/135#issuecomment-812287338) on your host to run the container.
 1. Launch the container with:
 
     ```bash

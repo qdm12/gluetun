@@ -111,7 +111,8 @@ func (p *purevpn) BuildConf(connection models.OpenVPNConnection,
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", connection.Protocol),
 		fmt.Sprintf("remote %s %d", connection.IP.String(), connection.Port),
-		fmt.Sprintf("cipher %s", settings.Cipher),
+		"data-ciphers-fallback " + settings.Cipher,
+		"data-ciphers " + settings.Cipher,
 	}
 	if !settings.Root {
 		lines = append(lines, "user "+username)

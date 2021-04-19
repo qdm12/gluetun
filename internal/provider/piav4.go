@@ -176,7 +176,8 @@ func (p *pia) BuildConf(connection models.OpenVPNConnection,
 		fmt.Sprintf("auth-user-pass %s", constants.OpenVPNAuthConf),
 		fmt.Sprintf("proto %s", connection.Protocol),
 		fmt.Sprintf("remote %s %d", connection.IP, connection.Port),
-		fmt.Sprintf("cipher %s", settings.Cipher),
+		"data-ciphers-fallback " + settings.Cipher,
+		"data-ciphers " + settings.Cipher,
 		fmt.Sprintf("auth %s", settings.Auth),
 	}
 	if strings.HasSuffix(settings.Cipher, "-gcm") {

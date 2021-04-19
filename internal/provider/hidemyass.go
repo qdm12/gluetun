@@ -129,7 +129,8 @@ func (h *hideMyAss) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
 		"remote " + connection.IP.String() + strconv.Itoa(int(connection.Port)),
-		"cipher " + settings.Cipher,
+		"data-ciphers-fallback " + settings.Cipher,
+		"data-ciphers " + settings.Cipher,
 	}
 
 	if !settings.Root {
