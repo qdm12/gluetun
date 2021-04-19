@@ -30,7 +30,7 @@ func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error)
 	if !enabled {
 		c.logger.Info("disabling...")
 		if err = c.disable(ctx); err != nil {
-			return fmt.Errorf("%w: %s", ErrDisable, err)
+			return err
 		}
 		c.enabled = false
 		c.logger.Info("disabled successfully")

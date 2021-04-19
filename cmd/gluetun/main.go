@@ -317,6 +317,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
+	if allSettings.Firewall.Enabled {
+		const enable = false
+		err := firewallConf.SetEnabled(context.Background(), enable)
+		if err != nil {
+			logger.Error(err)
+		}
+	}
+
 	wg.Wait()
 
 	return nil
