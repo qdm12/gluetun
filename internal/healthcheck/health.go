@@ -18,12 +18,16 @@ func (s *server) runHealthcheckLoop(ctx context.Context, healthy chan<- bool, wg
 		err := healthCheck(ctx, s.resolver)
 		s.handler.setErr(err)
 
+		// Notify the healthy channel, or not if it's already full
+		select {
+		case healthy <- err == nil:
+		default:
+		}
+
 		if previousErr != nil && err == nil {
 			s.logger.Info("healthy!")
-			healthy <- true
 		} else if previousErr == nil && err != nil {
 			s.logger.Info("unhealthy: " + err.Error())
-			healthy <- false
 		}
 
 		if err != nil { // try again after 1 second
