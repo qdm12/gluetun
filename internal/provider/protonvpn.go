@@ -106,7 +106,7 @@ func (p *protonvpn) BuildConf(connection models.OpenVPNConnection,
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
-		"remote " + connection.IP.String() + strconv.Itoa(int(connection.Port)),
+		"remote " + connection.IP.String() + " " + strconv.Itoa(int(connection.Port)),
 		"cipher " + settings.Cipher,
 		"auth " + settings.Auth,
 	}
