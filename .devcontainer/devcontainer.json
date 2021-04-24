@@ -8,7 +8,7 @@
         "vscode"
     ],
     "shutdownAction": "stopCompose",
-    "postCreateCommand": "go mod download",
+    "postCreateCommand": "source ~/.windows.sh && go mod download && go mod tidy",
     "workspaceFolder": "/workspace",
     "extensions": [
         "golang.go",

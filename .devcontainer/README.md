@@ -19,6 +19,7 @@ It works on Linux, Windows and OSX.
 
 1. Open the command palette in Visual Studio Code (CTRL+SHIFT+P).
 1. Select `Remote-Containers: Open Folder in Container...` and choose the project directory.
+1. For Docker running on Windows HyperV, if you want to use SSH keys, bind mount them at `/tmp/.ssh` by changing the `volumes` section in the [docker-compose.yml](docker-compose.yml).
 
 ## Customization
 
