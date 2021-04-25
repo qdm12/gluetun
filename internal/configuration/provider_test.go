@@ -148,6 +148,28 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Hostnames: a, b",
 			},
 		},
+		"protonvpn": {
+			settings: Provider{
+				Name: constants.Protonvpn,
+				ServerSelection: ServerSelection{
+					Protocol:  constants.UDP,
+					Countries: []string{"a", "b"},
+					Regions:   []string{"c", "d"},
+					Cities:    []string{"e", "f"},
+					Names:     []string{"g", "h"},
+					Hostnames: []string{"i", "j"},
+				},
+			},
+			lines: []string{
+				"|--Protonvpn settings:",
+				"   |--Network protocol: udp",
+				"   |--Countries: a, b",
+				"   |--Regions: c, d",
+				"   |--Cities: e, f",
+				"   |--Names: g, h",
+				"   |--Hostnames: i, j",
+			},
+		},
 		"private internet access": {
 			settings: Provider{
 				Name: constants.PrivateInternetAccess,

@@ -25,6 +25,7 @@ func countServers(allServers models.AllServers) int {
 		len(allServers.Privado.Servers) +
 		len(allServers.Pia.Servers) +
 		len(allServers.Privatevpn.Servers) +
+		len(allServers.Protonvpn.Servers) +
 		len(allServers.Purevpn.Servers) +
 		len(allServers.Surfshark.Servers) +
 		len(allServers.Torguard.Servers) +

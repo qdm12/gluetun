@@ -10,6 +10,7 @@ type AllServers struct {
 	Privado    PrivadoServers    `json:"privado"`
 	Pia        PiaServers        `json:"pia"`
 	Privatevpn PrivatevpnServers `json:"privatevpn"`
+	Protonvpn  ProtonvpnServers  `json:"protonvpn"`
 	Purevpn    PurevpnServers    `json:"purevpn"`
 	Surfshark  SurfsharkServers  `json:"surfshark"`
 	Torguard   TorguardServers   `json:"torguard"`
@@ -26,6 +27,7 @@ func (a *AllServers) Count() int {
 		len(a.Privado.Servers) +
 		len(a.Pia.Servers) +
 		len(a.Privatevpn.Servers) +
+		len(a.Protonvpn.Servers) +
 		len(a.Purevpn.Servers) +
 		len(a.Surfshark.Servers) +
 		len(a.Torguard.Servers) +
@@ -72,6 +74,11 @@ type PrivatevpnServers struct {
 	Version   uint16             `json:"version"`
 	Timestamp int64              `json:"timestamp"`
 	Servers   []PrivatevpnServer `json:"servers"`
+}
+type ProtonvpnServers struct {
+	Version   uint16            `json:"version"`
+	Timestamp int64             `json:"timestamp"`
+	Servers   []ProtonvpnServer `json:"servers"`
 }
 type PurevpnServers struct {
 	Version   uint16          `json:"version"`

@@ -74,6 +74,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Privatevpn.Version,
 			digest:  "cba13d78",
 		},
+		"Protonvpn": {
+			model:   models.ProtonvpnServer{},
+			version: allServers.Protonvpn.Version,
+			digest:  "b964085b",
+		},
 		"Purevpn": {
 			model:   models.PurevpnServer{},
 			version: allServers.Purevpn.Version,
@@ -174,6 +179,11 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.Privatevpn.Servers,
 			timestamp: allServers.Privatevpn.Timestamp,
 			digest:    "8ce3fba1",
+		},
+		"Protonvpn": {
+			servers:   allServers.Protonvpn.Servers,
+			timestamp: allServers.Protonvpn.Timestamp,
+			digest:    "c342020e",
 		},
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,
