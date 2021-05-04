@@ -31,7 +31,7 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
   make clean && \
   make install && \
 	mkdir /tmp/qbittorrent && \
-	curl -sSL https://codeload.github.com/qbittorrent/qBittorrent/tar.gz/refs/heads/master | tar xzC /tmp/qbittorrent && \
+  curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.5 | tar xzC /tmp/qbittorrent && \
 	cd /tmp/qbittorrent/*qBittorrent* && \
 	./configure --disable-gui && \
 	make install && \
