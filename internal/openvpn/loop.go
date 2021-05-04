@@ -45,6 +45,7 @@ type looper struct {
 	client           *http.Client
 	openFile         os.OpenFileFunc
 	tunnelReady      chan<- struct{}
+	healthy          <-chan bool
 	cancel           context.CancelFunc
 	// Internal channels and locks
 	loopLock           sync.Mutex
@@ -54,15 +55,19 @@ type looper struct {
 	portForwardSignals chan net.IP
 	crashed            bool
 	backoffTime        time.Duration
+	healthWaitTime     time.Duration
 }
 
-const defaultBackoffTime = 15 * time.Second
+const (
+	defaultBackoffTime    = 15 * time.Second
+	defaultHealthWaitTime = 6 * time.Second
+)
 
 func NewLooper(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,
-	tunnelReady chan<- struct{}, cancel context.CancelFunc) Looper {
+	tunnelReady chan<- struct{}, healthy <-chan bool, cancel context.CancelFunc) Looper {
 	return &looper{
 		state: state{
 			status:     constants.Stopped,
@@ -80,6 +85,7 @@ func NewLooper(settings configuration.OpenVPN,
 		client:             client,
 		openFile:           openFile,
 		tunnelReady:        tunnelReady,
+		healthy:            healthy,
 		cancel:             cancel,
 		start:              make(chan struct{}),
 		running:            make(chan models.LoopStatus),
@@ -87,6 +93,7 @@ func NewLooper(settings configuration.OpenVPN,
 		stopped:            make(chan struct{}),
 		portForwardSignals: make(chan net.IP),
 		backoffTime:        defaultBackoffTime,
+		healthWaitTime:     defaultHealthWaitTime,
 	}
 }
 
@@ -215,6 +222,22 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 				l.logAndWait(ctx, err)
 				l.crashed = true
 				stayHere = false
+			case healthy := <-l.healthy:
+				if healthy {
+					continue
+				}
+				// ensure it stays unhealthy for some time before restarting it
+				healthy = l.waitForHealth(ctx)
+				if healthy || ctx.Err() != nil {
+					continue
+				}
+				l.crashed = true // flag as crashed
+				l.state.setStatusWithLock(constants.Stopping)
+				l.logger.Warn("unhealthy program: restarting openvpn")
+				openvpnCancel()
+				<-waitError
+				l.state.setStatusWithLock(constants.Stopped)
+				stayHere = false
 			}
 		}
 		close(waitError)
@@ -236,6 +259,35 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	case <-ctx.Done():
 		if !timer.Stop() {
 			<-timer.C
+		}
+	}
+}
+
+// waitForHealth waits for a true healthy signal
+// after restarting openvpn in order to avoid restarting
+// openvpn in a loop as it requires a few seconds to connect.
+func (l *looper) waitForHealth(ctx context.Context) (healthy bool) {
+	l.logger.Info("unhealthy program: waiting %s for it to change to healthy", l.healthWaitTime)
+	timer := time.NewTimer(l.healthWaitTime)
+	l.healthWaitTime *= 2
+	for {
+		select {
+		case healthy = <-l.healthy:
+			if !healthy {
+				break
+			}
+			if !timer.Stop() {
+				<-timer.C
+			}
+			l.healthWaitTime = defaultHealthWaitTime
+			return true
+		case <-timer.C:
+			return false
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			return false
 		}
 	}
 }

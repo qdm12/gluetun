@@ -10,13 +10,19 @@ import (
 	"time"
 )
 
-func (s *server) runHealthcheckLoop(ctx context.Context, wg *sync.WaitGroup) {
+func (s *server) runHealthcheckLoop(ctx context.Context, healthy chan<- bool, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for {
 		previousErr := s.handler.getErr()
 
 		err := healthCheck(ctx, s.resolver)
 		s.handler.setErr(err)
+
+		// Notify the healthy channel, or not if it's already full
+		select {
+		case healthy <- err == nil:
+		default:
+		}
 
 		if previousErr != nil && err == nil {
 			s.logger.Info("healthy!")
@@ -36,8 +42,8 @@ func (s *server) runHealthcheckLoop(ctx context.Context, wg *sync.WaitGroup) {
 			}
 			continue
 		}
-		// Success, check again in 10 minutes
-		const period = 10 * time.Minute
+		// Success, check again in 5 seconds
+		const period = 5 * time.Second
 		timer := time.NewTimer(period)
 		select {
 		case <-ctx.Done():

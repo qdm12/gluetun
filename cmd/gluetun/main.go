@@ -253,9 +253,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	} // TODO move inside firewall?
 
 	wg := &sync.WaitGroup{}
+	healthy := make(chan bool)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, cancel)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, healthy, cancel)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)
@@ -302,7 +303,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	healthcheckServer := healthcheck.NewServer(
 		constants.HealthcheckAddress, logger)
 	wg.Add(1)
-	go healthcheckServer.Run(ctx, wg)
+	go healthcheckServer.Run(ctx, healthy, wg)
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
