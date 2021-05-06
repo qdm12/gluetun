@@ -143,17 +143,17 @@ func Test_timestamps(t *testing.T) {
 		"Cyberghost": {
 			servers:   allServers.Cyberghost.Servers,
 			timestamp: allServers.Cyberghost.Timestamp,
-			digest:    "5d3a8cbf",
+			digest:    "81d0cc77",
 		},
 		"Fastestvpn": {
 			servers:   allServers.Fastestvpn.Version,
 			timestamp: allServers.Fastestvpn.Timestamp,
-			digest:    "da65734a",
+			digest:    "feccb41a",
 		},
 		"HideMyAss": {
 			servers:   allServers.HideMyAss.Servers,
 			timestamp: allServers.HideMyAss.Timestamp,
-			digest:    "38c71676",
+			digest:    "546a98cb",
 		},
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,
@@ -168,7 +168,7 @@ func Test_timestamps(t *testing.T) {
 		"Privado": {
 			servers:   allServers.Privado.Servers,
 			timestamp: allServers.Privado.Timestamp,
-			digest:    "2ac55360",
+			digest:    "e7968fd3",
 		},
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,
@@ -178,7 +178,7 @@ func Test_timestamps(t *testing.T) {
 		"Privatevpn": {
 			servers:   allServers.Privatevpn.Servers,
 			timestamp: allServers.Privatevpn.Timestamp,
-			digest:    "8ce3fba1",
+			digest:    "6d32d785",
 		},
 		"Protonvpn": {
 			servers:   allServers.Protonvpn.Servers,
@@ -188,12 +188,12 @@ func Test_timestamps(t *testing.T) {
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,
 			timestamp: allServers.Purevpn.Timestamp,
-			digest:    "cd19edf5",
+			digest:    "617505bd",
 		},
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,
 			timestamp: allServers.Surfshark.Timestamp,
-			digest:    "c090bcd9",
+			digest:    "38e7ea80",
 		},
 		"Torguard": {
 			servers:   allServers.Torguard.Servers,
@@ -203,7 +203,7 @@ func Test_timestamps(t *testing.T) {
 		"Vyprvpn": {
 			servers:   allServers.Vyprvpn.Servers,
 			timestamp: allServers.Vyprvpn.Timestamp,
-			digest:    "1753d4f8",
+			digest:    "eccb7f5c",
 		},
 		"Windscribe": {
 			servers:   allServers.Windscribe.Servers,

@@ -8,17 +8,17 @@ func GetAllServers() (allServers models.AllServers) {
 		Version: 1, // used for migration of the top level scheme
 		Cyberghost: models.CyberghostServers{
 			Version:   1,          // model version
-			Timestamp: 1612031135, // latest takes precedence
+			Timestamp: 1620326951, // latest takes precedence
 			Servers:   CyberghostServers(),
 		},
 		Fastestvpn: models.FastestvpnServers{
 			Version:   1,
-			Timestamp: 1613323814,
+			Timestamp: 1620326951,
 			Servers:   FastestvpnServers(),
 		},
 		HideMyAss: models.HideMyAssServers{
 			Version:   1,
-			Timestamp: 1614562368,
+			Timestamp: 1620326951,
 			Servers:   HideMyAssServers(),
 		},
 		Mullvad: models.MullvadServers{
@@ -33,12 +33,12 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Privado: models.PrivadoServers{
 			Version:   2,
-			Timestamp: 1612031135,
+			Timestamp: 1620326951,
 			Servers:   PrivadoServers(),
 		},
 		Privatevpn: models.PrivatevpnServers{
 			Version:   1,
-			Timestamp: 1613861528,
+			Timestamp: 1620326951,
 			Servers:   PrivatevpnServers(),
 		},
 		Protonvpn: models.ProtonvpnServers{
@@ -53,12 +53,12 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Purevpn: models.PurevpnServers{
 			Version:   1,
-			Timestamp: 1612031135,
+			Timestamp: 1620326951,
 			Servers:   PurevpnServers(),
 		},
 		Surfshark: models.SurfsharkServers{
 			Version:   1,
-			Timestamp: 1618612180,
+			Timestamp: 1620326951,
 			Servers:   SurfsharkServers(),
 		},
 		Torguard: models.TorguardServers{
@@ -68,7 +68,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Vyprvpn: models.VyprvpnServers{
 			Version:   1,
-			Timestamp: 1612031135,
+			Timestamp: 1620326951,
 			Servers:   VyprvpnServers(),
 		},
 		Windscribe: models.WindscribeServers{
