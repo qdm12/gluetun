@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"path/filepath"
 	"reflect"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -83,6 +84,11 @@ func (s *storage) readFromFile(filepath string) (servers models.AllServers, err 
 }
 
 func (s *storage) FlushToFile(servers models.AllServers) error {
+	dirPath := filepath.Dir(s.filepath)
+	if err := s.os.MkdirAll(dirPath, 0644); err != nil {
+		return err
+	}
+
 	file, err := s.os.OpenFile(s.filepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
