@@ -7,12 +7,14 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updateFastestvpn(ctx context.Context) (err error) {
-	servers, warnings, err := findFastestvpnServersFromZip(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findFastestvpnServersFromZip(ctx, u.client, u.presolver)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("FastestVPN: %s", warning)
@@ -29,7 +31,7 @@ func (u *updater) updateFastestvpn(ctx context.Context) (err error) {
 	return nil
 }
 
-func findFastestvpnServersFromZip(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findFastestvpnServersFromZip(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.FastestvpnServer, warnings []string, err error) {
 	const zipURL = "https://support.fastestvpn.com/download/openvpn-tcp-udp-config-files"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
@@ -98,10 +100,22 @@ func findFastestvpnServersFromZip(ctx context.Context, client *http.Client, look
 		i++
 	}
 
-	const repetition = 1
-	const timeBetween = 0
-	const failOnErr = true
-	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio = 0.1
+		maxNoNew     = 1
+		maxFails     = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration: time.Second,
+			MaxNoNew:    maxNoNew,
+			MaxFails:    maxFails,
+			SortIPs:     true,
+		},
+	}
+	hostToIPs, newWarnings, err := presolver.Resolve(ctx, hosts, settings)
+	warnings = append(warnings, newWarnings...)
 	if err != nil {
 		return nil, warnings, err
 	}
@@ -120,7 +134,7 @@ func findFastestvpnServersFromZip(ctx context.Context, client *http.Client, look
 			TCP:      data.TCP,
 			UDP:      data.UDP,
 			Country:  data.Country,
-			IPs:      uniqueSortedIPs(IPs),
+			IPs:      IPs,
 		}
 		servers = append(servers, server)
 	}

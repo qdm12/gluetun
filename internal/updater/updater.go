@@ -9,6 +9,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -24,11 +25,11 @@ type updater struct {
 	servers models.AllServers
 
 	// Functions for tests
-	logger   logging.Logger
-	timeNow  func() time.Time
-	println  func(s string)
-	lookupIP lookupIPFunc
-	client   *http.Client
+	logger    logging.Logger
+	timeNow   func() time.Time
+	println   func(s string)
+	presolver resolver.Parallel
+	client    *http.Client
 }
 
 func New(settings configuration.Updater, httpClient *http.Client,
@@ -36,15 +37,14 @@ func New(settings configuration.Updater, httpClient *http.Client,
 	if len(settings.DNSAddress) == 0 {
 		settings.DNSAddress = "1.1.1.1"
 	}
-	resolver := newResolver(settings.DNSAddress)
 	return &updater{
-		logger:   logger,
-		timeNow:  time.Now,
-		println:  func(s string) { fmt.Println(s) },
-		lookupIP: newLookupIP(resolver),
-		client:   httpClient,
-		options:  settings,
-		servers:  currentServers,
+		logger:    logger,
+		timeNow:   time.Now,
+		println:   func(s string) { fmt.Println(s) },
+		presolver: resolver.NewParallelResolver(settings.DNSAddress),
+		client:    httpClient,
+		options:   settings,
+		servers:   currentServers,
 	}
 }
 

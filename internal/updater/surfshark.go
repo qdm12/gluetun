@@ -10,10 +10,11 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updateSurfshark(ctx context.Context) (err error) {
-	servers, warnings, err := findSurfsharkServersFromZip(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findSurfsharkServersFromZip(ctx, u.client, u.presolver)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Surfshark: %s", warning)
@@ -31,7 +32,7 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 }
 
 //nolint:deadcode,unused
-func findSurfsharkServersFromAPI(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findSurfsharkServersFromAPI(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.SurfsharkServer, warnings []string, err error) {
 	const url = "https://my.surfshark.com/vpn/api/v4/server/clusters"
 
@@ -69,12 +70,25 @@ func findSurfsharkServersFromAPI(ctx context.Context, client *http.Client, looku
 		hosts[i] = jsonServers[i].Host
 	}
 
-	const repetition = 20
-	const timeBetween = time.Second
-	const failOnErr = true
-	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio    = 0.1
+		maxDuration     = 20 * time.Second
+		betweenDuration = time.Second
+		maxNoNew        = 2
+		maxFails        = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration:     maxDuration,
+			BetweenDuration: betweenDuration,
+			MaxNoNew:        maxNoNew,
+			MaxFails:        maxFails,
+		},
+	}
+	hostToIPs, warnings, err := presolver.Resolve(ctx, hosts, settings)
 	if err != nil {
-		return nil, nil, err
+		return nil, warnings, err
 	}
 
 	for _, jsonServer := range jsonServers {
@@ -87,14 +101,14 @@ func findSurfsharkServersFromAPI(ctx context.Context, client *http.Client, looku
 		}
 		server := models.SurfsharkServer{
 			Region: jsonServer.Country + " " + jsonServer.Location,
-			IPs:    uniqueSortedIPs(IPs),
+			IPs:    IPs,
 		}
 		servers = append(servers, server)
 	}
 	return servers, warnings, nil
 }
 
-func findSurfsharkServersFromZip(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findSurfsharkServersFromZip(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.SurfsharkServer, warnings []string, err error) {
 	const zipURL = "https://my.surfshark.com/vpn/api/v1/server/configurations"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
@@ -119,10 +133,24 @@ func findSurfsharkServersFromZip(ctx context.Context, client *http.Client, looku
 		hosts = append(hosts, host)
 	}
 
-	const repetition = 20
-	const timeBetween = time.Second
-	const failOnErr = true
-	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio    = 0.1
+		maxDuration     = 20 * time.Second
+		betweenDuration = time.Second
+		maxNoNew        = 2
+		maxFails        = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration:     maxDuration,
+			BetweenDuration: betweenDuration,
+			MaxNoNew:        maxNoNew,
+			MaxFails:        maxFails,
+		},
+	}
+	hostToIPs, newWarnings, err := presolver.Resolve(ctx, hosts, settings)
+	warnings = append(warnings, newWarnings...)
 	if err != nil {
 		return nil, warnings, err
 	}
@@ -144,14 +172,18 @@ func findSurfsharkServersFromZip(ctx context.Context, client *http.Client, looku
 		}
 		server := models.SurfsharkServer{
 			Region: region,
-			IPs:    uniqueSortedIPs(IPs),
+			IPs:    IPs,
 		}
 		servers = append(servers, server)
 	}
 
 	// process entries in mapping that were not in zip file
-	remainingServers, newWarnings := getRemainingServers(ctx, mapping, lookupIP)
+	remainingServers, newWarnings, err := getRemainingServers(ctx, mapping, presolver)
 	warnings = append(warnings, newWarnings...)
+	if err != nil {
+		return nil, warnings, err
+	}
+
 	servers = append(servers, remainingServers...)
 
 	sort.Slice(servers, func(i, j int) bool {
@@ -160,28 +192,46 @@ func findSurfsharkServersFromZip(ctx context.Context, client *http.Client, looku
 	return servers, warnings, nil
 }
 
-func getRemainingServers(ctx context.Context, mapping map[string]string, lookupIP lookupIPFunc) (
-	servers []models.SurfsharkServer, warnings []string) {
+func getRemainingServers(ctx context.Context, mapping map[string]string, presolver resolver.Parallel) (
+	servers []models.SurfsharkServer, warnings []string, err error) {
 	hosts := make([]string, 0, len(mapping))
 	for subdomain := range mapping {
 		hosts = append(hosts, subdomain+".prod.surfshark.com")
 	}
 
-	const repetition = 20
-	const timeBetween = time.Second
-	const failOnErr = false
-	hostToIPs, warnings, _ := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio    = 0.3
+		maxDuration     = 20 * time.Second
+		betweenDuration = time.Second
+		maxNoNew        = 2
+		maxFails        = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration:     maxDuration,
+			BetweenDuration: betweenDuration,
+			MaxNoNew:        maxNoNew,
+			MaxFails:        maxFails,
+			SortIPs:         true,
+		},
+	}
+	hostToIPs, warnings, err := presolver.Resolve(ctx, hosts, settings)
+	if err != nil {
+		return nil, warnings, err
+	}
 
+	servers = make([]models.SurfsharkServer, 0, len(hostToIPs))
 	for host, IPs := range hostToIPs {
 		subdomain := strings.TrimSuffix(host, ".prod.surfshark.com")
 		server := models.SurfsharkServer{
 			Region: mapping[subdomain],
-			IPs:    uniqueSortedIPs(IPs),
+			IPs:    IPs,
 		}
 		servers = append(servers, server)
 	}
 
-	return servers, warnings
+	return servers, warnings, nil
 }
 
 func stringifySurfsharkServers(servers []models.SurfsharkServer) (s string) {

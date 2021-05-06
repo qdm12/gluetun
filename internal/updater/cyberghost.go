@@ -2,16 +2,16 @@ package updater
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updateCyberghost(ctx context.Context) (err error) {
-	servers, err := findCyberghostServers(ctx, u.lookupIP)
+	servers, err := findCyberghostServers(ctx, u.presolver)
 	if err != nil {
 		return err
 	}
@@ -23,60 +23,80 @@ func (u *updater) updateCyberghost(ctx context.Context) (err error) {
 	return nil
 }
 
-func findCyberghostServers(ctx context.Context, lookupIP lookupIPFunc) (servers []models.CyberghostServer, err error) {
+func findCyberghostServers(ctx context.Context, presolver resolver.Parallel) (
+	servers []models.CyberghostServer, err error) {
 	groups := getCyberghostGroups()
 	allCountryCodes := constants.CountryCodes()
 	cyberghostCountryCodes := getCyberghostSubdomainToRegion()
 	possibleCountryCodes := mergeCountryCodes(cyberghostCountryCodes, allCountryCodes)
 
-	results := make(chan models.CyberghostServer)
-	const maxGoroutines = 10
-	guard := make(chan struct{}, maxGoroutines)
-	defer close(guard)
+	// key is the host
+	possibleServers := make(map[string]models.CyberghostServer, len(groups)*len(possibleCountryCodes))
+	possibleHosts := make([]string, 0, len(groups)*len(possibleCountryCodes))
 	for groupID, groupName := range groups {
 		for countryCode, region := range possibleCountryCodes {
-			if err := ctx.Err(); err != nil {
-				return nil, err
-			}
 			const domain = "cg-dialup.net"
-			host := fmt.Sprintf("%s-%s.%s", groupID, countryCode, domain)
-			go tryCyberghostHostname(ctx, lookupIP, host, groupName, region, results, guard)
+			possibleHost := groupID + "-" + countryCode + "." + domain
+			possibleHosts = append(possibleHosts, possibleHost)
+			possibleServer := models.CyberghostServer{
+				Region: region,
+				Group:  groupName,
+			}
+			possibleServers[possibleHost] = possibleServer
 		}
 	}
-	for i := 0; i < len(groups)*len(possibleCountryCodes); i++ {
-		server := <-results
-		if server.IPs == nil {
-			continue
+
+	const (
+		maxFailRatio = 1
+		minFound     = 100
+		maxDuration  = 10 * time.Second
+		maxNoNew     = 2
+		maxFails     = 1
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		MinFound:     minFound,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration:     maxDuration,
+			BetweenDuration: time.Second,
+			MaxNoNew:        maxNoNew,
+			MaxFails:        maxFails,
+			SortIPs:         true,
+		},
+	}
+	hostToIPs, _, err := presolver.Resolve(ctx, possibleHosts, settings)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
+	// Set IPs for servers found
+	for host, IPs := range hostToIPs {
+		server := possibleServers[host]
+		server.IPs = IPs
+		possibleServers[host] = server
+	}
+
+	// Remove servers with no IPs (aka not found)
+	for host, server := range possibleServers {
+		if len(server.IPs) == 0 {
+			delete(possibleServers, host)
 		}
+	}
+
+	// Flatten possibleServers to a slice
+	servers = make([]models.CyberghostServer, 0, len(possibleServers))
+	for _, server := range possibleServers {
 		servers = append(servers, server)
 	}
-	if err := ctx.Err(); err != nil {
-		return servers, err
-	}
+
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].Region < servers[j].Region
 	})
 	return servers, nil
-}
-
-func tryCyberghostHostname(ctx context.Context, lookupIP lookupIPFunc,
-	host, groupName, region string,
-	results chan<- models.CyberghostServer, guard chan struct{}) {
-	guard <- struct{}{}
-	defer func() {
-		<-guard
-	}()
-	const repetition = 10
-	IPs, err := resolveRepeat(ctx, lookupIP, host, repetition, time.Second)
-	if err != nil || len(IPs) == 0 {
-		results <- models.CyberghostServer{}
-		return
-	}
-	results <- models.CyberghostServer{
-		Region: region,
-		Group:  groupName,
-		IPs:    IPs,
-	}
 }
 
 //nolint:goconst

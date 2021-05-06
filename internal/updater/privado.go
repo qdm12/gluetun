@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updatePrivado(ctx context.Context) (err error) {
-	servers, warnings, err := findPrivadoServersFromZip(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findPrivadoServersFromZip(ctx, u.client, u.presolver)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Privado: %s", warning)
@@ -27,7 +29,7 @@ func (u *updater) updatePrivado(ctx context.Context) (err error) {
 	return nil
 }
 
-func findPrivadoServersFromZip(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findPrivadoServersFromZip(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.PrivadoServer, warnings []string, err error) {
 	const zipURL = "https://privado.io/apps/ovpn_configs.zip"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
@@ -47,11 +49,26 @@ func findPrivadoServersFromZip(ctx context.Context, client *http.Client, lookupI
 		hosts = append(hosts, hostname)
 	}
 
-	const repetition = 1
-	const timeBetween = 1
-	const failOnErr = false
-	hostToIPs, newWarnings, _ := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio = 0.1
+		maxDuration  = 3 * time.Second
+		maxNoNew     = 1
+		maxFails     = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration: maxDuration,
+			MaxNoNew:    maxNoNew,
+			MaxFails:    maxFails,
+			SortIPs:     true,
+		},
+	}
+	hostToIPs, newWarnings, err := presolver.Resolve(ctx, hosts, settings)
 	warnings = append(warnings, newWarnings...)
+	if err != nil {
+		return nil, warnings, err
+	}
 
 	for hostname, IPs := range hostToIPs {
 		switch len(IPs) {

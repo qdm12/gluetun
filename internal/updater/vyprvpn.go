@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
-	servers, warnings, err := findVyprvpnServers(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findVyprvpnServers(ctx, u.client, u.presolver)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Vyprvpn: %s", warning)
@@ -28,7 +30,7 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 	return nil
 }
 
-func findVyprvpnServers(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findVyprvpnServers(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.VyprvpnServer, warnings []string, err error) {
 	const zipURL = "https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
@@ -60,18 +62,31 @@ func findVyprvpnServers(ctx context.Context, client *http.Client, lookupIP looku
 		i++
 	}
 
-	const repetition = 1
-	const timeBetween = 1
-	const failOnErr = true
-	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio = 0.1
+		maxNoNew     = 2
+		maxFails     = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration: time.Second,
+			MaxNoNew:    maxNoNew,
+			MaxFails:    maxFails,
+			SortIPs:     true,
+		},
+	}
+	hostToIPs, newWarnings, err := presolver.Resolve(ctx, hosts, settings)
+	warnings = append(warnings, newWarnings...)
 	if err != nil {
 		return nil, warnings, err
 	}
 
+	servers = make([]models.VyprvpnServer, 0, len(hostToIPs))
 	for host, IPs := range hostToIPs {
 		server := models.VyprvpnServer{
 			Region: hostToRegion[host],
-			IPs:    uniqueSortedIPs(IPs),
+			IPs:    IPs,
 		}
 		servers = append(servers, server)
 	}

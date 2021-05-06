@@ -10,10 +10,11 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/publicip"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updatePurevpn(ctx context.Context) (err error) {
-	servers, warnings, err := findPurevpnServers(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findPurevpnServers(ctx, u.client, u.presolver)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("PureVPN: %s", warning)
@@ -30,7 +31,7 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 	return nil
 }
 
-func findPurevpnServers(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findPurevpnServers(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.PurevpnServer, warnings []string, err error) {
 	const zipURL = "https://s3-us-west-1.amazonaws.com/heartbleed/windows/New+OVPN+Files.zip"
 	contents, err := fetchAndExtractFiles(ctx, client, zipURL)
@@ -53,10 +54,25 @@ func findPurevpnServers(ctx context.Context, client *http.Client, lookupIP looku
 		hosts = append(hosts, host)
 	}
 
-	const repetition = 20
-	const timeBetween = time.Second
-	const failOnErr = true
-	hostToIPs, _, err := parallelResolve(ctx, lookupIP, hosts, repetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio    = 0.1
+		maxDuration     = 20 * time.Second
+		betweenDuration = time.Second
+		maxNoNew        = 2
+		maxFails        = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration:     maxDuration,
+			BetweenDuration: betweenDuration,
+			MaxNoNew:        maxNoNew,
+			MaxFails:        maxFails,
+			SortIPs:         true,
+		},
+	}
+	hostToIPs, newWarnings, err := presolver.Resolve(ctx, hosts, settings)
+	warnings = append(warnings, newWarnings...)
 	if err != nil {
 		return nil, warnings, err
 	}

@@ -12,10 +12,11 @@ import (
 	"unicode"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updateHideMyAss(ctx context.Context) (err error) {
-	servers, warnings, err := findHideMyAssServers(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findHideMyAssServers(ctx, u.client, u.presolver)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("HideMyAss: %s", warning)
@@ -32,7 +33,7 @@ func (u *updater) updateHideMyAss(ctx context.Context) (err error) {
 	return nil
 }
 
-func findHideMyAssServers(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findHideMyAssServers(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.HideMyAssServer, warnings []string, err error) {
 	TCPhostToURL, err := findHideMyAssHostToURLForProto(ctx, client, "TCP")
 	if err != nil {
@@ -59,10 +60,27 @@ func findHideMyAssServers(ctx context.Context, client *http.Client, lookupIP loo
 		i++
 	}
 
-	const failOnErr = false
-	const resolveRepetition = 5
-	const timeBetween = 2 * time.Second
-	hostToIPs, warnings, _ := parallelResolve(ctx, lookupIP, hosts, resolveRepetition, timeBetween, failOnErr)
+	const (
+		maxFailRatio    = 0.1
+		maxDuration     = 15 * time.Second
+		betweenDuration = 2 * time.Second
+		maxNoNew        = 2
+		maxFails        = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration:     maxDuration,
+			BetweenDuration: betweenDuration,
+			MaxNoNew:        maxNoNew,
+			MaxFails:        maxFails,
+			SortIPs:         true,
+		},
+	}
+	hostToIPs, warnings, err := presolver.Resolve(ctx, hosts, settings)
+	if err != nil {
+		return nil, warnings, err
+	}
 
 	servers = make([]models.HideMyAssServer, 0, len(hostToIPs))
 	for host, IPs := range hostToIPs {

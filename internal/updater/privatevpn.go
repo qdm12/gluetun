@@ -11,10 +11,11 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 func (u *updater) updatePrivatevpn(ctx context.Context) (err error) {
-	servers, warnings, err := findPrivatevpnServersFromZip(ctx, u.client, u.lookupIP)
+	servers, warnings, err := findPrivatevpnServersFromZip(ctx, u.client, u.presolver)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Privatevpn: %s", warning)
@@ -31,7 +32,7 @@ func (u *updater) updatePrivatevpn(ctx context.Context) (err error) {
 	return nil
 }
 
-func findPrivatevpnServersFromZip(ctx context.Context, client *http.Client, lookupIP lookupIPFunc) (
+func findPrivatevpnServersFromZip(ctx context.Context, client *http.Client, presolver resolver.Parallel) (
 	servers []models.PrivatevpnServer, warnings []string, err error) {
 	// Note: all servers do both TCP and UDP
 	const zipURL = "https://privatevpn.com/client/PrivateVPN-TUN.zip"
@@ -93,10 +94,27 @@ func findPrivatevpnServersFromZip(ctx context.Context, client *http.Client, look
 		i++
 	}
 
-	const failOnError = false
-	hostToIPs, newWarnings, _ := parallelResolve(ctx, lookupIP, hostnames, 5, time.Second, failOnError)
-	if len(newWarnings) > 0 {
-		warnings = append(warnings, newWarnings...)
+	const (
+		maxFailRatio    = 0.1
+		maxDuration     = 6 * time.Second
+		betweenDuration = time.Second
+		maxNoNew        = 2
+		maxFails        = 2
+	)
+	settings := resolver.ParallelSettings{
+		MaxFailRatio: maxFailRatio,
+		Repeat: resolver.RepeatSettings{
+			MaxDuration:     maxDuration,
+			BetweenDuration: betweenDuration,
+			MaxNoNew:        maxNoNew,
+			MaxFails:        maxFails,
+			SortIPs:         true,
+		},
+	}
+	hostToIPs, newWarnings, err := presolver.Resolve(ctx, hostnames, settings)
+	warnings = append(warnings, newWarnings...)
+	if err != nil {
+		return nil, warnings, err
 	}
 
 	for hostname, server := range uniqueServers {
