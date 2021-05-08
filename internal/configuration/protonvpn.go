@@ -61,7 +61,7 @@ func (settings *Provider) readProtonvpn(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_NAME", constants.ProtonvpnNameChoices())
+	settings.ServerSelection.Names, err = r.env.CSVInside("SERVER_NAME", constants.ProtonvpnNameChoices())
 	if err != nil {
 		return err
 	}
