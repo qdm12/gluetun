@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -12,6 +13,17 @@ func getUnixTimeDifference(unix1, unix2 int64) (difference time.Duration) {
 		difference = -difference
 	}
 	return difference.Truncate(time.Second)
+}
+
+func (s *storage) logVersionDiff(provider string, diff uint16) {
+	diffString := strconv.Itoa(int(diff))
+
+	message := provider + " servers from file discarded because they are " +
+		diffString + " version"
+	if diff > 1 {
+		message += "s"
+	}
+	s.logger.Info(message)
 }
 
 func (s *storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
@@ -38,6 +50,13 @@ func (s *storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers)
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
+
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logVersionDiff("Cyberghost", versionDiff)
+		return hardcoded
+	}
+
 	s.logger.Info("Using Cyberghost servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
@@ -49,9 +68,7 @@ func (s *storage) mergeFastestvpn(hardcoded, persisted models.FastestvpnServers)
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"Fastestvpn servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("FastestVPN", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using Fastestvpn servers from file (%s more recent)",
@@ -65,9 +82,7 @@ func (s *storage) mergeHideMyAss(hardcoded, persisted models.HideMyAssServers) m
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"HideMyAss servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("HideMyAss", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using HideMyAss servers from file (%s more recent)",
@@ -79,6 +94,13 @@ func (s *storage) mergeMullvad(hardcoded, persisted models.MullvadServers) model
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
+
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logVersionDiff("Mullvad", versionDiff)
+		return hardcoded
+	}
+
 	s.logger.Info("Using Mullvad servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
@@ -88,6 +110,13 @@ func (s *storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) model
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
+
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logVersionDiff("NordVPN", versionDiff)
+		return hardcoded
+	}
+
 	s.logger.Info("Using NordVPN servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
@@ -99,9 +128,7 @@ func (s *storage) mergePrivado(hardcoded, persisted models.PrivadoServers) model
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"Privado servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("Privado", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using Privado servers from file (%s more recent)",
@@ -115,9 +142,7 @@ func (s *storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaSer
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"PIA servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("Private Internet Access", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using PIA servers from file (%s more recent)",
@@ -131,9 +156,7 @@ func (s *storage) mergePrivatevpn(hardcoded, persisted models.PrivatevpnServers)
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"Privatevpn servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("PrivateVPN", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using Privatevpn servers from file (%s more recent)",
@@ -147,9 +170,7 @@ func (s *storage) mergeProtonvpn(hardcoded, persisted models.ProtonvpnServers) m
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"Protonvpn servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("ProtonVPN", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using Protonvpn servers from file (%s more recent)",
@@ -161,6 +182,13 @@ func (s *storage) mergePureVPN(hardcoded, persisted models.PurevpnServers) model
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
+
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logVersionDiff("PureVPN", versionDiff)
+		return hardcoded
+	}
+
 	s.logger.Info("Using PureVPN servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
@@ -170,6 +198,13 @@ func (s *storage) mergeSurfshark(hardcoded, persisted models.SurfsharkServers) m
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
+
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logVersionDiff("Surfshark", versionDiff)
+		return hardcoded
+	}
+
 	s.logger.Info("Using Surfshark servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
@@ -181,9 +216,7 @@ func (s *storage) mergeTorguard(hardcoded, persisted models.TorguardServers) mod
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"Torguard servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("Torguard", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using Torguard servers from file (%s more recent)",
@@ -195,6 +228,13 @@ func (s *storage) mergeVyprvpn(hardcoded, persisted models.VyprvpnServers) model
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
+
+	versionDiff := hardcoded.Version - persisted.Version
+	if versionDiff > 0 {
+		s.logVersionDiff("VyprVPN", versionDiff)
+		return hardcoded
+	}
+
 	s.logger.Info("Using VyprVPN servers from file (%s more recent)",
 		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
 	return persisted
@@ -206,9 +246,7 @@ func (s *storage) mergeWindscribe(hardcoded, persisted models.WindscribeServers)
 	}
 	versionDiff := hardcoded.Version - persisted.Version
 	if versionDiff > 0 {
-		s.logger.Info(
-			"Windscribe servers from file discarded because they are %d versions behind",
-			versionDiff)
+		s.logVersionDiff("Windscribe", versionDiff)
 		return hardcoded
 	}
 	s.logger.Info("Using Windscribe servers from file (%s more recent)",
