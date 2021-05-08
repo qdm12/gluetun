@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 
@@ -73,15 +74,21 @@ func GetServers(ctx context.Context, client *http.Client,
 			ErrNotEnoughServers, len(servers), minServers)
 	}
 
+	// Get public IP address information
+	ipsToGetInfo := make([]net.IP, len(servers))
+	for i := range servers {
+		ipsToGetInfo[i] = servers[i].IPs[0]
+	}
+	ipsInfo, err := publicip.MultiInfo(ctx, client, ipsToGetInfo)
+	if err != nil {
+		return nil, warnings, err
+	}
+
 	// Dedup by location
 	lts := make(locationToServer)
-	for _, server := range servers {
-		ipInfo, err := publicip.Info(ctx, client, server.IPs[0])
-		if err != nil {
-			return nil, warnings, err
-		}
-
+	for i, server := range servers {
 		// TODO split servers by host
+		ipInfo := ipsInfo[i]
 		lts.add(ipInfo.Country, ipInfo.Region, ipInfo.City, server.IPs)
 	}
 
