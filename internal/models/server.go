@@ -8,13 +8,15 @@ import (
 )
 
 type CyberghostServer struct {
-	Region string   `json:"region"`
-	Group  string   `json:"group"`
-	IPs    []net.IP `json:"ips"`
+	Region   string   `json:"region"`
+	Group    string   `json:"group"`
+	Hostname string   `json:"hostname"`
+	IPs      []net.IP `json:"ips"`
 }
 
 func (s *CyberghostServer) String() string {
-	return fmt.Sprintf("{Region: %q, Group: %q, IPs: %s}", s.Region, s.Group, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Region: %q, Group: %q, Hostname: %q, IPs: %s}",
+		s.Region, s.Group, s.Hostname, goStringifyIPs(s.IPs))
 }
 
 type FastestvpnServer struct {

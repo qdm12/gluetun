@@ -16,6 +16,10 @@ func (settings *Provider) cyberghostLines() (lines []string) {
 		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
 	}
 
+	if len(settings.ServerSelection.Hostnames) > 0 {
+		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
+	}
+
 	if settings.ExtraConfigOptions.ClientKey != "" {
 		lines = append(lines, lastIndent+"Client key is set")
 	}
@@ -57,6 +61,11 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 	}
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.CyberghostRegionChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.CyberghostHostnameChoices())
 	if err != nil {
 		return err
 	}

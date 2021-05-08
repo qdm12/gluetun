@@ -7,8 +7,8 @@ func GetAllServers() (allServers models.AllServers) {
 	return models.AllServers{
 		Version: 1, // used for migration of the top level scheme
 		Cyberghost: models.CyberghostServers{
-			Version:   1,          // model version
-			Timestamp: 1620435633, // latest takes precedence
+			Version:   2,          // model version
+			Timestamp: 1620491290, // latest takes precedence
 			Servers:   CyberghostServers(),
 		},
 		Fastestvpn: models.FastestvpnServers{

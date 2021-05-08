@@ -37,7 +37,7 @@ func Test_versions(t *testing.T) {
 		"Cyberghost": {
 			model:   models.CyberghostServer{},
 			version: allServers.Cyberghost.Version,
-			digest:  "fd6242bb",
+			digest:  "229828de",
 		},
 		"Fastestvpn": {
 			model:   models.FastestvpnServer{},
@@ -143,7 +143,7 @@ func Test_timestamps(t *testing.T) {
 		"Cyberghost": {
 			servers:   allServers.Cyberghost.Servers,
 			timestamp: allServers.Cyberghost.Timestamp,
-			digest:    "0065bf9a",
+			digest:    "1de7ee68",
 		},
 		"Fastestvpn": {
 			servers:   allServers.Fastestvpn.Version,

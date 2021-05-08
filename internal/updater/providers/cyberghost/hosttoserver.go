@@ -25,8 +25,9 @@ func getPossibleServers() (possibleServers hostToServer) {
 			const domain = "cg-dialup.net"
 			possibleHost := groupID + "-" + countryCode + "." + domain
 			possibleServer := models.CyberghostServer{
-				Region: region,
-				Group:  groupName,
+				Hostname: possibleHost,
+				Region:   region,
+				Group:    groupName,
 			}
 			possibleServers[possibleHost] = possibleServer
 		}
