@@ -7,14 +7,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func getUnixTimeDifference(unix1, unix2 int64) (difference time.Duration) {
-	difference = time.Unix(unix1, 0).Sub(time.Unix(unix2, 0))
-	if difference < 0 {
-		difference = -difference
-	}
-	return difference.Truncate(time.Second)
-}
-
 func (s *storage) logVersionDiff(provider string, diff uint16) {
 	diffString := strconv.Itoa(int(diff))
 
@@ -23,6 +15,17 @@ func (s *storage) logVersionDiff(provider string, diff uint16) {
 	if diff > 1 {
 		message += "s"
 	}
+	s.logger.Info(message)
+}
+
+func (s *storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int64) {
+	diff := time.Unix(persistedUnix, 0).Sub(time.Unix(hardcodedUnix, 0))
+	if diff < 0 {
+		diff = -diff
+	}
+	diff = diff.Truncate(time.Second)
+	message := "Using " + provider + " servers from file which are " +
+		diff.String() + " more recent"
 	s.logger.Info(message)
 }
 
@@ -57,8 +60,7 @@ func (s *storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers)
 		return hardcoded
 	}
 
-	s.logger.Info("Using Cyberghost servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("Cyberghost", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -71,8 +73,7 @@ func (s *storage) mergeFastestvpn(hardcoded, persisted models.FastestvpnServers)
 		s.logVersionDiff("FastestVPN", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using Fastestvpn servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("FastestVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -85,8 +86,7 @@ func (s *storage) mergeHideMyAss(hardcoded, persisted models.HideMyAssServers) m
 		s.logVersionDiff("HideMyAss", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using HideMyAss servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("HideMyAss", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -101,8 +101,7 @@ func (s *storage) mergeMullvad(hardcoded, persisted models.MullvadServers) model
 		return hardcoded
 	}
 
-	s.logger.Info("Using Mullvad servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("Mullvad", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -117,8 +116,7 @@ func (s *storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) model
 		return hardcoded
 	}
 
-	s.logger.Info("Using NordVPN servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("NordVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -131,8 +129,8 @@ func (s *storage) mergePrivado(hardcoded, persisted models.PrivadoServers) model
 		s.logVersionDiff("Privado", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using Privado servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+
+	s.logTimeDiff("Privado", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -145,8 +143,8 @@ func (s *storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaSer
 		s.logVersionDiff("Private Internet Access", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using PIA servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+
+	s.logTimeDiff("Private Internet Access", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -159,8 +157,8 @@ func (s *storage) mergePrivatevpn(hardcoded, persisted models.PrivatevpnServers)
 		s.logVersionDiff("PrivateVPN", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using Privatevpn servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+
+	s.logTimeDiff("PrivateVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -173,8 +171,8 @@ func (s *storage) mergeProtonvpn(hardcoded, persisted models.ProtonvpnServers) m
 		s.logVersionDiff("ProtonVPN", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using Protonvpn servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+
+	s.logTimeDiff("ProtonVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -189,8 +187,7 @@ func (s *storage) mergePureVPN(hardcoded, persisted models.PurevpnServers) model
 		return hardcoded
 	}
 
-	s.logger.Info("Using PureVPN servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("PureVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -205,8 +202,7 @@ func (s *storage) mergeSurfshark(hardcoded, persisted models.SurfsharkServers) m
 		return hardcoded
 	}
 
-	s.logger.Info("Using Surfshark servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("Surfshark", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -219,8 +215,8 @@ func (s *storage) mergeTorguard(hardcoded, persisted models.TorguardServers) mod
 		s.logVersionDiff("Torguard", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using Torguard servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+
+	s.logTimeDiff("Torguard", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -235,8 +231,7 @@ func (s *storage) mergeVyprvpn(hardcoded, persisted models.VyprvpnServers) model
 		return hardcoded
 	}
 
-	s.logger.Info("Using VyprVPN servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+	s.logTimeDiff("VyprVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
@@ -249,7 +244,7 @@ func (s *storage) mergeWindscribe(hardcoded, persisted models.WindscribeServers)
 		s.logVersionDiff("Windscribe", versionDiff)
 		return hardcoded
 	}
-	s.logger.Info("Using Windscribe servers from file (%s more recent)",
-		getUnixTimeDifference(persisted.Timestamp, hardcoded.Timestamp))
+
+	s.logTimeDiff("Windscribe", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
