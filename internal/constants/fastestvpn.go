@@ -94,7 +94,6 @@ func FastestvpnServers() []models.FastestvpnServer {
 		{Country: "UK", Hostname: "uk6.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{5, 226, 139, 148}}},
 		{Country: "UK-Stream", Hostname: "uk-stream.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{195, 206, 169, 171}}},
 		{Country: "US-Atlanta", Hostname: "us-at-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{23, 82, 10, 205}}},
-		{Country: "US-Atlanta", Hostname: "us-at-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{23, 82, 10, 205}}},
 		{Country: "US-Charlotte", Hostname: "us-cf-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{192, 154, 253, 6}}},
 		{Country: "US-Charlotte", Hostname: "us-cf-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{192, 154, 253, 6}}},
 		{Country: "US-Chicago", Hostname: "us-ch1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{38, 98, 159, 11}}},

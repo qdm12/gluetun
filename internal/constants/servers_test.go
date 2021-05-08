@@ -143,57 +143,57 @@ func Test_timestamps(t *testing.T) {
 		"Cyberghost": {
 			servers:   allServers.Cyberghost.Servers,
 			timestamp: allServers.Cyberghost.Timestamp,
-			digest:    "81d0cc77",
+			digest:    "0065bf9a",
 		},
 		"Fastestvpn": {
 			servers:   allServers.Fastestvpn.Version,
 			timestamp: allServers.Fastestvpn.Timestamp,
-			digest:    "feccb41a",
+			digest:    "f0ef6b0b",
 		},
 		"HideMyAss": {
 			servers:   allServers.HideMyAss.Servers,
 			timestamp: allServers.HideMyAss.Timestamp,
-			digest:    "546a98cb",
+			digest:    "8f872ac4",
 		},
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,
 			timestamp: allServers.Mullvad.Timestamp,
-			digest:    "e2e006cf",
+			digest:    "f6d43e6b",
 		},
 		"Nordvpn": {
 			servers:   allServers.Nordvpn.Servers,
 			timestamp: allServers.Nordvpn.Timestamp,
-			digest:    "2296312c",
+			digest:    "69cb84b3",
 		},
 		"Privado": {
 			servers:   allServers.Privado.Servers,
 			timestamp: allServers.Privado.Timestamp,
-			digest:    "e7968fd3",
+			digest:    "d0892def",
 		},
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,
 			timestamp: allServers.Pia.Timestamp,
-			digest:    "403bdc67",
+			digest:    "ac856af0",
 		},
 		"Privatevpn": {
 			servers:   allServers.Privatevpn.Servers,
 			timestamp: allServers.Privatevpn.Timestamp,
-			digest:    "6d32d785",
+			digest:    "e8d8255a",
 		},
 		"Protonvpn": {
 			servers:   allServers.Protonvpn.Servers,
 			timestamp: allServers.Protonvpn.Timestamp,
-			digest:    "c342020e",
+			digest:    "15d415d0",
 		},
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,
 			timestamp: allServers.Purevpn.Timestamp,
-			digest:    "617505bd",
+			digest:    "8381d2b7",
 		},
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,
 			timestamp: allServers.Surfshark.Timestamp,
-			digest:    "38e7ea80",
+			digest:    "ae560066",
 		},
 		"Torguard": {
 			servers:   allServers.Torguard.Servers,
@@ -208,7 +208,7 @@ func Test_timestamps(t *testing.T) {
 		"Windscribe": {
 			servers:   allServers.Windscribe.Servers,
 			timestamp: allServers.Windscribe.Timestamp,
-			digest:    "4e719aa3",
+			digest:    "53629562",
 		},
 	}
 	for name, testCase := range testCases {
