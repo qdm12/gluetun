@@ -76,13 +76,13 @@ func GetServers(ctx context.Context, client *http.Client,
 	// Dedup by location
 	lts := make(locationToServer)
 	for _, server := range servers {
-		country, region, city, err := publicip.Info(ctx, client, server.IPs[0])
+		ipInfo, err := publicip.Info(ctx, client, server.IPs[0])
 		if err != nil {
 			return nil, warnings, err
 		}
 
 		// TODO split servers by host
-		lts.add(country, region, city, server.IPs)
+		lts.add(ipInfo.Country, ipInfo.Region, ipInfo.City, server.IPs)
 	}
 
 	if len(servers) < minServers {

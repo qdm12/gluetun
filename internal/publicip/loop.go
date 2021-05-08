@@ -154,11 +154,11 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				l.state.setPublicIP(ip)
 
 				message := "Public IP address is " + ip.String()
-				country, region, city, err := Info(ctx, l.client, ip)
+				result, err := Info(ctx, l.client, ip)
 				if err != nil {
 					l.logger.Warn(err)
 				} else {
-					message += " (" + country + ", " + region + ", " + city + ")"
+					message += " (" + result.Country + ", " + result.Region + ", " + result.City + ")"
 				}
 				l.logger.Info(message)
 

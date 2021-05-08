@@ -12,43 +12,49 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type ipInfoData struct {
+type Result struct {
 	Region  string `json:"region"`
 	Country string `json:"country"`
 	City    string `json:"city"`
 }
 
-var ErrBadHTTPStatus = errors.New("bad HTTP status received")
+var (
+	ErrTooManyRequests = errors.New("too many requests sent for this month")
+	ErrBadHTTPStatus   = errors.New("bad HTTP status received")
+)
 
 func Info(ctx context.Context, client *http.Client, ip net.IP) ( //nolint:interfacer
-	country, region, city string, err error) {
+	result Result, err error) {
 	const baseURL = "https://ipinfo.io/"
 	url := baseURL + ip.String()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return "", "", "", err
+		return result, err
 	}
 
 	response, err := client.Do(request)
 	if err != nil {
-		return "", "", "", err
+		return result, err
 	}
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		return "", "", "", fmt.Errorf("%w: %d", ErrBadHTTPStatus, response.StatusCode)
+	switch response.StatusCode {
+	case http.StatusOK:
+	case http.StatusTooManyRequests:
+		return result, fmt.Errorf("%w: %s", ErrTooManyRequests, baseURL)
+	default:
+		return result, fmt.Errorf("%w: %d", ErrBadHTTPStatus, response.StatusCode)
 	}
 
 	decoder := json.NewDecoder(response.Body)
-	var data ipInfoData
-	if err := decoder.Decode(&data); err != nil {
-		return "", "", "", err
+	if err := decoder.Decode(&result); err != nil {
+		return result, err
 	}
 
-	countryCode := strings.ToLower(data.Country)
+	countryCode := strings.ToLower(result.Country)
 	country, ok := constants.CountryCodes()[countryCode]
-	if !ok {
-		country = data.Country
+	if ok {
+		result.Country = country
 	}
-	return country, data.Region, data.City, nil
+	return result, nil
 }
