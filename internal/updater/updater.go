@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
+	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -30,6 +31,7 @@ type updater struct {
 	println   func(s string)
 	presolver resolver.Parallel
 	client    *http.Client
+	unzipper  unzip.Unzipper
 }
 
 func New(settings configuration.Updater, httpClient *http.Client,
@@ -37,12 +39,14 @@ func New(settings configuration.Updater, httpClient *http.Client,
 	if len(settings.DNSAddress) == 0 {
 		settings.DNSAddress = "1.1.1.1"
 	}
+	unzipper := unzip.New(httpClient)
 	return &updater{
 		logger:    logger,
 		timeNow:   time.Now,
 		println:   func(s string) { fmt.Println(s) },
 		presolver: resolver.NewParallelResolver(settings.DNSAddress),
 		client:    httpClient,
+		unzipper:  unzipper,
 		options:   settings,
 		servers:   currentServers,
 	}
