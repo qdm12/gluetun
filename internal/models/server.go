@@ -48,17 +48,18 @@ func (s *HideMyAssServer) String() string {
 }
 
 type MullvadServer struct {
-	IPs     []net.IP `json:"ips"`
-	IPsV6   []net.IP `json:"ipsv6"`
-	Country string   `json:"country"`
-	City    string   `json:"city"`
-	ISP     string   `json:"isp"`
-	Owned   bool     `json:"owned"`
+	IPs      []net.IP `json:"ips"`
+	IPsV6    []net.IP `json:"ipsv6"`
+	Country  string   `json:"country"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	ISP      string   `json:"isp"`
+	Owned    bool     `json:"owned"`
 }
 
 func (s *MullvadServer) String() string {
-	return fmt.Sprintf("{Country: %q, City: %q, ISP: %q, Owned: %t, IPs: %s, IPsV6: %s}",
-		s.Country, s.City, s.ISP, s.Owned, goStringifyIPs(s.IPs), goStringifyIPs(s.IPsV6))
+	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, ISP: %q, Owned: %t, IPs: %s, IPsV6: %s}",
+		s.Country, s.City, s.Hostname, s.ISP, s.Owned, goStringifyIPs(s.IPs), goStringifyIPs(s.IPsV6))
 }
 
 type NordvpnServer struct { //nolint:maligned

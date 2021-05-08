@@ -28,12 +28,14 @@ func newMullvad(servers []models.MullvadServer, timeNow timeNowFunc) *mullvad {
 	}
 }
 
-func (m *mullvad) filterServers(countries, cities, isps []string, owned bool) (servers []models.MullvadServer) {
+func (m *mullvad) filterServers(countries, cities, hostnames,
+	isps []string, owned bool) (servers []models.MullvadServer) {
 	for _, server := range m.servers {
 		switch {
 		case
 			filterByPossibilities(server.Country, countries),
 			filterByPossibilities(server.City, cities),
+			filterByPossibilities(server.Hostname, hostnames),
 			filterByPossibilities(server.ISP, isps),
 			owned && !server.Owned:
 		default:
@@ -58,7 +60,8 @@ func (m *mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := m.filterServers(selection.Countries, selection.Cities, selection.ISPs, selection.Owned)
+	servers := m.filterServers(selection.Countries, selection.Hostnames,
+		selection.Cities, selection.ISPs, selection.Owned)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for countries %s, cities %s, ISPs %s and owned %t",
 			commaJoin(selection.Countries), commaJoin(selection.Cities), commaJoin(selection.ISPs), selection.Owned)

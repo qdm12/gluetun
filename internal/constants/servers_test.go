@@ -52,7 +52,7 @@ func Test_versions(t *testing.T) {
 		"Mullvad": {
 			model:   models.MullvadServer{},
 			version: allServers.Mullvad.Version,
-			digest:  "665e9dc1",
+			digest:  "2a009192",
 		},
 		"Nordvpn": {
 			model:   models.NordvpnServer{},
@@ -158,7 +158,7 @@ func Test_timestamps(t *testing.T) {
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,
 			timestamp: allServers.Mullvad.Timestamp,
-			digest:    "f6d43e6b",
+			digest:    "01f2315f",
 		},
 		"Nordvpn": {
 			servers:   allServers.Nordvpn.Servers,

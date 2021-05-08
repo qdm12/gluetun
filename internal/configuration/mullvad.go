@@ -16,6 +16,10 @@ func (settings *Provider) mullvadLines() (lines []string) {
 		lines = append(lines, lastIndent+"Cities: "+commaJoin(settings.ServerSelection.Cities))
 	}
 
+	if len(settings.ServerSelection.Hostnames) > 0 {
+		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
+	}
+
 	if len(settings.ServerSelection.ISPs) > 0 {
 		lines = append(lines, lastIndent+"ISPs: "+commaJoin(settings.ServerSelection.ISPs))
 	}
@@ -50,6 +54,11 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 	}
 
 	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.MullvadCityChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.MullvadHostnameChoices())
 	if err != nil {
 		return err
 	}

@@ -32,15 +32,17 @@ func (hts hostToServer) add(data serverData) (err error) {
 	}
 
 	server, ok := hts[data.Hostname]
-	if !ok {
-		server.Country = data.Country
-		server.City = strings.ReplaceAll(data.City, ",", "")
-		server.ISP = data.Provider
-		server.Owned = data.Owned
+	if ok { // API returns a server per hostname at most
+		return nil
 	}
 
-	server.IPs = append(server.IPs, ipv4)
-	server.IPsV6 = append(server.IPsV6, ipv6)
+	server.Country = data.Country
+	server.City = strings.ReplaceAll(data.City, ",", "")
+	server.Hostname = data.Hostname
+	server.ISP = data.Provider
+	server.Owned = data.Owned
+	server.IPs = []net.IP{ipv4}
+	server.IPsV6 = []net.IP{ipv6}
 
 	hts[data.Hostname] = server
 
