@@ -13,6 +13,14 @@ func (settings *Provider) nordvpnLines() (lines []string) {
 		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
 	}
 
+	if len(settings.ServerSelection.Hostnames) > 0 {
+		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
+	}
+
+	if len(settings.ServerSelection.Names) > 0 {
+		lines = append(lines, lastIndent+"Names: "+commaJoin(settings.ServerSelection.Hostnames))
+	}
+
 	if numbersUint16 := settings.ServerSelection.Numbers; len(numbersUint16) > 0 {
 		numbersString := make([]string, len(numbersUint16))
 		for i, numberUint16 := range numbersUint16 {
@@ -38,6 +46,16 @@ func (settings *Provider) readNordvpn(r reader) (err error) {
 	}
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.NordvpnRegionChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.NordvpnHostnameChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Names, err = r.env.CSVInside("SERVER_NAME", constants.NordvpnHostnameChoices())
 	if err != nil {
 		return err
 	}

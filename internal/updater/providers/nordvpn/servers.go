@@ -44,11 +44,13 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 		}
 
 		server := models.NordvpnServer{
-			Region: jsonServer.Country,
-			Number: number,
-			IP:     ip,
-			TCP:    jsonServer.Features.TCP,
-			UDP:    jsonServer.Features.UDP,
+			Region:   jsonServer.Country,
+			Hostname: jsonServer.Domain,
+			Name:     jsonServer.Name,
+			Number:   number,
+			IP:       ip,
+			TCP:      jsonServer.Features.TCP,
+			UDP:      jsonServer.Features.UDP,
 		}
 		servers = append(servers, server)
 	}

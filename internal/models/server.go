@@ -63,16 +63,18 @@ func (s *MullvadServer) String() string {
 }
 
 type NordvpnServer struct { //nolint:maligned
-	Region string `json:"region"`
-	Number uint16 `json:"number"`
-	IP     net.IP `json:"ip"`
-	TCP    bool   `json:"tcp"`
-	UDP    bool   `json:"udp"`
+	Region   string `json:"region"`
+	Hostname string `json:"hostname"`
+	Name     string `json:"name"`
+	Number   uint16 `json:"number"`
+	IP       net.IP `json:"ip"`
+	TCP      bool   `json:"tcp"`
+	UDP      bool   `json:"udp"`
 }
 
 func (s *NordvpnServer) String() string {
-	return fmt.Sprintf("{Region: %q, Number: %d, TCP: %t, UDP: %t, IP: %s}",
-		s.Region, s.Number, s.TCP, s.UDP, goStringifyIP(s.IP))
+	return fmt.Sprintf("{Region: %q, Hostname: %q, Name: %q, Number: %d, TCP: %t, UDP: %t, IP: %s}",
+		s.Region, s.Hostname, s.Name, s.Number, s.TCP, s.UDP, goStringifyIP(s.IP))
 }
 
 type PrivadoServer struct {

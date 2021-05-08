@@ -57,7 +57,7 @@ func Test_versions(t *testing.T) {
 		"Nordvpn": {
 			model:   models.NordvpnServer{},
 			version: allServers.Nordvpn.Version,
-			digest:  "040de8d0",
+			digest:  "a3b5d609",
 		},
 		"Privado": {
 			model:   models.PrivadoServer{},
@@ -163,7 +163,7 @@ func Test_timestamps(t *testing.T) {
 		"Nordvpn": {
 			servers:   allServers.Nordvpn.Servers,
 			timestamp: allServers.Nordvpn.Timestamp,
-			digest:    "69cb84b3",
+			digest:    "b2619eea",
 		},
 		"Privado": {
 			servers:   allServers.Privado.Servers,

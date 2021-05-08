@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net"
@@ -28,7 +29,7 @@ func newNordvpn(servers []models.NordvpnServer, timeNow timeNowFunc) *nordvpn {
 	}
 }
 
-func (n *nordvpn) filterServers(regions []string, protocol string, numbers []uint16) (
+func (n *nordvpn) filterServers(regions, hostnames, names []string, numbers []uint16, protocol string) (
 	servers []models.NordvpnServer) {
 	numbersStr := make([]string, len(numbers))
 	for i := range numbers {
@@ -41,12 +42,42 @@ func (n *nordvpn) filterServers(regions []string, protocol string, numbers []uin
 			protocol == constants.TCP && !server.TCP,
 			protocol == constants.UDP && !server.UDP,
 			filterByPossibilities(server.Region, regions),
+			filterByPossibilities(server.Hostname, hostnames),
+			filterByPossibilities(server.Name, names),
 			filterByPossibilities(numberStr, numbersStr):
 		default:
 			servers = append(servers, server)
 		}
 	}
 	return servers
+}
+
+var errNoServerFound = errors.New("no server found")
+
+func (n *nordvpn) notFoundErr(selection configuration.ServerSelection) error {
+	message := "for protocol " + selection.Protocol
+
+	if len(selection.Regions) > 0 {
+		message += " + regions " + commaJoin(selection.Regions)
+	}
+
+	if len(selection.Hostnames) > 0 {
+		message += " + hostnames " + commaJoin(selection.Hostnames)
+	}
+
+	if len(selection.Names) > 0 {
+		message += " + names " + commaJoin(selection.Names)
+	}
+
+	if len(selection.Numbers) > 0 {
+		numbers := make([]string, len(selection.Numbers))
+		for i, n := range selection.Numbers {
+			numbers[i] = strconv.Itoa(int(n))
+		}
+		message += " + numbers " + commaJoin(numbers)
+	}
+
+	return fmt.Errorf("%w: %s", errNoServerFound, message)
 }
 
 func (n *nordvpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
@@ -65,10 +96,10 @@ func (n *nordvpn) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := n.filterServers(selection.Regions, selection.Protocol, selection.Numbers)
+	servers := n.filterServers(selection.Regions, selection.Hostnames,
+		selection.Names, selection.Numbers, selection.Protocol)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %s, protocol %s and numbers %v",
-			commaJoin(selection.Regions), selection.Protocol, selection.Numbers)
+		return connection, n.notFoundErr(selection)
 	}
 
 	connections := make([]models.OpenVPNConnection, len(servers))
