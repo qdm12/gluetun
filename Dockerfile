@@ -97,6 +97,8 @@ ENV VPNSP=pia \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
     # Nordvpn only:
     SERVER_NUMBER= \
+    # ProtonVPN only:
+    SERVER_NAME= \
     # Openvpn
     OPENVPN_CIPHER= \
     OPENVPN_AUTH= \
