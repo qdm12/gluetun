@@ -60,8 +60,8 @@ func (m *mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := m.filterServers(selection.Countries, selection.Hostnames,
-		selection.Cities, selection.ISPs, selection.Owned)
+	servers := m.filterServers(selection.Countries, selection.Cities,
+		selection.Hostnames, selection.ISPs, selection.Owned)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for countries %s, cities %s, ISPs %s and owned %t",
 			commaJoin(selection.Countries), commaJoin(selection.Cities), commaJoin(selection.ISPs), selection.Owned)
