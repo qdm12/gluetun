@@ -92,6 +92,7 @@ func (s *PrivadoServer) String() string {
 
 type PIAServer struct {
 	Region      string `json:"region"`
+	Hostname    string `json:"hostname"`
 	ServerName  string `json:"server_name"`
 	TCP         bool   `json:"tcp"`
 	UDP         bool   `json:"udp"`
@@ -100,8 +101,8 @@ type PIAServer struct {
 }
 
 func (p *PIAServer) String() string {
-	return fmt.Sprintf("{Region: %q, ServerName: %q, TCP: %t, UDP: %t, PortForward: %t, IP: %s}",
-		p.Region, p.ServerName, p.TCP, p.UDP, p.PortForward, goStringifyIP(p.IP))
+	return fmt.Sprintf("{Region: %q, Hostname: %q, ServerName: %q, TCP: %t, UDP: %t, PortForward: %t, IP: %s}",
+		p.Region, p.Hostname, p.ServerName, p.TCP, p.UDP, p.PortForward, goStringifyIP(p.IP))
 }
 
 type PrivatevpnServer struct {

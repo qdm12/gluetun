@@ -26,12 +26,12 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 
 		// newServers can support only UDP or both TCP and UDP
 		newServers := dataToServers(region.Servers.UDP, region.Name,
-			region.PortForward, commonNameToProtocols)
+			region.DNS, region.PortForward, commonNameToProtocols)
 		servers = append(servers, newServers...)
 
 		// tcpServers only support TCP as mixed servers were found above.
 		tcpServers := dataToServers(region.Servers.TCP, region.Name,
-			region.PortForward, commonNameToProtocols)
+			region.DNS, region.PortForward, commonNameToProtocols)
 		servers = append(servers, tcpServers...)
 	}
 
@@ -66,8 +66,8 @@ func dedupByProtocol(region regionData) (commonNameToProtocols map[string]protoc
 	return commonNameToProtocols
 }
 
-func dataToServers(data []serverData, region string, portForward bool,
-	commonNameToProtocols map[string]protocols) (
+func dataToServers(data []serverData, region, hostname string,
+	portForward bool, commonNameToProtocols map[string]protocols) (
 	servers []models.PIAServer) {
 	servers = make([]models.PIAServer, 0, len(data))
 	for _, serverData := range data {
@@ -78,6 +78,7 @@ func dataToServers(data []serverData, region string, portForward bool,
 		delete(commonNameToProtocols, serverData.CN)
 		server := models.PIAServer{
 			Region:      region,
+			Hostname:    hostname,
 			ServerName:  serverData.CN,
 			TCP:         proto.tcp,
 			UDP:         proto.udp,

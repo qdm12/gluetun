@@ -12,6 +12,14 @@ func (settings *Provider) privateinternetaccessLines() (lines []string) {
 		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
 	}
 
+	if len(settings.ServerSelection.Hostnames) > 0 {
+		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
+	}
+
+	if len(settings.ServerSelection.Names) > 0 {
+		lines = append(lines, lastIndent+"Names: "+commaJoin(settings.ServerSelection.Names))
+	}
+
 	lines = append(lines, lastIndent+"Encryption preset: "+settings.ServerSelection.EncryptionPreset)
 
 	lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
@@ -51,6 +59,16 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.PIAGeoChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.PIAHostnameChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_NAME", constants.PIANameChoices())
 	if err != nil {
 		return err
 	}

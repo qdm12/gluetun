@@ -93,6 +93,24 @@ func (p *pia) getPort(selection configuration.ServerSelection) (port uint16, err
 	return port, nil
 }
 
+func (p *pia) notFoundErr(regions, hostnames, names []string, protocol string) error {
+	message := "for protocol " + protocol
+
+	if len(regions) > 0 {
+		message += " + regions " + commaJoin(regions)
+	}
+
+	if len(hostnames) > 0 {
+		message += " + hostnames " + commaJoin(hostnames)
+	}
+
+	if len(names) > 0 {
+		message += " + names " + commaJoin(names)
+	}
+
+	return fmt.Errorf("%w: %s", errNoServerFound, message)
+}
+
 func (p *pia) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	port, err := p.getPort(selection)
@@ -104,10 +122,11 @@ func (p *pia) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	if selection.TargetIP != nil {
 		connection = models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}
 	} else {
-		servers := filterPIAServers(servers, selection.Regions, selection.Protocol)
+		servers := p.filterServers(selection.Regions, selection.Hostnames,
+			selection.Names, selection.Protocol)
 		if len(servers) == 0 {
-			return connection, fmt.Errorf("no server found for region %s and protocol %s",
-				commaJoin(selection.Regions), selection.Protocol)
+			return connection, p.notFoundErr(selection.Regions, selection.Hostnames,
+				selection.Names, selection.Protocol)
 		}
 
 		var connections []models.OpenVPNConnection
@@ -337,11 +356,13 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 	}
 }
 
-func filterPIAServers(servers []models.PIAServer, regions []string, protocol string) (
+func (p *pia) filterServers(regions, hostnames, names []string, protocol string) (
 	filtered []models.PIAServer) {
-	for _, server := range servers {
+	for _, server := range p.servers {
 		switch {
 		case filterByPossibilities(server.Region, regions),
+			filterByPossibilities(server.Hostname, hostnames),
+			filterByPossibilities(server.ServerName, names),
 			protocol == constants.TCP && !server.TCP,
 			protocol == constants.UDP && !server.UDP:
 		default:

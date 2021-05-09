@@ -21,6 +21,7 @@ type apiData struct {
 
 type regionData struct {
 	Name        string `json:"name"`
+	DNS         string `json:"dns"`
 	PortForward bool   `json:"port_forward"`
 	Offline     bool   `json:"offline"`
 	Servers     struct {
