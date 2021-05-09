@@ -78,13 +78,16 @@ func (s *NordvpnServer) String() string {
 }
 
 type PrivadoServer struct {
-	IP       net.IP `json:"ip"`
+	Country  string `json:"country"`
+	Region   string `json:"region"`
+	City     string `json:"city"`
 	Hostname string `json:"hostname"`
+	IP       net.IP `json:"ip"`
 }
 
 func (s *PrivadoServer) String() string {
-	return fmt.Sprintf("{Hostname: %q, IP: %s}",
-		s.Hostname, goStringifyIP(s.IP))
+	return fmt.Sprintf("{Country: %q, Region: %q, City: %q, Hostname: %q, IP: %s}",
+		s.Country, s.Region, s.City, s.Hostname, goStringifyIP(s.IP))
 }
 
 type PIAServer struct {

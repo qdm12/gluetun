@@ -28,10 +28,13 @@ func newPrivado(servers []models.PrivadoServer, timeNow timeNowFunc) *privado {
 	}
 }
 
-func (s *privado) filterServers(hostnames []string) (servers []models.PrivadoServer) {
+func (s *privado) filterServers(countries, regions, cities, hostnames []string) (servers []models.PrivadoServer) {
 	for _, server := range s.servers {
 		switch {
-		case filterByPossibilities(server.Hostname, hostnames):
+		case filterByPossibilities(server.Country, countries),
+			filterByPossibilities(server.Region, regions),
+			filterByPossibilities(server.City, cities),
+			filterByPossibilities(server.Hostname, hostnames):
 		default:
 			servers = append(servers, server)
 		}
@@ -52,7 +55,8 @@ func (s *privado) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := s.filterServers(selection.Hostnames)
+	servers := s.filterServers(selection.Countries, selection.Regions,
+		selection.Cities, selection.Hostnames)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for cities %s and server numbers %v",
 			commaJoin(selection.Cities), selection.Numbers)

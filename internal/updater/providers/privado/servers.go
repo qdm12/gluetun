@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -17,7 +18,7 @@ import (
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
-	presolver resolver.Parallel, minServers int) (
+	client *http.Client, presolver resolver.Parallel, minServers int) (
 	servers []models.PrivadoServer, warnings []string, err error) {
 	const url = "https://privado.io/apps/ovpn_configs.zip"
 	contents, err := unzipper.FetchAndExtract(ctx, url)
@@ -65,6 +66,10 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	warnings = append(warnings, newWarnings...)
 
 	servers = hts.toServersSlice()
+
+	if err := setLocationInfo(ctx, client, servers); err != nil {
+		return nil, warnings, err
+	}
 
 	sortServers(servers)
 

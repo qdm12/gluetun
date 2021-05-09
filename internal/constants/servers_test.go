@@ -62,7 +62,7 @@ func Test_versions(t *testing.T) {
 		"Privado": {
 			model:   models.PrivadoServer{},
 			version: allServers.Privado.Version,
-			digest:  "1d5aeb23",
+			digest:  "dba6736c",
 		},
 		"Private Internet Access": {
 			model:   models.PIAServer{},
@@ -168,7 +168,7 @@ func Test_timestamps(t *testing.T) {
 		"Privado": {
 			servers:   allServers.Privado.Servers,
 			timestamp: allServers.Privado.Timestamp,
-			digest:    "d0892def",
+			digest:    "df378478",
 		},
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,

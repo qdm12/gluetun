@@ -124,7 +124,7 @@ func (u *updater) updatePIA(ctx context.Context) (err error) {
 func (u *updater) updatePrivado(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Privado.Servers))
 	servers, warnings, err := privado.GetServers(
-		ctx, u.unzipper, u.presolver, minServers)
+		ctx, u.unzipper, u.client, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Privado: %s", warning)
