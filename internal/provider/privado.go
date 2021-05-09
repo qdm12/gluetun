@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -28,8 +29,8 @@ func newPrivado(servers []models.PrivadoServer, timeNow timeNowFunc) *privado {
 	}
 }
 
-func (s *privado) filterServers(countries, regions, cities, hostnames []string) (servers []models.PrivadoServer) {
-	for _, server := range s.servers {
+func (p *privado) filterServers(countries, regions, cities, hostnames []string) (servers []models.PrivadoServer) {
+	for _, server := range p.servers {
 		switch {
 		case filterByPossibilities(server.Country, countries),
 			filterByPossibilities(server.Region, regions),
@@ -42,7 +43,31 @@ func (s *privado) filterServers(countries, regions, cities, hostnames []string) 
 	return servers
 }
 
-func (s *privado) GetOpenVPNConnection(selection configuration.ServerSelection) (
+func (p *privado) notFoundErr(countries, regions, cities, hostnames []string) error {
+	var message string
+
+	if len(countries) > 0 {
+		message += " + countries " + commaJoin(countries)
+	}
+
+	if len(regions) > 0 {
+		message += " + regions " + commaJoin(regions)
+	}
+
+	if len(cities) > 0 {
+		message += " + cities " + commaJoin(cities)
+	}
+
+	if len(hostnames) > 0 {
+		message += " + hostnames " + commaJoin(hostnames)
+	}
+
+	message = "for " + strings.TrimPrefix(message, " +")
+
+	return fmt.Errorf("%w: %s", errNoServerFound, message)
+}
+
+func (p *privado) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16 = 1194
 	switch selection.Protocol {
@@ -55,11 +80,11 @@ func (s *privado) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := s.filterServers(selection.Countries, selection.Regions,
+	servers := p.filterServers(selection.Countries, selection.Regions,
 		selection.Cities, selection.Hostnames)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for cities %s and server numbers %v",
-			commaJoin(selection.Cities), selection.Numbers)
+		return connection, p.notFoundErr(selection.Countries,
+			selection.Regions, selection.Cities, selection.Hostnames)
 	}
 
 	connections := make([]models.OpenVPNConnection, len(servers))
@@ -73,10 +98,10 @@ func (s *privado) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		connections[i] = connection
 	}
 
-	return pickRandomConnection(connections, s.randSource), nil
+	return pickRandomConnection(connections, p.randSource), nil
 }
 
-func (s *privado) BuildConf(connection models.OpenVPNConnection,
+func (p *privado) BuildConf(connection models.OpenVPNConnection,
 	username string, settings configuration.OpenVPN) (lines []string) {
 	if len(settings.Cipher) == 0 {
 		settings.Cipher = aes256cbc
@@ -130,7 +155,7 @@ func (s *privado) BuildConf(connection models.OpenVPNConnection,
 	return lines
 }
 
-func (s *privado) PortForward(ctx context.Context, client *http.Client,
+func (p *privado) PortForward(ctx context.Context, client *http.Client,
 	openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath string)) {
 	panic("port forwarding is not supported for privado")
