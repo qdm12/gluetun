@@ -35,7 +35,7 @@ func Test_uniqueIPsToSlice(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			outputIPs := uniqueIPsToSlice(testCase.inputIPs)
-			assert.Equal(t, testCase.outputIPs, outputIPs)
+			assert.ElementsMatch(t, testCase.outputIPs, outputIPs)
 		})
 	}
 }
