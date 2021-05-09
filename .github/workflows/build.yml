@@ -42,10 +42,20 @@ jobs:
           -covermode=atomic \
           ./...
 
-      # We run this here to use the caching of the previous steps
-      - if: github.event_name == 'push'
-        name: Build final image
-        run: docker build .
+      - name: Code security analysis
+        uses: snyk/actions/golang@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Build final image
+        run: docker build -t final-image .
+
+      - name: Image security analysis
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: final-image
 
   publish:
     needs: [verify]
