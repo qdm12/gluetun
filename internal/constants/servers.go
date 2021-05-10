@@ -67,8 +67,8 @@ func GetAllServers() (allServers models.AllServers) {
 			Servers:   TorguardServers(),
 		},
 		Vyprvpn: models.VyprvpnServers{
-			Version:   1,
-			Timestamp: 1620326951,
+			Version:   2,
+			Timestamp: 1620612506,
 			Servers:   VyprvpnServers(),
 		},
 		Windscribe: models.WindscribeServers{

@@ -175,12 +175,16 @@ func (s *TorguardServer) String() string {
 }
 
 type VyprvpnServer struct {
-	Region string   `json:"region"`
-	IPs    []net.IP `json:"ips"`
+	Region   string   `json:"region"`
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"` // only support for UDP
+	IPs      []net.IP `json:"ips"`
 }
 
 func (s *VyprvpnServer) String() string {
-	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Region: %q, Hostname: %q, TCP: %t, UDP: %t, IPs: %s}",
+		s.Region, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
 }
 
 type WindscribeServer struct {

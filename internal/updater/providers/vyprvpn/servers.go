@@ -46,13 +46,21 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 			continue
 		}
 
+		tcp, udp, err := openvpn.ExtractProto(content)
+		if err != nil {
+			// treat error as warning and go to next file
+			warning := err.Error() + " in " + fileName
+			warnings = append(warnings, warning)
+			continue
+		}
+
 		region, err := parseFilename(fileName)
 		if err != nil {
 			warnings = append(warnings, err.Error())
 			continue
 		}
 
-		hts.add(host, region)
+		hts.add(host, region, tcp, udp)
 	}
 
 	if len(hts) < minServers {

@@ -97,7 +97,7 @@ func Test_versions(t *testing.T) {
 		"Vyprvpn": {
 			model:   models.VyprvpnServer{},
 			version: allServers.Vyprvpn.Version,
-			digest:  "042bef64",
+			digest:  "58de06d8",
 		},
 		"Windscribe": {
 			model:   models.WindscribeServer{},
@@ -203,7 +203,7 @@ func Test_timestamps(t *testing.T) {
 		"Vyprvpn": {
 			servers:   allServers.Vyprvpn.Servers,
 			timestamp: allServers.Vyprvpn.Timestamp,
-			digest:    "eccb7f5c",
+			digest:    "a62c484b",
 		},
 		"Windscribe": {
 			servers:   allServers.Windscribe.Servers,
