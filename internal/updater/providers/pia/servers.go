@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -15,22 +16,53 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, client *http.Client, minServers int) (
 	servers []models.PIAServer, err error) {
-	data, err := fetchAPI(ctx, client)
-	if err != nil {
-		return nil, err
-	}
-
 	nts := make(nameToServer)
 
-	for _, region := range data.Regions {
-		for _, server := range region.Servers.UDP {
-			const tcp, udp = false, true
-			nts.add(server.CN, region.DNS, region.Name, tcp, udp, region.PortForward, server.IP)
+	noChangeCounter := 0
+	const maxNoChange = 10
+	const betweenDuration = 200 * time.Millisecond
+	const maxDuration = time.Minute
+
+	maxTimer := time.NewTimer(maxDuration)
+
+	for {
+		data, err := fetchAPI(ctx, client)
+		if err != nil {
+			return nil, err
 		}
 
-		for _, server := range region.Servers.TCP {
-			const tcp, udp = true, false
-			nts.add(server.CN, region.DNS, region.Name, tcp, udp, region.PortForward, server.IP)
+		change := addData(data.Regions, nts)
+
+		if !change {
+			noChangeCounter++
+			if noChangeCounter == maxNoChange {
+				break
+			}
+		} else {
+			noChangeCounter = 0
+		}
+
+		timer := time.NewTimer(betweenDuration)
+		maxTimeout := false
+		select {
+		case <-ctx.Done():
+			if !timer.Stop() {
+				<-timer.C
+			}
+			if !maxTimer.Stop() {
+				<-timer.C
+			}
+			return nil, ctx.Err()
+		case <-timer.C:
+		case <-maxTimer.C:
+			if !timer.Stop() {
+				<-timer.C
+			}
+			maxTimeout = true
+		}
+
+		if maxTimeout {
+			break
 		}
 	}
 
@@ -44,4 +76,24 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 	sortServers(servers)
 
 	return servers, nil
+}
+
+func addData(regions []regionData, nts nameToServer) (change bool) {
+	for _, region := range regions {
+		for _, server := range region.Servers.UDP {
+			const tcp, udp = false, true
+			if nts.add(server.CN, region.DNS, region.Name, tcp, udp, region.PortForward, server.IP) {
+				change = true
+			}
+		}
+
+		for _, server := range region.Servers.TCP {
+			const tcp, udp = true, false
+			if nts.add(server.CN, region.DNS, region.Name, tcp, udp, region.PortForward, server.IP) {
+				change = true
+			}
+		}
+	}
+
+	return change
 }

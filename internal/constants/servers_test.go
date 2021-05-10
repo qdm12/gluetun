@@ -173,7 +173,7 @@ func Test_timestamps(t *testing.T) {
 		"Private Internet Access": {
 			servers:   allServers.Pia.Servers,
 			timestamp: allServers.Pia.Timestamp,
-			digest:    "68996ef1",
+			digest:    "ad230e95",
 		},
 		"Privatevpn": {
 			servers:   allServers.Privatevpn.Servers,
