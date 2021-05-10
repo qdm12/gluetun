@@ -87,7 +87,7 @@ func Test_versions(t *testing.T) {
 		"Surfshark": {
 			model:   models.SurfsharkServer{},
 			version: allServers.Surfshark.Version,
-			digest:  "042bef64",
+			digest:  "58de06d8",
 		},
 		"Torguard": {
 			model:   models.TorguardServer{},
@@ -193,7 +193,7 @@ func Test_timestamps(t *testing.T) {
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,
 			timestamp: allServers.Surfshark.Timestamp,
-			digest:    "ae560066",
+			digest:    "55669f49",
 		},
 		"Torguard": {
 			servers:   allServers.Torguard.Servers,

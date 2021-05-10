@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -28,16 +29,33 @@ func newSurfshark(servers []models.SurfsharkServer, timeNow timeNowFunc) *surfsh
 	}
 }
 
-func (s *surfshark) filterServers(regions []string) (servers []models.SurfsharkServer) {
+func (s *surfshark) filterServers(regions, hostnames []string, protocol string) (servers []models.SurfsharkServer) {
 	for _, server := range s.servers {
 		switch {
 		case
-			filterByPossibilities(server.Region, regions):
+			filterByPossibilities(server.Region, regions),
+			filterByPossibilities(server.Hostname, hostnames),
+			strings.EqualFold(protocol, "tcp") && !server.TCP,
+			strings.EqualFold(protocol, "udp") && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
 	}
 	return servers
+}
+
+func (s *surfshark) notFoundErr(selection configuration.ServerSelection) error {
+	message := "for protocol " + selection.Protocol
+
+	if len(selection.Countries) > 0 {
+		message += " + regions " + commaJoin(selection.Regions)
+	}
+
+	if len(selection.Hostnames) > 0 {
+		message += " + hostnames " + commaJoin(selection.Hostnames)
+	}
+
+	return fmt.Errorf("%w: %s", errNoServerFound, message)
 }
 
 func (s *surfshark) GetOpenVPNConnection(selection configuration.ServerSelection) (
@@ -56,9 +74,9 @@ func (s *surfshark) GetOpenVPNConnection(selection configuration.ServerSelection
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := s.filterServers(selection.Regions)
+	servers := s.filterServers(selection.Regions, selection.Hostnames, selection.Protocol)
 	if len(servers) == 0 {
-		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
+		return connection, s.notFoundErr(selection)
 	}
 
 	var connections []models.OpenVPNConnection

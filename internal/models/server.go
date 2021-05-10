@@ -148,12 +148,16 @@ func (s *PurevpnServer) String() string {
 }
 
 type SurfsharkServer struct {
-	Region string   `json:"region"`
-	IPs    []net.IP `json:"ips"`
+	Region   string   `json:"region"`
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	IPs      []net.IP `json:"ips"`
 }
 
 func (s *SurfsharkServer) String() string {
-	return fmt.Sprintf("{Region: %q, IPs: %s}", s.Region, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Region: %q, Hostname: %q, TCP: %t, UDP: %t, IPs: %s}",
+		s.Region, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
 }
 
 type TorguardServer struct {

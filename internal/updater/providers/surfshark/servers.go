@@ -36,6 +36,14 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 			continue // not an OpenVPN file
 		}
 
+		tcp, udp, err := openvpn.ExtractProto(content)
+		if err != nil {
+			// treat error as warning and go to next file
+			warning := err.Error() + " in " + fileName
+			warnings = append(warnings, warning)
+			continue
+		}
+
 		host, warning, err := openvpn.ExtractHost(content)
 		if warning != "" {
 			warnings = append(warnings, warning)
@@ -55,7 +63,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 			continue
 		}
 
-		hts.add(host, region)
+		hts.add(host, region, tcp, udp)
 	}
 
 	if len(hts) < minServers {
@@ -119,9 +127,14 @@ func getRemainingServers(ctx context.Context,
 		if err != nil {
 			return nil, warnings, err
 		}
+
+		// we assume the server supports TCP and UDP
 		server := models.SurfsharkServer{
-			Region: region,
-			IPs:    IPs,
+			Region:   region,
+			Hostname: host,
+			TCP:      true,
+			UDP:      true,
+			IPs:      IPs,
 		}
 		servers = append(servers, server)
 	}

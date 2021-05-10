@@ -57,8 +57,8 @@ func GetAllServers() (allServers models.AllServers) {
 			Servers:   PurevpnServers(),
 		},
 		Surfshark: models.SurfsharkServers{
-			Version:   1,
-			Timestamp: 1620435633,
+			Version:   2,
+			Timestamp: 1620607876,
 			Servers:   SurfsharkServers(),
 		},
 		Torguard: models.TorguardServers{

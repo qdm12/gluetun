@@ -9,14 +9,19 @@ import (
 
 type hostToServer map[string]models.SurfsharkServer
 
-func (hts hostToServer) add(host, region string) {
-	// TODO set TCP and UDP
-	// TODO set hostname
+func (hts hostToServer) add(host, region string, tcp, udp bool) {
 	server, ok := hts[host]
 	if !ok {
+		server.Hostname = host
 		server.Region = region
-		hts[host] = server
 	}
+	if tcp {
+		server.TCP = tcp
+	}
+	if udp {
+		server.UDP = udp
+	}
+	hts[host] = server
 }
 
 func (hts hostToServer) toHostsSlice() (hosts []string) {
