@@ -8,6 +8,7 @@ import (
 	"net/http"
 	nativeos "os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -209,6 +210,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localNetworks, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
+		if strings.Contains(err.Error(), "operation not permitted") {
+			logger.Warn("💡 Tip: Are you passing NET_ADMIN capability to gluetun?")
+		}
 		return fmt.Errorf("%w: %s", errSetupRouting, err)
 	}
 	defer func() {
