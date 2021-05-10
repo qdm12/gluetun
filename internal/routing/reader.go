@@ -2,6 +2,7 @@ package routing
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 
@@ -15,10 +16,28 @@ type LocalNetwork struct {
 	IP            net.IP
 }
 
+var (
+	ErrInterfaceIPNotFound       = errors.New("IP address not found for interface")
+	ErrInterfaceListAddr         = errors.New("cannot list interface addresses")
+	ErrInterfaceNotFound         = errors.New("network interface not found")
+	ErrLinkByIndex               = errors.New("cannot obtain link by index")
+	ErrLinkByName                = errors.New("cannot obtain link by name")
+	ErrLinkDefaultNotFound       = errors.New("default link not found")
+	ErrLinkList                  = errors.New("cannot list links")
+	ErrLinkLocalNotFound         = errors.New("local link not found")
+	ErrRouteDefaultNotFound      = errors.New("default route not found")
+	ErrRoutesList                = errors.New("cannot list routes")
+	ErrRulesList                 = errors.New("cannot list rules")
+	ErrSubnetDefaultNotFound     = errors.New("default subnet not found")
+	ErrSubnetLocalNotFound       = errors.New("local subnet not found")
+	ErrVPNDestinationIPNotFound  = errors.New("VPN destination IP address not found")
+	ErrVPNLocalGatewayIPNotFound = errors.New("VPN local gateway IP address not found")
+)
+
 func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return "", nil, fmt.Errorf("cannot list routes: %w", err)
+		return "", nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
 	for _, route := range routes {
 		if route.Dst == nil {
@@ -26,7 +45,7 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 			linkIndex := route.LinkIndex
 			link, err := netlink.LinkByIndex(linkIndex)
 			if err != nil {
-				return "", nil, fmt.Errorf("cannot obtain link with index %d for default route: %w", linkIndex, err)
+				return "", nil, fmt.Errorf("%w: for default route at index %d: %s", ErrLinkByIndex, linkIndex, err)
 			}
 			attributes := link.Attrs()
 			defaultInterface = attributes.Name
@@ -36,13 +55,13 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 			return defaultInterface, defaultGateway, nil
 		}
 	}
-	return "", nil, fmt.Errorf("cannot find default route in %d routes", len(routes))
+	return "", nil, fmt.Errorf("%w: in %d route(s)", ErrRouteDefaultNotFound, len(routes))
 }
 
 func (r *routing) DefaultIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("cannot get default IP address: %w", err)
+		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
 
 	defaultLinkName := ""
@@ -51,13 +70,13 @@ func (r *routing) DefaultIP() (ip net.IP, err error) {
 			linkIndex := route.LinkIndex
 			link, err := netlink.LinkByIndex(linkIndex)
 			if err != nil {
-				return nil, fmt.Errorf("cannot get default IP address: %w", err)
+				return nil, fmt.Errorf("%w: for default route at index %d: %s", ErrLinkByIndex, linkIndex, err)
 			}
 			defaultLinkName = link.Attrs().Name
 		}
 	}
 	if len(defaultLinkName) == 0 {
-		return nil, fmt.Errorf("cannot find default link name in %d routes", len(routes))
+		return nil, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
 	}
 
 	return r.assignedIP(defaultLinkName)
@@ -66,7 +85,7 @@ func (r *routing) DefaultIP() (ip net.IP, err error) {
 func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return defaultSubnet, fmt.Errorf("cannot find local subnet: %w", err)
+		return defaultSubnet, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
 
 	defaultLinkIndex := -1
@@ -77,7 +96,7 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 		}
 	}
 	if defaultLinkIndex == -1 {
-		return defaultSubnet, fmt.Errorf("cannot find local subnet: cannot find default link")
+		return defaultSubnet, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
 	}
 
 	for _, route := range routes {
@@ -91,13 +110,13 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 		return defaultSubnet, nil
 	}
 
-	return defaultSubnet, fmt.Errorf("cannot find default subnet in %d routes", len(routes))
+	return defaultSubnet, fmt.Errorf("%w: in %d routes", ErrSubnetDefaultNotFound, len(routes))
 }
 
 func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	links, err := netlink.LinkList()
 	if err != nil {
-		return localNetworks, fmt.Errorf("cannot find local subnet: %w", err)
+		return localNetworks, fmt.Errorf("%w: %s", ErrLinkList, err)
 	}
 
 	localLinks := make(map[int]struct{})
@@ -114,12 +133,12 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	}
 
 	if len(localLinks) == 0 {
-		return localNetworks, fmt.Errorf("cannot find any local interfaces")
+		return localNetworks, fmt.Errorf("%w: in %d links", ErrLinkLocalNotFound, len(links))
 	}
 
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_V4)
 	if err != nil {
-		return localNetworks, fmt.Errorf("cannot list local routes: %w", err)
+		return localNetworks, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
 
 	for _, route := range routes {
@@ -138,14 +157,14 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		link, err := netlink.LinkByIndex(route.LinkIndex)
 		if err != nil {
-			return localNetworks, fmt.Errorf("cannot get link by index: %w", err)
+			return localNetworks, fmt.Errorf("%w: at index %d: %s", ErrLinkByIndex, route.LinkIndex, err)
 		}
 
 		localNet.InterfaceName = link.Attrs().Name
 
 		ip, err := r.assignedIP(localNet.InterfaceName)
 		if err != nil {
-			return localNetworks, fmt.Errorf("cannot get IP assigned to link: %w", err)
+			return localNetworks, err
 		}
 
 		localNet.IP = ip
@@ -154,7 +173,7 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	}
 
 	if len(localNetworks) == 0 {
-		return localNetworks, fmt.Errorf("cannot find any local networks across %d routes", len(routes))
+		return localNetworks, fmt.Errorf("%w: in %d routes", ErrSubnetLocalNotFound, len(routes))
 	}
 
 	return localNetworks, nil
@@ -163,11 +182,11 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 func (r *routing) assignedIP(interfaceName string) (ip net.IP, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %s: %s", ErrInterfaceNotFound, interfaceName, err)
 	}
 	addresses, err := iface.Addrs()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %s: %s", ErrInterfaceListAddr, interfaceName, err)
 	}
 	for _, address := range addresses {
 		switch value := address.(type) {
@@ -177,13 +196,14 @@ func (r *routing) assignedIP(interfaceName string) (ip net.IP, err error) {
 			return value.IP, nil
 		}
 	}
-	return nil, fmt.Errorf("IP address not found in addresses of interface %s", interfaceName)
+	return nil, fmt.Errorf("%w: interface %s in %d addresses",
+		ErrInterfaceIPNotFound, interfaceName, len(addresses))
 }
 
 func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("cannot find VPN destination IP: %w", err)
+		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
 
 	defaultLinkIndex := -1
@@ -194,7 +214,7 @@ func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 		}
 	}
 	if defaultLinkIndex == -1 {
-		return nil, fmt.Errorf("cannot find VPN destination IP: cannot find default link")
+		return nil, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
 	}
 
 	for _, route := range routes {
@@ -205,18 +225,18 @@ func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 			return route.Dst.IP, nil
 		}
 	}
-	return nil, fmt.Errorf("cannot find VPN destination IP address from ip routes")
+	return nil, fmt.Errorf("%w: in %d routes", ErrVPNDestinationIPNotFound, len(routes))
 }
 
 func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("cannot find VPN local gateway IP: %w", err)
+		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
 	for _, route := range routes {
 		link, err := netlink.LinkByIndex(route.LinkIndex)
 		if err != nil {
-			return nil, fmt.Errorf("cannot find VPN local gateway IP: %w", err)
+			return nil, fmt.Errorf("%w: %s", ErrLinkByIndex, err)
 		}
 		interfaceName := link.Attrs().Name
 		if interfaceName == string(constants.TUN) &&
@@ -225,7 +245,7 @@ func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {
 			return route.Gw, nil
 		}
 	}
-	return nil, fmt.Errorf("cannot find VPN local gateway IP address from ip routes")
+	return nil, fmt.Errorf("%w: in %d routes", ErrVPNLocalGatewayIPNotFound, len(routes))
 }
 
 func IPIsPrivate(ip net.IP) bool {

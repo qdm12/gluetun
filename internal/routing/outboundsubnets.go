@@ -1,14 +1,19 @@
 package routing
 
 import (
+	"errors"
 	"fmt"
 	"net"
+)
+
+var (
+	ErrAddOutboundSubnet = errors.New("cannot add outbound subnet to routes")
 )
 
 func (r *routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 	defaultInterface, defaultGateway, err := r.DefaultRoute()
 	if err != nil {
-		return fmt.Errorf("cannot set oubtound subnets in routing: %w", err)
+		return err
 	}
 	return r.setOutboundRoutes(outboundSubnets, defaultInterface, defaultGateway)
 }
@@ -27,7 +32,7 @@ func (r *routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 
 	r.removeOutboundSubnets(subnetsToRemove, defaultInterfaceName, defaultGateway)
 	if err := r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway); err != nil {
-		return fmt.Errorf("cannot set outbound subnets in routing: %w", err)
+		return err
 	}
 
 	return nil
@@ -50,7 +55,7 @@ func (r *routing) addOutboundSubnets(subnets []net.IPNet,
 	for _, subnet := range subnets {
 		const table = 0
 		if err := r.addRouteVia(subnet, defaultGateway, defaultInterfaceName, table); err != nil {
-			return fmt.Errorf("cannot add outbound subnet %s to routing: %w", subnet, err)
+			return fmt.Errorf("%w: %s: %s", ErrAddOutboundSubnet, subnet, err)
 		}
 		r.outboundSubnets = append(r.outboundSubnets, subnet)
 	}

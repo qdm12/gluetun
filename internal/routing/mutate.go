@@ -2,10 +2,18 @@ package routing
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 
 	"github.com/vishvananda/netlink"
+)
+
+var (
+	ErrRouteReplace = errors.New("cannot replace route")
+	ErrRouteDelete  = errors.New("cannot delete route")
+	ErrRuleAdd      = errors.New("cannot add routing rule")
+	ErrRuleDel      = errors.New("cannot delete routing rule")
 )
 
 func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
@@ -19,7 +27,7 @@ func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 
 	link, err := netlink.LinkByName(iface)
 	if err != nil {
-		return fmt.Errorf("cannot add route for %s: %w", destinationStr, err)
+		return fmt.Errorf("%w: interface %s: %s", ErrLinkByName, iface, err)
 	}
 	route := netlink.Route{
 		Dst:       &destination,
@@ -28,7 +36,8 @@ func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 		Table:     table,
 	}
 	if err := netlink.RouteReplace(&route); err != nil {
-		return fmt.Errorf("cannot add route for %s: %w", destinationStr, err)
+		return fmt.Errorf("%w: for subnet %s at interface %s: %s",
+			ErrRouteReplace, destinationStr, iface, err)
 	}
 	return nil
 }
@@ -44,7 +53,7 @@ func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 
 	link, err := netlink.LinkByName(iface)
 	if err != nil {
-		return fmt.Errorf("cannot delete route for %s: %w", destinationStr, err)
+		return fmt.Errorf("%w: for interface %s: %s", ErrLinkByName, iface, err)
 	}
 	route := netlink.Route{
 		Dst:       &destination,
@@ -53,7 +62,8 @@ func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 		Table:     table,
 	}
 	if err := netlink.RouteDel(&route); err != nil {
-		return fmt.Errorf("cannot delete route for %s: %w", destinationStr, err)
+		return fmt.Errorf("%w: for subnet %s at interface %s: %s",
+			ErrRouteDelete, destinationStr, iface, err)
 	}
 	return nil
 }
@@ -71,7 +81,7 @@ func (r *routing) addIPRule(src net.IP, table, priority int) error {
 
 	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
-		return fmt.Errorf("cannot add ip rule: %w", err)
+		return fmt.Errorf("%w: %s", ErrRulesList, err)
 	}
 	for _, existingRule := range rules {
 		if existingRule.Src != nil &&
@@ -83,7 +93,10 @@ func (r *routing) addIPRule(src net.IP, table, priority int) error {
 		}
 	}
 
-	return netlink.RuleAdd(rule)
+	if err := netlink.RuleAdd(rule); err != nil {
+		return fmt.Errorf("%w: for rule %q: %s", ErrRuleAdd, rule, err)
+	}
+	return nil
 }
 
 func (r *routing) deleteIPRule(src net.IP, table, priority int) error {
@@ -99,7 +112,7 @@ func (r *routing) deleteIPRule(src net.IP, table, priority int) error {
 
 	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
-		return fmt.Errorf("cannot add ip rule: %w", err)
+		return fmt.Errorf("%w: %s", ErrRulesList, err)
 	}
 	for _, existingRule := range rules {
 		if existingRule.Src != nil &&
@@ -107,7 +120,9 @@ func (r *routing) deleteIPRule(src net.IP, table, priority int) error {
 			bytes.Equal(existingRule.Src.Mask, rule.Src.Mask) &&
 			existingRule.Priority == rule.Priority &&
 			existingRule.Table == rule.Table {
-			return netlink.RuleDel(rule)
+			if err := netlink.RuleDel(rule); err != nil {
+				return fmt.Errorf("%w: for rule %q: %s", ErrRuleDel, rule, err)
+			}
 		}
 	}
 	return nil

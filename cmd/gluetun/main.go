@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -43,6 +44,10 @@ var (
 	version   = "unknown"
 	commit    = "unknown"
 	buildDate = "an unknown date"
+)
+
+var (
+	errSetupRouting = errors.New("cannot setup routing")
 )
 
 func main() {
@@ -204,12 +209,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localNetworks, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", errSetupRouting, err)
 	}
 	defer func() {
 		routingConf.SetVerbose(false)
 		if err := routingConf.TearDown(); err != nil {
-			logger.Error(err)
+			logger.Error("cannot teardown routing: " + err.Error())
 		}
 	}()
 
