@@ -131,17 +131,30 @@ func (p *pia) GetOpenVPNConnection(selection configuration.ServerSelection) (
 
 		var connections []models.OpenVPNConnection
 		for _, server := range servers {
-			connection := models.OpenVPNConnection{IP: server.IP, Port: port, Protocol: selection.Protocol}
-			connections = append(connections, connection)
+			for _, ip := range server.IPs {
+				connection := models.OpenVPNConnection{
+					IP:       ip,
+					Port:     port,
+					Protocol: selection.Protocol,
+				}
+				connections = append(connections, connection)
+			}
 		}
 
 		connection = pickRandomConnection(connections, p.randSource)
 	}
 
 	// Reverse lookup server from picked connection
+	found := false
 	for _, server := range servers {
-		if connection.IP.Equal(server.IP) {
-			p.activeServer = server
+		for _, ip := range server.IPs {
+			if connection.IP.Equal(ip) {
+				p.activeServer = server
+				found = true
+				break
+			}
+		}
+		if found {
 			break
 		}
 	}
