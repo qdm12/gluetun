@@ -30,17 +30,20 @@ func (r *routing) Setup() (err error) {
 		return fmt.Errorf("%w: %s", ErrDefaultRoute, err)
 	}
 
+	touched := false
 	defer func() {
-		if err == nil {
-			return
-		}
-		if err := r.TearDown(); err != nil {
-			r.logger.Error("cannot reverse routing changes: " + err.Error())
+		if err != nil && touched {
+			if tearDownErr := r.TearDown(); tearDownErr != nil {
+				r.logger.Error("cannot reverse routing changes: " + tearDownErr.Error())
+			}
 		}
 	}()
 	if err := r.addIPRule(defaultIP, table, priority); err != nil {
 		return fmt.Errorf("%w: %s", ErrIPRuleAdd, err)
 	}
+
+	touched = true
+
 	defaultDestination := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
 	if err := r.addRouteVia(defaultDestination, defaultGateway, defaultInterfaceName, table); err != nil {
 		return fmt.Errorf("%w: %s", ErrRouteAdd, err)
