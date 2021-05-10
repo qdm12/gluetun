@@ -222,7 +222,8 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 
 func (u *updater) updateTorguard(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Torguard.Servers))
-	servers, warnings, err := torguard.GetServers(ctx, u.unzipper, minServers)
+	servers, warnings, err := torguard.GetServers(
+		ctx, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Torguard: %s", warning)

@@ -92,7 +92,7 @@ func Test_versions(t *testing.T) {
 		"Torguard": {
 			model:   models.TorguardServer{},
 			version: allServers.Torguard.Version,
-			digest:  "752702f3",
+			digest:  "6eb9028e",
 		},
 		"Vyprvpn": {
 			model:   models.VyprvpnServer{},
@@ -198,7 +198,7 @@ func Test_timestamps(t *testing.T) {
 		"Torguard": {
 			servers:   allServers.Torguard.Servers,
 			timestamp: allServers.Torguard.Timestamp,
-			digest:    "dffab93e",
+			digest:    "af54b9e8",
 		},
 		"Vyprvpn": {
 			servers:   allServers.Vyprvpn.Servers,

@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -28,12 +29,16 @@ func newTorguard(servers []models.TorguardServer, timeNow timeNowFunc) *torguard
 	}
 }
 
-func (t *torguard) filterServers(countries, cities, hostnames []string) (servers []models.TorguardServer) {
+func (t *torguard) filterServers(countries, cities, hostnames []string,
+	protocol string) (servers []models.TorguardServer) {
 	for _, server := range t.servers {
 		switch {
-		case filterByPossibilities(server.Country, countries):
-		case filterByPossibilities(server.City, cities):
-		case filterByPossibilities(server.Hostname, hostnames):
+		case
+			filterByPossibilities(server.Country, countries),
+			filterByPossibilities(server.City, cities),
+			filterByPossibilities(server.Hostname, hostnames),
+			strings.EqualFold(protocol, "tcp") && !server.TCP,
+			strings.EqualFold(protocol, "udp") && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
@@ -70,17 +75,21 @@ func (t *torguard) GetOpenVPNConnection(selection configuration.ServerSelection)
 		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
 	}
 
-	servers := t.filterServers(selection.Countries, selection.Cities, selection.Hostnames)
+	servers := t.filterServers(selection.Countries, selection.Cities,
+		selection.Hostnames, selection.Protocol)
 	if len(servers) == 0 {
 		return connection, t.notFoundErr(selection)
 	}
 
-	connections := make([]models.OpenVPNConnection, len(servers))
-	for i := range servers {
-		connections[i] = models.OpenVPNConnection{
-			IP:       servers[i].IP,
-			Port:     port,
-			Protocol: selection.Protocol,
+	var connections []models.OpenVPNConnection
+	for _, server := range servers {
+		for _, ip := range server.IPs {
+			connection := models.OpenVPNConnection{
+				IP:       ip,
+				Port:     port,
+				Protocol: selection.Protocol,
+			}
+			connections = append(connections, connection)
 		}
 	}
 

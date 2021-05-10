@@ -10,60 +10,56 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
-func GetServers(ctx context.Context, unzipper unzip.Unzipper, minServers int) (
+func GetServers(ctx context.Context, unzipper unzip.Unzipper,
+	presolver resolver.Parallel, minServers int) (
 	servers []models.TorguardServer, warnings []string, err error) {
-	const url = "https://torguard.net/downloads/OpenVPN-TCP-Linux.zip"
-	contents, err := unzipper.FetchAndExtract(ctx, url)
+	const tcpURL = "https://torguard.net/downloads/OpenVPN-TCP-Linux.zip"
+	tcpContents, err := unzipper.FetchAndExtract(ctx, tcpURL)
 	if err != nil {
 		return nil, nil, err
-	} else if len(contents) < minServers {
-		return nil, nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(contents), minServers)
 	}
 
-	servers = make([]models.TorguardServer, 0, len(contents))
-	for fileName, content := range contents {
-		if !strings.HasSuffix(fileName, ".ovpn") {
-			continue // not an OpenVPN file
-		}
-
-		country, city := parseFilename(fileName)
-
-		host, warning, err := openvpn.ExtractHost(content)
-		if warning != "" {
-			warnings = append(warnings, warning)
-		}
-		if err != nil {
-			// treat error as warning and go to next file
-			warning := err.Error() + " in " + fileName
-			warnings = append(warnings, warning)
-			continue
-		}
-
-		ip, warning, err := openvpn.ExtractIP(content)
-		if warning != "" {
-			warnings = append(warnings, warning)
-		}
-		if err != nil {
-			// treat error as warning and go to next file
-			warning := err.Error() + " in " + fileName
-			warnings = append(warnings, warning)
-			continue
-		}
-
-		server := models.TorguardServer{
-			Country:  country,
-			City:     city,
-			Hostname: host,
-			IP:       ip,
-		}
-		servers = append(servers, server)
+	const udpURL = "https://torguard.net/downloads/OpenVPN-UDP-Linux.zip"
+	udpContents, err := unzipper.FetchAndExtract(ctx, udpURL)
+	if err != nil {
+		return nil, nil, err
 	}
+
+	hts := make(hostToServer)
+
+	for fileName, content := range tcpContents {
+		const tcp, udp = true, false
+		newWarnings := addServerFromOvpn(fileName, content, hts, tcp, udp)
+		warnings = append(warnings, newWarnings...)
+	}
+
+	for fileName, content := range udpContents {
+		const tcp, udp = false, true
+		newWarnings := addServerFromOvpn(fileName, content, hts, tcp, udp)
+		warnings = append(warnings, newWarnings...)
+	}
+
+	if len(hts) < minServers {
+		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+			ErrNotEnoughServers, len(hts), minServers)
+	}
+
+	hosts := hts.toHostsSlice()
+	hostToIPs, newWarnings, err := resolveHosts(ctx, presolver, hosts, minServers)
+	warnings = append(warnings, newWarnings...)
+	if err != nil {
+		return nil, warnings, err
+	}
+
+	hts.adaptWithIPs(hostToIPs)
+
+	servers = hts.toServersSlice()
 
 	if len(servers) < minServers {
 		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
@@ -73,4 +69,38 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper, minServers int) (
 	sortServers(servers)
 
 	return servers, warnings, nil
+}
+
+func addServerFromOvpn(fileName string, content []byte,
+	hts hostToServer, tcp, udp bool) (warnings []string) {
+	if !strings.HasSuffix(fileName, ".ovpn") {
+		return nil // not an OpenVPN file
+	}
+
+	country, city := parseFilename(fileName)
+
+	host, warning, err := openvpn.ExtractHost(content)
+	if warning != "" {
+		warnings = append(warnings, warning)
+	}
+	if err != nil {
+		// treat error as warning and go to next file
+		warning := err.Error() + " in " + fileName
+		warnings = append(warnings, warning)
+		return warnings
+	}
+
+	ip, warning, err := openvpn.ExtractIP(content)
+	if warning != "" {
+		warnings = append(warnings, warning)
+	}
+	if err != nil {
+		// treat error as warning and go to next file
+		warning := err.Error() + " in " + fileName
+		warnings = append(warnings, warning)
+		return warnings
+	}
+
+	hts.add(host, country, city, tcp, udp, ip)
+	return warnings
 }
