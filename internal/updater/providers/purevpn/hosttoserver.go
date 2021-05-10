@@ -8,9 +8,18 @@ import (
 
 type hostToServer map[string]models.PurevpnServer
 
-func (hts hostToServer) add(host string) {
-	// TODO set TCP and UDP compatibility, set hostname
-	hts[host] = models.PurevpnServer{}
+func (hts hostToServer) add(host string, tcp, udp bool) {
+	server, ok := hts[host]
+	if !ok {
+		server.Hostname = host
+	}
+	if tcp {
+		server.TCP = true
+	}
+	if udp {
+		server.UDP = true
+	}
+	hts[host] = server
 }
 
 func (hts hostToServer) toHostsSlice() (hosts []string) {

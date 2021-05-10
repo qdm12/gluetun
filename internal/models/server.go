@@ -133,15 +133,18 @@ func (s *ProtonvpnServer) String() string {
 }
 
 type PurevpnServer struct {
-	Country string   `json:"country"`
-	Region  string   `json:"region"`
-	City    string   `json:"city"`
-	IPs     []net.IP `json:"ips"`
+	Country  string   `json:"country"`
+	Region   string   `json:"region"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	IPs      []net.IP `json:"ips"`
 }
 
 func (s *PurevpnServer) String() string {
-	return fmt.Sprintf("{Country: %q, Region: %q, City: %q, IPs: %s}",
-		s.Country, s.Region, s.City, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Country: %q, Region: %q, City: %q, Hostname: %q, TCP: %t, UDP: %t, IPs: %s}",
+		s.Country, s.Region, s.City, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
 }
 
 type SurfsharkServer struct {

@@ -82,7 +82,7 @@ func Test_versions(t *testing.T) {
 		"Purevpn": {
 			model:   models.PurevpnServer{},
 			version: allServers.Purevpn.Version,
-			digest:  "ada45379",
+			digest:  "23f2d422",
 		},
 		"Surfshark": {
 			model:   models.SurfsharkServer{},
@@ -188,7 +188,7 @@ func Test_timestamps(t *testing.T) {
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,
 			timestamp: allServers.Purevpn.Timestamp,
-			digest:    "8381d2b7",
+			digest:    "e48aa76d",
 		},
 		"Surfshark": {
 			servers:   allServers.Surfshark.Servers,

@@ -17,6 +17,10 @@ func (settings *Provider) purevpnLines() (lines []string) {
 		lines = append(lines, lastIndent+"Cities: "+commaJoin(settings.ServerSelection.Cities))
 	}
 
+	if len(settings.ServerSelection.Hostnames) > 0 {
+		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
+	}
+
 	return lines
 }
 
@@ -44,6 +48,11 @@ func (settings *Provider) readPurevpn(r reader) (err error) {
 	}
 
 	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.PurevpnCityChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.PurevpnHostnameChoices())
 	if err != nil {
 		return err
 	}

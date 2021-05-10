@@ -38,6 +38,14 @@ func GetServers(ctx context.Context, client *http.Client,
 			continue
 		}
 
+		tcp, udp, err := openvpn.ExtractProto(content)
+		if err != nil {
+			// treat error as warning and go to next file
+			warning := err.Error() + " in " + fileName
+			warnings = append(warnings, warning)
+			continue
+		}
+
 		host, warning, err := openvpn.ExtractHost(content)
 		if warning != "" {
 			warnings = append(warnings, warning)
@@ -50,7 +58,7 @@ func GetServers(ctx context.Context, client *http.Client,
 			continue
 		}
 
-		hts.add(host)
+		hts.add(host, tcp, udp)
 	}
 
 	if len(hts) < minServers {
@@ -83,21 +91,11 @@ func GetServers(ctx context.Context, client *http.Client,
 	if err != nil {
 		return nil, warnings, err
 	}
-
-	// Dedup by location
-	lts := make(locationToServer)
-	for i, server := range servers {
-		// TODO split servers by host
-		ipInfo := ipsInfo[i]
-		lts.add(ipInfo.Country, ipInfo.Region, ipInfo.City, server.IPs)
+	for i := range servers {
+		servers[i].Country = ipsInfo[i].Country
+		servers[i].Region = ipsInfo[i].Region
+		servers[i].City = ipsInfo[i].City
 	}
-
-	if len(servers) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers), minServers)
-	}
-
-	servers = lts.toServersSlice()
 
 	sortServers(servers)
 

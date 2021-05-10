@@ -8,9 +8,34 @@ import (
 )
 
 var (
+	ErrUnknownProto = errors.New("unknown protocol")
 	ErrNoRemoteHost = errors.New("remote host not found")
 	ErrNoRemoteIP   = errors.New("remote IP not found")
 )
+
+func ExtractProto(b []byte) (tcp, udp bool, err error) {
+	lines := strings.Split(string(b), "\n")
+	const protoPrefix = "proto "
+	for _, line := range lines {
+		if !strings.HasPrefix(line, protoPrefix) {
+			continue
+		}
+		s := strings.TrimPrefix(line, protoPrefix)
+		s = strings.TrimSpace(s)
+		s = strings.ToLower(s)
+		switch s {
+		case "tcp":
+			return true, false, nil
+		case "udp":
+			return false, true, nil
+		default:
+			return false, false, fmt.Errorf("%w: %s", ErrUnknownProto, s)
+		}
+	}
+
+	// default is UDP if unspecified in openvpn configuration
+	return false, true, nil
+}
 
 func ExtractHost(b []byte) (host, warning string, err error) {
 	const (
