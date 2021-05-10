@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -25,11 +26,22 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 		for _, group := range regionData.Groups {
 			city := group.City
 			for _, node := range group.Nodes {
+				const maxIPsPerNode = 3
+				ips := make([]net.IP, 0, maxIPsPerNode)
+				if node.IP != nil {
+					ips = append(ips, node.IP)
+				}
+				if node.IP2 != nil {
+					ips = append(ips, node.IP2)
+				}
+				if node.IP3 != nil {
+					ips = append(ips, node.IP3)
+				}
 				server := models.WindscribeServer{
 					Region:   region,
 					City:     city,
 					Hostname: node.Hostname,
-					IP:       node.OpenvpnIP,
+					IPs:      ips,
 				}
 				servers = append(servers, server)
 			}

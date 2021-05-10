@@ -188,15 +188,15 @@ func (s *VyprvpnServer) String() string {
 }
 
 type WindscribeServer struct {
-	Region   string `json:"region"`
-	City     string `json:"city"`
-	Hostname string `json:"hostname"`
-	IP       net.IP `json:"ip"`
+	Region   string   `json:"region"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	IPs      []net.IP `json:"ips"`
 }
 
 func (s *WindscribeServer) String() string {
-	return fmt.Sprintf("{Region: %q, City: %q, Hostname: %q, IP: %s}",
-		s.Region, s.City, s.Hostname, goStringifyIP(s.IP))
+	return fmt.Sprintf("{Region: %q, City: %q, Hostname: %q, IPs: %s}",
+		s.Region, s.City, s.Hostname, goStringifyIPs(s.IPs))
 }
 
 func goStringifyIP(ip net.IP) string {
