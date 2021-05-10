@@ -23,7 +23,7 @@ func (settings *Provider) privatevpnLines() (lines []string) {
 func (settings *Provider) readPrivatevpn(r reader) (err error) {
 	settings.Name = constants.Privatevpn
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

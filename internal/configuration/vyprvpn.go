@@ -15,7 +15,7 @@ func (settings *Provider) vyprvpnLines() (lines []string) {
 func (settings *Provider) readVyprvpn(r reader) (err error) {
 	settings.Name = constants.Vyprvpn
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

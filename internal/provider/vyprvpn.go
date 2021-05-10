@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -29,14 +28,14 @@ func newVyprvpn(servers []models.VyprvpnServer, timeNow timeNowFunc) *vyprvpn {
 	}
 }
 
-func (v *vyprvpn) filterServers(regions, hostnames []string, protocol string) (servers []models.VyprvpnServer) {
+func (v *vyprvpn) filterServers(regions, hostnames []string, tcp bool) (servers []models.VyprvpnServer) {
 	for _, server := range v.servers {
 		switch {
 		case
 			filterByPossibilities(server.Region, regions),
 			filterByPossibilities(server.Hostname, hostnames),
-			strings.EqualFold(protocol, "tcp") && !server.TCP,
-			strings.EqualFold(protocol, "udp") && !server.UDP:
+			tcp && !server.TCP,
+			!tcp && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
@@ -47,20 +46,17 @@ func (v *vyprvpn) filterServers(regions, hostnames []string, protocol string) (s
 func (v *vyprvpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16
-	switch {
-	case selection.Protocol == constants.TCP:
-		return connection, fmt.Errorf("TCP protocol not supported by this VPN provider")
-	case selection.Protocol == constants.UDP:
-		port = 443
-	default:
-		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
+	const protocol = constants.TCP
+	if selection.TCP {
+		return connection, fmt.Errorf("%w: TCP for provider VyprVPN",
+			ErrProtocolUnsupported)
 	}
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: protocol}, nil
 	}
 
-	servers := v.filterServers(selection.Regions, selection.Hostnames, selection.Protocol)
+	servers := v.filterServers(selection.Regions, selection.Hostnames, selection.TCP)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for region %s", commaJoin(selection.Regions))
 	}
@@ -68,7 +64,7 @@ func (v *vyprvpn) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: protocol})
 		}
 	}
 

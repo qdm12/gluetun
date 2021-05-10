@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -30,15 +29,15 @@ func newTorguard(servers []models.TorguardServer, timeNow timeNowFunc) *torguard
 }
 
 func (t *torguard) filterServers(countries, cities, hostnames []string,
-	protocol string) (servers []models.TorguardServer) {
+	tcp bool) (servers []models.TorguardServer) {
 	for _, server := range t.servers {
 		switch {
 		case
 			filterByPossibilities(server.Country, countries),
 			filterByPossibilities(server.City, cities),
 			filterByPossibilities(server.Hostname, hostnames),
-			strings.EqualFold(protocol, "tcp") && !server.TCP,
-			strings.EqualFold(protocol, "udp") && !server.UDP:
+			tcp && !server.TCP,
+			!tcp && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
@@ -47,7 +46,7 @@ func (t *torguard) filterServers(countries, cities, hostnames []string,
 }
 
 func (t *torguard) notFoundErr(selection configuration.ServerSelection) error {
-	message := "no server found for protocol " + selection.Protocol
+	message := "no server found for protocol " + tcpBoolToProtocol(selection.TCP)
 
 	if len(selection.Countries) > 0 {
 		message += " + countries " + commaJoin(selection.Countries)
@@ -71,12 +70,14 @@ func (t *torguard) GetOpenVPNConnection(selection configuration.ServerSelection)
 		port = selection.CustomPort
 	}
 
+	protocol := tcpBoolToProtocol(selection.TCP)
+
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: protocol}, nil
 	}
 
 	servers := t.filterServers(selection.Countries, selection.Cities,
-		selection.Hostnames, selection.Protocol)
+		selection.Hostnames, selection.TCP)
 	if len(servers) == 0 {
 		return connection, t.notFoundErr(selection)
 	}
@@ -87,7 +88,7 @@ func (t *torguard) GetOpenVPNConnection(selection configuration.ServerSelection)
 			connection := models.OpenVPNConnection{
 				IP:       ip,
 				Port:     port,
-				Protocol: selection.Protocol,
+				Protocol: protocol,
 			}
 			connections = append(connections, connection)
 		}

@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -21,10 +20,12 @@ type Provider struct {
 func (settings *Provider) lines() (lines []string) {
 	lines = append(lines, lastIndent+strings.Title(settings.Name)+" settings:")
 
-	lines = append(lines, indent+lastIndent+"Network protocol: "+settings.ServerSelection.Protocol)
+	selection := settings.ServerSelection
 
-	if settings.ServerSelection.TargetIP != nil {
-		lines = append(lines, indent+lastIndent+"Target IP address: "+settings.ServerSelection.TargetIP.String())
+	lines = append(lines, indent+lastIndent+"Network protocol: "+protoToString(selection.TCP))
+
+	if selection.TargetIP != nil {
+		lines = append(lines, indent+lastIndent+"Target IP address: "+selection.TargetIP.String())
 	}
 
 	var providerLines []string
@@ -73,19 +74,26 @@ func commaJoin(slice []string) string {
 	return strings.Join(slice, ", ")
 }
 
-func readProtocol(env params.Env) (protocol string, err error) {
-	return env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
+func readProtocol(env params.Env) (tcp bool, err error) {
+	protocol, err := env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
+	if err != nil {
+		return false, err
+	}
+	return protocol == constants.TCP, nil
+}
+
+func protoToString(tcp bool) string {
+	if tcp {
+		return constants.TCP
+	}
+	return constants.UDP
 }
 
 func readTargetIP(env params.Env) (targetIP net.IP, err error) {
 	return readIP(env, "OPENVPN_TARGET_IP")
 }
 
-var (
-	ErrInvalidProtocol = errors.New("invalid network protocol")
-)
-
-func readCustomPort(env params.Env, protocol string,
+func readCustomPort(env params.Env, tcp bool,
 	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "PORT")
 	if err != nil {
@@ -94,22 +102,18 @@ func readCustomPort(env params.Env, protocol string,
 		return 0, nil
 	}
 
-	switch protocol {
-	case constants.TCP:
+	if tcp {
 		for i := range allowedTCP {
 			if allowedTCP[i] == port {
 				return port, nil
 			}
 		}
 		return 0, fmt.Errorf("%w: port %d for TCP protocol", ErrInvalidPort, port)
-	case constants.UDP:
-		for i := range allowedUDP {
-			if allowedUDP[i] == port {
-				return port, nil
-			}
-		}
-		return 0, fmt.Errorf("%w: port %d for UDP protocol", ErrInvalidPort, port)
-	default:
-		return 0, fmt.Errorf("%w: %s", ErrInvalidProtocol, protocol)
 	}
+	for i := range allowedUDP {
+		if allowedUDP[i] == port {
+			return port, nil
+		}
+	}
+	return 0, fmt.Errorf("%w: port %d for UDP protocol", ErrInvalidPort, port)
 }

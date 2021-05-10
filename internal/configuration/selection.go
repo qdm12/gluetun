@@ -4,9 +4,9 @@ import (
 	"net"
 )
 
-type ServerSelection struct {
+type ServerSelection struct { //nolint:maligned
 	// Common
-	Protocol string `json:"network_protocol"`
+	TCP      bool   `json:"tcp"` // UDP if TCP is false
 	TargetIP net.IP `json:"target_ip,omitempty"`
 	// TODO comments
 	// Cyberghost, PIA, Protonvpn, Surfshark, Windscribe, Vyprvpn, NordVPN

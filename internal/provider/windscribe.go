@@ -45,20 +45,19 @@ func (w *windscribe) filterServers(regions, cities, hostnames []string) (servers
 
 //nolint:lll
 func (w *windscribe) GetOpenVPNConnection(selection configuration.ServerSelection) (connection models.OpenVPNConnection, err error) {
-	var port uint16
-	switch {
-	case selection.CustomPort > 0:
-		port = selection.CustomPort
-	case selection.Protocol == constants.TCP:
+	var port uint16 = 443
+	protocol := constants.UDP
+	if selection.TCP {
 		port = 1194
-	case selection.Protocol == constants.UDP:
-		port = 443
-	default:
-		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
+		protocol = constants.TCP
+	}
+
+	if selection.CustomPort > 0 {
+		port = selection.CustomPort
 	}
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: protocol}, nil
 	}
 
 	servers := w.filterServers(selection.Regions, selection.Cities, selection.Hostnames)
@@ -72,7 +71,7 @@ func (w *windscribe) GetOpenVPNConnection(selection configuration.ServerSelectio
 			connection := models.OpenVPNConnection{
 				IP:       ip,
 				Port:     port,
-				Protocol: selection.Protocol,
+				Protocol: protocol,
 			}
 			connections = append(connections, connection)
 		}

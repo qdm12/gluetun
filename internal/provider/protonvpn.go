@@ -35,11 +35,13 @@ func (p *protonvpn) GetOpenVPNConnection(selection configuration.ServerSelection
 		return connection, err
 	}
 
+	protocol := tcpBoolToProtocol(selection.TCP)
+
 	if selection.TargetIP != nil {
 		return models.OpenVPNConnection{
 			IP:       selection.TargetIP,
 			Port:     port,
-			Protocol: selection.Protocol,
+			Protocol: protocol,
 		}, nil
 	}
 
@@ -54,7 +56,7 @@ func (p *protonvpn) GetOpenVPNConnection(selection configuration.ServerSelection
 		connections[i] = models.OpenVPNConnection{
 			IP:       servers[i].EntryIP,
 			Port:     port,
-			Protocol: selection.Protocol,
+			Protocol: protocol,
 		}
 	}
 
@@ -139,35 +141,29 @@ func (p *protonvpn) PortForward(ctx context.Context, client *http.Client,
 
 func (p *protonvpn) getPort(selection configuration.ServerSelection) (port uint16, err error) {
 	if selection.CustomPort == 0 {
-		switch selection.Protocol {
-		case constants.TCP:
+		if selection.TCP {
 			const defaultTCPPort = 443
 			return defaultTCPPort, nil
-		case constants.UDP:
-			const defaultUDPPort = 1194
-			return defaultUDPPort, nil
 		}
+		const defaultUDPPort = 1194
+		return defaultUDPPort, nil
 	}
 
 	port = selection.CustomPort
-	switch selection.Protocol {
-	case constants.TCP:
+	if selection.TCP {
 		switch port {
 		case 443, 5995, 8443: //nolint:gomnd
+			return port, nil
 		default:
-			return 0, fmt.Errorf("%w: %d for protocol %s",
-				ErrInvalidPort, port, selection.Protocol)
-		}
-	case constants.UDP:
-		switch port {
-		case 80, 443, 1194, 4569, 5060: //nolint:gomnd
-		default:
-			return 0, fmt.Errorf("%w: %d for protocol %s",
-				ErrInvalidPort, port, selection.Protocol)
+			return 0, fmt.Errorf("%w: %d for protocol TCP", ErrInvalidPort, port)
 		}
 	}
-
-	return port, nil
+	switch port {
+	case 80, 443, 1194, 4569, 5060: //nolint:gomnd
+		return port, nil
+	default:
+		return 0, fmt.Errorf("%w: %d for protocol UDP", ErrInvalidPort, port)
+	}
 }
 
 func (p *protonvpn) filterServers(countries, regions, cities, names, hostnames []string) (
@@ -188,7 +184,7 @@ func (p *protonvpn) filterServers(countries, regions, cities, names, hostnames [
 }
 
 func (p *protonvpn) notFoundErr(selection configuration.ServerSelection) error {
-	message := "no server found for protocol " + selection.Protocol
+	message := "no server found for protocol " + tcpBoolToProtocol(selection.TCP)
 
 	if len(selection.Countries) > 0 {
 		message += " + countries " + commaJoin(selection.Countries)

@@ -45,8 +45,9 @@ func (c *cyberghost) filterServers(regions, hostnames []string, group string) (s
 func (c *cyberghost) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	const httpsPort = 443
+	protocol := tcpBoolToProtocol(selection.TCP)
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: httpsPort, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: httpsPort, Protocol: protocol}, nil
 	}
 
 	servers := c.filterServers(selection.Regions, selection.Hostnames, selection.Group)
@@ -58,7 +59,7 @@ func (c *cyberghost) GetOpenVPNConnection(selection configuration.ServerSelectio
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: httpsPort, Protocol: selection.Protocol})
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: httpsPort, Protocol: protocol})
 		}
 	}
 

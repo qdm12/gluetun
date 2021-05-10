@@ -27,7 +27,7 @@ func (settings *Provider) windscribeLines() (lines []string) {
 func (settings *Provider) readWindscribe(r reader) (err error) {
 	settings.Name = constants.Windscribe
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (settings *Provider) readWindscribe(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.Protocol,
+	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.TCP,
 		[]uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783},
 		[]uint16{53, 80, 123, 443, 1194, 54783})
 	if err != nil {

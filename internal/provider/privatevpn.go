@@ -43,7 +43,7 @@ func (p *privatevpn) filterServers(countries, cities, hostnames []string) (serve
 }
 
 func (p *privatevpn) notFoundErr(selection configuration.ServerSelection) error {
-	message := "no server found for protocol " + selection.Protocol
+	message := "no server found for protocol " + tcpBoolToProtocol(selection.TCP)
 
 	if len(selection.Countries) > 0 {
 		message += " + countries " + commaJoin(selection.Countries)
@@ -63,14 +63,20 @@ func (p *privatevpn) notFoundErr(selection configuration.ServerSelection) error 
 func (p *privatevpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16
-	if selection.Protocol == constants.TCP {
+	protocol := constants.TCP
+	if selection.TCP {
 		port = 443
 	} else {
+		protocol = constants.UDP
 		port = 1194
 	}
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{
+			IP:       selection.TargetIP,
+			Port:     port,
+			Protocol: protocol,
+		}, nil
 	}
 
 	servers := p.filterServers(selection.Countries, selection.Cities, selection.Hostnames)
@@ -84,7 +90,7 @@ func (p *privatevpn) GetOpenVPNConnection(selection configuration.ServerSelectio
 			connection := models.OpenVPNConnection{
 				IP:       ip,
 				Port:     port,
-				Protocol: selection.Protocol,
+				Protocol: protocol,
 			}
 			connections = append(connections, connection)
 		}

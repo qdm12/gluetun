@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net"
@@ -67,17 +68,22 @@ func (p *privado) notFoundErr(countries, regions, cities, hostnames []string) er
 	return fmt.Errorf("%w: %s", errNoServerFound, message)
 }
 
+var ErrProtocolUnsupported = errors.New("network protocol is not supported")
+
 func (p *privado) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16 = 1194
-	switch selection.Protocol {
-	case constants.UDP:
-	default:
-		return connection, fmt.Errorf("protocol %q is not supported by Privado", selection.Protocol)
+	const protocol = constants.UDP
+	if selection.TCP {
+		return connection, fmt.Errorf("%w: TCP for provider Privado", ErrProtocolUnsupported)
 	}
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{
+			IP:       selection.TargetIP,
+			Port:     port,
+			Protocol: protocol,
+		}, nil
 	}
 
 	servers := p.filterServers(selection.Countries, selection.Regions,
@@ -92,7 +98,7 @@ func (p *privado) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		connection := models.OpenVPNConnection{
 			IP:       servers[i].IP,
 			Port:     port,
-			Protocol: selection.Protocol,
+			Protocol: protocol,
 			Hostname: servers[i].Hostname,
 		}
 		connections[i] = connection

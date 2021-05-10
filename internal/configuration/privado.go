@@ -27,7 +27,7 @@ func (settings *Provider) privadoLines() (lines []string) {
 func (settings *Provider) readPrivado(r reader) (err error) {
 	settings.Name = constants.Privado
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

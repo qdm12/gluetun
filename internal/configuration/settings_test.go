@@ -28,7 +28,7 @@ func Test_Settings_lines(t *testing.T) {
 				"   |--Verbosity level: 0",
 				"   |--Provider:",
 				"      |--Mullvad settings:",
-				"         |--Network protocol: ",
+				"         |--Network protocol: udp",
 				"|--DNS:",
 				"|--Firewall: disabled ⚠️",
 				"|--System:",

@@ -47,15 +47,14 @@ var (
 
 func (p *pia) getPort(selection configuration.ServerSelection) (port uint16, err error) {
 	if selection.CustomPort == 0 {
-		switch selection.Protocol {
-		case constants.TCP:
+		if selection.TCP {
 			switch selection.EncryptionPreset {
 			case constants.PIAEncryptionPresetNormal:
 				port = 502
 			case constants.PIAEncryptionPresetStrong:
 				port = 501
 			}
-		case constants.UDP:
+		} else {
 			switch selection.EncryptionPreset {
 			case constants.PIAEncryptionPresetNormal:
 				port = 1198
@@ -63,38 +62,28 @@ func (p *pia) getPort(selection configuration.ServerSelection) (port uint16, err
 				port = 1197
 			}
 		}
-
-		if port == 0 {
-			return 0, fmt.Errorf(
-				"%w: combination of protocol %q and encryption %q does not yield any port number",
-				ErrInvalidPort, selection.Protocol, selection.EncryptionPreset)
-		}
 		return port, nil
 	}
 
 	port = selection.CustomPort
-	switch selection.Protocol {
-	case constants.TCP:
+	if selection.TCP {
 		switch port {
 		case 80, 110, 443: //nolint:gomnd
+			return port, nil
 		default:
-			return 0, fmt.Errorf("%w: %d for protocol %s",
-				ErrInvalidPort, port, selection.Protocol)
-		}
-	case constants.UDP:
-		switch port {
-		case 53, 1194, 1197, 1198, 8080, 9201: //nolint:gomnd
-		default:
-			return 0, fmt.Errorf("%w: %d for protocol %s",
-				ErrInvalidPort, port, selection.Protocol)
+			return 0, fmt.Errorf("%w: %d for protocol TCP", ErrInvalidPort, port)
 		}
 	}
-
-	return port, nil
+	switch port {
+	case 53, 1194, 1197, 1198, 8080, 9201: //nolint:gomnd
+		return port, nil
+	default:
+		return 0, fmt.Errorf("%w: %d for protocol UDP", ErrInvalidPort, port)
+	}
 }
 
-func (p *pia) notFoundErr(regions, hostnames, names []string, protocol string) error {
-	message := "for protocol " + protocol
+func (p *pia) notFoundErr(regions, hostnames, names []string, tcp bool) error {
+	message := "for protocol " + tcpBoolToProtocol(tcp)
 
 	if len(regions) > 0 {
 		message += " + regions " + commaJoin(regions)
@@ -118,15 +107,17 @@ func (p *pia) GetOpenVPNConnection(selection configuration.ServerSelection) (
 		return connection, err
 	}
 
+	protocol := tcpBoolToProtocol(selection.TCP)
+
 	servers := p.servers
 	if selection.TargetIP != nil {
-		connection = models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}
+		connection = models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: protocol}
 	} else {
 		servers := p.filterServers(selection.Regions, selection.Hostnames,
-			selection.Names, selection.Protocol)
+			selection.Names, selection.TCP)
 		if len(servers) == 0 {
 			return connection, p.notFoundErr(selection.Regions, selection.Hostnames,
-				selection.Names, selection.Protocol)
+				selection.Names, selection.TCP)
 		}
 
 		var connections []models.OpenVPNConnection
@@ -135,7 +126,7 @@ func (p *pia) GetOpenVPNConnection(selection configuration.ServerSelection) (
 				connection := models.OpenVPNConnection{
 					IP:       ip,
 					Port:     port,
-					Protocol: selection.Protocol,
+					Protocol: protocol,
 				}
 				connections = append(connections, connection)
 			}
@@ -369,15 +360,15 @@ func (p *pia) PortForward(ctx context.Context, client *http.Client,
 	}
 }
 
-func (p *pia) filterServers(regions, hostnames, names []string, protocol string) (
+func (p *pia) filterServers(regions, hostnames, names []string, tcp bool) (
 	filtered []models.PIAServer) {
 	for _, server := range p.servers {
 		switch {
 		case filterByPossibilities(server.Region, regions),
 			filterByPossibilities(server.Hostname, hostnames),
 			filterByPossibilities(server.ServerName, names),
-			protocol == constants.TCP && !server.TCP,
-			protocol == constants.UDP && !server.UDP:
+			tcp && !server.TCP,
+			!tcp && !server.UDP:
 		default:
 			filtered = append(filtered, server)
 		}

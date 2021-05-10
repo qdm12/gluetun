@@ -38,7 +38,7 @@ func (settings *Provider) mullvadLines() (lines []string) {
 func (settings *Provider) readMullvad(r reader) (err error) {
 	settings.Name = constants.Mullvad
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.Protocol,
+	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.TCP,
 		[]uint16{80, 443, 1401}, []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400})
 	if err != nil {
 		return err

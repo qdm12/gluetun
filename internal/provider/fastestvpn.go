@@ -28,20 +28,13 @@ func newFastestvpn(servers []models.FastestvpnServer, timeNow timeNowFunc) *fast
 	}
 }
 
-func (f *fastestvpn) filterServers(countries, hostnames []string, protocol string) (servers []models.FastestvpnServer) {
-	var tcp, udp bool
-	if protocol == "tcp" {
-		tcp = true
-	} else {
-		udp = true
-	}
-
+func (f *fastestvpn) filterServers(countries, hostnames []string, tcp bool) (servers []models.FastestvpnServer) {
 	for _, server := range f.servers {
 		switch {
 		case filterByPossibilities(server.Country, countries):
 		case filterByPossibilities(server.Hostname, hostnames):
 		case tcp && !server.TCP:
-		case udp && !server.UDP:
+		case !tcp && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
@@ -50,7 +43,7 @@ func (f *fastestvpn) filterServers(countries, hostnames []string, protocol strin
 }
 
 func (f *fastestvpn) notFoundErr(selection configuration.ServerSelection) error {
-	message := "no server found for protocol " + selection.Protocol
+	message := "no server found for protocol " + tcpBoolToProtocol(selection.TCP)
 
 	if len(selection.Hostnames) > 0 {
 		message += " + hostnames " + commaJoin(selection.Hostnames)
@@ -66,12 +59,13 @@ func (f *fastestvpn) notFoundErr(selection configuration.ServerSelection) error 
 func (f *fastestvpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var port uint16 = 4443
+	protocol := tcpBoolToProtocol(selection.TCP)
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: protocol}, nil
 	}
 
-	servers := f.filterServers(selection.Countries, selection.Hostnames, selection.Protocol)
+	servers := f.filterServers(selection.Countries, selection.Hostnames, selection.TCP)
 	if len(servers) == 0 {
 		return connection, f.notFoundErr(selection)
 	}
@@ -82,7 +76,7 @@ func (f *fastestvpn) GetOpenVPNConnection(selection configuration.ServerSelectio
 			connection := models.OpenVPNConnection{
 				IP:       IP,
 				Port:     port,
-				Protocol: selection.Protocol,
+				Protocol: protocol,
 			}
 			connections = append(connections, connection)
 		}

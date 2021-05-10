@@ -48,8 +48,10 @@ func (m *mullvad) filterServers(countries, cities, hostnames,
 func (m *mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var defaultPort uint16 = 1194
-	if selection.Protocol == constants.TCP {
+	protocol := constants.UDP
+	if selection.TCP {
 		defaultPort = 443
+		protocol = constants.TCP
 	}
 	port := defaultPort
 	if selection.CustomPort > 0 {
@@ -57,7 +59,7 @@ func (m *mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	}
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: protocol}, nil
 	}
 
 	servers := m.filterServers(selection.Countries, selection.Cities,
@@ -70,7 +72,7 @@ func (m *mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: protocol})
 		}
 	}
 

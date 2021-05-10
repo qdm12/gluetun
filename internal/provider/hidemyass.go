@@ -30,15 +30,15 @@ func newHideMyAss(servers []models.HideMyAssServer, timeNow timeNowFunc) *hideMy
 }
 
 func (h *hideMyAss) filterServers(countries, cities, hostnames []string,
-	protocol string) (servers []models.HideMyAssServer) {
+	tcp bool) (servers []models.HideMyAssServer) {
 	for _, server := range h.servers {
 		switch {
 		case
 			filterByPossibilities(server.Country, countries),
 			filterByPossibilities(server.City, cities),
 			filterByPossibilities(server.Hostname, hostnames),
-			protocol == constants.TCP && !server.TCP,
-			protocol == constants.UDP && !server.UDP:
+			tcp && !server.TCP,
+			!tcp && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
@@ -67,7 +67,9 @@ func (h *hideMyAss) notFoundErr(selection configuration.ServerSelection) error {
 func (h *hideMyAss) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	var defaultPort uint16 = 553
-	if selection.Protocol == constants.TCP {
+	protocol := constants.UDP
+	if selection.TCP {
+		protocol = constants.TCP
 		defaultPort = 8080
 	}
 	port := defaultPort
@@ -76,10 +78,14 @@ func (h *hideMyAss) GetOpenVPNConnection(selection configuration.ServerSelection
 	}
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{
+			IP:       selection.TargetIP,
+			Port:     port,
+			Protocol: protocol,
+		}, nil
 	}
 
-	servers := h.filterServers(selection.Countries, selection.Cities, selection.Hostnames, selection.Protocol)
+	servers := h.filterServers(selection.Countries, selection.Cities, selection.Hostnames, selection.TCP)
 	if len(servers) == 0 {
 		return models.OpenVPNConnection{}, h.notFoundErr(selection)
 	}
@@ -87,7 +93,11 @@ func (h *hideMyAss) GetOpenVPNConnection(selection configuration.ServerSelection
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			connections = append(connections, models.OpenVPNConnection{
+				IP:       IP,
+				Port:     port,
+				Protocol: protocol,
+			})
 		}
 	}
 

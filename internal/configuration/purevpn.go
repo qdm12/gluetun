@@ -27,7 +27,7 @@ func (settings *Provider) purevpnLines() (lines []string) {
 func (settings *Provider) readPurevpn(r reader) (err error) {
 	settings.Name = constants.Purevpn
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

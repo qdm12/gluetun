@@ -35,7 +35,7 @@ func (settings *Provider) nordvpnLines() (lines []string) {
 func (settings *Provider) readNordvpn(r reader) (err error) {
 	settings.Name = constants.Nordvpn
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

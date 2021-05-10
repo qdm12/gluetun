@@ -34,7 +34,7 @@ func (settings *Provider) cyberghostLines() (lines []string) {
 func (settings *Provider) readCyberghost(r reader) (err error) {
 	settings.Name = constants.Cyberghost
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

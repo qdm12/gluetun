@@ -19,7 +19,7 @@ func (settings *Provider) surfsharkLines() (lines []string) {
 func (settings *Provider) readSurfshark(r reader) (err error) {
 	settings.Name = constants.Surfshark
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

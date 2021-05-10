@@ -19,7 +19,7 @@ func (settings *Provider) fastestvpnLines() (lines []string) {
 func (settings *Provider) readFastestvpn(r reader) (err error) {
 	settings.Name = constants.Fastestvpn
 
-	settings.ServerSelection.Protocol, err = readProtocol(r.env)
+	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
 		return err
 	}

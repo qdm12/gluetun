@@ -24,9 +24,8 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Cyberghost,
 				ServerSelection: ServerSelection{
-					Protocol: constants.UDP,
-					Group:    "group",
-					Regions:  []string{"a", "El country"},
+					Group:   "group",
+					Regions: []string{"a", "El country"},
 				},
 				ExtraConfigOptions: ExtraConfigOptions{
 					ClientKey:         "a",
@@ -46,7 +45,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Fastestvpn,
 				ServerSelection: ServerSelection{
-					Protocol:  constants.UDP,
 					Hostnames: []string{"a", "b"},
 					Countries: []string{"c", "d"},
 				},
@@ -62,7 +60,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.HideMyAss,
 				ServerSelection: ServerSelection{
-					Protocol:  constants.UDP,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					Hostnames: []string{"e", "f"},
@@ -80,7 +77,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Mullvad,
 				ServerSelection: ServerSelection{
-					Protocol:   constants.UDP,
 					Countries:  []string{"a", "b"},
 					Cities:     []string{"c", "d"},
 					ISPs:       []string{"e", "f"},
@@ -104,9 +100,8 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Nordvpn,
 				ServerSelection: ServerSelection{
-					Protocol: constants.UDP,
-					Regions:  []string{"a", "b"},
-					Numbers:  []uint16{1, 2},
+					Regions: []string{"a", "b"},
+					Numbers: []uint16{1, 2},
 				},
 			},
 			lines: []string{
@@ -120,7 +115,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Privado,
 				ServerSelection: ServerSelection{
-					Protocol:  constants.UDP,
 					Hostnames: []string{"a", "b"},
 				},
 			},
@@ -134,7 +128,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Privatevpn,
 				ServerSelection: ServerSelection{
-					Protocol:  constants.UDP,
 					Hostnames: []string{"a", "b"},
 					Countries: []string{"c", "d"},
 					Cities:    []string{"e", "f"},
@@ -152,7 +145,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Protonvpn,
 				ServerSelection: ServerSelection{
-					Protocol:  constants.UDP,
 					Countries: []string{"a", "b"},
 					Regions:   []string{"c", "d"},
 					Cities:    []string{"e", "f"},
@@ -174,7 +166,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.PrivateInternetAccess,
 				ServerSelection: ServerSelection{
-					Protocol:         constants.UDP,
 					Regions:          []string{"a", "b"},
 					EncryptionPreset: constants.PIAEncryptionPresetStrong,
 					CustomPort:       1,
@@ -198,7 +189,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Purevpn,
 				ServerSelection: ServerSelection{
-					Protocol:  constants.UDP,
 					Regions:   []string{"a", "b"},
 					Countries: []string{"c", "d"},
 					Cities:    []string{"e", "f"},
@@ -216,8 +206,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Surfshark,
 				ServerSelection: ServerSelection{
-					Protocol: constants.UDP,
-					Regions:  []string{"a", "b"},
+					Regions: []string{"a", "b"},
 				},
 			},
 			lines: []string{
@@ -230,7 +219,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Torguard,
 				ServerSelection: ServerSelection{
-					Protocol:  constants.UDP,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					Hostnames: []string{"e"},
@@ -248,8 +236,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Vyprvpn,
 				ServerSelection: ServerSelection{
-					Protocol: constants.UDP,
-					Regions:  []string{"a", "b"},
+					Regions: []string{"a", "b"},
 				},
 			},
 			lines: []string{
@@ -262,7 +249,6 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Windscribe,
 				ServerSelection: ServerSelection{
-					Protocol:   constants.UDP,
 					Regions:    []string{"a", "b"},
 					Cities:     []string{"c", "d"},
 					Hostnames:  []string{"e", "f"},
@@ -296,18 +282,18 @@ func Test_readProtocol(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		mockStr  string
-		mockErr  error
-		protocol string
-		err      error
+		mockStr string
+		mockErr error
+		tcp     bool
+		err     error
 	}{
 		"error": {
 			mockErr: errDummy,
 			err:     errDummy,
 		},
 		"success": {
-			mockStr:  "tcp",
-			protocol: constants.TCP,
+			mockStr: "tcp",
+			tcp:     true,
 		},
 	}
 
@@ -322,7 +308,7 @@ func Test_readProtocol(t *testing.T) {
 				Inside("PROTOCOL", []string{"tcp", "udp"}, gomock.Any()).
 				Return(testCase.mockStr, testCase.mockErr)
 
-			protocol, err := readProtocol(env)
+			tcp, err := readProtocol(env)
 
 			if testCase.err != nil {
 				require.Error(t, err)
@@ -331,7 +317,7 @@ func Test_readProtocol(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, testCase.protocol, protocol)
+			assert.Equal(t, testCase.tcp, tcp)
 		})
 	}
 }

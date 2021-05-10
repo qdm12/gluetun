@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -30,7 +29,7 @@ func newPurevpn(servers []models.PurevpnServer, timeNow timeNowFunc) *purevpn {
 }
 
 func (p *purevpn) filterServers(regions, countries, cities, hostnames []string,
-	protocol string) (servers []models.PurevpnServer) {
+	tcp bool) (servers []models.PurevpnServer) {
 	for _, server := range p.servers {
 		switch {
 		case
@@ -38,8 +37,8 @@ func (p *purevpn) filterServers(regions, countries, cities, hostnames []string,
 			filterByPossibilities(server.Country, countries),
 			filterByPossibilities(server.City, cities),
 			filterByPossibilities(server.Hostname, hostnames),
-			strings.EqualFold(protocol, "tcp") && !server.TCP,
-			strings.EqualFold(protocol, "udp") && !server.UDP:
+			tcp && !server.TCP,
+			!tcp && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}
@@ -49,22 +48,19 @@ func (p *purevpn) filterServers(regions, countries, cities, hostnames []string,
 
 func (p *purevpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
-	var port uint16
-	switch {
-	case selection.Protocol == constants.UDP:
-		port = 53
-	case selection.Protocol == constants.TCP:
+	var port uint16 = 53
+	protocol := constants.UDP
+	if selection.TCP {
 		port = 80
-	default:
-		return connection, fmt.Errorf("protocol %q is unknown", selection.Protocol)
+		protocol = constants.TCP
 	}
 
 	if selection.TargetIP != nil {
-		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: selection.Protocol}, nil
+		return models.OpenVPNConnection{IP: selection.TargetIP, Port: port, Protocol: protocol}, nil
 	}
 
 	servers := p.filterServers(selection.Regions, selection.Countries,
-		selection.Cities, selection.Hostnames, selection.Protocol)
+		selection.Cities, selection.Hostnames, selection.TCP)
 	if len(servers) == 0 {
 		return connection, fmt.Errorf("no server found for regions %s, countries %s and cities %s",
 			commaJoin(selection.Regions), commaJoin(selection.Countries), commaJoin(selection.Cities))
@@ -73,7 +69,7 @@ func (p *purevpn) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	var connections []models.OpenVPNConnection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: selection.Protocol})
+			connections = append(connections, models.OpenVPNConnection{IP: IP, Port: port, Protocol: protocol})
 		}
 	}
 

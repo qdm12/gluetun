@@ -52,3 +52,10 @@ func filterByPossibilities(value string, possibilities []string) (filtered bool)
 func commaJoin(slice []string) string {
 	return strings.Join(slice, ",")
 }
+
+func tcpBoolToProtocol(tcp bool) (protocol string) {
+	if tcp {
+		return "tcp"
+	}
+	return "udp"
+}
