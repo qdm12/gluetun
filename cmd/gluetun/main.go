@@ -60,6 +60,7 @@ func main() {
 	}
 
 	ctx := context.Background()
+	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, nativeos.Interrupt)
 	ctx, cancel := context.WithCancel(ctx)
 
 	logger := logging.New(logging.StdLog)
@@ -75,25 +76,19 @@ func main() {
 		errorCh <- _main(ctx, buildInfo, args, logger, os, osUser, unix, cli)
 	}()
 
-	signalsCh := make(chan nativeos.Signal, 1)
-	signal.Notify(signalsCh,
-		syscall.SIGINT,
-		syscall.SIGTERM,
-		nativeos.Interrupt,
-	)
-
 	select {
-	case signal := <-signalsCh:
-		logger.Warn("Caught OS signal %s, shutting down", signal)
+	case <-ctx.Done():
+		stop()
+		logger.Warn("Caught OS signal, shutting down")
 	case err := <-errorCh:
+		stop()
 		close(errorCh)
 		if err == nil { // expected exit such as healthcheck
 			nativeos.Exit(0)
 		}
 		logger.Error(err)
+		cancel()
 	}
-
-	cancel()
 
 	const shutdownGracePeriod = 5 * time.Second
 	timer := time.NewTimer(shutdownGracePeriod)
