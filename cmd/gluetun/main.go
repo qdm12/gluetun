@@ -123,8 +123,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			return fmt.Errorf("command %q is unknown", args[1])
 		}
 	}
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
@@ -261,7 +259,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	healthy := make(chan bool)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, healthy, cancel)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, healthy)
 	wg.Add(1)
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(ctx, wg)

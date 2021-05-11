@@ -46,7 +46,6 @@ type looper struct {
 	openFile         os.OpenFileFunc
 	tunnelReady      chan<- struct{}
 	healthy          <-chan bool
-	cancel           context.CancelFunc
 	// Internal channels and locks
 	loopLock           sync.Mutex
 	running            chan models.LoopStatus
@@ -67,7 +66,7 @@ func NewLooper(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,
-	tunnelReady chan<- struct{}, healthy <-chan bool, cancel context.CancelFunc) Looper {
+	tunnelReady chan<- struct{}, healthy <-chan bool) Looper {
 	return &looper{
 		state: state{
 			status:     constants.Stopped,
@@ -86,7 +85,6 @@ func NewLooper(settings configuration.OpenVPN,
 		openFile:           openFile,
 		tunnelReady:        tunnelReady,
 		healthy:            healthy,
-		cancel:             cancel,
 		start:              make(chan struct{}),
 		running:            make(chan models.LoopStatus),
 		stop:               make(chan struct{}),
@@ -126,10 +124,9 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 		if len(settings.Config) == 0 {
 			connection, err = providerConf.GetOpenVPNConnection(settings.Provider.ServerSelection)
 			if err != nil {
-				l.logger.Error(err)
 				l.signalCrashedStatus()
-				l.cancel()
-				return
+				l.logAndWait(ctx, err)
+				continue
 			}
 			lines = providerConf.BuildConf(connection, l.username, settings)
 		} else {
@@ -142,24 +139,21 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 		}
 
 		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
-			l.logger.Error(err)
 			l.signalCrashedStatus()
-			l.cancel()
-			return
+			l.logAndWait(ctx, err)
+			continue
 		}
 
 		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.puid, l.pgid); err != nil {
-			l.logger.Error(err)
 			l.signalCrashedStatus()
-			l.cancel()
-			return
+			l.logAndWait(ctx, err)
+			continue
 		}
 
 		if err := l.fw.SetVPNConnection(ctx, connection); err != nil {
-			l.logger.Error(err)
 			l.signalCrashedStatus()
-			l.cancel()
-			return
+			l.logAndWait(ctx, err)
+			continue
 		}
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
