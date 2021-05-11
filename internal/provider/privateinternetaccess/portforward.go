@@ -29,8 +29,6 @@ var (
 func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 	openFile os.OpenFileFunc, logger logging.Logger, gateway net.IP, fw firewall.Configurator,
 	syncState func(port uint16) (pfFilepath string)) {
-	defer logger.Warn("loop exited")
-
 	commonName := p.activeServer.ServerName
 	if !p.activeServer.PortForward {
 		logger.Error("The server " + commonName +

@@ -15,8 +15,8 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
-	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, done chan<- struct{})
+	RunRestartTicker(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetSettings() (settings configuration.PublicIP)
@@ -91,8 +91,8 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 
 	crashed := false
 
@@ -101,7 +101,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	case <-ctx.Done():
 		return
 	}
-	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
 		getCtx, getCancel := context.WithCancel(ctx)
@@ -132,11 +131,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				l.logger.Warn("context canceled: exiting loop")
 				getCancel()
 				close(errorCh)
 				filepath := l.GetSettings().IPFilepath
-				l.logger.Info("Removing ip file %s", filepath)
+				l.logger.Info("Removing ip file " + filepath)
 				if err := l.os.Remove(filepath); err != nil {
 					l.logger.Error(err)
 				}
@@ -181,8 +179,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	}
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 	timer := time.NewTimer(time.Hour)
 	timer.Stop() // 1 hour, cannot be a race condition
 	timerIsStopped := true

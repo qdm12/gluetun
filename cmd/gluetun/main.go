@@ -9,7 +9,6 @@ import (
 	nativeos "os"
 	"os/signal"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 
@@ -29,6 +28,7 @@ import (
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
+	"github.com/qdm12/gluetun/internal/shutdown"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/gluetun/internal/updater"
@@ -255,44 +255,56 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	} // TODO move inside firewall?
 
-	wg := &sync.WaitGroup{}
+	const (
+		shutdownMaxTimeout     = 3 * time.Second
+		shutdownRoutineTimeout = 400 * time.Millisecond
+		shutdownOpenvpnTimeout = time.Second
+	)
+
 	healthy := make(chan bool)
+	controlWave := shutdown.NewWave("control")
+	tickerWave := shutdown.NewWave("tickers")
+	healthWave := shutdown.NewWave("health")
+	dnsWave := shutdown.NewWave("DNS")
+	vpnWave := shutdown.NewWave("VPN")
+	serverWave := shutdown.NewWave("servers")
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, healthy)
-	wg.Add(1)
+	openvpnCtx, openvpnDone := vpnWave.Add("openvpn", shutdownOpenvpnTimeout)
 	// wait for restartOpenvpn
-	go openvpnLooper.Run(ctx, wg)
+	go openvpnLooper.Run(openvpnCtx, openvpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
 		allServers, storage, openvpnLooper.SetServers, httpClient, logger)
-	wg.Add(1)
+	updaterCtx, updaterDone := tickerWave.Add("updater", shutdownRoutineTimeout)
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
-	go updaterLooper.Run(ctx, wg)
+	go updaterLooper.Run(updaterCtx, updaterDone)
 
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
 		logger, nonRootUsername, puid, pgid)
-	wg.Add(1)
+	dnsCtx, dnsDone := dnsWave.Add("unbound", shutdownRoutineTimeout)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
-	go unboundLooper.Run(ctx, wg)
+	go unboundLooper.Run(dnsCtx, dnsDone)
 
 	publicIPLooper := publicip.NewLooper(
 		httpClient, logger, allSettings.PublicIP, puid, pgid, os)
-	wg.Add(1)
-	go publicIPLooper.Run(ctx, wg)
-	wg.Add(1)
-	go publicIPLooper.RunRestartTicker(ctx, wg)
+	pubIPCtx, pubIPDone := serverWave.Add("public IP", shutdownRoutineTimeout)
+	go publicIPLooper.Run(pubIPCtx, pubIPDone)
+
+	pubIPTickerCtx, pubIPTickerDone := tickerWave.Add("public IP", shutdownRoutineTimeout)
+	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
 
 	httpProxyLooper := httpproxy.NewLooper(logger, allSettings.HTTPProxy)
-	wg.Add(1)
-	go httpProxyLooper.Run(ctx, wg)
+	httpProxyCtx, httpProxyDone := serverWave.Add("http proxy", shutdownRoutineTimeout)
+	go httpProxyLooper.Run(httpProxyCtx, httpProxyDone)
 
 	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger)
-	wg.Add(1)
-	go shadowsocksLooper.Run(ctx, wg)
+	shadowsocksCtx, shadowsocksDone := serverWave.Add("shadowsocks proxy", shutdownRoutineTimeout)
+	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 
-	wg.Add(1)
-	go routeReadyEvents(ctx, wg, buildInfo, tunnelReadyCh,
+	eventsRoutingCtx, eventsRoutingDone := controlWave.Add("events routing", shutdownRoutineTimeout)
+	go routeReadyEvents(eventsRoutingCtx, eventsRoutingDone, buildInfo, tunnelReadyCh,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
 		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
 	)
@@ -300,13 +312,17 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlServerLogging := allSettings.ControlServer.Log
 	httpServer := server.New(controlServerAddress, controlServerLogging,
 		logger, buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
-	wg.Add(1)
-	go httpServer.Run(ctx, wg)
+	httpServerCtx, httpServerDone := controlWave.Add("http server", shutdownRoutineTimeout)
+	go httpServer.Run(httpServerCtx, httpServerDone)
 
-	healthcheckServer := healthcheck.NewServer(
-		constants.HealthcheckAddress, logger)
-	wg.Add(1)
-	go healthcheckServer.Run(ctx, healthy, wg)
+	healthcheckServer := healthcheck.NewServer(constants.HealthcheckAddress, logger)
+	healthServerCtx, healthServerDone := healthWave.Add("HTTP health server", shutdownRoutineTimeout)
+	go healthcheckServer.Run(healthServerCtx, healthy, healthServerDone)
+
+	shutdownOrder := shutdown.NewOrder()
+	shutdownOrder.Append(controlWave, tickerWave, healthWave,
+		dnsWave, vpnWave, serverWave,
+	)
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
@@ -321,6 +337,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
+	if err := shutdownOrder.Shutdown(shutdownMaxTimeout, logger); err != nil {
+		return err
+	}
+
+	// Only disable firewall if everything has shutdown gracefully
 	if allSettings.Firewall.Enabled {
 		const enable = false
 		err := firewallConf.SetEnabled(context.Background(), enable)
@@ -328,8 +349,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			logger.Error(err)
 		}
 	}
-
-	wg.Wait()
 
 	return nil
 }
@@ -349,22 +368,29 @@ func printVersions(ctx context.Context, logger logging.Logger,
 	}
 }
 
-func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.BuildInformation,
+func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo models.BuildInformation,
 	tunnelReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
 	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
 	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
-	defer wg.Done()
-	tickerWg := &sync.WaitGroup{}
+	defer close(done)
+
 	// for linters only
 	var restartTickerContext context.Context
 	var restartTickerCancel context.CancelFunc = func() {}
+
+	unboundTickerDone := make(chan struct{})
+	close(unboundTickerDone)
+	updaterTickerDone := make(chan struct{})
+	close(updaterTickerDone)
+
 	first := true
 	for {
 		select {
 		case <-ctx.Done():
 			restartTickerCancel() // for linters only
-			tickerWg.Wait()
+			<-unboundTickerDone
+			<-updaterTickerDone
 			return
 		case <-tunnelReadyCh: // blocks until openvpn is connected
 			vpnDestination, err := routing.VPNDestinationIP()
@@ -379,7 +405,8 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.
 			}
 
 			restartTickerCancel() // stop previous restart tickers
-			tickerWg.Wait()
+			<-unboundTickerDone
+			<-updaterTickerDone
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 
 			// Runs the Public IP getter job once
@@ -398,10 +425,10 @@ func routeReadyEvents(ctx context.Context, wg *sync.WaitGroup, buildInfo models.
 				}
 			}
 
-			//nolint:gomnd
-			tickerWg.Add(2)
-			go unboundLooper.RunRestartTicker(restartTickerContext, tickerWg)
-			go updaterLooper.RunRestartTicker(restartTickerContext, tickerWg)
+			unboundTickerDone = make(chan struct{})
+			updaterTickerDone = make(chan struct{})
+			go unboundLooper.RunRestartTicker(restartTickerContext, unboundTickerDone)
+			go updaterLooper.RunRestartTicker(restartTickerContext, updaterTickerDone)
 			if portForwardingEnabled {
 				// vpnGateway required only for PIA
 				vpnGateway, err := routing.VPNLocalGatewayIP()

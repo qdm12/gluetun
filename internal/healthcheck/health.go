@@ -6,12 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"sync"
 	"time"
 )
 
-func (s *server) runHealthcheckLoop(ctx context.Context, healthy chan<- bool, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (s *server) runHealthcheckLoop(ctx context.Context, healthy chan<- bool, done chan<- struct{}) {
+	defer close(done)
 	for {
 		previousErr := s.handler.getErr()
 

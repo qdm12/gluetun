@@ -3,14 +3,13 @@ package dns
 import (
 	"regexp"
 	"strings"
-	"sync"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/logging"
 )
 
-func (l *looper) collectLines(wg *sync.WaitGroup, stdout, stderr <-chan string) {
-	defer wg.Done()
+func (l *looper) collectLines(stdout, stderr <-chan string, done chan<- struct{}) {
+	defer close(done)
 	var line string
 	var ok bool
 	for {

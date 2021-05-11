@@ -17,8 +17,8 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
-	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, done chan<- struct{})
+	RunRestartTicker(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetSettings() (settings configuration.DNS)
@@ -86,8 +86,8 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 
 	const fallback = false
 	l.useUnencryptedDNS(fallback) // TODO remove? Use default DNS by default for Docker resolution?
@@ -98,8 +98,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	case <-ctx.Done():
 		return
 	}
-
-	defer l.logger.Warn("loop exited")
 
 	crashed := false
 	l.backoffTime = defaultBackoffTime
@@ -116,11 +114,10 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 				if !crashed {
 					l.running <- constants.Stopped
 				}
-				l.logger.Warn("context canceled: exiting loop")
 				return
 			}
 			var err error
-			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx, wg, crashed)
+			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx, crashed)
 			if err != nil {
 				if !errors.Is(err, errUpdateFiles) {
 					const fallback = true
@@ -143,7 +140,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				l.logger.Warn("context canceled: exiting loop")
 				unboundCancel()
 				<-waitError
 				close(waitError)
@@ -178,9 +174,8 @@ var errUpdateFiles = errors.New("cannot update files")
 // Returning cancel == nil signals we want to re-run setupUnbound
 // Returning err == errUpdateFiles signals we should not fall back
 // on the plaintext DNS as DOT is still up and running.
-func (l *looper) setupUnbound(ctx context.Context, wg *sync.WaitGroup,
-	previousCrashed bool) (cancel context.CancelFunc, waitError chan error,
-	closeStreams func(), err error) {
+func (l *looper) setupUnbound(ctx context.Context, previousCrashed bool) (
+	cancel context.CancelFunc, waitError chan error, closeStreams func(), err error) {
 	err = l.updateFiles(ctx)
 	if err != nil {
 		l.state.setStatusWithLock(constants.Crashed)
@@ -199,8 +194,8 @@ func (l *looper) setupUnbound(ctx context.Context, wg *sync.WaitGroup,
 		return nil, nil, nil, err
 	}
 
-	wg.Add(1)
-	go l.collectLines(wg, stdoutLines, stderrLines)
+	collectLinesDone := make(chan struct{})
+	go l.collectLines(stdoutLines, stderrLines, collectLinesDone)
 
 	l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                                                  // use Unbound
 	if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}, settings.KeepNameserver); err != nil { // use Unbound
@@ -216,6 +211,7 @@ func (l *looper) setupUnbound(ctx context.Context, wg *sync.WaitGroup,
 		close(waitError)
 		close(stdoutLines)
 		close(stderrLines)
+		<-collectLinesDone
 		return nil, nil, nil, err
 	}
 
@@ -230,6 +226,7 @@ func (l *looper) setupUnbound(ctx context.Context, wg *sync.WaitGroup,
 	closeStreams = func() {
 		close(stdoutLines)
 		close(stderrLines)
+		<-collectLinesDone
 	}
 
 	return cancel, waitError, closeStreams, nil
@@ -276,8 +273,8 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 	l.logger.Error("no ipv4 DNS address found for providers %s", settings.Unbound.Providers)
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 	// Timer that acts as a ticker
 	timer := time.NewTimer(time.Hour)
 	timer.Stop()

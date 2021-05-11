@@ -19,7 +19,7 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetSettings() (settings configuration.OpenVPN)
@@ -104,14 +104,13 @@ func (l *looper) signalCrashedStatus() {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocognit
-	defer wg.Done()
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocognit
+	defer close(done)
 	select {
 	case <-l.start:
 	case <-ctx.Done():
 		return
 	}
-	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
 		settings, allServers := l.state.getSettingsAndServers()
@@ -166,20 +165,19 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 			continue
 		}
 
-		wg.Add(1)
-		go l.collectLines(wg, stdoutLines, stderrLines)
+		lineCollectionDone := make(chan struct{})
+		go l.collectLines(stdoutLines, stderrLines, lineCollectionDone)
 
 		// Needs the stream line from main.go to know when the tunnel is up
+		portForwardDone := make(chan struct{})
 		go func(ctx context.Context) {
-			for {
-				select {
-				// TODO have a way to disable pf with a context
-				case <-ctx.Done():
-					return
-				case gateway := <-l.portForwardSignals:
-					wg.Add(1)
-					go l.portForward(ctx, wg, providerConf, l.client, gateway)
-				}
+			defer close(portForwardDone)
+			select {
+			// TODO have a way to disable pf with a context
+			case <-ctx.Done():
+				return
+			case gateway := <-l.portForwardSignals:
+				l.portForward(ctx, providerConf, l.client, gateway)
 			}
 		}(openvpnCtx)
 
@@ -195,12 +193,13 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) { //nolint:gocogni
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				l.logger.Warn("context canceled: exiting loop")
 				openvpnCancel()
 				<-waitError
 				close(waitError)
 				close(stdoutLines)
 				close(stderrLines)
+				<-lineCollectionDone
+				<-portForwardDone
 				return
 			case <-l.stop:
 				l.logger.Info("stopping")
@@ -288,9 +287,8 @@ func (l *looper) waitForHealth(ctx context.Context) (healthy bool) {
 
 // portForward is a blocking operation which may or may not be infinite.
 // You should therefore always call it in a goroutine.
-func (l *looper) portForward(ctx context.Context, wg *sync.WaitGroup,
+func (l *looper) portForward(ctx context.Context,
 	providerConf provider.Provider, client *http.Client, gateway net.IP) {
-	defer wg.Done()
 	l.state.portForwardedMu.RLock()
 	settings := l.state.settings
 	l.state.portForwardedMu.RUnlock()

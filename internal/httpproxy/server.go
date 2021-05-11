@@ -10,7 +10,7 @@ import (
 )
 
 type Server interface {
-	Run(ctx context.Context, wg *sync.WaitGroup, errorCh chan<- error)
+	Run(ctx context.Context, errorCh chan<- error)
 }
 
 type server struct {
@@ -31,13 +31,10 @@ func New(ctx context.Context, address string, logger logging.Logger,
 	}
 }
 
-func (s *server) Run(ctx context.Context, wg *sync.WaitGroup, errorCh chan<- error) {
-	defer wg.Done()
+func (s *server) Run(ctx context.Context, errorCh chan<- error) {
 	server := http.Server{Addr: s.address, Handler: s.handler}
 	go func() {
 		<-ctx.Done()
-		s.logger.Warn("shutting down server")
-		defer s.logger.Warn("server shut down")
 		const shutdownGraceDuration = 2 * time.Second
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
@@ -47,8 +44,10 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup, errorCh chan<- err
 	}()
 	s.logger.Info("listening on %s", s.address)
 	err := server.ListenAndServe()
+	s.internalWG.Wait()
 	if err != nil && ctx.Err() == nil {
 		errorCh <- err
+	} else {
+		errorCh <- nil
 	}
-	s.internalWG.Wait()
 }

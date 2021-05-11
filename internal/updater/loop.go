@@ -14,8 +14,8 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
-	RunRestartTicker(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, done chan<- struct{})
+	RunRestartTicker(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetSettings() (settings configuration.Updater)
@@ -84,15 +84,14 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 	crashed := false
 	select {
 	case <-l.start:
 	case <-ctx.Done():
 		return
 	}
-	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
 		updateCtx, updateCancel := context.WithCancel(ctx)
@@ -125,7 +124,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				l.logger.Warn("context canceled: exiting loop")
 				updateCancel()
 				runWg.Wait()
 				close(errorCh)
@@ -162,8 +160,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	}
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 	timer := time.NewTimer(time.Hour)
 	timer.Stop()
 	timerIsStopped := true

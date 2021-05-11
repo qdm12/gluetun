@@ -5,14 +5,13 @@ import (
 	"errors"
 	"net"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/qdm12/golibs/logging"
 )
 
 type Server interface {
-	Run(ctx context.Context, healthy chan<- bool, wg *sync.WaitGroup)
+	Run(ctx context.Context, healthy chan<- bool, done chan<- struct{})
 }
 
 type server struct {
@@ -32,23 +31,20 @@ func NewServer(address string, logger logging.Logger) Server {
 	}
 }
 
-func (s *server) Run(ctx context.Context, healthy chan<- bool, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (s *server) Run(ctx context.Context, healthy chan<- bool, done chan<- struct{}) {
+	defer close(done)
 
-	internalWg := &sync.WaitGroup{}
-	internalWg.Add(1)
-	go s.runHealthcheckLoop(ctx, healthy, internalWg)
+	loopDone := make(chan struct{})
+	go s.runHealthcheckLoop(ctx, healthy, loopDone)
 
 	server := http.Server{
 		Addr:    s.address,
 		Handler: s.handler,
 	}
-	internalWg.Add(1)
+	serverDone := make(chan struct{})
 	go func() {
-		defer internalWg.Done()
+		defer close(serverDone)
 		<-ctx.Done()
-		s.logger.Warn("context canceled: shutting down server")
-		defer s.logger.Warn("server shut down")
 		const shutdownGraceDuration = 2 * time.Second
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
@@ -63,5 +59,6 @@ func (s *server) Run(ctx context.Context, healthy chan<- bool, wg *sync.WaitGrou
 		s.logger.Error(err)
 	}
 
-	internalWg.Wait()
+	<-loopDone
+	<-serverDone
 }

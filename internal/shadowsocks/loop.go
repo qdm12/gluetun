@@ -15,7 +15,7 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, done chan<- struct{})
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetStatus() (status models.LoopStatus)
 	GetSettings() (settings configuration.ShadowSocks)
@@ -67,8 +67,8 @@ func NewLooper(settings configuration.ShadowSocks, logger logging.Logger) Looper
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 
 	crashed := false
 
@@ -83,8 +83,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 	case <-ctx.Done():
 		return
 	}
-
-	defer l.logger.Warn("loop exited")
 
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
@@ -114,7 +112,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				l.logger.Warn("context canceled: exiting loop")
 				shadowsocksCancel()
 				<-waitError
 				close(waitError)

@@ -4,7 +4,6 @@ package server
 import (
 	"context"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/dns"
@@ -16,7 +15,7 @@ import (
 )
 
 type Server interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, done chan<- struct{})
 }
 
 type server struct {
@@ -39,12 +38,11 @@ func New(address string, logEnabled bool, logger logging.Logger,
 	}
 }
 
-func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (s *server) Run(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 	server := http.Server{Addr: s.address, Handler: s.handler}
 	go func() {
 		<-ctx.Done()
-		s.logger.Warn("context canceled: shutting down")
 		const shutdownGraceDuration = 2 * time.Second
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
@@ -57,5 +55,4 @@ func (s *server) Run(ctx context.Context, wg *sync.WaitGroup) {
 	if err != nil && ctx.Err() != context.Canceled {
 		s.logger.Error(err)
 	}
-	s.logger.Warn("shut down")
 }

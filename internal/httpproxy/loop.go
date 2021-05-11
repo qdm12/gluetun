@@ -14,7 +14,7 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, wg *sync.WaitGroup)
+	Run(ctx context.Context, done chan<- struct{})
 	SetStatus(status models.LoopStatus) (outcome string, err error)
 	GetStatus() (status models.LoopStatus)
 	GetSettings() (settings configuration.HTTPProxy)
@@ -50,8 +50,8 @@ func NewLooper(logger logging.Logger, settings configuration.HTTPProxy) Looper {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+	defer close(done)
 
 	crashed := false
 
@@ -67,8 +67,6 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		return
 	}
 
-	defer l.logger.Warn("loop exited")
-
 	for ctx.Err() == nil {
 		runCtx, runCancel := context.WithCancel(ctx)
 
@@ -76,10 +74,8 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		address := fmt.Sprintf(":%d", settings.Port)
 		server := New(runCtx, address, l.logger, settings.Stealth, settings.Log, settings.User, settings.Password)
 
-		runWg := &sync.WaitGroup{}
-		runWg.Add(1)
 		errorCh := make(chan error)
-		go server.Run(runCtx, runWg, errorCh)
+		go server.Run(runCtx, errorCh)
 
 		// TODO stable timer, check Shadowsocks
 		if !crashed {
@@ -94,22 +90,20 @@ func (l *looper) Run(ctx context.Context, wg *sync.WaitGroup) {
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				l.logger.Warn("context canceled: exiting loop")
 				runCancel()
-				runWg.Wait()
+				<-errorCh
 				return
 			case <-l.start:
 				l.logger.Info("starting")
 				runCancel()
-				runWg.Wait()
+				<-errorCh
 				stayHere = false
 			case <-l.stop:
 				l.logger.Info("stopping")
 				runCancel()
-				runWg.Wait()
+				<-errorCh
 				l.stopped <- struct{}{}
 			case err := <-errorCh:
-				runWg.Wait()
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
 				crashed = true
