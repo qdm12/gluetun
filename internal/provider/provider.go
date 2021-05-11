@@ -3,13 +3,29 @@ package provider
 
 import (
 	"context"
+	"math/rand"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/cyberghost"
+	"github.com/qdm12/gluetun/internal/provider/fastestvpn"
+	"github.com/qdm12/gluetun/internal/provider/hidemyass"
+	"github.com/qdm12/gluetun/internal/provider/mullvad"
+	"github.com/qdm12/gluetun/internal/provider/nordvpn"
+	"github.com/qdm12/gluetun/internal/provider/privado"
+	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess"
+	"github.com/qdm12/gluetun/internal/provider/privatevpn"
+	"github.com/qdm12/gluetun/internal/provider/protonvpn"
+	"github.com/qdm12/gluetun/internal/provider/purevpn"
+	"github.com/qdm12/gluetun/internal/provider/surfshark"
+	"github.com/qdm12/gluetun/internal/provider/torguard"
+	"github.com/qdm12/gluetun/internal/provider/vyprvpn"
+	"github.com/qdm12/gluetun/internal/provider/windscribe"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
 )
@@ -23,36 +39,37 @@ type Provider interface {
 		syncState func(port uint16) (pfFilepath string))
 }
 
-func New(provider string, allServers models.AllServers, timeNow timeNowFunc) Provider {
+func New(provider string, allServers models.AllServers, timeNow func() time.Time) Provider {
+	randSource := rand.NewSource(timeNow().UnixNano())
 	switch provider {
 	case constants.Cyberghost:
-		return newCyberghost(allServers.Cyberghost.Servers, timeNow)
+		return cyberghost.New(allServers.Cyberghost.Servers, randSource)
 	case constants.Fastestvpn:
-		return newFastestvpn(allServers.Fastestvpn.Servers, timeNow)
+		return fastestvpn.New(allServers.Fastestvpn.Servers, randSource)
 	case constants.HideMyAss:
-		return newHideMyAss(allServers.HideMyAss.Servers, timeNow)
+		return hidemyass.New(allServers.HideMyAss.Servers, randSource)
 	case constants.Mullvad:
-		return newMullvad(allServers.Mullvad.Servers, timeNow)
+		return mullvad.New(allServers.Mullvad.Servers, randSource)
 	case constants.Nordvpn:
-		return newNordvpn(allServers.Nordvpn.Servers, timeNow)
+		return nordvpn.New(allServers.Nordvpn.Servers, randSource)
 	case constants.Privado:
-		return newPrivado(allServers.Privado.Servers, timeNow)
+		return privado.New(allServers.Privado.Servers, randSource)
 	case constants.PrivateInternetAccess:
-		return newPrivateInternetAccess(allServers.Pia.Servers, timeNow)
+		return privateinternetaccess.New(allServers.Pia.Servers, randSource, timeNow)
 	case constants.Privatevpn:
-		return newPrivatevpn(allServers.Privatevpn.Servers, timeNow)
+		return privatevpn.New(allServers.Privatevpn.Servers, randSource)
 	case constants.Protonvpn:
-		return newProtonvpn(allServers.Protonvpn.Servers, timeNow)
+		return protonvpn.New(allServers.Protonvpn.Servers, randSource)
 	case constants.Purevpn:
-		return newPurevpn(allServers.Purevpn.Servers, timeNow)
+		return purevpn.New(allServers.Purevpn.Servers, randSource)
 	case constants.Surfshark:
-		return newSurfshark(allServers.Surfshark.Servers, timeNow)
+		return surfshark.New(allServers.Surfshark.Servers, randSource)
 	case constants.Torguard:
-		return newTorguard(allServers.Torguard.Servers, timeNow)
+		return torguard.New(allServers.Torguard.Servers, randSource)
 	case constants.Vyprvpn:
-		return newVyprvpn(allServers.Vyprvpn.Servers, timeNow)
+		return vyprvpn.New(allServers.Vyprvpn.Servers, randSource)
 	case constants.Windscribe:
-		return newWindscribe(allServers.Windscribe.Servers, timeNow)
+		return windscribe.New(allServers.Windscribe.Servers, randSource)
 	default:
 		return nil // should never occur
 	}
