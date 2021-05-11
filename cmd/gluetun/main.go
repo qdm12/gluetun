@@ -49,6 +49,7 @@ var (
 
 var (
 	errSetupRouting = errors.New("cannot setup routing")
+	errCreateUser   = errors.New("cannot create user")
 )
 
 func main() {
@@ -177,7 +178,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const defaultUsername = "nonrootuser"
 	nonRootUsername, err := alpineConf.CreateUser(defaultUsername, puid)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", errCreateUser, err)
 	}
 	if nonRootUsername != defaultUsername {
 		logger.Info("using existing username %s corresponding to user id %d", nonRootUsername, puid)
