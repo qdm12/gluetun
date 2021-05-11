@@ -337,20 +337,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	if err := shutdownOrder.Shutdown(shutdownMaxTimeout, logger); err != nil {
-		return err
-	}
-
-	// Only disable firewall if everything has shutdown gracefully
-	if allSettings.Firewall.Enabled {
-		const enable = false
-		err := firewallConf.SetEnabled(context.Background(), enable)
-		if err != nil {
-			logger.Error(err)
-		}
-	}
-
-	return nil
+	return shutdownOrder.Shutdown(shutdownMaxTimeout, logger)
 }
 
 func printVersions(ctx context.Context, logger logging.Logger,
