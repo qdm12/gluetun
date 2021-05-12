@@ -14,9 +14,7 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (c *cli) OpenvpnConfig(os os.OS) error {
-	logger := logging.New(logging.StdLog)
-
+func (c *cli) OpenvpnConfig(os os.OS, logger logging.Logger) error {
 	var allSettings configuration.Settings
 	err := allSettings.Read(params.NewEnv(), os, logger)
 	if err != nil {

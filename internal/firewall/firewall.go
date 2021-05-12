@@ -58,7 +58,7 @@ func NewConfigurator(logger logging.Logger, routing routing.Routing, openFile os
 	commander := command.NewCommander()
 	return &configurator{
 		commander:         commander,
-		logger:            logger.NewChild(logging.SetPrefix("firewall: ")),
+		logger:            logger,
 		routing:           routing,
 		openFile:          openFile,
 		allowedInputPorts: make(map[uint16]string),

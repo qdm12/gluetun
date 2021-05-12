@@ -47,16 +47,15 @@ const defaultBackoffTime = 5 * time.Second
 func NewLooper(settings configuration.Updater, currentServers models.AllServers,
 	storage storage.Storage, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger logging.Logger) Looper {
-	loggerWithPrefix := logger.NewChild(logging.SetPrefix("updater: "))
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
 		},
-		updater:       New(settings, client, currentServers, loggerWithPrefix),
+		updater:       New(settings, client, currentServers, logger),
 		storage:       storage,
 		setAllServers: setAllServers,
-		logger:        loggerWithPrefix,
+		logger:        logger,
 		start:         make(chan struct{}),
 		running:       make(chan models.LoopStatus),
 		stop:          make(chan struct{}),

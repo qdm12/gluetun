@@ -63,7 +63,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, nativeos.Interrupt)
 	ctx, cancel := context.WithCancel(ctx)
 
-	logger := logging.New(logging.StdLog)
+	logger := logging.NewParent(logging.Settings{})
 
 	args := nativeos.Args
 	os := os.New()
@@ -107,8 +107,8 @@ func main() {
 
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.Logger, os os.OS, osUser user.OSUser, unix unix.Unix,
-	cli cli.CLI) error {
+	args []string, logger logging.ParentLogger, os os.OS,
+	osUser user.OSUser, unix unix.Unix, cli cli.CLI) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -116,9 +116,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		case "clientkey":
 			return cli.ClientKey(args[2:], os.OpenFile)
 		case "openvpnconfig":
-			return cli.OpenvpnConfig(os)
+			return cli.OpenvpnConfig(os, logger)
 		case "update":
-			return cli.Update(ctx, args[2:], os)
+			return cli.Update(ctx, args[2:], os, logger)
 		default:
 			return fmt.Errorf("command %q is unknown", args[1])
 		}
@@ -128,13 +128,18 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
-	ovpnConf := openvpn.NewConfigurator(logger, os, unix)
+	ovpnConf := openvpn.NewConfigurator(
+		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
+		os, unix)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
-	dnsConf := unbound.NewConfigurator(logger, os.OpenFile, dnsCrypto,
+	dnsConf := unbound.NewConfigurator(nil, os.OpenFile, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
-	routingConf := routing.NewRouting(logger)
-	firewallConf := firewall.NewConfigurator(logger, routingConf, os.OpenFile)
+	routingConf := routing.NewRouting(
+		logger.NewChild(logging.Settings{Prefix: "routing: "}))
+	firewallConf := firewall.NewConfigurator(
+		logger.NewChild(logging.Settings{Prefix: "firewall: "}),
+		routingConf, os.OpenFile)
 
 	fmt.Println(gluetunLogging.Splash(buildInfo))
 
@@ -145,7 +150,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	})
 
 	var allSettings configuration.Settings
-	err := allSettings.Read(params.NewEnv(), os, logger.NewChild(logging.SetPrefix("configuration: ")))
+	err := allSettings.Read(params.NewEnv(), os,
+		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
 	if err != nil {
 		return err
 	}
@@ -159,7 +165,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
-	storage := storage.New(logger, os, constants.ServersData)
+	storage := storage.New(
+		logger.NewChild(logging.Settings{Prefix: "storage: "}),
+		os, constants.ServersData)
 	allServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
 		return err
@@ -276,30 +284,36 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go openvpnLooper.Run(openvpnCtx, openvpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
-		allServers, storage, openvpnLooper.SetServers, httpClient, logger)
+		allServers, storage, openvpnLooper.SetServers, httpClient,
+		logger.NewChild(logging.Settings{Prefix: "updater: "}))
 	updaterCtx, updaterDone := tickerWave.Add("updater", shutdownRoutineTimeout)
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
 	go updaterLooper.Run(updaterCtx, updaterDone)
 
+	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
-		logger, nonRootUsername, puid, pgid)
+		unboundLogger, nonRootUsername, puid, pgid)
 	dnsCtx, dnsDone := dnsWave.Add("unbound", shutdownRoutineTimeout)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(dnsCtx, dnsDone)
 
-	publicIPLooper := publicip.NewLooper(
-		httpClient, logger, allSettings.PublicIP, puid, pgid, os)
+	publicIPLooper := publicip.NewLooper(httpClient,
+		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
+		allSettings.PublicIP, puid, pgid, os)
 	pubIPCtx, pubIPDone := serverWave.Add("public IP", shutdownRoutineTimeout)
 	go publicIPLooper.Run(pubIPCtx, pubIPDone)
 
 	pubIPTickerCtx, pubIPTickerDone := tickerWave.Add("public IP", shutdownRoutineTimeout)
 	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
 
-	httpProxyLooper := httpproxy.NewLooper(logger, allSettings.HTTPProxy)
+	httpProxyLooper := httpproxy.NewLooper(
+		logger.NewChild(logging.Settings{Prefix: "http proxy: "}),
+		allSettings.HTTPProxy)
 	httpProxyCtx, httpProxyDone := serverWave.Add("http proxy", shutdownRoutineTimeout)
 	go httpProxyLooper.Run(httpProxyCtx, httpProxyDone)
 
-	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks, logger)
+	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks,
+		logger.NewChild(logging.Settings{Prefix: "shadowsocks: "}))
 	shadowsocksCtx, shadowsocksDone := serverWave.Add("shadowsocks proxy", shutdownRoutineTimeout)
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 
@@ -311,11 +325,13 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlServerAddress := fmt.Sprintf("0.0.0.0:%d", allSettings.ControlServer.Port)
 	controlServerLogging := allSettings.ControlServer.Log
 	httpServer := server.New(controlServerAddress, controlServerLogging,
-		logger, buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
+		logger.NewChild(logging.Settings{Prefix: "http server: "}),
+		buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
 	httpServerCtx, httpServerDone := controlWave.Add("http server", shutdownRoutineTimeout)
 	go httpServer.Run(httpServerCtx, httpServerDone)
 
-	healthcheckServer := healthcheck.NewServer(constants.HealthcheckAddress, logger)
+	healthcheckServer := healthcheck.NewServer(constants.HealthcheckAddress,
+		logger.NewChild(logging.Settings{Prefix: "healthcheck: "}))
 	healthServerCtx, healthServerDone := healthWave.Add("HTTP health server", shutdownRoutineTimeout)
 	go healthcheckServer.Run(healthServerCtx, healthy, healthServerDone)
 

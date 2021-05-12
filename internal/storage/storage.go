@@ -22,7 +22,7 @@ type storage struct {
 func New(logger logging.Logger, os os.OS, filepath string) Storage {
 	return &storage{
 		os:       os,
-		logger:   logger.NewChild(logging.SetPrefix("storage: ")),
+		logger:   logger,
 		filepath: filepath,
 	}
 }

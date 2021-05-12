@@ -29,7 +29,7 @@ type configurator struct {
 
 func NewConfigurator(logger logging.Logger, os os.OS, unix unix.Unix) Configurator {
 	return &configurator{
-		logger:    logger.NewChild(logging.SetPrefix("openvpn configurator: ")),
+		logger:    logger,
 		commander: command.NewCommander(),
 		os:        os,
 		unix:      unix,

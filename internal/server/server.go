@@ -28,12 +28,11 @@ func New(address string, logEnabled bool, logger logging.Logger,
 	buildInfo models.BuildInformation,
 	openvpnLooper openvpn.Looper, unboundLooper dns.Looper,
 	updaterLooper updater.Looper, publicIPLooper publicip.Looper) Server {
-	serverLogger := logger.NewChild(logging.SetPrefix("http server: "))
-	handler := newHandler(serverLogger, logEnabled, buildInfo,
+	handler := newHandler(logger, logEnabled, buildInfo,
 		openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
 	return &server{
 		address: address,
-		logger:  serverLogger,
+		logger:  logger,
 		handler: handler,
 	}
 }

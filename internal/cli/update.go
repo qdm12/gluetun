@@ -15,7 +15,7 @@ import (
 	"github.com/qdm12/golibs/os"
 )
 
-func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
+func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger logging.Logger) error {
 	options := configuration.Updater{CLI: true}
 	var flushToFile bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
@@ -39,7 +39,6 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS) error {
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
-	logger := logging.New(logging.StdLog)
 	if !flushToFile && !options.Stdout {
 		return fmt.Errorf("at least one of -file or -stdout must be specified")
 	}

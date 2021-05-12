@@ -58,7 +58,7 @@ func NewLooper(settings configuration.ShadowSocks, logger logging.Logger) Looper
 			status:   constants.Stopped,
 			settings: settings,
 		},
-		logger:      logger.NewChild(logging.SetPrefix("shadowsocks: ")),
+		logger:      logger,
 		start:       make(chan struct{}),
 		running:     make(chan models.LoopStatus),
 		stop:        make(chan struct{}),

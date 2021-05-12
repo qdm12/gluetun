@@ -65,7 +65,7 @@ const (
 func NewLooper(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
-	logger logging.Logger, client *http.Client, openFile os.OpenFileFunc,
+	logger logging.ParentLogger, client *http.Client, openFile os.OpenFileFunc,
 	tunnelReady chan<- struct{}, healthy <-chan bool) Looper {
 	return &looper{
 		state: state{
@@ -79,8 +79,8 @@ func NewLooper(settings configuration.OpenVPN,
 		conf:               conf,
 		fw:                 fw,
 		routing:            routing,
-		logger:             logger.NewChild(logging.SetPrefix("openvpn: ")),
-		pfLogger:           logger.NewChild(logging.SetPrefix("port forwarding: ")),
+		logger:             logger.NewChild(logging.Settings{Prefix: "openvpn: "}),
+		pfLogger:           logger.NewChild(logging.Settings{Prefix: "port forwarding: "}),
 		client:             client,
 		openFile:           openFile,
 		tunnelReady:        tunnelReady,
