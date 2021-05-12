@@ -355,7 +355,7 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, gateway net.
 	port uint16, signature string, expiration time.Time, err error) {
 	errSubstitutions := map[string]string{token: "<token>"}
 
-	queryParams := new(url.Values)
+	queryParams := make(url.Values)
 	queryParams.Add("token", token)
 	url := url.URL{
 		Scheme:   "https",
@@ -413,7 +413,7 @@ func bindPort(ctx context.Context, client *http.Client, gateway net.IP, data pia
 		return fmt.Errorf("%w: %s", ErrSerializePayload, err)
 	}
 
-	queryParams := new(url.Values)
+	queryParams := make(url.Values)
 	queryParams.Add("payload", payload)
 	queryParams.Add("signature", data.Signature)
 	url := url.URL{
