@@ -16,7 +16,6 @@ type Order interface {
 
 type order struct {
 	waves []Wave
-	total int // for logging only
 }
 
 func NewOrder() Order {

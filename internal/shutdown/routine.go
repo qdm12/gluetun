@@ -13,17 +13,6 @@ type routine struct {
 	timeout time.Duration
 }
 
-func newRoutine(name string) (r routine,
-	ctx context.Context, done chan struct{}) {
-	ctx, cancel := context.WithCancel(context.Background())
-	done = make(chan struct{})
-	return routine{
-		name:   name,
-		cancel: cancel,
-		done:   done,
-	}, ctx, done
-}
-
 func (r *routine) shutdown(ctx context.Context) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, r.timeout)
 	defer cancel()
