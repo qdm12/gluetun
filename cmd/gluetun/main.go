@@ -184,6 +184,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	if nonRootUsername != defaultUsername {
 		logger.Info("using existing username %s corresponding to user id %d", nonRootUsername, puid)
 	}
+	// set it for Unbound
+	// TODO remove this when migrating to qdm12/dns v2
+	allSettings.DNS.Unbound.Username = nonRootUsername
 
 	if err := os.Chown("/etc/unbound", puid, pgid); err != nil {
 		return err
@@ -292,7 +295,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
-		unboundLogger, nonRootUsername, puid, pgid)
+		unboundLogger, os.OpenFile)
 	dnsCtx, dnsDone := dnsWave.Add("unbound", shutdownRoutineTimeout)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(dnsCtx, dnsDone)

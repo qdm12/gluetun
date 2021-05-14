@@ -9,11 +9,15 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/dns/pkg/blacklist"
+	"github.com/qdm12/dns/pkg/check"
+	"github.com/qdm12/dns/pkg/nameserver"
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
 )
 
 type Looper interface {
@@ -28,11 +32,9 @@ type Looper interface {
 type looper struct {
 	state        state
 	conf         unbound.Configurator
+	blockBuilder blacklist.Builder
 	client       *http.Client
 	logger       logging.Logger
-	username     string
-	puid         int
-	pgid         int
 	loopLock     sync.Mutex
 	start        chan struct{}
 	running      chan models.LoopStatus
@@ -42,23 +44,22 @@ type looper struct {
 	backoffTime  time.Duration
 	timeNow      func() time.Time
 	timeSince    func(time.Time) time.Duration
+	openFile     os.OpenFileFunc
 }
 
 const defaultBackoffTime = 10 * time.Second
 
 func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *http.Client,
-	logger logging.Logger, username string, puid, pgid int) Looper {
+	logger logging.Logger, openFile os.OpenFileFunc) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
 		},
 		conf:         conf,
+		blockBuilder: blacklist.NewBuilder(client),
 		client:       client,
 		logger:       logger,
-		username:     username,
-		puid:         puid,
-		pgid:         pgid,
 		start:        make(chan struct{}),
 		running:      make(chan models.LoopStatus),
 		stop:         make(chan struct{}),
@@ -67,6 +68,7 @@ func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *ht
 		backoffTime:  defaultBackoffTime,
 		timeNow:      time.Now,
 		timeSince:    time.Since,
+		openFile:     openFile,
 	}
 }
 
@@ -197,12 +199,15 @@ func (l *looper) setupUnbound(ctx context.Context, previousCrashed bool) (
 	collectLinesDone := make(chan struct{})
 	go l.collectLines(stdoutLines, stderrLines, collectLinesDone)
 
-	l.conf.UseDNSInternally(net.IP{127, 0, 0, 1})                                                  // use Unbound
-	if err := l.conf.UseDNSSystemWide(net.IP{127, 0, 0, 1}, settings.KeepNameserver); err != nil { // use Unbound
+	// use Unbound
+	nameserver.UseDNSInternally(net.IP{127, 0, 0, 1})
+	err = nameserver.UseDNSSystemWide(l.openFile,
+		net.IP{127, 0, 0, 1}, settings.KeepNameserver)
+	if err != nil {
 		l.logger.Error(err)
 	}
 
-	if err := l.conf.WaitForUnbound(ctx); err != nil {
+	if err := check.WaitForDNS(ctx, net.DefaultResolver); err != nil {
 		if !previousCrashed {
 			l.running <- constants.Crashed
 		}
@@ -243,34 +248,25 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 		} else {
 			l.logger.Info("using plaintext DNS at address %s", targetIP)
 		}
-		l.conf.UseDNSInternally(targetIP)
-		if err := l.conf.UseDNSSystemWide(targetIP, settings.KeepNameserver); err != nil {
+		nameserver.UseDNSInternally(targetIP)
+		if err := nameserver.UseDNSSystemWide(l.openFile,
+			targetIP, settings.KeepNameserver); err != nil {
 			l.logger.Error(err)
 		}
 		return
 	}
 
-	// Try with any IPv4 address from the providers chosen
-	for _, provider := range settings.Unbound.Providers {
-		data, _ := unbound.GetProviderData(provider)
-		for _, targetIP = range data.IPs {
-			if targetIP.To4() != nil {
-				if fallback {
-					l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
-				} else {
-					l.logger.Info("using plaintext DNS at address %s", targetIP)
-				}
-				l.conf.UseDNSInternally(targetIP)
-				if err := l.conf.UseDNSSystemWide(targetIP, settings.KeepNameserver); err != nil {
-					l.logger.Error(err)
-				}
-				return
-			}
-		}
+	provider := settings.Unbound.Providers[0]
+	targetIP = provider.DoT().IPv4[0]
+	if fallback {
+		l.logger.Info("falling back on plaintext DNS at address " + targetIP.String())
+	} else {
+		l.logger.Info("using plaintext DNS at address " + targetIP.String())
 	}
-
-	// No IPv4 address found
-	l.logger.Error("no ipv4 DNS address found for providers %s", settings.Unbound.Providers)
+	nameserver.UseDNSInternally(targetIP)
+	if err := nameserver.UseDNSSystemWide(l.openFile, targetIP, settings.KeepNameserver); err != nil {
+		l.logger.Error(err)
+	}
 }
 
 func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
@@ -339,18 +335,16 @@ func (l *looper) updateFiles(ctx context.Context) (err error) {
 	settings := l.GetSettings()
 
 	l.logger.Info("downloading hostnames and IP block lists")
-	hostnameLines, ipLines, errs := l.conf.BuildBlocked(ctx, l.client,
-		settings.BlockMalicious, settings.BlockAds, settings.BlockSurveillance,
-		settings.Unbound.BlockedHostnames, settings.Unbound.BlockedIPs,
-		settings.Unbound.AllowedHostnames)
+	blockedHostnames, blockedIPs, blockedIPNets, errs := l.blockBuilder.All(
+		ctx, settings.BlacklistBuild)
 	for _, err := range errs {
 		l.logger.Warn(err)
 	}
 
-	if err := l.conf.MakeUnboundConf(
-		settings.Unbound, hostnameLines, ipLines,
-		l.username, l.puid, l.pgid); err != nil {
-		return err
-	}
-	return nil
+	// TODO change to BlockHostnames() when migrating to qdm12/dns v2
+	settings.Unbound.Blacklist.FqdnHostnames = blockedHostnames
+	settings.Unbound.Blacklist.IPs = blockedIPs
+	settings.Unbound.Blacklist.IPNets = blockedIPNets
+
+	return l.conf.MakeUnboundConf(settings.Unbound)
 }

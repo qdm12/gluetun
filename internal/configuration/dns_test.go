@@ -5,7 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qdm12/dns/pkg/models"
+	"github.com/qdm12/dns/pkg/blacklist"
+	"github.com/qdm12/dns/pkg/provider"
+	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,13 +30,17 @@ func Test_DNS_Lines(t *testing.T) {
 			settings: DNS{
 				Enabled:        true,
 				KeepNameserver: true,
-				Unbound: models.Settings{
-					Providers: []string{"cloudflare"},
+				Unbound: unbound.Settings{
+					Providers: []provider.Provider{
+						provider.Cloudflare(),
+					},
 				},
-				BlockMalicious:    true,
-				BlockAds:          true,
-				BlockSurveillance: true,
-				UpdatePeriod:      time.Hour,
+				BlacklistBuild: blacklist.BuilderSettings{
+					BlockMalicious:    true,
+					BlockAds:          true,
+					BlockSurveillance: true,
+				},
+				UpdatePeriod: time.Hour,
 			},
 			lines: []string{
 				"|--DNS:",
@@ -42,7 +48,7 @@ func Test_DNS_Lines(t *testing.T) {
 				"   |--DNS over TLS:",
 				"      |--Unbound:",
 				"          |--DNS over TLS providers:",
-				"              |--cloudflare",
+				"              |--Cloudflare",
 				"          |--Listening port: 0",
 				"          |--Access control:",
 				"              |--Allowed:",
@@ -52,12 +58,9 @@ func Test_DNS_Lines(t *testing.T) {
 				"          |--Verbosity level: 0/5",
 				"          |--Verbosity details level: 0/4",
 				"          |--Validation log level: 0/2",
-				"          |--Blocked hostnames:",
-				"          |--Blocked IP addresses:",
-				"          |--Allowed hostnames:",
-				"      |--Block malicious: enabled",
-				"      |--Block ads: enabled",
-				"      |--Block surveillance: enabled",
+				"          |--Username: ",
+				"      |--Blacklist:",
+				"         |--Blocked categories: malicious, surveillance, ads",
 				"      |--Update: every 1h0m0s",
 			},
 		},

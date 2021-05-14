@@ -6,7 +6,7 @@ import (
 	"net"
 	"strings"
 
-	unbound "github.com/qdm12/dns/pkg/unbound"
+	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/golibs/params"
 )
 
@@ -47,14 +47,6 @@ func (settings *DNS) readUnbound(r reader) (err error) {
 	}
 	settings.Unbound.ValidationLogLevel = uint8(validationLogLevel)
 
-	if err := settings.readUnboundPrivateAddresses(r.env); err != nil {
-		return err
-	}
-
-	if err := settings.readUnboundUnblockedHostnames(r); err != nil {
-		return err
-	}
-
 	settings.Unbound.AccessControl.Allowed = []net.IPNet{
 		{
 			IP:   net.IPv4zero,
@@ -78,56 +70,16 @@ func (settings *DNS) readUnboundProviders(env params.Env) (err error) {
 	if err != nil {
 		return err
 	}
-	for _, provider := range strings.Split(s, ",") {
-		_, ok := unbound.GetProviderData(provider)
-		if !ok {
-			return fmt.Errorf("%w: %s", ErrInvalidDNSOverTLSProvider, provider)
+	for _, field := range strings.Split(s, ",") {
+		dnsProvider, err := provider.Parse(field)
+		if err != nil {
+			return fmt.Errorf("%w: %s", ErrInvalidDNSOverTLSProvider, err)
 		}
-		settings.Unbound.Providers = append(settings.Unbound.Providers, provider)
+		settings.Unbound.Providers = append(settings.Unbound.Providers, dnsProvider)
 	}
-	return nil
-}
-
-var (
-	ErrInvalidPrivateAddress = errors.New("private address is not a valid IP or CIDR range")
-)
-
-func (settings *DNS) readUnboundPrivateAddresses(env params.Env) (err error) {
-	privateAddresses, err := env.CSV("DOT_PRIVATE_ADDRESS")
-	if err != nil {
-		return err
-	} else if len(privateAddresses) == 0 {
-		return nil
-	}
-	for _, address := range privateAddresses {
-		ip := net.ParseIP(address)
-		_, _, err := net.ParseCIDR(address)
-		if ip == nil && err != nil {
-			return fmt.Errorf("%w: %s", ErrInvalidPrivateAddress, address)
-		}
-	}
-	settings.Unbound.BlockedIPs = append(
-		settings.Unbound.BlockedIPs, privateAddresses...)
 	return nil
 }
 
 var (
 	ErrInvalidHostname = errors.New("invalid hostname")
 )
-
-func (settings *DNS) readUnboundUnblockedHostnames(r reader) (err error) {
-	hostnames, err := r.env.CSV("UNBLOCK")
-	if err != nil {
-		return err
-	} else if len(hostnames) == 0 {
-		return nil
-	}
-	for _, hostname := range hostnames {
-		if !r.regex.MatchHostname(hostname) {
-			return fmt.Errorf("%w: %s", ErrInvalidHostname, hostname)
-		}
-	}
-	settings.Unbound.AllowedHostnames = append(
-		settings.Unbound.AllowedHostnames, hostnames...)
-	return nil
-}

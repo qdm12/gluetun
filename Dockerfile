@@ -105,7 +105,7 @@ ENV VPNSP=pia \
     # DNS over TLS
     DOT=on \
     DOT_PROVIDERS=cloudflare \
-    DOT_PRIVATE_ADDRESS=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:0:0/96 \
+    DOT_PRIVATE_ADDRESS=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:7f00:1/104,::ffff:a00:0/104,::ffff:a9fe:0/112,::ffff:ac10:0/108,::ffff:c0a8:0/112 \
     DOT_VERBOSITY=1 \
     DOT_VERBOSITY_DETAILS=0 \
     DOT_VALIDATION_LOGLEVEL=0 \
