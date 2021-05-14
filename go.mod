@@ -12,5 +12,5 @@ require (
 	github.com/qdm12/updated v0.0.0-20210102012151-76b7f5994638
 	github.com/stretchr/testify v1.7.0
 	github.com/vishvananda/netlink v1.1.0
-	golang.org/x/sys v0.0.0-20201223074533-0d417f636930
+	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015
 )
