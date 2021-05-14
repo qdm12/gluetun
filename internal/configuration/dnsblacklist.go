@@ -3,9 +3,9 @@ package configuration
 import (
 	"errors"
 	"fmt"
-	"net"
 
 	"github.com/qdm12/golibs/params"
+	"inet.af/netaddr"
 )
 
 func (settings *DNS) readBlacklistBuilding(r reader) (err error) {
@@ -48,19 +48,19 @@ func (settings *DNS) readPrivateAddresses(env params.Env) (err error) {
 		return nil
 	}
 
-	ips := make([]net.IP, 0, len(privateAddresses))
-	ipNets := make([]*net.IPNet, 0, len(privateAddresses))
+	ips := make([]netaddr.IP, 0, len(privateAddresses))
+	ipPrefixes := make([]netaddr.IPPrefix, 0, len(privateAddresses))
 
 	for _, address := range privateAddresses {
-		ip := net.ParseIP(address)
-		if ip != nil {
+		ip, err := netaddr.ParseIP(address)
+		if err == nil {
 			ips = append(ips, ip)
 			continue
 		}
 
-		_, ipNet, err := net.ParseCIDR(address)
-		if err == nil && ipNet != nil {
-			ipNets = append(ipNets, ipNet)
+		ipPrefix, err := netaddr.ParseIPPrefix(address)
+		if err == nil {
+			ipPrefixes = append(ipPrefixes, ipPrefix)
 			continue
 		}
 
@@ -68,7 +68,7 @@ func (settings *DNS) readPrivateAddresses(env params.Env) (err error) {
 	}
 
 	settings.BlacklistBuild.AddBlockedIPs = append(settings.BlacklistBuild.AddBlockedIPs, ips...)
-	settings.BlacklistBuild.AddBlockedIPNets = append(settings.BlacklistBuild.AddBlockedIPNets, ipNets...)
+	settings.BlacklistBuild.AddBlockedIPPrefixes = append(settings.BlacklistBuild.AddBlockedIPPrefixes, ipPrefixes...)
 
 	return nil
 }

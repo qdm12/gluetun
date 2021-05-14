@@ -3,11 +3,11 @@ package configuration
 import (
 	"errors"
 	"fmt"
-	"net"
 	"strings"
 
 	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/golibs/params"
+	"inet.af/netaddr"
 )
 
 func (settings *DNS) readUnbound(r reader) (err error) {
@@ -47,15 +47,9 @@ func (settings *DNS) readUnbound(r reader) (err error) {
 	}
 	settings.Unbound.ValidationLogLevel = uint8(validationLogLevel)
 
-	settings.Unbound.AccessControl.Allowed = []net.IPNet{
-		{
-			IP:   net.IPv4zero,
-			Mask: net.IPv4Mask(0, 0, 0, 0),
-		},
-		{
-			IP:   net.IPv6zero,
-			Mask: net.IPMask{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-		},
+	settings.Unbound.AccessControl.Allowed = []netaddr.IPPrefix{
+		{IP: netaddr.IPv4(0, 0, 0, 0)},
+		{IP: netaddr.IPv6Raw([16]byte{})},
 	}
 
 	return nil

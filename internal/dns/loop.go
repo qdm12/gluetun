@@ -335,7 +335,7 @@ func (l *looper) updateFiles(ctx context.Context) (err error) {
 	settings := l.GetSettings()
 
 	l.logger.Info("downloading hostnames and IP block lists")
-	blockedHostnames, blockedIPs, blockedIPNets, errs := l.blockBuilder.All(
+	blockedHostnames, blockedIPs, blockedIPPrefixes, errs := l.blockBuilder.All(
 		ctx, settings.BlacklistBuild)
 	for _, err := range errs {
 		l.logger.Warn(err)
@@ -344,7 +344,7 @@ func (l *looper) updateFiles(ctx context.Context) (err error) {
 	// TODO change to BlockHostnames() when migrating to qdm12/dns v2
 	settings.Unbound.Blacklist.FqdnHostnames = blockedHostnames
 	settings.Unbound.Blacklist.IPs = blockedIPs
-	settings.Unbound.Blacklist.IPNets = blockedIPNets
+	settings.Unbound.Blacklist.IPPrefixes = blockedIPPrefixes
 
 	return l.conf.MakeUnboundConf(settings.Unbound)
 }
