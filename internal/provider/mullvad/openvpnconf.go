@@ -30,7 +30,6 @@ func (m *Mullvad) BuildConf(connection models.OpenVPNConnection,
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
-		"fast-io",
 		"script-security 2",
 
 		// Added constant values
@@ -51,6 +50,10 @@ func (m *Mullvad) BuildConf(connection models.OpenVPNConnection,
 
 	if settings.Auth != "" {
 		lines = append(lines, "auth "+settings.Auth)
+	}
+
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "fast-io")
 	}
 
 	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {

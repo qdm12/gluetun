@@ -38,7 +38,6 @@ func (n *Nordvpn) BuildConf(connection models.OpenVPNConnection,
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",
 		"comp-lzo no",
-		"fast-io",
 		"key-direction 1",
 		"ping 15",
 		"ping-restart 0",
@@ -58,6 +57,10 @@ func (n *Nordvpn) BuildConf(connection models.OpenVPNConnection,
 		"data-ciphers-fallback " + settings.Cipher,
 		"data-ciphers " + settings.Cipher,
 		"auth " + settings.Auth,
+	}
+
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "fast-io")
 	}
 
 	if !settings.Root {

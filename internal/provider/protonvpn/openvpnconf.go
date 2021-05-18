@@ -37,7 +37,6 @@ func (p *Protonvpn) BuildConf(connection models.OpenVPNConnection,
 		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",
-		"fast-io",
 		"key-direction 1",
 		"pull",
 		"comp-lzo no",
@@ -57,6 +56,10 @@ func (p *Protonvpn) BuildConf(connection models.OpenVPNConnection,
 		"data-ciphers-fallback " + settings.Cipher,
 		"data-ciphers " + settings.Cipher,
 		"auth " + settings.Auth,
+	}
+
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "fast-io")
 	}
 
 	if !settings.Root {

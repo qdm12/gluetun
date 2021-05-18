@@ -37,7 +37,6 @@ func (t *Torguard) BuildConf(connection models.OpenVPNConnection,
 		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",
-		"fast-io",
 		"key-direction 1",
 		"script-security 2",
 		"ncp-disable",
@@ -65,6 +64,10 @@ func (t *Torguard) BuildConf(connection models.OpenVPNConnection,
 
 	if !settings.Root {
 		lines = append(lines, "user "+username)
+	}
+
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "fast-io")
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
