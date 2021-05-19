@@ -22,7 +22,9 @@ func (settings *Provider) privateinternetaccessLines() (lines []string) {
 
 	lines = append(lines, lastIndent+"Encryption preset: "+settings.ServerSelection.EncryptionPreset)
 
-	lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
+	if settings.ServerSelection.CustomPort > 0 {
+		lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
+	}
 
 	if settings.PortForwarding.Enabled {
 		lines = append(lines, lastIndent+"Port forwarding:")
