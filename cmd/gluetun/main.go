@@ -144,6 +144,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	fmt.Println(gluetunLogging.Splash(buildInfo))
 
 	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
+		"Alpine":   alpineConf.Version,
 		"OpenVPN":  ovpnConf.Version,
 		"Unbound":  dnsConf.Version,
 		"IPtables": firewallConf.Version,
