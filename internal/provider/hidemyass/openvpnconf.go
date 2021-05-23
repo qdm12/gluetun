@@ -43,9 +43,9 @@ func (h *HideMyAss) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
 		"remote " + connection.IP.String() + strconv.Itoa(int(connection.Port)),
-		"data-ciphers-fallback " + settings.Cipher,
-		"data-ciphers " + settings.Cipher,
 	}
+
+	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
 
 	if settings.Auth != "" {
 		lines = append(lines, "auth "+settings.Auth)

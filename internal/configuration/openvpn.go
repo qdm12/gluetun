@@ -21,6 +21,7 @@ type OpenVPN struct {
 	Auth      string   `json:"auth"`
 	Provider  Provider `json:"provider"`
 	Config    string   `json:"custom_config"`
+	Version   string   `json:"-"` // injected at runtime
 }
 
 func (settings *OpenVPN) String() string {

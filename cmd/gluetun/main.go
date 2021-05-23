@@ -158,6 +158,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	logger.Info(allSettings.String())
 
+	allSettings.OpenVPN.Version, _ = ovpnConf.Version(ctx)
+
 	if err := os.MkdirAll("/tmp/gluetun", 0644); err != nil {
 		return err
 	}

@@ -44,9 +44,9 @@ func (m *Mullvad) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		connection.ProtoLine(),
 		connection.RemoteLine(),
-		"data-ciphers-fallback " + settings.Cipher,
-		"data-ciphers " + settings.Cipher,
 	}
+
+	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
 
 	if settings.Auth != "" {
 		lines = append(lines, "auth "+settings.Auth)

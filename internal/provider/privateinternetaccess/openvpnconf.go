@@ -57,10 +57,10 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		connection.ProtoLine(),
 		connection.RemoteLine(),
-		"data-ciphers-fallback " + settings.Cipher,
-		"data-ciphers " + settings.Cipher,
 		"auth " + settings.Auth,
 	}
+
+	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
 
 	if strings.HasSuffix(settings.Cipher, "-gcm") {
 		lines = append(lines, "ncp-disable")

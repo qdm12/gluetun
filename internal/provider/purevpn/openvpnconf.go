@@ -46,9 +46,9 @@ func (p *Purevpn) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		connection.ProtoLine(),
 		connection.RemoteLine(),
-		"data-ciphers-fallback " + settings.Cipher,
-		"data-ciphers " + settings.Cipher,
 	}
+
+	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
 
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "explicit-exit-notify")
