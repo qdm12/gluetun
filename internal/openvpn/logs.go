@@ -90,6 +90,7 @@ That error usually happens because either:
 
 4. Something else ➡️ https://github.com/qdm12/gluetun/issues/new/choose
 `
+		level = logging.LevelWarn
 	default:
 		filtered = s
 		level = logging.LevelInfo
