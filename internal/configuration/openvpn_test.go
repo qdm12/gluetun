@@ -40,7 +40,8 @@ func Test_OpenVPN_JSON(t *testing.T) {
       "owned": false,
       "custom_port": 0,
       "numbers": null,
-      "encryption_preset": ""
+      "encryption_preset": "",
+      "free_only": false
     },
     "extra_config": {
       "encryption_preset": "",

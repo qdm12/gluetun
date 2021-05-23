@@ -1,6 +1,8 @@
 package protonvpn
 
 import (
+	"strings"
+
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -15,7 +17,8 @@ func (p *Protonvpn) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			utils.FilterByPossibilities(server.Name, selection.Names):
+			utils.FilterByPossibilities(server.Name, selection.Names),
+			selection.FreeOnly && !strings.Contains(strings.ToLower(server.Name), "free"):
 		default:
 			servers = append(servers, server)
 		}

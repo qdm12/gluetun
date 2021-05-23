@@ -32,6 +32,9 @@ type ServerSelection struct { //nolint:maligned
 
 	// PIA
 	EncryptionPreset string `json:"encryption_preset"`
+
+	// ProtonVPN
+	FreeOnly bool `json:"free_only"`
 }
 
 type ExtraConfigOptions struct {

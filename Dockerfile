@@ -99,6 +99,8 @@ ENV VPNSP=pia \
     SERVER_NUMBER= \
     # NordVPN and ProtonVPN only:
     SERVER_NAME= \
+    # ProtonVPN only:
+    FREE_ONLY= \
     # Openvpn
     OPENVPN_CIPHER= \
     OPENVPN_AUTH= \

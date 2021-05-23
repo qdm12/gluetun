@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/golibs/params"
 )
 
 func (settings *Provider) protonvpnLines() (lines []string) {
@@ -23,6 +24,10 @@ func (settings *Provider) protonvpnLines() (lines []string) {
 
 	if len(settings.ServerSelection.Hostnames) > 0 {
 		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
+	}
+
+	if settings.ServerSelection.FreeOnly {
+		lines = append(lines, lastIndent+"Free only: yes")
 	}
 
 	return lines
@@ -67,6 +72,11 @@ func (settings *Provider) readProtonvpn(r reader) (err error) {
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.ProtonvpnHostnameChoices())
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.FreeOnly, err = r.env.YesNo("FREE_ONLY", params.Default("no"))
 	if err != nil {
 		return err
 	}
