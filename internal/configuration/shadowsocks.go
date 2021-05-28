@@ -44,7 +44,7 @@ func (settings *ShadowSocks) read(r reader) (err error) {
 		return err
 	}
 
-	settings.Password, err = r.getFromEnvOrSecretFile("SHADOWSOCKS_PASSWORD", false, nil)
+	settings.Password, err = r.getFromEnvOrSecretFile("SHADOWSOCKS_PASSWORD", settings.Enabled, nil)
 	if err != nil {
 		return err
 	}
