@@ -11,7 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
-	shadowsockslib "github.com/qdm12/ss-server/pkg"
+	shadowsockslib "github.com/qdm12/ss-server/pkg/tcpudp"
 )
 
 type Looper interface {

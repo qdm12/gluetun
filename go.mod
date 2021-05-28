@@ -8,7 +8,7 @@ require (
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/qdm12/dns v1.7.0
 	github.com/qdm12/golibs v0.0.0-20210402232648-cfebf1e87d1b
-	github.com/qdm12/ss-server v0.1.0
+	github.com/qdm12/ss-server v0.2.0
 	github.com/qdm12/updated v0.0.0-20210102012151-76b7f5994638
 	github.com/stretchr/testify v1.7.0
 	github.com/vishvananda/netlink v1.1.0
