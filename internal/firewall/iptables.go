@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"os"
 	"strings"
@@ -199,7 +199,7 @@ func (c *configurator) runUserPostRules(ctx context.Context, filepath string, re
 	} else if err != nil {
 		return err
 	}
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		_ = file.Close()
 		return err

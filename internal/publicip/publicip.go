@@ -4,7 +4,7 @@ package publicip
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math/rand"
 	"net"
 	"net/http"
@@ -55,7 +55,7 @@ func (i *ipGetter) Get(ctx context.Context) (ip net.IP, err error) {
 		return nil, fmt.Errorf("%w from %s: %s", ErrBadStatusCode, url, response.Status)
 	}
 
-	content, err := ioutil.ReadAll(response.Body)
+	content, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrCannotReadBody, err)
 	}

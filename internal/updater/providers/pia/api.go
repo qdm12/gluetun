@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 )
@@ -54,7 +54,7 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 		return data, fmt.Errorf("%w: %s", ErrHTTPStatusCodeNotOK, response.Status)
 	}
 
-	b, err := ioutil.ReadAll(response.Body)
+	b, err := io.ReadAll(response.Body)
 	if err != nil {
 		return data, err
 	}

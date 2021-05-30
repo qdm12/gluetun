@@ -3,7 +3,7 @@ package configuration
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"strings"
 
 	"github.com/qdm12/golibs/os"
@@ -49,7 +49,7 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 		return "", fmt.Errorf("%w: %s", ErrReadSecretFile, fileErr)
 	}
 
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		return "", fmt.Errorf("%w: %s", ErrReadSecretFile, err)
 	}
@@ -97,7 +97,7 @@ func readFromFile(openFile os.OpenFileFunc, filepath string) (b []byte, err erro
 	if err != nil {
 		return nil, err
 	}
-	b, err = ioutil.ReadAll(file)
+	b, err = io.ReadAll(file)
 	if err != nil {
 		_ = file.Close()
 		return nil, err

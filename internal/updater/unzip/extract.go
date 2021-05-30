@@ -3,7 +3,7 @@ package unzip
 import (
 	"archive/zip"
 	"bytes"
-	"io/ioutil"
+	"io"
 	"path/filepath"
 	"strings"
 )
@@ -24,7 +24,7 @@ func zipExtractAll(zipBytes []byte) (contents map[string][]byte, err error) {
 			return nil, err
 		}
 		defer f.Close()
-		contents[fileName], err = ioutil.ReadAll(f)
+		contents[fileName], err = io.ReadAll(f)
 		if err != nil {
 			return nil, err
 		}

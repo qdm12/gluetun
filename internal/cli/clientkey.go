@@ -3,7 +3,7 @@ package cli
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -20,7 +20,7 @@ func (c *cli) ClientKey(args []string, openFile os.OpenFileFunc) error {
 	if err != nil {
 		return err
 	}
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		_ = file.Close()
 		return err

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -326,7 +326,7 @@ func getOpenvpnCredentials(openFile os.OpenFileFunc) (username, password string,
 		return "", "", fmt.Errorf("%w: %s", errAuthFileRead, err)
 	}
 
-	authData, err := ioutil.ReadAll(file)
+	authData, err := io.ReadAll(file)
 	if err != nil {
 		_ = file.Close()
 		return "", "", fmt.Errorf("%w: %s", errAuthFileRead, err)
@@ -495,7 +495,7 @@ func makeNOKStatusError(response *http.Response, substitutions map[string]string
 	url := response.Request.URL.String()
 	url = replaceInString(url, substitutions)
 
-	b, _ := ioutil.ReadAll(response.Body)
+	b, _ := io.ReadAll(response.Body)
 	shortenMessage := string(b)
 	shortenMessage = strings.ReplaceAll(shortenMessage, "\n", "")
 	shortenMessage = strings.ReplaceAll(shortenMessage, "  ", " ")

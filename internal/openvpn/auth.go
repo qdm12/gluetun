@@ -1,7 +1,7 @@
 package openvpn
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 
@@ -34,7 +34,7 @@ func (c *configurator) WriteAuthFile(user, password string, puid, pgid int) erro
 		return file.Close()
 	}
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		_ = file.Close()
 		return err

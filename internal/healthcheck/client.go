@@ -3,7 +3,7 @@ package healthcheck
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -34,7 +34,7 @@ func (h *checker) Check(ctx context.Context, url string) error {
 	if response.StatusCode == http.StatusOK {
 		return nil
 	}
-	b, err := ioutil.ReadAll(response.Body)
+	b, err := io.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}

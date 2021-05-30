@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -31,7 +31,7 @@ func (u *unzipper) FetchAndExtract(ctx context.Context, url string) (
 		return nil, fmt.Errorf("%w: %s for %s", ErrHTTPStatusCodeNotOK, response.Status, url)
 	}
 
-	b, err := ioutil.ReadAll(response.Body)
+	b, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
