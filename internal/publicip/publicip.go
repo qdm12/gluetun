@@ -3,6 +3,7 @@ package publicip
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -26,6 +27,8 @@ func NewIPGetter(client *http.Client) IPGetter {
 		randIntn: rand.Intn,
 	}
 }
+
+var ErrParseIP = errors.New("cannot parse IP address")
 
 func (i *ipGetter) Get(ctx context.Context) (ip net.IP, err error) {
 	urls := []string{
@@ -63,7 +66,7 @@ func (i *ipGetter) Get(ctx context.Context) (ip net.IP, err error) {
 	s := strings.ReplaceAll(string(content), "\n", "")
 	ip = net.ParseIP(s)
 	if ip == nil {
-		return nil, fmt.Errorf("cannot parse IP address from %q", s)
+		return nil, fmt.Errorf("%w: %s", ErrParseIP, s)
 	}
 	return ip, nil
 }

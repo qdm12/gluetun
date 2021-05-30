@@ -2,9 +2,14 @@ package healthcheck
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+)
+
+var (
+	ErrHTTPStatusNotOK = errors.New("HTTP response status is not OK")
 )
 
 type Checker interface {
@@ -38,5 +43,5 @@ func (h *checker) Check(ctx context.Context, url string) error {
 	if err != nil {
 		return err
 	}
-	return fmt.Errorf("%s: %s", response.Status, string(b))
+	return fmt.Errorf("%w: %s: %s", ErrHTTPStatusNotOK, response.Status, string(b))
 }

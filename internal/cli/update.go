@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -13,6 +14,13 @@ import (
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/os"
+)
+
+var (
+	ErrNoFileOrStdoutFlag      = errors.New("at least one of -file or -stdout must be specified")
+	ErrSyncServers             = errors.New("cannot sync hardcoded and persisted servers")
+	ErrUpdateServerInformation = errors.New("cannot update server information")
+	ErrWriteToFile             = errors.New("cannot write updated information to file")
 )
 
 func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger logging.Logger) error {
@@ -40,7 +48,7 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 		return err
 	}
 	if !flushToFile && !options.Stdout {
-		return fmt.Errorf("at least one of -file or -stdout must be specified")
+		return ErrNoFileOrStdoutFlag
 	}
 
 	const clientTimeout = 10 * time.Second
@@ -48,16 +56,16 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 	storage := storage.New(logger, os, constants.ServersData)
 	currentServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
-		return fmt.Errorf("cannot update servers: %w", err)
+		return fmt.Errorf("%w: %s", ErrSyncServers, err)
 	}
 	updater := updater.New(options, httpClient, currentServers, logger)
 	allServers, err := updater.UpdateServers(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrUpdateServerInformation, err)
 	}
 	if flushToFile {
 		if err := storage.FlushToFile(allServers); err != nil {
-			return fmt.Errorf("cannot update servers: %w", err)
+			return fmt.Errorf("%w: %s", ErrWriteToFile, err)
 		}
 	}
 

@@ -41,16 +41,18 @@ func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction 
 	}
 	flags := strings.Fields(instruction)
 	if output, err := c.commander.Run(ctx, "ip6tables", flags...); err != nil {
-		return fmt.Errorf("%w \"ip6tables %s\": %s: %s", ErrIP6Tables, instruction, output, err)
+		return fmt.Errorf("%w: \"ip6tables %s\": %s: %s", ErrIP6Tables, instruction, output, err)
 	}
 	return nil
 }
+
+var errPolicyNotValid = errors.New("policy is not valid")
 
 func (c *configurator) setIPv6AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:
-		return fmt.Errorf("policy %q not recognized", policy)
+		return fmt.Errorf("%w: %s", errPolicyNotValid, policy)
 	}
 	return c.runIP6tablesInstructions(ctx, []string{
 		"--policy INPUT " + policy,

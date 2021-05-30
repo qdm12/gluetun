@@ -478,7 +478,7 @@ func writePortForwardedToFile(openFile os.OpenFileFunc,
 // replaceInErr is used to remove sensitive information from errors.
 func replaceInErr(err error, substitutions map[string]string) error {
 	s := replaceInString(err.Error(), substitutions)
-	return errors.New(s)
+	return errors.New(s) //nolint:goerr113
 }
 
 // replaceInString is used to remove sensitive information.

@@ -2,7 +2,7 @@ package configuration
 
 import (
 	"encoding/pem"
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -81,10 +81,12 @@ func readCyberghostClientKey(r reader) (clientKey string, err error) {
 	return extractClientKey(b)
 }
 
+var errDecodePEMBlockClientKey = errors.New("cannot decode PEM block from client key")
+
 func extractClientKey(b []byte) (key string, err error) {
 	pemBlock, _ := pem.Decode(b)
 	if pemBlock == nil {
-		return "", fmt.Errorf("cannot decode PEM block from client key")
+		return "", errDecodePEMBlockClientKey
 	}
 	parsedBytes := pem.EncodeToMemory(pemBlock)
 	s := string(parsedBytes)
@@ -102,10 +104,12 @@ func readCyberghostClientCertificate(r reader) (clientCertificate string, err er
 	return extractClientCertificate(b)
 }
 
+var errDecodePEMBlockClientCert = errors.New("cannot decode PEM block from client certificate")
+
 func extractClientCertificate(b []byte) (certificate string, err error) {
 	pemBlock, _ := pem.Decode(b)
 	if pemBlock == nil {
-		return "", fmt.Errorf("cannot decode PEM block from client certificate")
+		return "", errDecodePEMBlockClientCert
 	}
 	parsedBytes := pem.EncodeToMemory(pemBlock)
 	s := string(parsedBytes)

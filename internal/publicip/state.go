@@ -1,6 +1,7 @@
 package publicip
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"reflect"
@@ -31,6 +32,8 @@ func (l *looper) GetStatus() (status models.LoopStatus) {
 	defer l.state.statusMu.RUnlock()
 	return l.state.status
 }
+
+var ErrInvalidStatus = errors.New("invalid status")
 
 func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error) {
 	l.state.statusMu.Lock()
@@ -67,8 +70,8 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.state.status = status
 		return status.String(), nil
 	default:
-		return "", fmt.Errorf("status %q can only be %q or %q",
-			status, constants.Running, constants.Stopped)
+		return "", fmt.Errorf("%w: %s: it can only be one of: %s, %s",
+			ErrInvalidStatus, status, constants.Running, constants.Stopped)
 	}
 }
 

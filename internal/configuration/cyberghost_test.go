@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -71,11 +70,11 @@ zZjrL52saevO25cigVl+hxcnY8DTpbk=
 		err error
 	}{
 		"no input": {
-			err: fmt.Errorf("cannot decode PEM block from client key"),
+			err: errDecodePEMBlockClientKey,
 		},
 		"bad input": {
 			b:   []byte{1, 2, 3},
-			err: fmt.Errorf("cannot decode PEM block from client key"),
+			err: errDecodePEMBlockClientKey,
 		},
 		"valid key": {
 			b:   []byte(validPEM),
@@ -147,11 +146,11 @@ iOCYTbretAFZRhh6ycUN5hBeN8GMQxiMreMtDV4PEIQ=
 		err         error
 	}{
 		"no input": {
-			err: fmt.Errorf("cannot decode PEM block from client certificate"),
+			err: errDecodePEMBlockClientCert,
 		},
 		"bad input": {
 			b:   []byte{1, 2, 3},
-			err: fmt.Errorf("cannot decode PEM block from client certificate"),
+			err: errDecodePEMBlockClientCert,
 		},
 		"valid key": {
 			b:           []byte(validPEM),

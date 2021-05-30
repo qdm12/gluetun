@@ -106,6 +106,10 @@ func main() {
 	nativeos.Exit(1)
 }
 
+var (
+	errCommandUnknown = errors.New("command is unknown")
+)
+
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, os os.OS,
@@ -121,7 +125,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		case "update":
 			return cli.Update(ctx, args[2:], os, logger)
 		default:
-			return fmt.Errorf("command %q is unknown", args[1])
+			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
 	}
 
@@ -429,7 +433,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 				first = false
 				message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
 				if err != nil {
-					logger.Error(err)
+					logger.Error("cannot get version information: " + err.Error())
 				} else {
 					logger.Info(message)
 				}

@@ -3,6 +3,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
@@ -51,7 +52,7 @@ func (s *server) Run(ctx context.Context, done chan<- struct{}) {
 	}()
 	s.logger.Info("listening on %s", s.address)
 	err := server.ListenAndServe()
-	if err != nil && ctx.Err() != context.Canceled {
+	if err != nil && errors.Is(ctx.Err(), context.Canceled) {
 		s.logger.Error(err)
 	}
 }

@@ -10,6 +10,7 @@ issues:
       linters:
         - dupl
         - maligned
+        - goerr113
     - path: internal/server/
       linters:
         - dupl
@@ -40,7 +41,7 @@ linters:
     - gomnd
     - goprintffuncname
     - gosec
-    # - goerr113
+    - goerr113
     - gosimple
     - govet
     - importas

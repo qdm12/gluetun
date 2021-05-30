@@ -2,6 +2,7 @@ package openvpn
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -14,6 +15,8 @@ func (c *configurator) Start(ctx context.Context) (
 	return c.commander.Start(ctx, "openvpn", "--config", constants.OpenVPNConf)
 }
 
+var ErrVersionTooShort = errors.New("version output is too short")
+
 func (c *configurator) Version(ctx context.Context) (string, error) {
 	output, err := c.commander.Run(ctx, "openvpn", "--version")
 	if err != nil && err.Error() != "exit status 1" {
@@ -23,7 +26,7 @@ func (c *configurator) Version(ctx context.Context) (string, error) {
 	words := strings.Fields(firstLine)
 	const minWords = 2
 	if len(words) < minWords {
-		return "", fmt.Errorf("openvpn --version: first line is too short: %q", firstLine)
+		return "", fmt.Errorf("%w: %s", ErrVersionTooShort, firstLine)
 	}
 	return words[1], nil
 }

@@ -4,6 +4,7 @@ package version
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -20,7 +21,7 @@ func GetMessage(ctx context.Context, buildInfo models.BuildInformation,
 		// Find # of commits between current commit and latest commit
 		commitsSince, err := getCommitsSince(ctx, client, buildInfo.Commit)
 		if err != nil {
-			return "", fmt.Errorf("cannot get version information: %w", err)
+			return "", err
 		} else if commitsSince == 0 {
 			return fmt.Sprintf("You are running on the bleeding edge of %s!", buildInfo.Version), nil
 		}
@@ -32,7 +33,7 @@ func GetMessage(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	tagName, name, releaseTime, err := getLatestRelease(ctx, client)
 	if err != nil {
-		return "", fmt.Errorf("cannot get version information: %w", err)
+		return "", err
 	}
 	if tagName == buildInfo.Version {
 		return fmt.Sprintf("You are running the latest release %s", buildInfo.Version), nil
@@ -42,6 +43,8 @@ func GetMessage(ctx context.Context, buildInfo models.BuildInformation,
 			tagName, name, timeSinceRelease),
 		nil
 }
+
+var errReleaseNotFound = errors.New("release not found")
 
 func getLatestRelease(ctx context.Context, client *http.Client) (tagName, name string, time time.Time, err error) {
 	releases, err := getGithubReleases(ctx, client)
@@ -54,8 +57,10 @@ func getLatestRelease(ctx context.Context, client *http.Client) (tagName, name s
 		}
 		return release.TagName, release.Name, release.PublishedAt, nil
 	}
-	return "", "", time, fmt.Errorf("no releases found")
+	return "", "", time, errReleaseNotFound
 }
+
+var errCommitNotFound = errors.New("commit not found")
 
 func getCommitsSince(ctx context.Context, client *http.Client, commitShort string) (n int, err error) {
 	commits, err := getGithubCommits(ctx, client)
@@ -68,5 +73,5 @@ func getCommitsSince(ctx context.Context, client *http.Client, commitShort strin
 		}
 		n++
 	}
-	return 0, fmt.Errorf("no commit matching %q was found", commitShort)
+	return 0, fmt.Errorf("%w: %s", errCommitNotFound, commitShort)
 }
