@@ -37,27 +37,30 @@ linters:
     - godot
     - goheader
     - goimports
-    - golint
     - gomnd
     - goprintffuncname
     - gosec
+    # - goerr113
     - gosimple
     - govet
+    - importas
     - ineffassign
-    - interfacer
     - lll
-    - maligned
     - misspell
     - nakedret
     - nestif
+    - nilerr
     - noctx
     - nolintlint
     - prealloc
+    - predeclared
     - rowserrcheck
-    - scopelint
+    - exportloopref
     - sqlclosecheck
     - staticcheck
     - structcheck
+    - thelper
+    - tparallel
     - typecheck
     - unconvert
     - unparam

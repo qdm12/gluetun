@@ -12,6 +12,7 @@ import (
 )
 
 func digestServerModelVersion(t *testing.T, server interface{}, version uint16) string {
+	t.Helper()
 	bytes, err := json.Marshal(server)
 	if err != nil {
 		t.Fatal(err)
@@ -118,6 +119,7 @@ func Test_versions(t *testing.T) {
 }
 
 func digestServersTimestamp(t *testing.T, servers interface{}, timestamp int64) string {
+	t.Helper()
 	bytes, err := json.Marshal(servers)
 	if err != nil {
 		t.Fatal(err)
