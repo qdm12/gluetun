@@ -3,7 +3,7 @@ package shadowsocks
 
 import (
 	"context"
-	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -97,7 +97,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 
 		waitError := make(chan error)
 		go func() {
-			waitError <- server.Listen(shadowsocksCtx, fmt.Sprintf("0.0.0.0:%d", settings.Port))
+			waitError <- server.Listen(shadowsocksCtx, ":"+strconv.Itoa(int(settings.Port)))
 		}()
 		if err != nil {
 			crashed = true

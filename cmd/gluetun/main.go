@@ -8,6 +8,7 @@ import (
 	"net/http"
 	nativeos "os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -328,7 +329,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
 		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
 	)
-	controlServerAddress := fmt.Sprintf("0.0.0.0:%d", allSettings.ControlServer.Port)
+	controlServerAddress := ":" + strconv.Itoa(int(allSettings.ControlServer.Port))
 	controlServerLogging := allSettings.ControlServer.Log
 	httpServer := server.New(controlServerAddress, controlServerLogging,
 		logger.NewChild(logging.Settings{Prefix: "http server: "}),
