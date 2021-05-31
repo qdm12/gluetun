@@ -157,7 +157,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
 
-		stdoutLines, stderrLines, waitError, err := l.conf.Start(openvpnCtx)
+		stdoutLines, stderrLines, waitError, err := l.conf.Start(openvpnCtx, settings.Version)
 		if err != nil {
 			openvpnCancel()
 			l.signalCrashedStatus()

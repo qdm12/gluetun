@@ -150,7 +150,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	if err := printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
-		{name: "OpenVPN", getVersion: ovpnConf.Version},
+		{name: "OpenVPN 2.4", getVersion: ovpnConf.Version24},
+		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
 		{name: "Unbound", getVersion: dnsConf.Version},
 		{name: "IPtables", getVersion: firewallConf.Version},
 	}); err != nil {
@@ -164,8 +165,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 	logger.Info(allSettings.String())
-
-	allSettings.OpenVPN.Version, _ = ovpnConf.Version(ctx)
 
 	if err := os.MkdirAll("/tmp/gluetun", 0644); err != nil {
 		return err

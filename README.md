@@ -38,7 +38,7 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 ## Features
 
-- Based on Alpine 3.13 for a small Docker image of 52MB
+- Based on Alpine 3.13 for a small Docker image of 54MB
 - Supports: **Cyberghost**, **FastestVPN**, **HideMyAss**, **IVPN**, **Mullvad**, **NordVPN**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **Surfshark**, **TorGuard**, **Vyprvpn**, **Windscribe** servers
 - Supports Openvpn only for now
 - DNS over TLS baked in with service provider(s) of your choice

@@ -14,3 +14,8 @@ const (
 	SHA256    = "sha256"
 	SHA512    = "sha512"
 )
+
+const (
+	Openvpn24 = "2.4"
+	Openvpn25 = "2.5"
+)

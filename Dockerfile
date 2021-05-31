@@ -65,6 +65,7 @@ LABEL \
 ENV VPNSP=pia \
     VERSION_INFORMATION=on \
     PROTOCOL=udp \
+    OPENVPN_VERSION=2.5 \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_ROOT=yes \
     OPENVPN_TARGET_IP= \
@@ -145,7 +146,10 @@ ENV VPNSP=pia \
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /entrypoint healthcheck
-RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
+RUN apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.12/main" openvpn==2.4.11-r0 && \
+    mv /usr/sbin/openvpn /usr/sbin/openvpn2.4 && \
+    apk del openvpn && \
+    apk add --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
     rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/openvpn/*.sh /usr/lib/openvpn/plugins/openvpn-plugin-down-root.so && \
     deluser openvpn && \
     deluser unbound && \

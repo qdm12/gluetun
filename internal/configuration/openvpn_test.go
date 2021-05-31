@@ -52,7 +52,8 @@ func Test_OpenVPN_JSON(t *testing.T) {
       "filepath": ""
     }
   },
-  "custom_config": ""
+  "custom_config": "",
+  "version": ""
 }`, string(data))
 	var out OpenVPN
 	err = json.Unmarshal(data, &out)

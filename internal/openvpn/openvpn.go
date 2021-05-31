@@ -12,12 +12,13 @@ import (
 )
 
 type Configurator interface {
-	Version(ctx context.Context) (string, error)
+	Version24(ctx context.Context) (version string, err error)
+	Version25(ctx context.Context) (version string, err error)
 	WriteAuthFile(user, password string, puid, pgid int) error
 	CheckTUN() error
 	CreateTUN() error
-	Start(ctx context.Context) (stdoutLines, stderrLines chan string,
-		waitError chan error, err error)
+	Start(ctx context.Context, version string) (
+		stdoutLines, stderrLines chan string, waitError chan error, err error)
 }
 
 type configurator struct {

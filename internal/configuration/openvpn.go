@@ -21,7 +21,7 @@ type OpenVPN struct {
 	Auth      string   `json:"auth"`
 	Provider  Provider `json:"provider"`
 	Config    string   `json:"custom_config"`
-	Version   string   `json:"-"` // injected at runtime
+	Version   string   `json:"version"`
 }
 
 func (settings *OpenVPN) String() string {
@@ -30,6 +30,8 @@ func (settings *OpenVPN) String() string {
 
 func (settings *OpenVPN) lines() (lines []string) {
 	lines = append(lines, lastIndent+"OpenVPN:")
+
+	lines = append(lines, indent+lastIndent+"Version: "+settings.Version)
 
 	lines = append(lines, indent+lastIndent+"Verbosity level: "+strconv.Itoa(settings.Verbosity))
 
@@ -96,6 +98,12 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		if err != nil {
 			return err
 		}
+	}
+
+	settings.Version, err = r.env.Inside("OPENVPN_VERSION",
+		[]string{constants.Openvpn24, constants.Openvpn25}, params.Default(constants.Openvpn25))
+	if err != nil {
+		return err
 	}
 
 	settings.Verbosity, err = r.env.IntRange("OPENVPN_VERBOSITY", 0, 6, params.Default("1"))

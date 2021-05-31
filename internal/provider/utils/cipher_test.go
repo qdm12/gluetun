@@ -18,12 +18,12 @@ func Test_CipherLines(t *testing.T) {
 				"data-ciphers AES",
 			},
 		},
-		"2.4.5": {
-			version: "2.4.5",
+		"2.4": {
+			version: "2.4",
 			lines:   []string{"cipher AES"},
 		},
-		"2.5.3": {
-			version: "2.5.3",
+		"2.5": {
+			version: "2.5",
 			lines: []string{
 				"data-ciphers-fallback AES",
 				"data-ciphers AES",
