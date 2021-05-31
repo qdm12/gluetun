@@ -36,6 +36,8 @@ func (settings *Provider) lines() (lines []string) {
 		providerLines = settings.fastestvpnLines()
 	case "hidemyass":
 		providerLines = settings.hideMyAssLines()
+	case "ivpn":
+		providerLines = settings.ivpnLines()
 	case "mullvad":
 		providerLines = settings.mullvadLines()
 	case "nordvpn":

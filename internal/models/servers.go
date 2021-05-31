@@ -5,6 +5,7 @@ type AllServers struct {
 	Cyberghost CyberghostServers `json:"cyberghost"`
 	Fastestvpn FastestvpnServers `json:"fastestvpn"`
 	HideMyAss  HideMyAssServers  `json:"hidemyass"`
+	Ivpn       IvpnServers       `json:"ivpn"`
 	Mullvad    MullvadServers    `json:"mullvad"`
 	Nordvpn    NordvpnServers    `json:"nordvpn"`
 	Privado    PrivadoServers    `json:"privado"`
@@ -22,6 +23,7 @@ func (a *AllServers) Count() int {
 	return len(a.Cyberghost.Servers) +
 		len(a.Fastestvpn.Servers) +
 		len(a.HideMyAss.Servers) +
+		len(a.Ivpn.Servers) +
 		len(a.Mullvad.Servers) +
 		len(a.Nordvpn.Servers) +
 		len(a.Privado.Servers) +
@@ -49,6 +51,11 @@ type HideMyAssServers struct {
 	Version   uint16            `json:"version"`
 	Timestamp int64             `json:"timestamp"`
 	Servers   []HideMyAssServer `json:"servers"`
+}
+type IvpnServers struct {
+	Version   uint16       `json:"version"`
+	Timestamp int64        `json:"timestamp"`
+	Servers   []IvpnServer `json:"servers"`
 }
 type MullvadServers struct {
 	Version   uint16          `json:"version"`

@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/providers/cyberghost"
 	"github.com/qdm12/gluetun/internal/updater/providers/fastestvpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/hidemyass"
+	"github.com/qdm12/gluetun/internal/updater/providers/ivpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/mullvad"
 	"github.com/qdm12/gluetun/internal/updater/providers/nordvpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/pia"
@@ -71,6 +72,26 @@ func (u *updater) updateHideMyAss(ctx context.Context) (err error) {
 	}
 	u.servers.HideMyAss.Timestamp = u.timeNow().Unix()
 	u.servers.HideMyAss.Servers = servers
+	return nil
+}
+
+func (u *updater) updateIvpn(ctx context.Context) (err error) {
+	minServers := getMinServers(len(u.servers.Ivpn.Servers))
+	servers, warnings, err := ivpn.GetServers(
+		ctx, u.unzipper, u.presolver, minServers)
+	if u.options.CLI {
+		for _, warning := range warnings {
+			u.logger.Warn("Ivpn: %s", warning)
+		}
+	}
+	if err != nil {
+		return err
+	}
+	if u.options.Stdout {
+		u.println(ivpn.Stringify(servers))
+	}
+	u.servers.Ivpn.Timestamp = u.timeNow().Unix()
+	u.servers.Ivpn.Servers = servers
 	return nil
 }
 

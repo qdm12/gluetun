@@ -50,6 +50,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.HideMyAss.Version,
 			digest:  "a93b4057",
 		},
+		"Ivpn": {
+			model:   models.IvpnServer{},
+			version: allServers.Ivpn.Version,
+			digest:  "2eb80d28",
+		},
 		"Mullvad": {
 			model:   models.MullvadServer{},
 			version: allServers.Mullvad.Version,
@@ -156,6 +161,11 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.HideMyAss.Servers,
 			timestamp: allServers.HideMyAss.Timestamp,
 			digest:    "8f872ac4",
+		},
+		"Ivpn": {
+			servers:   allServers.Ivpn.Servers,
+			timestamp: allServers.Ivpn.Timestamp,
+			digest:    "a648c5f1",
 		},
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,

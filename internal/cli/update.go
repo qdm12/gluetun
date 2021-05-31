@@ -33,6 +33,7 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
 	flagSet.BoolVar(&options.Fastestvpn, "fastestvpn", false, "Update FastestVPN servers")
 	flagSet.BoolVar(&options.HideMyAss, "hidemyass", false, "Update HideMyAss servers")
+	flagSet.BoolVar(&options.Ivpn, "ivpn", false, "Update IVPN servers")
 	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
 	flagSet.BoolVar(&options.Nordvpn, "nordvpn", false, "Update Nordvpn servers")
 	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")

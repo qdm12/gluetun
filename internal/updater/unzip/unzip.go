@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+//go:generate mockgen -destination=mock_$GOPACKAGE/$GOFILE . Unzipper
+
 type Unzipper interface {
 	FetchAndExtract(ctx context.Context, url string) (contents map[string][]byte, err error)
 }

@@ -196,7 +196,7 @@ func setConnectionToLines(lines []string, connection models.OpenVPNConnection) (
 			lines[i] = "proto " + connection.Protocol
 
 		case strings.HasPrefix(line, "remote "):
-			lines[i] = "remote " + connection.IP.String() + " " + strconv.Itoa(int(connection.Port))
+			lines[i] = "remote " + connection.RemoteLine()
 		}
 	}
 

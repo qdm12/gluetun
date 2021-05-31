@@ -84,6 +84,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
+	if u.options.Ivpn {
+		u.logger.Info("updating Ivpn servers...")
+		if err := u.updateIvpn(ctx); err != nil {
+			u.logger.Error(err)
+		}
+		if err := ctx.Err(); err != nil {
+			return allServers, err
+		}
+	}
+
 	if u.options.Mullvad {
 		u.logger.Info("updating Mullvad servers...")
 		if err := u.updateMullvad(ctx); err != nil {

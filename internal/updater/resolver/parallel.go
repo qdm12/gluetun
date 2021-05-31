@@ -7,6 +7,8 @@ import (
 	"net"
 )
 
+//go:generate mockgen -destination=mock_$GOPACKAGE/$GOFILE . Parallel
+
 type Parallel interface {
 	Resolve(ctx context.Context, hosts []string, settings ParallelSettings) (
 		hostToIPs map[string][]net.IP, warnings []string, err error)

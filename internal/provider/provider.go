@@ -15,6 +15,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
 	"github.com/qdm12/gluetun/internal/provider/fastestvpn"
 	"github.com/qdm12/gluetun/internal/provider/hidemyass"
+	"github.com/qdm12/gluetun/internal/provider/ivpn"
 	"github.com/qdm12/gluetun/internal/provider/mullvad"
 	"github.com/qdm12/gluetun/internal/provider/nordvpn"
 	"github.com/qdm12/gluetun/internal/provider/privado"
@@ -48,6 +49,8 @@ func New(provider string, allServers models.AllServers, timeNow func() time.Time
 		return fastestvpn.New(allServers.Fastestvpn.Servers, randSource)
 	case constants.HideMyAss:
 		return hidemyass.New(allServers.HideMyAss.Servers, randSource)
+	case constants.Ivpn:
+		return ivpn.New(allServers.Ivpn.Servers, randSource)
 	case constants.Mullvad:
 		return mullvad.New(allServers.Mullvad.Servers, randSource)
 	case constants.Nordvpn:

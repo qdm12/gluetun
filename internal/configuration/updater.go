@@ -13,6 +13,7 @@ type Updater struct {
 	Cyberghost bool          `json:"cyberghost"`
 	Fastestvpn bool          `json:"fastestvpn"`
 	HideMyAss  bool          `json:"hidemyass"`
+	Ivpn       bool          `json:"ivpn"`
 	Mullvad    bool          `json:"mullvad"`
 	Nordvpn    bool          `json:"nordvpn"`
 	PIA        bool          `json:"pia"`
@@ -48,6 +49,7 @@ func (settings *Updater) lines() (lines []string) {
 func (settings *Updater) read(r reader) (err error) {
 	settings.Cyberghost = true
 	settings.HideMyAss = true
+	settings.Ivpn = true
 	settings.Mullvad = true
 	settings.Nordvpn = true
 	settings.Privado = true
