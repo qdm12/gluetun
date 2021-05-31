@@ -26,8 +26,8 @@ func Test_Stringify(t *testing.T) {
 			},
 			s: `func IvpnServers() []models.IvpnServer {
 	return []models.IvpnServer{
-		{Country: "A", City: "", Hostname: "", IPs: []net.IP{}},
-		{Country: "B", City: "", Hostname: "", IPs: []net.IP{}},
+		{Country: "A", City: "", Hostname: "", TCP: false, UDP: false, IPs: []net.IP{}},
+		{Country: "B", City: "", Hostname: "", TCP: false, UDP: false, IPs: []net.IP{}},
 	}
 }`,
 		},

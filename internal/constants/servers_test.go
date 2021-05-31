@@ -165,7 +165,7 @@ func Test_timestamps(t *testing.T) {
 		"Ivpn": {
 			servers:   allServers.Ivpn.Servers,
 			timestamp: allServers.Ivpn.Timestamp,
-			digest:    "a648c5f1",
+			digest:    "158630c0",
 		},
 		"Mullvad": {
 			servers:   allServers.Mullvad.Servers,

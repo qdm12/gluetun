@@ -57,8 +57,8 @@ type IvpnServer struct {
 }
 
 func (s *IvpnServer) String() string {
-	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, IPs: %s}",
-		s.Country, s.City, s.Hostname, goStringifyIPs(s.IPs))
+	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, TCP: %t, UDP: %t, IPs: %s}",
+		s.Country, s.City, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
 }
 
 type MullvadServer struct {
