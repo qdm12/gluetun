@@ -42,7 +42,7 @@ func (h *HideMyAss) BuildConf(connection models.OpenVPNConnection,
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
-		"remote " + connection.RemoteLine(),
+		connection.RemoteLine(),
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

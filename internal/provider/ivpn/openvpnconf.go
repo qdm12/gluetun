@@ -42,7 +42,7 @@ func (i *Ivpn) BuildConf(connection models.OpenVPNConnection,
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
-		"remote " + connection.RemoteLine(),
+		connection.RemoteLine(),
 		"verify-x509-name " + connection.Hostname, //  + " name-prefix"
 	}
 
