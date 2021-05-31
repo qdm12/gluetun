@@ -21,6 +21,11 @@ func GetAllServers() (allServers models.AllServers) {
 			Timestamp: 1620435633,
 			Servers:   HideMyAssServers(),
 		},
+		Ipvanish: models.IpvanishServers{
+			Version:   1,
+			Timestamp: 1622430497,
+			Servers:   IpvanishServers(),
+		},
 		Ivpn: models.IvpnServers{
 			Version:   1,
 			Timestamp: 1624120443,

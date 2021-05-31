@@ -68,7 +68,7 @@ var (
 
 func (settings *OpenVPN) read(r reader) (err error) {
 	vpnsp, err := r.env.Inside("VPNSP", []string{
-		"cyberghost", "fastestvpn", "hidemyass", "ivpn", "mullvad", "nordvpn",
+		"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
 		"privado", "pia", "private internet access", "privatevpn", "protonvpn",
 		"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"},
 		params.Default("private internet access"))
@@ -154,6 +154,8 @@ func (settings *OpenVPN) readProvider(r reader) error {
 		readProvider = settings.Provider.readFastestvpn
 	case constants.HideMyAss:
 		readProvider = settings.Provider.readHideMyAss
+	case constants.Ipvanish:
+		readProvider = settings.Provider.readIpvanish
 	case constants.Ivpn:
 		readProvider = settings.Provider.readIvpn
 	case constants.Mullvad:

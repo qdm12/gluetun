@@ -47,6 +47,20 @@ func (s *HideMyAssServer) String() string {
 		s.Country, s.Region, s.City, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
 }
 
+type IpvanishServer struct {
+	Country  string   `json:"country"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	IPs      []net.IP `json:"ips"`
+}
+
+func (s *IpvanishServer) String() string {
+	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, TCP: %t, UDP: %t, IPs: %s}",
+		s.Country, s.City, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
+}
+
 type IvpnServer struct {
 	Country  string   `json:"country"`
 	City     string   `json:"city"`

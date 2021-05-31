@@ -50,6 +50,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.HideMyAss.Version,
 			digest:  "a93b4057",
 		},
+		"Ipvanish": {
+			model:   models.IpvanishServer{},
+			version: allServers.Ipvanish.Version,
+			digest:  "2eb80d28",
+		},
 		"Ivpn": {
 			model:   models.IvpnServer{},
 			version: allServers.Ivpn.Version,
@@ -166,6 +171,11 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.HideMyAss.Servers,
 			timestamp: allServers.HideMyAss.Timestamp,
 			digest:    "8f872ac4",
+		},
+		"Ipvanish": {
+			servers:   allServers.Ipvanish.Servers,
+			timestamp: allServers.Ipvanish.Timestamp,
+			digest:    "c62dcf98",
 		},
 		"Ivpn": {
 			servers:   allServers.Ivpn.Servers,
