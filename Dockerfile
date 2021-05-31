@@ -146,7 +146,7 @@ ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /entrypoint healthcheck
 RUN apk add -q --progress --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
-    rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* && \
+    rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/openvpn/*.sh /usr/lib/openvpn/plugins/openvpn-plugin-down-root.so && \
     deluser openvpn && \
     deluser unbound && \
     mkdir /gluetun
