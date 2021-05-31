@@ -50,7 +50,7 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 	}
 
 	encryptionPreset, err := r.env.Inside("PIA_ENCRYPTION",
-		[]string{constants.PIAEncryptionPresetNormal, constants.PIAEncryptionPresetStrong},
+		[]string{constants.PIAEncryptionPresetNone, constants.PIAEncryptionPresetNormal, constants.PIAEncryptionPresetStrong},
 		params.RetroKeys([]string{"ENCRYPTION"}, r.onRetroActive),
 		params.Default(constants.PIACertificateStrong),
 	)

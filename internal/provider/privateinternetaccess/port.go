@@ -23,14 +23,14 @@ func getPort(tcp bool, encryptionPreset string, customPort uint16) (
 func getDefaultPort(tcp bool, encryptionPreset string) (port uint16) {
 	if tcp {
 		switch encryptionPreset {
-		case constants.PIAEncryptionPresetNormal:
+		case constants.PIAEncryptionPresetNone, constants.PIAEncryptionPresetNormal:
 			port = 502
 		case constants.PIAEncryptionPresetStrong:
 			port = 501
 		}
 	} else {
 		switch encryptionPreset {
-		case constants.PIAEncryptionPresetNormal:
+		case constants.PIAEncryptionPresetNone, constants.PIAEncryptionPresetNormal:
 			port = 1198
 		case constants.PIAEncryptionPresetStrong:
 			port = 1197

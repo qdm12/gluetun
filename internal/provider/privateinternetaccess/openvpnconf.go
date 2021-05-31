@@ -13,16 +13,22 @@ import (
 func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 	username string, settings configuration.OpenVPN) (lines []string) {
 	var defaultCipher, defaultAuth, X509CRL, certificate string
-	if settings.Provider.ExtraConfigOptions.EncryptionPreset == constants.PIAEncryptionPresetNormal {
+	switch settings.Provider.ExtraConfigOptions.EncryptionPreset {
+	case constants.PIAEncryptionPresetNormal:
 		defaultCipher = constants.AES128cbc
 		defaultAuth = constants.SHA1
 		X509CRL = constants.PiaX509CRLNormal
 		certificate = constants.PIACertificateNormal
-	} else { // strong encryption
+	case constants.PIAEncryptionPresetStrong:
 		defaultCipher = constants.AES256cbc
 		defaultAuth = constants.SHA256
 		X509CRL = constants.PiaX509CRLStrong
 		certificate = constants.PIACertificateStrong
+	default: // no encryption preset
+		defaultCipher = ""
+		defaultAuth = ""
+		X509CRL = constants.PiaX509CRLNormal
+		certificate = constants.PIACertificateNormal
 	}
 
 	if settings.Cipher == "" {
@@ -57,10 +63,15 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		connection.ProtoLine(),
 		connection.RemoteLine(),
-		"auth " + settings.Auth,
 	}
 
-	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
+	if settings.Cipher != "" {
+		lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
+	}
+
+	if settings.Auth != "" {
+		lines = append(lines, "auth "+settings.Auth)
+	}
 
 	if strings.HasSuffix(settings.Cipher, "-gcm") {
 		lines = append(lines, "ncp-disable")
