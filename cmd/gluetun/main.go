@@ -148,12 +148,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	fmt.Println(gluetunLogging.Splash(buildInfo))
 
-	printVersions(ctx, logger, map[string]func(ctx context.Context) (string, error){
-		"Alpine":   alpineConf.Version,
-		"OpenVPN":  ovpnConf.Version,
-		"Unbound":  dnsConf.Version,
-		"IPtables": firewallConf.Version,
-	})
+	if err := printVersions(ctx, logger, []printVersionElement{
+		{name: "Alpine", getVersion: alpineConf.Version},
+		{name: "OpenVPN", getVersion: ovpnConf.Version},
+		{name: "Unbound", getVersion: dnsConf.Version},
+		{name: "IPtables", getVersion: firewallConf.Version},
+	}); err != nil {
+		return err
+	}
 
 	var allSettings configuration.Settings
 	err := allSettings.Read(params.NewEnv(), os,
@@ -367,19 +369,26 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	return shutdownOrder.Shutdown(shutdownMaxTimeout, logger)
 }
 
+type printVersionElement struct {
+	name       string
+	getVersion func(ctx context.Context) (version string, err error)
+}
+
 func printVersions(ctx context.Context, logger logging.Logger,
-	versionFunctions map[string]func(ctx context.Context) (string, error)) {
+	elements []printVersionElement) (err error) {
 	const timeout = 5 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	for name, f := range versionFunctions {
-		version, err := f(ctx)
+
+	for _, element := range elements {
+		version, err := element.getVersion(ctx)
 		if err != nil {
-			logger.Error(err)
-		} else {
-			logger.Info("%s version: %s", name, version)
+			return err
 		}
+		logger.Info(element.name + " version: " + version)
 	}
+
+	return nil
 }
 
 func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo models.BuildInformation,
