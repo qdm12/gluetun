@@ -2,7 +2,6 @@ package privateinternetaccess
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -25,8 +24,8 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 		X509CRL = constants.PiaX509CRLStrong
 		certificate = constants.PIACertificateStrong
 	default: // no encryption preset
-		defaultCipher = ""
-		defaultAuth = ""
+		defaultCipher = "none"
+		defaultAuth = "none"
 		X509CRL = constants.PiaX509CRLNormal
 		certificate = constants.PIACertificateNormal
 	}
@@ -49,7 +48,8 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 		// PIA specific
 		"reneg-sec 0",
 		"disable-occ",
-		"compress", // allow PIA server to choose the compression to use
+		"compress",    // allow PIA server to choose the compression to use
+		"ncp-disable", // prevent from auto-upgrading cipher to aes-256-gcm
 
 		// Added constant values
 		"auth-nocache",
@@ -71,10 +71,6 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 
 	if settings.Auth != "" {
 		lines = append(lines, "auth "+settings.Auth)
-	}
-
-	if strings.HasSuffix(settings.Cipher, "-gcm") {
-		lines = append(lines, "ncp-disable")
 	}
 
 	if !settings.Root {
