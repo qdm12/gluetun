@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/fatih/color v1.12.0
 	github.com/golang/mock v1.5.0
-	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/qdm12/dns v1.8.0
 	github.com/qdm12/golibs v0.0.0-20210603202746-e5494e9c2ebb
 	github.com/qdm12/ss-server v0.2.0

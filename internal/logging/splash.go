@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kyokomi/emoji"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -36,7 +35,7 @@ func title() []string {
 		"=========== For tunneling to ============",
 		"======== your favorite VPN server =======",
 		"=========================================",
-		"=== Made with " + emoji.Sprint(":heart:") + " by github.com/qdm12 ====",
+		"=== Made with ❤️ by github.com/qdm12 ====",
 		"=========================================",
 	}
 }
@@ -49,14 +48,14 @@ func announcement() []string {
 	if time.Now().After(expirationDate) {
 		return nil
 	}
-	return []string{emoji.Sprint(":mega: ") + constants.Announcement}
+	return []string{"📣" + constants.Announcement}
 }
 
 func links() []string {
 	return []string{
-		emoji.Sprint(":wrench: ") + "Need help? " + constants.IssueLink,
-		emoji.Sprint(":computer: ") + "Email? quentin.mcgaw@gmail.com",
-		emoji.Sprint(":coffee: ") + "Slack? Join from the Slack button on Github",
-		emoji.Sprint(":money_with_wings: ") + "Help me? https://github.com/sponsors/qdm12",
+		"🔧 Need help? " + constants.IssueLink,
+		"💻 Email? quentin.mcgaw@gmail.com",
+		"☕ Slack? Join from the Slack button on Github",
+		"💰 Help me? https://github.com/sponsors/qdm12",
 	}
 }
