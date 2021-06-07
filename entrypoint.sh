@@ -72,10 +72,10 @@ if [ `echo $WEBUI_PORT | ack "^[0-9]+$"` != $WEBUI_PORT ]; then
   printf "WEBUI_PORT is not a valid number\n"
   exit 1
 elif [ $WEBUI_PORT -lt 1024 ]; then
-  printf "PROXY_PORT cannot be a privileged port under port 1024\n"
+  printf "WEBUI_PORT cannot be a privileged port under port 1024\n"
   exit 1
 elif [ $WEBUI_PORT -gt 65535 ]; then
-  printf "PROXY_PORT cannot be a port higher than the maximum port 65535\n"
+  printf "WEBUI_PORT cannot be a port higher than the maximum port 65535\n"
   exit 1
 fi
 
