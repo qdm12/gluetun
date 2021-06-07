@@ -11,6 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/utils"
 	"github.com/qdm12/golibs/os"
 )
 
@@ -64,6 +65,7 @@ func modifyCustomConfig(lines []string, username string,
 			strings.HasPrefix(line, "verb "),
 			strings.HasPrefix(line, "auth-user-pass "),
 			len(settings.Cipher) > 0 && strings.HasPrefix(line, "cipher "),
+			len(settings.Cipher) > 0 && strings.HasPrefix(line, "data-ciphers"),
 			len(settings.Auth) > 0 && strings.HasPrefix(line, "auth "),
 			settings.MSSFix > 0 && strings.HasPrefix(line, "mssfix "),
 			!settings.Provider.ExtraConfigOptions.OpenVPNIPv6 && strings.HasPrefix(line, "tun-ipv6"):
@@ -81,7 +83,7 @@ func modifyCustomConfig(lines []string, username string,
 	modified = append(modified, "auth-user-pass "+constants.OpenVPNAuthConf)
 	modified = append(modified, "verb "+strconv.Itoa(settings.Verbosity))
 	if len(settings.Cipher) > 0 {
-		modified = append(modified, "cipher "+settings.Cipher)
+		modified = append(modified, utils.CipherLines(settings.Cipher, settings.Version)...)
 	}
 	if len(settings.Auth) > 0 {
 		modified = append(modified, "auth "+settings.Auth)
