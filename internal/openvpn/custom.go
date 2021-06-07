@@ -195,10 +195,10 @@ func setConnectionToLines(lines []string, connection models.OpenVPNConnection) (
 	for i, line := range lines {
 		switch {
 		case strings.HasPrefix(line, "proto "):
-			lines[i] = "proto " + connection.Protocol
+			lines[i] = connection.ProtoLine()
 
 		case strings.HasPrefix(line, "remote "):
-			lines[i] = "remote " + connection.RemoteLine()
+			lines[i] = connection.RemoteLine()
 		}
 	}
 
