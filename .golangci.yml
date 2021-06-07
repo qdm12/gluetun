@@ -36,12 +36,12 @@ linters:
     - gocritic
     - gocyclo
     - godot
+    - goerr113
     - goheader
     - goimports
     - gomnd
     - goprintffuncname
     - gosec
-    - goerr113
     - gosimple
     - govet
     - importas
@@ -56,7 +56,6 @@ linters:
     - prealloc
     - predeclared
     - rowserrcheck
-    - exportloopref
     - sqlclosecheck
     - staticcheck
     - structcheck
