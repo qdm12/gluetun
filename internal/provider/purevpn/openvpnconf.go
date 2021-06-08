@@ -12,7 +12,7 @@ import (
 func (p *Purevpn) BuildConf(connection models.OpenVPNConnection,
 	username string, settings configuration.OpenVPN) (lines []string) {
 	if settings.Cipher == "" {
-		settings.Cipher = constants.AES256cbc
+		settings.Cipher = constants.AES256gcm
 	}
 
 	lines = []string{
