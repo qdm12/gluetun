@@ -29,7 +29,6 @@ import (
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
-	"github.com/qdm12/gluetun/internal/shutdown"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/gluetun/internal/updater"
@@ -38,6 +37,7 @@ import (
 	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/os/user"
 	"github.com/qdm12/golibs/params"
+	"github.com/qdm12/goshutdown"
 	"github.com/qdm12/updated/pkg/dnscrypto"
 )
 
@@ -275,82 +275,113 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	} // TODO move inside firewall?
 
-	const (
-		shutdownMaxTimeout     = 3 * time.Second
-		shutdownRoutineTimeout = 400 * time.Millisecond
-		shutdownOpenvpnTimeout = time.Second
-	)
-
 	healthy := make(chan bool)
-	controlWave := shutdown.NewWave("control")
-	tickerWave := shutdown.NewWave("tickers")
-	healthWave := shutdown.NewWave("health")
-	dnsWave := shutdown.NewWave("DNS")
-	vpnWave := shutdown.NewWave("VPN")
-	serverWave := shutdown.NewWave("servers")
+
+	// Shutdown settings
+	const defaultShutdownTimeout = 400 * time.Millisecond
+	defaultShutdownOnSuccess := func(goRoutineName string) {
+		logger.Info(goRoutineName + ": terminated ✔️")
+	}
+	defaultShutdownOnFailure := func(goRoutineName string, err error) {
+		logger.Warn(goRoutineName + ": " + err.Error() + " ⚠️")
+	}
+	defaultGoRoutineSettings := goshutdown.GoRoutineSettings{Timeout: defaultShutdownTimeout}
+	defaultGroupSettings := goshutdown.GroupSettings{
+		Timeout:   defaultShutdownTimeout,
+		OnFailure: defaultShutdownOnFailure,
+		OnSuccess: defaultShutdownOnSuccess,
+	}
+
+	controlGroupHandler := goshutdown.NewGroupHandler("control", defaultGroupSettings)
+	tickersGroupHandler := goshutdown.NewGroupHandler("tickers", defaultGroupSettings)
+	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, healthy)
-	openvpnCtx, openvpnDone := vpnWave.Add("openvpn", shutdownOpenvpnTimeout)
+	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
+		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn
 	go openvpnLooper.Run(openvpnCtx, openvpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
 		allServers, storage, openvpnLooper.SetServers, httpClient,
 		logger.NewChild(logging.Settings{Prefix: "updater: "}))
-	updaterCtx, updaterDone := tickerWave.Add("updater", shutdownRoutineTimeout)
+	updaterHandler, updaterCtx, updaterDone := goshutdown.NewGoRoutineHandler(
+		"updater", defaultGoRoutineSettings)
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
 	go updaterLooper.Run(updaterCtx, updaterDone)
+	tickersGroupHandler.Add(updaterHandler)
 
 	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
 		unboundLogger, os.OpenFile)
-	dnsCtx, dnsDone := dnsWave.Add("unbound", shutdownRoutineTimeout)
+	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
+		"unbound", defaultGoRoutineSettings)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(dnsCtx, dnsDone)
+	otherGroupHandler.Add(dnsHandler)
 
 	publicIPLooper := publicip.NewLooper(httpClient,
 		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
 		allSettings.PublicIP, puid, pgid, os)
-	pubIPCtx, pubIPDone := serverWave.Add("public IP", shutdownRoutineTimeout)
+	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
+		"public IP", defaultGoRoutineSettings)
 	go publicIPLooper.Run(pubIPCtx, pubIPDone)
+	otherGroupHandler.Add(pubIPHandler)
 
-	pubIPTickerCtx, pubIPTickerDone := tickerWave.Add("public IP", shutdownRoutineTimeout)
+	pubIPTickerHandler, pubIPTickerCtx, pubIPTickerDone := goshutdown.NewGoRoutineHandler(
+		"public IP", defaultGoRoutineSettings)
 	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
+	tickersGroupHandler.Add(pubIPTickerHandler)
 
 	httpProxyLooper := httpproxy.NewLooper(
 		logger.NewChild(logging.Settings{Prefix: "http proxy: "}),
 		allSettings.HTTPProxy)
-	httpProxyCtx, httpProxyDone := serverWave.Add("http proxy", shutdownRoutineTimeout)
+	httpProxyHandler, httpProxyCtx, httpProxyDone := goshutdown.NewGoRoutineHandler(
+		"http proxy", defaultGoRoutineSettings)
 	go httpProxyLooper.Run(httpProxyCtx, httpProxyDone)
+	otherGroupHandler.Add(httpProxyHandler)
 
 	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks,
 		logger.NewChild(logging.Settings{Prefix: "shadowsocks: "}))
-	shadowsocksCtx, shadowsocksDone := serverWave.Add("shadowsocks proxy", shutdownRoutineTimeout)
+	shadowsocksHandler, shadowsocksCtx, shadowsocksDone := goshutdown.NewGoRoutineHandler(
+		"shadowsocks proxy", defaultGoRoutineSettings)
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
+	otherGroupHandler.Add(shadowsocksHandler)
 
-	eventsRoutingCtx, eventsRoutingDone := controlWave.Add("events routing", shutdownRoutineTimeout)
+	eventsRoutingHandler, eventsRoutingCtx, eventsRoutingDone := goshutdown.NewGoRoutineHandler(
+		"events routing", defaultGoRoutineSettings)
 	go routeReadyEvents(eventsRoutingCtx, eventsRoutingDone, buildInfo, tunnelReadyCh,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
 		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
 	)
+	controlGroupHandler.Add(eventsRoutingHandler)
+
 	controlServerAddress := ":" + strconv.Itoa(int(allSettings.ControlServer.Port))
 	controlServerLogging := allSettings.ControlServer.Log
 	httpServer := server.New(controlServerAddress, controlServerLogging,
 		logger.NewChild(logging.Settings{Prefix: "http server: "}),
 		buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
-	httpServerCtx, httpServerDone := controlWave.Add("http server", shutdownRoutineTimeout)
+	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
+		"http server", defaultGoRoutineSettings)
 	go httpServer.Run(httpServerCtx, httpServerDone)
+	controlGroupHandler.Add(httpServerHandler)
 
 	healthcheckServer := healthcheck.NewServer(constants.HealthcheckAddress,
 		logger.NewChild(logging.Settings{Prefix: "healthcheck: "}))
-	healthServerCtx, healthServerDone := healthWave.Add("HTTP health server", shutdownRoutineTimeout)
+	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
+		"HTTP health server", defaultGoRoutineSettings)
 	go healthcheckServer.Run(healthServerCtx, healthy, healthServerDone)
 
-	shutdownOrder := shutdown.NewOrder()
-	shutdownOrder.Append(controlWave, tickerWave, healthWave,
-		dnsWave, vpnWave, serverWave,
-	)
+	const orderShutdownTimeout = 3 * time.Second
+	orderSettings := goshutdown.OrderSettings{
+		Timeout:   orderShutdownTimeout,
+		OnFailure: defaultShutdownOnFailure,
+		OnSuccess: defaultShutdownOnSuccess,
+	}
+	orderHandler := goshutdown.NewOrder("gluetun", orderSettings)
+	orderHandler.Append(controlGroupHandler, tickersGroupHandler, healthServerHandler,
+		openvpnHandler, otherGroupHandler)
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
@@ -365,7 +396,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	return shutdownOrder.Shutdown(shutdownMaxTimeout, logger)
+	return orderHandler.Shutdown(context.Background())
 }
 
 type printVersionElement struct {

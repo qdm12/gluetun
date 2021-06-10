@@ -7,6 +7,7 @@ require (
 	github.com/golang/mock v1.5.0
 	github.com/qdm12/dns v1.8.0
 	github.com/qdm12/golibs v0.0.0-20210603202746-e5494e9c2ebb
+	github.com/qdm12/goshutdown v0.1.0
 	github.com/qdm12/ss-server v0.2.0
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
 	github.com/stretchr/testify v1.7.0
