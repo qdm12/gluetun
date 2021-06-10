@@ -211,6 +211,14 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				openvpnCancel()
+				if ctx.Err() != nil {
+					close(waitError)
+					close(stdoutLines)
+					close(stderrLines)
+					<-lineCollectionDone
+					<-portForwardDone
+					return
+				}
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
 				l.crashed = true

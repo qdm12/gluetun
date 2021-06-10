@@ -159,6 +159,11 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				unboundCancel()
+				if ctx.Err() != nil {
+					close(waitError)
+					closeStreams()
+					return
+				}
 				l.state.setStatusWithLock(constants.Crashed)
 				const fallback = true
 				l.useUnencryptedDNS(fallback)

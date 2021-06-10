@@ -139,6 +139,9 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 			case err := <-waitError: // unexpected error
 				shadowsocksCancel()
 				close(waitError)
+				if ctx.Err() != nil {
+					return
+				}
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
 				crashed = true
