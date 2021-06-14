@@ -143,10 +143,12 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 			continue
 		}
 
-		if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.puid, l.pgid); err != nil {
-			l.signalCrashedStatus()
-			l.logAndWait(ctx, err)
-			continue
+		if settings.User != "" {
+			if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.puid, l.pgid); err != nil {
+				l.signalCrashedStatus()
+				l.logAndWait(ctx, err)
+				continue
+			}
 		}
 
 		if err := l.fw.SetVPNConnection(ctx, connection); err != nil {

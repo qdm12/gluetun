@@ -80,7 +80,9 @@ func modifyCustomConfig(lines []string, username string,
 	modified = append(modified, "pull-filter ignore \"auth-token\"") // prevent auth failed loop
 	modified = append(modified, "auth-retry nointeract")
 	modified = append(modified, "suppress-timestamps")
-	modified = append(modified, "auth-user-pass "+constants.OpenVPNAuthConf)
+	if settings.User != "" {
+		modified = append(modified, "auth-user-pass "+constants.OpenVPNAuthConf)
+	}
 	modified = append(modified, "verb "+strconv.Itoa(settings.Verbosity))
 	if len(settings.Cipher) > 0 {
 		modified = append(modified, utils.CipherLines(settings.Cipher, settings.Version)...)
