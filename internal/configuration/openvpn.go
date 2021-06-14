@@ -50,9 +50,13 @@ func (settings *OpenVPN) lines() (lines []string) {
 		lines = append(lines, indent+lastIndent+"Custom configuration: "+settings.Config)
 	}
 
-	lines = append(lines, indent+lastIndent+"Provider:")
-	for _, line := range settings.Provider.lines() {
-		lines = append(lines, indent+indent+line)
+	if settings.Provider.Name == "" {
+		lines = append(lines, indent+lastIndent+"Provider: custom configuration")
+	} else {
+		lines = append(lines, indent+lastIndent+"Provider:")
+		for _, line := range settings.Provider.lines() {
+			lines = append(lines, indent+indent+line)
+		}
 	}
 
 	return lines
@@ -81,8 +85,12 @@ func (settings *OpenVPN) read(r reader) (err error) {
 	if err != nil {
 		return err
 	}
-
-	credentialsRequired := len(settings.Config) == 0
+	customConfig := settings.Config != ""
+	credentialsRequired := true
+	if customConfig {
+		credentialsRequired = false
+		settings.Provider.Name = ""
+	}
 
 	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", credentialsRequired, []string{"USER"})
 	if err != nil {
@@ -134,6 +142,8 @@ func (settings *OpenVPN) read(r reader) (err error) {
 
 	var readProvider func(r reader) error
 	switch settings.Provider.Name {
+	case "": // custom config
+		readProvider = func(r reader) error { return nil }
 	case constants.Cyberghost:
 		readProvider = settings.Provider.readCyberghost
 	case constants.Fastestvpn:
