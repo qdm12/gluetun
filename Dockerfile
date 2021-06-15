@@ -17,6 +17,7 @@ FROM --platform=$BUILDPLATFORM base AS test
 # - we install g++ to support the race detector
 ENV CGO_ENABLED=1
 RUN apk --update --no-cache add g++
+ENTRYPOINT go test -race -coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
 
 FROM --platform=$BUILDPLATFORM base AS lint
 ARG GOLANGCI_LINT_VERSION=v1.40.1
