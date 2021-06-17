@@ -70,7 +70,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 	vpnsp, err := r.env.Inside("VPNSP", []string{
 		"cyberghost", "fastestvpn", "hidemyass", "ivpn", "mullvad", "nordvpn",
 		"privado", "pia", "private internet access", "privatevpn", "protonvpn",
-		"purevpn", "surfshark", "torguard", "vyprvpn", "windscribe"},
+		"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"},
 		params.Default("private internet access"))
 	if err != nil {
 		return err
@@ -139,7 +139,10 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		return err
 	}
 	settings.MSSFix = uint16(mssFix)
+	return settings.readProvider(r)
+}
 
+func (settings *OpenVPN) readProvider(r reader) error {
 	var readProvider func(r reader) error
 	switch settings.Provider.Name {
 	case "": // custom config
@@ -170,6 +173,8 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		readProvider = settings.Provider.readSurfshark
 	case constants.Torguard:
 		readProvider = settings.Provider.readTorguard
+	case constants.VPNUnlimited:
+		readProvider = settings.Provider.readVPNUnlimited
 	case constants.Vyprvpn:
 		readProvider = settings.Provider.readVyprvpn
 	case constants.Windscribe:
@@ -177,6 +182,5 @@ func (settings *OpenVPN) read(r reader) (err error) {
 	default:
 		return fmt.Errorf("%w: %s", ErrInvalidVPNProvider, settings.Provider.Name)
 	}
-
 	return readProvider(r)
 }

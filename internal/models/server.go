@@ -188,6 +188,22 @@ func (s *TorguardServer) String() string {
 		s.Country, s.City, s.Hostname, s.TCP, s.UDP, goStringifyIPs(s.IPs))
 }
 
+type VPNUnlimitedServer struct {
+	Country  string   `json:"country"`
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	Free     bool     `json:"free"`
+	Stream   bool     `json:"stream"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	IPs      []net.IP `json:"ips"`
+}
+
+func (s *VPNUnlimitedServer) String() string {
+	return fmt.Sprintf("{Country: %q, City: %q, Hostname: %q, Free: %t, Stream: %t, TCP: %t, UDP: %t, IPs: %s}",
+		s.Country, s.City, s.Hostname, s.Free, s.Stream, s.TCP, s.UDP, goStringifyIPs(s.IPs))
+}
+
 type VyprvpnServer struct {
 	Region   string   `json:"region"`
 	Hostname string   `json:"hostname"`

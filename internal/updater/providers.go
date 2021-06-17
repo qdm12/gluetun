@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/updater/providers/cyberghost"
 	"github.com/qdm12/gluetun/internal/updater/providers/fastestvpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/hidemyass"
@@ -17,6 +18,7 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/providers/purevpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/surfshark"
 	"github.com/qdm12/gluetun/internal/updater/providers/torguard"
+	"github.com/qdm12/gluetun/internal/updater/providers/vpnunlimited"
 	"github.com/qdm12/gluetun/internal/updater/providers/vyprvpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/windscribe"
 )
@@ -258,6 +260,26 @@ func (u *updater) updateTorguard(ctx context.Context) (err error) {
 	}
 	u.servers.Torguard.Timestamp = u.timeNow().Unix()
 	u.servers.Torguard.Servers = servers
+	return nil
+}
+
+func (u *updater) updateVPNUnlimited(ctx context.Context) (err error) {
+	minServers := getMinServers(len(u.servers.VPNUnlimited.Servers))
+	servers, warnings, err := vpnunlimited.GetServers(
+		ctx, u.unzipper, u.presolver, minServers)
+	if u.options.CLI {
+		for _, warning := range warnings {
+			u.logger.Warn(constants.VPNUnlimited + ": " + warning)
+		}
+	}
+	if err != nil {
+		return err
+	}
+	if u.options.Stdout {
+		u.println(vpnunlimited.Stringify(servers))
+	}
+	u.servers.VPNUnlimited.Timestamp = u.timeNow().Unix()
+	u.servers.VPNUnlimited.Servers = servers
 	return nil
 }
 

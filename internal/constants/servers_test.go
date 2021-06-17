@@ -100,6 +100,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Torguard.Version,
 			digest:  "6eb9028e",
 		},
+		"VPN Unlimited": {
+			model:   models.VPNUnlimitedServer{},
+			version: allServers.VPNUnlimited.Version,
+			digest:  "5cb51319",
+		},
 		"Vyprvpn": {
 			model:   models.VyprvpnServer{},
 			version: allServers.Vyprvpn.Version,
@@ -211,6 +216,11 @@ func Test_timestamps(t *testing.T) {
 			servers:   allServers.Torguard.Servers,
 			timestamp: allServers.Torguard.Timestamp,
 			digest:    "af54b9e8",
+		},
+		"VPN Unlimited": {
+			servers:   allServers.VPNUnlimited.Servers,
+			timestamp: allServers.VPNUnlimited.Timestamp,
+			digest:    "f6ddb84c",
 		},
 		"Vyprvpn": {
 			servers:   allServers.Vyprvpn.Servers,

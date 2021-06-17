@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
@@ -179,6 +180,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Torguard {
 		u.logger.Info("updating Torguard servers...")
 		if err := u.updateTorguard(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
+			u.logger.Error(err)
+		}
+	}
+
+	if u.options.VPNUnlimited {
+		u.logger.Info("updating " + constants.VPNUnlimited + " servers...")
+		if err := u.updateVPNUnlimited(ctx); err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}

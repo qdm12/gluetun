@@ -15,10 +15,13 @@ type ServerSelection struct { //nolint:maligned
 	// Cyberghost
 	Group string `json:"group"`
 
-	Countries []string `json:"countries"` // Fastestvpn, HideMyAss, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN
-	Cities    []string `json:"cities"`    // HideMyAss, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, Windscribe
-	Hostnames []string `json:"hostnames"` // Fastestvpn, HideMyAss, IVPN, PrivateVPN, Windscribe, Privado, Protonvpn
-	Names     []string `json:"names"`     // Protonvpn
+	// Fastestvpn, HideMyAss, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited
+	Countries []string `json:"countries"`
+	// HideMyAss, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited, Windscribe
+	Cities []string `json:"cities"`
+	// Fastestvpn, HideMyAss, IVPN, PrivateVPN, Windscribe, Privado, Protonvpn, VPNUnlimited
+	Hostnames []string `json:"hostnames"`
+	Names     []string `json:"names"` // Protonvpn
 
 	// Mullvad
 	ISPs  []string `json:"isps"`
@@ -35,11 +38,14 @@ type ServerSelection struct { //nolint:maligned
 
 	// ProtonVPN
 	FreeOnly bool `json:"free_only"`
+
+	// VPNUnlimited
+	StreamOnly bool `json:"stream_only"`
 }
 
 type ExtraConfigOptions struct {
 	ClientCertificate string `json:"-"`                 // Cyberghost
-	ClientKey         string `json:"-"`                 // Cyberghost
+	ClientKey         string `json:"-"`                 // Cyberghost, VPNUnlimited
 	EncryptionPreset  string `json:"encryption_preset"` // PIA
 	OpenVPNIPv6       bool   `json:"openvpn_ipv6"`      // Mullvad
 }

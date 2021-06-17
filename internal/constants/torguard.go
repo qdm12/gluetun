@@ -30,7 +30,7 @@ func TorguardCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func TorguardHostnamesChoices() (choices []string) {
+func TorguardHostnameChoices() (choices []string) {
 	servers := TorguardServers()
 	choices = make([]string, len(servers))
 	for i := range servers {

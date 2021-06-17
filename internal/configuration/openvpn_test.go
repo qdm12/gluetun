@@ -41,7 +41,8 @@ func Test_OpenVPN_JSON(t *testing.T) {
       "custom_port": 0,
       "numbers": null,
       "encryption_preset": "",
-      "free_only": false
+      "free_only": false,
+      "stream_only": false
     },
     "extra_config": {
       "encryption_preset": "",
