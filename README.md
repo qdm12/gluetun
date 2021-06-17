@@ -74,8 +74,6 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
     or use [docker-compose.yml](https://github.com/qdm12/gluetun/blob/master/docker-compose.yml) with:
 
     ```bash
-    echo "your openvpn username" > openvpn_user
-    echo "your openvpn password" > openvpn_password
     docker-compose up -d
     ```
 
@@ -85,12 +83,12 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 The following points are all optional but should give you insights on all the possibilities with this container.
 
-- Use [Docker secrets](https://github.com/qdm12/gluetun/wiki/Docker-secrets) to read your credentials instead of environment variables
 - [Test your setup](https://github.com/qdm12/gluetun/wiki/Test-your-setup)
 - [How to connect other containers and devices to Gluetun](https://github.com/qdm12/gluetun/wiki/Connect-to-gluetun)
 - [VPN server side port forwarding](https://github.com/qdm12/gluetun/wiki/Port-forwarding)
 - [HTTP control server](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server) to automate things, restart Openvpn etc.
 - Update the image with `docker pull qmcgaw/gluetun:latest`. See this [Wiki document](https://github.com/qdm12/gluetun/wiki/Docker-image-tags) for Docker tags available.
+- Use [Docker secrets](https://github.com/qdm12/gluetun/wiki/Docker-secrets) to read your credentials instead of environment variables
 
 ## License
 
