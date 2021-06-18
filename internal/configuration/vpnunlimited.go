@@ -34,7 +34,7 @@ func (settings *Provider) vpnUnlimitedLines() (lines []string) {
 }
 
 func (settings *Provider) readVPNUnlimited(r reader) (err error) {
-	settings.Name = constants.Ivpn
+	settings.Name = constants.VPNUnlimited
 
 	settings.ServerSelection.TCP, err = readProtocol(r.env)
 	if err != nil {
