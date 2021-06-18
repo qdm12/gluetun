@@ -91,10 +91,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		settings.Provider.Name = ""
 	}
 
-	credentialsRequired := true
-	if customConfig || settings.Provider.Name == constants.VPNUnlimited {
-		credentialsRequired = false
-	}
+	credentialsRequired := !customConfig && settings.Provider.Name != constants.VPNUnlimited
 
 	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", credentialsRequired, []string{"USER"})
 	if err != nil {
