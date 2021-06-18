@@ -17,13 +17,13 @@ func (p *Provider) BuildConf(connection models.OpenVPNConnection,
 		"nobind",
 		"persist-key",
 		"tls-exit",
+		"remote-cert-tls server",
 
 		// VPNUnlimited specific
 		"reneg-sec 0",
 		"ping 5",
 		"ping-exit 30",
 		"comp-lzo no",
-		"ns-cert-type server",
 		"route-metric 1",
 
 		// Added constant values
