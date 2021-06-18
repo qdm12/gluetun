@@ -51,6 +51,11 @@ func (settings *Provider) readVPNUnlimited(r reader) (err error) {
 		return err
 	}
 
+	settings.ExtraConfigOptions.ClientCertificate, err = readClientCertificate(r)
+	if err != nil {
+		return err
+	}
+
 	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.IvpnCountryChoices())
 	if err != nil {
 		return err

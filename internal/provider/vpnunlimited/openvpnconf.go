@@ -59,7 +59,7 @@ func (p *Provider) BuildConf(connection models.OpenVPNConnection,
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.VPNUnlimitedCertificateAuthority)...)
 	lines = append(lines, utils.WrapOpenvpnCert(
-		constants.VPNUnlimitedCertificate)...)
+		settings.Provider.ExtraConfigOptions.ClientCertificate)...)
 	lines = append(lines, utils.WrapOpenvpnKey(
 		settings.Provider.ExtraConfigOptions.ClientKey)...)
 

@@ -1,10 +1,6 @@
 package configuration
 
 import (
-	"encoding/pem"
-	"errors"
-	"strings"
-
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/params"
 )
@@ -49,7 +45,7 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 		return err
 	}
 
-	settings.ExtraConfigOptions.ClientCertificate, err = readCyberghostClientCertificate(r)
+	settings.ExtraConfigOptions.ClientCertificate, err = readClientCertificate(r)
 	if err != nil {
 		return err
 	}
@@ -71,27 +67,4 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 	}
 
 	return nil
-}
-
-func readCyberghostClientCertificate(r reader) (clientCertificate string, err error) {
-	b, err := r.getFromFileOrSecretFile("OPENVPN_CLIENTCRT", constants.ClientCertificate)
-	if err != nil {
-		return "", err
-	}
-	return extractClientCertificate(b)
-}
-
-var errDecodePEMBlockClientCert = errors.New("cannot decode PEM block from client certificate")
-
-func extractClientCertificate(b []byte) (certificate string, err error) {
-	pemBlock, _ := pem.Decode(b)
-	if pemBlock == nil {
-		return "", errDecodePEMBlockClientCert
-	}
-	parsedBytes := pem.EncodeToMemory(pemBlock)
-	s := string(parsedBytes)
-	s = strings.ReplaceAll(s, "\n", "")
-	s = strings.TrimPrefix(s, "-----BEGIN CERTIFICATE-----")
-	s = strings.TrimSuffix(s, "-----END CERTIFICATE-----")
-	return s, nil
 }
