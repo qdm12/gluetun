@@ -2,6 +2,7 @@ package ivpn
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -14,6 +15,8 @@ func (i *Ivpn) BuildConf(connection models.OpenVPNConnection,
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES256cbc
 	}
+
+	namePrefix := strings.Split(connection.Hostname, ".")[0]
 
 	lines = []string{
 		"client",
@@ -43,7 +46,7 @@ func (i *Ivpn) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
 		connection.RemoteLine(),
-		"verify-x509-name " + connection.Hostname, //  + " name-prefix"
+		"verify-x509-name " + namePrefix + " name-prefix",
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
