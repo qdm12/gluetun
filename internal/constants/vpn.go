@@ -7,6 +7,8 @@ const (
 	Fastestvpn = "fastestvpn"
 	// HideMyAss is a VPN provider.
 	HideMyAss = "hidemyass"
+	// Ipvanish is a VPN provider.
+	Ipvanish = "ipvanish"
 	// Ivpn is a VPN provider.
 	Ivpn = "ivpn"
 	// Mullvad is a VPN provider.

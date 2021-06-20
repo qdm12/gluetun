@@ -73,6 +73,23 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Hostnames: e, f",
 			},
 		},
+		"ipvanish": {
+			settings: Provider{
+				Name: constants.Ipvanish,
+				ServerSelection: ServerSelection{
+					Countries: []string{"a", "b"},
+					Cities:    []string{"c", "d"},
+					Hostnames: []string{"e", "f"},
+				},
+			},
+			lines: []string{
+				"|--Ipvanish settings:",
+				"   |--Network protocol: udp",
+				"   |--Countries: a, b",
+				"   |--Cities: c, d",
+				"   |--Hostnames: e, f",
+			},
+		},
 		"ivpn": {
 			settings: Provider{
 				Name: constants.Ivpn,
