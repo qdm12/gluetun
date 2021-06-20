@@ -21,6 +21,7 @@ func VyprvpnRegionChoices() (choices []string) {
 }
 
 //nolint:lll
+// VyprvpnServers returns a slice of all the VyprVPN servers.
 func VyprvpnServers() []models.VyprvpnServer {
 	return []models.VyprvpnServer{
 		{Region: "Algeria", Hostname: "dz1.vyprvpn.com", TCP: false, UDP: true, IPs: []net.IP{{209, 99, 75, 20}}},

@@ -40,6 +40,7 @@ func WindscribeHostnameChoices() (choices []string) {
 }
 
 //nolint:lll
+// WindscribeServers returns a slice of all the Windscribe servers.
 func WindscribeServers() []models.WindscribeServer {
 	return []models.WindscribeServer{
 		{Region: "Albania", City: "Tirana", Hostname: "al-002.whiskergalaxy.com", IPs: []net.IP{{31, 171, 152, 178}, {31, 171, 152, 179}, {31, 171, 152, 180}}},

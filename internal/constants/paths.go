@@ -21,10 +21,10 @@ const (
 	RootHints string = "/etc/unbound/root.hints"
 	// RootKey is the filepath to the root.key file used by Unbound.
 	RootKey string = "/etc/unbound/root.key"
-	// Client key filepath, used by Cyberghost.
+	// ClientKey is the client key filepath.
 	ClientKey string = "/gluetun/client.key"
-	// Client certificate filepath, used by Cyberghost.
+	// ClientCertificate is the client certificate filepath.
 	ClientCertificate string = "/gluetun/client.crt"
-	// Servers information filepath.
+	// ServersData is the server information filepath.
 	ServersData = "/gluetun/servers.json"
 )

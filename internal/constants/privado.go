@@ -48,6 +48,7 @@ func PrivadoHostnameChoices() (choices []string) {
 }
 
 //nolint:lll
+// PrivadoServers returns a slice of all the Privado servers.
 func PrivadoServers() []models.PrivadoServer {
 	return []models.PrivadoServer{
 		{Country: "Argentina", Region: "Buenos Aires F.D.", City: "Buenos Aires", Hostname: "eze-001.vpn.privado.io", IP: net.IP{168, 205, 93, 211}},

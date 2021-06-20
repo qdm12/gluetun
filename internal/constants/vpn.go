@@ -11,7 +11,7 @@ const (
 	Ivpn = "ivpn"
 	// Mullvad is a VPN provider.
 	Mullvad = "mullvad"
-	// NordVPN is a VPN provider.
+	// Nordvpn is a VPN provider.
 	Nordvpn = "nordvpn"
 	// Privado is a VPN provider.
 	Privado = "privado"
@@ -21,7 +21,7 @@ const (
 	Privatevpn = "privatevpn"
 	// Protonvpn is a VPN provider.
 	Protonvpn = "protonvpn"
-	// PureVPN is a VPN provider.
+	// Purevpn is a VPN provider.
 	Purevpn = "purevpn"
 	// Surfshark is a VPN provider.
 	Surfshark = "surfshark"

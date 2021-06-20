@@ -69,11 +69,7 @@ func (settings *Firewall) read(r reader) (err error) {
 		return err
 	}
 
-	if err := settings.readOutboundSubnets(r); err != nil {
-		return err
-	}
-
-	return nil
+	return settings.readOutboundSubnets(r)
 }
 
 func (settings *Firewall) readVPNInputPorts(env params.Env) (err error) {

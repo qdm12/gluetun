@@ -1,3 +1,4 @@
+//nolint:revive
 package constants
 
 const (

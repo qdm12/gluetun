@@ -327,8 +327,5 @@ func writeOpenvpnConf(lines []string, openFile os.OpenFileFunc) error {
 	if err != nil {
 		return err
 	}
-	if err := file.Close(); err != nil {
-		return err
-	}
-	return nil
+	return file.Close()
 }

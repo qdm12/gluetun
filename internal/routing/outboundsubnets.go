@@ -31,11 +31,7 @@ func (r *routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 	}
 
 	r.removeOutboundSubnets(subnetsToRemove, defaultInterfaceName, defaultGateway)
-	if err := r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway); err != nil {
-		return err
-	}
-
-	return nil
+	return r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway)
 }
 
 func (r *routing) removeOutboundSubnets(subnets []net.IPNet,

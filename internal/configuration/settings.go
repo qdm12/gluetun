@@ -1,6 +1,8 @@
 package configuration
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/golibs/logging"
@@ -43,6 +45,18 @@ func (settings *Settings) lines() (lines []string) {
 	return lines
 }
 
+var (
+	ErrOpenvpn       = errors.New("cannot read Openvpn settings")
+	ErrSystem        = errors.New("cannot read System settings")
+	ErrDNS           = errors.New("cannot read DNS settings")
+	ErrFirewall      = errors.New("cannot read firewall settings")
+	ErrHTTPProxy     = errors.New("cannot read HTTP proxy settings")
+	ErrShadowsocks   = errors.New("cannot read Shadowsocks settings")
+	ErrControlServer = errors.New("cannot read control server settings")
+	ErrUpdater       = errors.New("cannot read Updater settings")
+	ErrPublicIP      = errors.New("cannot read Public IP getter settings")
+)
+
 // Read obtains all configuration options for the program and returns an error as soon
 // as an error is encountered reading them.
 func (settings *Settings) Read(env params.Env, os os.OS, logger logging.Logger) (err error) {
@@ -54,35 +68,35 @@ func (settings *Settings) Read(env params.Env, os os.OS, logger logging.Logger) 
 	}
 
 	if err := settings.OpenVPN.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrOpenvpn, err)
 	}
 
 	if err := settings.System.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrSystem, err)
 	}
 
 	if err := settings.DNS.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrDNS, err)
 	}
 
 	if err := settings.Firewall.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrFirewall, err)
 	}
 
 	if err := settings.HTTPProxy.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrHTTPProxy, err)
 	}
 
 	if err := settings.ShadowSocks.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrShadowsocks, err)
 	}
 
 	if err := settings.ControlServer.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrControlServer, err)
 	}
 
 	if err := settings.Updater.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrUpdater, err)
 	}
 
 	if ip := settings.DNS.PlaintextAddress; ip != nil {
@@ -90,7 +104,7 @@ func (settings *Settings) Read(env params.Env, os os.OS, logger logging.Logger) 
 	}
 
 	if err := settings.PublicIP.read(r); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrPublicIP, err)
 	}
 
 	return nil

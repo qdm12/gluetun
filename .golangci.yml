@@ -17,6 +17,9 @@ issues:
     - path: internal/configuration/
       linters:
         - dupl
+    - text: "exported: exported var Err*"
+      linters:
+        - revive
 linters:
   disable-all: true
   enable:
@@ -55,6 +58,7 @@ linters:
     - nolintlint
     - prealloc
     - predeclared
+    - revive
     - rowserrcheck
     - sqlclosecheck
     - staticcheck

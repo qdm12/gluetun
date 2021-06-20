@@ -29,11 +29,7 @@ func (settings *DNS) readBlacklistBuilding(r reader) (err error) {
 		return err
 	}
 
-	if err := settings.readBlacklistUnblockedHostnames(r); err != nil {
-		return err
-	}
-
-	return nil
+	return settings.readBlacklistUnblockedHostnames(r)
 }
 
 var (

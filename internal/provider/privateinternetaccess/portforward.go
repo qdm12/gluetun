@@ -25,6 +25,7 @@ var (
 	ErrBindPort = errors.New("cannot bind port")
 )
 
+// PortForward obtains a VPN server side port forwarded from PIA.
 //nolint:gocognit
 func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 	openFile os.OpenFileFunc, logger logging.Logger, gateway net.IP, fw firewall.Configurator,
