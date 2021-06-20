@@ -69,7 +69,8 @@ func (settings *Provider) readNordvpn(r reader) (err error) {
 }
 
 func readNordVPNServerNumbers(env params.Env) (numbers []uint16, err error) {
-	possibilities := make([]string, 65537)
+	const possiblePortsCount = 65537
+	possibilities := make([]string, possiblePortsCount)
 	for i := range possibilities {
 		possibilities[i] = fmt.Sprintf("%d", i)
 	}

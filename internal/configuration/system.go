@@ -32,13 +32,14 @@ func (settings *System) lines() (lines []string) {
 }
 
 func (settings *System) read(r reader) (err error) {
-	settings.PUID, err = r.env.IntRange("PUID", 0, 65535, params.Default("1000"),
+	const maxID = 65535
+	settings.PUID, err = r.env.IntRange("PUID", 0, maxID, params.Default("1000"),
 		params.RetroKeys([]string{"UID"}, r.onRetroActive))
 	if err != nil {
 		return err
 	}
 
-	settings.PGID, err = r.env.IntRange("PGID", 0, 65535, params.Default("1000"),
+	settings.PGID, err = r.env.IntRange("PGID", 0, maxID, params.Default("1000"),
 		params.RetroKeys([]string{"GID"}, r.onRetroActive))
 	if err != nil {
 		return err

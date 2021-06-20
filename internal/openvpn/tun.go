@@ -23,7 +23,7 @@ func (c *configurator) CheckTUN() error {
 
 func (c *configurator) CreateTUN() error {
 	c.logger.Info("creating %s", constants.TunnelDevice)
-	if err := c.os.MkdirAll("/dev/net", 0751); err != nil {
+	if err := c.os.MkdirAll("/dev/net", 0751); err != nil { //nolint:gomnd
 		return err
 	}
 
@@ -36,7 +36,7 @@ func (c *configurator) CreateTUN() error {
 		return err
 	}
 
-	file, err := c.os.OpenFile(constants.TunnelDevice, os.O_WRONLY, 0666)
+	file, err := c.os.OpenFile(constants.TunnelDevice, os.O_WRONLY, 0666) //nolint:gomnd
 	if err != nil {
 		return err
 	}

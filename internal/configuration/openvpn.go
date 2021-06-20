@@ -115,7 +115,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		return err
 	}
 
-	settings.Verbosity, err = r.env.IntRange("OPENVPN_VERBOSITY", 0, 6, params.Default("1"))
+	settings.Verbosity, err = r.env.IntRange("OPENVPN_VERBOSITY", 0, 6, params.Default("1")) //nolint:gomnd
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,8 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		return err
 	}
 
-	mssFix, err := r.env.IntRange("OPENVPN_MSSFIX", 0, 10000, params.Default("0"))
+	const maxMSSFix = 10000
+	mssFix, err := r.env.IntRange("OPENVPN_MSSFIX", 0, maxMSSFix, params.Default("0"))
 	if err != nil {
 		return err
 	}

@@ -20,6 +20,12 @@ issues:
     - text: "exported: exported var Err*"
       linters:
         - revive
+    - text: "mnd: Magic number: 0644*"
+      linters:
+        - gomnd
+    - text: "mnd: Magic number: 0400*"
+      linters:
+        - gomnd
 linters:
   disable-all: true
   enable:

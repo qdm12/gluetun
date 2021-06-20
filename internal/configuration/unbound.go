@@ -29,19 +29,19 @@ func (settings *DNS) readUnbound(r reader) (err error) {
 		return err
 	}
 
-	verbosityLevel, err := r.env.IntRange("DOT_VERBOSITY", 0, 5, params.Default("1"))
+	verbosityLevel, err := r.env.IntRange("DOT_VERBOSITY", 0, 5, params.Default("1")) //nolint:gomnd
 	if err != nil {
 		return err
 	}
 	settings.Unbound.VerbosityLevel = uint8(verbosityLevel)
 
-	verbosityDetailsLevel, err := r.env.IntRange("DOT_VERBOSITY_DETAILS", 0, 4, params.Default("0"))
+	verbosityDetailsLevel, err := r.env.IntRange("DOT_VERBOSITY_DETAILS", 0, 4, params.Default("0")) //nolint:gomnd
 	if err != nil {
 		return err
 	}
 	settings.Unbound.VerbosityDetailsLevel = uint8(verbosityDetailsLevel)
 
-	validationLogLevel, err := r.env.IntRange("DOT_VALIDATION_LOGLEVEL", 0, 2, params.Default("0"))
+	validationLogLevel, err := r.env.IntRange("DOT_VALIDATION_LOGLEVEL", 0, 2, params.Default("0")) //nolint:gomnd
 	if err != nil {
 		return err
 	}
