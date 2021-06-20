@@ -43,7 +43,7 @@ func (settings *Provider) readTorguard(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.TorguardHostnamesChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.TorguardHostnameChoices())
 	if err != nil {
 		return err
 	}

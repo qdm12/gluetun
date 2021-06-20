@@ -249,6 +249,31 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Hostnames: e",
 			},
 		},
+		constants.VPNUnlimited: {
+			settings: Provider{
+				Name: constants.VPNUnlimited,
+				ServerSelection: ServerSelection{
+					Countries:  []string{"a", "b"},
+					Cities:     []string{"c", "d"},
+					Hostnames:  []string{"e", "f"},
+					FreeOnly:   true,
+					StreamOnly: true,
+				},
+				ExtraConfigOptions: ExtraConfigOptions{
+					ClientKey: "a",
+				},
+			},
+			lines: []string{
+				"|--Vpn Unlimited settings:",
+				"   |--Network protocol: udp",
+				"   |--Countries: a, b",
+				"   |--Cities: c, d",
+				"   |--Hostnames: e, f",
+				"   |--Free servers only",
+				"   |--Stream servers only",
+				"   |--Client key is set",
+			},
+		},
 		"vyprvpn": {
 			settings: Provider{
 				Name: constants.Vyprvpn,

@@ -71,6 +71,11 @@ func GetAllServers() (allServers models.AllServers) {
 			Timestamp: 1620611129,
 			Servers:   TorguardServers(),
 		},
+		VPNUnlimited: models.VPNUnlimitedServers{
+			Version:   1,
+			Timestamp: 1623950304,
+			Servers:   VPNUnlimitedServers(),
+		},
 		Vyprvpn: models.VyprvpnServers{
 			Version:   2,
 			Timestamp: 1620612506,

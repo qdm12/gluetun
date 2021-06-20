@@ -56,6 +56,8 @@ func (settings *Provider) lines() (lines []string) {
 		providerLines = settings.surfsharkLines()
 	case "torguard":
 		providerLines = settings.torguardLines()
+	case strings.ToLower(constants.VPNUnlimited):
+		providerLines = settings.vpnUnlimitedLines()
 	case "vyprvpn":
 		providerLines = settings.vyprvpnLines()
 	case "windscribe":

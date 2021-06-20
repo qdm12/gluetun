@@ -27,6 +27,8 @@ const (
 	Surfshark = "surfshark"
 	// Torguard is a VPN provider.
 	Torguard = "torguard"
+	// VPNUnlimited is a VPN provider.
+	VPNUnlimited = "vpn unlimited"
 	// Vyprvpn is a VPN provider.
 	Vyprvpn = "vyprvpn"
 	// Windscribe is a VPN provider.
