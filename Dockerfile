@@ -5,7 +5,6 @@ ARG BUILDPLATFORM=linux/amd64
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS base
 RUN apk --update add git g++
 ENV CGO_ENABLED=0
-COPY --from=qmcgaw/xcputranslate:v0.4.0 /xcputranslate /usr/local/bin/xcputranslate
 ARG GOLANGCI_LINT_VERSION=v1.41.1
 RUN go get github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}
 WORKDIR /tmp/gobuild
@@ -35,6 +34,7 @@ RUN git init && \
     git diff --exit-code -- go.mod
 
 FROM --platform=$BUILDPLATFORM base AS build
+COPY --from=qmcgaw/xcputranslate:v0.4.0 /xcputranslate /usr/local/bin/xcputranslate
 ARG TARGETPLATFORM
 ARG VERSION=unknown
 ARG BUILD_DATE="an unknown date"
