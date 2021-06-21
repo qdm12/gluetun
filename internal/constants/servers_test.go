@@ -160,7 +160,7 @@ func Test_timestamps(t *testing.T) {
 		"Cyberghost": {
 			servers:   allServers.Cyberghost.Servers,
 			timestamp: allServers.Cyberghost.Timestamp,
-			digest:    "1de7ee68",
+			digest:    "b3ca3118",
 		},
 		"Fastestvpn": {
 			servers:   allServers.Fastestvpn.Version,
