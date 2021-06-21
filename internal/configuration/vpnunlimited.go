@@ -56,17 +56,17 @@ func (settings *Provider) readVPNUnlimited(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.IvpnCountryChoices())
+	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.VPNUnlimitedCountryChoices())
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.IvpnCityChoices())
+	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.VPNUnlimitedCityChoices())
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.VPNUnlimitedHostnameChoices())
 	if err != nil {
 		return err
 	}
