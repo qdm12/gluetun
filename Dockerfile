@@ -2,7 +2,10 @@ ARG ALPINE_VERSION=3.13
 ARG GO_VERSION=1.16
 ARG BUILDPLATFORM=linux/amd64
 
+FROM --platform=$BUILDPLATFORM qmcgaw/xcputranslate:v0.6.0 AS xcputranslate
+
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS base
+COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
 RUN apk --update add git g++
 ENV CGO_ENABLED=0
 ARG GOLANGCI_LINT_VERSION=v1.41.1
@@ -34,7 +37,6 @@ RUN git init && \
     git diff --exit-code -- go.mod
 
 FROM --platform=$BUILDPLATFORM base AS build
-COPY --from=qmcgaw/xcputranslate:v0.6.0 /xcputranslate /usr/local/bin/xcputranslate
 ARG TARGETPLATFORM
 ARG ALLTARGETPLATFORMS=${TARGETPLATFORM}
 ARG VERSION=unknown
