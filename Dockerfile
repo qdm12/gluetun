@@ -36,9 +36,11 @@ RUN git init && \
 FROM --platform=$BUILDPLATFORM base AS build
 COPY --from=qmcgaw/xcputranslate:v0.6.0 /xcputranslate /usr/local/bin/xcputranslate
 ARG TARGETPLATFORM
+ARG ALLTARGETPLATFORMS=${TARGETPLATFORM}
 ARG VERSION=unknown
 ARG BUILD_DATE="an unknown date"
 ARG COMMIT=unknown
+RUN xcputranslate sleep -targetplatform ${TARGETPLATFORM} -buildtime=10s -order=${ALLTARGETPLATFORMS}
 RUN GOARCH="$(xcputranslate translate -field arch -targetplatform ${TARGETPLATFORM})" \
     GOARM="$(xcputranslate translate -field arm -targetplatform ${TARGETPLATFORM})" \
     go build -trimpath -ldflags="-s -w \

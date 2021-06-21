@@ -93,6 +93,7 @@ jobs:
             BUILD_DATE=${{ steps.vars.outputs.build_date }}
             COMMIT=${{ steps.vars.outputs.commit }}
             VERSION=${{ steps.vars.outputs.version }}
+            ALLTARGETPLATFORMS=${{ steps.vars.outputs.platforms }}
           tags: |
             qmcgaw/gluetun:${{ steps.vars.outputs.version }}
             qmcgaw/private-internet-access:${{ steps.vars.outputs.version }}
