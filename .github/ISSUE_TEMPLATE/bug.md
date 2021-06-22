@@ -39,3 +39,7 @@ PASTE YOUR LOGS
 IN THERE
 
 ```
+
+<!---
+💡 You can highlight your code with https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#syntax-highlight
+-->
