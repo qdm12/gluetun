@@ -58,9 +58,17 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 ## Setup
 
-1. On some devices you may need to setup your tunnel kernel module on your host with `insmod /lib/modules/tun.ko` or `modprobe tun`
-    - [Synology users Wiki page](https://github.com/qdm12/gluetun/wiki/Synology-setup)
-1. ⚠️ Raspberry Pi users running 32 bit systems: from image `v3.16.0` you need to do [this](https://github.com/alpinelinux/docker-alpine/issues/135#issuecomment-812287338) on your host to run the container.
+1. Ensure your `tun` kernel module is setup:
+
+    ```sh
+    sudo modprobe tun
+    # or, if you don't have modprobe, with
+    sudo insmod /lib/modules/tun.ko
+    ```
+
+1. Extra steps:
+    - [For Synology users](https://github.com/qdm12/gluetun/wiki/Synology-setup)
+    - [For 32 bit Operating systems (**Rasberry Pis**)](https://github.com/qdm12/gluetun/wiki/32-bit-setup)
 1. Launch the container with:
 
     ```bash
