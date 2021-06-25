@@ -1,9 +1,10 @@
 ARG ALPINE_VERSION=3.13
 ARG GO_VERSION=1.16
+ARG XCPUTRANSLATE_VERSION=v0.6.0
 ARG GOLANGCI_LINT_VERSION=v1.41.1
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM qmcgaw/xcputranslate:v0.6.0 AS xcputranslate
+FROM --platform=$BUILDPLATFORM qmcgaw/xcputranslate:${XCPUTRANSLATE_VERSION} AS xcputranslate
 FROM --platform=${BUILDPLATFORM} qmcgaw/binpot:golangci-lint-${GOLANGCI_LINT_VERSION} AS golangci-lint
 
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS base
