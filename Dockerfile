@@ -1,4 +1,5 @@
-ARG ALPINE_VERSION=3.13
+ARG ALPINE_VERSION=3.14
+ARG GO_ALPINE_VERSION=3.13
 ARG GO_VERSION=1.16
 ARG XCPUTRANSLATE_VERSION=v0.6.0
 ARG GOLANGCI_LINT_VERSION=v1.41.1
@@ -7,7 +8,7 @@ ARG BUILDPLATFORM=linux/amd64
 FROM --platform=$BUILDPLATFORM qmcgaw/xcputranslate:${XCPUTRANSLATE_VERSION} AS xcputranslate
 FROM --platform=${BUILDPLATFORM} qmcgaw/binpot:golangci-lint-${GOLANGCI_LINT_VERSION} AS golangci-lint
 
-FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS base
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine${GO_ALPINE_VERSION} AS base
 COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
 RUN apk --update add git g++
 ENV CGO_ENABLED=0
