@@ -210,7 +210,7 @@ func Test_timestamps(t *testing.T) {
 		"Protonvpn": {
 			servers:   allServers.Protonvpn.Servers,
 			timestamp: allServers.Protonvpn.Timestamp,
-			digest:    "e7180296",
+			digest:    "3b86393e",
 		},
 		"Purevpn": {
 			servers:   allServers.Purevpn.Servers,

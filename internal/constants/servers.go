@@ -53,7 +53,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Protonvpn: models.ProtonvpnServers{
 			Version:   1,
-			Timestamp: 1621791438,
+			Timestamp: 1624894186,
 			Servers:   ProtonvpnServers(),
 		},
 		Pia: models.PiaServers{
