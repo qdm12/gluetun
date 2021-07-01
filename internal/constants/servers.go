@@ -23,7 +23,7 @@ func GetAllServers() (allServers models.AllServers) {
 		},
 		Ipvanish: models.IpvanishServers{
 			Version:   1,
-			Timestamp: 1622430497,
+			Timestamp: 1625164062,
 			Servers:   IpvanishServers(),
 		},
 		Ivpn: models.IvpnServers{

@@ -175,7 +175,7 @@ func Test_timestamps(t *testing.T) {
 		"Ipvanish": {
 			servers:   allServers.Ipvanish.Servers,
 			timestamp: allServers.Ipvanish.Timestamp,
-			digest:    "c62dcf98",
+			digest:    "7c60dc5d",
 		},
 		"Ivpn": {
 			servers:   allServers.Ivpn.Servers,
