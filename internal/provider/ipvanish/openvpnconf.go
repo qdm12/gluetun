@@ -43,7 +43,7 @@ func (i *Ipvanish) BuildConf(connection models.OpenVPNConnection,
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
 		connection.RemoteLine(),
-		"verify-x509-name " + connection.Hostname, //  + " name"
+		"verify-x509-name " + connection.Hostname + " name",
 		"auth " + settings.Auth,
 	}
 
