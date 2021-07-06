@@ -18,6 +18,12 @@ var (
 	ErrFilesDoNotExist   = errors.New("files do not exist")
 )
 
+func cleanSuffix(value string) string {
+	value = strings.TrimSuffix(value, "\n")
+	value = strings.TrimSuffix(value, "\r")
+	return value
+}
+
 func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKeys []string) (value string, err error) {
 	envOptions := []params.OptionSetter{
 		params.Compulsory(), // to fallback on file reading
@@ -27,6 +33,7 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 	}
 	value, envErr := r.env.Get(envKey, envOptions...)
 	if envErr == nil {
+		value = cleanSuffix(value)
 		return value, nil
 	}
 
@@ -55,7 +62,7 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 	}
 
 	value = string(b)
-	value = strings.TrimSuffix(value, "\n")
+	value = cleanSuffix(value)
 	if compulsory && len(value) == 0 {
 		return "", ErrSecretFileIsEmpty
 	}
