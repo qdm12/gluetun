@@ -35,6 +35,9 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
   - Sponsor me on [github.com/sponsors/qdm12](https://github.com/sponsors/qdm12)
   - Donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw)
   - Drop me [an email](mailto:quentin.mcgaw@gmail.com)
+- Video:
+
+  [![Video Gif](https://i.imgur.com/CetWunc.gif)](https://youtu.be/0F6I03LQcI4)
 
 ## Features
 
