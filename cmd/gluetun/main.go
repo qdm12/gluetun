@@ -288,7 +288,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	defaultGoRoutineSettings := goshutdown.GoRoutineSettings{Timeout: defaultShutdownTimeout}
 	defaultGroupSettings := goshutdown.GroupSettings{
 		Timeout:   defaultShutdownTimeout,
-		OnFailure: defaultShutdownOnFailure,
 		OnSuccess: defaultShutdownOnSuccess,
 	}
 
