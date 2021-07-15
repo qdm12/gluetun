@@ -464,11 +464,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 
 			// Runs the Public IP getter job once
 			_, _ = publicIPLooper.SetStatus(constants.Running)
-			if !versionInformation {
-				break
-			}
-
-			if first {
+			if versionInformation && first {
 				first = false
 				message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
 				if err != nil {
