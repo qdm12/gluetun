@@ -359,11 +359,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	controlServerAddress := ":" + strconv.Itoa(int(allSettings.ControlServer.Port))
 	controlServerLogging := allSettings.ControlServer.Log
-	httpServer := server.New(controlServerAddress, controlServerLogging,
-		logger.NewChild(logging.Settings{Prefix: "http server: "}),
-		buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", defaultGoRoutineSettings)
+	httpServer := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
+		logger.NewChild(logging.Settings{Prefix: "http server: "}),
+		buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
 	go httpServer.Run(httpServerCtx, httpServerDone)
 	controlGroupHandler.Add(httpServerHandler)
 
@@ -454,7 +454,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 			}
 
 			if unboundLooper.GetSettings().Enabled {
-				_, _ = unboundLooper.SetStatus(constants.Running)
+				_, _ = unboundLooper.SetStatus(ctx, constants.Running)
 			}
 
 			restartTickerCancel() // stop previous restart tickers

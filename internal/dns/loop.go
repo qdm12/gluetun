@@ -24,9 +24,11 @@ type Looper interface {
 	Run(ctx context.Context, done chan<- struct{})
 	RunRestartTicker(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
-	SetStatus(status models.LoopStatus) (outcome string, err error)
+	SetStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 	GetSettings() (settings configuration.DNS)
-	SetSettings(settings configuration.DNS) (outcome string)
+	SetSettings(ctx context.Context, settings configuration.DNS) (
+		outcome string)
 }
 
 type looper struct {
@@ -88,7 +90,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocognit
 	defer close(done)
 
 	const fallback = false
@@ -120,6 +122,9 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 			}
 			var err error
 			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx, crashed)
+			if ctx.Err() != nil {
+				return
+			}
 			if err != nil {
 				if !errors.Is(err, errUpdateFiles) {
 					const fallback = true
@@ -306,8 +311,8 @@ func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 				}
 			}
 
-			_, _ = l.SetStatus(constants.Stopped)
-			_, _ = l.SetStatus(constants.Running)
+			_, _ = l.SetStatus(ctx, constants.Stopped)
+			_, _ = l.SetStatus(ctx, constants.Running)
 
 			settings := l.GetSettings()
 			timer.Reset(settings.UpdatePeriod)

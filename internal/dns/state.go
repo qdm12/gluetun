@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -32,7 +33,8 @@ func (l *looper) GetStatus() (status models.LoopStatus) {
 
 var ErrInvalidStatus = errors.New("invalid status")
 
-func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error) {
+func (l *looper) SetStatus(ctx context.Context, status models.LoopStatus) (
+	outcome string, err error) {
 	l.state.statusMu.Lock()
 	defer l.state.statusMu.Unlock()
 	existingStatus := l.state.status
@@ -48,7 +50,12 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.state.status = constants.Starting
 		l.state.statusMu.Unlock()
 		l.start <- struct{}{}
-		newStatus := <-l.running
+		newStatus := constants.Starting // for canceled context
+		select {
+		case <-ctx.Done():
+		case newStatus = <-l.running:
+		}
+
 		l.state.statusMu.Lock()
 		l.state.status = newStatus
 		return newStatus.String(), nil
@@ -78,7 +85,8 @@ func (l *looper) GetSettings() (settings configuration.DNS) {
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings configuration.DNS) (outcome string) {
+func (l *looper) SetSettings(ctx context.Context, settings configuration.DNS) (
+	outcome string) {
 	l.state.settingsMu.Lock()
 	settingsUnchanged := reflect.DeepEqual(l.state.settings, settings)
 	if settingsUnchanged {
@@ -94,9 +102,9 @@ func (l *looper) SetSettings(settings configuration.DNS) (outcome string) {
 		l.updateTicker <- struct{}{}
 		return "update period changed"
 	}
-	_, _ = l.SetStatus(constants.Stopped)
+	_, _ = l.SetStatus(ctx, constants.Stopped)
 	if settings.Enabled {
-		outcome, _ = l.SetStatus(constants.Running)
+		outcome, _ = l.SetStatus(ctx, constants.Running)
 	}
 	return outcome
 }

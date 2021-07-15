@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -10,9 +11,10 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func newHandlerV0(logger logging.Logger,
+func newHandlerV0(ctx context.Context, logger logging.Logger,
 	openvpn openvpn.Looper, dns dns.Looper, updater updater.Looper) http.Handler {
 	return &handlerV0{
+		ctx:     ctx,
 		logger:  logger,
 		openvpn: openvpn,
 		dns:     dns,
@@ -21,6 +23,7 @@ func newHandlerV0(logger logging.Logger,
 }
 
 type handlerV0 struct {
+	ctx     context.Context
 	logger  logging.Logger
 	openvpn openvpn.Looper
 	dns     dns.Looper
@@ -44,9 +47,9 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.logger.Warn(err)
 		}
 	case "/unbound/actions/restart":
-		outcome, _ := h.dns.SetStatus(constants.Stopped)
+		outcome, _ := h.dns.SetStatus(h.ctx, constants.Stopped)
 		h.logger.Info("dns: %s", outcome)
-		outcome, _ = h.dns.SetStatus(constants.Running)
+		outcome, _ = h.dns.SetStatus(h.ctx, constants.Running)
 		h.logger.Info("dns: %s", outcome)
 		if _, err := w.Write([]byte("dns restarted, please consider using the /v1/ API in the future.")); err != nil {
 			h.logger.Warn(err)

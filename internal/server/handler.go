@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func newHandler(logger logging.Logger, logging bool,
+func newHandler(ctx context.Context, logger logging.Logger, logging bool,
 	buildInfo models.BuildInformation,
 	openvpnLooper openvpn.Looper,
 	unboundLooper dns.Looper,
@@ -22,11 +23,11 @@ func newHandler(logger logging.Logger, logging bool,
 	handler := &handler{}
 
 	openvpn := newOpenvpnHandler(openvpnLooper, logger)
-	dns := newDNSHandler(unboundLooper, logger)
+	dns := newDNSHandler(ctx, unboundLooper, logger)
 	updater := newUpdaterHandler(updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)
 
-	handler.v0 = newHandlerV0(logger, openvpnLooper, unboundLooper, updaterLooper)
+	handler.v0 = newHandlerV0(ctx, logger, openvpnLooper, unboundLooper, updaterLooper)
 	handler.v1 = newHandlerV1(logger, buildInfo, openvpn, dns, updater, publicip)
 
 	handlerWithLog := withLogMiddleware(handler, logger, logging)

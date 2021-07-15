@@ -25,11 +25,11 @@ type server struct {
 	handler http.Handler
 }
 
-func New(address string, logEnabled bool, logger logging.Logger,
+func New(ctx context.Context, address string, logEnabled bool, logger logging.Logger,
 	buildInfo models.BuildInformation,
 	openvpnLooper openvpn.Looper, unboundLooper dns.Looper,
 	updaterLooper updater.Looper, publicIPLooper publicip.Looper) Server {
-	handler := newHandler(logger, logEnabled, buildInfo,
+	handler := newHandler(ctx, logger, logEnabled, buildInfo,
 		openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
 	return &server{
 		address: address,
