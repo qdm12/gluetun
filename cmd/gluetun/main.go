@@ -384,7 +384,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
-	_, _ = openvpnLooper.SetStatus(ctx, constants.Running) // TODO option to disable with variable
+	_, _ = openvpnLooper.ApplyStatus(ctx, constants.Running) // TODO option to disable with variable
 
 	<-ctx.Done()
 

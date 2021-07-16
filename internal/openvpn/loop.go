@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration"
@@ -21,7 +20,7 @@ import (
 type Looper interface {
 	Run(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
-	SetStatus(ctx context.Context, status models.LoopStatus) (
+	ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		outcome string, err error)
 	GetSettings() (settings configuration.OpenVPN)
 	SetSettings(ctx context.Context, settings configuration.OpenVPN) (
@@ -33,7 +32,7 @@ type Looper interface {
 }
 
 type looper struct {
-	state state
+	state *state
 	// Fixed parameters
 	username string
 	puid     int
@@ -48,15 +47,16 @@ type looper struct {
 	openFile         os.OpenFileFunc
 	tunnelReady      chan<- struct{}
 	healthy          <-chan bool
-	// Internal channels and locks
-	loopLock           sync.Mutex
-	running            chan models.LoopStatus
-	stop, stopped      chan struct{}
-	start              chan struct{}
+	// Internal channels and values
+	stop               <-chan struct{}
+	stopped            chan<- struct{}
+	start              <-chan struct{}
+	running            chan<- models.LoopStatus
 	portForwardSignals chan net.IP
-	crashed            bool
-	backoffTime        time.Duration
-	healthWaitTime     time.Duration
+	userTrigger        bool
+	// Internal constant values
+	backoffTime    time.Duration
+	healthWaitTime time.Duration
 }
 
 const (
@@ -69,12 +69,16 @@ func NewLooper(settings configuration.OpenVPN,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.ParentLogger, client *http.Client, openFile os.OpenFileFunc,
 	tunnelReady chan<- struct{}, healthy <-chan bool) Looper {
+	start := make(chan struct{})
+	running := make(chan models.LoopStatus)
+	stop := make(chan struct{})
+	stopped := make(chan struct{})
+
+	state := newState(constants.Stopped, settings, allServers,
+		start, running, stop, stopped)
+
 	return &looper{
-		state: state{
-			status:     constants.Stopped,
-			settings:   settings,
-			allServers: allServers,
-		},
+		state:              state,
 		username:           username,
 		puid:               puid,
 		pgid:               pgid,
@@ -87,11 +91,12 @@ func NewLooper(settings configuration.OpenVPN,
 		openFile:           openFile,
 		tunnelReady:        tunnelReady,
 		healthy:            healthy,
-		start:              make(chan struct{}),
-		running:            make(chan models.LoopStatus),
-		stop:               make(chan struct{}),
-		stopped:            make(chan struct{}),
+		start:              start,
+		running:            running,
+		stop:               stop,
+		stopped:            stopped,
 		portForwardSignals: make(chan net.IP),
+		userTrigger:        true,
 		backoffTime:        defaultBackoffTime,
 		healthWaitTime:     defaultHealthWaitTime,
 	}
@@ -99,15 +104,21 @@ func NewLooper(settings configuration.OpenVPN,
 
 func (l *looper) PortForward(vpnGateway net.IP) { l.portForwardSignals <- vpnGateway }
 
-func (l *looper) signalCrashedStatus() {
-	if !l.crashed {
-		l.crashed = true
-		l.running <- constants.Crashed
+func (l *looper) signalOrSetStatus(status models.LoopStatus) {
+	if l.userTrigger {
+		l.userTrigger = false
+		select {
+		case l.running <- status:
+		default: // receiver calling ApplyStatus droppped out
+		}
+	} else {
+		l.state.SetStatus(status)
 	}
 }
 
 func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocognit
 	defer close(done)
+
 	select {
 	case <-l.start:
 	case <-ctx.Done():
@@ -115,17 +126,17 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 	}
 
 	for ctx.Err() == nil {
-		settings, allServers := l.state.getSettingsAndServers()
+		settings, allServers := l.state.GetSettingsAndServers()
 
 		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
 
 		var connection models.OpenVPNConnection
 		var lines []string
 		var err error
-		if len(settings.Config) == 0 {
+		if settings.Config == "" {
 			connection, err = providerConf.GetOpenVPNConnection(settings.Provider.ServerSelection)
 			if err != nil {
-				l.signalCrashedStatus()
+				l.signalOrSetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				continue
 			}
@@ -133,28 +144,30 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 		} else {
 			lines, connection, err = l.processCustomConfig(settings)
 			if err != nil {
-				l.signalCrashedStatus()
+				l.signalOrSetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				continue
 			}
 		}
 
 		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
-			l.signalCrashedStatus()
+			l.signalOrSetStatus(constants.Crashed)
 			l.logAndWait(ctx, err)
 			continue
 		}
 
 		if settings.User != "" {
-			if err := l.conf.WriteAuthFile(settings.User, settings.Password, l.puid, l.pgid); err != nil {
-				l.signalCrashedStatus()
+			err := l.conf.WriteAuthFile(
+				settings.User, settings.Password, l.puid, l.pgid)
+			if err != nil {
+				l.signalOrSetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				continue
 			}
 		}
 
 		if err := l.fw.SetVPNConnection(ctx, connection); err != nil {
-			l.signalCrashedStatus()
+			l.signalOrSetStatus(constants.Crashed)
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -164,7 +177,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 		stdoutLines, stderrLines, waitError, err := l.conf.Start(openvpnCtx, settings.Version)
 		if err != nil {
 			openvpnCancel()
-			l.signalCrashedStatus()
+			l.signalOrSetStatus(constants.Crashed)
 			l.logAndWait(ctx, err)
 			continue
 		}
@@ -190,13 +203,8 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 			}
 		}(openvpnCtx)
 
-		if l.crashed {
-			l.crashed = false
-			l.backoffTime = defaultBackoffTime
-			l.state.setStatusWithLock(constants.Running)
-		} else {
-			l.running <- constants.Running
-		}
+		l.backoffTime = defaultBackoffTime
+		l.signalOrSetStatus(constants.Running)
 
 		stayHere := true
 		for stayHere {
@@ -209,6 +217,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 				<-portForwardDone
 				return
 			case <-l.stop:
+				l.userTrigger = true
 				l.logger.Info("stopping")
 				openvpnCancel()
 				<-waitError
@@ -218,17 +227,22 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 				<-portForwardDone
 				l.stopped <- struct{}{}
 			case <-l.start:
+				l.userTrigger = true
 				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
-				openvpnCancel()
 				close(waitError)
 				closeStreams()
+
+				l.state.Lock() // prevent SetStatus from running in parallel
+
+				openvpnCancel()
+				l.state.SetStatus(constants.Crashed)
 				<-portForwardDone
-				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
-				l.crashed = true
 				stayHere = false
+
+				l.state.Unlock()
 			case healthy := <-l.healthy:
 				if healthy {
 					continue
@@ -238,19 +252,19 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 				if healthy || ctx.Err() != nil {
 					continue
 				}
-				l.crashed = true // flag as crashed
-				l.state.setStatusWithLock(constants.Stopping)
+
 				l.logger.Warn("unhealthy program: restarting openvpn")
+				l.state.SetStatus(constants.Stopping)
 				openvpnCancel()
 				<-waitError
 				close(waitError)
 				closeStreams()
 				<-portForwardDone
-				l.state.setStatusWithLock(constants.Stopped)
+				l.state.SetStatus(constants.Stopped)
 				stayHere = false
 			}
 		}
-		openvpnCancel() // just for the linter
+		openvpnCancel()
 	}
 }
 
@@ -258,7 +272,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	if err != nil {
 		l.logger.Error(err)
 	}
-	l.logger.Info("retrying in %s", l.backoffTime)
+	l.logger.Info("retrying in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)
 	l.backoffTime *= 2
 	select {
@@ -332,4 +346,28 @@ func writeOpenvpnConf(lines []string, openFile os.OpenFileFunc) error {
 		return err
 	}
 	return file.Close()
+}
+
+func (l *looper) GetStatus() (status models.LoopStatus) {
+	return l.state.GetStatus()
+}
+func (l *looper) ApplyStatus(ctx context.Context, status models.LoopStatus) (
+	outcome string, err error) {
+	return l.state.ApplyStatus(ctx, status)
+}
+func (l *looper) GetSettings() (settings configuration.OpenVPN) {
+	return l.state.GetSettings()
+}
+func (l *looper) SetSettings(ctx context.Context, settings configuration.OpenVPN) (
+	outcome string) {
+	return l.state.SetSettings(ctx, settings)
+}
+func (l *looper) GetServers() (servers models.AllServers) {
+	return l.state.GetServers()
+}
+func (l *looper) SetServers(servers models.AllServers) {
+	l.state.SetServers(servers)
+}
+func (l *looper) GetPortForwarded() (port uint16) {
+	return l.state.GetPortForwarded()
 }
