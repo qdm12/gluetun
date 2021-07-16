@@ -120,7 +120,7 @@ func (s *state) ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		}
 		s.SetStatus(newStatus)
 
-		return status.String(), nil
+		return newStatus.String(), nil
 	default:
 		return "", fmt.Errorf("%w: %s: it can only be one of: %s, %s",
 			ErrInvalidStatus, status, constants.Running, constants.Stopped)

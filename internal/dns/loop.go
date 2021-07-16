@@ -36,6 +36,7 @@ type looper struct {
 	blockBuilder blacklist.Builder
 	client       *http.Client
 	logger       logging.Logger
+	userTrigger  bool
 	start        <-chan struct{}
 	running      chan<- models.LoopStatus
 	stop         <-chan struct{}
@@ -65,6 +66,7 @@ func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *ht
 		blockBuilder: blacklist.NewBuilder(client),
 		client:       client,
 		logger:       logger,
+		userTrigger:  true,
 		start:        start,
 		running:      running,
 		stop:         stop,
@@ -93,9 +95,9 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) signalOrSetStatus(userTriggered *bool, status models.LoopStatus) {
-	if *userTriggered {
-		*userTriggered = false
+func (l *looper) signalOrSetStatus(status models.LoopStatus) {
+	if l.userTrigger {
+		l.userTrigger = false
 		select {
 		case l.running <- status:
 		default: // receiver droppped out - avoid deadlock on events routing when shutting down
@@ -118,8 +120,6 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 		return
 	}
 
-	userTriggered := true
-
 	for ctx.Err() == nil {
 		// Upper scope variables for Unbound only
 		// Their values are to be used if DOT=off
@@ -133,11 +133,11 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
 				l.logger.Info("ready")
-				l.signalOrSetStatus(&userTriggered, constants.Running)
+				l.signalOrSetStatus(constants.Running)
 				break
 			}
 
-			l.signalOrSetStatus(&userTriggered, constants.Crashed)
+			l.signalOrSetStatus(constants.Crashed)
 
 			if ctx.Err() != nil {
 				return
@@ -155,7 +155,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 			l.useUnencryptedDNS(fallback)
 		}
 
-		userTriggered = false
+		l.userTrigger = false
 
 		stayHere := true
 		for stayHere {
@@ -167,7 +167,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				closeStreams()
 				return
 			case <-l.stop:
-				userTriggered = true
+				l.userTrigger = true
 				l.logger.Info("stopping")
 				const fallback = false
 				l.useUnencryptedDNS(fallback)
@@ -178,14 +178,12 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				closeStreams()
 				l.stopped <- struct{}{}
 			case <-l.start:
-				userTriggered = true
+				l.userTrigger = true
 				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				close(waitError)
 				closeStreams()
-
-				l.state.Lock() // prevent SetStatus from running in parallel
 
 				unboundCancel()
 				l.state.SetStatus(constants.Crashed)
@@ -193,8 +191,6 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				l.useUnencryptedDNS(fallback)
 				l.logAndWait(ctx, err)
 				stayHere = false
-
-				l.state.Unlock()
 			}
 		}
 	}
