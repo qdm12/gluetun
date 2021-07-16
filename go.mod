@@ -5,8 +5,8 @@ go 1.16
 require (
 	github.com/fatih/color v1.12.0
 	github.com/golang/mock v1.6.0
-	github.com/qdm12/dns v1.8.0
-	github.com/qdm12/golibs v0.0.0-20210603202746-e5494e9c2ebb
+	github.com/qdm12/dns v1.9.0
+	github.com/qdm12/golibs v0.0.0-20210716185557-66793f4ddd80
 	github.com/qdm12/goshutdown v0.1.0
 	github.com/qdm12/ss-server v0.2.0
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e

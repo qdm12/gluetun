@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os/exec"
 	"strings"
+	"syscall"
 
 	"github.com/qdm12/gluetun/internal/constants"
 )
@@ -30,7 +32,10 @@ func (c *configurator) Start(ctx context.Context, version string) (
 
 	c.logger.Info("starting OpenVPN " + version)
 
-	return c.commander.Start(ctx, bin, "--config", constants.OpenVPNConf)
+	cmd := exec.CommandContext(ctx, bin, "--config", constants.OpenVPNConf)
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+
+	return c.commander.Start(cmd)
 }
 
 func (c *configurator) Version24(ctx context.Context) (version string, err error) {
@@ -44,7 +49,8 @@ func (c *configurator) Version25(ctx context.Context) (version string, err error
 var ErrVersionTooShort = errors.New("version output is too short")
 
 func (c *configurator) version(ctx context.Context, binName string) (version string, err error) {
-	output, err := c.commander.Run(ctx, binName, "--version")
+	cmd := exec.CommandContext(ctx, binName, "--version")
+	output, err := c.commander.Run(cmd)
 	if err != nil && err.Error() != "exit status 1" {
 		return "", err
 	}

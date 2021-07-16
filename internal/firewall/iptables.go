@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -46,7 +47,8 @@ func flipRule(rule string) string {
 
 // Version obtains the version of the installed iptables.
 func (c *configurator) Version(ctx context.Context) (string, error) {
-	output, err := c.commander.Run(ctx, "iptables", "--version")
+	cmd := exec.CommandContext(ctx, "iptables", "--version")
+	output, err := c.commander.Run(cmd)
 	if err != nil {
 		return "", err
 	}
@@ -74,7 +76,8 @@ func (c *configurator) runIptablesInstruction(ctx context.Context, instruction s
 		fmt.Printf("iptables %s\n", instruction)
 	}
 	flags := strings.Fields(instruction)
-	if output, err := c.commander.Run(ctx, "iptables", flags...); err != nil {
+	cmd := exec.CommandContext(ctx, "iptables", flags...)
+	if output, err := c.commander.Run(cmd); err != nil {
 		return fmt.Errorf("%w \"iptables %s\": %s: %s", ErrIPTables, instruction, output, err)
 	}
 	return nil

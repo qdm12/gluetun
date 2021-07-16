@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os/exec"
 	"strings"
 
 	"github.com/qdm12/golibs/command"
@@ -15,7 +16,8 @@ var (
 )
 
 func ip6tablesSupported(ctx context.Context, commander command.Commander) (supported bool) {
-	if _, err := commander.Run(ctx, "ip6tables", "-L"); err != nil {
+	cmd := exec.CommandContext(ctx, "ip6tables", "-L")
+	if _, err := commander.Run(cmd); err != nil {
 		return false
 	}
 	return true
@@ -40,7 +42,8 @@ func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction 
 		fmt.Println("ip6tables " + instruction)
 	}
 	flags := strings.Fields(instruction)
-	if output, err := c.commander.Run(ctx, "ip6tables", flags...); err != nil {
+	cmd := exec.CommandContext(ctx, "ip6tables", flags...)
+	if output, err := c.commander.Run(cmd); err != nil {
 		return fmt.Errorf("%w: \"ip6tables %s\": %s: %s", ErrIP6Tables, instruction, output, err)
 	}
 	return nil
