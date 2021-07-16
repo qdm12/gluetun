@@ -96,7 +96,10 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 func (l *looper) signalOrSetStatus(userTriggered *bool, status models.LoopStatus) {
 	if *userTriggered {
 		*userTriggered = false
-		l.running <- status
+		select {
+		case l.running <- status:
+		default: // receiver droppped out - avoid deadlock on events routing when shutting down
+		}
 	} else {
 		l.state.SetStatus(status)
 	}
