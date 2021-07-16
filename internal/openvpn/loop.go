@@ -171,6 +171,11 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 
 		lineCollectionDone := make(chan struct{})
 		go l.collectLines(stdoutLines, stderrLines, lineCollectionDone)
+		closeStreams := func() {
+			close(stdoutLines)
+			close(stderrLines)
+			<-lineCollectionDone
+		}
 
 		// Needs the stream line from main.go to know when the tunnel is up
 		portForwardDone := make(chan struct{})
@@ -200,29 +205,26 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 				openvpnCancel()
 				<-waitError
 				close(waitError)
-				close(stdoutLines)
-				close(stderrLines)
-				<-lineCollectionDone
+				closeStreams()
 				<-portForwardDone
 				return
 			case <-l.stop:
 				l.logger.Info("stopping")
 				openvpnCancel()
 				<-waitError
+				// do not close waitError or the waitError
+				// select case will trigger
+				closeStreams()
+				<-portForwardDone
 				l.stopped <- struct{}{}
 			case <-l.start:
 				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				openvpnCancel()
-				if ctx.Err() != nil {
-					close(waitError)
-					close(stdoutLines)
-					close(stderrLines)
-					<-lineCollectionDone
-					<-portForwardDone
-					return
-				}
+				close(waitError)
+				closeStreams()
+				<-portForwardDone
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)
 				l.crashed = true
@@ -241,13 +243,13 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 				l.logger.Warn("unhealthy program: restarting openvpn")
 				openvpnCancel()
 				<-waitError
+				close(waitError)
+				closeStreams()
+				<-portForwardDone
 				l.state.setStatusWithLock(constants.Stopped)
 				stayHere = false
 			}
 		}
-		close(waitError)
-		close(stdoutLines)
-		close(stderrLines)
 		openvpnCancel() // just for the linter
 	}
 }
