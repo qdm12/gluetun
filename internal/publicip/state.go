@@ -1,6 +1,7 @@
 package publicip
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -35,7 +36,8 @@ func (l *looper) GetStatus() (status models.LoopStatus) {
 
 var ErrInvalidStatus = errors.New("invalid status")
 
-func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error) {
+func (l *looper) SetStatus(ctx context.Context, status models.LoopStatus) (
+	outcome string, err error) {
 	l.state.statusMu.Lock()
 	defer l.state.statusMu.Unlock()
 	existingStatus := l.state.status
@@ -51,7 +53,12 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.state.status = constants.Starting
 		l.state.statusMu.Unlock()
 		l.start <- struct{}{}
-		newStatus := <-l.running
+
+		newStatus := constants.Starting // for canceled context
+		select {
+		case <-ctx.Done():
+		case newStatus = <-l.running:
+		}
 		l.state.statusMu.Lock()
 		l.state.status = newStatus
 		return newStatus.String(), nil
@@ -65,9 +72,15 @@ func (l *looper) SetStatus(status models.LoopStatus) (outcome string, err error)
 		l.state.status = constants.Stopping
 		l.state.statusMu.Unlock()
 		l.stop <- struct{}{}
-		<-l.stopped
+
+		newStatus := constants.Stopping // for canceled context
+		select {
+		case <-ctx.Done():
+		case <-l.stopped:
+			newStatus = constants.Stopped
+		}
 		l.state.statusMu.Lock()
-		l.state.status = status
+		l.state.status = newStatus
 		return status.String(), nil
 	default:
 		return "", fmt.Errorf("%w: %s: it can only be one of: %s, %s",
@@ -81,7 +94,8 @@ func (l *looper) GetSettings() (settings configuration.PublicIP) {
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings configuration.PublicIP) (outcome string) {
+func (l *looper) SetSettings(settings configuration.PublicIP) (
+	outcome string) {
 	l.state.settingsMu.Lock()
 	defer l.state.settingsMu.Unlock()
 	settingsUnchanged := reflect.DeepEqual(settings, l.state.settings)

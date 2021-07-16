@@ -384,7 +384,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
-	_, _ = openvpnLooper.SetStatus(constants.Running) // TODO option to disable with variable
+	_, _ = openvpnLooper.SetStatus(ctx, constants.Running) // TODO option to disable with variable
 
 	<-ctx.Done()
 
@@ -462,7 +462,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 
 			// Runs the Public IP getter job once
-			_, _ = publicIPLooper.SetStatus(constants.Running)
+			_, _ = publicIPLooper.SetStatus(ctx, constants.Running)
 			if versionInformation && first {
 				first = false
 				message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)

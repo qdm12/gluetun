@@ -39,9 +39,9 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/version":
 		http.Redirect(w, r, "/v1/version", http.StatusPermanentRedirect)
 	case "/openvpn/actions/restart":
-		outcome, _ := h.openvpn.SetStatus(constants.Stopped)
+		outcome, _ := h.openvpn.SetStatus(h.ctx, constants.Stopped)
 		h.logger.Info("openvpn: %s", outcome)
-		outcome, _ = h.openvpn.SetStatus(constants.Running)
+		outcome, _ = h.openvpn.SetStatus(h.ctx, constants.Running)
 		h.logger.Info("openvpn: %s", outcome)
 		if _, err := w.Write([]byte("openvpn restarted, please consider using the /v1/ API in the future.")); err != nil {
 			h.logger.Warn(err)
@@ -59,9 +59,9 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/openvpn/settings":
 		http.Redirect(w, r, "/v1/openvpn/settings", http.StatusPermanentRedirect)
 	case "/updater/restart":
-		outcome, _ := h.updater.SetStatus(constants.Stopped)
+		outcome, _ := h.updater.SetStatus(h.ctx, constants.Stopped)
 		h.logger.Info("updater: %s", outcome)
-		outcome, _ = h.updater.SetStatus(constants.Running)
+		outcome, _ = h.updater.SetStatus(h.ctx, constants.Running)
 		h.logger.Info("updater: %s", outcome)
 		if _, err := w.Write([]byte("updater restarted, please consider using the /v1/ API in the future.")); err != nil {
 			h.logger.Warn(err)

@@ -21,9 +21,11 @@ import (
 type Looper interface {
 	Run(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
-	SetStatus(status models.LoopStatus) (outcome string, err error)
+	SetStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 	GetSettings() (settings configuration.OpenVPN)
-	SetSettings(settings configuration.OpenVPN) (outcome string)
+	SetSettings(ctx context.Context, settings configuration.OpenVPN) (
+		outcome string)
 	GetServers() (servers models.AllServers)
 	SetServers(servers models.AllServers)
 	GetPortForwarded() (port uint16)

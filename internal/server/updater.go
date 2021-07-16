@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -10,15 +11,18 @@ import (
 )
 
 func newUpdaterHandler(
+	ctx context.Context,
 	looper updater.Looper,
 	logger logging.Logger) http.Handler {
 	return &updaterHandler{
+		ctx:    ctx,
 		looper: looper,
 		logger: logger,
 	}
 }
 
 type updaterHandler struct {
+	ctx    context.Context
 	looper updater.Looper
 	logger logging.Logger
 }
@@ -63,7 +67,7 @@ func (h *updaterHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	outcome, err := h.looper.SetStatus(status)
+	outcome, err := h.looper.SetStatus(h.ctx, status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

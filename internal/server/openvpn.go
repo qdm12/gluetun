@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -9,14 +10,17 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func newOpenvpnHandler(looper openvpn.Looper, logger logging.Logger) http.Handler {
+func newOpenvpnHandler(ctx context.Context, looper openvpn.Looper,
+	logger logging.Logger) http.Handler {
 	return &openvpnHandler{
+		ctx:    ctx,
 		looper: looper,
 		logger: logger,
 	}
 }
 
 type openvpnHandler struct {
+	ctx    context.Context
 	looper openvpn.Looper
 	logger logging.Logger
 }
@@ -75,7 +79,7 @@ func (h *openvpnHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	outcome, err := h.looper.SetStatus(status)
+	outcome, err := h.looper.SetStatus(h.ctx, status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

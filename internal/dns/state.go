@@ -69,9 +69,15 @@ func (l *looper) SetStatus(ctx context.Context, status models.LoopStatus) (
 		l.state.status = constants.Stopping
 		l.state.statusMu.Unlock()
 		l.stop <- struct{}{}
-		<-l.stopped
+
+		newStatus := constants.Stopping // for canceled context
+		select {
+		case <-ctx.Done():
+		case <-l.stopped:
+			newStatus = constants.Stopped
+		}
 		l.state.statusMu.Lock()
-		l.state.status = constants.Stopped
+		l.state.status = newStatus
 		return status.String(), nil
 	default:
 		return "", fmt.Errorf("%w: %s: it can only be one of: %s, %s",

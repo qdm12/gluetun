@@ -17,7 +17,8 @@ type Looper interface {
 	Run(ctx context.Context, done chan<- struct{})
 	RunRestartTicker(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
-	SetStatus(status models.LoopStatus) (outcome string, err error)
+	SetStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 	GetSettings() (settings configuration.Updater)
 	SetSettings(settings configuration.Updater) (outcome string)
 }

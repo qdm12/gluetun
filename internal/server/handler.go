@@ -22,9 +22,9 @@ func newHandler(ctx context.Context, logger logging.Logger, logging bool,
 ) http.Handler {
 	handler := &handler{}
 
-	openvpn := newOpenvpnHandler(openvpnLooper, logger)
+	openvpn := newOpenvpnHandler(ctx, openvpnLooper, logger)
 	dns := newDNSHandler(ctx, unboundLooper, logger)
-	updater := newUpdaterHandler(updaterLooper, logger)
+	updater := newUpdaterHandler(ctx, updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)
 
 	handler.v0 = newHandlerV0(ctx, logger, openvpnLooper, unboundLooper, updaterLooper)

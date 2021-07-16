@@ -15,10 +15,12 @@ import (
 
 type Looper interface {
 	Run(ctx context.Context, done chan<- struct{})
-	SetStatus(status models.LoopStatus) (outcome string, err error)
+	SetStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 	GetStatus() (status models.LoopStatus)
 	GetSettings() (settings configuration.HTTPProxy)
-	SetSettings(settings configuration.HTTPProxy) (outcome string)
+	SetSettings(ctx context.Context, settings configuration.HTTPProxy) (
+		outcome string)
 }
 
 type looper struct {
@@ -57,7 +59,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 
 	if l.GetSettings().Enabled {
 		go func() {
-			_, _ = l.SetStatus(constants.Running)
+			_, _ = l.SetStatus(ctx, constants.Running)
 		}()
 	}
 
