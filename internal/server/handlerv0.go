@@ -47,9 +47,9 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.logger.Warn(err)
 		}
 	case "/unbound/actions/restart":
-		outcome, _ := h.dns.SetStatus(h.ctx, constants.Stopped)
+		outcome, _ := h.dns.ApplyStatus(h.ctx, constants.Stopped)
 		h.logger.Info("dns: %s", outcome)
-		outcome, _ = h.dns.SetStatus(h.ctx, constants.Running)
+		outcome, _ = h.dns.ApplyStatus(h.ctx, constants.Running)
 		h.logger.Info("dns: %s", outcome)
 		if _, err := w.Write([]byte("dns restarted, please consider using the /v1/ API in the future.")); err != nil {
 			h.logger.Warn(err)

@@ -453,7 +453,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 			}
 
 			if unboundLooper.GetSettings().Enabled {
-				_, _ = unboundLooper.SetStatus(ctx, constants.Running)
+				_, _ = unboundLooper.ApplyStatus(ctx, constants.Running)
 			}
 
 			restartTickerCancel() // stop previous restart tickers

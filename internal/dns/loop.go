@@ -6,7 +6,6 @@ import (
 	"errors"
 	"net"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/qdm12/dns/pkg/blacklist"
@@ -24,7 +23,7 @@ type Looper interface {
 	Run(ctx context.Context, done chan<- struct{})
 	RunRestartTicker(ctx context.Context, done chan<- struct{})
 	GetStatus() (status models.LoopStatus)
-	SetStatus(ctx context.Context, status models.LoopStatus) (
+	ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		outcome string, err error)
 	GetSettings() (settings configuration.DNS)
 	SetSettings(ctx context.Context, settings configuration.DNS) (
@@ -32,17 +31,16 @@ type Looper interface {
 }
 
 type looper struct {
-	state        state
+	state        *state
 	conf         unbound.Configurator
 	blockBuilder blacklist.Builder
 	client       *http.Client
 	logger       logging.Logger
-	loopLock     sync.Mutex
-	start        chan struct{}
-	running      chan models.LoopStatus
-	stop         chan struct{}
-	stopped      chan struct{}
-	updateTicker chan struct{}
+	start        <-chan struct{}
+	running      chan<- models.LoopStatus
+	stop         <-chan struct{}
+	stopped      chan<- struct{}
+	updateTicker <-chan struct{}
 	backoffTime  time.Duration
 	timeNow      func() time.Time
 	timeSince    func(time.Time) time.Duration
@@ -53,20 +51,25 @@ const defaultBackoffTime = 10 * time.Second
 
 func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *http.Client,
 	logger logging.Logger, openFile os.OpenFileFunc) Looper {
+	start := make(chan struct{})
+	running := make(chan models.LoopStatus)
+	stop := make(chan struct{})
+	stopped := make(chan struct{})
+	updateTicker := make(chan struct{})
+
+	state := newState(constants.Stopped, settings, start, running, stop, stopped, updateTicker)
+
 	return &looper{
-		state: state{
-			status:   constants.Stopped,
-			settings: settings,
-		},
+		state:        state,
 		conf:         conf,
 		blockBuilder: blacklist.NewBuilder(client),
 		client:       client,
 		logger:       logger,
-		start:        make(chan struct{}),
-		running:      make(chan models.LoopStatus),
-		stop:         make(chan struct{}),
-		stopped:      make(chan struct{}),
-		updateTicker: make(chan struct{}),
+		start:        start,
+		running:      running,
+		stop:         stop,
+		stopped:      stopped,
+		updateTicker: updateTicker,
 		backoffTime:  defaultBackoffTime,
 		timeNow:      time.Now,
 		timeSince:    time.Since,
@@ -78,7 +81,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	if err != nil {
 		l.logger.Warn(err)
 	}
-	l.logger.Info("attempting restart in %s", l.backoffTime)
+	l.logger.Info("attempting restart in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)
 	l.backoffTime *= 2
 	select {
@@ -90,7 +93,16 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocognit
+func (l *looper) signalOrSetStatus(userTriggered *bool, status models.LoopStatus) {
+	if *userTriggered {
+		*userTriggered = false
+		l.running <- status
+	} else {
+		l.state.SetStatus(status)
+	}
+}
+
+func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
 	const fallback = false
@@ -103,45 +115,44 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 		return
 	}
 
-	crashed := false
-	l.backoffTime = defaultBackoffTime
+	userTriggered := true
 
 	for ctx.Err() == nil {
 		// Upper scope variables for Unbound only
 		// Their values are to be used if DOT=off
-		var waitError chan error
-		var unboundCancel context.CancelFunc
-		var closeStreams func()
+		waitError := make(chan error)
+		unboundCancel := func() { waitError <- nil }
+		closeStreams := func() {}
 
 		for l.GetSettings().Enabled {
-			if ctx.Err() != nil {
-				if !crashed {
-					l.running <- constants.Stopped
-				}
-				return
-			}
 			var err error
-			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx, crashed)
+			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx)
+			if err == nil {
+				l.backoffTime = defaultBackoffTime
+				l.logger.Info("ready")
+				l.signalOrSetStatus(&userTriggered, constants.Running)
+				break
+			}
+
+			l.signalOrSetStatus(&userTriggered, constants.Crashed)
+
 			if ctx.Err() != nil {
 				return
 			}
-			if err != nil {
-				if !errors.Is(err, errUpdateFiles) {
-					const fallback = true
-					l.useUnencryptedDNS(fallback)
-				}
-				l.logAndWait(ctx, err)
-				continue
+
+			if !errors.Is(err, errUpdateFiles) {
+				const fallback = true
+				l.useUnencryptedDNS(fallback)
 			}
-			break
+			l.logAndWait(ctx, err)
 		}
+
 		if !l.GetSettings().Enabled {
 			const fallback = false
 			l.useUnencryptedDNS(fallback)
-			waitError := make(chan error)
-			unboundCancel = func() { waitError <- nil }
-			closeStreams = func() {}
 		}
+
+		userTriggered = false
 
 		stayHere := true
 		for stayHere {
@@ -153,31 +164,36 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) { //nolint:gocog
 				closeStreams()
 				return
 			case <-l.stop:
+				userTriggered = true
 				l.logger.Info("stopping")
 				const fallback = false
 				l.useUnencryptedDNS(fallback)
 				unboundCancel()
 				<-waitError
+				// do not close waitError or the waitError
+				// select case will trigger
+				closeStreams()
 				l.stopped <- struct{}{}
 			case <-l.start:
+				userTriggered = true
 				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
+				close(waitError)
+				closeStreams()
+
+				l.state.Lock() // prevent SetStatus from running in parallel
+
 				unboundCancel()
-				if ctx.Err() != nil {
-					close(waitError)
-					closeStreams()
-					return
-				}
-				l.state.setStatusWithLock(constants.Crashed)
+				l.state.SetStatus(constants.Crashed)
 				const fallback = true
 				l.useUnencryptedDNS(fallback)
 				l.logAndWait(ctx, err)
 				stayHere = false
+
+				l.state.Unlock()
 			}
 		}
-		close(waitError)
-		closeStreams()
 	}
 }
 
@@ -186,11 +202,10 @@ var errUpdateFiles = errors.New("cannot update files")
 // Returning cancel == nil signals we want to re-run setupUnbound
 // Returning err == errUpdateFiles signals we should not fall back
 // on the plaintext DNS as DOT is still up and running.
-func (l *looper) setupUnbound(ctx context.Context, previousCrashed bool) (
+func (l *looper) setupUnbound(ctx context.Context) (
 	cancel context.CancelFunc, waitError chan error, closeStreams func(), err error) {
 	err = l.updateFiles(ctx)
 	if err != nil {
-		l.state.setStatusWithLock(constants.Crashed)
 		return nil, nil, nil, errUpdateFiles
 	}
 
@@ -200,14 +215,16 @@ func (l *looper) setupUnbound(ctx context.Context, previousCrashed bool) (
 	stdoutLines, stderrLines, waitError, err := l.conf.Start(unboundCtx, settings.Unbound.VerbosityDetailsLevel)
 	if err != nil {
 		cancel()
-		if !previousCrashed {
-			l.running <- constants.Crashed
-		}
 		return nil, nil, nil, err
 	}
 
 	collectLinesDone := make(chan struct{})
 	go l.collectLines(stdoutLines, stderrLines, collectLinesDone)
+	closeStreams = func() {
+		close(stdoutLines)
+		close(stderrLines)
+		<-collectLinesDone
+	}
 
 	// use Unbound
 	nameserver.UseDNSInternally(net.IP{127, 0, 0, 1})
@@ -218,30 +235,11 @@ func (l *looper) setupUnbound(ctx context.Context, previousCrashed bool) (
 	}
 
 	if err := check.WaitForDNS(ctx, net.DefaultResolver); err != nil {
-		if !previousCrashed {
-			l.running <- constants.Crashed
-		}
 		cancel()
 		<-waitError
 		close(waitError)
-		close(stdoutLines)
-		close(stderrLines)
-		<-collectLinesDone
+		closeStreams()
 		return nil, nil, nil, err
-	}
-
-	l.logger.Info("ready")
-	if !previousCrashed {
-		l.running <- constants.Running
-	} else {
-		l.backoffTime = defaultBackoffTime
-		l.state.setStatusWithLock(constants.Running)
-	}
-
-	closeStreams = func() {
-		close(stdoutLines)
-		close(stderrLines)
-		<-collectLinesDone
 	}
 
 	return cancel, waitError, closeStreams, nil
@@ -304,15 +302,15 @@ func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			status := l.GetStatus()
 			if status == constants.Running {
 				if err := l.updateFiles(ctx); err != nil {
-					l.state.setStatusWithLock(constants.Crashed)
+					l.state.SetStatus(constants.Crashed)
 					l.logger.Error(err)
 					l.logger.Warn("skipping Unbound restart due to failed files update")
 					continue
 				}
 			}
 
-			_, _ = l.SetStatus(ctx, constants.Stopped)
-			_, _ = l.SetStatus(ctx, constants.Running)
+			_, _ = l.ApplyStatus(ctx, constants.Stopped)
+			_, _ = l.ApplyStatus(ctx, constants.Running)
 
 			settings := l.GetSettings()
 			timer.Reset(settings.UpdatePeriod)
@@ -357,4 +355,15 @@ func (l *looper) updateFiles(ctx context.Context) (err error) {
 	settings.Unbound.Blacklist.IPPrefixes = blockedIPPrefixes
 
 	return l.conf.MakeUnboundConf(settings.Unbound)
+}
+
+func (l *looper) GetStatus() (status models.LoopStatus) { return l.state.GetStatus() }
+func (l *looper) ApplyStatus(ctx context.Context, status models.LoopStatus) (
+	outcome string, err error) {
+	return l.state.ApplyStatus(ctx, status)
+}
+func (l *looper) GetSettings() (settings configuration.DNS) { return l.state.GetSettings() }
+func (l *looper) SetSettings(ctx context.Context, settings configuration.DNS) (
+	outcome string) {
+	return l.state.SetSettings(ctx, settings)
 }

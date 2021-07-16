@@ -65,7 +65,7 @@ func (h *dnsHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	outcome, err := h.looper.SetStatus(h.ctx, status)
+	outcome, err := h.looper.ApplyStatus(h.ctx, status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
