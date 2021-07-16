@@ -72,8 +72,6 @@ func processLogLine(s string) (filtered string, level logging.Level) {
 
 Your credentials might be wrong 🤨
 
-💡 If you use Private Internet Access, check https://github.com/qdm12/gluetun/issues/265
-
 `
 		level = logging.LevelError
 	case strings.Contains(s, "TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)"): //nolint:lll

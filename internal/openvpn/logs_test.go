@@ -42,7 +42,7 @@ func Test_processLogLine(t *testing.T) {
 			logging.LevelInfo},
 		"openvpn auth failed": {
 			"AUTH: Received control message: AUTH_FAILED",
-			"AUTH: Received control message: AUTH_FAILED\n\nYour credentials might be wrong 🤨\n\n💡 If you use Private Internet Access, check https://github.com/qdm12/gluetun/issues/265\n\n", //nolint:lll
+			"AUTH: Received control message: AUTH_FAILED\n\nYour credentials might be wrong 🤨\n\n",
 			logging.LevelError},
 	}
 	for name, tc := range tests {
