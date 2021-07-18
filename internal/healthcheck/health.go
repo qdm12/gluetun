@@ -9,24 +9,24 @@ import (
 	"time"
 )
 
-func (s *server) runHealthcheckLoop(ctx context.Context, healthy chan<- bool, done chan<- struct{}) {
+func (s *server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
+
+	s.openvpn.healthyTimer = time.NewTimer(defaultOpenvpnHealthyWaitTime)
+
 	for {
 		previousErr := s.handler.getErr()
 
 		err := healthCheck(ctx, s.resolver)
 		s.handler.setErr(err)
 
-		// Notify the healthy channel, or not if it's already full
-		select {
-		case healthy <- err == nil:
-		default:
-		}
-
 		if previousErr != nil && err == nil {
 			s.logger.Info("healthy!")
+			s.openvpn.healthyTimer.Stop()
+			s.openvpn.healthyWaitTime = defaultOpenvpnHealthyWaitTime
 		} else if previousErr == nil && err != nil {
 			s.logger.Info("unhealthy: " + err.Error())
+			s.openvpn.healthyTimer = time.NewTimer(s.openvpn.healthyWaitTime)
 		}
 
 		if err != nil { // try again after 1 second
@@ -38,9 +38,12 @@ func (s *server) runHealthcheckLoop(ctx context.Context, healthy chan<- bool, do
 				}
 				return
 			case <-timer.C:
+			case <-s.openvpn.healthyTimer.C:
+				s.onUnhealthyOpenvpn(ctx)
 			}
 			continue
 		}
+
 		// Success, check again in 5 seconds
 		const period = 5 * time.Second
 		timer := time.NewTimer(period)

@@ -275,8 +275,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	} // TODO move inside firewall?
 
-	healthy := make(chan bool)
-
 	// Shutdown settings
 	const defaultShutdownTimeout = 400 * time.Millisecond
 	defaultShutdownOnSuccess := func(goRoutineName string) {
@@ -296,7 +294,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh, healthy)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn
@@ -366,11 +364,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go httpServer.Run(httpServerCtx, httpServerDone)
 	controlGroupHandler.Add(httpServerHandler)
 
-	healthcheckServer := healthcheck.NewServer(constants.HealthcheckAddress,
-		logger.NewChild(logging.Settings{Prefix: "healthcheck: "}))
+	healthLogger := logger.NewChild(logging.Settings{Prefix: "healthcheck: "})
+	healthcheckServer := healthcheck.NewServer(
+		constants.HealthcheckAddress, healthLogger, openvpnLooper)
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", defaultGoRoutineSettings)
-	go healthcheckServer.Run(healthServerCtx, healthy, healthServerDone)
+	go healthcheckServer.Run(healthServerCtx, healthServerDone)
 
 	const orderShutdownTimeout = 3 * time.Second
 	orderSettings := goshutdown.OrderSettings{

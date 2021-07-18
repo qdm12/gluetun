@@ -7,11 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/golibs/logging"
 )
 
 type Server interface {
-	Run(ctx context.Context, healthy chan<- bool, done chan<- struct{})
+	Run(ctx context.Context, done chan<- struct{})
 }
 
 type server struct {
@@ -19,22 +20,40 @@ type server struct {
 	logger   logging.Logger
 	handler  *handler
 	resolver *net.Resolver
+	openvpn  openvpnHealth
 }
 
-func NewServer(address string, logger logging.Logger) Server {
+type openvpnHealth struct {
+	looper          openvpn.Looper
+	healthyWaitTime time.Duration
+	healthyTimer    *time.Timer
+}
+
+const (
+	defaultOpenvpnHealthyWaitTime = 6 * time.Second
+	openvpnHealthyWaitTimeAdd     = 5 * time.Second
+)
+
+func NewServer(address string, logger logging.Logger,
+	openvpnLooper openvpn.Looper) Server {
 	return &server{
 		address:  address,
 		logger:   logger,
 		handler:  newHandler(logger),
 		resolver: net.DefaultResolver,
+		openvpn: openvpnHealth{
+			looper:          openvpnLooper,
+			healthyWaitTime: defaultOpenvpnHealthyWaitTime,
+		},
 	}
 }
 
-func (s *server) Run(ctx context.Context, healthy chan<- bool, done chan<- struct{}) {
+func (s *server) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
+	s.logger.Debug("here 0")
 
 	loopDone := make(chan struct{})
-	go s.runHealthcheckLoop(ctx, healthy, loopDone)
+	go s.runHealthcheckLoop(ctx, loopDone)
 
 	server := http.Server{
 		Addr:    s.address,
