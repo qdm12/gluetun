@@ -29,7 +29,6 @@ func (p *Privatevpn) BuildConf(connection models.OpenVPNConnection,
 
 		// Privatevpn specific
 		"comp-lzo",
-		"tun-ipv6",
 
 		// Added constant values
 		"auth-nocache",
@@ -58,6 +57,13 @@ func (p *Privatevpn) BuildConf(connection models.OpenVPNConnection,
 
 	if settings.MSSFix > 0 {
 		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
+	}
+
+	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+		lines = append(lines, "tun-ipv6")
+	} else {
+		lines = append(lines, `pull-filter ignore "route-ipv6"`)
+		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(

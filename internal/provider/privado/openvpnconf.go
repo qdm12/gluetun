@@ -58,6 +58,13 @@ func (p *Privado) BuildConf(connection models.OpenVPNConnection,
 		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 
+	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+		lines = append(lines, "tun-ipv6")
+	} else {
+		lines = append(lines, `pull-filter ignore "route-ipv6"`)
+		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
+	}
+
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.PrivadoCertificate)...)
 

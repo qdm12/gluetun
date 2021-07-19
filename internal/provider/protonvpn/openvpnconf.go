@@ -66,6 +66,13 @@ func (p *Protonvpn) BuildConf(connection models.OpenVPNConnection,
 		lines = append(lines, "user "+username)
 	}
 
+	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+		lines = append(lines, "tun-ipv6")
+	} else {
+		lines = append(lines, `pull-filter ignore "route-ipv6"`)
+		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
+	}
+
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.ProtonvpnCertificate)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
