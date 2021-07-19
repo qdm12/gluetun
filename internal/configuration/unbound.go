@@ -48,8 +48,8 @@ func (settings *DNS) readUnbound(r reader) (err error) {
 	settings.Unbound.ValidationLogLevel = uint8(validationLogLevel)
 
 	settings.Unbound.AccessControl.Allowed = []netaddr.IPPrefix{
-		{IP: netaddr.IPv4(0, 0, 0, 0)},
-		{IP: netaddr.IPv6Raw([16]byte{})},
+		netaddr.IPPrefixFrom(netaddr.IPv4(0, 0, 0, 0), 0),
+		netaddr.IPPrefixFrom(netaddr.IPv6Raw([16]byte{}), 0),
 	}
 
 	return nil

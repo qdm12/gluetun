@@ -12,6 +12,6 @@ require (
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
 	github.com/stretchr/testify v1.7.0
 	github.com/vishvananda/netlink v1.1.0
-	golang.org/x/sys v0.0.0-20210514084401-e8d321eab015
-	inet.af/netaddr v0.0.0-20210511181906-37180328850c
+	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
+	inet.af/netaddr v0.0.0-20210718074554-06ca8145d722
 )
