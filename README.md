@@ -9,7 +9,7 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
-[![Build status](https://github.com/qdm12/gluetun/workflows/CI/badge.svg)](https://github.com/qdm12/gluetun/actions?query=workflow%3ACI)
+[![Build status](https://github.com/qdm12/gluetun/actions/workflows/ci.yml/badge.svg)](https://github.com/qdm12/gluetun/actions/workflows/ci.yml)
 
 [![Docker pulls qmcgaw/gluetun](https://img.shields.io/docker/pulls/qmcgaw/gluetun.svg)](https://hub.docker.com/r/qmcgaw/gluetun)
 [![Docker pulls qmcgaw/private-internet-access](https://img.shields.io/docker/pulls/qmcgaw/private-internet-access.svg)](https://hub.docker.com/r/qmcgaw/gluetun)

@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     paths:
-      - .github/workflows/build.yml
+      - .github/workflows/ci.yml
       - cmd/**
       - internal/**
       - pkg/**
