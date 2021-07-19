@@ -98,8 +98,3 @@ jobs:
             qmcgaw/gluetun:${{ steps.vars.outputs.version }}
             qmcgaw/private-internet-access:${{ steps.vars.outputs.version }}
           push: true
-
-      - if: github.event_name == 'push' && github.event.ref == 'refs/heads/master'
-        name: Microbadger hook
-        run: curl -X POST https://hooks.microbadger.com/images/qmcgaw/gluetun/l-keGI7p4IhX4QuIDMFYKhsZ1L0=
-        continue-on-error: true
