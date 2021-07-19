@@ -11,7 +11,8 @@ import (
 func Test_OpenVPN_JSON(t *testing.T) {
 	t.Parallel()
 	in := OpenVPN{
-		Root: true,
+		Root:  true,
+		Flags: []string{},
 		Provider: Provider{
 			Name: "name",
 		},
@@ -22,6 +23,7 @@ func Test_OpenVPN_JSON(t *testing.T) {
   "user": "",
   "password": "",
   "verbosity": 0,
+  "flags": [],
   "mssfix": 0,
   "run_as_root": true,
   "cipher": "",

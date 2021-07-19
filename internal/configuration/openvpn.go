@@ -15,6 +15,7 @@ type OpenVPN struct {
 	User      string   `json:"user"`
 	Password  string   `json:"password"`
 	Verbosity int      `json:"verbosity"`
+	Flags     []string `json:"flags"`
 	MSSFix    uint16   `json:"mssfix"`
 	Root      bool     `json:"run_as_root"`
 	Cipher    string   `json:"cipher"`
@@ -34,6 +35,10 @@ func (settings *OpenVPN) lines() (lines []string) {
 	lines = append(lines, indent+lastIndent+"Version: "+settings.Version)
 
 	lines = append(lines, indent+lastIndent+"Verbosity level: "+strconv.Itoa(settings.Verbosity))
+
+	if len(settings.Flags) > 0 {
+		lines = append(lines, indent+lastIndent+"Flags: "+strings.Join(settings.Flags, " "))
+	}
 
 	if settings.Root {
 		lines = append(lines, indent+lastIndent+"Run as root: enabled")
@@ -118,6 +123,15 @@ func (settings *OpenVPN) read(r reader) (err error) {
 	settings.Verbosity, err = r.env.IntRange("OPENVPN_VERBOSITY", 0, 6, params.Default("1")) //nolint:gomnd
 	if err != nil {
 		return err
+	}
+
+	settings.Flags = []string{}
+	flagsStr, err := r.env.Get("OPENVPN_FLAGS")
+	if err != nil {
+		return err
+	}
+	if flagsStr != "" {
+		settings.Flags = strings.Fields(flagsStr)
 	}
 
 	settings.Root, err = r.env.YesNo("OPENVPN_ROOT", params.Default("yes"))

@@ -18,7 +18,7 @@ const (
 	binOpenvpn25 = "openvpn"
 )
 
-func (c *configurator) Start(ctx context.Context, version string) (
+func (c *configurator) Start(ctx context.Context, version string, flags []string) (
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	var bin string
 	switch version {
@@ -32,7 +32,9 @@ func (c *configurator) Start(ctx context.Context, version string) (
 
 	c.logger.Info("starting OpenVPN " + version)
 
-	cmd := exec.CommandContext(ctx, bin, "--config", constants.OpenVPNConf)
+	args := []string{"--config", constants.OpenVPNConf}
+	args = append(args, flags...)
+	cmd := exec.CommandContext(ctx, bin, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
 	return c.commander.Start(cmd)

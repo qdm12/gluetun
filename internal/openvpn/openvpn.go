@@ -17,7 +17,7 @@ type Configurator interface {
 	WriteAuthFile(user, password string, puid, pgid int) error
 	CheckTUN() error
 	CreateTUN() error
-	Start(ctx context.Context, version string) (
+	Start(ctx context.Context, version string, flags []string) (
 		stdoutLines, stderrLines chan string, waitError chan error, err error)
 }
 
