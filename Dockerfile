@@ -41,11 +41,9 @@ RUN git init && \
 
 FROM --platform=${BUILDPLATFORM} base AS build
 ARG TARGETPLATFORM
-ARG ALLTARGETPLATFORMS=${TARGETPLATFORM}
 ARG VERSION=unknown
 ARG CREATED="an unknown date"
 ARG COMMIT=unknown
-RUN xcputranslate sleep -targetplatform ${TARGETPLATFORM} -buildtime=10s -order=${ALLTARGETPLATFORMS}
 RUN GOARCH="$(xcputranslate translate -field arch -targetplatform ${TARGETPLATFORM})" \
     GOARM="$(xcputranslate translate -field arm -targetplatform ${TARGETPLATFORM})" \
     go build -trimpath -ldflags="-s -w \
