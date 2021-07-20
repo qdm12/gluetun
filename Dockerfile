@@ -48,7 +48,7 @@ RUN GOARCH="$(xcputranslate translate -field arch -targetplatform ${TARGETPLATFO
     GOARM="$(xcputranslate translate -field arm -targetplatform ${TARGETPLATFORM})" \
     go build -trimpath -ldflags="-s -w \
     -X 'main.version=$VERSION' \
-    -X 'main.buildDate=$CREATED' \
+    -X 'main.created=$CREATED' \
     -X 'main.commit=$COMMIT' \
     " -o entrypoint cmd/gluetun/main.go
 
