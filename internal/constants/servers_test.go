@@ -15,7 +15,7 @@ import (
 func Test_parseAllServers(t *testing.T) {
 	t.Parallel()
 
-	servers, err := parseAllServers(allServersBytes)
+	servers, err := parseAllServers()
 
 	require.NoError(t, err)
 	require.NotEmpty(t, len(servers.Cyberghost.Servers))

@@ -1,29 +1,34 @@
 package constants
 
 import (
-	_ "embed"
+	"embed"
 	"encoding/json"
+	"sync"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 //go:embed servers.json
-var allServersBytes []byte       //nolint:gochecknoglobals
+var allServersEmbedFS embed.FS   //nolint:gochecknoglobals
 var allServers models.AllServers //nolint:gochecknoglobals
+var parseOnce sync.Once          //nolint:gochecknoglobals
 
 func init() { //nolint:gochecknoinits
 	// error returned covered by unit test
-	allServers, _ = parseAllServers(allServersBytes)
+	parseOnce.Do(func() { allServers, _ = parseAllServers() })
 }
 
-func parseAllServers(b []byte) (allServers models.AllServers, err error) {
-	err = json.Unmarshal(b, &allServers)
+func parseAllServers() (allServers models.AllServers, err error) {
+	f, err := allServersEmbedFS.Open("servers.json")
+	if err != nil {
+		return allServers, err
+	}
+	decoder := json.NewDecoder(f)
+	err = decoder.Decode(&allServers)
 	return allServers, err
 }
 
-func GetAllServers() (allServers models.AllServers) {
-	if allServers.Version == 0 { // not parsed yet - for unit tests mostly
-		allServers, _ = parseAllServers(allServersBytes)
-	}
+func GetAllServers() models.AllServers {
+	parseOnce.Do(func() { allServers, _ = parseAllServers() }) // init did not execute, used in tests
 	return allServers
 }
