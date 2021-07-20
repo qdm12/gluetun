@@ -3,6 +3,7 @@ package updater
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/updater/providers/cyberghost"
@@ -30,9 +31,11 @@ func (u *updater) updateCyberghost(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(cyberghost.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Cyberghost.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Cyberghost.Timestamp = u.timeNow().Unix()
 	u.servers.Cyberghost.Servers = servers
 	return nil
@@ -50,9 +53,11 @@ func (u *updater) updateFastestvpn(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(fastestvpn.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Fastestvpn.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Fastestvpn.Timestamp = u.timeNow().Unix()
 	u.servers.Fastestvpn.Servers = servers
 	return nil
@@ -70,9 +75,11 @@ func (u *updater) updateHideMyAss(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(hidemyass.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.HideMyAss.Servers, servers) {
+		return nil
 	}
+
 	u.servers.HideMyAss.Timestamp = u.timeNow().Unix()
 	u.servers.HideMyAss.Servers = servers
 	return nil
@@ -90,9 +97,11 @@ func (u *updater) updateIpvanish(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(ipvanish.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Ipvanish.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Ipvanish.Timestamp = u.timeNow().Unix()
 	u.servers.Ipvanish.Servers = servers
 	return nil
@@ -110,9 +119,11 @@ func (u *updater) updateIvpn(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(ivpn.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Ivpn.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Ivpn.Timestamp = u.timeNow().Unix()
 	u.servers.Ivpn.Servers = servers
 	return nil
@@ -124,9 +135,11 @@ func (u *updater) updateMullvad(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(mullvad.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Mullvad.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Mullvad.Timestamp = u.timeNow().Unix()
 	u.servers.Mullvad.Servers = servers
 	return nil
@@ -143,9 +156,11 @@ func (u *updater) updateNordvpn(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(nordvpn.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Nordvpn.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Nordvpn.Timestamp = u.timeNow().Unix()
 	u.servers.Nordvpn.Servers = servers
 	return nil
@@ -157,9 +172,11 @@ func (u *updater) updatePIA(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(pia.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Pia.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Pia.Timestamp = u.timeNow().Unix()
 	u.servers.Pia.Servers = servers
 	return nil
@@ -177,9 +194,11 @@ func (u *updater) updatePrivado(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(privado.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Privado.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Privado.Timestamp = u.timeNow().Unix()
 	u.servers.Privado.Servers = servers
 	return nil
@@ -197,9 +216,11 @@ func (u *updater) updatePrivatevpn(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(privatevpn.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Privatevpn.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Privatevpn.Timestamp = u.timeNow().Unix()
 	u.servers.Privatevpn.Servers = servers
 	return nil
@@ -216,9 +237,11 @@ func (u *updater) updateProtonvpn(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(protonvpn.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Protonvpn.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Protonvpn.Timestamp = u.timeNow().Unix()
 	u.servers.Protonvpn.Servers = servers
 	return nil
@@ -236,9 +259,11 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 	if err != nil {
 		return fmt.Errorf("cannot update Purevpn servers: %w", err)
 	}
-	if u.options.Stdout {
-		u.println(purevpn.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Purevpn.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Purevpn.Timestamp = u.timeNow().Unix()
 	u.servers.Purevpn.Servers = servers
 	return nil
@@ -256,9 +281,11 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(surfshark.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Surfshark.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Surfshark.Timestamp = u.timeNow().Unix()
 	u.servers.Surfshark.Servers = servers
 	return nil
@@ -276,9 +303,11 @@ func (u *updater) updateTorguard(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(torguard.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Torguard.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Torguard.Timestamp = u.timeNow().Unix()
 	u.servers.Torguard.Servers = servers
 	return nil
@@ -296,9 +325,11 @@ func (u *updater) updateVPNUnlimited(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(vpnunlimited.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.VPNUnlimited.Servers, servers) {
+		return nil
 	}
+
 	u.servers.VPNUnlimited.Timestamp = u.timeNow().Unix()
 	u.servers.VPNUnlimited.Servers = servers
 	return nil
@@ -316,9 +347,11 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(vyprvpn.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Vyprvpn.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Vyprvpn.Timestamp = u.timeNow().Unix()
 	u.servers.Vyprvpn.Servers = servers
 	return nil
@@ -330,9 +363,11 @@ func (u *updater) updateWindscribe(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	if u.options.Stdout {
-		u.println(windscribe.Stringify(servers))
+
+	if reflect.DeepEqual(u.servers.Windscribe.Servers, servers) {
+		return nil
 	}
+
 	u.servers.Windscribe.Timestamp = u.timeNow().Unix()
 	u.servers.Windscribe.Servers = servers
 	return nil

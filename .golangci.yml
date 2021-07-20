@@ -17,6 +17,9 @@ issues:
     - path: internal/configuration/
       linters:
         - dupl
+    - path: internal/constants/
+      linters:
+        - dupl
     - text: "exported: exported var Err*"
       linters:
         - revive

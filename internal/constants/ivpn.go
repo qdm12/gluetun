@@ -1,8 +1,6 @@
 package constants
 
 import (
-	"net"
-
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -39,54 +37,9 @@ func IvpnHostnameChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-//nolint:lll
 // IvpnServers returns a slice of all the server information for Ivpn.
-func IvpnServers() []models.IvpnServer {
-	return []models.IvpnServer{
-		{Country: "Australia", City: "", Hostname: "au-nsw.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{46, 102, 153, 242}}},
-		{Country: "Austria", City: "", Hostname: "at.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 244, 212, 66}}},
-		{Country: "Belgium", City: "", Hostname: "be.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{194, 187, 251, 10}}},
-		{Country: "Brazil", City: "", Hostname: "br.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{45, 162, 229, 130}}},
-		{Country: "Bulgaria", City: "", Hostname: "bg.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{82, 102, 23, 18}}},
-		{Country: "Canada", City: "Montreal", Hostname: "ca-qc.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{87, 101, 92, 26}}},
-		{Country: "Canada", City: "Toronto", Hostname: "ca.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{104, 254, 90, 178}}},
-		{Country: "Czech Republic", City: "", Hostname: "cz.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{195, 181, 160, 167}}},
-		{Country: "Denmark", City: "", Hostname: "dk.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 245, 84, 226}}},
-		{Country: "Finland", City: "", Hostname: "fi.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 112, 82, 12}}},
-		{Country: "France", City: "", Hostname: "fr.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 246, 211, 179}}},
-		{Country: "Germany", City: "", Hostname: "de.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{178, 162, 211, 114}}},
-		{Country: "Hong Kong", City: "", Hostname: "hk.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{209, 58, 188, 13}}},
-		{Country: "Hungary", City: "", Hostname: "hu.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 189, 114, 186}}},
-		{Country: "Iceland", City: "", Hostname: "is.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{82, 221, 107, 178}}},
-		{Country: "Israel", City: "", Hostname: "il.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 191, 207, 194}}},
-		{Country: "Italy", City: "", Hostname: "it.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{158, 58, 172, 73}}},
-		{Country: "Japan", City: "", Hostname: "jp.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{91, 207, 174, 234}}},
-		{Country: "Luxembourg", City: "", Hostname: "lu.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{92, 223, 89, 53}}},
-		{Country: "Netherlands", City: "", Hostname: "nl.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{95, 211, 172, 95}}},
-		{Country: "Norway", City: "", Hostname: "no.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{194, 242, 10, 150}}},
-		{Country: "Poland", City: "", Hostname: "pl.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 246, 208, 86}}},
-		{Country: "Portugal", City: "", Hostname: "pt.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{94, 46, 175, 112}}},
-		{Country: "Romania", City: "", Hostname: "ro.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{37, 120, 206, 50}}},
-		{Country: "Serbia", City: "", Hostname: "rs.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{141, 98, 103, 250}}},
-		{Country: "Singapore", City: "", Hostname: "sg.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 128, 24, 186}}},
-		{Country: "Slovakia", City: "", Hostname: "sk.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 245, 85, 250}}},
-		{Country: "Spain", City: "", Hostname: "es.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 93, 3, 193}}},
-		{Country: "Sweden", City: "", Hostname: "se.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{80, 67, 10, 138}}},
-		{Country: "Switzerland", City: "", Hostname: "ch.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 212, 170, 138}}},
-		{Country: "USA", City: "Atlanta", Hostname: "us-ga.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{104, 129, 24, 146}}},
-		{Country: "USA", City: "Chicago", Hostname: "us-il.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{72, 11, 137, 146}}},
-		{Country: "USA", City: "Dallas", Hostname: "us-tx.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{96, 44, 189, 194}}},
-		{Country: "USA", City: "Las Vegas", Hostname: "us-nv.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 242, 5, 34}}},
-		{Country: "USA", City: "Los Angeles", Hostname: "us-ca.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{69, 12, 80, 146}}},
-		{Country: "USA", City: "Miami", Hostname: "us-fl.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{173, 44, 49, 90}}},
-		{Country: "USA", City: "New Jersey", Hostname: "us-nj.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{23, 226, 128, 18}}},
-		{Country: "USA", City: "New York", Hostname: "us-ny.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{64, 120, 44, 114}}},
-		{Country: "USA", City: "Phoenix", Hostname: "us-az.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{193, 37, 254, 130}}},
-		{Country: "USA", City: "Salt Lake City", Hostname: "us-ut.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{198, 105, 216, 28}}},
-		{Country: "USA", City: "Seattle", Hostname: "us-wa.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{23, 19, 87, 209}}},
-		{Country: "USA", City: "Washington", Hostname: "us-dc.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{207, 244, 108, 207}}},
-		{Country: "Ukraine", City: "", Hostname: "ua.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{193, 203, 48, 54}}},
-		{Country: "United Kingdom", City: "London", Hostname: "gb.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{185, 59, 221, 133}, {185, 59, 221, 88}}},
-		{Country: "United Kingdom", City: "Manchester", Hostname: "gb-man.gw.ivpn.net", TCP: false, UDP: true, IPs: []net.IP{{89, 238, 141, 228}}},
-	}
+func IvpnServers() (servers []models.IvpnServer) {
+	servers = make([]models.IvpnServer, len(allServers.Ivpn.Servers))
+	copy(servers, allServers.Ivpn.Servers)
+	return servers
 }

@@ -1,7 +1,7 @@
 package models
 
 type AllServers struct {
-	Version      uint16              `json:"version"`
+	Version      uint16              `json:"version"` // used for migration of the top level scheme
 	Cyberghost   CyberghostServers   `json:"cyberghost"`
 	Fastestvpn   FastestvpnServers   `json:"fastestvpn"`
 	HideMyAss    HideMyAssServers    `json:"hidemyass"`

@@ -1,8 +1,6 @@
 package constants
 
 import (
-	"net"
-
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -31,90 +29,8 @@ func FastestvpnHostnameChoices() (choices []string) {
 }
 
 // FastestvpnServers returns the list of all VPN servers for FastestVPN.
-//nolint:lll
-func FastestvpnServers() []models.FastestvpnServer {
-	return []models.FastestvpnServer{
-		{Country: "Australia", Hostname: "au-sd-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{139, 99, 149, 10}}},
-		{Country: "Australia", Hostname: "au-sd-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{139, 99, 149, 10}}},
-		{Country: "Australia", Hostname: "au2-sd-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{139, 99, 131, 126}}},
-		{Country: "Australia", Hostname: "au2-sd-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{139, 99, 131, 126}}},
-		{Country: "Austria", Hostname: "at.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{185, 210, 219, 86}}},
-		{Country: "Belgium", Hostname: "bel1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{217, 138, 211, 67}}},
-		{Country: "Belgium", Hostname: "bel2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{217, 138, 211, 68}}},
-		{Country: "Belgium", Hostname: "bel3.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{217, 138, 211, 69}}},
-		{Country: "Brazil", Hostname: "br-jp-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{45, 179, 88, 31}}},
-		{Country: "Brazil", Hostname: "br-jp-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{45, 179, 88, 31}}},
-		{Country: "Bulgaria", Hostname: "bg.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{37, 46, 114, 46}}},
-		{Country: "Canada", Hostname: "ca1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{192, 99, 103, 48}}},
-		{Country: "Canada", Hostname: "ca2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{192, 99, 103, 49}}},
-		{Country: "Czechia", Hostname: "cz-pr-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{185, 216, 35, 218}}},
-		{Country: "Czechia", Hostname: "cz-pr-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{185, 216, 35, 218}}},
-		{Country: "Denmark", Hostname: "dk.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{185, 245, 84, 70}}},
-		{Country: "Finland", Hostname: "fi-hs-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{194, 34, 132, 19}}},
-		{Country: "Finland", Hostname: "fi-hs-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{194, 34, 132, 19}}},
-		{Country: "France", Hostname: "fr-rb-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{37, 59, 172, 213}}},
-		{Country: "France", Hostname: "fr-rb-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{37, 59, 172, 213}}},
-		{Country: "Germany", Hostname: "de1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{83, 143, 245, 254}}},
-		{Country: "Hong.Kong", Hostname: "hk-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{64, 120, 88, 115}}},
-		{Country: "Hong.Kong", Hostname: "hk-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{64, 120, 88, 115}}},
-		{Country: "India", Hostname: "in41.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{101, 53, 128, 39}}},
-		{Country: "India", Hostname: "in45.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{101, 53, 128, 148}}},
-		{Country: "India", Hostname: "in50.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{103, 104, 74, 32}}},
-		{Country: "India-stream", Hostname: "in-stream.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{103, 104, 74, 30}}},
-		{Country: "Italy", Hostname: "it.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{37, 120, 207, 90}}},
-		{Country: "Japan", Hostname: "jp-tk-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{202, 239, 38, 147}}},
-		{Country: "Japan", Hostname: "jp-tk-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{202, 239, 38, 147}}},
-		{Country: "Luxembourg", Hostname: "lux1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{94, 242, 195, 147}}},
-		{Country: "Netherlands", Hostname: "nl.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{213, 5, 64, 22}}},
-		{Country: "Netherlands", Hostname: "nl2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{89, 46, 223, 251}}},
-		{Country: "Netherlands", Hostname: "nl3.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{89, 46, 223, 252}}},
-		{Country: "Norway", Hostname: "nr-ol-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{185, 90, 61, 20}}},
-		{Country: "Norway", Hostname: "nr-ol-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{185, 90, 61, 20}}},
-		{Country: "Poland", Hostname: "pl2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{194, 15, 196, 117}}},
-		{Country: "Portugal", Hostname: "pt.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{185, 90, 57, 146}}},
-		{Country: "Romania", Hostname: "ro.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{91, 199, 50, 131}}},
-		{Country: "Russia", Hostname: "russia.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{95, 213, 193, 52}}},
-		{Country: "Serbia", Hostname: "rs.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{37, 46, 115, 246}}},
-		{Country: "Singapore", Hostname: "sg-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{209, 58, 174, 195}}},
-		{Country: "Singapore", Hostname: "sg-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{209, 58, 174, 195}}},
-		{Country: "South.Korea", Hostname: "kr-so-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{103, 249, 31, 36}}},
-		{Country: "South.Korea", Hostname: "kr-so-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{103, 249, 31, 36}}},
-		{Country: "Spain", Hostname: "es-bl-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{193, 148, 19, 155}}},
-		{Country: "Spain", Hostname: "es-bl-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{193, 148, 19, 155}}},
-		{Country: "Sweden", Hostname: "se-st-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{128, 127, 104, 200}}},
-		{Country: "Sweden", Hostname: "se-st-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{128, 127, 104, 201}}},
-		{Country: "Sweden", Hostname: "se2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{79, 142, 76, 142}}},
-		{Country: "Switzerland", Hostname: "ch-zr-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{82, 102, 24, 254}}},
-		{Country: "Switzerland", Hostname: "ch-zr-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{82, 102, 24, 254}}},
-		{Country: "Turkey", Hostname: "tr-iz-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{185, 123, 102, 57}}},
-		{Country: "Turkey", Hostname: "tr.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{185, 123, 102, 57}}},
-		{Country: "UAE-Dubai", Hostname: "ue-db-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{45, 9, 249, 110}}},
-		{Country: "UAE-Dubai", Hostname: "ue-db-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{45, 9, 249, 110}}},
-		{Country: "UK", Hostname: "uk.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{5, 226, 139, 143}}},
-		{Country: "UK", Hostname: "uk6.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{5, 226, 139, 148}}},
-		{Country: "UK-Stream", Hostname: "uk-stream.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{195, 206, 169, 171}}},
-		{Country: "US-Atlanta", Hostname: "us-at-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{23, 82, 10, 205}}},
-		{Country: "US-Charlotte", Hostname: "us-cf-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{192, 154, 253, 6}}},
-		{Country: "US-Charlotte", Hostname: "us-cf-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{192, 154, 253, 6}}},
-		{Country: "US-Chicago", Hostname: "us-ch1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{38, 98, 159, 11}}},
-		{Country: "US-Chicago", Hostname: "us-ch2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{38, 98, 159, 10}}},
-		{Country: "US-Dallas", Hostname: "us-dl-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{74, 63, 219, 202}}},
-		{Country: "US-Dallas", Hostname: "us-dl-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{74, 63, 219, 202}}},
-		{Country: "US-Denver", Hostname: "us-dv1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{173, 248, 157, 107}}},
-		{Country: "US-Los.Angeles", Hostname: "us-la-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{64, 31, 35, 222}}},
-		{Country: "US-Los.Angeles", Hostname: "us-la-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{64, 31, 35, 222}}},
-		{Country: "US-Miami", Hostname: "usmia.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{162, 255, 138, 226}}},
-		{Country: "US-Netflix", Hostname: "netflix.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{37, 59, 172, 215}}},
-		{Country: "US-New.York", Hostname: "us-ny-ovtcp-01.jumptoserver.com", UDP: false, TCP: true, IPs: []net.IP{{38, 132, 102, 107}}},
-		{Country: "US-New.York", Hostname: "us-ny-ovudp-01.jumptoserver.com", UDP: true, TCP: false, IPs: []net.IP{{38, 132, 102, 107}}},
-		{Country: "US-Phoenix", Hostname: "us-ph1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{23, 83, 184, 71}}},
-		{Country: "US-Phoenix", Hostname: "us-ph2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{23, 83, 184, 72}}},
-		{Country: "US-Seattle", Hostname: "us-se1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{23, 82, 33, 99}}},
-		{Country: "US-St.Louis", Hostname: "us-st1.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{148, 72, 173, 28}}},
-		{Country: "US-St.Louis", Hostname: "us-st3.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{148, 72, 173, 30}}},
-		{Country: "US-St.Louis", Hostname: "us-st4.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{148, 72, 173, 31}}},
-		{Country: "US-St.Louis", Hostname: "us-st5.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{148, 72, 173, 32}}},
-		{Country: "US-Washington", Hostname: "us-wt.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{23, 82, 15, 90}}},
-		{Country: "US-Washington", Hostname: "us-wt2.jumptoserver.com", UDP: true, TCP: true, IPs: []net.IP{{23, 82, 15, 91}}},
-	}
+func FastestvpnServers() (servers []models.FastestvpnServer) {
+	servers = make([]models.FastestvpnServer, len(allServers.Fastestvpn.Servers))
+	copy(servers, allServers.Fastestvpn.Servers)
+	return servers
 }

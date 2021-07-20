@@ -9,7 +9,17 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func Test_parseAllServers(t *testing.T) {
+	t.Parallel()
+
+	servers, err := parseAllServers(allServersBytes)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, len(servers.Cyberghost.Servers))
+}
 
 func digestServerModelVersion(t *testing.T, server interface{}, version uint16) string {
 	t.Helper()
@@ -127,128 +137,6 @@ func Test_versions(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			digest := digestServerModelVersion(t, testCase.model, testCase.version)
-			failureMessage := fmt.Sprintf(format, name)
-			assert.Equal(t, testCase.digest, digest, failureMessage)
-		})
-	}
-}
-
-func digestServersTimestamp(t *testing.T, servers interface{}, timestamp int64) string {
-	t.Helper()
-	bytes, err := json.Marshal(servers)
-	if err != nil {
-		t.Fatal(err)
-	}
-	bytes = append(bytes, []byte(fmt.Sprintf("%d", timestamp))...)
-	arr := sha256.Sum256(bytes)
-	hexString := hex.EncodeToString(arr[:])
-	if len(hexString) > 8 {
-		hexString = hexString[:8]
-	}
-	return hexString
-}
-
-func Test_timestamps(t *testing.T) {
-	t.Parallel()
-	allServers := GetAllServers()
-	const format = "you forgot to update the timestamp for %s"
-	testCases := map[string]struct {
-		servers   interface{}
-		timestamp int64
-		digest    string
-	}{
-		"Cyberghost": {
-			servers:   allServers.Cyberghost.Servers,
-			timestamp: allServers.Cyberghost.Timestamp,
-			digest:    "b3ca3118",
-		},
-		"Fastestvpn": {
-			servers:   allServers.Fastestvpn.Version,
-			timestamp: allServers.Fastestvpn.Timestamp,
-			digest:    "f0ef6b0b",
-		},
-		"HideMyAss": {
-			servers:   allServers.HideMyAss.Servers,
-			timestamp: allServers.HideMyAss.Timestamp,
-			digest:    "8f872ac4",
-		},
-		"Ipvanish": {
-			servers:   allServers.Ipvanish.Servers,
-			timestamp: allServers.Ipvanish.Timestamp,
-			digest:    "7c60dc5d",
-		},
-		"Ivpn": {
-			servers:   allServers.Ivpn.Servers,
-			timestamp: allServers.Ivpn.Timestamp,
-			digest:    "42f92754",
-		},
-		"Mullvad": {
-			servers:   allServers.Mullvad.Servers,
-			timestamp: allServers.Mullvad.Timestamp,
-			digest:    "01f2315f",
-		},
-		"Nordvpn": {
-			servers:   allServers.Nordvpn.Servers,
-			timestamp: allServers.Nordvpn.Timestamp,
-			digest:    "b2619eea",
-		},
-		"Privado": {
-			servers:   allServers.Privado.Servers,
-			timestamp: allServers.Privado.Timestamp,
-			digest:    "df378478",
-		},
-		"Private Internet Access": {
-			servers:   allServers.Pia.Servers,
-			timestamp: allServers.Pia.Timestamp,
-			digest:    "ad230e95",
-		},
-		"Privatevpn": {
-			servers:   allServers.Privatevpn.Servers,
-			timestamp: allServers.Privatevpn.Timestamp,
-			digest:    "e8d8255a",
-		},
-		"Protonvpn": {
-			servers:   allServers.Protonvpn.Servers,
-			timestamp: allServers.Protonvpn.Timestamp,
-			digest:    "3b86393e",
-		},
-		"Purevpn": {
-			servers:   allServers.Purevpn.Servers,
-			timestamp: allServers.Purevpn.Timestamp,
-			digest:    "9263cfdb",
-		},
-		"Surfshark": {
-			servers:   allServers.Surfshark.Servers,
-			timestamp: allServers.Surfshark.Timestamp,
-			digest:    "55669f49",
-		},
-		"Torguard": {
-			servers:   allServers.Torguard.Servers,
-			timestamp: allServers.Torguard.Timestamp,
-			digest:    "af54b9e8",
-		},
-		"VPN Unlimited": {
-			servers:   allServers.VPNUnlimited.Servers,
-			timestamp: allServers.VPNUnlimited.Timestamp,
-			digest:    "f6ddb84c",
-		},
-		"Vyprvpn": {
-			servers:   allServers.Vyprvpn.Servers,
-			timestamp: allServers.Vyprvpn.Timestamp,
-			digest:    "a62c484b",
-		},
-		"Windscribe": {
-			servers:   allServers.Windscribe.Servers,
-			timestamp: allServers.Windscribe.Timestamp,
-			digest:    "d9290941",
-		},
-	}
-	for name, testCase := range testCases {
-		name := name
-		testCase := testCase
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			digest := digestServersTimestamp(t, testCase.servers, testCase.timestamp)
 			failureMessage := fmt.Sprintf(format, name)
 			assert.Equal(t, testCase.digest, digest, failureMessage)
 		})

@@ -3,7 +3,6 @@ package updater
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -29,7 +28,6 @@ type updater struct {
 	// Functions for tests
 	logger    logging.Logger
 	timeNow   func() time.Time
-	println   func(s string)
 	presolver resolver.Parallel
 	client    *http.Client
 	unzipper  unzip.Unzipper
@@ -44,7 +42,6 @@ func New(settings configuration.Updater, httpClient *http.Client,
 	return &updater{
 		logger:    logger,
 		timeNow:   time.Now,
-		println:   func(s string) { fmt.Println(s) },
 		presolver: resolver.NewParallelResolver(settings.DNSAddress),
 		client:    httpClient,
 		unzipper:  unzipper,

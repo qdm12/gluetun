@@ -48,7 +48,11 @@ func parseFilename(fileName string) (
 			errNotEnoughParts, fileName)
 	}
 	countryCode, city = parts[0], parts[1]
+
 	countryCode = strings.ToLower(countryCode)
+	if countryCode == "co" && strings.HasPrefix(city, "Bogot") {
+		city = "Bogota"
+	}
 
 	return countryCode, city, nil
 }

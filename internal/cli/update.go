@@ -2,14 +2,17 @@ package cli
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"net/http"
+	nativeos "os"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
@@ -17,7 +20,7 @@ import (
 )
 
 var (
-	ErrNoFileOrStdoutFlag      = errors.New("at least one of -file or -stdout must be specified")
+	ErrModeUnspecified         = errors.New("at least one of -enduser or -maintainers must be specified")
 	ErrSyncServers             = errors.New("cannot sync hardcoded and persisted servers")
 	ErrUpdateServerInformation = errors.New("cannot update server information")
 	ErrWriteToFile             = errors.New("cannot write updated information to file")
@@ -25,10 +28,11 @@ var (
 
 func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger logging.Logger) error {
 	options := configuration.Updater{CLI: true}
-	var flushToFile bool
+	var endUserMode, maintainerMode bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
-	flagSet.BoolVar(&flushToFile, "file", false, "Write results to /gluetun/servers.json (for end users)")
-	flagSet.BoolVar(&options.Stdout, "stdout", false, "Write results to console to modify the program (for maintainers)")
+	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
+	flagSet.BoolVar(&maintainerMode, "maintainer", false,
+		"Write results to ./internal/constants/servers.json to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
 	flagSet.BoolVar(&options.Fastestvpn, "fastestvpn", false, "Update FastestVPN servers")
@@ -50,8 +54,8 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
-	if !flushToFile && !options.Stdout {
-		return ErrNoFileOrStdoutFlag
+	if !endUserMode && !maintainerMode {
+		return ErrModeUnspecified
 	}
 
 	const clientTimeout = 10 * time.Second
@@ -66,11 +70,33 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrUpdateServerInformation, err)
 	}
-	if flushToFile {
+
+	if endUserMode {
 		if err := storage.FlushToFile(allServers); err != nil {
 			return fmt.Errorf("%w: %s", ErrWriteToFile, err)
 		}
 	}
 
+	if maintainerMode {
+		if err := writeToEmbeddedJSON(os, allServers); err != nil {
+			return fmt.Errorf("%w: %s", ErrWriteToFile, err)
+		}
+	}
+
 	return nil
+}
+
+func writeToEmbeddedJSON(os os.OS, allServers models.AllServers) error {
+	const perms = 0600
+	f, err := os.OpenFile("./internal/constants/servers.json",
+		nativeos.O_TRUNC|nativeos.O_WRONLY|nativeos.O_CREATE, perms)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "  ")
+	return encoder.Encode(allServers)
 }

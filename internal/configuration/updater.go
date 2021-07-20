@@ -28,8 +28,7 @@ type Updater struct {
 	Vyprvpn      bool          `json:"vyprvpn"`
 	Windscribe   bool          `json:"windscribe"`
 	// The two below should be used in CLI mode only
-	Stdout bool `json:"-"` // in order to update constants file (maintainer side)
-	CLI    bool `json:"-"`
+	CLI bool `json:"-"`
 }
 
 func (settings *Updater) String() string {
@@ -66,7 +65,6 @@ func (settings *Updater) read(r reader) (err error) {
 	settings.VPNUnlimited = true
 	settings.Vyprvpn = true
 	settings.Windscribe = true
-	settings.Stdout = false
 	settings.CLI = false
 	// use cloudflare in plaintext to not be blocked by DNS over TLS by default.
 	// If a plaintext address is set in the DNS settings, this one will be used.
