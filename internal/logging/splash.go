@@ -15,7 +15,7 @@ func Splash(buildInfo models.BuildInformation) string {
 	lines := title()
 	lines = append(lines, "")
 	lines = append(lines, fmt.Sprintf("Running version %s built on %s (commit %s)",
-		buildInfo.Version, buildInfo.BuildDate, buildInfo.Commit))
+		buildInfo.Version, buildInfo.Created, buildInfo.Commit))
 	lines = append(lines, "")
 	lines = append(lines, announcement()...)
 	lines = append(lines, "")

@@ -73,7 +73,7 @@ jobs:
           BRANCH=${GITHUB_REF#refs/heads/}
           TAG=${GITHUB_REF#refs/tags/}
           echo ::set-output name=commit::$(git rev-parse --short HEAD)
-          echo ::set-output name=build_date::$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo ::set-output name=created::$(date -u +%Y-%m-%dT%H:%M:%SZ)
           if [ "$TAG" != "$GITHUB_REF" ]; then
             echo ::set-output name=version::$TAG
             echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le
@@ -90,7 +90,7 @@ jobs:
         with:
           platforms: ${{ steps.vars.outputs.platforms }}
           build-args: |
-            BUILD_DATE=${{ steps.vars.outputs.build_date }}
+            CREATED=${{ steps.vars.outputs.created }}
             COMMIT=${{ steps.vars.outputs.commit }}
             VERSION=${{ steps.vars.outputs.version }}
             ALLTARGETPLATFORMS=${{ steps.vars.outputs.platforms }}

@@ -43,9 +43,9 @@ import (
 
 //nolint:gochecknoglobals
 var (
-	version   = "unknown"
-	commit    = "unknown"
-	buildDate = "an unknown date"
+	version = "unknown"
+	commit  = "unknown"
+	created = "an unknown date"
 )
 
 var (
@@ -55,9 +55,9 @@ var (
 
 func main() {
 	buildInfo := models.BuildInformation{
-		Version:   version,
-		Commit:    commit,
-		BuildDate: buildDate,
+		Version: version,
+		Commit:  commit,
+		Created: created,
 	}
 
 	ctx := context.Background()
