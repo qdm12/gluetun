@@ -32,7 +32,6 @@ func (w *Windscribe) BuildConf(connection models.OpenVPNConnection,
 		"tls-exit",
 
 		// Windscribe specific
-		"comp-lzo",
 		"key-direction 1",
 		"script-security 2",
 		"reneg-sec 0",
