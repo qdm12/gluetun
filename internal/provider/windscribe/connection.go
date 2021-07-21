@@ -32,6 +32,7 @@ func (w *Windscribe) GetOpenVPNConnection(selection configuration.ServerSelectio
 				IP:       IP,
 				Port:     port,
 				Protocol: protocol,
+				Hostname: server.Hostname,
 			}
 			connections = append(connections, connection)
 		}
