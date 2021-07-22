@@ -2,19 +2,36 @@ package cli
 
 import (
 	"context"
+	"net"
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/healthcheck"
+	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
+	"github.com/qdm12/golibs/params"
 )
 
-func (c *cli) HealthCheck(ctx context.Context) error {
+func (c *cli) HealthCheck(ctx context.Context, env params.Env,
+	os os.OS, logger logging.Logger) error {
+	// Extract the health server port from the configuration.
+	config := configuration.Health{}
+	err := config.Read(env, os, logger)
+	if err != nil {
+		return err
+	}
+	_, port, err := net.SplitHostPort(config.ServerAddress)
+	if err != nil {
+		return err
+	}
+
 	const timeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: timeout}
 	healthchecker := healthcheck.NewChecker(httpClient)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	const url = "http://" + constants.HealthcheckAddress
+
+	url := "http://127.0.0.1:" + port
 	return healthchecker.Check(ctx, url)
 }

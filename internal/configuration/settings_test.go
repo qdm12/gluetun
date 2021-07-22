@@ -38,6 +38,7 @@ func Test_Settings_lines(t *testing.T) {
 				"   |--Process group ID: 0",
 				"   |--Timezone: NOT SET ⚠️ - it can cause time related issues",
 				"|--Health:",
+				"   |--Server address: ",
 				"   |--OpenVPN:",
 				"      |--Initial duration: 0s",
 				"|--HTTP control server:",

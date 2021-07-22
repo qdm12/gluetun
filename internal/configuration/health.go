@@ -3,12 +3,15 @@ package configuration
 import (
 	"strings"
 
+	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/params"
 )
 
 // Health contains settings for the healthcheck and health server.
 type Health struct {
-	OpenVPN HealthyWait
+	ServerAddress string
+	OpenVPN       HealthyWait
 }
 
 func (settings *Health) String() string {
@@ -18,6 +21,8 @@ func (settings *Health) String() string {
 func (settings *Health) lines() (lines []string) {
 	lines = append(lines, lastIndent+"Health:")
 
+	lines = append(lines, indent+lastIndent+"Server address: "+settings.ServerAddress)
+
 	lines = append(lines, indent+lastIndent+"OpenVPN:")
 	for _, line := range settings.OpenVPN.lines() {
 		lines = append(lines, indent+indent+line)
@@ -26,7 +31,23 @@ func (settings *Health) lines() (lines []string) {
 	return lines
 }
 
+// Read is to be used for the healthcheck query mode.
+func (settings *Health) Read(env params.Env, os os.OS, logger logging.Logger) (err error) {
+	reader := newReader(env, os, logger)
+	return settings.read(reader)
+}
+
 func (settings *Health) read(r reader) (err error) {
+	var warning string
+	settings.ServerAddress, warning, err = r.env.ListeningAddress(
+		"HEALTH_SERVER_ADDRESS", params.Default("127.0.0.1:9999"))
+	if warning != "" {
+		r.logger.Warn("health server address: " + warning)
+	}
+	if err != nil {
+		return err
+	}
+
 	settings.OpenVPN.Initial, err = r.env.Duration("HEALTH_OPENVPN_DURATION_INITIAL", params.Default("6s"))
 	if err != nil {
 		return err

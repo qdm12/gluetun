@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/qdm12/golibs/logging/mock_logging"
 	"github.com/qdm12/golibs/params/mock_params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,7 +16,7 @@ func Test_Health_String(t *testing.T) {
 	t.Parallel()
 
 	var health Health
-	const expected = "|--Health:\n   |--OpenVPN:\n      |--Initial duration: 0s"
+	const expected = "|--Health:\n   |--Server address: \n   |--OpenVPN:\n      |--Initial duration: 0s"
 
 	s := health.String()
 
@@ -32,12 +33,14 @@ func Test_Health_lines(t *testing.T) {
 		"empty": {
 			lines: []string{
 				"|--Health:",
+				"   |--Server address: ",
 				"   |--OpenVPN:",
 				"      |--Initial duration: 0s",
 			},
 		},
 		"filled settings": {
 			settings: Health{
+				ServerAddress: "address:9999",
 				OpenVPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
@@ -45,6 +48,7 @@ func Test_Health_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Health:",
+				"   |--Server address: address:9999",
 				"   |--OpenVPN:",
 				"      |--Initial duration: 1s",
 				"      |--Addition duration: 1m0s",
@@ -74,18 +78,34 @@ func Test_Health_read(t *testing.T) {
 		openvpnInitialErr       error
 		openvpnAdditionDuration time.Duration
 		openvpnAdditionErr      error
+		serverAddress           string
+		serverAddressWarning    string
+		serverAddressErr        error
 		expected                Health
 		err                     error
 	}{
 		"success": {
 			openvpnInitialDuration:  time.Second,
 			openvpnAdditionDuration: time.Minute,
+			serverAddress:           "127.0.0.1:9999",
 			expected: Health{
+				ServerAddress: "127.0.0.1:9999",
 				OpenVPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
 				},
 			},
+		},
+		"listening address error": {
+			openvpnInitialDuration:  time.Second,
+			openvpnAdditionDuration: time.Minute,
+			serverAddress:           "127.0.0.1:9999",
+			serverAddressWarning:    "warning",
+			serverAddressErr:        errDummy,
+			expected: Health{
+				ServerAddress: "127.0.0.1:9999",
+			},
+			err: errDummy,
 		},
 		"initial error": {
 			openvpnInitialDuration:  time.Second,
@@ -120,17 +140,29 @@ func Test_Health_read(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
 			env := mock_params.NewMockEnv(ctrl)
-			env.EXPECT().
-				Duration("HEALTH_OPENVPN_DURATION_INITIAL", gomock.Any()).
-				Return(testCase.openvpnInitialDuration, testCase.openvpnInitialErr)
-			if testCase.openvpnInitialErr == nil {
+			logger := mock_logging.NewMockLogger(ctrl)
+
+			env.EXPECT().ListeningAddress("HEALTH_SERVER_ADDRESS", gomock.Any()).
+				Return(testCase.serverAddress, testCase.serverAddressWarning,
+					testCase.serverAddressErr)
+			if testCase.serverAddressWarning != "" {
+				logger.EXPECT().Warn("health server address: " + testCase.serverAddressWarning)
+			}
+
+			if testCase.serverAddressErr == nil {
 				env.EXPECT().
-					Duration("HEALTH_OPENVPN_DURATION_ADDITION", gomock.Any()).
-					Return(testCase.openvpnAdditionDuration, testCase.openvpnAdditionErr)
+					Duration("HEALTH_OPENVPN_DURATION_INITIAL", gomock.Any()).
+					Return(testCase.openvpnInitialDuration, testCase.openvpnInitialErr)
+				if testCase.openvpnInitialErr == nil {
+					env.EXPECT().
+						Duration("HEALTH_OPENVPN_DURATION_ADDITION", gomock.Any()).
+						Return(testCase.openvpnAdditionDuration, testCase.openvpnAdditionErr)
+				}
 			}
 
 			r := reader{
-				env: env,
+				env:    env,
+				logger: logger,
 			}
 
 			var health Health

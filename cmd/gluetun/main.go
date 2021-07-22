@@ -71,10 +71,11 @@ func main() {
 	osUser := user.New()
 	unix := unix.New()
 	cli := cli.New()
+	env := params.NewEnv()
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, os, osUser, unix, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, env, os, osUser, unix, cli)
 	}()
 
 	select {
@@ -112,12 +113,12 @@ var (
 
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.ParentLogger, os os.OS,
+	args []string, logger logging.ParentLogger, env params.Env, os os.OS,
 	osUser user.OSUser, unix unix.Unix, cli cli.CLI) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
-			return cli.HealthCheck(ctx)
+			return cli.HealthCheck(ctx, env, os, logger)
 		case "clientkey":
 			return cli.ClientKey(args[2:], os.OpenFile)
 		case "openvpnconfig":
@@ -159,7 +160,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	var allSettings configuration.Settings
-	err := allSettings.Read(params.NewEnv(), os,
+	err := allSettings.Read(env, os,
 		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
 	if err != nil {
 		return err
@@ -365,8 +366,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlGroupHandler.Add(httpServerHandler)
 
 	healthLogger := logger.NewChild(logging.Settings{Prefix: "healthcheck: "})
-	healthcheckServer := healthcheck.NewServer(constants.HealthcheckAddress,
-		allSettings.Health, healthLogger, openvpnLooper)
+	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, openvpnLooper)
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", defaultGoRoutineSettings)
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)

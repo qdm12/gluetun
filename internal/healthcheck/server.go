@@ -17,7 +17,6 @@ type Server interface {
 }
 
 type server struct {
-	address  string
 	logger   logging.Logger
 	handler  *handler
 	resolver *net.Resolver
@@ -31,10 +30,9 @@ type openvpnHealth struct {
 	healthyTimer *time.Timer
 }
 
-func NewServer(address string, config configuration.Health,
+func NewServer(config configuration.Health,
 	logger logging.Logger, openvpnLooper openvpn.Looper) Server {
 	return &server{
-		address:  address,
 		logger:   logger,
 		handler:  newHandler(logger),
 		resolver: net.DefaultResolver,
@@ -53,7 +51,7 @@ func (s *server) Run(ctx context.Context, done chan<- struct{}) {
 	go s.runHealthcheckLoop(ctx, loopDone)
 
 	server := http.Server{
-		Addr:    s.address,
+		Addr:    s.config.ServerAddress,
 		Handler: s.handler,
 	}
 	serverDone := make(chan struct{})
@@ -68,7 +66,7 @@ func (s *server) Run(ctx context.Context, done chan<- struct{}) {
 		}
 	}()
 
-	s.logger.Info("listening on %s", s.address)
+	s.logger.Info("listening on " + s.config.ServerAddress)
 	err := server.ListenAndServe()
 	if err != nil && !errors.Is(ctx.Err(), context.Canceled) {
 		s.logger.Error(err)
