@@ -110,6 +110,9 @@ ENV VPNSP=pia \
     # Openvpn
     OPENVPN_CIPHER= \
     OPENVPN_AUTH= \
+    # Health
+    HEALTH_OPENVPN_DURATION_INITIAL=6s \
+    HEALTH_OPENVPN_DURATION_ADDITION=5s \
     # DNS over TLS
     DOT=on \
     DOT_PROVIDERS=cloudflare \

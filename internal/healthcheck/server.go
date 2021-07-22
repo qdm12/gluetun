@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/golibs/logging"
 )
@@ -24,26 +25,23 @@ type server struct {
 }
 
 type openvpnHealth struct {
-	looper          openvpn.Looper
-	healthyWaitTime time.Duration
-	healthyTimer    *time.Timer
+	looper             openvpn.Looper
+	healthyWaitConfig  configuration.HealthyWait
+	currentHealthyWait time.Duration
+	healthyTimer       *time.Timer
 }
 
-const (
-	defaultOpenvpnHealthyWaitTime = 6 * time.Second
-	openvpnHealthyWaitTimeAdd     = 5 * time.Second
-)
-
-func NewServer(address string, logger logging.Logger,
-	openvpnLooper openvpn.Looper) Server {
+func NewServer(address string, settings configuration.Health,
+	logger logging.Logger, openvpnLooper openvpn.Looper) Server {
 	return &server{
 		address:  address,
 		logger:   logger,
 		handler:  newHandler(logger),
 		resolver: net.DefaultResolver,
 		openvpn: openvpnHealth{
-			looper:          openvpnLooper,
-			healthyWaitTime: defaultOpenvpnHealthyWaitTime,
+			looper:             openvpnLooper,
+			currentHealthyWait: settings.OpenVPN.Initial,
+			healthyWaitConfig:  settings.OpenVPN,
 		},
 	}
 }

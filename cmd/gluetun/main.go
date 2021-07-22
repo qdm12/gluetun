@@ -365,8 +365,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlGroupHandler.Add(httpServerHandler)
 
 	healthLogger := logger.NewChild(logging.Settings{Prefix: "healthcheck: "})
-	healthcheckServer := healthcheck.NewServer(
-		constants.HealthcheckAddress, healthLogger, openvpnLooper)
+	healthcheckServer := healthcheck.NewServer(constants.HealthcheckAddress,
+		allSettings.Health, healthLogger, openvpnLooper)
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", defaultGoRoutineSettings)
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)

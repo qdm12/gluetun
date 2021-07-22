@@ -22,6 +22,7 @@ type Settings struct {
 	PublicIP           PublicIP
 	VersionInformation bool
 	ControlServer      ControlServer
+	Health             Health
 }
 
 func (settings *Settings) String() string {
@@ -36,6 +37,7 @@ func (settings *Settings) lines() (lines []string) {
 	lines = append(lines, settings.System.lines()...)
 	lines = append(lines, settings.HTTPProxy.lines()...)
 	lines = append(lines, settings.ShadowSocks.lines()...)
+	lines = append(lines, settings.Health.lines()...)
 	lines = append(lines, settings.ControlServer.lines()...)
 	lines = append(lines, settings.Updater.lines()...)
 	lines = append(lines, settings.PublicIP.lines()...)
@@ -55,6 +57,7 @@ var (
 	ErrControlServer = errors.New("cannot read control server settings")
 	ErrUpdater       = errors.New("cannot read Updater settings")
 	ErrPublicIP      = errors.New("cannot read Public IP getter settings")
+	ErrHealth        = errors.New("cannot read health settings")
 )
 
 // Read obtains all configuration options for the program and returns an error as soon
@@ -105,6 +108,10 @@ func (settings *Settings) Read(env params.Env, os os.OS, logger logging.Logger) 
 
 	if err := settings.PublicIP.read(r); err != nil {
 		return fmt.Errorf("%w: %s", ErrPublicIP, err)
+	}
+
+	if err := settings.Health.read(r); err != nil {
+		return fmt.Errorf("%w: %s", ErrHealth, err)
 	}
 
 	return nil
