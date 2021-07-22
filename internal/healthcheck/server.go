@@ -50,7 +50,6 @@ func NewServer(address string, logger logging.Logger,
 
 func (s *server) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
-	s.logger.Debug("here 0")
 
 	loopDone := make(chan struct{})
 	go s.runHealthcheckLoop(ctx, loopDone)
