@@ -21,27 +21,27 @@ type server struct {
 	logger   logging.Logger
 	handler  *handler
 	resolver *net.Resolver
+	config   configuration.Health
 	openvpn  openvpnHealth
 }
 
 type openvpnHealth struct {
-	looper             openvpn.Looper
-	healthyWaitConfig  configuration.HealthyWait
-	currentHealthyWait time.Duration
-	healthyTimer       *time.Timer
+	looper       openvpn.Looper
+	healthyWait  time.Duration
+	healthyTimer *time.Timer
 }
 
-func NewServer(address string, settings configuration.Health,
+func NewServer(address string, config configuration.Health,
 	logger logging.Logger, openvpnLooper openvpn.Looper) Server {
 	return &server{
 		address:  address,
 		logger:   logger,
 		handler:  newHandler(logger),
 		resolver: net.DefaultResolver,
+		config:   config,
 		openvpn: openvpnHealth{
-			looper:             openvpnLooper,
-			currentHealthyWait: settings.OpenVPN.Initial,
-			healthyWaitConfig:  settings.OpenVPN,
+			looper:      openvpnLooper,
+			healthyWait: config.OpenVPN.Initial,
 		},
 	}
 }
