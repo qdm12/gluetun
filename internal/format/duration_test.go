@@ -1,4 +1,4 @@
-package logging
+package format
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_FormatDuration(t *testing.T) {
+func Test_Duration(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
 		duration time.Duration
@@ -57,7 +57,7 @@ func Test_FormatDuration(t *testing.T) {
 		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			s := FormatDuration(testCase.duration)
+			s := Duration(testCase.duration)
 			assert.Equal(t, testCase.s, s)
 		})
 	}

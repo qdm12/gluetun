@@ -22,7 +22,6 @@ import (
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/httpproxy"
-	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/publicip"
@@ -38,6 +37,7 @@ import (
 	"github.com/qdm12/golibs/os/user"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/goshutdown"
+	"github.com/qdm12/gosplash"
 	"github.com/qdm12/updated/pkg/dnscrypto"
 )
 
@@ -147,7 +147,26 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		logger.NewChild(logging.Settings{Prefix: "firewall: "}),
 		routingConf, os.OpenFile)
 
-	fmt.Println(gluetunLogging.Splash(buildInfo))
+	announcementExp, err := time.Parse(time.RFC3339, "2021-07-22T00:00:00Z")
+	if err != nil {
+		return err
+	}
+	splashSettings := gosplash.Settings{
+		User:         "qdm12",
+		Repository:   "gluetun",
+		Emails:       []string{"quentin.mcgaw@gmail.com"},
+		Version:      buildInfo.Version,
+		Commit:       buildInfo.Commit,
+		BuildDate:    buildInfo.Created,
+		Announcement: "",
+		AnnounceExp:  announcementExp,
+		// Sponsor information
+		PaypalUser:    "qmcgaw",
+		GithubSponsor: "qdm12",
+	}
+	for _, line := range gosplash.MakeLines(splashSettings) {
+		fmt.Println(line)
+	}
 
 	if err := printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
@@ -160,7 +179,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	var allSettings configuration.Settings
-	err := allSettings.Read(env, os,
+	err = allSettings.Read(env, os,
 		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
 	if err != nil {
 		return err

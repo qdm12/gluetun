@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/logging"
+	"github.com/qdm12/gluetun/internal/format"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -38,7 +38,7 @@ func GetMessage(ctx context.Context, buildInfo models.BuildInformation,
 	if tagName == buildInfo.Version {
 		return fmt.Sprintf("You are running the latest release %s", buildInfo.Version), nil
 	}
-	timeSinceRelease := logging.FormatDuration(time.Since(releaseTime))
+	timeSinceRelease := format.Duration(time.Since(releaseTime))
 	return fmt.Sprintf("There is a new release %s (%s) created %s ago",
 			tagName, name, timeSinceRelease),
 		nil

@@ -1,11 +1,11 @@
-package logging
+package format
 
 import (
 	"fmt"
 	"time"
 )
 
-func FormatDuration(duration time.Duration) string {
+func Duration(duration time.Duration) string {
 	switch {
 	case duration < time.Minute:
 		seconds := int(duration.Round(time.Second).Seconds())
