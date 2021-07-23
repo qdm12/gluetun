@@ -8,7 +8,7 @@ import (
 )
 
 func (c *configurator) Version(ctx context.Context) (version string, err error) {
-	file, err := c.openFile("/etc/alpine-release", os.O_RDONLY, 0)
+	file, err := os.OpenFile(c.alpineReleasePath, os.O_RDONLY, 0)
 	if err != nil {
 		return "", err
 	}

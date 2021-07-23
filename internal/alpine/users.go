@@ -15,7 +15,7 @@ var (
 // CreateUser creates a user in Alpine with the given UID.
 func (c *configurator) CreateUser(username string, uid int) (createdUsername string, err error) {
 	UIDStr := strconv.Itoa(uid)
-	u, err := c.osUser.LookupID(UIDStr)
+	u, err := c.lookupID(UIDStr)
 	_, unknownUID := err.(user.UnknownUserIdError)
 	if err != nil && !unknownUID {
 		return "", err
@@ -28,7 +28,7 @@ func (c *configurator) CreateUser(username string, uid int) (createdUsername str
 		return u.Username, nil
 	}
 
-	u, err = c.osUser.Lookup(username)
+	u, err = c.lookup(username)
 	_, unknownUsername := err.(user.UnknownUserError)
 	if err != nil && !unknownUsername {
 		return "", err
@@ -39,7 +39,7 @@ func (c *configurator) CreateUser(username string, uid int) (createdUsername str
 			ErrUserAlreadyExists, username, u.Uid, uid)
 	}
 
-	file, err := c.openFile("/etc/passwd", os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(c.passwdPath, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return "", err
 	}

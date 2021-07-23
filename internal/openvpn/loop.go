@@ -4,6 +4,7 @@ import (
 	"context"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 type Looper interface {
@@ -34,9 +34,10 @@ type Looper interface {
 type looper struct {
 	state *state
 	// Fixed parameters
-	username string
-	puid     int
-	pgid     int
+	username       string
+	puid           int
+	pgid           int
+	targetConfPath string
 	// Configurators
 	conf    Configurator
 	fw      firewall.Configurator
@@ -44,7 +45,6 @@ type looper struct {
 	// Other objects
 	logger, pfLogger logging.Logger
 	client           *http.Client
-	openFile         os.OpenFileFunc
 	tunnelReady      chan<- struct{}
 	// Internal channels and values
 	stop               <-chan struct{}
@@ -64,7 +64,7 @@ const (
 func NewLooper(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
-	logger logging.ParentLogger, client *http.Client, openFile os.OpenFileFunc,
+	logger logging.ParentLogger, client *http.Client,
 	tunnelReady chan<- struct{}) Looper {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
@@ -79,13 +79,13 @@ func NewLooper(settings configuration.OpenVPN,
 		username:           username,
 		puid:               puid,
 		pgid:               pgid,
+		targetConfPath:     constants.OpenVPNConf,
 		conf:               conf,
 		fw:                 fw,
 		routing:            routing,
 		logger:             logger.NewChild(logging.Settings{Prefix: "openvpn: "}),
 		pfLogger:           logger.NewChild(logging.Settings{Prefix: "port forwarding: "}),
 		client:             client,
-		openFile:           openFile,
 		tunnelReady:        tunnelReady,
 		start:              start,
 		running:            running,
@@ -145,7 +145,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 			}
 		}
 
-		if err := writeOpenvpnConf(lines, l.openFile); err != nil {
+		if err := l.writeOpenvpnConf(lines); err != nil {
 			l.signalOrSetStatus(constants.Crashed)
 			l.logAndWait(ctx, err)
 			continue
@@ -279,13 +279,12 @@ func (l *looper) portForward(ctx context.Context,
 		defer l.state.settingsMu.RUnlock()
 		return settings.Provider.PortForwarding.Filepath
 	}
-	providerConf.PortForward(ctx,
-		client, l.openFile, l.pfLogger,
+	providerConf.PortForward(ctx, client, l.pfLogger,
 		gateway, l.fw, syncState)
 }
 
-func writeOpenvpnConf(lines []string, openFile os.OpenFileFunc) error {
-	file, err := openFile(constants.OpenVPNConf, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+func (l *looper) writeOpenvpnConf(lines []string) error {
+	file, err := os.OpenFile(l.targetConfPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

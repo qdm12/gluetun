@@ -4,7 +4,6 @@ package storage
 import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 type Storage interface {
@@ -14,14 +13,12 @@ type Storage interface {
 }
 
 type storage struct {
-	os       os.OS
 	logger   logging.Logger
 	filepath string
 }
 
-func New(logger logging.Logger, os os.OS, filepath string) Storage {
+func New(logger logging.Logger, filepath string) Storage {
 	return &storage{
-		os:       os,
 		logger:   logger,
 		filepath: filepath,
 	}

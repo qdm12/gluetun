@@ -4,19 +4,19 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/os"
 )
 
-func (c *cli) ClientKey(args []string, openFile os.OpenFileFunc) error {
+func (c *cli) ClientKey(args []string) error {
 	flagSet := flag.NewFlagSet("clientkey", flag.ExitOnError)
 	filepath := flagSet.String("path", constants.ClientKey, "file path to the client.key file")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
-	file, err := openFile(*filepath, os.O_RDONLY, 0)
+	file, err := os.OpenFile(*filepath, os.O_RDONLY, 0)
 	if err != nil {
 		return err
 	}

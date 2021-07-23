@@ -196,7 +196,7 @@ func (c *configurator) acceptInputToPort(ctx context.Context, intf string, port 
 }
 
 func (c *configurator) runUserPostRules(ctx context.Context, filepath string, remove bool) error {
-	file, err := c.openFile(filepath, os.O_RDONLY, 0)
+	file, err := os.OpenFile(filepath, os.O_RDONLY, 0)
 	if os.IsNotExist(err) {
 		return nil
 	} else if err != nil {

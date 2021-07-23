@@ -136,7 +136,7 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 		}
 	}
 
-	if err := c.runUserPostRules(ctx, "/iptables/post-rules.txt", remove); err != nil {
+	if err := c.runUserPostRules(ctx, c.customRulesPath, remove); err != nil {
 		return fmt.Errorf("%w: %s", ErrUserPostRules, err)
 	}
 

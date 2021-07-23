@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	nativeos "os"
+	"os"
 	"os/signal"
 	"strconv"
 	"strings"
@@ -33,8 +33,6 @@ import (
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
-	"github.com/qdm12/golibs/os/user"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/goshutdown"
 	"github.com/qdm12/gosplash"
@@ -61,21 +59,19 @@ func main() {
 	}
 
 	ctx := context.Background()
-	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, nativeos.Interrupt)
+	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	ctx, cancel := context.WithCancel(ctx)
 
 	logger := logging.NewParent(logging.Settings{})
 
-	args := nativeos.Args
-	os := os.New()
-	osUser := user.New()
+	args := os.Args
 	unix := unix.New()
 	cli := cli.New()
 	env := params.NewEnv()
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, env, os, osUser, unix, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, env, unix, cli)
 	}()
 
 	select {
@@ -86,7 +82,7 @@ func main() {
 		stop()
 		close(errorCh)
 		if err == nil { // expected exit such as healthcheck
-			nativeos.Exit(0)
+			os.Exit(0)
 		}
 		logger.Error(err)
 		cancel()
@@ -104,7 +100,7 @@ func main() {
 		logger.Warn("Shutdown timed out")
 	}
 
-	nativeos.Exit(1)
+	os.Exit(1)
 }
 
 var (
@@ -113,18 +109,18 @@ var (
 
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.ParentLogger, env params.Env, os os.OS,
-	osUser user.OSUser, unix unix.Unix, cli cli.CLI) error {
+	args []string, logger logging.ParentLogger, env params.Env,
+	unix unix.Unix, cli cli.CLI) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
-			return cli.HealthCheck(ctx, env, os, logger)
+			return cli.HealthCheck(ctx, env, logger)
 		case "clientkey":
-			return cli.ClientKey(args[2:], os.OpenFile)
+			return cli.ClientKey(args[2:])
 		case "openvpnconfig":
-			return cli.OpenvpnConfig(os, logger)
+			return cli.OpenvpnConfig(logger)
 		case "update":
-			return cli.Update(ctx, args[2:], os, logger)
+			return cli.Update(ctx, args[2:], logger)
 		default:
 			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
@@ -133,19 +129,19 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
-	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
+	alpineConf := alpine.NewConfigurator()
 	ovpnConf := openvpn.NewConfigurator(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
-		os, unix)
+		unix)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
-	dnsConf := unbound.NewConfigurator(nil, os.OpenFile, dnsCrypto,
+	dnsConf := unbound.NewConfigurator(nil, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
 	routingConf := routing.NewRouting(
 		logger.NewChild(logging.Settings{Prefix: "routing: "}))
 	firewallConf := firewall.NewConfigurator(
 		logger.NewChild(logging.Settings{Prefix: "firewall: "}),
-		routingConf, os.OpenFile)
+		routingConf)
 
 	announcementExp, err := time.Parse(time.RFC3339, "2021-07-22T00:00:00Z")
 	if err != nil {
@@ -179,7 +175,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	var allSettings configuration.Settings
-	err = allSettings.Read(env, os,
+	err = allSettings.Read(env,
 		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
 	if err != nil {
 		return err
@@ -196,7 +192,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storage := storage.New(
 		logger.NewChild(logging.Settings{Prefix: "storage: "}),
-		os, constants.ServersData)
+		constants.ServersData)
 	allServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
 		return err
@@ -314,7 +310,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
 	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh)
+		ovpnConf, firewallConf, routingConf, logger, httpClient, tunnelReadyCh)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn
@@ -331,7 +327,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
 	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
-		unboundLogger, os.OpenFile)
+		unboundLogger)
 	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
 		"unbound", defaultGoRoutineSettings)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
@@ -340,7 +336,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	publicIPLooper := publicip.NewLooper(httpClient,
 		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
-		allSettings.PublicIP, puid, pgid, os)
+		allSettings.PublicIP, puid, pgid)
 	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
 		"public IP", defaultGoRoutineSettings)
 	go publicIPLooper.Run(pubIPCtx, pubIPDone)

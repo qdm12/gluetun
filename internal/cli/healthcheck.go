@@ -9,15 +9,14 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/params"
 )
 
 func (c *cli) HealthCheck(ctx context.Context, env params.Env,
-	os os.OS, logger logging.Logger) error {
+	logger logging.Logger) error {
 	// Extract the health server port from the configuration.
 	config := configuration.Health{}
-	err := config.Read(env, os, logger)
+	err := config.Read(env, logger)
 	if err != nil {
 		return err
 	}

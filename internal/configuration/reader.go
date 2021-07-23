@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
 )
@@ -17,15 +16,13 @@ type reader struct {
 	env    params.Env
 	logger logging.Logger
 	regex  verification.Regex
-	os     os.OS
 }
 
-func newReader(env params.Env, os os.OS, logger logging.Logger) reader {
+func newReader(env params.Env, logger logging.Logger) reader {
 	return reader{
 		env:    env,
 		logger: logger,
 		regex:  verification.NewRegex(),
-		os:     os,
 	}
 }
 

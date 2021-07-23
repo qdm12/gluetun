@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/params"
 )
 
@@ -33,8 +32,8 @@ func (settings *Health) lines() (lines []string) {
 }
 
 // Read is to be used for the healthcheck query mode.
-func (settings *Health) Read(env params.Env, os os.OS, logger logging.Logger) (err error) {
-	reader := newReader(env, os, logger)
+func (settings *Health) Read(env params.Env, logger logging.Logger) (err error) {
+	reader := newReader(env, logger)
 	return settings.read(reader)
 }
 

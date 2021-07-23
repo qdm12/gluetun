@@ -5,10 +5,10 @@ package openvpn
 import (
 	"context"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 type Configurator interface {
@@ -22,17 +22,19 @@ type Configurator interface {
 }
 
 type configurator struct {
-	logger    logging.Logger
-	commander command.Commander
-	os        os.OS
-	unix      unix.Unix
+	logger       logging.Logger
+	commander    command.Commander
+	unix         unix.Unix
+	authFilePath string
+	tunDevPath   string
 }
 
-func NewConfigurator(logger logging.Logger, os os.OS, unix unix.Unix) Configurator {
+func NewConfigurator(logger logging.Logger, unix unix.Unix) Configurator {
 	return &configurator{
-		logger:    logger,
-		commander: command.NewCommander(),
-		os:        os,
-		unix:      unix,
+		logger:       logger,
+		commander:    command.NewCommander(),
+		unix:         unix,
+		authFilePath: constants.OpenVPNAuthConf,
+		tunDevPath:   constants.TunnelDevice,
 	}
 }

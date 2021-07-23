@@ -4,6 +4,7 @@ import (
 	"context"
 	"net"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 type Looper interface {
@@ -31,7 +31,6 @@ type looper struct {
 	getter IPGetter
 	client *http.Client
 	logger logging.Logger
-	os     os.OS
 	// Fixed settings
 	puid int
 	pgid int
@@ -51,8 +50,7 @@ type looper struct {
 const defaultBackoffTime = 5 * time.Second
 
 func NewLooper(client *http.Client, logger logging.Logger,
-	settings configuration.PublicIP, puid, pgid int,
-	os os.OS) Looper {
+	settings configuration.PublicIP, puid, pgid int) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
@@ -62,7 +60,6 @@ func NewLooper(client *http.Client, logger logging.Logger,
 		client:       client,
 		getter:       NewIPGetter(client),
 		logger:       logger,
-		os:           os,
 		puid:         puid,
 		pgid:         pgid,
 		start:        make(chan struct{}),
@@ -136,7 +133,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				close(errorCh)
 				filepath := l.GetSettings().IPFilepath
 				l.logger.Info("Removing ip file " + filepath)
-				if err := l.os.Remove(filepath); err != nil {
+				if err := os.Remove(filepath); err != nil {
 					l.logger.Error(err)
 				}
 				return
@@ -161,7 +158,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				}
 				l.logger.Info(message)
 
-				err = persistPublicIP(l.os.OpenFile, l.state.settings.IPFilepath,
+				err = persistPublicIP(l.state.settings.IPFilepath,
 					ip.String(), l.puid, l.pgid)
 				if err != nil {
 					l.logger.Error(err)

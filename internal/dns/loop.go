@@ -16,7 +16,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 type Looper interface {
@@ -33,6 +32,7 @@ type Looper interface {
 type looper struct {
 	state        *state
 	conf         unbound.Configurator
+	resolvConf   string
 	blockBuilder blacklist.Builder
 	client       *http.Client
 	logger       logging.Logger
@@ -45,13 +45,12 @@ type looper struct {
 	backoffTime  time.Duration
 	timeNow      func() time.Time
 	timeSince    func(time.Time) time.Duration
-	openFile     os.OpenFileFunc
 }
 
 const defaultBackoffTime = 10 * time.Second
 
 func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *http.Client,
-	logger logging.Logger, openFile os.OpenFileFunc) Looper {
+	logger logging.Logger) Looper {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
@@ -63,6 +62,7 @@ func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *ht
 	return &looper{
 		state:        state,
 		conf:         conf,
+		resolvConf:   "/etc/resolv.conf",
 		blockBuilder: blacklist.NewBuilder(client),
 		client:       client,
 		logger:       logger,
@@ -75,7 +75,6 @@ func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *ht
 		backoffTime:  defaultBackoffTime,
 		timeNow:      time.Now,
 		timeSince:    time.Since,
-		openFile:     openFile,
 	}
 }
 
@@ -227,8 +226,8 @@ func (l *looper) setupUnbound(ctx context.Context) (
 
 	// use Unbound
 	nameserver.UseDNSInternally(net.IP{127, 0, 0, 1})
-	err = nameserver.UseDNSSystemWide(l.openFile,
-		net.IP{127, 0, 0, 1}, settings.KeepNameserver)
+	err = nameserver.UseDNSSystemWide(l.resolvConf, net.IP{127, 0, 0, 1},
+		settings.KeepNameserver)
 	if err != nil {
 		l.logger.Error(err)
 	}
@@ -256,8 +255,8 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 			l.logger.Info("using plaintext DNS at address %s", targetIP)
 		}
 		nameserver.UseDNSInternally(targetIP)
-		if err := nameserver.UseDNSSystemWide(l.openFile,
-			targetIP, settings.KeepNameserver); err != nil {
+		err := nameserver.UseDNSSystemWide(l.resolvConf, targetIP, settings.KeepNameserver)
+		if err != nil {
 			l.logger.Error(err)
 		}
 		return
@@ -271,7 +270,8 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 		l.logger.Info("using plaintext DNS at address " + targetIP.String())
 	}
 	nameserver.UseDNSInternally(targetIP)
-	if err := nameserver.UseDNSSystemWide(l.openFile, targetIP, settings.KeepNameserver); err != nil {
+	err := nameserver.UseDNSSystemWide(l.resolvConf, targetIP, settings.KeepNameserver)
+	if err != nil {
 		l.logger.Error(err)
 	}
 }

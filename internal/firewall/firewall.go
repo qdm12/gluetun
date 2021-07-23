@@ -11,7 +11,6 @@ import (
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 // Configurator allows to change firewall rules and modify network routes.
@@ -32,7 +31,6 @@ type configurator struct { //nolint:maligned
 	commander        command.Commander
 	logger           logging.Logger
 	routing          routing.Routing
-	openFile         os.OpenFileFunc // for custom iptables rules
 	iptablesMutex    sync.Mutex
 	ip6tablesMutex   sync.Mutex
 	debug            bool
@@ -43,7 +41,8 @@ type configurator struct { //nolint:maligned
 	networkInfoMutex sync.Mutex
 
 	// Fixed state
-	ip6Tables bool
+	ip6Tables       bool
+	customRulesPath string
 
 	// State
 	enabled           bool
@@ -54,15 +53,15 @@ type configurator struct { //nolint:maligned
 }
 
 // NewConfigurator creates a new Configurator instance.
-func NewConfigurator(logger logging.Logger, routing routing.Routing, openFile os.OpenFileFunc) Configurator {
+func NewConfigurator(logger logging.Logger, routing routing.Routing) Configurator {
 	commander := command.NewCommander()
 	return &configurator{
 		commander:         commander,
 		logger:            logger,
 		routing:           routing,
-		openFile:          openFile,
 		allowedInputPorts: make(map[uint16]string),
 		ip6Tables:         ip6tablesSupported(context.Background(), commander),
+		customRulesPath:   "/iptables/post-rules.txt",
 	}
 }
 
