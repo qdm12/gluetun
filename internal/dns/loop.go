@@ -14,18 +14,16 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
+var _ Looper = (*Loop)(nil)
+
 type Looper interface {
-	Run(ctx context.Context, done chan<- struct{})
-	RunRestartTicker(ctx context.Context, done chan<- struct{})
-	GetStatus() (status models.LoopStatus)
-	ApplyStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-	GetSettings() (settings configuration.DNS)
-	SetSettings(ctx context.Context, settings configuration.DNS) (
-		outcome string)
+	Runner
+	RestartTickerRunner
+	StatusGetterApplier
+	SettingsGetterSetter
 }
 
-type looper struct {
+type Loop struct {
 	state        *state
 	conf         unbound.Configurator
 	resolvConf   string
@@ -46,7 +44,7 @@ type looper struct {
 const defaultBackoffTime = 10 * time.Second
 
 func NewLoop(conf unbound.Configurator, settings configuration.DNS, client *http.Client,
-	logger logging.Logger) Looper {
+	logger logging.Logger) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
@@ -55,7 +53,7 @@ func NewLoop(conf unbound.Configurator, settings configuration.DNS, client *http
 
 	state := newState(constants.Stopped, settings, start, running, stop, stopped, updateTicker)
 
-	return &looper{
+	return &Loop{
 		state:        state,
 		conf:         conf,
 		resolvConf:   "/etc/resolv.conf",
@@ -74,7 +72,7 @@ func NewLoop(conf unbound.Configurator, settings configuration.DNS, client *http
 	}
 }
 
-func (l *looper) logAndWait(ctx context.Context, err error) {
+func (l *Loop) logAndWait(ctx context.Context, err error) {
 	if err != nil {
 		l.logger.Warn(err.Error())
 	}
@@ -90,7 +88,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) signalOrSetStatus(status models.LoopStatus) {
+func (l *Loop) signalOrSetStatus(status models.LoopStatus) {
 	if l.userTrigger {
 		l.userTrigger = false
 		select {

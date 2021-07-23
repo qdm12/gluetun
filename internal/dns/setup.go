@@ -14,7 +14,7 @@ var errUpdateFiles = errors.New("cannot update files")
 // Returning cancel == nil signals we want to re-run setupUnbound
 // Returning err == errUpdateFiles signals we should not fall back
 // on the plaintext DNS as DOT is still up and running.
-func (l *looper) setupUnbound(ctx context.Context) (
+func (l *Loop) setupUnbound(ctx context.Context) (
 	cancel context.CancelFunc, waitError chan error, closeStreams func(), err error) {
 	err = l.updateFiles(ctx)
 	if err != nil {

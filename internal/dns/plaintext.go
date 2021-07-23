@@ -2,7 +2,7 @@ package dns
 
 import "github.com/qdm12/dns/pkg/nameserver"
 
-func (l *looper) useUnencryptedDNS(fallback bool) {
+func (l *Loop) useUnencryptedDNS(fallback bool) {
 	settings := l.GetSettings()
 
 	// Try with user provided plaintext ip address

@@ -2,7 +2,7 @@ package dns
 
 import "context"
 
-func (l *looper) updateFiles(ctx context.Context) (err error) {
+func (l *Loop) updateFiles(ctx context.Context) (err error) {
 	l.logger.Info("downloading DNS over TLS cryptographic files")
 	if err := l.conf.SetupFiles(ctx); err != nil {
 		return err
