@@ -14,7 +14,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 
 	if l.GetSettings().Enabled {
 		go func() {
-			_, _ = l.SetStatus(ctx, constants.Running)
+			_, _ = l.statusManager.ApplyStatus(ctx, constants.Running)
 		}()
 	}
 
@@ -40,7 +40,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 			crashed = false
 		} else {
 			l.backoffTime = defaultBackoffTime
-			l.state.setStatusWithLock(constants.Running)
+			l.statusManager.SetStatus(constants.Running)
 		}
 
 		stayHere := true
@@ -61,7 +61,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				<-errorCh
 				l.stopped <- struct{}{}
 			case err := <-errorCh:
-				l.state.setStatusWithLock(constants.Crashed)
+				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				crashed = true
 				stayHere = false
