@@ -28,12 +28,13 @@ var (
 
 func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger logging.Logger) error {
 	options := configuration.Updater{CLI: true}
-	var endUserMode, maintainerMode bool
+	var endUserMode, maintainerMode, updateAll bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
 		"Write results to ./internal/constants/servers.json to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
+	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
 	flagSet.BoolVar(&options.Fastestvpn, "fastestvpn", false, "Update FastestVPN servers")
 	flagSet.BoolVar(&options.HideMyAss, "hidemyass", false, "Update HideMyAss servers")
@@ -56,6 +57,10 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 	}
 	if !endUserMode && !maintainerMode {
 		return ErrModeUnspecified
+	}
+
+	if updateAll {
+		options.EnableAll()
 	}
 
 	const clientTimeout = 10 * time.Second

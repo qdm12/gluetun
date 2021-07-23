@@ -48,7 +48,7 @@ func (settings *Updater) lines() (lines []string) {
 	return lines
 }
 
-func (settings *Updater) read(r reader) (err error) {
+func (settings *Updater) EnableAll() {
 	settings.Cyberghost = true
 	settings.HideMyAss = true
 	settings.Ipvanish = true
@@ -66,7 +66,10 @@ func (settings *Updater) read(r reader) (err error) {
 	settings.VPNUnlimited = true
 	settings.Vyprvpn = true
 	settings.Windscribe = true
-	settings.CLI = false
+}
+
+func (settings *Updater) read(r reader) (err error) {
+	settings.EnableAll()
 	// use cloudflare in plaintext to not be blocked by DNS over TLS by default.
 	// If a plaintext address is set in the DNS settings, this one will be used.
 	// TODO use custom future encrypted DNS written in Go without blocking
