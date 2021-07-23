@@ -71,10 +71,11 @@ func main() {
 	unix := unix.New()
 	cli := cli.New()
 	env := params.NewEnv()
+	cmder := command.NewCommander()
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, env, unix, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, env, unix, cmder, cli)
 	}()
 
 	select {
@@ -113,7 +114,7 @@ var (
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, env params.Env,
-	unix unix.Unix, cli cli.CLI) error {
+	unix unix.Unix, cmder command.Commander, cli cli.CLI) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -135,7 +136,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	alpineConf := alpine.NewConfigurator()
 	ovpnConf := openvpn.NewConfigurator(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
-		unix)
+		unix, cmder)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
 	dnsConf := unbound.NewConfigurator(nil, dnsCrypto,
@@ -161,8 +162,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	for _, line := range gosplash.MakeLines(splashSettings) {
 		fmt.Println(line)
 	}
-
-	cmder := command.NewCommander()
 
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
@@ -233,7 +232,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Prefix: "firewall: ",
 		Level:  firewallLogLevel,
 	})
-	firewallConf := firewall.NewConfigurator(firewallLogger, routingConf)
+	firewallConf := firewall.NewConfigurator(firewallLogger, cmder, routingConf)
 
 	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
 	if err != nil {

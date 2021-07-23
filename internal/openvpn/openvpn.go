@@ -29,10 +29,11 @@ type configurator struct {
 	tunDevPath   string
 }
 
-func NewConfigurator(logger logging.Logger, unix unix.Unix) Configurator {
+func NewConfigurator(logger logging.Logger, unix unix.Unix,
+	cmder command.Commander) Configurator {
 	return &configurator{
 		logger:       logger,
-		commander:    command.NewCommander(),
+		commander:    cmder,
 		unix:         unix,
 		authFilePath: constants.OpenVPNAuthConf,
 		tunDevPath:   constants.TunnelDevice,

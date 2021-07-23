@@ -50,14 +50,13 @@ type configurator struct { //nolint:maligned
 }
 
 // NewConfigurator creates a new Configurator instance.
-func NewConfigurator(logger logging.Logger, routing routing.Routing) Configurator {
-	commander := command.NewCommander()
+func NewConfigurator(logger logging.Logger, cmder command.Commander, routing routing.Routing) Configurator {
 	return &configurator{
-		commander:         commander,
+		commander:         cmder,
 		logger:            logger,
 		routing:           routing,
 		allowedInputPorts: make(map[uint16]string),
-		ip6Tables:         ip6tablesSupported(context.Background(), commander),
+		ip6Tables:         ip6tablesSupported(context.Background(), cmder),
 		customRulesPath:   "/iptables/post-rules.txt",
 	}
 }
