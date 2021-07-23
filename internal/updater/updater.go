@@ -35,7 +35,7 @@ type updater struct {
 
 func New(settings configuration.Updater, httpClient *http.Client,
 	currentServers models.AllServers, logger logging.Logger) Updater {
-	if len(settings.DNSAddress) == 0 {
+	if settings.DNSAddress == "" {
 		settings.DNSAddress = "1.1.1.1"
 	}
 	unzipper := unzip.New(httpClient)

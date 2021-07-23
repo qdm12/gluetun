@@ -41,7 +41,7 @@ func readCSVPorts(env params.Env, key string) (ports []uint16, err error) {
 	s, err := env.Get(key)
 	if err != nil {
 		return nil, err
-	} else if len(s) == 0 {
+	} else if s == "" {
 		return nil, nil
 	}
 
@@ -95,7 +95,7 @@ var (
 
 func readIP(env params.Env, key string) (ip net.IP, err error) {
 	s, err := env.Get(key)
-	if len(s) == 0 {
+	if s == "" {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -115,7 +115,7 @@ func readPortOrZero(env params.Env, key string) (port uint16, err error) {
 		return 0, err
 	}
 
-	if len(s) == 0 || s == "0" {
+	if s == "" || s == "0" {
 		return 0, nil
 	}
 

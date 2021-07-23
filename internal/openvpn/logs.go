@@ -24,7 +24,7 @@ func (l *looper) collectLines(stdout, stderr <-chan string, done chan<- struct{}
 			return
 		}
 		line, level := processLogLine(line)
-		if len(line) == 0 {
+		if line == "" {
 			continue // filtered out
 		}
 		if errLine {

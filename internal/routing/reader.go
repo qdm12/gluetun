@@ -76,7 +76,7 @@ func (r *routing) DefaultIP() (ip net.IP, err error) {
 			defaultLinkName = link.Attrs().Name
 		}
 	}
-	if len(defaultLinkName) == 0 {
+	if defaultLinkName == "" {
 		return nil, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
 	}
 

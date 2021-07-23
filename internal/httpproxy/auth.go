@@ -7,11 +7,11 @@ import (
 )
 
 func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http.Request) (authorized bool) {
-	if len(h.username) == 0 || (request.Method != "CONNECT" && !request.URL.IsAbs()) {
+	if h.username == "" || (request.Method != "CONNECT" && !request.URL.IsAbs()) {
 		return true
 	}
 	basicAuth := request.Header.Get("Proxy-Authorization")
-	if len(basicAuth) == 0 {
+	if basicAuth == "" {
 		h.logger.Info("Proxy-Authorization header not found from " + request.RemoteAddr)
 		responseWriter.Header().Set("Proxy-Authenticate", `Basic realm="Access to Gluetun over HTTP"`)
 		responseWriter.WriteHeader(http.StatusProxyAuthRequired)

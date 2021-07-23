@@ -65,7 +65,7 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 
 	value = string(b)
 	value = cleanSuffix(value)
-	if compulsory && len(value) == 0 {
+	if compulsory && value == "" {
 		return "", ErrSecretFileIsEmpty
 	}
 
