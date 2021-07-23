@@ -11,7 +11,9 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
+	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/openvpn/state"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/logging"
@@ -32,7 +34,8 @@ type Looper interface {
 }
 
 type looper struct {
-	state *state
+	statusManager loopstate.Manager
+	state         state.Manager
 	// Fixed parameters
 	username       string
 	puid           int
@@ -71,10 +74,11 @@ func NewLooper(settings configuration.OpenVPN,
 	stop := make(chan struct{})
 	stopped := make(chan struct{})
 
-	state := newState(constants.Stopped, settings, allServers,
-		start, running, stop, stopped)
+	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
+	state := state.New(statusManager, settings, allServers)
 
 	return &looper{
+		statusManager:      statusManager,
 		state:              state,
 		username:           username,
 		puid:               puid,
@@ -107,7 +111,7 @@ func (l *looper) signalOrSetStatus(status models.LoopStatus) {
 		default: // receiver calling ApplyStatus droppped out
 		}
 	} else {
-		l.state.SetStatus(status)
+		l.statusManager.SetStatus(status)
 	}
 }
 
@@ -230,15 +234,15 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				close(waitError)
 				closeStreams()
 
-				l.state.Lock() // prevent SetStatus from running in parallel
+				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
 				openvpnCancel()
-				l.state.SetStatus(constants.Crashed)
+				l.statusManager.SetStatus(constants.Crashed)
 				<-portForwardDone
 				l.logAndWait(ctx, err)
 				stayHere = false
 
-				l.state.Unlock()
+				l.statusManager.Unlock()
 			}
 		}
 		openvpnCancel()
@@ -265,18 +269,13 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 // You should therefore always call it in a goroutine.
 func (l *looper) portForward(ctx context.Context,
 	providerConf provider.Provider, client *http.Client, gateway net.IP) {
-	l.state.portForwardedMu.RLock()
-	settings := l.state.settings
-	l.state.portForwardedMu.RUnlock()
+	settings := l.state.GetSettings()
 	if !settings.Provider.PortForwarding.Enabled {
 		return
 	}
 	syncState := func(port uint16) (pfFilepath string) {
-		l.state.portForwardedMu.Lock()
-		defer l.state.portForwardedMu.Unlock()
-		l.state.portForwarded = port
-		l.state.settingsMu.RLock()
-		defer l.state.settingsMu.RUnlock()
+		l.state.SetPortForwarded(port)
+		settings := l.state.GetSettings()
 		return settings.Provider.PortForwarding.Filepath
 	}
 	providerConf.PortForward(ctx, client, l.pfLogger,
@@ -293,28 +292,4 @@ func (l *looper) writeOpenvpnConf(lines []string) error {
 		return err
 	}
 	return file.Close()
-}
-
-func (l *looper) GetStatus() (status models.LoopStatus) {
-	return l.state.GetStatus()
-}
-func (l *looper) ApplyStatus(ctx context.Context, status models.LoopStatus) (
-	outcome string, err error) {
-	return l.state.ApplyStatus(ctx, status)
-}
-func (l *looper) GetSettings() (settings configuration.OpenVPN) {
-	return l.state.GetSettings()
-}
-func (l *looper) SetSettings(ctx context.Context, settings configuration.OpenVPN) (
-	outcome string) {
-	return l.state.SetSettings(ctx, settings)
-}
-func (l *looper) GetServers() (servers models.AllServers) {
-	return l.state.GetServers()
-}
-func (l *looper) SetServers(servers models.AllServers) {
-	l.state.SetServers(servers)
-}
-func (l *looper) GetPortForwarded() (port uint16) {
-	return l.state.GetPortForwarded()
 }
