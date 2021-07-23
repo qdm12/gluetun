@@ -23,7 +23,7 @@ func ip6tablesSupported(ctx context.Context, commander command.Commander) (suppo
 	return true
 }
 
-func (c *configurator) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
+func (c *Config) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
 	for _, instruction := range instructions {
 		if err := c.runIP6tablesInstruction(ctx, instruction); err != nil {
 			return err
@@ -32,7 +32,7 @@ func (c *configurator) runIP6tablesInstructions(ctx context.Context, instruction
 	return nil
 }
 
-func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction string) error {
+func (c *Config) runIP6tablesInstruction(ctx context.Context, instruction string) error {
 	if !c.ip6Tables {
 		return nil
 	}
@@ -51,7 +51,7 @@ func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction 
 
 var errPolicyNotValid = errors.New("policy is not valid")
 
-func (c *configurator) setIPv6AllPolicies(ctx context.Context, policy string) error {
+func (c *Config) setIPv6AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:

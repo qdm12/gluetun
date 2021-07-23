@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-func (c *configurator) runMixedIptablesInstructions(ctx context.Context, instructions []string) error {
+func (c *Config) runMixedIptablesInstructions(ctx context.Context, instructions []string) error {
 	for _, instruction := range instructions {
 		if err := c.runMixedIptablesInstruction(ctx, instruction); err != nil {
 			return err
@@ -13,7 +13,7 @@ func (c *configurator) runMixedIptablesInstructions(ctx context.Context, instruc
 	return nil
 }
 
-func (c *configurator) runMixedIptablesInstruction(ctx context.Context, instruction string) error {
+func (c *Config) runMixedIptablesInstruction(ctx context.Context, instruction string) error {
 	if err := c.runIptablesInstruction(ctx, instruction); err != nil {
 		return err
 	}

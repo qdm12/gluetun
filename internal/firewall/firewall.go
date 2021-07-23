@@ -13,19 +13,17 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
+var _ Configurator = (*Config)(nil)
+
 // Configurator allows to change firewall rules and modify network routes.
 type Configurator interface {
-	SetEnabled(ctx context.Context, enabled bool) (err error)
-	SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error)
-	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
-	SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error)
-	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
-	// SetNetworkInformation is meant to be called only once
-	SetNetworkInformation(defaultInterface string, defaultGateway net.IP,
-		localNetworks []routing.LocalNetwork, localIP net.IP)
+	Enabler
+	VPNConnectionSetter
+	PortAllower
+	OutboundSubnetsSetter
 }
 
-type configurator struct { //nolint:maligned
+type Config struct { //nolint:maligned
 	commander        command.Commander
 	logger           logging.Logger
 	routing          routing.Routing
@@ -35,7 +33,6 @@ type configurator struct { //nolint:maligned
 	defaultGateway   net.IP
 	localNetworks    []routing.LocalNetwork
 	localIP          net.IP
-	networkInfoMutex sync.Mutex
 
 	// Fixed state
 	ip6Tables       bool
@@ -49,8 +46,8 @@ type configurator struct { //nolint:maligned
 	stateMutex        sync.Mutex
 }
 
-// NewConfigurator creates a new Configurator instance.
-func NewConfigurator(logger logging.Logger, cmder command.Commander,
+// NewConfig creates a new Config instance.
+func NewConfig(logger logging.Logger, cmder command.Commander,
 	routing routing.Routing, defaultInterface string, defaultGateway net.IP,
 	localNetworks []routing.LocalNetwork, localIP net.IP) *Config {
 	return &Config{
