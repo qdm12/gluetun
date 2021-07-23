@@ -13,7 +13,11 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (c *cli) OpenvpnConfig(logger logging.Logger) error {
+type OpenvpnConfigMaker interface {
+	OpenvpnConfig(logger logging.Logger) error
+}
+
+func (c *CLI) OpenvpnConfig(logger logging.Logger) error {
 	var allSettings configuration.Settings
 	err := allSettings.Read(params.NewEnv(), logger)
 	if err != nil {

@@ -12,7 +12,11 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (c *cli) HealthCheck(ctx context.Context, env params.Env,
+type HealthChecker interface {
+	HealthCheck(ctx context.Context, env params.Env, logger logging.Logger) error
+}
+
+func (c *CLI) HealthCheck(ctx context.Context, env params.Env,
 	logger logging.Logger) error {
 	// Extract the health server port from the configuration.
 	config := configuration.Health{}

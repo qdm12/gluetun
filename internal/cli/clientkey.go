@@ -10,7 +10,11 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (c *cli) ClientKey(args []string) error {
+type ClientKeyFormatter interface {
+	ClientKey(args []string) error
+}
+
+func (c *CLI) ClientKey(args []string) error {
 	flagSet := flag.NewFlagSet("clientkey", flag.ExitOnError)
 	filepath := flagSet.String("path", constants.ClientKey, "file path to the client.key file")
 	if err := flagSet.Parse(args); err != nil {

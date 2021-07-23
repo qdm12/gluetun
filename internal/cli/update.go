@@ -25,7 +25,11 @@ var (
 	ErrWriteToFile             = errors.New("cannot write updated information to file")
 )
 
-func (c *cli) Update(ctx context.Context, args []string, logger logging.Logger) error {
+type Updater interface {
+	Update(ctx context.Context, args []string, logger logging.Logger) error
+}
+
+func (c *CLI) Update(ctx context.Context, args []string, logger logging.Logger) error {
 	options := configuration.Updater{CLI: true}
 	var endUserMode, maintainerMode, updateAll bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
