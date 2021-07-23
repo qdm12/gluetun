@@ -114,7 +114,7 @@ var (
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, env params.Env,
-	unix unix.Unix, cmder command.Commander, cli cli.CLI) error {
+	unix unix.Unix, cmder command.Commander, cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -133,7 +133,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
-	alpineConf := alpine.NewConfigurator()
+	alpineConf := alpine.New()
 	ovpnConf := openvpn.NewConfigurator(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
 		unix, cmder)
@@ -338,7 +338,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler.Add(updaterHandler)
 
 	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
-	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
+	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
 		unboundLogger)
 	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
 		"unbound", defaultGoRoutineSettings)
