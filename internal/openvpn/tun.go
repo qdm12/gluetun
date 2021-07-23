@@ -16,7 +16,7 @@ func (c *configurator) CheckTUN() error {
 		return fmt.Errorf("TUN device is not available: %w", err)
 	}
 	if err := f.Close(); err != nil {
-		c.logger.Warn("Could not close TUN device file: %s", err)
+		c.logger.Warn("Could not close TUN device file: " + err.Error())
 	}
 	return nil
 }

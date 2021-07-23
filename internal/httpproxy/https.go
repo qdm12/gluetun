@@ -25,16 +25,16 @@ func (h *handler) handleHTTPS(responseWriter http.ResponseWriter, request *http.
 	}
 	clientConnection, _, err := hijacker.Hijack()
 	if err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		http.Error(responseWriter, err.Error(), http.StatusServiceUnavailable)
 		if err := destinationConn.Close(); err != nil {
-			h.logger.Error("closing destination connection: %s", err)
+			h.logger.Error("closing destination connection: " + err.Error())
 		}
 		return
 	}
 
 	if h.verbose {
-		h.logger.Info("%s <-> %s", request.RemoteAddr, request.Host)
+		h.logger.Info(request.RemoteAddr + " <-> " + request.Host)
 	}
 
 	h.wg.Add(1)

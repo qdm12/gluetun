@@ -69,7 +69,7 @@ func (u *updater) updateHideMyAss(ctx context.Context) (err error) {
 		ctx, u.client, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("HideMyAss: %s", warning)
+			u.logger.Warn("HideMyAss: " + warning)
 		}
 	}
 	if err != nil {
@@ -91,7 +91,7 @@ func (u *updater) updateIpvanish(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("Ipvanish: %s", warning)
+			u.logger.Warn("Ipvanish: " + warning)
 		}
 	}
 	if err != nil {
@@ -113,7 +113,7 @@ func (u *updater) updateIvpn(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("Ivpn: %s", warning)
+			u.logger.Warn("Ivpn: " + warning)
 		}
 	}
 	if err != nil {
@@ -150,7 +150,7 @@ func (u *updater) updateNordvpn(ctx context.Context) (err error) {
 	servers, warnings, err := nordvpn.GetServers(ctx, u.client, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("NordVPN: %s", warning)
+			u.logger.Warn("NordVPN: " + warning)
 		}
 	}
 	if err != nil {
@@ -188,7 +188,7 @@ func (u *updater) updatePrivado(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.client, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("Privado: %s", warning)
+			u.logger.Warn("Privado: " + warning)
 		}
 	}
 	if err != nil {
@@ -210,7 +210,7 @@ func (u *updater) updatePrivatevpn(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("PrivateVPN: %s", warning)
+			u.logger.Warn("PrivateVPN: " + warning)
 		}
 	}
 	if err != nil {
@@ -231,7 +231,7 @@ func (u *updater) updateProtonvpn(ctx context.Context) (err error) {
 	servers, warnings, err := protonvpn.GetServers(ctx, u.client, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("ProtonVPN: %s", warning)
+			u.logger.Warn("ProtonVPN: " + warning)
 		}
 	}
 	if err != nil {
@@ -253,7 +253,7 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 		ctx, u.client, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("PureVPN: %s", warning)
+			u.logger.Warn("PureVPN: " + warning)
 		}
 	}
 	if err != nil {
@@ -275,7 +275,7 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("Surfshark: %s", warning)
+			u.logger.Warn("Surfshark: " + warning)
 		}
 	}
 	if err != nil {
@@ -297,7 +297,7 @@ func (u *updater) updateTorguard(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("Torguard: %s", warning)
+			u.logger.Warn("Torguard: " + warning)
 		}
 	}
 	if err != nil {
@@ -341,7 +341,7 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn("VyprVPN: %s", warning)
+			u.logger.Warn("VyprVPN: " + warning)
 		}
 	}
 	if err != nil {

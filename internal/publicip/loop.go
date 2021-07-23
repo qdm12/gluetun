@@ -75,9 +75,9 @@ func NewLooper(client *http.Client, logger logging.Logger,
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	if err != nil {
-		l.logger.Error(err)
+		l.logger.Error(err.Error())
 	}
-	l.logger.Info("retrying in %s", l.backoffTime)
+	l.logger.Info("retrying in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)
 	l.backoffTime *= 2
 	select {
@@ -134,7 +134,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				filepath := l.GetSettings().IPFilepath
 				l.logger.Info("Removing ip file " + filepath)
 				if err := os.Remove(filepath); err != nil {
-					l.logger.Error(err)
+					l.logger.Error(err.Error())
 				}
 				return
 			case <-l.start:
@@ -152,7 +152,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				message := "Public IP address is " + ip.String()
 				result, err := Info(ctx, l.client, ip)
 				if err != nil {
-					l.logger.Warn(err)
+					l.logger.Warn(err.Error())
 				} else {
 					message += " (" + result.Country + ", " + result.Region + ", " + result.City + ")"
 				}
@@ -161,7 +161,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				err = persistPublicIP(l.state.settings.IPFilepath,
 					ip.String(), l.puid, l.pgid)
 				if err != nil {
-					l.logger.Error(err)
+					l.logger.Error(err.Error())
 				}
 				l.state.setStatusWithLock(constants.Completed)
 			case err := <-errorCh:

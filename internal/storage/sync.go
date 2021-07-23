@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -48,12 +49,12 @@ func (s *storage) SyncServers(hardcodedServers models.AllServers) (
 	countOnFile := countServers(serversOnFile)
 
 	if countOnFile == 0 {
-		s.logger.Info("creating %s with %d hardcoded servers", s.filepath, hardcodedCount)
+		s.logger.Info("creating " + s.filepath + " with " + strconv.Itoa(hardcodedCount) + " hardcoded servers")
 		allServers = hardcodedServers
 	} else {
-		s.logger.Info(
-			"merging by most recent %d hardcoded servers and %d servers read from %s",
-			hardcodedCount, countOnFile, s.filepath)
+		s.logger.Info("merging by most recent " +
+			strconv.Itoa(hardcodedCount) + " hardcoded servers and " +
+			strconv.Itoa(countOnFile) + " servers read from " + s.filepath)
 		allServers = s.mergeServers(hardcodedServers, serversOnFile)
 	}
 

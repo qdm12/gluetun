@@ -39,7 +39,7 @@ func (r *routing) removeOutboundSubnets(subnets []net.IPNet,
 	for _, subnet := range subnets {
 		const table = 0
 		if err := r.deleteRouteVia(subnet, defaultGateway, defaultInterfaceName, table); err != nil {
-			r.logger.Error("cannot remove outdated outbound subnet from routing: %s", err)
+			r.logger.Error("cannot remove outdated outbound subnet from routing: " + err.Error())
 			continue
 		}
 		r.outboundSubnets = removeSubnetFromSubnets(r.outboundSubnets, subnet)

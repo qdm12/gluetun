@@ -117,8 +117,8 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 }
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
-	l.logger.Error(err)
-	l.logger.Info("retrying in %s", l.backoffTime)
+	l.logger.Error(err.Error())
+	l.logger.Info("retrying in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)
 	l.backoffTime *= 2
 	select {

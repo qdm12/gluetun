@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -34,8 +35,10 @@ func (m *logMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	statefulWriter := &statefulResponseWriter{httpWriter: w}
 	m.childHandler.ServeHTTP(statefulWriter, r)
 	duration := m.timeNow().Sub(tStart)
-	m.logger.Info("%d %s %s wrote %dB to %s in %s",
-		statefulWriter.statusCode, r.Method, r.RequestURI, statefulWriter.length, r.RemoteAddr, duration)
+	m.logger.Info(strconv.Itoa(statefulWriter.statusCode) + " " +
+		r.Method + " " + r.RequestURI +
+		" wrote " + strconv.Itoa(statefulWriter.length) + "B to " +
+		r.RemoteAddr + " in " + duration.String())
 }
 
 func (m *logMiddleware) setEnabled(enabled bool) {

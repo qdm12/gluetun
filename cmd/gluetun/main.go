@@ -84,7 +84,7 @@ func main() {
 		if err == nil { // expected exit such as healthcheck
 			os.Exit(0)
 		}
-		logger.Error(err)
+		logger.Error(err.Error())
 		cancel()
 	}
 
@@ -207,7 +207,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("%w: %s", errCreateUser, err)
 	}
 	if nonRootUsername != defaultUsername {
-		logger.Info("using existing username %s corresponding to user id %d", nonRootUsername, puid)
+		logger.Info("using existing username " + nonRootUsername + " corresponding to user id " + fmt.Sprint(puid))
 	}
 	// set it for Unbound
 	// TODO remove this when migrating to qdm12/dns v2
@@ -260,7 +260,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	if err := ovpnConf.CheckTUN(); err != nil {
-		logger.Warn(err)
+		logger.Warn(err.Error())
 		err = ovpnConf.CreateTUN()
 		if err != nil {
 			return err
@@ -403,9 +403,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	<-ctx.Done()
 
 	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
-		logger.Info("Clearing forwarded port status file %s", allSettings.OpenVPN.Provider.PortForwarding.Filepath)
+		logger.Info("Clearing forwarded port status file " + allSettings.OpenVPN.Provider.PortForwarding.Filepath)
 		if err := os.Remove(allSettings.OpenVPN.Provider.PortForwarding.Filepath); err != nil {
-			logger.Error(err)
+			logger.Error(err.Error())
 		}
 	}
 
@@ -461,9 +461,9 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 		case <-tunnelReadyCh: // blocks until openvpn is connected
 			vpnDestination, err := routing.VPNDestinationIP()
 			if err != nil {
-				logger.Warn(err)
+				logger.Warn(err.Error())
 			} else {
-				logger.Info("VPN routing IP address: %s", vpnDestination)
+				logger.Info("VPN routing IP address: " + vpnDestination.String())
 			}
 
 			if unboundLooper.GetSettings().Enabled {
@@ -495,9 +495,9 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 				// vpnGateway required only for PIA
 				vpnGateway, err := routing.VPNLocalGatewayIP()
 				if err != nil {
-					logger.Error(err)
+					logger.Error("cannot get VPN local gateway IP: " + err.Error())
 				}
-				logger.Info("VPN gateway IP address: %s", vpnGateway)
+				logger.Info("VPN gateway IP address: " + vpnGateway.String())
 				startPortForward(vpnGateway)
 			}
 		}

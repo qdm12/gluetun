@@ -58,14 +58,14 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
 	if u.options.Fastestvpn {
 		u.logger.Info("updating Fastestvpn servers...")
 		if err := u.updateFastestvpn(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if err := ctx.Err(); err != nil {
 			return allServers, err
@@ -75,7 +75,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.HideMyAss {
 		u.logger.Info("updating HideMyAss servers...")
 		if err := u.updateHideMyAss(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if err := ctx.Err(); err != nil {
 			return allServers, err
@@ -85,7 +85,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Ipvanish {
 		u.logger.Info("updating Ipvanish servers...")
 		if err := u.updateIpvanish(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if err := ctx.Err(); err != nil {
 			return allServers, err
@@ -95,7 +95,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Ivpn {
 		u.logger.Info("updating Ivpn servers...")
 		if err := u.updateIvpn(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if err := ctx.Err(); err != nil {
 			return allServers, err
@@ -105,7 +105,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Mullvad {
 		u.logger.Info("updating Mullvad servers...")
 		if err := u.updateMullvad(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if err := ctx.Err(); err != nil {
 			return allServers, err
@@ -116,7 +116,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		// TODO support servers offering only TCP or only UDP
 		u.logger.Info("updating NordVPN servers...")
 		if err := u.updateNordvpn(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if err := ctx.Err(); err != nil {
 			return allServers, err
@@ -126,7 +126,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.Privado {
 		u.logger.Info("updating Privado servers...")
 		if err := u.updatePrivado(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if ctx.Err() != nil {
 			return allServers, ctx.Err()
@@ -136,7 +136,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	if u.options.PIA {
 		u.logger.Info("updating Private Internet Access servers...")
 		if err := u.updatePIA(ctx); err != nil {
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 		if ctx.Err() != nil {
 			return allServers, ctx.Err()
@@ -149,7 +149,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
@@ -159,7 +159,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
@@ -170,7 +170,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
@@ -180,7 +180,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
@@ -190,7 +190,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
@@ -200,7 +200,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
@@ -210,7 +210,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 
@@ -220,7 +220,7 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
-			u.logger.Error(err)
+			u.logger.Error(err.Error())
 		}
 	}
 

@@ -12,7 +12,7 @@ func (h *handler) handleHTTP(responseWriter http.ResponseWriter, request *http.R
 	switch request.URL.Scheme {
 	case "http", "https":
 	default:
-		h.logger.Warn("Unsupported scheme %q", request.URL.Scheme)
+		h.logger.Warn("Unsupported scheme " + request.URL.Scheme)
 		http.Error(responseWriter, "unsupported scheme", http.StatusBadRequest)
 		return
 	}
@@ -32,13 +32,14 @@ func (h *handler) handleHTTP(responseWriter http.ResponseWriter, request *http.R
 	response, err := h.client.Do(request)
 	if err != nil {
 		http.Error(responseWriter, "server error", http.StatusInternalServerError)
-		h.logger.Warn("cannot request %s for client %q: %s",
-			request.URL, request.RemoteAddr, err)
+		h.logger.Warn("cannot request " + request.URL.String() +
+			" for client " + request.RemoteAddr + ": " + err.Error())
 		return
 	}
 	defer response.Body.Close()
 	if h.verbose {
-		h.logger.Info("%s %s %s %s", request.RemoteAddr, response.Status, request.Method, request.URL)
+		h.logger.Info(request.RemoteAddr + " " + response.Status + " " +
+			request.Method + " " + request.URL.String())
 	}
 
 	for _, key := range hopHeaders {
@@ -54,7 +55,8 @@ func (h *handler) handleHTTP(responseWriter http.ResponseWriter, request *http.R
 
 	responseWriter.WriteHeader(response.StatusCode)
 	if _, err := io.Copy(responseWriter, response.Body); err != nil {
-		h.logger.Error("%s %s: body copy error: %s", request.RemoteAddr, request.URL, err)
+		h.logger.Error(request.RemoteAddr + " " + request.URL.String() +
+			": body copy error: " + err.Error())
 	}
 }
 

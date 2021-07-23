@@ -38,9 +38,9 @@ type looper struct {
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	if err != nil {
-		l.logger.Error(err)
+		l.logger.Error(err.Error())
 	}
-	l.logger.Info("retrying in %s", l.backoffTime)
+	l.logger.Info("retrying in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)
 	l.backoffTime *= 2
 	select {

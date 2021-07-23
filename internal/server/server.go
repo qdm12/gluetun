@@ -47,12 +47,12 @@ func (s *server) Run(ctx context.Context, done chan<- struct{}) {
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
-			s.logger.Error("failed shutting down: %s", err)
+			s.logger.Error("failed shutting down: " + err.Error())
 		}
 	}()
-	s.logger.Info("listening on %s", s.address)
+	s.logger.Info("listening on " + s.address)
 	err := server.ListenAndServe()
 	if err != nil && errors.Is(ctx.Err(), context.Canceled) {
-		s.logger.Error(err)
+		s.logger.Error(err.Error())
 	}
 }

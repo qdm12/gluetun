@@ -50,7 +50,8 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 			attributes := link.Attrs()
 			defaultInterface = attributes.Name
 			if r.verbose {
-				r.logger.Info("default route found: interface %s, gateway %s", defaultInterface, defaultGateway.String())
+				r.logger.Info("default route found: interface " + defaultInterface +
+					", gateway " + defaultGateway.String())
 			}
 			return defaultInterface, defaultGateway, nil
 		}
@@ -105,7 +106,7 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 		}
 		defaultSubnet = *route.Dst
 		if r.verbose {
-			r.logger.Info("local subnet found: %s", defaultSubnet.String())
+			r.logger.Info("local subnet found: " + defaultSubnet.String())
 		}
 		return defaultSubnet, nil
 	}
@@ -128,7 +129,7 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		localLinks[link.Attrs().Index] = struct{}{}
 		if r.verbose {
-			r.logger.Info("local ethernet link found: %s", link.Attrs().Name)
+			r.logger.Info("local ethernet link found: " + link.Attrs().Name)
 		}
 	}
 
@@ -152,7 +153,7 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		localNet.IPNet = route.Dst
 		if r.verbose {
-			r.logger.Info("local ipnet found: %s", localNet.IPNet.String())
+			r.logger.Info("local ipnet found: " + localNet.IPNet.String())
 		}
 
 		link, err := netlink.LinkByIndex(route.LinkIndex)

@@ -15,7 +15,7 @@ func tryUntilSuccessful(ctx context.Context, logger logging.Logger, fn func() er
 		if err == nil {
 			break
 		}
-		logger.Error(err)
+		logger.Error(err.Error())
 		logger.Info("Trying again in " + retryPeriod.String())
 		timer := time.NewTimer(retryPeriod)
 		select {

@@ -80,7 +80,7 @@ func NewLooper(conf unbound.Configurator, settings configuration.DNS, client *ht
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	if err != nil {
-		l.logger.Warn(err)
+		l.logger.Warn(err.Error())
 	}
 	l.logger.Info("attempting restart in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)
@@ -229,7 +229,7 @@ func (l *looper) setupUnbound(ctx context.Context) (
 	err = nameserver.UseDNSSystemWide(l.resolvConf, net.IP{127, 0, 0, 1},
 		settings.KeepNameserver)
 	if err != nil {
-		l.logger.Error(err)
+		l.logger.Error(err.Error())
 	}
 
 	if err := check.WaitForDNS(ctx, net.DefaultResolver); err != nil {
@@ -250,14 +250,14 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 	targetIP := settings.PlaintextAddress
 	if targetIP != nil {
 		if fallback {
-			l.logger.Info("falling back on plaintext DNS at address %s", targetIP)
+			l.logger.Info("falling back on plaintext DNS at address " + targetIP.String())
 		} else {
-			l.logger.Info("using plaintext DNS at address %s", targetIP)
+			l.logger.Info("using plaintext DNS at address " + targetIP.String())
 		}
 		nameserver.UseDNSInternally(targetIP)
 		err := nameserver.UseDNSSystemWide(l.resolvConf, targetIP, settings.KeepNameserver)
 		if err != nil {
-			l.logger.Error(err)
+			l.logger.Error(err.Error())
 		}
 		return
 	}
@@ -272,7 +272,7 @@ func (l *looper) useUnencryptedDNS(fallback bool) {
 	nameserver.UseDNSInternally(targetIP)
 	err := nameserver.UseDNSSystemWide(l.resolvConf, targetIP, settings.KeepNameserver)
 	if err != nil {
-		l.logger.Error(err)
+		l.logger.Error(err.Error())
 	}
 }
 
@@ -302,7 +302,7 @@ func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			if status == constants.Running {
 				if err := l.updateFiles(ctx); err != nil {
 					l.state.SetStatus(constants.Crashed)
-					l.logger.Error(err)
+					l.logger.Error(err.Error())
 					l.logger.Warn("skipping Unbound restart due to failed files update")
 					continue
 				}
@@ -345,7 +345,7 @@ func (l *looper) updateFiles(ctx context.Context) (err error) {
 	blockedHostnames, blockedIPs, blockedIPPrefixes, errs := l.blockBuilder.All(
 		ctx, settings.BlacklistBuild)
 	for _, err := range errs {
-		l.logger.Warn(err)
+		l.logger.Warn(err.Error())
 	}
 
 	// TODO change to BlockHostnames() when migrating to qdm12/dns v2

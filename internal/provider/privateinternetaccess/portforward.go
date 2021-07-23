@@ -49,7 +49,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
 	if err != nil {
-		logger.Error(err)
+		logger.Error(err.Error())
 	}
 	dataFound := data.Port > 0
 	durationToExpiration := data.Expiration.Sub(p.timeNow())
@@ -93,11 +93,11 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 	filepath := syncState(data.Port)
 	logger.Info("Writing port to " + filepath)
 	if err := writePortForwardedToFile(filepath, data.Port); err != nil {
-		logger.Error(err)
+		logger.Error(err.Error())
 	}
 
 	if err := fw.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
-		logger.Error(err)
+		logger.Error(err.Error())
 	}
 
 	expiryTimer := time.NewTimer(durationToExpiration)
@@ -110,7 +110,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 			removeCtx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
 			if err := fw.RemoveAllowedPort(removeCtx, data.Port); err != nil {
-				logger.Error(err)
+				logger.Error(err.Error())
 			}
 			if !keepAliveTimer.Stop() {
 				<-keepAliveTimer.C
@@ -132,7 +132,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 				data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, gateway,
 					p.portForwardPath, p.authFilePath)
 				if err != nil {
-					logger.Error(err)
+					logger.Error(err.Error())
 					continue
 				}
 				break
@@ -141,10 +141,10 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 			logger.Info("Port forwarded is " + strconv.Itoa(int(data.Port)) +
 				" expiring in " + format.Duration(durationToExpiration))
 			if err := fw.RemoveAllowedPort(ctx, oldPort); err != nil {
-				logger.Error(err)
+				logger.Error(err.Error())
 			}
 			if err := fw.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
-				logger.Error(err)
+				logger.Error(err.Error())
 			}
 			filepath := syncState(data.Port)
 			logger.Info("Writing port to " + filepath)

@@ -49,7 +49,7 @@ func (h *updaterHandler) getStatus(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	data := statusWrapper{Status: string(status)}
 	if err := encoder.Encode(data); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -74,7 +74,7 @@ func (h *updaterHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(outcomeWrapper{Outcome: outcome}); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

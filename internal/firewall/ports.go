@@ -3,6 +3,7 @@ package firewall
 import (
 	"context"
 	"fmt"
+	"strconv"
 )
 
 func (c *configurator) SetAllowedPort(ctx context.Context, port uint16, intf string) (err error) {
@@ -19,7 +20,7 @@ func (c *configurator) SetAllowedPort(ctx context.Context, port uint16, intf str
 		return nil
 	}
 
-	c.logger.Info("setting allowed input port %d through interface %s...", port, intf)
+	c.logger.Info("setting allowed input port " + fmt.Sprint(port) + " through interface " + intf + "...")
 
 	if existingIntf, ok := c.allowedInputPorts[port]; ok {
 		if intf == existingIntf {
@@ -54,7 +55,7 @@ func (c *configurator) RemoveAllowedPort(ctx context.Context, port uint16) (err 
 		return nil
 	}
 
-	c.logger.Info("removing allowed port %d through firewall...", port)
+	c.logger.Info("removing allowed port "+strconv.Itoa(int(port))+" through firewall...", port)
 
 	intf, ok := c.allowedInputPorts[port]
 	if !ok {
