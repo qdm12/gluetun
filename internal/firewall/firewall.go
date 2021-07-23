@@ -50,23 +50,20 @@ type configurator struct { //nolint:maligned
 }
 
 // NewConfigurator creates a new Configurator instance.
-func NewConfigurator(logger logging.Logger, cmder command.Commander, routing routing.Routing) Configurator {
-	return &configurator{
+func NewConfigurator(logger logging.Logger, cmder command.Commander,
+	routing routing.Routing, defaultInterface string, defaultGateway net.IP,
+	localNetworks []routing.LocalNetwork, localIP net.IP) *Config {
+	return &Config{
 		commander:         cmder,
 		logger:            logger,
 		routing:           routing,
 		allowedInputPorts: make(map[uint16]string),
 		ip6Tables:         ip6tablesSupported(context.Background(), cmder),
 		customRulesPath:   "/iptables/post-rules.txt",
+		// Obtained from routing
+		defaultInterface: defaultInterface,
+		defaultGateway:   defaultGateway,
+		localNetworks:    localNetworks,
+		localIP:          localIP,
 	}
-}
-
-func (c *configurator) SetNetworkInformation(
-	defaultInterface string, defaultGateway net.IP, localNetworks []routing.LocalNetwork, localIP net.IP) {
-	c.networkInfoMutex.Lock()
-	defer c.networkInfoMutex.Unlock()
-	c.defaultInterface = defaultInterface
-	c.defaultGateway = defaultGateway
-	c.localNetworks = localNetworks
-	c.localIP = localIP
 }

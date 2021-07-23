@@ -228,11 +228,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Level:  firewallLogLevel,
 	})
 	routingConf := routing.NewRouting(routingLogger)
-	firewallLogger := logger.NewChild(logging.Settings{
-		Prefix: "firewall: ",
-		Level:  firewallLogLevel,
-	})
-	firewallConf := firewall.NewConfigurator(firewallLogger, cmder, routingConf)
 
 	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
 	if err != nil {
@@ -249,7 +244,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localNetworks, defaultIP)
+	firewallLogger := logger.NewChild(logging.Settings{
+		Prefix: "firewall: ",
+		Level:  firewallLogLevel,
+	})
+	firewallConf := firewall.NewConfigurator(firewallLogger, cmder, routingConf,
+		defaultInterface, defaultGateway, localNetworks, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
 		if strings.Contains(err.Error(), "operation not permitted") {
