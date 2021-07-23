@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (s *server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
+func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
 	s.openvpn.healthyTimer = time.NewTimer(s.openvpn.healthyWait)

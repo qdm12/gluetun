@@ -31,10 +31,10 @@ func (c *CLI) HealthCheck(ctx context.Context, env params.Env,
 
 	const timeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: timeout}
-	healthchecker := healthcheck.NewChecker(httpClient)
+	client := healthcheck.NewClient(httpClient)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	url := "http://127.0.0.1:" + port
-	return healthchecker.Check(ctx, url)
+	return client.Check(ctx, url)
 }

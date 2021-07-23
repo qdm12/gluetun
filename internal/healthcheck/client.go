@@ -12,26 +12,28 @@ var (
 	ErrHTTPStatusNotOK = errors.New("HTTP response status is not OK")
 )
 
+var _ Checker = (*Client)(nil)
+
 type Checker interface {
 	Check(ctx context.Context, url string) error
 }
 
-type checker struct {
+type Client struct {
 	httpClient *http.Client
 }
 
-func NewChecker(httpClient *http.Client) Checker {
-	return &checker{
+func NewClient(httpClient *http.Client) *Client {
+	return &Client{
 		httpClient: httpClient,
 	}
 }
 
-func (h *checker) Check(ctx context.Context, url string) error {
+func (c *Client) Check(ctx context.Context, url string) error {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
-	response, err := h.httpClient.Do(request)
+	response, err := c.httpClient.Do(request)
 	if err != nil {
 		return err
 	}
