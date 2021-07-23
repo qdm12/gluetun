@@ -37,13 +37,15 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 		return value, nil
 	}
 
+	secretFilepathEnvKey := envKey + "_SECRETFILE"
 	defaultSecretFile := "/run/secrets/" + strings.ToLower(envKey)
-	filepath, err := r.env.Get(envKey+"_SECRETFILE",
+	filepath, err := r.env.Get(secretFilepathEnvKey,
 		params.CaseSensitiveValue(),
 		params.Default(defaultSecretFile),
 	)
 	if err != nil {
-		return "", fmt.Errorf("%w: %s", ErrGetSecretFilepath, err)
+		return "", fmt.Errorf("%w: environment variable %s: %s",
+			ErrGetSecretFilepath, secretFilepathEnvKey, err)
 	}
 
 	file, fileErr := r.os.OpenFile(filepath, os.O_RDONLY, 0)
@@ -74,12 +76,13 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 func (r *reader) getFromFileOrSecretFile(secretName, filepath string) (
 	b []byte, err error) {
 	defaultSecretFile := "/run/secrets/" + strings.ToLower(secretName)
-	secretFilepath, err := r.env.Get(strings.ToUpper(secretName)+"_SECRETFILE",
+	key := strings.ToUpper(secretName) + "_SECRETFILE"
+	secretFilepath, err := r.env.Get(key,
 		params.CaseSensitiveValue(),
 		params.Default(defaultSecretFile),
 	)
 	if err != nil {
-		return b, fmt.Errorf("%w: %s", ErrGetSecretFilepath, err)
+		return b, fmt.Errorf("environment variable %s: %w: %s", key, ErrGetSecretFilepath, err)
 	}
 
 	b, err = readFromFile(r.os.OpenFile, secretFilepath)

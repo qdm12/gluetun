@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -32,7 +33,7 @@ func (settings *ControlServer) lines() (lines []string) {
 func (settings *ControlServer) read(r reader) (err error) {
 	settings.Log, err = r.env.OnOff("HTTP_CONTROL_SERVER_LOG", params.Default("on"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTP_CONTROL_SERVER_LOG: %w", err)
 	}
 
 	var warning string
@@ -42,7 +43,7 @@ func (settings *ControlServer) read(r reader) (err error) {
 		r.logger.Warn(warning)
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTP_CONTROL_SERVER_PORT: %w", err)
 	}
 
 	return nil

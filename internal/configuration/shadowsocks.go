@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -40,8 +41,10 @@ func (settings *ShadowSocks) lines() (lines []string) {
 
 func (settings *ShadowSocks) read(r reader) (err error) {
 	settings.Enabled, err = r.env.OnOff("SHADOWSOCKS", params.Default("off"))
-	if err != nil || !settings.Enabled {
-		return err
+	if !settings.Enabled {
+		return nil
+	} else if err != nil {
+		return fmt.Errorf("environment variable SHADOWSOCKS: %w", err)
 	}
 
 	settings.Password, err = r.getFromEnvOrSecretFile("SHADOWSOCKS_PASSWORD", settings.Enabled, nil)
@@ -51,12 +54,12 @@ func (settings *ShadowSocks) read(r reader) (err error) {
 
 	settings.Log, err = r.env.OnOff("SHADOWSOCKS_LOG", params.Default("off"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SHADOWSOCKS_LOG: %w", err)
 	}
 
 	settings.Method, err = r.env.Get("SHADOWSOCKS_METHOD", params.Default("chacha20-ietf-poly1305"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SHADOWSOCKS_METHOD: %w", err)
 	}
 
 	var warning string
@@ -65,7 +68,7 @@ func (settings *ShadowSocks) read(r reader) (err error) {
 		r.logger.Warn(warning)
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SHADOWSOCKS_PORT: %w", err)
 	}
 
 	return nil

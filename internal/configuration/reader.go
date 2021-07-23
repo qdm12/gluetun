@@ -53,11 +53,9 @@ func readCSVPorts(env params.Env, key string) (ports []uint16, err error) {
 	for i, portStr := range portsStr {
 		portInt, err := strconv.Atoi(portStr)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %q from environment variable %s: %s",
-				ErrInvalidPort, portStr, key, err)
+			return nil, fmt.Errorf("%w: %s: %s", ErrInvalidPort, portStr, err)
 		} else if portInt <= 0 || portInt > 65535 {
-			return nil, fmt.Errorf("%w: %d from environment variable %s: must be between 1 and 65535",
-				ErrInvalidPort, portInt, key)
+			return nil, fmt.Errorf("%w: %d: must be between 1 and 65535", ErrInvalidPort, portInt)
 		}
 		ports[i] = uint16(portInt)
 	}
@@ -83,11 +81,10 @@ func readCSVIPNets(env params.Env, key string, options ...params.OptionSetter) (
 	for i, ipNetStr := range ipNetsStr {
 		_, ipNet, err := net.ParseCIDR(ipNetStr)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %q from environment variable %s: %s",
-				ErrInvalidIPNet, ipNetStr, key, err)
+			return nil, fmt.Errorf("%w: %s: %s",
+				ErrInvalidIPNet, ipNetStr, err)
 		} else if ipNet == nil {
-			return nil, fmt.Errorf("%w: %q from environment variable %s: subnet is nil",
-				ErrInvalidIPNet, ipNetStr, key)
+			return nil, fmt.Errorf("%w: %s: subnet is nil", ErrInvalidIPNet, ipNetStr)
 		}
 		ipNets[i] = *ipNet
 	}

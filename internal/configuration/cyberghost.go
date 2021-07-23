@@ -1,6 +1,8 @@
 package configuration
 
 import (
+	"fmt"
+
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/params"
 )
@@ -53,17 +55,17 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 	settings.ServerSelection.Group, err = r.env.Inside("CYBERGHOST_GROUP",
 		constants.CyberghostGroupChoices(), params.Default("Premium UDP Europe"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable CYBERGHOST_GROUP: %w", err)
 	}
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.CyberghostRegionChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.CyberghostHostnameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
 	return nil

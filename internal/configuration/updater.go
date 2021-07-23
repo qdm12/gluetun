@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -74,7 +75,7 @@ func (settings *Updater) read(r reader) (err error) {
 
 	settings.Period, err = r.env.Duration("UPDATER_PERIOD", params.Default("0"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable UPDATER_PERIOD: %w", err)
 	}
 
 	return nil

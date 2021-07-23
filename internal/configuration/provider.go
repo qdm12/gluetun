@@ -83,7 +83,7 @@ func commaJoin(slice []string) string {
 func readProtocol(env params.Env) (tcp bool, err error) {
 	protocol, err := env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("environment variable PROTOCOL: %w", err)
 	}
 	return protocol == constants.TCP, nil
 }
@@ -96,14 +96,18 @@ func protoToString(tcp bool) string {
 }
 
 func readTargetIP(env params.Env) (targetIP net.IP, err error) {
-	return readIP(env, "OPENVPN_TARGET_IP")
+	targetIP, err = readIP(env, "OPENVPN_TARGET_IP")
+	if err != nil {
+		return nil, fmt.Errorf("environment variable OPENVPN_TARGET_IP: %w", err)
+	}
+	return targetIP, nil
 }
 
 func readCustomPort(env params.Env, tcp bool,
 	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "PORT")
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("environment variable PORT: %w", err)
 	} else if port == 0 {
 		return 0, nil
 	}
@@ -114,12 +118,12 @@ func readCustomPort(env params.Env, tcp bool,
 				return port, nil
 			}
 		}
-		return 0, fmt.Errorf("%w: port %d for TCP protocol", ErrInvalidPort, port)
+		return 0, fmt.Errorf("environment variable PORT: %w: port %d for TCP protocol", ErrInvalidPort, port)
 	}
 	for i := range allowedUDP {
 		if allowedUDP[i] == port {
 			return port, nil
 		}
 	}
-	return 0, fmt.Errorf("%w: port %d for UDP protocol", ErrInvalidPort, port)
+	return 0, fmt.Errorf("environment variable PORT: %w: port %d for UDP protocol", ErrInvalidPort, port)
 }

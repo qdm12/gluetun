@@ -105,7 +105,7 @@ func Test_Health_read(t *testing.T) {
 			expected: Health{
 				ServerAddress: "127.0.0.1:9999",
 			},
-			err: errDummy,
+			err: errors.New("environment variable HEALTH_SERVER_ADDRESS: dummy"),
 		},
 		"initial error": {
 			openvpnInitialDuration:  time.Second,
@@ -116,7 +116,7 @@ func Test_Health_read(t *testing.T) {
 					Initial: time.Second,
 				},
 			},
-			err: errDummy,
+			err: errors.New("environment variable HEALTH_OPENVPN_DURATION_INITIAL: dummy"),
 		},
 		"addition error": {
 			openvpnInitialDuration:  time.Second,
@@ -128,7 +128,7 @@ func Test_Health_read(t *testing.T) {
 					Addition: time.Minute,
 				},
 			},
-			err: errDummy,
+			err: errors.New("environment variable HEALTH_OPENVPN_DURATION_ADDITION: dummy"),
 		},
 	}
 
@@ -146,7 +146,7 @@ func Test_Health_read(t *testing.T) {
 				Return(testCase.serverAddress, testCase.serverAddressWarning,
 					testCase.serverAddressErr)
 			if testCase.serverAddressWarning != "" {
-				logger.EXPECT().Warn("health server address: " + testCase.serverAddressWarning)
+				logger.EXPECT().Warn("environment variable HEALTH_SERVER_ADDRESS: " + testCase.serverAddressWarning)
 			}
 
 			if testCase.serverAddressErr == nil {

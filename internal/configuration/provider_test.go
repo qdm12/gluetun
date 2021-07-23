@@ -348,7 +348,7 @@ func Test_readProtocol(t *testing.T) {
 	}{
 		"error": {
 			mockErr: errDummy,
-			err:     errDummy,
+			err:     errors.New("environment variable PROTOCOL: dummy"),
 		},
 		"success": {
 			mockStr: "tcp",

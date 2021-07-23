@@ -19,31 +19,31 @@ func (settings *DNS) readUnbound(r reader) (err error) {
 
 	settings.Unbound.Caching, err = r.env.OnOff("DOT_CACHING", params.Default("on"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DOT_CACHING: %w", err)
 	}
 
 	settings.Unbound.IPv4 = true
 
 	settings.Unbound.IPv6, err = r.env.OnOff("DOT_IPV6", params.Default("off"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DOT_IPV6: %w", err)
 	}
 
 	verbosityLevel, err := r.env.IntRange("DOT_VERBOSITY", 0, 5, params.Default("1")) //nolint:gomnd
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DOT_VERBOSITY: %w", err)
 	}
 	settings.Unbound.VerbosityLevel = uint8(verbosityLevel)
 
 	verbosityDetailsLevel, err := r.env.IntRange("DOT_VERBOSITY_DETAILS", 0, 4, params.Default("0")) //nolint:gomnd
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DOT_VERBOSITY_DETAILS: %w", err)
 	}
 	settings.Unbound.VerbosityDetailsLevel = uint8(verbosityDetailsLevel)
 
 	validationLogLevel, err := r.env.IntRange("DOT_VALIDATION_LOGLEVEL", 0, 2, params.Default("0")) //nolint:gomnd
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DOT_VALIDATION_LOGLEVEL: %w", err)
 	}
 	settings.Unbound.ValidationLogLevel = uint8(validationLogLevel)
 
@@ -62,7 +62,7 @@ var (
 func (settings *DNS) readUnboundProviders(env params.Env) (err error) {
 	s, err := env.Get("DOT_PROVIDERS", params.Default("cloudflare"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DOT_PROVIDERS: %w", err)
 	}
 	for _, field := range strings.Split(s, ",") {
 		dnsProvider, err := provider.Parse(field)

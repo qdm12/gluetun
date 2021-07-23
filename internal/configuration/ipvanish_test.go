@@ -78,7 +78,7 @@ func Test_Provider_readIpvanish(t *testing.T) {
 			settings: Provider{
 				Name: constants.Ipvanish,
 			},
-			err: errDummy,
+			err: errors.New("environment variable PROTOCOL: dummy test error"),
 		},
 		"target IP error": {
 			protocol: singleStringCall{call: true},
@@ -86,7 +86,7 @@ func Test_Provider_readIpvanish(t *testing.T) {
 			settings: Provider{
 				Name: constants.Ipvanish,
 			},
-			err: errDummy,
+			err: errors.New("environment variable OPENVPN_TARGET_IP: dummy test error"),
 		},
 		"countries error": {
 			protocol:  singleStringCall{call: true},
@@ -95,7 +95,7 @@ func Test_Provider_readIpvanish(t *testing.T) {
 			settings: Provider{
 				Name: constants.Ipvanish,
 			},
-			err: errDummy,
+			err: errors.New("environment variable COUNTRY: dummy test error"),
 		},
 		"cities error": {
 			protocol:  singleStringCall{call: true},
@@ -105,7 +105,7 @@ func Test_Provider_readIpvanish(t *testing.T) {
 			settings: Provider{
 				Name: constants.Ipvanish,
 			},
-			err: errDummy,
+			err: errors.New("environment variable CITY: dummy test error"),
 		},
 		"hostnames error": {
 			protocol:  singleStringCall{call: true},
@@ -116,7 +116,7 @@ func Test_Provider_readIpvanish(t *testing.T) {
 			settings: Provider{
 				Name: constants.Ipvanish,
 			},
-			err: errDummy,
+			err: errors.New("environment variable SERVER_HOSTNAME: dummy test error"),
 		},
 		"default settings": {
 			protocol:  singleStringCall{call: true},

@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -55,41 +56,41 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 		params.Default(constants.PIACertificateStrong),
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable PIA_ENCRYPTION: %w", err)
 	}
 	settings.ServerSelection.EncryptionPreset = encryptionPreset
 	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.PIAGeoChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.PIAHostnameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_NAME", constants.PIANameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_NAME: %w", err)
 	}
 
 	settings.ServerSelection.CustomPort, err = readPortOrZero(r.env, "PORT")
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable PORT: %w", err)
 	}
 
 	settings.PortForwarding.Enabled, err = r.env.OnOff("PORT_FORWARDING", params.Default("off"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable PORT_FORWARDING: %w", err)
 	}
 
 	if settings.PortForwarding.Enabled {
 		settings.PortForwarding.Filepath, err = r.env.Path("PORT_FORWARDING_STATUS_FILE",
 			params.Default("/tmp/gluetun/forwarded_port"), params.CaseSensitiveValue())
 		if err != nil {
-			return err
+			return fmt.Errorf("environment variable PORT_FORWARDING_STATUS_FILE: %w", err)
 		}
 	}
 

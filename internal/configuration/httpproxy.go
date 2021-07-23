@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -49,24 +50,24 @@ func (settings *HTTPProxy) read(r reader) (err error) {
 	settings.Enabled, err = r.env.OnOff("HTTPPROXY", params.Default("off"),
 		params.RetroKeys([]string{"TINYPROXY", "PROXY"}, r.onRetroActive))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTPPROXY (or TINYPROXY, PROXY): %w", err)
 	}
 
 	settings.User, err = r.getFromEnvOrSecretFile("HTTPPROXY_USER", false, // compulsory
 		[]string{"TINYPROXY_USER", "PROXY_USER"})
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTPPROXY_USER (or TINYPROXY_USER, PROXY_USER): %w", err)
 	}
 
 	settings.Password, err = r.getFromEnvOrSecretFile("HTTPPROXY_PASSWORD", false,
 		[]string{"TINYPROXY_PASSWORD", "PROXY_PASSWORD"})
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTPPROXY_PASSWORD (or TINYPROXY_PASSWORD, PROXY_PASSWORD): %w", err)
 	}
 
 	settings.Stealth, err = r.env.OnOff("HTTPPROXY_STEALTH", params.Default("off"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTPPROXY_STEALTH: %w", err)
 	}
 
 	if err := settings.readLog(r); err != nil {
@@ -80,7 +81,7 @@ func (settings *HTTPProxy) read(r reader) (err error) {
 		r.logger.Warn(warning)
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTPPROXY_PORT (or TINYPROXY_PORT, PROXY_PORT): %w", err)
 	}
 
 	return nil
@@ -90,7 +91,7 @@ func (settings *HTTPProxy) readLog(r reader) error {
 	s, err := r.env.Get("HTTPPROXY_LOG",
 		params.RetroKeys([]string{"PROXY_LOG_LEVEL", "TINYPROXY_LOG"}, r.onRetroActive))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HTTPPROXY_LOG (or TINYPROXY_LOG, PROXY_LOG_LEVEL): %w", err)
 	}
 
 	switch strings.ToLower(s) {

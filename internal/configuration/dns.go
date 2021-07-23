@@ -68,7 +68,7 @@ var (
 func (settings *DNS) read(r reader) (err error) {
 	settings.Enabled, err = r.env.OnOff("DOT", params.Default("on"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DOT: %w", err)
 	}
 
 	// Plain DNS settings
@@ -77,7 +77,7 @@ func (settings *DNS) read(r reader) (err error) {
 	}
 	settings.KeepNameserver, err = r.env.OnOff("DNS_KEEP_NAMESERVER", params.Default("off"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DNS_KEEP_NAMESERVER: %w", err)
 	}
 
 	// DNS over TLS external settings
@@ -87,7 +87,7 @@ func (settings *DNS) read(r reader) (err error) {
 
 	settings.UpdatePeriod, err = r.env.Duration("DNS_UPDATE_PERIOD", params.Default("24h"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DNS_UPDATE_PERIOD: %w", err)
 	}
 
 	// Unbound settings
@@ -105,7 +105,7 @@ var (
 func (settings *DNS) readDNSPlaintext(env params.Env) error {
 	s, err := env.Get("DNS_PLAINTEXT_ADDRESS", params.Default("1.1.1.1"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable DNS_PLAINTEXT_ADDRESS: %w", err)
 	}
 
 	settings.PlaintextAddress = net.ParseIP(s)

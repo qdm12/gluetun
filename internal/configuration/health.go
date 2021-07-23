@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/golibs/logging"
@@ -42,20 +43,20 @@ func (settings *Health) read(r reader) (err error) {
 	settings.ServerAddress, warning, err = r.env.ListeningAddress(
 		"HEALTH_SERVER_ADDRESS", params.Default("127.0.0.1:9999"))
 	if warning != "" {
-		r.logger.Warn("health server address: " + warning)
+		r.logger.Warn("environment variable HEALTH_SERVER_ADDRESS: " + warning)
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HEALTH_SERVER_ADDRESS: %w", err)
 	}
 
 	settings.OpenVPN.Initial, err = r.env.Duration("HEALTH_OPENVPN_DURATION_INITIAL", params.Default("6s"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HEALTH_OPENVPN_DURATION_INITIAL: %w", err)
 	}
 
 	settings.OpenVPN.Addition, err = r.env.Duration("HEALTH_OPENVPN_DURATION_ADDITION", params.Default("5s"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable HEALTH_OPENVPN_DURATION_ADDITION: %w", err)
 	}
 
 	return nil

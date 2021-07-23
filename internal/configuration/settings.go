@@ -67,7 +67,7 @@ func (settings *Settings) Read(env params.Env, os os.OS, logger logging.Logger) 
 
 	settings.VersionInformation, err = r.env.OnOff("VERSION_INFORMATION", params.Default("on"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable VERSION_INFORMATION: %w", err)
 	}
 
 	if err := settings.OpenVPN.read(r); err != nil {
