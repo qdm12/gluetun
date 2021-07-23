@@ -73,8 +73,8 @@ func (s *state) GetSettingsAndServers() (settings configuration.OpenVPN,
 	s.allServersMu.RLock()
 	settings = s.settings
 	allServers = s.allServers
-	s.settingsMu.RLock()
-	s.allServersMu.RLock()
+	s.settingsMu.RUnlock()
+	s.allServersMu.RUnlock()
 	return settings, allServers
 }
 
