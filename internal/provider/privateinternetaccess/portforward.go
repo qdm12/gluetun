@@ -17,7 +17,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
-	"github.com/qdm12/gluetun/internal/format"
+	"github.com/qdm12/golibs/format"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -61,7 +61,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 			logger.Warn("Forwarded port data expired on " +
 				data.Expiration.Format(time.RFC1123) + ", getting another one")
 		} else {
-			logger.Info("Forwarded port data expires in " + format.Duration(durationToExpiration))
+			logger.Info("Forwarded port data expires in " + format.FriendlyDuration(durationToExpiration))
 		}
 	}
 
@@ -77,7 +77,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 		durationToExpiration = data.Expiration.Sub(p.timeNow())
 	}
 	logger.Info("Port forwarded is " + strconv.Itoa(int(data.Port)) +
-		" expiring in " + format.Duration(durationToExpiration))
+		" expiring in " + format.FriendlyDuration(durationToExpiration))
 
 	// First time binding
 	tryUntilSuccessful(ctx, logger, func() error {
@@ -139,7 +139,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 			}
 			durationToExpiration := data.Expiration.Sub(p.timeNow())
 			logger.Info("Port forwarded is " + strconv.Itoa(int(data.Port)) +
-				" expiring in " + format.Duration(durationToExpiration))
+				" expiring in " + format.FriendlyDuration(durationToExpiration))
 			if err := fw.RemoveAllowedPort(ctx, oldPort); err != nil {
 				logger.Error(err.Error())
 			}
