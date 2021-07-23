@@ -38,9 +38,9 @@ func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction 
 	}
 	c.ip6tablesMutex.Lock() // only one ip6tables command at once
 	defer c.ip6tablesMutex.Unlock()
-	if c.debug {
-		fmt.Println("ip6tables " + instruction)
-	}
+
+	c.logger.Debug("ip6tables " + instruction)
+
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "ip6tables", flags...)
 	if output, err := c.commander.Run(cmd); err != nil {

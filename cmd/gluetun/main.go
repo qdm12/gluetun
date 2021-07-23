@@ -32,6 +32,7 @@ import (
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
+	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/goshutdown"
@@ -62,7 +63,9 @@ func main() {
 	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	ctx, cancel := context.WithCancel(ctx)
 
-	logger := logging.NewParent(logging.Settings{})
+	logger := logging.NewParent(logging.Settings{
+		Level: logging.LevelInfo,
+	})
 
 	args := os.Args
 	unix := unix.New()
@@ -137,11 +140,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
 	dnsConf := unbound.NewConfigurator(nil, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
-	routingConf := routing.NewRouting(
-		logger.NewChild(logging.Settings{Prefix: "routing: "}))
-	firewallConf := firewall.NewConfigurator(
-		logger.NewChild(logging.Settings{Prefix: "firewall: "}),
-		routingConf)
 
 	announcementExp, err := time.Parse(time.RFC3339, "2021-07-22T00:00:00Z")
 	if err != nil {
@@ -164,13 +162,18 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		fmt.Println(line)
 	}
 
-	if err := printVersions(ctx, logger, []printVersionElement{
+	cmder := command.NewCommander()
+
+	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
 		{name: "OpenVPN 2.4", getVersion: ovpnConf.Version24},
 		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
 		{name: "Unbound", getVersion: dnsConf.Version},
-		{name: "IPtables", getVersion: firewallConf.Version},
-	}); err != nil {
+		{name: "IPtables", getVersion: func(ctx context.Context) (version string, err error) {
+			return firewall.Version(ctx, cmder)
+		}},
+	})
+	if err != nil {
 		return err
 	}
 
@@ -217,10 +220,20 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
+	firewallLogLevel := logging.LevelInfo
 	if allSettings.Firewall.Debug {
-		firewallConf.SetDebug()
-		routingConf.SetDebug()
+		firewallLogLevel = logging.LevelDebug
 	}
+	routingLogger := logger.NewChild(logging.Settings{
+		Prefix: "routing: ",
+		Level:  firewallLogLevel,
+	})
+	routingConf := routing.NewRouting(routingLogger)
+	firewallLogger := logger.NewChild(logging.Settings{
+		Prefix: "firewall: ",
+		Level:  firewallLogLevel,
+	})
+	firewallConf := firewall.NewConfigurator(firewallLogger, routingConf)
 
 	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
 	if err != nil {
@@ -246,7 +259,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("%w: %s", errSetupRouting, err)
 	}
 	defer func() {
-		routingConf.SetVerbose(false)
+		logger.Info("routing cleanup...")
 		if err := routingConf.TearDown(); err != nil {
 			logger.Error("cannot teardown routing: " + err.Error())
 		}

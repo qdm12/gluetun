@@ -20,16 +20,10 @@ type Routing interface {
 	DefaultIP() (defaultIP net.IP, err error)
 	VPNDestinationIP() (ip net.IP, err error)
 	VPNLocalGatewayIP() (ip net.IP, err error)
-
-	// Internal state
-	SetVerbose(verbose bool)
-	SetDebug()
 }
 
 type routing struct {
 	logger          logging.Logger
-	verbose         bool
-	debug           bool
 	outboundSubnets []net.IPNet
 	stateMutex      sync.RWMutex
 }
@@ -37,15 +31,6 @@ type routing struct {
 // NewRouting creates a new routing instance.
 func NewRouting(logger logging.Logger) Routing {
 	return &routing{
-		logger:  logger,
-		verbose: true,
+		logger: logger,
 	}
-}
-
-func (r *routing) SetVerbose(verbose bool) {
-	r.verbose = verbose
-}
-
-func (r *routing) SetDebug() {
-	r.debug = true
 }

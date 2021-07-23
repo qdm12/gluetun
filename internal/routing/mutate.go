@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
 
 	"github.com/vishvananda/netlink"
 )
@@ -18,12 +19,11 @@ var (
 
 func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
 	destinationStr := destination.String()
-	if r.verbose {
-		r.logger.Info("adding route for " + destinationStr)
-	}
-	if r.debug {
-		fmt.Printf("ip route replace %s via %s dev %s table %d\n", destinationStr, gateway, iface, table)
-	}
+	r.logger.Info("adding route for " + destinationStr)
+	r.logger.Debug("ip route replace " + destinationStr +
+		" via " + gateway.String() +
+		" dev " + iface +
+		" table " + strconv.Itoa(table))
 
 	link, err := netlink.LinkByName(iface)
 	if err != nil {
@@ -44,12 +44,11 @@ func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 
 func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error) {
 	destinationStr := destination.String()
-	if r.verbose {
-		r.logger.Info("deleting route for " + destinationStr)
-	}
-	if r.debug {
-		fmt.Printf("ip route delete %s via %s dev %s table %d\n", destinationStr, gateway, iface, table)
-	}
+	r.logger.Info("deleting route for " + destinationStr)
+	r.logger.Debug("ip route delete " + destinationStr +
+		" via " + gateway.String() +
+		" dev " + iface +
+		" table " + strconv.Itoa(table))
 
 	link, err := netlink.LinkByName(iface)
 	if err != nil {
@@ -69,10 +68,9 @@ func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 }
 
 func (r *routing) addIPRule(src net.IP, table, priority int) error {
-	if r.debug {
-		fmt.Printf("ip rule add from %s lookup %d pref %d\n",
-			src, table, priority)
-	}
+	r.logger.Debug("ip rule add from " + src.String() +
+		" lookup " + strconv.Itoa(table) +
+		" pref " + strconv.Itoa(priority))
 
 	rule := netlink.NewRule()
 	rule.Src = netlink.NewIPNet(src)
@@ -100,10 +98,9 @@ func (r *routing) addIPRule(src net.IP, table, priority int) error {
 }
 
 func (r *routing) deleteIPRule(src net.IP, table, priority int) error {
-	if r.debug {
-		fmt.Printf("ip rule del from %s lookup %d pref %d\n",
-			src, table, priority)
-	}
+	r.logger.Debug("ip rule del from " + src.String() +
+		" lookup " + strconv.Itoa(table) +
+		" pref " + strconv.Itoa(priority))
 
 	rule := netlink.NewRule()
 	rule.Src = netlink.NewIPNet(src)

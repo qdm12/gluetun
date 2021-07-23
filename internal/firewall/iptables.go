@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/command"
 )
 
 var (
@@ -46,9 +47,9 @@ func flipRule(rule string) string {
 }
 
 // Version obtains the version of the installed iptables.
-func (c *configurator) Version(ctx context.Context) (string, error) {
+func Version(ctx context.Context, commander command.Commander) (string, error) {
 	cmd := exec.CommandContext(ctx, "iptables", "--version")
-	output, err := c.commander.Run(cmd)
+	output, err := commander.Run(cmd)
 	if err != nil {
 		return "", err
 	}
@@ -72,9 +73,9 @@ func (c *configurator) runIptablesInstructions(ctx context.Context, instructions
 func (c *configurator) runIptablesInstruction(ctx context.Context, instruction string) error {
 	c.iptablesMutex.Lock() // only one iptables command at once
 	defer c.iptablesMutex.Unlock()
-	if c.debug {
-		fmt.Printf("iptables %s\n", instruction)
-	}
+
+	c.logger.Debug("iptables " + instruction)
+
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "iptables", flags...)
 	if output, err := c.commander.Run(cmd); err != nil {

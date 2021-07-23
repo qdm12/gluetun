@@ -15,13 +15,11 @@ import (
 
 // Configurator allows to change firewall rules and modify network routes.
 type Configurator interface {
-	Version(ctx context.Context) (string, error)
 	SetEnabled(ctx context.Context, enabled bool) (err error)
 	SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error)
 	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
 	SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error)
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
-	SetDebug()
 	// SetNetworkInformation is meant to be called only once
 	SetNetworkInformation(defaultInterface string, defaultGateway net.IP,
 		localNetworks []routing.LocalNetwork, localIP net.IP)
@@ -33,7 +31,6 @@ type configurator struct { //nolint:maligned
 	routing          routing.Routing
 	iptablesMutex    sync.Mutex
 	ip6tablesMutex   sync.Mutex
-	debug            bool
 	defaultInterface string
 	defaultGateway   net.IP
 	localNetworks    []routing.LocalNetwork
@@ -63,10 +60,6 @@ func NewConfigurator(logger logging.Logger, routing routing.Routing) Configurato
 		ip6Tables:         ip6tablesSupported(context.Background(), commander),
 		customRulesPath:   "/iptables/post-rules.txt",
 	}
-}
-
-func (c *configurator) SetDebug() {
-	c.debug = true
 }
 
 func (c *configurator) SetNetworkInformation(
