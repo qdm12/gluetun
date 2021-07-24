@@ -9,6 +9,10 @@ import (
 	"github.com/qdm12/gluetun/internal/provider"
 )
 
+type Runner interface {
+	Run(ctx context.Context, done chan<- struct{})
+}
+
 func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 

@@ -1,7 +1,6 @@
 package openvpn
 
 import (
-	"context"
 	"net"
 	"net/http"
 	"time"
@@ -17,17 +16,13 @@ import (
 )
 
 type Looper interface {
-	Run(ctx context.Context, done chan<- struct{})
-	GetStatus() (status models.LoopStatus)
-	ApplyStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-	GetSettings() (settings configuration.OpenVPN)
-	SetSettings(ctx context.Context, settings configuration.OpenVPN) (
-		outcome string)
-	GetServers() (servers models.AllServers)
-	SetServers(servers models.AllServers)
-	GetPortForwarded() (port uint16)
-	PortForward(vpnGatewayIP net.IP)
+	Runner
+	loopstate.Getter
+	loopstate.Applier
+	SettingsGetterSetter
+	ServersGetterSetter
+	PortForwadedGetter
+	PortForwader
 }
 
 type looper struct {

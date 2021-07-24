@@ -7,11 +7,18 @@ import (
 	"os"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/openvpn/state"
 	"github.com/qdm12/gluetun/internal/provider"
 )
 
+type PortForwadedGetter = state.PortForwardedGetter
+
 func (l *looper) GetPortForwarded() (port uint16) {
 	return l.state.GetPortForwarded()
+}
+
+type PortForwader interface {
+	PortForward(vpnGatewayIP net.IP)
 }
 
 func (l *looper) PortForward(vpnGateway net.IP) { l.portForwardSignals <- vpnGateway }

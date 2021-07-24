@@ -1,8 +1,12 @@
 package state
 
 type PortForwardedGetterSetter interface {
-	GetPortForwarded() (port uint16)
+	PortForwardedGetter
 	SetPortForwarded(port uint16)
+}
+
+type PortForwardedGetter interface {
+	GetPortForwarded() (port uint16)
 }
 
 // GetPortForwarded is used by the control HTTP server

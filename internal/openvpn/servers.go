@@ -1,6 +1,11 @@
 package openvpn
 
-import "github.com/qdm12/gluetun/internal/models"
+import (
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/openvpn/state"
+)
+
+type ServersGetterSetter = state.ServersGetterSetter
 
 func (l *looper) GetServers() (servers models.AllServers) {
 	return l.state.GetServers()
