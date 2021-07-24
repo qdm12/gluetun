@@ -6,6 +6,8 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
+var _ Manager = (*State)(nil)
+
 type Manager interface {
 	Locker
 	Getter

@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+var _ Fetcher = (*Fetch)(nil)
+
 type Fetcher interface {
 	FetchPublicIP(ctx context.Context) (ip net.IP, err error)
 }

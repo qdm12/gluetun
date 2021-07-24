@@ -15,6 +15,8 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
+var _ Looper = (*Loop)(nil)
+
 type Looper interface {
 	Runner
 	loopstate.Getter
