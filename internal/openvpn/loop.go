@@ -19,7 +19,7 @@ type Looper interface {
 	Runner
 	loopstate.Getter
 	loopstate.Applier
-	SettingsGetterSetter
+	SettingsGetSetter
 	ServersGetterSetter
 	PortForwadedGetter
 	PortForwader

@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 )
 
-type SettingsGetterSetter interface {
+type SettingsGetSetter interface {
 	GetSettings() (settings configuration.PublicIP)
 	SetSettings(ctx context.Context,
 		settings configuration.PublicIP) (outcome string)

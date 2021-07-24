@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type SettingsGetterSetter interface {
+type SettingsGetSetter interface {
 	GetSettings() (settings configuration.OpenVPN)
 	SetSettings(ctx context.Context, settings configuration.OpenVPN) (
 		outcome string)

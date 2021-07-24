@@ -11,7 +11,7 @@ import (
 var _ Manager = (*State)(nil)
 
 type Manager interface {
-	SettingsGetterSetter
+	SettingsGetSetter
 	PublicIPGetSetter
 }
 

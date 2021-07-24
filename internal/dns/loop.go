@@ -23,7 +23,7 @@ type Looper interface {
 	RestartTickerRunner
 	loopstate.Applier
 	loopstate.Getter
-	SettingsGetterSetter
+	SettingsGetSetter
 }
 
 type Loop struct {

@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 )
 
-type SettingsGetterSetter interface {
+type SettingsGetSetter interface {
 	SettingsGetter
 	SettingsSetter
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/openvpn/state"
 )
 
-type SettingsGetterSetter = state.SettingsGetterSetter
+type SettingsGetSetter = state.SettingsGetSetter
 
 func (l *Loop) GetSettings() (settings configuration.OpenVPN) {
 	return l.state.GetSettings()

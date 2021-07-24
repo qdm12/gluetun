@@ -17,7 +17,7 @@ type Looper interface {
 	Runner
 	loopstate.Getter
 	loopstate.Applier
-	SettingsGetterSetter
+	SettingsGetSetter
 }
 
 type Loop struct {

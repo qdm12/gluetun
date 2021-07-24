@@ -19,7 +19,7 @@ type Looper interface {
 	RestartTickerRunner
 	loopstate.Getter
 	loopstate.Applier
-	SettingsGetterSetter
+	SettingsGetSetter
 	Getter
 }
 

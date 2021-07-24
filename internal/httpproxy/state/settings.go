@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type SettingsGetterSetter interface {
+type SettingsGetSetter interface {
 	SettingsGetter
 	SettingsSetter
 }
