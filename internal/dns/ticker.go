@@ -36,15 +36,15 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			status := l.GetStatus()
 			if status == constants.Running {
 				if err := l.updateFiles(ctx); err != nil {
-					l.state.SetStatus(constants.Crashed)
+					l.statusManager.SetStatus(constants.Crashed)
 					l.logger.Error(err.Error())
 					l.logger.Warn("skipping Unbound restart due to failed files update")
 					continue
 				}
 			}
 
-			_, _ = l.ApplyStatus(ctx, constants.Stopped)
-			_, _ = l.ApplyStatus(ctx, constants.Running)
+			_, _ = l.statusManager.ApplyStatus(ctx, constants.Stopped)
+			_, _ = l.statusManager.ApplyStatus(ctx, constants.Running)
 
 			settings := l.GetSettings()
 			timer.Reset(settings.UpdatePeriod)

@@ -90,7 +90,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				closeStreams()
 
 				unboundCancel()
-				l.state.SetStatus(constants.Crashed)
+				l.statusManager.SetStatus(constants.Crashed)
 				const fallback = true
 				l.useUnencryptedDNS(fallback)
 				l.logAndWait(ctx, err)

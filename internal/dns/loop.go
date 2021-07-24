@@ -10,6 +10,8 @@ import (
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/dns/state"
+	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
 )
@@ -19,26 +21,28 @@ var _ Looper = (*Loop)(nil)
 type Looper interface {
 	Runner
 	RestartTickerRunner
-	StatusGetterApplier
+	loopstate.Applier
+	loopstate.Getter
 	SettingsGetterSetter
 }
 
 type Loop struct {
-	state        *state
-	conf         unbound.Configurator
-	resolvConf   string
-	blockBuilder blacklist.Builder
-	client       *http.Client
-	logger       logging.Logger
-	userTrigger  bool
-	start        <-chan struct{}
-	running      chan<- models.LoopStatus
-	stop         <-chan struct{}
-	stopped      chan<- struct{}
-	updateTicker <-chan struct{}
-	backoffTime  time.Duration
-	timeNow      func() time.Time
-	timeSince    func(time.Time) time.Duration
+	statusManager loopstate.Manager
+	state         state.Manager
+	conf          unbound.Configurator
+	resolvConf    string
+	blockBuilder  blacklist.Builder
+	client        *http.Client
+	logger        logging.Logger
+	userTrigger   bool
+	start         <-chan struct{}
+	running       chan<- models.LoopStatus
+	stop          <-chan struct{}
+	stopped       chan<- struct{}
+	updateTicker  <-chan struct{}
+	backoffTime   time.Duration
+	timeNow       func() time.Time
+	timeSince     func(time.Time) time.Duration
 }
 
 const defaultBackoffTime = 10 * time.Second
@@ -51,24 +55,26 @@ func NewLoop(conf unbound.Configurator, settings configuration.DNS, client *http
 	stopped := make(chan struct{})
 	updateTicker := make(chan struct{})
 
-	state := newState(constants.Stopped, settings, start, running, stop, stopped, updateTicker)
+	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
+	state := state.New(statusManager, settings, updateTicker)
 
 	return &Loop{
-		state:        state,
-		conf:         conf,
-		resolvConf:   "/etc/resolv.conf",
-		blockBuilder: blacklist.NewBuilder(client),
-		client:       client,
-		logger:       logger,
-		userTrigger:  true,
-		start:        start,
-		running:      running,
-		stop:         stop,
-		stopped:      stopped,
-		updateTicker: updateTicker,
-		backoffTime:  defaultBackoffTime,
-		timeNow:      time.Now,
-		timeSince:    time.Since,
+		statusManager: statusManager,
+		state:         state,
+		conf:          conf,
+		resolvConf:    "/etc/resolv.conf",
+		blockBuilder:  blacklist.NewBuilder(client),
+		client:        client,
+		logger:        logger,
+		userTrigger:   true,
+		start:         start,
+		running:       running,
+		stop:          stop,
+		stopped:       stopped,
+		updateTicker:  updateTicker,
+		backoffTime:   defaultBackoffTime,
+		timeNow:       time.Now,
+		timeSince:     time.Since,
 	}
 }
 
@@ -96,6 +102,6 @@ func (l *Loop) signalOrSetStatus(status models.LoopStatus) {
 		default: // receiver dropped out - avoid deadlock on events routing when shutting down
 		}
 	} else {
-		l.state.SetStatus(status)
+		l.statusManager.SetStatus(status)
 	}
 }
