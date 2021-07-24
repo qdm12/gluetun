@@ -71,7 +71,7 @@ func main() {
 	unix := unix.New()
 	cli := cli.New()
 	env := params.NewEnv()
-	cmder := command.NewCommander()
+	cmder := command.NewCmder()
 
 	errorCh := make(chan error)
 	go func() {
@@ -114,7 +114,7 @@ var (
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, env params.Env,
-	unix unix.Unix, cmder command.Commander, cli cli.CLIer) error {
+	unix unix.Unix, cmder command.RunStarter, cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -139,7 +139,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		unix, cmder)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
-	dnsConf := unbound.NewConfigurator(nil, dnsCrypto,
+	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
 
 	announcementExp, err := time.Parse(time.RFC3339, "2021-07-22T00:00:00Z")

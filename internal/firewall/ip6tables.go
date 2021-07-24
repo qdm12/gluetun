@@ -15,9 +15,9 @@ var (
 	ErrIP6NotSupported = errors.New("ip6tables not supported")
 )
 
-func ip6tablesSupported(ctx context.Context, commander command.Commander) (supported bool) {
+func ip6tablesSupported(ctx context.Context, runner command.Runner) (supported bool) {
 	cmd := exec.CommandContext(ctx, "ip6tables", "-L")
-	if _, err := commander.Run(cmd); err != nil {
+	if _, err := runner.Run(cmd); err != nil {
 		return false
 	}
 	return true
@@ -43,7 +43,7 @@ func (c *Config) runIP6tablesInstruction(ctx context.Context, instruction string
 
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "ip6tables", flags...)
-	if output, err := c.commander.Run(cmd); err != nil {
+	if output, err := c.runner.Run(cmd); err != nil {
 		return fmt.Errorf("%w: \"ip6tables %s\": %s: %s", ErrIP6Tables, instruction, output, err)
 	}
 	return nil

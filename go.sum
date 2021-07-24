@@ -63,12 +63,11 @@ github.com/phayes/permbits v0.0.0-20190612203442-39d7c581d2ee/go.mod h1:3uODdxMg
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/qdm12/dns v1.10.0 h1:WX5QQ5+2h34xfhfxJTmvyURbs9XE4qNrEGtyNeq38Bw=
-github.com/qdm12/dns v1.10.0/go.mod h1:fqZoDf3VzddnKBMNI/OzZUp5H4dO0VBw1fp4qPkolOg=
+github.com/qdm12/dns v1.11.0 h1:jpcD5DZXXQSQe5a263PL09ghukiIdptvXFOZvyKEm6Q=
+github.com/qdm12/dns v1.11.0/go.mod h1:FmQsNOUcrrZ4UFzWAiED56AKXeNgaX3ySbmPwEfNjjE=
 github.com/qdm12/golibs v0.0.0-20210603202746-e5494e9c2ebb/go.mod h1:15RBzkun0i8XB7ADIoLJWp9ITRgsz3LroEI2FiOXLRg=
-github.com/qdm12/golibs v0.0.0-20210716185557-66793f4ddd80/go.mod h1:15RBzkun0i8XB7ADIoLJWp9ITRgsz3LroEI2FiOXLRg=
-github.com/qdm12/golibs v0.0.0-20210723191510-d1078ef6fa9d h1:bBLNwxvlU4LXrSkDXW+S6czLLUSN42ERA/KdX19qIbU=
-github.com/qdm12/golibs v0.0.0-20210723191510-d1078ef6fa9d/go.mod h1:6aRbg4Z/bTbm9JfxsGXfWKHi7zsOvPfUTK1S5HuAFKg=
+github.com/qdm12/golibs v0.0.0-20210723175634-a75ca7fd74c2 h1:FMeOhe/bGloI0T5Wb6QB7/rfOqgFeI//UF/N/f7PUCI=
+github.com/qdm12/golibs v0.0.0-20210723175634-a75ca7fd74c2/go.mod h1:6aRbg4Z/bTbm9JfxsGXfWKHi7zsOvPfUTK1S5HuAFKg=
 github.com/qdm12/goshutdown v0.1.0 h1:lmwnygdXtnr2pa6VqfR/bm8077/BnBef1+7CP96B7Sw=
 github.com/qdm12/goshutdown v0.1.0/go.mod h1:/LP3MWLqI+wGH/ijfaUG+RHzBbKXIiVKnrg5vXOCf6Q=
 github.com/qdm12/gosplash v0.1.0 h1:Sfl+zIjFZFP7b0iqf2l5UkmEY97XBnaKkH3FNY6Gf7g=

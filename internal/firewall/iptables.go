@@ -47,9 +47,9 @@ func flipRule(rule string) string {
 }
 
 // Version obtains the version of the installed iptables.
-func Version(ctx context.Context, commander command.Commander) (string, error) {
+func Version(ctx context.Context, runner command.Runner) (string, error) {
 	cmd := exec.CommandContext(ctx, "iptables", "--version")
-	output, err := commander.Run(cmd)
+	output, err := runner.Run(cmd)
 	if err != nil {
 		return "", err
 	}
@@ -78,7 +78,7 @@ func (c *Config) runIptablesInstruction(ctx context.Context, instruction string)
 
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "iptables", flags...)
-	if output, err := c.commander.Run(cmd); err != nil {
+	if output, err := c.runner.Run(cmd); err != nil {
 		return fmt.Errorf("%w \"iptables %s\": %s: %s", ErrIPTables, instruction, output, err)
 	}
 	return nil

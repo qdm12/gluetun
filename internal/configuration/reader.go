@@ -28,9 +28,8 @@ func newReader(env params.Env, logger logging.Logger) reader {
 
 func (r *reader) onRetroActive(oldKey, newKey string) {
 	r.logger.Warn(
-		"You are using the old environment variable %s, please consider changing it to %s",
-		oldKey, newKey,
-	)
+		"You are using the old environment variable " + oldKey +
+			", please consider changing it to " + newKey)
 }
 
 var (

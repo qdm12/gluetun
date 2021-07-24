@@ -23,17 +23,17 @@ type Configurator interface {
 
 type configurator struct {
 	logger       logging.Logger
-	commander    command.Commander
+	cmder        command.RunStarter
 	unix         unix.Unix
 	authFilePath string
 	tunDevPath   string
 }
 
 func NewConfigurator(logger logging.Logger, unix unix.Unix,
-	cmder command.Commander) Configurator {
+	cmder command.RunStarter) Configurator {
 	return &configurator{
 		logger:       logger,
-		commander:    cmder,
+		cmder:        cmder,
 		unix:         unix,
 		authFilePath: constants.OpenVPNAuthConf,
 		tunDevPath:   constants.TunnelDevice,

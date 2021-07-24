@@ -60,7 +60,7 @@ func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 		return nil
 	}
 
-	c.logger.Info("removing allowed port "+strconv.Itoa(int(port))+" through firewall...", port)
+	c.logger.Info("removing allowed port " + strconv.Itoa(int(port)) + " through firewall...")
 
 	intf, ok := c.allowedInputPorts[port]
 	if !ok {
