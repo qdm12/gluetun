@@ -13,7 +13,7 @@ import (
 
 type PortForwadedGetter = state.PortForwardedGetter
 
-func (l *looper) GetPortForwarded() (port uint16) {
+func (l *Loop) GetPortForwarded() (port uint16) {
 	return l.state.GetPortForwarded()
 }
 
@@ -21,11 +21,11 @@ type PortForwader interface {
 	PortForward(vpnGatewayIP net.IP)
 }
 
-func (l *looper) PortForward(vpnGateway net.IP) { l.portForwardSignals <- vpnGateway }
+func (l *Loop) PortForward(vpnGateway net.IP) { l.portForwardSignals <- vpnGateway }
 
 // portForward is a blocking operation which may or may not be infinite.
 // You should therefore always call it in a goroutine.
-func (l *looper) portForward(ctx context.Context,
+func (l *Loop) portForward(ctx context.Context,
 	providerConf provider.Provider, client *http.Client, gateway net.IP) {
 	settings := l.state.GetSettings()
 	if !settings.Provider.PortForwarding.Enabled {
@@ -40,7 +40,7 @@ func (l *looper) portForward(ctx context.Context,
 		gateway, l.fw, syncState)
 }
 
-func (l *looper) writeOpenvpnConf(lines []string) error {
+func (l *Loop) writeOpenvpnConf(lines []string) error {
 	file, err := os.OpenFile(l.targetConfPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		return err

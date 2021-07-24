@@ -13,7 +13,7 @@ type Runner interface {
 	Run(ctx context.Context, done chan<- struct{})
 }
 
-func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
 	select {

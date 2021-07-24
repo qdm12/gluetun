@@ -321,7 +321,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler := goshutdown.NewGroupHandler("tickers", defaultGroupSettings)
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
-	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
+	openvpnLooper := openvpn.NewLoop(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
 		ovpnConf, firewallConf, routingConf, logger, httpClient, tunnelReadyCh)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})

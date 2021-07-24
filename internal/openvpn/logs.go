@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func (l *looper) collectLines(stdout, stderr <-chan string, done chan<- struct{}) {
+func (l *Loop) collectLines(stdout, stderr <-chan string, done chan<- struct{}) {
 	defer close(done)
 	var line string
 	var ok, errLine bool

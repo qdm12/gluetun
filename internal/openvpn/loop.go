@@ -25,7 +25,7 @@ type Looper interface {
 	PortForwader
 }
 
-type looper struct {
+type Loop struct {
 	statusManager loopstate.Manager
 	state         state.Manager
 	// Fixed parameters
@@ -56,11 +56,11 @@ const (
 	defaultBackoffTime = 15 * time.Second
 )
 
-func NewLooper(settings configuration.OpenVPN,
+func NewLoop(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
 	conf Configurator, fw firewall.Configurator, routing routing.Routing,
 	logger logging.ParentLogger, client *http.Client,
-	tunnelReady chan<- struct{}) Looper {
+	tunnelReady chan<- struct{}) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
@@ -69,7 +69,7 @@ func NewLooper(settings configuration.OpenVPN,
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
 	state := state.New(statusManager, settings, allServers)
 
-	return &looper{
+	return &Loop{
 		statusManager:      statusManager,
 		state:              state,
 		username:           username,

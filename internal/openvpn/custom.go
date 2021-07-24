@@ -17,7 +17,7 @@ import (
 
 var errProcessCustomConfig = errors.New("cannot process custom config")
 
-func (l *looper) processCustomConfig(settings configuration.OpenVPN) (
+func (l *Loop) processCustomConfig(settings configuration.OpenVPN) (
 	lines []string, connection models.OpenVPNConnection, err error) {
 	lines, err = readCustomConfigLines(settings.Config)
 	if err != nil {

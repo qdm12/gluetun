@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (l *looper) signalOrSetStatus(status models.LoopStatus) {
+func (l *Loop) signalOrSetStatus(status models.LoopStatus) {
 	if l.userTrigger {
 		l.userTrigger = false
 		select {
@@ -19,7 +19,7 @@ func (l *looper) signalOrSetStatus(status models.LoopStatus) {
 	}
 }
 
-func (l *looper) logAndWait(ctx context.Context, err error) {
+func (l *Loop) logAndWait(ctx context.Context, err error) {
 	if err != nil {
 		l.logger.Error(err.Error())
 	}

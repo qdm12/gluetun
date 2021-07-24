@@ -7,10 +7,10 @@ import (
 
 type ServersGetterSetter = state.ServersGetterSetter
 
-func (l *looper) GetServers() (servers models.AllServers) {
+func (l *Loop) GetServers() (servers models.AllServers) {
 	return l.state.GetServers()
 }
 
-func (l *looper) SetServers(servers models.AllServers) {
+func (l *Loop) SetServers(servers models.AllServers) {
 	l.state.SetServers(servers)
 }

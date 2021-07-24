@@ -9,11 +9,11 @@ import (
 
 type SettingsGetterSetter = state.SettingsGetterSetter
 
-func (l *looper) GetSettings() (settings configuration.OpenVPN) {
+func (l *Loop) GetSettings() (settings configuration.OpenVPN) {
 	return l.state.GetSettings()
 }
 
-func (l *looper) SetSettings(ctx context.Context, settings configuration.OpenVPN) (
+func (l *Loop) SetSettings(ctx context.Context, settings configuration.OpenVPN) (
 	outcome string) {
 	return l.state.SetSettings(ctx, settings)
 }
