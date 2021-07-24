@@ -346,7 +346,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go unboundLooper.Run(dnsCtx, dnsDone)
 	otherGroupHandler.Add(dnsHandler)
 
-	publicIPLooper := publicip.NewLooper(httpClient,
+	publicIPLooper := publicip.NewLoop(httpClient,
 		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
 		allSettings.PublicIP, puid, pgid)
 	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
@@ -488,7 +488,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 
 			// Runs the Public IP getter job once
-			_, _ = publicIPLooper.SetStatus(ctx, constants.Running)
+			_, _ = publicIPLooper.ApplyStatus(ctx, constants.Running)
 			if versionInformation && first {
 				first = false
 				message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
