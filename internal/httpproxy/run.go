@@ -11,12 +11,12 @@ type Runner interface {
 	Run(ctx context.Context, done chan<- struct{})
 }
 
-func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
 	crashed := false
 
-	if l.GetSettings().Enabled {
+	if l.state.GetSettings().Enabled {
 		go func() {
 			_, _ = l.statusManager.ApplyStatus(ctx, constants.Running)
 		}()
@@ -31,7 +31,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 	for ctx.Err() == nil {
 		runCtx, runCancel := context.WithCancel(ctx)
 
-		settings := l.GetSettings()
+		settings := l.state.GetSettings()
 		address := fmt.Sprintf(":%d", settings.Port)
 		server := New(runCtx, address, l.logger, settings.Stealth, settings.Log, settings.User, settings.Password)
 

@@ -9,11 +9,11 @@ import (
 
 type SettingsGetterSetter = state.SettingsGetterSetter
 
-func (l *looper) GetSettings() (settings configuration.HTTPProxy) {
+func (l *Loop) GetSettings() (settings configuration.HTTPProxy) {
 	return l.state.GetSettings()
 }
 
-func (l *looper) SetSettings(ctx context.Context, settings configuration.HTTPProxy) (
+func (l *Loop) SetSettings(ctx context.Context, settings configuration.HTTPProxy) (
 	outcome string) {
 	return l.state.SetSettings(ctx, settings)
 }

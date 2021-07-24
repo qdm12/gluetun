@@ -20,7 +20,7 @@ type Looper interface {
 	SettingsGetterSetter
 }
 
-type looper struct {
+type Loop struct {
 	statusManager loopstate.Manager
 	state         state.Manager
 	// Other objects
@@ -34,7 +34,7 @@ type looper struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(logger logging.Logger, settings configuration.HTTPProxy) Looper {
+func NewLoop(logger logging.Logger, settings configuration.HTTPProxy) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
@@ -44,7 +44,7 @@ func NewLooper(logger logging.Logger, settings configuration.HTTPProxy) Looper {
 		start, running, stop, stopped)
 	state := state.New(statusManager, settings)
 
-	return &looper{
+	return &Loop{
 		statusManager: statusManager,
 		state:         state,
 		logger:        logger,
@@ -56,7 +56,7 @@ func NewLooper(logger logging.Logger, settings configuration.HTTPProxy) Looper {
 	}
 }
 
-func (l *looper) logAndWait(ctx context.Context, err error) {
+func (l *Loop) logAndWait(ctx context.Context, err error) {
 	l.logger.Error(err.Error())
 	l.logger.Info("retrying in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)

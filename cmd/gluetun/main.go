@@ -359,7 +359,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
-	httpProxyLooper := httpproxy.NewLooper(
+	httpProxyLooper := httpproxy.NewLoop(
 		logger.NewChild(logging.Settings{Prefix: "http proxy: "}),
 		allSettings.HTTPProxy)
 	httpProxyHandler, httpProxyCtx, httpProxyDone := goshutdown.NewGoRoutineHandler(
