@@ -322,7 +322,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
 	openvpnLooper := openvpn.NewLoop(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, tunnelReadyCh)
+		ovpnConf, firewallConf, logger, httpClient, tunnelReadyCh)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn

@@ -11,7 +11,6 @@ import (
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn/state"
-	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -36,9 +35,8 @@ type Loop struct {
 	pgid           int
 	targetConfPath string
 	// Configurators
-	conf    StarterAuthWriter
-	fw      firewallConfigurer
-	routing routing.Routing
+	conf StarterAuthWriter
+	fw   firewallConfigurer
 	// Other objects
 	logger, pfLogger logging.Logger
 	client           *http.Client
@@ -63,11 +61,10 @@ const (
 	defaultBackoffTime = 15 * time.Second
 )
 
-func NewLoop(settings configuration.OpenVPN,
-	username string, puid, pgid int, allServers models.AllServers,
-	conf Configurator, fw firewallConfigurer, routing routing.Routing,
-	logger logging.ParentLogger, client *http.Client,
-	tunnelReady chan<- struct{}) *Loop {
+func NewLoop(settings configuration.OpenVPN, username string,
+	puid, pgid int, allServers models.AllServers, conf Configurator,
+	fw firewallConfigurer, logger logging.ParentLogger,
+	client *http.Client, tunnelReady chan<- struct{}) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
@@ -85,7 +82,6 @@ func NewLoop(settings configuration.OpenVPN,
 		targetConfPath:     constants.OpenVPNConf,
 		conf:               conf,
 		fw:                 fw,
-		routing:            routing,
 		logger:             logger.NewChild(logging.Settings{Prefix: "openvpn: "}),
 		pfLogger:           logger.NewChild(logging.Settings{Prefix: "port forwarding: "}),
 		client:             client,
