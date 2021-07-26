@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+type AuthWriter interface {
+	WriteAuthFile(user, password string, puid, pgid int) error
+}
+
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions.
 func (c *configurator) WriteAuthFile(user, password string, puid, pgid int) error {
 	file, err := os.Open(c.authFilePath)

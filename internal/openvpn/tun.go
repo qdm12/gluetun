@@ -8,6 +8,15 @@ import (
 	"github.com/qdm12/gluetun/internal/unix"
 )
 
+type TUNCheckCreater interface {
+	TUNChecker
+	TUNCreater
+}
+
+type TUNChecker interface {
+	CheckTUN() error
+}
+
 // CheckTUN checks the tunnel device is present and accessible.
 func (c *configurator) CheckTUN() error {
 	c.logger.Info("checking for device " + c.tunDevPath)
@@ -19,6 +28,10 @@ func (c *configurator) CheckTUN() error {
 		c.logger.Warn("Could not close TUN device file: " + err.Error())
 	}
 	return nil
+}
+
+type TUNCreater interface {
+	CreateTUN() error
 }
 
 func (c *configurator) CreateTUN() error {

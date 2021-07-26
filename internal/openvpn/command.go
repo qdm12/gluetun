@@ -18,6 +18,11 @@ const (
 	binOpenvpn25 = "openvpn"
 )
 
+type Starter interface {
+	Start(ctx context.Context, version string, flags []string) (
+		stdoutLines, stderrLines chan string, waitError chan error, err error)
+}
+
 func (c *configurator) Start(ctx context.Context, version string, flags []string) (
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	var bin string
@@ -38,6 +43,11 @@ func (c *configurator) Start(ctx context.Context, version string, flags []string
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
 	return c.cmder.Start(cmd)
+}
+
+type VersionGetter interface {
+	Version24(ctx context.Context) (version string, err error)
+	Version25(ctx context.Context) (version string, err error)
 }
 
 func (c *configurator) Version24(ctx context.Context) (version string, err error) {

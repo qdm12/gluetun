@@ -36,7 +36,7 @@ type Loop struct {
 	pgid           int
 	targetConfPath string
 	// Configurators
-	conf    Configurator
+	conf    StarterAuthWriter
 	fw      firewall.Configurator
 	routing routing.Routing
 	// Other objects

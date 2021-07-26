@@ -3,8 +3,6 @@
 package openvpn
 
 import (
-	"context"
-
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/golibs/command"
@@ -12,13 +10,15 @@ import (
 )
 
 type Configurator interface {
-	Version24(ctx context.Context) (version string, err error)
-	Version25(ctx context.Context) (version string, err error)
-	WriteAuthFile(user, password string, puid, pgid int) error
-	CheckTUN() error
-	CreateTUN() error
-	Start(ctx context.Context, version string, flags []string) (
-		stdoutLines, stderrLines chan string, waitError chan error, err error)
+	VersionGetter
+	AuthWriter
+	TUNCheckCreater
+	Starter
+}
+
+type StarterAuthWriter interface {
+	Starter
+	AuthWriter
 }
 
 type configurator struct {
