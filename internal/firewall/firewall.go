@@ -26,7 +26,6 @@ type Configurator interface {
 type Config struct { //nolint:maligned
 	runner           command.Runner
 	logger           logging.Logger
-	routing          routing.Routing
 	iptablesMutex    sync.Mutex
 	ip6tablesMutex   sync.Mutex
 	defaultInterface string
@@ -48,12 +47,11 @@ type Config struct { //nolint:maligned
 
 // NewConfig creates a new Config instance.
 func NewConfig(logger logging.Logger, runner command.Runner,
-	routing routing.Routing, defaultInterface string, defaultGateway net.IP,
+	defaultInterface string, defaultGateway net.IP,
 	localNetworks []routing.LocalNetwork, localIP net.IP) *Config {
 	return &Config{
 		runner:            runner,
 		logger:            logger,
-		routing:           routing,
 		allowedInputPorts: make(map[uint16]string),
 		ip6Tables:         ip6tablesSupported(context.Background(), runner),
 		customRulesPath:   "/iptables/post-rules.txt",

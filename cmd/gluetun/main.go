@@ -248,7 +248,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Prefix: "firewall: ",
 		Level:  firewallLogLevel,
 	})
-	firewallConf := firewall.NewConfig(firewallLogger, cmder, routingConf,
+	firewallConf := firewall.NewConfig(firewallLogger, cmder,
 		defaultInterface, defaultGateway, localNetworks, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
