@@ -15,8 +15,6 @@ type Runner interface {
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	crashed := false
-
 	select {
 	case <-l.start:
 	case <-ctx.Done():
@@ -40,10 +38,10 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			ipCh <- ip
 		}()
 
-		if !crashed {
+		if l.userTrigger {
+			l.userTrigger = false
 			l.running <- constants.Running
-			crashed = false
-		} else {
+		} else { // crash
 			l.backoffTime = defaultBackoffTime
 			l.statusManager.SetStatus(constants.Running)
 		}
@@ -61,9 +59,11 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				}
 				return
 			case <-l.start:
+				l.userTrigger = true
 				getCancel()
 				stayHere = false
 			case <-l.stop:
+				l.userTrigger = true
 				l.logger.Info("stopping")
 				getCancel()
 				<-errorCh
@@ -92,7 +92,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				close(ipCh)
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
-				crashed = true
 				stayHere = false
 			}
 		}

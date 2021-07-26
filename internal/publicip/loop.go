@@ -40,6 +40,7 @@ type Loop struct {
 	stopped      chan struct{}
 	updateTicker chan struct{}
 	backoffTime  time.Duration
+	userTrigger  bool
 	// Mock functions
 	timeNow func() time.Time
 }
@@ -66,11 +67,12 @@ func NewLoop(client *http.Client, logger logging.Logger,
 		logger:       logger,
 		puid:         puid,
 		pgid:         pgid,
-		start:        make(chan struct{}),
-		running:      make(chan models.LoopStatus),
-		stop:         make(chan struct{}),
-		stopped:      make(chan struct{}),
-		updateTicker: make(chan struct{}),
+		start:        start,
+		running:      running,
+		stop:         stop,
+		stopped:      stopped,
+		updateTicker: updateTicker,
+		userTrigger:  true,
 		backoffTime:  defaultBackoffTime,
 		timeNow:      time.Now,
 	}
