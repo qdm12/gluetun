@@ -34,6 +34,10 @@ var (
 	ErrVPNLocalGatewayIPNotFound = errors.New("VPN local gateway IP address not found")
 )
 
+type DefaultRouteGetter interface {
+	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
+}
+
 func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
@@ -55,6 +59,10 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 		}
 	}
 	return "", nil, fmt.Errorf("%w: in %d route(s)", ErrRouteDefaultNotFound, len(routes))
+}
+
+type DefaultIPGetter interface {
+	DefaultIP() (defaultIP net.IP, err error)
 }
 
 func (r *routing) DefaultIP() (ip net.IP, err error) {
@@ -79,6 +87,10 @@ func (r *routing) DefaultIP() (ip net.IP, err error) {
 	}
 
 	return r.assignedIP(defaultLinkName)
+}
+
+type LocalSubnetGetter interface {
+	LocalSubnet() (defaultSubnet net.IPNet, err error)
 }
 
 func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
@@ -108,6 +120,10 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	}
 
 	return defaultSubnet, fmt.Errorf("%w: in %d routes", ErrSubnetDefaultNotFound, len(routes))
+}
+
+type LocalNetworksGetter interface {
+	LocalNetworks() (localNetworks []LocalNetwork, err error)
 }
 
 func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
@@ -193,6 +209,10 @@ func (r *routing) assignedIP(interfaceName string) (ip net.IP, err error) {
 		ErrInterfaceIPNotFound, interfaceName, len(addresses))
 }
 
+type VPNDestinationIPGetter interface {
+	VPNDestinationIP() (ip net.IP, err error)
+}
+
 func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
@@ -219,6 +239,10 @@ func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 		}
 	}
 	return nil, fmt.Errorf("%w: in %d routes", ErrVPNDestinationIPNotFound, len(routes))
+}
+
+type VPNLocalGatewayIPGetter interface {
+	VPNLocalGatewayIP() (ip net.IP, err error)
 }
 
 func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {

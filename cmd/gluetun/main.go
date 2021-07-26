@@ -449,7 +449,7 @@ func printVersions(ctx context.Context, logger logging.Logger,
 func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo models.BuildInformation,
 	tunnelReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
-	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
+	routing routing.VPNGetter, logger logging.Logger, httpClient *http.Client,
 	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
 	defer close(done)
 

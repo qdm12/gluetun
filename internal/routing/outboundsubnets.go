@@ -10,6 +10,10 @@ var (
 	ErrAddOutboundSubnet = errors.New("cannot add outbound subnet to routes")
 )
 
+type OutboundRoutesSetter interface {
+	SetOutboundRoutes(outboundSubnets []net.IPNet) error
+}
+
 func (r *routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 	defaultInterface, defaultGateway, err := r.DefaultRoute()
 	if err != nil {

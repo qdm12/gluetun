@@ -9,17 +9,27 @@ import (
 )
 
 type Routing interface {
-	// Mutations
-	Setup() (err error)
-	TearDown() error
-	SetOutboundRoutes(outboundSubnets []net.IPNet) error
+	Reader
+	Writer
+}
 
-	// Read only
-	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
-	LocalNetworks() (localNetworks []LocalNetwork, err error)
-	DefaultIP() (defaultIP net.IP, err error)
-	VPNDestinationIP() (ip net.IP, err error)
-	VPNLocalGatewayIP() (ip net.IP, err error)
+type Reader interface {
+	DefaultRouteGetter
+	DefaultIPGetter
+	LocalSubnetGetter
+	LocalNetworksGetter
+	VPNGetter
+}
+
+type VPNGetter interface {
+	VPNDestinationIPGetter
+	VPNLocalGatewayIPGetter
+}
+
+type Writer interface {
+	Setuper
+	TearDowner
+	OutboundRoutesSetter
 }
 
 type routing struct {
