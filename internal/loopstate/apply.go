@@ -34,7 +34,9 @@ func (s *State) ApplyStatus(ctx context.Context, status models.LoopStatus) (
 
 	switch status {
 	case constants.Running:
-		if existingStatus != constants.Stopped {
+		switch existingStatus {
+		case constants.Stopped, constants.Completed:
+		default:
 			return "already " + existingStatus.String(), nil
 		}
 
