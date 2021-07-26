@@ -28,7 +28,7 @@ var (
 // PortForward obtains a VPN server side port forwarded from PIA.
 //nolint:gocognit
 func (p *PIA) PortForward(ctx context.Context, client *http.Client,
-	logger logging.Logger, gateway net.IP, fw firewall.Configurator,
+	logger logging.Logger, gateway net.IP, portAllower firewall.PortAllower,
 	syncState func(port uint16) (pfFilepath string)) {
 	commonName := p.activeServer.ServerName
 	if !p.activeServer.PortForward {
@@ -96,7 +96,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 		logger.Error(err.Error())
 	}
 
-	if err := fw.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
+	if err := portAllower.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
 		logger.Error(err.Error())
 	}
 
@@ -109,7 +109,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 		case <-ctx.Done():
 			removeCtx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
-			if err := fw.RemoveAllowedPort(removeCtx, data.Port); err != nil {
+			if err := portAllower.RemoveAllowedPort(removeCtx, data.Port); err != nil {
 				logger.Error(err.Error())
 			}
 			if !keepAliveTimer.Stop() {
@@ -140,10 +140,10 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 			durationToExpiration := data.Expiration.Sub(p.timeNow())
 			logger.Info("Port forwarded is " + strconv.Itoa(int(data.Port)) +
 				" expiring in " + format.FriendlyDuration(durationToExpiration))
-			if err := fw.RemoveAllowedPort(ctx, oldPort); err != nil {
+			if err := portAllower.RemoveAllowedPort(ctx, oldPort); err != nil {
 				logger.Error(err.Error())
 			}
-			if err := fw.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
+			if err := portAllower.SetAllowedPort(ctx, data.Port, string(constants.TUN)); err != nil {
 				logger.Error(err.Error())
 			}
 			filepath := syncState(data.Port)

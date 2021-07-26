@@ -37,7 +37,7 @@ type Provider interface {
 	GetOpenVPNConnection(selection configuration.ServerSelection) (connection models.OpenVPNConnection, err error)
 	BuildConf(connection models.OpenVPNConnection, username string, settings configuration.OpenVPN) (lines []string)
 	PortForward(ctx context.Context, client *http.Client,
-		pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+		pfLogger logging.Logger, gateway net.IP, portAllower firewall.PortAllower,
 		syncState func(port uint16) (pfFilepath string))
 }
 

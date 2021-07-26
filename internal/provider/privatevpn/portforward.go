@@ -10,7 +10,7 @@ import (
 )
 
 func (p *Privatevpn) PortForward(ctx context.Context, client *http.Client,
-	pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
+	pfLogger logging.Logger, gateway net.IP, portAllower firewall.PortAllower,
 	syncState func(port uint16) (pfFilepath string)) {
 	panic("port forwarding is not supported for PrivateVPN")
 }

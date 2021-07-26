@@ -37,7 +37,7 @@ type Loop struct {
 	targetConfPath string
 	// Configurators
 	conf    StarterAuthWriter
-	fw      firewall.Configurator
+	fw      firewallConfigurer
 	routing routing.Routing
 	// Other objects
 	logger, pfLogger logging.Logger
@@ -54,13 +54,18 @@ type Loop struct {
 	backoffTime time.Duration
 }
 
+type firewallConfigurer interface {
+	firewall.VPNConnectionSetter
+	firewall.PortAllower
+}
+
 const (
 	defaultBackoffTime = 15 * time.Second
 )
 
 func NewLoop(settings configuration.OpenVPN,
 	username string, puid, pgid int, allServers models.AllServers,
-	conf Configurator, fw firewall.Configurator, routing routing.Routing,
+	conf Configurator, fw firewallConfigurer, routing routing.Routing,
 	logger logging.ParentLogger, client *http.Client,
 	tunnelReady chan<- struct{}) *Loop {
 	start := make(chan struct{})
