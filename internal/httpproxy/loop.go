@@ -31,6 +31,7 @@ type Loop struct {
 	running       chan models.LoopStatus
 	stop, stopped chan struct{}
 	start         chan struct{}
+	userTrigger   bool
 	backoffTime   time.Duration
 }
 
@@ -54,6 +55,7 @@ func NewLoop(logger logging.Logger, settings configuration.HTTPProxy) *Loop {
 		running:       running,
 		stop:          stop,
 		stopped:       stopped,
+		userTrigger:   true,
 		backoffTime:   defaultBackoffTime,
 	}
 }
