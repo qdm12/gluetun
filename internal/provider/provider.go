@@ -10,7 +10,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
 	"github.com/qdm12/gluetun/internal/provider/fastestvpn"
@@ -36,9 +35,16 @@ import (
 type Provider interface {
 	GetOpenVPNConnection(selection configuration.ServerSelection) (connection models.OpenVPNConnection, err error)
 	BuildConf(connection models.OpenVPNConnection, username string, settings configuration.OpenVPN) (lines []string)
+	PortForwarder
+}
+
+type PortForwarder interface {
 	PortForward(ctx context.Context, client *http.Client,
-		pfLogger logging.Logger, gateway net.IP, portAllower firewall.PortAllower,
-		syncState func(port uint16) (pfFilepath string))
+		logger logging.Logger, gateway net.IP, serverName string) (
+		port uint16, err error)
+	KeepPortForward(ctx context.Context, client *http.Client,
+		logger logging.Logger, port uint16, gateway net.IP, serverName string) (
+		err error)
 }
 
 func New(provider string, allServers models.AllServers, timeNow func() time.Time) Provider {

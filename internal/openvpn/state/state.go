@@ -13,7 +13,6 @@ var _ Manager = (*State)(nil)
 type Manager interface {
 	SettingsGetSetter
 	ServersGetterSetter
-	PortForwardedGetterSetter
 	GetSettingsAndServers() (settings configuration.OpenVPN,
 		allServers models.AllServers)
 }
@@ -36,9 +35,6 @@ type State struct {
 
 	allServers   models.AllServers
 	allServersMu sync.RWMutex
-
-	portForwarded   uint16
-	portForwardedMu sync.RWMutex
 }
 
 func (s *State) GetSettingsAndServers() (settings configuration.OpenVPN,
