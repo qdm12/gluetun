@@ -22,15 +22,17 @@ func (s *State) GetSettings() (settings configuration.PublicIP) {
 func (s *State) SetSettings(ctx context.Context, settings configuration.PublicIP) (
 	outcome string) {
 	s.settingsMu.Lock()
-	defer s.settingsMu.Unlock()
 
 	settingsUnchanged := reflect.DeepEqual(s.settings, settings)
 	if settingsUnchanged {
+		s.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
 
 	periodChanged := s.settings.Period != settings.Period
 	s.settings = settings
+	s.settingsMu.Unlock()
+
 	if periodChanged {
 		s.updateTicker <- struct{}{}
 		// TODO blocking

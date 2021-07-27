@@ -23,12 +23,13 @@ func (s *State) GetSettings() (settings configuration.OpenVPN) {
 func (s *State) SetSettings(ctx context.Context, settings configuration.OpenVPN) (
 	outcome string) {
 	s.settingsMu.Lock()
-	defer s.settingsMu.Unlock()
 	settingsUnchanged := reflect.DeepEqual(s.settings, settings)
 	if settingsUnchanged {
+		s.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
 	s.settings = settings
+	s.settingsMu.Unlock()
 	_, _ = s.statusApplier.ApplyStatus(ctx, constants.Stopped)
 	outcome, _ = s.statusApplier.ApplyStatus(ctx, constants.Running)
 	return outcome

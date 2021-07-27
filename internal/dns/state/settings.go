@@ -23,10 +23,10 @@ func (s *State) GetSettings() (settings configuration.DNS) {
 func (s *State) SetSettings(ctx context.Context, settings configuration.DNS) (
 	outcome string) {
 	s.settingsMu.Lock()
-	defer s.settingsMu.Unlock()
 
 	settingsUnchanged := reflect.DeepEqual(s.settings, settings)
 	if settingsUnchanged {
+		s.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
 
@@ -36,6 +36,7 @@ func (s *State) SetSettings(ctx context.Context, settings configuration.DNS) (
 	onlyUpdatePeriodChanged := reflect.DeepEqual(tempSettings, settings)
 
 	s.settings = settings
+	s.settingsMu.Unlock()
 
 	if onlyUpdatePeriodChanged {
 		s.updateTicker <- struct{}{}
