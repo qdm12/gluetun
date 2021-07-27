@@ -152,5 +152,6 @@ type WindscribeServer struct {
 	Region   string   `json:"region"`
 	City     string   `json:"city"`
 	Hostname string   `json:"hostname"`
+	OvpnX509 string   `json:"x509"`
 	IPs      []net.IP `json:"ips"`
 }

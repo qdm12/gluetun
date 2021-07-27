@@ -104368,13 +104368,14 @@
     ]
   },
   "windscribe": {
-    "version": 3,
-    "timestamp": 1627008365,
+    "version": 0,
+    "timestamp": 1627398646,
     "servers": [
       {
         "region": "Albania",
         "city": "Tirana",
         "hostname": "al-002.whiskergalaxy.com",
+        "x509": "tia-283.windscribe.com",
         "ips": [
           "31.171.152.178",
           "31.171.152.179",
@@ -104385,6 +104386,7 @@
         "region": "Argentina",
         "city": "Buenos Aires",
         "hostname": "ar-008.whiskergalaxy.com",
+        "x509": "eze-278.windscribe.com",
         "ips": [
           "190.103.176.146",
           "190.103.176.147",
@@ -104395,6 +104397,7 @@
         "region": "Australia",
         "city": "Adelaide",
         "hostname": "au-008.whiskergalaxy.com",
+        "x509": "adl-319.windscribe.com",
         "ips": [
           "116.90.72.242",
           "116.90.72.243",
@@ -104405,6 +104408,7 @@
         "region": "Australia",
         "city": "Adelaide ",
         "hostname": "au-011.whiskergalaxy.com",
+        "x509": "adl-354.windscribe.com",
         "ips": [
           "103.108.92.82",
           "103.108.92.83",
@@ -104415,6 +104419,7 @@
         "region": "Australia",
         "city": "Brisbane",
         "hostname": "au-007.whiskergalaxy.com",
+        "x509": "bne-225.windscribe.com",
         "ips": [
           "103.62.50.157",
           "103.62.50.208",
@@ -104425,6 +104430,7 @@
         "region": "Australia",
         "city": "Brisbane",
         "hostname": "au-014.whiskergalaxy.com",
+        "x509": "bne-357.windscribe.com",
         "ips": [
           "43.245.160.34",
           "43.245.160.35",
@@ -104435,6 +104441,7 @@
         "region": "Australia",
         "city": "Canberra",
         "hostname": "au-010.whiskergalaxy.com",
+        "x509": "cbr-353.windscribe.com",
         "ips": [
           "116.206.229.130",
           "116.206.229.131",
@@ -104445,6 +104452,7 @@
         "region": "Australia",
         "city": "Melbourne ",
         "hostname": "au-005.whiskergalaxy.com",
+        "x509": "mel-224.windscribe.com",
         "ips": [
           "45.121.209.103",
           "45.121.209.160",
@@ -104455,6 +104463,7 @@
         "region": "Australia",
         "city": "Melbourne ",
         "hostname": "au-013.whiskergalaxy.com",
+        "x509": "mel-356.windscribe.com",
         "ips": [
           "116.206.228.66",
           "116.206.228.67",
@@ -104465,6 +104474,7 @@
         "region": "Australia",
         "city": "Perth",
         "hostname": "au-004.whiskergalaxy.com",
+        "x509": "per-223.windscribe.com",
         "ips": [
           "45.121.208.128",
           "45.121.208.160",
@@ -104475,6 +104485,7 @@
         "region": "Australia",
         "city": "Perth",
         "hostname": "au-012.whiskergalaxy.com",
+        "x509": "per-355.windscribe.com",
         "ips": [
           "103.77.234.210",
           "103.77.234.211",
@@ -104485,6 +104496,7 @@
         "region": "Australia",
         "city": "Sydney",
         "hostname": "au-009.whiskergalaxy.com",
+        "x509": "syd-243.windscribe.com",
         "ips": [
           "103.77.233.66",
           "103.77.233.67",
@@ -104495,6 +104507,7 @@
         "region": "Australia",
         "city": "Sydney",
         "hostname": "au-015.whiskergalaxy.com",
+        "x509": "syd-226.windscribe.com",
         "ips": [
           "103.1.213.210",
           "103.1.213.211",
@@ -104505,6 +104518,7 @@
         "region": "Australia",
         "city": "Sydney",
         "hostname": "au-016.whiskergalaxy.com",
+        "x509": "syd-226.windscribe.com",
         "ips": [
           "103.1.212.242",
           "103.1.212.243",
@@ -104515,6 +104529,7 @@
         "region": "Austria",
         "city": "Vienna",
         "hostname": "at-001.whiskergalaxy.com",
+        "x509": "vie-87.windscribe.com",
         "ips": [
           "217.64.127.10",
           "217.64.127.11",
@@ -104525,6 +104540,7 @@
         "region": "Austria",
         "city": "Vienna",
         "hostname": "at-002.whiskergalaxy.com",
+        "x509": "vie-308.windscribe.com",
         "ips": [
           "89.187.168.65",
           "89.187.168.66",
@@ -104535,6 +104551,7 @@
         "region": "Azerbaijan",
         "city": "Baku City",
         "hostname": "az-001.whiskergalaxy.com",
+        "x509": "bak-127.windscribe.com",
         "ips": [
           "62.212.239.58",
           "62.212.239.59",
@@ -104545,6 +104562,7 @@
         "region": "Belgium",
         "city": "Brussels",
         "hostname": "be-001.whiskergalaxy.com",
+        "x509": "bru-99.windscribe.com",
         "ips": [
           "194.187.251.146",
           "194.187.251.147",
@@ -104555,6 +104573,7 @@
         "region": "Belgium",
         "city": "Brussels",
         "hostname": "be-002.whiskergalaxy.com",
+        "x509": "bru-99.windscribe.com",
         "ips": [
           "185.232.21.130",
           "185.232.21.131",
@@ -104565,6 +104584,7 @@
         "region": "Bosnia",
         "city": "Sarajevo",
         "hostname": "ba-001.whiskergalaxy.com",
+        "x509": "sjj-286.windscribe.com",
         "ips": [
           "185.164.35.16",
           "185.99.3.24",
@@ -104575,6 +104595,7 @@
         "region": "Brazil",
         "city": "Sao Paulo",
         "hostname": "br-004.whiskergalaxy.com",
+        "x509": "gru-231.windscribe.com",
         "ips": [
           "177.67.80.58",
           "177.67.80.59",
@@ -104585,6 +104606,7 @@
         "region": "Brazil",
         "city": "Sao Paulo",
         "hostname": "br-005.whiskergalaxy.com",
+        "x509": "gru-165.windscribe.com",
         "ips": [
           "177.54.157.27",
           "177.54.157.179",
@@ -104595,6 +104617,7 @@
         "region": "Brazil",
         "city": "Sao Paulo",
         "hostname": "br-006.whiskergalaxy.com",
+        "x509": "gru-165.windscribe.com",
         "ips": [
           "177.54.148.7",
           "177.54.148.247",
@@ -104605,6 +104628,7 @@
         "region": "Bulgaria",
         "city": "Sofia",
         "hostname": "bg-001.whiskergalaxy.com",
+        "x509": "sof-100.windscribe.com",
         "ips": [
           "185.94.192.34",
           "185.94.192.35",
@@ -104615,6 +104639,7 @@
         "region": "Cambodia",
         "city": "Phnom Penh",
         "hostname": "kh-001.whiskergalaxy.com",
+        "x509": "pnh-374.windscribe.com",
         "ips": [
           "195.80.149.242",
           "195.80.149.243",
@@ -104625,6 +104650,7 @@
         "region": "Canada East",
         "city": "Halifax",
         "hostname": "ca-029.whiskergalaxy.com",
+        "x509": "yhz-340.windscribe.com",
         "ips": [
           "199.204.208.157",
           "199.204.208.158",
@@ -104635,6 +104661,7 @@
         "region": "Canada East",
         "city": "Montreal",
         "hostname": "ca-027.whiskergalaxy.com",
+        "x509": "yul-316.windscribe.com",
         "ips": [
           "104.227.246.98",
           "144.168.163.160",
@@ -104645,6 +104672,7 @@
         "region": "Canada East",
         "city": "Montreal",
         "hostname": "ca-028.whiskergalaxy.com",
+        "x509": "yul-316.windscribe.com",
         "ips": [
           "23.236.161.50",
           "144.168.163.193",
@@ -104655,6 +104683,7 @@
         "region": "Canada East",
         "city": "Montreal",
         "hostname": "ca-032.whiskergalaxy.com",
+        "x509": "yul-316.windscribe.com",
         "ips": [
           "23.236.161.210",
           "104.227.235.129",
@@ -104665,6 +104694,7 @@
         "region": "Canada East",
         "city": "Montreal",
         "hostname": "ca-033.whiskergalaxy.com",
+        "x509": "yul-359.windscribe.com",
         "ips": [
           "198.8.85.194",
           "198.8.85.195",
@@ -104675,6 +104705,7 @@
         "region": "Canada East",
         "city": "Montreal",
         "hostname": "ca-034.whiskergalaxy.com",
+        "x509": "yul-359.windscribe.com",
         "ips": [
           "198.8.85.209",
           "198.8.85.210",
@@ -104685,6 +104716,7 @@
         "region": "Canada East",
         "city": "Toronto",
         "hostname": "ca-002.whiskergalaxy.com",
+        "x509": "yyz-72.windscribe.com",
         "ips": [
           "104.254.92.10",
           "104.254.92.11",
@@ -104695,6 +104727,7 @@
         "region": "Canada East",
         "city": "Toronto",
         "hostname": "ca-009.whiskergalaxy.com",
+        "x509": "yyz-72.windscribe.com",
         "ips": [
           "104.254.92.90",
           "104.254.92.91",
@@ -104705,6 +104738,7 @@
         "region": "Canada East",
         "city": "Toronto",
         "hostname": "ca-017.whiskergalaxy.com",
+        "x509": "yyz-72.windscribe.com",
         "ips": [
           "184.75.212.90",
           "184.75.212.91",
@@ -104715,6 +104749,7 @@
         "region": "Canada East",
         "city": "Toronto",
         "hostname": "ca-025.whiskergalaxy.com",
+        "x509": "yyz-197.windscribe.com",
         "ips": [
           "91.149.252.4",
           "91.149.252.97",
@@ -104725,6 +104760,7 @@
         "region": "Canada East",
         "city": "Toronto",
         "hostname": "ca-026.whiskergalaxy.com",
+        "x509": "yyz-197.windscribe.com",
         "ips": [
           "91.149.252.5",
           "91.149.252.129",
@@ -104735,6 +104771,7 @@
         "region": "Canada East",
         "city": "Toronto",
         "hostname": "ca-030.whiskergalaxy.com",
+        "x509": "yyz-197.windscribe.com",
         "ips": [
           "91.149.252.6",
           "91.149.252.161",
@@ -104745,6 +104782,7 @@
         "region": "Canada West",
         "city": "Vancouver",
         "hostname": "ca-west-005.whiskergalaxy.com",
+        "x509": "yvr-187.windscribe.com",
         "ips": [
           "162.221.207.94",
           "162.221.207.95",
@@ -104755,6 +104793,7 @@
         "region": "Canada West",
         "city": "Vancouver",
         "hostname": "ca-west-006.whiskergalaxy.com",
+        "x509": "yvr-187.windscribe.com",
         "ips": [
           "71.19.251.151",
           "71.19.251.152",
@@ -104765,6 +104804,7 @@
         "region": "Canada West",
         "city": "Vancouver",
         "hostname": "ca-west-011.whiskergalaxy.com",
+        "x509": "yvr-124.windscribe.com",
         "ips": [
           "104.218.61.250",
           "104.218.61.1",
@@ -104775,6 +104815,7 @@
         "region": "Canada West",
         "city": "Vancouver",
         "hostname": "ca-west-012.whiskergalaxy.com",
+        "x509": "yvr-124.windscribe.com",
         "ips": [
           "104.218.61.251",
           "104.218.61.33",
@@ -104785,6 +104826,7 @@
         "region": "Canada West",
         "city": "Vancouver",
         "hostname": "ca-west-017.whiskergalaxy.com",
+        "x509": "yvr-311.windscribe.com",
         "ips": [
           "208.78.41.130",
           "208.78.41.131",
@@ -104795,6 +104837,7 @@
         "region": "Canada West",
         "city": "Vancouver",
         "hostname": "ca-west-019.whiskergalaxy.com",
+        "x509": "yvr-311.windscribe.com",
         "ips": [
           "208.78.41.162",
           "208.78.41.163",
@@ -104805,6 +104848,7 @@
         "region": "Canada West",
         "city": "Vancouver",
         "hostname": "ca-west-020.whiskergalaxy.com",
+        "x509": "yvr-311.windscribe.com",
         "ips": [
           "198.8.92.98",
           "198.8.92.99",
@@ -104815,6 +104859,7 @@
         "region": "Chile",
         "city": "Santiago",
         "hostname": "cl-001.whiskergalaxy.com",
+        "x509": "scl-373.windscribe.com",
         "ips": [
           "66.203.113.19",
           "66.203.113.131",
@@ -104825,6 +104870,7 @@
         "region": "Chile",
         "city": "Santiago",
         "hostname": "cl-002.whiskergalaxy.com",
+        "x509": "scl-373.windscribe.com",
         "ips": [
           "66.203.113.18",
           "66.203.113.136",
@@ -104835,6 +104881,7 @@
         "region": "Colombia",
         "city": "Bogota",
         "hostname": "co-001.whiskergalaxy.com",
+        "x509": "bog-240.windscribe.com",
         "ips": [
           "138.121.203.202",
           "138.121.203.203",
@@ -104845,6 +104892,7 @@
         "region": "Colombia",
         "city": "Bogota",
         "hostname": "co-002.whiskergalaxy.com",
+        "x509": "bog-360.windscribe.com",
         "ips": [
           "138.186.141.154",
           "138.186.141.155",
@@ -104855,6 +104903,7 @@
         "region": "Croatia",
         "city": "Zagreb",
         "hostname": "hr-002.whiskergalaxy.com",
+        "x509": "zag-252.windscribe.com",
         "ips": [
           "85.10.56.128",
           "85.10.56.129",
@@ -104865,6 +104914,7 @@
         "region": "Cyprus",
         "city": "Nicosia",
         "hostname": "cy-001.whiskergalaxy.com",
+        "x509": "lca-320.windscribe.com",
         "ips": [
           "157.97.132.42",
           "157.97.132.43",
@@ -104875,6 +104925,7 @@
         "region": "Czech Republic",
         "city": "Prague",
         "hostname": "cz-001.whiskergalaxy.com",
+        "x509": "prg-88.windscribe.com",
         "ips": [
           "185.156.174.10",
           "185.156.174.11",
@@ -104885,6 +104936,7 @@
         "region": "Czech Republic",
         "city": "Prague ",
         "hostname": "cz-002.whiskergalaxy.com",
+        "x509": "prg-338.windscribe.com",
         "ips": [
           "185.246.210.1",
           "185.246.210.2",
@@ -104895,6 +104947,7 @@
         "region": "Denmark",
         "city": "Copenhagen",
         "hostname": "dk-001.whiskergalaxy.com",
+        "x509": "cph-153.windscribe.com",
         "ips": [
           "185.206.224.194",
           "185.206.224.195",
@@ -104905,6 +104958,7 @@
         "region": "Denmark",
         "city": "Copenhagen",
         "hostname": "dk-003.whiskergalaxy.com",
+        "x509": "cph-153.windscribe.com",
         "ips": [
           "185.206.224.34",
           "185.206.224.35",
@@ -104915,6 +104969,7 @@
         "region": "Estonia",
         "city": "Tallinn",
         "hostname": "ee-002.whiskergalaxy.com",
+        "x509": "tll-299.windscribe.com",
         "ips": [
           "196.196.216.130",
           "196.196.216.131",
@@ -104925,6 +104980,7 @@
         "region": "Estonia",
         "city": "Tallinn",
         "hostname": "ee-003.whiskergalaxy.com",
+        "x509": "tll-299.windscribe.com",
         "ips": [
           "196.196.216.194",
           "196.196.216.195",
@@ -104935,6 +104991,7 @@
         "region": "Estonia",
         "city": "Tallinn",
         "hostname": "ee-004.whiskergalaxy.com",
+        "x509": "tll-299.windscribe.com",
         "ips": [
           "196.196.216.226",
           "196.196.216.227",
@@ -104945,6 +105002,7 @@
         "region": "Fake Antarctica",
         "city": "Troll",
         "hostname": "aq-001.whiskergalaxy.com",
+        "x509": "wfr-332.windscribe.com",
         "ips": [
           "91.149.252.8",
           "91.149.252.225",
@@ -104955,6 +105013,7 @@
         "region": "Fake Antarctica",
         "city": "Troll",
         "hostname": "aq-002.whiskergalaxy.com",
+        "x509": "wfr-332.windscribe.com",
         "ips": [
           "91.149.252.9",
           "91.149.252.241",
@@ -104965,6 +105024,7 @@
         "region": "Finland",
         "city": "Helsinki",
         "hostname": "fi-002.whiskergalaxy.com",
+        "x509": "hel-186.windscribe.com",
         "ips": [
           "91.233.117.203",
           "185.112.82.227",
@@ -104975,6 +105035,7 @@
         "region": "Finland",
         "city": "Helsinki",
         "hostname": "fi-003.whiskergalaxy.com",
+        "x509": "hel-186.windscribe.com",
         "ips": [
           "185.112.82.8",
           "194.34.133.82",
@@ -104985,6 +105046,7 @@
         "region": "Finland",
         "city": "Helsinki",
         "hostname": "fi-004.whiskergalaxy.com",
+        "x509": "hel-98.windscribe.com",
         "ips": [
           "196.244.192.50",
           "196.244.192.51",
@@ -104995,6 +105057,7 @@
         "region": "France",
         "city": "Paris",
         "hostname": "fr-004.whiskergalaxy.com",
+        "x509": "cdg-103.windscribe.com",
         "ips": [
           "185.156.173.186",
           "185.156.173.187",
@@ -105005,6 +105068,7 @@
         "region": "France",
         "city": "Paris",
         "hostname": "fr-005.whiskergalaxy.com",
+        "x509": "cdg-103.windscribe.com",
         "ips": [
           "82.102.18.34",
           "82.102.18.35",
@@ -105015,6 +105079,7 @@
         "region": "France",
         "city": "Paris",
         "hostname": "fr-009.whiskergalaxy.com",
+        "x509": "cdg-342.windscribe.com",
         "ips": [
           "84.17.42.1",
           "84.17.42.2",
@@ -105025,6 +105090,7 @@
         "region": "France",
         "city": "Paris",
         "hostname": "fr-011.whiskergalaxy.com",
+        "x509": "cdg-103.windscribe.com",
         "ips": [
           "45.89.174.34",
           "45.89.174.35",
@@ -105035,6 +105101,7 @@
         "region": "Germany",
         "city": "Frankfurt",
         "hostname": "de-003.whiskergalaxy.com",
+        "x509": "fra-113.windscribe.com",
         "ips": [
           "89.249.65.18",
           "89.249.65.19",
@@ -105045,6 +105112,7 @@
         "region": "Germany",
         "city": "Frankfurt",
         "hostname": "de-006.whiskergalaxy.com",
+        "x509": "fra-113.windscribe.com",
         "ips": [
           "185.130.184.194",
           "185.130.184.195",
@@ -105055,6 +105123,7 @@
         "region": "Germany",
         "city": "Frankfurt",
         "hostname": "de-009.whiskergalaxy.com",
+        "x509": "fra-228.windscribe.com",
         "ips": [
           "195.181.170.65",
           "195.181.170.66",
@@ -105065,6 +105134,7 @@
         "region": "Germany",
         "city": "Frankfurt",
         "hostname": "de-010.whiskergalaxy.com",
+        "x509": "fra-228.windscribe.com",
         "ips": [
           "195.181.175.97",
           "195.181.175.98",
@@ -105075,6 +105145,7 @@
         "region": "Germany",
         "city": "Frankfurt",
         "hostname": "de-011.whiskergalaxy.com",
+        "x509": "fra-113.windscribe.com",
         "ips": [
           "217.138.194.114",
           "217.138.194.115",
@@ -105085,6 +105156,7 @@
         "region": "Germany",
         "city": "Frankfurt",
         "hostname": "de-012.whiskergalaxy.com",
+        "x509": "fra-113.windscribe.com",
         "ips": [
           "45.87.212.50",
           "45.87.212.51",
@@ -105095,6 +105167,7 @@
         "region": "Germany",
         "city": "Frankfurt",
         "hostname": "de-017.whiskergalaxy.com",
+        "x509": "fra-113.windscribe.com",
         "ips": [
           "45.87.212.82",
           "45.87.212.83",
@@ -105105,6 +105178,7 @@
         "region": "Greece",
         "city": "Athens",
         "hostname": "gr-002.whiskergalaxy.com",
+        "x509": "ath-246.windscribe.com",
         "ips": [
           "78.108.38.100",
           "78.108.38.155",
@@ -105115,6 +105189,7 @@
         "region": "Greece",
         "city": "Athens",
         "hostname": "gr-004.whiskergalaxy.com",
+        "x509": "ath-247.windscribe.com",
         "ips": [
           "185.226.64.102",
           "185.226.64.111",
@@ -105125,6 +105200,7 @@
         "region": "Greece",
         "city": "Athens",
         "hostname": "gr-005.whiskergalaxy.com",
+        "x509": "ath-312.windscribe.com",
         "ips": [
           "188.123.126.145",
           "188.123.126.146",
@@ -105135,6 +105211,7 @@
         "region": "Hong Kong",
         "city": "Hong Kong",
         "hostname": "hk-005.whiskergalaxy.com",
+        "x509": "hkg-26.windscribe.com",
         "ips": [
           "103.10.197.98",
           "103.10.197.99",
@@ -105145,6 +105222,7 @@
         "region": "Hong Kong",
         "city": "Hong Kong",
         "hostname": "hk-006.whiskergalaxy.com",
+        "x509": "hkg-189.windscribe.com",
         "ips": [
           "84.17.57.113",
           "84.17.57.114",
@@ -105155,6 +105233,7 @@
         "region": "Hong Kong",
         "city": "Hong Kong",
         "hostname": "hk-008.whiskergalaxy.com",
+        "x509": "hkg-26.windscribe.com",
         "ips": [
           "27.122.12.3",
           "27.122.12.2",
@@ -105165,6 +105244,7 @@
         "region": "Hungary",
         "city": "Budapest",
         "hostname": "hu-001.whiskergalaxy.com",
+        "x509": "bud-90.windscribe.com",
         "ips": [
           "185.104.187.42",
           "185.104.187.43",
@@ -105175,6 +105255,7 @@
         "region": "Iceland",
         "city": "Reykjavik",
         "hostname": "is-001.whiskergalaxy.com",
+        "x509": "kef-121.windscribe.com",
         "ips": [
           "82.221.139.37",
           "82.221.139.38",
@@ -105185,6 +105266,7 @@
         "region": "Iceland",
         "city": "Reykjavik",
         "hostname": "is-002.whiskergalaxy.com",
+        "x509": "kef-344.windscribe.com",
         "ips": [
           "185.165.170.1",
           "185.165.170.2",
@@ -105195,6 +105277,7 @@
         "region": "India",
         "city": "Chennai",
         "hostname": "in-005.whiskergalaxy.com",
+        "x509": "maa-271.windscribe.com",
         "ips": [
           "169.38.107.47",
           "169.38.68.188",
@@ -105205,6 +105288,7 @@
         "region": "India",
         "city": "Chennai",
         "hostname": "in-006.whiskergalaxy.com",
+        "x509": "maa-271.windscribe.com",
         "ips": [
           "169.38.107.32",
           "169.38.72.14",
@@ -105215,6 +105299,7 @@
         "region": "India",
         "city": "Chennai",
         "hostname": "in-007.whiskergalaxy.com",
+        "x509": "maa-271.windscribe.com",
         "ips": [
           "169.38.107.21",
           "169.38.72.12",
@@ -105225,6 +105310,7 @@
         "region": "India",
         "city": "Mumbai",
         "hostname": "in-009.whiskergalaxy.com",
+        "x509": "bom-372.windscribe.com",
         "ips": [
           "196.240.60.2",
           "196.240.60.3",
@@ -105235,6 +105321,7 @@
         "region": "India",
         "city": "Mumbai",
         "hostname": "in-010.whiskergalaxy.com",
+        "x509": "bom-372.windscribe.com",
         "ips": [
           "196.240.60.18",
           "196.240.60.19",
@@ -105245,6 +105332,7 @@
         "region": "India",
         "city": "Pune",
         "hostname": "in-008.whiskergalaxy.com",
+        "x509": "pnq-214.windscribe.com",
         "ips": [
           "103.205.140.30",
           "103.205.140.227",
@@ -105255,6 +105343,7 @@
         "region": "Indonesia",
         "city": "Jakarta",
         "hostname": "id-002.whiskergalaxy.com",
+        "x509": "cgk-253.windscribe.com",
         "ips": [
           "45.127.134.90",
           "45.127.134.91",
@@ -105265,6 +105354,7 @@
         "region": "Indonesia",
         "city": "Jakarta",
         "hostname": "id-003.whiskergalaxy.com",
+        "x509": "cgk-253.windscribe.com",
         "ips": [
           "103.236.201.70",
           "103.236.201.71",
@@ -105275,6 +105365,7 @@
         "region": "Indonesia",
         "city": "Jakarta",
         "hostname": "id-004.whiskergalaxy.com",
+        "x509": "cgk-253.windscribe.com",
         "ips": [
           "103.236.201.75",
           "103.236.201.76",
@@ -105285,6 +105376,7 @@
         "region": "Ireland",
         "city": "Dublin",
         "hostname": "ie-001.whiskergalaxy.com",
+        "x509": "dub-73.windscribe.com",
         "ips": [
           "185.24.235.14",
           "185.24.232.146",
@@ -105295,6 +105387,7 @@
         "region": "Ireland",
         "city": "Dublin",
         "hostname": "ie-002.whiskergalaxy.com",
+        "x509": "dub-73.windscribe.com",
         "ips": [
           "185.24.232.190",
           "185.104.219.2",
@@ -105305,6 +105398,7 @@
         "region": "Ireland",
         "city": "Dublin",
         "hostname": "ie-003.whiskergalaxy.com",
+        "x509": "dub-370.windscribe.com",
         "ips": [
           "23.92.127.34",
           "23.92.127.35",
@@ -105315,6 +105409,7 @@
         "region": "Israel",
         "city": "Ashdod",
         "hostname": "il-002.whiskergalaxy.com",
+        "x509": "tlv-218.windscribe.com",
         "ips": [
           "185.191.205.138",
           "185.191.205.139",
@@ -105325,6 +105420,7 @@
         "region": "Israel",
         "city": "Jerusalem",
         "hostname": "il-001.whiskergalaxy.com",
+        "x509": "jrs-119.windscribe.com",
         "ips": [
           "160.116.0.26",
           "160.116.0.27",
@@ -105335,6 +105431,7 @@
         "region": "Italy",
         "city": "Milan",
         "hostname": "it-001.whiskergalaxy.com",
+        "x509": "mxp-110.windscribe.com",
         "ips": [
           "37.120.135.82",
           "37.120.135.83",
@@ -105345,6 +105442,7 @@
         "region": "Italy",
         "city": "Milan",
         "hostname": "it-004.whiskergalaxy.com",
+        "x509": "mxp-318.windscribe.com",
         "ips": [
           "84.17.59.65",
           "84.17.59.66",
@@ -105355,6 +105453,7 @@
         "region": "Italy",
         "city": "Milan",
         "hostname": "it-005.whiskergalaxy.com",
+        "x509": "mxp-110.windscribe.com",
         "ips": [
           "89.40.182.2",
           "89.40.182.3",
@@ -105365,6 +105464,7 @@
         "region": "Italy",
         "city": "Rome",
         "hostname": "it-003.whiskergalaxy.com",
+        "x509": "fco-238.windscribe.com",
         "ips": [
           "87.101.94.194",
           "87.101.94.195",
@@ -105375,6 +105475,7 @@
         "region": "Italy",
         "city": "Rome",
         "hostname": "it-006.whiskergalaxy.com",
+        "x509": "fco-238.windscribe.com",
         "ips": [
           "37.120.207.18",
           "37.120.207.19",
@@ -105385,6 +105486,7 @@
         "region": "Japan",
         "city": "Tokyo",
         "hostname": "jp-004.whiskergalaxy.com",
+        "x509": "hnd-287.windscribe.com",
         "ips": [
           "193.148.16.242",
           "193.148.16.243",
@@ -105395,6 +105497,7 @@
         "region": "Japan",
         "city": "Tokyo",
         "hostname": "jp-006.whiskergalaxy.com",
+        "x509": "hnd-148.windscribe.com",
         "ips": [
           "138.199.22.161",
           "138.199.22.162",
@@ -105405,6 +105508,7 @@
         "region": "Latvia",
         "city": "Riga",
         "hostname": "lv-003.whiskergalaxy.com",
+        "x509": "rix-254.windscribe.com",
         "ips": [
           "159.148.186.169",
           "85.254.72.23",
@@ -105415,6 +105519,7 @@
         "region": "Latvia",
         "city": "Riga",
         "hostname": "lv-005.whiskergalaxy.com",
+        "x509": "rix-364.windscribe.com",
         "ips": [
           "195.123.209.175",
           "195.123.210.234",
@@ -105422,19 +105527,10 @@
         ]
       },
       {
-        "region": "Latvia",
-        "city": "Riga",
-        "hostname": "lv-006.whiskergalaxy.com",
-        "ips": [
-          "195.123.209.221",
-          "195.123.211.10",
-          "195.123.211.11"
-        ]
-      },
-      {
         "region": "Lithuania",
         "city": "Siauliai",
         "hostname": "lt-007.whiskergalaxy.com",
+        "x509": "sqq-380.windscribe.com",
         "ips": [
           "185.64.104.112",
           "185.64.104.116",
@@ -105445,6 +105541,7 @@
         "region": "Lithuania",
         "city": "Vilnius",
         "hostname": "lt-004.whiskergalaxy.com",
+        "x509": "vno-378.windscribe.com",
         "ips": [
           "37.156.216.146",
           "37.156.216.147",
@@ -105455,6 +105552,7 @@
         "region": "Lithuania",
         "city": "Vilnius",
         "hostname": "lt-005.whiskergalaxy.com",
+        "x509": "vno-378.windscribe.com",
         "ips": [
           "37.156.216.130",
           "37.156.216.131",
@@ -105465,6 +105563,7 @@
         "region": "Malaysia",
         "city": "Kuala Lumpur",
         "hostname": "my-001.whiskergalaxy.com",
+        "x509": "kul-270.windscribe.com",
         "ips": [
           "103.106.250.30",
           "103.106.250.31",
@@ -105475,6 +105574,7 @@
         "region": "Malaysia",
         "city": "Kuala Lumpur",
         "hostname": "my-003.whiskergalaxy.com",
+        "x509": "kul-270.windscribe.com",
         "ips": [
           "103.212.69.231",
           "103.212.69.232",
@@ -105485,6 +105585,7 @@
         "region": "Mexico",
         "city": "Guadalajara",
         "hostname": "mx-007.whiskergalaxy.com",
+        "x509": "gdl-205.windscribe.com",
         "ips": [
           "201.131.125.106",
           "201.131.125.107",
@@ -105495,6 +105596,7 @@
         "region": "Mexico",
         "city": "Guadalajara",
         "hostname": "mx-008.whiskergalaxy.com",
+        "x509": "gdl-205.windscribe.com",
         "ips": [
           "143.255.57.66",
           "143.255.57.67",
@@ -105505,6 +105607,7 @@
         "region": "Mexico",
         "city": "Mexico City",
         "hostname": "mx-009.whiskergalaxy.com",
+        "x509": "mex-351.windscribe.com",
         "ips": [
           "190.103.179.210",
           "190.103.179.211",
@@ -105515,6 +105618,7 @@
         "region": "Mexico",
         "city": "Mexico City",
         "hostname": "mx-010.whiskergalaxy.com",
+        "x509": "mex-351.windscribe.com",
         "ips": [
           "190.103.179.216",
           "190.103.179.217",
@@ -105525,6 +105629,7 @@
         "region": "Moldova",
         "city": "Chisinau",
         "hostname": "md-002.whiskergalaxy.com",
+        "x509": "kiv-210.windscribe.com",
         "ips": [
           "178.175.144.122",
           "178.175.144.123",
@@ -105535,6 +105640,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-001.whiskergalaxy.com",
+        "x509": "ams-229.windscribe.com",
         "ips": [
           "46.166.143.97",
           "46.166.143.98",
@@ -105545,6 +105651,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-005.whiskergalaxy.com",
+        "x509": "ams-120.windscribe.com",
         "ips": [
           "185.212.171.130",
           "185.212.171.131",
@@ -105555,6 +105662,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-008.whiskergalaxy.com",
+        "x509": "ams-120.windscribe.com",
         "ips": [
           "185.253.96.2",
           "185.253.96.3",
@@ -105565,6 +105673,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-011.whiskergalaxy.com",
+        "x509": "ams-193.windscribe.com",
         "ips": [
           "84.17.46.1",
           "84.17.46.2",
@@ -105575,6 +105684,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-013.whiskergalaxy.com",
+        "x509": "ams-289.windscribe.com",
         "ips": [
           "72.11.157.66",
           "72.11.157.67",
@@ -105585,6 +105695,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-014.whiskergalaxy.com",
+        "x509": "ams-289.windscribe.com",
         "ips": [
           "72.11.157.34",
           "72.11.157.35",
@@ -105595,6 +105706,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-015.whiskergalaxy.com",
+        "x509": "ams-229.windscribe.com",
         "ips": [
           "109.201.130.1",
           "109.201.130.2",
@@ -105605,6 +105717,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-019.whiskergalaxy.com",
+        "x509": "ams-120.windscribe.com",
         "ips": [
           "185.156.172.162",
           "185.156.172.163",
@@ -105615,6 +105728,7 @@
         "region": "Netherlands",
         "city": "Amsterdam",
         "hostname": "nl-020.whiskergalaxy.com",
+        "x509": "ams-193.windscribe.com",
         "ips": [
           "195.181.172.145",
           "195.181.172.146",
@@ -105625,6 +105739,7 @@
         "region": "New Zealand",
         "city": "Auckland",
         "hostname": "nz-002.whiskergalaxy.com",
+        "x509": "akl-251.windscribe.com",
         "ips": [
           "103.62.49.112",
           "103.62.49.113",
@@ -105635,6 +105750,7 @@
         "region": "New Zealand",
         "city": "Auckland ",
         "hostname": "nz-003.whiskergalaxy.com",
+        "x509": "akl-352.windscribe.com",
         "ips": [
           "103.108.94.162",
           "103.108.94.163",
@@ -105645,6 +105761,7 @@
         "region": "North Macedonia",
         "city": "Skopje",
         "hostname": "mk-001.whiskergalaxy.com",
+        "x509": "skp-339.windscribe.com",
         "ips": [
           "185.225.28.50",
           "185.225.28.51",
@@ -105655,6 +105772,7 @@
         "region": "Norway",
         "city": "Oslo",
         "hostname": "no-003.whiskergalaxy.com",
+        "x509": "osl-169.windscribe.com",
         "ips": [
           "185.206.225.130",
           "185.206.225.131",
@@ -105665,6 +105783,7 @@
         "region": "Norway",
         "city": "Oslo",
         "hostname": "no-006.whiskergalaxy.com",
+        "x509": "osl-169.windscribe.com",
         "ips": [
           "37.120.203.66",
           "37.120.203.67",
@@ -105675,6 +105794,7 @@
         "region": "Norway",
         "city": "Oslo",
         "hostname": "no-008.whiskergalaxy.com",
+        "x509": "osl-169.windscribe.com",
         "ips": [
           "37.120.149.50",
           "37.120.149.51",
@@ -105685,6 +105805,7 @@
         "region": "Panama",
         "city": "Panama City",
         "hostname": "pa-001.whiskergalaxy.com",
+        "x509": "pty-358.windscribe.com",
         "ips": [
           "138.186.142.202",
           "138.186.142.203",
@@ -105695,6 +105816,7 @@
         "region": "Peru",
         "city": "Lima",
         "hostname": "pe-002.whiskergalaxy.com",
+        "x509": "lim-367.windscribe.com",
         "ips": [
           "190.120.229.138",
           "190.120.229.139",
@@ -105705,6 +105827,7 @@
         "region": "Philippines",
         "city": "Manila",
         "hostname": "ph-003.whiskergalaxy.com",
+        "x509": "mnl-365.windscribe.com",
         "ips": [
           "141.98.215.210",
           "141.98.215.211",
@@ -105715,6 +105838,7 @@
         "region": "Philippines",
         "city": "San Antonio",
         "hostname": "ph-002.whiskergalaxy.com",
+        "x509": "mnl-262.windscribe.com",
         "ips": [
           "103.103.0.12",
           "103.103.0.118",
@@ -105725,6 +105849,7 @@
         "region": "Poland",
         "city": "Warsaw",
         "hostname": "pl-002.whiskergalaxy.com",
+        "x509": "waw-237.windscribe.com",
         "ips": [
           "185.244.214.34",
           "185.244.214.35",
@@ -105735,6 +105860,7 @@
         "region": "Poland",
         "city": "Warsaw",
         "hostname": "pl-004.whiskergalaxy.com",
+        "x509": "waw-309.windscribe.com",
         "ips": [
           "84.17.55.97",
           "84.17.55.98",
@@ -105745,6 +105871,7 @@
         "region": "Poland",
         "city": "Warsaw",
         "hostname": "pl-005.whiskergalaxy.com",
+        "x509": "waw-85.windscribe.com",
         "ips": [
           "5.187.49.182",
           "5.133.11.116",
@@ -105755,6 +105882,7 @@
         "region": "Portugal",
         "city": "Lisbon",
         "hostname": "pt-002.whiskergalaxy.com",
+        "x509": "lis-249.windscribe.com",
         "ips": [
           "94.46.13.214",
           "94.46.13.215",
@@ -105765,6 +105893,7 @@
         "region": "Portugal",
         "city": "Lisbon",
         "hostname": "pt-003.whiskergalaxy.com",
+        "x509": "lis-249.windscribe.com",
         "ips": [
           "185.15.21.65",
           "185.15.21.66",
@@ -105775,6 +105904,7 @@
         "region": "Romania",
         "city": "Bucharest",
         "hostname": "ro-006.whiskergalaxy.com",
+        "x509": "otp-105.windscribe.com",
         "ips": [
           "89.46.103.146",
           "89.46.103.147",
@@ -105785,6 +105915,7 @@
         "region": "Romania",
         "city": "Bucharest",
         "hostname": "ro-008.whiskergalaxy.com",
+        "x509": "otp-105.windscribe.com",
         "ips": [
           "91.207.102.146",
           "91.207.102.147",
@@ -105795,6 +105926,7 @@
         "region": "Russia",
         "city": "Moscow",
         "hostname": "ru-010.whiskergalaxy.com",
+        "x509": "svo-346.windscribe.com",
         "ips": [
           "95.213.193.226",
           "95.213.193.227",
@@ -105805,6 +105937,7 @@
         "region": "Russia",
         "city": "Moscow",
         "hostname": "ru-011.whiskergalaxy.com",
+        "x509": "svo-346.windscribe.com",
         "ips": [
           "95.213.193.194",
           "95.213.193.195",
@@ -105815,6 +105948,7 @@
         "region": "Russia",
         "city": "Saint Petersburg",
         "hostname": "ru-005.whiskergalaxy.com",
+        "x509": "led-211.windscribe.com",
         "ips": [
           "185.22.175.131",
           "185.22.175.132",
@@ -105825,6 +105959,7 @@
         "region": "Russia",
         "city": "Saint Petersburg",
         "hostname": "ru-008.whiskergalaxy.com",
+        "x509": "led-211.windscribe.com",
         "ips": [
           "94.242.62.18",
           "94.242.62.19",
@@ -105835,6 +105970,7 @@
         "region": "Russia",
         "city": "Saint Petersburg",
         "hostname": "ru-009.whiskergalaxy.com",
+        "x509": "led-211.windscribe.com",
         "ips": [
           "94.242.62.50",
           "94.242.62.67",
@@ -105845,6 +105981,7 @@
         "region": "Russia",
         "city": "Saint Petersburg",
         "hostname": "ru-012.whiskergalaxy.com",
+        "x509": "led-265.windscribe.com",
         "ips": [
           "188.124.42.114",
           "188.124.42.115",
@@ -105855,6 +105992,7 @@
         "region": "Russia",
         "city": "Saint Petersburg",
         "hostname": "ru-013.whiskergalaxy.com",
+        "x509": "led-265.windscribe.com",
         "ips": [
           "188.124.42.98",
           "188.124.42.99",
@@ -105865,6 +106003,7 @@
         "region": "Serbia",
         "city": "Belgrade",
         "hostname": "rs-003.whiskergalaxy.com",
+        "x509": "beg-288.windscribe.com",
         "ips": [
           "141.98.103.18",
           "141.98.103.19",
@@ -105875,6 +106014,7 @@
         "region": "Singapore",
         "city": "Singapore",
         "hostname": "sg-003.whiskergalaxy.com",
+        "x509": "sin-170.windscribe.com",
         "ips": [
           "185.200.117.162",
           "185.200.117.163",
@@ -105885,6 +106025,7 @@
         "region": "Singapore",
         "city": "Singapore",
         "hostname": "sg-004.whiskergalaxy.com",
+        "x509": "sin-170.windscribe.com",
         "ips": [
           "82.102.25.130",
           "82.102.25.131",
@@ -105895,6 +106036,7 @@
         "region": "Singapore",
         "city": "Singapore",
         "hostname": "sg-005.whiskergalaxy.com",
+        "x509": "sin-241.windscribe.com",
         "ips": [
           "103.62.48.130",
           "103.62.48.224",
@@ -105905,6 +106047,7 @@
         "region": "Singapore",
         "city": "Singapore",
         "hostname": "sg-006.whiskergalaxy.com",
+        "x509": "sin-235.windscribe.com",
         "ips": [
           "156.146.56.97",
           "156.146.56.98",
@@ -105915,6 +106058,7 @@
         "region": "Singapore",
         "city": "Singapore",
         "hostname": "sg-007.whiskergalaxy.com",
+        "x509": "sin-235.windscribe.com",
         "ips": [
           "156.146.56.110",
           "156.146.56.111",
@@ -105925,6 +106069,7 @@
         "region": "Singapore",
         "city": "Singapore",
         "hostname": "sg-008.whiskergalaxy.com",
+        "x509": "sin-241.windscribe.com",
         "ips": [
           "103.107.198.226",
           "103.107.198.227",
@@ -105935,6 +106080,7 @@
         "region": "Slovakia",
         "city": "Bratislava",
         "hostname": "sk-001.whiskergalaxy.com",
+        "x509": "bts-213.windscribe.com",
         "ips": [
           "185.245.85.2",
           "185.245.85.3",
@@ -105945,6 +106091,7 @@
         "region": "South Africa",
         "city": "Johannesburg",
         "hostname": "za-002.whiskergalaxy.com",
+        "x509": "jnb-216.windscribe.com",
         "ips": [
           "129.232.167.210",
           "129.232.167.211",
@@ -105955,6 +106102,7 @@
         "region": "South Africa",
         "city": "Johannesburg",
         "hostname": "za-003.whiskergalaxy.com",
+        "x509": "jnb-164.windscribe.com",
         "ips": [
           "197.242.155.197",
           "197.242.156.53",
@@ -105965,6 +106113,7 @@
         "region": "South Africa",
         "city": "Johannesburg",
         "hostname": "za-004.whiskergalaxy.com",
+        "x509": "jnb-232.windscribe.com",
         "ips": [
           "165.73.248.90",
           "165.73.248.91",
@@ -105975,6 +106124,7 @@
         "region": "South Korea",
         "city": "Seoul",
         "hostname": "kr-001.whiskergalaxy.com",
+        "x509": "icn-57.windscribe.com",
         "ips": [
           "103.212.223.2",
           "103.212.223.3",
@@ -105985,6 +106135,7 @@
         "region": "South Korea",
         "city": "Seoul",
         "hostname": "kr-002.whiskergalaxy.com",
+        "x509": "icn-267.windscribe.com",
         "ips": [
           "218.232.76.183",
           "218.232.76.179",
@@ -105995,6 +106146,7 @@
         "region": "South Korea",
         "city": "Seoul",
         "hostname": "kr-006.whiskergalaxy.com",
+        "x509": "icn-57.windscribe.com",
         "ips": [
           "27.255.77.241",
           "27.255.77.242",
@@ -106005,6 +106157,7 @@
         "region": "South Korea",
         "city": "Seoul",
         "hostname": "kr-007.whiskergalaxy.com",
+        "x509": "icn-267.windscribe.com",
         "ips": [
           "218.232.76.135",
           "218.232.76.136",
@@ -106015,6 +106168,7 @@
         "region": "South Korea",
         "city": "Seoul",
         "hostname": "kr-008.whiskergalaxy.com",
+        "x509": "icn-362.windscribe.com",
         "ips": [
           "141.98.213.250",
           "141.98.213.251",
@@ -106025,6 +106179,7 @@
         "region": "Spain",
         "city": "Barcelona",
         "hostname": "es-001.whiskergalaxy.com",
+        "x509": "bcn-239.windscribe.com",
         "ips": [
           "185.253.99.130",
           "185.253.99.131",
@@ -106035,6 +106190,7 @@
         "region": "Spain",
         "city": "Barcelona",
         "hostname": "es-004.whiskergalaxy.com",
+        "x509": "bcn-239.windscribe.com",
         "ips": [
           "37.120.142.226",
           "37.120.142.227",
@@ -106045,6 +106201,7 @@
         "region": "Spain",
         "city": "Madrid",
         "hostname": "es-002.whiskergalaxy.com",
+        "x509": "mad-115.windscribe.com",
         "ips": [
           "89.238.178.42",
           "89.238.178.43",
@@ -106055,6 +106212,7 @@
         "region": "Spain",
         "city": "Madrid",
         "hostname": "es-003.whiskergalaxy.com",
+        "x509": "mad-115.windscribe.com",
         "ips": [
           "217.138.218.98",
           "217.138.218.99",
@@ -106065,6 +106223,7 @@
         "region": "Sweden",
         "city": "Stockholm",
         "hostname": "se-001.whiskergalaxy.com",
+        "x509": "arn-30.windscribe.com",
         "ips": [
           "31.13.191.66",
           "31.13.191.67",
@@ -106075,6 +106234,7 @@
         "region": "Sweden",
         "city": "Stockholm",
         "hostname": "se-002.whiskergalaxy.com",
+        "x509": "arn-234.windscribe.com",
         "ips": [
           "79.142.76.197",
           "79.142.76.198",
@@ -106085,6 +106245,7 @@
         "region": "Sweden",
         "city": "Stockholm",
         "hostname": "se-003.whiskergalaxy.com",
+        "x509": "arn-159.windscribe.com",
         "ips": [
           "195.181.166.71",
           "195.181.166.129",
@@ -106095,6 +106256,7 @@
         "region": "Switzerland",
         "city": "Zurich",
         "hostname": "ch-001.whiskergalaxy.com",
+        "x509": "zrh-264.windscribe.com",
         "ips": [
           "179.43.168.170",
           "31.7.57.242",
@@ -106105,6 +106267,7 @@
         "region": "Switzerland",
         "city": "Zurich",
         "hostname": "ch-003.whiskergalaxy.com",
+        "x509": "zrh-112.windscribe.com",
         "ips": [
           "185.156.175.178",
           "185.156.175.179",
@@ -106115,6 +106278,7 @@
         "region": "Switzerland",
         "city": "Zurich",
         "hostname": "ch-005.whiskergalaxy.com",
+        "x509": "zrh-317.windscribe.com",
         "ips": [
           "89.187.165.97",
           "89.187.165.98",
@@ -106125,6 +106289,7 @@
         "region": "Switzerland",
         "city": "Zurich",
         "hostname": "ch-006.whiskergalaxy.com",
+        "x509": "zrh-317.windscribe.com",
         "ips": [
           "84.17.53.1",
           "84.17.53.2",
@@ -106135,6 +106300,7 @@
         "region": "Switzerland",
         "city": "Zurich",
         "hostname": "ch-008.whiskergalaxy.com",
+        "x509": "zrh-112.windscribe.com",
         "ips": [
           "37.120.213.162",
           "37.120.213.163",
@@ -106145,6 +106311,7 @@
         "region": "Taiwan",
         "city": "Taipei",
         "hostname": "tw-008.whiskergalaxy.com",
+        "x509": "tpe-314.windscribe.com",
         "ips": [
           "103.4.29.76",
           "103.4.29.77",
@@ -106155,6 +106322,7 @@
         "region": "Taiwan",
         "city": "Taipei",
         "hostname": "tw-009.whiskergalaxy.com",
+        "x509": "tpe-314.windscribe.com",
         "ips": [
           "185.189.160.11",
           "185.189.160.12",
@@ -106165,6 +106333,7 @@
         "region": "Taiwan",
         "city": "Taipei",
         "hostname": "tw-010.whiskergalaxy.com",
+        "x509": "tpe-314.windscribe.com",
         "ips": [
           "103.4.30.197",
           "185.189.160.27",
@@ -106175,6 +106344,7 @@
         "region": "Taiwan",
         "city": "Taipei",
         "hostname": "tw-011.whiskergalaxy.com",
+        "x509": "tpe-314.windscribe.com",
         "ips": [
           "103.4.30.203",
           "185.189.160.32",
@@ -106185,6 +106355,7 @@
         "region": "Thailand",
         "city": "Bangkok",
         "hostname": "th-003.whiskergalaxy.com",
+        "x509": "bkk-245.windscribe.com",
         "ips": [
           "27.254.130.220",
           "27.254.130.216",
@@ -106195,6 +106366,7 @@
         "region": "Thailand",
         "city": "Bangkok",
         "hostname": "th-005.whiskergalaxy.com",
+        "x509": "bkk-361.windscribe.com",
         "ips": [
           "202.129.16.136",
           "202.129.16.147",
@@ -106205,6 +106377,7 @@
         "region": "Thailand",
         "city": "Bangkok",
         "hostname": "th-006.whiskergalaxy.com",
+        "x509": "bkk-361.windscribe.com",
         "ips": [
           "202.129.16.154",
           "202.129.16.155",
@@ -106212,19 +106385,10 @@
         ]
       },
       {
-        "region": "Tunisia",
-        "city": "Tunis",
-        "hostname": "tn-001.whiskergalaxy.com",
-        "ips": [
-          "41.231.5.10",
-          "41.231.5.23",
-          "41.231.5.24"
-        ]
-      },
-      {
         "region": "Turkey",
         "city": "Bursa",
         "hostname": "tr-001.whiskergalaxy.com",
+        "x509": "yei-236.windscribe.com",
         "ips": [
           "45.123.118.155",
           "45.123.118.156",
@@ -106235,6 +106399,7 @@
         "region": "Turkey",
         "city": "Istanbul",
         "hostname": "tr-004.whiskergalaxy.com",
+        "x509": "ist-250.windscribe.com",
         "ips": [
           "45.123.119.10",
           "45.123.119.11",
@@ -106245,6 +106410,7 @@
         "region": "Turkey",
         "city": "Istanbul",
         "hostname": "tr-009.whiskergalaxy.com",
+        "x509": "ist-350.windscribe.com",
         "ips": [
           "79.98.131.42",
           "79.98.131.43",
@@ -106254,17 +106420,8 @@
       {
         "region": "Turkey",
         "city": "Istanbul",
-        "hostname": "tr-011.whiskergalaxy.com",
-        "ips": [
-          "176.53.113.162",
-          "176.53.113.163",
-          "176.53.113.164"
-        ]
-      },
-      {
-        "region": "Turkey",
-        "city": "Istanbul",
         "hostname": "tr-013.whiskergalaxy.com",
+        "x509": "ist-279.windscribe.com",
         "ips": [
           "46.45.136.98",
           "46.45.136.99",
@@ -106275,6 +106432,7 @@
         "region": "Turkey",
         "city": "Istanbul",
         "hostname": "tr-014.whiskergalaxy.com",
+        "x509": "ist-279.windscribe.com",
         "ips": [
           "178.211.33.242",
           "178.211.33.243",
@@ -106285,6 +106443,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-015.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "107.150.31.130",
           "107.150.31.131",
@@ -106295,6 +106454,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-016.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "104.129.18.2",
           "104.129.18.3",
@@ -106305,6 +106465,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-020.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "104.129.18.130",
           "104.129.18.131",
@@ -106315,6 +106476,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-034.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "161.129.70.194",
           "161.129.70.195",
@@ -106325,6 +106487,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-046.whiskergalaxy.com",
+        "x509": "atl-331.windscribe.com",
         "ips": [
           "198.12.76.210",
           "198.12.76.211",
@@ -106335,6 +106498,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-049.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "107.150.31.2",
           "107.150.31.3",
@@ -106345,6 +106509,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-050.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "107.150.31.66",
           "107.150.31.67",
@@ -106355,6 +106520,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-054.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "104.223.92.162",
           "104.223.92.163",
@@ -106365,6 +106531,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-056.whiskergalaxy.com",
+        "x509": "atl-331.windscribe.com",
         "ips": [
           "206.217.143.130",
           "206.217.143.131",
@@ -106375,6 +106542,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-070.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "107.150.30.194",
           "107.150.30.195",
@@ -106385,6 +106553,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-075.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "104.223.95.98",
           "104.223.95.99",
@@ -106395,6 +106564,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-077.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "162.222.198.130",
           "162.222.198.131",
@@ -106405,6 +106575,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-087.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "104.223.93.130",
           "104.223.93.131",
@@ -106415,6 +106586,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-088.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "155.94.216.130",
           "155.94.216.131",
@@ -106425,6 +106597,7 @@
         "region": "US Central",
         "city": "Atlanta",
         "hostname": "us-central-089.whiskergalaxy.com",
+        "x509": "atl-109.windscribe.com",
         "ips": [
           "155.94.216.194",
           "155.94.216.195",
@@ -106435,6 +106608,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-014.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "69.12.94.66",
           "69.12.94.67",
@@ -106445,6 +106619,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-029.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "198.55.125.194",
           "198.55.125.195",
@@ -106455,6 +106630,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-036.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "204.44.112.66",
           "204.44.112.67",
@@ -106465,6 +106641,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-037.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "204.44.112.130",
           "204.44.112.131",
@@ -106475,6 +106652,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-044.whiskergalaxy.com",
+        "x509": "dfw-192.windscribe.com",
         "ips": [
           "206.217.139.194",
           "206.217.139.195",
@@ -106485,6 +106663,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-045.whiskergalaxy.com",
+        "x509": "dfw-328.windscribe.com",
         "ips": [
           "172.241.115.46",
           "172.241.131.129",
@@ -106495,6 +106674,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-055.whiskergalaxy.com",
+        "x509": "dfw-192.windscribe.com",
         "ips": [
           "206.217.139.18",
           "206.217.139.19",
@@ -106505,6 +106685,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-057.whiskergalaxy.com",
+        "x509": "dfw-328.windscribe.com",
         "ips": [
           "172.241.113.18",
           "172.241.26.78",
@@ -106515,6 +106696,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-060.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "198.55.126.130",
           "198.55.126.131",
@@ -106525,6 +106707,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-067.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "104.223.98.194",
           "104.223.98.195",
@@ -106535,6 +106718,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-072.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "162.218.120.66",
           "162.218.120.67",
@@ -106545,6 +106729,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-073.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "173.254.250.66",
           "173.254.250.67",
@@ -106555,6 +106740,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-078.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "155.94.248.66",
           "155.94.248.67",
@@ -106565,6 +106751,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-079.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "192.161.189.130",
           "192.161.189.131",
@@ -106575,6 +106762,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-080.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "192.161.188.194",
           "192.161.188.195",
@@ -106585,6 +106773,7 @@
         "region": "US Central",
         "city": "Dallas",
         "hostname": "us-central-081.whiskergalaxy.com",
+        "x509": "dfw-86.windscribe.com",
         "ips": [
           "155.94.249.66",
           "155.94.249.67",
@@ -106595,6 +106784,7 @@
         "region": "US Central",
         "city": "Denver",
         "hostname": "us-central-043.whiskergalaxy.com",
+        "x509": "den-301.windscribe.com",
         "ips": [
           "199.115.96.82",
           "199.115.96.83",
@@ -106605,6 +106795,7 @@
         "region": "US Central",
         "city": "Denver",
         "hostname": "us-central-058.whiskergalaxy.com",
+        "x509": "den-145.windscribe.com",
         "ips": [
           "198.54.128.115",
           "198.54.128.116",
@@ -106615,6 +106806,7 @@
         "region": "US Central",
         "city": "Denver",
         "hostname": "us-central-062.whiskergalaxy.com",
+        "x509": "den-301.windscribe.com",
         "ips": [
           "174.128.251.146",
           "174.128.251.147",
@@ -106625,6 +106817,7 @@
         "region": "US Central",
         "city": "Denver",
         "hostname": "us-central-071.whiskergalaxy.com",
+        "x509": "den-145.windscribe.com",
         "ips": [
           "198.54.128.195",
           "198.54.128.196",
@@ -106635,6 +106828,7 @@
         "region": "US Central",
         "city": "Kansas City",
         "hostname": "us-central-063.whiskergalaxy.com",
+        "x509": "mci-371.windscribe.com",
         "ips": [
           "38.146.5.50",
           "38.146.5.51",
@@ -106645,6 +106839,7 @@
         "region": "US Central",
         "city": "Kansas City",
         "hostname": "us-central-086.whiskergalaxy.com",
+        "x509": "mci-371.windscribe.com",
         "ips": [
           "38.146.5.114",
           "38.146.5.115",
@@ -106655,6 +106850,7 @@
         "region": "US East",
         "city": "Boston",
         "hostname": "us-east-039.whiskergalaxy.com",
+        "x509": "bos-298.windscribe.com",
         "ips": [
           "199.217.104.226",
           "199.217.104.227",
@@ -106665,6 +106861,7 @@
         "region": "US East",
         "city": "Boston",
         "hostname": "us-east-051.whiskergalaxy.com",
+        "x509": "bos-298.windscribe.com",
         "ips": [
           "199.217.105.226",
           "199.217.105.227",
@@ -106675,6 +106872,7 @@
         "region": "US East",
         "city": "Buffalo",
         "hostname": "us-east-045.whiskergalaxy.com",
+        "x509": "buf-281.windscribe.com",
         "ips": [
           "104.168.34.146",
           "104.168.34.147",
@@ -106685,6 +106883,7 @@
         "region": "US East",
         "city": "Buffalo",
         "hostname": "us-east-065.whiskergalaxy.com",
+        "x509": "buf-281.windscribe.com",
         "ips": [
           "198.12.64.34",
           "198.12.64.35",
@@ -106693,8 +106892,31 @@
       },
       {
         "region": "US East",
+        "city": "Charlotte",
+        "hostname": "us-east-040.whiskergalaxy.com",
+        "x509": "clt-303.windscribe.com",
+        "ips": [
+          "67.21.32.144",
+          "67.21.32.145",
+          "67.21.32.146"
+        ]
+      },
+      {
+        "region": "US East",
+        "city": "Charlotte",
+        "hostname": "us-east-100.whiskergalaxy.com",
+        "x509": "clt-303.windscribe.com",
+        "ips": [
+          "192.158.226.14",
+          "192.158.226.15",
+          "192.158.226.16"
+        ]
+      },
+      {
+        "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-015.whiskergalaxy.com",
+        "x509": "ord-63.windscribe.com",
         "ips": [
           "68.235.50.226",
           "68.235.50.227",
@@ -106705,6 +106927,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-019.whiskergalaxy.com",
+        "x509": "ord-130.windscribe.com",
         "ips": [
           "23.226.141.194",
           "23.226.141.195",
@@ -106715,6 +106938,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-022.whiskergalaxy.com",
+        "x509": "ord-130.windscribe.com",
         "ips": [
           "167.160.172.2",
           "167.160.172.3",
@@ -106725,6 +106949,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-047.whiskergalaxy.com",
+        "x509": "ord-323.windscribe.com",
         "ips": [
           "108.62.202.217",
           "23.83.91.170",
@@ -106735,6 +106960,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-053.whiskergalaxy.com",
+        "x509": "ord-130.windscribe.com",
         "ips": [
           "107.150.29.130",
           "107.150.29.131",
@@ -106745,6 +106971,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-071.whiskergalaxy.com",
+        "x509": "ord-63.windscribe.com",
         "ips": [
           "68.235.35.11",
           "68.235.35.12",
@@ -106755,6 +106982,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-077.whiskergalaxy.com",
+        "x509": "ord-63.windscribe.com",
         "ips": [
           "68.235.43.203",
           "68.235.43.204",
@@ -106765,6 +106993,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-083.whiskergalaxy.com",
+        "x509": "ord-323.windscribe.com",
         "ips": [
           "108.62.104.31",
           "23.19.122.225",
@@ -106775,6 +107004,7 @@
         "region": "US East",
         "city": "Chicago",
         "hostname": "us-east-086.whiskergalaxy.com",
+        "x509": "ord-63.windscribe.com",
         "ips": [
           "208.77.22.99",
           "208.77.22.100",
@@ -106785,6 +107015,7 @@
         "region": "US East",
         "city": "Cleveland",
         "hostname": "us-east-078.whiskergalaxy.com",
+        "x509": "cle-146.windscribe.com",
         "ips": [
           "38.101.74.18",
           "38.101.74.19",
@@ -106795,6 +107026,7 @@
         "region": "US East",
         "city": "Cleveland",
         "hostname": "us-east-099.whiskergalaxy.com",
+        "x509": "cle-146.windscribe.com",
         "ips": [
           "38.101.74.82",
           "38.101.74.83",
@@ -106805,6 +107037,7 @@
         "region": "US East",
         "city": "Detroit",
         "hostname": "us-east-079.whiskergalaxy.com",
+        "x509": "dtw-368.windscribe.com",
         "ips": [
           "104.244.210.50",
           "104.244.210.51",
@@ -106815,6 +107048,7 @@
         "region": "US East",
         "city": "Detroit",
         "hostname": "us-east-098.whiskergalaxy.com",
+        "x509": "dtw-368.windscribe.com",
         "ips": [
           "104.244.210.242",
           "104.244.210.243",
@@ -106825,6 +107059,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-006.whiskergalaxy.com",
+        "x509": "mia-206.windscribe.com",
         "ips": [
           "173.44.36.66",
           "173.44.36.67",
@@ -106835,6 +107070,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-012.whiskergalaxy.com",
+        "x509": "mia-140.windscribe.com",
         "ips": [
           "45.87.214.34",
           "45.87.214.35",
@@ -106845,6 +107081,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-028.whiskergalaxy.com",
+        "x509": "mia-206.windscribe.com",
         "ips": [
           "104.223.127.194",
           "104.223.127.195",
@@ -106855,6 +107092,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-049.whiskergalaxy.com",
+        "x509": "mia-326.windscribe.com",
         "ips": [
           "23.82.136.94",
           "23.82.136.93",
@@ -106865,6 +107103,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-067.whiskergalaxy.com",
+        "x509": "mia-140.windscribe.com",
         "ips": [
           "86.106.87.82",
           "86.106.87.83",
@@ -106875,6 +107114,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-084.whiskergalaxy.com",
+        "x509": "mia-326.windscribe.com",
         "ips": [
           "23.82.137.83",
           "23.82.137.72",
@@ -106885,6 +107125,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-088.whiskergalaxy.com",
+        "x509": "mia-140.windscribe.com",
         "ips": [
           "194.5.215.194",
           "194.5.215.195",
@@ -106895,6 +107136,7 @@
         "region": "US East",
         "city": "Miami",
         "hostname": "us-east-097.whiskergalaxy.com",
+        "x509": "mia-206.windscribe.com",
         "ips": [
           "173.44.43.130",
           "173.44.43.131",
@@ -106905,6 +107147,7 @@
         "region": "US East",
         "city": "New Jersey",
         "hostname": "us-east-020.whiskergalaxy.com",
+        "x509": "ewr-181.windscribe.com",
         "ips": [
           "162.222.195.66",
           "162.222.195.67",
@@ -106915,6 +107158,7 @@
         "region": "US East",
         "city": "New Jersey",
         "hostname": "us-east-054.whiskergalaxy.com",
+        "x509": "ewr-181.windscribe.com",
         "ips": [
           "167.160.167.194",
           "167.160.167.195",
@@ -106925,6 +107169,7 @@
         "region": "US East",
         "city": "New Jersey",
         "hostname": "us-east-095.whiskergalaxy.com",
+        "x509": "ewr-181.windscribe.com",
         "ips": [
           "173.205.85.162",
           "173.205.85.163",
@@ -106935,6 +107180,7 @@
         "region": "US East",
         "city": "New York",
         "hostname": "us-east-013.whiskergalaxy.com",
+        "x509": "jfk-106.windscribe.com",
         "ips": [
           "185.232.22.194",
           "185.232.22.195",
@@ -106945,6 +107191,7 @@
         "region": "US East",
         "city": "New York",
         "hostname": "us-east-046.whiskergalaxy.com",
+        "x509": "jfk-322.windscribe.com",
         "ips": [
           "206.217.129.226",
           "206.217.129.227",
@@ -106955,6 +107202,7 @@
         "region": "US East",
         "city": "New York",
         "hostname": "us-east-050.whiskergalaxy.com",
+        "x509": "jfk-330.windscribe.com",
         "ips": [
           "23.105.149.130",
           "173.208.45.33",
@@ -106965,6 +107213,7 @@
         "region": "US East",
         "city": "New York",
         "hostname": "us-east-064.whiskergalaxy.com",
+        "x509": "jfk-322.windscribe.com",
         "ips": [
           "206.217.128.2",
           "206.217.128.3",
@@ -106975,6 +107224,7 @@
         "region": "US East",
         "city": "New York",
         "hostname": "us-east-068.whiskergalaxy.com",
+        "x509": "jfk-330.windscribe.com",
         "ips": [
           "142.234.200.140",
           "142.234.200.176",
@@ -106984,17 +107234,8 @@
       {
         "region": "US East",
         "city": "New York",
-        "hostname": "us-east-074.whiskergalaxy.com",
-        "ips": [
-          "217.138.255.178",
-          "217.138.255.179",
-          "217.138.255.180"
-        ]
-      },
-      {
-        "region": "US East",
-        "city": "New York",
         "hostname": "us-east-094.whiskergalaxy.com",
+        "x509": "jfk-106.windscribe.com",
         "ips": [
           "217.138.255.162",
           "217.138.255.163",
@@ -107005,6 +107246,7 @@
         "region": "US East",
         "city": "New York",
         "hostname": "us-east-096.whiskergalaxy.com",
+        "x509": "jfk-384.windscribe.com",
         "ips": [
           "89.187.177.49",
           "89.187.177.50",
@@ -107015,6 +107257,7 @@
         "region": "US East",
         "city": "Orlando",
         "hostname": "us-east-052.whiskergalaxy.com",
+        "x509": "mco-336.windscribe.com",
         "ips": [
           "198.147.22.186",
           "198.147.22.225",
@@ -107025,6 +107268,7 @@
         "region": "US East",
         "city": "Orlando",
         "hostname": "us-east-082.whiskergalaxy.com",
+        "x509": "mco-336.windscribe.com",
         "ips": [
           "66.115.182.130",
           "66.115.182.131",
@@ -107035,6 +107279,7 @@
         "region": "US East",
         "city": "Philadelphia",
         "hostname": "us-east-060.whiskergalaxy.com",
+        "x509": "phl-196.windscribe.com",
         "ips": [
           "76.72.175.98",
           "76.72.175.99",
@@ -107045,6 +107290,7 @@
         "region": "US East",
         "city": "Philadelphia",
         "hostname": "us-east-061.whiskergalaxy.com",
+        "x509": "phl-348.windscribe.com",
         "ips": [
           "23.172.112.226",
           "23.172.112.227",
@@ -107055,6 +107301,7 @@
         "region": "US East",
         "city": "Tampa",
         "hostname": "us-east-080.whiskergalaxy.com",
+        "x509": "tpa-349.windscribe.com",
         "ips": [
           "209.216.79.82",
           "209.216.79.83",
@@ -107065,6 +107312,7 @@
         "region": "US East",
         "city": "Tampa",
         "hostname": "us-east-081.whiskergalaxy.com",
+        "x509": "tpa-349.windscribe.com",
         "ips": [
           "209.216.79.66",
           "209.216.79.67",
@@ -107075,6 +107323,7 @@
         "region": "US East",
         "city": "Washington DC",
         "hostname": "us-east-089.whiskergalaxy.com",
+        "x509": "was-324.windscribe.com",
         "ips": [
           "198.7.56.247",
           "198.7.56.226",
@@ -107085,6 +107334,7 @@
         "region": "US East",
         "city": "Washington DC",
         "hostname": "us-east-090.whiskergalaxy.com",
+        "x509": "was-324.windscribe.com",
         "ips": [
           "198.7.56.248",
           "198.7.56.231",
@@ -107095,6 +107345,7 @@
         "region": "US East",
         "city": "Washington DC",
         "hostname": "us-east-092.whiskergalaxy.com",
+        "x509": "was-324.windscribe.com",
         "ips": [
           "198.7.56.232",
           "207.244.91.143",
@@ -107105,6 +107356,7 @@
         "region": "US East",
         "city": "Washington DC",
         "hostname": "us-east-093.whiskergalaxy.com",
+        "x509": "was-324.windscribe.com",
         "ips": [
           "198.7.56.230",
           "198.7.56.238",
@@ -107115,6 +107367,7 @@
         "region": "US West",
         "city": "Bend",
         "hostname": "us-west-038.whiskergalaxy.com",
+        "x509": "pdx-302.windscribe.com",
         "ips": [
           "104.152.222.32",
           "104.152.222.33",
@@ -107123,8 +107376,20 @@
       },
       {
         "region": "US West",
+        "city": "Bend",
+        "hostname": "us-west-072.whiskergalaxy.com",
+        "x509": "pdx-302.windscribe.com",
+        "ips": [
+          "104.255.169.109",
+          "104.255.169.110",
+          "104.255.169.111"
+        ]
+      },
+      {
+        "region": "US West",
         "city": "Las Vegas",
         "hostname": "us-west-018.whiskergalaxy.com",
+        "x509": "las-183.windscribe.com",
         "ips": [
           "82.102.30.66",
           "82.102.30.67",
@@ -107135,6 +107400,7 @@
         "region": "US West",
         "city": "Las Vegas",
         "hostname": "us-west-030.whiskergalaxy.com",
+        "x509": "las-183.windscribe.com",
         "ips": [
           "37.120.147.162",
           "37.120.147.163",
@@ -107145,6 +107411,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-004.whiskergalaxy.com",
+        "x509": "lax-107.windscribe.com",
         "ips": [
           "185.236.200.34",
           "185.236.200.35",
@@ -107155,6 +107422,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-015.whiskergalaxy.com",
+        "x509": "lax-180.windscribe.com",
         "ips": [
           "216.45.53.130",
           "216.45.53.131",
@@ -107165,6 +107433,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-027.whiskergalaxy.com",
+        "x509": "lax-107.windscribe.com",
         "ips": [
           "212.103.49.66",
           "212.103.49.67",
@@ -107175,6 +107444,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-040.whiskergalaxy.com",
+        "x509": "lax-310.windscribe.com",
         "ips": [
           "89.187.185.33",
           "89.187.185.34",
@@ -107185,6 +107455,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-044.whiskergalaxy.com",
+        "x509": "lax-321.windscribe.com",
         "ips": [
           "192.3.20.50",
           "192.3.20.51",
@@ -107195,6 +107466,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-047.whiskergalaxy.com",
+        "x509": "lax-327.windscribe.com",
         "ips": [
           "23.19.68.138",
           "172.241.214.202",
@@ -107205,6 +107477,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-055.whiskergalaxy.com",
+        "x509": "lax-180.windscribe.com",
         "ips": [
           "104.129.3.66",
           "104.129.3.67",
@@ -107215,6 +107488,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-059.whiskergalaxy.com",
+        "x509": "lax-180.windscribe.com",
         "ips": [
           "104.129.3.162",
           "104.129.3.163",
@@ -107225,6 +107499,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-060.whiskergalaxy.com",
+        "x509": "lax-107.windscribe.com",
         "ips": [
           "217.138.217.50",
           "217.138.217.51",
@@ -107235,6 +107510,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-063.whiskergalaxy.com",
+        "x509": "lax-321.windscribe.com",
         "ips": [
           "198.23.242.146",
           "198.23.242.147",
@@ -107245,6 +107521,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-065.whiskergalaxy.com",
+        "x509": "lax-107.windscribe.com",
         "ips": [
           "217.138.217.210",
           "217.138.217.211",
@@ -107255,6 +107532,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-066.whiskergalaxy.com",
+        "x509": "lax-310.windscribe.com",
         "ips": [
           "89.187.187.97",
           "89.187.187.98",
@@ -107265,6 +107543,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-069.whiskergalaxy.com",
+        "x509": "lax-310.windscribe.com",
         "ips": [
           "185.152.67.225",
           "185.152.67.226",
@@ -107275,6 +107554,7 @@
         "region": "US West",
         "city": "Los Angeles",
         "hostname": "us-west-070.whiskergalaxy.com",
+        "x509": "lax-180.windscribe.com",
         "ips": [
           "104.129.4.66",
           "104.129.4.67",
@@ -107285,6 +107565,7 @@
         "region": "US West",
         "city": "Phoenix",
         "hostname": "us-west-046.whiskergalaxy.com",
+        "x509": "phx-325.windscribe.com",
         "ips": [
           "23.83.129.72",
           "23.83.130.166",
@@ -107295,6 +107576,7 @@
         "region": "US West",
         "city": "Phoenix",
         "hostname": "us-west-061.whiskergalaxy.com",
+        "x509": "phx-325.windscribe.com",
         "ips": [
           "23.83.129.65",
           "23.83.131.187",
@@ -107305,6 +107587,7 @@
         "region": "US West",
         "city": "San Francisco",
         "hostname": "us-west-048.whiskergalaxy.com",
+        "x509": "sfo-329.windscribe.com",
         "ips": [
           "172.241.250.137",
           "172.241.250.131",
@@ -107315,6 +107598,7 @@
         "region": "US West",
         "city": "San Francisco",
         "hostname": "us-west-053.whiskergalaxy.com",
+        "x509": "sfo-329.windscribe.com",
         "ips": [
           "209.58.129.83",
           "209.58.129.121",
@@ -107325,6 +107609,7 @@
         "region": "US West",
         "city": "San Francisco",
         "hostname": "us-west-054.whiskergalaxy.com",
+        "x509": "sfo-329.windscribe.com",
         "ips": [
           "209.58.129.88",
           "172.255.125.141",
@@ -107335,6 +107620,7 @@
         "region": "US West",
         "city": "San Jose",
         "hostname": "us-west-052.whiskergalaxy.com",
+        "x509": "sjc-337.windscribe.com",
         "ips": [
           "66.115.176.2",
           "66.115.176.3",
@@ -107345,6 +107631,7 @@
         "region": "US West",
         "city": "San Jose",
         "hostname": "us-west-067.whiskergalaxy.com",
+        "x509": "sjc-337.windscribe.com",
         "ips": [
           "66.115.165.226",
           "66.115.165.227",
@@ -107355,6 +107642,7 @@
         "region": "US West",
         "city": "Santa Clara",
         "hostname": "us-west-050.whiskergalaxy.com",
+        "x509": "sjc-333.windscribe.com",
         "ips": [
           "167.88.60.226",
           "167.88.60.227",
@@ -107365,6 +107653,7 @@
         "region": "US West",
         "city": "Santa Clara",
         "hostname": "us-west-051.whiskergalaxy.com",
+        "x509": "sjc-333.windscribe.com",
         "ips": [
           "167.88.60.242",
           "167.88.60.243",
@@ -107375,6 +107664,7 @@
         "region": "US West",
         "city": "Seattle",
         "hostname": "us-west-043.whiskergalaxy.com",
+        "x509": "sea-221.windscribe.com",
         "ips": [
           "23.94.74.98",
           "23.94.74.99",
@@ -107385,6 +107675,7 @@
         "region": "US West",
         "city": "Seattle",
         "hostname": "us-west-045.whiskergalaxy.com",
+        "x509": "sea-182.windscribe.com",
         "ips": [
           "64.120.2.161",
           "64.120.2.174",
@@ -107395,6 +107686,7 @@
         "region": "US West",
         "city": "Seattle",
         "hostname": "us-west-056.whiskergalaxy.com",
+        "x509": "sea-290.windscribe.com",
         "ips": [
           "104.129.56.66",
           "104.129.56.67",
@@ -107405,6 +107697,7 @@
         "region": "US West",
         "city": "Seattle",
         "hostname": "us-west-057.whiskergalaxy.com",
+        "x509": "sea-290.windscribe.com",
         "ips": [
           "104.129.56.130",
           "104.129.56.131",
@@ -107415,6 +107708,7 @@
         "region": "US West",
         "city": "Seattle",
         "hostname": "us-west-062.whiskergalaxy.com",
+        "x509": "sea-221.windscribe.com",
         "ips": [
           "198.12.116.194",
           "198.12.116.195",
@@ -107425,6 +107719,7 @@
         "region": "US West",
         "city": "Seattle",
         "hostname": "us-west-071.whiskergalaxy.com",
+        "x509": "sea-290.windscribe.com",
         "ips": [
           "104.129.56.2",
           "104.129.56.3",
@@ -107435,6 +107730,7 @@
         "region": "Ukraine",
         "city": "Kyiv",
         "hostname": "ua-010.whiskergalaxy.com",
+        "x509": "kbp-383.windscribe.com",
         "ips": [
           "37.19.218.1",
           "37.19.218.2",
@@ -107445,6 +107741,7 @@
         "region": "Ukraine",
         "city": "Kyiv",
         "hostname": "ua-011.whiskergalaxy.com",
+        "x509": "kbp-383.windscribe.com",
         "ips": [
           "37.19.218.15",
           "37.19.218.16",
@@ -107455,6 +107752,7 @@
         "region": "United Arab Emirates",
         "city": "Dubai",
         "hostname": "ae-001.whiskergalaxy.com",
+        "x509": "dxb-304.windscribe.com",
         "ips": [
           "45.9.249.42",
           "45.9.249.43",
@@ -107465,6 +107763,7 @@
         "region": "United Kingdom",
         "city": "Edinburgh",
         "hostname": "uk-026.whiskergalaxy.com",
+        "x509": "edi-369.windscribe.com",
         "ips": [
           "193.36.118.242",
           "193.36.118.243",
@@ -107475,6 +107774,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-007.whiskergalaxy.com",
+        "x509": "lhr-171.windscribe.com",
         "ips": [
           "185.212.168.132",
           "185.212.168.133",
@@ -107485,6 +107785,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-013.whiskergalaxy.com",
+        "x509": "lhr-171.windscribe.com",
         "ips": [
           "89.238.150.228",
           "89.238.150.229",
@@ -107495,6 +107796,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-014.whiskergalaxy.com",
+        "x509": "lhr-335.windscribe.com",
         "ips": [
           "5.252.69.4",
           "2.58.29.145",
@@ -107505,6 +107807,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-015.whiskergalaxy.com",
+        "x509": "lhr-335.windscribe.com",
         "ips": [
           "5.252.69.5",
           "2.58.29.17",
@@ -107515,6 +107818,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-017.whiskergalaxy.com",
+        "x509": "lhr-341.windscribe.com",
         "ips": [
           "84.17.50.129",
           "84.17.50.130",
@@ -107525,6 +107829,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-021.whiskergalaxy.com",
+        "x509": "lhr-341.windscribe.com",
         "ips": [
           "212.102.63.31",
           "212.102.63.32",
@@ -107535,6 +107840,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-024.whiskergalaxy.com",
+        "x509": "lhr-171.windscribe.com",
         "ips": [
           "217.138.254.50",
           "217.138.254.51",
@@ -107545,6 +107851,7 @@
         "region": "United Kingdom",
         "city": "London",
         "hostname": "uk-028.whiskergalaxy.com",
+        "x509": "lhr-341.windscribe.com",
         "ips": [
           "212.102.63.92",
           "212.102.63.93",
@@ -107555,6 +107862,7 @@
         "region": "United Kingdom",
         "city": "Manchester",
         "hostname": "uk-008.whiskergalaxy.com",
+        "x509": "man-126.windscribe.com",
         "ips": [
           "81.92.207.68",
           "81.92.207.69",
@@ -107565,6 +107873,7 @@
         "region": "United Kingdom",
         "city": "Manchester",
         "hostname": "uk-010.whiskergalaxy.com",
+        "x509": "man-126.windscribe.com",
         "ips": [
           "89.238.135.132",
           "89.238.135.133",
@@ -107575,6 +107884,7 @@
         "region": "United Kingdom",
         "city": "Manchester",
         "hostname": "uk-025.whiskergalaxy.com",
+        "x509": "man-126.windscribe.com",
         "ips": [
           "89.44.201.98",
           "89.44.201.99",
@@ -107585,6 +107895,7 @@
         "region": "United Kingdom",
         "city": "Manchester",
         "hostname": "uk-027.whiskergalaxy.com",
+        "x509": "man-126.windscribe.com",
         "ips": [
           "84.252.95.130",
           "84.252.95.131",
@@ -107595,6 +107906,7 @@
         "region": "Vietnam",
         "city": "Hanoi",
         "hostname": "vn-001.whiskergalaxy.com",
+        "x509": "han-122.windscribe.com",
         "ips": [
           "103.9.76.196",
           "103.9.76.197",
@@ -107605,6 +107917,7 @@
         "region": "Vietnam",
         "city": "Hanoi",
         "hostname": "vn-002.whiskergalaxy.com",
+        "x509": "han-122.windscribe.com",
         "ips": [
           "103.9.79.185",
           "103.9.79.186",
@@ -107615,6 +107928,7 @@
         "region": "Vietnam",
         "city": "Hanoi",
         "hostname": "vn-003.whiskergalaxy.com",
+        "x509": "han-122.windscribe.com",
         "ips": [
           "103.9.79.218",
           "103.9.79.219",
@@ -107625,6 +107939,7 @@
         "region": "WINDFLIX CA",
         "city": "Toronto",
         "hostname": "wf-ca-003.whiskergalaxy.com",
+        "x509": "yyz-292.windscribe.com",
         "ips": [
           "91.149.252.10",
           "91.149.252.49",
@@ -107635,6 +107950,7 @@
         "region": "WINDFLIX CA",
         "city": "Toronto",
         "hostname": "wf-ca-004.whiskergalaxy.com",
+        "x509": "yyz-292.windscribe.com",
         "ips": [
           "104.254.92.98",
           "104.254.92.99",
@@ -107645,6 +107961,7 @@
         "region": "WINDFLIX JP",
         "city": "Tokyo",
         "hostname": "wf-jp-002.whiskergalaxy.com",
+        "x509": "hnd-291.windscribe.com",
         "ips": [
           "5.181.235.66",
           "5.181.235.67",
@@ -107655,6 +107972,7 @@
         "region": "WINDFLIX UK",
         "city": "London",
         "hostname": "wf-uk-001.whiskergalaxy.com",
+        "x509": "lhr-185.windscribe.com",
         "ips": [
           "45.9.248.2",
           "45.9.248.3",
@@ -107665,6 +107983,7 @@
         "region": "WINDFLIX UK",
         "city": "London",
         "hostname": "wf-uk-006.whiskergalaxy.com",
+        "x509": "lhr-185.windscribe.com",
         "ips": [
           "81.92.200.84",
           "81.92.200.85",
@@ -107675,6 +107994,7 @@
         "region": "WINDFLIX UK",
         "city": "London",
         "hostname": "wf-uk-007.whiskergalaxy.com",
+        "x509": "lhr-185.windscribe.com",
         "ips": [
           "89.47.62.82",
           "89.47.62.83",
@@ -107685,6 +108005,7 @@
         "region": "WINDFLIX US",
         "city": "New York",
         "hostname": "wf-us-010.whiskergalaxy.com",
+        "x509": "wfus-178.windscribe.com",
         "ips": [
           "146.70.25.2",
           "146.70.25.3",
@@ -107695,6 +108016,7 @@
         "region": "WINDFLIX US",
         "city": "New York",
         "hostname": "wf-us-011.whiskergalaxy.com",
+        "x509": "wfus-178.windscribe.com",
         "ips": [
           "146.70.25.66",
           "146.70.25.67",
@@ -107705,6 +108027,7 @@
         "region": "WINDFLIX US",
         "city": "New York",
         "hostname": "wf-us-012.whiskergalaxy.com",
+        "x509": "wfus-178.windscribe.com",
         "ips": [
           "185.232.22.130",
           "185.232.22.131",
@@ -107715,6 +108038,7 @@
         "region": "WINDFLIX US",
         "city": "New York",
         "hostname": "wf-us-013.whiskergalaxy.com",
+        "x509": "wfus-178.windscribe.com",
         "ips": [
           "217.138.206.210",
           "217.138.206.211",
@@ -107725,6 +108049,7 @@
         "region": "WINDFLIX US",
         "city": "New York",
         "hostname": "wf-us-014.whiskergalaxy.com",
+        "x509": "wfus-178.windscribe.com",
         "ips": [
           "77.81.136.98",
           "77.81.136.99",
@@ -107735,6 +108060,7 @@
         "region": "WINDFLIX US",
         "city": "New York",
         "hostname": "wf-us-015.whiskergalaxy.com",
+        "x509": "wfus-178.windscribe.com",
         "ips": [
           "38.132.101.210",
           "38.132.101.211",
