@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/provider"
 )
@@ -24,6 +25,7 @@ func (l *Loop) startPortForwarding(ctx context.Context,
 		PortForwarder: portForwarder,
 		Gateway:       gateway,
 		ServerName:    serverName,
+		Interface:     constants.TUN,
 	}
 	_, err = l.portForward.Start(ctx, pfData)
 	if err != nil {
