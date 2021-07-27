@@ -155,7 +155,9 @@ ENV VPNSP=pia \
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /entrypoint healthcheck
+ARG TARGETPLATFORM
 RUN apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.12/main" openvpn==2.4.11-r0 && \
+    if [ "${TARGETPLATFORM}" != "linux/ppc64le" ]; then apk add --no-cache --update apk-tools==2.12.6-r0; fi && \
     mv /usr/sbin/openvpn /usr/sbin/openvpn2.4 && \
     apk del openvpn && \
     apk add --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
