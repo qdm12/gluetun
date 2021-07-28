@@ -42,6 +42,7 @@ func (l *Loop) collectLines(stdout, stderr <-chan string, done chan<- struct{}) 
 		}
 		if strings.Contains(line, "Initialization Sequence Completed") {
 			l.tunnelReady <- struct{}{}
+			l.startPFCh <- struct{}{}
 		}
 	}
 }

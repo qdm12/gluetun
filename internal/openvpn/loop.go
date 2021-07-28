@@ -1,7 +1,6 @@
 package openvpn
 
 import (
-	"net"
 	"net/http"
 	"time"
 
@@ -11,6 +10,8 @@ import (
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn/state"
+	"github.com/qdm12/gluetun/internal/portforward"
+	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -22,8 +23,6 @@ type Looper interface {
 	loopstate.Applier
 	SettingsGetSetter
 	ServersGetterSetter
-	PortForwadedGetter
-	PortForwader
 }
 
 type Loop struct {
@@ -35,19 +34,21 @@ type Loop struct {
 	pgid           int
 	targetConfPath string
 	// Configurators
-	conf StarterAuthWriter
-	fw   firewallConfigurer
+	conf        StarterAuthWriter
+	fw          firewallConfigurer
+	routing     routing.VPNLocalGatewayIPGetter
+	portForward portforward.StartStopper
 	// Other objects
-	logger, pfLogger logging.Logger
-	client           *http.Client
-	tunnelReady      chan<- struct{}
+	logger      logging.Logger
+	client      *http.Client
+	tunnelReady chan<- struct{}
 	// Internal channels and values
-	stop               <-chan struct{}
-	stopped            chan<- struct{}
-	start              <-chan struct{}
-	running            chan<- models.LoopStatus
-	portForwardSignals chan net.IP
-	userTrigger        bool
+	stop        <-chan struct{}
+	stopped     chan<- struct{}
+	start       <-chan struct{}
+	running     chan<- models.LoopStatus
+	userTrigger bool
+	startPFCh   chan struct{}
 	// Internal constant values
 	backoffTime time.Duration
 }
@@ -63,7 +64,8 @@ const (
 
 func NewLoop(settings configuration.OpenVPN, username string,
 	puid, pgid int, allServers models.AllServers, conf Configurator,
-	fw firewallConfigurer, logger logging.ParentLogger,
+	fw firewallConfigurer, routing routing.VPNLocalGatewayIPGetter,
+	portForward portforward.StartStopper, logger logging.Logger,
 	client *http.Client, tunnelReady chan<- struct{}) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
@@ -74,24 +76,25 @@ func NewLoop(settings configuration.OpenVPN, username string,
 	state := state.New(statusManager, settings, allServers)
 
 	return &Loop{
-		statusManager:      statusManager,
-		state:              state,
-		username:           username,
-		puid:               puid,
-		pgid:               pgid,
-		targetConfPath:     constants.OpenVPNConf,
-		conf:               conf,
-		fw:                 fw,
-		logger:             logger.NewChild(logging.Settings{Prefix: "openvpn: "}),
-		pfLogger:           logger.NewChild(logging.Settings{Prefix: "port forwarding: "}),
-		client:             client,
-		tunnelReady:        tunnelReady,
-		start:              start,
-		running:            running,
-		stop:               stop,
-		stopped:            stopped,
-		portForwardSignals: make(chan net.IP),
-		userTrigger:        true,
-		backoffTime:        defaultBackoffTime,
+		statusManager:  statusManager,
+		state:          state,
+		username:       username,
+		puid:           puid,
+		pgid:           pgid,
+		targetConfPath: constants.OpenVPNConf,
+		conf:           conf,
+		fw:             fw,
+		routing:        routing,
+		portForward:    portForward,
+		logger:         logger,
+		client:         client,
+		tunnelReady:    tunnelReady,
+		start:          start,
+		running:        running,
+		stop:           stop,
+		stopped:        stopped,
+		userTrigger:    true,
+		startPFCh:      make(chan struct{}),
+		backoffTime:    defaultBackoffTime,
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -22,6 +23,7 @@ func newOpenvpnHandler(ctx context.Context, looper openvpn.Looper,
 type openvpnHandler struct {
 	ctx    context.Context
 	looper openvpn.Looper
+	pf     portforward.Getter
 	logger logging.Logger
 }
 
@@ -105,7 +107,7 @@ func (h *openvpnHandler) getSettings(w http.ResponseWriter) {
 }
 
 func (h *openvpnHandler) getPortForwarded(w http.ResponseWriter) {
-	port := h.looper.GetPortForwarded()
+	port := h.pf.GetPortForwarded()
 	encoder := json.NewEncoder(w)
 	data := portWrapper{Port: port}
 	if err := encoder.Encode(data); err != nil {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,6 +23,7 @@ import (
 	"github.com/qdm12/gluetun/internal/httpproxy"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
@@ -321,8 +321,16 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler := goshutdown.NewGroupHandler("tickers", defaultGroupSettings)
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
+	portForwardLogger := logger.NewChild(logging.Settings{Prefix: "port forwarding: "})
+	portForwardLooper := portforward.NewLoop(allSettings.OpenVPN.Provider.PortForwarding,
+		httpClient, firewallConf, portForwardLogger)
+	portForwardHandler, portForwardCtx, portForwardDone := goshutdown.NewGoRoutineHandler(
+		"port forwarding", goshutdown.GoRoutineSettings{Timeout: time.Second})
+	go portForwardLooper.Run(portForwardCtx, portForwardDone)
+
+	openvpnLogger := logger.NewChild(logging.Settings{Prefix: "openvpn: "})
 	openvpnLooper := openvpn.NewLoop(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, logger, httpClient, tunnelReadyCh)
+		ovpnConf, firewallConf, routingConf, portForwardLooper, openvpnLogger, httpClient, tunnelReadyCh)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn
@@ -378,8 +386,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"events routing", defaultGoRoutineSettings)
 	go routeReadyEvents(eventsRoutingCtx, eventsRoutingDone, buildInfo, tunnelReadyCh,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
-		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
-	)
+		allSettings.VersionInformation)
 	controlGroupHandler.Add(eventsRoutingHandler)
 
 	controlServerAddress := ":" + strconv.Itoa(int(allSettings.ControlServer.Port))
@@ -406,20 +413,13 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	orderHandler := goshutdown.NewOrder("gluetun", orderSettings)
 	orderHandler.Append(controlGroupHandler, tickersGroupHandler, healthServerHandler,
-		openvpnHandler, otherGroupHandler)
+		openvpnHandler, portForwardHandler, otherGroupHandler)
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
 	_, _ = openvpnLooper.ApplyStatus(ctx, constants.Running) // TODO option to disable with variable
 
 	<-ctx.Done()
-
-	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
-		logger.Info("Clearing forwarded port status file " + allSettings.OpenVPN.Provider.PortForwarding.Filepath)
-		if err := os.Remove(allSettings.OpenVPN.Provider.PortForwarding.Filepath); err != nil {
-			logger.Error(err.Error())
-		}
-	}
 
 	return orderHandler.Shutdown(context.Background())
 }
@@ -450,7 +450,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 	tunnelReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
 	routing routing.VPNGetter, logger logging.Logger, httpClient *http.Client,
-	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
+	versionInformation bool) {
 	defer close(done)
 
 	// for linters only
@@ -503,15 +503,6 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 			updaterTickerDone = make(chan struct{})
 			go unboundLooper.RunRestartTicker(restartTickerContext, unboundTickerDone)
 			go updaterLooper.RunRestartTicker(restartTickerContext, updaterTickerDone)
-			if portForwardingEnabled {
-				// vpnGateway required only for PIA
-				vpnGateway, err := routing.VPNLocalGatewayIP()
-				if err != nil {
-					logger.Error("cannot get VPN local gateway IP: " + err.Error())
-				}
-				logger.Info("VPN gateway IP address: " + vpnGateway.String())
-				startPortForward(vpnGateway)
-			}
 		}
 	}
 }

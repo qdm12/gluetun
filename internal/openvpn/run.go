@@ -88,41 +88,31 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			<-lineCollectionDone
 		}
 
-		// Needs the stream line from main.go to know when the tunnel is up
-		portForwardDone := make(chan struct{})
-		go func(ctx context.Context) {
-			defer close(portForwardDone)
-			select {
-			// TODO have a way to disable pf with a context
-			case <-ctx.Done():
-				return
-			case gateway := <-l.portForwardSignals:
-				l.portForward(ctx, providerConf, l.client, gateway)
-			}
-		}(openvpnCtx)
-
 		l.backoffTime = defaultBackoffTime
 		l.signalOrSetStatus(constants.Running)
 
 		stayHere := true
 		for stayHere {
 			select {
+			case <-l.startPFCh:
+				l.startPortForwarding(ctx, providerConf, connection.Hostname)
 			case <-ctx.Done():
+				const pfTimeout = 100 * time.Millisecond
+				l.stopPortForwarding(context.Background(), pfTimeout)
 				openvpnCancel()
 				<-waitError
 				close(waitError)
 				closeStreams()
-				<-portForwardDone
 				return
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
+				l.stopPortForwarding(ctx, 0)
 				openvpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
 				// select case will trigger
 				closeStreams()
-				<-portForwardDone
 				l.stopped <- struct{}{}
 			case <-l.start:
 				l.userTrigger = true
@@ -134,9 +124,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
+				l.stopPortForwarding(ctx, 0)
 				openvpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
-				<-portForwardDone
 				l.logAndWait(ctx, err)
 				stayHere = false
 
