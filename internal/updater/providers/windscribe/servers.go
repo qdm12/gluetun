@@ -25,6 +25,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 		region := regionData.Region
 		for _, group := range regionData.Groups {
 			city := group.City
+			x5090Name := group.OvpnX509
 			for _, node := range group.Nodes {
 				const maxIPsPerNode = 3
 				ips := make([]net.IP, 0, maxIPsPerNode)
@@ -41,6 +42,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 					Region:   region,
 					City:     city,
 					Hostname: node.Hostname,
+					OvpnX509: x5090Name,
 					IPs:      ips,
 				}
 				servers = append(servers, server)

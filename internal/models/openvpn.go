@@ -9,7 +9,9 @@ type OpenVPNConnection struct {
 	IP       net.IP `json:"ip"`
 	Port     uint16 `json:"port"`
 	Protocol string `json:"protocol"`
-	Hostname string `json:"hostname"` // Privado for tls verification
+	// Hostname is used for IPVanish, IVPN, Privado
+	// and Windscribe for TLS verification
+	Hostname string `json:"hostname"`
 }
 
 func (o *OpenVPNConnection) Equal(other OpenVPNConnection) bool {
