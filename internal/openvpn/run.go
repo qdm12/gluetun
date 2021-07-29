@@ -95,10 +95,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		for stayHere {
 			select {
 			case <-l.startPFCh:
-				l.startPortForwarding(ctx, providerConf, connection.Hostname)
+				l.startPortForwarding(ctx, settings.Provider.PortForwarding.Enabled,
+					providerConf, connection.Hostname)
 			case <-ctx.Done():
 				const pfTimeout = 100 * time.Millisecond
-				l.stopPortForwarding(context.Background(), pfTimeout)
+				l.stopPortForwarding(context.Background(),
+					settings.Provider.PortForwarding.Enabled, pfTimeout)
 				openvpnCancel()
 				<-waitError
 				close(waitError)
@@ -107,7 +109,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
-				l.stopPortForwarding(ctx, 0)
+				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
 				openvpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
@@ -124,7 +126,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
-				l.stopPortForwarding(ctx, 0)
+				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
 				openvpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)

@@ -10,10 +10,12 @@ import (
 )
 
 func (l *Loop) startPortForwarding(ctx context.Context,
-	portForwarder provider.PortForwarder, serverName string) {
-	if !l.GetSettings().Provider.PortForwarding.Enabled {
+	enabled bool, portForwarder provider.PortForwarder,
+	serverName string) {
+	if !enabled {
 		return
 	}
+
 	// only used for PIA for now
 	gateway, err := l.routing.VPNLocalGatewayIP()
 	if err != nil {
@@ -33,7 +35,12 @@ func (l *Loop) startPortForwarding(ctx context.Context,
 	}
 }
 
-func (l *Loop) stopPortForwarding(ctx context.Context, timeout time.Duration) {
+func (l *Loop) stopPortForwarding(ctx context.Context, enabled bool,
+	timeout time.Duration) {
+	if !enabled {
+		return // nothing to stop
+	}
+
 	if timeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, timeout)
