@@ -2,19 +2,16 @@ package configuration
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/qdm12/golibs/params"
+	"github.com/qdm12/ss-server/pkg/tcpudp"
 )
 
 // ShadowSocks contains settings to configure the Shadowsocks server.
 type ShadowSocks struct {
-	Method   string
-	Password string
-	Port     uint16
-	Enabled  bool
-	Log      bool
+	Enabled bool
+	tcpudp.Settings
 }
 
 func (settings *ShadowSocks) String() string {
@@ -28,12 +25,12 @@ func (settings *ShadowSocks) lines() (lines []string) {
 
 	lines = append(lines, lastIndent+"Shadowsocks server:")
 
-	lines = append(lines, indent+lastIndent+"Listening port: "+strconv.Itoa(int(settings.Port)))
+	lines = append(lines, indent+lastIndent+"Listening address: "+settings.Address)
 
-	lines = append(lines, indent+lastIndent+"Method: "+settings.Method)
+	lines = append(lines, indent+lastIndent+"Cipher: "+settings.CipherName)
 
-	if settings.Log {
-		lines = append(lines, indent+lastIndent+"Logging: enabled")
+	if settings.LogAddresses {
+		lines = append(lines, indent+lastIndent+"Log addresses: enabled")
 	}
 
 	return lines
@@ -52,24 +49,53 @@ func (settings *ShadowSocks) read(r reader) (err error) {
 		return err
 	}
 
-	settings.Log, err = r.env.OnOff("SHADOWSOCKS_LOG", params.Default("off"))
+	settings.LogAddresses, err = r.env.OnOff("SHADOWSOCKS_LOG", params.Default("off"))
 	if err != nil {
 		return fmt.Errorf("environment variable SHADOWSOCKS_LOG: %w", err)
 	}
 
-	settings.Method, err = r.env.Get("SHADOWSOCKS_METHOD", params.Default("chacha20-ietf-poly1305"))
+	settings.CipherName, err = r.env.Get("SHADOWSOCKS_CIPHER", params.Default("chacha20-ietf-poly1305"),
+		params.RetroKeys([]string{"SHADOWSOCKS_METHOD"}, r.onRetroActive))
 	if err != nil {
-		return fmt.Errorf("environment variable SHADOWSOCKS_METHOD: %w", err)
+		return fmt.Errorf("environment variable SHADOWSOCKS_CIPHER (or SHADOWSOCKS_METHOD): %w", err)
 	}
 
-	var warning string
-	settings.Port, warning, err = r.env.ListeningPort("SHADOWSOCKS_PORT", params.Default("8388"))
-	if len(warning) > 0 {
+	warning, err := settings.getAddress(r.env)
+	if warning != "" {
 		r.logger.Warn(warning)
 	}
 	if err != nil {
-		return fmt.Errorf("environment variable SHADOWSOCKS_PORT: %w", err)
+		return err
 	}
 
 	return nil
+}
+
+func (settings *ShadowSocks) getAddress(env params.Env) (
+	warning string, err error) {
+	address, addrWarning, err := env.ListeningAddress("SHADOWSOCKS_LISTENING_ADDRESS")
+	if err != nil {
+		return addrWarning, fmt.Errorf("environment variable SHADOWSOCKS_LISTENING_ADDRESS: %w", err)
+	}
+
+	if address != "" {
+		settings.Address = address
+		return addrWarning, nil
+	}
+
+	// Retro-compatibility
+	const retroWarning = "You are using the old environment variable " +
+		"SHADOWSOCKS_PORT, please consider using " +
+		"SHADOWSOCKS_LISTENING_ADDRESS instead"
+	port, _, err := env.ListeningPort("SHADOWSOCKS_PORT")
+	if err != nil {
+		return retroWarning, fmt.Errorf("environment variable SHADOWSOCKS_PORT: %w", err)
+	} else if port > 0 {
+		settings.Address = ":" + fmt.Sprint(port)
+		return retroWarning, nil
+	}
+
+	// Default value
+	settings.Address = ":8388"
+	return addrWarning, nil
 }

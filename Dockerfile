@@ -147,10 +147,10 @@ ENV VPNSP=pia \
     # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
-    SHADOWSOCKS_PORT=8388 \
+    SHADOWSOCKS_ADDRESS=":8388" \
     SHADOWSOCKS_PASSWORD= \
     SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
-    SHADOWSOCKS_METHOD=chacha20-ietf-poly1305 \
+    SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
     UPDATER_PERIOD=0
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp

@@ -3,7 +3,6 @@ package shadowsocks
 
 import (
 	"context"
-	"strconv"
 	"sync"
 	"time"
 
@@ -88,7 +87,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
-		server, err := shadowsockslib.NewServer(settings.Method, settings.Password, adaptLogger(l.logger, settings.Log))
+		server, err := shadowsockslib.NewServer(settings.Settings, l.logger)
 		if err != nil {
 			crashed = true
 			l.logAndWait(ctx, err)
@@ -99,7 +98,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 
 		waitError := make(chan error)
 		go func() {
-			waitError <- server.Listen(shadowsocksCtx, ":"+strconv.Itoa(int(settings.Port)))
+			waitError <- server.Listen(shadowsocksCtx)
 		}()
 		if err != nil {
 			crashed = true
