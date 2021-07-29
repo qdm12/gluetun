@@ -73,29 +73,37 @@ func (settings *ShadowSocks) read(r reader) (err error) {
 
 func (settings *ShadowSocks) getAddress(env params.Env) (
 	warning string, err error) {
-	address, addrWarning, err := env.ListeningAddress("SHADOWSOCKS_LISTENING_ADDRESS")
+	address, err := env.Get("SHADOWSOCKS_LISTENING_ADDRESS")
 	if err != nil {
-		return addrWarning, fmt.Errorf("environment variable SHADOWSOCKS_LISTENING_ADDRESS: %w", err)
+		return "", fmt.Errorf("environment variable SHADOWSOCKS_LISTENING_ADDRESS: %w", err)
 	}
 
 	if address != "" {
+		address, warning, err := env.ListeningAddress("SHADOWSOCKS_LISTENING_ADDRESS")
+		if err != nil {
+			return "", fmt.Errorf("environment variable SHADOWSOCKS_LISTENING_ADDRESS: %w", err)
+		}
 		settings.Address = address
-		return addrWarning, nil
+		return warning, nil
 	}
 
 	// Retro-compatibility
 	const retroWarning = "You are using the old environment variable " +
 		"SHADOWSOCKS_PORT, please consider using " +
 		"SHADOWSOCKS_LISTENING_ADDRESS instead"
-	port, _, err := env.ListeningPort("SHADOWSOCKS_PORT")
+	portStr, err := env.Get("SHADOWSOCKS_PORT")
 	if err != nil {
 		return retroWarning, fmt.Errorf("environment variable SHADOWSOCKS_PORT: %w", err)
-	} else if port > 0 {
+	} else if portStr != "" {
+		port, _, err := env.ListeningPort("SHADOWSOCKS_PORT")
+		if err != nil {
+			return retroWarning, fmt.Errorf("environment variable SHADOWSOCKS_PORT: %w", err)
+		}
 		settings.Address = ":" + fmt.Sprint(port)
 		return retroWarning, nil
 	}
 
 	// Default value
 	settings.Address = ":8388"
-	return addrWarning, nil
+	return "", nil
 }
