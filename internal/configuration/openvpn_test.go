@@ -33,7 +33,7 @@ func Test_OpenVPN_JSON(t *testing.T) {
     "server_selection": {
       "tcp": false,
       "regions": null,
-      "group": "",
+      "groups": null,
       "countries": null,
       "cities": null,
       "hostnames": null,
