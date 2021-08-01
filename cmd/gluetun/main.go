@@ -395,7 +395,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", defaultGoRoutineSettings)
 	httpServer := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.NewChild(logging.Settings{Prefix: "http server: "}),
-		buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
+		buildInfo, openvpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper)
 	go httpServer.Run(httpServerCtx, httpServerDone)
 	controlGroupHandler.Add(httpServerHandler)
 

@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
@@ -16,13 +17,14 @@ import (
 func newHandler(ctx context.Context, logger logging.Logger, logging bool,
 	buildInfo models.BuildInformation,
 	openvpnLooper openvpn.Looper,
+	pfGetter portforward.Getter,
 	unboundLooper dns.Looper,
 	updaterLooper updater.Looper,
 	publicIPLooper publicip.Looper,
 ) http.Handler {
 	handler := &handler{}
 
-	openvpn := newOpenvpnHandler(ctx, openvpnLooper, logger)
+	openvpn := newOpenvpnHandler(ctx, openvpnLooper, pfGetter, logger)
 	dns := newDNSHandler(ctx, unboundLooper, logger)
 	updater := newUpdaterHandler(ctx, updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)

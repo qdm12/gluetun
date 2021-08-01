@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
@@ -26,11 +27,11 @@ type server struct {
 }
 
 func New(ctx context.Context, address string, logEnabled bool, logger logging.Logger,
-	buildInfo models.BuildInformation,
-	openvpnLooper openvpn.Looper, unboundLooper dns.Looper,
+	buildInfo models.BuildInformation, openvpnLooper openvpn.Looper,
+	pfGetter portforward.Getter, unboundLooper dns.Looper,
 	updaterLooper updater.Looper, publicIPLooper publicip.Looper) Server {
 	handler := newHandler(ctx, logger, logEnabled, buildInfo,
-		openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
+		openvpnLooper, pfGetter, unboundLooper, updaterLooper, publicIPLooper)
 	return &server{
 		address: address,
 		logger:  logger,
