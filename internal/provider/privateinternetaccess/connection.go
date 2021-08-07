@@ -31,6 +31,7 @@ func (p *PIA) GetOpenVPNConnection(selection configuration.ServerSelection) (
 				IP:       IP,
 				Port:     port,
 				Protocol: protocol,
+				Hostname: server.ServerName, // used for port forwarding TLS
 			}
 			connections = append(connections, connection)
 		}

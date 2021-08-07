@@ -34,6 +34,10 @@ var (
 	ErrVPNLocalGatewayIPNotFound = errors.New("VPN local gateway IP address not found")
 )
 
+type DefaultRouteGetter interface {
+	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
+}
+
 func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
@@ -49,13 +53,16 @@ func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 			}
 			attributes := link.Attrs()
 			defaultInterface = attributes.Name
-			if r.verbose {
-				r.logger.Info("default route found: interface %s, gateway %s", defaultInterface, defaultGateway.String())
-			}
+			r.logger.Info("default route found: interface " + defaultInterface +
+				", gateway " + defaultGateway.String())
 			return defaultInterface, defaultGateway, nil
 		}
 	}
 	return "", nil, fmt.Errorf("%w: in %d route(s)", ErrRouteDefaultNotFound, len(routes))
+}
+
+type DefaultIPGetter interface {
+	DefaultIP() (defaultIP net.IP, err error)
 }
 
 func (r *routing) DefaultIP() (ip net.IP, err error) {
@@ -75,11 +82,15 @@ func (r *routing) DefaultIP() (ip net.IP, err error) {
 			defaultLinkName = link.Attrs().Name
 		}
 	}
-	if len(defaultLinkName) == 0 {
+	if defaultLinkName == "" {
 		return nil, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
 	}
 
 	return r.assignedIP(defaultLinkName)
+}
+
+type LocalSubnetGetter interface {
+	LocalSubnet() (defaultSubnet net.IPNet, err error)
 }
 
 func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
@@ -104,13 +115,15 @@ func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 			continue
 		}
 		defaultSubnet = *route.Dst
-		if r.verbose {
-			r.logger.Info("local subnet found: %s", defaultSubnet.String())
-		}
+		r.logger.Info("local subnet found: " + defaultSubnet.String())
 		return defaultSubnet, nil
 	}
 
 	return defaultSubnet, fmt.Errorf("%w: in %d routes", ErrSubnetDefaultNotFound, len(routes))
+}
+
+type LocalNetworksGetter interface {
+	LocalNetworks() (localNetworks []LocalNetwork, err error)
 }
 
 func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
@@ -127,9 +140,7 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		}
 
 		localLinks[link.Attrs().Index] = struct{}{}
-		if r.verbose {
-			r.logger.Info("local ethernet link found: %s", link.Attrs().Name)
-		}
+		r.logger.Info("local ethernet link found: " + link.Attrs().Name)
 	}
 
 	if len(localLinks) == 0 {
@@ -151,9 +162,7 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		var localNet LocalNetwork
 
 		localNet.IPNet = route.Dst
-		if r.verbose {
-			r.logger.Info("local ipnet found: %s", localNet.IPNet.String())
-		}
+		r.logger.Info("local ipnet found: " + localNet.IPNet.String())
 
 		link, err := netlink.LinkByIndex(route.LinkIndex)
 		if err != nil {
@@ -200,6 +209,10 @@ func (r *routing) assignedIP(interfaceName string) (ip net.IP, err error) {
 		ErrInterfaceIPNotFound, interfaceName, len(addresses))
 }
 
+type VPNDestinationIPGetter interface {
+	VPNDestinationIP() (ip net.IP, err error)
+}
+
 func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
@@ -226,6 +239,10 @@ func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 		}
 	}
 	return nil, fmt.Errorf("%w: in %d routes", ErrVPNDestinationIPNotFound, len(routes))
+}
+
+type VPNLocalGatewayIPGetter interface {
+	VPNLocalGatewayIP() (ip net.IP, err error)
 }
 
 func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {

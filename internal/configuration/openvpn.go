@@ -78,7 +78,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"},
 		params.Default("private internet access"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable VPNSP: %w", err)
 	}
 	if vpnsp == "pia" { // retro compatibility
 		vpnsp = "private internet access"
@@ -88,7 +88,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 
 	settings.Config, err = r.env.Get("OPENVPN_CUSTOM_CONFIG", params.CaseSensitiveValue())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_CUSTOM_CONFIG: %w", err)
 	}
 	customConfig := settings.Config != ""
 
@@ -100,7 +100,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 
 	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", credentialsRequired, []string{"USER"})
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_USER: %w", err)
 	}
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
 	settings.User = strings.ReplaceAll(settings.User, " ", "")
@@ -117,18 +117,18 @@ func (settings *OpenVPN) read(r reader) (err error) {
 	settings.Version, err = r.env.Inside("OPENVPN_VERSION",
 		[]string{constants.Openvpn24, constants.Openvpn25}, params.Default(constants.Openvpn25))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_VERSION: %w", err)
 	}
 
 	settings.Verbosity, err = r.env.IntRange("OPENVPN_VERBOSITY", 0, 6, params.Default("1")) //nolint:gomnd
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_VERBOSITY: %w", err)
 	}
 
 	settings.Flags = []string{}
 	flagsStr, err := r.env.Get("OPENVPN_FLAGS")
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_FLAGS: %w", err)
 	}
 	if flagsStr != "" {
 		settings.Flags = strings.Fields(flagsStr)
@@ -136,23 +136,23 @@ func (settings *OpenVPN) read(r reader) (err error) {
 
 	settings.Root, err = r.env.YesNo("OPENVPN_ROOT", params.Default("yes"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_ROOT: %w", err)
 	}
 
 	settings.Cipher, err = r.env.Get("OPENVPN_CIPHER")
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_CIPHER: %w", err)
 	}
 
 	settings.Auth, err = r.env.Get("OPENVPN_AUTH")
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_AUTH: %w", err)
 	}
 
 	const maxMSSFix = 10000
 	mssFix, err := r.env.IntRange("OPENVPN_MSSFIX", 0, maxMSSFix, params.Default("0"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_MSSFIX: %w", err)
 	}
 	settings.MSSFix = uint16(mssFix)
 	return settings.readProvider(r)

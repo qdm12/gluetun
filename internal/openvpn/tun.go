@@ -3,27 +3,42 @@ package openvpn
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/unix"
 )
 
+type TUNCheckCreater interface {
+	TUNChecker
+	TUNCreater
+}
+
+type TUNChecker interface {
+	CheckTUN() error
+}
+
 // CheckTUN checks the tunnel device is present and accessible.
 func (c *configurator) CheckTUN() error {
-	c.logger.Info("checking for device %s", constants.TunnelDevice)
-	f, err := c.os.OpenFile(constants.TunnelDevice, os.O_RDWR, 0)
+	c.logger.Info("checking for device " + c.tunDevPath)
+	f, err := os.OpenFile(c.tunDevPath, os.O_RDWR, 0)
 	if err != nil {
 		return fmt.Errorf("TUN device is not available: %w", err)
 	}
 	if err := f.Close(); err != nil {
-		c.logger.Warn("Could not close TUN device file: %s", err)
+		c.logger.Warn("Could not close TUN device file: " + err.Error())
 	}
 	return nil
 }
 
+type TUNCreater interface {
+	CreateTUN() error
+}
+
 func (c *configurator) CreateTUN() error {
-	c.logger.Info("creating %s", constants.TunnelDevice)
-	if err := c.os.MkdirAll("/dev/net", 0751); err != nil { //nolint:gomnd
+	c.logger.Info("creating " + c.tunDevPath)
+
+	parentDir := filepath.Dir(c.tunDevPath)
+	if err := os.MkdirAll(parentDir, 0751); err != nil { //nolint:gomnd
 		return err
 	}
 
@@ -32,17 +47,13 @@ func (c *configurator) CreateTUN() error {
 		minor = 200
 	)
 	dev := c.unix.Mkdev(major, minor)
-	if err := c.unix.Mknod(constants.TunnelDevice, unix.S_IFCHR, int(dev)); err != nil {
+	if err := c.unix.Mknod(c.tunDevPath, unix.S_IFCHR, int(dev)); err != nil {
 		return err
 	}
 
-	file, err := c.os.OpenFile(constants.TunnelDevice, os.O_WRONLY, 0666) //nolint:gomnd
-	if err != nil {
-		return err
-	}
 	const readWriteAllPerms os.FileMode = 0666
-	if err := file.Chmod(readWriteAllPerms); err != nil {
-		_ = file.Close()
+	file, err := os.OpenFile(c.tunDevPath, os.O_WRONLY, readWriteAllPerms)
+	if err != nil {
 		return err
 	}
 

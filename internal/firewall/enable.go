@@ -14,7 +14,11 @@ var (
 	ErrUserPostRules = errors.New("cannot run user post firewall rules")
 )
 
-func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error) {
+type Enabler interface {
+	SetEnabled(ctx context.Context, enabled bool) (err error)
+}
+
+func (c *Config) SetEnabled(ctx context.Context, enabled bool) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
@@ -48,7 +52,7 @@ func (c *configurator) SetEnabled(ctx context.Context, enabled bool) (err error)
 	return nil
 }
 
-func (c *configurator) disable(ctx context.Context) (err error) {
+func (c *Config) disable(ctx context.Context) (err error) {
 	if err = c.clearAllRules(ctx); err != nil {
 		return fmt.Errorf("cannot disable firewall: %w", err)
 	}
@@ -62,7 +66,7 @@ func (c *configurator) disable(ctx context.Context) (err error) {
 }
 
 // To use in defered call when enabling the firewall.
-func (c *configurator) fallbackToDisabled(ctx context.Context) {
+func (c *Config) fallbackToDisabled(ctx context.Context) {
 	if ctx.Err() != nil {
 		return
 	}
@@ -71,7 +75,7 @@ func (c *configurator) fallbackToDisabled(ctx context.Context) {
 	}
 }
 
-func (c *configurator) enable(ctx context.Context) (err error) {
+func (c *Config) enable(ctx context.Context) (err error) {
 	touched := false
 	if err = c.setIPv4AllPolicies(ctx, "DROP"); err != nil {
 		return fmt.Errorf("cannot enable firewall: %w", err)
@@ -136,7 +140,7 @@ func (c *configurator) enable(ctx context.Context) (err error) {
 		}
 	}
 
-	if err := c.runUserPostRules(ctx, "/iptables/post-rules.txt", remove); err != nil {
+	if err := c.runUserPostRules(ctx, c.customRulesPath, remove); err != nil {
 		return fmt.Errorf("%w: %s", ErrUserPostRules, err)
 	}
 

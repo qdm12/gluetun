@@ -110,6 +110,10 @@ ENV VPNSP=pia \
     # Openvpn
     OPENVPN_CIPHER= \
     OPENVPN_AUTH= \
+    # Health
+    HEALTH_OPENVPN_DURATION_INITIAL=6s \
+    HEALTH_OPENVPN_DURATION_ADDITION=5s \
+    HEALTH_SERVER_ADDRESS=127.0.0.1:9999 \
     # DNS over TLS
     DOT=on \
     DOT_PROVIDERS=cloudflare \
@@ -143,15 +147,17 @@ ENV VPNSP=pia \
     # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
-    SHADOWSOCKS_PORT=8388 \
+    SHADOWSOCKS_ADDRESS=":8388" \
     SHADOWSOCKS_PASSWORD= \
     SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
-    SHADOWSOCKS_METHOD=chacha20-ietf-poly1305 \
+    SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
     UPDATER_PERIOD=0
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /entrypoint healthcheck
+ARG TARGETPLATFORM
 RUN apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.12/main" openvpn==2.4.11-r0 && \
+    if [ "${TARGETPLATFORM}" != "linux/ppc64le" ]; then apk add --no-cache --update apk-tools==2.12.6-r0; fi && \
     mv /usr/sbin/openvpn /usr/sbin/openvpn2.4 && \
     apk del openvpn && \
     apk add --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \

@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/command"
 )
 
 var (
@@ -46,9 +47,9 @@ func flipRule(rule string) string {
 }
 
 // Version obtains the version of the installed iptables.
-func (c *configurator) Version(ctx context.Context) (string, error) {
+func Version(ctx context.Context, runner command.Runner) (string, error) {
 	cmd := exec.CommandContext(ctx, "iptables", "--version")
-	output, err := c.commander.Run(cmd)
+	output, err := runner.Run(cmd)
 	if err != nil {
 		return "", err
 	}
@@ -60,7 +61,7 @@ func (c *configurator) Version(ctx context.Context) (string, error) {
 	return words[1], nil
 }
 
-func (c *configurator) runIptablesInstructions(ctx context.Context, instructions []string) error {
+func (c *Config) runIptablesInstructions(ctx context.Context, instructions []string) error {
 	for _, instruction := range instructions {
 		if err := c.runIptablesInstruction(ctx, instruction); err != nil {
 			return err
@@ -69,21 +70,21 @@ func (c *configurator) runIptablesInstructions(ctx context.Context, instructions
 	return nil
 }
 
-func (c *configurator) runIptablesInstruction(ctx context.Context, instruction string) error {
+func (c *Config) runIptablesInstruction(ctx context.Context, instruction string) error {
 	c.iptablesMutex.Lock() // only one iptables command at once
 	defer c.iptablesMutex.Unlock()
-	if c.debug {
-		fmt.Printf("iptables %s\n", instruction)
-	}
+
+	c.logger.Debug("iptables " + instruction)
+
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "iptables", flags...)
-	if output, err := c.commander.Run(cmd); err != nil {
+	if output, err := c.runner.Run(cmd); err != nil {
 		return fmt.Errorf("%w \"iptables %s\": %s: %s", ErrIPTables, instruction, output, err)
 	}
 	return nil
 }
 
-func (c *configurator) clearAllRules(ctx context.Context) error {
+func (c *Config) clearAllRules(ctx context.Context) error {
 	if err := c.runMixedIptablesInstructions(ctx, []string{
 		"--flush",        // flush all chains
 		"--delete-chain", // delete all chains
@@ -93,7 +94,7 @@ func (c *configurator) clearAllRules(ctx context.Context) error {
 	return nil
 }
 
-func (c *configurator) setIPv4AllPolicies(ctx context.Context, policy string) error {
+func (c *Config) setIPv4AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:
@@ -109,13 +110,13 @@ func (c *configurator) setIPv4AllPolicies(ctx context.Context, policy string) er
 	return nil
 }
 
-func (c *configurator) acceptInputThroughInterface(ctx context.Context, intf string, remove bool) error {
+func (c *Config) acceptInputThroughInterface(ctx context.Context, intf string, remove bool) error {
 	return c.runMixedIptablesInstruction(ctx, fmt.Sprintf(
 		"%s INPUT -i %s -j ACCEPT", appendOrDelete(remove), intf,
 	))
 }
 
-func (c *configurator) acceptInputToSubnet(ctx context.Context, intf string, destination net.IPNet, remove bool) error {
+func (c *Config) acceptInputToSubnet(ctx context.Context, intf string, destination net.IPNet, remove bool) error {
 	isIP4Subnet := destination.IP.To4() != nil
 
 	interfaceFlag := "-i " + intf
@@ -135,20 +136,20 @@ func (c *configurator) acceptInputToSubnet(ctx context.Context, intf string, des
 	return c.runIP6tablesInstruction(ctx, instruction)
 }
 
-func (c *configurator) acceptOutputThroughInterface(ctx context.Context, intf string, remove bool) error {
+func (c *Config) acceptOutputThroughInterface(ctx context.Context, intf string, remove bool) error {
 	return c.runMixedIptablesInstruction(ctx, fmt.Sprintf(
 		"%s OUTPUT -o %s -j ACCEPT", appendOrDelete(remove), intf,
 	))
 }
 
-func (c *configurator) acceptEstablishedRelatedTraffic(ctx context.Context, remove bool) error {
+func (c *Config) acceptEstablishedRelatedTraffic(ctx context.Context, remove bool) error {
 	return c.runMixedIptablesInstructions(ctx, []string{
 		fmt.Sprintf("%s OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT", appendOrDelete(remove)),
 		fmt.Sprintf("%s INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT", appendOrDelete(remove)),
 	})
 }
 
-func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
+func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 	defaultInterface string, connection models.OpenVPNConnection, remove bool) error {
 	instruction := fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 		appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol,
@@ -163,7 +164,7 @@ func (c *configurator) acceptOutputTrafficToVPN(ctx context.Context,
 }
 
 // Thanks to @npawelek.
-func (c *configurator) acceptOutputFromIPToSubnet(ctx context.Context,
+func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
 	intf string, sourceIP net.IP, destinationSubnet net.IPNet, remove bool) error {
 	doIPv4 := sourceIP.To4() != nil && destinationSubnet.IP.To4() != nil
 
@@ -184,7 +185,7 @@ func (c *configurator) acceptOutputFromIPToSubnet(ctx context.Context,
 }
 
 // Used for port forwarding, with intf set to tun.
-func (c *configurator) acceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error {
+func (c *Config) acceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
@@ -195,8 +196,8 @@ func (c *configurator) acceptInputToPort(ctx context.Context, intf string, port 
 	})
 }
 
-func (c *configurator) runUserPostRules(ctx context.Context, filepath string, remove bool) error {
-	file, err := c.openFile(filepath, os.O_RDONLY, 0)
+func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove bool) error {
+	file, err := os.OpenFile(filepath, os.O_RDONLY, 0)
 	if os.IsNotExist(err) {
 		return nil
 	} else if err != nil {

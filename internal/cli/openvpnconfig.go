@@ -10,17 +10,20 @@ import (
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/params"
 )
 
-func (c *cli) OpenvpnConfig(os os.OS, logger logging.Logger) error {
+type OpenvpnConfigMaker interface {
+	OpenvpnConfig(logger logging.Logger) error
+}
+
+func (c *CLI) OpenvpnConfig(logger logging.Logger) error {
 	var allSettings configuration.Settings
-	err := allSettings.Read(params.NewEnv(), os, logger)
+	err := allSettings.Read(params.NewEnv(), logger)
 	if err != nil {
 		return err
 	}
-	allServers, err := storage.New(logger, os, constants.ServersData).
+	allServers, err := storage.New(logger, constants.ServersData).
 		SyncServers(constants.GetAllServers())
 	if err != nil {
 		return err

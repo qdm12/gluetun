@@ -10,7 +10,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
 	"github.com/qdm12/gluetun/internal/provider/fastestvpn"
@@ -30,16 +29,22 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/vyprvpn"
 	"github.com/qdm12/gluetun/internal/provider/windscribe"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 // Provider contains methods to read and modify the openvpn configuration to connect as a client.
 type Provider interface {
 	GetOpenVPNConnection(selection configuration.ServerSelection) (connection models.OpenVPNConnection, err error)
 	BuildConf(connection models.OpenVPNConnection, username string, settings configuration.OpenVPN) (lines []string)
+	PortForwarder
+}
+
+type PortForwarder interface {
 	PortForward(ctx context.Context, client *http.Client,
-		openFile os.OpenFileFunc, pfLogger logging.Logger, gateway net.IP, fw firewall.Configurator,
-		syncState func(port uint16) (pfFilepath string))
+		logger logging.Logger, gateway net.IP, serverName string) (
+		port uint16, err error)
+	KeepPortForward(ctx context.Context, client *http.Client,
+		logger logging.Logger, port uint16, gateway net.IP, serverName string) (
+		err error)
 }
 
 func New(provider string, allServers models.AllServers, timeNow func() time.Time) Provider {

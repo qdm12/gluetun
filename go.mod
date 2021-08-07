@@ -5,10 +5,11 @@ go 1.16
 require (
 	github.com/fatih/color v1.12.0
 	github.com/golang/mock v1.6.0
-	github.com/qdm12/dns v1.9.0
-	github.com/qdm12/golibs v0.0.0-20210716185557-66793f4ddd80
+	github.com/qdm12/dns v1.11.0
+	github.com/qdm12/golibs v0.0.0-20210723175634-a75ca7fd74c2
 	github.com/qdm12/goshutdown v0.1.0
-	github.com/qdm12/ss-server v0.2.0
+	github.com/qdm12/gosplash v0.1.0
+	github.com/qdm12/ss-server v0.3.0
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
 	github.com/stretchr/testify v1.7.0
 	github.com/vishvananda/netlink v1.1.0

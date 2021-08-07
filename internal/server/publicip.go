@@ -47,7 +47,7 @@ func (h *publicIPHandler) getPublicIP(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	data := publicIPWrapper{PublicIP: publicIP.String()}
 	if err := encoder.Encode(data); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

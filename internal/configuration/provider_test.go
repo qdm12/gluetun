@@ -24,7 +24,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Cyberghost,
 				ServerSelection: ServerSelection{
-					Group:   "group",
+					Groups:  []string{"group"},
 					Regions: []string{"a", "El country"},
 				},
 				ExtraConfigOptions: ExtraConfigOptions{
@@ -35,7 +35,7 @@ func Test_Provider_lines(t *testing.T) {
 			lines: []string{
 				"|--Cyberghost settings:",
 				"   |--Network protocol: udp",
-				"   |--Server group: group",
+				"   |--Server groups: group",
 				"   |--Regions: a, El country",
 				"   |--Client key is set",
 				"   |--Client certificate is set",
@@ -348,7 +348,7 @@ func Test_readProtocol(t *testing.T) {
 	}{
 		"error": {
 			mockErr: errDummy,
-			err:     errDummy,
+			err:     errors.New("environment variable PROTOCOL: dummy"),
 		},
 		"success": {
 			mockStr: "tcp",

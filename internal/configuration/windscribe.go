@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -41,17 +42,17 @@ func (settings *Provider) readWindscribe(r reader) (err error) {
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.WindscribeRegionChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
 	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.WindscribeCityChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.WindscribeHostnameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
 	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.TCP,

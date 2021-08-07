@@ -39,10 +39,10 @@ func (s *server) Run(ctx context.Context, errorCh chan<- error) {
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
-			s.logger.Error("failed shutting down: %s", err)
+			s.logger.Error("failed shutting down: " + err.Error())
 		}
 	}()
-	s.logger.Info("listening on %s", s.address)
+	s.logger.Info("listening on " + s.address)
 	err := server.ListenAndServe()
 	s.internalWG.Wait()
 	if err != nil && ctx.Err() == nil {

@@ -1,12 +1,13 @@
 package configuration
 
 import (
+	"fmt"
+
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/params"
 )
 
 func (settings *Provider) cyberghostLines() (lines []string) {
-	lines = append(lines, lastIndent+"Server group: "+settings.ServerSelection.Group)
+	lines = append(lines, lastIndent+"Server groups: "+commaJoin(settings.ServerSelection.Groups))
 
 	if len(settings.ServerSelection.Regions) > 0 {
 		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
@@ -50,20 +51,20 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.Group, err = r.env.Inside("CYBERGHOST_GROUP",
-		constants.CyberghostGroupChoices(), params.Default("Premium UDP Europe"))
+	settings.ServerSelection.Groups, err = r.env.CSVInside("CYBERGHOST_GROUP",
+		constants.CyberghostGroupChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable CYBERGHOST_GROUP: %w", err)
 	}
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.CyberghostRegionChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.CyberghostHostnameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
 	return nil

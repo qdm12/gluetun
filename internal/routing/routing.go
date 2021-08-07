@@ -9,27 +9,31 @@ import (
 )
 
 type Routing interface {
-	// Mutations
-	Setup() (err error)
-	TearDown() error
-	SetOutboundRoutes(outboundSubnets []net.IPNet) error
+	Reader
+	Writer
+}
 
-	// Read only
-	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
-	LocalNetworks() (localNetworks []LocalNetwork, err error)
-	DefaultIP() (defaultIP net.IP, err error)
-	VPNDestinationIP() (ip net.IP, err error)
-	VPNLocalGatewayIP() (ip net.IP, err error)
+type Reader interface {
+	DefaultRouteGetter
+	DefaultIPGetter
+	LocalSubnetGetter
+	LocalNetworksGetter
+	VPNGetter
+}
 
-	// Internal state
-	SetVerbose(verbose bool)
-	SetDebug()
+type VPNGetter interface {
+	VPNDestinationIPGetter
+	VPNLocalGatewayIPGetter
+}
+
+type Writer interface {
+	Setuper
+	TearDowner
+	OutboundRoutesSetter
 }
 
 type routing struct {
 	logger          logging.Logger
-	verbose         bool
-	debug           bool
 	outboundSubnets []net.IPNet
 	stateMutex      sync.RWMutex
 }
@@ -37,15 +41,6 @@ type routing struct {
 // NewRouting creates a new routing instance.
 func NewRouting(logger logging.Logger) Routing {
 	return &routing{
-		logger:  logger,
-		verbose: true,
+		logger: logger,
 	}
-}
-
-func (r *routing) SetVerbose(verbose bool) {
-	r.verbose = verbose
-}
-
-func (r *routing) SetDebug() {
-	r.debug = true
 }

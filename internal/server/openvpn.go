@@ -7,14 +7,16 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/golibs/logging"
 )
 
 func newOpenvpnHandler(ctx context.Context, looper openvpn.Looper,
-	logger logging.Logger) http.Handler {
+	pfGetter portforward.Getter, logger logging.Logger) http.Handler {
 	return &openvpnHandler{
 		ctx:    ctx,
 		looper: looper,
+		pf:     pfGetter,
 		logger: logger,
 	}
 }
@@ -22,6 +24,7 @@ func newOpenvpnHandler(ctx context.Context, looper openvpn.Looper,
 type openvpnHandler struct {
 	ctx    context.Context
 	looper openvpn.Looper
+	pf     portforward.Getter
 	logger logging.Logger
 }
 
@@ -61,7 +64,7 @@ func (h *openvpnHandler) getStatus(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	data := statusWrapper{Status: string(status)}
 	if err := encoder.Encode(data); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -86,7 +89,7 @@ func (h *openvpnHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(outcomeWrapper{Outcome: outcome}); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -98,18 +101,18 @@ func (h *openvpnHandler) getSettings(w http.ResponseWriter) {
 	settings.Password = "redacted"
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(settings); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
 
 func (h *openvpnHandler) getPortForwarded(w http.ResponseWriter) {
-	port := h.looper.GetPortForwarded()
+	port := h.pf.GetPortForwarded()
 	encoder := json.NewEncoder(w)
 	data := portWrapper{Port: port}
 	if err := encoder.Encode(data); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

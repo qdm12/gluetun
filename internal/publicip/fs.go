@@ -1,13 +1,11 @@
 package publicip
 
-import "github.com/qdm12/golibs/os"
+import (
+	"os"
+)
 
-func persistPublicIP(openFile os.OpenFileFunc,
-	filepath string, content string, puid, pgid int) error {
-	file, err := openFile(
-		filepath,
-		os.O_TRUNC|os.O_WRONLY|os.O_CREATE,
-		0644)
+func persistPublicIP(path string, content string, puid, pgid int) error {
+	file, err := os.OpenFile(path, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}

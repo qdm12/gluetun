@@ -7,7 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	nativeos "os"
+	"os"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration"
@@ -16,7 +16,6 @@ import (
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 )
 
 var (
@@ -26,14 +25,19 @@ var (
 	ErrWriteToFile             = errors.New("cannot write updated information to file")
 )
 
-func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger logging.Logger) error {
+type Updater interface {
+	Update(ctx context.Context, args []string, logger logging.Logger) error
+}
+
+func (c *CLI) Update(ctx context.Context, args []string, logger logging.Logger) error {
 	options := configuration.Updater{CLI: true}
-	var endUserMode, maintainerMode bool
+	var endUserMode, maintainerMode, updateAll bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
 		"Write results to ./internal/constants/servers.json to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
+	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
 	flagSet.BoolVar(&options.Fastestvpn, "fastestvpn", false, "Update FastestVPN servers")
 	flagSet.BoolVar(&options.HideMyAss, "hidemyass", false, "Update HideMyAss servers")
@@ -58,9 +62,13 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 		return ErrModeUnspecified
 	}
 
+	if updateAll {
+		options.EnableAll()
+	}
+
 	const clientTimeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
-	storage := storage.New(logger, os, constants.ServersData)
+	storage := storage.New(logger, constants.ServersData)
 	currentServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrSyncServers, err)
@@ -78,7 +86,7 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 	}
 
 	if maintainerMode {
-		if err := writeToEmbeddedJSON(os, allServers); err != nil {
+		if err := writeToEmbeddedJSON(c.repoServersPath, allServers); err != nil {
 			return fmt.Errorf("%w: %s", ErrWriteToFile, err)
 		}
 	}
@@ -86,10 +94,11 @@ func (c *cli) Update(ctx context.Context, args []string, os os.OS, logger loggin
 	return nil
 }
 
-func writeToEmbeddedJSON(os os.OS, allServers models.AllServers) error {
+func writeToEmbeddedJSON(repoServersPath string,
+	allServers models.AllServers) error {
 	const perms = 0600
-	f, err := os.OpenFile("./internal/constants/servers.json",
-		nativeos.O_TRUNC|nativeos.O_WRONLY|nativeos.O_CREATE, perms)
+	f, err := os.OpenFile(repoServersPath,
+		os.O_TRUNC|os.O_WRONLY|os.O_CREATE, perms)
 	if err != nil {
 		return err
 	}

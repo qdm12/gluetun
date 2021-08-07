@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
-	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/params"
 )
 
@@ -37,16 +37,18 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 		return value, nil
 	}
 
+	secretFilepathEnvKey := envKey + "_SECRETFILE"
 	defaultSecretFile := "/run/secrets/" + strings.ToLower(envKey)
-	filepath, err := r.env.Get(envKey+"_SECRETFILE",
+	filepath, err := r.env.Get(secretFilepathEnvKey,
 		params.CaseSensitiveValue(),
 		params.Default(defaultSecretFile),
 	)
 	if err != nil {
-		return "", fmt.Errorf("%w: %s", ErrGetSecretFilepath, err)
+		return "", fmt.Errorf("%w: environment variable %s: %s",
+			ErrGetSecretFilepath, secretFilepathEnvKey, err)
 	}
 
-	file, fileErr := r.os.OpenFile(filepath, os.O_RDONLY, 0)
+	file, fileErr := os.OpenFile(filepath, os.O_RDONLY, 0)
 	if os.IsNotExist(fileErr) {
 		if compulsory {
 			return "", envErr
@@ -63,7 +65,7 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 
 	value = string(b)
 	value = cleanSuffix(value)
-	if compulsory && len(value) == 0 {
+	if compulsory && value == "" {
 		return "", ErrSecretFileIsEmpty
 	}
 
@@ -74,15 +76,16 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 func (r *reader) getFromFileOrSecretFile(secretName, filepath string) (
 	b []byte, err error) {
 	defaultSecretFile := "/run/secrets/" + strings.ToLower(secretName)
-	secretFilepath, err := r.env.Get(strings.ToUpper(secretName)+"_SECRETFILE",
+	key := strings.ToUpper(secretName) + "_SECRETFILE"
+	secretFilepath, err := r.env.Get(key,
 		params.CaseSensitiveValue(),
 		params.Default(defaultSecretFile),
 	)
 	if err != nil {
-		return b, fmt.Errorf("%w: %s", ErrGetSecretFilepath, err)
+		return b, fmt.Errorf("environment variable %s: %w: %s", key, ErrGetSecretFilepath, err)
 	}
 
-	b, err = readFromFile(r.os.OpenFile, secretFilepath)
+	b, err = readFromFile(secretFilepath)
 	if err != nil && !os.IsNotExist(err) {
 		return b, fmt.Errorf("%w: %s", ErrReadSecretFile, err)
 	} else if err == nil {
@@ -90,7 +93,7 @@ func (r *reader) getFromFileOrSecretFile(secretName, filepath string) (
 	}
 
 	// Secret file does not exist, try the non secret file
-	b, err = readFromFile(r.os.OpenFile, filepath)
+	b, err = readFromFile(filepath)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, fmt.Errorf("%w: %s", ErrReadSecretFile, err)
 	} else if err == nil {
@@ -99,8 +102,8 @@ func (r *reader) getFromFileOrSecretFile(secretName, filepath string) (
 	return nil, fmt.Errorf("%w: %s and %s", ErrFilesDoNotExist, secretFilepath, filepath)
 }
 
-func readFromFile(openFile os.OpenFileFunc, filepath string) (b []byte, err error) {
-	file, err := openFile(filepath, os.O_RDONLY, 0)
+func readFromFile(filepath string) (b []byte, err error) {
+	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
 	}

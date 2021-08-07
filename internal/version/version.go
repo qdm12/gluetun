@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/format"
 )
 
 // GetMessage returns a message for the user describing if there is a newer version
@@ -38,7 +38,7 @@ func GetMessage(ctx context.Context, buildInfo models.BuildInformation,
 	if tagName == buildInfo.Version {
 		return fmt.Sprintf("You are running the latest release %s", buildInfo.Version), nil
 	}
-	timeSinceRelease := logging.FormatDuration(time.Since(releaseTime))
+	timeSinceRelease := format.FriendlyDuration(time.Since(releaseTime))
 	return fmt.Sprintf("There is a new release %s (%s) created %s ago",
 			tagName, name, timeSinceRelease),
 		nil

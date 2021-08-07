@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -36,18 +37,18 @@ func (settings *System) read(r reader) (err error) {
 	settings.PUID, err = r.env.IntRange("PUID", 0, maxID, params.Default("1000"),
 		params.RetroKeys([]string{"UID"}, r.onRetroActive))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable PUID (or UID): %w", err)
 	}
 
 	settings.PGID, err = r.env.IntRange("PGID", 0, maxID, params.Default("1000"),
 		params.RetroKeys([]string{"GID"}, r.onRetroActive))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable PGID (or GID): %w", err)
 	}
 
 	settings.Timezone, err = r.env.Get("TZ")
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable TZ: %w", err)
 	}
 
 	return nil

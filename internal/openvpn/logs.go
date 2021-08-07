@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func (l *looper) collectLines(stdout, stderr <-chan string, done chan<- struct{}) {
+func (l *Loop) collectLines(stdout, stderr <-chan string, done chan<- struct{}) {
 	defer close(done)
 	var line string
 	var ok, errLine bool
@@ -24,7 +24,7 @@ func (l *looper) collectLines(stdout, stderr <-chan string, done chan<- struct{}
 			return
 		}
 		line, level := processLogLine(line)
-		if len(line) == 0 {
+		if line == "" {
 			continue // filtered out
 		}
 		if errLine {
@@ -42,6 +42,7 @@ func (l *looper) collectLines(stdout, stderr <-chan string, done chan<- struct{}
 		}
 		if strings.Contains(line, "Initialization Sequence Completed") {
 			l.tunnelReady <- struct{}{}
+			l.startPFCh <- struct{}{}
 		}
 	}
 }

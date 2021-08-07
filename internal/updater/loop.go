@@ -70,9 +70,9 @@ func NewLooper(settings configuration.Updater, currentServers models.AllServers,
 
 func (l *looper) logAndWait(ctx context.Context, err error) {
 	if err != nil {
-		l.logger.Error(err)
+		l.logger.Error(err.Error())
 	}
-	l.logger.Info("retrying in %s", l.backoffTime)
+	l.logger.Info("retrying in " + l.backoffTime.String())
 	timer := time.NewTimer(l.backoffTime)
 	l.backoffTime *= 2
 	select {
@@ -141,7 +141,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 			case servers := <-serversCh:
 				l.setAllServers(servers)
 				if err := l.storage.FlushToFile(servers); err != nil {
-					l.logger.Error(err)
+					l.logger.Error(err.Error())
 				}
 				runWg.Wait()
 				l.state.setStatusWithLock(constants.Completed)

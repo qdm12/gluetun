@@ -7,8 +7,12 @@ import (
 	"strings"
 )
 
-func (c *configurator) Version(ctx context.Context) (version string, err error) {
-	file, err := c.openFile("/etc/alpine-release", os.O_RDONLY, 0)
+type VersionGetter interface {
+	Version(ctx context.Context) (version string, err error)
+}
+
+func (a *Alpine) Version(ctx context.Context) (version string, err error) {
+	file, err := os.OpenFile(a.alpineReleasePath, os.O_RDONLY, 0)
 	if err != nil {
 		return "", err
 	}

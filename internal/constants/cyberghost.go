@@ -1,6 +1,8 @@
 package constants
 
 import (
+	"sort"
+
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -20,11 +22,20 @@ func CyberghostRegionChoices() (choices []string) {
 
 func CyberghostGroupChoices() (choices []string) {
 	servers := CyberghostServers()
-	choices = make([]string, len(servers))
-	for i := range servers {
-		choices[i] = servers[i].Group
+	uniqueChoices := map[string]struct{}{}
+	for _, server := range servers {
+		uniqueChoices[server.Group] = struct{}{}
 	}
-	return makeUnique(choices)
+
+	choices = make([]string, 0, len(uniqueChoices))
+	for choice := range uniqueChoices {
+		choices = append(choices, choice)
+	}
+
+	sortable := sort.StringSlice(choices)
+	sortable.Sort()
+
+	return sortable
 }
 
 func CyberghostHostnameChoices() (choices []string) {

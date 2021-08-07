@@ -50,6 +50,7 @@ func (w *Windscribe) BuildConf(connection models.OpenVPNConnection,
 		connection.ProtoLine(),
 		connection.RemoteLine(),
 		"auth " + settings.Auth,
+		"verify-x509-name " + connection.Hostname + " name",
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

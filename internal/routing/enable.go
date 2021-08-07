@@ -20,6 +20,10 @@ var (
 	ErrSubnetsOutboundSet = errors.New("cannot set outbound subnets routes")
 )
 
+type Setuper interface {
+	Setup() (err error)
+}
+
 func (r *routing) Setup() (err error) {
 	defaultIP, err := r.DefaultIP()
 	if err != nil {
@@ -57,6 +61,10 @@ func (r *routing) Setup() (err error) {
 	}
 
 	return nil
+}
+
+type TearDowner interface {
+	TearDown() error
 }
 
 func (r *routing) TearDown() error {

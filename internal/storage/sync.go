@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/os"
 )
 
 var (
@@ -39,7 +40,7 @@ func countServers(allServers models.AllServers) int {
 
 func (s *storage) SyncServers(hardcodedServers models.AllServers) (
 	allServers models.AllServers, err error) {
-	serversOnFile, err := s.readFromFile(s.filepath)
+	serversOnFile, err := readFromFile(s.filepath)
 	if err != nil {
 		return allServers, fmt.Errorf("%w: %s", ErrCannotReadFile, err)
 	}
@@ -48,12 +49,12 @@ func (s *storage) SyncServers(hardcodedServers models.AllServers) (
 	countOnFile := countServers(serversOnFile)
 
 	if countOnFile == 0 {
-		s.logger.Info("creating %s with %d hardcoded servers", s.filepath, hardcodedCount)
+		s.logger.Info("creating " + s.filepath + " with " + strconv.Itoa(hardcodedCount) + " hardcoded servers")
 		allServers = hardcodedServers
 	} else {
-		s.logger.Info(
-			"merging by most recent %d hardcoded servers and %d servers read from %s",
-			hardcodedCount, countOnFile, s.filepath)
+		s.logger.Info("merging by most recent " +
+			strconv.Itoa(hardcodedCount) + " hardcoded servers and " +
+			strconv.Itoa(countOnFile) + " servers read from " + s.filepath)
 		allServers = s.mergeServers(hardcodedServers, serversOnFile)
 	}
 
@@ -62,14 +63,14 @@ func (s *storage) SyncServers(hardcodedServers models.AllServers) (
 		return allServers, nil
 	}
 
-	if err := s.FlushToFile(allServers); err != nil {
+	if err := flushToFile(s.filepath, allServers); err != nil {
 		return allServers, fmt.Errorf("%w: %s", ErrCannotWriteFile, err)
 	}
 	return allServers, nil
 }
 
-func (s *storage) readFromFile(filepath string) (servers models.AllServers, err error) {
-	file, err := s.os.OpenFile(filepath, os.O_RDONLY, 0)
+func readFromFile(filepath string) (servers models.AllServers, err error) {
+	file, err := os.Open(filepath)
 	if os.IsNotExist(err) {
 		return servers, nil
 	} else if err != nil {
@@ -86,13 +87,13 @@ func (s *storage) readFromFile(filepath string) (servers models.AllServers, err 
 	return servers, file.Close()
 }
 
-func (s *storage) FlushToFile(servers models.AllServers) error {
-	dirPath := filepath.Dir(s.filepath)
-	if err := s.os.MkdirAll(dirPath, 0644); err != nil {
+func flushToFile(path string, servers models.AllServers) error {
+	dirPath := filepath.Dir(path)
+	if err := os.MkdirAll(dirPath, 0644); err != nil {
 		return err
 	}
 
-	file, err := s.os.OpenFile(s.filepath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}

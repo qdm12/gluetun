@@ -4,20 +4,22 @@ import (
 	"io"
 	"os"
 	"strings"
-
-	"github.com/qdm12/gluetun/internal/constants"
 )
+
+type AuthWriter interface {
+	WriteAuthFile(user, password string, puid, pgid int) error
+}
 
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions.
 func (c *configurator) WriteAuthFile(user, password string, puid, pgid int) error {
-	file, err := c.os.OpenFile(constants.OpenVPNAuthConf, os.O_RDONLY, 0)
+	file, err := os.Open(c.authFilePath)
 
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
 
 	if os.IsNotExist(err) {
-		file, err = c.os.OpenFile(constants.OpenVPNAuthConf, os.O_WRONLY|os.O_CREATE, 0400)
+		file, err = os.OpenFile(c.authFilePath, os.O_WRONLY|os.O_CREATE, 0400)
 		if err != nil {
 			return err
 		}
@@ -48,8 +50,8 @@ func (c *configurator) WriteAuthFile(user, password string, puid, pgid int) erro
 		return nil
 	}
 
-	c.logger.Info("username and password changed in %s", constants.OpenVPNAuthConf)
-	file, err = c.os.OpenFile(constants.OpenVPNAuthConf, os.O_TRUNC|os.O_WRONLY, 0400)
+	c.logger.Info("username and password changed in " + c.authFilePath)
+	file, err = os.OpenFile(c.authFilePath, os.O_TRUNC|os.O_WRONLY, 0400)
 	if err != nil {
 		return err
 	}

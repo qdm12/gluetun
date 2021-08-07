@@ -13,7 +13,7 @@ type ServerSelection struct { //nolint:maligned
 	Regions []string `json:"regions"`
 
 	// Cyberghost
-	Group string `json:"group"`
+	Groups []string `json:"groups"`
 
 	// Fastestvpn, HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited
 	Countries []string `json:"countries"`

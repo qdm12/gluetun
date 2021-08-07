@@ -76,7 +76,7 @@ func extractRemoteHosts(content []byte, rejectIP, rejectDomain bool) (hosts []st
 			continue
 		}
 		fields := strings.Fields(line)
-		if len(fields) == 1 || len(fields[1]) == 0 {
+		if len(fields) == 1 || fields[1] == "" {
 			continue
 		}
 		host := fields[1]

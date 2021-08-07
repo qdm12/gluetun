@@ -52,7 +52,7 @@ func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *handlerV1) getVersion(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(h.buildInfo); err != nil {
-		h.logger.Warn(err)
+		h.logger.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

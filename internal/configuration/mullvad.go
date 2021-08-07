@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -50,22 +51,22 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 
 	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.MullvadCountryChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
 	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.MullvadCityChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.MullvadHostnameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
 	settings.ServerSelection.ISPs, err = r.env.CSVInside("ISP", constants.MullvadISPChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable ISP: %w", err)
 	}
 
 	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.TCP,
@@ -76,12 +77,12 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 
 	settings.ServerSelection.Owned, err = r.env.YesNo("OWNED", params.Default("no"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OWNED: %w", err)
 	}
 
 	settings.ExtraConfigOptions.OpenVPNIPv6, err = r.env.OnOff("OPENVPN_IPV6", params.Default("off"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable OPENVPN_IPV6: %w", err)
 	}
 
 	return nil

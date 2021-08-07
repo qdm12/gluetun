@@ -18,6 +18,11 @@ const (
 	binOpenvpn25 = "openvpn"
 )
 
+type Starter interface {
+	Start(ctx context.Context, version string, flags []string) (
+		stdoutLines, stderrLines chan string, waitError chan error, err error)
+}
+
 func (c *configurator) Start(ctx context.Context, version string, flags []string) (
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	var bin string
@@ -37,7 +42,12 @@ func (c *configurator) Start(ctx context.Context, version string, flags []string
 	cmd := exec.CommandContext(ctx, bin, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
-	return c.commander.Start(cmd)
+	return c.cmder.Start(cmd)
+}
+
+type VersionGetter interface {
+	Version24(ctx context.Context) (version string, err error)
+	Version25(ctx context.Context) (version string, err error)
 }
 
 func (c *configurator) Version24(ctx context.Context) (version string, err error) {
@@ -52,7 +62,7 @@ var ErrVersionTooShort = errors.New("version output is too short")
 
 func (c *configurator) version(ctx context.Context, binName string) (version string, err error) {
 	cmd := exec.CommandContext(ctx, binName, "--version")
-	output, err := c.commander.Run(cmd)
+	output, err := c.cmder.Run(cmd)
 	if err != nil && err.Error() != "exit status 1" {
 		return "", err
 	}

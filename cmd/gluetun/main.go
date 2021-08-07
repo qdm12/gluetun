@@ -4,9 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
-	nativeos "os"
+	"os"
 	"os/signal"
 	"strconv"
 	"strings"
@@ -22,9 +21,9 @@ import (
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/httpproxy"
-	gluetunLogging "github.com/qdm12/gluetun/internal/logging"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
@@ -33,11 +32,11 @@ import (
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/gluetun/internal/updater"
 	versionpkg "github.com/qdm12/gluetun/internal/version"
+	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
-	"github.com/qdm12/golibs/os/user"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/goshutdown"
+	"github.com/qdm12/gosplash"
 	"github.com/qdm12/updated/pkg/dnscrypto"
 )
 
@@ -61,20 +60,22 @@ func main() {
 	}
 
 	ctx := context.Background()
-	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, nativeos.Interrupt)
+	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	ctx, cancel := context.WithCancel(ctx)
 
-	logger := logging.NewParent(logging.Settings{})
+	logger := logging.NewParent(logging.Settings{
+		Level: logging.LevelInfo,
+	})
 
-	args := nativeos.Args
-	os := os.New()
-	osUser := user.New()
+	args := os.Args
 	unix := unix.New()
 	cli := cli.New()
+	env := params.NewEnv()
+	cmder := command.NewCmder()
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, os, osUser, unix, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, env, unix, cmder, cli)
 	}()
 
 	select {
@@ -85,9 +86,9 @@ func main() {
 		stop()
 		close(errorCh)
 		if err == nil { // expected exit such as healthcheck
-			nativeos.Exit(0)
+			os.Exit(0)
 		}
-		logger.Error(err)
+		logger.Error(err.Error())
 		cancel()
 	}
 
@@ -103,7 +104,7 @@ func main() {
 		logger.Warn("Shutdown timed out")
 	}
 
-	nativeos.Exit(1)
+	os.Exit(1)
 }
 
 var (
@@ -112,18 +113,18 @@ var (
 
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.ParentLogger, os os.OS,
-	osUser user.OSUser, unix unix.Unix, cli cli.CLI) error {
+	args []string, logger logging.ParentLogger, env params.Env,
+	unix unix.Unix, cmder command.RunStarter, cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
-			return cli.HealthCheck(ctx)
+			return cli.HealthCheck(ctx, env, logger)
 		case "clientkey":
-			return cli.ClientKey(args[2:], os.OpenFile)
+			return cli.ClientKey(args[2:])
 		case "openvpnconfig":
-			return cli.OpenvpnConfig(os, logger)
+			return cli.OpenvpnConfig(logger)
 		case "update":
-			return cli.Update(ctx, args[2:], os, logger)
+			return cli.Update(ctx, args[2:], logger)
 		default:
 			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
@@ -132,34 +133,51 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
-	alpineConf := alpine.NewConfigurator(os.OpenFile, osUser)
+	alpineConf := alpine.New()
 	ovpnConf := openvpn.NewConfigurator(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
-		os, unix)
+		unix, cmder)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
-	dnsConf := unbound.NewConfigurator(nil, os.OpenFile, dnsCrypto,
+	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
-	routingConf := routing.NewRouting(
-		logger.NewChild(logging.Settings{Prefix: "routing: "}))
-	firewallConf := firewall.NewConfigurator(
-		logger.NewChild(logging.Settings{Prefix: "firewall: "}),
-		routingConf, os.OpenFile)
 
-	fmt.Println(gluetunLogging.Splash(buildInfo))
+	announcementExp, err := time.Parse(time.RFC3339, "2021-07-22T00:00:00Z")
+	if err != nil {
+		return err
+	}
+	splashSettings := gosplash.Settings{
+		User:         "qdm12",
+		Repository:   "gluetun",
+		Emails:       []string{"quentin.mcgaw@gmail.com"},
+		Version:      buildInfo.Version,
+		Commit:       buildInfo.Commit,
+		BuildDate:    buildInfo.Created,
+		Announcement: "",
+		AnnounceExp:  announcementExp,
+		// Sponsor information
+		PaypalUser:    "qmcgaw",
+		GithubSponsor: "qdm12",
+	}
+	for _, line := range gosplash.MakeLines(splashSettings) {
+		fmt.Println(line)
+	}
 
-	if err := printVersions(ctx, logger, []printVersionElement{
+	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
 		{name: "OpenVPN 2.4", getVersion: ovpnConf.Version24},
 		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
 		{name: "Unbound", getVersion: dnsConf.Version},
-		{name: "IPtables", getVersion: firewallConf.Version},
-	}); err != nil {
+		{name: "IPtables", getVersion: func(ctx context.Context) (version string, err error) {
+			return firewall.Version(ctx, cmder)
+		}},
+	})
+	if err != nil {
 		return err
 	}
 
 	var allSettings configuration.Settings
-	err := allSettings.Read(params.NewEnv(), os,
+	err = allSettings.Read(env,
 		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
 	if err != nil {
 		return err
@@ -176,7 +194,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storage := storage.New(
 		logger.NewChild(logging.Settings{Prefix: "storage: "}),
-		os, constants.ServersData)
+		constants.ServersData)
 	allServers, err := storage.SyncServers(constants.GetAllServers())
 	if err != nil {
 		return err
@@ -191,7 +209,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("%w: %s", errCreateUser, err)
 	}
 	if nonRootUsername != defaultUsername {
-		logger.Info("using existing username %s corresponding to user id %d", nonRootUsername, puid)
+		logger.Info("using existing username " + nonRootUsername + " corresponding to user id " + fmt.Sprint(puid))
 	}
 	// set it for Unbound
 	// TODO remove this when migrating to qdm12/dns v2
@@ -201,10 +219,15 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
+	firewallLogLevel := logging.LevelInfo
 	if allSettings.Firewall.Debug {
-		firewallConf.SetDebug()
-		routingConf.SetDebug()
+		firewallLogLevel = logging.LevelDebug
 	}
+	routingLogger := logger.NewChild(logging.Settings{
+		Prefix: "routing: ",
+		Level:  firewallLogLevel,
+	})
+	routingConf := routing.NewRouting(routingLogger)
 
 	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
 	if err != nil {
@@ -221,7 +244,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	firewallConf.SetNetworkInformation(defaultInterface, defaultGateway, localNetworks, defaultIP)
+	firewallLogger := logger.NewChild(logging.Settings{
+		Prefix: "firewall: ",
+		Level:  firewallLogLevel,
+	})
+	firewallConf := firewall.NewConfig(firewallLogger, cmder,
+		defaultInterface, defaultGateway, localNetworks, defaultIP)
 
 	if err := routingConf.Setup(); err != nil {
 		if strings.Contains(err.Error(), "operation not permitted") {
@@ -230,7 +258,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("%w: %s", errSetupRouting, err)
 	}
 	defer func() {
-		routingConf.SetVerbose(false)
+		logger.Info("routing cleanup...")
 		if err := routingConf.TearDown(); err != nil {
 			logger.Error("cannot teardown routing: " + err.Error())
 		}
@@ -244,7 +272,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	if err := ovpnConf.CheckTUN(); err != nil {
-		logger.Warn(err)
+		logger.Warn(err.Error())
 		err = ovpnConf.CreateTUN()
 		if err != nil {
 			return err
@@ -293,8 +321,16 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler := goshutdown.NewGroupHandler("tickers", defaultGroupSettings)
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
-	openvpnLooper := openvpn.NewLooper(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, logger, httpClient, os.OpenFile, tunnelReadyCh)
+	portForwardLogger := logger.NewChild(logging.Settings{Prefix: "port forwarding: "})
+	portForwardLooper := portforward.NewLoop(allSettings.OpenVPN.Provider.PortForwarding,
+		httpClient, firewallConf, portForwardLogger)
+	portForwardHandler, portForwardCtx, portForwardDone := goshutdown.NewGoRoutineHandler(
+		"port forwarding", goshutdown.GoRoutineSettings{Timeout: time.Second})
+	go portForwardLooper.Run(portForwardCtx, portForwardDone)
+
+	openvpnLogger := logger.NewChild(logging.Settings{Prefix: "openvpn: "})
+	openvpnLooper := openvpn.NewLoop(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
+		ovpnConf, firewallConf, routingConf, portForwardLooper, openvpnLogger, httpClient, tunnelReadyCh)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn
@@ -310,17 +346,17 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler.Add(updaterHandler)
 
 	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
-	unboundLooper := dns.NewLooper(dnsConf, allSettings.DNS, httpClient,
-		unboundLogger, os.OpenFile)
+	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
+		unboundLogger)
 	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
 		"unbound", defaultGoRoutineSettings)
 	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
 	go unboundLooper.Run(dnsCtx, dnsDone)
 	otherGroupHandler.Add(dnsHandler)
 
-	publicIPLooper := publicip.NewLooper(httpClient,
+	publicIPLooper := publicip.NewLoop(httpClient,
 		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
-		allSettings.PublicIP, puid, pgid, os)
+		allSettings.PublicIP, puid, pgid)
 	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
 		"public IP", defaultGoRoutineSettings)
 	go publicIPLooper.Run(pubIPCtx, pubIPDone)
@@ -331,7 +367,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
-	httpProxyLooper := httpproxy.NewLooper(
+	httpProxyLooper := httpproxy.NewLoop(
 		logger.NewChild(logging.Settings{Prefix: "http proxy: "}),
 		allSettings.HTTPProxy)
 	httpProxyHandler, httpProxyCtx, httpProxyDone := goshutdown.NewGoRoutineHandler(
@@ -350,8 +386,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"events routing", defaultGoRoutineSettings)
 	go routeReadyEvents(eventsRoutingCtx, eventsRoutingDone, buildInfo, tunnelReadyCh,
 		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
-		allSettings.VersionInformation, allSettings.OpenVPN.Provider.PortForwarding.Enabled, openvpnLooper.PortForward,
-	)
+		allSettings.VersionInformation)
 	controlGroupHandler.Add(eventsRoutingHandler)
 
 	controlServerAddress := ":" + strconv.Itoa(int(allSettings.ControlServer.Port))
@@ -360,13 +395,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", defaultGoRoutineSettings)
 	httpServer := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.NewChild(logging.Settings{Prefix: "http server: "}),
-		buildInfo, openvpnLooper, unboundLooper, updaterLooper, publicIPLooper)
+		buildInfo, openvpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper)
 	go httpServer.Run(httpServerCtx, httpServerDone)
 	controlGroupHandler.Add(httpServerHandler)
 
 	healthLogger := logger.NewChild(logging.Settings{Prefix: "healthcheck: "})
-	healthcheckServer := healthcheck.NewServer(
-		constants.HealthcheckAddress, healthLogger, openvpnLooper)
+	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, openvpnLooper)
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", defaultGoRoutineSettings)
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)
@@ -379,20 +413,13 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	orderHandler := goshutdown.NewOrder("gluetun", orderSettings)
 	orderHandler.Append(controlGroupHandler, tickersGroupHandler, healthServerHandler,
-		openvpnHandler, otherGroupHandler)
+		openvpnHandler, portForwardHandler, otherGroupHandler)
 
 	// Start openvpn for the first time in a blocking call
 	// until openvpn is launched
 	_, _ = openvpnLooper.ApplyStatus(ctx, constants.Running) // TODO option to disable with variable
 
 	<-ctx.Done()
-
-	if allSettings.OpenVPN.Provider.PortForwarding.Enabled {
-		logger.Info("Clearing forwarded port status file %s", allSettings.OpenVPN.Provider.PortForwarding.Filepath)
-		if err := os.Remove(allSettings.OpenVPN.Provider.PortForwarding.Filepath); err != nil {
-			logger.Error(err)
-		}
-	}
 
 	return orderHandler.Shutdown(context.Background())
 }
@@ -422,8 +449,8 @@ func printVersions(ctx context.Context, logger logging.Logger,
 func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo models.BuildInformation,
 	tunnelReadyCh <-chan struct{},
 	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
-	routing routing.Routing, logger logging.Logger, httpClient *http.Client,
-	versionInformation, portForwardingEnabled bool, startPortForward func(vpnGateway net.IP)) {
+	routing routing.VPNGetter, logger logging.Logger, httpClient *http.Client,
+	versionInformation bool) {
 	defer close(done)
 
 	// for linters only
@@ -446,9 +473,9 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 		case <-tunnelReadyCh: // blocks until openvpn is connected
 			vpnDestination, err := routing.VPNDestinationIP()
 			if err != nil {
-				logger.Warn(err)
+				logger.Warn(err.Error())
 			} else {
-				logger.Info("VPN routing IP address: %s", vpnDestination)
+				logger.Info("VPN routing IP address: " + vpnDestination.String())
 			}
 
 			if unboundLooper.GetSettings().Enabled {
@@ -461,7 +488,7 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
 
 			// Runs the Public IP getter job once
-			_, _ = publicIPLooper.SetStatus(ctx, constants.Running)
+			_, _ = publicIPLooper.ApplyStatus(ctx, constants.Running)
 			if versionInformation && first {
 				first = false
 				message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
@@ -476,15 +503,6 @@ func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo model
 			updaterTickerDone = make(chan struct{})
 			go unboundLooper.RunRestartTicker(restartTickerContext, unboundTickerDone)
 			go updaterLooper.RunRestartTicker(restartTickerContext, updaterTickerDone)
-			if portForwardingEnabled {
-				// vpnGateway required only for PIA
-				vpnGateway, err := routing.VPNLocalGatewayIP()
-				if err != nil {
-					logger.Error(err)
-				}
-				logger.Info("VPN gateway IP address: %s", vpnGateway)
-				startPortForward(vpnGateway)
-			}
 		}
 	}
 }

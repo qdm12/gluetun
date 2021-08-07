@@ -15,6 +15,10 @@ assignees: qdm12
 
 **Host OS** (approximate answer is fine too): Ubuntu 18
 
+<!---
+🚧 If this is about the Unraid template see https://github.com/qdm12/gluetun/discussions/550
+-->
+
 **CPU arch** or **device name**: amd64
 
 **What VPN provider are you using**:

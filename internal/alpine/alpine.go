@@ -2,25 +2,28 @@
 package alpine
 
 import (
-	"context"
-
-	"github.com/qdm12/golibs/os"
-	"github.com/qdm12/golibs/os/user"
+	"os/user"
 )
 
-type Configurator interface {
-	CreateUser(username string, uid int) (createdUsername string, err error)
-	Version(ctx context.Context) (version string, err error)
+var _ Alpiner = (*Alpine)(nil)
+
+type Alpiner interface {
+	UserCreater
+	VersionGetter
 }
 
-type configurator struct {
-	openFile os.OpenFileFunc
-	osUser   user.OSUser
+type Alpine struct {
+	alpineReleasePath string
+	passwdPath        string
+	lookupID          func(uid string) (*user.User, error)
+	lookup            func(username string) (*user.User, error)
 }
 
-func NewConfigurator(openFile os.OpenFileFunc, osUser user.OSUser) Configurator {
-	return &configurator{
-		openFile: openFile,
-		osUser:   osUser,
+func New() *Alpine {
+	return &Alpine{
+		alpineReleasePath: "/etc/alpine-release",
+		passwdPath:        "/etc/passwd",
+		lookupID:          user.LookupId,
+		lookup:            user.Lookup,
 	}
 }

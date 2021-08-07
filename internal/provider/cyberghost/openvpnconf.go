@@ -35,7 +35,6 @@ func (c *Cyberghost) BuildConf(connection models.OpenVPNConnection,
 		// Cyberghost specific
 		// "redirect-gateway def1",
 		"ncp-disable",
-		"explicit-exit-notify 2",
 		"script-security 2",
 		"route-delay 5",
 
@@ -55,6 +54,10 @@ func (c *Cyberghost) BuildConf(connection models.OpenVPNConnection,
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
+
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "explicit-exit-notify")
+	}
 
 	if strings.HasSuffix(settings.Cipher, "-gcm") {
 		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")

@@ -47,17 +47,17 @@ func (settings *Provider) readNordvpn(r reader) (err error) {
 
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.NordvpnRegionChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.NordvpnHostnameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
 	settings.ServerSelection.Names, err = r.env.CSVInside("SERVER_NAME", constants.NordvpnHostnameChoices())
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable SERVER_NAME: %w", err)
 	}
 
 	settings.ServerSelection.Numbers, err = readNordVPNServerNumbers(r.env)

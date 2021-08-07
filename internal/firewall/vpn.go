@@ -7,7 +7,11 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (c *configurator) SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error) {
+type VPNConnectionSetter interface {
+	SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) error
+}
+
+func (c *Config) SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
@@ -26,7 +30,7 @@ func (c *configurator) SetVPNConnection(ctx context.Context, connection models.O
 	remove := true
 	if c.vpnConnection.IP != nil {
 		if err := c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, c.vpnConnection, remove); err != nil {
-			c.logger.Error("cannot remove outdated VPN connection through firewall: %s", err)
+			c.logger.Error("cannot remove outdated VPN connection through firewall: " + err.Error())
 		}
 	}
 	c.vpnConnection = models.OpenVPNConnection{}

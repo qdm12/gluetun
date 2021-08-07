@@ -10,6 +10,10 @@ var (
 	ErrAddOutboundSubnet = errors.New("cannot add outbound subnet to routes")
 )
 
+type OutboundRoutesSetter interface {
+	SetOutboundRoutes(outboundSubnets []net.IPNet) error
+}
+
 func (r *routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 	defaultInterface, defaultGateway, err := r.DefaultRoute()
 	if err != nil {
@@ -39,7 +43,7 @@ func (r *routing) removeOutboundSubnets(subnets []net.IPNet,
 	for _, subnet := range subnets {
 		const table = 0
 		if err := r.deleteRouteVia(subnet, defaultGateway, defaultInterfaceName, table); err != nil {
-			r.logger.Error("cannot remove outdated outbound subnet from routing: %s", err)
+			r.logger.Error("cannot remove outdated outbound subnet from routing: " + err.Error())
 			continue
 		}
 		r.outboundSubnets = removeSubnetFromSubnets(r.outboundSubnets, subnet)

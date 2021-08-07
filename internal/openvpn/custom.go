@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 
@@ -12,14 +13,13 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
-	"github.com/qdm12/golibs/os"
 )
 
 var errProcessCustomConfig = errors.New("cannot process custom config")
 
-func (l *looper) processCustomConfig(settings configuration.OpenVPN) (
+func (l *Loop) processCustomConfig(settings configuration.OpenVPN) (
 	lines []string, connection models.OpenVPNConnection, err error) {
-	lines, err = readCustomConfigLines(settings.Config, l.openFile)
+	lines, err = readCustomConfigLines(settings.Config)
 	if err != nil {
 		return nil, connection, fmt.Errorf("%w: %s", errProcessCustomConfig, err)
 	}
@@ -35,9 +35,9 @@ func (l *looper) processCustomConfig(settings configuration.OpenVPN) (
 	return lines, connection, nil
 }
 
-func readCustomConfigLines(filepath string, openFile os.OpenFileFunc) (
+func readCustomConfigLines(filepath string) (
 	lines []string, err error) {
-	file, err := openFile(filepath, os.O_RDONLY, 0)
+	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
 	}

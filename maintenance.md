@@ -14,7 +14,6 @@
 
 ## Code
 
-- Change empty string comparison from `len(s) == 0` to `s == ""`
 - Use `github.com/qdm12/ddns-updater/pkg/publicip`
 - Change firewall debug logs to use `logger.Debug` instead of `fmt.Println`
 

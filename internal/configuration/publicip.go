@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -32,14 +33,14 @@ func (settings *PublicIP) lines() (lines []string) {
 func (settings *PublicIP) read(r reader) (err error) {
 	settings.Period, err = r.env.Duration("PUBLICIP_PERIOD", params.Default("12h"))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable PUBLICIP_PERIOD: %w", err)
 	}
 
 	settings.IPFilepath, err = r.env.Path("PUBLICIP_FILE", params.CaseSensitiveValue(),
 		params.Default("/tmp/gluetun/ip"),
 		params.RetroKeys([]string{"IP_STATUS_FILE"}, r.onRetroActive))
 	if err != nil {
-		return err
+		return fmt.Errorf("environment variable PUBLICIP_FILE (or IP_STATUS_FILE): %w", err)
 	}
 
 	return nil

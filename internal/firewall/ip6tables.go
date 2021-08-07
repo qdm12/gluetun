@@ -15,15 +15,15 @@ var (
 	ErrIP6NotSupported = errors.New("ip6tables not supported")
 )
 
-func ip6tablesSupported(ctx context.Context, commander command.Commander) (supported bool) {
+func ip6tablesSupported(ctx context.Context, runner command.Runner) (supported bool) {
 	cmd := exec.CommandContext(ctx, "ip6tables", "-L")
-	if _, err := commander.Run(cmd); err != nil {
+	if _, err := runner.Run(cmd); err != nil {
 		return false
 	}
 	return true
 }
 
-func (c *configurator) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
+func (c *Config) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
 	for _, instruction := range instructions {
 		if err := c.runIP6tablesInstruction(ctx, instruction); err != nil {
 			return err
@@ -32,18 +32,18 @@ func (c *configurator) runIP6tablesInstructions(ctx context.Context, instruction
 	return nil
 }
 
-func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction string) error {
+func (c *Config) runIP6tablesInstruction(ctx context.Context, instruction string) error {
 	if !c.ip6Tables {
 		return nil
 	}
 	c.ip6tablesMutex.Lock() // only one ip6tables command at once
 	defer c.ip6tablesMutex.Unlock()
-	if c.debug {
-		fmt.Println("ip6tables " + instruction)
-	}
+
+	c.logger.Debug("ip6tables " + instruction)
+
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "ip6tables", flags...)
-	if output, err := c.commander.Run(cmd); err != nil {
+	if output, err := c.runner.Run(cmd); err != nil {
 		return fmt.Errorf("%w: \"ip6tables %s\": %s: %s", ErrIP6Tables, instruction, output, err)
 	}
 	return nil
@@ -51,7 +51,7 @@ func (c *configurator) runIP6tablesInstruction(ctx context.Context, instruction 
 
 var errPolicyNotValid = errors.New("policy is not valid")
 
-func (c *configurator) setIPv6AllPolicies(ctx context.Context, policy string) error {
+func (c *Config) setIPv6AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:

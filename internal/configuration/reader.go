@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/os"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
 )
@@ -17,23 +16,20 @@ type reader struct {
 	env    params.Env
 	logger logging.Logger
 	regex  verification.Regex
-	os     os.OS
 }
 
-func newReader(env params.Env, os os.OS, logger logging.Logger) reader {
+func newReader(env params.Env, logger logging.Logger) reader {
 	return reader{
 		env:    env,
 		logger: logger,
 		regex:  verification.NewRegex(),
-		os:     os,
 	}
 }
 
 func (r *reader) onRetroActive(oldKey, newKey string) {
 	r.logger.Warn(
-		"You are using the old environment variable %s, please consider changing it to %s",
-		oldKey, newKey,
-	)
+		"You are using the old environment variable " + oldKey +
+			", please consider changing it to " + newKey)
 }
 
 var (
@@ -44,7 +40,7 @@ func readCSVPorts(env params.Env, key string) (ports []uint16, err error) {
 	s, err := env.Get(key)
 	if err != nil {
 		return nil, err
-	} else if len(s) == 0 {
+	} else if s == "" {
 		return nil, nil
 	}
 
@@ -53,11 +49,9 @@ func readCSVPorts(env params.Env, key string) (ports []uint16, err error) {
 	for i, portStr := range portsStr {
 		portInt, err := strconv.Atoi(portStr)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %q from environment variable %s: %s",
-				ErrInvalidPort, portStr, key, err)
+			return nil, fmt.Errorf("%w: %s: %s", ErrInvalidPort, portStr, err)
 		} else if portInt <= 0 || portInt > 65535 {
-			return nil, fmt.Errorf("%w: %d from environment variable %s: must be between 1 and 65535",
-				ErrInvalidPort, portInt, key)
+			return nil, fmt.Errorf("%w: %d: must be between 1 and 65535", ErrInvalidPort, portInt)
 		}
 		ports[i] = uint16(portInt)
 	}
@@ -83,11 +77,10 @@ func readCSVIPNets(env params.Env, key string, options ...params.OptionSetter) (
 	for i, ipNetStr := range ipNetsStr {
 		_, ipNet, err := net.ParseCIDR(ipNetStr)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %q from environment variable %s: %s",
-				ErrInvalidIPNet, ipNetStr, key, err)
+			return nil, fmt.Errorf("%w: %s: %s",
+				ErrInvalidIPNet, ipNetStr, err)
 		} else if ipNet == nil {
-			return nil, fmt.Errorf("%w: %q from environment variable %s: subnet is nil",
-				ErrInvalidIPNet, ipNetStr, key)
+			return nil, fmt.Errorf("%w: %s: subnet is nil", ErrInvalidIPNet, ipNetStr)
 		}
 		ipNets[i] = *ipNet
 	}
@@ -101,7 +94,7 @@ var (
 
 func readIP(env params.Env, key string) (ip net.IP, err error) {
 	s, err := env.Get(key)
-	if len(s) == 0 {
+	if s == "" {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -121,7 +114,7 @@ func readPortOrZero(env params.Env, key string) (port uint16, err error) {
 		return 0, err
 	}
 
-	if len(s) == 0 || s == "0" {
+	if s == "" || s == "0" {
 		return 0, nil
 	}
 

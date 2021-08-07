@@ -6,7 +6,11 @@ import (
 	"net"
 )
 
-func (c *configurator) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error) {
+type OutboundSubnetsSetter interface {
+	SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error)
+}
+
+func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
@@ -33,18 +37,18 @@ func (c *configurator) SetOutboundSubnets(ctx context.Context, subnets []net.IPN
 	return nil
 }
 
-func (c *configurator) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet) {
+func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet) {
 	const remove = true
 	for _, subnet := range subnets {
 		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subnet, remove); err != nil {
-			c.logger.Error("cannot remove outdated outbound subnet through firewall: %s", err)
+			c.logger.Error("cannot remove outdated outbound subnet through firewall: " + err.Error())
 			continue
 		}
 		c.outboundSubnets = removeSubnetFromSubnets(c.outboundSubnets, subnet)
 	}
 }
 
-func (c *configurator) addOutboundSubnets(ctx context.Context, subnets []net.IPNet) error {
+func (c *Config) addOutboundSubnets(ctx context.Context, subnets []net.IPNet) error {
 	const remove = false
 	for _, subnet := range subnets {
 		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subnet, remove); err != nil {

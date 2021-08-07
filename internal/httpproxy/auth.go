@@ -7,12 +7,12 @@ import (
 )
 
 func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http.Request) (authorized bool) {
-	if len(h.username) == 0 || (request.Method != "CONNECT" && !request.URL.IsAbs()) {
+	if h.username == "" || (request.Method != "CONNECT" && !request.URL.IsAbs()) {
 		return true
 	}
 	basicAuth := request.Header.Get("Proxy-Authorization")
-	if len(basicAuth) == 0 {
-		h.logger.Info("Proxy-Authorization header not found from %s", request.RemoteAddr)
+	if basicAuth == "" {
+		h.logger.Info("Proxy-Authorization header not found from " + request.RemoteAddr)
 		responseWriter.Header().Set("Proxy-Authenticate", `Basic realm="Access to Gluetun over HTTP"`)
 		responseWriter.WriteHeader(http.StatusProxyAuthRequired)
 		return false
@@ -20,8 +20,8 @@ func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http
 	b64UsernamePassword := strings.TrimPrefix(basicAuth, "Basic ")
 	b, err := base64.StdEncoding.DecodeString(b64UsernamePassword)
 	if err != nil {
-		h.logger.Info("Cannot decode Proxy-Authorization header value from %s: %s",
-			request.RemoteAddr, err.Error())
+		h.logger.Info("Cannot decode Proxy-Authorization header value from " +
+			request.RemoteAddr + ": " + err.Error())
 		responseWriter.WriteHeader(http.StatusUnauthorized)
 		return false
 	}
@@ -32,8 +32,9 @@ func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http
 		return false
 	}
 	if h.username != usernamePassword[0] || h.password != usernamePassword[1] {
-		h.logger.Info("Username or password mismatch from %s", request.RemoteAddr)
-		h.logger.Debug("username provided %q and password provided %q", usernamePassword[0], usernamePassword[1])
+		h.logger.Info("Username or password mismatch from " + request.RemoteAddr)
+		h.logger.Debug("username provided \"" + usernamePassword[0] +
+			"\" and password provided \"" + usernamePassword[1] + "\"")
 		responseWriter.WriteHeader(http.StatusUnauthorized)
 		return false
 	}

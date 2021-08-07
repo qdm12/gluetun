@@ -25,8 +25,13 @@ func NoServerFoundError(selection configuration.ServerSelection) (err error) {
 	}
 	messageParts = append(messageParts, "protocol "+protocol)
 
-	if selection.Group != "" {
-		part := "group " + selection.Group
+	switch len(selection.Countries) {
+	case 0:
+	case 1:
+		part := "group " + selection.Groups[0]
+		messageParts = append(messageParts, part)
+	default:
+		part := "groups " + commaJoin(selection.Groups)
 		messageParts = append(messageParts, part)
 	}
 

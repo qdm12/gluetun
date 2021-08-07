@@ -16,7 +16,7 @@ func (h *handler) isAccepted(responseWriter http.ResponseWriter, request *http.R
 	if !request.ProtoAtLeast(minimalMajorVersion, minimalMinorVersion) ||
 		request.ProtoAtLeast(maximumMajorVersion, maximumMinorVersion) {
 		message := fmt.Sprintf("http version not supported: %s", request.Proto)
-		h.logger.Info("%s, from %s", message, request.RemoteAddr)
+		h.logger.Info(message + ", from " + request.RemoteAddr)
 		http.Error(responseWriter, message, http.StatusBadRequest)
 		return false
 	}
