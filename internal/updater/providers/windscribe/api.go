@@ -35,7 +35,6 @@ type serverData struct {
 	Hostname string `json:"hostname"`
 	IP       net.IP `json:"ip"`
 	IP2      net.IP `json:"ip2"`
-	IP3      net.IP `json:"ip3"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
