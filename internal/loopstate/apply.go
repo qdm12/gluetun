@@ -37,6 +37,7 @@ func (s *State) ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		switch existingStatus {
 		case constants.Stopped, constants.Completed:
 		default:
+			s.statusMu.Unlock()
 			return "already " + existingStatus.String(), nil
 		}
 
@@ -55,6 +56,7 @@ func (s *State) ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		return newStatus.String(), nil
 	case constants.Stopped:
 		if existingStatus != constants.Running {
+			s.statusMu.Unlock()
 			return "already " + existingStatus.String(), nil
 		}
 
@@ -73,6 +75,7 @@ func (s *State) ApplyStatus(ctx context.Context, status models.LoopStatus) (
 
 		return newStatus.String(), nil
 	default:
+		s.statusMu.Unlock()
 		return "", fmt.Errorf("%w: %s: it can only be one of: %s, %s",
 			ErrInvalidStatus, status, constants.Running, constants.Stopped)
 	}
