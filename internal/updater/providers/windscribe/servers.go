@@ -35,9 +35,9 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 				if node.IP2 != nil {
 					ips = append(ips, node.IP2)
 				}
-				if node.IP3 != nil {
-					ips = append(ips, node.IP3)
-				}
+				// if node.IP3 != nil { // Wireguard + Stealth
+				// 	ips = append(ips, node.IP3)
+				// }
 				server := models.WindscribeServer{
 					Region:   region,
 					City:     city,
