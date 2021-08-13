@@ -14,6 +14,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/vishvananda/netlink v1.1.0
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
+	golang.zx2c4.com/wireguard v0.0.0-20210805125648-3957e9b9dd19
+	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20210803171230-4253848d036c
 	inet.af/netaddr v0.0.0-20210718074554-06ca8145d722
 )
 
