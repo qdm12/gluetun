@@ -6,11 +6,13 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn/state"
 	"github.com/qdm12/gluetun/internal/portforward"
+	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/logging"
 )
@@ -33,15 +35,18 @@ type Loop struct {
 	puid           int
 	pgid           int
 	targetConfPath string
+	buildInfo      models.BuildInformation
+	versionInfo    bool
 	// Configurators
 	conf        StarterAuthWriter
 	fw          firewallConfigurer
-	routing     routing.VPNLocalGatewayIPGetter
+	routing     routing.VPNGetter
 	portForward portforward.StartStopper
+	publicip    publicip.Looper
+	dnsLooper   dns.Looper
 	// Other objects
-	logger      logging.Logger
-	client      *http.Client
-	tunnelReady chan<- struct{}
+	logger logging.Logger
+	client *http.Client
 	// Internal channels and values
 	stop        <-chan struct{}
 	stopped     chan<- struct{}
@@ -64,9 +69,11 @@ const (
 
 func NewLoop(settings configuration.OpenVPN, username string,
 	puid, pgid int, allServers models.AllServers, conf Configurator,
-	fw firewallConfigurer, routing routing.VPNLocalGatewayIPGetter,
-	portForward portforward.StartStopper, logger logging.Logger,
-	client *http.Client, tunnelReady chan<- struct{}) *Loop {
+	fw firewallConfigurer, routing routing.VPNGetter,
+	portForward portforward.StartStopper,
+	publicip publicip.Looper, dnsLooper dns.Looper,
+	logger logging.Logger, client *http.Client,
+	buildInfo models.BuildInformation, versionInfo bool) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
@@ -82,13 +89,16 @@ func NewLoop(settings configuration.OpenVPN, username string,
 		puid:           puid,
 		pgid:           pgid,
 		targetConfPath: constants.OpenVPNConf,
+		buildInfo:      buildInfo,
+		versionInfo:    versionInfo,
 		conf:           conf,
 		fw:             fw,
 		routing:        routing,
 		portForward:    portForward,
+		publicip:       publicip,
+		dnsLooper:      dnsLooper,
 		logger:         logger,
 		client:         client,
-		tunnelReady:    tunnelReady,
 		start:          start,
 		running:        running,
 		stop:           stop,

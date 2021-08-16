@@ -46,7 +46,7 @@ func (l *Loop) collectLines(ctx context.Context, done chan<- struct{},
 			l.logger.Error(line)
 		}
 		if strings.Contains(line, "Initialization Sequence Completed") {
-			l.tunnelReady <- struct{}{}
+			l.onTunnelUp(ctx)
 			l.startPFCh <- struct{}{}
 		}
 	}

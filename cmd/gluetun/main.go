@@ -31,7 +31,6 @@ import (
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/unix"
 	"github.com/qdm12/gluetun/internal/updater"
-	versionpkg "github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
@@ -279,9 +278,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	tunnelReadyCh := make(chan struct{})
-	defer close(tunnelReadyCh)
-
 	if allSettings.Firewall.Enabled {
 		err := firewallConf.SetEnabled(ctx, true) // disabled by default
 		if err != nil {
@@ -328,9 +324,37 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"port forwarding", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	go portForwardLooper.Run(portForwardCtx, portForwardDone)
 
+	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
+	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
+		unboundLogger)
+	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
+		"unbound", defaultGoRoutineSettings)
+	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
+	go unboundLooper.Run(dnsCtx, dnsDone)
+	otherGroupHandler.Add(dnsHandler)
+
+	dnsTickerHandler, dnsTickerCtx, dnsTickerDone := goshutdown.NewGoRoutineHandler(
+		"dns ticker", defaultGoRoutineSettings)
+	go unboundLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
+	controlGroupHandler.Add(dnsTickerHandler)
+
+	publicIPLooper := publicip.NewLoop(httpClient,
+		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
+		allSettings.PublicIP, puid, pgid)
+	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
+		"public IP", defaultGoRoutineSettings)
+	go publicIPLooper.Run(pubIPCtx, pubIPDone)
+	otherGroupHandler.Add(pubIPHandler)
+
+	pubIPTickerHandler, pubIPTickerCtx, pubIPTickerDone := goshutdown.NewGoRoutineHandler(
+		"public IP", defaultGoRoutineSettings)
+	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
+	tickersGroupHandler.Add(pubIPTickerHandler)
+
 	openvpnLogger := logger.NewChild(logging.Settings{Prefix: "openvpn: "})
 	openvpnLooper := openvpn.NewLoop(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
-		ovpnConf, firewallConf, routingConf, portForwardLooper, openvpnLogger, httpClient, tunnelReadyCh)
+		ovpnConf, firewallConf, routingConf, portForwardLooper, publicIPLooper, unboundLooper,
+		openvpnLogger, httpClient, buildInfo, allSettings.VersionInformation)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn
@@ -345,27 +369,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go updaterLooper.Run(updaterCtx, updaterDone)
 	tickersGroupHandler.Add(updaterHandler)
 
-	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
-	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
-		unboundLogger)
-	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
-		"unbound", defaultGoRoutineSettings)
-	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
-	go unboundLooper.Run(dnsCtx, dnsDone)
-	otherGroupHandler.Add(dnsHandler)
-
-	publicIPLooper := publicip.NewLoop(httpClient,
-		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
-		allSettings.PublicIP, puid, pgid)
-	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
-		"public IP", defaultGoRoutineSettings)
-	go publicIPLooper.Run(pubIPCtx, pubIPDone)
-	otherGroupHandler.Add(pubIPHandler)
-
-	pubIPTickerHandler, pubIPTickerCtx, pubIPTickerDone := goshutdown.NewGoRoutineHandler(
-		"public IP", defaultGoRoutineSettings)
-	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
-	tickersGroupHandler.Add(pubIPTickerHandler)
+	updaterTickerHandler, updaterTickerCtx, updaterTickerDone := goshutdown.NewGoRoutineHandler(
+		"updater ticker", defaultGoRoutineSettings)
+	go updaterLooper.RunRestartTicker(updaterTickerCtx, updaterTickerDone)
+	controlGroupHandler.Add(updaterTickerHandler)
 
 	httpProxyLooper := httpproxy.NewLoop(
 		logger.NewChild(logging.Settings{Prefix: "http proxy: "}),
@@ -381,13 +388,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"shadowsocks proxy", defaultGoRoutineSettings)
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 	otherGroupHandler.Add(shadowsocksHandler)
-
-	eventsRoutingHandler, eventsRoutingCtx, eventsRoutingDone := goshutdown.NewGoRoutineHandler(
-		"events routing", defaultGoRoutineSettings)
-	go routeReadyEvents(eventsRoutingCtx, eventsRoutingDone, buildInfo, tunnelReadyCh,
-		unboundLooper, updaterLooper, publicIPLooper, routingConf, logger, httpClient,
-		allSettings.VersionInformation)
-	controlGroupHandler.Add(eventsRoutingHandler)
 
 	controlServerAddress := ":" + strconv.Itoa(int(allSettings.ControlServer.Port))
 	controlServerLogging := allSettings.ControlServer.Log
@@ -444,65 +444,4 @@ func printVersions(ctx context.Context, logger logging.Logger,
 	}
 
 	return nil
-}
-
-func routeReadyEvents(ctx context.Context, done chan<- struct{}, buildInfo models.BuildInformation,
-	tunnelReadyCh <-chan struct{},
-	unboundLooper dns.Looper, updaterLooper updater.Looper, publicIPLooper publicip.Looper,
-	routing routing.VPNGetter, logger logging.Logger, httpClient *http.Client,
-	versionInformation bool) {
-	defer close(done)
-
-	// for linters only
-	var restartTickerContext context.Context
-	var restartTickerCancel context.CancelFunc = func() {}
-
-	unboundTickerDone := make(chan struct{})
-	close(unboundTickerDone)
-	updaterTickerDone := make(chan struct{})
-	close(updaterTickerDone)
-
-	first := true
-	for {
-		select {
-		case <-ctx.Done():
-			restartTickerCancel() // for linters only
-			<-unboundTickerDone
-			<-updaterTickerDone
-			return
-		case <-tunnelReadyCh: // blocks until openvpn is connected
-			vpnDestination, err := routing.VPNDestinationIP()
-			if err != nil {
-				logger.Warn(err.Error())
-			} else {
-				logger.Info("VPN routing IP address: " + vpnDestination.String())
-			}
-
-			if unboundLooper.GetSettings().Enabled {
-				_, _ = unboundLooper.ApplyStatus(ctx, constants.Running)
-			}
-
-			restartTickerCancel() // stop previous restart tickers
-			<-unboundTickerDone
-			<-updaterTickerDone
-			restartTickerContext, restartTickerCancel = context.WithCancel(ctx)
-
-			// Runs the Public IP getter job once
-			_, _ = publicIPLooper.ApplyStatus(ctx, constants.Running)
-			if versionInformation && first {
-				first = false
-				message, err := versionpkg.GetMessage(ctx, buildInfo, httpClient)
-				if err != nil {
-					logger.Error("cannot get version information: " + err.Error())
-				} else {
-					logger.Info(message)
-				}
-			}
-
-			unboundTickerDone = make(chan struct{})
-			updaterTickerDone = make(chan struct{})
-			go unboundLooper.RunRestartTicker(restartTickerContext, unboundTickerDone)
-			go updaterLooper.RunRestartTicker(restartTickerContext, updaterTickerDone)
-		}
-	}
 }
