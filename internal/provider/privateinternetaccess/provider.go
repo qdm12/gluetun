@@ -9,10 +9,9 @@ import (
 )
 
 type PIA struct {
-	servers      []models.PIAServer
-	randSource   rand.Source
-	timeNow      func() time.Time
-	activeServer models.PIAServer
+	servers    []models.PIAServer
+	randSource rand.Source
+	timeNow    func() time.Time
 	// Port forwarding
 	portForwardPath string
 	authFilePath    string

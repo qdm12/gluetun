@@ -47,20 +47,5 @@ func (p *PIA) GetOpenVPNConnection(selection configuration.ServerSelection) (
 		return connection, err
 	}
 
-	p.activeServer = findActiveServer(servers, connection)
-
 	return connection, nil
-}
-
-func findActiveServer(servers []models.PIAServer,
-	connection models.OpenVPNConnection) (activeServer models.PIAServer) {
-	// Reverse lookup server using the randomly picked connection
-	for _, server := range servers {
-		for _, ip := range server.IPs {
-			if connection.IP.Equal(ip) {
-				return server
-			}
-		}
-	}
-	return activeServer
 }

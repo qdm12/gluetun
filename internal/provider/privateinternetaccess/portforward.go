@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/format"
 	"github.com/qdm12/golibs/logging"
 )
@@ -32,12 +33,12 @@ var (
 func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 	logger logging.Logger, gateway net.IP, serverName string) (
 	port uint16, err error) {
-	// commonName := p.activeServer.ServerName
-	// if !p.activeServer.PortForward {
-	// 	logger.Error("The server " + commonName +
-	// 		" (region " + p.activeServer.Region + ") does not support port forwarding")
-	// 	return
-	// }
+	server := constants.PIAServerWhereName(serverName)
+	if !server.PortForward {
+		logger.Error("The server " + serverName +
+			" (region " + server.Region + ") does not support port forwarding")
+		return
+	}
 	if gateway == nil {
 		return 0, ErrGatewayIPIsNil
 	} else if serverName == "" {

@@ -48,3 +48,12 @@ func PIAServers() (servers []models.PIAServer) {
 	copy(servers, allServers.Pia.Servers)
 	return servers
 }
+
+func PIAServerWhereName(serverName string) (server models.PIAServer) {
+	for _, server := range PIAServers() {
+		if server.ServerName == serverName {
+			return server
+		}
+	}
+	return server
+}
