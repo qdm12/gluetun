@@ -32,7 +32,7 @@ RUN apt-get update && \
     make clean && \
     make install && \
   	mkdir /tmp/qbittorrent && \
-    curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.6 | tar xzC /tmp/qbittorrent && \
+    curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.7 | tar xzC /tmp/qbittorrent && \
   	cd /tmp/qbittorrent/*qBittorrent* && \
     ./configure --disable-gui && \
   	make install && \
