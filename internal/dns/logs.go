@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"context"
 	"regexp"
 	"strings"
 
@@ -8,18 +9,24 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func (l *Loop) collectLines(stdout, stderr <-chan string, done chan<- struct{}) {
+func (l *Loop) collectLines(ctx context.Context, done chan<- struct{},
+	stdout, stderr chan string) {
 	defer close(done)
+
 	var line string
-	var ok bool
+
 	for {
 		select {
-		case line, ok = <-stderr:
-		case line, ok = <-stdout:
-		}
-		if !ok {
+		case <-ctx.Done():
+			// Context should only be canceled after stdout and stderr are done
+			// being written to.
+			close(stdout)
+			close(stderr)
 			return
+		case line = <-stderr:
+		case line = <-stdout:
 		}
+
 		line, level := processLogLine(line)
 		switch level {
 		case logging.LevelDebug:

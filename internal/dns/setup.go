@@ -30,12 +30,13 @@ func (l *Loop) setupUnbound(ctx context.Context) (
 		return nil, nil, nil, err
 	}
 
-	collectLinesDone := make(chan struct{})
-	go l.collectLines(stdoutLines, stderrLines, collectLinesDone)
+	linesCollectionCtx, linesCollectionCancel := context.WithCancel(context.Background())
+	lineCollectionDone := make(chan struct{})
+	go l.collectLines(linesCollectionCtx, lineCollectionDone,
+		stdoutLines, stderrLines)
 	closeStreams = func() {
-		close(stdoutLines)
-		close(stderrLines)
-		<-collectLinesDone
+		linesCollectionCancel()
+		<-lineCollectionDone
 	}
 
 	// use Unbound

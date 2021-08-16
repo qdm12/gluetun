@@ -80,11 +80,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 
+		linesCollectionCtx, linesCollectionCancel := context.WithCancel(context.Background())
 		lineCollectionDone := make(chan struct{})
-		go l.collectLines(stdoutLines, stderrLines, lineCollectionDone)
+		go l.collectLines(linesCollectionCtx, lineCollectionDone,
+			stdoutLines, stderrLines)
 		closeStreams := func() {
-			close(stdoutLines)
-			close(stderrLines)
+			linesCollectionCancel()
 			<-lineCollectionDone
 		}
 

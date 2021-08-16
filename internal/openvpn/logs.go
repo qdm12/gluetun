@@ -1,6 +1,7 @@
 package openvpn
 
 import (
+	"context"
 	"strings"
 
 	"github.com/fatih/color"
@@ -8,20 +9,24 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-func (l *Loop) collectLines(stdout, stderr <-chan string, done chan<- struct{}) {
+func (l *Loop) collectLines(ctx context.Context, done chan<- struct{},
+	stdout, stderr chan string) {
 	defer close(done)
+
 	var line string
-	var ok, errLine bool
 
 	for {
-		errLine = false
+		errLine := false
 		select {
-		case line, ok = <-stdout:
-		case line, ok = <-stderr:
-			errLine = true
-		}
-		if !ok {
+		case <-ctx.Done():
+			// Context should only be canceled after stdout and stderr are done
+			// being written to.
+			close(stdout)
+			close(stderr)
 			return
+		case line = <-stdout:
+		case line = <-stderr:
+			errLine = true
 		}
 		line, level := processLogLine(line)
 		if line == "" {
