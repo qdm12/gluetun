@@ -15,10 +15,11 @@ services:
     volumes:
       - /yourpath:/gluetun
     environment:
-      # More variables are available, see the readme table
+      # More variables are available, see the Wiki table
       - OPENVPN_USER=
       - OPENVPN_PASSWORD=
       - VPNSP=private internet access
+      - VPN_TYPE=openvpn
       # Timezone for accurate logs times
       - TZ=
     restart: always

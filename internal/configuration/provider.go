@@ -43,7 +43,7 @@ var (
 )
 
 func (settings *Provider) read(r reader, vpnType string) error {
-	err := settings.readVPNServiceProvider(r)
+	err := settings.readVPNServiceProvider(r, vpnType)
 	if err != nil {
 		return err
 	}
@@ -94,11 +94,17 @@ func (settings *Provider) read(r reader, vpnType string) error {
 	return nil
 }
 
-func (settings *Provider) readVPNServiceProvider(r reader) (err error) {
-	allowedVPNServiceProviders := []string{
-		"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
-		"privado", "pia", "private internet access", "privatevpn", "protonvpn",
-		"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
+func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err error) {
+	var allowedVPNServiceProviders []string
+	switch vpnType {
+	case constants.OpenVPN:
+		allowedVPNServiceProviders = []string{
+			"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
+			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
+			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
+	case constants.Wireguard:
+		allowedVPNServiceProviders = []string{constants.Mullvad}
+	}
 
 	vpnsp, err := r.env.Inside("VPNSP", allowedVPNServiceProviders,
 		params.Default("private internet access"))

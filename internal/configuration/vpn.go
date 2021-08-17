@@ -10,9 +10,10 @@ import (
 )
 
 type VPN struct {
-	Type     string   `json:"type"`
-	OpenVPN  OpenVPN  `json:"openvpn"`
-	Provider Provider `json:"provider"`
+	Type      string    `json:"type"`
+	OpenVPN   OpenVPN   `json:"openvpn"`
+	Wireguard Wireguard `json:"wireguard"`
+	Provider  Provider  `json:"provider"`
 }
 
 func (settings *VPN) String() string {
@@ -24,7 +25,14 @@ func (settings *VPN) lines() (lines []string) {
 
 	lines = append(lines, indent+lastIndent+"Type: "+settings.Type)
 
-	for _, line := range settings.OpenVPN.lines() {
+	var vpnLines []string
+	switch settings.Type {
+	case constants.OpenVPN:
+		vpnLines = settings.OpenVPN.lines()
+	case constants.Wireguard:
+		vpnLines = settings.Wireguard.lines()
+	}
+	for _, line := range vpnLines {
 		lines = append(lines, indent+line)
 	}
 
@@ -36,13 +44,15 @@ func (settings *VPN) lines() (lines []string) {
 }
 
 var (
-	errReadProviderSettings = errors.New("cannot read provider settings")
-	errReadOpenVPNSettings  = errors.New("cannot read OpenVPN settings")
+	errReadProviderSettings  = errors.New("cannot read provider settings")
+	errReadOpenVPNSettings   = errors.New("cannot read OpenVPN settings")
+	errReadWireguardSettings = errors.New("cannot read Wireguard settings")
 )
 
 func (settings *VPN) read(r reader) (err error) {
 	vpnType, err := r.env.Inside("VPN_TYPE",
-		[]string{constants.OpenVPN}, params.Default(constants.OpenVPN))
+		[]string{constants.OpenVPN, constants.Wireguard},
+		params.Default(constants.OpenVPN))
 	if err != nil {
 		return fmt.Errorf("environment variable VPN_TYPE: %w", err)
 	}
@@ -54,9 +64,17 @@ func (settings *VPN) read(r reader) (err error) {
 		}
 	}
 
-	err = settings.OpenVPN.read(r, settings.Provider.Name)
-	if err != nil {
-		return fmt.Errorf("%w: %s", errReadOpenVPNSettings, err)
+	switch settings.Type {
+	case constants.OpenVPN:
+		err = settings.OpenVPN.read(r, settings.Provider.Name)
+		if err != nil {
+			return fmt.Errorf("%w: %s", errReadOpenVPNSettings, err)
+		}
+	case constants.Wireguard:
+		err = settings.Wireguard.read(r)
+		if err != nil {
+			return fmt.Errorf("%w: %s", errReadWireguardSettings, err)
+		}
 	}
 
 	return nil
