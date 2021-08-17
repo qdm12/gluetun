@@ -39,6 +39,15 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 		return config, fmt.Errorf("%w: %s", ErrPublicKeyInvalid, settings.PublicKey)
 	}
 
+	var preSharedKey *wgtypes.Key
+	if settings.PreSharedKey != "" {
+		preSharedKeyValue, err := wgtypes.ParseKey(settings.PreSharedKey)
+		if err != nil {
+			return config, ErrPreSharedKeyInvalid
+		}
+		preSharedKey = &preSharedKeyValue
+	}
+
 	firewallMark := settings.FirewallMark
 
 	config = wgtypes.Config{
@@ -47,7 +56,8 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 		FirewallMark: &firewallMark,
 		Peers: []wgtypes.PeerConfig{
 			{
-				PublicKey: publicKey,
+				PublicKey:    publicKey,
+				PresharedKey: preSharedKey,
 				AllowedIPs: []net.IPNet{
 					*allIPv4(),
 					*allIPv6(),

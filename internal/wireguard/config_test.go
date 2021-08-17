@@ -16,6 +16,7 @@ func Test_makeDeviceConfig(t *testing.T) {
 	const (
 		validKey1 = "oMNSf/zJ0pt1ciy+qIRk8Rlyfs9accwuRLnKd85Yl1Q="
 		validKey2 = "aPjc9US5ICB30D1P4glR9tO7bkB2Ga+KZiFqnoypBHk="
+		validKey3 = "gFIW0lTmBYEucynoIg+XmeWckDUXTcC4Po5ijR5G+HM="
 	)
 
 	parseKey := func(t *testing.T, s string) *wgtypes.Key {
@@ -45,10 +46,19 @@ func Test_makeDeviceConfig(t *testing.T) {
 			},
 			err: errors.New("cannot parse public key: bad key"),
 		},
+		"bad pre-shared key": {
+			settings: Settings{
+				PrivateKey:   validKey1,
+				PublicKey:    validKey2,
+				PreSharedKey: "bad key",
+			},
+			err: errors.New("cannot parse pre-shared key"),
+		},
 		"valid settings": {
 			settings: Settings{
 				PrivateKey:   validKey1,
 				PublicKey:    validKey2,
+				PreSharedKey: validKey3,
 				FirewallMark: 9876,
 				Endpoint: &net.UDPAddr{
 					IP:   net.IPv4(99, 99, 99, 99),
@@ -61,7 +71,8 @@ func Test_makeDeviceConfig(t *testing.T) {
 				FirewallMark: intPtr(9876),
 				Peers: []wgtypes.PeerConfig{
 					{
-						PublicKey: *parseKey(t, validKey2),
+						PublicKey:    *parseKey(t, validKey2),
+						PresharedKey: parseKey(t, validKey3),
 						AllowedIPs: []net.IPNet{
 							{
 								IP:   net.IPv4(0, 0, 0, 0),

@@ -17,6 +17,8 @@ type Settings struct {
 	PrivateKey string
 	// Public key in base 64 format
 	PublicKey string
+	// Pre shared key in base 64 format
+	PreSharedKey string
 	// Wireguard server endpoint to connect to.
 	Endpoint *net.UDPAddr
 	// Addresses assigned to the client.
@@ -44,6 +46,7 @@ var (
 	ErrPrivateKeyInvalid    = errors.New("cannot parse private key")
 	ErrPublicKeyMissing     = errors.New("public key is missing")
 	ErrPublicKeyInvalid     = errors.New("cannot parse public key")
+	ErrPreSharedKeyInvalid  = errors.New("cannot parse pre-shared key")
 	ErrEndpointMissing      = errors.New("endpoint is missing")
 	ErrEndpointIPMissing    = errors.New("endpoint IP is missing")
 	ErrEndpointPortMissing  = errors.New("endpoint port is missing")
@@ -71,6 +74,12 @@ func (s *Settings) Check() (err error) {
 		return ErrPublicKeyMissing
 	} else if _, err := wgtypes.ParseKey(s.PublicKey); err != nil {
 		return fmt.Errorf("%w: %s", ErrPublicKeyInvalid, s.PublicKey)
+	}
+
+	if s.PreSharedKey != "" {
+		if _, err := wgtypes.ParseKey(s.PreSharedKey); err != nil {
+			return ErrPreSharedKeyInvalid
+		}
 	}
 
 	switch {

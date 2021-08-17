@@ -95,6 +95,15 @@ func Test_Settings_Check(t *testing.T) {
 			},
 			err: errors.New("cannot parse public key: bad key"),
 		},
+		"bad preshared key": {
+			settings: Settings{
+				InterfaceName: "wg0",
+				PrivateKey:    validKey1,
+				PublicKey:     validKey2,
+				PreSharedKey:  "bad key",
+			},
+			err: errors.New("cannot parse pre-shared key"),
+		},
 		"empty endpoint": {
 			settings: Settings{
 				InterfaceName: "wg0",
