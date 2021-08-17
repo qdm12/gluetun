@@ -38,8 +38,8 @@ func (m *Mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	}
 
 	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
+		return utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
 	}
 
-	return utils.PickRandomConnection(connections, m.randSource), nil
+	return utils.PickRandomOpenVPNConnection(connections, m.randSource), nil
 }

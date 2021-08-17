@@ -38,8 +38,8 @@ func (h *HideMyAss) GetOpenVPNConnection(selection configuration.ServerSelection
 	}
 
 	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
+		return utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
 	}
 
-	return utils.PickRandomConnection(connections, h.randSource), nil
+	return utils.PickRandomOpenVPNConnection(connections, h.randSource), nil
 }

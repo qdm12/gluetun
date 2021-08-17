@@ -33,8 +33,8 @@ func (f *Fastestvpn) GetOpenVPNConnection(selection configuration.ServerSelectio
 	}
 
 	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
+		return utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
 	}
 
-	return utils.PickRandomConnection(connections, f.randSource), nil
+	return utils.PickRandomOpenVPNConnection(connections, f.randSource), nil
 }

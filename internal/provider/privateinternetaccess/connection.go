@@ -38,9 +38,9 @@ func (p *PIA) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	}
 
 	if selection.TargetIP != nil {
-		connection, err = utils.GetTargetIPConnection(connections, selection.TargetIP)
+		connection, err = utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
 	} else {
-		connection, err = utils.PickRandomConnection(connections, p.randSource), nil
+		connection, err = utils.PickRandomOpenVPNConnection(connections, p.randSource), nil
 	}
 
 	if err != nil {

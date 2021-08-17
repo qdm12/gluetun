@@ -10,7 +10,7 @@ import (
 
 var ErrTargetIPNotFound = errors.New("target IP address not found")
 
-func GetTargetIPConnection(connections []models.OpenVPNConnection,
+func GetTargetIPOpenVPNConnection(connections []models.OpenVPNConnection,
 	targetIP net.IP) (connection models.OpenVPNConnection, err error) {
 	for _, connection := range connections {
 		if targetIP.Equal(connection.IP) {

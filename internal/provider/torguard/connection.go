@@ -37,8 +37,8 @@ func (t *Torguard) GetOpenVPNConnection(selection configuration.ServerSelection)
 	}
 
 	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
+		return utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
 	}
 
-	return utils.PickRandomConnection(connections, t.randSource), nil
+	return utils.PickRandomOpenVPNConnection(connections, t.randSource), nil
 }
