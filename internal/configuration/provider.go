@@ -90,8 +90,6 @@ func (settings *Provider) read(r reader) error {
 
 	var readProvider func(r reader) error
 	switch settings.Name {
-	case "": // custom config
-		readProvider = func(r reader) error { return nil }
 	case constants.Cyberghost:
 		readProvider = settings.readCyberghost
 	case constants.Fastestvpn:
