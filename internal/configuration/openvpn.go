@@ -1,7 +1,6 @@
 package configuration
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -20,9 +19,12 @@ type OpenVPN struct {
 	Root      bool     `json:"run_as_root"`
 	Cipher    string   `json:"cipher"`
 	Auth      string   `json:"auth"`
-	Provider  Provider `json:"provider"`
 	Config    string   `json:"custom_config"`
 	Version   string   `json:"version"`
+	ClientCrt string   `json:"-"`                 // Cyberghost
+	ClientKey string   `json:"-"`                 // Cyberghost, VPNUnlimited
+	EncPreset string   `json:"encryption_preset"` // PIA
+	IPv6      bool     `json:"ipv6"`              // Mullvad
 }
 
 func (settings *OpenVPN) String() string {
@@ -55,48 +57,32 @@ func (settings *OpenVPN) lines() (lines []string) {
 		lines = append(lines, indent+lastIndent+"Custom configuration: "+settings.Config)
 	}
 
-	if settings.Provider.Name == "" {
-		lines = append(lines, indent+lastIndent+"Provider: custom configuration")
-	} else {
-		lines = append(lines, indent+lastIndent+"Provider:")
-		for _, line := range settings.Provider.lines() {
-			lines = append(lines, indent+indent+line)
-		}
+	if settings.ClientKey != "" {
+		lines = append(lines, indent+lastIndent+"Client key is set")
+	}
+
+	if settings.ClientCrt != "" {
+		lines = append(lines, indent+lastIndent+"Client certificate is set")
+	}
+
+	if settings.IPv6 {
+		lines = append(lines, indent+lastIndent+"IPv6: enabled")
+	}
+
+	if settings.EncPreset != "" { // PIA only
+		lines = append(lines, indent+lastIndent+"Encryption preset: "+settings.EncPreset)
 	}
 
 	return lines
 }
 
-var (
-	ErrInvalidVPNProvider = errors.New("invalid VPN provider")
-)
-
-func (settings *OpenVPN) read(r reader) (err error) {
-	vpnsp, err := r.env.Inside("VPNSP", []string{
-		"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
-		"privado", "pia", "private internet access", "privatevpn", "protonvpn",
-		"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"},
-		params.Default("private internet access"))
-	if err != nil {
-		return fmt.Errorf("environment variable VPNSP: %w", err)
-	}
-	if vpnsp == "pia" { // retro compatibility
-		vpnsp = "private internet access"
-	}
-
-	settings.Provider.Name = vpnsp
-
+func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 	settings.Config, err = r.env.Get("OPENVPN_CUSTOM_CONFIG", params.CaseSensitiveValue())
 	if err != nil {
 		return fmt.Errorf("environment variable OPENVPN_CUSTOM_CONFIG: %w", err)
 	}
-	customConfig := settings.Config != ""
 
-	if customConfig {
-		settings.Provider.Name = ""
-	}
-
-	credentialsRequired := !customConfig && settings.Provider.Name != constants.VPNUnlimited
+	credentialsRequired := settings.Config == "" && serviceProvider != constants.VPNUnlimited
 
 	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", credentialsRequired, []string{"USER"})
 	if err != nil {
@@ -105,7 +91,7 @@ func (settings *OpenVPN) read(r reader) (err error) {
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
 	settings.User = strings.ReplaceAll(settings.User, " ", "")
 
-	if settings.Provider.Name == constants.Mullvad {
+	if serviceProvider == constants.Mullvad {
 		settings.Password = "m"
 	} else {
 		settings.Password, err = r.getFromEnvOrSecretFile("OPENVPN_PASSWORD", credentialsRequired, []string{"PASSWORD"})
@@ -155,50 +141,23 @@ func (settings *OpenVPN) read(r reader) (err error) {
 		return fmt.Errorf("environment variable OPENVPN_MSSFIX: %w", err)
 	}
 	settings.MSSFix = uint16(mssFix)
-	return settings.readProvider(r)
-}
 
-func (settings *OpenVPN) readProvider(r reader) error {
-	var readProvider func(r reader) error
-	switch settings.Provider.Name {
-	case "": // custom config
-		readProvider = func(r reader) error { return nil }
-	case constants.Cyberghost:
-		readProvider = settings.Provider.readCyberghost
-	case constants.Fastestvpn:
-		readProvider = settings.Provider.readFastestvpn
-	case constants.HideMyAss:
-		readProvider = settings.Provider.readHideMyAss
-	case constants.Ipvanish:
-		readProvider = settings.Provider.readIpvanish
-	case constants.Ivpn:
-		readProvider = settings.Provider.readIvpn
-	case constants.Mullvad:
-		readProvider = settings.Provider.readMullvad
-	case constants.Nordvpn:
-		readProvider = settings.Provider.readNordvpn
-	case constants.Privado:
-		readProvider = settings.Provider.readPrivado
-	case constants.PrivateInternetAccess:
-		readProvider = settings.Provider.readPrivateInternetAccess
-	case constants.Privatevpn:
-		readProvider = settings.Provider.readPrivatevpn
-	case constants.Protonvpn:
-		readProvider = settings.Provider.readProtonvpn
-	case constants.Purevpn:
-		readProvider = settings.Provider.readPurevpn
-	case constants.Surfshark:
-		readProvider = settings.Provider.readSurfshark
-	case constants.Torguard:
-		readProvider = settings.Provider.readTorguard
-	case constants.VPNUnlimited:
-		readProvider = settings.Provider.readVPNUnlimited
-	case constants.Vyprvpn:
-		readProvider = settings.Provider.readVyprvpn
-	case constants.Windscribe:
-		readProvider = settings.Provider.readWindscribe
-	default:
-		return fmt.Errorf("%w: %s", ErrInvalidVPNProvider, settings.Provider.Name)
+	settings.IPv6, err = r.env.OnOff("OPENVPN_IPV6", params.Default("off"))
+	if err != nil {
+		return fmt.Errorf("environment variable OPENVPN_IPV6: %w", err)
 	}
-	return readProvider(r)
+
+	switch serviceProvider {
+	case constants.Cyberghost:
+		err = settings.readCyberghost(r)
+	case constants.PrivateInternetAccess:
+		err = settings.readPrivateInternetAccess(r)
+	case constants.VPNUnlimited:
+		err = settings.readVPNUnlimited(r)
+	}
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -67,8 +67,10 @@ const (
 	defaultBackoffTime = 15 * time.Second
 )
 
-func NewLoop(settings configuration.OpenVPN, username string,
-	puid, pgid int, allServers models.AllServers, conf Configurator,
+func NewLoop(openVPNSettings configuration.OpenVPN,
+	providerSettings configuration.Provider,
+	username string, puid, pgid int,
+	allServers models.AllServers, conf Configurator,
 	fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper,
 	publicip publicip.Looper, dnsLooper dns.Looper,
@@ -80,7 +82,7 @@ func NewLoop(settings configuration.OpenVPN, username string,
 	stopped := make(chan struct{})
 
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
-	state := state.New(statusManager, settings, allServers)
+	state := state.New(statusManager, openVPNSettings, providerSettings, allServers)
 
 	return &Loop{
 		statusManager:  statusManager,

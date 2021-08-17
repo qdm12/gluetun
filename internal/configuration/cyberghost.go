@@ -17,14 +17,6 @@ func (settings *Provider) cyberghostLines() (lines []string) {
 		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
 	}
 
-	if settings.ExtraConfigOptions.ClientKey != "" {
-		lines = append(lines, lastIndent+"Client key is set")
-	}
-
-	if settings.ExtraConfigOptions.ClientCertificate != "" {
-		lines = append(lines, lastIndent+"Client certificate is set")
-	}
-
 	return lines
 }
 
@@ -37,16 +29,6 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
-	if err != nil {
-		return err
-	}
-
-	settings.ExtraConfigOptions.ClientKey, err = readClientKey(r)
-	if err != nil {
-		return err
-	}
-
-	settings.ExtraConfigOptions.ClientCertificate, err = readClientCertificate(r)
 	if err != nil {
 		return err
 	}
@@ -65,6 +47,20 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.CyberghostHostnameChoices())
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
+	}
+
+	return nil
+}
+
+func (settings *OpenVPN) readCyberghost(r reader) (err error) {
+	settings.ClientKey, err = readClientKey(r)
+	if err != nil {
+		return err
+	}
+
+	settings.ClientCrt, err = readClientCertificate(r)
+	if err != nil {
+		return err
 	}
 
 	return nil

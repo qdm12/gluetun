@@ -55,7 +55,7 @@ func (p *Provider) BuildConf(connection models.OpenVPNConnection,
 		lines = append(lines, "user "+username)
 	}
 
-	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+	if settings.IPv6 {
 		lines = append(lines, "tun-ipv6")
 	} else {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
@@ -65,9 +65,9 @@ func (p *Provider) BuildConf(connection models.OpenVPNConnection,
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.VPNUnlimitedCertificateAuthority)...)
 	lines = append(lines, utils.WrapOpenvpnCert(
-		settings.Provider.ExtraConfigOptions.ClientCertificate)...)
+		settings.ClientCrt)...)
 	lines = append(lines, utils.WrapOpenvpnKey(
-		settings.Provider.ExtraConfigOptions.ClientKey)...)
+		settings.ClientKey)...)
 
 	lines = append(lines, "")
 

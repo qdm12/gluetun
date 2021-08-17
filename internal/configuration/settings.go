@@ -11,7 +11,7 @@ import (
 
 // Settings contains all settings for the program to run.
 type Settings struct {
-	OpenVPN            OpenVPN
+	VPN                VPN
 	System             System
 	DNS                DNS
 	Firewall           Firewall
@@ -30,7 +30,7 @@ func (settings *Settings) String() string {
 
 func (settings *Settings) lines() (lines []string) {
 	lines = append(lines, "Settings summary below:")
-	lines = append(lines, settings.OpenVPN.lines()...)
+	lines = append(lines, settings.VPN.lines()...)
 	lines = append(lines, settings.DNS.lines()...)
 	lines = append(lines, settings.Firewall.lines()...)
 	lines = append(lines, settings.System.lines()...)
@@ -47,7 +47,7 @@ func (settings *Settings) lines() (lines []string) {
 }
 
 var (
-	ErrOpenvpn       = errors.New("cannot read Openvpn settings")
+	ErrVPN           = errors.New("cannot read VPN settings")
 	ErrSystem        = errors.New("cannot read System settings")
 	ErrDNS           = errors.New("cannot read DNS settings")
 	ErrFirewall      = errors.New("cannot read firewall settings")
@@ -69,8 +69,8 @@ func (settings *Settings) Read(env params.Env, logger logging.Logger) (err error
 		return fmt.Errorf("environment variable VERSION_INFORMATION: %w", err)
 	}
 
-	if err := settings.OpenVPN.read(r); err != nil {
-		return fmt.Errorf("%w: %s", ErrOpenvpn, err)
+	if err := settings.VPN.read(r); err != nil {
+		return fmt.Errorf("%w: %s", ErrVPN, err)
 	}
 
 	if err := settings.System.read(r); err != nil {

@@ -68,7 +68,7 @@ func modifyCustomConfig(lines []string, username string,
 			len(settings.Cipher) > 0 && strings.HasPrefix(line, "data-ciphers"),
 			len(settings.Auth) > 0 && strings.HasPrefix(line, "auth "),
 			settings.MSSFix > 0 && strings.HasPrefix(line, "mssfix "),
-			!settings.Provider.ExtraConfigOptions.OpenVPNIPv6 && strings.HasPrefix(line, "tun-ipv6"):
+			!settings.IPv6 && strings.HasPrefix(line, "tun-ipv6"):
 		default:
 			modified = append(modified, line)
 		}
@@ -93,7 +93,7 @@ func modifyCustomConfig(lines []string, username string,
 	if settings.MSSFix > 0 {
 		modified = append(modified, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
-	if !settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+	if !settings.IPv6 {
 		modified = append(modified, `pull-filter ignore "route-ipv6"`)
 		modified = append(modified, `pull-filter ignore "ifconfig-ipv6"`)
 	}

@@ -56,7 +56,7 @@ func (m *Mullvad) BuildConf(connection models.OpenVPNConnection,
 		lines = append(lines, "fast-io")
 	}
 
-	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+	if settings.IPv6 {
 		lines = append(lines, "tun-ipv6")
 	} else {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
@@ -71,7 +71,7 @@ func (m *Mullvad) BuildConf(connection models.OpenVPNConnection,
 		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 
-	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+	if settings.IPv6 {
 		lines = append(lines, "tun-ipv6")
 	} else {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)

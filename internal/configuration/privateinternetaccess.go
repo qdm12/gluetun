@@ -21,8 +21,6 @@ func (settings *Provider) privateinternetaccessLines() (lines []string) {
 		lines = append(lines, lastIndent+"Names: "+commaJoin(settings.ServerSelection.Names))
 	}
 
-	lines = append(lines, lastIndent+"Encryption preset: "+settings.ServerSelection.EncryptionPreset)
-
 	if settings.ServerSelection.CustomPort > 0 {
 		lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
 	}
@@ -50,17 +48,6 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 		return err
 	}
 
-	encryptionPreset, err := r.env.Inside("PIA_ENCRYPTION",
-		[]string{constants.PIAEncryptionPresetNone, constants.PIAEncryptionPresetNormal, constants.PIAEncryptionPresetStrong},
-		params.RetroKeys([]string{"ENCRYPTION"}, r.onRetroActive),
-		params.Default(constants.PIACertificateStrong),
-	)
-	if err != nil {
-		return fmt.Errorf("environment variable PIA_ENCRYPTION: %w", err)
-	}
-	settings.ServerSelection.EncryptionPreset = encryptionPreset
-	settings.ExtraConfigOptions.EncryptionPreset = encryptionPreset
-
 	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.PIAGeoChoices())
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)
@@ -81,6 +68,11 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 		return fmt.Errorf("environment variable PORT: %w", err)
 	}
 
+	settings.ServerSelection.EncryptionPreset, err = getPIAEncryptionPreset(r)
+	if err != nil {
+		return err
+	}
+
 	settings.PortForwarding.Enabled, err = r.env.OnOff("PORT_FORWARDING", params.Default("off"))
 	if err != nil {
 		return fmt.Errorf("environment variable PORT_FORWARDING: %w", err)
@@ -95,4 +87,21 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 	}
 
 	return nil
+}
+
+func (settings *OpenVPN) readPrivateInternetAccess(r reader) (err error) {
+	settings.EncPreset, err = getPIAEncryptionPreset(r)
+	return err
+}
+
+func getPIAEncryptionPreset(r reader) (encryptionPreset string, err error) {
+	encryptionPreset, err = r.env.Inside("PIA_ENCRYPTION",
+		[]string{constants.PIAEncryptionPresetNone, constants.PIAEncryptionPresetNormal, constants.PIAEncryptionPresetStrong},
+		params.RetroKeys([]string{"ENCRYPTION"}, r.onRetroActive),
+		params.Default(constants.PIACertificateStrong),
+	)
+	if err != nil {
+		return "", fmt.Errorf("environment variable PIA_ENCRYPTION: %w", err)
+	}
+	return encryptionPreset, nil
 }

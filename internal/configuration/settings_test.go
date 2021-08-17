@@ -16,21 +16,25 @@ func Test_Settings_lines(t *testing.T) {
 	}{
 		"default settings": {
 			settings: Settings{
-				OpenVPN: OpenVPN{
-					Version: constants.Openvpn25,
+				VPN: VPN{
+					Type: constants.OpenVPN,
 					Provider: Provider{
 						Name: constants.Mullvad,
+					},
+					OpenVPN: OpenVPN{
+						Version: constants.Openvpn25,
 					},
 				},
 			},
 			lines: []string{
 				"Settings summary below:",
-				"|--OpenVPN:",
-				"   |--Version: 2.5",
-				"   |--Verbosity level: 0",
-				"   |--Provider:",
-				"      |--Mullvad settings:",
-				"         |--Network protocol: udp",
+				"|--VPN:",
+				"   |--Type: openvpn",
+				"   |--OpenVPN:",
+				"      |--Version: 2.5",
+				"      |--Verbosity level: 0",
+				"   |--Mullvad settings:",
+				"      |--Network protocol: udp",
 				"|--DNS:",
 				"|--Firewall: disabled ⚠️",
 				"|--System:",

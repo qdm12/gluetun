@@ -12,7 +12,7 @@ import (
 func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 	username string, settings configuration.OpenVPN) (lines []string) {
 	var defaultCipher, defaultAuth, X509CRL, certificate string
-	switch settings.Provider.ExtraConfigOptions.EncryptionPreset {
+	switch settings.EncPreset {
 	case constants.PIAEncryptionPresetNormal:
 		defaultCipher = constants.AES128cbc
 		defaultAuth = constants.SHA1
@@ -81,7 +81,7 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 
-	if settings.Provider.ExtraConfigOptions.OpenVPNIPv6 {
+	if settings.IPv6 {
 		lines = append(lines, "tun-ipv6")
 	} else {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)

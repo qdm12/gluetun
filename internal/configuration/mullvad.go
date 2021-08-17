@@ -29,10 +29,6 @@ func (settings *Provider) mullvadLines() (lines []string) {
 		lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
 	}
 
-	if settings.ExtraConfigOptions.OpenVPNIPv6 {
-		lines = append(lines, lastIndent+"IPv6: enabled")
-	}
-
 	return lines
 }
 
@@ -78,11 +74,6 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 	settings.ServerSelection.Owned, err = r.env.YesNo("OWNED", params.Default("no"))
 	if err != nil {
 		return fmt.Errorf("environment variable OWNED: %w", err)
-	}
-
-	settings.ExtraConfigOptions.OpenVPNIPv6, err = r.env.OnOff("OPENVPN_IPV6", params.Default("off"))
-	if err != nil {
-		return fmt.Errorf("environment variable OPENVPN_IPV6: %w", err)
 	}
 
 	return nil

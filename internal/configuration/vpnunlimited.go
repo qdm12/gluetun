@@ -28,10 +28,6 @@ func (settings *Provider) vpnUnlimitedLines() (lines []string) {
 		lines = append(lines, lastIndent+"Stream servers only")
 	}
 
-	if settings.ExtraConfigOptions.ClientKey != "" {
-		lines = append(lines, lastIndent+"Client key is set")
-	}
-
 	return lines
 }
 
@@ -44,16 +40,6 @@ func (settings *Provider) readVPNUnlimited(r reader) (err error) {
 	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
-	if err != nil {
-		return err
-	}
-
-	settings.ExtraConfigOptions.ClientKey, err = readClientKey(r)
-	if err != nil {
-		return err
-	}
-
-	settings.ExtraConfigOptions.ClientCertificate, err = readClientCertificate(r)
 	if err != nil {
 		return err
 	}
@@ -81,6 +67,20 @@ func (settings *Provider) readVPNUnlimited(r reader) (err error) {
 	settings.ServerSelection.StreamOnly, err = r.env.YesNo("STREAM_ONLY", params.Default("no"))
 	if err != nil {
 		return fmt.Errorf("environment variable STREAM_ONLY: %w", err)
+	}
+
+	return nil
+}
+
+func (settings *OpenVPN) readVPNUnlimited(r reader) (err error) {
+	settings.ClientKey, err = readClientKey(r)
+	if err != nil {
+		return err
+	}
+
+	settings.ClientCrt, err = readClientCertificate(r)
+	if err != nil {
+		return err
 	}
 
 	return nil

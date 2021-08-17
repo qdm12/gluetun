@@ -23,23 +23,23 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	}
 
 	for ctx.Err() == nil {
-		settings, allServers := l.state.GetSettingsAndServers()
+		openVPNSettings, providerSettings, allServers := l.state.GetSettingsAndServers()
 
-		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
+		providerConf := provider.New(providerSettings.Name, allServers, time.Now)
 
 		var connection models.OpenVPNConnection
 		var lines []string
 		var err error
-		if settings.Config == "" {
-			connection, err = providerConf.GetOpenVPNConnection(settings.Provider.ServerSelection)
+		if openVPNSettings.Config == "" {
+			connection, err = providerConf.GetOpenVPNConnection(providerSettings.ServerSelection)
 			if err != nil {
 				l.signalOrSetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				continue
 			}
-			lines = providerConf.BuildConf(connection, l.username, settings)
+			lines = providerConf.BuildConf(connection, l.username, openVPNSettings)
 		} else {
-			lines, connection, err = l.processCustomConfig(settings)
+			lines, connection, err = l.processCustomConfig(openVPNSettings)
 			if err != nil {
 				l.signalOrSetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
@@ -53,9 +53,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 
-		if settings.User != "" {
+		if openVPNSettings.User != "" {
 			err := l.conf.WriteAuthFile(
-				settings.User, settings.Password, l.puid, l.pgid)
+				openVPNSettings.User, openVPNSettings.Password, l.puid, l.pgid)
 			if err != nil {
 				l.signalOrSetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
@@ -72,7 +72,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
 
 		stdoutLines, stderrLines, waitError, err := l.conf.Start(
-			openvpnCtx, settings.Version, settings.Flags)
+			openvpnCtx, openVPNSettings.Version, openVPNSettings.Flags)
 		if err != nil {
 			openvpnCancel()
 			l.signalOrSetStatus(constants.Crashed)
@@ -96,12 +96,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		for stayHere {
 			select {
 			case <-l.startPFCh:
-				l.startPortForwarding(ctx, settings.Provider.PortForwarding.Enabled,
+				l.startPortForwarding(ctx, providerSettings.PortForwarding.Enabled,
 					providerConf, connection.Hostname)
 			case <-ctx.Done():
 				const pfTimeout = 100 * time.Millisecond
 				l.stopPortForwarding(context.Background(),
-					settings.Provider.PortForwarding.Enabled, pfTimeout)
+					providerSettings.PortForwarding.Enabled, pfTimeout)
 				openvpnCancel()
 				<-waitError
 				close(waitError)
@@ -110,7 +110,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
-				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
+				l.stopPortForwarding(ctx, providerSettings.PortForwarding.Enabled, 0)
 				openvpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
@@ -127,7 +127,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
-				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
+				l.stopPortForwarding(ctx, providerSettings.PortForwarding.Enabled, 0)
 				openvpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)

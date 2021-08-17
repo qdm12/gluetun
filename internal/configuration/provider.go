@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"strings"
@@ -11,10 +12,9 @@ import (
 
 // Provider contains settings specific to a VPN provider.
 type Provider struct {
-	Name               string             `json:"name"`
-	ServerSelection    ServerSelection    `json:"server_selection"`
-	ExtraConfigOptions ExtraConfigOptions `json:"extra_config"`
-	PortForwarding     PortForwarding     `json:"port_forwarding"`
+	Name            string          `json:"name"`
+	ServerSelection ServerSelection `json:"server_selection"`
+	PortForwarding  PortForwarding  `json:"port_forwarding"`
 }
 
 func (settings *Provider) lines() (lines []string) {
@@ -74,6 +74,79 @@ func (settings *Provider) lines() (lines []string) {
 	}
 
 	return lines
+}
+
+var (
+	ErrInvalidVPNProvider = errors.New("invalid VPN provider")
+)
+
+func (settings *Provider) read(r reader) error {
+	err := settings.readVPNServiceProvider(r)
+	if err != nil {
+		return err
+	}
+
+	var readProvider func(r reader) error
+	switch settings.Name {
+	case "": // custom config
+		readProvider = func(r reader) error { return nil }
+	case constants.Cyberghost:
+		readProvider = settings.readCyberghost
+	case constants.Fastestvpn:
+		readProvider = settings.readFastestvpn
+	case constants.HideMyAss:
+		readProvider = settings.readHideMyAss
+	case constants.Ipvanish:
+		readProvider = settings.readIpvanish
+	case constants.Ivpn:
+		readProvider = settings.readIvpn
+	case constants.Mullvad:
+		readProvider = settings.readMullvad
+	case constants.Nordvpn:
+		readProvider = settings.readNordvpn
+	case constants.Privado:
+		readProvider = settings.readPrivado
+	case constants.PrivateInternetAccess:
+		readProvider = settings.readPrivateInternetAccess
+	case constants.Privatevpn:
+		readProvider = settings.readPrivatevpn
+	case constants.Protonvpn:
+		readProvider = settings.readProtonvpn
+	case constants.Purevpn:
+		readProvider = settings.readPurevpn
+	case constants.Surfshark:
+		readProvider = settings.readSurfshark
+	case constants.Torguard:
+		readProvider = settings.readTorguard
+	case constants.VPNUnlimited:
+		readProvider = settings.readVPNUnlimited
+	case constants.Vyprvpn:
+		readProvider = settings.readVyprvpn
+	case constants.Windscribe:
+		readProvider = settings.readWindscribe
+	default:
+		return fmt.Errorf("%w: %s", ErrInvalidVPNProvider, settings.Name)
+	}
+	return readProvider(r)
+}
+
+func (settings *Provider) readVPNServiceProvider(r reader) (err error) {
+	allowedVPNServiceProviders := []string{
+		"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
+		"privado", "pia", "private internet access", "privatevpn", "protonvpn",
+		"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
+
+	vpnsp, err := r.env.Inside("VPNSP", allowedVPNServiceProviders,
+		params.Default("private internet access"))
+	if err != nil {
+		return fmt.Errorf("environment variable VPNSP: %w", err)
+	}
+	if vpnsp == "pia" { // retro compatibility
+		vpnsp = "private internet access"
+	}
+	settings.Name = vpnsp
+
+	return nil
 }
 
 func commaJoin(slice []string) string {

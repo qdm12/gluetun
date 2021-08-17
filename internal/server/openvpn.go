@@ -96,7 +96,7 @@ func (h *openvpnHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *openvpnHandler) getSettings(w http.ResponseWriter) {
-	settings := h.looper.GetSettings()
+	settings, _ := h.looper.GetSettings()
 	settings.User = "redacted"
 	settings.Password = "redacted"
 	encoder := json.NewEncoder(w)

@@ -27,18 +27,12 @@ func Test_Provider_lines(t *testing.T) {
 					Groups:  []string{"group"},
 					Regions: []string{"a", "El country"},
 				},
-				ExtraConfigOptions: ExtraConfigOptions{
-					ClientKey:         "a",
-					ClientCertificate: "a",
-				},
 			},
 			lines: []string{
 				"|--Cyberghost settings:",
 				"   |--Network protocol: udp",
 				"   |--Server groups: group",
 				"   |--Regions: a, El country",
-				"   |--Client key is set",
-				"   |--Client certificate is set",
 			},
 		},
 		"fastestvpn": {
@@ -116,9 +110,6 @@ func Test_Provider_lines(t *testing.T) {
 					ISPs:       []string{"e", "f"},
 					CustomPort: 1,
 				},
-				ExtraConfigOptions: ExtraConfigOptions{
-					OpenVPNIPv6: true,
-				},
 			},
 			lines: []string{
 				"|--Mullvad settings:",
@@ -127,7 +118,6 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Cities: c, d",
 				"   |--ISPs: e, f",
 				"   |--Custom port: 1",
-				"   |--IPv6: enabled",
 			},
 		},
 		"nordvpn": {
@@ -200,9 +190,8 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.PrivateInternetAccess,
 				ServerSelection: ServerSelection{
-					Regions:          []string{"a", "b"},
-					EncryptionPreset: constants.PIAEncryptionPresetStrong,
-					CustomPort:       1,
+					Regions:    []string{"a", "b"},
+					CustomPort: 1,
 				},
 				PortForwarding: PortForwarding{
 					Enabled:  true,
@@ -213,7 +202,6 @@ func Test_Provider_lines(t *testing.T) {
 				"|--Private Internet Access settings:",
 				"   |--Network protocol: udp",
 				"   |--Regions: a, b",
-				"   |--Encryption preset: strong",
 				"   |--Custom port: 1",
 				"   |--Port forwarding:",
 				"      |--File path: /here",
@@ -276,9 +264,6 @@ func Test_Provider_lines(t *testing.T) {
 					FreeOnly:   true,
 					StreamOnly: true,
 				},
-				ExtraConfigOptions: ExtraConfigOptions{
-					ClientKey: "a",
-				},
 			},
 			lines: []string{
 				"|--Vpn Unlimited settings:",
@@ -288,7 +273,6 @@ func Test_Provider_lines(t *testing.T) {
 				"   |--Hostnames: e, f",
 				"   |--Free servers only",
 				"   |--Stream servers only",
-				"   |--Client key is set",
 			},
 		},
 		"vyprvpn": {

@@ -28,12 +28,12 @@ func (c *CLI) OpenvpnConfig(logger logging.Logger) error {
 	if err != nil {
 		return err
 	}
-	providerConf := provider.New(allSettings.OpenVPN.Provider.Name, allServers, time.Now)
-	connection, err := providerConf.GetOpenVPNConnection(allSettings.OpenVPN.Provider.ServerSelection)
+	providerConf := provider.New(allSettings.VPN.Provider.Name, allServers, time.Now)
+	connection, err := providerConf.GetOpenVPNConnection(allSettings.VPN.Provider.ServerSelection)
 	if err != nil {
 		return err
 	}
-	lines := providerConf.BuildConf(connection, "nonroortuser", allSettings.OpenVPN)
+	lines := providerConf.BuildConf(connection, "nonrootuser", allSettings.VPN.OpenVPN)
 	fmt.Println(strings.Join(lines, "\n"))
 	return nil
 }

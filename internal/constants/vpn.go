@@ -1,6 +1,10 @@
 package constants
 
 const (
+	OpenVPN = "openvpn"
+)
+
+const (
 	// Cyberghost is a VPN provider.
 	Cyberghost = "cyberghost"
 	// Fastestvpn is a VPN provider.

@@ -318,7 +318,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupSettings)
 
 	portForwardLogger := logger.NewChild(logging.Settings{Prefix: "port forwarding: "})
-	portForwardLooper := portforward.NewLoop(allSettings.OpenVPN.Provider.PortForwarding,
+	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
 		httpClient, firewallConf, portForwardLogger)
 	portForwardHandler, portForwardCtx, portForwardDone := goshutdown.NewGoRoutineHandler(
 		"port forwarding", goshutdown.GoRoutineSettings{Timeout: time.Second})
@@ -352,7 +352,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
 	openvpnLogger := logger.NewChild(logging.Settings{Prefix: "openvpn: "})
-	openvpnLooper := openvpn.NewLoop(allSettings.OpenVPN, nonRootUsername, puid, pgid, allServers,
+	openvpnLooper := openvpn.NewLoop(allSettings.VPN.OpenVPN,
+		allSettings.VPN.Provider, nonRootUsername, puid, pgid, allServers,
 		ovpnConf, firewallConf, routingConf, portForwardLooper, publicIPLooper, unboundLooper,
 		openvpnLogger, httpClient, buildInfo, allSettings.VersionInformation)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(

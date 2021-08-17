@@ -33,7 +33,7 @@ type ServerSelection struct { //nolint:maligned
 	// NordVPN
 	Numbers []uint16 `json:"numbers"`
 
-	// PIA
+	// PIA - needed to get the port number
 	EncryptionPreset string `json:"encryption_preset"`
 
 	// ProtonVPN
@@ -41,13 +41,6 @@ type ServerSelection struct { //nolint:maligned
 
 	// VPNUnlimited
 	StreamOnly bool `json:"stream_only"`
-}
-
-type ExtraConfigOptions struct {
-	ClientCertificate string `json:"-"`                 // Cyberghost
-	ClientKey         string `json:"-"`                 // Cyberghost, VPNUnlimited
-	EncryptionPreset  string `json:"encryption_preset"` // PIA
-	OpenVPNIPv6       bool   `json:"openvpn_ipv6"`      // Mullvad
 }
 
 // PortForwarding contains settings for port forwarding.
