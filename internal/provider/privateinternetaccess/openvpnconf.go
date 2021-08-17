@@ -18,16 +18,16 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 		defaultAuth = constants.SHA1
 		X509CRL = constants.PiaX509CRLNormal
 		certificate = constants.PIACertificateNormal
-	case constants.PIAEncryptionPresetStrong:
-		defaultCipher = constants.AES256cbc
-		defaultAuth = constants.SHA256
-		X509CRL = constants.PiaX509CRLStrong
-		certificate = constants.PIACertificateStrong
-	default: // no encryption preset
+	case constants.PIAEncryptionPresetNone:
 		defaultCipher = "none"
 		defaultAuth = "none"
 		X509CRL = constants.PiaX509CRLNormal
 		certificate = constants.PIACertificateNormal
+	default: // strong
+		defaultCipher = constants.AES256cbc
+		defaultAuth = constants.SHA256
+		X509CRL = constants.PiaX509CRLStrong
+		certificate = constants.PIACertificateStrong
 	}
 
 	if settings.Cipher == "" {

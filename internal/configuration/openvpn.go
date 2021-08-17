@@ -147,6 +147,11 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 		return fmt.Errorf("environment variable OPENVPN_IPV6: %w", err)
 	}
 
+	settings.EncPreset, err = getPIAEncryptionPreset(r)
+	if err != nil {
+		return err
+	}
+
 	switch serviceProvider {
 	case constants.Cyberghost:
 		err = settings.readCyberghost(r)
