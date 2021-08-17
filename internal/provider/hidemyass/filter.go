@@ -14,8 +14,8 @@ func (h *HideMyAss) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.Country, selection.Countries),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			selection.TCP && !server.TCP,
-			!selection.TCP && !server.UDP:
+			selection.OpenVPN.TCP && !server.TCP,
+			!selection.OpenVPN.TCP && !server.UDP:
 		default:
 			servers = append(servers, server)
 		}

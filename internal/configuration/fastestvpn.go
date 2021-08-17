@@ -15,16 +15,13 @@ func (settings *Provider) fastestvpnLines() (lines []string) {
 		lines = append(lines, lastIndent+"Countries: "+commaJoin(settings.ServerSelection.Countries))
 	}
 
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
+
 	return lines
 }
 
 func (settings *Provider) readFastestvpn(r reader) (err error) {
 	settings.Name = constants.Fastestvpn
-
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
@@ -41,5 +38,5 @@ func (settings *Provider) readFastestvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
-	return nil
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
 }

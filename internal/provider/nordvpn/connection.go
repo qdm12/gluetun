@@ -11,7 +11,7 @@ func (n *Nordvpn) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	connection models.OpenVPNConnection, err error) {
 	var port uint16 = 1194
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		port = 443
 		protocol = constants.TCP
 	}

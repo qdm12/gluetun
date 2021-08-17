@@ -15,7 +15,7 @@ func (i *Ivpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	const port = 2049
 	const protocol = constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		return connection, ErrProtocolUnsupported
 	}
 

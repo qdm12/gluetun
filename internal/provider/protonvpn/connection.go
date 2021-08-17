@@ -10,11 +10,11 @@ import (
 func (p *Protonvpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 
-	port, err := getPort(selection.TCP, selection.CustomPort)
+	port, err := getPort(selection.OpenVPN.TCP, selection.OpenVPN.CustomPort)
 	if err != nil {
 		return connection, err
 	}

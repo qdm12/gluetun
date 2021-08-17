@@ -150,8 +150,6 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 	switch serviceProvider {
 	case constants.Cyberghost:
 		err = settings.readCyberghost(r)
-	case constants.PrivateInternetAccess:
-		err = settings.readPrivateInternetAccess(r)
 	case constants.VPNUnlimited:
 		err = settings.readVPNUnlimited(r)
 	}
@@ -160,4 +158,12 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 	}
 
 	return nil
+}
+
+func readProtocol(env params.Env) (tcp bool, err error) {
+	protocol, err := env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
+	if err != nil {
+		return false, fmt.Errorf("environment variable PROTOCOL: %w", err)
+	}
+	return protocol == constants.TCP, nil
 }

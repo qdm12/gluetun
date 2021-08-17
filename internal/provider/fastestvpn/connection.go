@@ -11,7 +11,7 @@ func (f *Fastestvpn) GetOpenVPNConnection(selection configuration.ServerSelectio
 	connection models.OpenVPNConnection, err error) {
 	const port = 4443
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 

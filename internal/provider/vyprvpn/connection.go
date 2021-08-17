@@ -16,7 +16,7 @@ func (v *Vyprvpn) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	connection models.OpenVPNConnection, err error) {
 	const port = 443
 	const protocol = constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		return connection, fmt.Errorf("%w: TCP for provider VyprVPN", ErrProtocolUnsupported)
 	}
 

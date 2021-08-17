@@ -20,7 +20,7 @@ func NoServerFoundError(selection configuration.ServerSelection) (err error) {
 	var messageParts []string
 
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 	messageParts = append(messageParts, "protocol "+protocol)
@@ -113,8 +113,8 @@ func NoServerFoundError(selection configuration.ServerSelection) (err error) {
 		messageParts = append(messageParts, part)
 	}
 
-	if selection.EncryptionPreset != "" {
-		part := "encryption preset " + selection.EncryptionPreset
+	if selection.OpenVPN.EncPreset != "" {
+		part := "encryption preset " + selection.OpenVPN.EncPreset
 		messageParts = append(messageParts, part)
 	}
 

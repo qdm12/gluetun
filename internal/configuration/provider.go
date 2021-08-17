@@ -18,11 +18,13 @@ type Provider struct {
 }
 
 func (settings *Provider) lines() (lines []string) {
+	if settings.Name == "" { // custom OpenVPN configuration
+		return nil
+	}
+
 	lines = append(lines, lastIndent+strings.Title(settings.Name)+" settings:")
 
 	selection := settings.ServerSelection
-
-	lines = append(lines, indent+lastIndent+"Network protocol: "+protoToString(selection.TCP))
 
 	if selection.TargetIP != nil {
 		lines = append(lines, indent+lastIndent+"Target IP address: "+selection.TargetIP.String())
@@ -151,14 +153,6 @@ func (settings *Provider) readVPNServiceProvider(r reader) (err error) {
 
 func commaJoin(slice []string) string {
 	return strings.Join(slice, ", ")
-}
-
-func readProtocol(env params.Env) (tcp bool, err error) {
-	protocol, err := env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
-	if err != nil {
-		return false, fmt.Errorf("environment variable PROTOCOL: %w", err)
-	}
-	return protocol == constants.TCP, nil
 }
 
 func protoToString(tcp bool) string {

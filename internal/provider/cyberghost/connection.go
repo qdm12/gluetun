@@ -11,7 +11,7 @@ func (c *Cyberghost) GetOpenVPNConnection(selection configuration.ServerSelectio
 	connection models.OpenVPNConnection, err error) {
 	const port = 443
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 

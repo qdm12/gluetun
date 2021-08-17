@@ -29,16 +29,13 @@ func (settings *Provider) nordvpnLines() (lines []string) {
 		lines = append(lines, lastIndent+"Numbers: "+commaJoin(numbersString))
 	}
 
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
+
 	return lines
 }
 
 func (settings *Provider) readNordvpn(r reader) (err error) {
 	settings.Name = constants.Nordvpn
-
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
@@ -65,7 +62,7 @@ func (settings *Provider) readNordvpn(r reader) (err error) {
 		return err
 	}
 
-	return nil
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
 }
 
 func readNordVPNServerNumbers(env params.Env) (numbers []uint16, err error) {

@@ -19,16 +19,13 @@ func (settings *Provider) ipvanishLines() (lines []string) {
 		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
 	}
 
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
+
 	return lines
 }
 
 func (settings *Provider) readIpvanish(r reader) (err error) {
 	settings.Name = constants.Ipvanish
-
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
@@ -50,5 +47,5 @@ func (settings *Provider) readIpvanish(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	return nil
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
 }

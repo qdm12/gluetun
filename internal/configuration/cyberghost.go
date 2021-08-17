@@ -17,16 +17,13 @@ func (settings *Provider) cyberghostLines() (lines []string) {
 		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
 	}
 
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
+
 	return lines
 }
 
 func (settings *Provider) readCyberghost(r reader) (err error) {
 	settings.Name = constants.Cyberghost
-
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
@@ -49,7 +46,7 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	return nil
+	return settings.ServerSelection.OpenVPN.readProtocolAndPort(r.env)
 }
 
 func (settings *OpenVPN) readCyberghost(r reader) (err error) {

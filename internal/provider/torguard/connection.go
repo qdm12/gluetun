@@ -10,13 +10,13 @@ import (
 func (t *Torguard) GetOpenVPNConnection(selection configuration.ServerSelection) (
 	connection models.OpenVPNConnection, err error) {
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 
 	var port uint16 = 1912
-	if selection.CustomPort > 0 {
-		port = selection.CustomPort
+	if selection.OpenVPN.CustomPort > 0 {
+		port = selection.OpenVPN.CustomPort
 	}
 
 	servers, err := t.filterServers(selection)

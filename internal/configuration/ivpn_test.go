@@ -19,7 +19,12 @@ func Test_Provider_ivpnLines(t *testing.T) {
 		settings Provider
 		lines    []string
 	}{
-		"empty settings": {},
+		"empty settings": {
+			lines: []string{
+				"|--OpenVPN selection:",
+				"   |--Protocol: udp",
+			},
+		},
 		"full settings": {
 			settings: Provider{
 				ServerSelection: ServerSelection{
@@ -32,6 +37,8 @@ func Test_Provider_ivpnLines(t *testing.T) {
 				"|--Countries: A, B",
 				"|--Cities: C, D",
 				"|--Hostnames: E, F",
+				"|--OpenVPN selection:",
+				"   |--Protocol: udp",
 			},
 		},
 	}
@@ -73,15 +80,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 		settings  Provider
 		err       error
 	}{
-		"protocol error": {
-			protocol: singleStringCall{call: true, err: errDummy},
-			settings: Provider{
-				Name: constants.Ivpn,
-			},
-			err: errors.New("environment variable PROTOCOL: dummy test error"),
-		},
 		"target IP error": {
-			protocol: singleStringCall{call: true},
 			targetIP: singleStringCall{call: true, value: "something", err: errDummy},
 			settings: Provider{
 				Name: constants.Ivpn,
@@ -89,7 +88,6 @@ func Test_Provider_readIvpn(t *testing.T) {
 			err: errors.New("environment variable OPENVPN_TARGET_IP: dummy test error"),
 		},
 		"countries error": {
-			protocol:  singleStringCall{call: true},
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true, err: errDummy},
 			settings: Provider{
@@ -98,7 +96,6 @@ func Test_Provider_readIvpn(t *testing.T) {
 			err: errors.New("environment variable COUNTRY: dummy test error"),
 		},
 		"cities error": {
-			protocol:  singleStringCall{call: true},
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true, err: errDummy},
@@ -108,7 +105,6 @@ func Test_Provider_readIvpn(t *testing.T) {
 			err: errors.New("environment variable CITY: dummy test error"),
 		},
 		"hostnames error": {
-			protocol:  singleStringCall{call: true},
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true},
@@ -118,26 +114,39 @@ func Test_Provider_readIvpn(t *testing.T) {
 			},
 			err: errors.New("environment variable SERVER_HOSTNAME: dummy test error"),
 		},
-		"default settings": {
-			protocol:  singleStringCall{call: true},
+		"protocol error": {
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true},
 			hostnames: sliceStringCall{call: true},
+			protocol:  singleStringCall{call: true, err: errDummy},
+			settings: Provider{
+				Name: constants.Ivpn,
+			},
+			err: errors.New("environment variable PROTOCOL: dummy test error"),
+		},
+		"default settings": {
+			targetIP:  singleStringCall{call: true},
+			countries: sliceStringCall{call: true},
+			cities:    sliceStringCall{call: true},
+			hostnames: sliceStringCall{call: true},
+			protocol:  singleStringCall{call: true},
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
 		},
 		"set settings": {
-			protocol:  singleStringCall{call: true, value: constants.TCP},
 			targetIP:  singleStringCall{call: true, value: "1.2.3.4"},
 			countries: sliceStringCall{call: true, values: []string{"A", "B"}},
 			cities:    sliceStringCall{call: true, values: []string{"C", "D"}},
 			hostnames: sliceStringCall{call: true, values: []string{"E", "F"}},
+			protocol:  singleStringCall{call: true, value: constants.TCP},
 			settings: Provider{
 				Name: constants.Ivpn,
 				ServerSelection: ServerSelection{
-					TCP:       true,
+					OpenVPN: OpenVPNSelection{
+						TCP: true,
+					},
 					TargetIP:  net.IPv4(1, 2, 3, 4),
 					Countries: []string{"A", "B"},
 					Cities:    []string{"C", "D"},

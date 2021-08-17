@@ -11,13 +11,13 @@ func (h *HideMyAss) GetOpenVPNConnection(selection configuration.ServerSelection
 	connection models.OpenVPNConnection, err error) {
 	var port uint16 = 553
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 		port = 8080
 	}
 
-	if selection.CustomPort > 0 {
-		port = selection.CustomPort
+	if selection.OpenVPN.CustomPort > 0 {
+		port = selection.OpenVPN.CustomPort
 	}
 
 	servers, err := h.filterServers(selection)

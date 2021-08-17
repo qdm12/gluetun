@@ -15,7 +15,7 @@ func (i *Ipvanish) GetOpenVPNConnection(selection configuration.ServerSelection)
 	connection models.OpenVPNConnection, err error) {
 	const port = 443
 	const protocol = constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		return connection, ErrProtocolUnsupported
 	}
 

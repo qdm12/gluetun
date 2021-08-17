@@ -13,7 +13,12 @@ func Test_Provider_vpnUnlimitedLines(t *testing.T) {
 		settings Provider
 		lines    []string
 	}{
-		"empty settings": {},
+		"empty settings": {
+			lines: []string{
+				"|--OpenVPN selection:",
+				"   |--Protocol: udp",
+			},
+		},
 		"full settings": {
 			settings: Provider{
 				ServerSelection: ServerSelection{
@@ -26,6 +31,8 @@ func Test_Provider_vpnUnlimitedLines(t *testing.T) {
 				"|--Countries: A, B",
 				"|--Cities: C, D",
 				"|--Hostnames: E, F",
+				"|--OpenVPN selection:",
+				"   |--Protocol: udp",
 			},
 		},
 	}

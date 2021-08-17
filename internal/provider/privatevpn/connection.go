@@ -11,7 +11,7 @@ func (p *Privatevpn) GetOpenVPNConnection(selection configuration.ServerSelectio
 	connection models.OpenVPNConnection, err error) {
 	protocol := constants.UDP
 	var port uint16 = 1194
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 		port = 443
 	}

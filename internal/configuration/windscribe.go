@@ -2,9 +2,9 @@ package configuration
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/golibs/params"
 )
 
 func (settings *Provider) windscribeLines() (lines []string) {
@@ -20,20 +20,13 @@ func (settings *Provider) windscribeLines() (lines []string) {
 		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
 	}
 
-	if settings.ServerSelection.CustomPort > 0 {
-		lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
-	}
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
 
 	return lines
 }
 
 func (settings *Provider) readWindscribe(r reader) (err error) {
 	settings.Name = constants.Windscribe
-
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
@@ -55,7 +48,16 @@ func (settings *Provider) readWindscribe(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.TCP,
+	return settings.ServerSelection.OpenVPN.readWindscribe(r.env)
+}
+
+func (settings *OpenVPNSelection) readWindscribe(env params.Env) (err error) {
+	settings.TCP, err = readProtocol(env)
+	if err != nil {
+		return err
+	}
+
+	settings.CustomPort, err = readCustomPort(env, settings.TCP,
 		[]uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783},
 		[]uint16{53, 80, 123, 443, 1194, 54783})
 	if err != nil {

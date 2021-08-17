@@ -30,9 +30,10 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Cyberghost settings:",
-				"   |--Network protocol: udp",
 				"   |--Server groups: group",
 				"   |--Regions: a, El country",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"fastestvpn": {
@@ -45,9 +46,10 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Fastestvpn settings:",
-				"   |--Network protocol: udp",
 				"   |--Hostnames: a, b",
 				"   |--Countries: c, d",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"hidemyass": {
@@ -61,10 +63,11 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Hidemyass settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Cities: c, d",
 				"   |--Hostnames: e, f",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"ipvanish": {
@@ -78,10 +81,11 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Ipvanish settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Cities: c, d",
 				"   |--Hostnames: e, f",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"ivpn": {
@@ -95,29 +99,33 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Ivpn settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Cities: c, d",
 				"   |--Hostnames: e, f",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"mullvad": {
 			settings: Provider{
 				Name: constants.Mullvad,
 				ServerSelection: ServerSelection{
-					Countries:  []string{"a", "b"},
-					Cities:     []string{"c", "d"},
-					ISPs:       []string{"e", "f"},
-					CustomPort: 1,
+					Countries: []string{"a", "b"},
+					Cities:    []string{"c", "d"},
+					ISPs:      []string{"e", "f"},
+					OpenVPN: OpenVPNSelection{
+						CustomPort: 1,
+					},
 				},
 			},
 			lines: []string{
 				"|--Mullvad settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Cities: c, d",
 				"   |--ISPs: e, f",
-				"   |--Custom port: 1",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
+				"      |--Custom port: 1",
 			},
 		},
 		"nordvpn": {
@@ -130,9 +138,10 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Nordvpn settings:",
-				"   |--Network protocol: udp",
 				"   |--Regions: a, b",
 				"   |--Numbers: 1, 2",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"privado": {
@@ -144,8 +153,9 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Privado settings:",
-				"   |--Network protocol: udp",
 				"   |--Hostnames: a, b",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"privatevpn": {
@@ -159,10 +169,11 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Privatevpn settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: c, d",
 				"   |--Cities: e, f",
 				"   |--Hostnames: a, b",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"protonvpn": {
@@ -178,20 +189,23 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Protonvpn settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Regions: c, d",
 				"   |--Cities: e, f",
 				"   |--Names: g, h",
 				"   |--Hostnames: i, j",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"private internet access": {
 			settings: Provider{
 				Name: constants.PrivateInternetAccess,
 				ServerSelection: ServerSelection{
-					Regions:    []string{"a", "b"},
-					CustomPort: 1,
+					Regions: []string{"a", "b"},
+					OpenVPN: OpenVPNSelection{
+						CustomPort: 1,
+					},
 				},
 				PortForwarding: PortForwarding{
 					Enabled:  true,
@@ -200,9 +214,10 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Private Internet Access settings:",
-				"   |--Network protocol: udp",
 				"   |--Regions: a, b",
-				"   |--Custom port: 1",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
+				"      |--Custom port: 1",
 				"   |--Port forwarding:",
 				"      |--File path: /here",
 			},
@@ -218,10 +233,11 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Purevpn settings:",
-				"   |--Network protocol: udp",
 				"   |--Regions: a, b",
 				"   |--Countries: c, d",
 				"   |--Cities: e, f",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"surfshark": {
@@ -233,8 +249,9 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Surfshark settings:",
-				"   |--Network protocol: udp",
 				"   |--Regions: a, b",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"torguard": {
@@ -248,10 +265,11 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Torguard settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Cities: c, d",
 				"   |--Hostnames: e",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		constants.VPNUnlimited: {
@@ -267,12 +285,13 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Vpn Unlimited settings:",
-				"   |--Network protocol: udp",
 				"   |--Countries: a, b",
 				"   |--Cities: c, d",
 				"   |--Hostnames: e, f",
 				"   |--Free servers only",
 				"   |--Stream servers only",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"vyprvpn": {
@@ -284,27 +303,31 @@ func Test_Provider_lines(t *testing.T) {
 			},
 			lines: []string{
 				"|--Vyprvpn settings:",
-				"   |--Network protocol: udp",
 				"   |--Regions: a, b",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
 			},
 		},
 		"windscribe": {
 			settings: Provider{
 				Name: constants.Windscribe,
 				ServerSelection: ServerSelection{
-					Regions:    []string{"a", "b"},
-					Cities:     []string{"c", "d"},
-					Hostnames:  []string{"e", "f"},
-					CustomPort: 1,
+					Regions:   []string{"a", "b"},
+					Cities:    []string{"c", "d"},
+					Hostnames: []string{"e", "f"},
+					OpenVPN: OpenVPNSelection{
+						CustomPort: 1,
+					},
 				},
 			},
 			lines: []string{
 				"|--Windscribe settings:",
-				"   |--Network protocol: udp",
 				"   |--Regions: a, b",
 				"   |--Cities: c, d",
 				"   |--Hostnames: e, f",
-				"   |--Custom port: 1",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
+				"      |--Custom port: 1",
 			},
 		},
 	}

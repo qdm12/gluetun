@@ -11,16 +11,13 @@ func (settings *Provider) vyprvpnLines() (lines []string) {
 		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
 	}
 
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
+
 	return lines
 }
 
 func (settings *Provider) readVyprvpn(r reader) (err error) {
 	settings.Name = constants.Vyprvpn
-
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {

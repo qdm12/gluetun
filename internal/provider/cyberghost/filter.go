@@ -16,7 +16,7 @@ var ErrGroupMismatchesProtocol = errors.New("server group does not match protoco
 func (c *Cyberghost) filterServers(selection configuration.ServerSelection) (
 	servers []models.CyberghostServer, err error) {
 	if len(selection.Groups) == 0 {
-		if selection.TCP {
+		if selection.OpenVPN.TCP {
 			selection.Groups = tcpGroupChoices()
 		} else {
 			selection.Groups = udpGroupChoices()
@@ -25,7 +25,7 @@ func (c *Cyberghost) filterServers(selection configuration.ServerSelection) (
 
 	// Check each group match the protocol
 	groupsCheckFn := groupsAreAllUDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		groupsCheckFn = groupsAreAllTCP
 	}
 	if err := groupsCheckFn(selection.Groups); err != nil {

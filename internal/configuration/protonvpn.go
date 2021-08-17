@@ -32,25 +32,17 @@ func (settings *Provider) protonvpnLines() (lines []string) {
 		lines = append(lines, lastIndent+"Free only: yes")
 	}
 
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
+
 	return lines
 }
 
 func (settings *Provider) readProtonvpn(r reader) (err error) {
 	settings.Name = constants.Protonvpn
 
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
-
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
-	}
-
-	settings.ServerSelection.CustomPort, err = readPortOrZero(r.env, "PORT")
-	if err != nil {
-		return fmt.Errorf("environment variable PORT: %w", err)
 	}
 
 	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.ProtonvpnCountryChoices())
@@ -83,5 +75,5 @@ func (settings *Provider) readProtonvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable FREE_ONLY: %w", err)
 	}
 
-	return nil
+	return settings.ServerSelection.OpenVPN.readProtocolAndPort(r.env)
 }

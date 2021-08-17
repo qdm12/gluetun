@@ -41,7 +41,9 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 				{Region: "d", Group: "Premium UDP Europe"},
 			},
 			selection: configuration.ServerSelection{
-				TCP: true,
+				OpenVPN: configuration.OpenVPNSelection{
+					TCP: true,
+				},
 			},
 			filteredServers: []models.CyberghostServer{
 				{Region: "a", Group: "Premium TCP Asia"},

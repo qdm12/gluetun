@@ -11,13 +11,13 @@ func (m *Mullvad) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	connection models.OpenVPNConnection, err error) {
 	var port uint16 = 1194
 	protocol := constants.UDP
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		port = 443
 		protocol = constants.TCP
 	}
 
-	if selection.CustomPort > 0 {
-		port = selection.CustomPort
+	if selection.OpenVPN.CustomPort > 0 {
+		port = selection.OpenVPN.CustomPort
 	}
 
 	servers, err := m.filterServers(selection)

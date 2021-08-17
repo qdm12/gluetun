@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/params"
@@ -25,20 +24,13 @@ func (settings *Provider) mullvadLines() (lines []string) {
 		lines = append(lines, lastIndent+"ISPs: "+commaJoin(settings.ServerSelection.ISPs))
 	}
 
-	if settings.ServerSelection.CustomPort > 0 {
-		lines = append(lines, lastIndent+"Custom port: "+strconv.Itoa(int(settings.ServerSelection.CustomPort)))
-	}
+	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
 
 	return lines
 }
 
 func (settings *Provider) readMullvad(r reader) (err error) {
 	settings.Name = constants.Mullvad
-
-	settings.ServerSelection.TCP, err = readProtocol(r.env)
-	if err != nil {
-		return err
-	}
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
@@ -65,15 +57,24 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 		return fmt.Errorf("environment variable ISP: %w", err)
 	}
 
-	settings.ServerSelection.CustomPort, err = readCustomPort(r.env, settings.ServerSelection.TCP,
-		[]uint16{80, 443, 1401}, []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400})
+	settings.ServerSelection.Owned, err = r.env.YesNo("OWNED", params.Default("no"))
+	if err != nil {
+		return fmt.Errorf("environment variable OWNED: %w", err)
+	}
+
+	return settings.ServerSelection.OpenVPN.readMullvad(r.env)
+}
+
+func (settings *OpenVPNSelection) readMullvad(env params.Env) (err error) {
+	settings.TCP, err = readProtocol(env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Owned, err = r.env.YesNo("OWNED", params.Default("no"))
+	settings.CustomPort, err = readCustomPort(env, settings.TCP,
+		[]uint16{80, 443, 1401}, []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400})
 	if err != nil {
-		return fmt.Errorf("environment variable OWNED: %w", err)
+		return err
 	}
 
 	return nil

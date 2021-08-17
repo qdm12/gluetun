@@ -11,13 +11,13 @@ func (w *Windscribe) GetOpenVPNConnection(selection configuration.ServerSelectio
 	connection models.OpenVPNConnection, err error) {
 	protocol := constants.UDP
 	var port uint16 = 443
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 		port = 1194
 	}
 
-	if selection.CustomPort > 0 {
-		port = selection.CustomPort
+	if selection.OpenVPN.CustomPort > 0 {
+		port = selection.OpenVPN.CustomPort
 	}
 
 	servers, err := w.filterServers(selection)

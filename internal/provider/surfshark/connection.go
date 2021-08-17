@@ -11,7 +11,7 @@ func (s *Surfshark) GetOpenVPNConnection(selection configuration.ServerSelection
 	connection models.OpenVPNConnection, err error) {
 	protocol := constants.UDP
 	var port uint16 = 1194
-	if selection.TCP {
+	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
 		port = 1443
 	}
