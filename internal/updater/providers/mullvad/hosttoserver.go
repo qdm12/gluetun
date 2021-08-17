@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -43,6 +44,11 @@ func (hts hostToServer) add(data serverData) (err error) {
 	server.Owned = data.Owned
 	server.IPs = []net.IP{ipv4}
 	server.IPsV6 = []net.IP{ipv6}
+	server.VPN = constants.OpenVPN
+	if data.PubKey != "" {
+		server.VPN = constants.Wireguard
+		server.WgPubKey = data.PubKey
+	}
 
 	hts[data.Hostname] = server
 

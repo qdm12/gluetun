@@ -1,7 +1,8 @@
 package constants
 
 const (
-	OpenVPN = "openvpn"
+	OpenVPN   = "openvpn"
+	Wireguard = "wireguard"
 )
 
 const (
