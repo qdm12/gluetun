@@ -10,7 +10,7 @@ import (
 )
 
 func (l *Loop) collectLines(ctx context.Context, done chan<- struct{},
-	stdout, stderr chan string) {
+	stdout, stderr chan string, tunnelUpData tunnelUpData) {
 	defer close(done)
 
 	var line string
@@ -46,8 +46,7 @@ func (l *Loop) collectLines(ctx context.Context, done chan<- struct{},
 			l.logger.Error(line)
 		}
 		if strings.Contains(line, "Initialization Sequence Completed") {
-			l.onTunnelUp(ctx)
-			l.startPFCh <- struct{}{}
+			l.onTunnelUp(ctx, tunnelUpData)
 		}
 	}
 }

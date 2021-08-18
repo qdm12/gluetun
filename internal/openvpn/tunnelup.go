@@ -4,10 +4,18 @@ import (
 	"context"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/version"
 )
 
-func (l *Loop) onTunnelUp(ctx context.Context) {
+type tunnelUpData struct {
+	// Port forwarding
+	portForwarding bool
+	serverName     string
+	portForwarder  provider.PortForwarder
+}
+
+func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 	vpnDestination, err := l.routing.VPNDestinationIP()
 	if err != nil {
 		l.logger.Warn(err.Error())
@@ -29,5 +37,10 @@ func (l *Loop) onTunnelUp(ctx context.Context) {
 		} else {
 			l.logger.Info(message)
 		}
+	}
+
+	err = l.startPortForwarding(ctx, data.portForwarding, data.portForwarder, data.serverName)
+	if err != nil {
+		l.logger.Error(err.Error())
 	}
 }

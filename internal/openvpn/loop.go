@@ -50,7 +50,6 @@ type Loop struct {
 	start       <-chan struct{}
 	running     chan<- models.LoopStatus
 	userTrigger bool
-	startPFCh   chan struct{}
 	// Internal constant values
 	backoffTime time.Duration
 }
@@ -99,7 +98,6 @@ func NewLoop(openVPNSettings configuration.OpenVPN,
 		stop:          stop,
 		stopped:       stopped,
 		userTrigger:   true,
-		startPFCh:     make(chan struct{}),
 		backoffTime:   defaultBackoffTime,
 	}
 }

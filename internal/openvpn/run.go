@@ -73,8 +73,13 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		linesCollectionCtx, linesCollectionCancel := context.WithCancel(context.Background())
 		lineCollectionDone := make(chan struct{})
+		tunnelUpData := tunnelUpData{
+			portForwarding: providerSettings.PortForwarding.Enabled,
+			serverName:     connection.Hostname,
+			portForwarder:  providerConf,
+		}
 		go l.collectLines(linesCollectionCtx, lineCollectionDone,
-			stdoutLines, stderrLines)
+			stdoutLines, stderrLines, tunnelUpData)
 		closeStreams := func() {
 			linesCollectionCancel()
 			<-lineCollectionDone
@@ -86,9 +91,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		stayHere := true
 		for stayHere {
 			select {
-			case <-l.startPFCh:
-				l.startPortForwarding(ctx, providerSettings.PortForwarding.Enabled,
-					providerConf, connection.Hostname)
 			case <-ctx.Done():
 				const pfTimeout = 100 * time.Millisecond
 				l.stopPortForwarding(context.Background(),
