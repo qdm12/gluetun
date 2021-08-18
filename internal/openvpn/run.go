@@ -55,7 +55,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		if openVPNSettings.User != "" {
 			err := l.conf.WriteAuthFile(
-				openVPNSettings.User, openVPNSettings.Password, l.puid, l.pgid)
+				openVPNSettings.User, openVPNSettings.Password)
 			if err != nil {
 				l.signalOrSetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)

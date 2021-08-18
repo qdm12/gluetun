@@ -7,11 +7,11 @@ import (
 )
 
 type AuthWriter interface {
-	WriteAuthFile(user, password string, puid, pgid int) error
+	WriteAuthFile(user, password string) error
 }
 
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions.
-func (c *configurator) WriteAuthFile(user, password string, puid, pgid int) error {
+func (c *configurator) WriteAuthFile(user, password string) error {
 	file, err := os.Open(c.authFilePath)
 
 	if err != nil && !os.IsNotExist(err) {
@@ -28,7 +28,7 @@ func (c *configurator) WriteAuthFile(user, password string, puid, pgid int) erro
 			_ = file.Close()
 			return err
 		}
-		err = file.Chown(puid, pgid)
+		err = file.Chown(c.puid, c.pgid)
 		if err != nil {
 			_ = file.Close()
 			return err
@@ -60,7 +60,7 @@ func (c *configurator) WriteAuthFile(user, password string, puid, pgid int) erro
 		_ = file.Close()
 		return err
 	}
-	err = file.Chown(puid, pgid)
+	err = file.Chown(c.puid, c.pgid)
 	if err != nil {
 		_ = file.Close()
 		return err

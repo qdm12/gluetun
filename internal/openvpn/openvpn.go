@@ -20,14 +20,17 @@ type configurator struct {
 	cmder        command.RunStarter
 	configPath   string
 	authFilePath string
+	puid, pgid   int
 }
 
 func NewConfigurator(logger logging.Logger,
-	cmder command.RunStarter) Configurator {
+	cmder command.RunStarter, puid, pgid int) Configurator {
 	return &configurator{
 		logger:       logger,
 		cmder:        cmder,
 		configPath:   constants.OpenVPNConf,
 		authFilePath: constants.OpenVPNAuthConf,
+		puid:         puid,
+		pgid:         pgid,
 	}
 }

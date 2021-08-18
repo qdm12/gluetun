@@ -32,8 +32,6 @@ type Loop struct {
 	state         state.Manager
 	// Fixed parameters
 	username    string
-	puid        int
-	pgid        int
 	buildInfo   models.BuildInformation
 	versionInfo bool
 	// Configurators
@@ -67,8 +65,7 @@ const (
 )
 
 func NewLoop(openVPNSettings configuration.OpenVPN,
-	providerSettings configuration.Provider,
-	username string, puid, pgid int,
+	providerSettings configuration.Provider, username string,
 	allServers models.AllServers, conf Configurator,
 	fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper,
@@ -87,8 +84,6 @@ func NewLoop(openVPNSettings configuration.OpenVPN,
 		statusManager: statusManager,
 		state:         state,
 		username:      username,
-		puid:          puid,
-		pgid:          pgid,
 		buildInfo:     buildInfo,
 		versionInfo:   versionInfo,
 		conf:          conf,

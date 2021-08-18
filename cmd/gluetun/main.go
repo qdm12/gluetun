@@ -136,13 +136,15 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
+	puid, pgid := allSettings.System.PUID, allSettings.System.PGID
+
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.New()
 	ovpnConf := openvpn.NewConfigurator(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
-		cmder)
+		cmder, puid, pgid)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
 	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
@@ -199,9 +201,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	if err != nil {
 		return err
 	}
-
-	// Should never change
-	puid, pgid := allSettings.System.PUID, allSettings.System.PGID
 
 	const defaultUsername = "nonrootuser"
 	nonRootUsername, err := alpineConf.CreateUser(defaultUsername, puid)
@@ -354,7 +353,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	openvpnLogger := logger.NewChild(logging.Settings{Prefix: "openvpn: "})
 	openvpnLooper := openvpn.NewLoop(allSettings.VPN.OpenVPN,
-		allSettings.VPN.Provider, nonRootUsername, puid, pgid, allServers,
+		allSettings.VPN.Provider, nonRootUsername, allServers,
 		ovpnConf, firewallConf, routingConf, portForwardLooper, publicIPLooper, unboundLooper,
 		openvpnLogger, httpClient, buildInfo, allSettings.VersionInformation)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
