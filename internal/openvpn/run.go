@@ -22,11 +22,11 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	}
 
 	for ctx.Err() == nil {
-		openVPNSettings, providerSettings, allServers := l.state.GetSettingsAndServers()
+		VPNSettings, providerSettings, allServers := l.state.GetSettingsAndServers()
 
 		providerConf := provider.New(providerSettings.Name, allServers, time.Now)
 
-		serverName, err := setup(ctx, l.fw, l.openvpnConf, providerConf, openVPNSettings, providerSettings)
+		serverName, err := setup(ctx, l.fw, l.openvpnConf, providerConf, VPNSettings.OpenVPN, providerSettings)
 		if err != nil {
 			l.crashed(ctx, err)
 			continue
@@ -42,7 +42,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		tunnelReady := make(chan struct{})
 
 		go l.openvpnConf.Run(openvpnCtx, waitError, tunnelReady,
-			l.logger, openVPNSettings)
+			l.logger, VPNSettings.OpenVPN)
 
 		if err := l.waitForError(ctx, waitError); err != nil {
 			openvpnCancel()

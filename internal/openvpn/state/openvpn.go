@@ -9,32 +9,32 @@ import (
 )
 
 type SettingsGetSetter interface {
-	GetSettings() (openvpn configuration.OpenVPN,
+	GetSettings() (vpn configuration.VPN,
 		provider configuration.Provider)
-	SetSettings(ctx context.Context, openvpn configuration.OpenVPN,
+	SetSettings(ctx context.Context, vpn configuration.VPN,
 		provider configuration.Provider) (outcome string)
 }
 
-func (s *State) GetSettings() (openvpn configuration.OpenVPN,
+func (s *State) GetSettings() (vpn configuration.VPN,
 	provider configuration.Provider) {
 	s.settingsMu.RLock()
-	openvpn = s.openvpn
+	vpn = s.vpn
 	provider = s.provider
 	s.settingsMu.RUnlock()
-	return openvpn, provider
+	return vpn, provider
 }
 
 func (s *State) SetSettings(ctx context.Context,
-	openvpn configuration.OpenVPN, provider configuration.Provider) (
+	vpn configuration.VPN, provider configuration.Provider) (
 	outcome string) {
 	s.settingsMu.Lock()
-	settingsUnchanged := reflect.DeepEqual(s.openvpn, openvpn) &&
+	settingsUnchanged := reflect.DeepEqual(s.vpn, vpn) &&
 		reflect.DeepEqual(s.provider, provider)
 	if settingsUnchanged {
 		s.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
-	s.openvpn = openvpn
+	s.vpn = vpn
 	s.provider = provider
 	s.settingsMu.Unlock()
 	_, _ = s.statusApplier.ApplyStatus(ctx, constants.Stopped)

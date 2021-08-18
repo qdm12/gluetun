@@ -13,16 +13,16 @@ var _ Manager = (*State)(nil)
 type Manager interface {
 	SettingsGetSetter
 	ServersGetterSetter
-	GetSettingsAndServers() (openvpn configuration.OpenVPN,
+	GetSettingsAndServers() (vpn configuration.VPN,
 		provider configuration.Provider, allServers models.AllServers)
 }
 
 func New(statusApplier loopstate.Applier,
-	openvpn configuration.OpenVPN, provider configuration.Provider,
+	vpn configuration.VPN, provider configuration.Provider,
 	allServers models.AllServers) *State {
 	return &State{
 		statusApplier: statusApplier,
-		openvpn:       openvpn,
+		vpn:           vpn,
 		provider:      provider,
 		allServers:    allServers,
 	}
@@ -31,7 +31,7 @@ func New(statusApplier loopstate.Applier,
 type State struct {
 	statusApplier loopstate.Applier
 
-	openvpn    configuration.OpenVPN
+	vpn        configuration.VPN
 	provider   configuration.Provider
 	settingsMu sync.RWMutex
 
@@ -39,14 +39,14 @@ type State struct {
 	allServersMu sync.RWMutex
 }
 
-func (s *State) GetSettingsAndServers() (openvpn configuration.OpenVPN,
+func (s *State) GetSettingsAndServers() (vpn configuration.VPN,
 	provider configuration.Provider, allServers models.AllServers) {
 	s.settingsMu.RLock()
 	s.allServersMu.RLock()
-	openvpn = s.openvpn
+	vpn = s.vpn
 	provider = s.provider
 	allServers = s.allServers
 	s.settingsMu.RUnlock()
 	s.allServersMu.RUnlock()
-	return openvpn, provider, allServers
+	return vpn, provider, allServers
 }
