@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
+	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/logging"
 )
 
-func newOpenvpnHandler(ctx context.Context, looper openvpn.Looper,
+func newOpenvpnHandler(ctx context.Context, looper vpn.Looper,
 	pfGetter portforward.Getter, logger logging.Logger) http.Handler {
 	return &openvpnHandler{
 		ctx:    ctx,
@@ -23,7 +23,7 @@ func newOpenvpnHandler(ctx context.Context, looper openvpn.Looper,
 
 type openvpnHandler struct {
 	ctx    context.Context
-	looper openvpn.Looper
+	looper vpn.Looper
 	pf     portforward.Getter
 	logger logging.Logger
 }

@@ -1,4 +1,4 @@
-package openvpn
+package vpn
 
 import (
 	"net/http"
@@ -11,10 +11,10 @@ import (
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn/config"
-	"github.com/qdm12/gluetun/internal/openvpn/state"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
+	"github.com/qdm12/gluetun/internal/vpn/state"
 	"github.com/qdm12/golibs/logging"
 )
 

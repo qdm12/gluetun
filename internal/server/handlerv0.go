@@ -6,17 +6,17 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
-	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/updater"
+	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/logging"
 )
 
 func newHandlerV0(ctx context.Context, logger logging.Logger,
-	openvpn openvpn.Looper, dns dns.Looper, updater updater.Looper) http.Handler {
+	vpn vpn.Looper, dns dns.Looper, updater updater.Looper) http.Handler {
 	return &handlerV0{
 		ctx:     ctx,
 		logger:  logger,
-		openvpn: openvpn,
+		vpn:     vpn,
 		dns:     dns,
 		updater: updater,
 	}
@@ -25,7 +25,7 @@ func newHandlerV0(ctx context.Context, logger logging.Logger,
 type handlerV0 struct {
 	ctx     context.Context
 	logger  logging.Logger
-	openvpn openvpn.Looper
+	vpn     vpn.Looper
 	dns     dns.Looper
 	updater updater.Looper
 }
@@ -39,9 +39,9 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/version":
 		http.Redirect(w, r, "/v1/version", http.StatusPermanentRedirect)
 	case "/openvpn/actions/restart":
-		outcome, _ := h.openvpn.ApplyStatus(h.ctx, constants.Stopped)
+		outcome, _ := h.vpn.ApplyStatus(h.ctx, constants.Stopped)
 		h.logger.Info("openvpn: " + outcome)
-		outcome, _ = h.openvpn.ApplyStatus(h.ctx, constants.Running)
+		outcome, _ = h.vpn.ApplyStatus(h.ctx, constants.Running)
 		h.logger.Info("openvpn: " + outcome)
 		if _, err := w.Write([]byte("openvpn restarted, please consider using the /v1/ API in the future.")); err != nil {
 			h.logger.Warn(err.Error())

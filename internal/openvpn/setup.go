@@ -20,9 +20,9 @@ var (
 	errFirewall    = errors.New("failed allowing VPN connection through firewall")
 )
 
-// setup sets OpenVPN up using the configurators and settings given.
+// Setup sets OpenVPN up using the configurators and settings given.
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
-func setup(ctx context.Context, fw firewall.VPNConnectionSetter,
+func Setup(ctx context.Context, fw firewall.VPNConnectionSetter,
 	openvpnConf config.Interface, providerConf provider.Provider,
 	openVPNSettings configuration.OpenVPN, providerSettings configuration.Provider) (
 	serverName string, err error) {

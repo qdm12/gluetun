@@ -1,10 +1,11 @@
-package openvpn
+package vpn
 
 import (
 	"context"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/provider"
 )
 
@@ -26,7 +27,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		providerConf := provider.New(providerSettings.Name, allServers, time.Now)
 
-		serverName, err := setup(ctx, l.fw, l.openvpnConf, providerConf, VPNSettings.OpenVPN, providerSettings)
+		serverName, err := openvpn.Setup(ctx, l.fw, l.openvpnConf, providerConf, VPNSettings.OpenVPN, providerSettings)
 		if err != nil {
 			l.crashed(ctx, err)
 			continue

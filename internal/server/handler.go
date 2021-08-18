@@ -7,16 +7,16 @@ import (
 
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/updater"
+	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/logging"
 )
 
 func newHandler(ctx context.Context, logger logging.Logger, logging bool,
 	buildInfo models.BuildInformation,
-	openvpnLooper openvpn.Looper,
+	vpnLooper vpn.Looper,
 	pfGetter portforward.Getter,
 	unboundLooper dns.Looper,
 	updaterLooper updater.Looper,
@@ -24,12 +24,12 @@ func newHandler(ctx context.Context, logger logging.Logger, logging bool,
 ) http.Handler {
 	handler := &handler{}
 
-	openvpn := newOpenvpnHandler(ctx, openvpnLooper, pfGetter, logger)
+	openvpn := newOpenvpnHandler(ctx, vpnLooper, pfGetter, logger)
 	dns := newDNSHandler(ctx, unboundLooper, logger)
 	updater := newUpdaterHandler(ctx, updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)
 
-	handler.v0 = newHandlerV0(ctx, logger, openvpnLooper, unboundLooper, updaterLooper)
+	handler.v0 = newHandlerV0(ctx, logger, vpnLooper, unboundLooper, updaterLooper)
 	handler.v1 = newHandlerV1(logger, buildInfo, openvpn, dns, updater, publicip)
 
 	handlerWithLog := withLogMiddleware(handler, logger, logging)

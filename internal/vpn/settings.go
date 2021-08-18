@@ -1,10 +1,10 @@
-package openvpn
+package vpn
 
 import (
 	"context"
 
 	"github.com/qdm12/gluetun/internal/configuration"
-	"github.com/qdm12/gluetun/internal/openvpn/state"
+	"github.com/qdm12/gluetun/internal/vpn/state"
 )
 
 type SettingsGetSetter = state.SettingsGetSetter

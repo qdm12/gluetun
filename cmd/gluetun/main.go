@@ -22,7 +22,6 @@ import (
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/httpproxy"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/openvpn"
 	openvpnconfig "github.com/qdm12/gluetun/internal/openvpn/config"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
@@ -32,6 +31,7 @@ import (
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tun"
 	"github.com/qdm12/gluetun/internal/updater"
+	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
@@ -355,18 +355,17 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
-	openvpnLogger := logger.NewChild(logging.Settings{Prefix: "openvpn: "})
-	openvpnLooper := openvpn.NewLoop(allSettings.VPN, allSettings.VPN.Provider,
+	vpnLogger := logger.NewChild(logging.Settings{Prefix: "vpn: "})
+	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.VPN.Provider,
 		allServers, ovpnConf, firewallConf, routingConf, portForwardLooper,
-		publicIPLooper, unboundLooper, openvpnLogger, httpClient,
+		publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, allSettings.VersionInformation)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
-	// wait for restartOpenvpn
-	go openvpnLooper.Run(openvpnCtx, openvpnDone)
+	go vpnLooper.Run(openvpnCtx, openvpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
-		allServers, storage, openvpnLooper.SetServers, httpClient,
+		allServers, storage, vpnLooper.SetServers, httpClient,
 		logger.NewChild(logging.Settings{Prefix: "updater: "}))
 	updaterHandler, updaterCtx, updaterDone := goshutdown.NewGoRoutineHandler(
 		"updater", defaultGoRoutineSettings)
@@ -400,12 +399,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", defaultGoRoutineSettings)
 	httpServer := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.NewChild(logging.Settings{Prefix: "http server: "}),
-		buildInfo, openvpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper)
+		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper)
 	go httpServer.Run(httpServerCtx, httpServerDone)
 	controlGroupHandler.Add(httpServerHandler)
 
 	healthLogger := logger.NewChild(logging.Settings{Prefix: "healthcheck: "})
-	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, openvpnLooper)
+	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, vpnLooper)
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", defaultGoRoutineSettings)
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)
@@ -420,9 +419,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	orderHandler.Append(controlGroupHandler, tickersGroupHandler, healthServerHandler,
 		openvpnHandler, portForwardHandler, otherGroupHandler)
 
-	// Start openvpn for the first time in a blocking call
-	// until openvpn is launched
-	_, _ = openvpnLooper.ApplyStatus(ctx, constants.Running) // TODO option to disable with variable
+	// Start VPN for the first time in a blocking call
+	// until the VPN is launched
+	_, _ = vpnLooper.ApplyStatus(ctx, constants.Running) // TODO option to disable with variable
 
 	<-ctx.Done()
 

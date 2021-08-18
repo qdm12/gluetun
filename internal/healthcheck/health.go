@@ -12,7 +12,7 @@ import (
 func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	s.openvpn.healthyTimer = time.NewTimer(s.openvpn.healthyWait)
+	s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 
 	for {
 		previousErr := s.handler.getErr()
@@ -22,12 +22,12 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 
 		if previousErr != nil && err == nil {
 			s.logger.Info("healthy!")
-			s.openvpn.healthyTimer.Stop()
-			s.openvpn.healthyWait = s.config.OpenVPN.Initial
+			s.vpn.healthyTimer.Stop()
+			s.vpn.healthyWait = s.config.OpenVPN.Initial
 		} else if previousErr == nil && err != nil {
 			s.logger.Info("unhealthy: " + err.Error())
-			s.openvpn.healthyTimer.Stop()
-			s.openvpn.healthyTimer = time.NewTimer(s.openvpn.healthyWait)
+			s.vpn.healthyTimer.Stop()
+			s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 		}
 
 		if err != nil { // try again after 1 second
@@ -39,7 +39,7 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 				}
 				return
 			case <-timer.C:
-			case <-s.openvpn.healthyTimer.C:
+			case <-s.vpn.healthyTimer.C:
 				s.onUnhealthyOpenvpn(ctx)
 			}
 			continue
