@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/openvpn/custom"
 	"github.com/qdm12/gluetun/internal/provider"
 )
 
@@ -36,7 +37,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				lines = providerConf.BuildConf(connection, openVPNSettings)
 			}
 		} else {
-			lines, connection, err = processCustomConfig(openVPNSettings)
+			lines, connection, err = custom.ProcessCustomConfig(openVPNSettings)
 		}
 		if err != nil {
 			l.crashed(ctx, err)

@@ -1,4 +1,4 @@
-package openvpn
+package custom
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_processCustomConfig(t *testing.T) {
+func Test_ProcessCustomConfig(t *testing.T) {
 	t.Parallel()
 
 	file, err := os.CreateTemp("", "")
@@ -33,7 +33,7 @@ func Test_processCustomConfig(t *testing.T) {
 		Config: file.Name(),
 	}
 
-	lines, connection, err := processCustomConfig(settings)
+	lines, connection, err := ProcessCustomConfig(settings)
 	assert.NoError(t, err)
 
 	expectedLines := []string{

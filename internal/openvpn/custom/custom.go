@@ -1,4 +1,4 @@
-package openvpn
+package custom
 
 import (
 	"errors"
@@ -20,7 +20,7 @@ var (
 	errExtractConnection = errors.New("cannot extract connection from custom configuration file")
 )
 
-func processCustomConfig(settings configuration.OpenVPN) (
+func ProcessCustomConfig(settings configuration.OpenVPN) (
 	lines []string, connection models.OpenVPNConnection, err error) {
 	lines, err = readCustomConfigLines(settings.Config)
 	if err != nil {
