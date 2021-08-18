@@ -28,7 +28,8 @@ func Test_OpenVPN_JSON(t *testing.T) {
   "custom_config": "",
   "version": "",
   "encryption_preset": "",
-  "ipv6": false
+  "ipv6": false,
+  "procuser": ""
 }`, string(data))
 	var out OpenVPN
 	err = json.Unmarshal(data, &out)
