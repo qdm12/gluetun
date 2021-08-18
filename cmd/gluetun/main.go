@@ -213,6 +213,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	// set it for Unbound
 	// TODO remove this when migrating to qdm12/dns v2
 	allSettings.DNS.Unbound.Username = nonRootUsername
+	allSettings.VPN.OpenVPN.ProcUser = nonRootUsername
 
 	if err := os.Chown("/etc/unbound", puid, pgid); err != nil {
 		return err
@@ -352,10 +353,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
 	openvpnLogger := logger.NewChild(logging.Settings{Prefix: "openvpn: "})
-	openvpnLooper := openvpn.NewLoop(allSettings.VPN.OpenVPN,
-		allSettings.VPN.Provider, nonRootUsername, allServers,
-		ovpnConf, firewallConf, routingConf, portForwardLooper, publicIPLooper, unboundLooper,
-		openvpnLogger, httpClient, buildInfo, allSettings.VersionInformation)
+	openvpnLooper := openvpn.NewLoop(allSettings.VPN.OpenVPN, allSettings.VPN.Provider,
+		allServers, ovpnConf, firewallConf, routingConf, portForwardLooper,
+		publicIPLooper, unboundLooper, openvpnLogger, httpClient,
+		buildInfo, allSettings.VersionInformation)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
 	// wait for restartOpenvpn

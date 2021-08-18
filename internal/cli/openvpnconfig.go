@@ -33,7 +33,7 @@ func (c *CLI) OpenvpnConfig(logger logging.Logger) error {
 	if err != nil {
 		return err
 	}
-	lines := providerConf.BuildConf(connection, "nonrootuser", allSettings.VPN.OpenVPN)
+	lines := providerConf.BuildConf(connection, allSettings.VPN.OpenVPN)
 	fmt.Println(strings.Join(lines, "\n"))
 	return nil
 }

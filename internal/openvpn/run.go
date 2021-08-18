@@ -33,7 +33,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		if openVPNSettings.Config == "" {
 			connection, err = providerConf.GetOpenVPNConnection(providerSettings.ServerSelection)
 			if err == nil {
-				lines = providerConf.BuildConf(connection, l.username, openVPNSettings)
+				lines = providerConf.BuildConf(connection, openVPNSettings)
 			}
 		} else {
 			lines, connection, err = l.processCustomConfig(openVPNSettings)

@@ -25,6 +25,7 @@ type OpenVPN struct {
 	ClientKey string   `json:"-"`                 // Cyberghost, VPNUnlimited
 	EncPreset string   `json:"encryption_preset"` // PIA
 	IPv6      bool     `json:"ipv6"`              // Mullvad
+	ProcUser  string   `json:"procuser"`          // Process username
 }
 
 func (settings *OpenVPN) String() string {

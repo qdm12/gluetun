@@ -10,7 +10,7 @@ import (
 )
 
 func (p *PIA) BuildConf(connection models.OpenVPNConnection,
-	username string, settings configuration.OpenVPN) (lines []string) {
+	settings configuration.OpenVPN) (lines []string) {
 	var defaultCipher, defaultAuth, X509CRL, certificate string
 	switch settings.EncPreset {
 	case constants.PIAEncryptionPresetNormal:
@@ -74,7 +74,7 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 	}
 
 	if !settings.Root {
-		lines = append(lines, "user "+username)
+		lines = append(lines, "user "+settings.ProcUser)
 	}
 
 	if settings.MSSFix > 0 {

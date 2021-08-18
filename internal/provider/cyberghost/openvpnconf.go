@@ -11,7 +11,7 @@ import (
 )
 
 func (c *Cyberghost) BuildConf(connection models.OpenVPNConnection,
-	username string, settings configuration.OpenVPN) (lines []string) {
+	settings configuration.OpenVPN) (lines []string) {
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES256cbc
 	}
@@ -64,7 +64,7 @@ func (c *Cyberghost) BuildConf(connection models.OpenVPNConnection,
 	}
 
 	if !settings.Root {
-		lines = append(lines, "user "+username)
+		lines = append(lines, "user "+settings.ProcUser)
 	}
 
 	if settings.MSSFix > 0 {

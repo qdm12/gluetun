@@ -10,7 +10,7 @@ import (
 )
 
 func (p *Provider) BuildConf(connection models.OpenVPNConnection,
-	username string, settings configuration.OpenVPN) (lines []string) {
+	settings configuration.OpenVPN) (lines []string) {
 	lines = []string{
 		"client",
 		"dev tun",
@@ -52,7 +52,7 @@ func (p *Provider) BuildConf(connection models.OpenVPNConnection,
 	}
 
 	if !settings.Root {
-		lines = append(lines, "user "+username)
+		lines = append(lines, "user "+settings.ProcUser)
 	}
 
 	if settings.IPv6 {

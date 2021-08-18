@@ -24,7 +24,7 @@ func (l *Loop) processCustomConfig(settings configuration.OpenVPN) (
 		return nil, connection, fmt.Errorf("%w: %s", errProcessCustomConfig, err)
 	}
 
-	lines = modifyCustomConfig(lines, l.username, settings)
+	lines = modifyCustomConfig(lines, settings)
 
 	connection, err = extractConnectionFromLines(lines)
 	if err != nil {
@@ -55,7 +55,7 @@ func readCustomConfigLines(filepath string) (
 	return strings.Split(string(b), "\n"), nil
 }
 
-func modifyCustomConfig(lines []string, username string,
+func modifyCustomConfig(lines []string,
 	settings configuration.OpenVPN) (modified []string) {
 	// Remove some lines
 	for _, line := range lines {
@@ -98,7 +98,7 @@ func modifyCustomConfig(lines []string, username string,
 		modified = append(modified, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 	if !settings.Root {
-		modified = append(modified, "user "+username)
+		modified = append(modified, "user "+settings.ProcUser)
 	}
 
 	return modified
