@@ -129,6 +129,13 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
+	var allSettings configuration.Settings
+	err := allSettings.Read(env,
+		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
+	if err != nil {
+		return err
+	}
+
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
@@ -175,12 +182,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	var allSettings configuration.Settings
-	err = allSettings.Read(env,
-		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
-	if err != nil {
-		return err
-	}
 	logger.Info(allSettings.String())
 
 	if err := os.MkdirAll("/tmp/gluetun", 0644); err != nil {
