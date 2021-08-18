@@ -4,8 +4,14 @@ import (
 	"context"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
+
+func (l *Loop) crashed(ctx context.Context, err error) {
+	l.signalOrSetStatus(constants.Crashed)
+	l.logAndWait(ctx, err)
+}
 
 func (l *Loop) signalOrSetStatus(status models.LoopStatus) {
 	if l.userTrigger {

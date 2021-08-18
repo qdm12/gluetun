@@ -32,40 +32,32 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		var err error
 		if openVPNSettings.Config == "" {
 			connection, err = providerConf.GetOpenVPNConnection(providerSettings.ServerSelection)
-			if err != nil {
-				l.signalOrSetStatus(constants.Crashed)
-				l.logAndWait(ctx, err)
-				continue
+			if err == nil {
+				lines = providerConf.BuildConf(connection, l.username, openVPNSettings)
 			}
-			lines = providerConf.BuildConf(connection, l.username, openVPNSettings)
 		} else {
 			lines, connection, err = l.processCustomConfig(openVPNSettings)
-			if err != nil {
-				l.signalOrSetStatus(constants.Crashed)
-				l.logAndWait(ctx, err)
-				continue
-			}
+		}
+		if err != nil {
+			l.crashed(ctx, err)
+			continue
 		}
 
 		if err := l.conf.WriteConfig(lines); err != nil {
-			l.signalOrSetStatus(constants.Crashed)
-			l.logAndWait(ctx, err)
+			l.crashed(ctx, err)
 			continue
 		}
 
 		if openVPNSettings.User != "" {
-			err := l.conf.WriteAuthFile(
-				openVPNSettings.User, openVPNSettings.Password)
+			err := l.conf.WriteAuthFile(openVPNSettings.User, openVPNSettings.Password)
 			if err != nil {
-				l.signalOrSetStatus(constants.Crashed)
-				l.logAndWait(ctx, err)
+				l.crashed(ctx, err)
 				continue
 			}
 		}
 
 		if err := l.fw.SetVPNConnection(ctx, connection); err != nil {
-			l.signalOrSetStatus(constants.Crashed)
-			l.logAndWait(ctx, err)
+			l.crashed(ctx, err)
 			continue
 		}
 
@@ -75,8 +67,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			openvpnCtx, openVPNSettings.Version, openVPNSettings.Flags)
 		if err != nil {
 			openvpnCancel()
-			l.signalOrSetStatus(constants.Crashed)
-			l.logAndWait(ctx, err)
+			l.crashed(ctx, err)
 			continue
 		}
 
