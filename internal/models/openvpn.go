@@ -26,3 +26,19 @@ func (o OpenVPNConnection) RemoteLine() (line string) {
 func (o OpenVPNConnection) ProtoLine() (line string) {
 	return "proto " + o.Protocol
 }
+
+// UpdateEmptyWith updates each field of the connection where the value is not set.
+func (o *OpenVPNConnection) UpdateEmptyWith(connection OpenVPNConnection) {
+	if o.IP == nil {
+		o.IP = connection.IP
+	}
+	if o.Port == 0 {
+		o.Port = connection.Port
+	}
+	if o.Protocol == "" {
+		o.Protocol = connection.Protocol
+	}
+	if o.Hostname == "" {
+		o.Hostname = connection.Hostname
+	}
+}
