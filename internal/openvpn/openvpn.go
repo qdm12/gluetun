@@ -12,16 +12,13 @@ type Configurator interface {
 	VersionGetter
 	AuthWriter
 	Starter
-}
-
-type StarterAuthWriter interface {
-	Starter
-	AuthWriter
+	ConfigWriter
 }
 
 type configurator struct {
 	logger       logging.Logger
 	cmder        command.RunStarter
+	configPath   string
 	authFilePath string
 }
 
@@ -30,6 +27,7 @@ func NewConfigurator(logger logging.Logger,
 	return &configurator{
 		logger:       logger,
 		cmder:        cmder,
+		configPath:   constants.OpenVPNConf,
 		authFilePath: constants.OpenVPNAuthConf,
 	}
 }

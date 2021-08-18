@@ -47,7 +47,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			}
 		}
 
-		if err := l.writeOpenvpnConf(lines); err != nil {
+		if err := l.conf.WriteConfig(lines); err != nil {
 			l.signalOrSetStatus(constants.Crashed)
 			l.logAndWait(ctx, err)
 			continue

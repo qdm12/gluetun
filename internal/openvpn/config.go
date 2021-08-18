@@ -5,8 +5,12 @@ import (
 	"strings"
 )
 
-func (l *Loop) writeOpenvpnConf(lines []string) error {
-	file, err := os.OpenFile(l.targetConfPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+type ConfigWriter interface {
+	WriteConfig(lines []string) error
+}
+
+func (c *configurator) WriteConfig(lines []string) error {
+	file, err := os.OpenFile(c.configPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

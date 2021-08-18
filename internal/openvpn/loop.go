@@ -31,14 +31,13 @@ type Loop struct {
 	statusManager loopstate.Manager
 	state         state.Manager
 	// Fixed parameters
-	username       string
-	puid           int
-	pgid           int
-	targetConfPath string
-	buildInfo      models.BuildInformation
-	versionInfo    bool
+	username    string
+	puid        int
+	pgid        int
+	buildInfo   models.BuildInformation
+	versionInfo bool
 	// Configurators
-	conf        StarterAuthWriter
+	conf        Configurator
 	fw          firewallConfigurer
 	routing     routing.VPNGetter
 	portForward portforward.StartStopper
@@ -85,28 +84,27 @@ func NewLoop(openVPNSettings configuration.OpenVPN,
 	state := state.New(statusManager, openVPNSettings, providerSettings, allServers)
 
 	return &Loop{
-		statusManager:  statusManager,
-		state:          state,
-		username:       username,
-		puid:           puid,
-		pgid:           pgid,
-		targetConfPath: constants.OpenVPNConf,
-		buildInfo:      buildInfo,
-		versionInfo:    versionInfo,
-		conf:           conf,
-		fw:             fw,
-		routing:        routing,
-		portForward:    portForward,
-		publicip:       publicip,
-		dnsLooper:      dnsLooper,
-		logger:         logger,
-		client:         client,
-		start:          start,
-		running:        running,
-		stop:           stop,
-		stopped:        stopped,
-		userTrigger:    true,
-		startPFCh:      make(chan struct{}),
-		backoffTime:    defaultBackoffTime,
+		statusManager: statusManager,
+		state:         state,
+		username:      username,
+		puid:          puid,
+		pgid:          pgid,
+		buildInfo:     buildInfo,
+		versionInfo:   versionInfo,
+		conf:          conf,
+		fw:            fw,
+		routing:       routing,
+		portForward:   portForward,
+		publicip:      publicip,
+		dnsLooper:     dnsLooper,
+		logger:        logger,
+		client:        client,
+		start:         start,
+		running:       running,
+		stop:          stop,
+		stopped:       stopped,
+		userTrigger:   true,
+		startPFCh:     make(chan struct{}),
+		backoffTime:   defaultBackoffTime,
 	}
 }
