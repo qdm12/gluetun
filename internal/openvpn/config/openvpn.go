@@ -6,10 +6,12 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
+var _ Interface = (*Configurator)(nil)
+
 type Interface interface {
 	VersionGetter
 	AuthWriter
-	Starter
+	Runner
 	Writer
 }
 

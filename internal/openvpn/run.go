@@ -31,29 +31,23 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			l.crashed(ctx, err)
 			continue
 		}
-
-		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
-
-		stdoutLines, stderrLines, waitError, err := l.openvpnConf.Start(
-			openvpnCtx, openVPNSettings.Version, openVPNSettings.Flags)
-		if err != nil {
-			openvpnCancel()
-			l.crashed(ctx, err)
-			continue
-		}
-
-		linesCollectionCtx, linesCollectionCancel := context.WithCancel(context.Background())
-		lineCollectionDone := make(chan struct{})
 		tunnelUpData := tunnelUpData{
 			portForwarding: providerSettings.PortForwarding.Enabled,
 			serverName:     serverName,
 			portForwarder:  providerConf,
 		}
-		go l.collectLines(linesCollectionCtx, lineCollectionDone,
-			stdoutLines, stderrLines, tunnelUpData)
-		closeStreams := func() {
-			linesCollectionCancel()
-			<-lineCollectionDone
+
+		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
+		waitError := make(chan error)
+		tunnelReady := make(chan struct{})
+
+		go l.openvpnConf.Run(openvpnCtx, waitError, tunnelReady,
+			l.logger, openVPNSettings)
+
+		if err := l.waitForError(ctx, waitError); err != nil {
+			openvpnCancel()
+			l.crashed(ctx, err)
+			continue
 		}
 
 		l.backoffTime = defaultBackoffTime
@@ -62,6 +56,8 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		stayHere := true
 		for stayHere {
 			select {
+			case <-tunnelReady:
+				go l.onTunnelUp(openvpnCtx, tunnelUpData)
 			case <-ctx.Done():
 				const pfTimeout = 100 * time.Millisecond
 				l.stopPortForwarding(context.Background(),
@@ -69,7 +65,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				openvpnCancel()
 				<-waitError
 				close(waitError)
-				closeStreams()
 				return
 			case <-l.stop:
 				l.userTrigger = true
@@ -79,7 +74,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				<-waitError
 				// do not close waitError or the waitError
 				// select case will trigger
-				closeStreams()
 				l.stopped <- struct{}{}
 			case <-l.start:
 				l.userTrigger = true
@@ -87,7 +81,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				stayHere = false
 			case err := <-waitError: // unexpected error
 				close(waitError)
-				closeStreams()
 
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 

@@ -8,6 +8,28 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
+// waitForError waits 100ms for an error in the waitError channel.
+func (l *Loop) waitForError(ctx context.Context,
+	waitError chan error) (err error) {
+	const waitDurationForError = 100 * time.Millisecond
+	timer := time.NewTimer(waitDurationForError)
+	select {
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
+		}
+		return ctx.Err()
+	case <-timer.C:
+		return nil
+	case err := <-waitError:
+		close(waitError)
+		if !timer.Stop() {
+			<-timer.C
+		}
+		return err
+	}
+}
+
 func (l *Loop) crashed(ctx context.Context, err error) {
 	l.signalOrSetStatus(constants.Crashed)
 	l.logAndWait(ctx, err)

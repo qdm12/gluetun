@@ -1,55 +1,12 @@
-package openvpn
+package config
 
 import (
-	"context"
 	"strings"
 
 	"github.com/fatih/color"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/logging"
 )
-
-func (l *Loop) collectLines(ctx context.Context, done chan<- struct{},
-	stdout, stderr chan string, tunnelUpData tunnelUpData) {
-	defer close(done)
-
-	var line string
-
-	for {
-		errLine := false
-		select {
-		case <-ctx.Done():
-			// Context should only be canceled after stdout and stderr are done
-			// being written to.
-			close(stdout)
-			close(stderr)
-			return
-		case line = <-stdout:
-		case line = <-stderr:
-			errLine = true
-		}
-		line, level := processLogLine(line)
-		if line == "" {
-			continue // filtered out
-		}
-		if errLine {
-			level = logging.LevelError
-		}
-		switch level {
-		case logging.LevelDebug:
-			l.logger.Debug(line)
-		case logging.LevelInfo:
-			l.logger.Info(line)
-		case logging.LevelWarn:
-			l.logger.Warn(line)
-		case logging.LevelError:
-			l.logger.Error(line)
-		}
-		if strings.Contains(line, "Initialization Sequence Completed") {
-			l.onTunnelUp(ctx, tunnelUpData)
-		}
-	}
-}
 
 func processLogLine(s string) (filtered string, level logging.Level) {
 	for _, ignored := range []string{

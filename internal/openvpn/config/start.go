@@ -17,12 +17,7 @@ const (
 	binOpenvpn25 = "openvpn"
 )
 
-type Starter interface {
-	Start(ctx context.Context, version string, flags []string) (
-		stdoutLines, stderrLines chan string, waitError chan error, err error)
-}
-
-func (c *Configurator) Start(ctx context.Context, version string, flags []string) (
+func (c *Configurator) start(ctx context.Context, version string, flags []string) (
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	var bin string
 	switch version {
