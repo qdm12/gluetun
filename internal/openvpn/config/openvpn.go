@@ -1,6 +1,4 @@
-// Package openvpn defines interfaces to interact with openvpn
-// and run it in a stateful loop.
-package openvpn
+package config
 
 import (
 	"github.com/qdm12/gluetun/internal/constants"
@@ -12,7 +10,7 @@ type Configurator interface {
 	VersionGetter
 	AuthWriter
 	Starter
-	ConfigWriter
+	Writer
 }
 
 type configurator struct {

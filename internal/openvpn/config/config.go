@@ -1,11 +1,11 @@
-package openvpn
+package config
 
 import (
 	"os"
 	"strings"
 )
 
-type ConfigWriter interface {
+type Writer interface {
 	WriteConfig(lines []string) error
 }
 

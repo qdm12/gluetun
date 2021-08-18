@@ -1,4 +1,4 @@
-package openvpn
+package config
 
 import (
 	"io"
