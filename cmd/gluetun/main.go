@@ -59,9 +59,9 @@ func main() {
 		Created: created,
 	}
 
-	ctx := context.Background()
-	ctx, stop := signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-	ctx, cancel := context.WithCancel(ctx)
+	background := context.Background()
+	signalCtx, stop := signal.NotifyContext(background, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	ctx, cancel := context.WithCancel(background)
 
 	logger := logging.NewParent(logging.Settings{
 		Level: logging.LevelInfo,
@@ -79,9 +79,11 @@ func main() {
 	}()
 
 	select {
-	case <-ctx.Done():
+	case <-signalCtx.Done():
 		stop()
+		fmt.Println("")
 		logger.Warn("Caught OS signal, shutting down")
+		cancel()
 	case err := <-errorCh:
 		stop()
 		close(errorCh)
