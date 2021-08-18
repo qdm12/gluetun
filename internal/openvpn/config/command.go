@@ -23,7 +23,7 @@ type Starter interface {
 		stdoutLines, stderrLines chan string, waitError chan error, err error)
 }
 
-func (c *configurator) Start(ctx context.Context, version string, flags []string) (
+func (c *Configurator) Start(ctx context.Context, version string, flags []string) (
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	var bin string
 	switch version {
@@ -50,17 +50,17 @@ type VersionGetter interface {
 	Version25(ctx context.Context) (version string, err error)
 }
 
-func (c *configurator) Version24(ctx context.Context) (version string, err error) {
+func (c *Configurator) Version24(ctx context.Context) (version string, err error) {
 	return c.version(ctx, binOpenvpn24)
 }
 
-func (c *configurator) Version25(ctx context.Context) (version string, err error) {
+func (c *Configurator) Version25(ctx context.Context) (version string, err error) {
 	return c.version(ctx, binOpenvpn25)
 }
 
 var ErrVersionTooShort = errors.New("version output is too short")
 
-func (c *configurator) version(ctx context.Context, binName string) (version string, err error) {
+func (c *Configurator) version(ctx context.Context, binName string) (version string, err error) {
 	cmd := exec.CommandContext(ctx, binName, "--version")
 	output, err := c.cmder.Run(cmd)
 	if err != nil && err.Error() != "exit status 1" {

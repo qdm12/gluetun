@@ -35,7 +35,7 @@ type Loop struct {
 	buildInfo   models.BuildInformation
 	versionInfo bool
 	// Configurators
-	conf        config.Configurator
+	openvpnConf config.Interface
 	fw          firewallConfigurer
 	routing     routing.VPNGetter
 	portForward portforward.StartStopper
@@ -65,7 +65,7 @@ const (
 
 func NewLoop(openVPNSettings configuration.OpenVPN,
 	providerSettings configuration.Provider,
-	allServers models.AllServers, conf config.Configurator,
+	allServers models.AllServers, openvpnConf config.Interface,
 	fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper,
 	publicip publicip.Looper, dnsLooper dns.Looper,
@@ -84,7 +84,7 @@ func NewLoop(openVPNSettings configuration.OpenVPN,
 		state:         state,
 		buildInfo:     buildInfo,
 		versionInfo:   versionInfo,
-		conf:          conf,
+		openvpnConf:   openvpnConf,
 		fw:            fw,
 		routing:       routing,
 		portForward:   portForward,

@@ -11,7 +11,7 @@ type AuthWriter interface {
 }
 
 // WriteAuthFile writes the OpenVPN auth file to disk with the right permissions.
-func (c *configurator) WriteAuthFile(user, password string) error {
+func (c *Configurator) WriteAuthFile(user, password string) error {
 	file, err := os.Open(c.authFilePath)
 
 	if err != nil && !os.IsNotExist(err) {

@@ -9,7 +9,7 @@ type Writer interface {
 	WriteConfig(lines []string) error
 }
 
-func (c *configurator) WriteConfig(lines []string) error {
+func (c *Configurator) WriteConfig(lines []string) error {
 	file, err := os.OpenFile(c.configPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		return err

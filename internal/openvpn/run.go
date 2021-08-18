@@ -44,13 +44,13 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 
-		if err := l.conf.WriteConfig(lines); err != nil {
+		if err := l.openvpnConf.WriteConfig(lines); err != nil {
 			l.crashed(ctx, err)
 			continue
 		}
 
 		if openVPNSettings.User != "" {
-			err := l.conf.WriteAuthFile(openVPNSettings.User, openVPNSettings.Password)
+			err := l.openvpnConf.WriteAuthFile(openVPNSettings.User, openVPNSettings.Password)
 			if err != nil {
 				l.crashed(ctx, err)
 				continue
@@ -64,7 +64,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
 
-		stdoutLines, stderrLines, waitError, err := l.conf.Start(
+		stdoutLines, stderrLines, waitError, err := l.openvpnConf.Start(
 			openvpnCtx, openVPNSettings.Version, openVPNSettings.Flags)
 		if err != nil {
 			openvpnCancel()

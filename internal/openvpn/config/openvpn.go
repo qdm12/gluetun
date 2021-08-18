@@ -6,14 +6,14 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-type Configurator interface {
+type Interface interface {
 	VersionGetter
 	AuthWriter
 	Starter
 	Writer
 }
 
-type configurator struct {
+type Configurator struct {
 	logger       logging.Logger
 	cmder        command.RunStarter
 	configPath   string
@@ -21,9 +21,9 @@ type configurator struct {
 	puid, pgid   int
 }
 
-func NewConfigurator(logger logging.Logger,
-	cmder command.RunStarter, puid, pgid int) Configurator {
-	return &configurator{
+func New(logger logging.Logger,
+	cmder command.RunStarter, puid, pgid int) *Configurator {
+	return &Configurator{
 		logger:       logger,
 		cmder:        cmder,
 		configPath:   constants.OpenVPNConf,

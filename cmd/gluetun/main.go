@@ -143,7 +143,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.New()
-	ovpnConf := openvpnconfig.NewConfigurator(
+	ovpnConf := openvpnconfig.New(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
 		cmder, puid, pgid)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
