@@ -16,7 +16,15 @@ func (c *configurator) WriteConfig(lines []string) error {
 	}
 	_, err = file.WriteString(strings.Join(lines, "\n"))
 	if err != nil {
+		_ = file.Close()
 		return err
 	}
+
+	err = file.Chown(c.puid, c.pgid)
+	if err != nil {
+		_ = file.Close()
+		return err
+	}
+
 	return file.Close()
 }
