@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/openvpn/custom"
 	"github.com/qdm12/gluetun/internal/provider"
 )
 
@@ -28,36 +26,8 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		providerConf := provider.New(providerSettings.Name, allServers, time.Now)
 
-		var connection models.OpenVPNConnection
-		var lines []string
-		var err error
-		if openVPNSettings.Config == "" {
-			connection, err = providerConf.GetOpenVPNConnection(providerSettings.ServerSelection)
-			if err == nil {
-				lines = providerConf.BuildConf(connection, openVPNSettings)
-			}
-		} else {
-			lines, connection, err = custom.BuildConfig(openVPNSettings)
-		}
+		serverName, err := setup(ctx, l.fw, l.openvpnConf, providerConf, openVPNSettings, providerSettings)
 		if err != nil {
-			l.crashed(ctx, err)
-			continue
-		}
-
-		if err := l.openvpnConf.WriteConfig(lines); err != nil {
-			l.crashed(ctx, err)
-			continue
-		}
-
-		if openVPNSettings.User != "" {
-			err := l.openvpnConf.WriteAuthFile(openVPNSettings.User, openVPNSettings.Password)
-			if err != nil {
-				l.crashed(ctx, err)
-				continue
-			}
-		}
-
-		if err := l.fw.SetVPNConnection(ctx, connection); err != nil {
 			l.crashed(ctx, err)
 			continue
 		}
@@ -76,7 +46,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		lineCollectionDone := make(chan struct{})
 		tunnelUpData := tunnelUpData{
 			portForwarding: providerSettings.PortForwarding.Enabled,
-			serverName:     connection.Hostname,
+			serverName:     serverName,
 			portForwarder:  providerConf,
 		}
 		go l.collectLines(linesCollectionCtx, lineCollectionDone,
