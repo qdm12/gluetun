@@ -1,0 +1,77 @@
+package custom
+
+import (
+	"net"
+	"testing"
+
+	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/stretchr/testify/assert"
+)
+
+func Test_modifyCustomConfig(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		lines      []string
+		settings   configuration.OpenVPN
+		connection models.OpenVPNConnection
+		modified   []string
+	}{
+		"mixed": {
+			lines: []string{
+				"up bla",
+				"proto tcp",
+				"remote 5.5.5.5",
+				"cipher bla",
+				"tun-ipv6",
+				"keep me here",
+				"auth bla",
+			},
+			settings: configuration.OpenVPN{
+				User:     "user",
+				Cipher:   "cipher",
+				Auth:     "auth",
+				MSSFix:   1000,
+				ProcUser: "procuser",
+			},
+			connection: models.OpenVPNConnection{
+				IP:       net.IPv4(1, 2, 3, 4),
+				Port:     1194,
+				Protocol: constants.UDP,
+			},
+			modified: []string{
+				"keep me here",
+				"proto udp",
+				"remote 1.2.3.4 1194",
+				"mute-replay-warnings",
+				"auth-nocache",
+				"pull-filter ignore \"auth-token\"",
+				"auth-retry nointeract",
+				"suppress-timestamps",
+				"auth-user-pass /etc/openvpn/auth.conf",
+				"verb 0",
+				"data-ciphers-fallback cipher",
+				"data-ciphers cipher",
+				"auth auth",
+				"mssfix 1000",
+				"pull-filter ignore \"route-ipv6\"",
+				"pull-filter ignore \"ifconfig-ipv6\"",
+				"user procuser",
+			},
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			modified := modifyCustomConfig(testCase.lines,
+				testCase.settings, testCase.connection)
+
+			assert.Equal(t, testCase.modified, modified)
+		})
+	}
+}

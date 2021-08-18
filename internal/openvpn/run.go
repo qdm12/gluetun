@@ -37,7 +37,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				lines = providerConf.BuildConf(connection, openVPNSettings)
 			}
 		} else {
-			lines, connection, err = custom.ProcessCustomConfig(openVPNSettings)
+			lines, connection, err = custom.BuildConfig(openVPNSettings)
 		}
 		if err != nil {
 			l.crashed(ctx, err)
