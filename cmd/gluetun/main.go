@@ -29,7 +29,7 @@ import (
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/gluetun/internal/unix"
+	"github.com/qdm12/gluetun/internal/tun"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
@@ -67,14 +67,14 @@ func main() {
 	})
 
 	args := os.Args
-	unix := unix.New()
+	tun := tun.New()
 	cli := cli.New()
 	env := params.NewEnv()
 	cmder := command.NewCmder()
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, env, unix, cmder, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, env, tun, cmder, cli)
 	}()
 
 	select {
@@ -113,7 +113,7 @@ var (
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, env params.Env,
-	unix unix.Unix, cmder command.RunStarter, cli cli.CLIer) error {
+	tun tun.Interface, cmder command.RunStarter, cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -135,7 +135,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	alpineConf := alpine.New()
 	ovpnConf := openvpn.NewConfigurator(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
-		unix, cmder)
+		cmder)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
 	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
@@ -270,9 +270,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	if err := ovpnConf.CheckTUN(); err != nil {
-		logger.Warn(err.Error())
-		err = ovpnConf.CreateTUN()
+	if err := tun.Check(constants.TunnelDevice); err != nil {
+		logger.Info(err.Error() + "; creating it...")
+		err = tun.Create(constants.TunnelDevice)
 		if err != nil {
 			return err
 		}
