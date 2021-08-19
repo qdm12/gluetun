@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/vishvananda/netlink"
 )
 
@@ -242,10 +241,10 @@ func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
 }
 
 type VPNLocalGatewayIPGetter interface {
-	VPNLocalGatewayIP() (ip net.IP, err error)
+	VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error)
 }
 
-func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {
+func (r *routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
@@ -256,7 +255,7 @@ func (r *routing) VPNLocalGatewayIP() (ip net.IP, err error) {
 			return nil, fmt.Errorf("%w: %s", ErrLinkByIndex, err)
 		}
 		interfaceName := link.Attrs().Name
-		if interfaceName == string(constants.TUN) &&
+		if interfaceName == vpnIntf &&
 			route.Dst != nil &&
 			route.Dst.IP.Equal(net.IP{0, 0, 0, 0}) {
 			return route.Gw, nil

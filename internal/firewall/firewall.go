@@ -40,6 +40,7 @@ type Config struct { //nolint:maligned
 	// State
 	enabled           bool
 	vpnConnection     models.Connection
+	vpnIntf           string
 	outboundSubnets   []net.IPNet
 	allowedInputPorts map[uint16]string // port to interface mapping
 	stateMutex        sync.Mutex

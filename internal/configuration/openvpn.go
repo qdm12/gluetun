@@ -1,7 +1,9 @@
 package configuration
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -26,6 +28,7 @@ type OpenVPN struct {
 	EncPreset string   `json:"encryption_preset"` // PIA
 	IPv6      bool     `json:"ipv6"`              // Mullvad
 	ProcUser  string   `json:"procuser"`          // Process username
+	Interface string   `json:"interface"`
 }
 
 func (settings *OpenVPN) String() string {
@@ -38,6 +41,8 @@ func (settings *OpenVPN) lines() (lines []string) {
 	lines = append(lines, indent+lastIndent+"Version: "+settings.Version)
 
 	lines = append(lines, indent+lastIndent+"Verbosity level: "+strconv.Itoa(settings.Verbosity))
+
+	lines = append(lines, indent+lastIndent+"Network interface: "+settings.Interface)
 
 	if len(settings.Flags) > 0 {
 		lines = append(lines, indent+lastIndent+"Flags: "+strings.Join(settings.Flags, " "))
@@ -148,6 +153,11 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 		return fmt.Errorf("environment variable OPENVPN_IPV6: %w", err)
 	}
 
+	settings.Interface, err = readInterface(r.env)
+	if err != nil {
+		return err
+	}
+
 	settings.EncPreset, err = getPIAEncryptionPreset(r)
 	if err != nil {
 		return err
@@ -172,4 +182,23 @@ func readProtocol(env params.Env) (tcp bool, err error) {
 		return false, fmt.Errorf("environment variable PROTOCOL: %w", err)
 	}
 	return protocol == constants.TCP, nil
+}
+
+const openvpnIntfRegexString = `^.*[0-9]$`
+
+var openvpnIntfRegexp = regexp.MustCompile(openvpnIntfRegexString)
+var errInterfaceNameNotValid = errors.New("interface name is not valid")
+
+func readInterface(env params.Env) (intf string, err error) {
+	intf, err = env.Get("OPENVPN_INTERFACE", params.Default("tun0"))
+	if err != nil {
+		return "", fmt.Errorf("environment variable OPENVPN_INTERFACE: %w", err)
+	}
+
+	if !openvpnIntfRegexp.MatchString(intf) {
+		return "", fmt.Errorf("%w: does not match regex %s: %s",
+			errInterfaceNameNotValid, openvpnIntfRegexString, intf)
+	}
+
+	return intf, nil
 }

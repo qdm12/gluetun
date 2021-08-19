@@ -14,18 +14,22 @@ var (
 )
 
 func BuildConfig(settings configuration.OpenVPN) (
-	lines []string, connection models.Connection, err error) {
+	lines []string, connection models.Connection, intf string, err error) {
 	lines, err = readCustomConfigLines(settings.Config)
 	if err != nil {
-		return nil, connection, fmt.Errorf("%w: %s", ErrReadCustomConfig, err)
+		return nil, connection, "", fmt.Errorf("%w: %s", ErrReadCustomConfig, err)
 	}
 
-	connection, err = extractConnectionFromLines(lines)
+	connection, intf, err = extractDataFromLines(lines)
 	if err != nil {
-		return nil, connection, fmt.Errorf("%w: %s", ErrExtractConnection, err)
+		return nil, connection, "", fmt.Errorf("%w: %s", ErrExtractConnection, err)
 	}
 
-	lines = modifyCustomConfig(lines, settings, connection)
+	if intf == "" {
+		intf = settings.Interface
+	}
 
-	return lines, connection, nil
+	lines = modifyCustomConfig(lines, settings, connection, intf)
+
+	return lines, connection, intf, nil
 }

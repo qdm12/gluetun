@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/portforward"
-	"github.com/qdm12/gluetun/internal/provider"
 )
 
 var (
@@ -16,24 +14,23 @@ var (
 	errStartPortForwarding   = errors.New("cannot start port forwarding")
 )
 
-func (l *Loop) startPortForwarding(ctx context.Context, enabled bool,
-	portForwarder provider.PortForwarder, serverName string) (err error) {
-	if !enabled {
+func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err error) {
+	if !data.portForwarding {
 		return nil
 	}
 
 	// only used for PIA for now
-	gateway, err := l.routing.VPNLocalGatewayIP()
+	gateway, err := l.routing.VPNLocalGatewayIP(data.vpnIntf)
 	if err != nil {
 		return fmt.Errorf("%w: %s", errObtainVPNLocalGateway, err)
 	}
 	l.logger.Info("VPN gateway IP address: " + gateway.String())
 
 	pfData := portforward.StartData{
-		PortForwarder: portForwarder,
+		PortForwarder: data.portForwarder,
 		Gateway:       gateway,
-		ServerName:    serverName,
-		Interface:     constants.TUN,
+		ServerName:    data.serverName,
+		Interface:     data.vpnIntf,
 	}
 	_, err = l.portForward.Start(ctx, pfData)
 	if err != nil {

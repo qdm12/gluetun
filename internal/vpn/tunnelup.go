@@ -11,6 +11,7 @@ import (
 type tunnelUpData struct {
 	// Port forwarding
 	portForwarding bool
+	vpnIntf        string
 	serverName     string
 	portForwarder  provider.PortForwarder
 }
@@ -39,7 +40,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		}
 	}
 
-	err = l.startPortForwarding(ctx, data.portForwarding, data.portForwarder, data.serverName)
+	err = l.startPortForwarding(ctx, data)
 	if err != nil {
 		l.logger.Error(err.Error())
 	}

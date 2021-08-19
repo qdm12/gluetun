@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
-	"github.com/qdm12/gluetun/internal/constants"
 )
 
 var (
@@ -109,9 +107,9 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		if err = c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, c.vpnConnection, remove); err != nil {
 			return fmt.Errorf("cannot enable firewall: %w", err)
 		}
-	}
-	if err = c.acceptOutputThroughInterface(ctx, string(constants.TUN), remove); err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
+		if err = c.acceptOutputThroughInterface(ctx, c.vpnIntf, remove); err != nil {
+			return fmt.Errorf("cannot enable firewall: %w", err)
+		}
 	}
 
 	for _, network := range c.localNetworks {

@@ -33,18 +33,15 @@ func (c Connection) OpenVPNProtoLine() (line string) {
 }
 
 // UpdateEmptyWith updates each field of the connection where the
-// value is not set using the value from the other connection.
-func (c *Connection) UpdateEmptyWith(connection Connection) {
+// value is not set using the value given as arguments.
+func (c *Connection) UpdateEmptyWith(ip net.IP, port uint16, protocol string) {
 	if c.IP == nil {
-		c.IP = connection.IP
+		c.IP = ip
 	}
 	if c.Port == 0 {
-		c.Port = connection.Port
+		c.Port = port
 	}
 	if c.Protocol == "" {
-		c.Protocol = connection.Protocol
-	}
-	if c.Hostname == "" {
-		c.Hostname = connection.Hostname
+		c.Protocol = protocol
 	}
 }

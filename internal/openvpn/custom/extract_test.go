@@ -11,21 +11,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_extractConnectionFromLines(t *testing.T) {
+func Test_extractDataFromLines(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
 		lines      []string
 		connection models.Connection
+		intf       string
 		err        error
 	}{
 		"success": {
-			lines: []string{"bla bla", "proto tcp", "remote 1.2.3.4 1194 tcp"},
+			lines: []string{"bla bla", "proto tcp", "remote 1.2.3.4 1194 tcp", "dev tun6"},
 			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     1194,
 				Protocol: constants.TCP,
 			},
+			intf: "tun6",
 		},
 		"extraction error": {
 			lines: []string{"bla bla", "proto bad", "remote 1.2.3.4 1194 tcp"},
@@ -69,7 +71,7 @@ func Test_extractConnectionFromLines(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			connection, err := extractConnectionFromLines(testCase.lines)
+			connection, intf, err := extractDataFromLines(testCase.lines)
 
 			if testCase.err != nil {
 				require.Error(t, err)
@@ -79,17 +81,21 @@ func Test_extractConnectionFromLines(t *testing.T) {
 			}
 
 			assert.Equal(t, testCase.connection, connection)
+			assert.Equal(t, testCase.intf, intf)
 		})
 	}
 }
 
-func Test_extractConnectionFromLine(t *testing.T) {
+func Test_extractDataFromLine(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		line       string
-		connection models.Connection
-		isErr      error
+		line     string
+		ip       net.IP
+		port     uint16
+		protocol string
+		intf     string
+		isErr    error
 	}{
 		"irrelevant line": {
 			line: "bla bla",
@@ -99,22 +105,26 @@ func Test_extractConnectionFromLine(t *testing.T) {
 			isErr: errExtractProto,
 		},
 		"extract proto success": {
-			line: "proto tcp",
-			connection: models.Connection{
-				Protocol: constants.TCP,
-			},
+			line:     "proto tcp",
+			protocol: constants.TCP,
+		},
+		"extract intf error": {
+			line:  "dev ",
+			isErr: errExtractDev,
+		},
+		"extract intf success": {
+			line: "dev tun3",
+			intf: "tun3",
 		},
 		"extract remote error": {
 			line:  "remote bad",
 			isErr: errExtractRemote,
 		},
 		"extract remote success": {
-			line: "remote 1.2.3.4 1194 udp",
-			connection: models.Connection{
-				IP:       net.IPv4(1, 2, 3, 4),
-				Port:     1194,
-				Protocol: constants.UDP,
-			},
+			line:     "remote 1.2.3.4 1194 udp",
+			ip:       net.IPv4(1, 2, 3, 4),
+			port:     1194,
+			protocol: constants.UDP,
 		},
 	}
 
@@ -123,7 +133,7 @@ func Test_extractConnectionFromLine(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			connection, err := extractConnectionFromLine(testCase.line)
+			ip, port, protocol, intf, err := extractDataFromLine(testCase.line)
 
 			if testCase.isErr != nil {
 				assert.ErrorIs(t, err, testCase.isErr)
@@ -131,7 +141,10 @@ func Test_extractConnectionFromLine(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, testCase.connection, connection)
+			assert.Equal(t, testCase.ip, ip)
+			assert.Equal(t, testCase.port, port)
+			assert.Equal(t, testCase.protocol, protocol)
+			assert.Equal(t, testCase.intf, intf)
 		})
 	}
 }
@@ -257,6 +270,47 @@ func Test_extractRemote(t *testing.T) {
 			assert.Equal(t, testCase.ip, ip)
 			assert.Equal(t, testCase.port, port)
 			assert.Equal(t, testCase.protocol, protocol)
+		})
+	}
+}
+
+func Test_extractInterface(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		line string
+		intf string
+		err  error
+	}{
+		"found": {
+			line: "dev tun3",
+			intf: "tun3",
+		},
+		"not enough fields": {
+			line: "dev ",
+			err:  errors.New("dev line has not 2 fields as expected: dev "),
+		},
+		"too many fields": {
+			line: "dev one two",
+			err:  errors.New("dev line has not 2 fields as expected: dev one two"),
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			intf, err := extractInterfaceFromLine(testCase.line)
+
+			if testCase.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, testCase.err.Error(), err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, testCase.intf, intf)
 		})
 	}
 }

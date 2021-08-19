@@ -76,6 +76,7 @@ ENV VPNSP=pia \
     OPENVPN_TARGET_IP= \
     OPENVPN_IPV6=off \
     OPENVPN_CUSTOM_CONFIG= \
+    OPENVPN_INTERFACE=tun0 \
     TZ= \
     PUID= \
     PGID= \

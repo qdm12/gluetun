@@ -29,14 +29,16 @@ func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 	settings configuration.VPN, starter command.Starter, logger logging.Logger) (
 	runner vpnRunner, serverName string, err error) {
 	var connection models.Connection
+	var netInterface string
 	var lines []string
 	if settings.OpenVPN.Config == "" {
+		netInterface = settings.OpenVPN.Interface
 		connection, err = providerConf.GetConnection(settings.Provider.ServerSelection)
 		if err == nil {
 			lines = providerConf.BuildConf(connection, settings.OpenVPN)
 		}
 	} else {
-		lines, connection, err = custom.BuildConfig(settings.OpenVPN)
+		lines, connection, netInterface, err = custom.BuildConfig(settings.OpenVPN)
 	}
 	if err != nil {
 		return nil, "", fmt.Errorf("%w: %s", errBuildConfig, err)
@@ -53,7 +55,7 @@ func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 		}
 	}
 
-	if err := fw.SetVPNConnection(ctx, connection); err != nil {
+	if err := fw.SetVPNConnection(ctx, connection, netInterface); err != nil {
 		return nil, "", fmt.Errorf("%w: %s", errFirewall, err)
 	}
 

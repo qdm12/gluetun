@@ -17,6 +17,7 @@ func Test_modifyCustomConfig(t *testing.T) {
 		lines      []string
 		settings   configuration.OpenVPN
 		connection models.Connection
+		intf       string
 		modified   []string
 	}{
 		"mixed": {
@@ -41,10 +42,12 @@ func Test_modifyCustomConfig(t *testing.T) {
 				Port:     1194,
 				Protocol: constants.UDP,
 			},
+			intf: "tun3",
 			modified: []string{
 				"keep me here",
 				"proto udp",
 				"remote 1.2.3.4 1194",
+				"dev tun3",
 				"mute-replay-warnings",
 				"auth-nocache",
 				"pull-filter ignore \"auth-token\"",
@@ -69,7 +72,7 @@ func Test_modifyCustomConfig(t *testing.T) {
 			t.Parallel()
 
 			modified := modifyCustomConfig(testCase.lines,
-				testCase.settings, testCase.connection)
+				testCase.settings, testCase.connection, testCase.intf)
 
 			assert.Equal(t, testCase.modified, modified)
 		})

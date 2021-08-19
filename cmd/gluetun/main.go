@@ -290,7 +290,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	for _, vpnPort := range allSettings.Firewall.VPNInputPorts {
-		err = firewallConf.SetAllowedPort(ctx, vpnPort, string(constants.TUN))
+		err = firewallConf.SetAllowedPort(ctx, vpnPort, allSettings.VPN.OpenVPN.Interface)
 		if err != nil {
 			return err
 		}

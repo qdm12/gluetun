@@ -27,18 +27,20 @@ func Test_BuildConfig(t *testing.T) {
 	require.NoError(t, err)
 
 	settings := configuration.OpenVPN{
-		Cipher: "cipher",
-		MSSFix: 999,
-		Config: file.Name(),
+		Cipher:    "cipher",
+		MSSFix:    999,
+		Config:    file.Name(),
+		Interface: "tun",
 	}
 
-	lines, connection, err := BuildConfig(settings)
+	lines, connection, intf, err := BuildConfig(settings)
 	assert.NoError(t, err)
 
 	expectedLines := []string{
 		"keep me",
 		"proto udp",
 		"remote 1.9.8.7 1194",
+		"dev tun",
 		"mute-replay-warnings",
 		"auth-nocache",
 		"pull-filter ignore \"auth-token\"",
@@ -60,4 +62,6 @@ func Test_BuildConfig(t *testing.T) {
 		Protocol: constants.UDP,
 	}
 	assert.Equal(t, expectedConnection, connection)
+
+	assert.Equal(t, "tun", intf)
 }

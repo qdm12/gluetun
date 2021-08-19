@@ -22,7 +22,8 @@ func Test_Settings_lines(t *testing.T) {
 						Name: constants.Mullvad,
 					},
 					OpenVPN: OpenVPN{
-						Version: constants.Openvpn25,
+						Version:   constants.Openvpn25,
+						Interface: "tun",
 					},
 				},
 			},
@@ -33,6 +34,7 @@ func Test_Settings_lines(t *testing.T) {
 				"   |--OpenVPN:",
 				"      |--Version: 2.5",
 				"      |--Verbosity level: 0",
+				"      |--Network interface: tun",
 				"   |--Mullvad settings:",
 				"      |--OpenVPN selection:",
 				"         |--Protocol: udp",
