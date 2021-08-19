@@ -360,9 +360,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		allServers, ovpnConf, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, allSettings.VersionInformation)
-	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
-		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
-	go vpnLooper.Run(openvpnCtx, openvpnDone)
+	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
+		"vpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
+	go vpnLooper.Run(vpnCtx, vpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
 		allServers, storage, vpnLooper.SetServers, httpClient,
@@ -417,7 +417,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	orderHandler := goshutdown.NewOrder("gluetun", orderSettings)
 	orderHandler.Append(controlGroupHandler, tickersGroupHandler, healthServerHandler,
-		openvpnHandler, portForwardHandler, otherGroupHandler)
+		vpnHandler, portForwardHandler, otherGroupHandler)
 
 	// Start VPN for the first time in a blocking call
 	// until the VPN is launched
