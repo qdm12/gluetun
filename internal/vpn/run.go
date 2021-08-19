@@ -30,8 +30,15 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
 
-		vpnRunner, serverName, err := setupOpenVPN(ctx, l.fw,
-			l.openvpnConf, providerConf, settings, l.starter, l.logger)
+		var vpnRunner vpnRunner
+		var serverName string
+		var err error
+		if settings.Type == constants.OpenVPN {
+			vpnRunner, serverName, err = setupOpenVPN(ctx, l.fw,
+				l.openvpnConf, providerConf, settings, l.starter, l.logger)
+		} else { // Wireguard
+			vpnRunner, serverName, err = setupWireguard(ctx, l.fw, providerConf, settings, l.logger)
+		}
 		if err != nil {
 			l.crashed(ctx, err)
 			continue
