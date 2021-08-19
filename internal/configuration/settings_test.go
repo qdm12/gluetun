@@ -20,6 +20,9 @@ func Test_Settings_lines(t *testing.T) {
 					Type: constants.OpenVPN,
 					Provider: Provider{
 						Name: constants.Mullvad,
+						ServerSelection: ServerSelection{
+							VPN: constants.OpenVPN,
+						},
 					},
 					OpenVPN: OpenVPN{
 						Version:   constants.Openvpn25,
