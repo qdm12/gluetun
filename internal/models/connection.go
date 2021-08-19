@@ -48,7 +48,4 @@ func (c *Connection) UpdateEmptyWith(ip net.IP, port uint16, protocol string) {
 	if c.Protocol == "" {
 		c.Protocol = protocol
 	}
-	if c.PubKey == "" {
-		c.PubKey = connection.PubKey
-	}
 }
