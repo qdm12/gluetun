@@ -1,4 +1,4 @@
-package config
+package openvpn
 
 import (
 	"context"

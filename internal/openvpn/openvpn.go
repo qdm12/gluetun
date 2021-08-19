@@ -1,4 +1,4 @@
-package config
+package openvpn
 
 import (
 	"github.com/qdm12/gluetun/internal/constants"

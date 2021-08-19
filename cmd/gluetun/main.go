@@ -22,7 +22,7 @@ import (
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/httpproxy"
 	"github.com/qdm12/gluetun/internal/models"
-	openvpnconfig "github.com/qdm12/gluetun/internal/openvpn/config"
+	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
@@ -145,7 +145,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.New()
-	ovpnConf := openvpnconfig.New(
+	ovpnConf := openvpn.New(
 		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
 		cmder, puid, pgid)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
