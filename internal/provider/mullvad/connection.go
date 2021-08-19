@@ -9,16 +9,8 @@ import (
 
 func (m *Mullvad) GetConnection(selection configuration.ServerSelection) (
 	connection models.Connection, err error) {
-	var port uint16 = 1194
-	protocol := constants.UDP
-	if selection.OpenVPN.TCP {
-		port = 443
-		protocol = constants.TCP
-	}
-
-	if selection.OpenVPN.CustomPort > 0 {
-		port = selection.OpenVPN.CustomPort
-	}
+	port := getPort(selection)
+	protocol := getProtocol(selection)
 
 	servers, err := m.filterServers(selection)
 	if err != nil {
@@ -33,6 +25,7 @@ func (m *Mullvad) GetConnection(selection configuration.ServerSelection) (
 				IP:       IP,
 				Port:     port,
 				Protocol: protocol,
+				PubKey:   server.WgPubKey, // Wireguard only
 			}
 			connections = append(connections, connection)
 		}
@@ -43,4 +36,34 @@ func (m *Mullvad) GetConnection(selection configuration.ServerSelection) (
 	}
 
 	return utils.PickRandomConnection(connections, m.randSource), nil
+}
+
+func getPort(selection configuration.ServerSelection) (port uint16) {
+	switch selection.VPN {
+	case constants.Wireguard:
+		customPort := selection.Wireguard.CustomPort
+		if customPort > 0 {
+			return customPort
+		}
+		const defaultPort = 51820
+		return defaultPort
+	default: // OpenVPN
+		customPort := selection.OpenVPN.CustomPort
+		if customPort > 0 {
+			return customPort
+		}
+		port = 1194
+		if selection.OpenVPN.TCP {
+			port = 443
+		}
+		return port
+	}
+}
+
+func getProtocol(selection configuration.ServerSelection) (protocol string) {
+	protocol = constants.UDP
+	if selection.VPN == constants.OpenVPN && selection.OpenVPN.TCP {
+		protocol = constants.TCP
+	}
+	return protocol
 }
