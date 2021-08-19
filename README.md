@@ -5,7 +5,7 @@ HideMyAss, IPVanish, IVPN, Mullvad, NordVPN, Privado, Private Internet Access, P
 ProtonVPN, PureVPN, Surfshark, TorGuard, VPNUnlimited, VyprVPN and Windscribe VPN servers
 using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
-**ANNOUNCEMENT**:
+**ANNOUNCEMENT**: You can try Wireguard, see #565
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
@@ -55,9 +55,9 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 ## Features
 
-- Based on Alpine 3.13 for a small Docker image of 54MB
+- Based on Alpine 3.14 for a small Docker image of 31MB
 - Supports: **Cyberghost**, **FastestVPN**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **Surfshark**, **TorGuard**, **VPNUnlimited**, **Vyprvpn**, **Windscribe** servers
-- Supports Openvpn only for now
+- Supports OpenVPN and Wireguard (the latter in progress, see PR #565 and issue #134)
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
