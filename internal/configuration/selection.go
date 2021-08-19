@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/params"
 )
 
@@ -39,7 +40,8 @@ type ServerSelection struct { //nolint:maligned
 	// VPNUnlimited
 	StreamOnly bool `json:"stream_only"`
 
-	OpenVPN OpenVPNSelection `json:"openvpn"`
+	OpenVPN   OpenVPNSelection   `json:"openvpn"`
+	Wireguard WireguardSelection `json:"wireguard"`
 }
 
 func (selection ServerSelection) toLines() (lines []string) {
@@ -91,7 +93,11 @@ func (selection ServerSelection) toLines() (lines []string) {
 		lines = append(lines, lastIndent+"Numbers: "+commaJoin(numbersString))
 	}
 
-	lines = append(lines, selection.OpenVPN.lines()...)
+	if selection.VPN == constants.OpenVPN {
+		lines = append(lines, selection.OpenVPN.lines()...)
+	} else { // wireguard
+		lines = append(lines, selection.Wireguard.lines()...)
+	}
 
 	return lines
 }
@@ -135,6 +141,20 @@ func (settings *OpenVPNSelection) readProtocolAndPort(env params.Env) (err error
 	}
 
 	return nil
+}
+
+type WireguardSelection struct {
+	CustomPort uint16 `json:"custom_port"` // Mullvad
+}
+
+func (settings *WireguardSelection) lines() (lines []string) {
+	lines = append(lines, lastIndent+"Wireguard selection:")
+
+	if settings.CustomPort != 0 {
+		lines = append(lines, indent+lastIndent+"Custom port: "+fmt.Sprint(settings.CustomPort))
+	}
+
+	return lines
 }
 
 // PortForwarding contains settings for port forwarding.
