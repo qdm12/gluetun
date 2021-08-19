@@ -35,7 +35,8 @@ func setupWireguard(ctx context.Context,
 		return nil, "", fmt.Errorf("%w: %s", errCreateWireguard, err)
 	}
 
-	if err := fw.SetVPNConnection(ctx, connection); err != nil {
+	err = fw.SetVPNConnection(ctx, connection, settings.Wireguard.Interface)
+	if err != nil {
 		return nil, "", fmt.Errorf("%w: %s", errFirewall, err)
 	}
 

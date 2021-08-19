@@ -14,6 +14,7 @@ type Wireguard struct {
 	PreSharedKey string     `json:"presharedkey"`
 	Address      *net.IPNet `json:"address"`
 	CustomPort   uint16     `json:"port"`
+	Interface    string     `json:"interface"`
 }
 
 func (settings *Wireguard) String() string {
@@ -22,6 +23,8 @@ func (settings *Wireguard) String() string {
 
 func (settings *Wireguard) lines() (lines []string) {
 	lines = append(lines, lastIndent+"Wireguard:")
+
+	lines = append(lines, indent+lastIndent+"Network interface: "+settings.Interface)
 
 	if settings.PrivateKey != "" {
 		lines = append(lines, indent+lastIndent+"Private key is set")
@@ -69,6 +72,11 @@ func (settings *Wireguard) read(r reader) (err error) {
 	settings.CustomPort, err = readPortOrZero(r.env, "WIREGUARD_PORT")
 	if err != nil {
 		return fmt.Errorf("environment variable WIREGUARD_PORT: %w", err)
+	}
+
+	settings.Interface, err = r.env.Get("WIREGUARD_INTERFACE", params.Default("wg0"))
+	if err != nil {
+		return fmt.Errorf("environment variable WIREGUARD_INTERFACE: %w", err)
 	}
 
 	return nil

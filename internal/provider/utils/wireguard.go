@@ -13,6 +13,7 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.PrivateKey = userSettings.PrivateKey
 	settings.PublicKey = connection.PubKey
 	settings.PreSharedKey = userSettings.PreSharedKey
+	settings.InterfaceName = userSettings.Interface
 
 	settings.Endpoint = new(net.UDPAddr)
 	settings.Endpoint.IP = make(net.IP, len(connection.IP))
