@@ -19,6 +19,8 @@ var ErrNoServerFound = errors.New("no server found")
 func NoServerFoundError(selection configuration.ServerSelection) (err error) {
 	var messageParts []string
 
+	messageParts = append(messageParts, "VPN "+selection.VPN)
+
 	protocol := constants.UDP
 	if selection.OpenVPN.TCP {
 		protocol = constants.TCP
