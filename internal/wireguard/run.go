@@ -30,14 +30,15 @@ var (
 )
 
 type Runner interface {
-	Run(ctx context.Context) (err error)
+	Run(ctx context.Context, waitError chan<- error, ready chan<- struct{})
 }
 
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
-func (w *Wireguard) Run(ctx context.Context) (err error) {
+func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<- struct{}) {
 	client, err := wgctrl.New()
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrWgctrlOpen, err)
+		waitError <- fmt.Errorf("%w: %s", ErrWgctrlOpen, err)
+		return
 	}
 
 	var closers closers
@@ -47,23 +48,26 @@ func (w *Wireguard) Run(ctx context.Context) (err error) {
 
 	tun, err := tun.CreateTUN(w.settings.InterfaceName, device.DefaultMTU)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrCreateTun, err)
+		waitError <- fmt.Errorf("%w: %s", ErrCreateTun, err)
+		return
 	}
 
 	closers.add("closing TUN device", stepFive, tun.Close)
 
 	tunName, err := tun.Name()
 	if err != nil {
-		return fmt.Errorf("%w: cannot get TUN name: %s",
-			ErrCreateTun, err)
+		waitError <- fmt.Errorf("%w: cannot get TUN name: %s", ErrCreateTun, err)
+		return
 	} else if tunName != w.settings.InterfaceName {
-		return fmt.Errorf("%w: names don't match: expected %q and got %q",
+		waitError <- fmt.Errorf("%w: names don't match: expected %q and got %q",
 			ErrCreateTun, w.settings.InterfaceName, tunName)
+		return
 	}
 
 	link, err := netlink.LinkByName(w.settings.InterfaceName)
 	if err != nil {
-		return fmt.Errorf("%w: %s: %s", ErrFindLink, w.settings.InterfaceName, err)
+		waitError <- fmt.Errorf("%w: %s: %s", ErrFindLink, w.settings.InterfaceName, err)
+		return
 	}
 
 	bind := conn.NewDefaultBind()
@@ -80,14 +84,16 @@ func (w *Wireguard) Run(ctx context.Context) (err error) {
 
 	uapiFile, err := ipc.UAPIOpen(w.settings.InterfaceName)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
+		waitError <- fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
+		return
 	}
 
 	closers.add("closing UAPI file", stepThree, uapiFile.Close)
 
 	uapiListener, err := ipc.UAPIListen(w.settings.InterfaceName, uapiFile)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUAPIListen, err)
+		waitError <- fmt.Errorf("%w: %s", ErrUAPIListen, err)
+		return
 	}
 
 	closers.add("closing UAPI listener", stepTwo, uapiListener.Close)
@@ -98,16 +104,19 @@ func (w *Wireguard) Run(ctx context.Context) (err error) {
 
 	err = addAddresses(w.settings.InterfaceName, w.settings.Addresses)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrAddAddress, err)
+		waitError <- fmt.Errorf("%w: %s", ErrAddAddress, err)
+		return
 	}
 
 	err = configureDevice(client, w.settings)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrConfigure, err)
+		waitError <- fmt.Errorf("%w: %s", ErrConfigure, err)
+		return
 	}
 
 	if err := netlink.LinkSetUp(link); err != nil {
-		return fmt.Errorf("%w: %s", ErrIfaceUp, err)
+		waitError <- fmt.Errorf("%w: %s", ErrIfaceUp, err)
+		return
 	}
 
 	route := &netlink.Route{
@@ -116,7 +125,8 @@ func (w *Wireguard) Run(ctx context.Context) (err error) {
 		Table:     w.settings.FirewallMark,
 	}
 	if err := netlink.RouteAdd(route); err != nil {
-		return fmt.Errorf("%w: %s", ErrRouteAdd, err)
+		waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
+		return
 	}
 
 	rule := netlink.NewRule()
@@ -124,7 +134,7 @@ func (w *Wireguard) Run(ctx context.Context) (err error) {
 	rule.Mark = w.settings.FirewallMark
 	rule.Table = w.settings.FirewallMark
 	if err := netlink.RuleAdd(rule); err != nil {
-		return fmt.Errorf("%w: %s", ErrRuleAdd, err)
+		waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
 	}
 
 	closers.add("removing rule", stepOne, func() error {
@@ -132,6 +142,7 @@ func (w *Wireguard) Run(ctx context.Context) (err error) {
 	})
 
 	w.logger.Info("Wireguard is up")
+	ready <- struct{}{}
 
 	select {
 	case <-ctx.Done():
@@ -146,7 +157,7 @@ func (w *Wireguard) Run(ctx context.Context) (err error) {
 
 	<-uapiAcceptErrorCh // wait for acceptAndHandle to exit
 
-	return err
+	waitError <- err
 }
 
 func acceptAndHandle(uapi net.Listener, device *device.Device,
