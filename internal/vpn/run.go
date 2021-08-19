@@ -12,6 +12,10 @@ type Runner interface {
 	Run(ctx context.Context, done chan<- struct{})
 }
 
+type vpnRunner interface {
+	Run(ctx context.Context, errCh chan<- error, ready chan<- struct{})
+}
+
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
@@ -26,7 +30,10 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		providerConf := provider.New(providerSettings.Name, allServers, time.Now)
 
-		serverName, err := setupOpenVPN(ctx, l.fw, l.openvpnConf, providerConf, VPNSettings.OpenVPN, providerSettings)
+		vpnRunner, serverName, err := setupOpenVPN(ctx, l.fw,
+			l.openvpnConf, providerConf,
+			VPNSettings.OpenVPN, providerSettings,
+			l.starter, l.logger)
 		if err != nil {
 			l.crashed(ctx, err)
 			continue
@@ -41,8 +48,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		waitError := make(chan error)
 		tunnelReady := make(chan struct{})
 
-		go l.openvpnConf.Run(openvpnCtx, waitError, tunnelReady,
-			l.logger, VPNSettings.OpenVPN)
+		go vpnRunner.Run(openvpnCtx, waitError, tunnelReady)
 
 		if err := l.waitForError(ctx, waitError); err != nil {
 			openvpnCancel()

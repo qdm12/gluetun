@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/golibs/command"
 )
 
 var ErrVersionUnknown = errors.New("OpenVPN version is unknown")
@@ -17,7 +18,7 @@ const (
 	binOpenvpn25 = "openvpn"
 )
 
-func (c *Configurator) start(ctx context.Context, version string, flags []string) (
+func start(ctx context.Context, starter command.Starter, version string, flags []string) (
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	var bin string
 	switch version {
@@ -29,12 +30,10 @@ func (c *Configurator) start(ctx context.Context, version string, flags []string
 		return nil, nil, nil, fmt.Errorf("%w: %s", ErrVersionUnknown, version)
 	}
 
-	c.logger.Info("starting OpenVPN " + version)
-
 	args := []string{"--config", constants.OpenVPNConf}
 	args = append(args, flags...)
 	cmd := exec.CommandContext(ctx, bin, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 
-	return c.cmder.Start(cmd)
+	return starter.Start(cmd)
 }

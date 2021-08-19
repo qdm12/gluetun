@@ -358,7 +358,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	vpnLogger := logger.NewChild(logging.Settings{Prefix: "vpn: "})
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.VPN.Provider,
 		allServers, ovpnConf, firewallConf, routingConf, portForwardLooper,
-		publicIPLooper, unboundLooper, vpnLogger, httpClient,
+		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, allSettings.VersionInformation)
 	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
 		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})

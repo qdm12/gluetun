@@ -4,17 +4,27 @@ import (
 	"context"
 
 	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
 )
 
-type Runner interface {
-	Run(ctx context.Context, errCh chan<- error, ready chan<- struct{},
-		logger logging.Logger, settings configuration.OpenVPN)
+type Runner struct {
+	settings configuration.OpenVPN
+	starter  command.Starter
+	logger   logging.Logger
 }
 
-func (c *Configurator) Run(ctx context.Context, errCh chan<- error,
-	ready chan<- struct{}, logger logging.Logger, settings configuration.OpenVPN) {
-	stdoutLines, stderrLines, waitError, err := c.start(ctx, settings.Version, settings.Flags)
+func NewRunner(settings configuration.OpenVPN, starter command.Starter,
+	logger logging.Logger) *Runner {
+	return &Runner{
+		starter:  starter,
+		logger:   logger,
+		settings: settings,
+	}
+}
+
+func (r *Runner) Run(ctx context.Context, errCh chan<- error, ready chan<- struct{}) {
+	stdoutLines, stderrLines, waitError, err := start(ctx, r.starter, r.settings.Version, r.settings.Flags)
 	if err != nil {
 		errCh <- err
 		return
@@ -22,7 +32,7 @@ func (c *Configurator) Run(ctx context.Context, errCh chan<- error,
 
 	streamCtx, streamCancel := context.WithCancel(context.Background())
 	streamDone := make(chan struct{})
-	go streamLines(streamCtx, streamDone, logger,
+	go streamLines(streamCtx, streamDone, r.logger,
 		stdoutLines, stderrLines, ready)
 
 	select {

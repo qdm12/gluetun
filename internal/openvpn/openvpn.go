@@ -11,7 +11,6 @@ var _ Interface = (*Configurator)(nil)
 type Interface interface {
 	VersionGetter
 	AuthWriter
-	Runner
 	Writer
 }
 

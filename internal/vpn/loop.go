@@ -15,6 +15,7 @@ import (
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/vpn/state"
+	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -42,8 +43,9 @@ type Loop struct {
 	publicip    publicip.Looper
 	dnsLooper   dns.Looper
 	// Other objects
-	logger logging.Logger
-	client *http.Client
+	starter command.Starter // for OpenVPN
+	logger  logging.Logger
+	client  *http.Client
 	// Internal channels and values
 	stop        <-chan struct{}
 	stopped     chan<- struct{}
@@ -67,7 +69,7 @@ func NewLoop(vpnSettings configuration.VPN,
 	providerSettings configuration.Provider,
 	allServers models.AllServers, openvpnConf openvpn.Interface,
 	fw firewallConfigurer, routing routing.VPNGetter,
-	portForward portforward.StartStopper,
+	portForward portforward.StartStopper, starter command.Starter,
 	publicip publicip.Looper, dnsLooper dns.Looper,
 	logger logging.Logger, client *http.Client,
 	buildInfo models.BuildInformation, versionInfo bool) *Loop {
@@ -90,6 +92,7 @@ func NewLoop(vpnSettings configuration.VPN,
 		portForward:   portForward,
 		publicip:      publicip,
 		dnsLooper:     dnsLooper,
+		starter:       starter,
 		logger:        logger,
 		client:        client,
 		start:         start,
