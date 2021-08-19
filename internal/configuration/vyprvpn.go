@@ -6,16 +6,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (settings *Provider) vyprvpnLines() (lines []string) {
-	if len(settings.ServerSelection.Regions) > 0 {
-		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	return lines
-}
-
 func (settings *Provider) readVyprvpn(r reader) (err error) {
 	settings.Name = constants.Vyprvpn
 

@@ -6,22 +6,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (settings *Provider) cyberghostLines() (lines []string) {
-	lines = append(lines, lastIndent+"Server groups: "+commaJoin(settings.ServerSelection.Groups))
-
-	if len(settings.ServerSelection.Regions) > 0 {
-		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
-	}
-
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	return lines
-}
-
 func (settings *Provider) readCyberghost(r reader) (err error) {
 	settings.Name = constants.Cyberghost
 

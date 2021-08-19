@@ -6,20 +6,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func (settings *Provider) fastestvpnLines() (lines []string) {
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	if len(settings.ServerSelection.Countries) > 0 {
-		lines = append(lines, lastIndent+"Countries: "+commaJoin(settings.ServerSelection.Countries))
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	return lines
-}
-
 func (settings *Provider) readFastestvpn(r reader) (err error) {
 	settings.Name = constants.Fastestvpn
 

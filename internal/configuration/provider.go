@@ -24,55 +24,15 @@ func (settings *Provider) lines() (lines []string) {
 
 	lines = append(lines, lastIndent+strings.Title(settings.Name)+" settings:")
 
-	selection := settings.ServerSelection
-
-	if selection.TargetIP != nil {
-		lines = append(lines, indent+lastIndent+"Target IP address: "+selection.TargetIP.String())
-	}
-
-	var providerLines []string
-	switch strings.ToLower(settings.Name) {
-	case "cyberghost":
-		providerLines = settings.cyberghostLines()
-	case "fastestvpn":
-		providerLines = settings.fastestvpnLines()
-	case "hidemyass":
-		providerLines = settings.hideMyAssLines()
-	case "ipvanish":
-		providerLines = settings.ipvanishLines()
-	case "ivpn":
-		providerLines = settings.ivpnLines()
-	case "mullvad":
-		providerLines = settings.mullvadLines()
-	case "nordvpn":
-		providerLines = settings.nordvpnLines()
-	case "privado":
-		providerLines = settings.privadoLines()
-	case "privatevpn":
-		providerLines = settings.privatevpnLines()
-	case "private internet access":
-		providerLines = settings.privateinternetaccessLines()
-	case "protonvpn":
-		providerLines = settings.protonvpnLines()
-	case "purevpn":
-		providerLines = settings.purevpnLines()
-	case "surfshark":
-		providerLines = settings.surfsharkLines()
-	case "torguard":
-		providerLines = settings.torguardLines()
-	case strings.ToLower(constants.VPNUnlimited):
-		providerLines = settings.vpnUnlimitedLines()
-	case "vyprvpn":
-		providerLines = settings.vyprvpnLines()
-	case "windscribe":
-		providerLines = settings.windscribeLines()
-	default:
-		panic(`Missing lines method for provider "` +
-			settings.Name + `"! Please create a Github issue.`)
-	}
-
-	for _, line := range providerLines {
+	for _, line := range settings.ServerSelection.toLines() {
 		lines = append(lines, indent+line)
+	}
+
+	if settings.PortForwarding.Enabled { // PIA
+		lines = append(lines, indent+lastIndent+"Port forwarding:")
+		for _, line := range settings.PortForwarding.lines() {
+			lines = append(lines, indent+indent+line)
+		}
 	}
 
 	return lines

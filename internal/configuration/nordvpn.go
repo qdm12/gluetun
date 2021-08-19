@@ -8,32 +8,6 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (settings *Provider) nordvpnLines() (lines []string) {
-	if len(settings.ServerSelection.Regions) > 0 {
-		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
-	}
-
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	if len(settings.ServerSelection.Names) > 0 {
-		lines = append(lines, lastIndent+"Names: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	if numbersUint16 := settings.ServerSelection.Numbers; len(numbersUint16) > 0 {
-		numbersString := make([]string, len(numbersUint16))
-		for i, numberUint16 := range numbersUint16 {
-			numbersString[i] = strconv.Itoa(int(numberUint16))
-		}
-		lines = append(lines, lastIndent+"Numbers: "+commaJoin(numbersString))
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	return lines
-}
-
 func (settings *Provider) readNordvpn(r reader) (err error) {
 	settings.Name = constants.Nordvpn
 

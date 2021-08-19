@@ -42,6 +42,60 @@ type ServerSelection struct { //nolint:maligned
 	OpenVPN OpenVPNSelection `json:"openvpn"`
 }
 
+func (selection ServerSelection) toLines() (lines []string) {
+	if selection.TargetIP != nil {
+		lines = append(lines, lastIndent+"Target IP address: "+selection.TargetIP.String())
+	}
+
+	if len(selection.Groups) > 0 {
+		lines = append(lines, lastIndent+"Server groups: "+commaJoin(selection.Groups))
+	}
+
+	if len(selection.Countries) > 0 {
+		lines = append(lines, lastIndent+"Countries: "+commaJoin(selection.Countries))
+	}
+
+	if len(selection.Regions) > 0 {
+		lines = append(lines, lastIndent+"Regions: "+commaJoin(selection.Regions))
+	}
+
+	if len(selection.Cities) > 0 {
+		lines = append(lines, lastIndent+"Cities: "+commaJoin(selection.Cities))
+	}
+
+	if len(selection.ISPs) > 0 {
+		lines = append(lines, lastIndent+"ISPs: "+commaJoin(selection.ISPs))
+	}
+
+	if selection.FreeOnly {
+		lines = append(lines, lastIndent+"Free servers only")
+	}
+
+	if selection.StreamOnly {
+		lines = append(lines, lastIndent+"Stream servers only")
+	}
+
+	if len(selection.Hostnames) > 0 {
+		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(selection.Hostnames))
+	}
+
+	if len(selection.Names) > 0 {
+		lines = append(lines, lastIndent+"Names: "+commaJoin(selection.Names))
+	}
+
+	if len(selection.Numbers) > 0 {
+		numbersString := make([]string, len(selection.Numbers))
+		for i, numberUint16 := range selection.Numbers {
+			numbersString[i] = fmt.Sprint(numberUint16)
+		}
+		lines = append(lines, lastIndent+"Numbers: "+commaJoin(numbersString))
+	}
+
+	lines = append(lines, selection.OpenVPN.lines()...)
+
+	return lines
+}
+
 type OpenVPNSelection struct {
 	TCP        bool   `json:"tcp"`               // UDP if TCP is false
 	CustomPort uint16 `json:"custom_port"`       // HideMyAss, Mullvad, PIA, ProtonVPN, Windscribe

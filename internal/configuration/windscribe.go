@@ -7,24 +7,6 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (settings *Provider) windscribeLines() (lines []string) {
-	if len(settings.ServerSelection.Regions) > 0 {
-		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
-	}
-
-	if len(settings.ServerSelection.Cities) > 0 {
-		lines = append(lines, lastIndent+"Cities: "+commaJoin(settings.ServerSelection.Cities))
-	}
-
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	return lines
-}
-
 func (settings *Provider) readWindscribe(r reader) (err error) {
 	settings.Name = constants.Windscribe
 

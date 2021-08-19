@@ -7,28 +7,6 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (settings *Provider) mullvadLines() (lines []string) {
-	if len(settings.ServerSelection.Countries) > 0 {
-		lines = append(lines, lastIndent+"Countries: "+commaJoin(settings.ServerSelection.Countries))
-	}
-
-	if len(settings.ServerSelection.Cities) > 0 {
-		lines = append(lines, lastIndent+"Cities: "+commaJoin(settings.ServerSelection.Cities))
-	}
-
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	if len(settings.ServerSelection.ISPs) > 0 {
-		lines = append(lines, lastIndent+"ISPs: "+commaJoin(settings.ServerSelection.ISPs))
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	return lines
-}
-
 func (settings *Provider) readMullvad(r reader) (err error) {
 	settings.Name = constants.Mullvad
 

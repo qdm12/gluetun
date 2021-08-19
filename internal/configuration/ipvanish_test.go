@@ -12,48 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Provider_ipvanishLines(t *testing.T) {
-	t.Parallel()
-
-	testCases := map[string]struct {
-		settings Provider
-		lines    []string
-	}{
-		"empty settings": {
-			lines: []string{
-				"|--OpenVPN selection:",
-				"   |--Protocol: udp",
-			},
-		},
-		"full settings": {
-			settings: Provider{
-				ServerSelection: ServerSelection{
-					Countries: []string{"A", "B"},
-					Cities:    []string{"C", "D"},
-					Hostnames: []string{"E", "F"},
-				},
-			},
-			lines: []string{
-				"|--Countries: A, B",
-				"|--Cities: C, D",
-				"|--Hostnames: E, F",
-				"|--OpenVPN selection:",
-				"   |--Protocol: udp",
-			},
-		},
-	}
-	for name, testCase := range testCases {
-		testCase := testCase
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			lines := testCase.settings.ipvanishLines()
-
-			assert.Equal(t, testCase.lines, lines)
-		})
-	}
-}
-
 func Test_Provider_readIpvanish(t *testing.T) {
 	t.Parallel()
 

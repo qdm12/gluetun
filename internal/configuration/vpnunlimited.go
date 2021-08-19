@@ -7,32 +7,6 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (settings *Provider) vpnUnlimitedLines() (lines []string) {
-	if len(settings.ServerSelection.Countries) > 0 {
-		lines = append(lines, lastIndent+"Countries: "+commaJoin(settings.ServerSelection.Countries))
-	}
-
-	if len(settings.ServerSelection.Cities) > 0 {
-		lines = append(lines, lastIndent+"Cities: "+commaJoin(settings.ServerSelection.Cities))
-	}
-
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	if settings.ServerSelection.FreeOnly {
-		lines = append(lines, lastIndent+"Free servers only")
-	}
-
-	if settings.ServerSelection.StreamOnly {
-		lines = append(lines, lastIndent+"Stream servers only")
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	return lines
-}
-
 func (settings *Provider) readVPNUnlimited(r reader) (err error) {
 	settings.Name = constants.VPNUnlimited
 

@@ -7,31 +7,6 @@ import (
 	"github.com/qdm12/golibs/params"
 )
 
-func (settings *Provider) privateinternetaccessLines() (lines []string) {
-	if len(settings.ServerSelection.Regions) > 0 {
-		lines = append(lines, lastIndent+"Regions: "+commaJoin(settings.ServerSelection.Regions))
-	}
-
-	if len(settings.ServerSelection.Hostnames) > 0 {
-		lines = append(lines, lastIndent+"Hostnames: "+commaJoin(settings.ServerSelection.Hostnames))
-	}
-
-	if len(settings.ServerSelection.Names) > 0 {
-		lines = append(lines, lastIndent+"Names: "+commaJoin(settings.ServerSelection.Names))
-	}
-
-	lines = append(lines, settings.ServerSelection.OpenVPN.lines()...)
-
-	if settings.PortForwarding.Enabled {
-		lines = append(lines, lastIndent+"Port forwarding:")
-		for _, line := range settings.PortForwarding.lines() {
-			lines = append(lines, indent+line)
-		}
-	}
-
-	return lines
-}
-
 func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 	settings.Name = constants.PrivateInternetAccess
 
