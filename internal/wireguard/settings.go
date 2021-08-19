@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"regexp"
+	"strings"
 
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
@@ -113,4 +114,87 @@ func (s *Settings) Check() (err error) {
 	}
 
 	return nil
+}
+
+func (s Settings) String() string {
+	lines := s.ToLines(ToLinesSettings{})
+	return strings.Join(lines, "\n")
+}
+
+type ToLinesSettings struct {
+	// Indent defaults to 4 spaces "    ".
+	Indent *string
+	// FieldPrefix defaults to "├── ".
+	FieldPrefix *string
+	// LastFieldPrefix defaults to "└── ".
+	LastFieldPrefix *string
+}
+
+func (settings *ToLinesSettings) setDefaults() {
+	toStringPtr := func(s string) *string { return &s }
+	if settings.Indent == nil {
+		settings.Indent = toStringPtr("    ")
+	}
+	if settings.FieldPrefix == nil {
+		settings.FieldPrefix = toStringPtr("├── ")
+	}
+	if settings.LastFieldPrefix == nil {
+		settings.LastFieldPrefix = toStringPtr("└── ")
+	}
+}
+
+// ToLines serializes the settings to a slice of strings for display.
+func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
+	settings.setDefaults()
+
+	indent := *settings.Indent
+	fieldPrefix := *settings.FieldPrefix
+	lastFieldPrefix := *settings.LastFieldPrefix
+
+	lines = append(lines, fieldPrefix+"Interface name: "+s.InterfaceName)
+	const (
+		set    = "set"
+		notSet = "not set"
+	)
+
+	isSet := notSet
+	if s.PrivateKey != "" {
+		isSet = set
+	}
+	lines = append(lines, fieldPrefix+"Private key: "+isSet)
+
+	if s.PublicKey != "" {
+		lines = append(lines, fieldPrefix+"PublicKey: "+s.PublicKey)
+	}
+
+	isSet = notSet
+	if s.PreSharedKey != "" {
+		isSet = set
+	}
+	lines = append(lines, fieldPrefix+"Pre shared key: "+isSet)
+
+	endpointStr := notSet
+	if s.Endpoint != nil {
+		endpointStr = s.Endpoint.String()
+	}
+	lines = append(lines, fieldPrefix+"Endpoint: "+endpointStr)
+
+	if s.FirewallMark != 0 {
+		lines = append(lines, fieldPrefix+"Firewall mark: "+fmt.Sprint(s.FirewallMark))
+	}
+
+	if len(s.Addresses) == 0 {
+		lines = append(lines, lastFieldPrefix+"Addresses: "+notSet)
+	} else {
+		lines = append(lines, lastFieldPrefix+"Addresses:")
+		for i, address := range s.Addresses {
+			prefix := fieldPrefix
+			if i == len(s.Addresses)-1 {
+				prefix = lastFieldPrefix
+			}
+			lines = append(lines, indent+prefix+address.String())
+		}
+	}
+
+	return lines
 }

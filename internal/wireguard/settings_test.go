@@ -227,3 +227,111 @@ func Test_Settings_Check(t *testing.T) {
 		})
 	}
 }
+
+func toStringPtr(s string) *string { return &s }
+
+func Test_ToLinesSettings_setDefaults(t *testing.T) {
+	t.Parallel()
+
+	settings := ToLinesSettings{
+		Indent: toStringPtr("indent"),
+	}
+
+	someFunc := func(settings ToLinesSettings) {
+		settings.setDefaults()
+		expectedSettings := ToLinesSettings{
+			Indent:          toStringPtr("indent"),
+			FieldPrefix:     toStringPtr("├── "),
+			LastFieldPrefix: toStringPtr("└── "),
+		}
+		assert.Equal(t, expectedSettings, settings)
+	}
+	someFunc(settings)
+
+	untouchedSettings := ToLinesSettings{
+		Indent: toStringPtr("indent"),
+	}
+	assert.Equal(t, untouchedSettings, settings)
+}
+
+func Test_Settings_Lines(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		settings     Settings
+		lineSettings ToLinesSettings
+		lines        []string
+	}{
+		"empty settings": {
+			lines: []string{
+				"├── Interface name: ",
+				"├── Private key: not set",
+				"├── Pre shared key: not set",
+				"├── Endpoint: not set",
+				"└── Addresses: not set",
+			},
+		},
+		"settings all set": {
+			settings: Settings{
+				InterfaceName: "wg0",
+				PrivateKey:    "private key",
+				PublicKey:     "public key",
+				PreSharedKey:  "pre-shared key",
+				Endpoint: &net.UDPAddr{
+					IP:   net.IPv4(1, 2, 3, 4),
+					Port: 51820,
+				},
+				FirewallMark: 999,
+				Addresses: []*net.IPNet{
+					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
+					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
+				},
+			},
+			lines: []string{
+				"├── Interface name: wg0",
+				"├── Private key: set",
+				"├── PublicKey: public key",
+				"├── Pre shared key: set",
+				"├── Endpoint: 1.2.3.4:51820",
+				"├── Firewall mark: 999",
+				"└── Addresses:",
+				"    ├── 1.1.1.1/24",
+				"    └── 2.2.2.2/32",
+			},
+		},
+		"custom line settings": {
+			lineSettings: ToLinesSettings{
+				Indent:          toStringPtr("  "),
+				FieldPrefix:     toStringPtr("- "),
+				LastFieldPrefix: toStringPtr("* "),
+			},
+			settings: Settings{
+				InterfaceName: "wg0",
+				Addresses: []*net.IPNet{
+					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
+					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
+				},
+			},
+			lines: []string{
+				"- Interface name: wg0",
+				"- Private key: not set",
+				"- Pre shared key: not set",
+				"- Endpoint: not set",
+				"* Addresses:",
+				"  - 1.1.1.1/24",
+				"  * 2.2.2.2/32",
+			},
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			lines := testCase.settings.ToLines(testCase.lineSettings)
+
+			assert.Equal(t, testCase.lines, lines)
+		})
+	}
+}
