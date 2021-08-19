@@ -24,6 +24,7 @@ func BuildWireguardSettings(connection models.Connection,
 	copy(address.IP, userSettings.Address.IP)
 	address.Mask = make(net.IPMask, len(userSettings.Address.Mask))
 	copy(address.Mask, userSettings.Address.Mask)
+	settings.Addresses = append(settings.Addresses, address)
 
 	return settings
 }
