@@ -9,33 +9,26 @@ import (
 )
 
 type SettingsGetSetter interface {
-	GetSettings() (vpn configuration.VPN,
-		provider configuration.Provider)
-	SetSettings(ctx context.Context, vpn configuration.VPN,
-		provider configuration.Provider) (outcome string)
+	GetSettings() (vpn configuration.VPN)
+	SetSettings(ctx context.Context, vpn configuration.VPN) (outcome string)
 }
 
-func (s *State) GetSettings() (vpn configuration.VPN,
-	provider configuration.Provider) {
+func (s *State) GetSettings() (vpn configuration.VPN) {
 	s.settingsMu.RLock()
 	vpn = s.vpn
-	provider = s.provider
 	s.settingsMu.RUnlock()
-	return vpn, provider
+	return vpn
 }
 
-func (s *State) SetSettings(ctx context.Context,
-	vpn configuration.VPN, provider configuration.Provider) (
+func (s *State) SetSettings(ctx context.Context, vpn configuration.VPN) (
 	outcome string) {
 	s.settingsMu.Lock()
-	settingsUnchanged := reflect.DeepEqual(s.vpn, vpn) &&
-		reflect.DeepEqual(s.provider, provider)
+	settingsUnchanged := reflect.DeepEqual(s.vpn, vpn)
 	if settingsUnchanged {
 		s.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
 	s.vpn = vpn
-	s.provider = provider
 	s.settingsMu.Unlock()
 	_, _ = s.statusApplier.ApplyStatus(ctx, constants.Stopped)
 	outcome, _ = s.statusApplier.ApplyStatus(ctx, constants.Running)

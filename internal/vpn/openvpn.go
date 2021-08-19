@@ -26,18 +26,17 @@ var (
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
 func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 	openvpnConf openvpn.Interface, providerConf provider.Provider,
-	openVPNSettings configuration.OpenVPN, providerSettings configuration.Provider,
-	starter command.Starter, logger logging.Logger) (
+	settings configuration.VPN, starter command.Starter, logger logging.Logger) (
 	runner vpnRunner, serverName string, err error) {
 	var connection models.Connection
 	var lines []string
-	if openVPNSettings.Config == "" {
-		connection, err = providerConf.GetConnection(providerSettings.ServerSelection)
+	if settings.OpenVPN.Config == "" {
+		connection, err = providerConf.GetConnection(settings.Provider.ServerSelection)
 		if err == nil {
-			lines = providerConf.BuildConf(connection, openVPNSettings)
+			lines = providerConf.BuildConf(connection, settings.OpenVPN)
 		}
 	} else {
-		lines, connection, err = custom.BuildConfig(openVPNSettings)
+		lines, connection, err = custom.BuildConfig(settings.OpenVPN)
 	}
 	if err != nil {
 		return nil, "", fmt.Errorf("%w: %s", errBuildConfig, err)
@@ -47,8 +46,8 @@ func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 		return nil, "", fmt.Errorf("%w: %s", errWriteConfig, err)
 	}
 
-	if openVPNSettings.User != "" {
-		err := openvpnConf.WriteAuthFile(openVPNSettings.User, openVPNSettings.Password)
+	if settings.OpenVPN.User != "" {
+		err := openvpnConf.WriteAuthFile(settings.OpenVPN.User, settings.OpenVPN.Password)
 		if err != nil {
 			return nil, "", fmt.Errorf("%w: %s", errWriteAuth, err)
 		}
@@ -58,7 +57,7 @@ func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 		return nil, "", fmt.Errorf("%w: %s", errFirewall, err)
 	}
 
-	runner = openvpn.NewRunner(openVPNSettings, starter, logger)
+	runner = openvpn.NewRunner(settings.OpenVPN, starter, logger)
 
 	return runner, connection.Hostname, nil
 }

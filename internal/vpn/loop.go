@@ -66,7 +66,6 @@ const (
 )
 
 func NewLoop(vpnSettings configuration.VPN,
-	providerSettings configuration.Provider,
 	allServers models.AllServers, openvpnConf openvpn.Interface,
 	fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper, starter command.Starter,
@@ -79,7 +78,7 @@ func NewLoop(vpnSettings configuration.VPN,
 	stopped := make(chan struct{})
 
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
-	state := state.New(statusManager, vpnSettings, providerSettings, allServers)
+	state := state.New(statusManager, vpnSettings, allServers)
 
 	return &Loop{
 		statusManager: statusManager,

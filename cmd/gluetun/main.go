@@ -356,7 +356,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
 	vpnLogger := logger.NewChild(logging.Settings{Prefix: "vpn: "})
-	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.VPN.Provider,
+	vpnLooper := vpn.NewLoop(allSettings.VPN,
 		allServers, ovpnConf, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, allSettings.VersionInformation)

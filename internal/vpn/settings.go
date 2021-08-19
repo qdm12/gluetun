@@ -9,13 +9,12 @@ import (
 
 type SettingsGetSetter = state.SettingsGetSetter
 
-func (l *Loop) GetSettings() (
-	vpn configuration.VPN, provider configuration.Provider) {
+func (l *Loop) GetSettings() (settings configuration.VPN) {
 	return l.state.GetSettings()
 }
 
 func (l *Loop) SetSettings(ctx context.Context,
-	vpn configuration.VPN, provider configuration.Provider) (
+	vpn configuration.VPN) (
 	outcome string) {
-	return l.state.SetSettings(ctx, vpn, provider)
+	return l.state.SetSettings(ctx, vpn)
 }

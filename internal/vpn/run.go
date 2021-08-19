@@ -26,20 +26,18 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	}
 
 	for ctx.Err() == nil {
-		VPNSettings, providerSettings, allServers := l.state.GetSettingsAndServers()
+		settings, allServers := l.state.GetSettingsAndServers()
 
-		providerConf := provider.New(providerSettings.Name, allServers, time.Now)
+		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
 
 		vpnRunner, serverName, err := setupOpenVPN(ctx, l.fw,
-			l.openvpnConf, providerConf,
-			VPNSettings.OpenVPN, providerSettings,
-			l.starter, l.logger)
+			l.openvpnConf, providerConf, settings, l.starter, l.logger)
 		if err != nil {
 			l.crashed(ctx, err)
 			continue
 		}
 		tunnelUpData := tunnelUpData{
-			portForwarding: providerSettings.PortForwarding.Enabled,
+			portForwarding: settings.Provider.PortForwarding.Enabled,
 			serverName:     serverName,
 			portForwarder:  providerConf,
 		}
@@ -67,7 +65,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-ctx.Done():
 				const pfTimeout = 100 * time.Millisecond
 				l.stopPortForwarding(context.Background(),
-					providerSettings.PortForwarding.Enabled, pfTimeout)
+					settings.Provider.PortForwarding.Enabled, pfTimeout)
 				openvpnCancel()
 				<-waitError
 				close(waitError)
@@ -75,7 +73,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
-				l.stopPortForwarding(ctx, providerSettings.PortForwarding.Enabled, 0)
+				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
 				openvpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
@@ -90,7 +88,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
-				l.stopPortForwarding(ctx, providerSettings.PortForwarding.Enabled, 0)
+				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
 				openvpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
