@@ -14,7 +14,7 @@ var (
 )
 
 func BuildConfig(settings configuration.OpenVPN) (
-	lines []string, connection models.OpenVPNConnection, err error) {
+	lines []string, connection models.Connection, err error) {
 	lines, err = readCustomConfigLines(settings.Config)
 	if err != nil {
 		return nil, connection, fmt.Errorf("%w: %s", ErrReadCustomConfig, err)

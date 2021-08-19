@@ -54,7 +54,7 @@ func Test_BuildConfig(t *testing.T) {
 	}
 	assert.Equal(t, expectedLines, lines)
 
-	expectedConnection := models.OpenVPNConnection{
+	expectedConnection := models.Connection{
 		IP:       net.IPv4(1, 9, 8, 7),
 		Port:     1194,
 		Protocol: constants.UDP,

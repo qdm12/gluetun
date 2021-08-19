@@ -12,8 +12,8 @@ import (
 
 var ErrProtocolUnsupported = errors.New("network protocol is not supported")
 
-func (p *Privado) GetOpenVPNConnection(selection configuration.ServerSelection) (
-	connection models.OpenVPNConnection, err error) {
+func (p *Privado) GetConnection(selection configuration.ServerSelection) (
+	connection models.Connection, err error) {
 	const port = 1194
 	const protocol = constants.UDP
 	if selection.OpenVPN.TCP {
@@ -25,9 +25,10 @@ func (p *Privado) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		return connection, err
 	}
 
-	connections := make([]models.OpenVPNConnection, len(servers))
+	connections := make([]models.Connection, len(servers))
 	for i := range servers {
-		connection := models.OpenVPNConnection{
+		connection := models.Connection{
+			Type:     selection.VPN,
 			IP:       servers[i].IP,
 			Port:     port,
 			Protocol: protocol,
@@ -37,8 +38,8 @@ func (p *Privado) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	}
 
 	if selection.TargetIP != nil {
-		return utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
+		return utils.GetTargetIPConnection(connections, selection.TargetIP)
 	}
 
-	return utils.PickRandomOpenVPNConnection(connections, p.randSource), nil
+	return utils.PickRandomConnection(connections, p.randSource), nil
 }

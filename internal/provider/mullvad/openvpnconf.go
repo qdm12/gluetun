@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (m *Mullvad) BuildConf(connection models.OpenVPNConnection,
+func (m *Mullvad) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string) {
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES256cbc
@@ -42,8 +42,8 @@ func (m *Mullvad) BuildConf(connection models.OpenVPNConnection,
 		// Modified variables
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		connection.ProtoLine(),
-		connection.RemoteLine(),
+		connection.OpenVPNProtoLine(),
+		connection.OpenVPNRemoteLine(),
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

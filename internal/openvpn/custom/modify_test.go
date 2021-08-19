@@ -16,7 +16,7 @@ func Test_modifyCustomConfig(t *testing.T) {
 	testCases := map[string]struct {
 		lines      []string
 		settings   configuration.OpenVPN
-		connection models.OpenVPNConnection
+		connection models.Connection
 		modified   []string
 	}{
 		"mixed": {
@@ -36,7 +36,7 @@ func Test_modifyCustomConfig(t *testing.T) {
 				MSSFix:   1000,
 				ProcUser: "procuser",
 			},
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     1194,
 				Protocol: constants.UDP,

@@ -8,10 +8,10 @@ import (
 )
 
 type VPNConnectionSetter interface {
-	SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) error
+	SetVPNConnection(ctx context.Context, connection models.Connection) error
 }
 
-func (c *Config) SetVPNConnection(ctx context.Context, connection models.OpenVPNConnection) (err error) {
+func (c *Config) SetVPNConnection(ctx context.Context, connection models.Connection) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
@@ -33,7 +33,7 @@ func (c *Config) SetVPNConnection(ctx context.Context, connection models.OpenVPN
 			c.logger.Error("cannot remove outdated VPN connection through firewall: " + err.Error())
 		}
 	}
-	c.vpnConnection = models.OpenVPNConnection{}
+	c.vpnConnection = models.Connection{}
 	remove = false
 	if err := c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, connection, remove); err != nil {
 		return fmt.Errorf("cannot set VPN connection through firewall: %w", err)

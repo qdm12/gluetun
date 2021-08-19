@@ -7,8 +7,8 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Privatevpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
-	connection models.OpenVPNConnection, err error) {
+func (p *Privatevpn) GetConnection(selection configuration.ServerSelection) (
+	connection models.Connection, err error) {
 	protocol := constants.UDP
 	var port uint16 = 1194
 	if selection.OpenVPN.TCP {
@@ -21,10 +21,11 @@ func (p *Privatevpn) GetOpenVPNConnection(selection configuration.ServerSelectio
 		return connection, err
 	}
 
-	var connections []models.OpenVPNConnection
+	var connections []models.Connection
 	for _, server := range servers {
 		for _, ip := range server.IPs {
-			connection := models.OpenVPNConnection{
+			connection := models.Connection{
+				Type:     selection.VPN,
 				IP:       ip,
 				Port:     port,
 				Protocol: protocol,
@@ -34,8 +35,8 @@ func (p *Privatevpn) GetOpenVPNConnection(selection configuration.ServerSelectio
 	}
 
 	if selection.TargetIP != nil {
-		return utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
+		return utils.GetTargetIPConnection(connections, selection.TargetIP)
 	}
 
-	return utils.PickRandomOpenVPNConnection(connections, p.randSource), nil
+	return utils.PickRandomConnection(connections, p.randSource), nil
 }

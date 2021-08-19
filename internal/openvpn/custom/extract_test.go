@@ -16,12 +16,12 @@ func Test_extractConnectionFromLines(t *testing.T) {
 
 	testCases := map[string]struct {
 		lines      []string
-		connection models.OpenVPNConnection
+		connection models.Connection
 		err        error
 	}{
 		"success": {
 			lines: []string{"bla bla", "proto tcp", "remote 1.2.3.4 1194 tcp"},
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     1194,
 				Protocol: constants.TCP,
@@ -33,7 +33,7 @@ func Test_extractConnectionFromLines(t *testing.T) {
 		},
 		"only use first values found": {
 			lines: []string{"proto udp", "proto tcp", "remote 1.2.3.4 443 tcp", "remote 5.2.3.4 1194 udp"},
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     443,
 				Protocol: constants.UDP,
@@ -41,14 +41,14 @@ func Test_extractConnectionFromLines(t *testing.T) {
 		},
 		"no IP found": {
 			lines: []string{"proto tcp"},
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				Protocol: constants.TCP,
 			},
 			err: errRemoteLineNotFound,
 		},
 		"default TCP port": {
 			lines: []string{"remote 1.2.3.4", "proto tcp"},
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     443,
 				Protocol: constants.TCP,
@@ -56,7 +56,7 @@ func Test_extractConnectionFromLines(t *testing.T) {
 		},
 		"default UDP port": {
 			lines: []string{"remote 1.2.3.4", "proto udp"},
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     1194,
 				Protocol: constants.UDP,
@@ -88,7 +88,7 @@ func Test_extractConnectionFromLine(t *testing.T) {
 
 	testCases := map[string]struct {
 		line       string
-		connection models.OpenVPNConnection
+		connection models.Connection
 		isErr      error
 	}{
 		"irrelevant line": {
@@ -100,7 +100,7 @@ func Test_extractConnectionFromLine(t *testing.T) {
 		},
 		"extract proto success": {
 			line: "proto tcp",
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				Protocol: constants.TCP,
 			},
 		},
@@ -110,7 +110,7 @@ func Test_extractConnectionFromLine(t *testing.T) {
 		},
 		"extract remote success": {
 			line: "remote 1.2.3.4 1194 udp",
-			connection: models.OpenVPNConnection{
+			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     1194,
 				Protocol: constants.UDP,

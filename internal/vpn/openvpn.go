@@ -26,10 +26,10 @@ func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 	openvpnConf openvpn.Interface, providerConf provider.Provider,
 	openVPNSettings configuration.OpenVPN, providerSettings configuration.Provider) (
 	serverName string, err error) {
-	var connection models.OpenVPNConnection
+	var connection models.Connection
 	var lines []string
 	if openVPNSettings.Config == "" {
-		connection, err = providerConf.GetOpenVPNConnection(providerSettings.ServerSelection)
+		connection, err = providerConf.GetConnection(providerSettings.ServerSelection)
 		if err == nil {
 			lines = providerConf.BuildConf(connection, openVPNSettings)
 		}

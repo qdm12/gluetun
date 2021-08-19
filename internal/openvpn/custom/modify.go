@@ -11,7 +11,7 @@ import (
 )
 
 func modifyCustomConfig(lines []string, settings configuration.OpenVPN,
-	connection models.OpenVPNConnection) (modified []string) {
+	connection models.Connection) (modified []string) {
 	// Remove some lines
 	for _, line := range lines {
 		switch {
@@ -33,8 +33,8 @@ func modifyCustomConfig(lines []string, settings configuration.OpenVPN,
 	}
 
 	// Add values
-	modified = append(modified, connection.ProtoLine())
-	modified = append(modified, connection.RemoteLine())
+	modified = append(modified, connection.OpenVPNProtoLine())
+	modified = append(modified, connection.OpenVPNRemoteLine())
 	modified = append(modified, "mute-replay-warnings")
 	modified = append(modified, "auth-nocache")
 	modified = append(modified, "pull-filter ignore \"auth-token\"") // prevent auth failed loop

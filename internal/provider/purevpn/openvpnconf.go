@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Purevpn) BuildConf(connection models.OpenVPNConnection,
+func (p *Purevpn) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string) {
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES256gcm
@@ -44,8 +44,8 @@ func (p *Purevpn) BuildConf(connection models.OpenVPNConnection,
 		// Modified variables
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		connection.ProtoLine(),
-		connection.RemoteLine(),
+		connection.OpenVPNProtoLine(),
+		connection.OpenVPNRemoteLine(),
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

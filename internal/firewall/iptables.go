@@ -150,7 +150,7 @@ func (c *Config) acceptEstablishedRelatedTraffic(ctx context.Context, remove boo
 }
 
 func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
-	defaultInterface string, connection models.OpenVPNConnection, remove bool) error {
+	defaultInterface string, connection models.Connection, remove bool) error {
 	instruction := fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 		appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol,
 		connection.Protocol, connection.Port)

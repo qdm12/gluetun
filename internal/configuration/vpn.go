@@ -49,7 +49,7 @@ func (settings *VPN) read(r reader) (err error) {
 	settings.Type = vpnType
 
 	if !settings.isOpenVPNCustomConfig(r.env) {
-		if err := settings.Provider.read(r); err != nil {
+		if err := settings.Provider.read(r, vpnType); err != nil {
 			return fmt.Errorf("%w: %s", errReadProviderSettings, err)
 		}
 	}

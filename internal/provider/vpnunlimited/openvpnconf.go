@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Provider) BuildConf(connection models.OpenVPNConnection,
+func (p *Provider) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string) {
 	lines = []string{
 		"client",
@@ -35,8 +35,8 @@ func (p *Provider) BuildConf(connection models.OpenVPNConnection,
 
 		// Modified variables
 		"verb " + strconv.Itoa(settings.Verbosity),
-		connection.ProtoLine(),
-		connection.RemoteLine(),
+		connection.OpenVPNProtoLine(),
+		connection.OpenVPNRemoteLine(),
 	}
 
 	if settings.Cipher != "" {

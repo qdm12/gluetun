@@ -17,7 +17,7 @@ var (
 
 // extractConnectionFromLines always takes the first remote line only.
 func extractConnectionFromLines(lines []string) (
-	connection models.OpenVPNConnection, err error) {
+	connection models.Connection, err error) {
 	for i, line := range lines {
 		newConnectionData, err := extractConnectionFromLine(line)
 		if err != nil {
@@ -54,7 +54,7 @@ var (
 )
 
 func extractConnectionFromLine(line string) (
-	connection models.OpenVPNConnection, err error) {
+	connection models.Connection, err error) {
 	switch {
 	case strings.HasPrefix(line, "proto "):
 		connection.Protocol, err = extractProto(line)

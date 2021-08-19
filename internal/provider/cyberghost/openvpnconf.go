@@ -10,7 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (c *Cyberghost) BuildConf(connection models.OpenVPNConnection,
+func (c *Cyberghost) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string) {
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES256cbc
@@ -48,8 +48,8 @@ func (c *Cyberghost) BuildConf(connection models.OpenVPNConnection,
 		// Modified variables
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		connection.ProtoLine(),
-		connection.RemoteLine(),
+		connection.OpenVPNProtoLine(),
+		connection.OpenVPNRemoteLine(),
 		"auth " + settings.Auth,
 	}
 

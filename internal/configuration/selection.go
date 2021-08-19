@@ -9,6 +9,7 @@ import (
 
 type ServerSelection struct { //nolint:maligned
 	// Common
+	VPN      string `json:"vpn"`
 	TargetIP net.IP `json:"target_ip,omitempty"`
 	// TODO comments
 	// Cyberghost, PIA, Protonvpn, Surfshark, Windscribe, Vyprvpn, NordVPN

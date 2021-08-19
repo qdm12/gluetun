@@ -12,8 +12,8 @@ import (
 
 var ErrProtocolUnsupported = errors.New("network protocol is not supported")
 
-func (v *Vyprvpn) GetOpenVPNConnection(selection configuration.ServerSelection) (
-	connection models.OpenVPNConnection, err error) {
+func (v *Vyprvpn) GetConnection(selection configuration.ServerSelection) (
+	connection models.Connection, err error) {
 	const port = 443
 	const protocol = constants.UDP
 	if selection.OpenVPN.TCP {
@@ -25,10 +25,11 @@ func (v *Vyprvpn) GetOpenVPNConnection(selection configuration.ServerSelection) 
 		return connection, err
 	}
 
-	var connections []models.OpenVPNConnection
+	var connections []models.Connection
 	for _, server := range servers {
 		for _, IP := range server.IPs {
-			connection := models.OpenVPNConnection{
+			connection := models.Connection{
+				Type:     selection.VPN,
 				IP:       IP,
 				Port:     port,
 				Protocol: protocol,
@@ -38,8 +39,8 @@ func (v *Vyprvpn) GetOpenVPNConnection(selection configuration.ServerSelection) 
 	}
 
 	if selection.TargetIP != nil {
-		return utils.GetTargetIPOpenVPNConnection(connections, selection.TargetIP)
+		return utils.GetTargetIPConnection(connections, selection.TargetIP)
 	}
 
-	return utils.PickRandomOpenVPNConnection(connections, v.randSource), nil
+	return utils.PickRandomConnection(connections, v.randSource), nil
 }

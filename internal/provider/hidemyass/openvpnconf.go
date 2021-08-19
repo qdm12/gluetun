@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (h *HideMyAss) BuildConf(connection models.OpenVPNConnection,
+func (h *HideMyAss) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string) {
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES256cbc
@@ -42,7 +42,7 @@ func (h *HideMyAss) BuildConf(connection models.OpenVPNConnection,
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"proto " + connection.Protocol,
-		connection.RemoteLine(),
+		connection.OpenVPNRemoteLine(),
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

@@ -29,7 +29,7 @@ func (c *CLI) OpenvpnConfig(logger logging.Logger) error {
 		return err
 	}
 	providerConf := provider.New(allSettings.VPN.Provider.Name, allServers, time.Now)
-	connection, err := providerConf.GetOpenVPNConnection(allSettings.VPN.Provider.ServerSelection)
+	connection, err := providerConf.GetConnection(allSettings.VPN.Provider.ServerSelection)
 	if err != nil {
 		return err
 	}

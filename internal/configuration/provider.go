@@ -82,52 +82,56 @@ var (
 	ErrInvalidVPNProvider = errors.New("invalid VPN provider")
 )
 
-func (settings *Provider) read(r reader) error {
+func (settings *Provider) read(r reader, vpnType string) error {
 	err := settings.readVPNServiceProvider(r)
 	if err != nil {
 		return err
 	}
 
-	var readProvider func(r reader) error
 	switch settings.Name {
 	case constants.Cyberghost:
-		readProvider = settings.readCyberghost
+		err = settings.readCyberghost(r)
 	case constants.Fastestvpn:
-		readProvider = settings.readFastestvpn
+		err = settings.readFastestvpn(r)
 	case constants.HideMyAss:
-		readProvider = settings.readHideMyAss
+		err = settings.readHideMyAss(r)
 	case constants.Ipvanish:
-		readProvider = settings.readIpvanish
+		err = settings.readIpvanish(r)
 	case constants.Ivpn:
-		readProvider = settings.readIvpn
+		err = settings.readIvpn(r)
 	case constants.Mullvad:
-		readProvider = settings.readMullvad
+		err = settings.readMullvad(r)
 	case constants.Nordvpn:
-		readProvider = settings.readNordvpn
+		err = settings.readNordvpn(r)
 	case constants.Privado:
-		readProvider = settings.readPrivado
+		err = settings.readPrivado(r)
 	case constants.PrivateInternetAccess:
-		readProvider = settings.readPrivateInternetAccess
+		err = settings.readPrivateInternetAccess(r)
 	case constants.Privatevpn:
-		readProvider = settings.readPrivatevpn
+		err = settings.readPrivatevpn(r)
 	case constants.Protonvpn:
-		readProvider = settings.readProtonvpn
+		err = settings.readProtonvpn(r)
 	case constants.Purevpn:
-		readProvider = settings.readPurevpn
+		err = settings.readPurevpn(r)
 	case constants.Surfshark:
-		readProvider = settings.readSurfshark
+		err = settings.readSurfshark(r)
 	case constants.Torguard:
-		readProvider = settings.readTorguard
+		err = settings.readTorguard(r)
 	case constants.VPNUnlimited:
-		readProvider = settings.readVPNUnlimited
+		err = settings.readVPNUnlimited(r)
 	case constants.Vyprvpn:
-		readProvider = settings.readVyprvpn
+		err = settings.readVyprvpn(r)
 	case constants.Windscribe:
-		readProvider = settings.readWindscribe
+		err = settings.readWindscribe(r)
 	default:
 		return fmt.Errorf("%w: %s", ErrInvalidVPNProvider, settings.Name)
 	}
-	return readProvider(r)
+	if err != nil {
+		return err
+	}
+
+	settings.ServerSelection.VPN = vpnType
+	return nil
 }
 
 func (settings *Provider) readVPNServiceProvider(r reader) (err error) {

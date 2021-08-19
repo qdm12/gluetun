@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *PIA) BuildConf(connection models.OpenVPNConnection,
+func (p *PIA) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string) {
 	var defaultCipher, defaultAuth, X509CRL, certificate string
 	switch settings.EncPreset {
@@ -61,8 +61,8 @@ func (p *PIA) BuildConf(connection models.OpenVPNConnection,
 		// Modified variables
 		"verb " + strconv.Itoa(settings.Verbosity),
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		connection.ProtoLine(),
-		connection.RemoteLine(),
+		connection.OpenVPNProtoLine(),
+		connection.OpenVPNRemoteLine(),
 	}
 
 	if settings.Cipher != "" {
