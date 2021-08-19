@@ -63,7 +63,7 @@ func main() {
 	signalCtx, stop := signal.NotifyContext(background, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	ctx, cancel := context.WithCancel(background)
 
-	logger := logging.NewParent(logging.Settings{
+	logger := logging.New(logging.Settings{
 		Level: logging.LevelInfo,
 	})
 
