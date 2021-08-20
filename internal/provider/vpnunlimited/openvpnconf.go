@@ -13,7 +13,7 @@ func (p *Provider) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string) {
 	lines = []string{
 		"client",
-		"dev tun",
+		"dev " + settings.Interface,
 		"nobind",
 		"persist-key",
 		"tls-exit",

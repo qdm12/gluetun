@@ -17,7 +17,7 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev tun",
+		"dev " + settings.Interface,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",

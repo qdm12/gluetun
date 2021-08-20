@@ -20,7 +20,7 @@ func (i *Ipvanish) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev tun",
+		"dev " + settings.Interface,
 		"nobind",
 		"persist-key",
 		"ping-timer-rem",

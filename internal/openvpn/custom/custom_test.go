@@ -30,7 +30,7 @@ func Test_BuildConfig(t *testing.T) {
 		Cipher:    "cipher",
 		MSSFix:    999,
 		Config:    file.Name(),
-		Interface: "tun",
+		Interface: "tun0",
 	}
 
 	lines, connection, intf, err := BuildConfig(settings)
@@ -40,7 +40,7 @@ func Test_BuildConfig(t *testing.T) {
 		"keep me",
 		"proto udp",
 		"remote 1.9.8.7 1194",
-		"dev tun",
+		"dev tun0",
 		"mute-replay-warnings",
 		"auth-nocache",
 		"pull-filter ignore \"auth-token\"",
@@ -63,5 +63,5 @@ func Test_BuildConfig(t *testing.T) {
 	}
 	assert.Equal(t, expectedConnection, connection)
 
-	assert.Equal(t, "tun", intf)
+	assert.Equal(t, "tun0", intf)
 }
