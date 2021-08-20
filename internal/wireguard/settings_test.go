@@ -277,6 +277,21 @@ func Test_ToLinesSettings_setDefaults(t *testing.T) {
 	assert.Equal(t, untouchedSettings, settings)
 }
 
+func Test_Settings_String(t *testing.T) {
+	t.Parallel()
+
+	settings := Settings{
+		InterfaceName: "wg0",
+	}
+	const expected = `├── Interface name: wg0
+├── Private key: not set
+├── Pre shared key: not set
+├── Endpoint: not set
+└── Addresses: not set`
+	s := settings.String()
+	assert.Equal(t, expected, s)
+}
+
 func Test_Settings_Lines(t *testing.T) {
 	t.Parallel()
 
@@ -305,6 +320,7 @@ func Test_Settings_Lines(t *testing.T) {
 					Port: 51820,
 				},
 				FirewallMark: 999,
+				RulePriority: 888,
 				Addresses: []*net.IPNet{
 					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
 					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
@@ -317,6 +333,7 @@ func Test_Settings_Lines(t *testing.T) {
 				"├── Pre shared key: set",
 				"├── Endpoint: 1.2.3.4:51820",
 				"├── Firewall mark: 999",
+				"├── Rule priority: 888",
 				"└── Addresses:",
 				"    ├── 1.1.1.1/24",
 				"    └── 2.2.2.2/32",
