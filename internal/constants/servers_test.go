@@ -108,7 +108,7 @@ func Test_versions(t *testing.T) {
 		"Surfshark": {
 			model:   models.SurfsharkServer{},
 			version: allServers.Surfshark.Version,
-			digest:  "58de06d8",
+			digest:  "3ccaa772",
 		},
 		"Torguard": {
 			model:   models.TorguardServer{},

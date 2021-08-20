@@ -119,7 +119,11 @@ type PurevpnServer struct {
 
 type SurfsharkServer struct {
 	Region   string   `json:"region"`
+	Country  string   `json:"country"` // Country is also used for multi-hop
+	City     string   `json:"city"`
+	RetroLoc string   `json:"retroloc"` // TODO remove in v4
 	Hostname string   `json:"hostname"`
+	MultiHop bool     `json:"multihop"`
 	TCP      bool     `json:"tcp"`
 	UDP      bool     `json:"udp"`
 	IPs      []net.IP `json:"ips"`
