@@ -22,14 +22,37 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				FirewallMark:  51820,
 			},
 		},
+		"default endpoint port": {
+			original: Settings{
+				Endpoint: &net.UDPAddr{
+					IP: net.IPv4(1, 2, 3, 4),
+				},
+			},
+			expected: Settings{
+				InterfaceName: "wg0",
+				FirewallMark:  51820,
+				Endpoint: &net.UDPAddr{
+					IP:   net.IPv4(1, 2, 3, 4),
+					Port: 51820,
+				},
+			},
+		},
 		"not empty settings": {
 			original: Settings{
 				InterfaceName: "wg1",
 				FirewallMark:  999,
+				Endpoint: &net.UDPAddr{
+					IP:   net.IPv4(1, 2, 3, 4),
+					Port: 9999,
+				},
 			},
 			expected: Settings{
 				InterfaceName: "wg1",
 				FirewallMark:  999,
+				Endpoint: &net.UDPAddr{
+					IP:   net.IPv4(1, 2, 3, 4),
+					Port: 9999,
+				},
 			},
 		},
 	}

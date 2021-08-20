@@ -38,6 +38,11 @@ func (s *Settings) SetDefaults() {
 		s.InterfaceName = defaultInterfaceName
 	}
 
+	if s.Endpoint != nil && s.Endpoint.Port == 0 {
+		const defaultPort = 51820
+		s.Endpoint.Port = defaultPort
+	}
+
 	if s.FirewallMark == 0 {
 		const defaultFirewallMark = 51820
 		s.FirewallMark = defaultFirewallMark
