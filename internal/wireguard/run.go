@@ -102,7 +102,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	uapiAcceptErrorCh := make(chan error)
 	go acceptAndHandle(uapiListener, device, uapiAcceptErrorCh)
 
-	err = addAddresses(w.settings.InterfaceName, w.settings.Addresses)
+	err = addAddresses(link, w.settings.Addresses)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrAddAddress, err)
 		return
@@ -119,28 +119,19 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	route := &netlink.Route{
-		LinkIndex: link.Attrs().Index,
-		Dst:       allIPv4(),
-		Table:     w.settings.FirewallMark,
-	}
-	if err := netlink.RouteAdd(route); err != nil {
+	err = addRoute(link, allIPv4(), w.settings.FirewallMark)
+	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
 		return
 	}
 
-	rule := netlink.NewRule()
-	rule.Invert = true
-	rule.Priority = w.settings.RulePriority
-	rule.Mark = w.settings.FirewallMark
-	rule.Table = w.settings.FirewallMark
-	if err := netlink.RuleAdd(rule); err != nil {
+	ruleCleanup, err := addRule(
+		w.settings.RulePriority, w.settings.FirewallMark)
+	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
+		return
 	}
-
-	closers.add("removing rule", stepOne, func() error {
-		return netlink.RuleDel(rule)
-	})
+	closers.add("removing rule", stepOne, ruleCleanup)
 
 	w.logger.Info("Wireguard is up")
 	ready <- struct{}{}
