@@ -25918,7 +25918,7 @@
   },
   "mullvad": {
     "version": 3,
-    "timestamp": 1629161673,
+    "timestamp": 1629419119,
     "servers": [
       {
         "vpn": "openvpn",
@@ -26714,6 +26714,20 @@
         "country": "Canada",
         "city": "Montreal",
         "hostname": "ca-mtr-102",
+        "isp": "M247",
+        "owned": false
+      },
+      {
+        "vpn": "openvpn",
+        "ips": [
+          "89.36.78.50"
+        ],
+        "ipsv6": [
+          "2a0d:5600:9:161::3f"
+        ],
+        "country": "Canada",
+        "city": "Montreal",
+        "hostname": "ca-mtr-103",
         "isp": "M247",
         "owned": false
       },
@@ -29106,6 +29120,21 @@
         "isp": "Evoluso",
         "owned": false,
         "wgpubkey": "08lMToz0IbJfqNdybOrLJ+bGeyl28DuTaM80paWCrVg="
+      },
+      {
+        "vpn": "wireguard",
+        "ips": [
+          "185.225.28.146"
+        ],
+        "ipsv6": [
+          "2a0d:4500::a01f"
+        ],
+        "country": "Macedonia",
+        "city": "Skopje",
+        "hostname": "mk1-wireguard",
+        "isp": "Interspace",
+        "owned": false,
+        "wgpubkey": "jJ6XV88Ba0olZqriq44Gga8uMH35FBlMEg/6AzZ02BI="
       },
       {
         "vpn": "openvpn",
@@ -32135,6 +32164,21 @@
         "hostname": "gb-mnc-106",
         "isp": "M247",
         "owned": false
+      },
+      {
+        "vpn": "wireguard",
+        "ips": [
+          "185.206.227.130"
+        ],
+        "ipsv6": [
+          "2001:ac8:21:ac::a22f"
+        ],
+        "country": "UK",
+        "city": "Manchester",
+        "hostname": "gb22-wireguard",
+        "isp": "M247",
+        "owned": false,
+        "wgpubkey": "BDTfnJvtHlh15E54kLYHJlZBL5yXkEQlC0AtOyDXNRU="
       },
       {
         "vpn": "wireguard",
@@ -36460,6 +36504,21 @@
         "isp": "Quadranet",
         "owned": false,
         "wgpubkey": "ODuPYwpLGkN3MZuRTmXqPCLdC8h0eCUUaK8R/MySoEU="
+      },
+      {
+        "vpn": "wireguard",
+        "ips": [
+          "162.218.210.18"
+        ],
+        "ipsv6": [
+          "2607:fcd0:ccc0:1d02::b37f"
+        ],
+        "country": "USA",
+        "city": "Secaucus NJ",
+        "hostname": "us237-wireguard",
+        "isp": "Quadranet",
+        "owned": false,
+        "wgpubkey": "gIPt84pfJGTKNcfow/S5/7davshqE5YlWvdiC9iUp3M="
       },
       {
         "vpn": "wireguard",
