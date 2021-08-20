@@ -39,7 +39,7 @@ func (settings *OpenVPNSelection) readWindscribe(env params.Env) (err error) {
 		return err
 	}
 
-	settings.CustomPort, err = readCustomPort(env, settings.TCP,
+	settings.CustomPort, err = readOpenVPNCustomPort(env, settings.TCP,
 		[]uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783},
 		[]uint16{53, 80, 123, 443, 1194, 54783})
 	if err != nil {

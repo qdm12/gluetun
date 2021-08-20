@@ -138,7 +138,7 @@ func readTargetIP(env params.Env) (targetIP net.IP, err error) {
 	return targetIP, nil
 }
 
-func readCustomPort(env params.Env, tcp bool,
+func readOpenVPNCustomPort(env params.Env, tcp bool,
 	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "PORT")
 	if err != nil {
@@ -153,12 +153,24 @@ func readCustomPort(env params.Env, tcp bool,
 				return port, nil
 			}
 		}
-		return 0, fmt.Errorf("environment variable PORT: %w: port %d for TCP protocol", ErrInvalidPort, port)
+		return 0, fmt.Errorf(
+			"environment variable PORT: %w: port %d for TCP protocol, can only be one of %s",
+			ErrInvalidPort, port, portsToString(allowedTCP))
 	}
 	for i := range allowedUDP {
 		if allowedUDP[i] == port {
 			return port, nil
 		}
 	}
-	return 0, fmt.Errorf("environment variable PORT: %w: port %d for UDP protocol", ErrInvalidPort, port)
+	return 0, fmt.Errorf(
+		"environment variable PORT: %w: port %d for UDP protocol, can only be one of %s",
+		ErrInvalidPort, port, portsToString(allowedUDP))
+}
+
+func portsToString(ports []uint16) string {
+	slice := make([]string, len(ports))
+	for i := range ports {
+		slice[i] = fmt.Sprint(ports[i])
+	}
+	return strings.Join(slice, ", ")
 }
