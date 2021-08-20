@@ -13,8 +13,10 @@ import (
 type hostToServer map[string]models.MullvadServer
 
 var (
-	ErrParseIPv4 = errors.New("cannot parse IPv4 address")
-	ErrParseIPv6 = errors.New("cannot parse IPv6 address")
+	ErrNoIP                = errors.New("no IP address for VPN server")
+	ErrParseIPv4           = errors.New("cannot parse IPv4 address")
+	ErrParseIPv6           = errors.New("cannot parse IPv6 address")
+	ErrVPNTypeNotSupported = errors.New("VPN type not supported")
 )
 
 func (hts hostToServer) add(data serverData) (err error) {
@@ -22,14 +24,8 @@ func (hts hostToServer) add(data serverData) (err error) {
 		return
 	}
 
-	ipv4 := net.ParseIP(data.IPv4)
-	if ipv4 == nil || ipv4.To4() == nil {
-		return fmt.Errorf("%w: %s", ErrParseIPv4, data.IPv4)
-	}
-
-	ipv6 := net.ParseIP(data.IPv6)
-	if ipv6 == nil || ipv6.To4() != nil {
-		return fmt.Errorf("%w: %s", ErrParseIPv6, data.IPv6)
+	if data.IPv4 == "" && data.IPv6 == "" {
+		return ErrNoIP
 	}
 
 	server, ok := hts[data.Hostname]
@@ -37,18 +33,40 @@ func (hts hostToServer) add(data serverData) (err error) {
 		return nil
 	}
 
+	switch data.Type {
+	case "openvpn":
+		server.VPN = constants.OpenVPN
+	case "wireguard":
+		server.VPN = constants.Wireguard
+	case "bridge":
+		// ignore bridge servers
+		return nil
+	default:
+		return fmt.Errorf("%w: %s", ErrVPNTypeNotSupported, data.Type)
+	}
+
+	if data.IPv4 != "" {
+		ipv4 := net.ParseIP(data.IPv4)
+		if ipv4 == nil || ipv4.To4() == nil {
+			return fmt.Errorf("%w: %s", ErrParseIPv4, data.IPv4)
+		}
+		server.IPs = []net.IP{ipv4}
+	}
+
+	if data.IPv6 != "" {
+		ipv6 := net.ParseIP(data.IPv6)
+		if ipv6 == nil || ipv6.To4() != nil {
+			return fmt.Errorf("%w: %s", ErrParseIPv6, data.IPv6)
+		}
+		server.IPsV6 = []net.IP{ipv6}
+	}
+
 	server.Country = data.Country
 	server.City = strings.ReplaceAll(data.City, ",", "")
 	server.Hostname = data.Hostname
 	server.ISP = data.Provider
 	server.Owned = data.Owned
-	server.IPs = []net.IP{ipv4}
-	server.IPsV6 = []net.IP{ipv6}
-	server.VPN = constants.OpenVPN
-	if data.PubKey != "" {
-		server.VPN = constants.Wireguard
-		server.WgPubKey = data.PubKey
-	}
+	server.WgPubKey = data.PubKey
 
 	hts[data.Hostname] = server
 
