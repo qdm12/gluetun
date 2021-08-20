@@ -153,7 +153,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2021-07-22T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2021-10-02T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		BuildDate:    buildInfo.Created,
-		Announcement: "",
+		Announcement: "Wireguard is now supported!",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
