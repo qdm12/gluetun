@@ -24,6 +24,7 @@ func getResolveSettings(minServers int) (settings resolver.ParallelSettings) {
 			BetweenDuration: betweenDuration,
 			MaxNoNew:        maxNoNew,
 			MaxFails:        maxFails,
+			SortIPs:         true,
 		},
 	}
 }
