@@ -131,6 +131,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	rule := netlink.NewRule()
 	rule.Invert = true
+	rule.Priority = w.settings.RulePriority
 	rule.Mark = w.settings.FirewallMark
 	rule.Table = w.settings.FirewallMark
 	if err := netlink.RuleAdd(rule); err != nil {

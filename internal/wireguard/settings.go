@@ -27,6 +27,9 @@ type Settings struct {
 	// FirewallMark to be used in routing tables and IP rules.
 	// It defaults to 51820 if left to 0.
 	FirewallMark int
+	// RulePriority is the priority for the rule created with the
+	// FirewallMark.
+	RulePriority int
 }
 
 func (s *Settings) SetDefaults() {
@@ -181,6 +184,10 @@ func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
 
 	if s.FirewallMark != 0 {
 		lines = append(lines, fieldPrefix+"Firewall mark: "+fmt.Sprint(s.FirewallMark))
+	}
+
+	if s.RulePriority != 0 {
+		lines = append(lines, fieldPrefix+"Rule priority: "+fmt.Sprint(s.RulePriority))
 	}
 
 	if len(s.Addresses) == 0 {
