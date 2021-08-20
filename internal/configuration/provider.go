@@ -103,7 +103,7 @@ func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err 
 			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
 			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
 	case constants.Wireguard:
-		allowedVPNServiceProviders = []string{constants.Mullvad}
+		allowedVPNServiceProviders = []string{constants.Mullvad, constants.Windscribe}
 	}
 
 	vpnsp, err := r.env.Inside("VPNSP", allowedVPNServiceProviders,
@@ -165,6 +165,24 @@ func readOpenVPNCustomPort(env params.Env, tcp bool,
 	return 0, fmt.Errorf(
 		"environment variable PORT: %w: port %d for UDP protocol, can only be one of %s",
 		ErrInvalidPort, port, portsToString(allowedUDP))
+}
+
+func readWireguardCustomPort(env params.Env, allowed []uint16) (port uint16, err error) {
+	port, err = readPortOrZero(env, "WIREGUARD_PORT")
+	if err != nil {
+		return 0, fmt.Errorf("environment variable WIREGUARD_PORT: %w", err)
+	} else if port == 0 {
+		return 0, nil
+	}
+
+	for i := range allowed {
+		if allowed[i] == port {
+			return port, nil
+		}
+	}
+	return 0, fmt.Errorf(
+		"environment variable WIREGUARD_PORT: %w: port %d, can only be one of %s",
+		ErrInvalidPort, port, portsToString(allowed))
 }
 
 func portsToString(ports []uint16) string {

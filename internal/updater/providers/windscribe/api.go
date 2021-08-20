@@ -29,6 +29,7 @@ type groupData struct {
 	City     string       `json:"city"`
 	Nodes    []serverData `json:"nodes"`
 	OvpnX509 string       `json:"ovpn_x509"`
+	WgPubKey string       `json:"wg_pubkey"`
 }
 
 type serverData struct {

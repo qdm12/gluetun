@@ -151,9 +151,11 @@ type VyprvpnServer struct {
 }
 
 type WindscribeServer struct {
+	VPN      string   `json:"vpn"`
 	Region   string   `json:"region"`
 	City     string   `json:"city"`
 	Hostname string   `json:"hostname"`
-	OvpnX509 string   `json:"x509"`
+	OvpnX509 string   `json:"x509,omitempty"`
+	WgPubKey string   `json:"wgpubkey,omitempty"`
 	IPs      []net.IP `json:"ips"`
 }
