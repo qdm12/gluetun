@@ -26,6 +26,7 @@ func (w *Windscribe) GetConnection(selection configuration.ServerSelection) (
 				Port:     port,
 				Protocol: protocol,
 				Hostname: server.OvpnX509,
+				PubKey:   server.WgPubKey,
 			}
 			connections = append(connections, connection)
 		}
