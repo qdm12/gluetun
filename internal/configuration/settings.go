@@ -22,6 +22,7 @@ type Settings struct {
 	VersionInformation bool
 	ControlServer      ControlServer
 	Health             Health
+	Log                Log
 }
 
 func (settings *Settings) String() string {
@@ -33,6 +34,7 @@ func (settings *Settings) lines() (lines []string) {
 	lines = append(lines, settings.VPN.lines()...)
 	lines = append(lines, settings.DNS.lines()...)
 	lines = append(lines, settings.Firewall.lines()...)
+	lines = append(lines, settings.Log.lines()...)
 	lines = append(lines, settings.System.lines()...)
 	lines = append(lines, settings.HTTPProxy.lines()...)
 	lines = append(lines, settings.ShadowSocks.lines()...)
@@ -57,6 +59,7 @@ var (
 	ErrUpdater       = errors.New("cannot read Updater settings")
 	ErrPublicIP      = errors.New("cannot read Public IP getter settings")
 	ErrHealth        = errors.New("cannot read health settings")
+	ErrLog           = errors.New("cannot read log settings")
 )
 
 // Read obtains all configuration options for the program and returns an error as soon
@@ -111,6 +114,10 @@ func (settings *Settings) Read(env params.Interface, logger logging.Logger) (err
 
 	if err := settings.Health.read(r); err != nil {
 		return fmt.Errorf("%w: %s", ErrHealth, err)
+	}
+
+	if err := settings.Log.read(r.env); err != nil {
+		return fmt.Errorf("%w: %s", ErrLog, err)
 	}
 
 	return nil
