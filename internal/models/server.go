@@ -41,6 +41,7 @@ type IpvanishServer struct {
 type IvpnServer struct {
 	Country  string   `json:"country"`
 	City     string   `json:"city"`
+	ISP      string   `json:"isp"`
 	Hostname string   `json:"hostname"`
 	TCP      bool     `json:"tcp"`
 	UDP      bool     `json:"udp"`

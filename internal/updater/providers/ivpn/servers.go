@@ -57,6 +57,7 @@ func GetServers(ctx context.Context, client *http.Client,
 		server := models.IvpnServer{
 			Country:  serverData.Country,
 			City:     serverData.City,
+			ISP:      serverData.ISP,
 			Hostname: serverData.Hostnames.OpenVPN,
 			// TCP is not supported
 			UDP: true,

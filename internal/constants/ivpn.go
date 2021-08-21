@@ -28,6 +28,15 @@ func IvpnCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
+func IvpnISPChoices() (choices []string) {
+	servers := IvpnServers()
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].ISP
+	}
+	return makeUnique(choices)
+}
+
 func IvpnHostnameChoices() (choices []string) {
 	servers := IvpnServers()
 	choices = make([]string, len(servers))
