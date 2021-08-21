@@ -44,6 +44,7 @@ func Test_resolveHosts(t *testing.T) {
 			BetweenDuration: betweenDuration,
 			MaxNoNew:        maxNoNew,
 			MaxFails:        maxFails,
+			SortIPs:         true,
 		},
 	}
 	presolver.EXPECT().Resolve(ctx, hosts, expectedSettings).

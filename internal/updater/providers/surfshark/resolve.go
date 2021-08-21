@@ -26,6 +26,7 @@ func resolveHosts(ctx context.Context, presolver resolver.Parallel,
 			BetweenDuration: betweenDuration,
 			MaxNoNew:        maxNoNew,
 			MaxFails:        maxFails,
+			SortIPs:         true,
 		},
 	}
 	return presolver.Resolve(ctx, hosts, settings)
