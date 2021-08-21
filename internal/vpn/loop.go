@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
@@ -37,6 +38,7 @@ type Loop struct {
 	versionInfo bool
 	// Configurators
 	openvpnConf openvpn.Interface
+	netLinker   netlink.NetLinker
 	fw          firewallConfigurer
 	routing     routing.VPNGetter
 	portForward portforward.StartStopper
@@ -67,7 +69,7 @@ const (
 
 func NewLoop(vpnSettings configuration.VPN,
 	allServers models.AllServers, openvpnConf openvpn.Interface,
-	fw firewallConfigurer, routing routing.VPNGetter,
+	netLinker netlink.NetLinker, fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper, starter command.Starter,
 	publicip publicip.Looper, dnsLooper dns.Looper,
 	logger logging.Logger, client *http.Client,
@@ -86,6 +88,7 @@ func NewLoop(vpnSettings configuration.VPN,
 		buildInfo:     buildInfo,
 		versionInfo:   versionInfo,
 		openvpnConf:   openvpnConf,
+		netLinker:     netLinker,
 		fw:            fw,
 		routing:       routing,
 		portForward:   portForward,

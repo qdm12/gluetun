@@ -37,7 +37,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			vpnRunner, serverName, err = setupOpenVPN(ctx, l.fw,
 				l.openvpnConf, providerConf, settings, l.starter, l.logger)
 		} else { // Wireguard
-			vpnRunner, serverName, err = setupWireguard(ctx, l.fw, providerConf, settings, l.logger)
+			vpnRunner, serverName, err = setupWireguard(ctx, l.netLinker, l.fw, providerConf, settings, l.logger)
 		}
 		if err != nil {
 			l.crashed(ctx, err)

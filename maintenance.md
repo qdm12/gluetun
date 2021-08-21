@@ -11,6 +11,7 @@
 
 - Filter servers by protocol for all
 - Multiple IPs addresses support for all proviedrs
+- Use `internal/netlink` in firewall and routing packages
 
 ## Code
 

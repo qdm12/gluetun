@@ -1,22 +1,28 @@
 package wireguard
 
 import (
+	"fmt"
+
 	"github.com/vishvananda/netlink"
 )
 
-func addRule(rulePriority, firewallMark int) (
+func (w *Wireguard) addRule(rulePriority, firewallMark int) (
 	cleanup func() error, err error) {
 	rule := netlink.NewRule()
 	rule.Invert = true
 	rule.Priority = rulePriority
 	rule.Mark = firewallMark
 	rule.Table = firewallMark
-	if err := netlink.RuleAdd(rule); err != nil {
-		return nil, err
+	if err := w.netlink.RuleAdd(rule); err != nil {
+		return nil, fmt.Errorf("%w: when adding rule: %s", err, rule)
 	}
 
 	cleanup = func() error {
-		return netlink.RuleDel(rule)
+		err := w.netlink.RuleDel(rule)
+		if err != nil {
+			return fmt.Errorf("%w: when deleting rule: %s", err, rule)
+		}
+		return nil
 	}
 	return cleanup, nil
 }

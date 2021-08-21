@@ -1,5 +1,7 @@
 package wireguard
 
+import "github.com/qdm12/gluetun/internal/netlink"
+
 var _ Wireguarder = (*Wireguard)(nil)
 
 type Wireguarder interface {
@@ -10,9 +12,11 @@ type Wireguarder interface {
 type Wireguard struct {
 	logger   Logger
 	settings Settings
+	netlink  netlink.NetLinker
 }
 
-func New(settings Settings, logger Logger) (w *Wireguard, err error) {
+func New(settings Settings, netlink NetLinker,
+	logger Logger) (w *Wireguard, err error) {
 	settings.SetDefaults()
 	if err := settings.Check(); err != nil {
 		return nil, err
@@ -21,5 +25,6 @@ func New(settings Settings, logger Logger) (w *Wireguard, err error) {
 	return &Wireguard{
 		logger:   logger,
 		settings: settings,
+		netlink:  netlink,
 	}, nil
 }

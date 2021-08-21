@@ -13,6 +13,7 @@ func Test_New(t *testing.T) {
 
 	const validKeyString = "oMNSf/zJ0pt1ciy+qIRk8Rlyfs9accwuRLnKd85Yl1Q="
 	logger := NewMockLogger(nil)
+	netLinker := NewMockNetLinker(nil)
 
 	testCases := map[string]struct {
 		settings  Settings
@@ -39,7 +40,8 @@ func Test_New(t *testing.T) {
 				FirewallMark: 100,
 			},
 			wireguard: &Wireguard{
-				logger: logger,
+				logger:  logger,
+				netlink: netLinker,
 				settings: Settings{
 					InterfaceName: "wg0",
 					PrivateKey:    validKeyString,
@@ -63,7 +65,7 @@ func Test_New(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			wireguard, err := New(testCase.settings, logger)
+			wireguard, err := New(testCase.settings, netLinker, logger)
 
 			if testCase.err != nil {
 				require.Error(t, err)

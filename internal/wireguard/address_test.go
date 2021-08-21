@@ -1,54 +1,94 @@
 package wireguard
 
 import (
-	"fmt"
-	"math/rand"
+	"errors"
 	"net"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/vishvananda/netlink"
 )
 
-func Test_addAddresses(t *testing.T) {
+func Test_Wireguard_addAddresses(t *testing.T) {
 	t.Parallel()
 
-	intfName := "test_" + fmt.Sprint(rand.Intn(10000)) //nolint:gosec
+	ipNetOne := &net.IPNet{IP: net.IPv4(1, 2, 3, 4), Mask: net.IPv4Mask(255, 255, 255, 255)}
+	ipNetTwo := &net.IPNet{IP: net.IPv4(4, 5, 6, 7), Mask: net.IPv4Mask(255, 255, 255, 128)}
 
-	// Add link
-	linkAttrs := netlink.NewLinkAttrs()
-	linkAttrs.Name = intfName
-	link := &netlink.Bridge{
-		LinkAttrs: linkAttrs,
-	}
-	err := netlink.LinkAdd(link)
-	require.NoError(t, err)
-
-	defer func() {
-		err = netlink.LinkDel(link)
-		assert.NoError(t, err)
-	}()
-
-	addresses := []*net.IPNet{
-		{IP: net.IP{1, 2, 3, 4}, Mask: net.IPv4Mask(255, 255, 255, 255)},
-		{IP: net.IP{5, 6, 7, 8}, Mask: net.IPv4Mask(255, 255, 255, 255)},
+	newLink := func() netlink.Link {
+		linkAttrs := netlink.NewLinkAttrs()
+		linkAttrs.Name = "a_bridge"
+		return &netlink.Bridge{
+			LinkAttrs: linkAttrs,
+		}
 	}
 
-	// Success
-	err = addAddresses(link, addresses)
-	require.NoError(t, err)
+	errDummy := errors.New("dummy")
 
-	netlinkAddresses, err := netlink.AddrList(link, netlink.FAMILY_ALL)
-	require.NoError(t, err)
-	require.Equal(t, len(addresses), len(netlinkAddresses))
-	for i, netlinkAddress := range netlinkAddresses {
-		ipNet := netlinkAddress.IPNet
-		assert.Equal(t, addresses[i], ipNet)
+	testCases := map[string]struct {
+		link          netlink.Link
+		addrs         []*net.IPNet
+		expectedAddrs []*netlink.Addr
+		addrAddErrs   []error
+		err           error
+	}{
+		"success": {
+			link:  newLink(),
+			addrs: []*net.IPNet{ipNetOne, ipNetTwo},
+			expectedAddrs: []*netlink.Addr{
+				{IPNet: ipNetOne}, {IPNet: ipNetTwo},
+			},
+			addrAddErrs: []error{nil, nil},
+		},
+		"first add error": {
+			link:  newLink(),
+			addrs: []*net.IPNet{ipNetOne, ipNetTwo},
+			expectedAddrs: []*netlink.Addr{
+				{IPNet: ipNetOne},
+			},
+			addrAddErrs: []error{errDummy},
+			err:         errors.New("dummy: when adding address 1.2.3.4/32 to link a_bridge"),
+		},
+		"second add error": {
+			link:  newLink(),
+			addrs: []*net.IPNet{ipNetOne, ipNetTwo},
+			expectedAddrs: []*netlink.Addr{
+				{IPNet: ipNetOne}, {IPNet: ipNetTwo},
+			},
+			addrAddErrs: []error{nil, errDummy},
+			err:         errors.New("dummy: when adding address 4.5.6.7/25 to link a_bridge"),
+		},
 	}
 
-	// Existing address cannot be added
-	err = addAddresses(link, addresses)
-	require.Error(t, err)
-	assert.Equal(t, "file exists: when adding address 1.2.3.4/32 to link test_8081", err.Error())
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			ctrl := gomock.NewController(t)
+
+			require.Equal(t, len(testCase.expectedAddrs), len(testCase.addrAddErrs))
+
+			netLinker := NewMockNetLinker(ctrl)
+			wg := Wireguard{
+				netlink: netLinker,
+			}
+
+			for i := range testCase.expectedAddrs {
+				netLinker.EXPECT().
+					AddrAdd(testCase.link, testCase.expectedAddrs[i]).
+					Return(testCase.addrAddErrs[i])
+			}
+
+			err := wg.addAddresses(testCase.link, testCase.addrs)
+
+			if testCase.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, testCase.err.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }

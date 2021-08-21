@@ -22,6 +22,7 @@ import (
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/httpproxy"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
@@ -69,13 +70,14 @@ func main() {
 
 	args := os.Args
 	tun := tun.New()
+	netLinker := netlink.New()
 	cli := cli.New()
 	env := params.NewEnv()
 	cmder := command.NewCmder()
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, env, tun, cmder, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, env, tun, netLinker, cmder, cli)
 	}()
 
 	select {
@@ -116,7 +118,8 @@ var (
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, env params.Env,
-	tun tun.Interface, cmder command.RunStarter, cli cli.CLIer) error {
+	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,
+	cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -357,7 +360,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	vpnLogger := logger.NewChild(logging.Settings{Prefix: "vpn: "})
 	vpnLooper := vpn.NewLoop(allSettings.VPN,
-		allServers, ovpnConf, firewallConf, routingConf, portForwardLooper,
+		allServers, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, allSettings.VersionInformation)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(

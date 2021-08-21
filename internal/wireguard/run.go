@@ -102,7 +102,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	uapiAcceptErrorCh := make(chan error)
 	go acceptAndHandle(uapiListener, device, uapiAcceptErrorCh)
 
-	err = addAddresses(link, w.settings.Addresses)
+	err = w.addAddresses(link, w.settings.Addresses)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrAddAddress, err)
 		return
@@ -119,13 +119,13 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	err = addRoute(link, allIPv4(), w.settings.FirewallMark)
+	err = w.addRoute(link, allIPv4(), w.settings.FirewallMark)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
 		return
 	}
 
-	ruleCleanup, err := addRule(
+	ruleCleanup, err := w.addRule(
 		w.settings.RulePriority, w.settings.FirewallMark)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
