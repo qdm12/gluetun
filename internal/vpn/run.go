@@ -40,6 +40,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			portForwarding: settings.Provider.PortForwarding.Enabled,
 			serverName:     serverName,
 			portForwarder:  providerConf,
+			vpnIntf:        settings.OpenVPN.Interface,
 		}
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())

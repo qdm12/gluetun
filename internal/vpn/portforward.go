@@ -22,7 +22,7 @@ func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err 
 	// only used for PIA for now
 	gateway, err := l.routing.VPNLocalGatewayIP(data.vpnIntf)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errObtainVPNLocalGateway, err)
+		return fmt.Errorf("%w: for interface %s: %s", errObtainVPNLocalGateway, data.vpnIntf, err)
 	}
 	l.logger.Info("VPN gateway IP address: " + gateway.String())
 
