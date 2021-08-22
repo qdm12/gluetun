@@ -19,7 +19,7 @@ func (settings *Log) lines() (lines []string) {
 	return lines
 }
 
-func (settings *Log) read(env params.Env) (err error) {
+func (settings *Log) read(env params.Interface) (err error) {
 	defaultLevel := logging.LevelInfo.String()
 	settings.Level, err = env.LogLevel("LOG_LEVEL", params.Default(defaultLevel))
 	if err != nil {
