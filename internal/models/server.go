@@ -48,6 +48,7 @@ type IvpnServer struct {
 }
 
 type MullvadServer struct {
+	VPN      string   `json:"vpn"`
 	IPs      []net.IP `json:"ips"`
 	IPsV6    []net.IP `json:"ipsv6"`
 	Country  string   `json:"country"`
@@ -55,6 +56,7 @@ type MullvadServer struct {
 	Hostname string   `json:"hostname"`
 	ISP      string   `json:"isp"`
 	Owned    bool     `json:"owned"`
+	WgPubKey string   `json:"wgpubkey,omitempty"`
 }
 
 type NordvpnServer struct { //nolint:maligned
@@ -149,9 +151,11 @@ type VyprvpnServer struct {
 }
 
 type WindscribeServer struct {
+	VPN      string   `json:"vpn"`
 	Region   string   `json:"region"`
 	City     string   `json:"city"`
 	Hostname string   `json:"hostname"`
-	OvpnX509 string   `json:"x509"`
+	OvpnX509 string   `json:"x509,omitempty"`
+	WgPubKey string   `json:"wgpubkey,omitempty"`
 	IPs      []net.IP `json:"ips"`
 }

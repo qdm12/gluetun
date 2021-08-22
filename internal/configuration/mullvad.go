@@ -49,7 +49,7 @@ func (settings *OpenVPNSelection) readMullvad(env params.Env) (err error) {
 		return err
 	}
 
-	settings.CustomPort, err = readCustomPort(env, settings.TCP,
+	settings.CustomPort, err = readOpenVPNCustomPort(env, settings.TCP,
 		[]uint16{80, 443, 1401}, []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400})
 	if err != nil {
 		return err

@@ -9,10 +9,14 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-var ErrNotEnoughServers = errors.New("not enough servers found")
+var (
+	ErrNotEnoughServers = errors.New("not enough servers found")
+	ErrNoWireguardKey   = errors.New("no wireguard public key found")
+)
 
 func GetServers(ctx context.Context, client *http.Client, minServers int) (
 	servers []models.WindscribeServer, err error) {
@@ -26,25 +30,35 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 		for _, group := range regionData.Groups {
 			city := group.City
 			x5090Name := group.OvpnX509
+			wgPubKey := group.WgPubKey
 			for _, node := range group.Nodes {
-				const maxIPsPerNode = 3
-				ips := make([]net.IP, 0, maxIPsPerNode)
+				ips := make([]net.IP, 0, 2) // nolint:gomnd
 				if node.IP != nil {
 					ips = append(ips, node.IP)
 				}
 				if node.IP2 != nil {
 					ips = append(ips, node.IP2)
 				}
-				// if node.IP3 != nil { // Wireguard + Stealth
-				// 	ips = append(ips, node.IP3)
-				// }
 				server := models.WindscribeServer{
+					VPN:      constants.OpenVPN,
 					Region:   region,
 					City:     city,
 					Hostname: node.Hostname,
 					OvpnX509: x5090Name,
 					IPs:      ips,
 				}
+				servers = append(servers, server)
+
+				if node.IP3 == nil { // Wireguard + Stealth
+					continue
+				} else if wgPubKey == "" {
+					return nil, fmt.Errorf("%w: for node %s", ErrNoWireguardKey, node.Hostname)
+				}
+
+				server.VPN = constants.Wireguard
+				server.OvpnX509 = ""
+				server.WgPubKey = wgPubKey
+				server.IPs = []net.IP{node.IP3}
 				servers = append(servers, server)
 			}
 		}

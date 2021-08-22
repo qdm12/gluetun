@@ -30,8 +30,17 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
 
-		vpnRunner, serverName, err := setupOpenVPN(ctx, l.fw,
-			l.openvpnConf, providerConf, settings, l.starter, l.logger)
+		var vpnRunner vpnRunner
+		var serverName, vpnInterface string
+		var err error
+		if settings.Type == constants.OpenVPN {
+			vpnInterface = settings.OpenVPN.Interface
+			vpnRunner, serverName, err = setupOpenVPN(ctx, l.fw,
+				l.openvpnConf, providerConf, settings, l.starter, l.logger)
+		} else { // Wireguard
+			vpnInterface = settings.Wireguard.Interface
+			vpnRunner, serverName, err = setupWireguard(ctx, l.netLinker, l.fw, providerConf, settings, l.logger)
+		}
 		if err != nil {
 			l.crashed(ctx, err)
 			continue
@@ -40,7 +49,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			portForwarding: settings.Provider.PortForwarding.Enabled,
 			serverName:     serverName,
 			portForwarder:  providerConf,
-			vpnIntf:        settings.OpenVPN.Interface,
+			vpnIntf:        vpnInterface,
 		}
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())

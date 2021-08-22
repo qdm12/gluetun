@@ -73,7 +73,7 @@ func Test_versions(t *testing.T) {
 		"Mullvad": {
 			model:   models.MullvadServer{},
 			version: allServers.Mullvad.Version,
-			digest:  "2a009192",
+			digest:  "ec56f19d",
 		},
 		"Nordvpn": {
 			model:   models.NordvpnServer{},
@@ -128,7 +128,7 @@ func Test_versions(t *testing.T) {
 		"Windscribe": {
 			model:   models.WindscribeServer{},
 			version: allServers.Windscribe.Version,
-			digest:  "6f6c16d6",
+			digest:  "4bd0fc4f",
 		},
 	}
 	for name, testCase := range testCases {

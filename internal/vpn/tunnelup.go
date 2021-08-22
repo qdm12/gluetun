@@ -17,13 +17,6 @@ type tunnelUpData struct {
 }
 
 func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
-	vpnDestination, err := l.routing.VPNDestinationIP()
-	if err != nil {
-		l.logger.Warn(err.Error())
-	} else {
-		l.logger.Info("VPN routing IP address: " + vpnDestination.String())
-	}
-
 	if l.dnsLooper.GetSettings().Enabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	}
@@ -40,7 +33,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		}
 	}
 
-	err = l.startPortForwarding(ctx, data)
+	err := l.startPortForwarding(ctx, data)
 	if err != nil {
 		l.logger.Error(err.Error())
 	}

@@ -22,10 +22,12 @@ type serverData struct {
 	Provider string `json:"provider"`
 	IPv4     string `json:"ipv4_addr_in"`
 	IPv6     string `json:"ipv6_addr_in"`
+	Type     string `json:"type"`
+	PubKey   string `json:"pubkey"` // Wireguard public key
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (data []serverData, err error) {
-	const url = "https://api.mullvad.net/www/relays/openvpn/"
+	const url = "https://api.mullvad.net/www/relays/all/"
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

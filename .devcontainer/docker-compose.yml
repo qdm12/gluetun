@@ -4,6 +4,8 @@ services:
   vscode:
     build: .
     image: godevcontainer
+    devices:
+      - /dev/net/tun:/dev/net/tun
     volumes:
       - ../:/workspace
       # Docker socket to access Docker server
@@ -23,7 +25,8 @@ services:
       - TZ=
     cap_add:
       # For debugging with dlv
-      - SYS_PTRACE
+      # - SYS_PTRACE
+      - NET_ADMIN
     security_opt:
       # For debugging with dlv
       - seccomp:unconfined

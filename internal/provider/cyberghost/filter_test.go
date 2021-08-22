@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,7 +20,8 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 		err             error
 	}{
 		"no servers": {
-			err: errors.New("no server found: for protocol udp"),
+			selection: configuration.ServerSelection{VPN: constants.OpenVPN},
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"servers without filter defaults to UDP": {
 			servers: []models.CyberghostServer{

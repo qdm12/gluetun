@@ -24,6 +24,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Cyberghost,
 				ServerSelection: ServerSelection{
+					VPN:     constants.OpenVPN,
 					Groups:  []string{"group"},
 					Regions: []string{"a", "El country"},
 				},
@@ -40,6 +41,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Fastestvpn,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Hostnames: []string{"a", "b"},
 					Countries: []string{"c", "d"},
 				},
@@ -56,6 +58,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.HideMyAss,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					Hostnames: []string{"e", "f"},
@@ -74,6 +77,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Ipvanish,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					Hostnames: []string{"e", "f"},
@@ -92,6 +96,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Ivpn,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					Hostnames: []string{"e", "f"},
@@ -110,6 +115,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Mullvad,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					ISPs:      []string{"e", "f"},
@@ -132,6 +138,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Nordvpn,
 				ServerSelection: ServerSelection{
+					VPN:     constants.OpenVPN,
 					Regions: []string{"a", "b"},
 					Numbers: []uint16{1, 2},
 				},
@@ -148,6 +155,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Privado,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Hostnames: []string{"a", "b"},
 				},
 			},
@@ -162,6 +170,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Privatevpn,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Hostnames: []string{"a", "b"},
 					Countries: []string{"c", "d"},
 					Cities:    []string{"e", "f"},
@@ -180,6 +189,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Protonvpn,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Countries: []string{"a", "b"},
 					Regions:   []string{"c", "d"},
 					Cities:    []string{"e", "f"},
@@ -202,6 +212,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.PrivateInternetAccess,
 				ServerSelection: ServerSelection{
+					VPN:     constants.OpenVPN,
 					Regions: []string{"a", "b"},
 					OpenVPN: OpenVPNSelection{
 						CustomPort: 1,
@@ -226,6 +237,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Purevpn,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Regions:   []string{"a", "b"},
 					Countries: []string{"c", "d"},
 					Cities:    []string{"e", "f"},
@@ -244,6 +256,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Surfshark,
 				ServerSelection: ServerSelection{
+					VPN:     constants.OpenVPN,
 					Regions: []string{"a", "b"},
 				},
 			},
@@ -258,6 +271,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Torguard,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Countries: []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					Hostnames: []string{"e"},
@@ -276,6 +290,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.VPNUnlimited,
 				ServerSelection: ServerSelection{
+					VPN:        constants.OpenVPN,
 					Countries:  []string{"a", "b"},
 					Cities:     []string{"c", "d"},
 					Hostnames:  []string{"e", "f"},
@@ -298,6 +313,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Vyprvpn,
 				ServerSelection: ServerSelection{
+					VPN:     constants.OpenVPN,
 					Regions: []string{"a", "b"},
 				},
 			},
@@ -312,6 +328,7 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Windscribe,
 				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
 					Regions:   []string{"a", "b"},
 					Cities:    []string{"c", "d"},
 					Hostnames: []string{"e", "f"},

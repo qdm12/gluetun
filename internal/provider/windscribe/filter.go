@@ -11,6 +11,7 @@ func (w *Windscribe) filterServers(selection configuration.ServerSelection) (
 	for _, server := range w.servers {
 		switch {
 		case
+			server.VPN != selection.VPN,
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames):

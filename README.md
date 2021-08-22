@@ -5,7 +5,7 @@ HideMyAss, IPVanish, IVPN, Mullvad, NordVPN, Privado, Private Internet Access, P
 ProtonVPN, PureVPN, Surfshark, TorGuard, VPNUnlimited, VyprVPN and Windscribe VPN servers
 using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
-**ANNOUNCEMENT**: You can try Wireguard, see #565
+**ANNOUNCEMENT**: Wireguard is now supported for all providers supporting it!
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
@@ -55,9 +55,10 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 ## Features
 
-- Based on Alpine 3.14 for a small Docker image of 30MB
+- Based on Alpine 3.14 for a small Docker image of 31MB
 - Supports: **Cyberghost**, **FastestVPN**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **Surfshark**, **TorGuard**, **VPNUnlimited**, **Vyprvpn**, **Windscribe** servers
-- Supports OpenVPN and Wireguard (the latter in progress, see PR #565 and issue #134)
+- Supports OpenVPN
+- Supports Wireguard for **Mullvad** and **Windscribe** (more in progress, see #134)
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
@@ -110,6 +111,7 @@ The following points are all optional but should give you insights on all the po
 
 - [Test your setup](https://github.com/qdm12/gluetun/wiki/Test-your-setup)
 - [How to connect other containers and devices to Gluetun](https://github.com/qdm12/gluetun/wiki/Connect-to-gluetun)
+- [How to use Wireguard](https://github.com/qdm12/gluetun/wiki/Wireguard)
 - [VPN server side port forwarding](https://github.com/qdm12/gluetun/wiki/Port-forwarding)
 - [HTTP control server](https://github.com/qdm12/gluetun/wiki/HTTP-Control-server) to automate things, restart Openvpn etc.
 - Update the image with `docker pull qmcgaw/gluetun:latest`. See this [Wiki document](https://github.com/qdm12/gluetun/wiki/Docker-image-tags) for Docker tags available.

@@ -9,16 +9,8 @@ import (
 
 func (w *Windscribe) GetConnection(selection configuration.ServerSelection) (
 	connection models.Connection, err error) {
-	protocol := constants.UDP
-	var port uint16 = 443
-	if selection.OpenVPN.TCP {
-		protocol = constants.TCP
-		port = 1194
-	}
-
-	if selection.OpenVPN.CustomPort > 0 {
-		port = selection.OpenVPN.CustomPort
-	}
+	port := getPort(selection)
+	protocol := getProtocol(selection)
 
 	servers, err := w.filterServers(selection)
 	if err != nil {
@@ -34,6 +26,7 @@ func (w *Windscribe) GetConnection(selection configuration.ServerSelection) (
 				Port:     port,
 				Protocol: protocol,
 				Hostname: server.OvpnX509,
+				PubKey:   server.WgPubKey,
 			}
 			connections = append(connections, connection)
 		}
@@ -44,4 +37,34 @@ func (w *Windscribe) GetConnection(selection configuration.ServerSelection) (
 	}
 
 	return utils.PickRandomConnection(connections, w.randSource), nil
+}
+
+func getPort(selection configuration.ServerSelection) (port uint16) {
+	switch selection.VPN {
+	case constants.Wireguard:
+		customPort := selection.Wireguard.CustomPort
+		if customPort > 0 {
+			return customPort
+		}
+		const defaultPort = 1194
+		return defaultPort
+	default: // OpenVPN
+		customPort := selection.OpenVPN.CustomPort
+		if customPort > 0 {
+			return customPort
+		}
+		port = 1194
+		if selection.OpenVPN.TCP {
+			port = 443
+		}
+		return port
+	}
+}
+
+func getProtocol(selection configuration.ServerSelection) (protocol string) {
+	protocol = constants.UDP
+	if selection.VPN == constants.OpenVPN && selection.OpenVPN.TCP {
+		protocol = constants.TCP
+	}
+	return protocol
 }

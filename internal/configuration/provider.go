@@ -43,7 +43,7 @@ var (
 )
 
 func (settings *Provider) read(r reader, vpnType string) error {
-	err := settings.readVPNServiceProvider(r)
+	err := settings.readVPNServiceProvider(r, vpnType)
 	if err != nil {
 		return err
 	}
@@ -94,11 +94,17 @@ func (settings *Provider) read(r reader, vpnType string) error {
 	return nil
 }
 
-func (settings *Provider) readVPNServiceProvider(r reader) (err error) {
-	allowedVPNServiceProviders := []string{
-		"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
-		"privado", "pia", "private internet access", "privatevpn", "protonvpn",
-		"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
+func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err error) {
+	var allowedVPNServiceProviders []string
+	switch vpnType {
+	case constants.OpenVPN:
+		allowedVPNServiceProviders = []string{
+			"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
+			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
+			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
+	case constants.Wireguard:
+		allowedVPNServiceProviders = []string{constants.Mullvad, constants.Windscribe}
+	}
 
 	vpnsp, err := r.env.Inside("VPNSP", allowedVPNServiceProviders,
 		params.Default("private internet access"))
@@ -132,7 +138,7 @@ func readTargetIP(env params.Env) (targetIP net.IP, err error) {
 	return targetIP, nil
 }
 
-func readCustomPort(env params.Env, tcp bool,
+func readOpenVPNCustomPort(env params.Env, tcp bool,
 	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "PORT")
 	if err != nil {
@@ -147,12 +153,42 @@ func readCustomPort(env params.Env, tcp bool,
 				return port, nil
 			}
 		}
-		return 0, fmt.Errorf("environment variable PORT: %w: port %d for TCP protocol", ErrInvalidPort, port)
+		return 0, fmt.Errorf(
+			"environment variable PORT: %w: port %d for TCP protocol, can only be one of %s",
+			ErrInvalidPort, port, portsToString(allowedTCP))
 	}
 	for i := range allowedUDP {
 		if allowedUDP[i] == port {
 			return port, nil
 		}
 	}
-	return 0, fmt.Errorf("environment variable PORT: %w: port %d for UDP protocol", ErrInvalidPort, port)
+	return 0, fmt.Errorf(
+		"environment variable PORT: %w: port %d for UDP protocol, can only be one of %s",
+		ErrInvalidPort, port, portsToString(allowedUDP))
+}
+
+func readWireguardCustomPort(env params.Env, allowed []uint16) (port uint16, err error) {
+	port, err = readPortOrZero(env, "WIREGUARD_PORT")
+	if err != nil {
+		return 0, fmt.Errorf("environment variable WIREGUARD_PORT: %w", err)
+	} else if port == 0 {
+		return 0, nil
+	}
+
+	for i := range allowed {
+		if allowed[i] == port {
+			return port, nil
+		}
+	}
+	return 0, fmt.Errorf(
+		"environment variable WIREGUARD_PORT: %w: port %d, can only be one of %s",
+		ErrInvalidPort, port, portsToString(allowed))
+}
+
+func portsToString(ports []uint16) string {
+	slice := make([]string, len(ports))
+	for i := range ports {
+		slice[i] = fmt.Sprint(ports[i])
+	}
+	return strings.Join(slice, ", ")
 }

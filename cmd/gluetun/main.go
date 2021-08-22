@@ -22,6 +22,7 @@ import (
 	"github.com/qdm12/gluetun/internal/healthcheck"
 	"github.com/qdm12/gluetun/internal/httpproxy"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
@@ -69,13 +70,14 @@ func main() {
 
 	args := os.Args
 	tun := tun.New()
+	netLinker := netlink.New()
 	cli := cli.New()
 	env := params.NewEnv()
 	cmder := command.NewCmder()
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, env, tun, cmder, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, env, tun, netLinker, cmder, cli)
 	}()
 
 	select {
@@ -116,7 +118,8 @@ var (
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, env params.Env,
-	tun tun.Interface, cmder command.RunStarter, cli cli.CLIer) error {
+	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,
+	cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -153,7 +156,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2021-07-22T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2021-10-02T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -164,7 +167,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		BuildDate:    buildInfo.Created,
-		Announcement: "",
+		Announcement: "Wireguard is now supported!",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
@@ -357,12 +360,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	vpnLogger := logger.NewChild(logging.Settings{Prefix: "vpn: "})
 	vpnLooper := vpn.NewLoop(allSettings.VPN,
-		allServers, ovpnConf, firewallConf, routingConf, portForwardLooper,
+		allServers, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, allSettings.VersionInformation)
-	openvpnHandler, openvpnCtx, openvpnDone := goshutdown.NewGoRoutineHandler(
-		"openvpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
-	go vpnLooper.Run(openvpnCtx, openvpnDone)
+	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
+		"vpn", goshutdown.GoRoutineSettings{Timeout: time.Second})
+	go vpnLooper.Run(vpnCtx, vpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
 		allServers, storage, vpnLooper.SetServers, httpClient,
@@ -417,7 +420,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	orderHandler := goshutdown.NewOrder("gluetun", orderSettings)
 	orderHandler.Append(controlGroupHandler, tickersGroupHandler, healthServerHandler,
-		openvpnHandler, portForwardHandler, otherGroupHandler)
+		vpnHandler, portForwardHandler, otherGroupHandler)
 
 	// Start VPN for the first time in a blocking call
 	// until the VPN is launched
