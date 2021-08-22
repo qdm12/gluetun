@@ -60,7 +60,7 @@ func Test_DNS_readUnboundProviders(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
 
-			env := mock_params.NewMockEnv(ctrl)
+			env := mock_params.NewMockInterface(ctrl)
 			env.EXPECT().Get("DOT_PROVIDERS", gomock.Any()).
 				Return(testCase.envValue, testCase.envErr)
 

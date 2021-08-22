@@ -124,12 +124,12 @@ func (settings *OpenVPNSelection) lines() (lines []string) {
 	return lines
 }
 
-func (settings *OpenVPNSelection) readProtocolOnly(env params.Env) (err error) {
+func (settings *OpenVPNSelection) readProtocolOnly(env params.Interface) (err error) {
 	settings.TCP, err = readProtocol(env)
 	return err
 }
 
-func (settings *OpenVPNSelection) readProtocolAndPort(env params.Env) (err error) {
+func (settings *OpenVPNSelection) readProtocolAndPort(env params.Interface) (err error) {
 	settings.TCP, err = readProtocol(env)
 	if err != nil {
 		return err

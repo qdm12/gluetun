@@ -13,12 +13,12 @@ import (
 )
 
 type reader struct {
-	env    params.Env
+	env    params.Interface
 	logger logging.Logger
 	regex  verification.Regex
 }
 
-func newReader(env params.Env, logger logging.Logger) reader {
+func newReader(env params.Interface, logger logging.Logger) reader {
 	return reader{
 		env:    env,
 		logger: logger,
@@ -36,7 +36,7 @@ var (
 	ErrInvalidPort = errors.New("invalid port")
 )
 
-func readCSVPorts(env params.Env, key string) (ports []uint16, err error) {
+func readCSVPorts(env params.Interface, key string) (ports []uint16, err error) {
 	s, err := env.Get(key)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ var (
 	ErrInvalidIPNet = errors.New("invalid IP network")
 )
 
-func readCSVIPNets(env params.Env, key string, options ...params.OptionSetter) (
+func readCSVIPNets(env params.Interface, key string, options ...params.OptionSetter) (
 	ipNets []net.IPNet, err error) {
 	s, err := env.Get(key, options...)
 	if err != nil {
@@ -92,7 +92,7 @@ var (
 	ErrInvalidIP = errors.New("invalid IP address")
 )
 
-func readIP(env params.Env, key string) (ip net.IP, err error) {
+func readIP(env params.Interface, key string) (ip net.IP, err error) {
 	s, err := env.Get(key)
 	if s == "" {
 		return nil, nil
@@ -108,7 +108,7 @@ func readIP(env params.Env, key string) (ip net.IP, err error) {
 	return ip, nil
 }
 
-func readPortOrZero(env params.Env, key string) (port uint16, err error) {
+func readPortOrZero(env params.Interface, key string) (port uint16, err error) {
 	s, err := env.Get(key, params.Default("0"))
 	if err != nil {
 		return 0, err

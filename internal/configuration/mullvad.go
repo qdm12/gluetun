@@ -43,7 +43,7 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 	return settings.ServerSelection.OpenVPN.readMullvad(r.env)
 }
 
-func (settings *OpenVPNSelection) readMullvad(env params.Env) (err error) {
+func (settings *OpenVPNSelection) readMullvad(env params.Interface) (err error) {
 	settings.TCP, err = readProtocol(env)
 	if err != nil {
 		return err

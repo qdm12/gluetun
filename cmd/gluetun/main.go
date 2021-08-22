@@ -72,7 +72,7 @@ func main() {
 	tun := tun.New()
 	netLinker := netlink.New()
 	cli := cli.New()
-	env := params.NewEnv()
+	env := params.New()
 	cmder := command.NewCmder()
 
 	errorCh := make(chan error)
@@ -117,7 +117,7 @@ var (
 
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.ParentLogger, env params.Env,
+	args []string, logger logging.ParentLogger, env params.Interface,
 	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,
 	cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
@@ -127,7 +127,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		case "clientkey":
 			return cli.ClientKey(args[2:])
 		case "openvpnconfig":
-			return cli.OpenvpnConfig(logger)
+			return cli.OpenvpnConfig(logger, env)
 		case "update":
 			return cli.Update(ctx, args[2:], logger)
 		default:

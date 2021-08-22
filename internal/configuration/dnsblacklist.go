@@ -36,7 +36,7 @@ var (
 	ErrInvalidPrivateAddress = errors.New("private address is not a valid IP or CIDR range")
 )
 
-func (settings *DNS) readPrivateAddresses(env params.Env) (err error) {
+func (settings *DNS) readPrivateAddresses(env params.Interface) (err error) {
 	privateAddresses, err := env.CSV("DOT_PRIVATE_ADDRESS")
 	if err != nil {
 		return fmt.Errorf("environment variable DOT_PRIVATE_ADDRESS: %w", err)

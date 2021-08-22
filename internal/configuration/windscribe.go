@@ -38,7 +38,7 @@ func (settings *Provider) readWindscribe(r reader) (err error) {
 	return settings.ServerSelection.Wireguard.readWindscribe(r.env)
 }
 
-func (settings *OpenVPNSelection) readWindscribe(env params.Env) (err error) {
+func (settings *OpenVPNSelection) readWindscribe(env params.Interface) (err error) {
 	settings.TCP, err = readProtocol(env)
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func (settings *OpenVPNSelection) readWindscribe(env params.Env) (err error) {
 	return nil
 }
 
-func (settings *WireguardSelection) readWindscribe(env params.Env) (err error) {
+func (settings *WireguardSelection) readWindscribe(env params.Interface) (err error) {
 	settings.CustomPort, err = readWireguardCustomPort(env,
 		[]uint16{53, 80, 123, 443, 1194, 65142})
 	if err != nil {

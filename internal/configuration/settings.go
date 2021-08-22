@@ -61,7 +61,7 @@ var (
 
 // Read obtains all configuration options for the program and returns an error as soon
 // as an error is encountered reading them.
-func (settings *Settings) Read(env params.Env, logger logging.Logger) (err error) {
+func (settings *Settings) Read(env params.Interface, logger logging.Logger) (err error) {
 	r := newReader(env, logger)
 
 	settings.VersionInformation, err = r.env.OnOff("VERSION_INFORMATION", params.Default("on"))

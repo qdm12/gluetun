@@ -14,12 +14,12 @@ import (
 )
 
 type OpenvpnConfigMaker interface {
-	OpenvpnConfig(logger logging.Logger) error
+	OpenvpnConfig(logger logging.Logger, env params.Interface) error
 }
 
-func (c *CLI) OpenvpnConfig(logger logging.Logger) error {
+func (c *CLI) OpenvpnConfig(logger logging.Logger, env params.Interface) error {
 	var allSettings configuration.Settings
-	err := allSettings.Read(params.NewEnv(), logger)
+	err := allSettings.Read(env, logger)
 	if err != nil {
 		return err
 	}

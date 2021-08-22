@@ -119,7 +119,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 
-			env := mock_params.NewMockEnv(ctrl)
+			env := mock_params.NewMockInterface(ctrl)
 			if testCase.protocol.call {
 				env.EXPECT().Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
 					Return(testCase.protocol.value, testCase.protocol.err)

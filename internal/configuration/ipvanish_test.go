@@ -119,7 +119,7 @@ func Test_Provider_readIpvanish(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 
-			env := mock_params.NewMockEnv(ctrl)
+			env := mock_params.NewMockInterface(ctrl)
 			if testCase.targetIP.call {
 				env.EXPECT().Get("OPENVPN_TARGET_IP").
 					Return(testCase.targetIP.value, testCase.targetIP.err)

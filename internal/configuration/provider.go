@@ -130,7 +130,7 @@ func protoToString(tcp bool) string {
 	return constants.UDP
 }
 
-func readTargetIP(env params.Env) (targetIP net.IP, err error) {
+func readTargetIP(env params.Interface) (targetIP net.IP, err error) {
 	targetIP, err = readIP(env, "OPENVPN_TARGET_IP")
 	if err != nil {
 		return nil, fmt.Errorf("environment variable OPENVPN_TARGET_IP: %w", err)
@@ -138,7 +138,7 @@ func readTargetIP(env params.Env) (targetIP net.IP, err error) {
 	return targetIP, nil
 }
 
-func readOpenVPNCustomPort(env params.Env, tcp bool,
+func readOpenVPNCustomPort(env params.Interface, tcp bool,
 	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "PORT")
 	if err != nil {
@@ -167,7 +167,7 @@ func readOpenVPNCustomPort(env params.Env, tcp bool,
 		ErrInvalidPort, port, portsToString(allowedUDP))
 }
 
-func readWireguardCustomPort(env params.Env, allowed []uint16) (port uint16, err error) {
+func readWireguardCustomPort(env params.Interface, allowed []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "WIREGUARD_PORT")
 	if err != nil {
 		return 0, fmt.Errorf("environment variable WIREGUARD_PORT: %w", err)

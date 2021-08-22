@@ -102,7 +102,7 @@ var (
 	ErrDNSAddressNotAnIP = errors.New("DNS plaintext address is not an IP address")
 )
 
-func (settings *DNS) readDNSPlaintext(env params.Env) error {
+func (settings *DNS) readDNSPlaintext(env params.Interface) error {
 	s, err := env.Get("DNS_PLAINTEXT_ADDRESS", params.Default("1.1.1.1"))
 	if err != nil {
 		return fmt.Errorf("environment variable DNS_PLAINTEXT_ADDRESS: %w", err)

@@ -176,7 +176,7 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 	return nil
 }
 
-func readProtocol(env params.Env) (tcp bool, err error) {
+func readProtocol(env params.Interface) (tcp bool, err error) {
 	protocol, err := env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
 	if err != nil {
 		return false, fmt.Errorf("environment variable PROTOCOL: %w", err)
@@ -189,7 +189,7 @@ const openvpnIntfRegexString = `^.*[0-9]$`
 var openvpnIntfRegexp = regexp.MustCompile(openvpnIntfRegexString)
 var errInterfaceNameNotValid = errors.New("interface name is not valid")
 
-func readInterface(env params.Env) (intf string, err error) {
+func readInterface(env params.Interface) (intf string, err error) {
 	intf, err = env.Get("OPENVPN_INTERFACE", params.Default("tun0"))
 	if err != nil {
 		return "", fmt.Errorf("environment variable OPENVPN_INTERFACE: %w", err)

@@ -386,7 +386,7 @@ func Test_readProtocol(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 
-			env := mock_params.NewMockEnv(ctrl)
+			env := mock_params.NewMockInterface(ctrl)
 			env.EXPECT().
 				Inside("PROTOCOL", []string{"tcp", "udp"}, gomock.Any()).
 				Return(testCase.mockStr, testCase.mockErr)

@@ -80,7 +80,7 @@ func (settings *VPN) read(r reader) (err error) {
 	return nil
 }
 
-func (settings VPN) isOpenVPNCustomConfig(env params.Env) (ok bool) {
+func (settings VPN) isOpenVPNCustomConfig(env params.Interface) (ok bool) {
 	if settings.Type != constants.OpenVPN {
 		return false
 	}

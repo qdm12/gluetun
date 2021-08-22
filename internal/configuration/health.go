@@ -32,7 +32,7 @@ func (settings *Health) lines() (lines []string) {
 }
 
 // Read is to be used for the healthcheck query mode.
-func (settings *Health) Read(env params.Env, logger logging.Logger) (err error) {
+func (settings *Health) Read(env params.Interface, logger logging.Logger) (err error) {
 	reader := newReader(env, logger)
 	return settings.read(reader)
 }

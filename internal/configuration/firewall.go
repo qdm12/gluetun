@@ -73,7 +73,7 @@ func (settings *Firewall) read(r reader) (err error) {
 	return settings.readOutboundSubnets(r)
 }
 
-func (settings *Firewall) readVPNInputPorts(env params.Env) (err error) {
+func (settings *Firewall) readVPNInputPorts(env params.Interface) (err error) {
 	settings.VPNInputPorts, err = readCSVPorts(env, "FIREWALL_VPN_INPUT_PORTS")
 	if err != nil {
 		return fmt.Errorf("environment variable FIREWALL_VPN_INPUT_PORTS: %w", err)
@@ -81,7 +81,7 @@ func (settings *Firewall) readVPNInputPorts(env params.Env) (err error) {
 	return nil
 }
 
-func (settings *Firewall) readInputPorts(env params.Env) (err error) {
+func (settings *Firewall) readInputPorts(env params.Interface) (err error) {
 	settings.InputPorts, err = readCSVPorts(env, "FIREWALL_INPUT_PORTS")
 	if err != nil {
 		return fmt.Errorf("environment variable FIREWALL_INPUT_PORTS: %w", err)

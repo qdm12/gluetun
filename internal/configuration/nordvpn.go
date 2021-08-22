@@ -39,7 +39,7 @@ func (settings *Provider) readNordvpn(r reader) (err error) {
 	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
 }
 
-func readNordVPNServerNumbers(env params.Env) (numbers []uint16, err error) {
+func readNordVPNServerNumbers(env params.Interface) (numbers []uint16, err error) {
 	const possiblePortsCount = 65537
 	possibilities := make([]string, possiblePortsCount)
 	for i := range possibilities {

@@ -71,7 +71,7 @@ func (settings *ShadowSocks) read(r reader) (err error) {
 	return nil
 }
 
-func (settings *ShadowSocks) getAddress(env params.Env) (
+func (settings *ShadowSocks) getAddress(env params.Interface) (
 	warning string, err error) {
 	address, err := env.Get("SHADOWSOCKS_LISTENING_ADDRESS")
 	if err != nil {

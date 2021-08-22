@@ -13,10 +13,10 @@ import (
 )
 
 type HealthChecker interface {
-	HealthCheck(ctx context.Context, env params.Env, logger logging.Logger) error
+	HealthCheck(ctx context.Context, env params.Interface, logger logging.Logger) error
 }
 
-func (c *CLI) HealthCheck(ctx context.Context, env params.Env,
+func (c *CLI) HealthCheck(ctx context.Context, env params.Interface,
 	logger logging.Logger) error {
 	// Extract the health server port from the configuration.
 	config := configuration.Health{}

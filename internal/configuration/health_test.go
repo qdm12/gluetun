@@ -139,7 +139,7 @@ func Test_Health_read(t *testing.T) {
 
 			ctrl := gomock.NewController(t)
 
-			env := mock_params.NewMockEnv(ctrl)
+			env := mock_params.NewMockInterface(ctrl)
 			logger := mock_logging.NewMockLogger(ctrl)
 
 			env.EXPECT().ListeningAddress("HEALTH_SERVER_ADDRESS", gomock.Any()).

@@ -59,7 +59,7 @@ var (
 	ErrInvalidDNSOverTLSProvider = errors.New("invalid DNS over TLS provider")
 )
 
-func (settings *DNS) readUnboundProviders(env params.Env) (err error) {
+func (settings *DNS) readUnboundProviders(env params.Interface) (err error) {
 	s, err := env.Get("DOT_PROVIDERS", params.Default("cloudflare"))
 	if err != nil {
 		return fmt.Errorf("environment variable DOT_PROVIDERS: %w", err)
