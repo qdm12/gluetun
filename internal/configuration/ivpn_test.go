@@ -34,6 +34,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 		targetIP  singleStringCall
 		countries sliceStringCall
 		cities    sliceStringCall
+		isps      sliceStringCall
 		hostnames sliceStringCall
 		settings  Provider
 		err       error
@@ -62,10 +63,21 @@ func Test_Provider_readIvpn(t *testing.T) {
 			},
 			err: errors.New("environment variable CITY: dummy test error"),
 		},
+		"isps error": {
+			targetIP:  singleStringCall{call: true},
+			countries: sliceStringCall{call: true},
+			cities:    sliceStringCall{call: true},
+			isps:      sliceStringCall{call: true, err: errDummy},
+			settings: Provider{
+				Name: constants.Ivpn,
+			},
+			err: errors.New("environment variable ISP: dummy test error"),
+		},
 		"hostnames error": {
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true},
+			isps:      sliceStringCall{call: true},
 			hostnames: sliceStringCall{call: true, err: errDummy},
 			settings: Provider{
 				Name: constants.Ivpn,
@@ -76,6 +88,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true},
+			isps:      sliceStringCall{call: true},
 			hostnames: sliceStringCall{call: true},
 			protocol:  singleStringCall{call: true, err: errDummy},
 			settings: Provider{
@@ -87,6 +100,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true},
+			isps:      sliceStringCall{call: true},
 			hostnames: sliceStringCall{call: true},
 			protocol:  singleStringCall{call: true},
 			settings: Provider{
@@ -97,6 +111,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 			targetIP:  singleStringCall{call: true, value: "1.2.3.4"},
 			countries: sliceStringCall{call: true, values: []string{"A", "B"}},
 			cities:    sliceStringCall{call: true, values: []string{"C", "D"}},
+			isps:      sliceStringCall{call: true, values: []string{"ISP 1"}},
 			hostnames: sliceStringCall{call: true, values: []string{"E", "F"}},
 			protocol:  singleStringCall{call: true, value: constants.TCP},
 			settings: Provider{
@@ -108,6 +123,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 					TargetIP:  net.IPv4(1, 2, 3, 4),
 					Countries: []string{"A", "B"},
 					Cities:    []string{"C", "D"},
+					ISPs:      []string{"ISP 1"},
 					Hostnames: []string{"E", "F"},
 				},
 			},
@@ -135,6 +151,10 @@ func Test_Provider_readIvpn(t *testing.T) {
 			if testCase.cities.call {
 				env.EXPECT().CSVInside("CITY", constants.IvpnCityChoices()).
 					Return(testCase.cities.values, testCase.cities.err)
+			}
+			if testCase.isps.call {
+				env.EXPECT().CSVInside("ISP", constants.IvpnISPChoices()).
+					Return(testCase.isps.values, testCase.isps.err)
 			}
 			if testCase.hostnames.call {
 				env.EXPECT().CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices()).
