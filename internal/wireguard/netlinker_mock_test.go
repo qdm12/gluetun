@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	netlink "github.com/vishvananda/netlink"
+	netlink "github.com/qdm12/gluetun/internal/netlink"
 )
 
 // MockNetLinker is a mock of NetLinker interface.
@@ -46,6 +46,35 @@ func (m *MockNetLinker) AddrAdd(arg0 netlink.Link, arg1 *netlink.Addr) error {
 func (mr *MockNetLinkerMockRecorder) AddrAdd(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddrAdd", reflect.TypeOf((*MockNetLinker)(nil).AddrAdd), arg0, arg1)
+}
+
+// LinkByName mocks base method.
+func (m *MockNetLinker) LinkByName(arg0 string) (netlink.Link, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LinkByName", arg0)
+	ret0, _ := ret[0].(netlink.Link)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LinkByName indicates an expected call of LinkByName.
+func (mr *MockNetLinkerMockRecorder) LinkByName(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkByName", reflect.TypeOf((*MockNetLinker)(nil).LinkByName), arg0)
+}
+
+// LinkSetUp mocks base method.
+func (m *MockNetLinker) LinkSetUp(arg0 netlink.Link) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LinkSetUp", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// LinkSetUp indicates an expected call of LinkSetUp.
+func (mr *MockNetLinkerMockRecorder) LinkSetUp(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkSetUp", reflect.TypeOf((*MockNetLinker)(nil).LinkSetUp), arg0)
 }
 
 // RouteAdd mocks base method.

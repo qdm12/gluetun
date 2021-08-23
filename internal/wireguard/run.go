@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/vishvananda/netlink"
 	"golang.zx2c4.com/wireguard/conn"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/ipc"
@@ -64,7 +63,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	link, err := netlink.LinkByName(w.settings.InterfaceName)
+	link, err := w.netlink.LinkByName(w.settings.InterfaceName)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s: %s", ErrFindLink, w.settings.InterfaceName, err)
 		return
@@ -114,7 +113,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	if err := netlink.LinkSetUp(link); err != nil {
+	if err := w.netlink.LinkSetUp(link); err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrIfaceUp, err)
 		return
 	}

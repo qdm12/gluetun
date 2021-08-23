@@ -7,7 +7,7 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/vishvananda/netlink"
+	"github.com/qdm12/gluetun/internal/netlink"
 )
 
 var (

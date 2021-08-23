@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/vishvananda/netlink"
+	"github.com/qdm12/gluetun/internal/netlink"
 )
 
 // TODO add IPv6 route if IPv6 is supported

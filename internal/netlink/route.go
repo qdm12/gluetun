@@ -2,6 +2,8 @@ package netlink
 
 import "github.com/vishvananda/netlink"
 
+type Route = netlink.Route
+
 var _ Router = (*NetLink)(nil)
 
 type Router interface {

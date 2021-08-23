@@ -2,6 +2,12 @@ package netlink
 
 import "github.com/vishvananda/netlink"
 
+type Rule = netlink.Rule
+
+func NewRule() *Rule {
+	return netlink.NewRule()
+}
+
 var _ Ruler = (*NetLink)(nil)
 
 type Ruler interface {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/vishvananda/netlink"
+	"github.com/qdm12/gluetun/internal/netlink"
 )
 
 type LocalNetwork struct {

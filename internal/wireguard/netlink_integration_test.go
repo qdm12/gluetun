@@ -8,16 +8,15 @@ import (
 	"net"
 	"testing"
 
-	inetlink "github.com/qdm12/gluetun/internal/netlink"
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/vishvananda/netlink"
 )
 
 func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	t.Parallel()
 
-	netlinker := inetlink.New()
+	netlinker := netlink.New()
 	wg := &Wireguard{
 		netlink: netlinker,
 	}
@@ -30,11 +29,11 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	link := &netlink.Bridge{
 		LinkAttrs: linkAttrs,
 	}
-	err := netlink.LinkAdd(link)
+	err := netlinker.LinkAdd(link)
 	require.NoError(t, err)
 
 	defer func() {
-		err = netlink.LinkDel(link)
+		err = netlinker.LinkDel(link)
 		assert.NoError(t, err)
 	}()
 
@@ -47,7 +46,7 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	err = wg.addAddresses(link, addresses)
 	require.NoError(t, err)
 
-	netlinkAddresses, err := netlink.AddrList(link, netlink.FAMILY_ALL)
+	netlinkAddresses, err := netlinker.AddrList(link, netlink.FAMILY_ALL)
 	require.NoError(t, err)
 	require.Equal(t, len(addresses), len(netlinkAddresses))
 	for i, netlinkAddress := range netlinkAddresses {
@@ -64,7 +63,7 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 func Test_netlink_Wireguard_addRule(t *testing.T) {
 	t.Parallel()
 
-	netlinker := inetlink.New()
+	netlinker := netlink.New()
 	wg := &Wireguard{
 		netlink: netlinker,
 	}
@@ -79,7 +78,7 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
+	rules, err := netlinker.RuleList(netlink.FAMILY_ALL)
 	require.NoError(t, err)
 	var rule netlink.Rule
 	var ruleFound bool
