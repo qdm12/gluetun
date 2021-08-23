@@ -10,7 +10,7 @@ import (
 func (i *Ivpn) GetConnection(selection configuration.ServerSelection) (
 	connection models.Connection, err error) {
 	port := getPort(selection)
-	protocol := getProtocol(selection.OpenVPN.TCP)
+	protocol := getProtocol(selection)
 
 	servers, err := i.filterServers(selection)
 	if err != nil {
@@ -26,6 +26,7 @@ func (i *Ivpn) GetConnection(selection configuration.ServerSelection) (
 				Port:     port,
 				Protocol: protocol,
 				Hostname: server.Hostname,
+				PubKey:   server.WgPubKey, // Wireguard only
 			}
 			connections = append(connections, connection)
 		}
@@ -39,19 +40,29 @@ func (i *Ivpn) GetConnection(selection configuration.ServerSelection) (
 }
 
 func getPort(selection configuration.ServerSelection) (port uint16) {
-	customPort := selection.OpenVPN.CustomPort
-	if customPort > 0 {
-		return customPort
+	switch selection.VPN {
+	case constants.Wireguard:
+		customPort := selection.Wireguard.CustomPort
+		if customPort > 0 {
+			return customPort
+		}
+		const defaultPort = 58237
+		return defaultPort
+	default: // OpenVPN
+		customPort := selection.OpenVPN.CustomPort
+		if customPort > 0 {
+			return customPort
+		}
+		port = 1194
+		if selection.OpenVPN.TCP {
+			port = 443
+		}
+		return port
 	}
-	port = 1194
-	if selection.OpenVPN.TCP {
-		port = 443
-	}
-	return port
 }
 
-func getProtocol(tcp bool) (protocol string) {
-	if tcp {
+func getProtocol(selection configuration.ServerSelection) (protocol string) {
+	if selection.VPN == constants.OpenVPN && selection.OpenVPN.TCP {
 		return constants.TCP
 	}
 	return constants.UDP

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/resolver/mock_resolver"
@@ -70,23 +71,31 @@ func Test_GetServers(t *testing.T) {
 			minServers: 1,
 			responseBody: `{"servers":[
 				{"country":"Country1","city":"City A","hostnames":{"openvpn":"hosta"}},
-				{"country":"Country2","city":"City B","hostnames":{"openvpn":"hostb"}},
-				{"country":"Country3","city":"City C","hostnames":{"wireguard":"hostc"}}
+				{"country":"Country2","city":"City B","hostnames":{"openvpn":"hostb"},"wg_public_key":"xyz"},
+				{"country":"Country3","city":"City C","hostnames":{"wireguard":"hostc"},"wg_public_key":"xyz"}
 			]}`,
 			responseStatus:  http.StatusOK,
 			expectResolve:   true,
-			hostsToResolve:  []string{"hosta", "hostb"},
+			hostsToResolve:  []string{"hosta", "hostb", "hostc"},
 			resolveSettings: getResolveSettings(1),
 			hostToIPs: map[string][]net.IP{
 				"hosta": {{1, 1, 1, 1}, {2, 2, 2, 2}},
 				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
+				"hostc": {{5, 5, 5, 5}, {6, 6, 6, 6}},
 			},
 			resolveWarnings: []string{"resolve warning"},
 			servers: []models.IvpnServer{
-				{Country: "Country1", City: "City A", Hostname: "hosta",
-					TCP: true, UDP: true, IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
-				{Country: "Country2", City: "City B", Hostname: "hostb",
-					TCP: true, UDP: true, IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
+				{VPN: constants.OpenVPN, Country: "Country1",
+					City: "City A", Hostname: "hosta", TCP: true, UDP: true,
+					IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
+				{VPN: constants.OpenVPN, Country: "Country2",
+					City: "City B", Hostname: "hostb", TCP: true, UDP: true,
+					IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
+				{VPN: constants.Wireguard,
+					Country: "Country3", City: "City C",
+					Hostname: "hostc", UDP: true,
+					WgPubKey: "xyz",
+					IPs:      []net.IP{{5, 5, 5, 5}, {6, 6, 6, 6}}},
 			},
 			warnings: []string{"resolve warning"},
 		},

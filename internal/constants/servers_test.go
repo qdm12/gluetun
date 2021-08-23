@@ -68,7 +68,7 @@ func Test_versions(t *testing.T) {
 		"Ivpn": {
 			model:   models.IvpnServer{},
 			version: allServers.Ivpn.Version,
-			digest:  "abdc2848",
+			digest:  "88074ceb",
 		},
 		"Mullvad": {
 			model:   models.MullvadServer{},

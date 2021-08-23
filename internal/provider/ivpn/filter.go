@@ -11,6 +11,7 @@ func (i *Ivpn) filterServers(selection configuration.ServerSelection) (
 	for _, server := range i.servers {
 		switch {
 		case
+			server.VPN != selection.VPN,
 			utils.FilterByPossibilities(server.ISP, selection.ISPs),
 			utils.FilterByPossibilities(server.Country, selection.Countries),
 			utils.FilterByPossibilities(server.City, selection.Cities),

@@ -103,7 +103,8 @@ func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err 
 			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
 			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
 	case constants.Wireguard:
-		allowedVPNServiceProviders = []string{constants.Mullvad, constants.Windscribe}
+		allowedVPNServiceProviders = []string{constants.Mullvad, constants.Windscribe,
+			constants.Ivpn}
 	}
 
 	vpnsp, err := r.env.Inside("VPNSP", allowedVPNServiceProviders,

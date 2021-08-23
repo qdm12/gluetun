@@ -130,6 +130,21 @@ func Test_getPort(t *testing.T) {
 			},
 			port: 1234,
 		},
+		"Wireguard": {
+			selection: configuration.ServerSelection{
+				VPN: constants.Wireguard,
+			},
+			port: 58237,
+		},
+		"Wireguard custom port": {
+			selection: configuration.ServerSelection{
+				VPN: constants.Wireguard,
+				Wireguard: configuration.WireguardSelection{
+					CustomPort: 1234,
+				},
+			},
+			port: 1234,
+		},
 	}
 
 	for name, testCase := range testCases {
@@ -148,15 +163,26 @@ func Test_getProtocol(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		tcp      bool
-		protocol string
+		selection configuration.ServerSelection
+		protocol  string
 	}{
-		"UDP": {
+		"OpenVPN UDP": {
 			protocol: constants.UDP,
 		},
-		"TCP": {
-			tcp:      true,
+		"OpenVPN TCP": {
+			selection: configuration.ServerSelection{
+				VPN: constants.OpenVPN,
+				OpenVPN: configuration.OpenVPNSelection{
+					TCP: true,
+				},
+			},
 			protocol: constants.TCP,
+		},
+		"Wireguard": {
+			selection: configuration.ServerSelection{
+				VPN: constants.Wireguard,
+			},
+			protocol: constants.UDP,
 		},
 	}
 
@@ -165,7 +191,7 @@ func Test_getProtocol(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			protocol := getProtocol(testCase.tcp)
+			protocol := getProtocol(testCase.selection)
 
 			assert.Equal(t, testCase.protocol, protocol)
 		})

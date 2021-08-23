@@ -26,10 +26,12 @@ type apiServer struct {
 	Country   string       `json:"country"`
 	City      string       `json:"city"`
 	ISP       string       `json:"isp"`
+	WgPubKey  string       `json:"wg_public_key"`
 }
 
 type apiHostnames struct {
-	OpenVPN string `json:"openvpn"`
+	OpenVPN   string `json:"openvpn"`
+	Wireguard string `json:"wireguard"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
