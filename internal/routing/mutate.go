@@ -25,7 +25,7 @@ func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 		" dev " + iface +
 		" table " + strconv.Itoa(table))
 
-	link, err := netlink.LinkByName(iface)
+	link, err := r.netLinker.LinkByName(iface)
 	if err != nil {
 		return fmt.Errorf("%w: interface %s: %s", ErrLinkByName, iface, err)
 	}
@@ -35,7 +35,7 @@ func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 		LinkIndex: link.Attrs().Index,
 		Table:     table,
 	}
-	if err := netlink.RouteReplace(&route); err != nil {
+	if err := r.netLinker.RouteReplace(&route); err != nil {
 		return fmt.Errorf("%w: for subnet %s at interface %s: %s",
 			ErrRouteReplace, destinationStr, iface, err)
 	}
@@ -50,7 +50,7 @@ func (r *Routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 		" dev " + iface +
 		" table " + strconv.Itoa(table))
 
-	link, err := netlink.LinkByName(iface)
+	link, err := r.netLinker.LinkByName(iface)
 	if err != nil {
 		return fmt.Errorf("%w: for interface %s: %s", ErrLinkByName, iface, err)
 	}
@@ -60,7 +60,7 @@ func (r *Routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 		LinkIndex: link.Attrs().Index,
 		Table:     table,
 	}
-	if err := netlink.RouteDel(&route); err != nil {
+	if err := r.netLinker.RouteDel(&route); err != nil {
 		return fmt.Errorf("%w: for subnet %s at interface %s: %s",
 			ErrRouteDelete, destinationStr, iface, err)
 	}
@@ -77,7 +77,7 @@ func (r *Routing) addIPRule(src net.IP, table, priority int) error {
 	rule.Priority = priority
 	rule.Table = table
 
-	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
+	rules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrRulesList, err)
 	}
@@ -91,7 +91,7 @@ func (r *Routing) addIPRule(src net.IP, table, priority int) error {
 		}
 	}
 
-	if err := netlink.RuleAdd(rule); err != nil {
+	if err := r.netLinker.RuleAdd(rule); err != nil {
 		return fmt.Errorf("%w: for rule %q: %s", ErrRuleAdd, rule, err)
 	}
 	return nil
@@ -107,7 +107,7 @@ func (r *Routing) deleteIPRule(src net.IP, table, priority int) error {
 	rule.Priority = priority
 	rule.Table = table
 
-	rules, err := netlink.RuleList(netlink.FAMILY_ALL)
+	rules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrRulesList, err)
 	}
@@ -117,7 +117,7 @@ func (r *Routing) deleteIPRule(src net.IP, table, priority int) error {
 			bytes.Equal(existingRule.Src.Mask, rule.Src.Mask) &&
 			existingRule.Priority == rule.Priority &&
 			existingRule.Table == rule.Table {
-			if err := netlink.RuleDel(rule); err != nil {
+			if err := r.netLinker.RuleDel(rule); err != nil {
 				return fmt.Errorf("%w: for rule %q: %s", ErrRuleDel, rule, err)
 			}
 		}

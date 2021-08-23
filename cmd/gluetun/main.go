@@ -234,7 +234,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Prefix: "routing: ",
 		Level:  firewallLogLevel,
 	})
-	routingConf := routing.New(routingLogger)
+	routingConf := routing.New(netLinker, routingLogger)
 
 	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
 	if err != nil {

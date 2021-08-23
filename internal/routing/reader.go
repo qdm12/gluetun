@@ -38,7 +38,7 @@ type DefaultRouteGetter interface {
 }
 
 func (r *Routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return "", nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
@@ -46,7 +46,7 @@ func (r *Routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP
 		if route.Dst == nil {
 			defaultGateway = route.Gw
 			linkIndex := route.LinkIndex
-			link, err := netlink.LinkByIndex(linkIndex)
+			link, err := r.netLinker.LinkByIndex(linkIndex)
 			if err != nil {
 				return "", nil, fmt.Errorf("%w: for default route at index %d: %s", ErrLinkByIndex, linkIndex, err)
 			}
@@ -65,7 +65,7 @@ type DefaultIPGetter interface {
 }
 
 func (r *Routing) DefaultIP() (ip net.IP, err error) {
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
@@ -74,7 +74,7 @@ func (r *Routing) DefaultIP() (ip net.IP, err error) {
 	for _, route := range routes {
 		if route.Dst == nil {
 			linkIndex := route.LinkIndex
-			link, err := netlink.LinkByIndex(linkIndex)
+			link, err := r.netLinker.LinkByIndex(linkIndex)
 			if err != nil {
 				return nil, fmt.Errorf("%w: for default route at index %d: %s", ErrLinkByIndex, linkIndex, err)
 			}
@@ -93,7 +93,7 @@ type LocalSubnetGetter interface {
 }
 
 func (r *Routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return defaultSubnet, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
@@ -126,7 +126,7 @@ type LocalNetworksGetter interface {
 }
 
 func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
-	links, err := netlink.LinkList()
+	links, err := r.netLinker.LinkList()
 	if err != nil {
 		return localNetworks, fmt.Errorf("%w: %s", ErrLinkList, err)
 	}
@@ -146,7 +146,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		return localNetworks, fmt.Errorf("%w: in %d links", ErrLinkLocalNotFound, len(links))
 	}
 
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_V4)
+	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_V4)
 	if err != nil {
 		return localNetworks, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
@@ -163,7 +163,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		localNet.IPNet = route.Dst
 		r.logger.Info("local ipnet found: " + localNet.IPNet.String())
 
-		link, err := netlink.LinkByIndex(route.LinkIndex)
+		link, err := r.netLinker.LinkByIndex(route.LinkIndex)
 		if err != nil {
 			return localNetworks, fmt.Errorf("%w: at index %d: %s", ErrLinkByIndex, route.LinkIndex, err)
 		}
@@ -213,7 +213,7 @@ type VPNDestinationIPGetter interface {
 }
 
 func (r *Routing) VPNDestinationIP() (ip net.IP, err error) {
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
@@ -245,12 +245,12 @@ type VPNLocalGatewayIPGetter interface {
 }
 
 func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {
-	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
 	}
 	for _, route := range routes {
-		link, err := netlink.LinkByIndex(route.LinkIndex)
+		link, err := r.netLinker.LinkByIndex(route.LinkIndex)
 		if err != nil {
 			return nil, fmt.Errorf("%w: %s", ErrLinkByIndex, err)
 		}
