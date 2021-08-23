@@ -10,7 +10,7 @@ import (
 func (w *Windscribe) GetConnection(selection configuration.ServerSelection) (
 	connection models.Connection, err error) {
 	port := getPort(selection)
-	protocol := getProtocol(selection)
+	protocol := utils.GetProtocol(selection)
 
 	servers, err := w.filterServers(selection)
 	if err != nil {
@@ -59,12 +59,4 @@ func getPort(selection configuration.ServerSelection) (port uint16) {
 		}
 		return port
 	}
-}
-
-func getProtocol(selection configuration.ServerSelection) (protocol string) {
-	protocol = constants.UDP
-	if selection.VPN == constants.OpenVPN && selection.OpenVPN.TCP {
-		protocol = constants.TCP
-	}
-	return protocol
 }
