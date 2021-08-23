@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Provider_readIvpn(t *testing.T) {
+func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 	t.Parallel()
 
 	var errDummy = errors.New("dummy test error")
@@ -23,10 +23,13 @@ func Test_Provider_readIvpn(t *testing.T) {
 		err   error
 	}
 
-	type singleUint16Call struct {
-		call  bool
-		value uint16
-		err   error
+	type portCall struct {
+		getCall   bool
+		getValue  string // "" or "0"
+		getErr    error
+		portCall  bool
+		portValue uint16
+		portErr   error
 	}
 
 	type sliceStringCall struct {
@@ -42,8 +45,8 @@ func Test_Provider_readIvpn(t *testing.T) {
 		isps      sliceStringCall
 		hostnames sliceStringCall
 		protocol  singleStringCall
-		portGet   singleStringCall
-		portPort  singleUint16Call
+		ovpnPort  portCall
+		wgPort    portCall
 		settings  Provider
 		err       error
 	}{
@@ -92,7 +95,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 			},
 			err: errors.New("environment variable SERVER_HOSTNAME: dummy test error"),
 		},
-		"protocol error": {
+		"openvpn protocol error": {
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true},
@@ -104,18 +107,32 @@ func Test_Provider_readIvpn(t *testing.T) {
 			},
 			err: errors.New("environment variable PROTOCOL: dummy test error"),
 		},
-		"custom port error": {
+		"openvpn custom port error": {
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
 			cities:    sliceStringCall{call: true},
 			isps:      sliceStringCall{call: true},
 			hostnames: sliceStringCall{call: true},
 			protocol:  singleStringCall{call: true},
-			portGet:   singleStringCall{call: true, err: errDummy},
+			ovpnPort:  portCall{getCall: true, getErr: errDummy},
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
 			err: errors.New("environment variable PORT: dummy test error"),
+		},
+		"wireguard custom port error": {
+			targetIP:  singleStringCall{call: true},
+			countries: sliceStringCall{call: true},
+			cities:    sliceStringCall{call: true},
+			isps:      sliceStringCall{call: true},
+			hostnames: sliceStringCall{call: true},
+			protocol:  singleStringCall{call: true},
+			ovpnPort:  portCall{getCall: true, getValue: "0"},
+			wgPort:    portCall{getCall: true, getErr: errDummy},
+			settings: Provider{
+				Name: constants.Ivpn,
+			},
+			err: errors.New("environment variable WIREGUARD_PORT: dummy test error"),
 		},
 		"default settings": {
 			targetIP:  singleStringCall{call: true},
@@ -124,7 +141,8 @@ func Test_Provider_readIvpn(t *testing.T) {
 			isps:      sliceStringCall{call: true},
 			hostnames: sliceStringCall{call: true},
 			protocol:  singleStringCall{call: true},
-			portGet:   singleStringCall{call: true, value: "0"},
+			ovpnPort:  portCall{getCall: true, getValue: "0"},
+			wgPort:    portCall{getCall: true, getValue: "0"},
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
@@ -136,14 +154,17 @@ func Test_Provider_readIvpn(t *testing.T) {
 			isps:      sliceStringCall{call: true, values: []string{"ISP 1"}},
 			hostnames: sliceStringCall{call: true, values: []string{"E", "F"}},
 			protocol:  singleStringCall{call: true, value: constants.TCP},
-			portGet:   singleStringCall{call: true},
-			portPort:  singleUint16Call{call: true, value: 443},
+			ovpnPort:  portCall{getCall: true, portCall: true, portValue: 443},
+			wgPort:    portCall{getCall: true, portCall: true, portValue: 2049},
 			settings: Provider{
 				Name: constants.Ivpn,
 				ServerSelection: ServerSelection{
 					OpenVPN: OpenVPNSelection{
 						TCP:        true,
 						CustomPort: 443,
+					},
+					Wireguard: WireguardSelection{
+						CustomPort: 2049,
 					},
 					TargetIP:  net.IPv4(1, 2, 3, 4),
 					Countries: []string{"A", "B"},
@@ -161,6 +182,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
 			env := mock_params.NewMockInterface(ctrl)
+
 			if testCase.targetIP.call {
 				env.EXPECT().Get("OPENVPN_TARGET_IP").
 					Return(testCase.targetIP.value, testCase.targetIP.err)
@@ -185,13 +207,21 @@ func Test_Provider_readIvpn(t *testing.T) {
 				env.EXPECT().Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
 					Return(testCase.protocol.value, testCase.protocol.err)
 			}
-			if testCase.portGet.call {
+			if testCase.ovpnPort.getCall {
 				env.EXPECT().Get("PORT", gomock.Any()).
-					Return(testCase.portGet.value, testCase.portGet.err)
+					Return(testCase.ovpnPort.getValue, testCase.ovpnPort.getErr)
 			}
-			if testCase.portPort.call {
+			if testCase.ovpnPort.portCall {
 				env.EXPECT().Port("PORT").
-					Return(testCase.portPort.value, testCase.portPort.err)
+					Return(testCase.ovpnPort.portValue, testCase.ovpnPort.portErr)
+			}
+			if testCase.wgPort.getCall {
+				env.EXPECT().Get("WIREGUARD_PORT", gomock.Any()).
+					Return(testCase.wgPort.getValue, testCase.wgPort.getErr)
+			}
+			if testCase.wgPort.portCall {
+				env.EXPECT().Port("WIREGUARD_PORT").
+					Return(testCase.wgPort.portValue, testCase.wgPort.portErr)
 			}
 
 			r := reader{env: env}
