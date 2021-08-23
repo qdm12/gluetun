@@ -23,6 +23,12 @@ func Test_Provider_readIvpn(t *testing.T) {
 		err   error
 	}
 
+	type singleUint16Call struct {
+		call  bool
+		value uint16
+		err   error
+	}
+
 	type sliceStringCall struct {
 		call   bool
 		values []string
@@ -30,12 +36,14 @@ func Test_Provider_readIvpn(t *testing.T) {
 	}
 
 	testCases := map[string]struct {
-		protocol  singleStringCall
 		targetIP  singleStringCall
 		countries sliceStringCall
 		cities    sliceStringCall
 		isps      sliceStringCall
 		hostnames sliceStringCall
+		protocol  singleStringCall
+		portGet   singleStringCall
+		portPort  singleUint16Call
 		settings  Provider
 		err       error
 	}{
@@ -96,6 +104,19 @@ func Test_Provider_readIvpn(t *testing.T) {
 			},
 			err: errors.New("environment variable PROTOCOL: dummy test error"),
 		},
+		"custom port error": {
+			targetIP:  singleStringCall{call: true},
+			countries: sliceStringCall{call: true},
+			cities:    sliceStringCall{call: true},
+			isps:      sliceStringCall{call: true},
+			hostnames: sliceStringCall{call: true},
+			protocol:  singleStringCall{call: true},
+			portGet:   singleStringCall{call: true, err: errDummy},
+			settings: Provider{
+				Name: constants.Ivpn,
+			},
+			err: errors.New("environment variable PORT: dummy test error"),
+		},
 		"default settings": {
 			targetIP:  singleStringCall{call: true},
 			countries: sliceStringCall{call: true},
@@ -103,6 +124,7 @@ func Test_Provider_readIvpn(t *testing.T) {
 			isps:      sliceStringCall{call: true},
 			hostnames: sliceStringCall{call: true},
 			protocol:  singleStringCall{call: true},
+			portGet:   singleStringCall{call: true, value: "0"},
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
@@ -114,11 +136,14 @@ func Test_Provider_readIvpn(t *testing.T) {
 			isps:      sliceStringCall{call: true, values: []string{"ISP 1"}},
 			hostnames: sliceStringCall{call: true, values: []string{"E", "F"}},
 			protocol:  singleStringCall{call: true, value: constants.TCP},
+			portGet:   singleStringCall{call: true},
+			portPort:  singleUint16Call{call: true, value: 443},
 			settings: Provider{
 				Name: constants.Ivpn,
 				ServerSelection: ServerSelection{
 					OpenVPN: OpenVPNSelection{
-						TCP: true,
+						TCP:        true,
+						CustomPort: 443,
 					},
 					TargetIP:  net.IPv4(1, 2, 3, 4),
 					Countries: []string{"A", "B"},
@@ -136,10 +161,6 @@ func Test_Provider_readIvpn(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
 			env := mock_params.NewMockInterface(ctrl)
-			if testCase.protocol.call {
-				env.EXPECT().Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
-					Return(testCase.protocol.value, testCase.protocol.err)
-			}
 			if testCase.targetIP.call {
 				env.EXPECT().Get("OPENVPN_TARGET_IP").
 					Return(testCase.targetIP.value, testCase.targetIP.err)
@@ -159,6 +180,18 @@ func Test_Provider_readIvpn(t *testing.T) {
 			if testCase.hostnames.call {
 				env.EXPECT().CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices()).
 					Return(testCase.hostnames.values, testCase.hostnames.err)
+			}
+			if testCase.protocol.call {
+				env.EXPECT().Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
+					Return(testCase.protocol.value, testCase.protocol.err)
+			}
+			if testCase.portGet.call {
+				env.EXPECT().Get("PORT", gomock.Any()).
+					Return(testCase.portGet.value, testCase.portGet.err)
+			}
+			if testCase.portPort.call {
+				env.EXPECT().Port("PORT").
+					Return(testCase.portPort.value, testCase.portPort.err)
 			}
 
 			r := reader{env: env}

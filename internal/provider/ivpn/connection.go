@@ -1,23 +1,16 @@
 package ivpn
 
 import (
-	"errors"
-
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-var ErrProtocolUnsupported = errors.New("network protocol is not supported")
-
 func (i *Ivpn) GetConnection(selection configuration.ServerSelection) (
 	connection models.Connection, err error) {
-	const port = 2049
-	const protocol = constants.UDP
-	if selection.OpenVPN.TCP {
-		return connection, ErrProtocolUnsupported
-	}
+	port := getPort(selection)
+	protocol := getProtocol(selection.OpenVPN.TCP)
 
 	servers, err := i.filterServers(selection)
 	if err != nil {
@@ -43,4 +36,23 @@ func (i *Ivpn) GetConnection(selection configuration.ServerSelection) (
 	}
 
 	return utils.PickRandomConnection(connections, i.randSource), nil
+}
+
+func getPort(selection configuration.ServerSelection) (port uint16) {
+	customPort := selection.OpenVPN.CustomPort
+	if customPort > 0 {
+		return customPort
+	}
+	port = 1194
+	if selection.OpenVPN.TCP {
+		port = 443
+	}
+	return port
+}
+
+func getProtocol(tcp bool) (protocol string) {
+	if tcp {
+		return constants.TCP
+	}
+	return constants.UDP
 }

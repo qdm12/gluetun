@@ -83,8 +83,10 @@ func Test_GetServers(t *testing.T) {
 			},
 			resolveWarnings: []string{"resolve warning"},
 			servers: []models.IvpnServer{
-				{Country: "Country1", City: "City A", Hostname: "hosta", UDP: true, IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
-				{Country: "Country2", City: "City B", Hostname: "hostb", UDP: true, IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
+				{Country: "Country1", City: "City A", Hostname: "hosta",
+					TCP: true, UDP: true, IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
+				{Country: "Country2", City: "City B", Hostname: "hostb",
+					TCP: true, UDP: true, IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
 			},
 			warnings: []string{"resolve warning"},
 		},

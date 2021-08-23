@@ -59,9 +59,9 @@ func GetServers(ctx context.Context, client *http.Client,
 			City:     serverData.City,
 			ISP:      serverData.ISP,
 			Hostname: serverData.Hostnames.OpenVPN,
-			// TCP is not supported
-			UDP: true,
-			IPs: hostToIPs[host],
+			TCP:      true,
+			UDP:      true,
+			IPs:      hostToIPs[host],
 		}
 		servers = append(servers, server)
 	}

@@ -25971,14 +25971,14 @@
   },
   "ivpn": {
     "version": 2,
-    "timestamp": 1629589118,
+    "timestamp": 1629725441,
     "servers": [
       {
         "country": "Australia",
         "city": "Sydney",
         "isp": "M247",
         "hostname": "au-nsw1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "46.102.153.242"
@@ -25989,7 +25989,7 @@
         "city": "Vienna",
         "isp": "M247",
         "hostname": "at1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.244.212.66"
@@ -26000,7 +26000,7 @@
         "city": "Brussels",
         "isp": "M247",
         "hostname": "be1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "194.187.251.10"
@@ -26011,7 +26011,7 @@
         "city": "Franca",
         "isp": "Qnax",
         "hostname": "br1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "45.162.229.130"
@@ -26022,7 +26022,7 @@
         "city": "Sofia",
         "isp": "M247",
         "hostname": "bg1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "82.102.23.18"
@@ -26033,7 +26033,7 @@
         "city": "Montreal",
         "isp": "M247",
         "hostname": "ca-qc1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "87.101.92.26"
@@ -26044,7 +26044,7 @@
         "city": "Toronto",
         "isp": "Amanah",
         "hostname": "ca1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "104.254.90.178"
@@ -26055,7 +26055,7 @@
         "city": "Toronto",
         "isp": "Amanah",
         "hostname": "ca2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "172.86.186.170"
@@ -26066,7 +26066,7 @@
         "city": "Prague",
         "isp": "Datapacket",
         "hostname": "cz1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "195.181.160.167"
@@ -26077,7 +26077,7 @@
         "city": "Copenhagen",
         "isp": "M247",
         "hostname": "dk1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.245.84.226"
@@ -26088,7 +26088,7 @@
         "city": "Helsinki",
         "isp": "Creanova",
         "hostname": "fi1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.112.82.12"
@@ -26099,7 +26099,7 @@
         "city": "Paris",
         "isp": "Datapacket",
         "hostname": "fr1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.246.211.179"
@@ -26110,7 +26110,7 @@
         "city": "Frankfurt",
         "isp": "Leaseweb",
         "hostname": "de1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "178.162.222.40"
@@ -26121,7 +26121,7 @@
         "city": "Frankfurt",
         "isp": "Leaseweb",
         "hostname": "de2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "178.162.211.114"
@@ -26132,7 +26132,7 @@
         "city": "Hong Kong",
         "isp": "Leaseweb",
         "hostname": "hk1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "209.58.189.163"
@@ -26143,7 +26143,7 @@
         "city": "Hong Kong",
         "isp": "Leaseweb",
         "hostname": "hk2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "209.58.188.13"
@@ -26154,7 +26154,7 @@
         "city": "Budapest",
         "isp": "M247",
         "hostname": "hu1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.189.114.186"
@@ -26165,7 +26165,7 @@
         "city": "Reykjavik",
         "isp": "Advania",
         "hostname": "is1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "82.221.107.178"
@@ -26176,7 +26176,7 @@
         "city": "Holon, Tel Aviv",
         "isp": "HQServ",
         "hostname": "il1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.191.207.194"
@@ -26187,7 +26187,7 @@
         "city": "Milan",
         "isp": "SEFlow",
         "hostname": "it1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "158.58.172.73"
@@ -26198,7 +26198,7 @@
         "city": "Tokyo",
         "isp": "M247",
         "hostname": "jp1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "91.207.174.234"
@@ -26209,7 +26209,7 @@
         "city": "Luxembourg",
         "isp": "Evoluso",
         "hostname": "lu1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "92.223.89.53"
@@ -26220,7 +26220,7 @@
         "city": "Amsterdam",
         "isp": "Leaseweb",
         "hostname": "nl3.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "95.211.172.68"
@@ -26231,7 +26231,7 @@
         "city": "Amsterdam",
         "isp": "Leaseweb",
         "hostname": "nl4.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "95.211.172.95"
@@ -26242,7 +26242,7 @@
         "city": "Amsterdam",
         "isp": "Leaseweb",
         "hostname": "nl5.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "95.211.187.222"
@@ -26253,7 +26253,7 @@
         "city": "Amsterdam",
         "isp": "Leaseweb",
         "hostname": "nl6.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "95.211.187.228"
@@ -26264,7 +26264,7 @@
         "city": "Amsterdam",
         "isp": "Leaseweb",
         "hostname": "nl7.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "95.211.95.22"
@@ -26275,7 +26275,7 @@
         "city": "Amsterdam",
         "isp": "Leaseweb",
         "hostname": "nl8.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "95.211.172.18"
@@ -26286,7 +26286,7 @@
         "city": "Oslo",
         "isp": "Servethewrld",
         "hostname": "no1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "194.242.10.150"
@@ -26297,7 +26297,7 @@
         "city": "Warsaw",
         "isp": "Datapacket",
         "hostname": "pl1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.246.208.86"
@@ -26308,7 +26308,7 @@
         "city": "Lisbon",
         "isp": "Hostwebis",
         "hostname": "pt1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "94.46.175.112"
@@ -26319,7 +26319,7 @@
         "city": "Bucharest",
         "isp": "M247",
         "hostname": "ro1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "37.120.206.50"
@@ -26330,7 +26330,7 @@
         "city": "Belgrade",
         "isp": "M247",
         "hostname": "rs1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "141.98.103.250"
@@ -26341,7 +26341,7 @@
         "city": "Singapore",
         "isp": "M247",
         "hostname": "sg1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.128.24.186"
@@ -26352,7 +26352,7 @@
         "city": "Bratislava",
         "isp": "M247",
         "hostname": "sk1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.245.85.250"
@@ -26363,7 +26363,7 @@
         "city": "Madrid",
         "isp": "Datapacket",
         "hostname": "es1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.93.3.193"
@@ -26374,7 +26374,7 @@
         "city": "Stockholm",
         "isp": "GleSyS",
         "hostname": "se1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "80.67.10.138"
@@ -26385,7 +26385,7 @@
         "city": "Zurich",
         "isp": "M247",
         "hostname": "ch1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.212.170.138"
@@ -26396,7 +26396,7 @@
         "city": "Zurich",
         "isp": "Privatelayer",
         "hostname": "ch3.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "141.255.166.194"
@@ -26407,7 +26407,7 @@
         "city": "Kharkiv",
         "isp": "Xservers",
         "hostname": "ua1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "193.203.48.54"
@@ -26418,7 +26418,7 @@
         "city": "London",
         "isp": "Datapacket",
         "hostname": "gb1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.59.221.133"
@@ -26429,7 +26429,7 @@
         "city": "London",
         "isp": "Datapacket",
         "hostname": "gb2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.59.221.88"
@@ -26440,7 +26440,7 @@
         "city": "Manchester",
         "isp": "M247",
         "hostname": "gb-man1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "89.238.141.228"
@@ -26451,7 +26451,7 @@
         "city": "Atlanta, GA",
         "isp": "Quadranet",
         "hostname": "us-ga1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "104.129.24.146"
@@ -26462,7 +26462,7 @@
         "city": "Atlanta, GA",
         "isp": "Quadranet",
         "hostname": "us-ga2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "107.150.22.74"
@@ -26473,7 +26473,7 @@
         "city": "Chicago, IL",
         "isp": "Quadranet",
         "hostname": "us-il1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "107.150.28.82"
@@ -26484,7 +26484,7 @@
         "city": "Chicago, IL",
         "isp": "Quadranet",
         "hostname": "us-il2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "72.11.137.146"
@@ -26495,7 +26495,7 @@
         "city": "Dallas, TX",
         "isp": "Quadranet",
         "hostname": "us-tx1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "96.44.189.194"
@@ -26506,7 +26506,7 @@
         "city": "Dallas, TX",
         "isp": "Quadranet",
         "hostname": "us-tx2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "96.44.142.74"
@@ -26517,7 +26517,7 @@
         "city": "Las Vegas, NV",
         "isp": "M247",
         "hostname": "us-nv1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "185.242.5.34"
@@ -26528,7 +26528,7 @@
         "city": "Los Angeles, CA",
         "isp": "Quadranet",
         "hostname": "us-ca1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "173.254.196.58"
@@ -26539,7 +26539,7 @@
         "city": "Los Angeles, CA",
         "isp": "Quadranet",
         "hostname": "us-ca2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "69.12.80.146"
@@ -26550,7 +26550,7 @@
         "city": "Los Angeles, CA",
         "isp": "Leaseweb",
         "hostname": "us-ca3.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "209.58.130.196"
@@ -26561,7 +26561,7 @@
         "city": "Los Angeles, CA",
         "isp": "Quadranet",
         "hostname": "us-ca4.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "173.254.204.202"
@@ -26572,7 +26572,7 @@
         "city": "Miami, FL",
         "isp": "Quadranet",
         "hostname": "us-fl1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "173.44.49.90"
@@ -26583,7 +26583,7 @@
         "city": "New Jersey, NJ",
         "isp": "Quadranet",
         "hostname": "us-nj3.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "23.226.128.18"
@@ -26594,7 +26594,7 @@
         "city": "New Jersey, NJ",
         "isp": "M247",
         "hostname": "us-nj4.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "194.36.111.50"
@@ -26605,7 +26605,7 @@
         "city": "New York, NY",
         "isp": "Leaseweb",
         "hostname": "us-ny1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "64.120.44.114"
@@ -26616,7 +26616,7 @@
         "city": "New York, NY",
         "isp": "Leaseweb",
         "hostname": "us-ny2.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "173.234.153.130"
@@ -26627,7 +26627,7 @@
         "city": "Phoenix, AZ",
         "isp": "M247",
         "hostname": "us-az1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "193.37.254.130"
@@ -26638,7 +26638,7 @@
         "city": "Salt Lake City, UT",
         "isp": "100TB",
         "hostname": "us-ut1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "198.105.216.28"
@@ -26649,7 +26649,7 @@
         "city": "Seattle, WA",
         "isp": "Leaseweb",
         "hostname": "us-wa1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "23.19.87.209"
@@ -26660,7 +26660,7 @@
         "city": "Washington, DC",
         "isp": "Leaseweb",
         "hostname": "us-dc1.gw.ivpn.net",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "ips": [
           "207.244.108.207"
