@@ -2,7 +2,6 @@ package windscribe
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration"
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -40,23 +39,11 @@ func (w *Windscribe) GetConnection(selection configuration.ServerSelection) (
 }
 
 func getPort(selection configuration.ServerSelection) (port uint16) {
-	switch selection.VPN {
-	case constants.Wireguard:
-		customPort := selection.Wireguard.CustomPort
-		if customPort > 0 {
-			return customPort
-		}
-		const defaultPort = 1194
-		return defaultPort
-	default: // OpenVPN
-		customPort := selection.OpenVPN.CustomPort
-		if customPort > 0 {
-			return customPort
-		}
-		port = 1194
-		if selection.OpenVPN.TCP {
-			port = 443
-		}
-		return port
-	}
+	const (
+		defaultOpenVPNTCP = 443
+		defaultOpenVPNUDP = 1194
+		defaultWireguard  = 1194
+	)
+	return utils.GetPort(selection, defaultOpenVPNTCP,
+		defaultOpenVPNUDP, defaultWireguard)
 }
