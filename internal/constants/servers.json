@@ -25971,9 +25971,10 @@
   },
   "ivpn": {
     "version": 3,
-    "timestamp": 1629725441,
+    "timestamp": 1629732504,
     "servers": [
       {
+        "vpn": "openvpn",
         "country": "Australia",
         "city": "Sydney",
         "isp": "M247",
@@ -25985,6 +25986,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Austria",
         "city": "Vienna",
         "isp": "M247",
@@ -25996,6 +25998,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Belgium",
         "city": "Brussels",
         "isp": "M247",
@@ -26007,6 +26010,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Brazil",
         "city": "Franca",
         "isp": "Qnax",
@@ -26018,6 +26022,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Bulgaria",
         "city": "Sofia",
         "isp": "M247",
@@ -26029,6 +26034,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Canada",
         "city": "Montreal",
         "isp": "M247",
@@ -26040,6 +26046,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Canada",
+        "city": "Montreal",
+        "isp": "M247",
+        "hostname": "ca1.wg.ivpn.net",
+        "wgpubkey": "rg+GGDmjM4Vxo1hURvKmgm9yonb6qcoKbPCP/DNDBnI=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "37.120.130.58"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Canada",
         "city": "Toronto",
         "isp": "Amanah",
@@ -26051,6 +26071,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Canada",
         "city": "Toronto",
         "isp": "Amanah",
@@ -26062,6 +26083,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Czech Republic",
         "city": "Prague",
         "isp": "Datapacket",
@@ -26073,6 +26095,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Denmark",
         "city": "Copenhagen",
         "isp": "M247",
@@ -26084,6 +26107,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Finland",
         "city": "Helsinki",
         "isp": "Creanova",
@@ -26095,6 +26119,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "France",
         "city": "Paris",
         "isp": "Datapacket",
@@ -26106,6 +26131,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Germany",
         "city": "Frankfurt",
         "isp": "Leaseweb",
@@ -26117,6 +26143,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Germany",
+        "city": "Frankfurt",
+        "isp": "Datapacket",
+        "hostname": "de1.wg.ivpn.net",
+        "wgpubkey": "mS3/WpXjnMAMmXjSpd4nFzx9HSE3ubv2WyjpyH2REgs=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "185.102.219.26"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Germany",
         "city": "Frankfurt",
         "isp": "Leaseweb",
@@ -26128,6 +26168,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Hong Kong",
         "city": "Hong Kong",
         "isp": "Leaseweb",
@@ -26139,6 +26180,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Hong Kong",
         "city": "Hong Kong",
         "isp": "Leaseweb",
@@ -26150,6 +26192,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Hungary",
         "city": "Budapest",
         "isp": "M247",
@@ -26161,6 +26204,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Iceland",
         "city": "Reykjavik",
         "isp": "Advania",
@@ -26172,6 +26216,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Israel",
         "city": "Holon, Tel Aviv",
         "isp": "HQServ",
@@ -26183,6 +26228,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Italy",
         "city": "Milan",
         "isp": "SEFlow",
@@ -26194,6 +26240,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Italy",
+        "city": "Milan",
+        "isp": "M247",
+        "hostname": "it1.wg.ivpn.net",
+        "wgpubkey": "Aj6b81yrDk7I913R+fuSW/NAmIl87N73vHgY5/WQY0Q=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "82.102.21.90"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Japan",
         "city": "Tokyo",
         "isp": "M247",
@@ -26205,6 +26265,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Luxembourg",
         "city": "Luxembourg",
         "isp": "Evoluso",
@@ -26216,6 +26277,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Netherlands",
+        "city": "Amsterdam",
+        "isp": "Datapacket",
+        "hostname": "nl1.wg.ivpn.net",
+        "wgpubkey": "AsMT2FqpkZbjzWeDch6GwufF5odl259W/hIkGytVfWo=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "185.102.218.104"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
         "isp": "Leaseweb",
@@ -26227,6 +26302,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
         "isp": "Leaseweb",
@@ -26238,6 +26314,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
         "isp": "Leaseweb",
@@ -26249,6 +26326,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
         "isp": "Leaseweb",
@@ -26260,6 +26338,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
         "isp": "Leaseweb",
@@ -26271,6 +26350,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
         "isp": "Leaseweb",
@@ -26282,6 +26362,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Norway",
         "city": "Oslo",
         "isp": "Servethewrld",
@@ -26293,6 +26374,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Poland",
         "city": "Warsaw",
         "isp": "Datapacket",
@@ -26304,6 +26386,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Portugal",
         "city": "Lisbon",
         "isp": "Hostwebis",
@@ -26315,6 +26398,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Romania",
         "city": "Bucharest",
         "isp": "M247",
@@ -26326,6 +26410,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Serbia",
         "city": "Belgrade",
         "isp": "M247",
@@ -26337,6 +26422,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Singapore",
         "city": "Singapore",
         "isp": "M247",
@@ -26348,6 +26434,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Singapore",
+        "city": "Singapore",
+        "isp": "M247",
+        "hostname": "sg1.wg.ivpn.net",
+        "wgpubkey": "hSg0At4uwuIhmTy5UT4fRbi5AN6JO2ZWTuIvqd4nHCE=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "37.120.151.122"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Slovakia",
         "city": "Bratislava",
         "isp": "M247",
@@ -26359,6 +26459,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Spain",
         "city": "Madrid",
         "isp": "Datapacket",
@@ -26370,6 +26471,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Sweden",
         "city": "Stockholm",
         "isp": "GleSyS",
@@ -26381,6 +26483,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Sweden",
+        "city": "Stockholm",
+        "isp": "M247",
+        "hostname": "se1.wg.ivpn.net",
+        "wgpubkey": "2n0nFE1g/+vQr2AOQPm9Igyiy0zh9uTTultvOOSkMRo=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "37.120.153.226"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Switzerland",
         "city": "Zurich",
         "isp": "M247",
@@ -26392,6 +26508,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Switzerland",
+        "city": "Zurich",
+        "isp": "Privatelayer",
+        "hostname": "ch1.wg.ivpn.net",
+        "wgpubkey": "jVZJ61i1xxkAfriDHpwvF/GDuTvZUqhwoWSjkOJvaUA=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "141.255.164.66"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Switzerland",
         "city": "Zurich",
         "isp": "Privatelayer",
@@ -26403,6 +26533,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "Ukraine",
         "city": "Kharkiv",
         "isp": "Xservers",
@@ -26414,6 +26545,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United Kingdom",
         "city": "London",
         "isp": "Datapacket",
@@ -26425,6 +26557,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "United Kingdom",
+        "city": "London",
+        "isp": "M247",
+        "hostname": "gb1.wg.ivpn.net",
+        "wgpubkey": "7+jos+Eg+hMEOQE4Std6OJ+WVnCcmbqS1/EbPwn9w3s=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "81.92.202.114"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "United Kingdom",
         "city": "London",
         "isp": "Datapacket",
@@ -26436,6 +26582,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United Kingdom",
         "city": "Manchester",
         "isp": "M247",
@@ -26447,6 +26594,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Atlanta, GA",
         "isp": "Quadranet",
@@ -26458,6 +26606,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "United States",
+        "city": "Atlanta, GA",
+        "isp": "Datapacket",
+        "hostname": "us-ga1.wg.ivpn.net",
+        "wgpubkey": "jD8h+pL5/d6fmYcTzl0lR8AWzQVN5XkwRFSmM/3NcDM=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "185.93.0.212"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Atlanta, GA",
         "isp": "Quadranet",
@@ -26469,6 +26631,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Chicago, IL",
         "isp": "Quadranet",
@@ -26480,6 +26643,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "United States",
+        "city": "Chicago, IL",
+        "isp": "Datapacket",
+        "hostname": "us-il1.wg.ivpn.net",
+        "wgpubkey": "hku9gjamhoii8OvxZgx+TdUDIkOAQYFu39qbav2AyUQ=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "89.187.181.116"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Chicago, IL",
         "isp": "Quadranet",
@@ -26491,6 +26668,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Dallas, TX",
         "isp": "Quadranet",
@@ -26502,6 +26680,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "United States",
+        "city": "Dallas, TX",
+        "isp": "Quadranet",
+        "hostname": "us-tx1.wg.ivpn.net",
+        "wgpubkey": "JPT1veXLmasj2uQDstX24mpR7VWD+GmV8JDkidkz91Q=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "198.55.124.114"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Dallas, TX",
         "isp": "Quadranet",
@@ -26513,6 +26705,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Las Vegas, NV",
         "isp": "M247",
@@ -26524,6 +26717,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles, CA",
         "isp": "Quadranet",
@@ -26535,6 +26729,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "United States",
+        "city": "Los Angeles, CA",
+        "isp": "Datapacket",
+        "hostname": "us-ca1.wg.ivpn.net",
+        "wgpubkey": "FGl78s9Ct6xNamQ2/CtAyXwGePrrU0kiZxfM27pm8XA=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "185.180.13.41"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles, CA",
         "isp": "Quadranet",
@@ -26546,6 +26754,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles, CA",
         "isp": "Leaseweb",
@@ -26557,6 +26766,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles, CA",
         "isp": "Quadranet",
@@ -26568,6 +26778,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Miami, FL",
         "isp": "Quadranet",
@@ -26579,6 +26790,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "New Jersey, NJ",
         "isp": "Quadranet",
@@ -26590,6 +26802,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "New Jersey, NJ",
         "isp": "M247",
@@ -26601,6 +26814,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "New York, NY",
         "isp": "Leaseweb",
@@ -26612,6 +26826,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "United States",
+        "city": "New York, NY",
+        "isp": "M247",
+        "hostname": "us-ny1.wg.ivpn.net",
+        "wgpubkey": "6/tjvgb7HFl7UuvBSegolxa1zKr3iSlDrlCexCmhAGE=",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "91.132.137.170"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "New York, NY",
         "isp": "Leaseweb",
@@ -26623,6 +26851,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Phoenix, AZ",
         "isp": "M247",
@@ -26634,6 +26863,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Salt Lake City, UT",
         "isp": "100TB",
@@ -26645,6 +26875,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Seattle, WA",
         "isp": "Leaseweb",
@@ -26656,6 +26887,7 @@
         ]
       },
       {
+        "vpn": "openvpn",
         "country": "United States",
         "city": "Washington, DC",
         "isp": "Leaseweb",
