@@ -265,24 +265,6 @@ func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {
 }
 
 func IPIsPrivate(ip net.IP) bool {
-	if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
-		return true
-	}
-	privateCIDRBlocks := [8]string{
-		"127.0.0.0/8",    // localhost
-		"10.0.0.0/8",     // 24-bit block
-		"172.16.0.0/12",  // 20-bit block
-		"192.168.0.0/16", // 16-bit block
-		"169.254.0.0/16", // link local address
-		"::1/128",        // localhost IPv6
-		"fc00::/7",       // unique local address IPv6
-		"fe80::/10",      // link local address IPv6
-	}
-	for i := range privateCIDRBlocks {
-		_, CIDR, _ := net.ParseCIDR(privateCIDRBlocks[i])
-		if CIDR.Contains(ip) {
-			return true
-		}
-	}
-	return false
+	return ip.IsPrivate() || ip.IsLoopback() ||
+		ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast()
 }
