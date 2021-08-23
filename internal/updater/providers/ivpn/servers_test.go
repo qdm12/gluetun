@@ -3,27 +3,30 @@ package ivpn
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"net"
+	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/resolver/mock_resolver"
-	"github.com/qdm12/gluetun/internal/updater/unzip/mock_unzip"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_GetServers(t *testing.T) {
 	t.Parallel()
+
 	testCases := map[string]struct {
 		// Inputs
 		minServers int
 
-		// Unzip
-		unzipContents map[string][]byte
-		unzipErr      error
+		// From API
+		responseBody   string
+		responseStatus int
 
 		// Resolution
 		expectResolve   bool
@@ -38,47 +41,15 @@ func Test_GetServers(t *testing.T) {
 		warnings []string
 		err      error
 	}{
-		"unzipper error": {
-			unzipErr: errors.New("dummy"),
-			err:      errors.New("dummy"),
-		},
-		"not enough unzip contents": {
-			minServers:    1,
-			unzipContents: map[string][]byte{},
-			err:           errors.New("not enough servers found: 0 and expected at least 1"),
-		},
-		"no openvpn file": {
-			minServers:    1,
-			unzipContents: map[string][]byte{"somefile.txt": {}},
-			err:           errors.New("not enough servers found: 0 and expected at least 1"),
-		},
-		"invalid proto": {
-			minServers:    1,
-			unzipContents: map[string][]byte{"badproto.ovpn": []byte(`proto invalid`)},
-			warnings:      []string{"unknown protocol: invalid: in badproto.ovpn"},
-			err:           errors.New("not enough servers found: 0 and expected at least 1"),
-		},
-		"no host": {
-			minServers:    1,
-			unzipContents: map[string][]byte{"nohost.ovpn": []byte(``)},
-			warnings:      []string{"remote host not found in nohost.ovpn"},
-			err:           errors.New("not enough servers found: 0 and expected at least 1"),
-		},
-		"multiple hosts": {
-			minServers: 1,
-			unzipContents: map[string][]byte{
-				"MultiHosts.ovpn": []byte("remote hosta\nremote hostb"),
-			},
-			expectResolve:   true,
-			hostsToResolve:  []string{"hosta"},
-			resolveSettings: getResolveSettings(1),
-			warnings:        []string{"only using the first host \"hosta\" and discarding 1 other hosts"},
-			err:             errors.New("not enough servers found: 0 and expected at least 1"),
+		"http response error": {
+			responseStatus: http.StatusNoContent,
+			err:            errors.New("failed fetching API: HTTP status code not OK: 204 No Content"),
 		},
 		"resolve error": {
-			unzipContents: map[string][]byte{
-				"config.ovpn": []byte("remote hosta"),
-			},
+			responseBody: `{"servers":[
+				{"hostnames":{"openvpn":"hosta"}}
+			]}`,
+			responseStatus:  http.StatusOK,
 			expectResolve:   true,
 			hostsToResolve:  []string{"hosta"},
 			resolveSettings: getResolveSettings(0),
@@ -87,12 +58,22 @@ func Test_GetServers(t *testing.T) {
 			warnings:        []string{"resolve warning"},
 			err:             errors.New("dummy"),
 		},
+		"not enough servers": {
+			minServers: 2,
+			responseBody: `{"servers":[
+				{"hostnames":{"openvpn":"hosta"}}
+			]}`,
+			responseStatus: http.StatusOK,
+			err:            errors.New("not enough servers found: 1 and expected at least 2"),
+		},
 		"success": {
 			minServers: 1,
-			unzipContents: map[string][]byte{
-				"Country1-City_A.ovpn": []byte("remote hosta"),
-				"Country2-City_B.ovpn": []byte("remote hostb"),
-			},
+			responseBody: `{"servers":[
+				{"country":"Country1","city":"City A","hostnames":{"openvpn":"hosta"}},
+				{"country":"Country2","city":"City B","hostnames":{"openvpn":"hostb"}},
+				{"country":"Country3","city":"City C","hostnames":{"wireguard":"hostc"}}
+			]}`,
+			responseStatus:  http.StatusOK,
 			expectResolve:   true,
 			hostsToResolve:  []string{"hosta", "hostb"},
 			resolveSettings: getResolveSettings(1),
@@ -116,10 +97,17 @@ func Test_GetServers(t *testing.T) {
 
 			ctx := context.Background()
 
-			unzipper := mock_unzip.NewMockUnzipper(ctrl)
-			const zipURL = "https://www.ivpn.net/releases/config/ivpn-openvpn-config.zip"
-			unzipper.EXPECT().FetchAndExtract(ctx, zipURL).
-				Return(testCase.unzipContents, testCase.unzipErr)
+			client := &http.Client{
+				Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+					assert.Equal(t, http.MethodGet, r.Method)
+					assert.Equal(t, r.URL.String(), "https://api.ivpn.net/v4/servers/stats")
+					return &http.Response{
+						StatusCode: testCase.responseStatus,
+						Status:     http.StatusText(testCase.responseStatus),
+						Body:       ioutil.NopCloser(strings.NewReader(testCase.responseBody)),
+					}, nil
+				}),
+			}
 
 			presolver := mock_resolver.NewMockParallel(ctrl)
 			if testCase.expectResolve {
@@ -127,7 +115,7 @@ func Test_GetServers(t *testing.T) {
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 
-			servers, warnings, err := GetServers(ctx, unzipper, presolver, testCase.minServers)
+			servers, warnings, err := GetServers(ctx, client, presolver, testCase.minServers)
 
 			assert.Equal(t, testCase.servers, servers)
 			assert.Equal(t, testCase.warnings, warnings)

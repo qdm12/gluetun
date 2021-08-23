@@ -24,6 +24,11 @@ func (settings *Provider) readIvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
+	settings.ServerSelection.ISPs, err = r.env.CSVInside("ISP", constants.IvpnISPChoices())
+	if err != nil {
+		return fmt.Errorf("environment variable ISP: %w", err)
+	}
+
 	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices())
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)

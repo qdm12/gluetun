@@ -110,7 +110,7 @@ func (u *updater) updateIpvanish(ctx context.Context) (err error) {
 func (u *updater) updateIvpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Ivpn.Servers))
 	servers, warnings, err := ivpn.GetServers(
-		ctx, u.unzipper, u.presolver, minServers)
+		ctx, u.client, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Ivpn: " + warning)
