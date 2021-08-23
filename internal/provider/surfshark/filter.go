@@ -12,9 +12,12 @@ func (s *Surfshark) filterServers(selection configuration.ServerSelection) (
 		switch {
 		case
 			utils.FilterByPossibilities(server.Region, selection.Regions),
+			utils.FilterByPossibilities(server.Country, selection.Countries),
+			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
 			selection.OpenVPN.TCP && !server.TCP,
-			!selection.OpenVPN.TCP && !server.UDP:
+			!selection.OpenVPN.TCP && !server.UDP,
+			selection.MultiHopOnly && !server.MultiHop:
 		default:
 			servers = append(servers, server)
 		}

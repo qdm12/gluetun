@@ -272,7 +272,7 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Surfshark.Servers))
 	servers, warnings, err := surfshark.GetServers(
-		ctx, u.unzipper, u.presolver, minServers)
+		ctx, u.unzipper, u.client, u.presolver, minServers)
 	if u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Surfshark: " + warning)

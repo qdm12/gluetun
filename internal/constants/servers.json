@@ -10730,6 +10730,36 @@
       {
         "country": "Luxembourg",
         "city": "Luxembourg",
+        "hostname": "lux-c07.ipvanish.com",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "216.131.68.22"
+        ]
+      },
+      {
+        "country": "Luxembourg",
+        "city": "Luxembourg",
+        "hostname": "lux-c08.ipvanish.com",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "216.131.68.28"
+        ]
+      },
+      {
+        "country": "Luxembourg",
+        "city": "Luxembourg",
+        "hostname": "lux-c09.ipvanish.com",
+        "tcp": false,
+        "udp": true,
+        "ips": [
+          "216.131.68.34"
+        ]
+      },
+      {
+        "country": "Luxembourg",
+        "city": "Luxembourg",
         "hostname": "lux-c10.ipvanish.com",
         "tcp": false,
         "udp": true,
@@ -106830,135 +106860,105 @@
     ]
   },
   "surfshark": {
-    "version": 2,
-    "timestamp": 1629490850,
+    "version": 3,
+    "timestamp": 1629736187,
     "servers": [
       {
-        "region": "Albania",
-        "hostname": "al-tia.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "31.171.153.19",
-          "31.171.153.21",
-          "31.171.153.117",
-          "31.171.154.149",
-          "31.171.155.67",
-          "31.171.155.69"
-        ]
-      },
-      {
-        "region": "Argentina Buenos Aires",
-        "hostname": "ar-bua.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "91.206.168.3",
-          "91.206.168.5",
-          "91.206.168.13",
-          "91.206.168.15",
-          "91.206.168.21",
-          "91.206.168.34",
-          "91.206.168.36",
-          "91.206.168.45",
-          "91.206.168.54",
-          "91.206.168.56",
-          "91.206.168.66",
-          "91.206.168.68",
-          "91.206.168.70",
-          "91.206.168.72"
-        ]
-      },
-      {
-        "region": "Australia Adelaide",
+        "region": "Asia Pacific",
+        "country": "Australia",
+        "city": "Adelaide",
+        "retroloc": "Australia Adelaide",
         "hostname": "au-adl.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "45.248.79.19",
+          "45.248.79.21",
           "45.248.79.35",
           "45.248.79.51",
-          "45.248.79.53",
-          "45.248.79.69",
-          "45.248.79.83"
+          "45.248.79.53"
         ]
       },
       {
-        "region": "Australia Brisbane",
+        "region": "Asia Pacific",
+        "country": "Australia",
+        "city": "Brisbane",
+        "retroloc": "Australia Brisbane",
         "hostname": "au-bne.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "45.248.77.235",
+          "45.248.77.237",
+          "144.48.39.13",
+          "144.48.39.67",
           "144.48.39.69",
-          "144.48.39.109",
-          "144.48.39.123",
-          "144.48.39.131",
-          "144.48.39.133"
+          "144.48.39.109"
         ]
       },
       {
-        "region": "Australia Melbourne",
+        "region": "Asia Pacific",
+        "country": "Australia",
+        "city": "Melbourne",
+        "retroloc": "Australia Melbourne",
         "hostname": "au-mel.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "103.192.80.139",
+          "103.192.80.149",
           "103.192.80.243",
-          "103.192.80.253",
-          "144.48.38.19"
+          "103.192.80.251",
+          "144.48.38.139",
+          "144.48.38.141",
+          "144.48.38.149"
         ]
       },
       {
-        "region": "Australia Perth",
+        "region": "Asia Pacific",
+        "country": "Australia",
+        "city": "Perth",
+        "retroloc": "Australia Perth",
         "hostname": "au-per.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "124.150.139.29",
-          "124.150.139.43",
-          "124.150.139.83",
-          "124.150.139.85",
-          "124.150.139.179",
-          "124.150.139.181"
+          "124.150.139.35",
+          "124.150.139.125",
+          "124.150.139.179"
         ]
       },
       {
-        "region": "Australia Sydney",
+        "region": "Asia Pacific",
+        "country": "Australia",
+        "city": "Sydney",
+        "retroloc": "Australia Sydney",
         "hostname": "au-syd.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "180.149.228.29",
-          "180.149.228.181"
+          "45.125.247.45",
+          "45.125.247.155",
+          "45.125.247.157",
+          "45.125.247.195",
+          "180.149.228.27",
+          "180.149.228.149",
+          "180.149.228.163",
+          "180.149.228.165"
         ]
       },
       {
-        "region": "Australia US",
-        "hostname": "au-us.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.76.117.108"
-        ]
-      },
-      {
-        "region": "Austria",
-        "hostname": "at-vie.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "5.253.207.53",
-          "37.120.212.75",
-          "37.120.212.133",
-          "37.120.212.141",
-          "146.70.28.91",
-          "146.70.28.93"
-        ]
-      },
-      {
-        "region": "Azerbaijan",
+        "region": "Asia Pacific",
+        "country": "Azerbaijan",
+        "city": "Baku",
+        "retroloc": "Azerbaijan",
         "hostname": "az-bak.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -106967,88 +106967,1835 @@
           "62.212.239.53",
           "62.212.239.67",
           "94.20.154.61",
-          "94.20.154.83"
+          "94.20.154.69",
+          "94.20.154.83",
+          "94.20.154.85"
         ]
       },
       {
-        "region": "Belgium",
+        "region": "Asia Pacific",
+        "country": "Hong Kong",
+        "city": "Hong Kong",
+        "retroloc": "Hong Kong",
+        "hostname": "hk-hkg.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "84.17.37.154",
+          "84.17.37.160",
+          "84.17.57.71",
+          "212.102.42.209"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "India",
+        "city": "Chennai",
+        "retroloc": "India Chennai",
+        "hostname": "in-chn.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "103.94.27.99",
+          "103.94.27.115",
+          "103.94.27.117",
+          "103.94.27.229",
+          "103.108.117.116",
+          "103.108.117.118"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "India",
+        "city": "Indore",
+        "retroloc": "India Indore",
+        "hostname": "in-idr.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "103.39.132.187",
+          "103.39.132.189"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "India",
+        "city": "Mumbai",
+        "retroloc": "India Mumbai",
+        "hostname": "in-mum.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "103.156.50.97",
+          "103.156.50.99",
+          "103.156.50.101",
+          "103.156.50.103",
+          "103.156.50.105",
+          "103.156.50.109",
+          "103.156.50.115",
+          "103.156.51.22",
+          "103.156.51.26",
+          "103.156.51.53"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Indonesia",
+        "city": "Jakarta",
+        "retroloc": "Indonesia",
+        "hostname": "id-jak.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "103.120.66.236",
+          "103.148.242.163",
+          "103.148.242.168",
+          "103.148.242.175"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st001",
+        "hostname": "jp-tok-st001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.87.213.19"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st002",
+        "hostname": "jp-tok-st002.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.87.213.21"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st003",
+        "hostname": "jp-tok-st003.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.87.213.23"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st004",
+        "hostname": "jp-tok-st004.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "217.138.212.19"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st005",
+        "hostname": "jp-tok-st005.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "217.138.212.21"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st006",
+        "hostname": "jp-tok-st006.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "82.102.28.123"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st007",
+        "hostname": "jp-tok-st007.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "82.102.28.125"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st008",
+        "hostname": "jp-tok-st008.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.12"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st009",
+        "hostname": "jp-tok-st009.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.14"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st010",
+        "hostname": "jp-tok-st010.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.17"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st011",
+        "hostname": "jp-tok-st011.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.19"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st012",
+        "hostname": "jp-tok-st012.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.7"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo st013",
+        "hostname": "jp-tok-st013.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.9"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Japan",
+        "city": "Tokyo",
+        "retroloc": "Japan Tokyo",
+        "hostname": "jp-tok.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "84.17.34.26",
+          "84.17.34.46",
+          "89.187.161.2",
+          "89.187.161.24",
+          "138.199.22.132"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Kazakhstan",
+        "city": "Oral",
+        "retroloc": "Kazakhstan",
+        "hostname": "kz-ura.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "5.189.202.9",
+          "5.189.202.14"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Malaysia",
+        "city": "Kuala Lumpur",
+        "retroloc": "Malaysia",
+        "hostname": "my-kul.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "42.0.30.150",
+          "42.0.30.162",
+          "42.0.30.183",
+          "42.0.30.209"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "New Zealand",
+        "city": "Auckland",
+        "retroloc": "New Zealand",
+        "hostname": "nz-akl.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "180.149.231.3",
+          "180.149.231.45",
+          "180.149.231.67",
+          "180.149.231.69"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Philippines",
+        "city": "Manila",
+        "retroloc": "Philippines",
+        "hostname": "ph-mnl.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.134.224.5",
+          "45.134.224.15",
+          "45.134.224.29"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore",
+        "city": "Singapore",
+        "retroloc": "Singapore mp001",
+        "hostname": "sg-sng-mp001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "206.189.94.229"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore",
+        "city": "Singapore",
+        "retroloc": "Singapore st001",
+        "hostname": "sg-sng-st001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "217.138.201.91"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore",
+        "city": "Singapore",
+        "retroloc": "Singapore st002",
+        "hostname": "sg-sng-st002.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "217.138.201.93"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore",
+        "city": "Singapore",
+        "retroloc": "Singapore st003",
+        "hostname": "sg-sng-st003.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "84.247.49.19"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore",
+        "city": "Singapore",
+        "retroloc": "Singapore st004",
+        "hostname": "sg-sng-st004.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "84.247.49.21"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore",
+        "city": "Singapore",
+        "retroloc": "Singapore",
+        "hostname": "sg-sng.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.163.134",
+          "89.187.163.195",
+          "89.187.163.202",
+          "89.187.163.215"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore Hong Kong",
+        "city": "Hong Kong",
+        "retroloc": "Singapore Hong Kong",
+        "hostname": "sg-hk.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "206.189.83.129"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Singapore in",
+        "city": "",
+        "retroloc": "Singapore in",
+        "hostname": "sg-in.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "128.199.193.35"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "South Korea",
+        "city": "Seoul",
+        "retroloc": "Korea",
+        "hostname": "kr-seo.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.130.137.10",
+          "45.130.137.26",
+          "45.130.137.38",
+          "61.14.210.232",
+          "61.14.210.239",
+          "103.249.31.26"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Taiwan",
+        "city": "Taichung City",
+        "retroloc": "Taiwan",
+        "hostname": "tw-tai.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "2.58.241.27",
+          "2.58.241.29",
+          "2.58.241.43",
+          "2.58.241.45",
+          "2.58.241.131",
+          "2.58.241.133",
+          "2.58.242.45",
+          "103.152.151.21"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Thailand",
+        "city": "Bangkok",
+        "retroloc": "Thailand",
+        "hostname": "th-bkk.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "27.131.164.91",
+          "27.131.164.99"
+        ]
+      },
+      {
+        "region": "Asia Pacific",
+        "country": "Vietnam",
+        "city": "Ho Chi Minh City",
+        "retroloc": "Vietnam",
+        "hostname": "vn-hcm.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "202.143.110.29"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Albania",
+        "city": "Tirana",
+        "retroloc": "Albania",
+        "hostname": "al-tia.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "31.171.152.197",
+          "31.171.153.19",
+          "31.171.154.163",
+          "31.171.154.221",
+          "31.171.155.69",
+          "31.171.155.85"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Austria",
+        "city": "Vienna",
+        "retroloc": "Austria",
+        "hostname": "at-vie.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "5.253.207.51",
+          "146.70.28.93"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Belgium",
+        "city": "Brussels",
+        "retroloc": "Belgium",
         "hostname": "be-bru.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "5.253.205.101",
-          "91.90.123.133",
-          "91.90.123.141",
-          "91.90.123.157",
-          "91.90.123.205",
-          "185.210.217.107"
+          "5.253.205.181",
+          "5.253.205.213",
+          "5.253.205.229",
+          "37.120.143.117",
+          "37.120.236.147",
+          "89.249.73.197",
+          "91.90.123.125",
+          "91.90.123.149",
+          "91.90.123.189",
+          "91.90.123.227",
+          "185.104.186.75",
+          "194.110.115.91"
         ]
       },
       {
-        "region": "Bosnia and Herzegovina",
+        "region": "Europe",
+        "country": "Bosnia and Herzegovina",
+        "city": "Sarajevo",
+        "retroloc": "Bosnia and Herzegovina",
         "hostname": "ba-sjj.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "185.99.3.12",
+          "185.99.3.66",
+          "185.99.3.98",
+          "185.99.3.100",
           "185.99.3.108",
-          "185.99.3.118",
-          "185.99.3.141",
-          "185.164.34.252",
-          "185.212.111.59"
+          "185.99.3.146",
+          "185.99.3.207"
         ]
       },
       {
-        "region": "Brazil",
-        "hostname": "br-sao.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "191.96.13.194",
-          "191.96.13.202",
-          "191.96.15.84",
-          "191.96.73.214"
-        ]
-      },
-      {
-        "region": "Bulgaria",
+        "region": "Europe",
+        "country": "Bulgaria",
+        "city": "Sofia",
+        "retroloc": "Bulgaria",
         "hostname": "bg-sof.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
+          "37.120.152.35",
           "37.120.152.37",
-          "37.120.152.197",
-          "217.138.221.203",
-          "217.138.221.205"
+          "217.138.202.19",
+          "217.138.202.21"
         ]
       },
       {
-        "region": "Canada Montreal",
+        "region": "Europe",
+        "country": "Croatia",
+        "city": "Zagreb",
+        "retroloc": "Croatia",
+        "hostname": "hr-zag.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.164.99.109",
+          "176.222.34.130"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Cyprus",
+        "city": "Nicosia",
+        "retroloc": "Cyprus",
+        "hostname": "cy-nic.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.191.206.99",
+          "185.191.206.101",
+          "195.47.194.83",
+          "195.47.194.97"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Czech Republic",
+        "city": "Prague",
+        "retroloc": "Czech Republic",
+        "hostname": "cz-prg.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.152.64.151",
+          "185.180.14.147",
+          "193.9.112.183",
+          "193.9.112.199",
+          "217.138.199.179",
+          "217.138.220.179",
+          "217.138.220.181",
+          "217.138.220.189"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Denmark",
+        "city": "Copenhagen",
+        "retroloc": "Denmark",
+        "hostname": "dk-cph.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.194.91",
+          "37.120.194.125",
+          "193.29.107.117",
+          "193.29.107.123",
+          "193.29.107.173",
+          "193.29.107.187",
+          "193.29.107.211",
+          "193.29.107.221"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Estonia",
+        "city": "Tallinn",
+        "retroloc": "Estonia",
+        "hostname": "ee-tll.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "165.231.163.5",
+          "185.174.159.51",
+          "185.174.159.131",
+          "185.174.159.136"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Finland",
+        "city": "Helsinki",
+        "retroloc": "Finland",
+        "hostname": "fi-hel.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "196.196.203.83",
+          "196.196.203.85",
+          "196.196.203.107",
+          "196.244.191.37",
+          "196.244.191.165",
+          "196.244.191.179"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "France",
+        "city": "Bordeaux",
+        "retroloc": "France Bordeaux",
+        "hostname": "fr-bod.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.108.106.72",
+          "185.108.106.89",
+          "185.108.106.142",
+          "185.108.106.158"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "France",
+        "city": "Marseille",
+        "retroloc": "France Marseilles",
+        "hostname": "fr-mrs.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.166.84.5",
+          "185.166.84.17",
+          "185.166.84.33",
+          "185.166.84.36",
+          "185.166.84.87",
+          "185.166.84.93"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "France",
+        "city": "Paris",
+        "retroloc": "France Paris",
+        "hostname": "fr-par.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.89.174.93",
+          "84.17.43.178",
+          "143.244.56.230",
+          "143.244.57.87",
+          "143.244.57.110",
+          "143.244.57.119",
+          "185.246.211.103",
+          "217.138.207.251"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "France Sweden",
+        "city": "",
+        "retroloc": "France Sweden",
+        "hostname": "fr-se.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "199.247.8.20"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Georgia",
+        "city": "Tbilisi",
+        "retroloc": "",
+        "hostname": "ge-tbs.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "91.239.207.224",
+          "91.239.207.226"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Berlin",
+        "retroloc": "Germany Berlin",
+        "hostname": "de-ber.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.217.147",
+          "89.36.76.67",
+          "152.89.163.247",
+          "193.29.106.13",
+          "193.29.106.21",
+          "193.29.106.45",
+          "193.29.106.75",
+          "193.29.106.77",
+          "193.29.106.179",
+          "217.138.216.251"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "retroloc": "Germany Frankfurt mp001",
+        "hostname": "de-fra-mp001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "46.101.189.14"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "retroloc": "Germany Frankfurt am Main st001",
+        "hostname": "de-fra-st001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.87.212.179"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "retroloc": "Germany Frankfurt am Main st002",
+        "hostname": "de-fra-st002.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.87.212.181"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "retroloc": "Germany Frankfurt am Main st003",
+        "hostname": "de-fra-st003.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.87.212.183"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "retroloc": "Germany Frankfurt am Main st004",
+        "hostname": "de-fra-st004.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "195.181.174.226"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "retroloc": "Germany Frankfurt am Main st005",
+        "hostname": "de-fra-st005.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "195.181.174.228"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany",
+        "city": "Frankfurt am Main",
+        "retroloc": "Germany Frankfurt am Main",
+        "hostname": "de-fra.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.19.139",
+          "138.199.19.162",
+          "138.199.19.164",
+          "138.199.19.169",
+          "138.199.19.177",
+          "156.146.33.69",
+          "185.59.220.144",
+          "185.102.219.47"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany Singapour",
+        "city": "",
+        "retroloc": "Germany Singapour",
+        "hostname": "de-sg.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "159.89.14.157"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Germany UK",
+        "city": "",
+        "retroloc": "Germany UK",
+        "hostname": "de-uk.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "46.101.250.73"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Greece",
+        "city": "Athens",
+        "retroloc": "Greece",
+        "hostname": "gr-ath.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "91.240.243.19",
+          "91.240.243.24",
+          "194.150.167.34",
+          "194.150.167.38",
+          "194.150.167.46",
+          "194.150.167.48",
+          "194.150.167.50",
+          "194.150.167.54"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Hungary",
+        "city": "Budapest",
+        "retroloc": "Hungary",
+        "hostname": "hu-bud.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.144.149",
+          "37.120.144.151",
+          "37.120.144.195",
+          "37.120.144.211",
+          "185.252.223.83",
+          "185.252.223.85"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Iceland",
+        "city": "Reykjavik",
+        "retroloc": "Iceland",
+        "hostname": "is-rkv.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.133.193.115",
+          "45.133.193.117",
+          "45.133.193.197",
+          "45.133.193.219"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "India UK",
+        "city": "",
+        "retroloc": "India UK",
+        "hostname": "in-uk.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "134.209.148.122"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Ireland",
+        "city": "Dublin",
+        "retroloc": "Ireland",
+        "hostname": "ie-dub.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "5.157.13.67",
+          "5.157.13.69",
+          "5.157.13.91",
+          "5.157.13.133",
+          "37.120.235.77",
+          "37.120.235.83",
+          "37.120.235.213",
+          "217.138.222.53"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Italy",
+        "city": "Milan",
+        "retroloc": "Italy Milan",
+        "hostname": "it-mil.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.201.19",
+          "84.17.58.152",
+          "84.17.58.156",
+          "212.102.54.137",
+          "212.102.54.170",
+          "212.102.54.177",
+          "212.102.54.180"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Italy",
+        "city": "Rome",
+        "retroloc": "Italy Rome",
+        "hostname": "it-rom.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.217.71.51",
+          "185.217.71.187",
+          "185.217.71.211",
+          "185.217.71.237"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Latvia",
+        "city": "Riga",
+        "retroloc": "Latvia",
+        "hostname": "lv-rig.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "91.203.69.146",
+          "91.203.69.176",
+          "91.203.69.178",
+          "188.92.78.142",
+          "188.92.78.147",
+          "188.92.78.210"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Luxembourg",
+        "city": "Luxembourg",
+        "retroloc": "Luxembourg",
+        "hostname": "lu-ste.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.153.151.80",
+          "185.153.151.91",
+          "185.153.151.94",
+          "185.153.151.114",
+          "185.153.151.116",
+          "185.153.151.122",
+          "185.153.151.124",
+          "185.153.151.134",
+          "185.153.151.136",
+          "185.153.151.142",
+          "185.153.151.167",
+          "185.153.151.171",
+          "185.153.151.173",
+          "185.153.151.179",
+          "185.153.151.183",
+          "185.153.151.191"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Malta",
+        "city": "Valletta",
+        "retroloc": "",
+        "hostname": "mt-mla.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "130.185.255.36",
+          "130.185.255.38"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Moldova",
+        "city": "Chisinau",
+        "retroloc": "Moldova",
+        "hostname": "md-chi.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "178.175.128.235",
+          "178.175.128.237"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Netherlands",
+        "city": "Amsterdam",
+        "retroloc": "Netherlands Amsterdam mp001",
+        "hostname": "nl-ams-mp001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "188.166.43.117"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Netherlands",
+        "city": "Amsterdam",
+        "retroloc": "Netherlands Amsterdam st001",
+        "hostname": "nl-ams-st001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "81.19.209.51"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Netherlands",
+        "city": "Amsterdam",
+        "retroloc": "Netherlands Amsterdam",
+        "hostname": "nl-ams.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.46.223.68",
+          "89.46.223.237",
+          "143.244.42.86",
+          "195.181.172.39"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "North Macedonia",
+        "city": "Skopje",
+        "retroloc": "North Macedonia",
+        "hostname": "mk-skp.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.225.28.91",
+          "185.225.28.107",
+          "185.225.28.245"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Norway",
+        "city": "Oslo",
+        "retroloc": "Norway",
+        "hostname": "no-osl.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.12.223.197",
+          "45.12.223.213",
+          "91.219.215.21",
+          "91.219.215.85"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Poland",
+        "city": "Gdansk",
+        "retroloc": "Poland Gdansk",
+        "hostname": "pl-gdn.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.28.156.115",
+          "37.28.156.117",
+          "178.255.44.68",
+          "178.255.45.187"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Poland",
+        "city": "Warsaw",
+        "retroloc": "Poland Warsaw",
+        "hostname": "pl-waw.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "5.253.206.71",
+          "138.199.17.132",
+          "185.246.208.77",
+          "185.246.208.107"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Portugal",
+        "city": "Lisbon",
+        "retroloc": "Portugal Lisbon",
+        "hostname": "pt-lis.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "5.154.174.181",
+          "91.205.230.131",
+          "91.205.230.150",
+          "91.205.230.158",
+          "91.205.230.160"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Portugal",
+        "city": "Porto",
+        "retroloc": "Portugal Porto",
+        "hostname": "pt-opo.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.39.127.153",
+          "194.39.127.181",
+          "194.39.127.193",
+          "194.39.127.242"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Romania",
+        "city": "Bucharest",
+        "retroloc": "Romania",
+        "hostname": "ro-buc.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.206.237",
+          "45.89.175.51",
+          "45.89.175.53",
+          "185.102.217.155",
+          "185.102.217.165",
+          "185.102.217.167",
+          "185.102.217.169",
+          "217.148.143.219"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Russia",
+        "city": "Moscow",
+        "retroloc": "Russia Moscow",
+        "hostname": "ru-mos.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "92.38.138.112",
+          "92.38.138.135",
+          "92.38.138.139",
+          "92.38.138.148"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Serbia",
+        "city": "Belgrade",
+        "retroloc": "Serbia",
+        "hostname": "rs-beg.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.193.51",
+          "37.120.193.53",
+          "152.89.160.61",
+          "152.89.160.115",
+          "152.89.160.149"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Singapore Netherlands",
+        "city": "",
+        "retroloc": "Singapore Netherlands",
+        "hostname": "sg-nl.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "104.248.148.18"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Slovakia",
+        "city": "Bratislava",
+        "retroloc": "Slovekia",
+        "hostname": "sk-bts.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.76.8.215",
+          "185.76.8.217"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Slovenia",
+        "city": "Ljubljana",
+        "retroloc": "Slovenia",
+        "hostname": "si-lju.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "195.158.249.36",
+          "195.158.249.40",
+          "195.158.249.46",
+          "195.158.249.48",
+          "195.158.249.59",
+          "195.158.249.61"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Spain",
+        "city": "Barcelona",
+        "retroloc": "Spain Barcelona",
+        "hostname": "es-bcn.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.142.179",
+          "185.188.61.87",
+          "185.188.61.117",
+          "185.216.32.59"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Spain",
+        "city": "Madrid",
+        "retroloc": "Spain Madrid",
+        "hostname": "es-mad.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.148.211",
+          "37.120.148.215",
+          "82.102.17.179",
+          "84.17.62.163",
+          "84.17.62.165",
+          "89.37.95.15",
+          "89.37.95.19",
+          "89.37.95.23",
+          "89.37.95.25",
+          "89.37.95.171",
+          "89.37.95.177",
+          "89.37.95.185",
+          "188.208.141.20",
+          "188.208.141.34",
+          "212.102.48.2",
+          "212.102.48.18"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Spain",
+        "city": "Valencia",
+        "retroloc": "Spain Valencia",
+        "hostname": "es-vlc.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.153.150.48",
+          "185.153.150.52",
+          "185.153.150.70",
+          "185.153.150.78",
+          "185.153.150.84",
+          "196.196.150.67",
+          "196.196.150.69",
+          "196.196.150.71"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Sweden",
+        "city": "Stockholm",
+        "retroloc": "Sweden",
+        "hostname": "se-sto.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.83.91.133",
+          "185.76.9.34",
+          "185.76.9.49",
+          "185.76.9.51",
+          "185.76.9.55",
+          "185.76.9.57",
+          "195.181.166.226",
+          "195.181.166.228"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Switzerland",
+        "city": "Zurich",
+        "retroloc": "Switzerland",
+        "hostname": "ch-zur.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.213.7",
+          "45.12.222.243",
+          "84.17.53.216",
+          "156.146.62.46"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Turkey",
+        "city": "Istanbul",
+        "retroloc": "Turkey Istanbul",
+        "hostname": "tr-ist.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "107.150.94.13",
+          "107.150.94.43"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "UK France",
+        "city": "",
+        "retroloc": "UK France",
+        "hostname": "uk-fr.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "188.166.168.247"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "UK Germany",
+        "city": "",
+        "retroloc": "UK Germany",
+        "hostname": "uk-de.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.77.58.16"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "US Netherlands",
+        "city": "",
+        "retroloc": "US Netherlands",
+        "hostname": "us-nl.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "142.93.58.71"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "US Portugal",
+        "city": "",
+        "retroloc": "US Portugal",
+        "hostname": "us-pt.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "142.93.81.242"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "Ukraine",
+        "city": "Kyiv",
+        "retroloc": "Ukraine",
+        "hostname": "ua-iev.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "156.146.50.97",
+          "156.146.50.99",
+          "156.146.50.102",
+          "156.146.50.104"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "Glasgow",
+        "retroloc": "UK Glasgow",
+        "hostname": "uk-gla.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.108.105.45",
+          "185.108.105.63",
+          "185.108.105.79",
+          "185.108.105.131"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "London",
+        "retroloc": "UK London mp001",
+        "hostname": "uk-lon-mp001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "206.189.119.92"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "London",
+        "retroloc": "UK London st001",
+        "hostname": "uk-lon-st001.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "217.146.82.83"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "London",
+        "retroloc": "UK London st002",
+        "hostname": "uk-lon-st002.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.134.22.80"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "London",
+        "retroloc": "UK London st003",
+        "hostname": "uk-lon-st003.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.134.22.92"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "London",
+        "retroloc": "UK London st004",
+        "hostname": "uk-lon-st004.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.44.76.186"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "London",
+        "retroloc": "UK London st005",
+        "hostname": "uk-lon-st005.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.44.76.188"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "London",
+        "retroloc": "UK London",
+        "hostname": "uk-lon.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "5.226.137.10",
+          "185.38.148.228",
+          "185.44.77.56",
+          "217.146.82.189"
+        ]
+      },
+      {
+        "region": "Europe",
+        "country": "United Kingdom",
+        "city": "Manchester",
+        "retroloc": "UK Manchester",
+        "hostname": "uk-man.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.159.141",
+          "37.120.233.157",
+          "86.106.136.67",
+          "89.238.130.245",
+          "91.90.121.187",
+          "194.37.96.229",
+          "194.37.98.61",
+          "194.37.98.246"
+        ]
+      },
+      {
+        "region": "Middle East and Africa",
+        "country": "Israel",
+        "city": "Tel Aviv",
+        "retroloc": "Israel",
+        "hostname": "il-tlv.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "84.110.41.83",
+          "84.110.41.85",
+          "87.239.255.116",
+          "87.239.255.119"
+        ]
+      },
+      {
+        "region": "Middle East and Africa",
+        "country": "Nigeria",
+        "city": "Lagos",
+        "retroloc": "Nigeria",
+        "hostname": "ng-lag.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "102.165.23.6",
+          "102.165.23.40",
+          "102.165.23.42",
+          "102.165.23.44",
+          "102.165.25.132",
+          "102.165.25.134"
+        ]
+      },
+      {
+        "region": "Middle East and Africa",
+        "country": "South Africa",
+        "city": "Johannesburg",
+        "retroloc": "South Africa",
+        "hostname": "za-jnb.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "102.165.19.18",
+          "102.165.19.20",
+          "102.165.47.134",
+          "102.165.47.138",
+          "154.16.93.53",
+          "154.127.49.232"
+        ]
+      },
+      {
+        "region": "Middle East and Africa",
+        "country": "United Arab Emirates",
+        "city": "Dubai",
+        "retroloc": "United Arab Emirates",
+        "hostname": "ae-dub.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "176.125.231.3",
+          "176.125.231.5",
+          "176.125.231.11",
+          "176.125.231.19",
+          "176.125.231.27"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "Argentina",
+        "city": "Buenos Aires",
+        "retroloc": "Argentina Buenos Aires",
+        "hostname": "ar-bua.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "91.206.168.11",
+          "91.206.168.13",
+          "91.206.168.15",
+          "91.206.168.19",
+          "91.206.168.34",
+          "91.206.168.39",
+          "91.206.168.58",
+          "91.206.168.60",
+          "91.206.168.66",
+          "91.206.168.68",
+          "91.206.168.70",
+          "91.206.168.72"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "Australia US",
+        "city": "",
+        "retroloc": "Australia US",
+        "hostname": "au-us.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.76.117.108"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "Brazil",
+        "city": "Sao Paulo",
+        "retroloc": "Brazil",
+        "hostname": "br-sao.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.58.86",
+          "138.199.58.88",
+          "138.199.58.97",
+          "191.96.13.194",
+          "191.96.13.204",
+          "191.96.13.206",
+          "191.96.13.208",
+          "191.96.15.86",
+          "191.96.15.88",
+          "191.96.73.210",
+          "191.96.73.216"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "Canada",
+        "city": "Montreal",
+        "retroloc": "Canada Montreal",
         "hostname": "ca-mon.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "172.98.82.243",
-          "172.98.82.245"
+          "91.245.254.67",
+          "91.245.254.75",
+          "91.245.254.99",
+          "91.245.254.235",
+          "146.70.27.43",
+          "217.138.200.187"
         ]
       },
       {
-        "region": "Canada Toronto",
-        "hostname": "ca-tor.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.211.107",
-          "37.19.211.109",
-          "37.19.211.112",
-          "37.19.211.114",
-          "37.19.211.135",
-          "138.199.57.39"
-        ]
-      },
-      {
-        "region": "Canada Toronto mp001",
+        "region": "The Americas",
+        "country": "Canada",
+        "city": "Toronto",
+        "retroloc": "Canada Toronto mp001",
         "hostname": "ca-tor-mp001.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -107056,8 +108803,46 @@
         ]
       },
       {
-        "region": "Canada US",
+        "region": "The Americas",
+        "country": "Canada",
+        "city": "Toronto",
+        "retroloc": "Canada Toronto",
+        "hostname": "ca-tor.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.211.47",
+          "37.19.211.69",
+          "37.19.211.72",
+          "37.19.211.109",
+          "37.19.211.137",
+          "138.199.57.41"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "Canada",
+        "city": "Vancouver",
+        "retroloc": "Canada Vancouver",
+        "hostname": "ca-van.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "66.115.147.79",
+          "66.115.147.82",
+          "66.115.147.84",
+          "198.8.92.82"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "Canada US",
+        "city": "",
+        "retroloc": "Canada US",
         "hostname": "ca-us.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -107065,20 +108850,12 @@
         ]
       },
       {
-        "region": "Canada Vancouver",
-        "hostname": "ca-van.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.69",
-          "66.115.147.77",
-          "66.115.147.84",
-          "198.8.92.79"
-        ]
-      },
-      {
-        "region": "Chile",
+        "region": "The Americas",
+        "country": "Chile",
+        "city": "Santiago",
+        "retroloc": "Chile",
         "hostname": "cl-san.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -107087,1433 +108864,432 @@
         ]
       },
       {
-        "region": "Colombia",
+        "region": "The Americas",
+        "country": "Colombia",
+        "city": "Bogota",
+        "retroloc": "Colombia",
         "hostname": "co-bog.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "45.129.32.10",
-          "45.129.32.27"
+          "45.129.32.13"
         ]
       },
       {
-        "region": "Costa Rica",
+        "region": "The Americas",
+        "country": "Costa Rica",
+        "city": "San Jose",
+        "retroloc": "Costa Rica",
         "hostname": "cr-sjn.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "176.227.241.19",
-          "176.227.241.21"
+          "176.227.241.24",
+          "176.227.241.26",
+          "176.227.241.31",
+          "176.227.241.33"
         ]
       },
       {
-        "region": "Croatia",
-        "hostname": "hr-zag.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "85.10.51.89",
-          "89.164.99.136"
-        ]
-      },
-      {
-        "region": "Cyprus",
-        "hostname": "cy-nic.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "195.47.194.32",
-          "195.47.194.40",
-          "195.47.194.56",
-          "195.47.194.58",
-          "195.47.194.79",
-          "195.47.194.81",
-          "195.47.194.83",
-          "195.47.194.87",
-          "195.47.194.89",
-          "195.47.194.93",
-          "195.47.194.95",
-          "195.47.194.97",
-          "195.47.194.99",
-          "195.47.194.101"
-        ]
-      },
-      {
-        "region": "Czech Republic",
-        "hostname": "cz-prg.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.180.14.153",
-          "193.9.112.197",
-          "217.138.220.139",
-          "217.138.220.155",
-          "217.138.220.157",
-          "217.138.220.187"
-        ]
-      },
-      {
-        "region": "Denmark",
-        "hostname": "dk-cph.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.194.117",
-          "37.120.194.123",
-          "37.120.194.125",
-          "37.120.194.163"
-        ]
-      },
-      {
-        "region": "Estonia",
-        "hostname": "ee-tll.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "165.231.163.5",
-          "165.231.163.21",
-          "185.174.159.53",
-          "185.174.159.59",
-          "185.174.159.61",
-          "185.174.159.69",
-          "185.174.159.133",
-          "185.174.159.136"
-        ]
-      },
-      {
-        "region": "Finland",
-        "hostname": "fi-hel.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "196.196.203.99",
-          "196.244.191.35",
-          "196.244.191.165",
-          "196.244.191.181"
-        ]
-      },
-      {
-        "region": "France Bordeaux",
-        "hostname": "fr-bod.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.108.106.72",
-          "185.108.106.74",
-          "185.108.106.106",
-          "185.108.106.142",
-          "185.108.106.146",
-          "185.108.106.162",
-          "185.108.106.166",
-          "185.108.106.182",
-          "185.108.106.184",
-          "185.108.106.188"
-        ]
-      },
-      {
-        "region": "France Marseilles",
-        "hostname": "fr-mrs.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.16.147",
-          "138.199.16.150",
-          "185.166.84.17",
-          "185.166.84.21",
-          "185.166.84.31",
-          "185.166.84.38",
-          "185.166.84.53",
-          "185.166.84.63",
-          "185.166.84.65",
-          "185.166.84.73",
-          "185.166.84.81",
-          "185.166.84.91"
-        ]
-      },
-      {
-        "region": "France Paris",
-        "hostname": "fr-par.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.89.174.85",
-          "185.246.211.103"
-        ]
-      },
-      {
-        "region": "Germany Berlin",
-        "hostname": "de-ber.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.36.76.51",
-          "89.36.76.67",
-          "193.29.106.3",
-          "217.138.216.61"
-        ]
-      },
-      {
-        "region": "Germany Frankfurt am Main",
-        "hostname": "de-fra.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.196.51",
-          "45.87.212.215",
-          "185.59.220.144",
-          "185.102.219.6"
-        ]
-      },
-      {
-        "region": "Germany Frankfurt am Main st001",
-        "hostname": "de-fra-st001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.87.212.179"
-        ]
-      },
-      {
-        "region": "Germany Frankfurt am Main st002",
-        "hostname": "de-fra-st002.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.87.212.181"
-        ]
-      },
-      {
-        "region": "Germany Frankfurt am Main st003",
-        "hostname": "de-fra-st003.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.87.212.183"
-        ]
-      },
-      {
-        "region": "Germany Frankfurt am Main st004",
-        "hostname": "de-fra-st004.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "195.181.174.226"
-        ]
-      },
-      {
-        "region": "Germany Frankfurt am Main st005",
-        "hostname": "de-fra-st005.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "195.181.174.228"
-        ]
-      },
-      {
-        "region": "Germany Frankfurt mp001",
-        "hostname": "de-fra-mp001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "46.101.189.14"
-        ]
-      },
-      {
-        "region": "Germany Singapour",
-        "hostname": "de-sg.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "159.89.14.157"
-        ]
-      },
-      {
-        "region": "Germany UK",
-        "hostname": "de-uk.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "46.101.250.73"
-        ]
-      },
-      {
-        "region": "Greece",
-        "hostname": "gr-ath.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.150.167.32",
-          "194.150.167.36",
-          "194.150.167.42",
-          "194.150.167.44",
-          "194.150.167.50",
-          "194.150.167.54"
-        ]
-      },
-      {
-        "region": "Hong Kong",
-        "hostname": "hk-hkg.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "84.17.37.154",
-          "84.17.57.148",
-          "212.102.42.196",
-          "212.102.42.199",
-          "212.102.42.204"
-        ]
-      },
-      {
-        "region": "Hungary",
-        "hostname": "hu-bud.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.144.151",
-          "37.120.144.195",
-          "37.120.144.197",
-          "37.120.144.199",
-          "37.120.144.215",
-          "185.252.223.83"
-        ]
-      },
-      {
-        "region": "Iceland",
-        "hostname": "is-rkv.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.133.193.195",
-          "45.133.193.197",
-          "45.133.193.211",
-          "45.133.193.213",
-          "45.133.193.219",
-          "45.133.193.221"
-        ]
-      },
-      {
-        "region": "India Chennai",
-        "hostname": "in-chn.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "103.94.27.101",
-          "103.94.27.179",
-          "103.94.27.181",
-          "103.108.117.151"
-        ]
-      },
-      {
-        "region": "India Indore",
-        "hostname": "in-idr.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "103.39.132.187",
-          "103.39.132.189",
-          "103.73.189.59"
-        ]
-      },
-      {
-        "region": "India Mumbai",
-        "hostname": "in-mum.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "103.156.50.107",
-          "103.156.50.111",
-          "103.156.51.35",
-          "103.156.51.39",
-          "103.156.51.43",
-          "103.156.51.45",
-          "103.156.51.55",
-          "103.156.51.59",
-          "165.231.253.163",
-          "165.231.253.165"
-        ]
-      },
-      {
-        "region": "Indonesia",
-        "hostname": "id-jak.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "103.120.66.219",
-          "103.120.66.221",
-          "103.120.66.234",
-          "103.120.66.236",
-          "103.148.242.170",
-          "103.148.242.173"
-        ]
-      },
-      {
-        "region": "Ireland",
-        "hostname": "ie-dub.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "5.157.13.53",
-          "5.157.13.117",
-          "23.92.127.91",
-          "37.120.235.91",
-          "37.120.235.205",
-          "37.120.235.211",
-          "37.120.235.213",
-          "146.70.48.51",
-          "185.252.222.109",
-          "185.252.222.115",
-          "185.252.222.117",
-          "217.138.222.45"
-        ]
-      },
-      {
-        "region": "Israel",
-        "hostname": "il-tlv.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "84.110.41.83",
-          "84.110.41.85"
-        ]
-      },
-      {
-        "region": "Italy Milan",
-        "hostname": "it-mil.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.201.67",
-          "37.120.201.71",
-          "84.17.58.161",
-          "84.17.58.200",
-          "212.102.54.150",
-          "212.102.54.162"
-        ]
-      },
-      {
-        "region": "Italy Rome",
-        "hostname": "it-rom.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "82.102.26.101",
-          "87.101.94.211",
-          "87.101.94.213",
-          "87.101.94.227",
-          "185.217.71.3",
-          "185.217.71.5",
-          "185.217.71.195",
-          "185.217.71.197",
-          "185.217.71.229",
-          "217.138.219.227",
-          "217.138.219.235",
-          "217.138.219.237"
-        ]
-      },
-      {
-        "region": "Japan Tokyo",
-        "hostname": "jp-tok.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "84.17.34.24",
-          "89.187.161.24",
-          "89.187.161.241",
-          "138.199.22.130",
-          "138.199.22.135"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st001",
-        "hostname": "jp-tok-st001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.87.213.19"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st002",
-        "hostname": "jp-tok-st002.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.87.213.21"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st003",
-        "hostname": "jp-tok-st003.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.87.213.23"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st004",
-        "hostname": "jp-tok-st004.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "217.138.212.19"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st005",
-        "hostname": "jp-tok-st005.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "217.138.212.21"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st006",
-        "hostname": "jp-tok-st006.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "82.102.28.123"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st007",
-        "hostname": "jp-tok-st007.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "82.102.28.125"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st008",
-        "hostname": "jp-tok-st008.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.12"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st009",
-        "hostname": "jp-tok-st009.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.14"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st010",
-        "hostname": "jp-tok-st010.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.17"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st011",
-        "hostname": "jp-tok-st011.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.19"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st012",
-        "hostname": "jp-tok-st012.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.7"
-        ]
-      },
-      {
-        "region": "Japan Tokyo st013",
-        "hostname": "jp-tok-st013.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.9"
-        ]
-      },
-      {
-        "region": "Kazakhstan",
-        "hostname": "kz-ura.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "5.189.202.9",
-          "5.189.202.11",
-          "5.189.202.14",
-          "5.189.202.16"
-        ]
-      },
-      {
-        "region": "Korea",
-        "hostname": "kr-seo.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "27.255.77.226",
-          "45.130.137.12",
-          "45.130.137.36",
-          "45.130.137.44",
-          "45.130.137.46",
-          "61.14.210.234"
-        ]
-      },
-      {
-        "region": "Latvia",
-        "hostname": "lv-rig.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "188.92.78.135",
-          "188.92.78.137",
-          "188.92.78.140",
-          "188.92.78.208"
-        ]
-      },
-      {
-        "region": "Luxembourg",
-        "hostname": "lu-ste.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.153.151.100",
-          "185.153.151.104",
-          "185.153.151.108",
-          "185.153.151.120",
-          "185.153.151.164",
-          "185.153.151.195"
-        ]
-      },
-      {
-        "region": "Malaysia",
-        "hostname": "my-kul.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "42.0.30.160",
-          "42.0.30.162",
-          "42.0.30.179",
-          "42.0.30.183",
-          "42.0.30.215",
-          "111.90.140.136",
-          "111.90.141.52",
-          "111.90.145.109"
-        ]
-      },
-      {
-        "region": "Mexico City Mexico",
+        "region": "The Americas",
+        "country": "Mexico",
+        "city": "Mexico City",
+        "retroloc": "Mexico City Mexico",
         "hostname": "mx-mex.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "194.41.112.3",
-          "194.41.112.19",
-          "194.41.112.24",
-          "194.41.112.30"
+          "194.41.112.14",
+          "194.41.112.16",
+          "194.41.112.26",
+          "194.41.112.39"
         ]
       },
       {
-        "region": "Moldova",
-        "hostname": "md-chi.prod.surfshark.com",
+        "region": "The Americas",
+        "country": "Netherlands US",
+        "city": "",
+        "retroloc": "Netherlands US",
+        "hostname": "nl-us.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "178.175.128.235",
-          "178.175.128.237",
-          "194.33.40.112",
-          "194.33.40.114"
+          "188.166.98.91"
         ]
       },
       {
-        "region": "Netherlands Amsterdam",
-        "hostname": "nl-ams.prod.surfshark.com",
+        "region": "The Americas",
+        "country": "Panama",
+        "city": "Panama",
+        "retroloc": "",
+        "hostname": "pa-pac.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "81.19.208.66",
-          "81.19.208.124",
-          "81.19.209.113",
-          "81.19.209.124",
-          "89.46.223.70",
-          "89.46.223.74",
-          "89.46.223.76",
-          "89.46.223.84",
-          "89.46.223.86",
-          "89.46.223.100",
-          "109.236.86.51",
-          "143.244.42.71",
-          "185.59.222.94",
-          "212.102.35.206"
+          "185.244.139.3",
+          "185.244.139.5",
+          "185.244.139.7",
+          "185.244.139.9"
         ]
       },
       {
-        "region": "Netherlands Amsterdam mp001",
-        "hostname": "nl-ams-mp001.prod.surfshark.com",
+        "region": "The Americas",
+        "country": "Peru",
+        "city": "Lima",
+        "retroloc": "",
+        "hostname": "pe-lim.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "188.166.43.117"
+          "193.218.35.9",
+          "193.218.35.12",
+          "193.218.35.14",
+          "193.218.35.19"
         ]
       },
       {
-        "region": "Netherlands Amsterdam st001",
-        "hostname": "nl-ams-st001.prod.surfshark.com",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Ashburn",
+        "retroloc": "",
+        "hostname": "us-ash.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "81.19.209.51"
+          "37.19.220.199",
+          "37.19.220.201"
         ]
       },
       {
-        "region": "New Zealand",
-        "hostname": "nz-akl.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "180.149.231.3",
-          "180.149.231.11",
-          "180.149.231.13",
-          "180.149.231.43",
-          "180.149.231.45",
-          "180.149.231.67",
-          "180.149.231.117",
-          "180.149.231.163"
-        ]
-      },
-      {
-        "region": "Nigeria",
-        "hostname": "ng-lag.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "102.165.23.44",
-          "102.165.25.132"
-        ]
-      },
-      {
-        "region": "North Macedonia",
-        "hostname": "mk-skp.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.225.28.67",
-          "185.225.28.69",
-          "185.225.28.91",
-          "185.225.28.245"
-        ]
-      },
-      {
-        "region": "Norway",
-        "hostname": "no-osl.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.12.223.197",
-          "84.247.50.69",
-          "91.219.215.21",
-          "95.174.66.37"
-        ]
-      },
-      {
-        "region": "Philippines",
-        "hostname": "ph-mnl.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.134.224.15",
-          "45.134.224.24",
-          "45.134.224.26",
-          "45.134.224.31"
-        ]
-      },
-      {
-        "region": "Poland Gdansk",
-        "hostname": "pl-gdn.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "5.133.14.198",
-          "5.187.49.187"
-        ]
-      },
-      {
-        "region": "Poland Warsaw",
-        "hostname": "pl-waw.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "5.253.206.71",
-          "185.246.208.77",
-          "185.246.208.176",
-          "185.246.208.182"
-        ]
-      },
-      {
-        "region": "Portugal Lisbon",
-        "hostname": "pt-lis.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "5.154.174.77",
-          "5.154.174.171",
-          "5.154.174.173",
-          "5.154.174.179",
-          "5.154.174.211",
-          "5.154.174.213",
-          "5.154.174.219",
-          "91.205.230.142",
-          "91.205.230.152",
-          "91.205.230.158",
-          "91.205.230.162",
-          "91.205.230.166",
-          "91.205.230.174",
-          "91.205.230.178",
-          "91.250.240.142",
-          "91.250.240.148"
-        ]
-      },
-      {
-        "region": "Portugal Porto",
-        "hostname": "pt-opo.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.39.127.151",
-          "194.39.127.181",
-          "194.39.127.191",
-          "194.39.127.193",
-          "194.39.127.233",
-          "194.39.127.244"
-        ]
-      },
-      {
-        "region": "Romania",
-        "hostname": "ro-buc.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.206.235",
-          "37.120.206.237",
-          "45.89.175.51",
-          "45.89.175.55",
-          "86.106.137.147",
-          "185.102.217.169",
-          "185.102.217.194",
-          "217.148.143.213"
-        ]
-      },
-      {
-        "region": "Russia Moscow",
-        "hostname": "ru-mos.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "92.38.138.53",
-          "92.38.138.135",
-          "92.38.138.139",
-          "92.38.138.141"
-        ]
-      },
-      {
-        "region": "Serbia",
-        "hostname": "rs-beg.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.193.51",
-          "37.120.193.53",
-          "152.89.160.59",
-          "152.89.160.61",
-          "152.89.160.147",
-          "152.89.160.149",
-          "152.89.160.211",
-          "152.89.160.213"
-        ]
-      },
-      {
-        "region": "Singapore",
-        "hostname": "sg-sng.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.162.184",
-          "89.187.163.210",
-          "156.146.56.132",
-          "156.146.56.137"
-        ]
-      },
-      {
-        "region": "Singapore Hong Kong",
-        "hostname": "sg-hk.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "206.189.83.129"
-        ]
-      },
-      {
-        "region": "Singapore in",
-        "hostname": "sg-in.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "128.199.193.35"
-        ]
-      },
-      {
-        "region": "Singapore mp001",
-        "hostname": "sg-sng-mp001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "206.189.94.229"
-        ]
-      },
-      {
-        "region": "Singapore st001",
-        "hostname": "sg-sng-st001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "217.138.201.91"
-        ]
-      },
-      {
-        "region": "Singapore st002",
-        "hostname": "sg-sng-st002.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "217.138.201.93"
-        ]
-      },
-      {
-        "region": "Singapore st003",
-        "hostname": "sg-sng-st003.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "84.247.49.19"
-        ]
-      },
-      {
-        "region": "Singapore st004",
-        "hostname": "sg-sng-st004.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "84.247.49.21"
-        ]
-      },
-      {
-        "region": "Slovekia",
-        "hostname": "sk-bts.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.221.5",
-          "185.76.8.210",
-          "185.76.8.212",
-          "185.76.8.215",
-          "185.76.8.217",
-          "193.37.255.37"
-        ]
-      },
-      {
-        "region": "Slovenia",
-        "hostname": "si-lju.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "195.158.249.36",
-          "195.158.249.40",
-          "195.158.249.46",
-          "195.158.249.50",
-          "195.158.249.52",
-          "195.158.249.59"
-        ]
-      },
-      {
-        "region": "South Africa",
-        "hostname": "za-jnb.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "102.165.19.18",
-          "102.165.47.130",
-          "154.16.93.51",
-          "154.127.49.226",
-          "154.127.49.228",
-          "154.127.49.232",
-          "154.127.50.130",
-          "154.127.50.136",
-          "154.127.50.138",
-          "154.127.50.140"
-        ]
-      },
-      {
-        "region": "Spain Barcelona",
-        "hostname": "es-bcn.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.142.135",
-          "185.188.61.79",
-          "185.188.61.91",
-          "185.188.61.115"
-        ]
-      },
-      {
-        "region": "Spain Madrid",
-        "hostname": "es-mad.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.148.213",
-          "89.37.95.171",
-          "89.37.95.173",
-          "89.37.95.183",
-          "188.208.141.20",
-          "188.208.141.34"
-        ]
-      },
-      {
-        "region": "Spain Valencia",
-        "hostname": "es-vlc.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.153.150.54",
-          "185.153.150.72",
-          "185.153.150.78",
-          "185.153.150.84",
-          "196.196.150.71",
-          "196.196.150.85"
-        ]
-      },
-      {
-        "region": "Sweden",
-        "hostname": "se-sto.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.83.91.133",
-          "185.76.9.34",
-          "185.76.9.49"
-        ]
-      },
-      {
-        "region": "Switzerland",
-        "hostname": "ch-zur.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.12.222.243",
-          "84.17.53.166",
-          "84.17.53.168",
-          "84.17.53.223"
-        ]
-      },
-      {
-        "region": "Taiwan",
-        "hostname": "tw-tai.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "2.58.241.45",
-          "103.152.151.3",
-          "103.152.151.5",
-          "103.152.151.21",
-          "103.152.151.67",
-          "103.152.151.85"
-        ]
-      },
-      {
-        "region": "Thailand",
-        "hostname": "th-bkk.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "27.131.164.91",
-          "27.131.164.93",
-          "27.131.164.99",
-          "27.131.164.101",
-          "27.131.164.107",
-          "27.131.164.109"
-        ]
-      },
-      {
-        "region": "Turkey Istanbul",
-        "hostname": "tr-ist.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.150.94.11",
-          "107.150.94.21",
-          "107.150.94.27",
-          "107.150.94.29"
-        ]
-      },
-      {
-        "region": "UK Germany",
-        "hostname": "uk-de.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.77.58.16"
-        ]
-      },
-      {
-        "region": "UK Glasgow",
-        "hostname": "uk-gla.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.108.105.43",
-          "185.108.105.61",
-          "185.108.105.79",
-          "185.108.105.89"
-        ]
-      },
-      {
-        "region": "UK London",
-        "hostname": "uk-lon.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "86.106.157.190",
-          "185.38.148.232",
-          "195.140.215.38",
-          "217.146.82.201"
-        ]
-      },
-      {
-        "region": "UK London mp001",
-        "hostname": "uk-lon-mp001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "206.189.119.92"
-        ]
-      },
-      {
-        "region": "UK London st001",
-        "hostname": "uk-lon-st001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "217.146.82.83"
-        ]
-      },
-      {
-        "region": "UK London st002",
-        "hostname": "uk-lon-st002.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.134.22.80"
-        ]
-      },
-      {
-        "region": "UK London st003",
-        "hostname": "uk-lon-st003.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.134.22.92"
-        ]
-      },
-      {
-        "region": "UK London st004",
-        "hostname": "uk-lon-st004.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.44.76.186"
-        ]
-      },
-      {
-        "region": "UK London st005",
-        "hostname": "uk-lon-st005.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.44.76.188"
-        ]
-      },
-      {
-        "region": "UK Manchester",
-        "hostname": "uk-man.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.200.93",
-          "37.120.233.53",
-          "84.252.95.157",
-          "86.106.136.117",
-          "89.238.130.237",
-          "89.238.132.69",
-          "89.238.132.75",
-          "89.238.134.61",
-          "89.238.137.29",
-          "89.238.183.11",
-          "91.90.121.141",
-          "91.90.121.197",
-          "194.37.98.99",
-          "194.37.98.221"
-        ]
-      },
-      {
-        "region": "US Atlanta",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Atlanta",
+        "retroloc": "US Atlanta",
         "hostname": "us-atl.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
+          "66.115.154.135",
+          "66.115.154.151",
           "66.115.166.149",
-          "138.199.2.130",
-          "185.93.0.143",
-          "195.181.171.243",
-          "195.181.171.249"
+          "66.115.175.35",
+          "66.115.175.45",
+          "66.115.175.50"
         ]
       },
       {
-        "region": "US Bend",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Bend",
+        "retroloc": "US Bend",
         "hostname": "us-bdn.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "45.43.14.75",
-          "45.43.14.93",
+          "45.43.14.83",
+          "45.43.14.95",
           "45.43.14.105",
+          "104.255.169.130",
+          "154.16.168.186",
           "154.16.168.188"
         ]
       },
       {
-        "region": "US Boston",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Boston",
+        "retroloc": "US Boston",
         "hostname": "us-bos.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "173.237.207.11",
           "173.237.207.13",
-          "173.237.207.36",
-          "173.237.207.56"
+          "173.237.207.44",
+          "173.237.207.52",
+          "173.237.207.62",
+          "173.237.207.66"
         ]
       },
       {
-        "region": "US Buffalo",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Buffalo",
+        "retroloc": "US Buffalo",
         "hostname": "us-buf.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
+          "64.44.42.194",
           "64.44.42.196",
-          "107.174.20.132",
-          "107.175.104.82",
-          "172.93.146.82",
-          "172.93.146.212",
-          "172.93.153.146",
-          "172.93.153.150"
+          "107.174.20.134",
+          "107.175.104.86"
         ]
       },
       {
-        "region": "US Charlotte",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Charlotte",
+        "retroloc": "US Charlotte",
         "hostname": "us-clt.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.16.171.204",
+          "66.11.124.17",
+          "154.16.171.195",
+          "154.16.171.197",
+          "154.16.171.206",
           "154.16.171.213",
+          "155.254.28.141",
+          "155.254.29.163",
+          "155.254.31.184",
+          "192.154.253.67",
           "192.154.254.135",
-          "192.154.254.137"
+          "192.158.224.110"
         ]
       },
       {
-        "region": "US Chicago",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Chicago",
+        "retroloc": "US Chicago",
         "hostname": "us-chi.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "89.187.182.173",
-          "138.199.42.137",
-          "138.199.42.145",
-          "138.199.42.169",
-          "138.199.42.171",
-          "143.244.60.162",
-          "143.244.60.172",
-          "185.246.209.55",
-          "185.246.209.57"
+          "89.187.182.175",
+          "138.199.42.129",
+          "138.199.42.131",
+          "138.199.42.133",
+          "138.199.42.135",
+          "143.244.60.167"
         ]
       },
       {
-        "region": "US Dallas",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Dallas",
+        "retroloc": "US Dallas",
         "hostname": "us-dal.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "66.115.177.131",
-          "66.115.177.156",
-          "107.181.173.163",
-          "212.102.40.83"
+          "66.115.177.138",
+          "66.115.177.141",
+          "66.115.177.143",
+          "66.115.177.146",
+          "66.115.177.151",
+          "66.115.177.158",
+          "89.187.175.167",
+          "172.241.114.89",
+          "212.102.40.78"
         ]
       },
       {
-        "region": "US Denver",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Denver",
+        "retroloc": "US Denver",
         "hostname": "us-den.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
+          "212.102.44.68",
           "212.102.44.71",
           "212.102.44.81",
           "212.102.44.86",
-          "212.102.44.91"
+          "212.102.44.91",
+          "212.102.44.93",
+          "212.102.44.96",
+          "212.102.44.98"
         ]
       },
       {
-        "region": "US Gahanna",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Detroit",
+        "retroloc": "US Gahanna",
         "hostname": "us-dtw.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "104.244.208.101",
-          "104.244.210.125",
-          "104.244.210.157",
-          "104.244.211.139",
-          "104.244.211.141",
-          "104.244.211.181"
+          "38.146.4.245",
+          "104.244.208.35",
+          "104.244.208.37",
+          "104.244.208.203",
+          "104.244.208.205",
+          "104.244.208.227",
+          "104.244.210.117",
+          "104.244.210.133",
+          "104.244.210.139",
+          "104.244.210.155",
+          "104.244.211.173"
         ]
       },
       {
-        "region": "US Houston",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Houston",
+        "retroloc": "US Houston",
         "hostname": "us-hou.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "199.10.64.147",
+          "199.10.64.99",
+          "199.10.64.115",
+          "199.10.64.131",
+          "199.10.64.149",
+          "199.10.64.163",
           "199.10.64.165",
+          "199.10.64.179",
+          "199.10.64.195",
           "199.10.64.197",
+          "199.10.64.211",
+          "199.10.64.213",
           "199.10.64.227",
-          "199.10.64.243",
-          "199.10.64.245"
+          "199.10.64.229"
         ]
       },
       {
-        "region": "US Kansas City",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Kansas City",
+        "retroloc": "US Kansas City",
         "hostname": "us-kan.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "63.141.236.243",
-          "69.30.249.123",
-          "69.30.249.125",
-          "173.208.149.197",
-          "173.208.202.59",
-          "173.208.202.61"
+          "63.141.236.245",
+          "63.141.248.179",
+          "173.208.149.195",
+          "198.204.231.147",
+          "198.204.231.149"
         ]
       },
       {
-        "region": "US Las Vegas",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Las Vegas",
+        "retroloc": "US Las Vegas",
         "hostname": "us-las.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
+          "79.110.53.203",
           "79.110.54.93",
-          "79.110.54.131",
+          "79.110.54.115",
+          "79.110.54.117",
+          "79.110.54.123",
+          "185.242.5.147",
+          "185.242.5.149",
           "185.242.5.155",
-          "185.242.5.157"
+          "185.242.5.213"
         ]
       },
       {
-        "region": "US Latham",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Latham",
+        "retroloc": "US Latham",
         "hostname": "us-ltm.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "45.43.19.68",
-          "45.43.19.74",
           "45.43.19.76",
-          "154.16.169.3",
-          "154.16.169.5",
+          "45.43.19.82",
+          "45.43.19.84",
+          "45.43.19.90",
+          "45.43.19.92",
           "154.16.169.7"
         ]
       },
       {
-        "region": "US Los Angeles",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Los Angeles",
+        "retroloc": "US Los Angeles",
         "hostname": "us-lax.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
+          "84.17.45.247",
           "89.187.187.68",
-          "89.187.187.73",
-          "89.187.187.86",
-          "138.199.9.199",
-          "184.170.243.197",
+          "89.187.187.88",
           "184.170.243.199",
-          "192.111.134.207",
-          "192.111.134.215"
+          "192.111.134.212"
         ]
       },
       {
-        "region": "US Maryland",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Manassas",
+        "retroloc": "US Maryland",
         "hostname": "us-mnz.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
           "23.82.8.173",
-          "23.82.11.51",
+          "23.105.163.80",
           "23.105.178.160",
-          "207.244.67.147",
-          "207.244.86.31",
+          "162.210.199.215",
+          "207.244.84.44",
+          "207.244.127.47",
           "207.244.127.116"
         ]
       },
       {
-        "region": "US Miami",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Miami",
+        "retroloc": "US Miami",
         "hostname": "us-mia.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "23.108.54.68",
-          "23.108.54.71",
-          "23.108.54.79",
-          "45.87.214.253",
-          "87.101.93.133",
-          "87.101.93.181",
-          "89.38.227.165",
-          "89.187.173.201"
+          "23.82.142.229",
+          "23.108.54.70",
+          "45.87.214.251",
+          "87.101.93.173",
+          "89.38.227.171",
+          "193.37.252.199"
         ]
       },
       {
-        "region": "US Netherlands",
-        "hostname": "us-nl.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "142.93.58.71"
-        ]
-      },
-      {
-        "region": "US New York City",
-        "hostname": "us-nyc.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.199.221",
-          "84.17.35.91",
-          "89.187.178.92",
-          "138.199.40.179"
-        ]
-      },
-      {
-        "region": "US New York City mp001",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "New York",
+        "retroloc": "US New York City mp001",
         "hostname": "us-nyc-mp001.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -108521,8 +109297,12 @@
         ]
       },
       {
-        "region": "US New York City st001",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "New York",
+        "retroloc": "US New York City st001",
         "hostname": "us-nyc-st001.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -108530,8 +109310,12 @@
         ]
       },
       {
-        "region": "US New York City st002",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "New York",
+        "retroloc": "US New York City st002",
         "hostname": "us-nyc-st002.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -108539,8 +109323,12 @@
         ]
       },
       {
-        "region": "US New York City st003",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "New York",
+        "retroloc": "US New York City st003",
         "hostname": "us-nyc-st003.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -108548,8 +109336,12 @@
         ]
       },
       {
-        "region": "US New York City st004",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "New York",
+        "retroloc": "US New York City st004",
         "hostname": "us-nyc-st004.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -108557,8 +109349,12 @@
         ]
       },
       {
-        "region": "US New York City st005",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "New York",
+        "retroloc": "US New York City st005",
         "hostname": "us-nyc-st005.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -108566,85 +109362,86 @@
         ]
       },
       {
-        "region": "US Orlando",
-        "hostname": "us-orl.prod.surfshark.com",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "New York",
+        "retroloc": "US New York City",
+        "hostname": "us-nyc.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "66.115.182.43",
-          "66.115.182.72",
-          "66.115.182.106",
+          "37.19.199.209",
+          "37.19.199.216",
+          "37.120.202.3",
+          "37.120.202.5",
+          "84.17.35.88",
+          "84.17.35.101",
+          "138.199.40.162",
+          "138.199.40.174"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Orlando",
+        "retroloc": "US Orlando",
+        "hostname": "us-orl.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "66.115.182.69",
+          "66.115.182.74",
+          "198.147.22.85",
           "198.147.22.133",
-          "198.147.22.135",
+          "198.147.22.151",
           "198.147.22.195"
         ]
       },
       {
-        "region": "US Phoenix",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Phoenix",
+        "retroloc": "US Phoenix",
         "hostname": "us-phx.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "199.58.187.3",
-          "199.58.187.67"
+          "23.81.207.110",
+          "23.83.128.233",
+          "23.83.128.235",
+          "199.58.187.5",
+          "199.58.187.13",
+          "199.58.187.20",
+          "199.58.187.67",
+          "199.58.187.69"
         ]
       },
       {
-        "region": "US Portugal",
-        "hostname": "us-pt.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "142.93.81.242"
-        ]
-      },
-      {
-        "region": "US Saint Louis",
-        "hostname": "us-stl.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "148.72.174.38",
-          "148.72.174.53"
-        ]
-      },
-      {
-        "region": "US Salt Lake City",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Salt Lake City",
+        "retroloc": "US Salt Lake City",
         "hostname": "us-slc.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "104.200.131.5",
-          "104.200.131.165",
           "104.200.131.167",
-          "104.200.131.172",
           "104.200.131.229",
-          "104.200.131.233",
           "104.200.131.245",
-          "104.200.131.249"
+          "209.95.41.29"
         ]
       },
       {
-        "region": "US San Francisco",
-        "hostname": "us-sfo.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "23.81.178.221",
-          "23.108.108.84",
-          "185.124.240.145",
-          "185.124.240.147",
-          "185.124.240.151",
-          "185.124.240.155",
-          "185.124.240.157",
-          "185.124.240.159",
-          "185.124.240.161",
-          "185.124.240.165"
-        ]
-      },
-      {
-        "region": "US San Francisco mp001",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "San Francisco",
+        "retroloc": "US San Francisco mp001",
         "hostname": "us-sfo-mp001.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
@@ -108652,61 +109449,90 @@
         ]
       },
       {
-        "region": "US Seatle",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "San Francisco",
+        "retroloc": "US San Francisco",
+        "hostname": "us-sfo.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "23.81.115.195",
+          "23.81.178.219",
+          "23.81.181.7",
+          "185.124.240.145",
+          "185.124.240.147",
+          "185.124.240.149",
+          "185.124.240.165",
+          "185.124.240.169"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Seattle",
+        "retroloc": "US Seatle",
         "hostname": "us-sea.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "84.17.41.79",
-          "84.17.41.85",
-          "212.102.46.37",
-          "212.102.46.49"
+          "84.17.41.71",
+          "212.102.46.42",
+          "212.102.46.49",
+          "212.102.46.65",
+          "212.102.46.69",
+          "212.102.46.71"
         ]
       },
       {
-        "region": "US Tampa",
+        "region": "The Americas",
+        "country": "United States",
+        "city": "St. Louis",
+        "retroloc": "US Saint Louis",
+        "hostname": "us-stl.prod.surfshark.com",
+        "multihop": false,
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "148.72.169.209",
+          "148.72.171.178",
+          "148.72.174.41",
+          "148.72.174.48"
+        ]
+      },
+      {
+        "region": "The Americas",
+        "country": "United States",
+        "city": "Tampa",
+        "retroloc": "US Tampa",
         "hostname": "us-tpa.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "209.216.92.202",
-          "209.216.92.210",
-          "209.216.92.212",
-          "209.216.92.215"
+          "209.216.85.165",
+          "209.216.92.10",
+          "209.216.92.15",
+          "209.216.92.197",
+          "209.216.92.207"
         ]
       },
       {
-        "region": "Ukraine",
-        "hostname": "ua-iev.prod.surfshark.com",
+        "region": "The Americas",
+        "country": "Venezuela",
+        "city": "Caracas",
+        "retroloc": "",
+        "hostname": "ve-car.prod.surfshark.com",
+        "multihop": false,
         "tcp": true,
         "udp": true,
         "ips": [
-          "156.146.50.97",
-          "156.146.50.102",
-          "156.146.50.104"
-        ]
-      },
-      {
-        "region": "United Arab Emirates",
-        "hostname": "ae-dub.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.9.249.243",
-          "45.9.249.247",
-          "45.9.250.99",
-          "45.9.250.101",
-          "176.125.231.3",
-          "176.125.231.19"
-        ]
-      },
-      {
-        "region": "Vietnam",
-        "hostname": "vn-hcm.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "202.143.110.36"
+          "45.149.3.3",
+          "45.149.3.5",
+          "45.149.3.7",
+          "45.149.3.9"
         ]
       }
     ]

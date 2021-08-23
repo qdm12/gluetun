@@ -2,18 +2,20 @@ package surfshark
 
 import (
 	"net"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 type hostToServer map[string]models.SurfsharkServer
 
-func (hts hostToServer) add(host, region string, tcp, udp bool) {
+func (hts hostToServer) add(host, region, country, city, retroLoc string, tcp, udp bool) {
 	server, ok := hts[host]
 	if !ok {
 		server.Hostname = host
 		server.Region = region
+		server.Country = country
+		server.City = city
+		server.RetroLoc = retroLoc
 	}
 	if tcp {
 		server.TCP = tcp
@@ -30,16 +32,6 @@ func (hts hostToServer) toHostsSlice() (hosts []string) {
 		hosts = append(hosts, host)
 	}
 	return hosts
-}
-
-func (hts hostToServer) toSubdomainsSlice() (subdomains []string) {
-	subdomains = make([]string, 0, len(hts))
-	const suffix = ".prod.surfshark.com"
-	for host := range hts {
-		subdomain := strings.TrimSuffix(host, suffix)
-		subdomains = append(subdomains, subdomain)
-	}
-	return subdomains
 }
 
 func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]net.IP) {

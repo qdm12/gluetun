@@ -40,6 +40,9 @@ type ServerSelection struct { //nolint:maligned
 	// VPNUnlimited
 	StreamOnly bool `json:"stream_only"`
 
+	// Surfshark
+	MultiHopOnly bool `json:"multihop_only"`
+
 	OpenVPN   OpenVPNSelection   `json:"openvpn"`
 	Wireguard WireguardSelection `json:"wireguard"`
 }
