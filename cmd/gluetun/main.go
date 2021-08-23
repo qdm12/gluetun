@@ -141,6 +141,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	if err != nil {
 		return err
 	}
+	logger.PatchLevel(allSettings.Log.Level)
 
 	puid, pgid := allSettings.System.PUID, allSettings.System.PGID
 

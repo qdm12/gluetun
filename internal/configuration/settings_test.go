@@ -43,6 +43,8 @@ func Test_Settings_lines(t *testing.T) {
 				"         |--Protocol: udp",
 				"|--DNS:",
 				"|--Firewall: disabled ⚠️",
+				"|--Log:",
+				"   |--Level: DEBUG",
 				"|--System:",
 				"   |--Process user ID: 0",
 				"   |--Process group ID: 0",

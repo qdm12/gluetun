@@ -68,6 +68,7 @@ LABEL \
     org.opencontainers.image.description="VPN swiss-knife like client to tunnel to multiple VPN servers using OpenVPN, IPtables, DNS over TLS, Shadowsocks, an HTTP proxy and Alpine Linux"
 ENV VPNSP=pia \
     VERSION_INFORMATION=on \
+    LOG_LEVEL=info \
     VPN_TYPE=openvpn \
     PROTOCOL=udp \
     OPENVPN_VERSION=2.5 \
