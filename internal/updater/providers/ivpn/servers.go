@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
@@ -28,13 +29,15 @@ func GetServers(ctx context.Context, client *http.Client,
 	hosts := make([]string, 0, len(data.Servers))
 
 	for _, serverData := range data.Servers {
-		host := serverData.Hostnames.OpenVPN
-
-		if host == "" {
-			continue // Wireguard
+		openVPNHost := serverData.Hostnames.OpenVPN
+		if openVPNHost != "" {
+			hosts = append(hosts, openVPNHost)
 		}
 
-		hosts = append(hosts, host)
+		wireguardHost := serverData.Hostnames.Wireguard
+		if wireguardHost != "" {
+			hosts = append(hosts, wireguardHost)
+		}
 	}
 
 	if len(hosts) < minServers {
@@ -49,19 +52,27 @@ func GetServers(ctx context.Context, client *http.Client,
 
 	servers = make([]models.IvpnServer, 0, len(hosts))
 	for _, serverData := range data.Servers {
-		host := serverData.Hostnames.OpenVPN
-		if serverData.Hostnames.OpenVPN == "" {
-			continue // Wireguard
+		vpnType := constants.OpenVPN
+		hostname := serverData.Hostnames.OpenVPN
+		tcp := true
+		wgPubKey := ""
+		if hostname == "" {
+			vpnType = constants.Wireguard
+			hostname = serverData.Hostnames.Wireguard
+			tcp = false
+			wgPubKey = serverData.WgPubKey
 		}
 
 		server := models.IvpnServer{
+			VPN:      vpnType,
 			Country:  serverData.Country,
 			City:     serverData.City,
 			ISP:      serverData.ISP,
-			Hostname: serverData.Hostnames.OpenVPN,
-			TCP:      true,
+			Hostname: hostname,
+			WgPubKey: wgPubKey,
+			TCP:      tcp,
 			UDP:      true,
-			IPs:      hostToIPs[host],
+			IPs:      hostToIPs[hostname],
 		}
 		servers = append(servers, server)
 	}
