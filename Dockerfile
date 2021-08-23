@@ -29,12 +29,12 @@ RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ gi
   ./autotool.sh && \
   ./configure --disable-debug --enable-encryption && \
   make clean && \
-  make install && \
+  make install -j$(nproc) && \
 	mkdir /tmp/qbittorrent && \
   curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.7 | tar xzC /tmp/qbittorrent && \
 	cd /tmp/qbittorrent/*qBittorrent* && \
 	./configure --disable-gui && \
-	make install && \
+  make install -j$(nproc) && \
   mkdir /tmp/openvpn && \
   cd /tmp/openvpn && \
   curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn.zip -o openvpn-nextgen.zip && \
