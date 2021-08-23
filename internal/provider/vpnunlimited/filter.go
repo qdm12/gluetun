@@ -16,8 +16,7 @@ func (p *Provider) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
 			selection.FreeOnly && !server.Free,
 			selection.StreamOnly && !server.Stream,
-			selection.OpenVPN.TCP && !server.TCP,
-			!selection.OpenVPN.TCP && !server.UDP:
+			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)
 		}

@@ -13,8 +13,7 @@ func (v *Vyprvpn) filterServers(selection configuration.ServerSelection) (
 		case
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			selection.OpenVPN.TCP && !server.TCP,
-			!selection.OpenVPN.TCP && !server.UDP:
+			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)
 		}

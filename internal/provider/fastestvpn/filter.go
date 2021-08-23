@@ -13,8 +13,7 @@ func (f *Fastestvpn) filterServers(selection configuration.ServerSelection) (
 		case
 			utils.FilterByPossibilities(server.Country, selection.Countries),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			selection.OpenVPN.TCP && !server.TCP,
-			!selection.OpenVPN.TCP && !server.UDP:
+			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)
 		}

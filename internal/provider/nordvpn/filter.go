@@ -23,8 +23,7 @@ func (n *Nordvpn) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
 			utils.FilterByPossibilities(server.Name, selection.Names),
 			utils.FilterByPossibilities(serverNumber, selectedNumbers),
-			selection.OpenVPN.TCP && !server.TCP,
-			!selection.OpenVPN.TCP && !server.UDP:
+			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)
 		}

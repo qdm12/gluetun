@@ -14,8 +14,7 @@ func (p *PIA) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
 			utils.FilterByPossibilities(server.ServerName, selection.Names),
-			selection.OpenVPN.TCP && !server.TCP,
-			!selection.OpenVPN.TCP && !server.UDP:
+			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)
 		}

@@ -16,8 +16,7 @@ func (i *Ivpn) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.Country, selection.Countries),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			selection.OpenVPN.TCP && !server.TCP,
-			!selection.OpenVPN.TCP && !server.UDP:
+			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)
 		}
