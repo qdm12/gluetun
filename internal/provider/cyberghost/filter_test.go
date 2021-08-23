@@ -19,9 +19,9 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 		filteredServers []models.CyberghostServer
 		err             error
 	}{
-		"no servers": {
+		"no server": {
 			selection: configuration.ServerSelection{VPN: constants.OpenVPN},
-			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp; groups Premium UDP Asia, Premium UDP Europe, Premium UDP USA"), //nolint:lll
 		},
 		"servers without filter defaults to UDP": {
 			servers: []models.CyberghostServer{
