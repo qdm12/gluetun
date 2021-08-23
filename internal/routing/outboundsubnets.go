@@ -14,7 +14,7 @@ type OutboundRoutesSetter interface {
 	SetOutboundRoutes(outboundSubnets []net.IPNet) error
 }
 
-func (r *routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
+func (r *Routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 	defaultInterface, defaultGateway, err := r.DefaultRoute()
 	if err != nil {
 		return err
@@ -22,7 +22,7 @@ func (r *routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 	return r.setOutboundRoutes(outboundSubnets, defaultInterface, defaultGateway)
 }
 
-func (r *routing) setOutboundRoutes(outboundSubnets []net.IPNet,
+func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 	defaultInterfaceName string, defaultGateway net.IP) error {
 	r.stateMutex.Lock()
 	defer r.stateMutex.Unlock()
@@ -38,7 +38,7 @@ func (r *routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 	return r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway)
 }
 
-func (r *routing) removeOutboundSubnets(subnets []net.IPNet,
+func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 	defaultInterfaceName string, defaultGateway net.IP) {
 	for _, subnet := range subnets {
 		const table = 0
@@ -50,7 +50,7 @@ func (r *routing) removeOutboundSubnets(subnets []net.IPNet,
 	}
 }
 
-func (r *routing) addOutboundSubnets(subnets []net.IPNet,
+func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
 	defaultInterfaceName string, defaultGateway net.IP) error {
 	for _, subnet := range subnets {
 		const table = 0

@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-type Routing interface {
+type ReadWriter interface {
 	Reader
 	Writer
 }
@@ -32,15 +32,15 @@ type Writer interface {
 	OutboundRoutesSetter
 }
 
-type routing struct {
+type Routing struct {
 	logger          logging.Logger
 	outboundSubnets []net.IPNet
 	stateMutex      sync.RWMutex
 }
 
-// NewRouting creates a new routing instance.
-func NewRouting(logger logging.Logger) Routing {
-	return &routing{
+// New creates a new routing instance.
+func New(logger logging.Logger) *Routing {
+	return &Routing{
 		logger: logger,
 	}
 }

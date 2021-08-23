@@ -37,7 +37,7 @@ type DefaultRouteGetter interface {
 	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
 }
 
-func (r *routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
+func (r *Routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return "", nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
@@ -64,7 +64,7 @@ type DefaultIPGetter interface {
 	DefaultIP() (defaultIP net.IP, err error)
 }
 
-func (r *routing) DefaultIP() (ip net.IP, err error) {
+func (r *Routing) DefaultIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
@@ -92,7 +92,7 @@ type LocalSubnetGetter interface {
 	LocalSubnet() (defaultSubnet net.IPNet, err error)
 }
 
-func (r *routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
+func (r *Routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return defaultSubnet, fmt.Errorf("%w: %s", ErrRoutesList, err)
@@ -125,7 +125,7 @@ type LocalNetworksGetter interface {
 	LocalNetworks() (localNetworks []LocalNetwork, err error)
 }
 
-func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
+func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	links, err := netlink.LinkList()
 	if err != nil {
 		return localNetworks, fmt.Errorf("%w: %s", ErrLinkList, err)
@@ -187,7 +187,7 @@ func (r *routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	return localNetworks, nil
 }
 
-func (r *routing) assignedIP(interfaceName string) (ip net.IP, err error) {
+func (r *Routing) assignedIP(interfaceName string) (ip net.IP, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s: %s", ErrInterfaceNotFound, interfaceName, err)
@@ -212,7 +212,7 @@ type VPNDestinationIPGetter interface {
 	VPNDestinationIP() (ip net.IP, err error)
 }
 
-func (r *routing) VPNDestinationIP() (ip net.IP, err error) {
+func (r *Routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
@@ -244,7 +244,7 @@ type VPNLocalGatewayIPGetter interface {
 	VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error)
 }
 
-func (r *routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {
+func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {
 	routes, err := netlink.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)

@@ -17,7 +17,7 @@ var (
 	ErrRuleDel      = errors.New("cannot delete routing rule")
 )
 
-func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
+func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) error {
 	destinationStr := destination.String()
 	r.logger.Info("adding route for " + destinationStr)
 	r.logger.Debug("ip route replace " + destinationStr +
@@ -42,7 +42,7 @@ func (r *routing) addRouteVia(destination net.IPNet, gateway net.IP, iface strin
 	return nil
 }
 
-func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error) {
+func (r *Routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface string, table int) (err error) {
 	destinationStr := destination.String()
 	r.logger.Info("deleting route for " + destinationStr)
 	r.logger.Debug("ip route delete " + destinationStr +
@@ -67,7 +67,7 @@ func (r *routing) deleteRouteVia(destination net.IPNet, gateway net.IP, iface st
 	return nil
 }
 
-func (r *routing) addIPRule(src net.IP, table, priority int) error {
+func (r *Routing) addIPRule(src net.IP, table, priority int) error {
 	r.logger.Debug("ip rule add from " + src.String() +
 		" lookup " + strconv.Itoa(table) +
 		" pref " + strconv.Itoa(priority))
@@ -97,7 +97,7 @@ func (r *routing) addIPRule(src net.IP, table, priority int) error {
 	return nil
 }
 
-func (r *routing) deleteIPRule(src net.IP, table, priority int) error {
+func (r *Routing) deleteIPRule(src net.IP, table, priority int) error {
 	r.logger.Debug("ip rule del from " + src.String() +
 		" lookup " + strconv.Itoa(table) +
 		" pref " + strconv.Itoa(priority))

@@ -24,7 +24,7 @@ type Setuper interface {
 	Setup() (err error)
 }
 
-func (r *routing) Setup() (err error) {
+func (r *Routing) Setup() (err error) {
 	defaultIP, err := r.DefaultIP()
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrDefaultIP, err)
@@ -67,7 +67,7 @@ type TearDowner interface {
 	TearDown() error
 }
 
-func (r *routing) TearDown() error {
+func (r *Routing) TearDown() error {
 	defaultIP, err := r.DefaultIP()
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrDefaultIP, err)
