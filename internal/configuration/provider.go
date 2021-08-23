@@ -167,6 +167,7 @@ func readOpenVPNCustomPort(env params.Interface, tcp bool,
 		ErrInvalidPort, port, portsToString(allowedUDP))
 }
 
+// note: set allowed to an empty slice to allow all valid ports
 func readWireguardCustomPort(env params.Interface, allowed []uint16) (port uint16, err error) {
 	port, err = readPortOrZero(env, "WIREGUARD_PORT")
 	if err != nil {
@@ -175,11 +176,16 @@ func readWireguardCustomPort(env params.Interface, allowed []uint16) (port uint1
 		return 0, nil
 	}
 
+	if len(allowed) == 0 {
+		return port, nil
+	}
+
 	for i := range allowed {
 		if allowed[i] == port {
 			return port, nil
 		}
 	}
+
 	return 0, fmt.Errorf(
 		"environment variable WIREGUARD_PORT: %w: port %d, can only be one of %s",
 		ErrInvalidPort, port, portsToString(allowed))

@@ -40,7 +40,12 @@ func (settings *Provider) readMullvad(r reader) (err error) {
 		return fmt.Errorf("environment variable OWNED: %w", err)
 	}
 
-	return settings.ServerSelection.OpenVPN.readMullvad(r.env)
+	err = settings.ServerSelection.OpenVPN.readMullvad(r.env)
+	if err != nil {
+		return err
+	}
+
+	return settings.ServerSelection.Wireguard.readMullvad(r.env)
 }
 
 func (settings *OpenVPNSelection) readMullvad(env params.Interface) (err error) {
@@ -51,6 +56,15 @@ func (settings *OpenVPNSelection) readMullvad(env params.Interface) (err error) 
 
 	settings.CustomPort, err = readOpenVPNCustomPort(env, settings.TCP,
 		[]uint16{80, 443, 1401}, []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (settings *WireguardSelection) readMullvad(env params.Interface) (err error) {
+	settings.CustomPort, err = readWireguardCustomPort(env, nil)
 	if err != nil {
 		return err
 	}
