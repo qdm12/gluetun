@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/params"
 )
 
 func (settings *Provider) readSurfshark(r reader) (err error) {
@@ -54,7 +55,7 @@ func (settings *Provider) readSurfshark(r reader) (err error) {
 		settings.ServerSelection.Hostnames = append(settings.ServerSelection.Hostnames, locationData.Hostname)
 	}
 
-	settings.ServerSelection.MultiHopOnly, err = r.env.YesNo("MULTIHOP_ONLY")
+	settings.ServerSelection.MultiHopOnly, err = r.env.YesNo("MULTIHOP_ONLY", params.Default("no"))
 	if err != nil {
 		return fmt.Errorf("environment variable MULTIHOP_ONLY: %w", err)
 	}
