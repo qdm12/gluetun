@@ -1,11 +1,9 @@
 package httpproxy
 
 import (
-	"context"
 	"io"
 	"net"
 	"net/http"
-	"sync"
 )
 
 func (h *handler) handleHTTPS(responseWriter http.ResponseWriter, request *http.Request) {
@@ -38,27 +36,30 @@ func (h *handler) handleHTTPS(responseWriter http.ResponseWriter, request *http.
 	}
 
 	h.wg.Add(1)
-	ctx, cancel := context.WithCancel(h.ctx)
-	const transferGoroutines = 2
-	wg := &sync.WaitGroup{}
-	wg.Add(transferGoroutines)
-	go func() { // trigger cleanup when done
-		wg.Wait()
-		cancel()
-	}()
-	go func() { // cleanup
-		<-ctx.Done()
+
+	serverToClientDone := make(chan struct{})
+	clientToServerClientDone := make(chan struct{})
+	go transfer(destinationConn, clientConnection, clientToServerClientDone)
+	go transfer(clientConnection, destinationConn, serverToClientDone)
+
+	select {
+	case <-h.ctx.Done():
 		destinationConn.Close()
 		clientConnection.Close()
-		h.wg.Done()
-	}()
-	go transfer(destinationConn, clientConnection, wg)
-	go transfer(clientConnection, destinationConn, wg)
+		<-serverToClientDone
+		<-clientToServerClientDone
+	case <-serverToClientDone:
+		<-clientToServerClientDone
+	case <-clientToServerClientDone: // happens more rarely, when a connection is closed on the client side
+		<-serverToClientDone
+	}
+
+	h.wg.Done()
 }
 
-func transfer(destination io.WriteCloser, source io.ReadCloser, wg *sync.WaitGroup) {
+func transfer(destination io.WriteCloser, source io.ReadCloser, done chan<- struct{}) {
 	_, _ = io.Copy(destination, source)
 	_ = source.Close()
 	_ = destination.Close()
-	wg.Done()
+	close(done)
 }
