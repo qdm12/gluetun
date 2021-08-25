@@ -25,8 +25,7 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 
 	c.logger.Info("setting allowed subnets through firewall...")
 
-	subnetsToAdd := subnet.FindSubnetsToAdd(c.outboundSubnets, subnets)
-	subnetsToRemove := subnet.FindSubnetsToRemove(c.outboundSubnets, subnets)
+	subnetsToAdd, subnetsToRemove := subnet.FindSubnetsToChange(c.outboundSubnets, subnets)
 	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
 		return nil
 	}

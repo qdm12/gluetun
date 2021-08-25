@@ -4,7 +4,13 @@ import (
 	"net"
 )
 
-func FindSubnetsToAdd(oldSubnets, newSubnets []net.IPNet) (subnetsToAdd []net.IPNet) {
+func FindSubnetsToChange(oldSubnets, newSubnets []net.IPNet) (subnetsToAdd, subnetsToRemove []net.IPNet) {
+	subnetsToAdd = findSubnetsToAdd(oldSubnets, newSubnets)
+	subnetsToRemove = findSubnetsToRemove(oldSubnets, newSubnets)
+	return subnetsToAdd, subnetsToRemove
+}
+
+func findSubnetsToAdd(oldSubnets, newSubnets []net.IPNet) (subnetsToAdd []net.IPNet) {
 	for _, newSubnet := range newSubnets {
 		found := false
 		for _, oldSubnet := range oldSubnets {
@@ -20,7 +26,7 @@ func FindSubnetsToAdd(oldSubnets, newSubnets []net.IPNet) (subnetsToAdd []net.IP
 	return subnetsToAdd
 }
 
-func FindSubnetsToRemove(oldSubnets, newSubnets []net.IPNet) (subnetsToRemove []net.IPNet) {
+func findSubnetsToRemove(oldSubnets, newSubnets []net.IPNet) (subnetsToRemove []net.IPNet) {
 	for _, oldSubnet := range oldSubnets {
 		found := false
 		for _, newSubnet := range newSubnets {

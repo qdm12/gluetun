@@ -29,8 +29,8 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 	r.stateMutex.Lock()
 	defer r.stateMutex.Unlock()
 
-	subnetsToRemove := subnet.FindSubnetsToRemove(r.outboundSubnets, outboundSubnets)
-	subnetsToAdd := subnet.FindSubnetsToAdd(r.outboundSubnets, outboundSubnets)
+	subnetsToAdd, subnetsToRemove := subnet.FindSubnetsToChange(
+		r.outboundSubnets, outboundSubnets)
 
 	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
 		return nil
