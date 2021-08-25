@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net"
+
+	"github.com/qdm12/gluetun/internal/subnet"
 )
 
 type OutboundSubnetsSetter interface {
@@ -23,8 +25,8 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 
 	c.logger.Info("setting allowed subnets through firewall...")
 
-	subnetsToAdd := findSubnetsToAdd(c.outboundSubnets, subnets)
-	subnetsToRemove := findSubnetsToRemove(c.outboundSubnets, subnets)
+	subnetsToAdd := subnet.FindSubnetsToAdd(c.outboundSubnets, subnets)
+	subnetsToRemove := subnet.FindSubnetsToRemove(c.outboundSubnets, subnets)
 	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
 		return nil
 	}
@@ -39,12 +41,12 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 
 func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet) {
 	const remove = true
-	for _, subnet := range subnets {
-		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subnet, remove); err != nil {
+	for _, subNet := range subnets {
+		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subNet, remove); err != nil {
 			c.logger.Error("cannot remove outdated outbound subnet through firewall: " + err.Error())
 			continue
 		}
-		c.outboundSubnets = removeSubnetFromSubnets(c.outboundSubnets, subnet)
+		c.outboundSubnets = subnet.RemoveSubnetFromSubnets(c.outboundSubnets, subNet)
 	}
 }
 

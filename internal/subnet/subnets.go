@@ -1,10 +1,10 @@
-package firewall
+package subnet
 
 import (
 	"net"
 )
 
-func findSubnetsToAdd(oldSubnets, newSubnets []net.IPNet) (subnetsToAdd []net.IPNet) {
+func FindSubnetsToAdd(oldSubnets, newSubnets []net.IPNet) (subnetsToAdd []net.IPNet) {
 	for _, newSubnet := range newSubnets {
 		found := false
 		for _, oldSubnet := range oldSubnets {
@@ -20,7 +20,7 @@ func findSubnetsToAdd(oldSubnets, newSubnets []net.IPNet) (subnetsToAdd []net.IP
 	return subnetsToAdd
 }
 
-func findSubnetsToRemove(oldSubnets, newSubnets []net.IPNet) (subnetsToRemove []net.IPNet) {
+func FindSubnetsToRemove(oldSubnets, newSubnets []net.IPNet) (subnetsToRemove []net.IPNet) {
 	for _, oldSubnet := range oldSubnets {
 		found := false
 		for _, newSubnet := range newSubnets {
@@ -40,7 +40,7 @@ func subnetsAreEqual(a, b net.IPNet) bool {
 	return a.IP.Equal(b.IP) && a.Mask.String() == b.Mask.String()
 }
 
-func removeSubnetFromSubnets(subnets []net.IPNet, subnet net.IPNet) []net.IPNet {
+func RemoveSubnetFromSubnets(subnets []net.IPNet, subnet net.IPNet) []net.IPNet {
 	L := len(subnets)
 	for i := range subnets {
 		if subnetsAreEqual(subnet, subnets[i]) {

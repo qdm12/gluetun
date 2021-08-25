@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+
+	"github.com/qdm12/gluetun/internal/subnet"
 )
 
 var (
@@ -27,8 +29,8 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 	r.stateMutex.Lock()
 	defer r.stateMutex.Unlock()
 
-	subnetsToRemove := findSubnetsToRemove(r.outboundSubnets, outboundSubnets)
-	subnetsToAdd := findSubnetsToAdd(r.outboundSubnets, outboundSubnets)
+	subnetsToRemove := subnet.FindSubnetsToRemove(r.outboundSubnets, outboundSubnets)
+	subnetsToAdd := subnet.FindSubnetsToAdd(r.outboundSubnets, outboundSubnets)
 
 	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
 		return nil
@@ -40,13 +42,13 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 
 func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 	defaultInterfaceName string, defaultGateway net.IP) {
-	for _, subnet := range subnets {
+	for _, subNet := range subnets {
 		const table = 0
-		if err := r.deleteRouteVia(subnet, defaultGateway, defaultInterfaceName, table); err != nil {
+		if err := r.deleteRouteVia(subNet, defaultGateway, defaultInterfaceName, table); err != nil {
 			r.logger.Error("cannot remove outdated outbound subnet from routing: " + err.Error())
 			continue
 		}
-		r.outboundSubnets = removeSubnetFromSubnets(r.outboundSubnets, subnet)
+		r.outboundSubnets = subnet.RemoveSubnetFromSubnets(r.outboundSubnets, subNet)
 	}
 }
 
