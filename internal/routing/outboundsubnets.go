@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	ErrAddOutboundSubnet = errors.New("cannot add outbound subnet to routes")
+	errAddOutboundSubnet = errors.New("cannot add outbound subnet to routes")
 )
 
 type OutboundRoutesSetter interface {
@@ -25,7 +25,7 @@ func (r *Routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 }
 
 func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
-	defaultInterfaceName string, defaultGateway net.IP) error {
+	defaultInterfaceName string, defaultGateway net.IP) (err error) {
 	r.stateMutex.Lock()
 	defer r.stateMutex.Unlock()
 
@@ -36,20 +36,32 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 		return nil
 	}
 
-	r.removeOutboundSubnets(subnetsToRemove, defaultInterfaceName, defaultGateway)
-	return r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway)
+	warnings := r.removeOutboundSubnets(subnetsToRemove, defaultInterfaceName, defaultGateway)
+	for _, warning := range warnings {
+		r.logger.Warn("cannot remove outdated outbound subnet from routing: " + warning)
+	}
+
+	err = r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway)
+	if err != nil {
+		return fmt.Errorf("%w: %s", errAddOutboundSubnet, err)
+	}
+
+	return nil
 }
 
 func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
-	defaultInterfaceName string, defaultGateway net.IP) {
+	defaultInterfaceName string, defaultGateway net.IP) (warnings []string) {
 	for _, subNet := range subnets {
 		const table = 0
 		if err := r.deleteRouteVia(subNet, defaultGateway, defaultInterfaceName, table); err != nil {
-			r.logger.Error("cannot remove outdated outbound subnet from routing: " + err.Error())
+			warnings = append(warnings, err.Error())
 			continue
 		}
+
 		r.outboundSubnets = subnet.RemoveSubnetFromSubnets(r.outboundSubnets, subNet)
 	}
+
+	return warnings
 }
 
 func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
@@ -57,7 +69,7 @@ func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
 	for _, subnet := range subnets {
 		const table = 0
 		if err := r.addRouteVia(subnet, defaultGateway, defaultInterfaceName, table); err != nil {
-			return fmt.Errorf("%w: %s: %s", ErrAddOutboundSubnet, subnet, err)
+			return fmt.Errorf("%w: for subnet %s", err, subnet)
 		}
 		r.outboundSubnets = append(r.outboundSubnets, subnet)
 	}

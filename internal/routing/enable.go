@@ -17,6 +17,7 @@ var (
 	ErrIPRuleAdd          = errors.New("cannot add IP rule")
 	ErrIPRuleDelete       = errors.New("cannot delete IP rule")
 	ErrRouteAdd           = errors.New("cannot add route")
+	ErrRouteDelete        = errors.New("cannot delete route")
 	ErrSubnetsOutboundSet = errors.New("cannot set outbound subnets routes")
 )
 
