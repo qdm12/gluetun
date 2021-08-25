@@ -226,7 +226,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	firewallLogLevel := logging.LevelInfo
+	firewallLogLevel := allSettings.Log.Level
 	if allSettings.Firewall.Debug {
 		firewallLogLevel = logging.LevelDebug
 	}
