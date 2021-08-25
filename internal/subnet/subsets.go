@@ -42,10 +42,6 @@ func findSubnetsToRemove(oldSubnets, newSubnets []net.IPNet) (subnetsToRemove []
 	return subnetsToRemove
 }
 
-func subnetsAreEqual(a, b net.IPNet) bool {
-	return a.IP.Equal(b.IP) && a.Mask.String() == b.Mask.String()
-}
-
 func RemoveSubnetFromSubnets(subnets []net.IPNet, subnet net.IPNet) []net.IPNet {
 	L := len(subnets)
 	for i := range subnets {
