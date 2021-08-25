@@ -9,11 +9,7 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-type Server interface {
-	Run(ctx context.Context, errorCh chan<- error)
-}
-
-type server struct {
+type Server struct {
 	address    string
 	handler    http.Handler
 	logger     logging.Logger
@@ -21,9 +17,9 @@ type server struct {
 }
 
 func New(ctx context.Context, address string, logger logging.Logger,
-	stealth, verbose bool, username, password string) Server {
+	stealth, verbose bool, username, password string) *Server {
 	wg := &sync.WaitGroup{}
-	return &server{
+	return &Server{
 		address:    address,
 		handler:    newHandler(ctx, wg, logger, stealth, verbose, username, password),
 		logger:     logger,
@@ -31,7 +27,7 @@ func New(ctx context.Context, address string, logger logging.Logger,
 	}
 }
 
-func (s *server) Run(ctx context.Context, errorCh chan<- error) {
+func (s *Server) Run(ctx context.Context, errorCh chan<- error) {
 	server := http.Server{Addr: s.address, Handler: s.handler}
 	go func() {
 		<-ctx.Done()
