@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	errIPRuleAdd = errors.New("cannot add IP rule")
 	errRulesList = errors.New("cannot list rules")
 )
 

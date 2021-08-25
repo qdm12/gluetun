@@ -3,22 +3,13 @@ package routing
 import (
 	"errors"
 	"fmt"
-	"net"
-)
-
-const (
-	table    = 200
-	priority = 100
 )
 
 var (
-	ErrDefaultIP          = errors.New("cannot get default IP address")
-	ErrDefaultRoute       = errors.New("cannot get default route")
-	ErrIPRuleAdd          = errors.New("cannot add IP rule")
-	ErrIPRuleDelete       = errors.New("cannot delete IP rule")
-	ErrRouteAdd           = errors.New("cannot add route")
-	ErrRouteDelete        = errors.New("cannot delete route")
-	ErrSubnetsOutboundSet = errors.New("cannot set outbound subnets routes")
+	ErrDefaultRoute          = errors.New("cannot get default route")
+	ErrAddInboundFromDefault = errors.New("cannot add routes for inbound traffic from default IP")
+	ErrDelInboundFromDefault = errors.New("cannot remove routes for inbound traffic from default IP")
+	ErrSubnetsOutboundSet    = errors.New("cannot set outbound subnets routes")
 )
 
 type Setuper interface {
@@ -26,10 +17,6 @@ type Setuper interface {
 }
 
 func (r *Routing) Setup() (err error) {
-	defaultIP, err := r.DefaultIP()
-	if err != nil {
-		return fmt.Errorf("%w: %s", ErrDefaultIP, err)
-	}
 	defaultInterfaceName, defaultGateway, err := r.DefaultRoute()
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrDefaultRoute, err)
@@ -43,15 +30,12 @@ func (r *Routing) Setup() (err error) {
 			}
 		}
 	}()
-	if err := r.addIPRule(defaultIP, table, priority); err != nil {
-		return fmt.Errorf("%w: %s", ErrIPRuleAdd, err)
-	}
 
 	touched = true
 
-	defaultDestination := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
-	if err := r.addRouteVia(defaultDestination, defaultGateway, defaultInterfaceName, table); err != nil {
-		return fmt.Errorf("%w: %s", ErrRouteAdd, err)
+	err = r.routeInboundFromDefault(defaultGateway, defaultInterfaceName)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrAddInboundFromDefault, err)
 	}
 
 	r.stateMutex.RLock()
@@ -69,21 +53,14 @@ type TearDowner interface {
 }
 
 func (r *Routing) TearDown() error {
-	defaultIP, err := r.DefaultIP()
-	if err != nil {
-		return fmt.Errorf("%w: %s", ErrDefaultIP, err)
-	}
 	defaultInterfaceName, defaultGateway, err := r.DefaultRoute()
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrDefaultRoute, err)
 	}
 
-	defaultNet := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
-	if err := r.deleteRouteVia(defaultNet, defaultGateway, defaultInterfaceName, table); err != nil {
-		return fmt.Errorf("%w: %s", ErrRouteDelete, err)
-	}
-	if err := r.deleteIPRule(defaultIP, table, priority); err != nil {
-		return fmt.Errorf("%w: %s", ErrIPRuleDelete, err)
+	err = r.unrouteInboundFromDefault(defaultGateway, defaultInterfaceName)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrDelInboundFromDefault, err)
 	}
 
 	if err := r.setOutboundRoutes(nil, defaultInterfaceName, defaultGateway); err != nil {
