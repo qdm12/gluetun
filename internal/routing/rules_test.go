@@ -306,3 +306,125 @@ func Test_ruleDbgMsg(t *testing.T) {
 		})
 	}
 }
+
+func Test_rulesAreEqual(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		a     *netlink.Rule
+		b     *netlink.Rule
+		equal bool
+	}{
+		"both nil": {
+			equal: true,
+		},
+		"first nil": {
+			b: &netlink.Rule{},
+		},
+		"second nil": {
+			a: &netlink.Rule{},
+		},
+		"both not nil": {
+			a:     &netlink.Rule{},
+			b:     &netlink.Rule{},
+			equal: true,
+		},
+		"both equal": {
+			a: &netlink.Rule{
+				Src: &net.IPNet{
+					IP:   net.IPv4(1, 1, 1, 1),
+					Mask: net.IPv4Mask(255, 255, 255, 0),
+				},
+				Priority: 100,
+				Table:    101,
+			},
+			b: &netlink.Rule{
+				Src: &net.IPNet{
+					IP:   net.IPv4(1, 1, 1, 1),
+					Mask: net.IPv4Mask(255, 255, 255, 0),
+				},
+				Priority: 100,
+				Table:    101,
+			},
+			equal: true,
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			equal := rulesAreEqual(testCase.a, testCase.b)
+
+			assert.Equal(t, testCase.equal, equal)
+		})
+	}
+}
+
+func Test_ipNetsAreEqual(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		a     *net.IPNet
+		b     *net.IPNet
+		equal bool
+	}{
+		"both nil": {
+			equal: true,
+		},
+		"first nil": {
+			b: &net.IPNet{},
+		},
+		"second nil": {
+			a: &net.IPNet{},
+		},
+		"both not nil": {
+			a:     &net.IPNet{},
+			b:     &net.IPNet{},
+			equal: true,
+		},
+		"both equal": {
+			a: &net.IPNet{
+				IP:   net.IPv4(1, 1, 1, 1),
+				Mask: net.IPv4Mask(255, 255, 255, 0),
+			},
+			b: &net.IPNet{
+				IP:   net.IPv4(1, 1, 1, 1),
+				Mask: net.IPv4Mask(255, 255, 255, 0),
+			},
+			equal: true,
+		},
+		"both not equal by IP": {
+			a: &net.IPNet{
+				IP:   net.IPv4(1, 1, 1, 1),
+				Mask: net.IPv4Mask(255, 255, 255, 0),
+			},
+			b: &net.IPNet{
+				IP:   net.IPv4(2, 2, 2, 2),
+				Mask: net.IPv4Mask(255, 255, 255, 0),
+			},
+		},
+		"both not equal by mask": {
+			a: &net.IPNet{
+				IP:   net.IPv4(1, 1, 1, 1),
+				Mask: net.IPv4Mask(255, 255, 255, 255),
+			},
+			b: &net.IPNet{
+				IP:   net.IPv4(1, 1, 1, 1),
+				Mask: net.IPv4Mask(255, 255, 0, 0),
+			},
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			equal := ipNetsAreEqual(testCase.a, testCase.b)
+
+			assert.Equal(t, testCase.equal, equal)
+		})
+	}
+}

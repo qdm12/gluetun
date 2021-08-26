@@ -23,18 +23,15 @@ func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {
 	rule.Priority = priority
 	rule.Table = table
 
-	rules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
+	existingRules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
 		return fmt.Errorf("%w: %s", errRulesList, err)
 	}
-	for _, existingRule := range rules {
-		if existingRule.Src != nil &&
-			existingRule.Src.IP.Equal(rule.Src.IP) &&
-			bytes.Equal(existingRule.Src.Mask, rule.Src.Mask) &&
-			existingRule.Priority == rule.Priority &&
-			existingRule.Table == rule.Table {
-			return nil // already exists
+	for i := range existingRules {
+		if !rulesAreEqual(&existingRules[i], rule) {
+			continue
 		}
+		return nil // already exists
 	}
 
 	if err := r.netLinker.RuleAdd(rule); err != nil {
@@ -53,19 +50,16 @@ func (r *Routing) deleteIPRule(src, dst *net.IPNet, table, priority int) error {
 	rule.Priority = priority
 	rule.Table = table
 
-	rules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
+	existingRules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
 		return fmt.Errorf("%w: %s", errRulesList, err)
 	}
-	for _, existingRule := range rules {
-		if existingRule.Src != nil &&
-			existingRule.Src.IP.Equal(rule.Src.IP) &&
-			bytes.Equal(existingRule.Src.Mask, rule.Src.Mask) &&
-			existingRule.Priority == rule.Priority &&
-			existingRule.Table == rule.Table {
-			if err := r.netLinker.RuleDel(rule); err != nil {
-				return fmt.Errorf("%w: for rule: %s", err, rule)
-			}
+	for i := range existingRules {
+		if !rulesAreEqual(&existingRules[i], rule) {
+			continue
+		}
+		if err := r.netLinker.RuleDel(rule); err != nil {
+			return fmt.Errorf("%w: for rule: %s", err, rule)
 		}
 	}
 	return nil
@@ -98,4 +92,28 @@ func ruleDbgMsg(add bool, src, dst *net.IPNet,
 	}
 
 	return debugMessage
+}
+
+func rulesAreEqual(a, b *netlink.Rule) bool {
+	// fmt.Println(a, b)
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return ipNetsAreEqual(a.Src, b.Src) &&
+		ipNetsAreEqual(a.Dst, b.Dst) &&
+		a.Priority == b.Priority &&
+		a.Table == b.Table
+}
+
+func ipNetsAreEqual(a, b *net.IPNet) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return a.IP.Equal(b.IP) && bytes.Equal(a.Mask, b.Mask)
 }
