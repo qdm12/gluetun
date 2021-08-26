@@ -87,3 +87,11 @@ func (settings VPN) isOpenVPNCustomConfig(env params.Interface) (ok bool) {
 	s, err := env.Get("OPENVPN_CUSTOM_CONFIG")
 	return err == nil && s != ""
 }
+
+func (settings VPN) VPNInterface() (intf string) {
+	if settings.Type == constants.Wireguard {
+		return settings.Wireguard.Interface
+	}
+	// OpenVPN
+	return settings.OpenVPN.Interface
+}
