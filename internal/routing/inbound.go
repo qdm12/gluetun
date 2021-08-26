@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+
+	"github.com/qdm12/gluetun/internal/netlink"
 )
 
 const (
@@ -53,8 +55,11 @@ func (r *Routing) addRuleInboundFromDefault(table int) (err error) {
 		return fmt.Errorf("%w: %s", errDefaultIP, err)
 	}
 
-	if err := r.addIPRule(defaultIP, table, inboundPriority); err != nil {
-		return fmt.Errorf("%w: %s", errIPRuleAdd, err)
+	defaultIPMasked32 := netlink.NewIPNet(defaultIP)
+	ruleDstNet := (*net.IPNet)(nil)
+	err = r.addIPRule(defaultIPMasked32, ruleDstNet, table, inboundPriority)
+	if err != nil {
+		return fmt.Errorf("%w: %s", errRuleAdd, err)
 	}
 
 	return nil
@@ -66,8 +71,11 @@ func (r *Routing) delRuleInboundFromDefault(table int) (err error) {
 		return fmt.Errorf("%w: %s", errDefaultIP, err)
 	}
 
-	if err := r.deleteIPRule(defaultIP, table, inboundPriority); err != nil {
-		return fmt.Errorf("%w: %s", errIPRuleAdd, err)
+	defaultIPMasked32 := netlink.NewIPNet(defaultIP)
+	ruleDstNet := (*net.IPNet)(nil)
+	err = r.deleteIPRule(defaultIPMasked32, ruleDstNet, table, inboundPriority)
+	if err != nil {
+		return fmt.Errorf("%w: %s", errRuleDelete, err)
 	}
 
 	return nil

@@ -5,23 +5,21 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"strconv"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
 var (
-	errIPRuleAdd = errors.New("cannot add IP rule")
 	errRulesList = errors.New("cannot list rules")
 )
 
-func (r *Routing) addIPRule(src net.IP, table, priority int) error {
-	r.logger.Debug("ip rule add from " + src.String() +
-		" lookup " + strconv.Itoa(table) +
-		" pref " + strconv.Itoa(priority))
+func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {
+	const add = true
+	r.logger.Debug(ruleDbgMsg(add, src, dst, table, priority))
 
 	rule := netlink.NewRule()
-	rule.Src = netlink.NewIPNet(src)
+	rule.Src = src
+	rule.Dst = dst
 	rule.Priority = priority
 	rule.Table = table
 
@@ -45,13 +43,13 @@ func (r *Routing) addIPRule(src net.IP, table, priority int) error {
 	return nil
 }
 
-func (r *Routing) deleteIPRule(src net.IP, table, priority int) error {
-	r.logger.Debug("ip rule del from " + src.String() +
-		" lookup " + strconv.Itoa(table) +
-		" pref " + strconv.Itoa(priority))
+func (r *Routing) deleteIPRule(src, dst *net.IPNet, table, priority int) error {
+	const add = false
+	r.logger.Debug(ruleDbgMsg(add, src, dst, table, priority))
 
 	rule := netlink.NewRule()
-	rule.Src = netlink.NewIPNet(src)
+	rule.Src = src
+	rule.Dst = dst
 	rule.Priority = priority
 	rule.Table = table
 
@@ -71,4 +69,33 @@ func (r *Routing) deleteIPRule(src net.IP, table, priority int) error {
 		}
 	}
 	return nil
+}
+
+func ruleDbgMsg(add bool, src, dst *net.IPNet,
+	table, priority int) (debugMessage string) {
+	debugMessage = "ip rule"
+
+	if add {
+		debugMessage += " add"
+	} else {
+		debugMessage += " del"
+	}
+
+	if src != nil {
+		debugMessage += " from " + src.String()
+	}
+
+	if dst != nil {
+		debugMessage += " to " + dst.String()
+	}
+
+	if table != 0 {
+		debugMessage += " lookup " + fmt.Sprint(table)
+	}
+
+	if priority != -1 {
+		debugMessage += " pref " + fmt.Sprint(priority)
+	}
+
+	return debugMessage
 }
