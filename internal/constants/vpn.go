@@ -41,6 +41,8 @@ const (
 	VPNUnlimited = "vpn unlimited"
 	// Vyprvpn is a VPN provider.
 	Vyprvpn = "vyprvpn"
+	// WeVPN is a VPN provider.
+	Wevpn = "wevpn"
 	// Windscribe is a VPN provider.
 	Windscribe = "windscribe"
 )

@@ -27,6 +27,7 @@ type Updater struct {
 	Torguard     bool          `json:"torguard"`
 	VPNUnlimited bool          `json:"vpnunlimited"`
 	Vyprvpn      bool          `json:"vyprvpn"`
+	Wevpn        bool          `json:"wevpn"`
 	Windscribe   bool          `json:"windscribe"`
 	// The two below should be used in CLI mode only
 	CLI bool `json:"-"`
@@ -65,6 +66,7 @@ func (settings *Updater) EnableAll() {
 	settings.Torguard = true
 	settings.VPNUnlimited = true
 	settings.Vyprvpn = true
+	settings.Wevpn = true
 	settings.Windscribe = true
 }
 

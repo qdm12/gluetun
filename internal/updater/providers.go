@@ -22,6 +22,7 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/providers/torguard"
 	"github.com/qdm12/gluetun/internal/updater/providers/vpnunlimited"
 	"github.com/qdm12/gluetun/internal/updater/providers/vyprvpn"
+	"github.com/qdm12/gluetun/internal/updater/providers/wevpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/windscribe"
 )
 
@@ -354,6 +355,27 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 
 	u.servers.Vyprvpn.Timestamp = u.timeNow().Unix()
 	u.servers.Vyprvpn.Servers = servers
+	return nil
+}
+
+func (u *updater) updateWevpn(ctx context.Context) (err error) {
+	minServers := getMinServers(len(u.servers.Wevpn.Servers))
+	servers, warnings, err := wevpn.GetServers(ctx, u.presolver, minServers)
+	if u.options.CLI {
+		for _, warning := range warnings {
+			u.logger.Warn("WeVPN: " + warning)
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	if reflect.DeepEqual(u.servers.Wevpn.Servers, servers) {
+		return nil
+	}
+
+	u.servers.Wevpn.Timestamp = u.timeNow().Unix()
+	u.servers.Wevpn.Servers = servers
 	return nil
 }
 

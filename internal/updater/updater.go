@@ -214,6 +214,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
+	if u.options.Wevpn {
+		u.logger.Info("updating WeVPN servers...")
+		if err := u.updateWevpn(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
+			u.logger.Error(err.Error())
+		}
+	}
+
 	if u.options.Windscribe {
 		u.logger.Info("updating Windscribe servers...")
 		if err := u.updateWindscribe(ctx); err != nil {

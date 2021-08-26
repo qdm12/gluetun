@@ -54,6 +54,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger logging.Logger) 
 	flagSet.BoolVar(&options.Torguard, "torguard", false, "Update Torguard servers")
 	flagSet.BoolVar(&options.VPNUnlimited, "vpnunlimited", false, "Update VPN Unlimited servers")
 	flagSet.BoolVar(&options.Vyprvpn, "vyprvpn", false, "Update Vyprvpn servers")
+	flagSet.BoolVar(&options.Wevpn, "wevpn", false, "Update WeVPN servers")
 	flagSet.BoolVar(&options.Windscribe, "windscribe", false, "Update Windscribe servers")
 	if err := flagSet.Parse(args); err != nil {
 		return err
