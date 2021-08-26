@@ -168,6 +168,8 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 		settings.EncPreset, err = getPIAEncryptionPreset(r)
 	case constants.VPNUnlimited:
 		err = settings.readVPNUnlimited(r)
+	case constants.Wevpn:
+		err = settings.readWevpn(r)
 	}
 	if err != nil {
 		return err
