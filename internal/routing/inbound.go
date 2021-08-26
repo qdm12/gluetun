@@ -14,11 +14,7 @@ const (
 )
 
 var (
-	errDefaultIP   = errors.New("cannot get default IP address")
-	errRuleAdd     = errors.New("cannot add rule")
-	errRouteAdd    = errors.New("cannot add route")
-	errRuleDelete  = errors.New("cannot delete rule")
-	errRouteDelete = errors.New("cannot delete route")
+	errDefaultIP = errors.New("cannot get default IP address")
 )
 
 func (r *Routing) routeInboundFromDefault(defaultGateway net.IP,

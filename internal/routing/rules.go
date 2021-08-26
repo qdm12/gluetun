@@ -10,7 +10,9 @@ import (
 )
 
 var (
-	errRulesList = errors.New("cannot list rules")
+	errRulesList  = errors.New("cannot list rules")
+	errRuleAdd    = errors.New("cannot add rule")
+	errRuleDelete = errors.New("cannot delete rule")
 )
 
 func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {

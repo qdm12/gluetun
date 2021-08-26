@@ -10,7 +10,9 @@ import (
 )
 
 var (
-	errLinkByName = errors.New("cannot obtain link by name")
+	errLinkByName  = errors.New("cannot obtain link by name")
+	errRouteAdd    = errors.New("cannot add route")
+	errRouteDelete = errors.New("cannot delete route")
 )
 
 func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP,

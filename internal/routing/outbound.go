@@ -8,6 +8,11 @@ import (
 	"github.com/qdm12/gluetun/internal/subnet"
 )
 
+const (
+	outboundTable    = 199
+	outboundPriority = 99
+)
+
 var (
 	errAddOutboundSubnet = errors.New("cannot add outbound subnet to routes")
 )
@@ -51,10 +56,19 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 
 func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 	defaultInterfaceName string, defaultGateway net.IP) (warnings []string) {
-	for _, subNet := range subnets {
-		const table = 0
-		if err := r.deleteRouteVia(subNet, defaultGateway, defaultInterfaceName, table); err != nil {
+	for i, subNet := range subnets {
+		err := r.deleteRouteVia(subNet, defaultGateway, defaultInterfaceName, outboundTable)
+		if err != nil {
 			warnings = append(warnings, err.Error())
+			continue
+		}
+
+		ruleSrcNet := (*net.IPNet)(nil)
+		ruleDstNet := &subnets[i]
+		err = r.deleteIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
+		if err != nil {
+			warnings = append(warnings,
+				errRuleDelete.Error()+": for subnet "+subNet.String()+": "+err.Error())
 			continue
 		}
 
@@ -66,11 +80,21 @@ func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 
 func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
 	defaultInterfaceName string, defaultGateway net.IP) error {
-	for _, subnet := range subnets {
-		const table = 0
-		if err := r.addRouteVia(subnet, defaultGateway, defaultInterfaceName, table); err != nil {
-			return fmt.Errorf("%w: for subnet %s", err, subnet)
+	for i, subnet := range subnets {
+		err := r.addRouteVia(subnet, defaultGateway, defaultInterfaceName, outboundTable)
+		if err != nil {
+			return fmt.Errorf("%w: for subnet %s: %s",
+				errRouteAdd, subnet, err)
 		}
+
+		ruleSrcNet := (*net.IPNet)(nil)
+		ruleDstNet := &subnets[i]
+		err = r.addIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
+		if err != nil {
+			return fmt.Errorf("%w: for subnet %s: %s",
+				errRuleAdd, subnet, err)
+		}
+
 		r.outboundSubnets = append(r.outboundSubnets, subnet)
 	}
 	return nil
