@@ -9,23 +9,25 @@ import (
 
 func (settings *Provider) readWindscribe(r reader) (err error) {
 	settings.Name = constants.Windscribe
+	servers := r.servers.GetWindscribe()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.WindscribeRegionChoices())
+	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.WindscribeRegionChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
-	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.WindscribeCityChoices())
+	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.WindscribeCityChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.WindscribeHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME",
+		constants.WindscribeHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}

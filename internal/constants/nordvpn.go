@@ -10,8 +10,7 @@ const (
 	NordvpnOpenvpnStaticKeyV1 = "e685bdaf659a25a200e2b9e39e51ff030fc72cf1ce07232bd8b2be5e6c670143f51e937e670eee09d4f2ea5a6e4e69965db852c275351b86fc4ca892d78ae002d6f70d029bd79c4d1c26cf14e9588033cf639f8a74809f29f72b9d58f9b8f5fefc7938eade40e9fed6cb92184abb2cc10eb1a296df243b251df0643d53724cdb5a92a1d6cb817804c4a9319b57d53be580815bcfcb2df55018cc83fc43bc7ff82d51f9b88364776ee9d12fc85cc7ea5b9741c4f598c485316db066d52db4540e212e1518a9bd4828219e24b20d88f598a196c9de96012090e333519ae18d35099427e7b372d348d352dc4c85e18cd4b93f8a56ddb2e64eb67adfc9b337157ff4"
 )
 
-func NordvpnRegionChoices() (choices []string) {
-	servers := NordvpnServers()
+func NordvpnRegionChoices(servers []models.NordvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -19,8 +18,7 @@ func NordvpnRegionChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func NordvpnHostnameChoices() (choices []string) {
-	servers := NordvpnServers()
+func NordvpnHostnameChoices(servers []models.NordvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
@@ -28,18 +26,10 @@ func NordvpnHostnameChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func NordvpnNameChoices() (choices []string) {
-	servers := NordvpnServers()
+func NordvpnNameChoices(servers []models.NordvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Name
 	}
 	return makeUnique(choices)
-}
-
-// NordvpnServers returns a slice of all the server information for Nordvpn.
-func NordvpnServers() (servers []models.NordvpnServer) {
-	servers = make([]models.NordvpnServer, len(allServers.Nordvpn.Servers))
-	copy(servers, allServers.Nordvpn.Servers)
-	return servers
 }

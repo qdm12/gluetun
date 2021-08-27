@@ -9,28 +9,29 @@ import (
 
 func (settings *Provider) readMullvad(r reader) (err error) {
 	settings.Name = constants.Mullvad
+	servers := r.servers.GetMullvad()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.MullvadCountryChoices())
+	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.MullvadCountryChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
-	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.MullvadCityChoices())
+	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.MullvadCityChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.MullvadHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.MullvadHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	settings.ServerSelection.ISPs, err = r.env.CSVInside("ISP", constants.MullvadISPChoices())
+	settings.ServerSelection.ISPs, err = r.env.CSVInside("ISP", constants.MullvadISPChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable ISP: %w", err)
 	}

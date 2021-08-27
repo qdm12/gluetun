@@ -6,20 +6,29 @@ import (
 	"github.com/qdm12/golibs/logging"
 )
 
-type Storage interface {
-	// Passing an empty filepath disables writing to a file
-	SyncServers(hardcodedServers models.AllServers) (allServers models.AllServers, err error)
-	FlushToFile(servers models.AllServers) error
+type Storage struct {
+	mergedServers    models.AllServers
+	hardcodedServers models.AllServers
+	logger           logging.Logger
+	filepath         string
 }
 
-type storage struct {
-	logger   logging.Logger
-	filepath string
-}
+// New creates a new storage and reads the servers from the
+// embedded servers file and the file on disk.
+// Passing an empty filepath disables writing servers to a file.
+func New(logger logging.Logger, filepath string) (storage *Storage, err error) {
+	// error returned covered by unit test
+	harcodedServers, _ := parseHardcodedServers()
 
-func New(logger logging.Logger, filepath string) Storage {
-	return &storage{
-		logger:   logger,
-		filepath: filepath,
+	storage = &Storage{
+		hardcodedServers: harcodedServers,
+		logger:           logger,
+		filepath:         filepath,
 	}
+
+	if err := storage.SyncServers(); err != nil {
+		return nil, err
+	}
+
+	return storage, nil
 }

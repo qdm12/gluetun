@@ -10,23 +10,24 @@ import (
 
 func (settings *Provider) readNordvpn(r reader) (err error) {
 	settings.Name = constants.Nordvpn
+	servers := r.servers.GetNordvpn()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.NordvpnRegionChoices())
+	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.NordvpnRegionChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.NordvpnHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.NordvpnHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	settings.ServerSelection.Names, err = r.env.CSVInside("SERVER_NAME", constants.NordvpnHostnameChoices())
+	settings.ServerSelection.Names, err = r.env.CSVInside("SERVER_NAME", constants.NordvpnHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_NAME: %w", err)
 	}

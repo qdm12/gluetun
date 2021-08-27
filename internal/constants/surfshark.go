@@ -10,8 +10,7 @@ const (
 	SurfsharkOpenvpnStaticKeyV1 = "b02cb1d7c6fee5d4f89b8de72b51a8d0c7b282631d6fc19be1df6ebae9e2779e6d9f097058a31c97f57f0c35526a44ae09a01d1284b50b954d9246725a1ead1ff224a102ed9ab3da0152a15525643b2eee226c37041dc55539d475183b889a10e18bb94f079a4a49888da566b99783460ece01daaf93548beea6c827d9674897e7279ff1a19cb092659e8c1860fbad0db4ad0ad5732f1af4655dbd66214e552f04ed8fd0104e1d4bf99c249ac229ce169d9ba22068c6c0ab742424760911d4636aafb4b85f0c952a9ce4275bc821391aa65fcd0d2394f006e3fba0fd34c4bc4ab260f4b45dec3285875589c97d3087c9134d3a3aa2f904512e85aa2dc2202498"
 )
 
-func SurfsharkRegionChoices() (choices []string) {
-	servers := SurfsharkServers()
+func SurfsharkRegionChoices(servers []models.SurfsharkServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -19,8 +18,7 @@ func SurfsharkRegionChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func SurfsharkCountryChoices() (choices []string) {
-	servers := SurfsharkServers()
+func SurfsharkCountryChoices(servers []models.SurfsharkServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -28,8 +26,7 @@ func SurfsharkCountryChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func SurfsharkCityChoices() (choices []string) {
-	servers := SurfsharkServers()
+func SurfsharkCityChoices(servers []models.SurfsharkServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -38,7 +35,7 @@ func SurfsharkCityChoices() (choices []string) {
 }
 
 // TODO remove in v4.
-func SurfsharkRetroLocChoices() (choices []string) {
+func SurfsharkRetroLocChoices(servers []models.SurfsharkServer) (choices []string) {
 	locationData := SurfsharkLocationData()
 	choices = make([]string, len(locationData))
 	for i := range locationData {
@@ -222,18 +219,10 @@ func SurfsharkLocationData() (data []models.SurfsharkLocationData) {
 	}
 }
 
-func SurfsharkHostnameChoices() (choices []string) {
-	servers := SurfsharkServers()
+func SurfsharkHostnameChoices(servers []models.SurfsharkServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeUnique(choices)
-}
-
-// SurfsharkServers returns a slice of all the server information for Surfshark.
-func SurfsharkServers() (servers []models.SurfsharkServer) {
-	servers = make([]models.SurfsharkServer, len(allServers.Surfshark.Servers))
-	copy(servers, allServers.Surfshark.Servers)
-	return servers
 }

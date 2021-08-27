@@ -10,8 +10,7 @@ const (
 	IvpnOpenvpnStaticKeyV1 = "ac470c93ff9f5602a8aab37dee84a52814d10f20490ad23c47d5d82120c1bf859e93d0696b455d4a1b8d55d40c2685c41ca1d0aef29a3efd27274c4ef09020a3978fe45784b335da6df2d12db97bbb838416515f2a96f04715fd28949c6fe296a925cfada3f8b8928ed7fc963c1563272f5cf46e5e1d9c845d7703ca881497b7e6564a9d1dea9358adffd435295479f47d5298fabf5359613ff5992cb57ff081a04dfb81a26513a6b44a9b5490ad265f8a02384832a59cc3e075ad545461060b7bcab49bac815163cb80983dd51d5b1fd76170ffd904d8291071e96efc3fb777856c717b148d08a510f5687b8a8285dcffe737b98916dd15ef6235dee4266d3b"
 )
 
-func IvpnCountryChoices() (choices []string) {
-	servers := IvpnServers()
+func IvpnCountryChoices(servers []models.IvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -19,8 +18,7 @@ func IvpnCountryChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func IvpnCityChoices() (choices []string) {
-	servers := IvpnServers()
+func IvpnCityChoices(servers []models.IvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -28,8 +26,7 @@ func IvpnCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func IvpnISPChoices() (choices []string) {
-	servers := IvpnServers()
+func IvpnISPChoices(servers []models.IvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].ISP
@@ -37,18 +34,10 @@ func IvpnISPChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func IvpnHostnameChoices() (choices []string) {
-	servers := IvpnServers()
+func IvpnHostnameChoices(servers []models.IvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeUnique(choices)
-}
-
-// IvpnServers returns a slice of all the server information for Ivpn.
-func IvpnServers() (servers []models.IvpnServer) {
-	servers = make([]models.IvpnServer, len(allServers.Ivpn.Servers))
-	copy(servers, allServers.Ivpn.Servers)
-	return servers
 }

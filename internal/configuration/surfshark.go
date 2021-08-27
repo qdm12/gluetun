@@ -10,29 +10,31 @@ import (
 
 func (settings *Provider) readSurfshark(r reader) (err error) {
 	settings.Name = constants.Surfshark
+	servers := r.servers.GetSurfshark()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.SurfsharkCountryChoices())
+	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.SurfsharkCountryChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
-	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.SurfsharkCityChoices())
+	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.SurfsharkCityChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.SurfsharkHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME",
+		constants.SurfsharkHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	regionChoices := constants.SurfsharkRegionChoices()
-	regionChoices = append(regionChoices, constants.SurfsharkRetroLocChoices()...)
+	regionChoices := constants.SurfsharkRegionChoices(servers)
+	regionChoices = append(regionChoices, constants.SurfsharkRetroLocChoices(servers)...)
 	regions, err := r.env.CSVInside("REGION", regionChoices)
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)

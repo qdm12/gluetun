@@ -4,11 +4,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (s *storage) logVersionDiff(provider string, diff int) {
+func (s *Storage) logVersionDiff(provider string, diff int) {
 	diffString := strconv.Itoa(diff)
 
 	message := provider + " servers from file discarded because they are " +
@@ -20,7 +19,7 @@ func (s *storage) logVersionDiff(provider string, diff int) {
 	s.logger.Info(message)
 }
 
-func (s *storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int64) {
+func (s *Storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int64) {
 	diff := time.Unix(persistedUnix, 0).Sub(time.Unix(hardcodedUnix, 0))
 	if diff < 0 {
 		diff = -diff
@@ -31,7 +30,7 @@ func (s *storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int6
 	s.logger.Info(message)
 }
 
-func (s *storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
+func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
 	return models.AllServers{
 		Version:      hardcoded.Version,
 		Cyberghost:   s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
@@ -54,7 +53,7 @@ func (s *storage) mergeServers(hardcoded, persisted models.AllServers) models.Al
 	}
 }
 
-func (s *storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers) models.CyberghostServers {
+func (s *Storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers) models.CyberghostServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -69,7 +68,7 @@ func (s *storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers)
 	return persisted
 }
 
-func (s *storage) mergeFastestvpn(hardcoded, persisted models.FastestvpnServers) models.FastestvpnServers {
+func (s *Storage) mergeFastestvpn(hardcoded, persisted models.FastestvpnServers) models.FastestvpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -82,7 +81,7 @@ func (s *storage) mergeFastestvpn(hardcoded, persisted models.FastestvpnServers)
 	return persisted
 }
 
-func (s *storage) mergeHideMyAss(hardcoded, persisted models.HideMyAssServers) models.HideMyAssServers {
+func (s *Storage) mergeHideMyAss(hardcoded, persisted models.HideMyAssServers) models.HideMyAssServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -95,7 +94,7 @@ func (s *storage) mergeHideMyAss(hardcoded, persisted models.HideMyAssServers) m
 	return persisted
 }
 
-func (s *storage) mergeIpvanish(hardcoded, persisted models.IpvanishServers) models.IpvanishServers {
+func (s *Storage) mergeIpvanish(hardcoded, persisted models.IpvanishServers) models.IpvanishServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -108,7 +107,7 @@ func (s *storage) mergeIpvanish(hardcoded, persisted models.IpvanishServers) mod
 	return persisted
 }
 
-func (s *storage) mergeIvpn(hardcoded, persisted models.IvpnServers) models.IvpnServers {
+func (s *Storage) mergeIvpn(hardcoded, persisted models.IvpnServers) models.IvpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -121,7 +120,7 @@ func (s *storage) mergeIvpn(hardcoded, persisted models.IvpnServers) models.Ivpn
 	return persisted
 }
 
-func (s *storage) mergeMullvad(hardcoded, persisted models.MullvadServers) models.MullvadServers {
+func (s *Storage) mergeMullvad(hardcoded, persisted models.MullvadServers) models.MullvadServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -136,7 +135,7 @@ func (s *storage) mergeMullvad(hardcoded, persisted models.MullvadServers) model
 	return persisted
 }
 
-func (s *storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) models.NordvpnServers {
+func (s *Storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) models.NordvpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -151,7 +150,7 @@ func (s *storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) model
 	return persisted
 }
 
-func (s *storage) mergePrivado(hardcoded, persisted models.PrivadoServers) models.PrivadoServers {
+func (s *Storage) mergePrivado(hardcoded, persisted models.PrivadoServers) models.PrivadoServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -165,7 +164,7 @@ func (s *storage) mergePrivado(hardcoded, persisted models.PrivadoServers) model
 	return persisted
 }
 
-func (s *storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaServers {
+func (s *Storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -179,7 +178,7 @@ func (s *storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaSer
 	return persisted
 }
 
-func (s *storage) mergePrivatevpn(hardcoded, persisted models.PrivatevpnServers) models.PrivatevpnServers {
+func (s *Storage) mergePrivatevpn(hardcoded, persisted models.PrivatevpnServers) models.PrivatevpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -193,7 +192,7 @@ func (s *storage) mergePrivatevpn(hardcoded, persisted models.PrivatevpnServers)
 	return persisted
 }
 
-func (s *storage) mergeProtonvpn(hardcoded, persisted models.ProtonvpnServers) models.ProtonvpnServers {
+func (s *Storage) mergeProtonvpn(hardcoded, persisted models.ProtonvpnServers) models.ProtonvpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -207,7 +206,7 @@ func (s *storage) mergeProtonvpn(hardcoded, persisted models.ProtonvpnServers) m
 	return persisted
 }
 
-func (s *storage) mergePureVPN(hardcoded, persisted models.PurevpnServers) models.PurevpnServers {
+func (s *Storage) mergePureVPN(hardcoded, persisted models.PurevpnServers) models.PurevpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -222,7 +221,7 @@ func (s *storage) mergePureVPN(hardcoded, persisted models.PurevpnServers) model
 	return persisted
 }
 
-func (s *storage) mergeSurfshark(hardcoded, persisted models.SurfsharkServers) models.SurfsharkServers {
+func (s *Storage) mergeSurfshark(hardcoded, persisted models.SurfsharkServers) models.SurfsharkServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -237,7 +236,7 @@ func (s *storage) mergeSurfshark(hardcoded, persisted models.SurfsharkServers) m
 	return persisted
 }
 
-func (s *storage) mergeTorguard(hardcoded, persisted models.TorguardServers) models.TorguardServers {
+func (s *Storage) mergeTorguard(hardcoded, persisted models.TorguardServers) models.TorguardServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -251,21 +250,21 @@ func (s *storage) mergeTorguard(hardcoded, persisted models.TorguardServers) mod
 	return persisted
 }
 
-func (s *storage) mergeVPNUnlimited(hardcoded, persisted models.VPNUnlimitedServers) models.VPNUnlimitedServers {
+func (s *Storage) mergeVPNUnlimited(hardcoded, persisted models.VPNUnlimitedServers) models.VPNUnlimitedServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
 	versionDiff := int(hardcoded.Version) - int(persisted.Version)
 	if versionDiff > 0 {
-		s.logVersionDiff(constants.VPNUnlimited, versionDiff)
+		s.logVersionDiff("VPN Unlimited", versionDiff)
 		return hardcoded
 	}
 
-	s.logTimeDiff(constants.VPNUnlimited, persisted.Timestamp, hardcoded.Timestamp)
+	s.logTimeDiff("VPN Unlimited", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
-func (s *storage) mergeVyprvpn(hardcoded, persisted models.VyprvpnServers) models.VyprvpnServers {
+func (s *Storage) mergeVyprvpn(hardcoded, persisted models.VyprvpnServers) models.VyprvpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
@@ -280,7 +279,7 @@ func (s *storage) mergeVyprvpn(hardcoded, persisted models.VyprvpnServers) model
 	return persisted
 }
 
-func (s *storage) mergeWindscribe(hardcoded, persisted models.WindscribeServers) models.WindscribeServers {
+func (s *Storage) mergeWindscribe(hardcoded, persisted models.WindscribeServers) models.WindscribeServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}

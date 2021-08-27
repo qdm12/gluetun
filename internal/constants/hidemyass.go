@@ -11,8 +11,7 @@ const (
 	HideMyAssRSAPrivateKey = "MIIEpAIBAAKCAQEA5XY3ERJYWs/YIeBoybivNlu+M32rJs+CAZsh7BnnetTxytI4ngsMRoqXETuis8udp2hsqEHsglLR9tlk9C8yCuKhxbkpdrXFWdISmUq5sa7/wqg/zJF1AZm5Jy0oHNyTHfG6XW61I/h9IN5dmcR9YLir8DVDBNllbtt0z+DnvOhYJOqC30ENahWkTmNKl1cT7EBrR5slddiBJleAb08z77pwsD310e6jWTBySsBcPy+xu/Jj2QgVil/3mstZZDI+noFzs3SkTFBkha/lNTP7NODBQ6m39iaJxz6ZR1xE3v7XU0H5WnpZIcQ2+kmu5Krk2y1GYMKL+9oaotXFPz9v+QIDAQABAoIBAQCcMcssOMOiFWc3MC3EWo4SP4MKQ9n0Uj5Z34LI151FdJyehlj54+VYQ1Cv71tCbjED2sZUBoP69mtsT/EzcsjqtfiOwgrifrs2+BOm+0HKHKiGlcbP9peiHkT10PxEITWXpYtJvGlbcfOjIxqt6B28cBjCK09ShrVQL9ylAKBearRRUacszppntMNTMtN/uG48ZR9Wm+xAczImdG6CrG5sLI/++JwM5PDChLvn5JgMGyOfQZdjNe1oSOVLmqFeG5uu/FS4oMon9+HtfjHJr4ZgA1yQ2wQh3GvEjlP8zwHxEpRJYbxpj6ZbjHZJ2HLX/Gcd9/cXiN8+fQ2zPIYQyG9dAoGBAPUUmt2nJNvl7gj0GbZZ3XR9o+hvj7bJ74W2NhMrw6kjrrzHTAUQd1sBQS8szAQCLqf2ou1aw9AMMBdsLAHydXxvbH7IBAla7rKr23iethtSfjhTNSgQLJHVZlNHfp3hzNtCQZ7j0qVjrteNotrdVF7kKPHDXAK00ICy6SPNjvrXAoGBAO+vdnO15jLeZbbi3lQNS4r8oCadyqyX7ouKE6MtKNhiPsNPGqHKiGcKs/+QylVgYvSmm7TgpsCAiEYeLSPT+Yq3y7HtwVpULlpfAhEJXmvn/6hGpOizx1WNGWhw7nHPWPDzf+jqCGzHdhK0aEZR3MZZQ+U+uKfGiJ8vrvgB7eGvAoGAWxxp5nU48rcsIw/8bxpBhgkfYk33M5EnBqKSv9XJS5wEXhIJZOiWNrLktNEGl4boKXE7aNoRacreJhcE1UR6AOS7hPZ+6atwiePyF4mJUeb9HZtxa493wk9/Vv6BR9il++1Jz/QKX4oLef8hyBP4Rb60qgxirG7kBLR+j9zfhskCgYEAzA5y5xIeuIIU0H4XUDG9dcebxSSjbwsuYIgeLdb9pjMGQhsvjjyyoh8/nT20tLkJpkXN3FFCRjNnUWLRhWYrVkkh1wqWiYOPrwqh5MU4KN/sDWSPcznTY+drkTpMFoKzsvdrl2zf3VR3FneXKv742bkXj601Ykko+XWMHcLutisCgYBSq8IrsjzfaTQiTGI9a7WWsvzK92bq7Abnfq7swAXWcJd/bnjTQKLrrvt2bmwNvlWKAb3c69BFMn0X4t4PuN0iJQ39D6aQAEaM7HwWAmjf5TbodbmgbGxdsUB4xcCIQQ1mvTkigXWrCg0YAD2GZSoaslXAAVv6nR5qWEIa0Hx9GA=="
 )
 
-func HideMyAssCountryChoices() (choices []string) {
-	servers := HideMyAssServers()
+func HideMyAssCountryChoices(servers []models.HideMyAssServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -20,8 +19,7 @@ func HideMyAssCountryChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func HideMyAssCityChoices() (choices []string) {
-	servers := HideMyAssServers()
+func HideMyAssCityChoices(servers []models.HideMyAssServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -29,18 +27,10 @@ func HideMyAssCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func HideMyAssHostnameChoices() (choices []string) {
-	servers := HideMyAssServers()
+func HideMyAssHostnameChoices(servers []models.HideMyAssServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeUnique(choices)
-}
-
-// HideMyAssServers returns a slice of all the server information for HideMyAss.
-func HideMyAssServers() (servers []models.HideMyAssServer) {
-	servers = make([]models.HideMyAssServer, len(allServers.HideMyAss.Servers))
-	copy(servers, allServers.HideMyAss.Servers)
-	return servers
 }

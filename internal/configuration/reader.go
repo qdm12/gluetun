@@ -7,22 +7,26 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
 )
 
 type reader struct {
-	env    params.Interface
-	logger logging.Logger
-	regex  verification.Regex
+	servers models.AllServers
+	env     params.Interface
+	logger  logging.Logger
+	regex   verification.Regex
 }
 
-func newReader(env params.Interface, logger logging.Logger) reader {
+func newReader(env params.Interface,
+	servers models.AllServers, logger logging.Logger) reader {
 	return reader{
-		env:    env,
-		logger: logger,
-		regex:  verification.NewRegex(),
+		servers: servers,
+		env:     env,
+		logger:  logger,
+		regex:   verification.NewRegex(),
 	}
 }
 

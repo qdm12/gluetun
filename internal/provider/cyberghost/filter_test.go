@@ -21,7 +21,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 	}{
 		"no server": {
 			selection: configuration.ServerSelection{VPN: constants.OpenVPN},
-			err:       errors.New("no server found: for VPN openvpn; protocol udp; groups Premium UDP Asia, Premium UDP Europe, Premium UDP USA"), //nolint:lll
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"servers without filter defaults to UDP": {
 			servers: []models.CyberghostServer{
@@ -146,10 +146,18 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 func Test_tcpGroupChoices(t *testing.T) {
 	t.Parallel()
 
+	servers := []models.CyberghostServer{
+		{Group: "Premium TCP Asia"},
+		{Group: "Premium TCP Europe"},
+		{Group: "Premium TCP USA"},
+		{Group: "Premium UDP Asia"},
+		{Group: "Premium UDP Europe"},
+		{Group: "Premium UDP USA"},
+	}
 	expected := []string{
 		"Premium TCP Asia", "Premium TCP Europe", "Premium TCP USA",
 	}
-	choices := tcpGroupChoices()
+	choices := tcpGroupChoices(servers)
 
 	assert.Equal(t, expected, choices)
 }
@@ -157,10 +165,18 @@ func Test_tcpGroupChoices(t *testing.T) {
 func Test_udpGroupChoices(t *testing.T) {
 	t.Parallel()
 
+	servers := []models.CyberghostServer{
+		{Group: "Premium TCP Asia"},
+		{Group: "Premium TCP Europe"},
+		{Group: "Premium TCP USA"},
+		{Group: "Premium UDP Asia"},
+		{Group: "Premium UDP Europe"},
+		{Group: "Premium UDP USA"},
+	}
 	expected := []string{
 		"Premium UDP Asia", "Premium UDP Europe", "Premium UDP USA",
 	}
-	choices := udpGroupChoices()
+	choices := udpGroupChoices(servers)
 
 	assert.Equal(t, expected, choices)
 }

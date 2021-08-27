@@ -135,8 +135,16 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
+	// TODO run this in a loop or in openvpn to reload from file without restarting
+	storageLogger := logger.NewChild(logging.Settings{Prefix: "storage: "})
+	storage, err := storage.New(storageLogger, constants.ServersData)
+	if err != nil {
+		return err
+	}
+	allServers := storage.GetServers()
+
 	var allSettings configuration.Settings
-	err := allSettings.Read(env,
+	err = allSettings.Read(env, allServers,
 		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
 	if err != nil {
 		return err
@@ -197,15 +205,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 	if err := os.MkdirAll("/gluetun", 0644); err != nil {
-		return err
-	}
-
-	// TODO run this in a loop or in openvpn to reload from file without restarting
-	storage := storage.New(
-		logger.NewChild(logging.Settings{Prefix: "storage: "}),
-		constants.ServersData)
-	allServers, err := storage.SyncServers(constants.GetAllServers())
-	if err != nil {
 		return err
 	}
 

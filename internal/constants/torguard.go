@@ -10,8 +10,7 @@ const (
 	TorguardOpenvpnStaticKeyV1 = "770e8de5fc56e0248cc7b5aab56be80d0e19cbf003c1b3ed68efbaf08613c3a1a019dac6a4b84f13a6198f73229ffc21fa512394e288f82aa2cf0180f01fb3eb1a71e00a077a20f6d7a83633f5b4f47f27e30617eaf8485dd8c722a8606d56b3c183f65da5d3c9001a8cbdb96c793d936251098b24fe52a6dd2472e98cfccbc466e63520d63ade7a0eacc36208c3142a1068236a52142fbb7b3ed83d785e12a28261bccfb3bcb62a8d2f6d18f5df5f3652e59c5627d8d9c8f7877c4d7b08e19a5c363556ba68d392be78b75152dd55ba0f74d45089e84f77f4492d886524ea6c82b9f4dd83d46528d4f5c3b51cfeaf2838d938bd0597c426b0e440434f2c451f"
 )
 
-func TorguardCountryChoices() (choices []string) {
-	servers := TorguardServers()
+func TorguardCountryChoices(servers []models.TorguardServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -19,8 +18,7 @@ func TorguardCountryChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func TorguardCityChoices() (choices []string) {
-	servers := TorguardServers()
+func TorguardCityChoices(servers []models.TorguardServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -28,18 +26,10 @@ func TorguardCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func TorguardHostnameChoices() (choices []string) {
-	servers := TorguardServers()
+func TorguardHostnameChoices(servers []models.TorguardServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeUnique(choices)
-}
-
-// TorguardServers returns a slice of all the server information for Torguard.
-func TorguardServers() (servers []models.TorguardServer) {
-	servers = make([]models.TorguardServer, len(allServers.Torguard.Servers))
-	copy(servers, allServers.Torguard.Servers)
-	return servers
 }

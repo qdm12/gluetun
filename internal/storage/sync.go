@@ -1,14 +1,9 @@
 package storage
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-	"path/filepath"
 	"reflect"
-	"strconv"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -38,70 +33,35 @@ func countServers(allServers models.AllServers) int {
 		len(allServers.Windscribe.Servers)
 }
 
-func (s *storage) SyncServers(hardcodedServers models.AllServers) (
-	allServers models.AllServers, err error) {
+func (s *Storage) SyncServers() (err error) {
 	serversOnFile, err := readFromFile(s.filepath)
 	if err != nil {
-		return allServers, fmt.Errorf("%w: %s", ErrCannotReadFile, err)
+		return fmt.Errorf("%w: %s", ErrCannotReadFile, err)
 	}
 
-	hardcodedCount := countServers(hardcodedServers)
+	hardcodedCount := countServers(s.hardcodedServers)
 	countOnFile := countServers(serversOnFile)
 
 	if countOnFile == 0 {
-		s.logger.Info("creating " + s.filepath + " with " + strconv.Itoa(hardcodedCount) + " hardcoded servers")
-		allServers = hardcodedServers
+		s.logger.Info(fmt.Sprintf(
+			"creating %s with %d hardcoded servers",
+			s.filepath, hardcodedCount))
+		s.mergedServers = s.hardcodedServers
 	} else {
-		s.logger.Info("merging by most recent " +
-			strconv.Itoa(hardcodedCount) + " hardcoded servers and " +
-			strconv.Itoa(countOnFile) + " servers read from " + s.filepath)
-		allServers = s.mergeServers(hardcodedServers, serversOnFile)
+		s.logger.Info(fmt.Sprintf(
+			"merging by most recent %d hardcoded servers and %d servers read from %s",
+			hardcodedCount, countOnFile, s.filepath))
+
+		s.mergedServers = s.mergeServers(s.hardcodedServers, serversOnFile)
 	}
 
 	// Eventually write file
-	if s.filepath == "" || reflect.DeepEqual(serversOnFile, allServers) {
-		return allServers, nil
+	if s.filepath == "" || reflect.DeepEqual(serversOnFile, s.mergedServers) {
+		return nil
 	}
 
-	if err := flushToFile(s.filepath, allServers); err != nil {
-		return allServers, fmt.Errorf("%w: %s", ErrCannotWriteFile, err)
+	if err := flushToFile(s.filepath, s.mergedServers); err != nil {
+		return fmt.Errorf("%w: %s", ErrCannotWriteFile, err)
 	}
-	return allServers, nil
-}
-
-func readFromFile(filepath string) (servers models.AllServers, err error) {
-	file, err := os.Open(filepath)
-	if os.IsNotExist(err) {
-		return servers, nil
-	} else if err != nil {
-		return servers, err
-	}
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&servers); err != nil {
-		_ = file.Close()
-		if errors.Is(err, io.EOF) {
-			return servers, nil
-		}
-		return servers, err
-	}
-	return servers, file.Close()
-}
-
-func flushToFile(path string, servers models.AllServers) error {
-	dirPath := filepath.Dir(path)
-	if err := os.MkdirAll(dirPath, 0644); err != nil {
-		return err
-	}
-
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
-	if err != nil {
-		return err
-	}
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(servers); err != nil {
-		_ = file.Close()
-		return err
-	}
-	return file.Close()
+	return nil
 }

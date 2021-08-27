@@ -18,13 +18,14 @@ type OpenvpnConfigMaker interface {
 }
 
 func (c *CLI) OpenvpnConfig(logger logging.Logger, env params.Interface) error {
-	var allSettings configuration.Settings
-	err := allSettings.Read(env, logger)
+	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
 		return err
 	}
-	allServers, err := storage.New(logger, constants.ServersData).
-		SyncServers(constants.GetAllServers())
+	allServers := storage.GetServers()
+
+	var allSettings configuration.Settings
+	err = allSettings.Read(env, allServers, logger)
 	if err != nil {
 		return err
 	}

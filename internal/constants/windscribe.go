@@ -1,8 +1,6 @@
 package constants
 
-import (
-	"github.com/qdm12/gluetun/internal/models"
-)
+import "github.com/qdm12/gluetun/internal/models"
 
 //nolint:lll
 const (
@@ -10,8 +8,7 @@ const (
 	WindscribeOpenvpnStaticKeyV1 = "5801926a57ac2ce27e3dfd1dd6ef82042d82bd4f3f0021296f57734f6f1ea714a6623845541c4b0c3dea0a050fe6746cb66dfab14cda27e5ae09d7c155aa554f399fa4a863f0e8c1af787e5c602a801d3a2ec41e395a978d56729457fe6102d7d9e9119aa83643210b33c678f9d4109e3154ac9c759e490cb309b319cf708cae83ddadc3060a7a26564d1a24411cd552fe6620ea16b755697a4fc5e6e9d0cfc0c5c4a1874685429046a424c026db672e4c2c492898052ba59128d46200b40f880027a8b6610a4d559bdc9346d33a0a6b08e75c7fd43192b162bfd0aef0c716b31584827693f676f9a5047123466f0654eade34972586b31c6ce7e395f4b478cb"
 )
 
-func WindscribeRegionChoices() (choices []string) {
-	servers := WindscribeServers()
+func WindscribeRegionChoices(servers []models.WindscribeServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -19,8 +16,7 @@ func WindscribeRegionChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func WindscribeCityChoices() (choices []string) {
-	servers := WindscribeServers()
+func WindscribeCityChoices(servers []models.WindscribeServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -28,18 +24,10 @@ func WindscribeCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func WindscribeHostnameChoices() (choices []string) {
-	servers := WindscribeServers()
+func WindscribeHostnameChoices(servers []models.WindscribeServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeUnique(choices)
-}
-
-// WindscribeServers returns a slice of all the Windscribe servers.
-func WindscribeServers() (servers []models.WindscribeServer) {
-	servers = make([]models.WindscribeServer, len(allServers.Windscribe.Servers))
-	copy(servers, allServers.Windscribe.Servers)
-	return servers
 }

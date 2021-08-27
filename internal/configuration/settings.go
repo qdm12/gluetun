@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 )
@@ -64,8 +65,9 @@ var (
 
 // Read obtains all configuration options for the program and returns an error as soon
 // as an error is encountered reading them.
-func (settings *Settings) Read(env params.Interface, logger logging.Logger) (err error) {
-	r := newReader(env, logger)
+func (settings *Settings) Read(env params.Interface, servers models.AllServers,
+	logger logging.Logger) (err error) {
+	r := newReader(env, servers, logger)
 
 	settings.VersionInformation, err = r.env.OnOff("VERSION_INFORMATION", params.Default("on"))
 	if err != nil {

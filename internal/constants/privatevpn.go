@@ -1,8 +1,6 @@
 package constants
 
-import (
-	"github.com/qdm12/gluetun/internal/models"
-)
+import "github.com/qdm12/gluetun/internal/models"
 
 //nolint:lll
 const (
@@ -10,8 +8,7 @@ const (
 	PrivatevpnOpenvpnStaticKeyV1 = "a49082f082ca89d6a6bb4ecc7c047c6d428a1d3c8254a95206d38a61d7fbe65984214cd7d56eacc5a60803bffd677fa7294d4bfe555036339312de2dfb1335bd9d5fd94b04bba3a15fc5192aeb02fb6d8dd2ca831fad7509be5eefa8d1eaa689dc586c831a23b589c512662652ecf1bb3a4a673816aba434a04f6857b8c2f8bb265bfe48a7b8112539729d2f7d9734a720e1035188118c73fef1824d0237d5579ca382d703b4bb252acaedc753b12199f00154d3769efbcf85ef5ad6ee755cbeaa944cb98e7654286df54c793a8443f5363078e3da548ba0beed079df633283cefb256f6a4bcfc4ab2c4affc24955c1864d5458e84a7c210d0d186269e55dcf6"
 )
 
-func PrivatevpnCountryChoices() (choices []string) {
-	servers := PrivatevpnServers()
+func PrivatevpnCountryChoices(servers []models.PrivatevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -19,8 +16,7 @@ func PrivatevpnCountryChoices() (choices []string) {
 	return makeChoicesUnique(choices)
 }
 
-func PrivatevpnCityChoices() (choices []string) {
-	servers := PrivatevpnServers()
+func PrivatevpnCityChoices(servers []models.PrivatevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -28,17 +24,10 @@ func PrivatevpnCityChoices() (choices []string) {
 	return makeChoicesUnique(choices)
 }
 
-func PrivatevpnHostnameChoices() (choices []string) {
-	servers := PrivatevpnServers()
+func PrivatevpnHostnameChoices(servers []models.PrivatevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeChoicesUnique(choices)
-}
-
-func PrivatevpnServers() (servers []models.PrivatevpnServer) {
-	servers = make([]models.PrivatevpnServer, len(allServers.Privatevpn.Servers))
-	copy(servers, allServers.Privatevpn.Servers)
-	return servers
 }

@@ -9,28 +9,29 @@ import (
 
 func (settings *Provider) readIvpn(r reader) (err error) {
 	settings.Name = constants.Ivpn
+	servers := r.servers.GetIvpn()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.IvpnCountryChoices())
+	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY", constants.IvpnCountryChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
-	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.IvpnCityChoices())
+	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.IvpnCityChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
-	settings.ServerSelection.ISPs, err = r.env.CSVInside("ISP", constants.IvpnISPChoices())
+	settings.ServerSelection.ISPs, err = r.env.CSVInside("ISP", constants.IvpnISPChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable ISP: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}

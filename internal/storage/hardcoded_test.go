@@ -1,4 +1,4 @@
-package constants
+package storage
 
 import (
 	"crypto/sha256"
@@ -12,10 +12,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_parseAllServers(t *testing.T) {
+func Test_parseHardcodedServers(t *testing.T) {
 	t.Parallel()
 
-	servers, err := parseAllServers()
+	servers, err := parseHardcodedServers()
 
 	require.NoError(t, err)
 	require.NotEmpty(t, len(servers.Cyberghost.Servers))
@@ -38,7 +38,10 @@ func digestServerModelVersion(t *testing.T, server interface{}, version uint16) 
 
 func Test_versions(t *testing.T) {
 	t.Parallel()
-	allServers := GetAllServers()
+
+	allServers, err := parseHardcodedServers()
+	require.NoError(t, err)
+
 	const format = "you forgot to update the version for %s"
 	testCases := map[string]struct {
 		model   interface{}

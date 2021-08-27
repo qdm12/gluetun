@@ -1,8 +1,6 @@
 package constants
 
-import (
-	"github.com/qdm12/gluetun/internal/models"
-)
+import "github.com/qdm12/gluetun/internal/models"
 
 //nolint:lll
 const (
@@ -10,8 +8,7 @@ const (
 	ProtonvpnOpenvpnStaticKeyV1 = "6acef03f62675b4b1bbd03e53b187727423cea742242106cb2916a8a4c8297563d22c7e5cef430b1103c6f66eb1fc5b375a672f158e2e2e936c3faa48b035a6de17beaac23b5f03b10b868d53d03521d8ba115059da777a60cbfd7b2c9c5747278a15b8f6e68a3ef7fd583ec9f398c8bd4735dab40cbd1e3c62a822e97489186c30a0b48c7c38ea32ceb056d3fa5a710e10ccc7a0ddb363b08c3d2777a3395e10c0b6080f56309192ab5aacd4b45f55da61fc77af39bd81a19218a79762c33862df55785075f37d8c71dc8a42097ee43344739a0dd48d03025b0450cf1fb5e8caeb893d9a96d1f15519bb3c4dcb40ee316672ea16c012664f8a9f11255518deb"
 )
 
-func ProtonvpnCountryChoices() (choices []string) {
-	servers := ProtonvpnServers()
+func ProtonvpnCountryChoices(servers []models.ProtonvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -19,8 +16,7 @@ func ProtonvpnCountryChoices() (choices []string) {
 	return makeChoicesUnique(choices)
 }
 
-func ProtonvpnRegionChoices() (choices []string) {
-	servers := ProtonvpnServers()
+func ProtonvpnRegionChoices(servers []models.ProtonvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -28,8 +24,7 @@ func ProtonvpnRegionChoices() (choices []string) {
 	return makeChoicesUnique(choices)
 }
 
-func ProtonvpnCityChoices() (choices []string) {
-	servers := ProtonvpnServers()
+func ProtonvpnCityChoices(servers []models.ProtonvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -37,8 +32,7 @@ func ProtonvpnCityChoices() (choices []string) {
 	return makeChoicesUnique(choices)
 }
 
-func ProtonvpnNameChoices() (choices []string) {
-	servers := ProtonvpnServers()
+func ProtonvpnNameChoices(servers []models.ProtonvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Name
@@ -46,18 +40,10 @@ func ProtonvpnNameChoices() (choices []string) {
 	return makeChoicesUnique(choices)
 }
 
-func ProtonvpnHostnameChoices() (choices []string) {
-	servers := ProtonvpnServers()
+func ProtonvpnHostnameChoices(servers []models.ProtonvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeChoicesUnique(choices)
-}
-
-// ProtonvpnServers returns a slice of all the server information for Protonvpn.
-func ProtonvpnServers() (servers []models.ProtonvpnServer) {
-	servers = make([]models.ProtonvpnServer, len(allServers.Protonvpn.Servers))
-	copy(servers, allServers.Protonvpn.Servers)
-	return servers
 }

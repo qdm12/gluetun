@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/params/mock_params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -119,21 +120,28 @@ func Test_Provider_readIpvanish(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 
+			servers := []models.IpvanishServer{{Hostname: "a"}}
+			allServers := models.AllServers{
+				Ipvanish: models.IpvanishServers{
+					Servers: servers,
+				},
+			}
+
 			env := mock_params.NewMockInterface(ctrl)
 			if testCase.targetIP.call {
 				env.EXPECT().Get("OPENVPN_TARGET_IP").
 					Return(testCase.targetIP.value, testCase.targetIP.err)
 			}
 			if testCase.countries.call {
-				env.EXPECT().CSVInside("COUNTRY", constants.IpvanishCountryChoices()).
+				env.EXPECT().CSVInside("COUNTRY", constants.IpvanishCountryChoices(servers)).
 					Return(testCase.countries.values, testCase.countries.err)
 			}
 			if testCase.cities.call {
-				env.EXPECT().CSVInside("CITY", constants.IpvanishCityChoices()).
+				env.EXPECT().CSVInside("CITY", constants.IpvanishCityChoices(servers)).
 					Return(testCase.cities.values, testCase.cities.err)
 			}
 			if testCase.hostnames.call {
-				env.EXPECT().CSVInside("SERVER_HOSTNAME", constants.IpvanishHostnameChoices()).
+				env.EXPECT().CSVInside("SERVER_HOSTNAME", constants.IpvanishHostnameChoices(servers)).
 					Return(testCase.hostnames.values, testCase.hostnames.err)
 			}
 			if testCase.protocol.call {
@@ -141,7 +149,10 @@ func Test_Provider_readIpvanish(t *testing.T) {
 					Return(testCase.protocol.value, testCase.protocol.err)
 			}
 
-			r := reader{env: env}
+			r := reader{
+				servers: allServers,
+				env:     env,
+			}
 
 			var settings Provider
 			err := settings.readIpvanish(r)

@@ -20,7 +20,7 @@ import (
 
 var (
 	ErrModeUnspecified         = errors.New("at least one of -enduser or -maintainers must be specified")
-	ErrSyncServers             = errors.New("cannot sync hardcoded and persisted servers")
+	ErrNewStorage              = errors.New("cannot create storage")
 	ErrUpdateServerInformation = errors.New("cannot update server information")
 	ErrWriteToFile             = errors.New("cannot write updated information to file")
 )
@@ -68,11 +68,13 @@ func (c *CLI) Update(ctx context.Context, args []string, logger logging.Logger) 
 
 	const clientTimeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
-	storage := storage.New(logger, constants.ServersData)
-	currentServers, err := storage.SyncServers(constants.GetAllServers())
+
+	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrSyncServers, err)
+		return fmt.Errorf("%w: %s", ErrNewStorage, err)
 	}
+	currentServers := storage.GetServers()
+
 	updater := updater.New(options, httpClient, currentServers, logger)
 	allServers, err := updater.UpdateServers(ctx)
 	if err != nil {

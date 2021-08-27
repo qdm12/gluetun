@@ -10,8 +10,7 @@ const (
 	FastestvpnOpenvpnStaticKeyV1 = "697fe793b32cb5091d30f2326d5d124a9412e93d0a44ef7361395d76528fcbfc82c3859dccea70a93cfa8fae409709bff75f844cf5ff0c237f426d0c20969233db0e706edb6bdf195ec3dc11b3f76bc807a77e74662d9a800c8cd1144ebb67b7f0d3f1281d1baf522bfe03b7c3f963b1364fc0769400e413b61ca7b43ab19fac9e0f77e41efd4bda7fd77b1de2d7d7855cbbe3e620cecceac72c21a825b243e651f44d90e290e09c3ad650de8fca99c858bc7caad584bc69b11e5c9fd9381c69c505ec487a65912c672d83ed0113b5a74ddfbd3ab33b3683cec593557520a72c4d6cce46111f56f3396cc3ce7183edce553c68ea0796cf6c4375fad00aaa2a42"
 )
 
-func FastestvpnCountriesChoices() (choices []string) {
-	servers := FastestvpnServers()
+func FastestvpnCountriesChoices(servers []models.FastestvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -19,18 +18,10 @@ func FastestvpnCountriesChoices() (choices []string) {
 	return choices
 }
 
-func FastestvpnHostnameChoices() (choices []string) {
-	servers := FastestvpnServers()
+func FastestvpnHostnameChoices(servers []models.FastestvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return choices
-}
-
-// FastestvpnServers returns the list of all VPN servers for FastestVPN.
-func FastestvpnServers() (servers []models.FastestvpnServer) {
-	servers = make([]models.FastestvpnServer, len(allServers.Fastestvpn.Servers))
-	copy(servers, allServers.Fastestvpn.Servers)
-	return servers
 }

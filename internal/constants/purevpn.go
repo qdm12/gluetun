@@ -1,8 +1,6 @@
 package constants
 
-import (
-	"github.com/qdm12/gluetun/internal/models"
-)
+import "github.com/qdm12/gluetun/internal/models"
 
 //nolint:lll
 const (
@@ -12,8 +10,7 @@ const (
 	PurevpnOpenvpnStaticKeyV1   = "e30af995f56d07426d9ba1f824730521d4283db4b4d0cdda9c6e8759a3799dcb7939b6a5989160c9660de0f6125cbb1f585b41c074b2fe88ecfcf17eab9a33be1352379cdf74952b588fb161a93e13df9135b2b29038231e02d657a6225705e6868ccb0c384ed11614690a1894bfbeb274cebf1fe9c2329bdd5c8a40fe8820624d2ea7540cd79ab76892db51fc371a3ac5fc9573afecb3fffe3281e61d72e91579d9b03d8cbf7909b3aebf4d90850321ee6b7d0a7846d15c27d8290e031e951e19438a4654663cad975e138f5bc5af89c737ad822f27e19057731f41e1e254cc9c95b7175c622422cde9f1f2cfd3510add94498b4d7133d3729dd214a16b27fb"
 )
 
-func PurevpnRegionChoices() (choices []string) {
-	servers := PurevpnServers()
+func PurevpnRegionChoices(servers []models.PurevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -21,8 +18,7 @@ func PurevpnRegionChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func PurevpnCountryChoices() (choices []string) {
-	servers := PurevpnServers()
+func PurevpnCountryChoices(servers []models.PurevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -30,8 +26,7 @@ func PurevpnCountryChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func PurevpnCityChoices() (choices []string) {
-	servers := PurevpnServers()
+func PurevpnCityChoices(servers []models.PurevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -39,18 +34,10 @@ func PurevpnCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func PurevpnHostnameChoices() (choices []string) {
-	servers := PurevpnServers()
+func PurevpnHostnameChoices(servers []models.PurevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeUnique(choices)
-}
-
-// PurevpnServers returns a slice of all the server information for Purevpn.
-func PurevpnServers() (servers []models.PurevpnServer) {
-	servers = make([]models.PurevpnServer, len(allServers.Purevpn.Servers))
-	copy(servers, allServers.Purevpn.Servers)
-	return servers
 }

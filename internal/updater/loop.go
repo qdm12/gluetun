@@ -27,7 +27,7 @@ type looper struct {
 	state state
 	// Objects
 	updater       Updater
-	storage       storage.Storage
+	flusher       storage.Flusher
 	setAllServers func(allServers models.AllServers)
 	logger        logging.Logger
 	// Internal channels and locks
@@ -46,7 +46,7 @@ type looper struct {
 const defaultBackoffTime = 5 * time.Second
 
 func NewLooper(settings configuration.Updater, currentServers models.AllServers,
-	storage storage.Storage, setAllServers func(allServers models.AllServers),
+	flusher storage.Flusher, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger logging.Logger) Looper {
 	return &looper{
 		state: state{
@@ -54,7 +54,7 @@ func NewLooper(settings configuration.Updater, currentServers models.AllServers,
 			settings: settings,
 		},
 		updater:       New(settings, client, currentServers, logger),
-		storage:       storage,
+		flusher:       flusher,
 		setAllServers: setAllServers,
 		logger:        logger,
 		start:         make(chan struct{}),
@@ -140,7 +140,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				l.stopped <- struct{}{}
 			case servers := <-serversCh:
 				l.setAllServers(servers)
-				if err := l.storage.FlushToFile(servers); err != nil {
+				if err := l.flusher.FlushToFile(servers); err != nil {
 					l.logger.Error(err.Error())
 				}
 				runWg.Wait()

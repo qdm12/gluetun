@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/params/mock_params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -183,24 +184,31 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 
 			env := mock_params.NewMockInterface(ctrl)
 
+			servers := []models.IvpnServer{{Hostname: "a"}}
+			allServers := models.AllServers{
+				Ivpn: models.IvpnServers{
+					Servers: servers,
+				},
+			}
+
 			if testCase.targetIP.call {
 				env.EXPECT().Get("OPENVPN_TARGET_IP").
 					Return(testCase.targetIP.value, testCase.targetIP.err)
 			}
 			if testCase.countries.call {
-				env.EXPECT().CSVInside("COUNTRY", constants.IvpnCountryChoices()).
+				env.EXPECT().CSVInside("COUNTRY", constants.IvpnCountryChoices(servers)).
 					Return(testCase.countries.values, testCase.countries.err)
 			}
 			if testCase.cities.call {
-				env.EXPECT().CSVInside("CITY", constants.IvpnCityChoices()).
+				env.EXPECT().CSVInside("CITY", constants.IvpnCityChoices(servers)).
 					Return(testCase.cities.values, testCase.cities.err)
 			}
 			if testCase.isps.call {
-				env.EXPECT().CSVInside("ISP", constants.IvpnISPChoices()).
+				env.EXPECT().CSVInside("ISP", constants.IvpnISPChoices(servers)).
 					Return(testCase.isps.values, testCase.isps.err)
 			}
 			if testCase.hostnames.call {
-				env.EXPECT().CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices()).
+				env.EXPECT().CSVInside("SERVER_HOSTNAME", constants.IvpnHostnameChoices(servers)).
 					Return(testCase.hostnames.values, testCase.hostnames.err)
 			}
 			if testCase.protocol.call {
@@ -224,7 +232,10 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 					Return(testCase.wgPort.portValue, testCase.wgPort.portErr)
 			}
 
-			r := reader{env: env}
+			r := reader{
+				servers: allServers,
+				env:     env,
+			}
 
 			var settings Provider
 			err := settings.readIvpn(r)

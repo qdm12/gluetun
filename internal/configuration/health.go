@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 )
@@ -33,7 +34,7 @@ func (settings *Health) lines() (lines []string) {
 
 // Read is to be used for the healthcheck query mode.
 func (settings *Health) Read(env params.Interface, logger logging.Logger) (err error) {
-	reader := newReader(env, logger)
+	reader := newReader(env, models.AllServers{}, logger) // note: no need for servers data
 	return settings.read(reader)
 }
 

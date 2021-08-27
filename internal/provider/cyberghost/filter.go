@@ -17,9 +17,9 @@ func (c *Cyberghost) filterServers(selection configuration.ServerSelection) (
 	servers []models.CyberghostServer, err error) {
 	if len(selection.Groups) == 0 {
 		if selection.OpenVPN.TCP {
-			selection.Groups = tcpGroupChoices()
+			selection.Groups = tcpGroupChoices(c.servers)
 		} else {
-			selection.Groups = udpGroupChoices()
+			selection.Groups = udpGroupChoices(c.servers)
 		}
 	}
 
@@ -50,18 +50,18 @@ func (c *Cyberghost) filterServers(selection configuration.ServerSelection) (
 	return servers, nil
 }
 
-func tcpGroupChoices() (choices []string) {
+func tcpGroupChoices(servers []models.CyberghostServer) (choices []string) {
 	const tcp = true
-	return groupsForTCP(tcp)
+	return groupsForTCP(servers, tcp)
 }
 
-func udpGroupChoices() (choices []string) {
+func udpGroupChoices(servers []models.CyberghostServer) (choices []string) {
 	const tcp = false
-	return groupsForTCP(tcp)
+	return groupsForTCP(servers, tcp)
 }
 
-func groupsForTCP(tcp bool) (choices []string) {
-	allGroups := constants.CyberghostGroupChoices()
+func groupsForTCP(servers []models.CyberghostServer, tcp bool) (choices []string) {
+	allGroups := constants.CyberghostGroupChoices(servers)
 	choices = make([]string, 0, len(allGroups))
 	for _, group := range allGroups {
 		switch {

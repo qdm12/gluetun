@@ -9,23 +9,24 @@ import (
 
 func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 	settings.Name = constants.PrivateInternetAccess
+	servers := r.servers.GetPia()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.PIAGeoChoices())
+	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.PIAGeoChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.PIAHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.PIAHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_NAME", constants.PIANameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_NAME", constants.PIANameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_NAME: %w", err)
 	}

@@ -8,6 +8,7 @@ import (
 
 func (settings *Provider) readCyberghost(r reader) (err error) {
 	settings.Name = constants.Cyberghost
+	servers := r.servers.GetCyberghost()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
@@ -15,17 +16,18 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 	}
 
 	settings.ServerSelection.Groups, err = r.env.CSVInside("CYBERGHOST_GROUP",
-		constants.CyberghostGroupChoices())
+		constants.CyberghostGroupChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable CYBERGHOST_GROUP: %w", err)
 	}
 
-	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.CyberghostRegionChoices())
+	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.CyberghostRegionChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.CyberghostHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME",
+		constants.CyberghostHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
