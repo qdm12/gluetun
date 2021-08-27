@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -286,8 +285,6 @@ func (s *storage) mergeWindscribe(hardcoded, persisted models.WindscribeServers)
 		return hardcoded
 	}
 
-	s.logger.Info("hardcoded.Version: " + fmt.Sprint(hardcoded.Version))
-	s.logger.Info("persisted.Version: " + fmt.Sprint(persisted.Version))
 	versionDiff := int(hardcoded.Version) - int(persisted.Version)
 	if versionDiff > 0 {
 		s.logVersionDiff("Windscribe", versionDiff)
