@@ -33,9 +33,5 @@ func (c *Cyberghost) GetConnection(selection configuration.ServerSelection) (
 		}
 	}
 
-	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
-	}
-
-	return utils.PickRandomConnection(connections, c.randSource), nil
+	return utils.PickConnection(connections, selection, c.randSource)
 }

@@ -37,9 +37,5 @@ func (p *Provider) GetConnection(selection configuration.ServerSelection) (
 		}
 	}
 
-	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
-	}
-
-	return utils.PickRandomConnection(connections, p.randSource), nil
+	return utils.PickConnection(connections, selection, p.randSource)
 }

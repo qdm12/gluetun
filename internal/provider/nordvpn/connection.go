@@ -32,9 +32,5 @@ func (n *Nordvpn) GetConnection(selection configuration.ServerSelection) (
 		connections[i] = connection
 	}
 
-	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
-	}
-
-	return utils.PickRandomConnection(connections, n.randSource), nil
+	return utils.PickConnection(connections, selection, n.randSource)
 }

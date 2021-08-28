@@ -30,11 +30,7 @@ func (m *Mullvad) GetConnection(selection configuration.ServerSelection) (
 		}
 	}
 
-	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
-	}
-
-	return utils.PickRandomConnection(connections, m.randSource), nil
+	return utils.PickConnection(connections, selection, m.randSource)
 }
 
 func getPort(selection configuration.ServerSelection) (port uint16) {

@@ -31,11 +31,7 @@ func (w *Windscribe) GetConnection(selection configuration.ServerSelection) (
 		}
 	}
 
-	if selection.TargetIP != nil {
-		return utils.GetTargetIPConnection(connections, selection.TargetIP)
-	}
-
-	return utils.PickRandomConnection(connections, w.randSource), nil
+	return utils.PickConnection(connections, selection, w.randSource)
 }
 
 func getPort(selection configuration.ServerSelection) (port uint16) {

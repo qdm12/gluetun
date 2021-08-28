@@ -38,15 +38,5 @@ func (p *PIA) GetConnection(selection configuration.ServerSelection) (
 		}
 	}
 
-	if selection.TargetIP != nil {
-		connection, err = utils.GetTargetIPConnection(connections, selection.TargetIP)
-	} else {
-		connection, err = utils.PickRandomConnection(connections, p.randSource), nil
-	}
-
-	if err != nil {
-		return connection, err
-	}
-
-	return connection, nil
+	return utils.PickConnection(connections, selection, p.randSource)
 }
