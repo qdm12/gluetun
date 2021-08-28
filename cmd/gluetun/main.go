@@ -176,7 +176,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		BuildDate:    buildInfo.Created,
-		Announcement: "Wireguard is now supported!",
+		Announcement: "Wireguard is now supported for Mullvad, IVPN and Windscribe!",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
