@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
@@ -35,27 +36,14 @@ func (settings *Provider) readSurfshark(r reader) (err error) {
 
 	regionChoices := constants.SurfsharkRegionChoices(servers)
 	regionChoices = append(regionChoices, constants.SurfsharkRetroLocChoices(servers)...)
-	regions, err := r.env.CSVInside("REGION", regionChoices)
+	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", regionChoices)
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)
 	}
 
 	// Retro compatibility
 	// TODO remove in v4
-	for i, region := range regions {
-		locationData, isRetro :=
-			surfsharkConvertRetroLoc(region)
-		if !isRetro {
-			continue
-		}
-
-		regions[i] = locationData.Region
-		settings.ServerSelection.Countries = append(settings.ServerSelection.Countries, locationData.Country)
-		if locationData.City != "" { // city is empty for some servers
-			settings.ServerSelection.Cities = append(settings.ServerSelection.Cities, locationData.City)
-		}
-		settings.ServerSelection.Hostnames = append(settings.ServerSelection.Hostnames, locationData.Hostname)
-	}
+	settings.ServerSelection = surfsharkRetroRegion(settings.ServerSelection)
 
 	settings.ServerSelection.MultiHopOnly, err = r.env.YesNo("MULTIHOP_ONLY", params.Default("no"))
 	if err != nil {
@@ -65,13 +53,50 @@ func (settings *Provider) readSurfshark(r reader) (err error) {
 	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
 }
 
-// TODO remove in v4.
-func surfsharkConvertRetroLoc(retroLoc string) (
-	locationData models.SurfsharkLocationData, isRetro bool) {
-	for _, data := range constants.SurfsharkLocationData() {
-		if retroLoc == data.RetroLoc {
-			return data, true
+func surfsharkRetroRegion(selection ServerSelection) (
+	updatedSelection ServerSelection) {
+	locationData := constants.SurfsharkLocationData()
+
+	retroToLocation := make(map[string]models.SurfsharkLocationData, len(locationData))
+	for _, data := range locationData {
+		if data.RetroLoc == "" {
+			continue
+		}
+		retroToLocation[strings.ToLower(data.RetroLoc)] = data
+	}
+
+	for i, region := range selection.Regions {
+		location, ok := retroToLocation[region]
+		if !ok {
+			continue
+		}
+		selection.Regions[i] = strings.ToLower(location.Region)
+		selection.Countries = append(selection.Countries, strings.ToLower(location.Country))
+		selection.Cities = append(selection.Cities, strings.ToLower(location.City)) // even empty string
+		selection.Hostnames = append(selection.Hostnames, location.Hostname)
+	}
+
+	selection.Regions = dedupSlice(selection.Regions)
+	selection.Countries = dedupSlice(selection.Countries)
+	selection.Cities = dedupSlice(selection.Cities)
+	selection.Hostnames = dedupSlice(selection.Hostnames)
+
+	return selection
+}
+
+func dedupSlice(slice []string) (deduped []string) {
+	if slice == nil {
+		return nil
+	}
+
+	deduped = make([]string, 0, len(slice))
+	seen := make(map[string]struct{}, len(slice))
+	for _, s := range slice {
+		if _, ok := seen[s]; !ok {
+			seen[s] = struct{}{}
+			deduped = append(deduped, s)
 		}
 	}
-	return locationData, false
+
+	return deduped
 }
