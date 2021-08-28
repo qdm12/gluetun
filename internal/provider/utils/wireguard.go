@@ -15,15 +15,15 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.PreSharedKey = userSettings.PreSharedKey
 	settings.InterfaceName = userSettings.Interface
 
-	const routePriority = 101 // 100 is to receive external connections
-	settings.RulePriority = routePriority
+	const rulePriority = 101 // 100 is to receive external connections
+	settings.RulePriority = rulePriority
 
 	settings.Endpoint = new(net.UDPAddr)
 	settings.Endpoint.IP = make(net.IP, len(connection.IP))
 	copy(settings.Endpoint.IP, connection.IP)
 	settings.Endpoint.Port = int(connection.Port)
 
-	for _, address := range settings.Addresses {
+	for _, address := range userSettings.Addresses {
 		addressCopy := new(net.IPNet)
 		addressCopy.IP = make(net.IP, len(address.IP))
 		copy(addressCopy.IP, address.IP)
