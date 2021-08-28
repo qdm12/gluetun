@@ -23,12 +23,14 @@ func BuildWireguardSettings(connection models.Connection,
 	copy(settings.Endpoint.IP, connection.IP)
 	settings.Endpoint.Port = int(connection.Port)
 
-	address := new(net.IPNet)
-	address.IP = make(net.IP, len(userSettings.Address.IP))
-	copy(address.IP, userSettings.Address.IP)
-	address.Mask = make(net.IPMask, len(userSettings.Address.Mask))
-	copy(address.Mask, userSettings.Address.Mask)
-	settings.Addresses = append(settings.Addresses, address)
+	for _, address := range settings.Addresses {
+		addressCopy := new(net.IPNet)
+		addressCopy.IP = make(net.IP, len(address.IP))
+		copy(addressCopy.IP, address.IP)
+		addressCopy.Mask = make(net.IPMask, len(address.Mask))
+		copy(addressCopy.Mask, address.Mask)
+		settings.Addresses = append(settings.Addresses, addressCopy)
+	}
 
 	return settings
 }
