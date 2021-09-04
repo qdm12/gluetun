@@ -136,6 +136,20 @@ func (mr *MockNetLinkerMockRecorder) LinkList() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkList", reflect.TypeOf((*MockNetLinker)(nil).LinkList))
 }
 
+// LinkSetDown mocks base method.
+func (m *MockNetLinker) LinkSetDown(arg0 netlink.Link) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LinkSetDown", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// LinkSetDown indicates an expected call of LinkSetDown.
+func (mr *MockNetLinkerMockRecorder) LinkSetDown(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkSetDown", reflect.TypeOf((*MockNetLinker)(nil).LinkSetDown), arg0)
+}
+
 // LinkSetUp mocks base method.
 func (m *MockNetLinker) LinkSetUp(arg0 netlink.Link) error {
 	m.ctrl.T.Helper()

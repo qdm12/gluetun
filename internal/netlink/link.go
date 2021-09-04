@@ -16,6 +16,7 @@ type Linker interface {
 	LinkAdd(link netlink.Link) (err error)
 	LinkDel(link netlink.Link) (err error)
 	LinkSetUp(link netlink.Link) (err error)
+	LinkSetDown(link netlink.Link) (err error)
 }
 
 func (n *NetLink) LinkList() (links []netlink.Link, err error) {
@@ -40,4 +41,8 @@ func (n *NetLink) LinkDel(link netlink.Link) (err error) {
 
 func (n *NetLink) LinkSetUp(link netlink.Link) (err error) {
 	return netlink.LinkSetUp(link)
+}
+
+func (n *NetLink) LinkSetDown(link netlink.Link) (err error) {
+	return netlink.LinkSetDown(link)
 }

@@ -52,8 +52,12 @@ const (
 	stepTwo
 	// stepThree closes the UAPI file.
 	stepThree
-	// stepFour closes the Wireguard device.
+	// stepFour shuts down the Wireguard link.
 	stepFour
-	// stepFive closes the bind connection and the TUN device file.
+	// stepFive removes the Wireguard link.
 	stepFive
+	// stepSix closes the Wireguard device.
+	stepSix
+	// stepSeven closes the bind connection and the TUN device file.
+	stepSeven
 )

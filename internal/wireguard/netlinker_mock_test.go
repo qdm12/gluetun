@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	netlink "github.com/qdm12/gluetun/internal/netlink"
+	netlink "github.com/vishvananda/netlink"
 )
 
 // MockNetLinker is a mock of NetLinker interface.
@@ -61,6 +61,34 @@ func (m *MockNetLinker) LinkByName(arg0 string) (netlink.Link, error) {
 func (mr *MockNetLinkerMockRecorder) LinkByName(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkByName", reflect.TypeOf((*MockNetLinker)(nil).LinkByName), arg0)
+}
+
+// LinkDel mocks base method.
+func (m *MockNetLinker) LinkDel(arg0 netlink.Link) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LinkDel", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// LinkDel indicates an expected call of LinkDel.
+func (mr *MockNetLinkerMockRecorder) LinkDel(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkDel", reflect.TypeOf((*MockNetLinker)(nil).LinkDel), arg0)
+}
+
+// LinkSetDown mocks base method.
+func (m *MockNetLinker) LinkSetDown(arg0 netlink.Link) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LinkSetDown", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// LinkSetDown indicates an expected call of LinkSetDown.
+func (mr *MockNetLinkerMockRecorder) LinkSetDown(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkSetDown", reflect.TypeOf((*MockNetLinker)(nil).LinkSetDown), arg0)
 }
 
 // LinkSetUp mocks base method.

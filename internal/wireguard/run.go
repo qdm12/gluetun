@@ -51,7 +51,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	closers.add("closing TUN device", stepFive, tun.Close)
+	closers.add("closing TUN device", stepSeven, tun.Close)
 
 	tunName, err := tun.Name()
 	if err != nil {
@@ -71,12 +71,12 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	bind := conn.NewDefaultBind()
 
-	closers.add("closing bind", stepFive, bind.Close)
+	closers.add("closing bind", stepSeven, bind.Close)
 
 	deviceLogger := makeDeviceLogger(w.logger)
 	device := device.NewDevice(tun, bind, deviceLogger)
 
-	closers.add("closing Wireguard device", stepFour, func() error {
+	closers.add("closing Wireguard device", stepSix, func() error {
 		device.Close()
 		return nil
 	})
@@ -117,6 +117,12 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		waitError <- fmt.Errorf("%w: %s", ErrIfaceUp, err)
 		return
 	}
+	closers.add("shutting down link", stepFour, func() error {
+		return w.netlink.LinkSetDown(link)
+	})
+	closers.add("deleting link", stepFive, func() error {
+		return w.netlink.LinkDel(link)
+	})
 
 	err = w.addRoute(link, allIPv4(), w.settings.FirewallMark)
 	if err != nil {

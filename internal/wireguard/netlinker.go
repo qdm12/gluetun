@@ -11,4 +11,6 @@ type NetLinker interface {
 	RuleDel(rule *netlink.Rule) error
 	LinkByName(name string) (link netlink.Link, err error)
 	LinkSetUp(link netlink.Link) error
+	LinkSetDown(link netlink.Link) error
+	LinkDel(link netlink.Link) error
 }
