@@ -70,7 +70,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.stopped <- struct{}{}
 			case ip := <-ipCh:
 				getCancel()
-				l.state.SetPublicIP(ip)
 
 				message := "Public IP address is " + ip.String()
 				result, err := Info(ctx, l.client, ip)
@@ -80,6 +79,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 					message += " (" + result.Country + ", " + result.Region + ", " + result.City + ")"
 				}
 				l.logger.Info(message)
+
+				result.SetIP(ip)
+				l.state.SetData(result)
 
 				filepath := l.state.GetSettings().IPFilepath
 				err = persistPublicIP(filepath, ip.String(), l.puid, l.pgid)

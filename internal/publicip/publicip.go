@@ -1,7 +1,9 @@
 package publicip
 
-import "net"
+import (
+	"github.com/qdm12/gluetun/internal/publicip/models"
+)
 
-func (l *Loop) GetPublicIP() (publicIP net.IP) {
-	return l.state.GetPublicIP()
+func (l *Loop) GetData() (data models.IPInfoData) {
+	return l.state.GetData()
 }

@@ -38,14 +38,9 @@ func (h *publicIPHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type publicIPWrapper struct {
-	PublicIP string `json:"public_ip"`
-}
-
 func (h *publicIPHandler) getPublicIP(w http.ResponseWriter) {
-	publicIP := h.looper.GetPublicIP()
+	data := h.looper.GetData()
 	encoder := json.NewEncoder(w)
-	data := publicIPWrapper{PublicIP: publicIP.String()}
 	if err := encoder.Encode(data); err != nil {
 		h.logger.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

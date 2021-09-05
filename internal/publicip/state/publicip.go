@@ -1,29 +1,26 @@
 package state
 
 import (
-	"net"
+	"github.com/qdm12/gluetun/internal/publicip/models"
 )
 
-type PublicIPGetSetter interface {
-	PublicIPGetter
-	SetPublicIP(publicIP net.IP)
+type DataGetSetter interface {
+	DataGetter
+	SetData(data models.IPInfoData)
 }
 
-type PublicIPGetter interface {
-	GetPublicIP() (publicIP net.IP)
+type DataGetter interface {
+	GetData() (data models.IPInfoData)
 }
 
-func (s *State) GetPublicIP() (publicIP net.IP) {
-	s.publicIPMu.RLock()
-	defer s.publicIPMu.RUnlock()
-	publicIP = make(net.IP, len(s.publicIP))
-	copy(publicIP, s.publicIP)
-	return publicIP
+func (s *State) GetData() (data models.IPInfoData) {
+	s.ipDataMu.RLock()
+	defer s.ipDataMu.RUnlock()
+	return s.ipData.Copy()
 }
 
-func (s *State) SetPublicIP(publicIP net.IP) {
-	s.settingsMu.Lock()
-	defer s.settingsMu.Unlock()
-	s.publicIP = make(net.IP, len(publicIP))
-	copy(s.publicIP, publicIP)
+func (s *State) SetData(data models.IPInfoData) {
+	s.ipDataMu.Lock()
+	defer s.ipDataMu.Unlock()
+	s.ipData = data.Copy()
 }

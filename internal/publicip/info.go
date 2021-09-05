@@ -10,13 +10,8 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/publicip/models"
 )
-
-type Result struct {
-	Region  string `json:"region"`
-	Country string `json:"country"`
-	City    string `json:"city"`
-}
 
 var (
 	ErrTooManyRequests = errors.New("too many requests sent for this month")
@@ -24,7 +19,7 @@ var (
 )
 
 func Info(ctx context.Context, client *http.Client, ip net.IP) ( //nolint:interfacer
-	result Result, err error) {
+	result models.IPInfoData, err error) {
 	const baseURL = "https://ipinfo.io/"
 	url := baseURL + ip.String()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
