@@ -9,18 +9,19 @@ import (
 
 func (settings *Provider) readWevpn(r reader) (err error) {
 	settings.Name = constants.Wevpn
+	servers := r.servers.GetWevpn()
 
 	settings.ServerSelection.TargetIP, err = readTargetIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.WevpnCityChoices())
+	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.WevpnCityChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.WevpnHostnameChoices())
+	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_HOSTNAME", constants.WevpnHostnameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}

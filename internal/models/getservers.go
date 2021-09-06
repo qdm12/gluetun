@@ -220,6 +220,18 @@ func (a *AllServers) GetVyprvpn() (servers []VyprvpnServer) {
 	return servers
 }
 
+func (a *AllServers) GetWevpn() (servers []WevpnServer) {
+	if a.Windscribe.Servers == nil {
+		return nil
+	}
+	servers = make([]WevpnServer, len(a.Wevpn.Servers))
+	for i, serverToCopy := range a.Wevpn.Servers {
+		servers[i] = serverToCopy
+		servers[i].IPs = copyIPs(serverToCopy.IPs)
+	}
+	return servers
+}
+
 func (a *AllServers) GetWindscribe() (servers []WindscribeServer) {
 	if a.Windscribe.Servers == nil {
 		return nil

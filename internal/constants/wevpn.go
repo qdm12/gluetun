@@ -9,8 +9,7 @@ const (
 	WevpnOpenvpnStaticKeyV1 = "7be66c0df0b8855e076d9e37b19f9ff3c1735ed537dee6dc786e51bdb8502f878077eeba0420a25e2b04814d22bbdcc0191a4fc396fdba1af6eb090a9d8664f18e70012ee98a2e32c28620a771d13cf3a619c417480c2c312562fffaebfd7ba73f57a28edde6c287365e6ce28291a29728da211cb53e01aa46b92f5f276c61fb46bd810b41219022c8f3d9e699fe9ade6bfcbb937fbbf6f49d741740e71c7c008a9a13c2432608038c6310b4f33588d8d234b3dffcf0823395267d73140d0e9a40e323ca92866c37073bfb072ab9de518bb9f2c65df7e219c2f114afbcf7c6e3c401cb08c3ed2901725b0601d2b5de89245719dd32506d52f149d14156215c1e"
 )
 
-func WevpnCityChoices() (choices []string) {
-	servers := WevpnServers()
+func WevpnCityChoices(servers []models.WevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -18,18 +17,10 @@ func WevpnCityChoices() (choices []string) {
 	return makeUnique(choices)
 }
 
-func WevpnHostnameChoices() (choices []string) {
-	servers := WevpnServers()
+func WevpnHostnameChoices(servers []models.WevpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
 	return makeUnique(choices)
-}
-
-// WevpnServers returns a slice of all the Wevpn servers.
-func WevpnServers() (servers []models.WevpnServer) {
-	servers = make([]models.WevpnServer, len(allServers.Wevpn.Servers))
-	copy(servers, allServers.Wevpn.Servers)
-	return servers
 }
