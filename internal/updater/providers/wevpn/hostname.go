@@ -10,10 +10,10 @@ func getHostnameFromCity(city string) (hostname string) {
 	specialCases := map[string]string{
 		"washingtondc": "washington",
 		"mexicocity":   "mexico",
-		// "denizli":      "",
-		// "sibu":         "",
-		// "kiev":         "",
-		// "stpetersburg": "",
+		"denizli":      "bursa",
+		"sibu":         "kualalumpur",
+		"kiev":         "kyiv",
+		"stpetersburg": "petersburg",
 	}
 	if specialHost, ok := specialCases[host]; ok {
 		host = specialHost
