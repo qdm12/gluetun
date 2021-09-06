@@ -16,6 +16,6 @@ type CLI struct {
 
 func New() *CLI {
 	return &CLI{
-		repoServersPath: "./internal/constants/servers.json",
+		repoServersPath: "./internal/storage/servers.json",
 	}
 }

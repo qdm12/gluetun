@@ -35,7 +35,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger logging.Logger) 
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
-		"Write results to ./internal/constants/servers.json to modify the program (for maintainers)")
+		"Write results to ./internal/storage/servers.json to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
