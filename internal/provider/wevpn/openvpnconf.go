@@ -29,7 +29,7 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		"ping 10",
 		"ping-exit 60",
 		"ping-timer-rem",
-		"	-exit",
+		"tls-exit",
 
 		// Wevpn specific
 		"redirect-gateway def1 bypass-dhcp",
