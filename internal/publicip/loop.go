@@ -20,7 +20,7 @@ type Looper interface {
 	loopstate.Getter
 	loopstate.Applier
 	SettingsGetSetter
-	Getter
+	GetSetter
 }
 
 type Loop struct {

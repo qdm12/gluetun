@@ -7,3 +7,7 @@ import (
 func (l *Loop) GetData() (data models.IPInfoData) {
 	return l.state.GetData()
 }
+
+func (l *Loop) SetData(data models.IPInfoData) {
+	l.state.SetData(data)
+}

@@ -5,12 +5,8 @@ import (
 )
 
 type DataGetSetter interface {
-	DataGetter
-	SetData(data models.IPInfoData)
-}
-
-type DataGetter interface {
 	GetData() (data models.IPInfoData)
+	SetData(data models.IPInfoData)
 }
 
 func (s *State) GetData() (data models.IPInfoData) {

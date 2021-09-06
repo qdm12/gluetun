@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
+	"github.com/qdm12/gluetun/internal/publicip/models"
 )
 
 type Runner interface {
@@ -83,6 +84,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
+				l.publicip.SetData(models.IPInfoData{}) // clear public IP address data
 				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
 				openvpnCancel()
 				<-waitError
