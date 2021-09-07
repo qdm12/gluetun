@@ -14,19 +14,19 @@ type Router interface {
 	RouteReplace(route *netlink.Route) error
 }
 
-func (n *NetLink) RouteList(link netlink.Link, family int) (
-	routes []netlink.Route, err error) {
+func (n *NetLink) RouteList(link Link, family int) (
+	routes []Route, err error) {
 	return netlink.RouteList(link, family)
 }
 
-func (n *NetLink) RouteAdd(route *netlink.Route) error {
+func (n *NetLink) RouteAdd(route *Route) error {
 	return netlink.RouteAdd(route)
 }
 
-func (n *NetLink) RouteDel(route *netlink.Route) error {
+func (n *NetLink) RouteDel(route *Route) error {
 	return netlink.RouteDel(route)
 }
 
-func (n *NetLink) RouteReplace(route *netlink.Route) error {
+func (n *NetLink) RouteReplace(route *Route) error {
 	return netlink.RouteReplace(route)
 }

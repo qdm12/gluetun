@@ -16,14 +16,14 @@ type Ruler interface {
 	RuleDel(rule *netlink.Rule) error
 }
 
-func (n *NetLink) RuleList(family int) (rules []netlink.Rule, err error) {
+func (n *NetLink) RuleList(family int) (rules []Rule, err error) {
 	return netlink.RuleList(family)
 }
 
-func (n *NetLink) RuleAdd(rule *netlink.Rule) error {
+func (n *NetLink) RuleAdd(rule *Rule) error {
 	return netlink.RuleAdd(rule)
 }
 
-func (n *NetLink) RuleDel(rule *netlink.Rule) error {
+func (n *NetLink) RuleDel(rule *Rule) error {
 	return netlink.RuleDel(rule)
 }
