@@ -38,12 +38,12 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 func (settings *OpenVPN) readCyberghost(r reader) (err error) {
 	settings.ClientKey, err = readClientKey(r)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", errClientKey, err)
 	}
 
 	settings.ClientCrt, err = readClientCertificate(r)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", errClientCert, err)
 	}
 
 	return nil
