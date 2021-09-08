@@ -56,6 +56,11 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	}
 	defer response.Body.Close()
 
+	if response.StatusCode != http.StatusOK {
+		return data, fmt.Errorf("%w: %d %s", ErrHTTPStatusCodeNotOK,
+			response.StatusCode, response.Status)
+	}
+
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&data); err != nil {
 		return data, fmt.Errorf("%w: %s", ErrUnmarshalResponseBody, err)
