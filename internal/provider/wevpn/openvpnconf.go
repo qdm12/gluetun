@@ -2,7 +2,6 @@ package wevpn
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -26,14 +25,13 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
-		"ping 10",
-		"ping-exit 60",
+		"ping 30",
+		"ping-exit 220",
 		"ping-timer-rem",
 		"tls-exit",
 
 		// Wevpn specific
 		"redirect-gateway def1 bypass-dhcp",
-		"route-delay 0",
 		"reneg-sec 0",
 
 		// Added constant values
@@ -56,10 +54,6 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
-
-	if strings.HasSuffix(settings.Cipher, "-gcm") {
-		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")
-	}
 
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
