@@ -65,7 +65,7 @@ func getPIAEncryptionPreset(r reader) (encryptionPreset string, err error) {
 	encryptionPreset, err = r.env.Inside("PIA_ENCRYPTION",
 		[]string{constants.PIAEncryptionPresetNone, constants.PIAEncryptionPresetNormal, constants.PIAEncryptionPresetStrong},
 		params.RetroKeys([]string{"ENCRYPTION"}, r.onRetroActive),
-		params.Default(constants.PIACertificateStrong),
+		params.Default(constants.PIAEncryptionPresetStrong),
 	)
 	if err != nil {
 		return "", fmt.Errorf("environment variable PIA_ENCRYPTION: %w", err)

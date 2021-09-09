@@ -158,14 +158,11 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 		return err
 	}
 
-	settings.EncPreset, err = getPIAEncryptionPreset(r)
-	if err != nil {
-		return err
-	}
-
 	switch serviceProvider {
 	case constants.Cyberghost:
 		err = settings.readCyberghost(r)
+	case constants.PrivateInternetAccess:
+		settings.EncPreset, err = getPIAEncryptionPreset(r)
 	case constants.VPNUnlimited:
 		err = settings.readVPNUnlimited(r)
 	}
