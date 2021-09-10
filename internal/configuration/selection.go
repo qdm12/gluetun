@@ -147,14 +147,17 @@ func (settings *OpenVPNSelection) readProtocolAndPort(env params.Interface) (err
 }
 
 type WireguardSelection struct {
-	CustomPort uint16 `json:"custom_port"` // Mullvad
+	// EndpointPort is a the server port to use for the VPN server.
+	// It is optional for Wireguard VPN providers IVPN, Mullvad
+	// and Windscribe, and compulsory for the others
+	EndpointPort uint16 `json:"port,omitempty"`
 }
 
 func (settings *WireguardSelection) lines() (lines []string) {
 	lines = append(lines, lastIndent+"Wireguard selection:")
 
-	if settings.CustomPort != 0 {
-		lines = append(lines, indent+lastIndent+"Custom port: "+fmt.Sprint(settings.CustomPort))
+	if settings.EndpointPort != 0 {
+		lines = append(lines, indent+lastIndent+"Custom port: "+fmt.Sprint(settings.EndpointPort))
 	}
 
 	return lines

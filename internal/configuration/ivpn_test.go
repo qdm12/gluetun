@@ -165,7 +165,7 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 						CustomPort: 443,
 					},
 					Wireguard: WireguardSelection{
-						CustomPort: 2049,
+						EndpointPort: 2049,
 					},
 					TargetIP:  net.IPv4(1, 2, 3, 4),
 					Countries: []string{"A", "B"},

@@ -58,7 +58,7 @@ func Test_GetPort(t *testing.T) {
 			selection: configuration.ServerSelection{
 				VPN: constants.Wireguard,
 				Wireguard: configuration.WireguardSelection{
-					CustomPort: 1234,
+					EndpointPort: 1234,
 				},
 			},
 			port: 1234,

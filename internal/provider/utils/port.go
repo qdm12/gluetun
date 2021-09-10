@@ -9,7 +9,7 @@ func GetPort(selection configuration.ServerSelection,
 	defaultOpenVPNTCP, defaultOpenVPNUDP, defaultWireguard uint16) (port uint16) {
 	switch selection.VPN {
 	case constants.Wireguard:
-		customPort := selection.Wireguard.CustomPort
+		customPort := selection.Wireguard.EndpointPort
 		if customPort > 0 {
 			return customPort
 		}

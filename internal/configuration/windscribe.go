@@ -57,7 +57,7 @@ func (settings *OpenVPNSelection) readWindscribe(env params.Interface) (err erro
 }
 
 func (settings *WireguardSelection) readWindscribe(env params.Interface) (err error) {
-	settings.CustomPort, err = readWireguardCustomPort(env,
+	settings.EndpointPort, err = readWireguardCustomPort(env,
 		[]uint16{53, 80, 123, 443, 1194, 65142})
 	if err != nil {
 		return err

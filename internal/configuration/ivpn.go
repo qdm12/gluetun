@@ -60,7 +60,7 @@ func (settings *OpenVPNSelection) readIVPN(env params.Interface) (err error) {
 }
 
 func (settings *WireguardSelection) readIVPN(env params.Interface) (err error) {
-	settings.CustomPort, err = readWireguardCustomPort(env,
+	settings.EndpointPort, err = readWireguardCustomPort(env,
 		[]uint16{2049, 2050, 53, 30587, 41893, 48574, 58237})
 	if err != nil {
 		return err
