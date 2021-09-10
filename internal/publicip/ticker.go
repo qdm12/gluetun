@@ -3,6 +3,8 @@ package publicip
 import (
 	"context"
 	"time"
+
+	"github.com/qdm12/gluetun/internal/constants"
 )
 
 type RestartTickerRunner interface {
@@ -28,7 +30,7 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			return
 		case <-timer.C:
 			lastTick = l.timeNow()
-			l.start <- struct{}{}
+			_, _ = l.ApplyStatus(ctx, constants.Running)
 			timer.Reset(l.state.GetSettings().Period)
 		case <-l.updateTicker:
 			if !timerIsStopped && !timer.Stop() {

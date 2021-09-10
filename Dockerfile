@@ -159,7 +159,8 @@ ENV VPNSP=pia \
     SHADOWSOCKS_PASSWORD= \
     SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
     SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
-    UPDATER_PERIOD=0
+    UPDATER_PERIOD=0 \
+    PUBLICIP_PERIOD=12h
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /entrypoint healthcheck
