@@ -3,7 +3,7 @@
 *Lightweight swiss-knife-like VPN client to tunnel to Cyberghost, FastestVPN,
 HideMyAss, IPVanish, IVPN, Mullvad, NordVPN, Privado, Private Internet Access, PrivateVPN,
 ProtonVPN, PureVPN, Surfshark, TorGuard, VPNUnlimited, VyprVPN and Windscribe VPN servers
-using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
+using Go, OpenVPN or Wireguard, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
 **ANNOUNCEMENT**: Wireguard is now supported for all providers supporting it!
 
