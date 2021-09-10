@@ -43,6 +43,7 @@ using Go, OpenVPN, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 - Problem or suggestion?
   - [Start a discussion](https://github.com/qdm12/gluetun/discussions)
   - [Create an issue](https://github.com/qdm12/gluetun/issues)
+  - [Fix the Unraid template](https://github.com/qdm12/gluetun/discussions/550)
   - [Check the Wiki](https://github.com/qdm12/gluetun/wiki)
   - [Join the Slack channel](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
 - Happy?
