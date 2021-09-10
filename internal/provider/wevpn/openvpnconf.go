@@ -76,7 +76,7 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		constants.WevpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnCert(
 		constants.WevpnCertificate)...)
-	lines = append(lines, utils.WrapOpenvpnTLSAuth(
+	lines = append(lines, utils.WrapOpenvpnTLSCrypt(
 		constants.WevpnOpenvpnStaticKeyV1)...)
 
 	lines = append(lines, "")
