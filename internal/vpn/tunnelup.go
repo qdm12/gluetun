@@ -17,6 +17,8 @@ type tunnelUpData struct {
 }
 
 func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
+	l.client.CloseIdleConnections()
+
 	if l.dnsLooper.GetSettings().Enabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	}
