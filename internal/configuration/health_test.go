@@ -15,8 +15,15 @@ import (
 func Test_Health_String(t *testing.T) {
 	t.Parallel()
 
-	var health Health
-	const expected = "|--Health:\n   |--Server address: \n   |--VPN:\n      |--Initial duration: 0s"
+	health := Health{
+		ServerAddress: "a",
+		AddressToPing: "b",
+	}
+	const expected = `|--Health:
+   |--Server address: a
+   |--Address to ping: b
+   |--VPN:
+      |--Initial duration: 0s`
 
 	s := health.String()
 
@@ -34,6 +41,7 @@ func Test_Health_lines(t *testing.T) {
 			lines: []string{
 				"|--Health:",
 				"   |--Server address: ",
+				"   |--Address to ping: ",
 				"   |--VPN:",
 				"      |--Initial duration: 0s",
 			},
@@ -41,6 +49,7 @@ func Test_Health_lines(t *testing.T) {
 		"filled settings": {
 			settings: Health{
 				ServerAddress: "address:9999",
+				AddressToPing: "1.1.1.1",
 				VPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
@@ -49,6 +58,7 @@ func Test_Health_lines(t *testing.T) {
 			lines: []string{
 				"|--Health:",
 				"   |--Server address: address:9999",
+				"   |--Address to ping: 1.1.1.1",
 				"   |--VPN:",
 				"      |--Initial duration: 1s",
 				"      |--Addition duration: 1m0s",
@@ -73,6 +83,12 @@ func Test_Health_read(t *testing.T) {
 
 	errDummy := errors.New("dummy")
 
+	type stringCall struct {
+		call bool
+		s    string
+		err  error
+	}
+
 	type stringCallWithWarning struct {
 		call    bool
 		s       string
@@ -88,6 +104,7 @@ func Test_Health_read(t *testing.T) {
 
 	testCases := map[string]struct {
 		serverAddress stringCallWithWarning
+		addressToPing stringCall
 		vpnInitial    durationCall
 		vpnAddition   durationCall
 		expected      Health
@@ -97,6 +114,10 @@ func Test_Health_read(t *testing.T) {
 			serverAddress: stringCallWithWarning{
 				call: true,
 				s:    "127.0.0.1:9999",
+			},
+			addressToPing: stringCall{
+				call: true,
+				s:    "1.2.3.4",
 			},
 			vpnInitial: durationCall{
 				call:     true,
@@ -108,6 +129,7 @@ func Test_Health_read(t *testing.T) {
 			},
 			expected: Health{
 				ServerAddress: "127.0.0.1:9999",
+				AddressToPing: "1.2.3.4",
 				VPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
@@ -126,8 +148,25 @@ func Test_Health_read(t *testing.T) {
 			},
 			err: errors.New("environment variable HEALTH_SERVER_ADDRESS: dummy"),
 		},
+		"address to ping error": {
+			serverAddress: stringCallWithWarning{
+				call: true,
+			},
+			addressToPing: stringCall{
+				call: true,
+				s:    "address",
+				err:  errDummy,
+			},
+			expected: Health{
+				AddressToPing: "address",
+			},
+			err: errors.New("environment variable HEALTH_ADDRESS_TO_PING: dummy"),
+		},
 		"initial error": {
 			serverAddress: stringCallWithWarning{
+				call: true,
+			},
+			addressToPing: stringCall{
 				call: true,
 			},
 			vpnInitial: durationCall{
@@ -144,6 +183,9 @@ func Test_Health_read(t *testing.T) {
 		},
 		"addition error": {
 			serverAddress: stringCallWithWarning{
+				call: true,
+			},
+			addressToPing: stringCall{
 				call: true,
 			},
 			vpnInitial: durationCall{
@@ -184,6 +226,13 @@ func Test_Health_read(t *testing.T) {
 				if warning != "" {
 					logger.EXPECT().Warn("environment variable HEALTH_SERVER_ADDRESS: " + warning)
 				}
+			}
+
+			if testCase.addressToPing.call {
+				value := testCase.addressToPing.s
+				err := testCase.addressToPing.err
+				env.EXPECT().Get("HEALTH_ADDRESS_TO_PING", gomock.Any()).
+					Return(value, err)
 			}
 
 			if testCase.vpnInitial.call {

@@ -12,6 +12,7 @@ import (
 // Health contains settings for the healthcheck and health server.
 type Health struct {
 	ServerAddress string
+	AddressToPing string
 	VPN           HealthyWait
 }
 
@@ -23,6 +24,8 @@ func (settings *Health) lines() (lines []string) {
 	lines = append(lines, lastIndent+"Health:")
 
 	lines = append(lines, indent+lastIndent+"Server address: "+settings.ServerAddress)
+
+	lines = append(lines, indent+lastIndent+"Address to ping: "+settings.AddressToPing)
 
 	lines = append(lines, indent+lastIndent+"VPN:")
 	for _, line := range settings.VPN.lines() {
@@ -47,6 +50,11 @@ func (settings *Health) read(r reader) (err error) {
 	}
 	if err != nil {
 		return fmt.Errorf("environment variable HEALTH_SERVER_ADDRESS: %w", err)
+	}
+
+	settings.AddressToPing, err = r.env.Get("HEALTH_ADDRESS_TO_PING", params.Default("1.1.1.1"))
+	if err != nil {
+		return fmt.Errorf("environment variable HEALTH_ADDRESS_TO_PING: %w", err)
 	}
 
 	retroKeyOption := params.RetroKeys([]string{"HEALTH_OPENVPN_DURATION_INITIAL"}, r.onRetroActive)

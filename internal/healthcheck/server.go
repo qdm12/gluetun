@@ -27,7 +27,7 @@ func NewServer(config configuration.Health,
 	return &Server{
 		logger:  logger,
 		handler: newHandler(logger),
-		pinger:  newPinger(),
+		pinger:  newPinger(config.AddressToPing),
 		config:  config,
 		vpn: vpnHealth{
 			looper:      vpnLooper,

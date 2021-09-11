@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -69,7 +70,7 @@ func Test_healthCheck(t *testing.T) {
 	t.Run("canceled real pinger", func(t *testing.T) {
 		t.Parallel()
 
-		pinger := newPinger()
+		pinger := newPinger("1.1.1.1")
 
 		canceledCtx, cancel := context.WithCancel(context.Background())
 		cancel()
@@ -77,5 +78,19 @@ func Test_healthCheck(t *testing.T) {
 		err := healthCheck(canceledCtx, pinger)
 
 		assert.ErrorIs(t, context.Canceled, err)
+	})
+
+	t.Run("ping 127.0.0.1", func(t *testing.T) {
+		t.Parallel()
+
+		pinger := newPinger("127.0.0.1")
+
+		const timeout = 100 * time.Millisecond
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		err := healthCheck(ctx, pinger)
+
+		assert.NoError(t, err)
 	})
 }

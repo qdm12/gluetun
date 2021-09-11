@@ -5,6 +5,7 @@ package healthcheck
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -12,9 +13,34 @@ import (
 func Test_healthCheck_ping(t *testing.T) {
 	t.Parallel()
 
-	pinger := newPinger()
+	const timeout = time.Second
 
-	err := healthCheck(context.Background(), pinger)
+	testCases := map[string]struct {
+		address string
+		err     error
+	}{
+		"1.1.1.1": {
+			address: "1.1.1.1",
+		},
+		"99.99.99.99": {
+			address: "99.99.99.99",
+			err:     context.DeadlineExceeded,
+		},
+	}
 
-	assert.NoError(t, err)
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			defer cancel()
+
+			pinger := newPinger(testCase.address)
+
+			err := healthCheck(ctx, pinger)
+
+			assert.ErrorIs(t, testCase.err, err)
+		})
+	}
 }

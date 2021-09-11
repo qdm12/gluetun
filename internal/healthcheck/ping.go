@@ -9,11 +9,10 @@ type Pinger interface {
 	Stop()
 }
 
-func newPinger() (pinger *ping.Pinger) {
-	const addrToPing = "1.1.1.1"
+func newPinger(addrToPing string) (pinger *ping.Pinger) {
 	const count = 1
 	pinger = ping.New(addrToPing)
 	pinger.Count = count
-	pinger.SetPrivileged(true)
+	pinger.SetPrivileged(true) // see https://github.com/go-ping/ping#linux
 	return pinger
 }

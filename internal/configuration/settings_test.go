@@ -51,6 +51,7 @@ func Test_Settings_lines(t *testing.T) {
 				"   |--Timezone: NOT SET ⚠️ - it can cause time related issues",
 				"|--Health:",
 				"   |--Server address: ",
+				"   |--Address to ping: ",
 				"   |--VPN:",
 				"      |--Initial duration: 0s",
 				"|--HTTP control server:",
