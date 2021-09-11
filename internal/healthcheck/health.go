@@ -3,9 +3,6 @@ package healthcheck
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"net"
 	"time"
 )
 
@@ -17,7 +14,7 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 	for {
 		previousErr := s.handler.getErr()
 
-		err := healthCheck(ctx, s.resolver)
+		err := healthCheck(ctx, s.pinger)
 		s.handler.setErr(err)
 
 		if previousErr != nil && err == nil {
@@ -59,20 +56,23 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 	}
 }
 
-var (
-	errNoIPResolved = errors.New("no IP address resolved")
-)
-
-func healthCheck(ctx context.Context, resolver *net.Resolver) (err error) {
+func healthCheck(ctx context.Context, pinger Pinger) (err error) {
 	// TODO use mullvad API if current provider is Mullvad
-	const domainToResolve = "github.com"
-	ips, err := resolver.LookupIP(ctx, "ip", domainToResolve)
-	switch {
-	case err != nil:
+	// If we run without root, you need to run this on the gluetun binary:
+	// setcap cap_net_raw=+ep /path/to/your/compiled/binary
+	// Alternatively, we could have a separate binary just for healthcheck to
+	// reduce attack surface.
+	errCh := make(chan error)
+	go func() {
+		errCh <- pinger.Run()
+	}()
+
+	select {
+	case <-ctx.Done():
+		pinger.Stop()
+		<-errCh
+		return ctx.Err()
+	case err = <-errCh:
 		return err
-	case len(ips) == 0:
-		return fmt.Errorf("%w for %s", errNoIPResolved, domainToResolve)
-	default:
-		return nil
 	}
 }
