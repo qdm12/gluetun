@@ -14,11 +14,11 @@ type vpnHealth struct {
 	healthyTimer *time.Timer
 }
 
-func (s *Server) onUnhealthyOpenvpn(ctx context.Context) {
+func (s *Server) onUnhealthyVPN(ctx context.Context) {
 	s.logger.Info("program has been unhealthy for " +
-		s.vpn.healthyWait.String() + ": restarting OpenVPN")
+		s.vpn.healthyWait.String() + ": restarting VPN")
 	_, _ = s.vpn.looper.ApplyStatus(ctx, constants.Stopped)
 	_, _ = s.vpn.looper.ApplyStatus(ctx, constants.Running)
-	s.vpn.healthyWait += s.config.OpenVPN.Addition
+	s.vpn.healthyWait += s.config.VPN.Addition
 	s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 }

@@ -32,7 +32,7 @@ func NewServer(config configuration.Health,
 		config:   config,
 		vpn: vpnHealth{
 			looper:      vpnLooper,
-			healthyWait: config.OpenVPN.Initial,
+			healthyWait: config.VPN.Initial,
 		},
 	}
 }

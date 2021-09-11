@@ -12,7 +12,7 @@ import (
 // Health contains settings for the healthcheck and health server.
 type Health struct {
 	ServerAddress string
-	OpenVPN       HealthyWait
+	VPN           HealthyWait
 }
 
 func (settings *Health) String() string {
@@ -24,8 +24,8 @@ func (settings *Health) lines() (lines []string) {
 
 	lines = append(lines, indent+lastIndent+"Server address: "+settings.ServerAddress)
 
-	lines = append(lines, indent+lastIndent+"OpenVPN:")
-	for _, line := range settings.OpenVPN.lines() {
+	lines = append(lines, indent+lastIndent+"VPN:")
+	for _, line := range settings.VPN.lines() {
 		lines = append(lines, indent+indent+line)
 	}
 
@@ -49,14 +49,16 @@ func (settings *Health) read(r reader) (err error) {
 		return fmt.Errorf("environment variable HEALTH_SERVER_ADDRESS: %w", err)
 	}
 
-	settings.OpenVPN.Initial, err = r.env.Duration("HEALTH_OPENVPN_DURATION_INITIAL", params.Default("6s"))
+	retroKeyOption := params.RetroKeys([]string{"HEALTH_OPENVPN_DURATION_INITIAL"}, r.onRetroActive)
+	settings.VPN.Initial, err = r.env.Duration("HEALTH_VPN_DURATION_INITIAL", params.Default("6s"), retroKeyOption)
 	if err != nil {
-		return fmt.Errorf("environment variable HEALTH_OPENVPN_DURATION_INITIAL: %w", err)
+		return fmt.Errorf("environment variable HEALTH_VPN_DURATION_INITIAL: %w", err)
 	}
 
-	settings.OpenVPN.Addition, err = r.env.Duration("HEALTH_OPENVPN_DURATION_ADDITION", params.Default("5s"))
+	retroKeyOption = params.RetroKeys([]string{"HEALTH_OPENVPN_DURATION_ADDITION"}, r.onRetroActive)
+	settings.VPN.Addition, err = r.env.Duration("HEALTH_VPN_DURATION_ADDITION", params.Default("5s"), retroKeyOption)
 	if err != nil {
-		return fmt.Errorf("environment variable HEALTH_OPENVPN_DURATION_ADDITION: %w", err)
+		return fmt.Errorf("environment variable HEALTH_VPN_DURATION_ADDITION: %w", err)
 	}
 
 	return nil

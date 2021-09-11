@@ -16,7 +16,7 @@ func Test_Health_String(t *testing.T) {
 	t.Parallel()
 
 	var health Health
-	const expected = "|--Health:\n   |--Server address: \n   |--OpenVPN:\n      |--Initial duration: 0s"
+	const expected = "|--Health:\n   |--Server address: \n   |--VPN:\n      |--Initial duration: 0s"
 
 	s := health.String()
 
@@ -34,14 +34,14 @@ func Test_Health_lines(t *testing.T) {
 			lines: []string{
 				"|--Health:",
 				"   |--Server address: ",
-				"   |--OpenVPN:",
+				"   |--VPN:",
 				"      |--Initial duration: 0s",
 			},
 		},
 		"filled settings": {
 			settings: Health{
 				ServerAddress: "address:9999",
-				OpenVPN: HealthyWait{
+				VPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
 				},
@@ -49,7 +49,7 @@ func Test_Health_lines(t *testing.T) {
 			lines: []string{
 				"|--Health:",
 				"   |--Server address: address:9999",
-				"   |--OpenVPN:",
+				"   |--VPN:",
 				"      |--Initial duration: 1s",
 				"      |--Addition duration: 1m0s",
 			},
@@ -74,61 +74,61 @@ func Test_Health_read(t *testing.T) {
 	errDummy := errors.New("dummy")
 
 	testCases := map[string]struct {
-		openvpnInitialDuration  time.Duration
-		openvpnInitialErr       error
-		openvpnAdditionDuration time.Duration
-		openvpnAdditionErr      error
-		serverAddress           string
-		serverAddressWarning    string
-		serverAddressErr        error
-		expected                Health
-		err                     error
+		vpnInitialDuration   time.Duration
+		vpnInitialErr        error
+		vpnAdditionDuration  time.Duration
+		vpnAdditionErr       error
+		serverAddress        string
+		serverAddressWarning string
+		serverAddressErr     error
+		expected             Health
+		err                  error
 	}{
 		"success": {
-			openvpnInitialDuration:  time.Second,
-			openvpnAdditionDuration: time.Minute,
-			serverAddress:           "127.0.0.1:9999",
+			vpnInitialDuration:  time.Second,
+			vpnAdditionDuration: time.Minute,
+			serverAddress:       "127.0.0.1:9999",
 			expected: Health{
 				ServerAddress: "127.0.0.1:9999",
-				OpenVPN: HealthyWait{
+				VPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
 				},
 			},
 		},
 		"listening address error": {
-			openvpnInitialDuration:  time.Second,
-			openvpnAdditionDuration: time.Minute,
-			serverAddress:           "127.0.0.1:9999",
-			serverAddressWarning:    "warning",
-			serverAddressErr:        errDummy,
+			vpnInitialDuration:   time.Second,
+			vpnAdditionDuration:  time.Minute,
+			serverAddress:        "127.0.0.1:9999",
+			serverAddressWarning: "warning",
+			serverAddressErr:     errDummy,
 			expected: Health{
 				ServerAddress: "127.0.0.1:9999",
 			},
 			err: errors.New("environment variable HEALTH_SERVER_ADDRESS: dummy"),
 		},
 		"initial error": {
-			openvpnInitialDuration:  time.Second,
-			openvpnInitialErr:       errDummy,
-			openvpnAdditionDuration: time.Minute,
+			vpnInitialDuration:  time.Second,
+			vpnInitialErr:       errDummy,
+			vpnAdditionDuration: time.Minute,
 			expected: Health{
-				OpenVPN: HealthyWait{
+				VPN: HealthyWait{
 					Initial: time.Second,
 				},
 			},
-			err: errors.New("environment variable HEALTH_OPENVPN_DURATION_INITIAL: dummy"),
+			err: errors.New("environment variable HEALTH_VPN_DURATION_INITIAL: dummy"),
 		},
 		"addition error": {
-			openvpnInitialDuration:  time.Second,
-			openvpnAdditionDuration: time.Minute,
-			openvpnAdditionErr:      errDummy,
+			vpnInitialDuration:  time.Second,
+			vpnAdditionDuration: time.Minute,
+			vpnAdditionErr:      errDummy,
 			expected: Health{
-				OpenVPN: HealthyWait{
+				VPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
 				},
 			},
-			err: errors.New("environment variable HEALTH_OPENVPN_DURATION_ADDITION: dummy"),
+			err: errors.New("environment variable HEALTH_VPN_DURATION_ADDITION: dummy"),
 		},
 	}
 
@@ -151,12 +151,12 @@ func Test_Health_read(t *testing.T) {
 
 			if testCase.serverAddressErr == nil {
 				env.EXPECT().
-					Duration("HEALTH_OPENVPN_DURATION_INITIAL", gomock.Any()).
-					Return(testCase.openvpnInitialDuration, testCase.openvpnInitialErr)
-				if testCase.openvpnInitialErr == nil {
+					Duration("HEALTH_VPN_DURATION_INITIAL", gomock.Any()).
+					Return(testCase.vpnInitialDuration, testCase.vpnInitialErr)
+				if testCase.vpnInitialErr == nil {
 					env.EXPECT().
-						Duration("HEALTH_OPENVPN_DURATION_ADDITION", gomock.Any()).
-						Return(testCase.openvpnAdditionDuration, testCase.openvpnAdditionErr)
+						Duration("HEALTH_VPN_DURATION_ADDITION", gomock.Any()).
+						Return(testCase.vpnAdditionDuration, testCase.vpnAdditionErr)
 				}
 			}
 
