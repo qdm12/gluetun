@@ -6,17 +6,20 @@
 - Remove firewall shadowsocks input port?
 - Re-add `persist-tun`? Run openvpn without root?
 - Remove `script-security` option
+- `ncp-ciphers` to `data-ciphers`
+- Remove `ncp-disable`
 
 ## Uniformization
 
 - Filter servers by protocol for all
 - Multiple IPs addresses support for all proviedrs
-- Use `internal/netlink` in firewall and routing packages
+- UPDATER_PERIOD only update provider in use
 
 ## Code
 
 - Use `github.com/qdm12/ddns-updater/pkg/publicip`
-- Change firewall debug logs to use `logger.Debug` instead of `fmt.Println`
+- Windows and Darwin development support
+- Use `internal/netlink` in firewall and routing packages
 
 ## Features
 
@@ -24,6 +27,7 @@
 - Pre-install DNSSEC files so DoT can be activated even before the tunnel is up
 - Gluetun entire logs available at control server, maybe in structured format
 - Authentication with the control server
+- Get announcement from Github file
 
 ## Gluetun V4
 
@@ -36,3 +40,11 @@
 - `PROTOCOL` to `OPENVPN_PROTOCOL`
 - `PORT_FORWARDING`
 - Change servers filtering environment variables to plural
+- `WIREGUARD_PORT` to `WIREGUARD_ENDPOINT_PORT`
+- `WIREGUARD_ADDRESS` to `WIREGUARD_ADDRESSES`
+- Only use `custom` VPNSP for custom OpenVPN configurations
+- `VPNSP` compulsory
+- Change `VPNSP` to `VPN_SERVICE_PROVIDER`
+- Change `REGION` (etc.) to `SERVER_REGIONS`
+- Remove `PUBLICIP_FILE`
+- Split servers.json and compress it

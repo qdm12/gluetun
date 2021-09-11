@@ -97,7 +97,6 @@ func ruleDbgMsg(add bool, src, dst *net.IPNet,
 }
 
 func rulesAreEqual(a, b *netlink.Rule) bool {
-	// fmt.Println(a, b)
 	if a == nil && b == nil {
 		return true
 	}
