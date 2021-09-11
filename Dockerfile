@@ -2,7 +2,7 @@ ARG ALPINE_VERSION=3.14
 ARG GO_ALPINE_VERSION=3.14
 ARG GO_VERSION=1.17
 ARG XCPUTRANSLATE_VERSION=v0.6.0
-ARG GOLANGCI_LINT_VERSION=v1.41.1
+ARG GOLANGCI_LINT_VERSION=v1.42.1
 ARG BUILDPLATFORM=linux/amd64
 
 FROM --platform=${BUILDPLATFORM} qmcgaw/xcputranslate:${XCPUTRANSLATE_VERSION} AS xcputranslate
@@ -67,61 +67,66 @@ LABEL \
     org.opencontainers.image.title="VPN swiss-knife like client for multiple VPN providers" \
     org.opencontainers.image.description="VPN swiss-knife like client to tunnel to multiple VPN servers using OpenVPN, IPtables, DNS over TLS, Shadowsocks, an HTTP proxy and Alpine Linux"
 ENV VPNSP=pia \
-    VERSION_INFORMATION=on \
-    LOG_LEVEL=info \
     VPN_TYPE=openvpn \
+    # OpenVPN
     PROTOCOL=udp \
+    OPENVPN_USER= \
+    OPENVPN_PASSWORD= \
+    OPENVPN_USER_SECRETFILE=/run/secrets/openvpn_user \
+    OPENVPN_PASSWORD_SECRETFILE=/run/secrets/openvpn_password \
     OPENVPN_VERSION=2.5 \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_FLAGS= \
+    OPENVPN_CIPHER= \
+    OPENVPN_AUTH= \
     OPENVPN_ROOT=yes \
     OPENVPN_TARGET_IP= \
     OPENVPN_IPV6=off \
     OPENVPN_CUSTOM_CONFIG= \
     OPENVPN_INTERFACE=tun0 \
+    PORT= \
+    # Wireguard
     WIREGUARD_PRIVATE_KEY= \
     WIREGUARD_PRESHARED_KEY= \
     WIREGUARD_ADDRESS= \
     WIREGUARD_PORT= \
     WIREGUARD_INTERFACE=wg0 \
-    TZ= \
-    PUID= \
-    PGID= \
-    PUBLICIP_FILE="/tmp/gluetun/ip" \
-    # VPN provider settings
-    OPENVPN_USER= \
-    OPENVPN_PASSWORD= \
-    USER_SECRETFILE=/run/secrets/openvpn_user \
-    PASSWORD_SECRETFILE=/run/secrets/openvpn_password \
+    # VPN server filtering
     REGION= \
     COUNTRY= \
     CITY= \
-    PORT= \
     SERVER_HOSTNAME= \
-    # Mullvad only:
+    # # Mullvad only:
     ISP= \
     OWNED=no \
-    # Private Internet Access only:
+    # # Private Internet Access only:
     PIA_ENCRYPTION=strong \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
-    # Cyberghost only:
+    # # Cyberghost only:
     CYBERGHOST_GROUP="Premium UDP Europe" \
     OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
-    # Nordvpn only:
+    # # Nordvpn only:
     SERVER_NUMBER= \
-    # NordVPN and ProtonVPN only:
+    # # NordVPN and ProtonVPN only:
     SERVER_NAME= \
-    # ProtonVPN only:
+    # # ProtonVPN only:
     FREE_ONLY= \
-    # Openvpn
-    OPENVPN_CIPHER= \
-    OPENVPN_AUTH= \
+    # # Surfshark only:
+    MULTIHOP_ONLY= \
+    # Firewall
+    FIREWALL=on \
+    FIREWALL_VPN_INPUT_PORTS= \
+    FIREWALL_INPUT_PORTS= \
+    FIREWALL_OUTBOUND_SUBNETS= \
+    FIREWALL_DEBUG=off \
+    # Logging
+    LOG_LEVEL=info \
     # Health
+    HEALTH_SERVER_ADDRESS=127.0.0.1:9999 \
     HEALTH_OPENVPN_DURATION_INITIAL=6s \
     HEALTH_OPENVPN_DURATION_ADDITION=5s \
-    HEALTH_SERVER_ADDRESS=127.0.0.1:9999 \
     # DNS over TLS
     DOT=on \
     DOT_PROVIDERS=cloudflare \
@@ -138,12 +143,6 @@ ENV VPNSP=pia \
     DNS_UPDATE_PERIOD=24h \
     DNS_PLAINTEXT_ADDRESS=1.1.1.1 \
     DNS_KEEP_NAMESERVER=off \
-    # Firewall
-    FIREWALL=on \
-    FIREWALL_VPN_INPUT_PORTS= \
-    FIREWALL_INPUT_PORTS= \
-    FIREWALL_OUTBOUND_SUBNETS= \
-    FIREWALL_DEBUG=off \
     # HTTP proxy
     HTTPPROXY= \
     HTTPPROXY_LOG=off \
@@ -159,8 +158,16 @@ ENV VPNSP=pia \
     SHADOWSOCKS_PASSWORD= \
     SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
     SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
+    # Server data updater
     UPDATER_PERIOD=0 \
-    PUBLICIP_PERIOD=12h
+    # Public IP
+    PUBLICIP_FILE="/tmp/gluetun/ip" \
+    PUBLICIP_PERIOD=12h \
+    # Extras
+    VERSION_INFORMATION=on \
+    TZ= \
+    PUID= \
+    PGID=
 ENTRYPOINT ["/entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /entrypoint healthcheck
