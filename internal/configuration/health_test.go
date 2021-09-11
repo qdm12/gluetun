@@ -49,7 +49,7 @@ func Test_Health_lines(t *testing.T) {
 		"filled settings": {
 			settings: Health{
 				ServerAddress: "address:9999",
-				AddressToPing: "1.1.1.1",
+				AddressToPing: "github.com",
 				VPN: HealthyWait{
 					Initial:  time.Second,
 					Addition: time.Minute,
@@ -58,7 +58,7 @@ func Test_Health_lines(t *testing.T) {
 			lines: []string{
 				"|--Health:",
 				"   |--Server address: address:9999",
-				"   |--Address to ping: 1.1.1.1",
+				"   |--Address to ping: github.com",
 				"   |--VPN:",
 				"      |--Initial duration: 1s",
 				"      |--Addition duration: 1m0s",

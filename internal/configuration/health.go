@@ -52,7 +52,7 @@ func (settings *Health) read(r reader) (err error) {
 		return fmt.Errorf("environment variable HEALTH_SERVER_ADDRESS: %w", err)
 	}
 
-	settings.AddressToPing, err = r.env.Get("HEALTH_ADDRESS_TO_PING", params.Default("1.1.1.1"))
+	settings.AddressToPing, err = r.env.Get("HEALTH_ADDRESS_TO_PING", params.Default("github.com"))
 	if err != nil {
 		return fmt.Errorf("environment variable HEALTH_ADDRESS_TO_PING: %w", err)
 	}

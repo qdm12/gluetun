@@ -19,8 +19,8 @@ func Test_healthCheck_ping(t *testing.T) {
 		address string
 		err     error
 	}{
-		"1.1.1.1": {
-			address: "1.1.1.1",
+		"github.com": {
+			address: "github.com",
 		},
 		"99.99.99.99": {
 			address: "99.99.99.99",

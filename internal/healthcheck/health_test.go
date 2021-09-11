@@ -70,7 +70,7 @@ func Test_healthCheck(t *testing.T) {
 	t.Run("canceled real pinger", func(t *testing.T) {
 		t.Parallel()
 
-		pinger := newPinger("1.1.1.1")
+		pinger := newPinger("github.com")
 
 		canceledCtx, cancel := context.WithCancel(context.Background())
 		cancel()
