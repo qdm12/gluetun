@@ -46,7 +46,7 @@ type Loop struct {
 	dnsLooper   dns.Looper
 	// Other objects
 	starter command.Starter // for OpenVPN
-	logger  logging.Logger
+	logger  logging.ParentLogger
 	client  *http.Client
 	// Internal channels and values
 	stop        <-chan struct{}
@@ -72,7 +72,7 @@ func NewLoop(vpnSettings configuration.VPN,
 	netLinker netlink.NetLinker, fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper, starter command.Starter,
 	publicip publicip.Looper, dnsLooper dns.Looper,
-	logger logging.Logger, client *http.Client,
+	logger logging.ParentLogger, client *http.Client,
 	buildInfo models.BuildInformation, versionInfo bool) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)

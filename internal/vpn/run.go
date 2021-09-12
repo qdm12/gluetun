@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/publicip/models"
+	"github.com/qdm12/golibs/logging"
 )
 
 type Runner interface {
@@ -34,13 +35,14 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		var vpnRunner vpnRunner
 		var serverName, vpnInterface string
 		var err error
+		subLogger := l.logger.NewChild(logging.Settings{Prefix: settings.Type + ": "})
 		if settings.Type == constants.OpenVPN {
 			vpnInterface = settings.OpenVPN.Interface
 			vpnRunner, serverName, err = setupOpenVPN(ctx, l.fw,
-				l.openvpnConf, providerConf, settings, l.starter, l.logger)
+				l.openvpnConf, providerConf, settings, l.starter, subLogger)
 		} else { // Wireguard
 			vpnInterface = settings.Wireguard.Interface
-			vpnRunner, serverName, err = setupWireguard(ctx, l.netLinker, l.fw, providerConf, settings, l.logger)
+			vpnRunner, serverName, err = setupWireguard(ctx, l.netLinker, l.fw, providerConf, settings, subLogger)
 		}
 		if err != nil {
 			l.crashed(ctx, err)
