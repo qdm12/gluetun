@@ -14,7 +14,9 @@ type Creator interface {
 }
 
 var (
-	ErrMknod = errors.New("cannot create TUN device file node")
+	ErrMknod       = errors.New("cannot create TUN device file node")
+	ErrUnixOpen    = errors.New("cannot Unix Open TUN device file")
+	ErrSetNonBlock = errors.New("cannot set non block to TUN device file descriptor")
 )
 
 // Create creates a TUN device at the path specified.
@@ -32,6 +34,17 @@ func (t *Tun) Create(path string) error {
 	err := t.mknod(path, unix.S_IFCHR, int(dev))
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrMknod, err)
+	}
+
+	fd, err := unix.Open(path, 0, 0)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnixOpen, err)
+	}
+
+	const nonBlocking = true
+	err = unix.SetNonblock(fd, nonBlocking)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrSetNonBlock, err)
 	}
 
 	return nil
