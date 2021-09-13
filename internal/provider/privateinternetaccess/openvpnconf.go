@@ -48,7 +48,6 @@ func (p *PIA) BuildConf(connection models.Connection,
 		// PIA specific
 		"reneg-sec 0",
 		"disable-occ",
-		"compress",    // allow PIA server to choose the compression to use
 		"ncp-disable", // prevent from auto-upgrading cipher to aes-256-gcm
 
 		// Added constant values
