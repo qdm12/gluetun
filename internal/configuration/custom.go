@@ -3,6 +3,7 @@ package configuration
 import (
 	"errors"
 	"fmt"
+	"net"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/params"
@@ -16,19 +17,22 @@ var (
 func (settings *Provider) readCustom(r reader, vpnType string) (err error) {
 	settings.Name = constants.Custom
 
-	if vpnType != constants.OpenVPN {
+	switch vpnType {
+	case constants.OpenVPN:
+		return settings.ServerSelection.OpenVPN.readCustom(r)
+	case constants.Wireguard:
+		return settings.ServerSelection.Wireguard.readCustom(r.env)
+	default:
 		return fmt.Errorf("%w: for VPN type %s", errCustomNotSupported, vpnType)
 	}
-
-	return settings.readCustomOpenVPN(r)
 }
 
-func (settings *Provider) readCustomOpenVPN(r reader) (err error) {
+func (settings *OpenVPNSelection) readCustom(r reader) (err error) {
 	configFile, err := r.env.Get("OPENVPN_CUSTOM_CONFIG", params.CaseSensitiveValue(), params.Compulsory())
 	if err != nil {
 		return fmt.Errorf("environment variable OPENVPN_CUSTOM_CONFIG: %w", err)
 	}
-	settings.ServerSelection.OpenVPN.ConfFile = configFile
+	settings.ConfFile = configFile
 
 	// For display and consistency purposes only,
 	// these values are not actually used since the file is re-read
@@ -37,7 +41,7 @@ func (settings *Provider) readCustomOpenVPN(r reader) (err error) {
 	if err != nil {
 		return fmt.Errorf("%w: %s", errCustomExtractFromFile, err)
 	}
-	settings.ServerSelection.OpenVPN.TCP = connection.Protocol == constants.TCP
+	settings.TCP = connection.Protocol == constants.TCP
 
 	return nil
 }
@@ -50,4 +54,41 @@ func (settings *OpenVPN) readCustom(r reader) (err error) {
 	}
 
 	return nil
+}
+
+func (settings *WireguardSelection) readCustom(env params.Interface) (err error) {
+	settings.PublicKey, err = env.Get("WIREGUARD_PUBLIC_KEY",
+		params.CaseSensitiveValue(), params.Compulsory())
+	if err != nil {
+		return fmt.Errorf("environment variable WIREGUARD_PUBLIC_KEY: %w", err)
+	}
+
+	settings.EndpointIP, err = readWireguardEndpointIP(env)
+	if err != nil {
+		return err
+	}
+
+	settings.EndpointPort, err = env.Port("WIREGUARD_PORT", params.Compulsory())
+	if err != nil {
+		return fmt.Errorf("environment variable WIREGUARD_PORT: %w", err)
+	}
+
+	return nil
+}
+
+// readWireguardEndpointIP reads and parses the server endpoint IP
+// address from the environment variable WIREGUARD_ENDPOINT_IP.
+func readWireguardEndpointIP(env params.Interface) (endpointIP net.IP, err error) {
+	s, err := env.Get("WIREGUARD_ENDPOINT_IP", params.Compulsory())
+	if err != nil {
+		return nil, fmt.Errorf("environment variable WIREGUARD_ENDPOINT_IP: %w", err)
+	}
+
+	endpointIP = net.ParseIP(s)
+	if endpointIP == nil {
+		return nil, fmt.Errorf("environment variable WIREGUARD_ENDPOINT_IP: %w: %s",
+			ErrInvalidIP, s)
+	}
+
+	return endpointIP, nil
 }

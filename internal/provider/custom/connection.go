@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
@@ -18,18 +19,38 @@ var (
 // GetConnection gets the connection from the OpenVPN configuration file.
 func (p *Provider) GetConnection(selection configuration.ServerSelection) (
 	connection models.Connection, err error) {
-	if selection.VPN != constants.OpenVPN {
+	switch selection.VPN {
+	case constants.OpenVPN:
+		return getOpenVPNConnection(p.extractor, selection)
+	case constants.Wireguard:
+		return getWireguardConnection(selection), nil
+	default:
 		return connection, fmt.Errorf("%w: %s", ErrVPNTypeNotSupported, selection.VPN)
 	}
+}
 
-	_, connection, err = p.extractor.Data(selection.OpenVPN.ConfFile)
+func getOpenVPNConnection(extractor extract.Interface,
+	selection configuration.ServerSelection) (
+	connection models.Connection, err error) {
+	_, connection, err = extractor.Data(selection.OpenVPN.ConfFile)
 	if err != nil {
 		return connection, fmt.Errorf("%w: %s", ErrExtractConnection, err)
 	}
 
 	connection.Port = getPort(connection.Port, selection)
-
 	return connection, nil
+}
+
+func getWireguardConnection(selection configuration.ServerSelection) (
+	connection models.Connection) {
+	port := getPort(selection.Wireguard.EndpointPort, selection)
+	return models.Connection{
+		Type:     constants.Wireguard,
+		IP:       selection.Wireguard.EndpointIP,
+		Port:     port,
+		Protocol: constants.UDP,
+		PubKey:   selection.Wireguard.PublicKey,
+	}
 }
 
 // Port found is overridden by custom port set with `PORT` or `WIREGUARD_PORT`.

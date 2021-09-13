@@ -156,12 +156,27 @@ type WireguardSelection struct {
 	// It is optional for Wireguard VPN providers IVPN, Mullvad
 	// and Windscribe, and compulsory for the others
 	EndpointPort uint16 `json:"port,omitempty"`
+	// PublicKey is the server public key.
+	// It is only used with VPN providers generating Wireguard
+	// configurations specific to each server and user.
+	PublicKey string `json:"publickey,omitempty"`
+	// EndpointIP is the server endpoint IP address.
+	// It is only used with VPN providers generating Wireguard
+	// configurations specific to each server and user.
+	EndpointIP net.IP `json:"endpoint_ip,omitempty"`
 }
 
 func (settings *WireguardSelection) lines() (lines []string) {
 	lines = append(lines, lastIndent+"Wireguard selection:")
 
-	if settings.EndpointPort != 0 {
+	if settings.PublicKey != "" {
+		lines = append(lines, indent+lastIndent+"Public key: "+settings.PublicKey)
+	}
+
+	if settings.EndpointIP != nil {
+		endpoint := settings.EndpointIP.String() + ":" + fmt.Sprint(settings.EndpointPort)
+		lines = append(lines, indent+lastIndent+"Server endpoint: "+endpoint)
+	} else if settings.EndpointPort != 0 {
 		lines = append(lines, indent+lastIndent+"Custom port: "+fmt.Sprint(settings.EndpointPort))
 	}
 
