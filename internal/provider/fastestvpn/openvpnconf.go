@@ -62,9 +62,7 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		lines = append(lines, "user "+settings.ProcUser)
 	}
 
-	if settings.IPv6 {
-		lines = append(lines, "tun-ipv6")
-	} else {
+	if !settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
