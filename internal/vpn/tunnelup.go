@@ -19,6 +19,13 @@ type tunnelUpData struct {
 func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 	l.client.CloseIdleConnections()
 
+	for _, vpnPort := range l.vpnInputPorts {
+		err := l.fw.SetAllowedPort(ctx, vpnPort, data.vpnIntf)
+		if err != nil {
+			l.logger.Error("cannot allow input port through firewall: " + err.Error())
+		}
+	}
+
 	if l.dnsLooper.GetSettings().Enabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	}

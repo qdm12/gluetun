@@ -40,20 +40,14 @@ func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err 
 	return nil
 }
 
-func (l *Loop) stopPortForwarding(ctx context.Context, enabled bool,
-	timeout time.Duration) {
-	if !enabled {
-		return // nothing to stop
-	}
-
+func (l *Loop) stopPortForwarding(ctx context.Context,
+	timeout time.Duration) (err error) {
 	if timeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, timeout)
 		defer cancel()
 	}
 
-	_, err := l.portForward.Stop(ctx)
-	if err != nil {
-		l.logger.Error("cannot stop port forwarding: " + err.Error())
-	}
+	_, err = l.portForward.Stop(ctx)
+	return err
 }

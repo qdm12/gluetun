@@ -292,14 +292,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	for _, vpnPort := range allSettings.Firewall.VPNInputPorts {
-		vpnIntf := allSettings.VPN.VPNInterface()
-		err = firewallConf.SetAllowedPort(ctx, vpnPort, vpnIntf)
-		if err != nil {
-			return err
-		}
-	}
-
 	for _, port := range allSettings.Firewall.InputPorts {
 		err = firewallConf.SetAllowedPort(ctx, port, defaultInterface)
 		if err != nil {
@@ -360,7 +352,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
 	vpnLogger := logger.NewChild(logging.Settings{Prefix: "vpn: "})
-	vpnLooper := vpn.NewLoop(allSettings.VPN,
+	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,
 		allServers, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, allSettings.VersionInformation)

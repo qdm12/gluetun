@@ -6,7 +6,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/publicip/models"
 	"github.com/qdm12/golibs/logging"
 )
 
@@ -32,6 +31,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
 
+		portForwarding := settings.Provider.PortForwarding.Enabled
 		var vpnRunner vpnRunner
 		var serverName, vpnInterface string
 		var err error
@@ -49,7 +49,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 		tunnelUpData := tunnelUpData{
-			portForwarding: settings.Provider.PortForwarding.Enabled,
+			portForwarding: portForwarding,
 			serverName:     serverName,
 			portForwarder:  providerConf,
 			vpnIntf:        vpnInterface,
@@ -76,9 +76,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-tunnelReady:
 				go l.onTunnelUp(openvpnCtx, tunnelUpData)
 			case <-ctx.Done():
-				const pfTimeout = 100 * time.Millisecond
-				l.stopPortForwarding(context.Background(),
-					settings.Provider.PortForwarding.Enabled, pfTimeout)
+				l.cleanup(context.Background(), portForwarding)
 				openvpnCancel()
 				<-waitError
 				close(waitError)
@@ -86,8 +84,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
-				l.publicip.SetData(models.IPInfoData{}) // clear public IP address data
-				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
+				l.cleanup(context.Background(), portForwarding)
 				openvpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
@@ -102,7 +99,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
-				l.stopPortForwarding(ctx, settings.Provider.PortForwarding.Enabled, 0)
+				l.cleanup(context.Background(), portForwarding)
 				openvpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
