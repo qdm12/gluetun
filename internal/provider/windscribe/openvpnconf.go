@@ -33,7 +33,6 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 
 		// Windscribe specific
 		"key-direction 1",
-		"script-security 2",
 		"reneg-sec 0",
 
 		// Added constant values

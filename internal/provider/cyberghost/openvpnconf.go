@@ -33,8 +33,6 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		"tls-exit",
 
 		// Cyberghost specific
-		// "redirect-gateway def1",
-		"script-security 2",
 		"route-delay 5",
 
 		// Added constant values

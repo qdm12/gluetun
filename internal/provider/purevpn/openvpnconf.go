@@ -32,7 +32,6 @@ func (p *Purevpn) BuildConf(connection models.Connection,
 		"cipher AES-256-CBC",
 		"route-method exe",
 		"route-delay 0",
-		"script-security 2",
 
 		// Added constant values
 		"auth-nocache",

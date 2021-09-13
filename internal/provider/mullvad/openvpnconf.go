@@ -30,7 +30,6 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
-		"script-security 2",
 
 		// Added constant values
 		"auth-nocache",

@@ -40,7 +40,6 @@ func (s *Surfshark) BuildConf(connection models.Connection,
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",
 		"key-direction 1",
-		"script-security 2",
 		"ping-restart 0",
 
 		// Added constant values
