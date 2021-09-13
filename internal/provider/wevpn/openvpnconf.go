@@ -10,7 +10,7 @@ import (
 )
 
 func (w *Wevpn) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string) {
+	settings configuration.OpenVPN) (lines []string, err error) {
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES256gcm
 	}
@@ -81,5 +81,5 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 
 	lines = append(lines, "")
 
-	return lines
+	return lines, nil
 }
