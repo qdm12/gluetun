@@ -29,7 +29,6 @@ func (i *Ipvanish) BuildConf(connection models.Connection,
 		// Ipvanish specific
 		"comp-lzo",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",
-		"keysize 256",
 
 		// Added constant values
 		"mute-replay-warnings",
