@@ -48,6 +48,7 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 		protocol  singleStringCall
 		ovpnPort  portCall
 		wgPort    portCall
+		wgOldPort portCall
 		settings  Provider
 		err       error
 	}{
@@ -133,7 +134,7 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
-			err: errors.New("environment variable WIREGUARD_PORT: dummy test error"),
+			err: errors.New("environment variable WIREGUARD_ENDPOINT_PORT: dummy test error"),
 		},
 		"default settings": {
 			targetIP:  singleStringCall{call: true},
@@ -144,6 +145,7 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 			protocol:  singleStringCall{call: true},
 			ovpnPort:  portCall{getCall: true, getValue: "0"},
 			wgPort:    portCall{getCall: true, getValue: "0"},
+			wgOldPort: portCall{getCall: true, getValue: "0"},
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
@@ -224,12 +226,20 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 					Return(testCase.ovpnPort.portValue, testCase.ovpnPort.portErr)
 			}
 			if testCase.wgPort.getCall {
-				env.EXPECT().Get("WIREGUARD_PORT", gomock.Any()).
+				env.EXPECT().Get("WIREGUARD_ENDPOINT_PORT", gomock.Any()).
 					Return(testCase.wgPort.getValue, testCase.wgPort.getErr)
 			}
 			if testCase.wgPort.portCall {
-				env.EXPECT().Port("WIREGUARD_PORT").
+				env.EXPECT().Port("WIREGUARD_ENDPOINT_PORT").
 					Return(testCase.wgPort.portValue, testCase.wgPort.portErr)
+			}
+			if testCase.wgOldPort.getCall {
+				env.EXPECT().Get("WIREGUARD_PORT", gomock.Any()).
+					Return(testCase.wgOldPort.getValue, testCase.wgOldPort.getErr)
+			}
+			if testCase.wgOldPort.portCall {
+				env.EXPECT().Port("WIREGUARD_PORT").
+					Return(testCase.wgOldPort.portValue, testCase.wgOldPort.portErr)
 			}
 
 			r := reader{

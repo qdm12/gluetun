@@ -180,11 +180,15 @@ func readOpenVPNCustomPort(env params.Interface, tcp bool,
 
 // note: set allowed to an empty slice to allow all valid ports
 func readWireguardCustomPort(env params.Interface, allowed []uint16) (port uint16, err error) {
-	port, err = readPortOrZero(env, "WIREGUARD_PORT")
+	port, err = readPortOrZero(env, "WIREGUARD_ENDPOINT_PORT")
 	if err != nil {
-		return 0, fmt.Errorf("environment variable WIREGUARD_PORT: %w", err)
+		return 0, fmt.Errorf("environment variable WIREGUARD_ENDPOINT_PORT: %w", err)
 	} else if port == 0 {
-		return 0, nil
+		port, _ = readPortOrZero(env, "WIREGUARD_PORT")
+		if err == nil {
+			return port, nil // 0 or WIREGUARD_PORT value
+		}
+		return 0, nil // default 0
 	}
 
 	if len(allowed) == 0 {

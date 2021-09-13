@@ -41,7 +41,7 @@
 - `PROTOCOL` to `OPENVPN_PROTOCOL`
 - `PORT_FORWARDING`
 - Change servers filtering environment variables to plural
-- `WIREGUARD_PORT` to `WIREGUARD_ENDPOINT_PORT`
+- Remove `WIREGUARD_PORT`
 - `WIREGUARD_ADDRESS` to `WIREGUARD_ADDRESSES`
 - Only use `custom` VPNSP for custom OpenVPN configurations
 - `VPNSP` compulsory

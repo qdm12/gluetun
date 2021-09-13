@@ -21,7 +21,7 @@ func (settings *Provider) readCustom(r reader, vpnType string) (err error) {
 	case constants.OpenVPN:
 		return settings.ServerSelection.OpenVPN.readCustom(r)
 	case constants.Wireguard:
-		return settings.ServerSelection.Wireguard.readCustom(r.env)
+		return settings.ServerSelection.Wireguard.readCustom(r)
 	default:
 		return fmt.Errorf("%w: for VPN type %s", errCustomNotSupported, vpnType)
 	}
@@ -56,21 +56,22 @@ func (settings *OpenVPN) readCustom(r reader) (err error) {
 	return nil
 }
 
-func (settings *WireguardSelection) readCustom(env params.Interface) (err error) {
-	settings.PublicKey, err = env.Get("WIREGUARD_PUBLIC_KEY",
+func (settings *WireguardSelection) readCustom(r reader) (err error) {
+	settings.PublicKey, err = r.env.Get("WIREGUARD_PUBLIC_KEY",
 		params.CaseSensitiveValue(), params.Compulsory())
 	if err != nil {
 		return fmt.Errorf("environment variable WIREGUARD_PUBLIC_KEY: %w", err)
 	}
 
-	settings.EndpointIP, err = readWireguardEndpointIP(env)
+	settings.EndpointIP, err = readWireguardEndpointIP(r.env)
 	if err != nil {
 		return err
 	}
 
-	settings.EndpointPort, err = env.Port("WIREGUARD_PORT", params.Compulsory())
+	settings.EndpointPort, err = r.env.Port("WIREGUARD_ENDPOINT_PORT", params.Compulsory(),
+		params.RetroKeys([]string{"WIREGUARD_PORT"}, r.onRetroActive))
 	if err != nil {
-		return fmt.Errorf("environment variable WIREGUARD_PORT: %w", err)
+		return fmt.Errorf("environment variable WIREGUARD_ENDPOINT_PORT: %w", err)
 	}
 
 	return nil
