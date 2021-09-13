@@ -10,7 +10,7 @@ import (
 )
 
 func (p *Provider) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string) {
+	settings configuration.OpenVPN) (lines []string, err error) {
 	lines = []string{
 		"client",
 		"dev " + settings.Interface,
@@ -71,5 +71,5 @@ func (p *Provider) BuildConf(connection models.Connection,
 
 	lines = append(lines, "")
 
-	return lines
+	return lines, nil
 }

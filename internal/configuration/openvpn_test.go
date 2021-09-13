@@ -25,7 +25,7 @@ func Test_OpenVPN_JSON(t *testing.T) {
   "run_as_root": true,
   "cipher": "",
   "auth": "",
-  "custom_config": "",
+  "conf_file": "",
   "version": "",
   "encryption_preset": "",
   "ipv6": false,

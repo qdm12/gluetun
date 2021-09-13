@@ -58,10 +58,8 @@ func (settings *VPN) read(r reader) (err error) {
 	}
 	settings.Type = vpnType
 
-	if !settings.isOpenVPNCustomConfig(r.env) {
-		if err := settings.Provider.read(r, vpnType); err != nil {
-			return fmt.Errorf("%w: %s", errReadProviderSettings, err)
-		}
+	if err := settings.Provider.read(r, vpnType); err != nil {
+		return fmt.Errorf("%w: %s", errReadProviderSettings, err)
 	}
 
 	switch settings.Type {
@@ -78,20 +76,4 @@ func (settings *VPN) read(r reader) (err error) {
 	}
 
 	return nil
-}
-
-func (settings VPN) isOpenVPNCustomConfig(env params.Interface) (ok bool) {
-	if settings.Type != constants.OpenVPN {
-		return false
-	}
-	s, err := env.Get("OPENVPN_CUSTOM_CONFIG")
-	return err == nil && s != ""
-}
-
-func (settings VPN) VPNInterface() (intf string) {
-	if settings.Type == constants.Wireguard {
-		return settings.Wireguard.Interface
-	}
-	// OpenVPN
-	return settings.OpenVPN.Interface
 }

@@ -51,22 +51,22 @@ func (r *reader) getFromEnvOrSecretFile(envKey string, compulsory bool, retroKey
 	file, fileErr := os.OpenFile(filepath, os.O_RDONLY, 0)
 	if os.IsNotExist(fileErr) {
 		if compulsory {
-			return "", envErr
+			return "", fmt.Errorf("environment variable %s: %w", envKey, envErr)
 		}
 		return "", nil
 	} else if fileErr != nil {
-		return "", fmt.Errorf("%w: %s", ErrReadSecretFile, fileErr)
+		return "", fmt.Errorf("%w: %s: %s", ErrReadSecretFile, filepath, fileErr)
 	}
 
 	b, err := io.ReadAll(file)
 	if err != nil {
-		return "", fmt.Errorf("%w: %s", ErrReadSecretFile, err)
+		return "", fmt.Errorf("%w: %s: %s", ErrReadSecretFile, filepath, err)
 	}
 
 	value = string(b)
 	value = cleanSuffix(value)
 	if compulsory && value == "" {
-		return "", ErrSecretFileIsEmpty
+		return "", fmt.Errorf("%s: %w", filepath, ErrSecretFileIsEmpty)
 	}
 
 	return value, nil

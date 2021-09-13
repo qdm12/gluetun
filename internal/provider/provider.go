@@ -11,6 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/custom"
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
 	"github.com/qdm12/gluetun/internal/provider/fastestvpn"
 	"github.com/qdm12/gluetun/internal/provider/hidemyass"
@@ -34,7 +35,7 @@ import (
 // Provider contains methods to read and modify the openvpn configuration to connect as a client.
 type Provider interface {
 	GetConnection(selection configuration.ServerSelection) (connection models.Connection, err error)
-	BuildConf(connection models.Connection, settings configuration.OpenVPN) (lines []string)
+	BuildConf(connection models.Connection, settings configuration.OpenVPN) (lines []string, err error)
 	PortForwarder
 }
 
@@ -50,6 +51,8 @@ type PortForwarder interface {
 func New(provider string, allServers models.AllServers, timeNow func() time.Time) Provider {
 	randSource := rand.NewSource(timeNow().UnixNano())
 	switch provider {
+	case constants.Custom:
+		return custom.New()
 	case constants.Cyberghost:
 		return cyberghost.New(allServers.Cyberghost.Servers, randSource)
 	case constants.Fastestvpn:

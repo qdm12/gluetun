@@ -10,7 +10,7 @@ import (
 )
 
 func (p *Privatevpn) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string) {
+	settings configuration.OpenVPN) (lines []string, err error) {
 	if settings.Cipher == "" {
 		settings.Cipher = constants.AES128gcm
 	}
@@ -73,5 +73,5 @@ func (p *Privatevpn) BuildConf(connection models.Connection,
 
 	lines = append(lines, "")
 
-	return lines
+	return lines, nil
 }
