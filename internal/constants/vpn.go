@@ -6,6 +6,9 @@ const (
 )
 
 const (
+	// Custom is the VPN provider name for custom
+	// VPN configurations.
+	Custom = "custom"
 	// Cyberghost is a VPN provider.
 	Cyberghost = "cyberghost"
 	// Fastestvpn is a VPN provider.

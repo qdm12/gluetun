@@ -49,6 +49,8 @@ func (settings *Provider) read(r reader, vpnType string) error {
 	}
 
 	switch settings.Name {
+	case constants.Custom:
+		err = settings.readCustom(r, vpnType)
 	case constants.Cyberghost:
 		err = settings.readCyberghost(r)
 	case constants.Fastestvpn:
@@ -99,6 +101,7 @@ func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err 
 	switch vpnType {
 	case constants.OpenVPN:
 		allowedVPNServiceProviders = []string{
+			constants.Custom,
 			"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
 			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
 			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
@@ -115,6 +118,11 @@ func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err 
 	if vpnsp == "pia" { // retro compatibility
 		vpnsp = "private internet access"
 	}
+
+	if settings.isOpenVPNCustomConfig(r.env) { // retro compatibility
+		vpnsp = constants.Custom
+	}
+
 	settings.Name = vpnsp
 
 	return nil
@@ -198,4 +206,13 @@ func portsToString(ports []uint16) string {
 		slice[i] = fmt.Sprint(ports[i])
 	}
 	return strings.Join(slice, ", ")
+}
+
+// isOpenVPNCustomConfig is for retro compatibility to set VPNSP=custom
+// if OPENVPN_CUSTOM_CONFIG is set.
+func (settings Provider) isOpenVPNCustomConfig(env params.Interface) (ok bool) {
+	s, _ := env.Get("VPN_TYPE")
+	isOpenVPN := s == constants.OpenVPN
+	s, _ = env.Get("OPENVPN_CUSTOM_CONFIG")
+	return isOpenVPN && s != ""
 }

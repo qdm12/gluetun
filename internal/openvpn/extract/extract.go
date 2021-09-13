@@ -1,4 +1,4 @@
-package custom
+package extract
 
 import (
 	"errors"
@@ -16,23 +16,22 @@ var (
 )
 
 func extractDataFromLines(lines []string) (
-	connection models.Connection, intf string, err error) {
+	connection models.Connection, err error) {
 	for i, line := range lines {
-		ip, port, protocol, intfFound, err := extractDataFromLine(line)
+		ip, port, protocol, err := extractDataFromLine(line)
 		if err != nil {
-			return connection, "", fmt.Errorf("on line %d: %w", i+1, err)
+			return connection, fmt.Errorf("on line %d: %w", i+1, err)
 		}
 
-		intf = intfFound
 		connection.UpdateEmptyWith(ip, port, protocol)
 
-		if connection.Protocol != "" && connection.IP != nil && intf != "" {
+		if connection.Protocol != "" && connection.IP != nil {
 			break
 		}
 	}
 
 	if connection.IP == nil {
-		return connection, "", errRemoteLineNotFound
+		return connection, errRemoteLineNotFound
 	}
 
 	if connection.Protocol == "" {
@@ -46,41 +45,33 @@ func extractDataFromLines(lines []string) (
 		}
 	}
 
-	return connection, intf, nil
+	return connection, nil
 }
 
 var (
 	errExtractProto  = errors.New("failed extracting protocol from proto line")
 	errExtractRemote = errors.New("failed extracting from remote line")
-	errExtractDev    = errors.New("failed extracting network interface from dev line")
 )
 
 func extractDataFromLine(line string) (
-	ip net.IP, port uint16, protocol, intf string, err error) {
+	ip net.IP, port uint16, protocol string, err error) {
 	switch {
 	case strings.HasPrefix(line, "proto "):
 		protocol, err = extractProto(line)
 		if err != nil {
-			return nil, 0, "", "", fmt.Errorf("%w: %s", errExtractProto, err)
+			return nil, 0, "", fmt.Errorf("%w: %s", errExtractProto, err)
 		}
-		return nil, 0, protocol, "", nil
+		return nil, 0, protocol, nil
 
 	case strings.HasPrefix(line, "remote "):
 		ip, port, protocol, err = extractRemote(line)
 		if err != nil {
-			return nil, 0, "", "", fmt.Errorf("%w: %s", errExtractRemote, err)
+			return nil, 0, "", fmt.Errorf("%w: %s", errExtractRemote, err)
 		}
-		return ip, port, protocol, "", nil
-
-	case strings.HasPrefix(line, "dev "):
-		intf, err = extractInterfaceFromLine(line)
-		if err != nil {
-			return nil, 0, "", "", fmt.Errorf("%w: %s", errExtractDev, err)
-		}
-		return nil, 0, "", intf, nil
+		return ip, port, protocol, nil
 	}
 
-	return nil, 0, "", "", nil
+	return nil, 0, "", nil
 }
 
 var (
@@ -146,17 +137,4 @@ func extractRemote(line string) (ip net.IP, port uint16,
 	}
 
 	return ip, port, protocol, nil
-}
-
-var (
-	errDevLineFieldsCount = errors.New("dev line has not 2 fields as expected")
-)
-
-func extractInterfaceFromLine(line string) (intf string, err error) {
-	fields := strings.Fields(line)
-	if len(fields) != 2 { //nolint:gomnd
-		return "", fmt.Errorf("%w: %s", errDevLineFieldsCount, line)
-	}
-
-	return fields[1], nil
 }

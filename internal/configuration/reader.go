@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	ovpnextract "github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
@@ -18,6 +19,7 @@ type reader struct {
 	env     params.Interface
 	logger  logging.Logger
 	regex   verification.Regex
+	ovpnExt ovpnextract.Interface
 }
 
 func newReader(env params.Interface,
@@ -27,6 +29,7 @@ func newReader(env params.Interface,
 		env:     env,
 		logger:  logger,
 		regex:   verification.NewRegex(),
+		ovpnExt: ovpnextract.New(),
 	}
 }
 

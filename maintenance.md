@@ -28,6 +28,7 @@
 - Gluetun entire logs available at control server, maybe in structured format
 - Authentication with the control server
 - Get announcement from Github file
+- Support multiple connections in custom ovpn
 
 ## Gluetun V4
 
@@ -47,4 +48,7 @@
 - Change `VPNSP` to `VPN_SERVICE_PROVIDER`
 - Change `REGION` (etc.) to `SERVER_REGIONS`
 - Remove `PUBLICIP_FILE`
+- Remove retro-compatibility where OPENVPN_CONFIG != "" implies VPNSP = "custom"
+ and set `OPENVPN_CUSTOM_CONFIG` default to `/gluetun/custom.ovpn`
 - Split servers.json and compress it
+- Use relative paths everywhere instead of absolute

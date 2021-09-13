@@ -10,14 +10,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_modifyCustomConfig(t *testing.T) {
+func Test_modifyConfig(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
 		lines      []string
 		settings   configuration.OpenVPN
 		connection models.Connection
-		intf       string
 		modified   []string
 	}{
 		"mixed": {
@@ -26,24 +25,26 @@ func Test_modifyCustomConfig(t *testing.T) {
 				"proto tcp",
 				"remote 5.5.5.5",
 				"cipher bla",
+				"",
 				"tun-ipv6",
 				"keep me here",
 				"auth bla",
 			},
 			settings: configuration.OpenVPN{
-				User:     "user",
-				Cipher:   "cipher",
-				Auth:     "auth",
-				MSSFix:   1000,
-				ProcUser: "procuser",
+				User:      "user",
+				Cipher:    "cipher",
+				Auth:      "auth",
+				MSSFix:    1000,
+				ProcUser:  "procuser",
+				Interface: "tun3",
 			},
 			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     1194,
 				Protocol: constants.UDP,
 			},
-			intf: "tun3",
 			modified: []string{
+				"up bla",
 				"keep me here",
 				"proto udp",
 				"remote 1.2.3.4 1194",
@@ -62,6 +63,7 @@ func Test_modifyCustomConfig(t *testing.T) {
 				"pull-filter ignore \"route-ipv6\"",
 				"pull-filter ignore \"ifconfig-ipv6\"",
 				"user procuser",
+				"",
 			},
 		},
 	}
@@ -71,8 +73,8 @@ func Test_modifyCustomConfig(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			modified := modifyCustomConfig(testCase.lines,
-				testCase.settings, testCase.connection, testCase.intf)
+			modified := modifyConfig(testCase.lines,
+				testCase.connection, testCase.settings)
 
 			assert.Equal(t, testCase.modified, modified)
 		})

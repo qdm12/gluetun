@@ -21,7 +21,7 @@ type OpenVPN struct {
 	Root      bool     `json:"run_as_root"`
 	Cipher    string   `json:"cipher"`
 	Auth      string   `json:"auth"`
-	Config    string   `json:"custom_config"`
+	ConfFile  string   `json:"conf_file"`
 	Version   string   `json:"version"`
 	ClientCrt string   `json:"-"`                 // Cyberghost
 	ClientKey string   `json:"-"`                 // Cyberghost, VPNUnlimited
@@ -59,8 +59,8 @@ func (settings *OpenVPN) lines() (lines []string) {
 		lines = append(lines, indent+lastIndent+"Custom auth algorithm: "+settings.Auth)
 	}
 
-	if len(settings.Config) > 0 {
-		lines = append(lines, indent+lastIndent+"Custom configuration: "+settings.Config)
+	if settings.ConfFile != "" {
+		lines = append(lines, indent+lastIndent+"Configuration file: "+settings.ConfFile)
 	}
 
 	if settings.ClientKey != "" {
@@ -83,12 +83,13 @@ func (settings *OpenVPN) lines() (lines []string) {
 }
 
 func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
-	settings.Config, err = r.env.Get("OPENVPN_CUSTOM_CONFIG", params.CaseSensitiveValue())
-	if err != nil {
-		return fmt.Errorf("environment variable OPENVPN_CUSTOM_CONFIG: %w", err)
+	credentialsRequired := false
+	switch serviceProvider {
+	case constants.Custom:
+	case constants.VPNUnlimited:
+	default:
+		credentialsRequired = true
 	}
-
-	credentialsRequired := settings.Config == "" && serviceProvider != constants.VPNUnlimited
 
 	settings.User, err = r.getFromEnvOrSecretFile("OPENVPN_USER", credentialsRequired, []string{"USER"})
 	if err != nil {
@@ -159,6 +160,8 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 	}
 
 	switch serviceProvider {
+	case constants.Custom:
+		err = settings.readCustom(r) // read OPENVPN_CUSTOM_CONFIG
 	case constants.Cyberghost:
 		err = settings.readCyberghost(r)
 	case constants.PrivateInternetAccess:

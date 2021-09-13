@@ -106,6 +106,7 @@ func (selection ServerSelection) toLines() (lines []string) {
 }
 
 type OpenVPNSelection struct {
+	ConfFile   string `json:"conf_file"`         // Custom configuration file path
 	TCP        bool   `json:"tcp"`               // UDP if TCP is false
 	CustomPort uint16 `json:"custom_port"`       // HideMyAss, Mullvad, PIA, ProtonVPN, Windscribe
 	EncPreset  string `json:"encryption_preset"` // PIA - needed to get the port number
@@ -113,6 +114,10 @@ type OpenVPNSelection struct {
 
 func (settings *OpenVPNSelection) lines() (lines []string) {
 	lines = append(lines, lastIndent+"OpenVPN selection:")
+
+	if settings.ConfFile != "" {
+		lines = append(lines, indent+lastIndent+"Custom configuration file: "+settings.ConfFile)
+	}
 
 	lines = append(lines, indent+lastIndent+"Protocol: "+protoToString(settings.TCP))
 

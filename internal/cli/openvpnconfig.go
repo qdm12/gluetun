@@ -34,7 +34,11 @@ func (c *CLI) OpenvpnConfig(logger logging.Logger, env params.Interface) error {
 	if err != nil {
 		return err
 	}
-	lines := providerConf.BuildConf(connection, allSettings.VPN.OpenVPN)
+	lines, err := providerConf.BuildConf(connection, allSettings.VPN.OpenVPN)
+	if err != nil {
+		return err
+	}
+
 	fmt.Println(strings.Join(lines, "\n"))
 	return nil
 }

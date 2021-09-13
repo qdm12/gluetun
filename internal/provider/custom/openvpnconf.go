@@ -1,6 +1,8 @@
 package custom
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -10,13 +12,27 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func modifyCustomConfig(lines []string, settings configuration.OpenVPN,
-	connection models.Connection, intf string) (modified []string) {
+var ErrExtractData = errors.New("failed extracting information from custom configuration file")
+
+func (p *Provider) BuildConf(connection models.Connection,
+	settings configuration.OpenVPN) (lines []string, err error) {
+	lines, _, err = p.extractor.Data(settings.ConfFile)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrExtractData, err)
+	}
+
+	lines = modifyConfig(lines, connection, settings)
+
+	return lines, nil
+}
+
+func modifyConfig(lines []string, connection models.Connection,
+	settings configuration.OpenVPN) (modified []string) {
 	// Remove some lines
 	for _, line := range lines {
 		switch {
-		case strings.HasPrefix(line, "up "),
-			strings.HasPrefix(line, "down "),
+		case
+			line == "",
 			strings.HasPrefix(line, "verb "),
 			strings.HasPrefix(line, "auth-user-pass "),
 			strings.HasPrefix(line, "user "),
@@ -36,7 +52,7 @@ func modifyCustomConfig(lines []string, settings configuration.OpenVPN,
 	// Add values
 	modified = append(modified, connection.OpenVPNProtoLine())
 	modified = append(modified, connection.OpenVPNRemoteLine())
-	modified = append(modified, "dev "+intf)
+	modified = append(modified, "dev "+settings.Interface)
 	modified = append(modified, "mute-replay-warnings")
 	modified = append(modified, "auth-nocache")
 	modified = append(modified, "pull-filter ignore \"auth-token\"") // prevent auth failed loop
@@ -63,5 +79,23 @@ func modifyCustomConfig(lines []string, settings configuration.OpenVPN,
 		modified = append(modified, "user "+settings.ProcUser)
 	}
 
-	return modified
+	modified = append(modified, "") // trailing line
+
+	return uniqueLines(modified)
+}
+
+func uniqueLines(lines []string) (unique []string) {
+	seen := make(map[string]struct{}, len(lines))
+	unique = make([]string, 0, len(lines))
+
+	for _, line := range lines {
+		_, ok := seen[line]
+		if ok {
+			continue
+		}
+		seen[line] = struct{}{}
+		unique = append(unique, line)
+	}
+
+	return unique
 }
