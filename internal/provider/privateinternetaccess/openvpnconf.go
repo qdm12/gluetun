@@ -48,7 +48,6 @@ func (p *PIA) BuildConf(connection models.Connection,
 		// PIA specific
 		"reneg-sec 0",
 		"disable-occ",
-		"ncp-disable", // prevent from auto-upgrading cipher to aes-256-gcm
 
 		// Added constant values
 		"auth-nocache",

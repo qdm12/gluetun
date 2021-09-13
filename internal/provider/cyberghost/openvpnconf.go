@@ -34,7 +34,6 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 
 		// Cyberghost specific
 		// "redirect-gateway def1",
-		"ncp-disable",
 		"script-security 2",
 		"route-delay 5",
 
