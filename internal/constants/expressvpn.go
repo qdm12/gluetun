@@ -20,7 +20,7 @@ func ExpressvpnCountriesChoices(servers []models.ExpressvpnServer) (choices []st
 	return makeUnique(choices)
 }
 
-func ExpressvpnCitiesChoices(servers []models.ExpressvpnServer) (choices []string) {
+func ExpressvpnCityChoices(servers []models.ExpressvpnServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City

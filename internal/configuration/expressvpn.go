@@ -29,7 +29,7 @@ func (settings *Provider) readExpressvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
-	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.ExpressvpnCitiesChoices(servers))
+	settings.ServerSelection.Cities, err = r.env.CSVInside("CITY", constants.ExpressvpnCityChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
