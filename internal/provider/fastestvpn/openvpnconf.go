@@ -25,12 +25,10 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		"client",
 		"dev " + settings.Interface,
 		"nobind",
-		"ping 15",
-		"ping-exit 60",
 		"tls-exit",
 
 		// Fastestvpn specific
-		"ping-restart 0",
+		"ping 15",
 		"tls-cipher  TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 		"key-direction 1",
 		"tun-mtu-extra 32",

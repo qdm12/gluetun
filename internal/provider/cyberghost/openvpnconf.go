@@ -25,11 +25,10 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"remote-cert-tls server",
-		"ping 10",
-		"ping-exit 60",
 		"tls-exit",
 
 		// Cyberghost specific
+		"ping 10",
 
 		// Added constant values
 		"auth-nocache",

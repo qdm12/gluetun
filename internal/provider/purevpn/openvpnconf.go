@@ -20,11 +20,10 @@ func (p *Purevpn) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"remote-cert-tls server",
-		"ping 10",
-		"ping-exit 60",
 		"tls-exit",
 
 		// Purevpn specific
+		"ping 10",
 		"key-direction 1",
 		"remote-cert-tls server",
 		"cipher AES-256-CBC",

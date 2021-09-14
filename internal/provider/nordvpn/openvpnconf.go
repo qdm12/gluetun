@@ -36,7 +36,6 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 		"reneg-sec 0",
 		"key-direction 1",
 		"ping 15",
-		"ping-restart 0",
 
 		// Added constant values
 		"auth-nocache",

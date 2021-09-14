@@ -24,11 +24,10 @@ func (v *Vyprvpn) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"remote-cert-tls server",
-		"ping 10",
-		"ping-exit 60",
 		"tls-exit",
 
 		// Vyprvpn specific
+		"ping 10",
 		// "verify-x509-name lu1.vyprvpn.com name",
 		"tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 

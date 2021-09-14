@@ -23,11 +23,10 @@ func (p *Privado) BuildConf(connection models.Connection,
 		"client",
 		"dev " + settings.Interface,
 		"nobind",
-		"ping 10",
-		"ping-exit 60",
 		"tls-exit",
 
 		// Privado specific
+		"ping 10",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",
 		"verify-x509-name " + connection.Hostname + " name",
 

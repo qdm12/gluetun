@@ -21,7 +21,6 @@ func (p *Provider) BuildConf(connection models.Connection,
 		// VPNUnlimited specific
 		"reneg-sec 0",
 		"ping 5",
-		"ping-exit 30",
 		"route-metric 1",
 
 		// Added constant values

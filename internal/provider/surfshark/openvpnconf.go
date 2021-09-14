@@ -29,15 +29,14 @@ func (s *Surfshark) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"remote-cert-tls server",
-		"ping 15",
 		"tls-exit",
 
 		// Surfshark specific
+		"ping 15",
 		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",
 		"key-direction 1",
-		"ping-restart 0",
 
 		// Added constant values
 		"auth-nocache",

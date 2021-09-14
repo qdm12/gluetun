@@ -22,11 +22,10 @@ func (i *Ivpn) BuildConf(connection models.Connection,
 		"client",
 		"dev " + settings.Interface,
 		"nobind",
-		"ping 5",
-		"ping-exit 30",
 		"tls-exit",
 
 		// IVPN specific
+		"ping 5",
 		"remote-cert-tls server", // updated name of ns-cert-type
 		"key-direction 1",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",

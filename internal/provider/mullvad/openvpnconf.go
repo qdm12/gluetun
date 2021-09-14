@@ -20,11 +20,10 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"remote-cert-tls server",
-		"ping 10",
-		"ping-exit 60",
 		"tls-exit",
 
 		// Mullvad specific
+		"ping 10",
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",

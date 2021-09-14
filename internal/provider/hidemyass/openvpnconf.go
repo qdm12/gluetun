@@ -19,11 +19,10 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 		"client",
 		"dev " + settings.Interface,
 		"nobind",
-		"ping 5",
-		"ping-exit 30",
 		"tls-exit",
 
 		// HideMyAss specific
+		"ping 5",
 		"remote-cert-tls server", // updated name of ns-cert-type
 		// "route-metric 1",
 
