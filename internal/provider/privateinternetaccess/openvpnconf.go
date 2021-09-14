@@ -43,6 +43,7 @@ func (p *PIA) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"remote-cert-tls server",
+		"tls-exit",
 
 		// PIA specific
 		"reneg-sec 0",
