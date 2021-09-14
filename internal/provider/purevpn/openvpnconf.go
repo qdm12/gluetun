@@ -26,7 +26,6 @@ func (p *Purevpn) BuildConf(connection models.Connection,
 		"ping 10",
 		"remote-cert-tls server",
 		"key-direction 1",
-		"cipher AES-256-CBC",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 
 		// Added constant values
