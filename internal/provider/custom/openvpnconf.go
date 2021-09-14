@@ -40,6 +40,7 @@ func modifyConfig(lines []string, connection models.Connection,
 			line == "pull-filter ignore \"auth-token\"",
 			line == "auth-retry nointeract",
 			line == "suppress-timestamps",
+			line == "persist-tun",
 			// Remove values always modified
 			strings.HasPrefix(line, "verb "),
 			strings.HasPrefix(line, "auth-user-pass "),
@@ -88,6 +89,7 @@ func modifyConfig(lines []string, connection models.Connection,
 	}
 	if !settings.Root {
 		modified = append(modified, "user "+settings.ProcUser)
+		modified = append(modified, "persist-tun")
 	}
 
 	modified = append(modified, "") // trailing line

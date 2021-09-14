@@ -4,7 +4,6 @@
 
 - Remove duplicate `/gluetun` directory creation
 - Remove firewall shadowsocks input port?
-- Re-add `persist-tun`? Run openvpn without root?
 - Remove `script-security` option
 - `ncp-ciphers` to `data-ciphers`
 - Remove `ncp-disable`

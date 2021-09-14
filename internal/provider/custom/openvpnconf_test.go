@@ -63,6 +63,7 @@ func Test_modifyConfig(t *testing.T) {
 				"pull-filter ignore \"route-ipv6\"",
 				"pull-filter ignore \"ifconfig-ipv6\"",
 				"user procuser",
+				"persist-tun",
 				"",
 			},
 		},

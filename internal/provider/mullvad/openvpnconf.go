@@ -61,6 +61,7 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
+		lines = append(lines, "persist-tun")
 	}
 
 	if settings.MSSFix > 0 {

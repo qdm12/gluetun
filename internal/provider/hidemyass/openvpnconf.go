@@ -54,6 +54,7 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
+		lines = append(lines, "persist-tun")
 	}
 
 	if !settings.IPv6 {
