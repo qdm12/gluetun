@@ -32,7 +32,6 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		"tls-exit",
 
 		// Cyberghost specific
-		"route-delay 5",
 
 		// Added constant values
 		"auth-nocache",
