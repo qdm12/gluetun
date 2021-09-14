@@ -32,18 +32,29 @@ func modifyConfig(lines []string, connection models.Connection,
 	for _, line := range lines {
 		switch {
 		case
+			// Remove empty lines
 			line == "",
+			// Remove future to be duplicates
+			line == "mute-replay-warnings",
+			line == "auth-nocache",
+			line == "pull-filter ignore \"auth-token\"",
+			line == "auth-retry nointeract",
+			line == "suppress-timestamps",
+			// Remove values always modified
 			strings.HasPrefix(line, "verb "),
 			strings.HasPrefix(line, "auth-user-pass "),
 			strings.HasPrefix(line, "user "),
 			strings.HasPrefix(line, "proto "),
 			strings.HasPrefix(line, "remote "),
 			strings.HasPrefix(line, "dev "),
-			settings.Cipher != "" && strings.HasPrefix(line, "cipher "),
-			settings.Cipher != "" && strings.HasPrefix(line, "data-ciphers "),
+			// Remove values eventually modified
+			settings.Cipher != "" && hasPrefixOneOf(line,
+				"cipher ", "data-ciphers ", "data-ciphers-fallback "),
 			settings.Auth != "" && strings.HasPrefix(line, "auth "),
 			settings.MSSFix > 0 && strings.HasPrefix(line, "mssfix "),
-			!settings.IPv6 && strings.HasPrefix(line, "tun-ipv6"):
+			!settings.IPv6 && hasPrefixOneOf(line, "tun-ipv6",
+				`pull-filter ignore "route-ipv6"`,
+				`pull-filter ignore "ifconfig-ipv6"`):
 		default:
 			modified = append(modified, line)
 		}
@@ -81,21 +92,14 @@ func modifyConfig(lines []string, connection models.Connection,
 
 	modified = append(modified, "") // trailing line
 
-	return uniqueLines(modified)
+	return modified
 }
 
-func uniqueLines(lines []string) (unique []string) {
-	seen := make(map[string]struct{}, len(lines))
-	unique = make([]string, 0, len(lines))
-
-	for _, line := range lines {
-		_, ok := seen[line]
-		if ok {
-			continue
+func hasPrefixOneOf(s string, prefixes ...string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(s, prefix) {
+			return true
 		}
-		seen[line] = struct{}{}
-		unique = append(unique, line)
 	}
-
-	return unique
+	return false
 }
