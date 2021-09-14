@@ -50,7 +50,7 @@ func (settings *Provider) readSurfshark(r reader) (err error) {
 		return fmt.Errorf("environment variable MULTIHOP_ONLY: %w", err)
 	}
 
-	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r)
 }
 
 func surfsharkRetroRegion(selection ServerSelection) (

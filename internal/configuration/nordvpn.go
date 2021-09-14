@@ -37,7 +37,7 @@ func (settings *Provider) readNordvpn(r reader) (err error) {
 		return err
 	}
 
-	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r)
 }
 
 func readNordVPNServerNumbers(env params.Interface) (numbers []uint16, err error) {

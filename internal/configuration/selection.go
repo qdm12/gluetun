@@ -5,7 +5,6 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/params"
 )
 
 type ServerSelection struct { //nolint:maligned
@@ -132,18 +131,18 @@ func (settings *OpenVPNSelection) lines() (lines []string) {
 	return lines
 }
 
-func (settings *OpenVPNSelection) readProtocolOnly(env params.Interface) (err error) {
-	settings.TCP, err = readProtocol(env)
+func (settings *OpenVPNSelection) readProtocolOnly(r reader) (err error) {
+	settings.TCP, err = readOpenVPNProtocol(r)
 	return err
 }
 
-func (settings *OpenVPNSelection) readProtocolAndPort(env params.Interface) (err error) {
-	settings.TCP, err = readProtocol(env)
+func (settings *OpenVPNSelection) readProtocolAndPort(r reader) (err error) {
+	settings.TCP, err = readOpenVPNProtocol(r)
 	if err != nil {
 		return err
 	}
 
-	settings.CustomPort, err = readPortOrZero(env, "PORT")
+	settings.CustomPort, err = readPortOrZero(r.env, "PORT")
 	if err != nil {
 		return fmt.Errorf("environment variable PORT: %w", err)
 	}

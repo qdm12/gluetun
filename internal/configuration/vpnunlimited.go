@@ -42,7 +42,7 @@ func (settings *Provider) readVPNUnlimited(r reader) (err error) {
 		return fmt.Errorf("environment variable STREAM_ONLY: %w", err)
 	}
 
-	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r)
 }
 
 func (settings *OpenVPN) readVPNUnlimited(r reader) (err error) {

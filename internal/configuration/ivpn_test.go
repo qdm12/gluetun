@@ -107,7 +107,7 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
-			err: errors.New("environment variable PROTOCOL: dummy test error"),
+			err: errors.New("environment variable OPENVPN_PROTOCOL: dummy test error"),
 		},
 		"openvpn custom port error": {
 			targetIP:  singleStringCall{call: true},
@@ -214,7 +214,7 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 					Return(testCase.hostnames.values, testCase.hostnames.err)
 			}
 			if testCase.protocol.call {
-				env.EXPECT().Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
+				env.EXPECT().Inside("OPENVPN_PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
 					Return(testCase.protocol.value, testCase.protocol.err)
 			}
 			if testCase.ovpnPort.getCall {

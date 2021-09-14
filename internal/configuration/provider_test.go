@@ -372,7 +372,7 @@ func Test_readProtocol(t *testing.T) {
 	}{
 		"error": {
 			mockErr: errDummy,
-			err:     errors.New("environment variable PROTOCOL: dummy"),
+			err:     errors.New("environment variable OPENVPN_PROTOCOL: dummy"),
 		},
 		"success": {
 			mockStr: "tcp",
@@ -388,10 +388,13 @@ func Test_readProtocol(t *testing.T) {
 
 			env := mock_params.NewMockInterface(ctrl)
 			env.EXPECT().
-				Inside("PROTOCOL", []string{"tcp", "udp"}, gomock.Any()).
+				Inside("OPENVPN_PROTOCOL", []string{"tcp", "udp"}, gomock.Any(), gomock.Any()).
 				Return(testCase.mockStr, testCase.mockErr)
+			reader := reader{
+				env: env,
+			}
 
-			tcp, err := readProtocol(env)
+			tcp, err := readOpenVPNProtocol(reader)
 
 			if testCase.err != nil {
 				require.Error(t, err)

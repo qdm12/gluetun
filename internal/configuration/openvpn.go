@@ -176,10 +176,11 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 	return nil
 }
 
-func readProtocol(env params.Interface) (tcp bool, err error) {
-	protocol, err := env.Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, params.Default(constants.UDP))
+func readOpenVPNProtocol(r reader) (tcp bool, err error) {
+	protocol, err := r.env.Inside("OPENVPN_PROTOCOL", []string{constants.TCP, constants.UDP},
+		params.Default(constants.UDP), params.RetroKeys([]string{"PROTOCOL"}, r.onRetroActive))
 	if err != nil {
-		return false, fmt.Errorf("environment variable PROTOCOL: %w", err)
+		return false, fmt.Errorf("environment variable OPENVPN_PROTOCOL: %w", err)
 	}
 	return protocol == constants.TCP, nil
 }

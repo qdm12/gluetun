@@ -32,7 +32,7 @@ func (settings *Provider) readWindscribe(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	err = settings.ServerSelection.OpenVPN.readWindscribe(r.env)
+	err = settings.ServerSelection.OpenVPN.readWindscribe(r)
 	if err != nil {
 		return err
 	}
@@ -40,13 +40,13 @@ func (settings *Provider) readWindscribe(r reader) (err error) {
 	return settings.ServerSelection.Wireguard.readWindscribe(r.env)
 }
 
-func (settings *OpenVPNSelection) readWindscribe(env params.Interface) (err error) {
-	settings.TCP, err = readProtocol(env)
+func (settings *OpenVPNSelection) readWindscribe(r reader) (err error) {
+	settings.TCP, err = readOpenVPNProtocol(r)
 	if err != nil {
 		return err
 	}
 
-	settings.CustomPort, err = readOpenVPNCustomPort(env, settings.TCP,
+	settings.CustomPort, err = readOpenVPNCustomPort(r.env, settings.TCP,
 		[]uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783},
 		[]uint16{53, 80, 123, 443, 1194, 54783})
 	if err != nil {

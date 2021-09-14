@@ -31,5 +31,5 @@ func (settings *Provider) readIpvanish(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r)
 }

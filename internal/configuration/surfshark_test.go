@@ -115,7 +115,7 @@ func Test_Provider_readSurfshark(t *testing.T) {
 			settings: Provider{
 				Name: constants.Surfshark,
 			},
-			err: errors.New("environment variable PROTOCOL: dummy test error"),
+			err: errors.New("environment variable OPENVPN_PROTOCOL: dummy test error"),
 		},
 		"default settings": {
 			targetIP:  stringCall{call: true},
@@ -214,7 +214,7 @@ func Test_Provider_readSurfshark(t *testing.T) {
 					Return(testCase.multiHop.value, testCase.multiHop.err)
 			}
 			if testCase.protocol.call {
-				env.EXPECT().Inside("PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
+				env.EXPECT().Inside("OPENVPN_PROTOCOL", []string{constants.TCP, constants.UDP}, gomock.Any()).
 					Return(testCase.protocol.value, testCase.protocol.err)
 			}
 

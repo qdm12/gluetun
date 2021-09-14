@@ -47,5 +47,5 @@ func (settings *Provider) readProtonvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable FREE_ONLY: %w", err)
 	}
 
-	return settings.ServerSelection.OpenVPN.readProtocolAndPort(r.env)
+	return settings.ServerSelection.OpenVPN.readProtocolAndPort(r)
 }

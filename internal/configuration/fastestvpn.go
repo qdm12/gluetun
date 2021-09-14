@@ -26,5 +26,5 @@ func (settings *Provider) readFastestvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
-	return settings.ServerSelection.OpenVPN.readProtocolOnly(r.env)
+	return settings.ServerSelection.OpenVPN.readProtocolOnly(r)
 }

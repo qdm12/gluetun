@@ -37,7 +37,7 @@
 - Remove HTTP server v0
 - `PORT` to `OPENVPN_PORT`
 - `UNBLOCK` to `DOT_UNBOUND_UNBLOCK`
-- `PROTOCOL` to `OPENVPN_PROTOCOL`
+- Remove `PROTOCOL`
 - `PORT_FORWARDING`
 - Change servers filtering environment variables to plural
 - Remove `WIREGUARD_PORT`

@@ -69,7 +69,7 @@ LABEL \
 ENV VPNSP=pia \
     VPN_TYPE=openvpn \
     # OpenVPN
-    PROTOCOL=udp \
+    OPENVPN_PROTOCOL=udp \
     OPENVPN_USER= \
     OPENVPN_PASSWORD= \
     OPENVPN_USER_SECRETFILE=/run/secrets/openvpn_user \
