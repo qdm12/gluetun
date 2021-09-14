@@ -21,18 +21,18 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
-		"persist-key",
-		"remote-cert-tls server",
-		"ping 30",
-		"ping-exit 220",
-		"ping-timer-rem",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Wevpn specific
+		"ping 30",
+		"remote-cert-tls server",
 		"redirect-gateway def1 bypass-dhcp",
 		"reneg-sec 0",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + settings.Auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -42,11 +42,8 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		"suppress-timestamps",
 
 		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"auth " + settings.Auth,
 	}
 
 	if connection.Protocol == constants.UDP {
@@ -57,6 +54,8 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
+		lines = append(lines, "persist-tun")
+		lines = append(lines, "persist-key")
 	}
 
 	if settings.MSSFix > 0 {
