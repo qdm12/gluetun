@@ -23,7 +23,6 @@ func (p *Provider) BuildConf(connection models.Connection,
 		"reneg-sec 0",
 		"ping 5",
 		"ping-exit 30",
-		"comp-lzo no",
 		"route-metric 1",
 
 		// Added constant values

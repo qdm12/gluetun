@@ -30,7 +30,6 @@ func (i *Ivpn) BuildConf(connection models.Connection,
 
 		// IVPN specific
 		"remote-cert-tls server", // updated name of ns-cert-type
-		"comp-lzo no",
 		"key-direction 1",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",
 

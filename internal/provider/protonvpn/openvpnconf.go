@@ -39,7 +39,6 @@ func (p *Protonvpn) BuildConf(connection models.Connection,
 		"reneg-sec 0",
 		"key-direction 1",
 		"pull",
-		"comp-lzo no",
 
 		// Added constant values
 		"auth-nocache",

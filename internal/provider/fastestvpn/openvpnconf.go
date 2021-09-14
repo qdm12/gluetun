@@ -35,7 +35,6 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		"ping-restart 0",
 		"tls-client",
 		"tls-cipher  TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
-		"comp-lzo",
 		"key-direction 1",
 		"tun-mtu 1500",
 		"tun-mtu-extra 32",

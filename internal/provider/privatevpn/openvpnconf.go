@@ -28,7 +28,6 @@ func (p *Privatevpn) BuildConf(connection models.Connection,
 		"tls-exit",
 
 		// Privatevpn specific
-		"comp-lzo",
 
 		// Added constant values
 		"auth-nocache",

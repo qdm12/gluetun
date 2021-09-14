@@ -28,8 +28,6 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 		// HideMyAss specific
 		"remote-cert-tls server", // updated name of ns-cert-type
 		// "route-metric 1",
-		"comp-lzo yes",
-		"comp-noadapt",
 
 		// Added constant values
 		"mute-replay-warnings",

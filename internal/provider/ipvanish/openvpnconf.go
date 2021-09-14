@@ -27,7 +27,6 @@ func (i *Ipvanish) BuildConf(connection models.Connection,
 		"tls-exit",
 
 		// Ipvanish specific
-		"comp-lzo",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",
 
 		// Added constant values

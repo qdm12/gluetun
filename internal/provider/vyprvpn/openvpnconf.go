@@ -31,7 +31,6 @@ func (v *Vyprvpn) BuildConf(connection models.Connection,
 		"tls-exit",
 
 		// Vyprvpn specific
-		"comp-lzo",
 		// "verify-x509-name lu1.vyprvpn.com name",
 		"tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 
