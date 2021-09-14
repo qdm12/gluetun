@@ -29,6 +29,8 @@ func (t *Torguard) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"remote-cert-tls server",
+		"ping 5",
+		"ping-restart 30",
 		"tls-exit",
 
 		// Torguard specific
@@ -37,7 +39,6 @@ func (t *Torguard) BuildConf(connection models.Connection,
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",
 		"key-direction 1",
-		"keepalive 5 30",
 		"sndbuf 393216",
 		"rcvbuf 393216",
 
