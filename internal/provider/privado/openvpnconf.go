@@ -26,7 +26,6 @@ func (p *Privado) BuildConf(connection models.Connection,
 		"persist-key",
 		"ping 10",
 		"ping-exit 60",
-		"ping-timer-rem",
 		"tls-exit",
 
 		// Privado specific

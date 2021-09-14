@@ -23,7 +23,6 @@ func (i *Ipvanish) BuildConf(connection models.Connection,
 		"dev " + settings.Interface,
 		"nobind",
 		"persist-key",
-		"ping-timer-rem",
 		"tls-exit",
 
 		// Ipvanish specific

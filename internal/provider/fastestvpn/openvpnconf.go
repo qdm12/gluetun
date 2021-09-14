@@ -28,7 +28,6 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		"persist-key",
 		"ping 15",
 		"ping-exit 60",
-		"ping-timer-rem",
 		"tls-exit",
 
 		// Fastestvpn specific

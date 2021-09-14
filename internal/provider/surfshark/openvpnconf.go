@@ -31,7 +31,6 @@ func (s *Surfshark) BuildConf(connection models.Connection,
 		"persist-key",
 		"remote-cert-tls server",
 		"ping 15",
-		"ping-timer-rem",
 		"tls-exit",
 
 		// Surfshark specific

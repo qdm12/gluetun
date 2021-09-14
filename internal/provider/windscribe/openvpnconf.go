@@ -28,7 +28,6 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		"remote-cert-tls server",
 		"ping 10",
 		"ping-exit 60",
-		"ping-timer-rem",
 		"tls-exit",
 
 		// Windscribe specific

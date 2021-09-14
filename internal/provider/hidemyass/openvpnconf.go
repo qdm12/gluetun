@@ -22,7 +22,6 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 		"persist-key",
 		"ping 5",
 		"ping-exit 30",
-		"ping-timer-rem",
 		"tls-exit",
 
 		// HideMyAss specific

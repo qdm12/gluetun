@@ -29,7 +29,6 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 		"nobind",
 		"persist-key",
 		"remote-cert-tls server",
-		"ping-timer-rem",
 		"tls-exit",
 
 		// Nordvpn specific
