@@ -33,7 +33,6 @@ func (s *Surfshark) BuildConf(connection models.Connection,
 		"tls-exit",
 
 		// Surfshark specific
-		"tun-mtu 1500",
 		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",

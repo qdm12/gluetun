@@ -32,7 +32,6 @@ func (p *Protonvpn) BuildConf(connection models.Connection,
 		"tls-exit",
 
 		// Protonvpn specific
-		"tun-mtu 1500",
 		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 		"reneg-sec 0",
