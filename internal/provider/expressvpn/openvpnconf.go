@@ -24,19 +24,22 @@ func (p *Provider) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
-		"persist-key",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Expressvpn specific
 		"fast-io",
+		"fragment 1300",
+		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
+		"sndbuf 524288",
+		"rcvbuf 524288",
 		"verify-x509-name Server name-prefix", // security hole I guess?
 		"remote-cert-tls server",              // updated name of ns-cert-type
 		"key-direction 1",
-		"fragment 1300",
-		"sndbuf 524288",
-		"rcvbuf 524288",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + settings.Auth,
 
 		// Added constant values
 		"mute-replay-warnings",
@@ -46,18 +49,20 @@ func (p *Provider) BuildConf(connection models.Connection,
 		"suppress-timestamps",
 
 		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"proto " + connection.Protocol,
+		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"auth " + settings.Auth,
-		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
 
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "explicit-exit-notify")
+	}
+
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
+		lines = append(lines, "persist-tun")
+		lines = append(lines, "persist-key")
 	}
 
 	if !settings.IPv6 {
