@@ -24,7 +24,6 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		"client",
 		"dev " + settings.Interface,
 		"nobind",
-		"persist-key",
 		"remote-cert-tls server",
 		"ping 10",
 		"ping-exit 60",
@@ -60,6 +59,7 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
+		lines = append(lines, "persist-key")
 	}
 
 	if settings.MSSFix > 0 {

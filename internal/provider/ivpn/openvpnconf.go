@@ -22,7 +22,6 @@ func (i *Ivpn) BuildConf(connection models.Connection,
 		"client",
 		"dev " + settings.Interface,
 		"nobind",
-		"persist-key",
 		"ping 5",
 		"ping-exit 30",
 		"tls-exit",
@@ -60,6 +59,7 @@ func (i *Ivpn) BuildConf(connection models.Connection,
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
+		lines = append(lines, "persist-key")
 	}
 
 	if !settings.IPv6 {

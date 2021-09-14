@@ -28,7 +28,6 @@ func (p *Protonvpn) BuildConf(connection models.Connection,
 		"client",
 		"dev " + settings.Interface,
 		"nobind",
-		"persist-key",
 		"remote-cert-tls server",
 		"tls-exit",
 
@@ -64,6 +63,7 @@ func (p *Protonvpn) BuildConf(connection models.Connection,
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
+		lines = append(lines, "persist-key")
 	}
 
 	if !settings.IPv6 {
