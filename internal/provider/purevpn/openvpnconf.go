@@ -29,7 +29,6 @@ func (p *Purevpn) BuildConf(connection models.Connection,
 		"key-direction 1",
 		"remote-cert-tls server",
 		"cipher AES-256-CBC",
-		"route-method exe",
 
 		// Added constant values
 		"auth-nocache",
