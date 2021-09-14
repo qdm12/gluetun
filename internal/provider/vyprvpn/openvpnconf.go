@@ -49,6 +49,10 @@ func (v *Vyprvpn) BuildConf(connection models.Connection,
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
 
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "explicit-exit-notify")
+	}
+
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")

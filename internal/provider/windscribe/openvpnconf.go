@@ -55,6 +55,10 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")
 	}
 
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "explicit-exit-notify")
+	}
+
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")

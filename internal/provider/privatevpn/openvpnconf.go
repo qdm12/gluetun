@@ -47,6 +47,7 @@ func (p *Privatevpn) BuildConf(connection models.Connection,
 
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "key-direction 1")
+		lines = append(lines, "explicit-exit-notify")
 	}
 
 	if !settings.Root {

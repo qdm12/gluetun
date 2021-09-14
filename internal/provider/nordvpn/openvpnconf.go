@@ -57,6 +57,7 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "fast-io")
+		lines = append(lines, "explicit-exit-notify")
 	}
 
 	if !settings.Root {

@@ -58,6 +58,10 @@ func (p *Privado) BuildConf(connection models.Connection,
 		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "explicit-exit-notify")
+	}
+
 	if !settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)

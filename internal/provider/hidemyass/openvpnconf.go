@@ -51,6 +51,10 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
 	}
 
+	if connection.Protocol == constants.UDP {
+		lines = append(lines, "explicit-exit-notify")
+	}
+
 	if !settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
