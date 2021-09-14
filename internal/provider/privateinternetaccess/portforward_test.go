@@ -40,7 +40,8 @@ func Test_newHTTPClient(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify pia transport TLS config is set
-	piaTransport := piaClient.Transport.(*http.Transport)
+	piaTransport, ok := piaClient.Transport.(*http.Transport)
+	require.True(t, ok)
 	rootCAsSubjects := piaTransport.TLSClientConfig.RootCAs.Subjects()
 	assert.Equal(t, expectedRootCAsSubjects, rootCAsSubjects)
 	piaTransport.TLSClientConfig.RootCAs = nil

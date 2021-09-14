@@ -32,14 +32,20 @@ issues:
 linters:
   disable-all: true
   enable:
+    # - cyclop
+    # - errorlint
+    # - wrapcheck
     - asciicheck
     - bodyclose
     - deadcode
     - dogsled
     - dupl
+    - durationcheck
     - errcheck
+    - errname
     - exhaustive
     - exportloopref
+    - forcetypeassert
     - gci
     - gochecknoglobals
     - gochecknoinits
@@ -52,13 +58,16 @@ linters:
     - goheader
     - goimports
     - gomnd
+    - gomoddirectives
     - goprintffuncname
     - gosec
     - gosimple
     - govet
     - importas
+    - importas
     - ineffassign
     - lll
+    - makezero
     - misspell
     - nakedret
     - nestif
@@ -67,6 +76,8 @@ linters:
     - nolintlint
     - prealloc
     - predeclared
+    - predeclared
+    - promlinter
     - revive
     - rowserrcheck
     - sqlclosecheck
@@ -79,6 +90,7 @@ linters:
     - unparam
     - unused
     - varcheck
+    - wastedassign
     - whitespace
 
 run:
