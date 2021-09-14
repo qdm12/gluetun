@@ -40,14 +40,16 @@ func (p *PIA) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
-		"remote-cert-tls server",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// PIA specific
+		"remote-cert-tls server",
 		"reneg-sec 0",
 		"disable-occ",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
 
 		// Added constant values
 		"auth-nocache",
@@ -56,9 +58,7 @@ func (p *PIA) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
+		// Connection variables
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
 	}

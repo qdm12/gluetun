@@ -22,15 +22,19 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
-		"remote-cert-tls server",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Windscribe specific
 		"ping 10",
+		"remote-cert-tls server",
+		"verify-x509-name " + connection.Hostname + " name",
 		"key-direction 1",
 		"reneg-sec 0",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + settings.Auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -39,13 +43,9 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
+		// Connection variables
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"auth " + settings.Auth,
-		"verify-x509-name " + connection.Hostname + " name",
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

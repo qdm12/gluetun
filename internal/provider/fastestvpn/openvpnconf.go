@@ -23,16 +23,19 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Fastestvpn specific
-		"ping 15",
-		"tls-cipher  TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
-		"key-direction 1",
 		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)), // defaults to 1450
+		"ping 15",
+		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
+		"key-direction 1",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + settings.Auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -41,12 +44,9 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
+		// Connection variables
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"auth " + settings.Auth,
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

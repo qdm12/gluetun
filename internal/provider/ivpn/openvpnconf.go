@@ -20,15 +20,18 @@ func (i *Ivpn) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// IVPN specific
 		"ping 5",
 		"remote-cert-tls server", // updated name of ns-cert-type
 		"key-direction 1",
+		"verify-x509-name " + namePrefix + " name-prefix",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
 
 		// Added constant values
 		"mute-replay-warnings",
@@ -37,12 +40,9 @@ func (i *Ivpn) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"proto " + connection.Protocol,
+		// Connection variables
+		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"verify-x509-name " + namePrefix + " name-prefix",
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

@@ -25,17 +25,20 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
-		"remote-cert-tls server",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Nordvpn specific
 		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
+		"ping 15",
+		"remote-cert-tls server",
 		"reneg-sec 0",
 		"key-direction 1",
-		"ping 15",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + settings.Auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -44,12 +47,9 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
+		// Connection variables
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"auth " + settings.Auth,
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

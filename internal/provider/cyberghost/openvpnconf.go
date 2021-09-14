@@ -22,13 +22,16 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
-		"remote-cert-tls server",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Cyberghost specific
 		"ping 10",
+		"remote-cert-tls server",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + settings.Auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -37,12 +40,9 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
+		// Connection variables
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"auth " + settings.Auth,
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

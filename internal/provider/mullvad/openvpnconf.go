@@ -17,13 +17,15 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
-		"remote-cert-tls server",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
+		"auth-user-pass " + constants.OpenVPNAuthConf,
 
 		// Mullvad specific
 		"ping 10",
+		"remote-cert-tls server",
 		"sndbuf 524288",
 		"rcvbuf 524288",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA",
@@ -35,9 +37,7 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
+		// Connection variables
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
 	}

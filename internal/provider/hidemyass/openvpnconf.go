@@ -17,14 +17,15 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// HideMyAss specific
 		"ping 5",
 		"remote-cert-tls server", // updated name of ns-cert-type
-		// "route-metric 1",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
 
 		// Added constant values
 		"mute-replay-warnings",
@@ -33,10 +34,8 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"proto " + connection.Protocol,
+		// Connection variables
+		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
 	}
 

@@ -20,12 +20,16 @@ func (i *Ipvanish) BuildConf(connection models.Connection,
 
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
 		"tls-exit",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Ipvanish specific
+		"verify-x509-name " + connection.Hostname + " name",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",
+		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + settings.Auth,
 
 		// Added constant values
 		"mute-replay-warnings",
@@ -34,13 +38,9 @@ func (i *Ipvanish) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
-		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"proto " + connection.Protocol,
+		// Connection variables
+		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
-		"verify-x509-name " + connection.Hostname + " name",
-		"auth " + settings.Auth,
 	}
 
 	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)

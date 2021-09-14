@@ -13,14 +13,15 @@ func (p *Provider) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string, err error) {
 	lines = []string{
 		"client",
-		"dev " + settings.Interface,
 		"nobind",
 		"tls-exit",
-		"remote-cert-tls server",
+		"dev " + settings.Interface,
+		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// VPNUnlimited specific
-		"reneg-sec 0",
 		"ping 5",
+		"remote-cert-tls server",
+		"reneg-sec 0",
 		"route-metric 1",
 
 		// Added constant values
@@ -30,8 +31,7 @@ func (p *Provider) BuildConf(connection models.Connection,
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
-		// Modified variables
-		"verb " + strconv.Itoa(settings.Verbosity),
+		// Connection variables
 		connection.OpenVPNProtoLine(),
 		connection.OpenVPNRemoteLine(),
 	}
