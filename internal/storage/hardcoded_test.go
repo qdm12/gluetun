@@ -53,6 +53,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Cyberghost.Version,
 			digest:  "9ce64729",
 		},
+		"Expressvpn": {
+			model:   models.ExpressvpnServer{},
+			version: allServers.Expressvpn.Version,
+			digest:  "6e54a351",
+		},
 		"Fastestvpn": {
 			model:   models.FastestvpnServer{},
 			version: allServers.Fastestvpn.Version,

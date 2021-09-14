@@ -16,6 +16,11 @@ func Test_AllServers_GetCopy(t *testing.T) {
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
+		Expressvpn: ExpressvpnServers{
+			Servers: []ExpressvpnServer{{
+				IPs: []net.IP{{1, 2, 3, 4}},
+			}},
+		},
 		Fastestvpn: FastestvpnServers{
 			Servers: []FastestvpnServer{{
 				IPs: []net.IP{{1, 2, 3, 4}},

@@ -7,6 +7,7 @@ import (
 func (a AllServers) GetCopy() (servers AllServers) {
 	servers = a // copy versions and timestamps
 	servers.Cyberghost.Servers = a.GetCyberghost()
+	servers.Expressvpn.Servers = a.GetExpressvpn()
 	servers.Fastestvpn.Servers = a.GetFastestvpn()
 	servers.HideMyAss.Servers = a.GetHideMyAss()
 	servers.Ipvanish.Servers = a.GetIpvanish()
@@ -32,6 +33,18 @@ func (a *AllServers) GetCyberghost() (servers []CyberghostServer) {
 	}
 	servers = make([]CyberghostServer, len(a.Cyberghost.Servers))
 	for i, serverToCopy := range a.Cyberghost.Servers {
+		servers[i] = serverToCopy
+		servers[i].IPs = copyIPs(serverToCopy.IPs)
+	}
+	return servers
+}
+
+func (a *AllServers) GetExpressvpn() (servers []ExpressvpnServer) {
+	if a.Expressvpn.Servers == nil {
+		return nil
+	}
+	servers = make([]ExpressvpnServer, len(a.Expressvpn.Servers))
+	for i, serverToCopy := range a.Expressvpn.Servers {
 		servers[i] = serverToCopy
 		servers[i].IPs = copyIPs(serverToCopy.IPs)
 	}

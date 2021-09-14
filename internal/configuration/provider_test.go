@@ -35,6 +35,25 @@ func Test_Provider_lines(t *testing.T) {
 				"      |--Protocol: udp",
 			},
 		},
+		"expressvpn": {
+			settings: Provider{
+				Name: constants.Expressvpn,
+				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
+					Hostnames: []string{"a", "b"},
+					Countries: []string{"c", "d"},
+					Cities:    []string{"e", "f"},
+				},
+			},
+			lines: []string{
+				"|--Expressvpn settings:",
+				"   |--Countries: c, d",
+				"   |--Cities: e, f",
+				"   |--Hostnames: a, b",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
+			},
+		},
 		"fastestvpn": {
 			settings: Provider{
 				Name: constants.Fastestvpn,

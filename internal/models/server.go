@@ -12,6 +12,15 @@ type CyberghostServer struct {
 	IPs      []net.IP `json:"ips"`
 }
 
+type ExpressvpnServer struct {
+	Country  string   `json:"country"`
+	City     string   `json:"city,omitempty"`
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	IPs      []net.IP `json:"ips"`
+}
+
 type FastestvpnServer struct {
 	Hostname string   `json:"hostname"`
 	TCP      bool     `json:"tcp"`

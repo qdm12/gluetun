@@ -44,6 +44,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
+	flagSet.BoolVar(&options.Expressvpn, "expressvpn", false, "Update ExpressVPN servers")
 	flagSet.BoolVar(&options.Fastestvpn, "fastestvpn", false, "Update FastestVPN servers")
 	flagSet.BoolVar(&options.HideMyAss, "hidemyass", false, "Update HideMyAss servers")
 	flagSet.BoolVar(&options.Ipvanish, "ipvanish", false, "Update IpVanish servers")

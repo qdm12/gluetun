@@ -53,6 +53,8 @@ func (settings *Provider) read(r reader, vpnType string) error {
 		err = settings.readCustom(r, vpnType)
 	case constants.Cyberghost:
 		err = settings.readCyberghost(r)
+	case constants.Expressvpn:
+		err = settings.readExpressvpn(r)
 	case constants.Fastestvpn:
 		err = settings.readFastestvpn(r)
 	case constants.HideMyAss:
@@ -104,7 +106,8 @@ func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err 
 	case constants.OpenVPN:
 		allowedVPNServiceProviders = []string{
 			constants.Custom,
-			"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
+			"cyberghost", constants.Expressvpn, "fastestvpn", "hidemyass", "ipvanish",
+			"ivpn", "mullvad", "nordvpn",
 			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
 			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn",
 			constants.Wevpn, "windscribe"}

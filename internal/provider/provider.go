@@ -13,6 +13,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/custom"
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
+	"github.com/qdm12/gluetun/internal/provider/expressvpn"
 	"github.com/qdm12/gluetun/internal/provider/fastestvpn"
 	"github.com/qdm12/gluetun/internal/provider/hidemyass"
 	"github.com/qdm12/gluetun/internal/provider/ipvanish"
@@ -55,6 +56,8 @@ func New(provider string, allServers models.AllServers, timeNow func() time.Time
 		return custom.New()
 	case constants.Cyberghost:
 		return cyberghost.New(allServers.Cyberghost.Servers, randSource)
+	case constants.Expressvpn:
+		return expressvpn.New(allServers.Expressvpn.Servers, randSource)
 	case constants.Fastestvpn:
 		return fastestvpn.New(allServers.Fastestvpn.Servers, randSource)
 	case constants.HideMyAss:

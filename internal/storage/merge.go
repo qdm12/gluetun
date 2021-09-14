@@ -34,6 +34,7 @@ func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.Al
 	return models.AllServers{
 		Version:      hardcoded.Version,
 		Cyberghost:   s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
+		Expressvpn:   s.mergeExpressvpn(hardcoded.Expressvpn, persisted.Expressvpn),
 		Fastestvpn:   s.mergeFastestvpn(hardcoded.Fastestvpn, persisted.Fastestvpn),
 		HideMyAss:    s.mergeHideMyAss(hardcoded.HideMyAss, persisted.HideMyAss),
 		Ipvanish:     s.mergeIpvanish(hardcoded.Ipvanish, persisted.Ipvanish),
@@ -66,6 +67,19 @@ func (s *Storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers)
 	}
 
 	s.logTimeDiff("Cyberghost", persisted.Timestamp, hardcoded.Timestamp)
+	return persisted
+}
+
+func (s *Storage) mergeExpressvpn(hardcoded, persisted models.ExpressvpnServers) models.ExpressvpnServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+	versionDiff := int(hardcoded.Version) - int(persisted.Version)
+	if versionDiff > 0 {
+		s.logVersionDiff("ExpressVPN", versionDiff)
+		return hardcoded
+	}
+	s.logTimeDiff("ExpressVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 

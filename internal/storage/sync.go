@@ -15,6 +15,7 @@ var (
 
 func countServers(allServers models.AllServers) int {
 	return len(allServers.Cyberghost.Servers) +
+		len(allServers.Expressvpn.Servers) +
 		len(allServers.Fastestvpn.Servers) +
 		len(allServers.HideMyAss.Servers) +
 		len(allServers.Ipvanish.Servers) +
