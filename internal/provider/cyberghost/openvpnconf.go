@@ -13,7 +13,7 @@ import (
 func (c *Cyberghost) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string, err error) {
 	if settings.Cipher == "" {
-		settings.Cipher = constants.AES256cbc
+		settings.Cipher = constants.AES128gcm
 	}
 
 	if settings.Auth == "" {
