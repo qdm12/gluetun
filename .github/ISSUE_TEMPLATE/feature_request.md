@@ -3,7 +3,6 @@ name: Feature request
 about: Suggest a feature to add to this project
 title: 'Feature request: FILL THIS TEXT!'
 labels: ":bulb: feature request"
-assignees: qdm12
 
 ---
 

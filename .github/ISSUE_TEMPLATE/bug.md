@@ -3,7 +3,6 @@ name: Bug
 about: Report a bug
 title: 'Bug: FILL THIS TEXT!'
 labels: ":bug: bug"
-assignees: qdm12
 
 ---
 

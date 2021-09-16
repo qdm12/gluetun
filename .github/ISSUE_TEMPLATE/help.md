@@ -3,7 +3,6 @@ name: Help
 about: Ask for help
 title: 'Help: FILL THIS TEXT!'
 labels: ":pray: help wanted"
-assignees:
 
 ---
 
