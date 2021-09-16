@@ -48,7 +48,6 @@ func (p *PIA) BuildConf(connection models.Connection,
 		// PIA specific
 		"remote-cert-tls server",
 		"reneg-sec 0",
-		"disable-occ",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 
 		// Added constant values
