@@ -1,6 +1,4 @@
 linters-settings:
-  maligned:
-    suggest-new: true
   misspell:
     locale: US
 
@@ -30,18 +28,15 @@ issues:
       linters:
         - gomnd
 linters:
-  disable-all: true
   enable:
     # - cyclop
     # - errorlint
     # - wrapcheck
     - asciicheck
     - bodyclose
-    - deadcode
     - dogsled
     - dupl
     - durationcheck
-    - errcheck
     - errname
     - exhaustive
     - exportloopref
@@ -61,11 +56,8 @@ linters:
     - gomoddirectives
     - goprintffuncname
     - gosec
-    - gosimple
-    - govet
     - importas
     - importas
-    - ineffassign
     - lll
     - makezero
     - misspell
@@ -81,15 +73,10 @@ linters:
     - revive
     - rowserrcheck
     - sqlclosecheck
-    - staticcheck
-    - structcheck
     - thelper
     - tparallel
-    - typecheck
     - unconvert
     - unparam
-    - unused
-    - varcheck
     - wastedassign
     - whitespace
 
