@@ -55,8 +55,11 @@ func (settings *OpenVPNSelection) readMullvad(r reader) (err error) {
 		return err
 	}
 
-	settings.CustomPort, err = readOpenVPNCustomPort(r.env, settings.TCP,
-		[]uint16{80, 443, 1401}, []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400})
+	settings.CustomPort, err = readOpenVPNCustomPort(r, openvpnPortValidation{
+		tcp:        settings.TCP,
+		allowedTCP: []uint16{80, 443, 1401},
+		allowedUDP: []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400},
+	})
 	if err != nil {
 		return err
 	}

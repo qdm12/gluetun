@@ -142,7 +142,7 @@ func (settings *OpenVPNSelection) readProtocolAndPort(r reader) (err error) {
 		return err
 	}
 
-	settings.CustomPort, err = readPortOrZero(r.env, "PORT")
+	settings.CustomPort, err = readOpenVPNCustomPort(r, openvpnPortValidation{allAllowed: true})
 	if err != nil {
 		return fmt.Errorf("environment variable PORT: %w", err)
 	}

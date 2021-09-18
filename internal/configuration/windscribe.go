@@ -46,9 +46,11 @@ func (settings *OpenVPNSelection) readWindscribe(r reader) (err error) {
 		return err
 	}
 
-	settings.CustomPort, err = readOpenVPNCustomPort(r.env, settings.TCP,
-		[]uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783},
-		[]uint16{53, 80, 123, 443, 1194, 54783})
+	settings.CustomPort, err = readOpenVPNCustomPort(r, openvpnPortValidation{
+		tcp:        settings.TCP,
+		allowedTCP: []uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783},
+		allowedUDP: []uint16{53, 80, 123, 443, 1194, 54783},
+	})
 	if err != nil {
 		return err
 	}

@@ -40,17 +40,18 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 	}
 
 	testCases := map[string]struct {
-		targetIP  singleStringCall
-		countries sliceStringCall
-		cities    sliceStringCall
-		isps      sliceStringCall
-		hostnames sliceStringCall
-		protocol  singleStringCall
-		ovpnPort  portCall
-		wgPort    portCall
-		wgOldPort portCall
-		settings  Provider
-		err       error
+		targetIP    singleStringCall
+		countries   sliceStringCall
+		cities      sliceStringCall
+		isps        sliceStringCall
+		hostnames   sliceStringCall
+		protocol    singleStringCall
+		ovpnPort    portCall
+		ovpnOldPort portCall
+		wgPort      portCall
+		wgOldPort   portCall
+		settings    Provider
+		err         error
 	}{
 		"target IP error": {
 			targetIP: singleStringCall{call: true, value: "something", err: errDummy},
@@ -120,32 +121,34 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
-			err: errors.New("environment variable PORT: dummy test error"),
+			err: errors.New("environment variable OPENVPN_PORT: dummy test error"),
 		},
 		"wireguard custom port error": {
-			targetIP:  singleStringCall{call: true},
-			countries: sliceStringCall{call: true},
-			cities:    sliceStringCall{call: true},
-			isps:      sliceStringCall{call: true},
-			hostnames: sliceStringCall{call: true},
-			protocol:  singleStringCall{call: true},
-			ovpnPort:  portCall{getCall: true, getValue: "0"},
-			wgPort:    portCall{getCall: true, getErr: errDummy},
+			targetIP:    singleStringCall{call: true},
+			countries:   sliceStringCall{call: true},
+			cities:      sliceStringCall{call: true},
+			isps:        sliceStringCall{call: true},
+			hostnames:   sliceStringCall{call: true},
+			protocol:    singleStringCall{call: true},
+			ovpnPort:    portCall{getCall: true, getValue: "0"},
+			ovpnOldPort: portCall{getCall: true, getValue: "0"},
+			wgPort:      portCall{getCall: true, getErr: errDummy},
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
 			err: errors.New("environment variable WIREGUARD_ENDPOINT_PORT: dummy test error"),
 		},
 		"default settings": {
-			targetIP:  singleStringCall{call: true},
-			countries: sliceStringCall{call: true},
-			cities:    sliceStringCall{call: true},
-			isps:      sliceStringCall{call: true},
-			hostnames: sliceStringCall{call: true},
-			protocol:  singleStringCall{call: true},
-			ovpnPort:  portCall{getCall: true, getValue: "0"},
-			wgPort:    portCall{getCall: true, getValue: "0"},
-			wgOldPort: portCall{getCall: true, getValue: "0"},
+			targetIP:    singleStringCall{call: true},
+			countries:   sliceStringCall{call: true},
+			cities:      sliceStringCall{call: true},
+			isps:        sliceStringCall{call: true},
+			hostnames:   sliceStringCall{call: true},
+			protocol:    singleStringCall{call: true},
+			ovpnPort:    portCall{getCall: true, getValue: "0"},
+			ovpnOldPort: portCall{getCall: true, getValue: "0"},
+			wgPort:      portCall{getCall: true, getValue: "0"},
+			wgOldPort:   portCall{getCall: true, getValue: "0"},
 			settings: Provider{
 				Name: constants.Ivpn,
 			},
@@ -218,12 +221,20 @@ func Test_Provider_readIvpn(t *testing.T) { //nolint:gocognit
 					Return(testCase.protocol.value, testCase.protocol.err)
 			}
 			if testCase.ovpnPort.getCall {
-				env.EXPECT().Get("PORT", gomock.Any()).
+				env.EXPECT().Get("OPENVPN_PORT", gomock.Any()).
 					Return(testCase.ovpnPort.getValue, testCase.ovpnPort.getErr)
 			}
 			if testCase.ovpnPort.portCall {
-				env.EXPECT().Port("PORT").
+				env.EXPECT().Port("OPENVPN_PORT").
 					Return(testCase.ovpnPort.portValue, testCase.ovpnPort.portErr)
+			}
+			if testCase.ovpnOldPort.getCall {
+				env.EXPECT().Get("PORT", gomock.Any()).
+					Return(testCase.ovpnOldPort.getValue, testCase.ovpnOldPort.getErr)
+			}
+			if testCase.ovpnOldPort.portCall {
+				env.EXPECT().Port("PORT").
+					Return(testCase.ovpnOldPort.portValue, testCase.ovpnOldPort.portErr)
 			}
 			if testCase.wgPort.getCall {
 				env.EXPECT().Get("WIREGUARD_ENDPOINT_PORT", gomock.Any()).

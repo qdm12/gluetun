@@ -50,8 +50,11 @@ func (settings *OpenVPNSelection) readIVPN(r reader) (err error) {
 		return err
 	}
 
-	settings.CustomPort, err = readOpenVPNCustomPort(r.env, settings.TCP,
-		[]uint16{80, 443, 1443}, []uint16{53, 1194, 2049, 2050})
+	settings.CustomPort, err = readOpenVPNCustomPort(r, openvpnPortValidation{
+		tcp:        settings.TCP,
+		allowedTCP: []uint16{80, 443, 1443},
+		allowedUDP: []uint16{53, 1194, 2049, 2050},
+	})
 	if err != nil {
 		return err
 	}

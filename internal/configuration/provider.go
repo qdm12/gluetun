@@ -149,33 +149,49 @@ func readTargetIP(env params.Interface) (targetIP net.IP, err error) {
 	return targetIP, nil
 }
 
-func readOpenVPNCustomPort(env params.Interface, tcp bool,
-	allowedTCP, allowedUDP []uint16) (port uint16, err error) {
-	port, err = readPortOrZero(env, "PORT")
+type openvpnPortValidation struct {
+	allAllowed bool
+	tcp        bool
+	allowedTCP []uint16
+	allowedUDP []uint16
+}
+
+func readOpenVPNCustomPort(r reader, validation openvpnPortValidation) (
+	port uint16, err error) {
+	port, err = readPortOrZero(r.env, "OPENVPN_PORT")
 	if err != nil {
-		return 0, fmt.Errorf("environment variable PORT: %w", err)
+		return 0, fmt.Errorf("environment variable OPENVPN_PORT: %w", err)
 	} else if port == 0 {
-		return 0, nil
+		// Try using old variable name
+		port, err = readPortOrZero(r.env, "PORT")
+		if err != nil {
+			r.onRetroActive("PORT", "OPENVPN_PORT")
+			return 0, fmt.Errorf("environment variable PORT: %w", err)
+		}
 	}
 
-	if tcp {
-		for i := range allowedTCP {
-			if allowedTCP[i] == port {
+	if port == 0 || validation.allAllowed {
+		return port, nil
+	}
+
+	if validation.tcp {
+		for _, allowedPort := range validation.allowedTCP {
+			if port == allowedPort {
 				return port, nil
 			}
 		}
 		return 0, fmt.Errorf(
 			"environment variable PORT: %w: port %d for TCP protocol, can only be one of %s",
-			ErrInvalidPort, port, portsToString(allowedTCP))
+			ErrInvalidPort, port, portsToString(validation.allowedTCP))
 	}
-	for i := range allowedUDP {
-		if allowedUDP[i] == port {
+	for _, allowedPort := range validation.allowedUDP {
+		if port == allowedPort {
 			return port, nil
 		}
 	}
 	return 0, fmt.Errorf(
 		"environment variable PORT: %w: port %d for UDP protocol, can only be one of %s",
-		ErrInvalidPort, port, portsToString(allowedUDP))
+		ErrInvalidPort, port, portsToString(validation.allowedUDP))
 }
 
 // note: set allowed to an empty slice to allow all valid ports
