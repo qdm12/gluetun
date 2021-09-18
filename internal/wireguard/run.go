@@ -107,6 +107,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
+	w.logger.Info("Connecting to " + w.settings.Endpoint.String())
 	err = configureDevice(client, w.settings)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrConfigure, err)
