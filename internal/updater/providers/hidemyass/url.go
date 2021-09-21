@@ -27,8 +27,13 @@ func parseOpenvpnURL(url, protocol string) (country, region, city string) {
 		city = parts[2]
 	}
 
-	return camelCaseToWords(country), camelCaseToWords(region),
-		camelCaseToWords(city)
+	country = camelCaseToWords(country)
+	region = camelCaseToWords(region)
+	city = camelCaseToWords(city)
+
+	country = mutateSpecialCountryCases(country)
+
+	return country, region, city
 }
 
 func camelCaseToWords(camelCase string) (words string) {
@@ -41,4 +46,13 @@ func camelCaseToWords(camelCase string) (words string) {
 		words += string(r)
 	}
 	return words
+}
+
+func mutateSpecialCountryCases(country string) string {
+	switch country {
+	case "Coted`Ivoire":
+		return "Cote d'Ivoire"
+	default:
+		return country
+	}
 }
