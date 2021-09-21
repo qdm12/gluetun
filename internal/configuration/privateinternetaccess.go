@@ -26,7 +26,7 @@ func (settings *Provider) readPrivateInternetAccess(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	settings.ServerSelection.Hostnames, err = r.env.CSVInside("SERVER_NAME", constants.PIANameChoices(servers))
+	settings.ServerSelection.Names, err = r.env.CSVInside("SERVER_NAME", constants.PIANameChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable SERVER_NAME: %w", err)
 	}
