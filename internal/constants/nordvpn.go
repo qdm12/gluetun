@@ -25,11 +25,3 @@ func NordvpnHostnameChoices(servers []models.NordvpnServer) (choices []string) {
 	}
 	return makeUnique(choices)
 }
-
-func NordvpnNameChoices(servers []models.NordvpnServer) (choices []string) {
-	choices = make([]string, len(servers))
-	for i := range servers {
-		choices[i] = servers[i].Name
-	}
-	return makeUnique(choices)
-}

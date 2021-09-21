@@ -81,7 +81,7 @@ func Test_versions(t *testing.T) {
 		"Nordvpn": {
 			model:   models.NordvpnServer{},
 			version: allServers.Nordvpn.Version,
-			digest:  "a3b5d609",
+			digest:  "a8043704",
 		},
 		"Privado": {
 			model:   models.PrivadoServer{},

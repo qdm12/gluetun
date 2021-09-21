@@ -27,11 +27,6 @@ func (settings *Provider) readNordvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	settings.ServerSelection.Names, err = r.env.CSVInside("SERVER_NAME", constants.NordvpnHostnameChoices(servers))
-	if err != nil {
-		return fmt.Errorf("environment variable SERVER_NAME: %w", err)
-	}
-
 	settings.ServerSelection.Numbers, err = readNordVPNServerNumbers(r.env)
 	if err != nil {
 		return err

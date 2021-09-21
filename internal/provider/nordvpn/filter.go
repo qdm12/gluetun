@@ -21,7 +21,6 @@ func (n *Nordvpn) filterServers(selection configuration.ServerSelection) (
 		case
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			utils.FilterByPossibilities(server.Name, selection.Names),
 			utils.FilterByPossibilities(serverNumber, selectedNumbers),
 			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:

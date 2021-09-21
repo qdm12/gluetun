@@ -111,7 +111,7 @@ ENV VPNSP=pia \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
     # # Nordvpn only:
     SERVER_NUMBER= \
-    # # NordVPN and ProtonVPN only:
+    # # PIA and ProtonVPN only:
     SERVER_NAME= \
     # # ProtonVPN only:
     FREE_ONLY= \

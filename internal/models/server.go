@@ -65,7 +65,6 @@ type MullvadServer struct {
 type NordvpnServer struct { //nolint:maligned
 	Region   string `json:"region"`
 	Hostname string `json:"hostname"`
-	Name     string `json:"name"`
 	Number   uint16 `json:"number"`
 	IP       net.IP `json:"ip"`
 	TCP      bool   `json:"tcp"`
