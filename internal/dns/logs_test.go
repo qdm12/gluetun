@@ -3,7 +3,6 @@ package dns
 import (
 	"testing"
 
-	"github.com/qdm12/golibs/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,30 +11,30 @@ func Test_processLogLine(t *testing.T) {
 	tests := map[string]struct {
 		s        string
 		filtered string
-		level    logging.Level
+		level    logLevel
 	}{
-		"empty string":  {"", "", logging.LevelInfo},
-		"random string": {"asdasqdb", "asdasqdb", logging.LevelInfo},
+		"empty string":  {"", "", levelInfo},
+		"random string": {"asdasqdb", "asdasqdb", levelInfo},
 		"unbound notice": {
 			"[1594595249] unbound[75:0] notice: init module 0: validator",
 			"init module 0: validator",
-			logging.LevelInfo},
+			levelInfo},
 		"unbound info": {
 			"[1594595249] unbound[75:0] info: init module 0: validator",
 			"init module 0: validator",
-			logging.LevelInfo},
+			levelInfo},
 		"unbound warn": {
 			"[1594595249] unbound[75:0] warn: init module 0: validator",
 			"init module 0: validator",
-			logging.LevelWarn},
+			levelWarn},
 		"unbound error": {
 			"[1594595249] unbound[75:0] error: init module 0: validator",
 			"init module 0: validator",
-			logging.LevelError},
+			levelError},
 		"unbound unknown": {
 			"[1594595249] unbound[75:0] BLA: init module 0: validator",
 			"BLA: init module 0: validator",
-			logging.LevelInfo},
+			levelInfo},
 	}
 	for name, tc := range tests {
 		tc := tc

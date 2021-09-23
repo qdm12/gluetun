@@ -3,7 +3,6 @@ package openvpn
 import (
 	"testing"
 
-	"github.com/qdm12/golibs/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,38 +11,38 @@ func Test_processLogLine(t *testing.T) {
 	tests := map[string]struct {
 		s        string
 		filtered string
-		level    logging.Level
+		level    logLevel
 	}{
-		"empty string":  {"", "", logging.LevelInfo},
-		"random string": {"asdasqdb", "asdasqdb", logging.LevelInfo},
+		"empty string":  {"", "", levelInfo},
+		"random string": {"asdasqdb", "asdasqdb", levelInfo},
 		"openvpn unknown": {
 			"message",
 			"message",
-			logging.LevelInfo},
+			levelInfo},
 		"openvpn note": {
 			"NOTE: message",
 			"message",
-			logging.LevelInfo},
+			levelInfo},
 		"openvpn warning": {
 			"WARNING: message",
 			"message",
-			logging.LevelWarn},
+			levelWarn},
 		"openvpn options error": {
 			"Options error: message",
 			"message",
-			logging.LevelError},
+			levelError},
 		"openvpn ignored message": {
 			"NOTE: UID/GID downgrade will be delayed because of --client, --pull, or --up-delay",
 			"",
-			logging.LevelDebug},
+			levelInfo},
 		"openvpn success": {
 			"Initialization Sequence Completed",
 			"Initialization Sequence Completed",
-			logging.LevelInfo},
+			levelInfo},
 		"openvpn auth failed": {
 			"AUTH: Received control message: AUTH_FAILED",
 			"AUTH: Received control message: AUTH_FAILED\n\nYour credentials might be wrong 🤨\n\n",
-			logging.LevelError},
+			levelError},
 	}
 	for name, tc := range tests {
 		tc := tc

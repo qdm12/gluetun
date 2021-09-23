@@ -3,8 +3,6 @@ package openvpn
 import (
 	"context"
 	"strings"
-
-	"github.com/qdm12/golibs/logging"
 )
 
 func streamLines(ctx context.Context, done chan<- struct{},
@@ -32,16 +30,14 @@ func streamLines(ctx context.Context, done chan<- struct{},
 			continue // filtered out
 		}
 		if errLine {
-			level = logging.LevelError
+			level = levelError
 		}
 		switch level {
-		case logging.LevelDebug:
-			logger.Debug(line)
-		case logging.LevelInfo:
+		case levelInfo:
 			logger.Info(line)
-		case logging.LevelWarn:
+		case levelWarn:
 			logger.Warn(line)
-		case logging.LevelError:
+		case levelError:
 			logger.Error(line)
 		}
 		if strings.Contains(line, "Initialization Sequence Completed") {
