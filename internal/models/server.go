@@ -5,7 +5,7 @@ import (
 )
 
 type CyberghostServer struct {
-	Region   string   `json:"region"`
+	Country  string   `json:"country"`
 	Group    string   `json:"group"`
 	Hostname string   `json:"hostname"`
 	IPs      []net.IP `json:"ips"`

@@ -36,7 +36,7 @@ func (c *Cyberghost) filterServers(selection configuration.ServerSelection) (
 		switch {
 		case
 			utils.FilterByPossibilities(server.Group, selection.Groups),
-			utils.FilterByPossibilities(server.Region, selection.Regions),
+			utils.FilterByPossibilities(server.Country, selection.Countries),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames):
 		default:
 			servers = append(servers, server)

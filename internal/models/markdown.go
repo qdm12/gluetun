@@ -18,7 +18,7 @@ func markdownTableHeading(legendFields ...string) (markdown string) {
 }
 
 func (s *CyberghostServers) ToMarkdown() (markdown string) {
-	markdown = markdownTableHeading("Region", "Group", "Hostname")
+	markdown = markdownTableHeading("Country", "Group", "Hostname")
 	for _, server := range s.Servers {
 		markdown += server.ToMarkdown() + "\n"
 	}
@@ -26,7 +26,7 @@ func (s *CyberghostServers) ToMarkdown() (markdown string) {
 }
 
 func (s CyberghostServer) ToMarkdown() (markdown string) {
-	return fmt.Sprintf("| %s | %s | `%s` |", s.Region, s.Group, s.Hostname)
+	return fmt.Sprintf("| %s | %s | `%s` |", s.Country, s.Group, s.Hostname)
 }
 
 func (s *FastestvpnServers) ToMarkdown() (markdown string) {

@@ -25,22 +25,22 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 		},
 		"servers without filter defaults to UDP": {
 			servers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium TCP Asia"},
-				{Region: "b", Group: "Premium TCP Europe"},
-				{Region: "c", Group: "Premium UDP Asia"},
-				{Region: "d", Group: "Premium UDP Europe"},
+				{Country: "a", Group: "Premium TCP Asia"},
+				{Country: "b", Group: "Premium TCP Europe"},
+				{Country: "c", Group: "Premium UDP Asia"},
+				{Country: "d", Group: "Premium UDP Europe"},
 			},
 			filteredServers: []models.CyberghostServer{
-				{Region: "c", Group: "Premium UDP Asia"},
-				{Region: "d", Group: "Premium UDP Europe"},
+				{Country: "c", Group: "Premium UDP Asia"},
+				{Country: "d", Group: "Premium UDP Europe"},
 			},
 		},
 		"servers with TCP selection": {
 			servers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium TCP Asia"},
-				{Region: "b", Group: "Premium TCP Europe"},
-				{Region: "c", Group: "Premium UDP Asia"},
-				{Region: "d", Group: "Premium UDP Europe"},
+				{Country: "a", Group: "Premium TCP Asia"},
+				{Country: "b", Group: "Premium TCP Europe"},
+				{Country: "c", Group: "Premium UDP Asia"},
+				{Country: "d", Group: "Premium UDP Europe"},
 			},
 			selection: configuration.ServerSelection{
 				OpenVPN: configuration.OpenVPNSelection{
@@ -48,46 +48,46 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 				},
 			},
 			filteredServers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium TCP Asia"},
-				{Region: "b", Group: "Premium TCP Europe"},
+				{Country: "a", Group: "Premium TCP Asia"},
+				{Country: "b", Group: "Premium TCP Europe"},
 			},
 		},
 		"servers with regions filter": {
 			servers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium UDP Asia"},
-				{Region: "b", Group: "Premium UDP Asia"},
-				{Region: "c", Group: "Premium UDP Asia"},
-				{Region: "d", Group: "Premium UDP Asia"},
+				{Country: "a", Group: "Premium UDP Asia"},
+				{Country: "b", Group: "Premium UDP Asia"},
+				{Country: "c", Group: "Premium UDP Asia"},
+				{Country: "d", Group: "Premium UDP Asia"},
 			},
 			selection: configuration.ServerSelection{
-				Regions: []string{"a", "c"},
+				Countries: []string{"a", "c"},
 			},
 			filteredServers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium UDP Asia"},
-				{Region: "c", Group: "Premium UDP Asia"},
+				{Country: "a", Group: "Premium UDP Asia"},
+				{Country: "c", Group: "Premium UDP Asia"},
 			},
 		},
 		"servers with group filter": {
 			servers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium UDP Europe"},
-				{Region: "b", Group: "Premium UDP Europe"},
-				{Region: "c", Group: "Premium TCP Europe"},
-				{Region: "d", Group: "Premium TCP Europe"},
+				{Country: "a", Group: "Premium UDP Europe"},
+				{Country: "b", Group: "Premium UDP Europe"},
+				{Country: "c", Group: "Premium TCP Europe"},
+				{Country: "d", Group: "Premium TCP Europe"},
 			},
 			selection: configuration.ServerSelection{
 				Groups: []string{"Premium UDP Europe"},
 			},
 			filteredServers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium UDP Europe"},
-				{Region: "b", Group: "Premium UDP Europe"},
+				{Country: "a", Group: "Premium UDP Europe"},
+				{Country: "b", Group: "Premium UDP Europe"},
 			},
 		},
 		"servers with bad group filter": {
 			servers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium TCP Europe"},
-				{Region: "b", Group: "Premium TCP Europe"},
-				{Region: "c", Group: "Premium UDP Europe"},
-				{Region: "d", Group: "Premium UDP Europe"},
+				{Country: "a", Group: "Premium TCP Europe"},
+				{Country: "b", Group: "Premium TCP Europe"},
+				{Country: "c", Group: "Premium UDP Europe"},
+				{Country: "d", Group: "Premium UDP Europe"},
 			},
 			selection: configuration.ServerSelection{
 				Groups: []string{"Premium TCP Europe"},
@@ -96,17 +96,17 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 		},
 		"servers with regions and group filter": {
 			servers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium UDP Europe"},
-				{Region: "b", Group: "Premium TCP Europe"},
-				{Region: "c", Group: "Premium UDP Asia"},
-				{Region: "d", Group: "Premium TCP Asia"},
+				{Country: "a", Group: "Premium UDP Europe"},
+				{Country: "b", Group: "Premium TCP Europe"},
+				{Country: "c", Group: "Premium UDP Asia"},
+				{Country: "d", Group: "Premium TCP Asia"},
 			},
 			selection: configuration.ServerSelection{
-				Regions: []string{"a", "c"},
-				Groups:  []string{"Premium UDP Europe"},
+				Countries: []string{"a", "c"},
+				Groups:    []string{"Premium UDP Europe"},
 			},
 			filteredServers: []models.CyberghostServer{
-				{Region: "a", Group: "Premium UDP Europe"},
+				{Country: "a", Group: "Premium UDP Europe"},
 			},
 		},
 		"servers with hostnames filter": {

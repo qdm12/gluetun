@@ -24,15 +24,15 @@ func Test_Provider_lines(t *testing.T) {
 			settings: Provider{
 				Name: constants.Cyberghost,
 				ServerSelection: ServerSelection{
-					VPN:     constants.OpenVPN,
-					Groups:  []string{"group"},
-					Regions: []string{"a", "El country"},
+					VPN:       constants.OpenVPN,
+					Groups:    []string{"group"},
+					Countries: []string{"a", "El country"},
 				},
 			},
 			lines: []string{
 				"|--Cyberghost settings:",
 				"   |--Server groups: group",
-				"   |--Regions: a, El country",
+				"   |--Countries: a, El country",
 				"   |--OpenVPN selection:",
 				"      |--Protocol: udp",
 			},

@@ -21,12 +21,12 @@ func getPossibleServers() (possibleServers hostToServer) {
 	possibleServers = make(hostToServer, n) // key is the host
 
 	for groupID, groupName := range groups {
-		for countryCode, region := range possibleCountryCodes {
+		for countryCode, country := range possibleCountryCodes {
 			const domain = "cg-dialup.net"
 			possibleHost := groupID + "-" + countryCode + "." + domain
 			possibleServer := models.CyberghostServer{
 				Hostname: possibleHost,
-				Region:   region,
+				Country:  country,
 				Group:    groupName,
 			}
 			possibleServers[possibleHost] = possibleServer

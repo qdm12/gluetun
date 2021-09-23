@@ -51,7 +51,7 @@
   - `PIA_ENCRYPTION`
   - `PORT_FORWARDING`
   - `WIREGUARD_PORT`
-  - `REGION` for PIA
+  - `REGION` for PIA, Cyberghost
   - `WIREGUARD_ADDRESS`
   - `VPNSP`
   - All old location filters such as `REGION`, `COUNTRY`, etc.
