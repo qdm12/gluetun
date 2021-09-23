@@ -28,6 +28,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/torguard"
 	"github.com/qdm12/gluetun/internal/provider/vpnunlimited"
 	"github.com/qdm12/gluetun/internal/provider/vyprvpn"
+	"github.com/qdm12/gluetun/internal/provider/wevpn"
 	"github.com/qdm12/gluetun/internal/provider/windscribe"
 	"github.com/qdm12/golibs/logging"
 )
@@ -85,6 +86,8 @@ func New(provider string, allServers models.AllServers, timeNow func() time.Time
 		return vpnunlimited.New(allServers.VPNUnlimited.Servers, randSource)
 	case constants.Vyprvpn:
 		return vyprvpn.New(allServers.Vyprvpn.Servers, randSource)
+	case constants.Wevpn:
+		return wevpn.New(allServers.Wevpn.Servers, randSource)
 	case constants.Windscribe:
 		return windscribe.New(allServers.Windscribe.Servers, randSource)
 	default:

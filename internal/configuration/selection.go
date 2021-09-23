@@ -17,9 +17,9 @@ type ServerSelection struct { //nolint:maligned
 
 	// Fastestvpn, HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited
 	Countries []string `json:"countries"`
-	// HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited, Windscribe
+	// HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited, WeVPN, Windscribe
 	Cities []string `json:"cities"`
-	// Fastestvpn, HideMyAss, IPVanish, IVPN, PrivateVPN, Windscribe, Privado, Protonvpn, VPNUnlimited
+	// Fastestvpn, HideMyAss, IPVanish, IVPN, PrivateVPN, Windscribe, Privado, Protonvpn, VPNUnlimited, WeVPN
 	Hostnames []string `json:"hostnames"`
 	Names     []string `json:"names"` // Protonvpn
 
@@ -100,7 +100,7 @@ func (selection ServerSelection) toLines() (lines []string) {
 type OpenVPNSelection struct {
 	ConfFile   string `json:"conf_file"`         // Custom configuration file path
 	TCP        bool   `json:"tcp"`               // UDP if TCP is false
-	CustomPort uint16 `json:"custom_port"`       // HideMyAss, Mullvad, PIA, ProtonVPN, Windscribe
+	CustomPort uint16 `json:"custom_port"`       // HideMyAss, Mullvad, PIA, ProtonVPN, WeVPN, Windscribe
 	EncPreset  string `json:"encryption_preset"` // PIA - needed to get the port number
 }
 

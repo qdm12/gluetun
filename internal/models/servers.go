@@ -18,6 +18,7 @@ type AllServers struct {
 	Torguard     TorguardServers     `json:"torguard"`
 	VPNUnlimited VPNUnlimitedServers `json:"vpnunlimited"`
 	Vyprvpn      VyprvpnServers      `json:"vyprvpn"`
+	Wevpn        WevpnServers        `json:"wevpn"`
 	Windscribe   WindscribeServers   `json:"windscribe"`
 }
 
@@ -38,6 +39,7 @@ func (a *AllServers) Count() int {
 		len(a.Torguard.Servers) +
 		len(a.VPNUnlimited.Servers) +
 		len(a.Vyprvpn.Servers) +
+		len(a.Wevpn.Servers) +
 		len(a.Windscribe.Servers)
 }
 
@@ -120,6 +122,11 @@ type VyprvpnServers struct {
 	Version   uint16          `json:"version"`
 	Timestamp int64           `json:"timestamp"`
 	Servers   []VyprvpnServer `json:"servers"`
+}
+type WevpnServers struct {
+	Version   uint16        `json:"version"`
+	Timestamp int64         `json:"timestamp"`
+	Servers   []WevpnServer `json:"servers"`
 }
 type WindscribeServers struct {
 	Version   uint16             `json:"version"`

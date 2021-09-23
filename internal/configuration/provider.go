@@ -83,6 +83,8 @@ func (settings *Provider) read(r reader, vpnType string) error {
 		err = settings.readVPNUnlimited(r)
 	case constants.Vyprvpn:
 		err = settings.readVyprvpn(r)
+	case constants.Wevpn:
+		err = settings.readWevpn(r)
 	case constants.Windscribe:
 		err = settings.readWindscribe(r)
 	default:
@@ -104,7 +106,8 @@ func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err 
 			constants.Custom,
 			"cyberghost", "fastestvpn", "hidemyass", "ipvanish", "ivpn", "mullvad", "nordvpn",
 			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
-			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn", "windscribe"}
+			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn",
+			constants.Wevpn, "windscribe"}
 	case constants.Wireguard:
 		allowedVPNServiceProviders = []string{
 			constants.Custom, constants.Ivpn,

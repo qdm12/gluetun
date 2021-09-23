@@ -128,6 +128,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Vyprvpn.Version,
 			digest:  "58de06d8",
 		},
+		"Wevpn": {
+			model:   models.WevpnServer{},
+			version: allServers.Wevpn.Version,
+			digest:  "f4daa186",
+		},
 		"Windscribe": {
 			model:   models.WindscribeServer{},
 			version: allServers.Windscribe.Version,

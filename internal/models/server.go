@@ -157,6 +157,14 @@ type VyprvpnServer struct {
 	IPs      []net.IP `json:"ips"`
 }
 
+type WevpnServer struct {
+	City     string   `json:"city"`
+	Hostname string   `json:"hostname"`
+	TCP      bool     `json:"tcp"`
+	UDP      bool     `json:"udp"`
+	IPs      []net.IP `json:"ips"`
+}
+
 type WindscribeServer struct {
 	VPN      string   `json:"vpn"`
 	Region   string   `json:"region"`

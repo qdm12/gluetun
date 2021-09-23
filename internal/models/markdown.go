@@ -239,6 +239,19 @@ func (s *VyprvpnServer) ToMarkdown() (markdown string) {
 		boolToMarkdown(s.TCP), boolToMarkdown(s.UDP))
 }
 
+func (s *WevpnServers) ToMarkdown() (markdown string) {
+	markdown = markdownTableHeading("City", "Hostname", "TCP", "UDP")
+	for _, server := range s.Servers {
+		markdown += server.ToMarkdown() + "\n"
+	}
+	return markdown
+}
+
+func (s *WevpnServer) ToMarkdown() (markdown string) {
+	return fmt.Sprintf("| %s | `%s` | %s | %s |",
+		s.City, s.Hostname, boolToMarkdown(s.TCP), boolToMarkdown(s.UDP))
+}
+
 func (s *WindscribeServers) ToMarkdown() (markdown string) {
 	markdown = markdownTableHeading("Region", "City", "Hostname", "VPN")
 	for _, server := range s.Servers {

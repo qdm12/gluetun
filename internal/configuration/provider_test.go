@@ -322,6 +322,27 @@ func Test_Provider_lines(t *testing.T) {
 				"      |--Protocol: udp",
 			},
 		},
+		"wevpn": {
+			settings: Provider{
+				Name: constants.Wevpn,
+				ServerSelection: ServerSelection{
+					VPN:       constants.OpenVPN,
+					Cities:    []string{"a", "b"},
+					Hostnames: []string{"c", "d"},
+					OpenVPN: OpenVPNSelection{
+						CustomPort: 1,
+					},
+				},
+			},
+			lines: []string{
+				"|--Wevpn settings:",
+				"   |--Cities: a, b",
+				"   |--Hostnames: c, d",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
+				"      |--Custom port: 1",
+			},
+		},
 		"windscribe": {
 			settings: Provider{
 				Name: constants.Windscribe,
