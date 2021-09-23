@@ -104,7 +104,7 @@ func (c *CLI) FormatServers(args []string) error {
 	}
 
 	output = filepath.Clean(output)
-	file, err := os.OpenFile(output, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrOpenOutputFile, err)
 	}
