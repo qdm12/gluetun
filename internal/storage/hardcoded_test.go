@@ -51,7 +51,7 @@ func Test_versions(t *testing.T) {
 		"Cyberghost": {
 			model:   models.CyberghostServer{},
 			version: allServers.Cyberghost.Version,
-			digest:  "c2f6f43b",
+			digest:  "9ce64729",
 		},
 		"Fastestvpn": {
 			model:   models.FastestvpnServer{},

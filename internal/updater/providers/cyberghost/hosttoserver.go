@@ -10,24 +10,25 @@ import (
 type hostToServer map[string]models.CyberghostServer
 
 func getPossibleServers() (possibleServers hostToServer) {
-	groups := getGroups()
+	groupIDToProtocol := getGroupIDToProtocol()
 
 	cyberghostCountryCodes := getSubdomainToRegion()
 	allCountryCodes := constants.CountryCodes()
 	possibleCountryCodes := mergeCountryCodes(cyberghostCountryCodes, allCountryCodes)
 
-	n := len(groups) * len(possibleCountryCodes)
+	n := len(groupIDToProtocol) * len(possibleCountryCodes)
 
 	possibleServers = make(hostToServer, n) // key is the host
 
-	for groupID, groupName := range groups {
+	for groupID, protocol := range groupIDToProtocol {
 		for countryCode, country := range possibleCountryCodes {
 			const domain = "cg-dialup.net"
 			possibleHost := groupID + "-" + countryCode + "." + domain
 			possibleServer := models.CyberghostServer{
 				Hostname: possibleHost,
 				Country:  country,
-				Group:    groupName,
+				TCP:      protocol == constants.TCP,
+				UDP:      protocol == constants.UDP,
 			}
 			possibleServers[possibleHost] = possibleServer
 		}

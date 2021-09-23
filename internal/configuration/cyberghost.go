@@ -16,12 +16,6 @@ func (settings *Provider) readCyberghost(r reader) (err error) {
 		return err
 	}
 
-	settings.ServerSelection.Groups, err = r.env.CSVInside("CYBERGHOST_GROUP",
-		constants.CyberghostGroupChoices(servers))
-	if err != nil {
-		return fmt.Errorf("environment variable CYBERGHOST_GROUP: %w", err)
-	}
-
 	settings.ServerSelection.Countries, err = r.env.CSVInside("COUNTRY",
 		constants.CyberghostCountryChoices(servers),
 		params.RetroKeys([]string{"REGION"}, r.onRetroActive))

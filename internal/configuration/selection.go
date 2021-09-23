@@ -15,9 +15,6 @@ type ServerSelection struct { //nolint:maligned
 	// Cyberghost, PIA, Protonvpn, Surfshark, Windscribe, Vyprvpn, NordVPN
 	Regions []string `json:"regions"`
 
-	// Cyberghost
-	Groups []string `json:"groups"`
-
 	// Fastestvpn, HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited
 	Countries []string `json:"countries"`
 	// HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited, Windscribe
@@ -49,10 +46,6 @@ type ServerSelection struct { //nolint:maligned
 func (selection ServerSelection) toLines() (lines []string) {
 	if selection.TargetIP != nil {
 		lines = append(lines, lastIndent+"Target IP address: "+selection.TargetIP.String())
-	}
-
-	if len(selection.Groups) > 0 {
-		lines = append(lines, lastIndent+"Server groups: "+commaJoin(selection.Groups))
 	}
 
 	if len(selection.Countries) > 0 {

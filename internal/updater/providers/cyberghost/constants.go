@@ -1,15 +1,17 @@
 package cyberghost
 
-func getGroups() map[string]string {
+import "github.com/qdm12/gluetun/internal/constants"
+
+func getGroupIDToProtocol() map[string]string {
 	return map[string]string{
-		"87-1": "Premium UDP Europe",
-		"94-1": "Premium UDP USA",
-		"95-1": "Premium UDP Asia",
-		"87-8": "NoSpy UDP Europe",
-		"97-1": "Premium TCP Europe",
-		"93-1": "Premium TCP USA",
-		"96-1": "Premium TCP Asia",
-		"97-8": "NoSpy TCP Europe",
+		"87-1": constants.UDP, // Premium UDP Europe
+		"94-1": constants.UDP, // Premium UDP USA
+		"95-1": constants.UDP, // Premium UDP Asia
+		"87-8": constants.UDP, // NoSpy UDP Europe
+		"97-1": constants.TCP, // Premium TCP Europe
+		"93-1": constants.TCP, // Premium TCP USA
+		"96-1": constants.TCP, // Premium TCP Asia
+		"97-8": constants.TCP, // NoSpy TCP Europe
 	}
 }
 

@@ -11,16 +11,16 @@ func Test_CyberghostServers_ToMarkdown(t *testing.T) {
 
 	servers := CyberghostServers{
 		Servers: []CyberghostServer{
-			{Country: "a", Group: "A", Hostname: "xa"},
-			{Country: "b", Group: "A", Hostname: "xb"},
+			{Country: "a", UDP: true, Hostname: "xa"},
+			{Country: "b", TCP: true, Hostname: "xb"},
 		},
 	}
 
 	markdown := servers.ToMarkdown()
-	const expected = "| Country | Group | Hostname |\n" +
-		"| --- | --- | --- |\n" +
-		"| a | A | `xa` |\n" +
-		"| b | A | `xb` |\n"
+	const expected = "| Country | Hostname | TCP | UDP |\n" +
+		"| --- | --- | --- | --- |\n" +
+		"| a | `xa` | ❎ | ✅ |\n" +
+		"| b | `xb` | ✅ | ❎ |\n"
 
 	assert.Equal(t, expected, markdown)
 }

@@ -106,7 +106,6 @@ ENV VPNSP=pia \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # # Cyberghost only:
-    CYBERGHOST_GROUP="Premium UDP Europe" \
     OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
     # # Nordvpn only:
