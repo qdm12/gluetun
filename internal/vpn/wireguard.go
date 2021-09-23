@@ -31,6 +31,10 @@ func setupWireguard(ctx context.Context, netlinker netlink.NetLinker,
 
 	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard)
 
+	logger.Debug("Wireguard server public key: " + wireguardSettings.PublicKey)
+	logger.Debug("Wireguard client private key: " + wireguardSettings.PrivateKey)
+	logger.Debug("Wireguard pre-shared key: " + wireguardSettings.PreSharedKey)
+
 	wireguarder, err = wireguard.New(wireguardSettings, netlinker, logger)
 	if err != nil {
 		return nil, "", fmt.Errorf("%w: %s", errCreateWireguard, err)
