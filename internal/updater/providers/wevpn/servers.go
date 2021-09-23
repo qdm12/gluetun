@@ -46,6 +46,7 @@ func GetServers(ctx context.Context, presolver resolver.Parallel, minServers int
 		server := models.WevpnServer{
 			City:     city,
 			Hostname: hostname,
+			UDP:      true,
 			IPs:      ips,
 		}
 		servers = append(servers, server)

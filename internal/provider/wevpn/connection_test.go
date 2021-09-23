@@ -30,9 +30,9 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 		},
 		"no filter": {
 			servers: []models.WevpnServer{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{UDP: true, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+				{UDP: true, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
+				{UDP: true, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
 			connection: models.Connection{
 				IP:       net.IPv4(1, 1, 1, 1),
@@ -45,9 +45,9 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				TargetIP: net.IPv4(2, 2, 2, 2),
 			},
 			servers: []models.WevpnServer{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{UDP: true, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+				{UDP: true, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
+				{UDP: true, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
 			connection: models.Connection{
 				IP:       net.IPv4(2, 2, 2, 2),
@@ -60,9 +60,9 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				Hostnames: []string{"b"},
 			},
 			servers: []models.WevpnServer{
-				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{UDP: true, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+				{UDP: true, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
+				{UDP: true, Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
 			connection: models.Connection{
 				IP:       net.IPv4(2, 2, 2, 2),

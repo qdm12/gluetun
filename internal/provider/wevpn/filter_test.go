@@ -29,14 +29,27 @@ func Test_Wevpn_filterServers(t *testing.T) {
 		},
 		"no filter": {
 			servers: []models.WevpnServer{
-				{Hostname: "a"},
-				{Hostname: "b"},
-				{Hostname: "c"},
+				{Hostname: "a", UDP: true},
+				{Hostname: "b", UDP: true},
+				{Hostname: "c", UDP: true},
 			},
 			filtered: []models.WevpnServer{
-				{Hostname: "a"},
-				{Hostname: "b"},
-				{Hostname: "c"},
+				{Hostname: "a", UDP: true},
+				{Hostname: "b", UDP: true},
+				{Hostname: "c", UDP: true},
+			},
+		},
+		"filter by protocol": {
+			selection: configuration.ServerSelection{
+				OpenVPN: configuration.OpenVPNSelection{TCP: true},
+			},
+			servers: []models.WevpnServer{
+				{Hostname: "a", UDP: true},
+				{Hostname: "b", TCP: true},
+				{Hostname: "c", UDP: true},
+			},
+			filtered: []models.WevpnServer{
+				{Hostname: "b", TCP: true},
 			},
 		},
 		"filter by city": {
@@ -44,12 +57,12 @@ func Test_Wevpn_filterServers(t *testing.T) {
 				Cities: []string{"b"},
 			},
 			servers: []models.WevpnServer{
-				{City: "a"},
-				{City: "b"},
-				{City: "c"},
+				{City: "a", UDP: true},
+				{City: "b", UDP: true},
+				{City: "c", UDP: true},
 			},
 			filtered: []models.WevpnServer{
-				{City: "b"},
+				{City: "b", UDP: true},
 			},
 		},
 		"filter by hostname": {
@@ -57,12 +70,12 @@ func Test_Wevpn_filterServers(t *testing.T) {
 				Hostnames: []string{"b"},
 			},
 			servers: []models.WevpnServer{
-				{Hostname: "a"},
-				{Hostname: "b"},
-				{Hostname: "c"},
+				{Hostname: "a", UDP: true},
+				{Hostname: "b", UDP: true},
+				{Hostname: "c", UDP: true},
 			},
 			filtered: []models.WevpnServer{
-				{Hostname: "b"},
+				{Hostname: "b", UDP: true},
 			},
 		},
 	}

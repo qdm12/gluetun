@@ -107916,13 +107916,13 @@
   },
   "wevpn": {
     "version": 1,
-    "timestamp": 1630935729,
+    "timestamp": 1632407719,
     "servers": [
       {
         "city": "Amsterdam",
         "hostname": "amsterdam.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "89.238.177.234"
         ]
@@ -107931,7 +107931,7 @@
         "city": "Athens",
         "hostname": "athens.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "185.51.134.210"
         ]
@@ -107940,7 +107940,7 @@
         "city": "Atlanta",
         "hostname": "atlanta.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "104.223.91.146"
         ]
@@ -107949,7 +107949,7 @@
         "city": "Auckland",
         "hostname": "auckland.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "103.108.94.226"
         ]
@@ -107958,7 +107958,7 @@
         "city": "Belgrade",
         "hostname": "belgrade.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "37.120.193.170"
         ]
@@ -107967,7 +107967,7 @@
         "city": "Brussels",
         "hostname": "brussels.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "77.243.191.178"
         ]
@@ -107976,7 +107976,7 @@
         "city": "Bucharest",
         "hostname": "bucharest.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "86.105.25.162"
         ]
@@ -107985,7 +107985,7 @@
         "city": "Budapest",
         "hostname": "budapest.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "185.128.26.130"
         ]
@@ -107994,7 +107994,7 @@
         "city": "Buenos Aires",
         "hostname": "buenosaires.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "131.255.4.140"
         ]
@@ -108003,7 +108003,7 @@
         "city": "Cairo",
         "hostname": "cairo.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "188.214.122.138"
         ]
@@ -108012,7 +108012,7 @@
         "city": "Chennai",
         "hostname": "chennai.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "169.38.107.52"
         ]
@@ -108021,16 +108021,16 @@
         "city": "Chicago",
         "hostname": "chicago.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
-          "69.39.239.72"
+          "69.39.239.57"
         ]
       },
       {
         "city": "Copenhagen",
         "hostname": "copenhagen.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "37.120.194.82"
         ]
@@ -108039,9 +108039,8 @@
         "city": "Dallas",
         "hostname": "dallas.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
-          "170.130.31.114",
           "194.110.112.74"
         ]
       },
@@ -108049,7 +108048,7 @@
         "city": "Denizli",
         "hostname": "bursa.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "95.173.161.240"
         ]
@@ -108058,7 +108057,7 @@
         "city": "Denver",
         "hostname": "denver.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "70.39.71.2"
         ]
@@ -108067,7 +108066,7 @@
         "city": "Dubai",
         "hostname": "dubai.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "217.138.193.42"
         ]
@@ -108076,7 +108075,7 @@
         "city": "Dublin",
         "hostname": "dublin.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "217.138.222.138"
         ]
@@ -108085,7 +108084,7 @@
         "city": "Frankfurt",
         "hostname": "frankfurt.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "45.141.152.178"
         ]
@@ -108094,7 +108093,7 @@
         "city": "Hanoi",
         "hostname": "hanoi.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "188.214.152.194"
         ]
@@ -108103,7 +108102,7 @@
         "city": "Helsinki",
         "hostname": "helsinki.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "185.212.149.152"
         ]
@@ -108112,7 +108111,7 @@
         "city": "Hong Kong",
         "hostname": "hongkong.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "84.17.37.55"
         ]
@@ -108121,7 +108120,7 @@
         "city": "Jakarta",
         "hostname": "jakarta.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "45.133.181.58"
         ]
@@ -108130,7 +108129,7 @@
         "city": "Johannesburg",
         "hostname": "johannesburg.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "102.165.20.38"
         ]
@@ -108139,7 +108138,7 @@
         "city": "Kiev",
         "hostname": "kyiv.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "37.19.218.197"
         ]
@@ -108148,7 +108147,7 @@
         "city": "Lagos",
         "hostname": "lagos.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "102.129.144.142"
         ]
@@ -108157,7 +108156,7 @@
         "city": "Lisbon",
         "hostname": "lisbon.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "185.90.57.152"
         ]
@@ -108166,17 +108165,16 @@
         "city": "London",
         "hostname": "london.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
-          "45.141.154.2",
-          "45.141.154.234"
+          "45.141.154.2"
         ]
       },
       {
         "city": "London-PF",
         "hostname": "london-pf.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "77.243.177.78"
         ]
@@ -108185,7 +108183,7 @@
         "city": "Los Angeles",
         "hostname": "losangeles.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "45.152.182.82"
         ]
@@ -108194,7 +108192,7 @@
         "city": "Los Angeles-PF",
         "hostname": "losangeles-pf.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "66.55.92.75"
         ]
@@ -108203,7 +108201,7 @@
         "city": "Luxembourg",
         "hostname": "luxembourg.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "5.253.204.194"
         ]
@@ -108212,7 +108210,7 @@
         "city": "Madrid",
         "hostname": "madrid.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "45.152.183.242"
         ]
@@ -108221,7 +108219,7 @@
         "city": "Manchester",
         "hostname": "manchester.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "86.106.136.98"
         ]
@@ -108230,7 +108228,7 @@
         "city": "Manila",
         "hostname": "manila.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "188.214.125.106"
         ]
@@ -108239,7 +108237,7 @@
         "city": "Melbourne",
         "hostname": "melbourne.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "116.206.230.130"
         ]
@@ -108248,7 +108246,7 @@
         "city": "Mexico City",
         "hostname": "mexico.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "169.57.35.97"
         ]
@@ -108257,7 +108255,7 @@
         "city": "Miami",
         "hostname": "miami.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "96.47.224.2"
         ]
@@ -108266,7 +108264,7 @@
         "city": "Milan",
         "hostname": "milan.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "217.138.197.138"
         ]
@@ -108275,7 +108273,7 @@
         "city": "Montreal",
         "hostname": "montreal.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "217.138.200.242"
         ]
@@ -108284,7 +108282,7 @@
         "city": "Moscow",
         "hostname": "moscow.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "80.93.181.194"
         ]
@@ -108293,7 +108291,7 @@
         "city": "New Jersey",
         "hostname": "newjersey.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "23.226.131.146"
         ]
@@ -108302,16 +108300,16 @@
         "city": "New York",
         "hostname": "newyork.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
-          "89.40.206.146"
+          "217.138.206.106"
         ]
       },
       {
         "city": "New York-PF",
         "hostname": "newyork-pf.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "188.241.179.2"
         ]
@@ -108320,7 +108318,7 @@
         "city": "Oslo",
         "hostname": "oslo.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "84.247.50.10"
         ]
@@ -108329,7 +108327,7 @@
         "city": "Oulu",
         "hostname": "oulu.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "188.126.89.174"
         ]
@@ -108338,7 +108336,7 @@
         "city": "Paris",
         "hostname": "paris.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "37.120.136.234"
         ]
@@ -108347,7 +108345,7 @@
         "city": "Phoenix",
         "hostname": "phoenix.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "170.130.15.34"
         ]
@@ -108356,7 +108354,7 @@
         "city": "Prague",
         "hostname": "prague.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "217.138.199.138"
         ]
@@ -108365,7 +108363,7 @@
         "city": "Salt Lake City",
         "hostname": "saltlakecity.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "107.182.234.233"
         ]
@@ -108374,7 +108372,7 @@
         "city": "San Jose",
         "hostname": "sanjose.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "169.62.109.140"
         ]
@@ -108383,7 +108381,7 @@
         "city": "Sao Paulo",
         "hostname": "saopaulo.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "177.54.152.89"
         ]
@@ -108392,7 +108390,7 @@
         "city": "Seattle",
         "hostname": "seattle.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "104.140.21.178"
         ]
@@ -108401,7 +108399,7 @@
         "city": "Seoul",
         "hostname": "seoul.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "169.56.83.206"
         ]
@@ -108410,7 +108408,7 @@
         "city": "Sibu",
         "hostname": "kualalumpur.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "223.25.246.4"
         ]
@@ -108419,7 +108417,7 @@
         "city": "Singapore",
         "hostname": "singapore.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "84.17.38.144"
         ]
@@ -108428,7 +108426,7 @@
         "city": "Sofia",
         "hostname": "sofia.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "217.138.221.42"
         ]
@@ -108437,7 +108435,7 @@
         "city": "St Petersburg",
         "hostname": "petersburg.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "82.202.220.242"
         ]
@@ -108446,7 +108444,7 @@
         "city": "Stockholm",
         "hostname": "stockholm.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "45.83.91.66"
         ]
@@ -108455,7 +108453,7 @@
         "city": "Sydney",
         "hostname": "sydney.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "46.102.153.106"
         ]
@@ -108464,7 +108462,7 @@
         "city": "Taipei",
         "hostname": "taipei.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "188.214.106.98"
         ]
@@ -108473,7 +108471,7 @@
         "city": "Tel Aviv",
         "hostname": "telaviv.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "193.43.72.242"
         ]
@@ -108482,7 +108480,7 @@
         "city": "Tokyo",
         "hostname": "tokyo.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "84.17.34.8"
         ]
@@ -108491,7 +108489,7 @@
         "city": "Toronto",
         "hostname": "toronto.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "184.75.208.234"
         ]
@@ -108500,7 +108498,7 @@
         "city": "Vancouver",
         "hostname": "vancouver.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "71.19.249.109"
         ]
@@ -108509,7 +108507,7 @@
         "city": "Vienna",
         "hostname": "vienna.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "37.120.212.162"
         ]
@@ -108518,7 +108516,7 @@
         "city": "Warsaw",
         "hostname": "warsaw.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "217.138.209.122"
         ]
@@ -108527,7 +108525,7 @@
         "city": "Washington DC",
         "hostname": "washington.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "70.32.0.208"
         ]
@@ -108536,7 +108534,7 @@
         "city": "Zurich",
         "hostname": "zurich.wevpn.com",
         "tcp": false,
-        "udp": false,
+        "udp": true,
         "ips": [
           "37.120.137.82"
         ]

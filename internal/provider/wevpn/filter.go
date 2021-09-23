@@ -11,6 +11,7 @@ func (w *Wevpn) filterServers(selection configuration.ServerSelection) (
 	for _, server := range w.servers {
 		switch {
 		case
+			utils.FilterByProtocol(selection, server.TCP, server.UDP),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames):
 		default:
