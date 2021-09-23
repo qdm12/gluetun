@@ -5,11 +5,9 @@ import (
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/qdm12/golibs/logging"
 )
 
-func newHandler(ctx context.Context, wg *sync.WaitGroup, logger logging.Logger,
+func newHandler(ctx context.Context, wg *sync.WaitGroup, logger Logger,
 	stealth, verbose bool, username, password string) http.Handler {
 	const httpTimeout = 24 * time.Hour
 	return &handler{
@@ -30,7 +28,7 @@ type handler struct {
 	ctx                context.Context
 	wg                 *sync.WaitGroup
 	client             *http.Client
-	logger             logging.Logger
+	logger             Logger
 	verbose, stealth   bool
 	username, password string
 }

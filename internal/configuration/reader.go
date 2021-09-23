@@ -9,32 +9,37 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	ovpnextract "github.com/qdm12/gluetun/internal/openvpn/extract"
-	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/golibs/verification"
 )
 
+//go:generate mockgen -destination=warner_mock_test.go -package configuration . Warner
+
 type reader struct {
 	servers models.AllServers
 	env     params.Interface
-	logger  logging.Logger
+	warner  Warner
 	regex   verification.Regex
 	ovpnExt ovpnextract.Interface
 }
 
+type Warner interface {
+	Warn(s string)
+}
+
 func newReader(env params.Interface,
-	servers models.AllServers, logger logging.Logger) reader {
+	servers models.AllServers, warner Warner) reader {
 	return reader{
 		servers: servers,
 		env:     env,
-		logger:  logger,
+		warner:  warner,
 		regex:   verification.NewRegex(),
 		ovpnExt: ovpnextract.New(),
 	}
 }
 
 func (r *reader) onRetroActive(oldKey, newKey string) {
-	r.logger.Warn(
+	r.warner.Warn(
 		"You are using the old environment variable " + oldKey +
 			", please consider changing it to " + newKey)
 }

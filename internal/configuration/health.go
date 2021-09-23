@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 )
 
@@ -36,8 +35,8 @@ func (settings *Health) lines() (lines []string) {
 }
 
 // Read is to be used for the healthcheck query mode.
-func (settings *Health) Read(env params.Interface, logger logging.Logger) (err error) {
-	reader := newReader(env, models.AllServers{}, logger) // note: no need for servers data
+func (settings *Health) Read(env params.Interface, warner Warner) (err error) {
+	reader := newReader(env, models.AllServers{}, warner) // note: no need for servers data
 	return settings.read(reader)
 }
 
@@ -46,7 +45,7 @@ func (settings *Health) read(r reader) (err error) {
 	settings.ServerAddress, warning, err = r.env.ListeningAddress(
 		"HEALTH_SERVER_ADDRESS", params.Default("127.0.0.1:9999"))
 	if warning != "" {
-		r.logger.Warn("environment variable HEALTH_SERVER_ADDRESS: " + warning)
+		r.warner.Warn("environment variable HEALTH_SERVER_ADDRESS: " + warning)
 	}
 	if err != nil {
 		return fmt.Errorf("environment variable HEALTH_SERVER_ADDRESS: %w", err)

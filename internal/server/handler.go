@@ -11,10 +11,9 @@ import (
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/vpn"
-	"github.com/qdm12/golibs/logging"
 )
 
-func newHandler(ctx context.Context, logger logging.Logger, logging bool,
+func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	buildInfo models.BuildInformation,
 	vpnLooper vpn.Looper,
 	pfGetter portforward.Getter,

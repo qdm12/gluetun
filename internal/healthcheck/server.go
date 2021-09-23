@@ -5,7 +5,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/vpn"
-	"github.com/qdm12/golibs/logging"
 )
 
 var _ ServerRunner = (*Server)(nil)
@@ -15,7 +14,7 @@ type ServerRunner interface {
 }
 
 type Server struct {
-	logger  logging.Logger
+	logger  Logger
 	handler *handler
 	pinger  Pinger
 	config  configuration.Health
@@ -23,10 +22,10 @@ type Server struct {
 }
 
 func NewServer(config configuration.Health,
-	logger logging.Logger, vpnLooper vpn.Looper) *Server {
+	logger Logger, vpnLooper vpn.Looper) *Server {
 	return &Server{
 		logger:  logger,
-		handler: newHandler(logger),
+		handler: newHandler(),
 		pinger:  newPinger(config.AddressToPing),
 		config:  config,
 		vpn: vpnHealth{

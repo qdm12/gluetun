@@ -4,21 +4,17 @@ import (
 	"errors"
 	"net/http"
 	"sync"
-
-	"github.com/qdm12/golibs/logging"
 )
 
 type handler struct {
-	logger      logging.Logger
 	healthErr   error
 	healthErrMu sync.RWMutex
 }
 
 var errHealthcheckNotRunYet = errors.New("healthcheck did not run yet")
 
-func newHandler(logger logging.Logger) *handler {
+func newHandler() *handler {
 	return &handler{
-		logger:    logger,
 		healthErr: errHealthcheckNotRunYet,
 	}
 }

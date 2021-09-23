@@ -7,22 +7,21 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/dns"
-	"github.com/qdm12/golibs/logging"
 )
 
 func newDNSHandler(ctx context.Context, looper dns.Looper,
-	logger logging.Logger) http.Handler {
+	warner warner) http.Handler {
 	return &dnsHandler{
 		ctx:    ctx,
 		looper: looper,
-		logger: logger,
+		warner: warner,
 	}
 }
 
 type dnsHandler struct {
 	ctx    context.Context
 	looper dns.Looper
-	logger logging.Logger
+	warner warner
 }
 
 func (h *dnsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +46,7 @@ func (h *dnsHandler) getStatus(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	data := statusWrapper{Status: string(status)}
 	if err := encoder.Encode(data); err != nil {
-		h.logger.Warn(err.Error())
+		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -72,7 +71,7 @@ func (h *dnsHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(outcomeWrapper{Outcome: outcome}); err != nil {
-		h.logger.Warn(err.Error())
+		h.warner.Warn(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

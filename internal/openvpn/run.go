@@ -5,17 +5,16 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/logging"
 )
 
 type Runner struct {
 	settings configuration.OpenVPN
 	starter  command.Starter
-	logger   logging.Logger
+	logger   Logger
 }
 
 func NewRunner(settings configuration.OpenVPN, starter command.Starter,
-	logger logging.Logger) *Runner {
+	logger Logger) *Runner {
 	return &Runner{
 		starter:  starter,
 		logger:   logger,

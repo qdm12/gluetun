@@ -7,13 +7,12 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/logging"
 )
 
-func newHandlerV1(logger logging.Logger, buildInfo models.BuildInformation,
+func newHandlerV1(w warner, buildInfo models.BuildInformation,
 	openvpn, dns, updater, publicip http.Handler) http.Handler {
 	return &handlerV1{
-		logger:    logger,
+		warner:    w,
 		buildInfo: buildInfo,
 		openvpn:   openvpn,
 		dns:       dns,
@@ -23,7 +22,7 @@ func newHandlerV1(logger logging.Logger, buildInfo models.BuildInformation,
 }
 
 type handlerV1 struct {
-	logger    logging.Logger
+	warner    warner
 	buildInfo models.BuildInformation
 	openvpn   http.Handler
 	dns       http.Handler
@@ -52,7 +51,7 @@ func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *handlerV1) getVersion(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(h.buildInfo); err != nil {
-		h.logger.Warn(err.Error())
+		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

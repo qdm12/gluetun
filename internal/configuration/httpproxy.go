@@ -78,7 +78,7 @@ func (settings *HTTPProxy) read(r reader) (err error) {
 	settings.Port, warning, err = r.env.ListeningPort("HTTPPROXY_PORT", params.Default("8888"),
 		params.RetroKeys([]string{"TINYPROXY_PORT", "PROXY_PORT"}, r.onRetroActive))
 	if len(warning) > 0 {
-		r.logger.Warn(warning)
+		r.warner.Warn(warning)
 	}
 	if err != nil {
 		return fmt.Errorf("environment variable HTTPPROXY_PORT (or TINYPROXY_PORT, PROXY_PORT): %w", err)

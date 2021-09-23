@@ -3,7 +3,6 @@ package openvpn
 import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/logging"
 )
 
 var _ Interface = (*Configurator)(nil)
@@ -15,15 +14,15 @@ type Interface interface {
 }
 
 type Configurator struct {
-	logger       logging.Logger
+	logger       Infoer
 	cmder        command.RunStarter
 	configPath   string
 	authFilePath string
 	puid, pgid   int
 }
 
-func New(logger logging.Logger,
-	cmder command.RunStarter, puid, pgid int) *Configurator {
+func New(logger Infoer, cmder command.RunStarter,
+	puid, pgid int) *Configurator {
 	return &Configurator{
 		logger:       logger,
 		cmder:        cmder,

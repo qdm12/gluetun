@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/logging"
 )
 
 var _ Configurator = (*Config)(nil)
@@ -25,7 +24,7 @@ type Configurator interface {
 
 type Config struct { //nolint:maligned
 	runner           command.Runner
-	logger           logging.Logger
+	logger           Logger
 	iptablesMutex    sync.Mutex
 	ip6tablesMutex   sync.Mutex
 	defaultInterface string
@@ -47,7 +46,7 @@ type Config struct { //nolint:maligned
 }
 
 // NewConfig creates a new Config instance.
-func NewConfig(logger logging.Logger, runner command.Runner,
+func NewConfig(logger Logger, runner command.Runner,
 	defaultInterface string, defaultGateway net.IP,
 	localNetworks []routing.LocalNetwork, localIP net.IP) *Config {
 	return &Config{

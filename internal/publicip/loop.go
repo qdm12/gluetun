@@ -9,7 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/publicip/state"
-	"github.com/qdm12/golibs/logging"
 )
 
 var _ Looper = (*Loop)(nil)
@@ -29,7 +28,7 @@ type Loop struct {
 	// Objects
 	fetcher Fetcher
 	client  *http.Client
-	logger  logging.Logger
+	logger  Logger
 	// Fixed settings
 	puid int
 	pgid int
@@ -47,7 +46,7 @@ type Loop struct {
 
 const defaultBackoffTime = 5 * time.Second
 
-func NewLoop(client *http.Client, logger logging.Logger,
+func NewLoop(client *http.Client, logger Logger,
 	settings configuration.PublicIP, puid, pgid int) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)

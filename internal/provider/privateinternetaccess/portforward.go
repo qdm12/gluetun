@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/provider/utils"
 	"github.com/qdm12/golibs/format"
-	"github.com/qdm12/golibs/logging"
 )
 
 var (
@@ -31,13 +31,13 @@ var (
 
 // PortForward obtains a VPN server side port forwarded from PIA.
 func (p *PIA) PortForward(ctx context.Context, client *http.Client,
-	logger logging.Logger, gateway net.IP, serverName string) (
+	logger utils.Logger, gateway net.IP, serverName string) (
 	port uint16, err error) {
 	server := constants.PIAServerWhereName(p.servers, serverName)
 	if !server.PortForward {
 		logger.Error("The server " + serverName +
 			" (region " + server.Region + ") does not support port forwarding")
-		return
+		return 0, nil
 	}
 	if gateway == nil {
 		return 0, ErrGatewayIPIsNil
@@ -92,8 +92,7 @@ var (
 )
 
 func (p *PIA) KeepPortForward(ctx context.Context, client *http.Client,
-	logger logging.Logger, port uint16, gateway net.IP, serverName string) (
-	err error) {
+	port uint16, gateway net.IP, serverName string) (err error) {
 	privateIPClient, err := newHTTPClient(serverName)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrCreateHTTPClient, err)

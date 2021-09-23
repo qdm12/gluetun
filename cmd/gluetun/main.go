@@ -431,7 +431,11 @@ type printVersionElement struct {
 	getVersion func(ctx context.Context) (version string, err error)
 }
 
-func printVersions(ctx context.Context, logger logging.Logger,
+type infoer interface {
+	Info(s string)
+}
+
+func printVersions(ctx context.Context, logger infoer,
 	elements []printVersionElement) (err error) {
 	const timeout = 5 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)

@@ -3,20 +3,23 @@ package storage
 
 import (
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/logging"
 )
 
 type Storage struct {
 	mergedServers    models.AllServers
 	hardcodedServers models.AllServers
-	logger           logging.Logger
+	logger           InfoErrorer
 	filepath         string
+}
+
+type InfoErrorer interface {
+	Info(s string)
 }
 
 // New creates a new storage and reads the servers from the
 // embedded servers file and the file on disk.
 // Passing an empty filepath disables writing servers to a file.
-func New(logger logging.Logger, filepath string) (storage *Storage, err error) {
+func New(logger InfoErrorer, filepath string) (storage *Storage, err error) {
 	// error returned covered by unit test
 	harcodedServers, _ := parseHardcodedServers()
 

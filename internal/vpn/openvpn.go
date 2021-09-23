@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/logging"
 )
 
 var (
@@ -25,7 +24,7 @@ var (
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
 func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 	openvpnConf openvpn.Interface, providerConf provider.Provider,
-	settings configuration.VPN, starter command.Starter, logger logging.Logger) (
+	settings configuration.VPN, starter command.Starter, logger openvpn.Logger) (
 	runner vpnRunner, serverName string, err error) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection)
 	if err != nil {

@@ -13,7 +13,6 @@ import (
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/vpn"
-	"github.com/qdm12/golibs/logging"
 )
 
 type Server interface {
@@ -22,11 +21,11 @@ type Server interface {
 
 type server struct {
 	address string
-	logger  logging.Logger
+	logger  infoErrorer
 	handler http.Handler
 }
 
-func New(ctx context.Context, address string, logEnabled bool, logger logging.Logger,
+func New(ctx context.Context, address string, logEnabled bool, logger Logger,
 	buildInfo models.BuildInformation, openvpnLooper vpn.Looper,
 	pfGetter portforward.Getter, unboundLooper dns.Looper,
 	updaterLooper updater.Looper, publicIPLooper publicip.Looper) Server {

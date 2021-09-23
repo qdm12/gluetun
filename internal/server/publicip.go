@@ -6,21 +6,18 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/publicip"
-	"github.com/qdm12/golibs/logging"
 )
 
-func newPublicIPHandler(
-	looper publicip.Looper,
-	logger logging.Logger) http.Handler {
+func newPublicIPHandler(looper publicip.Looper, w warner) http.Handler {
 	return &publicIPHandler{
 		looper: looper,
-		logger: logger,
+		warner: w,
 	}
 }
 
 type publicIPHandler struct {
 	looper publicip.Looper
-	logger logging.Logger
+	warner warner
 }
 
 func (h *publicIPHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +39,7 @@ func (h *publicIPHandler) getPublicIP(w http.ResponseWriter) {
 	data := h.looper.GetData()
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(data); err != nil {
-		h.logger.Warn(err.Error())
+		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

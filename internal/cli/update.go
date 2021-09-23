@@ -15,7 +15,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
-	"github.com/qdm12/golibs/logging"
 )
 
 var (
@@ -26,10 +25,16 @@ var (
 )
 
 type Updater interface {
-	Update(ctx context.Context, args []string, logger logging.Logger) error
+	Update(ctx context.Context, args []string, logger UpdaterLogger) error
 }
 
-func (c *CLI) Update(ctx context.Context, args []string, logger logging.Logger) error {
+type UpdaterLogger interface {
+	Info(s string)
+	Warn(s string)
+	Error(s string)
+}
+
+func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
 	options := configuration.Updater{CLI: true}
 	var endUserMode, maintainerMode, updateAll bool
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)

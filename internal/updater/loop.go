@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/golibs/logging"
 )
 
 type Looper interface {
@@ -29,7 +28,7 @@ type looper struct {
 	updater       Updater
 	flusher       storage.Flusher
 	setAllServers func(allServers models.AllServers)
-	logger        logging.Logger
+	logger        infoErrorer
 	// Internal channels and locks
 	loopLock     sync.Mutex
 	start        chan struct{}
@@ -47,7 +46,7 @@ const defaultBackoffTime = 5 * time.Second
 
 func NewLooper(settings configuration.Updater, currentServers models.AllServers,
 	flusher storage.Flusher, setAllServers func(allServers models.AllServers),
-	client *http.Client, logger logging.Logger) Looper {
+	client *http.Client, logger Logger) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,

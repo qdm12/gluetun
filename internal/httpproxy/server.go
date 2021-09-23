@@ -5,18 +5,16 @@ import (
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/qdm12/golibs/logging"
 )
 
 type Server struct {
 	address    string
 	handler    http.Handler
-	logger     logging.Logger
+	logger     infoErrorer
 	internalWG *sync.WaitGroup
 }
 
-func New(ctx context.Context, address string, logger logging.Logger,
+func New(ctx context.Context, address string, logger Logger,
 	stealth, verbose bool, username, password string) *Server {
 	wg := &sync.WaitGroup{}
 	return &Server{

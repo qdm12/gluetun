@@ -8,7 +8,7 @@ import (
 )
 
 func streamLines(ctx context.Context, done chan<- struct{},
-	logger logging.Logger, stdout, stderr chan string,
+	logger Logger, stdout, stderr chan string,
 	tunnelReady chan<- struct{}) {
 	defer close(done)
 

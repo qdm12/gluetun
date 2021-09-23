@@ -13,7 +13,6 @@ import (
 	"github.com/qdm12/gluetun/internal/dns/state"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/logging"
 )
 
 var _ Looper = (*Loop)(nil)
@@ -33,7 +32,7 @@ type Loop struct {
 	resolvConf    string
 	blockBuilder  blacklist.Builder
 	client        *http.Client
-	logger        logging.Logger
+	logger        Logger
 	userTrigger   bool
 	start         <-chan struct{}
 	running       chan<- models.LoopStatus
@@ -48,7 +47,7 @@ type Loop struct {
 const defaultBackoffTime = 10 * time.Second
 
 func NewLoop(conf unbound.Configurator, settings configuration.DNS, client *http.Client,
-	logger logging.Logger) *Loop {
+	logger Logger) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})

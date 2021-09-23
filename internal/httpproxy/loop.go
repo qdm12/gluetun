@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/httpproxy/state"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/logging"
 )
 
 var _ Looper = (*Loop)(nil)
@@ -26,7 +25,7 @@ type Loop struct {
 	statusManager loopstate.Manager
 	state         state.Manager
 	// Other objects
-	logger logging.Logger
+	logger Logger
 	// Internal channels and locks
 	running       chan models.LoopStatus
 	stop, stopped chan struct{}
@@ -37,7 +36,7 @@ type Loop struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLoop(logger logging.Logger, settings configuration.HTTPProxy) *Loop {
+func NewLoop(logger Logger, settings configuration.HTTPProxy) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})

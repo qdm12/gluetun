@@ -9,7 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/logging"
 	shadowsockslib "github.com/qdm12/ss-server/pkg/tcpudp"
 )
 
@@ -26,7 +25,7 @@ type Looper interface {
 type looper struct {
 	state state
 	// Other objects
-	logger logging.Logger
+	logger Logger
 	// Internal channels and locks
 	loopLock      sync.Mutex
 	running       chan models.LoopStatus
@@ -53,7 +52,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(settings configuration.ShadowSocks, logger logging.Logger) Looper {
+func NewLooper(settings configuration.ShadowSocks, logger Logger) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,

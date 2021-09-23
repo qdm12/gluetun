@@ -62,7 +62,7 @@ func (settings *ShadowSocks) read(r reader) (err error) {
 
 	warning, err := settings.getAddress(r.env)
 	if warning != "" {
-		r.logger.Warn(warning)
+		r.warner.Warn(warning)
 	}
 	if err != nil {
 		return err

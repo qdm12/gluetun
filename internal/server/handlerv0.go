@@ -8,10 +8,9 @@ import (
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/vpn"
-	"github.com/qdm12/golibs/logging"
 )
 
-func newHandlerV0(ctx context.Context, logger logging.Logger,
+func newHandlerV0(ctx context.Context, logger infoWarner,
 	vpn vpn.Looper, dns dns.Looper, updater updater.Looper) http.Handler {
 	return &handlerV0{
 		ctx:     ctx,
@@ -24,7 +23,7 @@ func newHandlerV0(ctx context.Context, logger logging.Logger,
 
 type handlerV0 struct {
 	ctx     context.Context
-	logger  logging.Logger
+	logger  infoWarner
 	vpn     vpn.Looper
 	dns     dns.Looper
 	updater updater.Looper

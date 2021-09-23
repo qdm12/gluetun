@@ -40,7 +40,7 @@ func (settings *ControlServer) read(r reader) (err error) {
 	settings.Port, warning, err = r.env.ListeningPort(
 		"HTTP_CONTROL_SERVER_PORT", params.Default("8000"))
 	if len(warning) > 0 {
-		r.logger.Warn(warning)
+		r.warner.Warn(warning)
 	}
 	if err != nil {
 		return fmt.Errorf("environment variable HTTP_CONTROL_SERVER_PORT: %w", err)

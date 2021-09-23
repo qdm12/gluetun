@@ -7,24 +7,23 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/updater"
-	"github.com/qdm12/golibs/logging"
 )
 
 func newUpdaterHandler(
 	ctx context.Context,
 	looper updater.Looper,
-	logger logging.Logger) http.Handler {
+	warner warner) http.Handler {
 	return &updaterHandler{
 		ctx:    ctx,
 		looper: looper,
-		logger: logger,
+		warner: warner,
 	}
 }
 
 type updaterHandler struct {
 	ctx    context.Context
 	looper updater.Looper
-	logger logging.Logger
+	warner warner
 }
 
 func (h *updaterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +48,7 @@ func (h *updaterHandler) getStatus(w http.ResponseWriter) {
 	encoder := json.NewEncoder(w)
 	data := statusWrapper{Status: string(status)}
 	if err := encoder.Encode(data); err != nil {
-		h.logger.Warn(err.Error())
+		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -74,7 +73,7 @@ func (h *updaterHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 	}
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(outcomeWrapper{Outcome: outcome}); err != nil {
-		h.logger.Warn(err.Error())
+		h.warner.Warn(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

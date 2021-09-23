@@ -11,7 +11,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
-	"github.com/qdm12/golibs/logging"
 )
 
 type Updater interface {
@@ -26,7 +25,7 @@ type updater struct {
 	servers models.AllServers
 
 	// Functions for tests
-	logger    logging.Logger
+	logger    Logger
 	timeNow   func() time.Time
 	presolver resolver.Parallel
 	client    *http.Client
@@ -34,7 +33,7 @@ type updater struct {
 }
 
 func New(settings configuration.Updater, httpClient *http.Client,
-	currentServers models.AllServers, logger logging.Logger) Updater {
+	currentServers models.AllServers, logger Logger) Updater {
 	if settings.DNSAddress == "" {
 		settings.DNSAddress = "1.1.1.1"
 	}

@@ -9,15 +9,19 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 )
 
 type OpenvpnConfigMaker interface {
-	OpenvpnConfig(logger logging.Logger, env params.Interface) error
+	OpenvpnConfig(logger OpenvpnConfigLogger, env params.Interface) error
 }
 
-func (c *CLI) OpenvpnConfig(logger logging.Logger, env params.Interface) error {
+type OpenvpnConfigLogger interface {
+	Info(s string)
+	Warn(s string)
+}
+
+func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, env params.Interface) error {
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
 		return err

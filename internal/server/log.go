@@ -5,11 +5,9 @@ import (
 	"strconv"
 	"sync"
 	"time"
-
-	"github.com/qdm12/golibs/logging"
 )
 
-func withLogMiddleware(childHandler http.Handler, logger logging.Logger, enabled bool) *logMiddleware {
+func withLogMiddleware(childHandler http.Handler, logger infoer, enabled bool) *logMiddleware {
 	return &logMiddleware{
 		childHandler: childHandler,
 		logger:       logger,
@@ -20,7 +18,7 @@ func withLogMiddleware(childHandler http.Handler, logger logging.Logger, enabled
 
 type logMiddleware struct {
 	childHandler http.Handler
-	logger       logging.Logger
+	logger       infoer
 	timeNow      func() time.Time
 	enabled      bool
 	enabledMu    sync.RWMutex

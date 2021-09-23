@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/qdm12/golibs/logging/mock_logging"
 	"github.com/qdm12/golibs/params/mock_params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -215,7 +214,7 @@ func Test_Health_read(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
 			env := mock_params.NewMockInterface(ctrl)
-			logger := mock_logging.NewMockLogger(ctrl)
+			warner := NewMockWarner(ctrl)
 
 			if testCase.serverAddress.call {
 				value := testCase.serverAddress.s
@@ -224,7 +223,7 @@ func Test_Health_read(t *testing.T) {
 				env.EXPECT().ListeningAddress("HEALTH_SERVER_ADDRESS", gomock.Any()).
 					Return(value, warning, err)
 				if warning != "" {
-					logger.EXPECT().Warn("environment variable HEALTH_SERVER_ADDRESS: " + warning)
+					warner.EXPECT().Warn("environment variable HEALTH_SERVER_ADDRESS: " + warning)
 				}
 			}
 
@@ -253,7 +252,7 @@ func Test_Health_read(t *testing.T) {
 
 			r := reader{
 				env:    env,
-				logger: logger,
+				warner: warner,
 			}
 
 			var health Health

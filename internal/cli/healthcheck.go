@@ -8,19 +8,18 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/healthcheck"
-	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/golibs/params"
 )
 
 type HealthChecker interface {
-	HealthCheck(ctx context.Context, env params.Interface, logger logging.Logger) error
+	HealthCheck(ctx context.Context, env params.Interface, warner configuration.Warner) error
 }
 
 func (c *CLI) HealthCheck(ctx context.Context, env params.Interface,
-	logger logging.Logger) error {
+	warner configuration.Warner) error {
 	// Extract the health server port from the configuration.
 	config := configuration.Health{}
-	err := config.Read(env, logger)
+	err := config.Read(env, warner)
 	if err != nil {
 		return err
 	}

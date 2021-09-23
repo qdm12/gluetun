@@ -26,11 +26,11 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/purevpn"
 	"github.com/qdm12/gluetun/internal/provider/surfshark"
 	"github.com/qdm12/gluetun/internal/provider/torguard"
+	"github.com/qdm12/gluetun/internal/provider/utils"
 	"github.com/qdm12/gluetun/internal/provider/vpnunlimited"
 	"github.com/qdm12/gluetun/internal/provider/vyprvpn"
 	"github.com/qdm12/gluetun/internal/provider/wevpn"
 	"github.com/qdm12/gluetun/internal/provider/windscribe"
-	"github.com/qdm12/golibs/logging"
 )
 
 // Provider contains methods to read and modify the openvpn configuration to connect as a client.
@@ -42,11 +42,10 @@ type Provider interface {
 
 type PortForwarder interface {
 	PortForward(ctx context.Context, client *http.Client,
-		logger logging.Logger, gateway net.IP, serverName string) (
+		logger utils.Logger, gateway net.IP, serverName string) (
 		port uint16, err error)
 	KeepPortForward(ctx context.Context, client *http.Client,
-		logger logging.Logger, port uint16, gateway net.IP, serverName string) (
-		err error)
+		port uint16, gateway net.IP, serverName string) (err error)
 }
 
 func New(provider string, allServers models.AllServers, timeNow func() time.Time) Provider {

@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"github.com/qdm12/golibs/logging"
 )
 
 type ReadWriter interface {
@@ -35,14 +34,13 @@ type Writer interface {
 
 type Routing struct {
 	netLinker       netlink.NetLinker
-	logger          logging.Logger
+	logger          Logger
 	outboundSubnets []net.IPNet
 	stateMutex      sync.RWMutex
 }
 
 // New creates a new routing instance.
-func New(netLinker netlink.NetLinker,
-	logger logging.Logger) *Routing {
+func New(netLinker netlink.NetLinker, logger Logger) *Routing {
 	return &Routing{
 		netLinker: netLinker,
 		logger:    logger,
