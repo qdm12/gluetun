@@ -1,13 +1,10 @@
 package configuration
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/constants"
 )
-
-var errProtocolNotSupported = errors.New("protocol is not supported")
 
 func (settings *Provider) readExpressvpn(r reader) (err error) {
 	settings.Name = constants.Expressvpn
@@ -34,9 +31,9 @@ func (settings *Provider) readExpressvpn(r reader) (err error) {
 		return fmt.Errorf("environment variable CITY: %w", err)
 	}
 
-	tcp, _ := readProtocol(r.env)
-	if tcp {
-		return fmt.Errorf("%w: for provider %s", errProtocolNotSupported, constants.Expressvpn)
+	settings.ServerSelection.OpenVPN.TCP, err = readOpenVPNProtocol(r)
+	if err != nil {
+		return err
 	}
 
 	return nil
