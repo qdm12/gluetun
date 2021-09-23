@@ -8,6 +8,7 @@ type CLIer interface {
 	HealthChecker
 	OpenvpnConfigMaker
 	Updater
+	ServersFormatter
 }
 
 type CLI struct {

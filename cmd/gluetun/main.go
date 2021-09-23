@@ -130,6 +130,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			return cli.OpenvpnConfig(logger, env)
 		case "update":
 			return cli.Update(ctx, args[2:], logger)
+		case "format-servers":
+			return cli.FormatServers(args[2:])
 		default:
 			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
