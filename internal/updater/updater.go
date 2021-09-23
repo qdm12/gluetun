@@ -61,6 +61,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
+	if u.options.Expressvpn {
+		u.logger.Info("updating Expressvpn servers...")
+		if err := u.updateExpressvpn(ctx); err != nil {
+			u.logger.Error(err.Error())
+		}
+		if err := ctx.Err(); err != nil {
+			return allServers, err
+		}
+	}
+
 	if u.options.Fastestvpn {
 		u.logger.Info("updating Fastestvpn servers...")
 		if err := u.updateFastestvpn(ctx); err != nil {

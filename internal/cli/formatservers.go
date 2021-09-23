@@ -25,13 +25,14 @@ var (
 
 func (c *CLI) FormatServers(args []string) error {
 	var format, output string
-	var cyberghost, fastestvpn, hideMyAss, ipvanish, ivpn, mullvad,
+	var cyberghost, expressvpn, fastestvpn, hideMyAss, ipvanish, ivpn, mullvad,
 		nordvpn, pia, privado, privatevpn, protonvpn, purevpn, surfshark,
 		torguard, vpnUnlimited, vyprvpn, wevpn, windscribe bool
 	flagSet := flag.NewFlagSet("markdown", flag.ExitOnError)
 	flagSet.StringVar(&format, "format", "markdown", "Format to use which can be: 'markdown'")
 	flagSet.StringVar(&output, "output", "/dev/stdout", "Output file to write the formatted data to")
 	flagSet.BoolVar(&cyberghost, "cyberghost", false, "Format Cyberghost servers")
+	flagSet.BoolVar(&expressvpn, "expressvpn", false, "Format ExpressVPN servers")
 	flagSet.BoolVar(&fastestvpn, "fastestvpn", false, "Format FastestVPN servers")
 	flagSet.BoolVar(&hideMyAss, "hidemyass", false, "Format HideMyAss servers")
 	flagSet.BoolVar(&ipvanish, "ipvanish", false, "Format IpVanish servers")
@@ -68,6 +69,8 @@ func (c *CLI) FormatServers(args []string) error {
 	switch {
 	case cyberghost:
 		formatted = currentServers.Cyberghost.ToMarkdown()
+	case expressvpn:
+		formatted = currentServers.Expressvpn.ToMarkdown()
 	case fastestvpn:
 		formatted = currentServers.Fastestvpn.ToMarkdown()
 	case hideMyAss:

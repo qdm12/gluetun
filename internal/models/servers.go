@@ -3,6 +3,7 @@ package models
 type AllServers struct {
 	Version      uint16              `json:"version"` // used for migration of the top level scheme
 	Cyberghost   CyberghostServers   `json:"cyberghost"`
+	Expressvpn   ExpressvpnServers   `json:"expressvpn"`
 	Fastestvpn   FastestvpnServers   `json:"fastestvpn"`
 	HideMyAss    HideMyAssServers    `json:"hidemyass"`
 	Ipvanish     IpvanishServers     `json:"ipvanish"`
@@ -24,6 +25,7 @@ type AllServers struct {
 
 func (a *AllServers) Count() int {
 	return len(a.Cyberghost.Servers) +
+		len(a.Expressvpn.Servers) +
 		len(a.Fastestvpn.Servers) +
 		len(a.HideMyAss.Servers) +
 		len(a.Ipvanish.Servers) +
@@ -47,6 +49,11 @@ type CyberghostServers struct {
 	Version   uint16             `json:"version"`
 	Timestamp int64              `json:"timestamp"`
 	Servers   []CyberghostServer `json:"servers"`
+}
+type ExpressvpnServers struct {
+	Version   uint16             `json:"version"`
+	Timestamp int64              `json:"timestamp"`
+	Servers   []ExpressvpnServer `json:"servers"`
 }
 type FastestvpnServers struct {
 	Version   uint16             `json:"version"`

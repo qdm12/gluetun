@@ -15,7 +15,7 @@ func FastestvpnCountriesChoices(servers []models.FastestvpnServer) (choices []st
 	for i := range servers {
 		choices[i] = servers[i].Country
 	}
-	return choices
+	return makeUnique(choices)
 }
 
 func FastestvpnHostnameChoices(servers []models.FastestvpnServer) (choices []string) {
@@ -23,5 +23,5 @@ func FastestvpnHostnameChoices(servers []models.FastestvpnServer) (choices []str
 	for i := range servers {
 		choices[i] = servers[i].Hostname
 	}
-	return choices
+	return makeUnique(choices)
 }

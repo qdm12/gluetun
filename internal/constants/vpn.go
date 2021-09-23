@@ -11,6 +11,8 @@ const (
 	Custom = "custom"
 	// Cyberghost is a VPN provider.
 	Cyberghost = "cyberghost"
+	// Expressvpn is a VPN provider.
+	Expressvpn = "expressvpn"
 	// Fastestvpn is a VPN provider.
 	Fastestvpn = "fastestvpn"
 	// HideMyAss is a VPN provider.

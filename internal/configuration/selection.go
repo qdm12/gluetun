@@ -15,11 +15,11 @@ type ServerSelection struct { //nolint:maligned
 	// Cyberghost, PIA, Protonvpn, Surfshark, Windscribe, Vyprvpn, NordVPN
 	Regions []string `json:"regions"`
 
-	// Fastestvpn, HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited
+	// Expressvpn, Fastestvpn, HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited
 	Countries []string `json:"countries"`
-	// HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited, WeVPN, Windscribe
+	// Expressvpn, HideMyAss, IPVanish, IVPN, Mullvad, PrivateVPN, Protonvpn, PureVPN, VPNUnlimited, WeVPN, Windscribe
 	Cities []string `json:"cities"`
-	// Fastestvpn, HideMyAss, IPVanish, IVPN, PrivateVPN, Windscribe, Privado, Protonvpn, VPNUnlimited, WeVPN
+	// Expressvpn, Fastestvpn, HideMyAss, IPVanish, IVPN, PrivateVPN, Windscribe, Privado, Protonvpn, VPNUnlimited, WeVPN
 	Hostnames []string `json:"hostnames"`
 	Names     []string `json:"names"` // Protonvpn
 

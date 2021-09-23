@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/updater/providers/cyberghost"
+	"github.com/qdm12/gluetun/internal/updater/providers/expressvpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/fastestvpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/hidemyass"
 	"github.com/qdm12/gluetun/internal/updater/providers/ipvanish"
@@ -39,6 +40,28 @@ func (u *updater) updateCyberghost(ctx context.Context) (err error) {
 
 	u.servers.Cyberghost.Timestamp = u.timeNow().Unix()
 	u.servers.Cyberghost.Servers = servers
+	return nil
+}
+
+func (u *updater) updateExpressvpn(ctx context.Context) (err error) {
+	minServers := getMinServers(len(u.servers.Expressvpn.Servers))
+	servers, warnings, err := expressvpn.GetServers(
+		ctx, u.unzipper, u.presolver, minServers)
+	if u.options.CLI {
+		for _, warning := range warnings {
+			u.logger.Warn("ExpressVPN: " + warning)
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	if reflect.DeepEqual(u.servers.Expressvpn.Servers, servers) {
+		return nil
+	}
+
+	u.servers.Expressvpn.Timestamp = u.timeNow().Unix()
+	u.servers.Expressvpn.Servers = servers
 	return nil
 }
 

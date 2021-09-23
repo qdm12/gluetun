@@ -30,6 +30,20 @@ func (s CyberghostServer) ToMarkdown() (markdown string) {
 		boolToMarkdown(s.TCP), boolToMarkdown(s.UDP))
 }
 
+func (s *ExpressvpnServers) ToMarkdown() (markdown string) {
+	markdown = markdownTableHeading("Country", "City", "Hostname", "TCP", "UDP")
+	for _, server := range s.Servers {
+		markdown += server.ToMarkdown() + "\n"
+	}
+	return markdown
+}
+
+func (s *ExpressvpnServer) ToMarkdown() (markdown string) {
+	return fmt.Sprintf("| %s | %s | `%s` | %s | %s |",
+		s.Country, s.City, s.Hostname,
+		boolToMarkdown(s.TCP), boolToMarkdown(s.UDP))
+}
+
 func (s *FastestvpnServers) ToMarkdown() (markdown string) {
 	markdown = markdownTableHeading("Country", "Hostname", "TCP", "UDP")
 	for _, server := range s.Servers {
