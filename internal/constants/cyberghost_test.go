@@ -22,9 +22,8 @@ func Test_CyberghostGroupChoices(t *testing.T) {
 
 	servers := storage.GetServers()
 
-	expected := []string{"Premium TCP Asia", "Premium TCP Europe",
-		"Premium TCP USA", "Premium UDP Asia", "Premium UDP Europe",
-		"Premium UDP USA"}
+	expected := []string{"NoSpy TCP Europe", "NoSpy UDP Europe",
+		"Premium TCP Europe", "Premium UDP Europe"}
 	choices := CyberghostGroupChoices(servers.GetCyberghost())
 
 	assert.Equal(t, expected, choices)
