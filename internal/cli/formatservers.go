@@ -27,7 +27,7 @@ func (c *CLI) FormatServers(args []string) error {
 	var format, output string
 	var cyberghost, fastestvpn, hideMyAss, ipvanish, ivpn, mullvad,
 		nordvpn, pia, privado, privatevpn, protonvpn, purevpn, surfshark,
-		torguard, vpnUnlimited, vyprvpn, windscribe bool
+		torguard, vpnUnlimited, vyprvpn, wevpn, windscribe bool
 	flagSet := flag.NewFlagSet("markdown", flag.ExitOnError)
 	flagSet.StringVar(&format, "format", "markdown", "Format to use which can be: 'markdown'")
 	flagSet.StringVar(&output, "output", "/dev/stdout", "Output file to write the formatted data to")
@@ -47,6 +47,7 @@ func (c *CLI) FormatServers(args []string) error {
 	flagSet.BoolVar(&torguard, "torguard", false, "Format Torguard servers")
 	flagSet.BoolVar(&vpnUnlimited, "vpnunlimited", false, "Format VPN Unlimited servers")
 	flagSet.BoolVar(&vyprvpn, "vyprvpn", false, "Format Vyprvpn servers")
+	flagSet.BoolVar(&wevpn, "wevpn", false, "Format WeVPN servers")
 	flagSet.BoolVar(&windscribe, "windscribe", false, "Format Windscribe servers")
 	if err := flagSet.Parse(args); err != nil {
 		return err
@@ -97,6 +98,8 @@ func (c *CLI) FormatServers(args []string) error {
 		formatted = currentServers.VPNUnlimited.ToMarkdown()
 	case vyprvpn:
 		formatted = currentServers.Vyprvpn.ToMarkdown()
+	case wevpn:
+		formatted = currentServers.Wevpn.ToMarkdown()
 	case windscribe:
 		formatted = currentServers.Windscribe.ToMarkdown()
 	default:

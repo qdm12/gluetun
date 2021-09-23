@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/golibs/params"
 )
 
 func (settings *Provider) readWevpn(r reader) (err error) {
@@ -26,18 +25,21 @@ func (settings *Provider) readWevpn(r reader) (err error) {
 		return fmt.Errorf("environment variable SERVER_HOSTNAME: %w", err)
 	}
 
-	return settings.ServerSelection.OpenVPN.readWevpn(r.env)
+	return settings.ServerSelection.OpenVPN.readWevpn(r)
 }
 
-func (settings *OpenVPNSelection) readWevpn(env params.Interface) (err error) {
-	settings.TCP, err = readProtocol(env)
+func (settings *OpenVPNSelection) readWevpn(r reader) (err error) {
+	settings.TCP, err = readOpenVPNProtocol(r)
 	if err != nil {
 		return err
 	}
 
-	settings.CustomPort, err = readOpenVPNCustomPort(env, settings.TCP,
-		[]uint16{53, 1195, 1199, 2018},
-		[]uint16{80, 1194, 1198})
+	validation := openvpnPortValidation{
+		tcp:        settings.TCP,
+		allowedTCP: []uint16{53, 1195, 1199, 2018},
+		allowedUDP: []uint16{80, 1194, 1198},
+	}
+	settings.CustomPort, err = readOpenVPNCustomPort(r, validation)
 	if err != nil {
 		return err
 	}
