@@ -5018,20 +5018,11 @@
   },
   "fastestvpn": {
     "version": 1,
-    "timestamp": 1620435633,
+    "timestamp": 1632576585,
     "servers": [
       {
-        "hostname": "au-sd-ovtcp-01.jumptoserver.com",
+        "hostname": "au.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Australia",
-        "ips": [
-          "139.99.149.10"
-        ]
-      },
-      {
-        "hostname": "au-sd-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Australia",
         "ips": [
@@ -5039,17 +5030,8 @@
         ]
       },
       {
-        "hostname": "au2-sd-ovtcp-01.jumptoserver.com",
+        "hostname": "au2.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Australia",
-        "ips": [
-          "139.99.131.126"
-        ]
-      },
-      {
-        "hostname": "au2-sd-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Australia",
         "ips": [
@@ -5081,15 +5063,6 @@
         "country": "Belgium",
         "ips": [
           "217.138.211.68"
-        ]
-      },
-      {
-        "hostname": "bel3.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "country": "Belgium",
-        "ips": [
-          "217.138.211.69"
         ]
       },
       {
@@ -5134,21 +5107,12 @@
         "udp": true,
         "country": "Canada",
         "ips": [
-          "192.99.103.49"
+          "192.99.103.50"
         ]
       },
       {
-        "hostname": "cz-pr-ovtcp-01.jumptoserver.com",
+        "hostname": "cz.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Czechia",
-        "ips": [
-          "185.216.35.218"
-        ]
-      },
-      {
-        "hostname": "cz-pr-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Czechia",
         "ips": [
@@ -5165,17 +5129,8 @@
         ]
       },
       {
-        "hostname": "fi-hs-ovtcp-01.jumptoserver.com",
+        "hostname": "fi.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Finland",
-        "ips": [
-          "194.34.132.19"
-        ]
-      },
-      {
-        "hostname": "fi-hs-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Finland",
         "ips": [
@@ -5210,39 +5165,21 @@
         ]
       },
       {
-        "hostname": "hk-ovtcp-01.jumptoserver.com",
+        "hostname": "hk.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Hong.Kong",
-        "ips": [
-          "64.120.88.115"
-        ]
-      },
-      {
-        "hostname": "hk-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Hong.Kong",
         "ips": [
-          "64.120.88.115"
+          "64.120.88.110"
         ]
       },
       {
-        "hostname": "in41.jumptoserver.com",
+        "hostname": "in.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "country": "India",
         "ips": [
-          "101.53.128.39"
-        ]
-      },
-      {
-        "hostname": "in45.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "country": "India",
-        "ips": [
-          "101.53.128.148"
+          "43.240.67.58"
         ]
       },
       {
@@ -5269,21 +5206,12 @@
         "udp": true,
         "country": "Italy",
         "ips": [
-          "37.120.207.90"
+          "95.174.64.182"
         ]
       },
       {
-        "hostname": "jp-tk-ovtcp-01.jumptoserver.com",
+        "hostname": "jp.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Japan",
-        "ips": [
-          "202.239.38.147"
-        ]
-      },
-      {
-        "hostname": "jp-tk-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Japan",
         "ips": [
@@ -5327,17 +5255,8 @@
         ]
       },
       {
-        "hostname": "nr-ol-ovtcp-01.jumptoserver.com",
+        "hostname": "nr.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Norway",
-        "ips": [
-          "185.90.61.20"
-        ]
-      },
-      {
-        "hostname": "nr-ol-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Norway",
         "ips": [
@@ -5381,44 +5300,26 @@
         ]
       },
       {
-        "hostname": "rs.jumptoserver.com",
+        "hostname": "rs2.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "country": "Serbia",
         "ips": [
-          "37.46.115.246"
+          "37.46.115.247"
         ]
       },
       {
-        "hostname": "sg-ovtcp-01.jumptoserver.com",
+        "hostname": "sg.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Singapore",
-        "ips": [
-          "209.58.174.195"
-        ]
-      },
-      {
-        "hostname": "sg-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Singapore",
         "ips": [
-          "209.58.174.195"
+          "209.58.174.219"
         ]
       },
       {
-        "hostname": "kr-so-ovtcp-01.jumptoserver.com",
+        "hostname": "kr.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "South.Korea",
-        "ips": [
-          "103.249.31.36"
-        ]
-      },
-      {
-        "hostname": "kr-so-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "South.Korea",
         "ips": [
@@ -5426,17 +5327,8 @@
         ]
       },
       {
-        "hostname": "es-bl-ovtcp-01.jumptoserver.com",
+        "hostname": "es.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Spain",
-        "ips": [
-          "193.148.19.155"
-        ]
-      },
-      {
-        "hostname": "es-bl-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Spain",
         "ips": [
@@ -5444,21 +5336,12 @@
         ]
       },
       {
-        "hostname": "se-st-ovtcp-01.jumptoserver.com",
+        "hostname": "se.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Sweden",
-        "ips": [
-          "128.127.104.200"
-        ]
-      },
-      {
-        "hostname": "se-st-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Sweden",
         "ips": [
-          "128.127.104.201"
+          "128.127.104.196"
         ]
       },
       {
@@ -5471,17 +5354,8 @@
         ]
       },
       {
-        "hostname": "ch-zr-ovtcp-01.jumptoserver.com",
+        "hostname": "ch.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Switzerland",
-        "ips": [
-          "82.102.24.254"
-        ]
-      },
-      {
-        "hostname": "ch-zr-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "Switzerland",
         "ips": [
@@ -5489,17 +5363,17 @@
         ]
       },
       {
-        "hostname": "tr-iz-ovtcp-01.jumptoserver.com",
+        "hostname": "ch2.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "Turkey",
+        "udp": true,
+        "country": "Switzerland",
         "ips": [
-          "185.123.102.57"
+          "79.142.69.168"
         ]
       },
       {
         "hostname": "tr.jumptoserver.com",
-        "tcp": false,
+        "tcp": true,
         "udp": true,
         "country": "Turkey",
         "ips": [
@@ -5507,17 +5381,8 @@
         ]
       },
       {
-        "hostname": "ue-db-ovtcp-01.jumptoserver.com",
+        "hostname": "uae.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "UAE-Dubai",
-        "ips": [
-          "45.9.249.110"
-        ]
-      },
-      {
-        "hostname": "ue-db-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "UAE-Dubai",
         "ips": [
@@ -5531,6 +5396,15 @@
         "country": "UK",
         "ips": [
           "5.226.139.143"
+        ]
+      },
+      {
+        "hostname": "uk3.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "country": "UK",
+        "ips": [
+          "83.229.75.27"
         ]
       },
       {
@@ -5552,30 +5426,21 @@
         ]
       },
       {
-        "hostname": "us-at-ovtcp-01.jumptoserver.com",
+        "hostname": "us-at.jumptoserver.com",
         "tcp": true,
-        "udp": false,
+        "udp": true,
         "country": "US-Atlanta",
         "ips": [
           "23.82.10.205"
         ]
       },
       {
-        "hostname": "us-cf-ovtcp-01.jumptoserver.com",
+        "hostname": "us-cf.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "US-Charlotte",
-        "ips": [
-          "192.154.253.6"
-        ]
-      },
-      {
-        "hostname": "us-cf-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "US-Charlotte",
         "ips": [
-          "192.154.253.6"
+          "155.254.28.194"
         ]
       },
       {
@@ -5597,17 +5462,8 @@
         ]
       },
       {
-        "hostname": "us-dl-ovtcp-01.jumptoserver.com",
+        "hostname": "us-dl.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "US-Dallas",
-        "ips": [
-          "74.63.219.202"
-        ]
-      },
-      {
-        "hostname": "us-dl-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "US-Dallas",
         "ips": [
@@ -5624,17 +5480,8 @@
         ]
       },
       {
-        "hostname": "us-la-ovtcp-01.jumptoserver.com",
+        "hostname": "us-la.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "US-Los.Angeles",
-        "ips": [
-          "64.31.35.222"
-        ]
-      },
-      {
-        "hostname": "us-la-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "US-Los.Angeles",
         "ips": [
@@ -5651,30 +5498,12 @@
         ]
       },
       {
-        "hostname": "netflix.jumptoserver.com",
-        "tcp": false,
-        "udp": true,
-        "country": "US-Netflix",
-        "ips": [
-          "37.59.172.215"
-        ]
-      },
-      {
-        "hostname": "us-ny-ovtcp-01.jumptoserver.com",
+        "hostname": "us-ny.jumptoserver.com",
         "tcp": true,
-        "udp": false,
-        "country": "US-New.York",
-        "ips": [
-          "38.132.102.107"
-        ]
-      },
-      {
-        "hostname": "us-ny-ovudp-01.jumptoserver.com",
-        "tcp": false,
         "udp": true,
         "country": "US-New.York",
         "ips": [
-          "38.132.102.107"
+          "185.240.246.99"
         ]
       },
       {
@@ -5738,6 +5567,15 @@
         "country": "US-St.Louis",
         "ips": [
           "148.72.173.32"
+        ]
+      },
+      {
+        "hostname": "netflix1.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "country": "US-Stream",
+        "ips": [
+          "155.254.28.195"
         ]
       },
       {
