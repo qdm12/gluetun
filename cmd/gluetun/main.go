@@ -13,6 +13,7 @@ import (
 	"time"
 	_ "time/tzdata"
 
+	_ "github.com/breml/rootcerts"
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"

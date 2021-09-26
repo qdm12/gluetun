@@ -3,6 +3,7 @@ module github.com/qdm12/gluetun
 go 1.17
 
 require (
+	github.com/breml/rootcerts v0.1.0
 	github.com/fatih/color v1.13.0
 	github.com/go-ping/ping v0.0.0-20210911151512-381826476871
 	github.com/golang/mock v1.6.0
