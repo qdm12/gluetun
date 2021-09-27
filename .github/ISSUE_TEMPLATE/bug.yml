@@ -1,0 +1,104 @@
+name: Bug
+description: Report a bug
+title: "Bug: "
+labels: [":bug: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: dropdown
+    id: urgent
+    attributes:
+      label: Is this urgent?
+      description: Is this a critical bug, or do you need this fixed urgently?
+      options:
+        - "No"
+        - "Yes"
+  - type: input
+    id: host-os
+    attributes:
+      label: Host OS
+      description: What is your host OS?
+      placeholder: "Debian Buster"
+  - type: dropdown
+    id: cpu-arch
+    attributes:
+      label: CPU arch
+      description: You can find it on Linux with `uname -m`.
+      options:
+        - x86_64
+        - aarch64
+        - armv7l
+        - "386"
+        - s390x
+        - ppc64le
+  - type: dropdown
+    id: vpn-service-provider
+    attributes:
+      label: VPN service provider
+      options:
+        - Cyberghost
+        - ExpressVPN
+        - FastestVPN
+        - HideMyAss
+        - IPVanish
+        - IVPN
+        - Mullvad
+        - NordVPN
+        - Privado
+        - Private Internet Access
+        - PrivateVPN
+        - ProtonVPN
+        - PureVPN
+        - Surfshark
+        - TorGuard
+        - VPNUnlimited
+        - VyprVPN
+        - WeVPN
+        - Windscribe
+    validations:
+      required: true
+  - type: dropdown
+    id: docker
+    attributes:
+      label: What are you using to run the container
+      options:
+        - docker run
+        - docker-compose
+        - Portainer
+        - Kubernetes
+        - Podman
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: What is the version of Gluetun
+      description: |
+        Copy paste the version line at the top of your logs.
+        It should be in the form `Running version latest built on 2020-03-13T01:30:06Z (commit d0f678c)`.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: "What's the problem 🤔"
+      placeholder: "That feature does not work..."
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Share your logs
+      description: No sensitive information is logged out except when running with `LOG_LEVEL=debug`.
+      render: log
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Share your configuration
+      description: Share your configuration such as `docker-compose.yml`. Ensure to remove credentials.
+      render: yml
