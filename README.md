@@ -57,6 +57,8 @@ using Go, OpenVPN or Wireguard, iptables, DNS over TLS, ShadowSocks and an HTTP 
 
   [![Video Gif](https://i.imgur.com/CetWunc.gif)](https://youtu.be/0F6I03LQcI4)
 
+- [Substack Console interview](https://console.substack.com/p/console-72)
+
 ## Features
 
 - Based on Alpine 3.14 for a small Docker image of 31MB
