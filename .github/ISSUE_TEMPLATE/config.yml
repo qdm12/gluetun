@@ -2,3 +2,6 @@ contact_links:
   - name: Configuration help?
     url: https://github.com/qdm12/gluetun/discussions/new
     about: Please create a Github discussion.
+  - name: Unraid template issue
+    url: https://github.com/qdm12/gluetun/discussions/550
+    about: Please read the relevant Github discussion.
