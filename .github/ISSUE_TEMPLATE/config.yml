@@ -1,0 +1,4 @@
+contact_links:
+  - name: Configuration help?
+    url: https://github.com/qdm12/gluetun/discussions/new
+    about: Please create a Github discussion.
