@@ -31,6 +31,9 @@ func processLogLine(s string) (filtered string, level logLevel) {
 	case strings.HasPrefix(s, "WARNING: "):
 		filtered = strings.TrimPrefix(s, "WARNING: ")
 		level = levelWarn
+	case strings.HasPrefix(s, "ERROR: "):
+		filtered = strings.TrimPrefix(s, "ERROR: ")
+		level = levelError
 	case strings.HasPrefix(s, "Options error: "):
 		filtered = strings.TrimPrefix(s, "Options error: ")
 		level = levelError
