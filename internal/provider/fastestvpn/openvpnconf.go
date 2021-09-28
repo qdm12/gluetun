@@ -29,18 +29,18 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		"verb " + strconv.Itoa(settings.Verbosity),
 
 		// Fastestvpn specific
-		"tun-mtu-extra 32",
 		"mssfix " + strconv.Itoa(int(settings.MSSFix)), // defaults to 1450
-		"ping 15",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 		"key-direction 1",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"auth " + settings.Auth,
+		"comp-lzo",
+		"reneg-sec 0",
 
 		// Added constant values
 		"auth-nocache",
 		"mute-replay-warnings",
-		"pull-filter ignore \"auth-token\"", // prevent auth failed loops
+		// "pull-filter ignore \"auth-token\"", // needed for FastestVPN
 		"auth-retry nointeract",
 		"suppress-timestamps",
 
@@ -53,6 +53,9 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "explicit-exit-notify")
+		lines = append(lines, "tun-mtu 1500")     // FastestVPN specific
+		lines = append(lines, "tun-mtu-extra 32") // FastestVPN specific
+		lines = append(lines, "ping 15")          // FastestVPN specific
 	}
 
 	if !settings.Root {
