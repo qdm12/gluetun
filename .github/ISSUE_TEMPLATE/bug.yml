@@ -38,6 +38,7 @@ body:
     attributes:
       label: VPN service provider
       options:
+        - Custom
         - Cyberghost
         - ExpressVPN
         - FastestVPN
