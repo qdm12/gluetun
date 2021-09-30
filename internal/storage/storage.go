@@ -5,6 +5,8 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
+//go:generate mockgen -destination=infoerrorer_mock_test.go -package $GOPACKAGE . InfoErrorer
+
 type Storage struct {
 	mergedServers    models.AllServers
 	hardcodedServers models.AllServers

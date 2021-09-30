@@ -36,7 +36,7 @@ func countServers(allServers models.AllServers) int {
 }
 
 func (s *Storage) SyncServers() (err error) {
-	serversOnFile, err := readFromFile(s.filepath)
+	serversOnFile, err := s.readFromFile(s.filepath, s.hardcodedServers)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrCannotReadFile, err)
 	}

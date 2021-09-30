@@ -7,15 +7,11 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (s *Storage) logVersionDiff(provider string, diff int) {
-	diffString := strconv.Itoa(diff)
-
-	message := provider + " servers from file discarded because they are " +
-		diffString + " version"
-	if diff > 1 {
-		message += "s"
-	}
-	message += " behind"
+func (s *Storage) logVersionDiff(provider string, hardcodedVersion, persistedVersion uint16) {
+	message := provider + " servers from file discarded because they have version " +
+		strconv.Itoa(int(persistedVersion)) +
+		" and hardcoded servers have version " +
+		strconv.Itoa(int(hardcodedVersion))
 	s.logger.Info(message)
 }
 
@@ -60,12 +56,6 @@ func (s *Storage) mergeCyberghost(hardcoded, persisted models.CyberghostServers)
 		return hardcoded
 	}
 
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Cyberghost", versionDiff)
-		return hardcoded
-	}
-
 	s.logTimeDiff("Cyberghost", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
@@ -74,11 +64,7 @@ func (s *Storage) mergeExpressvpn(hardcoded, persisted models.ExpressvpnServers)
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("ExpressVPN", versionDiff)
-		return hardcoded
-	}
+
 	s.logTimeDiff("ExpressVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
@@ -87,11 +73,7 @@ func (s *Storage) mergeFastestvpn(hardcoded, persisted models.FastestvpnServers)
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("FastestVPN", versionDiff)
-		return hardcoded
-	}
+
 	s.logTimeDiff("FastestVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
@@ -100,11 +82,7 @@ func (s *Storage) mergeHideMyAss(hardcoded, persisted models.HideMyAssServers) m
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("HideMyAss", versionDiff)
-		return hardcoded
-	}
+
 	s.logTimeDiff("HideMyAss", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
@@ -113,11 +91,7 @@ func (s *Storage) mergeIpvanish(hardcoded, persisted models.IpvanishServers) mod
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Ipvanish", versionDiff)
-		return hardcoded
-	}
+
 	s.logTimeDiff("Ipvanish", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
@@ -126,23 +100,13 @@ func (s *Storage) mergeIvpn(hardcoded, persisted models.IvpnServers) models.Ivpn
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Ivpn", versionDiff)
-		return hardcoded
-	}
+
 	s.logTimeDiff("Ivpn", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
 func (s *Storage) mergeMullvad(hardcoded, persisted models.MullvadServers) models.MullvadServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
-		return hardcoded
-	}
-
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Mullvad", versionDiff)
 		return hardcoded
 	}
 
@@ -155,23 +119,12 @@ func (s *Storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) model
 		return hardcoded
 	}
 
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("NordVPN", versionDiff)
-		return hardcoded
-	}
-
 	s.logTimeDiff("NordVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
 func (s *Storage) mergePrivado(hardcoded, persisted models.PrivadoServers) models.PrivadoServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
-		return hardcoded
-	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Privado", versionDiff)
 		return hardcoded
 	}
 
@@ -183,11 +136,6 @@ func (s *Storage) mergePIA(hardcoded, persisted models.PiaServers) models.PiaSer
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Private Internet Access", versionDiff)
-		return hardcoded
-	}
 
 	s.logTimeDiff("Private Internet Access", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
@@ -197,11 +145,6 @@ func (s *Storage) mergePrivatevpn(hardcoded, persisted models.PrivatevpnServers)
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("PrivateVPN", versionDiff)
-		return hardcoded
-	}
 
 	s.logTimeDiff("PrivateVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
@@ -209,11 +152,6 @@ func (s *Storage) mergePrivatevpn(hardcoded, persisted models.PrivatevpnServers)
 
 func (s *Storage) mergeProtonvpn(hardcoded, persisted models.ProtonvpnServers) models.ProtonvpnServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
-		return hardcoded
-	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("ProtonVPN", versionDiff)
 		return hardcoded
 	}
 
@@ -226,24 +164,12 @@ func (s *Storage) mergePureVPN(hardcoded, persisted models.PurevpnServers) model
 		return hardcoded
 	}
 
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("PureVPN", versionDiff)
-		return hardcoded
-	}
-
 	s.logTimeDiff("PureVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
 func (s *Storage) mergeSurfshark(hardcoded, persisted models.SurfsharkServers) models.SurfsharkServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
-		return hardcoded
-	}
-
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Surfshark", versionDiff)
 		return hardcoded
 	}
 
@@ -255,11 +181,6 @@ func (s *Storage) mergeTorguard(hardcoded, persisted models.TorguardServers) mod
 	if persisted.Timestamp <= hardcoded.Timestamp {
 		return hardcoded
 	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Torguard", versionDiff)
-		return hardcoded
-	}
 
 	s.logTimeDiff("Torguard", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
@@ -267,11 +188,6 @@ func (s *Storage) mergeTorguard(hardcoded, persisted models.TorguardServers) mod
 
 func (s *Storage) mergeVPNUnlimited(hardcoded, persisted models.VPNUnlimitedServers) models.VPNUnlimitedServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
-		return hardcoded
-	}
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("VPN Unlimited", versionDiff)
 		return hardcoded
 	}
 
@@ -284,12 +200,6 @@ func (s *Storage) mergeVyprvpn(hardcoded, persisted models.VyprvpnServers) model
 		return hardcoded
 	}
 
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("VyprVPN", versionDiff)
-		return hardcoded
-	}
-
 	s.logTimeDiff("VyprVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
@@ -299,24 +209,12 @@ func (s *Storage) mergeWevpn(hardcoded, persisted models.WevpnServers) models.We
 		return hardcoded
 	}
 
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("WeVPN", versionDiff)
-		return hardcoded
-	}
-
 	s.logTimeDiff("WeVPN", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 
 func (s *Storage) mergeWindscribe(hardcoded, persisted models.WindscribeServers) models.WindscribeServers {
 	if persisted.Timestamp <= hardcoded.Timestamp {
-		return hardcoded
-	}
-
-	versionDiff := int(hardcoded.Version) - int(persisted.Version)
-	if versionDiff > 0 {
-		s.logVersionDiff("Windscribe", versionDiff)
 		return hardcoded
 	}
 
