@@ -106,7 +106,7 @@ func Test_versions(t *testing.T) {
 		"Protonvpn": {
 			model:   models.ProtonvpnServer{},
 			version: allServers.Protonvpn.Version,
-			digest:  "b964085b",
+			digest:  "4cb74c3a",
 		},
 		"Purevpn": {
 			model:   models.PurevpnServer{},

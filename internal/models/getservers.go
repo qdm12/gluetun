@@ -168,7 +168,7 @@ func (a *AllServers) GetProtonvpn() (servers []ProtonvpnServer) {
 	for i, serverToCopy := range a.Protonvpn.Servers {
 		servers[i] = serverToCopy
 		servers[i].EntryIP = copyIP(serverToCopy.EntryIP)
-		servers[i].ExitIP = copyIP(serverToCopy.ExitIP)
+		servers[i].ExitIPs = copyIPs(serverToCopy.ExitIPs)
 	}
 	return servers
 }

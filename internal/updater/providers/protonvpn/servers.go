@@ -33,61 +33,44 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 			ErrNotEnoughServers, count, minServers)
 	}
 
-	servers = make([]models.ProtonvpnServer, 0, count)
+	ipToServer := make(ipToServer, count)
 	for _, logicalServer := range data.LogicalServers {
+		region := getStringValue(logicalServer.Region)
+		city := getStringValue(logicalServer.City)
+		name := logicalServer.Name
 		for _, physicalServer := range logicalServer.Servers {
-			server, warning, err := makeServer(
-				physicalServer, logicalServer, countryCodes)
+			if physicalServer.Status == 0 { // disabled so skip server
+				warnings = append(warnings,
+					"ignoring server "+physicalServer.Domain+" with status 0")
+				continue
+			}
 
+			hostname := physicalServer.Domain
+			entryIP := physicalServer.EntryIP
+			exitIP := physicalServer.ExitIP
+
+			// Note: for multi-hop use the server name or hostname
+			// instead of the country
+			countryCode := logicalServer.ExitCountry
+			country, warning := codeToCountry(countryCode, countryCodes)
 			if warning != "" {
 				warnings = append(warnings, warning)
 			}
 
-			if err != nil {
-				warnings = append(warnings, err.Error())
-				continue
-			}
-
-			servers = append(servers, server)
+			ipToServer.add(country, region, city, name, hostname, entryIP, exitIP)
 		}
 	}
 
-	if len(servers) < minServers {
+	if len(ipToServer) < minServers {
 		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers), minServers)
+			ErrNotEnoughServers, len(ipToServer), minServers)
 	}
+
+	servers = ipToServer.toServersSlice()
 
 	sortServers(servers)
 
 	return servers, warnings, nil
-}
-
-var errServerStatusZero = errors.New("ignoring server with status 0")
-
-func makeServer(physical physicalServer, logical logicalServer,
-	countryCodes map[string]string) (server models.ProtonvpnServer,
-	warning string, err error) {
-	if physical.Status == 0 {
-		return server, "", fmt.Errorf("%w: %s",
-			errServerStatusZero, physical.Domain)
-	}
-
-	countryCode := logical.ExitCountry
-	country, warning := codeToCountry(countryCode, countryCodes)
-
-	server = models.ProtonvpnServer{
-		// Note: for multi-hop use the server name or hostname
-		// instead of the country
-		Country:  country,
-		Region:   getStringValue(logical.Region),
-		City:     getStringValue(logical.City),
-		Name:     logical.Name,
-		Hostname: physical.Domain,
-		EntryIP:  physical.EntryIP,
-		ExitIP:   physical.ExitIP,
-	}
-
-	return server, warning, nil
 }
 
 func getStringValue(ptr *string) string {
