@@ -142,6 +142,27 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
+	announcementExp, err := time.Parse(time.RFC3339, "2021-10-02T00:00:00Z")
+	if err != nil {
+		return err
+	}
+	splashSettings := gosplash.Settings{
+		User:         "qdm12",
+		Repository:   "gluetun",
+		Emails:       []string{"quentin.mcgaw@gmail.com"},
+		Version:      buildInfo.Version,
+		Commit:       buildInfo.Commit,
+		BuildDate:    buildInfo.Created,
+		Announcement: "Wireguard is now supported for Mullvad, IVPN and Windscribe!",
+		AnnounceExp:  announcementExp,
+		// Sponsor information
+		PaypalUser:    "qmcgaw",
+		GithubSponsor: "qdm12",
+	}
+	for _, line := range gosplash.MakeLines(splashSettings) {
+		fmt.Println(line)
+	}
+
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storageLogger := logger.NewChild(logging.Settings{Prefix: "storage: "})
 	storage, err := storage.New(storageLogger, constants.ServersData)
@@ -171,27 +192,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
 	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
 		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
-
-	announcementExp, err := time.Parse(time.RFC3339, "2021-10-02T00:00:00Z")
-	if err != nil {
-		return err
-	}
-	splashSettings := gosplash.Settings{
-		User:         "qdm12",
-		Repository:   "gluetun",
-		Emails:       []string{"quentin.mcgaw@gmail.com"},
-		Version:      buildInfo.Version,
-		Commit:       buildInfo.Commit,
-		BuildDate:    buildInfo.Created,
-		Announcement: "Wireguard is now supported for Mullvad, IVPN and Windscribe!",
-		AnnounceExp:  announcementExp,
-		// Sponsor information
-		PaypalUser:    "qmcgaw",
-		GithubSponsor: "qdm12",
-	}
-	for _, line := range gosplash.MakeLines(splashSettings) {
-		fmt.Println(line)
-	}
 
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
