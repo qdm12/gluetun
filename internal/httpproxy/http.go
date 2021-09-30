@@ -32,8 +32,7 @@ func (h *handler) handleHTTP(responseWriter http.ResponseWriter, request *http.R
 	response, err := h.client.Do(request)
 	if err != nil {
 		http.Error(responseWriter, "server error", http.StatusInternalServerError)
-		h.logger.Warn("cannot request " + request.URL.String() +
-			" for client " + request.RemoteAddr + ": " + err.Error())
+		h.logger.Warn("cannot process request for client " + request.RemoteAddr + ": " + err.Error())
 		return
 	}
 	defer response.Body.Close()
