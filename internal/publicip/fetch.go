@@ -38,7 +38,6 @@ func (f *Fetch) FetchPublicIP(ctx context.Context) (ip net.IP, err error) {
 		"http://ip1.dynupdate.no-ip.com:8245",
 		"http://ip1.dynupdate.no-ip.com",
 		"https://api.ipify.org",
-		"https://diagnostic.opendns.com/myip",
 		"https://domains.google.com/checkip",
 		"https://ifconfig.io/ip",
 		"https://ipinfo.io/ip",
