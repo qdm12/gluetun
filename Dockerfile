@@ -1,5 +1,5 @@
 # Start with alpine
-FROM alpine:3.14
+FROM alpine:3.13
 
 ENV USER= \
     PASSWORD= \
