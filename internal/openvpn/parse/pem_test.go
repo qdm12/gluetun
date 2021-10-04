@@ -25,7 +25,7 @@ func Test_extractPEM(t *testing.T) {
 			err: errors.New("cannot decode PEM encoded block"),
 		},
 		"valid data": {
-			name:        "certificate",
+			name:        "CERTIFICATE",
 			b:           []byte(validCertPEM),
 			encodedData: validCertData,
 		},

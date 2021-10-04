@@ -14,6 +14,7 @@ func (a AllServers) GetCopy() (servers AllServers) {
 	servers.Ivpn.Servers = a.GetIvpn()
 	servers.Mullvad.Servers = a.GetMullvad()
 	servers.Nordvpn.Servers = a.GetNordvpn()
+	servers.Perfectprivacy.Servers = a.GetPerfectprivacy()
 	servers.Privado.Servers = a.GetPrivado()
 	servers.Pia.Servers = a.GetPia()
 	servers.Privatevpn.Servers = a.GetPrivatevpn()
@@ -120,6 +121,18 @@ func (a *AllServers) GetNordvpn() (servers []NordvpnServer) {
 	for i, serverToCopy := range a.Nordvpn.Servers {
 		servers[i] = serverToCopy
 		servers[i].IP = copyIP(serverToCopy.IP)
+	}
+	return servers
+}
+
+func (a *AllServers) GetPerfectprivacy() (servers []PerfectprivacyServer) {
+	if a.Perfectprivacy.Servers == nil {
+		return nil
+	}
+	servers = make([]PerfectprivacyServer, len(a.Perfectprivacy.Servers))
+	for i, serverToCopy := range a.Perfectprivacy.Servers {
+		servers[i] = serverToCopy
+		servers[i].IPs = copyIPs(serverToCopy.IPs)
 	}
 	return servers
 }

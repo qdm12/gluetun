@@ -141,6 +141,19 @@ func (s *PrivadoServer) ToMarkdown() (markdown string) {
 		s.Country, s.Region, s.City, s.Hostname)
 }
 
+func (s *PerfectprivacyServers) ToMarkdown() (markdown string) {
+	markdown = markdownTableHeading("City", "TCP", "UDP")
+	for _, server := range s.Servers {
+		markdown += server.ToMarkdown() + "\n"
+	}
+	return markdown
+}
+
+func (s *PerfectprivacyServer) ToMarkdown() (markdown string) {
+	return fmt.Sprintf("| %s | %s | %s |",
+		s.City, boolToMarkdown(s.TCP), boolToMarkdown(s.UDP))
+}
+
 func (s *PiaServers) ToMarkdown() (markdown string) {
 	markdown = markdownTableHeading("Region", "Hostname", "TCP", "UDP")
 	for _, server := range s.Servers {

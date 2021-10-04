@@ -67,6 +67,8 @@ func (settings *Provider) read(r reader, vpnType string) error {
 		err = settings.readMullvad(r)
 	case constants.Nordvpn:
 		err = settings.readNordvpn(r)
+	case constants.Perfectprivacy:
+		err = settings.readPerfectPrivacy(r)
 	case constants.Privado:
 		err = settings.readPrivado(r)
 	case constants.PrivateInternetAccess:
@@ -108,7 +110,7 @@ func (settings *Provider) readVPNServiceProvider(r reader, vpnType string) (err 
 			constants.Custom,
 			"cyberghost", constants.Expressvpn, "fastestvpn", "hidemyass", "ipvanish",
 			"ivpn", "mullvad", "nordvpn",
-			"privado", "pia", "private internet access", "privatevpn", "protonvpn",
+			constants.Perfectprivacy, "privado", "pia", "private internet access", "privatevpn", "protonvpn",
 			"purevpn", "surfshark", "torguard", constants.VPNUnlimited, "vyprvpn",
 			constants.Wevpn, "windscribe"}
 	case constants.Wireguard:

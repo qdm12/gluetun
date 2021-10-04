@@ -51,6 +51,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	flagSet.BoolVar(&options.Ivpn, "ivpn", false, "Update IVPN servers")
 	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
 	flagSet.BoolVar(&options.Nordvpn, "nordvpn", false, "Update Nordvpn servers")
+	flagSet.BoolVar(&options.Perfectprivacy, "perfectprivacy", false, "Update Perfect Privacy servers")
 	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
 	flagSet.BoolVar(&options.Privado, "privado", false, "Update Privado servers")
 	flagSet.BoolVar(&options.Privatevpn, "privatevpn", false, "Update Private VPN servers")

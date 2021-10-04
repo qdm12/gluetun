@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"sort"
 	"strings"
 )
 
@@ -53,20 +54,38 @@ func ExtractHost(b []byte) (host, warning string, err error) {
 	return hosts[0], warning, nil
 }
 
+func ExtractIPs(b []byte) (ips []net.IP, err error) {
+	const rejectIP, rejectDomain = false, true
+	ipStrings := extractRemoteHosts(b, rejectIP, rejectDomain)
+	if len(ipStrings) == 0 {
+		return nil, ErrNoRemoteIP
+	}
+
+	sort.Slice(ipStrings, func(i, j int) bool {
+		return ipStrings[i] < ipStrings[j]
+	})
+
+	ips = make([]net.IP, len(ipStrings))
+	for i := range ipStrings {
+		ips[i] = net.ParseIP(ipStrings[i])
+	}
+
+	return ips, nil
+}
+
 func ExtractIP(b []byte) (ip net.IP, warning string, err error) {
-	const (
-		rejectIP     = false
-		rejectDomain = true
-	)
-	ips := extractRemoteHosts(b, rejectIP, rejectDomain)
-	if len(ips) == 0 {
-		return nil, "", ErrNoRemoteIP
-	} else if len(ips) > 1 {
+	ips, err := ExtractIPs(b)
+	if err != nil {
+		return nil, "", err
+	}
+
+	if len(ips) > 1 {
 		warning = fmt.Sprintf(
 			"only using the first IP address %s and discarding %d other hosts",
 			ips[0], len(ips)-1)
 	}
-	return net.ParseIP(ips[0]), warning, nil
+
+	return ips[0], warning, nil
 }
 
 func extractRemoteHosts(content []byte, rejectIP, rejectDomain bool) (hosts []string) {

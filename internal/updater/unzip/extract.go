@@ -16,7 +16,8 @@ func zipExtractAll(zipBytes []byte) (contents map[string][]byte, err error) {
 	contents = map[string][]byte{}
 	for _, zf := range r.File {
 		fileName := filepath.Base(zf.Name)
-		if !strings.HasSuffix(fileName, ".ovpn") {
+		if !strings.HasSuffix(fileName, ".ovpn") &&
+			!strings.HasSuffix(fileName, ".conf") {
 			continue
 		}
 		f, err := zf.Open()

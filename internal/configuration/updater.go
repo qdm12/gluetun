@@ -9,27 +9,28 @@ import (
 )
 
 type Updater struct {
-	Period       time.Duration `json:"period"`
-	DNSAddress   string        `json:"dns_address"`
-	Cyberghost   bool          `json:"cyberghost"`
-	Expressvpn   bool          `json:"expressvpn"`
-	Fastestvpn   bool          `json:"fastestvpn"`
-	HideMyAss    bool          `json:"hidemyass"`
-	Ipvanish     bool          `json:"ipvanish"`
-	Ivpn         bool          `json:"ivpn"`
-	Mullvad      bool          `json:"mullvad"`
-	Nordvpn      bool          `json:"nordvpn"`
-	PIA          bool          `json:"pia"`
-	Privado      bool          `json:"privado"`
-	Privatevpn   bool          `json:"privatevpn"`
-	Protonvpn    bool          `json:"protonvpn"`
-	Purevpn      bool          `json:"purevpn"`
-	Surfshark    bool          `json:"surfshark"`
-	Torguard     bool          `json:"torguard"`
-	VPNUnlimited bool          `json:"vpnunlimited"`
-	Vyprvpn      bool          `json:"vyprvpn"`
-	Wevpn        bool          `json:"wevpn"`
-	Windscribe   bool          `json:"windscribe"`
+	Period         time.Duration `json:"period"`
+	DNSAddress     string        `json:"dns_address"`
+	Cyberghost     bool          `json:"cyberghost"`
+	Expressvpn     bool          `json:"expressvpn"`
+	Fastestvpn     bool          `json:"fastestvpn"`
+	HideMyAss      bool          `json:"hidemyass"`
+	Ipvanish       bool          `json:"ipvanish"`
+	Ivpn           bool          `json:"ivpn"`
+	Mullvad        bool          `json:"mullvad"`
+	Nordvpn        bool          `json:"nordvpn"`
+	Perfectprivacy bool          `json:"perfectprivacy"`
+	PIA            bool          `json:"pia"`
+	Privado        bool          `json:"privado"`
+	Privatevpn     bool          `json:"privatevpn"`
+	Protonvpn      bool          `json:"protonvpn"`
+	Purevpn        bool          `json:"purevpn"`
+	Surfshark      bool          `json:"surfshark"`
+	Torguard       bool          `json:"torguard"`
+	VPNUnlimited   bool          `json:"vpnunlimited"`
+	Vyprvpn        bool          `json:"vyprvpn"`
+	Wevpn          bool          `json:"wevpn"`
+	Windscribe     bool          `json:"windscribe"`
 	// The two below should be used in CLI mode only
 	CLI bool `json:"-"`
 }
@@ -57,6 +58,7 @@ func (settings *Updater) EnableAll() {
 	settings.Ivpn = true
 	settings.Mullvad = true
 	settings.Nordvpn = true
+	settings.Perfectprivacy = true
 	settings.Privado = true
 	settings.PIA = true
 	settings.Privado = true

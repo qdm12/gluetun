@@ -14,6 +14,7 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/providers/ivpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/mullvad"
 	"github.com/qdm12/gluetun/internal/updater/providers/nordvpn"
+	"github.com/qdm12/gluetun/internal/updater/providers/perfectprivacy"
 	"github.com/qdm12/gluetun/internal/updater/providers/pia"
 	"github.com/qdm12/gluetun/internal/updater/providers/privado"
 	"github.com/qdm12/gluetun/internal/updater/providers/privatevpn"
@@ -187,6 +188,27 @@ func (u *updater) updateNordvpn(ctx context.Context) (err error) {
 
 	u.servers.Nordvpn.Timestamp = u.timeNow().Unix()
 	u.servers.Nordvpn.Servers = servers
+	return nil
+}
+
+func (u *updater) updatePerfectprivacy(ctx context.Context) (err error) {
+	minServers := getMinServers(len(u.servers.Perfectprivacy.Servers))
+	servers, warnings, err := perfectprivacy.GetServers(ctx, u.unzipper, minServers)
+	if u.options.CLI {
+		for _, warning := range warnings {
+			u.logger.Warn(constants.Perfectprivacy + ": " + warning)
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	if reflect.DeepEqual(u.servers.Perfectprivacy.Servers, servers) {
+		return nil
+	}
+
+	u.servers.Perfectprivacy.Timestamp = u.timeNow().Unix()
+	u.servers.Perfectprivacy.Servers = servers
 	return nil
 }
 

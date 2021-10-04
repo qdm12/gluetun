@@ -25,6 +25,8 @@ const (
 	Mullvad = "mullvad"
 	// Nordvpn is a VPN provider.
 	Nordvpn = "nordvpn"
+	// Perfectprivacy is a VPN provider.
+	Perfectprivacy = "perfect privacy"
 	// Privado is a VPN provider.
 	Privado = "privado"
 	// PrivateInternetAccess is a VPN provider.

@@ -126,6 +126,15 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 		}
 	}
 
+	if hardcoded.Perfectprivacy.Version != versions.Perfectprivacy.Version {
+		s.logVersionDiff("Perfect Privacy", hardcoded.Perfectprivacy.Version, versions.Perfectprivacy.Version)
+	} else {
+		err = json.Unmarshal(rawMessages.Perfectprivacy, &servers.Perfectprivacy)
+		if err != nil {
+			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Perfect Privacy", err)
+		}
+	}
+
 	if hardcoded.Privado.Version != versions.Privado.Version {
 		s.logVersionDiff("Privado", hardcoded.Privado.Version, versions.Privado.Version)
 	} else {
@@ -231,26 +240,27 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 // allVersions is a subset of models.AllServers structure used to track
 // versions to avoid unmarshaling errors.
 type allVersions struct {
-	Version      uint16        `json:"version"` // used for migration of the top level scheme
-	Cyberghost   serverVersion `json:"cyberghost"`
-	Expressvpn   serverVersion `json:"expressvpn"`
-	Fastestvpn   serverVersion `json:"fastestvpn"`
-	HideMyAss    serverVersion `json:"hidemyass"`
-	Ipvanish     serverVersion `json:"ipvanish"`
-	Ivpn         serverVersion `json:"ivpn"`
-	Mullvad      serverVersion `json:"mullvad"`
-	Nordvpn      serverVersion `json:"nordvpn"`
-	Privado      serverVersion `json:"privado"`
-	Pia          serverVersion `json:"pia"`
-	Privatevpn   serverVersion `json:"privatevpn"`
-	Protonvpn    serverVersion `json:"protonvpn"`
-	Purevpn      serverVersion `json:"purevpn"`
-	Surfshark    serverVersion `json:"surfshark"`
-	Torguard     serverVersion `json:"torguard"`
-	VPNUnlimited serverVersion `json:"vpnunlimited"`
-	Vyprvpn      serverVersion `json:"vyprvpn"`
-	Wevpn        serverVersion `json:"wevpn"`
-	Windscribe   serverVersion `json:"windscribe"`
+	Version        uint16        `json:"version"` // used for migration of the top level scheme
+	Cyberghost     serverVersion `json:"cyberghost"`
+	Expressvpn     serverVersion `json:"expressvpn"`
+	Fastestvpn     serverVersion `json:"fastestvpn"`
+	HideMyAss      serverVersion `json:"hidemyass"`
+	Ipvanish       serverVersion `json:"ipvanish"`
+	Ivpn           serverVersion `json:"ivpn"`
+	Mullvad        serverVersion `json:"mullvad"`
+	Nordvpn        serverVersion `json:"nordvpn"`
+	Perfectprivacy serverVersion `json:"perfectprivacy"`
+	Privado        serverVersion `json:"privado"`
+	Pia            serverVersion `json:"pia"`
+	Privatevpn     serverVersion `json:"privatevpn"`
+	Protonvpn      serverVersion `json:"protonvpn"`
+	Purevpn        serverVersion `json:"purevpn"`
+	Surfshark      serverVersion `json:"surfshark"`
+	Torguard       serverVersion `json:"torguard"`
+	VPNUnlimited   serverVersion `json:"vpnunlimited"`
+	Vyprvpn        serverVersion `json:"vyprvpn"`
+	Wevpn          serverVersion `json:"wevpn"`
+	Windscribe     serverVersion `json:"windscribe"`
 }
 
 type serverVersion struct {
@@ -259,24 +269,25 @@ type serverVersion struct {
 
 // allJSONRawMessages is to delay decoding of each provider servers.
 type allJSONRawMessages struct {
-	Version      uint16          `json:"version"` // used for migration of the top level scheme
-	Cyberghost   json.RawMessage `json:"cyberghost"`
-	Expressvpn   json.RawMessage `json:"expressvpn"`
-	Fastestvpn   json.RawMessage `json:"fastestvpn"`
-	HideMyAss    json.RawMessage `json:"hidemyass"`
-	Ipvanish     json.RawMessage `json:"ipvanish"`
-	Ivpn         json.RawMessage `json:"ivpn"`
-	Mullvad      json.RawMessage `json:"mullvad"`
-	Nordvpn      json.RawMessage `json:"nordvpn"`
-	Privado      json.RawMessage `json:"privado"`
-	Pia          json.RawMessage `json:"pia"`
-	Privatevpn   json.RawMessage `json:"privatevpn"`
-	Protonvpn    json.RawMessage `json:"protonvpn"`
-	Purevpn      json.RawMessage `json:"purevpn"`
-	Surfshark    json.RawMessage `json:"surfshark"`
-	Torguard     json.RawMessage `json:"torguard"`
-	VPNUnlimited json.RawMessage `json:"vpnunlimited"`
-	Vyprvpn      json.RawMessage `json:"vyprvpn"`
-	Wevpn        json.RawMessage `json:"wevpn"`
-	Windscribe   json.RawMessage `json:"windscribe"`
+	Version        uint16          `json:"version"` // used for migration of the top level scheme
+	Cyberghost     json.RawMessage `json:"cyberghost"`
+	Expressvpn     json.RawMessage `json:"expressvpn"`
+	Fastestvpn     json.RawMessage `json:"fastestvpn"`
+	HideMyAss      json.RawMessage `json:"hidemyass"`
+	Ipvanish       json.RawMessage `json:"ipvanish"`
+	Ivpn           json.RawMessage `json:"ivpn"`
+	Mullvad        json.RawMessage `json:"mullvad"`
+	Nordvpn        json.RawMessage `json:"nordvpn"`
+	Perfectprivacy json.RawMessage `json:"perfectprivacy"`
+	Privado        json.RawMessage `json:"privado"`
+	Pia            json.RawMessage `json:"pia"`
+	Privatevpn     json.RawMessage `json:"privatevpn"`
+	Protonvpn      json.RawMessage `json:"protonvpn"`
+	Purevpn        json.RawMessage `json:"purevpn"`
+	Surfshark      json.RawMessage `json:"surfshark"`
+	Torguard       json.RawMessage `json:"torguard"`
+	VPNUnlimited   json.RawMessage `json:"vpnunlimited"`
+	Vyprvpn        json.RawMessage `json:"vyprvpn"`
+	Wevpn          json.RawMessage `json:"wevpn"`
+	Windscribe     json.RawMessage `json:"windscribe"`
 }
