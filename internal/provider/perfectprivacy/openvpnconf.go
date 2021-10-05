@@ -12,7 +12,8 @@ import (
 func (p *Perfectprivacy) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string, err error) {
 	if settings.Cipher == "" {
-		settings.Cipher = constants.AES256gcm
+		// TODO add AES 256 GCM
+		settings.Cipher = constants.AES256cbc
 	}
 
 	if settings.Auth == "" {
@@ -65,11 +66,12 @@ func (p *Perfectprivacy) BuildConf(connection models.Connection,
 		lines = append(lines, "persist-key")
 	}
 
-	if settings.IPv6 {
-		lines = append(lines, "tun-ipv6")
-	} else {
+	if !settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
+		// Perfect Privacy specific IPv6
+		lines = append(lines, "redirect-gateway def1")
+		lines = append(lines, `pull-filter ignore "redirect-gateway def1 ipv6"`)
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
