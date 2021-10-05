@@ -127,7 +127,7 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 		settings.Flags = strings.Fields(flagsStr)
 	}
 
-	settings.Root, err = r.env.YesNo("OPENVPN_ROOT", params.Default("yes"))
+	settings.Root, err = r.env.YesNo("OPENVPN_ROOT", params.Default("no"))
 	if err != nil {
 		return fmt.Errorf("environment variable OPENVPN_ROOT: %w", err)
 	}
