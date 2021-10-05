@@ -2,7 +2,6 @@ package windscribe
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -12,8 +11,12 @@ import (
 
 func (w *Windscribe) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string, err error) {
-	if settings.Cipher == "" {
-		settings.Cipher = constants.AES256gcm
+	if len(settings.Ciphers) == 0 {
+		settings.Ciphers = []string{
+			constants.AES256gcm,
+			constants.AES256cbc,
+			constants.AES128gcm,
+		}
 	}
 
 	if settings.Auth == "" {
@@ -48,11 +51,7 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		connection.OpenVPNRemoteLine(),
 	}
 
-	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
-
-	if strings.HasSuffix(settings.Cipher, "-gcm") {
-		lines = append(lines, "ncp-ciphers AES-256-GCM:AES-256-CBC:AES-128-GCM")
-	}
+	lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "explicit-exit-notify")

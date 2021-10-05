@@ -50,8 +50,8 @@ func modifyConfig(lines []string, connection models.Connection,
 			strings.HasPrefix(line, "remote "),
 			strings.HasPrefix(line, "dev "),
 			// Remove values eventually modified
-			settings.Cipher != "" && hasPrefixOneOf(line,
-				"cipher ", "data-ciphers ", "data-ciphers-fallback "),
+			len(settings.Ciphers) > 0 && hasPrefixOneOf(line,
+				"cipher ", "ncp-ciphers ", "data-ciphers ", "data-ciphers-fallback "),
 			settings.Auth != "" && strings.HasPrefix(line, "auth "),
 			settings.MSSFix > 0 && strings.HasPrefix(line, "mssfix "),
 			!settings.IPv6 && hasPrefixOneOf(line, "tun-ipv6",
@@ -75,8 +75,8 @@ func modifyConfig(lines []string, connection models.Connection,
 		modified = append(modified, "auth-user-pass "+constants.OpenVPNAuthConf)
 	}
 	modified = append(modified, "verb "+strconv.Itoa(settings.Verbosity))
-	if settings.Cipher != "" {
-		modified = append(modified, utils.CipherLines(settings.Cipher, settings.Version)...)
+	if len(settings.Ciphers) > 0 {
+		modified = append(modified, utils.CipherLines(settings.Ciphers, settings.Version)...)
 	}
 	if settings.Auth != "" {
 		modified = append(modified, "auth "+settings.Auth)

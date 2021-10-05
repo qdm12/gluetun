@@ -19,7 +19,7 @@ type OpenVPN struct {
 	Flags     []string `json:"flags"`
 	MSSFix    uint16   `json:"mssfix"`
 	Root      bool     `json:"run_as_root"`
-	Cipher    string   `json:"cipher"`
+	Ciphers   []string `json:"ciphers"`
 	Auth      string   `json:"auth"`
 	ConfFile  string   `json:"conf_file"`
 	Version   string   `json:"version"`
@@ -52,8 +52,8 @@ func (settings *OpenVPN) lines() (lines []string) {
 		lines = append(lines, indent+lastIndent+"Run as root: enabled")
 	}
 
-	if len(settings.Cipher) > 0 {
-		lines = append(lines, indent+lastIndent+"Custom cipher: "+settings.Cipher)
+	if len(settings.Ciphers) > 0 {
+		lines = append(lines, indent+lastIndent+"Custom ciphers: "+commaJoin(settings.Ciphers))
 	}
 	if len(settings.Auth) > 0 {
 		lines = append(lines, indent+lastIndent+"Custom auth algorithm: "+settings.Auth)
@@ -132,7 +132,7 @@ func (settings *OpenVPN) read(r reader, serviceProvider string) (err error) {
 		return fmt.Errorf("environment variable OPENVPN_ROOT: %w", err)
 	}
 
-	settings.Cipher, err = r.env.Get("OPENVPN_CIPHER")
+	settings.Ciphers, err = r.env.CSV("OPENVPN_CIPHER")
 	if err != nil {
 		return fmt.Errorf("environment variable OPENVPN_CIPHER: %w", err)
 	}

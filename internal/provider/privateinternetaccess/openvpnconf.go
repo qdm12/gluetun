@@ -30,8 +30,8 @@ func (p *PIA) BuildConf(connection models.Connection,
 		certificate = constants.PIACertificateStrong
 	}
 
-	if settings.Cipher == "" {
-		settings.Cipher = defaultCipher
+	if len(settings.Ciphers) == 0 {
+		settings.Ciphers = []string{defaultCipher}
 	}
 
 	if settings.Auth == "" {
@@ -62,8 +62,8 @@ func (p *PIA) BuildConf(connection models.Connection,
 		connection.OpenVPNRemoteLine(),
 	}
 
-	if settings.Cipher != "" {
-		lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
+	if len(settings.Ciphers) > 0 {
+		lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 	}
 
 	if settings.Auth != "" {

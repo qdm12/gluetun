@@ -11,8 +11,9 @@ import (
 func Test_OpenVPN_JSON(t *testing.T) {
 	t.Parallel()
 	in := OpenVPN{
-		Root:  true,
-		Flags: []string{},
+		Root:    true,
+		Flags:   []string{},
+		Ciphers: []string{},
 	}
 	data, err := json.MarshalIndent(in, "", "  ")
 	require.NoError(t, err)
@@ -23,7 +24,7 @@ func Test_OpenVPN_JSON(t *testing.T) {
   "flags": [],
   "mssfix": 0,
   "run_as_root": true,
-  "cipher": "",
+  "ciphers": [],
   "auth": "",
   "conf_file": "",
   "version": "",

@@ -5,8 +5,6 @@
 - Remove duplicate `/gluetun` directory creation
 - Remove firewall shadowsocks input port?
 - Remove `script-security` option
-- `ncp-ciphers` to `data-ciphers`
-- Remove `ncp-disable`
 
 ## Uniformization
 
@@ -40,6 +38,7 @@
   - `WIREGUARD_ADDRESS` to `WIREGUARD_ADDRESSES`
   - `VPNSP` to `VPN_SERVICE_PROVIDER`
   - Rename `REGION` (etc.) to `SERVER_REGIONS`
+  - `OPENVPN_CIPHER` to `OPENVPN_CIPHERS`
 - Split servers.json and compress it
 
 ## Gluetun V4

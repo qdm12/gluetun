@@ -11,8 +11,8 @@ import (
 
 func (h *HideMyAss) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string, err error) {
-	if settings.Cipher == "" {
-		settings.Cipher = constants.AES256cbc
+	if len(settings.Ciphers) == 0 {
+		settings.Ciphers = []string{constants.AES256cbc}
 	}
 
 	lines = []string{
@@ -39,7 +39,7 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 		connection.OpenVPNRemoteLine(),
 	}
 
-	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
+	lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 
 	if settings.Auth != "" {
 		lines = append(lines, "auth "+settings.Auth)

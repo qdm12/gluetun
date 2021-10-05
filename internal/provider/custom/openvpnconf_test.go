@@ -32,7 +32,7 @@ func Test_modifyConfig(t *testing.T) {
 			},
 			settings: configuration.OpenVPN{
 				User:      "user",
-				Cipher:    "cipher",
+				Ciphers:   []string{"cipher"},
 				Auth:      "auth",
 				MSSFix:    1000,
 				ProcUser:  "procuser",

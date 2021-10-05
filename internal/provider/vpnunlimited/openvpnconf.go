@@ -36,8 +36,8 @@ func (p *Provider) BuildConf(connection models.Connection,
 		connection.OpenVPNRemoteLine(),
 	}
 
-	if settings.Cipher != "" {
-		lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
+	if len(settings.Ciphers) > 0 {
+		lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 	}
 
 	if settings.Auth != "" {

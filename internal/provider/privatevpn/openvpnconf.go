@@ -11,8 +11,8 @@ import (
 
 func (p *Privatevpn) BuildConf(connection models.Connection,
 	settings configuration.OpenVPN) (lines []string, err error) {
-	if settings.Cipher == "" {
-		settings.Cipher = constants.AES128gcm
+	if len(settings.Ciphers) == 0 {
+		settings.Ciphers = []string{constants.AES128gcm}
 	}
 
 	if settings.Auth == "" {
@@ -43,7 +43,7 @@ func (p *Privatevpn) BuildConf(connection models.Connection,
 		connection.OpenVPNRemoteLine(),
 	}
 
-	lines = append(lines, utils.CipherLines(settings.Cipher, settings.Version)...)
+	lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "key-direction 1")
