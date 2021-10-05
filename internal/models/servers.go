@@ -1,26 +1,27 @@
 package models
 
 type AllServers struct {
-	Version      uint16              `json:"version"` // used for migration of the top level scheme
-	Cyberghost   CyberghostServers   `json:"cyberghost"`
-	Expressvpn   ExpressvpnServers   `json:"expressvpn"`
-	Fastestvpn   FastestvpnServers   `json:"fastestvpn"`
-	HideMyAss    HideMyAssServers    `json:"hidemyass"`
-	Ipvanish     IpvanishServers     `json:"ipvanish"`
-	Ivpn         IvpnServers         `json:"ivpn"`
-	Mullvad      MullvadServers      `json:"mullvad"`
-	Nordvpn      NordvpnServers      `json:"nordvpn"`
-	Privado      PrivadoServers      `json:"privado"`
-	Pia          PiaServers          `json:"pia"`
-	Privatevpn   PrivatevpnServers   `json:"privatevpn"`
-	Protonvpn    ProtonvpnServers    `json:"protonvpn"`
-	Purevpn      PurevpnServers      `json:"purevpn"`
-	Surfshark    SurfsharkServers    `json:"surfshark"`
-	Torguard     TorguardServers     `json:"torguard"`
-	VPNUnlimited VPNUnlimitedServers `json:"vpnunlimited"`
-	Vyprvpn      VyprvpnServers      `json:"vyprvpn"`
-	Wevpn        WevpnServers        `json:"wevpn"`
-	Windscribe   WindscribeServers   `json:"windscribe"`
+	Version        uint16                `json:"version"` // used for migration of the top level scheme
+	Cyberghost     CyberghostServers     `json:"cyberghost"`
+	Expressvpn     ExpressvpnServers     `json:"expressvpn"`
+	Fastestvpn     FastestvpnServers     `json:"fastestvpn"`
+	HideMyAss      HideMyAssServers      `json:"hidemyass"`
+	Ipvanish       IpvanishServers       `json:"ipvanish"`
+	Ivpn           IvpnServers           `json:"ivpn"`
+	Mullvad        MullvadServers        `json:"mullvad"`
+	Perfectprivacy PerfectprivacyServers `json:"perfectprivacy"`
+	Nordvpn        NordvpnServers        `json:"nordvpn"`
+	Privado        PrivadoServers        `json:"privado"`
+	Pia            PiaServers            `json:"pia"`
+	Privatevpn     PrivatevpnServers     `json:"privatevpn"`
+	Protonvpn      ProtonvpnServers      `json:"protonvpn"`
+	Purevpn        PurevpnServers        `json:"purevpn"`
+	Surfshark      SurfsharkServers      `json:"surfshark"`
+	Torguard       TorguardServers       `json:"torguard"`
+	VPNUnlimited   VPNUnlimitedServers   `json:"vpnunlimited"`
+	Vyprvpn        VyprvpnServers        `json:"vyprvpn"`
+	Wevpn          WevpnServers          `json:"wevpn"`
+	Windscribe     WindscribeServers     `json:"windscribe"`
 }
 
 func (a *AllServers) Count() int {
@@ -32,6 +33,7 @@ func (a *AllServers) Count() int {
 		len(a.Ivpn.Servers) +
 		len(a.Mullvad.Servers) +
 		len(a.Nordvpn.Servers) +
+		len(a.Perfectprivacy.Servers) +
 		len(a.Privado.Servers) +
 		len(a.Pia.Servers) +
 		len(a.Privatevpn.Servers) +
@@ -84,6 +86,11 @@ type NordvpnServers struct {
 	Version   uint16          `json:"version"`
 	Timestamp int64           `json:"timestamp"`
 	Servers   []NordvpnServer `json:"servers"`
+}
+type PerfectprivacyServers struct {
+	Version   uint16                 `json:"version"`
+	Timestamp int64                  `json:"timestamp"`
+	Servers   []PerfectprivacyServer `json:"servers"`
 }
 type PrivadoServers struct {
 	Version   uint16          `json:"version"`

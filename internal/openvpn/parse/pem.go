@@ -11,8 +11,6 @@ var (
 )
 
 func extractPEM(b []byte, name string) (encodedData string, err error) {
-	name = strings.ToUpper(name) // certificate -> CERTIFICATE
-
 	pemBlock, _ := pem.Decode(b)
 	if pemBlock == nil {
 		return "", errPEMDecode

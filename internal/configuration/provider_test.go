@@ -168,6 +168,21 @@ func Test_Provider_lines(t *testing.T) {
 				"      |--Protocol: udp",
 			},
 		},
+		"perfectprivacy": {
+			settings: Provider{
+				Name: constants.Perfectprivacy,
+				ServerSelection: ServerSelection{
+					VPN:    constants.OpenVPN,
+					Cities: []string{"a", "b"},
+				},
+			},
+			lines: []string{
+				"|--Perfect Privacy settings:",
+				"   |--Cities: a, b",
+				"   |--OpenVPN selection:",
+				"      |--Protocol: udp",
+			},
+		},
 		"privado": {
 			settings: Provider{
 				Name: constants.Privado,

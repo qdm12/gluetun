@@ -20,6 +20,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/ivpn"
 	"github.com/qdm12/gluetun/internal/provider/mullvad"
 	"github.com/qdm12/gluetun/internal/provider/nordvpn"
+	"github.com/qdm12/gluetun/internal/provider/perfectprivacy"
 	"github.com/qdm12/gluetun/internal/provider/privado"
 	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess"
 	"github.com/qdm12/gluetun/internal/provider/privatevpn"
@@ -70,6 +71,8 @@ func New(provider string, allServers models.AllServers, timeNow func() time.Time
 		return mullvad.New(allServers.Mullvad.Servers, randSource)
 	case constants.Nordvpn:
 		return nordvpn.New(allServers.Nordvpn.Servers, randSource)
+	case constants.Perfectprivacy:
+		return perfectprivacy.New(allServers.Perfectprivacy.Servers, randSource)
 	case constants.Privado:
 		return privado.New(allServers.Privado.Servers, randSource)
 	case constants.PrivateInternetAccess:

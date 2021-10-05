@@ -28,26 +28,27 @@ func (s *Storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int6
 
 func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
 	return models.AllServers{
-		Version:      hardcoded.Version,
-		Cyberghost:   s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
-		Expressvpn:   s.mergeExpressvpn(hardcoded.Expressvpn, persisted.Expressvpn),
-		Fastestvpn:   s.mergeFastestvpn(hardcoded.Fastestvpn, persisted.Fastestvpn),
-		HideMyAss:    s.mergeHideMyAss(hardcoded.HideMyAss, persisted.HideMyAss),
-		Ipvanish:     s.mergeIpvanish(hardcoded.Ipvanish, persisted.Ipvanish),
-		Ivpn:         s.mergeIvpn(hardcoded.Ivpn, persisted.Ivpn),
-		Mullvad:      s.mergeMullvad(hardcoded.Mullvad, persisted.Mullvad),
-		Nordvpn:      s.mergeNordVPN(hardcoded.Nordvpn, persisted.Nordvpn),
-		Privado:      s.mergePrivado(hardcoded.Privado, persisted.Privado),
-		Pia:          s.mergePIA(hardcoded.Pia, persisted.Pia),
-		Privatevpn:   s.mergePrivatevpn(hardcoded.Privatevpn, persisted.Privatevpn),
-		Protonvpn:    s.mergeProtonvpn(hardcoded.Protonvpn, persisted.Protonvpn),
-		Purevpn:      s.mergePureVPN(hardcoded.Purevpn, persisted.Purevpn),
-		Surfshark:    s.mergeSurfshark(hardcoded.Surfshark, persisted.Surfshark),
-		Torguard:     s.mergeTorguard(hardcoded.Torguard, persisted.Torguard),
-		VPNUnlimited: s.mergeVPNUnlimited(hardcoded.VPNUnlimited, persisted.VPNUnlimited),
-		Vyprvpn:      s.mergeVyprvpn(hardcoded.Vyprvpn, persisted.Vyprvpn),
-		Wevpn:        s.mergeWevpn(hardcoded.Wevpn, persisted.Wevpn),
-		Windscribe:   s.mergeWindscribe(hardcoded.Windscribe, persisted.Windscribe),
+		Version:        hardcoded.Version,
+		Cyberghost:     s.mergeCyberghost(hardcoded.Cyberghost, persisted.Cyberghost),
+		Expressvpn:     s.mergeExpressvpn(hardcoded.Expressvpn, persisted.Expressvpn),
+		Fastestvpn:     s.mergeFastestvpn(hardcoded.Fastestvpn, persisted.Fastestvpn),
+		HideMyAss:      s.mergeHideMyAss(hardcoded.HideMyAss, persisted.HideMyAss),
+		Ipvanish:       s.mergeIpvanish(hardcoded.Ipvanish, persisted.Ipvanish),
+		Ivpn:           s.mergeIvpn(hardcoded.Ivpn, persisted.Ivpn),
+		Mullvad:        s.mergeMullvad(hardcoded.Mullvad, persisted.Mullvad),
+		Nordvpn:        s.mergeNordVPN(hardcoded.Nordvpn, persisted.Nordvpn),
+		Perfectprivacy: s.mergePerfectprivacy(hardcoded.Perfectprivacy, persisted.Perfectprivacy),
+		Privado:        s.mergePrivado(hardcoded.Privado, persisted.Privado),
+		Pia:            s.mergePIA(hardcoded.Pia, persisted.Pia),
+		Privatevpn:     s.mergePrivatevpn(hardcoded.Privatevpn, persisted.Privatevpn),
+		Protonvpn:      s.mergeProtonvpn(hardcoded.Protonvpn, persisted.Protonvpn),
+		Purevpn:        s.mergePureVPN(hardcoded.Purevpn, persisted.Purevpn),
+		Surfshark:      s.mergeSurfshark(hardcoded.Surfshark, persisted.Surfshark),
+		Torguard:       s.mergeTorguard(hardcoded.Torguard, persisted.Torguard),
+		VPNUnlimited:   s.mergeVPNUnlimited(hardcoded.VPNUnlimited, persisted.VPNUnlimited),
+		Vyprvpn:        s.mergeVyprvpn(hardcoded.Vyprvpn, persisted.Vyprvpn),
+		Wevpn:          s.mergeWevpn(hardcoded.Wevpn, persisted.Wevpn),
+		Windscribe:     s.mergeWindscribe(hardcoded.Windscribe, persisted.Windscribe),
 	}
 }
 
@@ -120,6 +121,15 @@ func (s *Storage) mergeNordVPN(hardcoded, persisted models.NordvpnServers) model
 	}
 
 	s.logTimeDiff("NordVPN", persisted.Timestamp, hardcoded.Timestamp)
+	return persisted
+}
+
+func (s *Storage) mergePerfectprivacy(hardcoded, persisted models.PerfectprivacyServers) models.PerfectprivacyServers {
+	if persisted.Timestamp <= hardcoded.Timestamp {
+		return hardcoded
+	}
+
+	s.logTimeDiff("Perfect Privacy", persisted.Timestamp, hardcoded.Timestamp)
 	return persisted
 }
 

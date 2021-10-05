@@ -14,8 +14,6 @@ var (
 
 func (u *unzipper) FetchAndExtract(ctx context.Context, url string) (
 	contents map[string][]byte, err error) {
-	contents = make(map[string][]byte)
-
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -40,13 +38,5 @@ func (u *unzipper) FetchAndExtract(ctx context.Context, url string) (
 		return nil, err
 	}
 
-	newContents, err := zipExtractAll(b)
-	if err != nil {
-		return nil, err
-	}
-	for fileName, content := range newContents {
-		contents[fileName] = content
-	}
-
-	return contents, nil
+	return zipExtractAll(b)
 }

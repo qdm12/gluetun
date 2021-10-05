@@ -88,6 +88,11 @@ func Test_versions(t *testing.T) {
 			version: allServers.Nordvpn.Version,
 			digest:  "a8043704",
 		},
+		"Perfect privacy": {
+			model:   models.PerfectprivacyServer{},
+			version: allServers.Perfectprivacy.Version,
+			digest:  "233f0dd4",
+		},
 		"Privado": {
 			model:   models.PrivadoServer{},
 			version: allServers.Privado.Version,

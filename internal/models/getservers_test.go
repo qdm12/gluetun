@@ -51,6 +51,11 @@ func Test_AllServers_GetCopy(t *testing.T) {
 				IP: net.IP{1, 2, 3, 4},
 			}},
 		},
+		Perfectprivacy: PerfectprivacyServers{
+			Servers: []PerfectprivacyServer{{
+				IPs: []net.IP{{1, 2, 3, 4}},
+			}},
+		},
 		Privado: PrivadoServers{
 			Servers: []PrivadoServer{{
 				IP: net.IP{1, 2, 3, 4},

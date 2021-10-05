@@ -132,6 +132,16 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		}
 	}
 
+	if u.options.Perfectprivacy {
+		u.logger.Info("updating " + constants.Perfectprivacy + " servers...")
+		if err := u.updatePerfectprivacy(ctx); err != nil {
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return allServers, ctxErr
+			}
+			u.logger.Error(err.Error())
+		}
+	}
+
 	if u.options.Privado {
 		u.logger.Info("updating Privado servers...")
 		if err := u.updatePrivado(ctx); err != nil {
