@@ -29,7 +29,8 @@ on:
 
 jobs:
   verify:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # Only run if it's a push event or if it's a PR from this repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: "1"
@@ -68,7 +69,8 @@ jobs:
           image: final-image
 
   publish:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # Only run if it's a push event or if it's a PR from this repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     needs: [verify]
     runs-on: ubuntu-latest
     steps:
@@ -99,7 +101,7 @@ jobs:
           fi
 
       - name: Build and push final image
-        uses: docker/build-push-action@v2.7.0
+        uses: docker/build-push-action@v2.6.1
         with:
           platforms: ${{ steps.vars.outputs.platforms }}
           build-args: |
