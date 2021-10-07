@@ -101,7 +101,7 @@ jobs:
           fi
 
       - name: Build and push final image
-        uses: docker/build-push-action@v2.6.1
+        uses: docker/build-push-action@v2.7.0
         with:
           platforms: ${{ steps.vars.outputs.platforms }}
           build-args: |
