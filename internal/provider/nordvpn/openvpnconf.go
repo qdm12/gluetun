@@ -39,6 +39,7 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 		"key-direction 1",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"auth " + settings.Auth,
+		"comp-lzo", // Required, NordVPN does not work without it
 
 		// Added constant values
 		"auth-nocache",
