@@ -29,8 +29,11 @@ on:
 
 jobs:
   verify:
-    # Only run if it's a push event or if it's a PR from this repository
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    # Only run if it's a push event or if it's a PR from this repository, and it is not dependabot.
+    if: |
+      github.actor != 'dependabot[bot]'
+      (github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: "1"
