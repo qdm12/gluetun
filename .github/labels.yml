@@ -14,6 +14,14 @@
   color: "795548"
   description: ""
 
+# Priority
+- name: "🚨 Urgent"
+  color: "d5232f"
+  description: ""
+- name: "💤 Low priority"
+  color: "4285f4"
+  description: ""
+
 # VPN providers
 - name: ":cloud: Cyberghost"
   color: "cfe8d4"
