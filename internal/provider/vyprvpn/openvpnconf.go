@@ -33,6 +33,7 @@ func (v *Vyprvpn) BuildConf(connection models.Connection,
 		"tls-cipher TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"auth " + settings.Auth,
+		"comp-lzo",
 
 		// Added constant values
 		"auth-nocache",
