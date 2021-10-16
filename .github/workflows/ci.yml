@@ -87,31 +87,47 @@ jobs:
           username: qmcgaw
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Set variables
-        id: vars
-        env:
-          EVENT_NAME: ${{ github.event_name }}
+      - name: Check for semver tag
+        id: semvercheck
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          echo ::set-output name=commit::$(git rev-parse --short HEAD)
-          echo ::set-output name=created::$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          if [ "$TAG" != "$GITHUB_REF" ]; then
-            echo ::set-output name=version::$TAG
-            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le
+          if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            MATCH=true
           else
-            echo ::set-output name=version::latest
-            echo ::set-output name=platforms::linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le
+            MATCH=false
           fi
+          if [[ ! ${{ github.ref }} =~ ^refs/tags/v0\. ]]; then
+            MATCH=$MATCH_nonzero
+          fi
+          echo ::set-output name=match::$MATCH
+
+      # extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          flavor: |
+            latest=${{ github.ref == 'refs/heads/master' }}
+          images: |
+            qmcgaw/gluetun
+            qmcgaw/private-internet-access
+          tags: |
+            type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master' }}
+            type=ref,event=pr
+            type=ref,event=tag,enable=${{ !startsWith(steps.semvercheck.outputs.match, 'true') }}
+            type=semver,pattern=v{{major}}.{{minor}}.{{patch}},enable=${{ startsWith(steps.semvercheck.outputs.match, 'true') }}
+            type=semver,pattern=v{{major}}.{{minor}},enable=${{ startsWith(steps.semvercheck.outputs.match, 'true') }}
+            type=semver,pattern=v{{major}},enable=${{ startsWith(steps.semvercheck.outputs.match, 'true_nonzero') }}
+            type=raw,value=latest,enable=${{ !startsWith(steps.semvercheck.outputs.match, 'true') }}
 
       - name: Build and push final image
         uses: docker/build-push-action@v2.7.0
         with:
-          platforms: ${{ steps.vars.outputs.platforms }}
+          platforms: linux/amd64,linux/386,linux/arm64,linux/arm/v6,linux/arm/v7,linux/ppc64le
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            CREATED=${{ steps.vars.outputs.created }}
-            COMMIT=${{ steps.vars.outputs.commit }}
-            VERSION=${{ steps.vars.outputs.version }}
-          tags: |
-            qmcgaw/gluetun:${{ steps.vars.outputs.version }}
-            qmcgaw/private-internet-access:${{ steps.vars.outputs.version }}
+            CREATED=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            COMMIT=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          tags: ${{ steps.meta.outputs.tags }}
           push: true
