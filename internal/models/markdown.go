@@ -9,7 +9,7 @@ func boolToMarkdown(b bool) string {
 	if b {
 		return "✅"
 	}
-	return "❎"
+	return "❌"
 }
 
 func markdownTableHeading(legendFields ...string) (markdown string) {

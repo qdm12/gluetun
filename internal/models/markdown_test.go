@@ -19,8 +19,8 @@ func Test_CyberghostServers_ToMarkdown(t *testing.T) {
 	markdown := servers.ToMarkdown()
 	const expected = "| Country | Hostname | TCP | UDP |\n" +
 		"| --- | --- | --- | --- |\n" +
-		"| a | `xa` | ❎ | ✅ |\n" +
-		"| b | `xb` | ✅ | ❎ |\n"
+		"| a | `xa` | ❌ | ✅ |\n" +
+		"| b | `xb` | ✅ | ❌ |\n"
 
 	assert.Equal(t, expected, markdown)
 }
@@ -38,8 +38,8 @@ func Test_FastestvpnServers_ToMarkdown(t *testing.T) {
 	markdown := servers.ToMarkdown()
 	const expected = "| Country | Hostname | TCP | UDP |\n" +
 		"| --- | --- | --- | --- |\n" +
-		"| a | `xa` | ✅ | ❎ |\n" +
-		"| b | `xb` | ❎ | ✅ |\n"
+		"| a | `xa` | ✅ | ❌ |\n" +
+		"| b | `xb` | ❌ | ✅ |\n"
 
 	assert.Equal(t, expected, markdown)
 }
