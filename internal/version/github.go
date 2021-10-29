@@ -3,6 +3,8 @@ package version
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -23,17 +25,25 @@ type githubCommit struct {
 	}
 }
 
+var errHTTPStatusCode = errors.New("bad response HTTP status code")
+
 func getGithubReleases(ctx context.Context, client *http.Client) (releases []githubRelease, err error) {
 	const url = "https://api.github.com/repos/qdm12/gluetun/releases"
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
+
 	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %s", errHTTPStatusCode, response.Status)
+	}
+
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&releases); err != nil {
 		return nil, err
