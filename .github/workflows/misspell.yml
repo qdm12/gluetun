@@ -8,7 +8,7 @@ jobs:
   misspell:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - uses: reviewdog/action-misspell@v1
         with:
           locale: "US"
