@@ -8,7 +8,7 @@ import (
 )
 
 //go:embed servers.json
-var allServersEmbedFS embed.FS //nolint:gochecknoglobals
+var allServersEmbedFS embed.FS
 
 func parseHardcodedServers() (allServers models.AllServers, err error) {
 	f, err := allServersEmbedFS.Open("servers.json")
