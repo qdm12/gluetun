@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	ErrModeUnspecified         = errors.New("at least one of -enduser or -maintainers must be specified")
+	ErrModeUnspecified         = errors.New("at least one of -enduser or -maintainer must be specified")
 	ErrNewStorage              = errors.New("cannot create storage")
 	ErrUpdateServerInformation = errors.New("cannot update server information")
 	ErrWriteToFile             = errors.New("cannot write updated information to file")
