@@ -179,6 +179,7 @@ RUN apk add --no-cache --update -l apk-tools && \
     mv /usr/sbin/openvpn /usr/sbin/openvpn2.4 && \
     apk del openvpn && \
     apk add --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
+    mv /usr/sbin/openvpn /usr/sbin/openvpn2.5 && \
     rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/openvpn/*.sh /usr/lib/openvpn/plugins/openvpn-plugin-down-root.so && \
     deluser openvpn && \
     deluser unbound && \

@@ -15,7 +15,7 @@ var ErrVersionUnknown = errors.New("OpenVPN version is unknown")
 
 const (
 	binOpenvpn24 = "openvpn2.4"
-	binOpenvpn25 = "openvpn"
+	binOpenvpn25 = "openvpn2.5"
 )
 
 func start(ctx context.Context, starter command.Starter, version string, flags []string) (
