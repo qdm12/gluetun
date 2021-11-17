@@ -15,6 +15,9 @@ func (p *Privatevpn) GetConnection(selection configuration.ServerSelection) (
 		protocol = constants.TCP
 		port = 443
 	}
+	if selection.OpenVPN.CustomPort > 0 {
+		port = selection.OpenVPN.CustomPort
+	}
 
 	servers, err := p.filterServers(selection)
 	if err != nil {
