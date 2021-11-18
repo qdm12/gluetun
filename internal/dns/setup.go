@@ -3,6 +3,7 @@ package dns
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 
 	"github.com/qdm12/dns/pkg/check"
@@ -18,7 +19,8 @@ func (l *Loop) setupUnbound(ctx context.Context) (
 	cancel context.CancelFunc, waitError chan error, closeStreams func(), err error) {
 	err = l.updateFiles(ctx)
 	if err != nil {
-		return nil, nil, nil, errUpdateFiles
+		return nil, nil, nil,
+			fmt.Errorf("%w: %s", errUpdateFiles, err)
 	}
 
 	settings := l.GetSettings()
