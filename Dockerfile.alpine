@@ -51,7 +51,3 @@ RUN chmod 500 /entrypoint.sh
 
 # Start point for docker
 ENTRYPOINT /entrypoint.sh
-
-# healthcheck
-HEALTHCHECK --interval=60s --timeout=15s --start-period=120s \
-             CMD curl -LSs 'https://api.ipify.org'
