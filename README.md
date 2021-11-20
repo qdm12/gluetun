@@ -88,7 +88,7 @@ try [http://checkmyip.torrentprivacy.com/](http://checkmyip.torrentprivacy.com/)
 | `USER` | | Your PIA username |
 | `PASSWORD` | | Your PIA password |
 | `WEBUI_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
-! `DNS_SERVERS` | `209.222.18.222,209.222.18.218` | DNS servers to use, comma separated
+! `DNS_SERVERS` | `209.222.18.222,209.222.18.218,103.196.38.38,103.196.38.39` | DNS servers to use, comma separated
 
 ## Connect to it
 
