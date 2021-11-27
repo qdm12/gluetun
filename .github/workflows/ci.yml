@@ -1,5 +1,8 @@
 name: CI
 on:
+  release:
+    types:
+      - published
   push:
     branches:
       - master
@@ -33,7 +36,8 @@ jobs:
     if: |
       github.actor != 'dependabot[bot]' &&
       (github.event_name == 'push' ||
-      github.event.pull_request.head.repo.full_name == github.repository)
+      github.event_name == 'release' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: "1"
@@ -73,7 +77,10 @@ jobs:
 
   publish:
     # Only run if it's a push event or if it's a PR from this repository
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'release' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     needs: [verify]
     runs-on: ubuntu-latest
     steps:
