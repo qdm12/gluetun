@@ -88,7 +88,7 @@ func Test_Routing_addIPRule(t *testing.T) {
 				ruleToAdd: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
 				err:       errDummy,
 			},
-			err: errors.New("dummy error: for rule: ip rule 99: from 1.1.1.0/24 table 99"),
+			err: errors.New("dummy error: for rule: ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99"),
 		},
 		"add rule success": {
 			src:      makeIPNet(t, 1),
@@ -193,7 +193,7 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 				ruleToDel: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
 				err:       errDummy,
 			},
-			err: errors.New("dummy error: for rule: ip rule 99: from 1.1.1.0/24 table 99"),
+			err: errors.New("dummy error: for rule: ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99"),
 		},
 		"rule deleted": {
 			src:      makeIPNet(t, 1),

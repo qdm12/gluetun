@@ -48,6 +48,35 @@ func (mr *MockNetLinkerMockRecorder) AddrAdd(arg0, arg1 interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddrAdd", reflect.TypeOf((*MockNetLinker)(nil).AddrAdd), arg0, arg1)
 }
 
+// IsWireguardSupported mocks base method.
+func (m *MockNetLinker) IsWireguardSupported() (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsWireguardSupported")
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsWireguardSupported indicates an expected call of IsWireguardSupported.
+func (mr *MockNetLinkerMockRecorder) IsWireguardSupported() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsWireguardSupported", reflect.TypeOf((*MockNetLinker)(nil).IsWireguardSupported))
+}
+
+// LinkAdd mocks base method.
+func (m *MockNetLinker) LinkAdd(arg0 netlink.Link) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LinkAdd", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// LinkAdd indicates an expected call of LinkAdd.
+func (mr *MockNetLinkerMockRecorder) LinkAdd(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LinkAdd", reflect.TypeOf((*MockNetLinker)(nil).LinkAdd), arg0)
+}
+
 // LinkByName mocks base method.
 func (m *MockNetLinker) LinkByName(arg0 string) (netlink.Link, error) {
 	m.ctrl.T.Helper()

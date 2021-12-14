@@ -9,4 +9,5 @@ type NetLinker interface {
 	Linker
 	Router
 	Ruler
+	WireguardChecker
 }

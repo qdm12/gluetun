@@ -64,7 +64,7 @@ using Go, OpenVPN or Wireguard, iptables, DNS over TLS, ShadowSocks and an HTTP 
 - Based on Alpine 3.14 for a small Docker image of 33MB
 - Supports: **Cyberghost**, **ExpressVPN**, **FastestVPN**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Perfect Privacy**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **Surfshark**, **TorGuard**, **VPNUnlimited**, **Vyprvpn**, **WeVPN**, **Windscribe** servers
 - Supports OpenVPN for all providers listed
-- Supports Wireguard
+- Supports Wireguard both kernelspace and userspace
   - For **Mullvad**, **Ivpn** and **Windscribe**
   - For **Torguard**, **VPN Unlimited** and **WeVPN** using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
   - For custom Wireguard configurations using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)

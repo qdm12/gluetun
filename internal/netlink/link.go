@@ -3,8 +3,9 @@ package netlink
 import "github.com/vishvananda/netlink"
 
 type (
-	Link   = netlink.Link
-	Bridge = netlink.Bridge
+	Link      = netlink.Link
+	Bridge    = netlink.Bridge
+	Wireguard = netlink.Wireguard
 )
 
 var _ Linker = (*NetLink)(nil)
