@@ -19,13 +19,13 @@ import (
 func PickConnection(connections []models.Connection,
 	selection configuration.ServerSelection, randSource rand.Source) (
 	connection models.Connection, err error) {
-	if selection.TargetIP != nil && selection.VPN == constants.Wireguard {
+	if len(selection.TargetIP) > 0 && selection.VPN == constants.Wireguard {
 		// we need the right public key
 		return getTargetIPConnection(connections, selection.TargetIP)
 	}
 
 	connection = pickRandomConnection(connections, randSource)
-	if selection.TargetIP != nil {
+	if len(selection.TargetIP) > 0 {
 		connection.IP = selection.TargetIP
 	}
 

@@ -94,7 +94,7 @@ func (s *Settings) Check() (err error) {
 	switch {
 	case s.Endpoint == nil:
 		return ErrEndpointMissing
-	case s.Endpoint.IP == nil:
+	case len(s.Endpoint.IP) == 0:
 		return ErrEndpointIPMissing
 	case s.Endpoint.Port == 0:
 		return ErrEndpointPortMissing

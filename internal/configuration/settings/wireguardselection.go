@@ -1,0 +1,121 @@
+package settings
+
+import (
+	"fmt"
+	"net"
+
+	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gluetun/internal/constants"
+	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
+)
+
+type WireguardSelection struct {
+	// EndpointIP is the server endpoint IP address.
+	// It is only used with VPN providers generating Wireguard
+	// configurations specific to each server and user.
+	// To indicate it should not be used, it should be set
+	// to the empty net.IP{} slice. It can never be nil
+	// in the internal state.
+	EndpointIP net.IP `json:"endpoint_ip,omitempty"`
+	// EndpointPort is a the server port to use for the VPN server.
+	// It is optional for VPN providers IVPN, Mullvad
+	// and Windscribe, and compulsory for the others.
+	// When optional, it can be set to 0 to indicate not use
+	// a custom endpoint port. It cannot be nil in the internal
+	// state.
+	EndpointPort *uint16 `json:"port,omitempty"`
+	// PublicKey is the server public key.
+	// It is only used with VPN providers generating Wireguard
+	// configurations specific to each server and user.
+	PublicKey string `json:"publickey,omitempty"`
+}
+
+// Validate validates WireguardSelection settings.
+// It should only be ran if the VPN type chosen is Wireguard.
+func (w WireguardSelection) validate(vpnProvider string) (err error) {
+	// Validate EndpointIP
+	switch vpnProvider {
+	case constants.Ivpn, constants.Mullvad, constants.Windscribe: // endpoint IP addresses are baked in
+	case constants.Custom:
+		if len(w.EndpointIP) == 0 {
+			return ErrWireguardEndpointIPNotSet
+		}
+	default: // Providers not supporting Wireguard
+	}
+
+	// Validate EndpointPort
+	switch vpnProvider {
+	// EndpointPort is required
+	case constants.Custom:
+		if *w.EndpointPort == 0 {
+			return ErrWireguardEndpointPortNotSet
+		}
+	case constants.Ivpn, constants.Mullvad, constants.Windscribe:
+		// EndpointPort is optional and can be 0
+		if *w.EndpointPort == 0 {
+			break // no custom endpoint port set
+		}
+		if vpnProvider == constants.Mullvad {
+			break // no restriction on custom endpoint port value
+		}
+		var allowed []uint16
+		switch vpnProvider {
+		case constants.Ivpn:
+			allowed = []uint16{2049, 2050, 53, 30587, 41893, 48574, 58237}
+		case constants.Windscribe:
+			allowed = []uint16{53, 80, 123, 443, 1194, 65142}
+		}
+
+		if helpers.Uint16IsOneOf(*w.EndpointPort, allowed) {
+			break
+		}
+		return fmt.Errorf("%w: %d for VPN service provider %s; %s",
+			ErrWireguardEndpointPortNotAllowed, w.EndpointPort, vpnProvider,
+			helpers.PortChoicesOrString(allowed))
+	default: // Providers not supporting Wireguard
+	}
+
+	// Validate PublicKey
+	switch vpnProvider {
+	case constants.Ivpn, constants.Mullvad, constants.Windscribe: // public keys are baked in
+	case constants.Custom:
+		if w.PublicKey == "" {
+			return ErrWireguardPublicKeyNotSet
+		}
+	default: // Providers not supporting Wireguard
+	}
+	if w.PublicKey != "" {
+		_, err := wgtypes.ParseKey(w.PublicKey)
+		if err != nil {
+			return fmt.Errorf("%w: %s: %s",
+				ErrWireguardPublicKeyNotValid, w.PublicKey, err)
+		}
+	}
+
+	return nil
+}
+
+func (w *WireguardSelection) copy() (copied WireguardSelection) {
+	return WireguardSelection{
+		EndpointIP:   helpers.CopyIP(w.EndpointIP),
+		EndpointPort: helpers.CopyUint16Ptr(w.EndpointPort),
+		PublicKey:    w.PublicKey,
+	}
+}
+
+func (w *WireguardSelection) mergeWith(other WireguardSelection) {
+	w.EndpointIP = helpers.MergeWithIP(w.EndpointIP, other.EndpointIP)
+	w.EndpointPort = helpers.MergeWithUint16(w.EndpointPort, other.EndpointPort)
+	w.PublicKey = helpers.MergeWithString(w.PublicKey, other.PublicKey)
+}
+
+func (w *WireguardSelection) overrideWith(other WireguardSelection) {
+	w.EndpointIP = helpers.OverrideWithIP(w.EndpointIP, other.EndpointIP)
+	w.EndpointPort = helpers.OverrideWithUint16(w.EndpointPort, other.EndpointPort)
+	w.PublicKey = helpers.OverrideWithString(w.PublicKey, other.PublicKey)
+}
+
+func (w *WireguardSelection) setDefaults() {
+	w.EndpointIP = helpers.DefaultIP(w.EndpointIP, net.IP{})
+	w.EndpointPort = helpers.DefaultUint16(w.EndpointPort, 0)
+}
