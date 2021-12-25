@@ -55,6 +55,7 @@ func (s Settings) validate(allServers models.AllServers) (err error) {
 		"http proxy":      s.HTTPProxy.validate,
 		"log":             s.Log.validate,
 		"public ip check": s.PublicIP.validate,
+		"shadowsocks":     s.Shadowsocks.validate,
 		"system":          s.System.validate,
 		"updater":         s.Updater.validate,
 		"version":         s.Version.validate,
@@ -81,6 +82,7 @@ func (s *Settings) copy() (copied Settings) {
 		HTTPProxy:     s.HTTPProxy.copy(),
 		Log:           s.Log.copy(),
 		PublicIP:      s.PublicIP.copy(),
+		Shadowsocks:   s.Shadowsocks.copy(),
 		System:        s.System.copy(),
 		Updater:       s.Updater.copy(),
 		Version:       s.Version.copy(),
@@ -95,6 +97,7 @@ func (s *Settings) mergeWith(other Settings) {
 	s.HTTPProxy.mergeWith(other.HTTPProxy)
 	s.Log.mergeWith(other.Log)
 	s.PublicIP.mergeWith(other.PublicIP)
+	s.Shadowsocks.mergeWith(other.Shadowsocks)
 	s.System.mergeWith(other.System)
 	s.Updater.mergeWith(other.Updater)
 	s.Version.mergeWith(other.Version)
@@ -110,6 +113,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.HTTPProxy.overrideWith(other.HTTPProxy)
 	patchedSettings.Log.overrideWith(other.Log)
 	patchedSettings.PublicIP.overrideWith(other.PublicIP)
+	patchedSettings.Shadowsocks.overrideWith(other.Shadowsocks)
 	patchedSettings.System.overrideWith(other.System)
 	patchedSettings.Updater.overrideWith(other.Updater)
 	patchedSettings.Version.overrideWith(other.Version)
@@ -129,6 +133,7 @@ func (s *Settings) setDefaults() {
 	s.HTTPProxy.setDefaults()
 	s.Log.setDefaults()
 	s.PublicIP.setDefaults()
+	s.Shadowsocks.setDefaults()
 	s.System.setDefaults()
 	s.Updater.setDefaults()
 	s.Version.setDefaults()

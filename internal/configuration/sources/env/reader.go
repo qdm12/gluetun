@@ -62,6 +62,11 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 		return settings, err
 	}
 
+	settings.Shadowsocks, err = r.readShadowsocks()
+	if err != nil {
+		return settings, err
+	}
+
 	return settings, nil
 }
 
