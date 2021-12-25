@@ -38,30 +38,14 @@ func (u Updater) validate() (err error) {
 	}
 
 	for i, provider := range u.Providers {
-		switch provider {
-		case
-			constants.Custom,
-			constants.Cyberghost,
-			constants.Expressvpn,
-			constants.Fastestvpn,
-			constants.HideMyAss,
-			constants.Ipvanish,
-			constants.Ivpn,
-			constants.Mullvad,
-			constants.Nordvpn,
-			constants.Perfectprivacy,
-			constants.Privado,
-			constants.PrivateInternetAccess,
-			constants.Privatevpn,
-			constants.Protonvpn,
-			constants.Purevpn,
-			constants.Surfshark,
-			constants.Torguard,
-			constants.VPNUnlimited,
-			constants.Vyprvpn,
-			constants.Wevpn,
-			constants.Windscribe:
-		default:
+		valid := false
+		for _, validProvider := range constants.AllProviders() {
+			if provider == validProvider {
+				valid = true
+				break
+			}
+		}
+		if !valid {
 			return fmt.Errorf("%w: %s at index %d",
 				ErrVPNProviderNameNotValid, provider, i)
 		}

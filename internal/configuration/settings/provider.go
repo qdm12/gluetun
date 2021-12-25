@@ -24,30 +24,8 @@ func (p Provider) validate(vpnType string, allServers models.AllServers) (err er
 	// Validate Name
 	var validNames []string
 	if vpnType == constants.OpenVPN {
-		validNames = []string{
-			constants.Custom,
-			constants.Cyberghost,
-			constants.Expressvpn,
-			constants.Fastestvpn,
-			constants.HideMyAss,
-			constants.Ipvanish,
-			constants.Ivpn,
-			constants.Mullvad,
-			constants.Nordvpn,
-			constants.Perfectprivacy,
-			constants.Privado,
-			"pia", // Retro-compatibility
-			constants.PrivateInternetAccess,
-			constants.Privatevpn,
-			constants.Protonvpn,
-			constants.Purevpn,
-			constants.Surfshark,
-			constants.Torguard,
-			constants.VPNUnlimited,
-			constants.Vyprvpn,
-			constants.Wevpn,
-			constants.Windscribe,
-		}
+		validNames = constants.AllProviders()
+		validNames = append(validNames, "pia") // Retro-compatibility
 	} else { // Wireguard
 		validNames = []string{
 			constants.Custom,
