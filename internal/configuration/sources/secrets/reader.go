@@ -10,12 +10,12 @@ func New() *Reader {
 }
 
 func (r *Reader) Read() (settings settings.Settings, err error) {
-	settings.VPN, err = r.readVPN()
+	settings.VPN, err = readVPN()
 	if err != nil {
 		return settings, err
 	}
 
-	settings.HTTPProxy, err = r.readHTTPProxy()
+	settings.HTTPProxy, err = readHTTPProxy()
 	if err != nil {
 		return settings, err
 	}
