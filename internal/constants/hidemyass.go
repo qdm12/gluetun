@@ -19,6 +19,14 @@ func HideMyAssCountryChoices(servers []models.HideMyAssServer) (choices []string
 	return makeUnique(choices)
 }
 
+func HideMyAssRegionChoices(servers []models.HideMyAssServer) (choices []string) {
+	choices = make([]string, len(servers))
+	for i := range servers {
+		choices[i] = servers[i].Region
+	}
+	return makeUnique(choices)
+}
+
 func HideMyAssCityChoices(servers []models.HideMyAssServer) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {

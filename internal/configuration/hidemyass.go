@@ -20,7 +20,7 @@ func (settings *Provider) readHideMyAss(r reader) (err error) {
 		return fmt.Errorf("environment variable COUNTRY: %w", err)
 	}
 
-	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.HideMyAssCountryChoices(servers))
+	settings.ServerSelection.Regions, err = r.env.CSVInside("REGION", constants.HideMyAssRegionChoices(servers))
 	if err != nil {
 		return fmt.Errorf("environment variable REGION: %w", err)
 	}
