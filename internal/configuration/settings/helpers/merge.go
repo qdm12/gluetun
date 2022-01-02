@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/qdm12/golibs/logging"
+	"inet.af/netaddr"
 )
 
 func MergeWithBool(existing, other *bool) (result *bool) {
@@ -43,6 +44,17 @@ func MergeWithInt(existing, other *int) (result *int) {
 		return nil
 	}
 	result = new(int)
+	*result = *other
+	return result
+}
+
+func MergeWithUint8(existing, other *uint8) (result *uint8) {
+	if existing != nil {
+		return existing
+	} else if other == nil {
+		return nil
+	}
+	result = new(uint8)
 	*result = *other
 	return result
 }
@@ -150,6 +162,50 @@ func MergeIPNetsSlices(a, b []*net.IPNet) (result []*net.IPNet) {
 			continue // duplicate
 		}
 		result = append(result, ipNet)
+		seen[key] = struct{}{}
+	}
+	return result
+}
+
+func MergeNetaddrIPsSlices(a, b []netaddr.IP) (result []netaddr.IP) {
+	seen := make(map[string]struct{}, len(a)+len(b))
+	result = make([]netaddr.IP, 0, len(a)+len(b))
+	for _, ip := range a {
+		key := ip.String()
+		if _, ok := seen[key]; ok {
+			continue // duplicate
+		}
+		result = append(result, ip)
+		seen[key] = struct{}{}
+	}
+	for _, ip := range b {
+		key := ip.String()
+		if _, ok := seen[key]; ok {
+			continue // duplicate
+		}
+		result = append(result, ip)
+		seen[key] = struct{}{}
+	}
+	return result
+}
+
+func MergeIPPrefixesSlices(a, b []netaddr.IPPrefix) (result []netaddr.IPPrefix) {
+	seen := make(map[string]struct{}, len(a)+len(b))
+	result = make([]netaddr.IPPrefix, 0, len(a)+len(b))
+	for _, ipPrefix := range a {
+		key := ipPrefix.String()
+		if _, ok := seen[key]; ok {
+			continue // duplicate
+		}
+		result = append(result, ipPrefix)
+		seen[key] = struct{}{}
+	}
+	for _, ipPrefix := range b {
+		key := ipPrefix.String()
+		if _, ok := seen[key]; ok {
+			continue // duplicate
+		}
+		result = append(result, ipPrefix)
 		seen[key] = struct{}{}
 	}
 	return result

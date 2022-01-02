@@ -17,6 +17,16 @@ func DefaultInt(existing *int, defaultValue int) (
 	return result
 }
 
+func DefaultUint8(existing *uint8, defaultValue uint8) (
+	result *uint8) {
+	if existing != nil {
+		return existing
+	}
+	result = new(uint8)
+	*result = defaultValue
+	return result
+}
+
 func DefaultUint16(existing *uint16, defaultValue uint16) (
 	result *uint16) {
 	if existing != nil {

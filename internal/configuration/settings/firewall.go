@@ -63,9 +63,9 @@ func (f *Firewall) mergeWith(other Firewall) {
 // settings object with any field set in the other
 // settings.
 func (f *Firewall) overrideWith(other Firewall) {
-	f.VPNInputPorts = helpers.OverrideUint16Slices(f.VPNInputPorts, other.VPNInputPorts)
-	f.InputPorts = helpers.OverrideUint16Slices(f.InputPorts, other.InputPorts)
-	f.OutboundSubnets = helpers.OverrideIPNetsSlices(f.OutboundSubnets, other.OutboundSubnets)
+	f.VPNInputPorts = helpers.OverrideWithUint16Slice(f.VPNInputPorts, other.VPNInputPorts)
+	f.InputPorts = helpers.OverrideWithUint16Slice(f.InputPorts, other.InputPorts)
+	f.OutboundSubnets = helpers.OverrideWithIPNetsSlice(f.OutboundSubnets, other.OutboundSubnets)
 	f.Enabled = helpers.OverrideWithBool(f.Enabled, other.Enabled)
 	f.Debug = helpers.OverrideWithBool(f.Debug, other.Debug)
 }

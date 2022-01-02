@@ -78,7 +78,7 @@ func (u *Updater) mergeWith(other Updater) {
 func (u *Updater) overrideWith(other Updater) {
 	u.Period = helpers.OverrideWithDuration(u.Period, other.Period)
 	u.DNSAddress = helpers.OverrideWithIP(u.DNSAddress, other.DNSAddress)
-	u.Providers = helpers.OverrideStringSlices(u.Providers, other.Providers)
+	u.Providers = helpers.OverrideWithStringSlice(u.Providers, other.Providers)
 	u.CLI = helpers.MergeWithBool(u.CLI, other.CLI)
 }
 

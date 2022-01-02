@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/qdm12/govalid/binary"
 	"github.com/qdm12/govalid/integer"
@@ -52,13 +53,30 @@ func envToIntPtr(envKey string) (intPtr *int, err error) {
 	return &value, nil
 }
 
+func envToUint8Ptr(envKey string) (uint8Ptr *uint8, err error) {
+	s := os.Getenv(envKey)
+	if s == "" {
+		return nil, nil //nolint:nilnil
+	}
+
+	const min, max = 0, 255
+	value, err := integer.Validate(s, integer.OptionRange(min, max))
+	if err != nil {
+		return nil, err
+	}
+
+	uint8Ptr = new(uint8)
+	*uint8Ptr = uint8(value)
+	return uint8Ptr, nil
+}
+
 func envToUint16Ptr(envKey string) (uint16Ptr *uint16, err error) {
 	s := os.Getenv(envKey)
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}
 
-	const min, max = 0, 10000
+	const min, max = 0, 65535
 	value, err := integer.Validate(s, integer.OptionRange(min, max))
 	if err != nil {
 		return nil, err
@@ -67,6 +85,21 @@ func envToUint16Ptr(envKey string) (uint16Ptr *uint16, err error) {
 	uint16Ptr = new(uint16)
 	*uint16Ptr = uint16(value)
 	return uint16Ptr, nil
+}
+
+func envToDurationPtr(envKey string) (durationPtr *time.Duration, err error) {
+	s := os.Getenv(envKey)
+	if s == "" {
+		return nil, nil //nolint:nilnil
+	}
+
+	durationPtr = new(time.Duration)
+	*durationPtr, err = time.ParseDuration(s)
+	if err != nil {
+		return nil, err
+	}
+
+	return durationPtr, nil
 }
 
 func lowerAndSplit(csv string) (values []string) {

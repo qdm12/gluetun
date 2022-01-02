@@ -30,5 +30,4 @@ func readVersionEnabled() (enabled *bool, err error) {
 	}
 
 	return enabled, nil
-
 }

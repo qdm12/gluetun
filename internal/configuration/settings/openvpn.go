@@ -210,7 +210,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.User = helpers.OverrideWithString(o.User, other.User)
 	o.Password = helpers.OverrideWithString(o.Password, other.Password)
 	o.ConfFile = helpers.OverrideWithStringPtr(o.ConfFile, other.ConfFile)
-	o.Ciphers = helpers.OverrideStringSlices(o.Ciphers, other.Ciphers)
+	o.Ciphers = helpers.OverrideWithStringSlice(o.Ciphers, other.Ciphers)
 	o.Auth = helpers.OverrideWithStringPtr(o.Auth, other.Auth)
 	o.ClientCrt = helpers.OverrideWithStringPtr(o.ClientCrt, other.ClientCrt)
 	o.ClientKey = helpers.OverrideWithStringPtr(o.ClientKey, other.ClientKey)
@@ -221,7 +221,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.Root = helpers.OverrideWithBool(o.Root, other.Root)
 	o.ProcUser = helpers.OverrideWithString(o.ProcUser, other.ProcUser)
 	o.Verbosity = helpers.OverrideWithInt(o.Verbosity, other.Verbosity)
-	o.Flags = helpers.OverrideStringSlices(o.Flags, other.Flags)
+	o.Flags = helpers.OverrideWithStringSlice(o.Flags, other.Flags)
 }
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {

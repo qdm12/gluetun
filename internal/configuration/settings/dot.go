@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qdm12/dns/pkg/blacklist"
-	"github.com/qdm12/dns/pkg/unbound"
+	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 )
 
 // DoT contains settings to configure the DoT server.
@@ -22,8 +21,10 @@ type DoT struct {
 	// the internal state.
 	UpdatePeriod *time.Duration
 	// Unbound contains settings to configure Unbound.
-	Unbound        unbound.Settings
-	BlacklistBuild blacklist.BuilderSettings
+	Unbound Unbound
+	// Blacklist contains settings to configure the filter
+	// block lists.
+	Blacklist DNSBlacklist
 }
 
 var (
@@ -37,31 +38,51 @@ func (d DoT) validate() (err error) {
 			ErrDoTUpdatePeriodTooShort, *d.UpdatePeriod, minUpdatePeriod)
 	}
 
+	err = d.Unbound.validate()
+	if err != nil {
+		return err
+	}
+
+	err = d.Blacklist.validate()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func validateUnbound(settings unbound.Settings) (err error) {
-
-}
-
 func (d *DoT) copy() (copied DoT) {
-	// TODO
-	return DoT{}
+	return DoT{
+		Enabled:      helpers.CopyBoolPtr(d.Enabled),
+		UpdatePeriod: helpers.CopyDurationPtr(d.UpdatePeriod),
+		Unbound:      d.Unbound.copy(),
+		Blacklist:    d.Blacklist.copy(),
+	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (d *DoT) mergeWith(other DoT) {
-	// TODO
+	d.Enabled = helpers.MergeWithBool(d.Enabled, other.Enabled)
+	d.UpdatePeriod = helpers.MergeWithDuration(d.UpdatePeriod, other.UpdatePeriod)
+	d.Unbound.mergeWith(other.Unbound)
+	d.Blacklist.mergeWith(other.Blacklist)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (d *DoT) overrideWith(other DoT) {
-	// TODO
+	d.Enabled = helpers.OverrideWithBool(d.Enabled, other.Enabled)
+	d.UpdatePeriod = helpers.OverrideWithDuration(d.UpdatePeriod, other.UpdatePeriod)
+	d.Unbound.overrideWith(other.Unbound)
+	d.Blacklist.overrideWith(other.Blacklist)
 }
 
 func (d *DoT) setDefaults() {
-	// TODO
+	d.Enabled = helpers.DefaultBool(d.Enabled, true)
+	const defaultUpdatePeriod = 24 * time.Hour
+	d.UpdatePeriod = helpers.DefaultDuration(d.UpdatePeriod, defaultUpdatePeriod)
+	d.Unbound.setDefaults()
+	d.Blacklist.setDefaults()
 }

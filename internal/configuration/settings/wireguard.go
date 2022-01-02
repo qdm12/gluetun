@@ -99,7 +99,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PrivateKey = helpers.OverrideWithStringPtr(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = helpers.OverrideWithStringPtr(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.OverrideIPNetsSlices(w.Addresses, other.Addresses)
+	w.Addresses = helpers.OverrideWithIPNetsSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
 }
 
