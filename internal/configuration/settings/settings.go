@@ -50,6 +50,7 @@ func New(allServers models.AllServers, sources ...Source) (settings Settings, er
 func (s Settings) validate(allServers models.AllServers) (err error) {
 	nameToValidation := map[string]func() error{
 		"control server":  s.ControlServer.validate,
+		"dns":             s.DNS.validate,
 		"firewall":        s.Firewall.validate,
 		"health":          s.Health.validate,
 		"http proxy":      s.HTTPProxy.validate,
@@ -77,6 +78,7 @@ func (s Settings) validate(allServers models.AllServers) (err error) {
 func (s *Settings) copy() (copied Settings) {
 	return Settings{
 		ControlServer: s.ControlServer.copy(),
+		DNS:           s.DNS.copy(),
 		Firewall:      s.Firewall.copy(),
 		Health:        s.Health.copy(),
 		HTTPProxy:     s.HTTPProxy.copy(),
@@ -92,6 +94,7 @@ func (s *Settings) copy() (copied Settings) {
 
 func (s *Settings) mergeWith(other Settings) {
 	s.ControlServer.mergeWith(other.ControlServer)
+	s.DNS.mergeWith(other.DNS)
 	s.Firewall.mergeWith(other.Firewall)
 	s.Health.mergeWith(other.Health)
 	s.HTTPProxy.mergeWith(other.HTTPProxy)
@@ -108,6 +111,7 @@ func (s *Settings) OverrideWith(other Settings,
 	allServers models.AllServers) (err error) {
 	patchedSettings := s.copy()
 	patchedSettings.ControlServer.overrideWith(other.ControlServer)
+	patchedSettings.DNS.overrideWith(other.DNS)
 	patchedSettings.Firewall.overrideWith(other.Firewall)
 	patchedSettings.Health.overrideWith(other.Health)
 	patchedSettings.HTTPProxy.overrideWith(other.HTTPProxy)
@@ -128,6 +132,7 @@ func (s *Settings) OverrideWith(other Settings,
 
 func (s *Settings) setDefaults() {
 	s.ControlServer.setDefaults()
+	s.DNS.setDefaults()
 	s.Firewall.setDefaults()
 	s.Health.setDefaults()
 	s.HTTPProxy.setDefaults()

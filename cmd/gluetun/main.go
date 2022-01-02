@@ -18,6 +18,10 @@ import (
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"
 	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/configuration/sources/env"
+	"github.com/qdm12/gluetun/internal/configuration/sources/files"
+	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -122,17 +126,17 @@ var (
 
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.ParentLogger, env params.Interface,
+	args []string, logger logging.ParentLogger, env2 params.Interface,
 	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,
 	cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
-			return cli.HealthCheck(ctx, env, logger)
+			return cli.HealthCheck(ctx, env2, logger)
 		case "clientkey":
 			return cli.ClientKey(args[2:])
 		case "openvpnconfig":
-			return cli.OpenvpnConfig(logger, env)
+			return cli.OpenvpnConfig(logger, env2)
 		case "update":
 			return cli.Update(ctx, args[2:], logger)
 		case "format-servers":
@@ -171,8 +175,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	allServers := storage.GetServers()
 
+	envReader := env.New(logger)
+	filesReader := files.New()
+	secretsReader := secrets.New()
+	_, err = settings.New(allServers,
+		envReader, filesReader, secretsReader)
+
 	var allSettings configuration.Settings
-	err = allSettings.Read(env, allServers,
+	err = allSettings.Read(env2, allServers,
 		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
 	if err != nil {
 		return err

@@ -67,6 +67,11 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 		return settings, err
 	}
 
+	settings.DNS, err = r.readDNS()
+	if err != nil {
+		return settings, err
+	}
+
 	return settings, nil
 }
 
