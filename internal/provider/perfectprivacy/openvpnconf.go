@@ -3,24 +3,26 @@ package perfectprivacy
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (p *Perfectprivacy) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
 		settings.Ciphers = []string{constants.AES256cbc, constants.AES256gcm}
 	}
 
-	if settings.Auth == "" {
-		settings.Auth = constants.SHA512
+	auth := *settings.Auth
+	if auth == "" {
+		auth = constants.SHA512
 	}
 
-	if settings.MSSFix == 0 {
-		settings.MSSFix = 1450
+	mssFix := *settings.MSSFix
+	if mssFix == 0 {
+		mssFix = 1450
 	}
 
 	lines = []string{
@@ -28,18 +30,18 @@ func (p *Perfectprivacy) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// Perfect Privacy specific
 		"ping 5",
 		"tun-mtu 1500",
 		"tun-mtu-extra 32",
-		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
+		"mssfix " + strconv.Itoa(int(mssFix)),
 		"reneg-sec 3600",
 		"key-direction 1",
 		"tls-cipher TLS_CHACHA20_POLY1305_SHA256:TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-128-GCM-SHA256:TLS-DHE-RSA-WITH-AES-128-CBC-SHA:TLS_AES_256_GCM_SHA384:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"auth " + settings.Auth,
+		"auth " + auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -59,13 +61,13 @@ func (p *Perfectprivacy) BuildConf(connection models.Connection,
 		lines = append(lines, "explicit-exit-notify")
 	}
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 		// Perfect Privacy specific IPv6

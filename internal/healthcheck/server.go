@@ -3,7 +3,7 @@ package healthcheck
 import (
 	"context"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/vpn"
 )
 
@@ -17,11 +17,11 @@ type Server struct {
 	logger  Logger
 	handler *handler
 	pinger  Pinger
-	config  configuration.Health
+	config  settings.Health
 	vpn     vpnHealth
 }
 
-func NewServer(config configuration.Health,
+func NewServer(config settings.Health,
 	logger Logger, vpnLooper vpn.Looper) *Server {
 	return &Server{
 		logger:  logger,
@@ -30,7 +30,7 @@ func NewServer(config configuration.Health,
 		config:  config,
 		vpn: vpnHealth{
 			looper:      vpnLooper,
-			healthyWait: config.VPN.Initial,
+			healthyWait: *config.VPN.Initial,
 		},
 	}
 }

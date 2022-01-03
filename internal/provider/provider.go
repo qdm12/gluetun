@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/custom"
@@ -37,8 +37,8 @@ import (
 
 // Provider contains methods to read and modify the openvpn configuration to connect as a client.
 type Provider interface {
-	GetConnection(selection configuration.ServerSelection) (connection models.Connection, err error)
-	BuildConf(connection models.Connection, settings configuration.OpenVPN) (lines []string, err error)
+	GetConnection(selection settings.ServerSelection) (connection models.Connection, err error)
+	BuildConf(connection models.Connection, settings settings.OpenVPN) (lines []string, err error)
 	PortForwarder
 }
 
@@ -96,6 +96,6 @@ func New(provider string, allServers models.AllServers, timeNow func() time.Time
 	case constants.Windscribe:
 		return windscribe.New(allServers.Windscribe.Servers, randSource)
 	default:
-		return nil // should never occur
+		panic("provider " + provider + " is unknown") // should never occur
 	}
 }

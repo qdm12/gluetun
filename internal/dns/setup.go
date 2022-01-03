@@ -26,7 +26,8 @@ func (l *Loop) setupUnbound(ctx context.Context) (
 	settings := l.GetSettings()
 
 	unboundCtx, cancel := context.WithCancel(context.Background())
-	stdoutLines, stderrLines, waitError, err := l.conf.Start(unboundCtx, settings.Unbound.VerbosityDetailsLevel)
+	stdoutLines, stderrLines, waitError, err := l.conf.Start(unboundCtx,
+		*settings.DoT.Unbound.VerbosityDetailsLevel)
 	if err != nil {
 		cancel()
 		return nil, nil, nil, err
@@ -42,9 +43,9 @@ func (l *Loop) setupUnbound(ctx context.Context) (
 	}
 
 	// use Unbound
-	nameserver.UseDNSInternally(net.IP{127, 0, 0, 1})
-	err = nameserver.UseDNSSystemWide(l.resolvConf, net.IP{127, 0, 0, 1},
-		settings.KeepNameserver)
+	nameserver.UseDNSInternally(settings.ServerAddress)
+	err = nameserver.UseDNSSystemWide(l.resolvConf, settings.ServerAddress,
+		*settings.KeepNameserver)
 	if err != nil {
 		l.logger.Error(err.Error())
 	}

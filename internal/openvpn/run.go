@@ -3,17 +3,17 @@ package openvpn
 import (
 	"context"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/golibs/command"
 )
 
 type Runner struct {
-	settings configuration.OpenVPN
+	settings settings.OpenVPN
 	starter  command.Starter
 	logger   Logger
 }
 
-func NewRunner(settings configuration.OpenVPN, starter command.Starter,
+func NewRunner(settings settings.OpenVPN, starter command.Starter,
 	logger Logger) *Runner {
 	return &Runner{
 		starter:  starter,

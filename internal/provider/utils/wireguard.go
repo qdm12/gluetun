@@ -3,16 +3,16 @@ package utils
 import (
 	"net"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/wireguard"
 )
 
 func BuildWireguardSettings(connection models.Connection,
-	userSettings configuration.Wireguard) (settings wireguard.Settings) {
-	settings.PrivateKey = userSettings.PrivateKey
+	userSettings settings.Wireguard) (settings wireguard.Settings) {
+	settings.PrivateKey = *userSettings.PrivateKey
 	settings.PublicKey = connection.PubKey
-	settings.PreSharedKey = userSettings.PreSharedKey
+	settings.PreSharedKey = *userSettings.PreSharedKey
 	settings.InterfaceName = userSettings.Interface
 
 	const rulePriority = 101 // 100 is to receive external connections

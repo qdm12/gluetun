@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
@@ -17,12 +17,12 @@ func Test_Windscribe_filterServers(t *testing.T) {
 
 	testCases := map[string]struct {
 		servers   []models.WindscribeServer
-		selection configuration.ServerSelection
+		selection settings.ServerSelection
 		filtered  []models.WindscribeServer
 		err       error
 	}{
 		"no server available": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
 			},
 			err: errors.New("no server found: for VPN openvpn; protocol udp"),
@@ -40,7 +40,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			},
 		},
 		"filter OpenVPN out": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
 			},
 			servers: []models.WindscribeServer{
@@ -53,7 +53,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			},
 		},
 		"filter by region": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Regions: []string{"b"},
 			},
 			servers: []models.WindscribeServer{
@@ -66,7 +66,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			},
 		},
 		"filter by city": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Cities: []string{"b"},
 			},
 			servers: []models.WindscribeServer{
@@ -79,7 +79,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			},
 		},
 		"filter by hostname": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			},
 			servers: []models.WindscribeServer{

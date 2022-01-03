@@ -4,22 +4,22 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
 type SettingsGetSetter interface {
-	GetSettings() (settings configuration.PublicIP)
+	GetSettings() (settings settings.PublicIP)
 	SetSettings(ctx context.Context,
-		settings configuration.PublicIP) (outcome string)
+		settings settings.PublicIP) (outcome string)
 }
 
-func (s *State) GetSettings() (settings configuration.PublicIP) {
+func (s *State) GetSettings() (settings settings.PublicIP) {
 	s.settingsMu.RLock()
 	defer s.settingsMu.RUnlock()
 	return s.settings
 }
 
-func (s *State) SetSettings(ctx context.Context, settings configuration.PublicIP) (
+func (s *State) SetSettings(ctx context.Context, settings settings.PublicIP) (
 	outcome string) {
 	s.settingsMu.Lock()
 

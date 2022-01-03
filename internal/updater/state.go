@@ -7,14 +7,14 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 type state struct {
 	status   models.LoopStatus
-	settings configuration.Updater
+	settings settings.Updater
 	statusMu sync.RWMutex
 	periodMu sync.RWMutex
 }
@@ -84,13 +84,13 @@ func (l *looper) SetStatus(ctx context.Context, status models.LoopStatus) (outco
 	}
 }
 
-func (l *looper) GetSettings() (settings configuration.Updater) {
+func (l *looper) GetSettings() (settings settings.Updater) {
 	l.state.periodMu.RLock()
 	defer l.state.periodMu.RUnlock()
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings configuration.Updater) (outcome string) {
+func (l *looper) SetSettings(settings settings.Updater) (outcome string) {
 	l.state.periodMu.Lock()
 	defer l.state.periodMu.Unlock()
 	settingsUnchanged := reflect.DeepEqual(settings, l.state.settings)

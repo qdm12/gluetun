@@ -3,6 +3,7 @@ package settings
 import (
 	"errors"
 	"fmt"
+	"net"
 
 	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/dns/pkg/unbound"
@@ -151,4 +152,14 @@ func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {
 		},
 		Username: u.Username,
 	}, nil
+}
+
+func (u Unbound) GetFirstPlaintextIPv4() (ipv4 net.IP, err error) {
+	s := u.Providers[0]
+	provider, err := provider.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+
+	return provider.DNS().IPv4[0], nil
 }

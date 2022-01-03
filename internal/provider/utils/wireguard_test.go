@@ -4,18 +4,20 @@ import (
 	"net"
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/wireguard"
 	"github.com/stretchr/testify/assert"
 )
+
+func stringPtr(s string) *string { return &s }
 
 func Test_BuildWireguardSettings(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
 		connection   models.Connection
-		userSettings configuration.Wireguard
+		userSettings settings.Wireguard
 		settings     wireguard.Settings
 	}{
 		"some settings": {
@@ -24,10 +26,10 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				Port:   51821,
 				PubKey: "public",
 			},
-			userSettings: configuration.Wireguard{
-				PrivateKey:   "private",
-				PreSharedKey: "pre-shared",
-				Addresses: []*net.IPNet{
+			userSettings: settings.Wireguard{
+				PrivateKey:   stringPtr("private"),
+				PreSharedKey: stringPtr("pre-shared"),
+				Addresses: []net.IPNet{
 					{IP: net.IPv4(1, 1, 1, 1), Mask: net.IPv4Mask(255, 255, 255, 255)},
 					{IP: net.IPv4(2, 2, 2, 2), Mask: net.IPv4Mask(255, 255, 255, 255)},
 				},

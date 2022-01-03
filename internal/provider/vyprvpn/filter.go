@@ -1,12 +1,12 @@
 package vyprvpn
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (v *Vyprvpn) filterServers(selection configuration.ServerSelection) (
+func (v *Vyprvpn) filterServers(selection settings.ServerSelection) (
 	servers []models.VyprvpnServer, err error) {
 	for _, server := range v.servers {
 		switch {

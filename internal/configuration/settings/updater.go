@@ -30,7 +30,7 @@ type Updater struct {
 	CLI *bool `json:"-"`
 }
 
-func (u Updater) validate() (err error) {
+func (u Updater) Validate() (err error) {
 	const minPeriod = time.Minute
 	if *u.Period > 0 && *u.Period < minPeriod {
 		return fmt.Errorf("%w: %d must be larger than %s",

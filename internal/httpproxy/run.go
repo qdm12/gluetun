@@ -2,7 +2,6 @@ package httpproxy
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/qdm12/gluetun/internal/constants"
 )
@@ -14,7 +13,7 @@ type Runner interface {
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	if !l.state.GetSettings().Enabled {
+	if !*l.state.GetSettings().Enabled {
 		select {
 		case <-l.start:
 		case <-ctx.Done():
@@ -26,8 +25,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		runCtx, runCancel := context.WithCancel(ctx)
 
 		settings := l.state.GetSettings()
-		address := ":" + strconv.Itoa(int(settings.Port))
-		server := New(runCtx, address, l.logger, settings.Stealth, settings.Log, settings.User, settings.Password)
+		server := New(runCtx, settings.ListeningAddress, l.logger,
+			*settings.Stealth, *settings.Log, *settings.User,
+			*settings.Password)
 
 		errorCh := make(chan error)
 		go server.Run(runCtx, errorCh)

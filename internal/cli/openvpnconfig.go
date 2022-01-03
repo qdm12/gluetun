@@ -5,15 +5,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/sources"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/golibs/params"
 )
 
 type OpenvpnConfigMaker interface {
-	OpenvpnConfig(logger OpenvpnConfigLogger, env params.Interface) error
+	OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) error
 }
 
 type OpenvpnConfigLogger interface {
@@ -21,19 +20,23 @@ type OpenvpnConfigLogger interface {
 	Warn(s string)
 }
 
-func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, env params.Interface) error {
+func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) error {
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
 		return err
 	}
 	allServers := storage.GetServers()
 
-	var allSettings configuration.Settings
-	err = allSettings.Read(env, allServers, logger)
+	allSettings, err := source.Read()
 	if err != nil {
 		return err
 	}
-	providerConf := provider.New(allSettings.VPN.Provider.Name, allServers, time.Now)
+
+	if err = allSettings.Validate(allServers); err != nil {
+		return err
+	}
+
+	providerConf := provider.New(*allSettings.VPN.Provider.Name, allServers, time.Now)
 	connection, err := providerConf.GetConnection(allSettings.VPN.Provider.ServerSelection)
 	if err != nil {
 		return err

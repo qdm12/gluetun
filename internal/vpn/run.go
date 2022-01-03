@@ -29,9 +29,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	for ctx.Err() == nil {
 		settings, allServers := l.state.GetSettingsAndServers()
 
-		providerConf := provider.New(settings.Provider.Name, allServers, time.Now)
+		providerConf := provider.New(*settings.Provider.Name, allServers, time.Now)
 
-		portForwarding := settings.Provider.PortForwarding.Enabled
+		portForwarding := *settings.Provider.PortForwarding.Enabled
 		var vpnRunner vpnRunner
 		var serverName, vpnInterface string
 		var err error

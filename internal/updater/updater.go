@@ -4,9 +4,10 @@ package updater
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
@@ -19,7 +20,7 @@ type Updater interface {
 
 type updater struct {
 	// configuration
-	options configuration.Updater
+	options settings.Updater
 
 	// state
 	servers models.AllServers
@@ -32,16 +33,13 @@ type updater struct {
 	unzipper  unzip.Unzipper
 }
 
-func New(settings configuration.Updater, httpClient *http.Client,
+func New(settings settings.Updater, httpClient *http.Client,
 	currentServers models.AllServers, logger Logger) Updater {
-	if settings.DNSAddress == "" {
-		settings.DNSAddress = "1.1.1.1"
-	}
 	unzipper := unzip.New(httpClient)
 	return &updater{
 		logger:    logger,
 		timeNow:   time.Now,
-		presolver: resolver.NewParallelResolver(settings.DNSAddress),
+		presolver: resolver.NewParallelResolver(settings.DNSAddress.String()),
 		client:    httpClient,
 		unzipper:  unzipper,
 		options:   settings,
@@ -49,203 +47,17 @@ func New(settings configuration.Updater, httpClient *http.Client,
 	}
 }
 
-//nolint:gocognit,gocyclo
+type updateFunc func(ctx context.Context) (err error)
+
 func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) {
-	if u.options.Cyberghost {
-		u.logger.Info("updating Cyberghost servers...")
-		if err := u.updateCyberghost(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
+	for _, provider := range u.options.Providers {
+		u.logger.Info("updating " + strings.Title(provider) + " servers...")
+		updateProvider := u.getUpdateFunction(provider)
 
-	if u.options.Expressvpn {
-		u.logger.Info("updating Expressvpn servers...")
-		if err := u.updateExpressvpn(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if err := ctx.Err(); err != nil {
-			return allServers, err
-		}
-	}
-
-	if u.options.Fastestvpn {
-		u.logger.Info("updating Fastestvpn servers...")
-		if err := u.updateFastestvpn(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if err := ctx.Err(); err != nil {
-			return allServers, err
-		}
-	}
-
-	if u.options.HideMyAss {
-		u.logger.Info("updating HideMyAss servers...")
-		if err := u.updateHideMyAss(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if err := ctx.Err(); err != nil {
-			return allServers, err
-		}
-	}
-
-	if u.options.Ipvanish {
-		u.logger.Info("updating Ipvanish servers...")
-		if err := u.updateIpvanish(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if err := ctx.Err(); err != nil {
-			return allServers, err
-		}
-	}
-
-	if u.options.Ivpn {
-		u.logger.Info("updating Ivpn servers...")
-		if err := u.updateIvpn(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if err := ctx.Err(); err != nil {
-			return allServers, err
-		}
-	}
-
-	if u.options.Mullvad {
-		u.logger.Info("updating Mullvad servers...")
-		if err := u.updateMullvad(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if err := ctx.Err(); err != nil {
-			return allServers, err
-		}
-	}
-
-	if u.options.Nordvpn {
 		// TODO support servers offering only TCP or only UDP
-		u.logger.Info("updating NordVPN servers...")
-		if err := u.updateNordvpn(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if err := ctx.Err(); err != nil {
-			return allServers, err
-		}
-	}
-
-	if u.options.Perfectprivacy {
-		u.logger.Info("updating " + constants.Perfectprivacy + " servers...")
-		if err := u.updatePerfectprivacy(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Privado {
-		u.logger.Info("updating Privado servers...")
-		if err := u.updatePrivado(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if ctx.Err() != nil {
-			return allServers, ctx.Err()
-		}
-	}
-
-	if u.options.PIA {
-		u.logger.Info("updating Private Internet Access servers...")
-		if err := u.updatePIA(ctx); err != nil {
-			u.logger.Error(err.Error())
-		}
-		if ctx.Err() != nil {
-			return allServers, ctx.Err()
-		}
-	}
-
-	if u.options.Privatevpn {
-		u.logger.Info("updating Privatevpn servers...")
-		if err := u.updatePrivatevpn(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Protonvpn {
-		u.logger.Info("updating Protonvpn servers...")
-		if err := u.updateProtonvpn(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Purevpn {
-		u.logger.Info("updating PureVPN servers...")
-		// TODO support servers offering only TCP or only UDP
-		if err := u.updatePurevpn(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Surfshark {
-		u.logger.Info("updating Surfshark servers...")
-		if err := u.updateSurfshark(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Torguard {
-		u.logger.Info("updating Torguard servers...")
-		if err := u.updateTorguard(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.VPNUnlimited {
-		u.logger.Info("updating " + constants.VPNUnlimited + " servers...")
-		if err := u.updateVPNUnlimited(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Vyprvpn {
-		u.logger.Info("updating Vyprvpn servers...")
-		if err := u.updateVyprvpn(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Wevpn {
-		u.logger.Info("updating WeVPN servers...")
-		if err := u.updateWevpn(ctx); err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
-		}
-	}
-
-	if u.options.Windscribe {
-		u.logger.Info("updating Windscribe servers...")
-		if err := u.updateWindscribe(ctx); err != nil {
+		// for NordVPN and PureVPN
+		err = updateProvider(ctx)
+		if err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr
 			}
@@ -254,4 +66,53 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 	}
 
 	return u.servers, nil
+}
+
+func (u *updater) getUpdateFunction(provider string) (updateFunction updateFunc) {
+	switch provider {
+	case constants.Custom:
+		panic("cannot update custom provider")
+	case constants.Cyberghost:
+		return func(ctx context.Context) (err error) { return u.updateCyberghost(ctx) }
+	case constants.Expressvpn:
+		return func(ctx context.Context) (err error) { return u.updateExpressvpn(ctx) }
+	case constants.Fastestvpn:
+		return func(ctx context.Context) (err error) { return u.updateFastestvpn(ctx) }
+	case constants.HideMyAss:
+		return func(ctx context.Context) (err error) { return u.updateHideMyAss(ctx) }
+	case constants.Ipvanish:
+		return func(ctx context.Context) (err error) { return u.updateIpvanish(ctx) }
+	case constants.Ivpn:
+		return func(ctx context.Context) (err error) { return u.updateIvpn(ctx) }
+	case constants.Mullvad:
+		return func(ctx context.Context) (err error) { return u.updateMullvad(ctx) }
+	case constants.Nordvpn:
+		return func(ctx context.Context) (err error) { return u.updateNordvpn(ctx) }
+	case constants.Perfectprivacy:
+		return func(ctx context.Context) (err error) { return u.updatePerfectprivacy(ctx) }
+	case constants.Privado:
+		return func(ctx context.Context) (err error) { return u.updatePrivado(ctx) }
+	case constants.PrivateInternetAccess:
+		return func(ctx context.Context) (err error) { return u.updatePIA(ctx) }
+	case constants.Privatevpn:
+		return func(ctx context.Context) (err error) { return u.updatePrivatevpn(ctx) }
+	case constants.Protonvpn:
+		return func(ctx context.Context) (err error) { return u.updateProtonvpn(ctx) }
+	case constants.Purevpn:
+		return func(ctx context.Context) (err error) { return u.updatePurevpn(ctx) }
+	case constants.Surfshark:
+		return func(ctx context.Context) (err error) { return u.updateSurfshark(ctx) }
+	case constants.Torguard:
+		return func(ctx context.Context) (err error) { return u.updateTorguard(ctx) }
+	case constants.VPNUnlimited:
+		return func(ctx context.Context) (err error) { return u.updateVPNUnlimited(ctx) }
+	case constants.Vyprvpn:
+		return func(ctx context.Context) (err error) { return u.updateVyprvpn(ctx) }
+	case constants.Wevpn:
+		return func(ctx context.Context) (err error) { return u.updateWevpn(ctx) }
+	case constants.Windscribe:
+		return func(ctx context.Context) (err error) { return u.updateWindscribe(ctx) }
+	default:
+		panic("provider " + provider + " is unknown")
+	}
 }

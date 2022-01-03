@@ -5,24 +5,26 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+func boolPtr(b bool) *bool { return &b }
+
 func Test_Expressvpn_filterServers(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
 		servers   []models.ExpressvpnServer
-		selection configuration.ServerSelection
+		selection settings.ServerSelection
 		filtered  []models.ExpressvpnServer
 		err       error
 	}{
 		"no server available": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
 			},
 			err: errors.New("no server found: for VPN openvpn; protocol udp"),
@@ -40,7 +42,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			},
 		},
 		"filter by country": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Countries: []string{"b"},
 			},
 			servers: []models.ExpressvpnServer{
@@ -53,7 +55,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			},
 		},
 		"filter by city": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Cities: []string{"b"},
 			},
 			servers: []models.ExpressvpnServer{
@@ -66,7 +68,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			},
 		},
 		"filter by hostname": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			},
 			servers: []models.ExpressvpnServer{
@@ -79,9 +81,9 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			},
 		},
 		"filter by protocol": {
-			selection: configuration.ServerSelection{
-				OpenVPN: configuration.OpenVPNSelection{
-					TCP: true,
+			selection: settings.ServerSelection{
+				OpenVPN: settings.OpenVPNSelection{
+					TCP: boolPtr(true),
 				},
 			},
 			servers: []models.ExpressvpnServer{

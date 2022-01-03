@@ -1,12 +1,12 @@
 package hidemyass
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (h *HideMyAss) filterServers(selection configuration.ServerSelection) (
+func (h *HideMyAss) filterServers(selection settings.ServerSelection) (
 	servers []models.HideMyAssServer, err error) {
 	for _, server := range h.servers {
 		switch {

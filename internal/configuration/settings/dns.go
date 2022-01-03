@@ -36,7 +36,7 @@ func (d DNS) validate() (err error) {
 	return nil
 }
 
-func (d *DNS) copy() (copied DNS) {
+func (d *DNS) Copy() (copied DNS) {
 	return DNS{
 		ServerAddress:  helpers.CopyIP(d.ServerAddress),
 		KeepNameserver: helpers.CopyBoolPtr(d.KeepNameserver),

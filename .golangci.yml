@@ -27,6 +27,14 @@ issues:
     - text: "mnd: Magic number: 0400*"
       linters:
         - gomnd
+    - text: "variable 'mssFix' is only used in the if-statement*"
+      path: "openvpnconf.go"
+      linters:
+        - ifshort
+    - text: "variable 'auth' is only used in the if-statement*"
+      path: "openvpnconf.go"
+      linters:
+        - ifshort
 linters:
   enable:
     # - cyclop

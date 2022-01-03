@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/loopstate"
@@ -42,7 +42,7 @@ type Loop struct {
 
 const defaultBackoffTime = 5 * time.Second
 
-func NewLoop(settings configuration.PortForwarding,
+func NewLoop(settings settings.PortForwarding,
 	client *http.Client, portAllower firewall.PortAllower,
 	logger Logger) *Loop {
 	start := make(chan struct{})

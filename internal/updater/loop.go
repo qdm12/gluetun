@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
@@ -18,8 +18,8 @@ type Looper interface {
 	GetStatus() (status models.LoopStatus)
 	SetStatus(ctx context.Context, status models.LoopStatus) (
 		outcome string, err error)
-	GetSettings() (settings configuration.Updater)
-	SetSettings(settings configuration.Updater) (outcome string)
+	GetSettings() (settings settings.Updater)
+	SetSettings(settings settings.Updater) (outcome string)
 }
 
 type looper struct {
@@ -44,7 +44,7 @@ type looper struct {
 
 const defaultBackoffTime = 5 * time.Second
 
-func NewLooper(settings configuration.Updater, currentServers models.AllServers,
+func NewLooper(settings settings.Updater, currentServers models.AllServers,
 	flusher storage.Flusher, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger Logger) Looper {
 	return &looper{
@@ -164,7 +164,7 @@ func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 	timer := time.NewTimer(time.Hour)
 	timer.Stop()
 	timerIsStopped := true
-	if period := l.GetSettings().Period; period > 0 {
+	if period := *l.GetSettings().Period; period > 0 {
 		timerIsStopped = false
 		timer.Reset(period)
 	}
@@ -179,13 +179,13 @@ func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 		case <-timer.C:
 			lastTick = l.timeNow()
 			l.start <- struct{}{}
-			timer.Reset(l.GetSettings().Period)
+			timer.Reset(*l.GetSettings().Period)
 		case <-l.updateTicker:
 			if !timerIsStopped && !timer.Stop() {
 				<-timer.C
 			}
 			timerIsStopped = true
-			period := l.GetSettings().Period
+			period := *l.GetSettings().Period
 			if period == 0 {
 				continue
 			}

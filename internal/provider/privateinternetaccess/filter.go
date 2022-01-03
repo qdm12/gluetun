@@ -1,12 +1,12 @@
 package privateinternetaccess
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *PIA) filterServers(selection configuration.ServerSelection) (
+func (p *PIA) filterServers(selection settings.ServerSelection) (
 	servers []models.PIAServer, err error) {
 	for _, server := range p.servers {
 		switch {

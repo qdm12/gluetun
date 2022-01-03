@@ -5,7 +5,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/httpproxy/state"
 	"github.com/qdm12/gluetun/internal/loopstate"
@@ -36,7 +36,7 @@ type Loop struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLoop(logger Logger, settings configuration.HTTPProxy) *Loop {
+func NewLoop(logger Logger, settings settings.HTTPProxy) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})

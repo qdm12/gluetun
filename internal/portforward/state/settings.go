@@ -5,23 +5,23 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
 type SettingsGetSetter interface {
-	GetSettings() (settings configuration.PortForwarding)
+	GetSettings() (settings settings.PortForwarding)
 	SetSettings(ctx context.Context,
-		settings configuration.PortForwarding) (outcome string)
+		settings settings.PortForwarding) (outcome string)
 }
 
-func (s *State) GetSettings() (settings configuration.PortForwarding) {
+func (s *State) GetSettings() (settings settings.PortForwarding) {
 	s.settingsMu.RLock()
 	defer s.settingsMu.RUnlock()
 	return s.settings
 }
 
-func (s *State) SetSettings(ctx context.Context, settings configuration.PortForwarding) (
+func (s *State) SetSettings(ctx context.Context, settings settings.PortForwarding) (
 	outcome string) {
 	s.settingsMu.Lock()
 
@@ -32,11 +32,11 @@ func (s *State) SetSettings(ctx context.Context, settings configuration.PortForw
 	}
 
 	if s.settings.Filepath != settings.Filepath {
-		_ = os.Rename(s.settings.Filepath, settings.Filepath)
+		_ = os.Rename(*s.settings.Filepath, *settings.Filepath)
 	}
 
-	newEnabled := settings.Enabled
-	previousEnabled := s.settings.Enabled
+	newEnabled := *settings.Enabled
+	previousEnabled := *s.settings.Enabled
 
 	s.settings = settings
 	s.settingsMu.Unlock()

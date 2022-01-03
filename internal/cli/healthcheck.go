@@ -6,23 +6,26 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/sources"
 	"github.com/qdm12/gluetun/internal/healthcheck"
-	"github.com/qdm12/golibs/params"
 )
 
 type HealthChecker interface {
-	HealthCheck(ctx context.Context, env params.Interface, warner configuration.Warner) error
+	HealthCheck(ctx context.Context, source sources.Source, warner Warner) error
 }
 
-func (c *CLI) HealthCheck(ctx context.Context, env params.Interface,
-	warner configuration.Warner) error {
+func (c *CLI) HealthCheck(ctx context.Context, source sources.Source, warner Warner) error {
 	// Extract the health server port from the configuration.
-	config := configuration.Health{}
-	err := config.Read(env, warner)
+	config, err := source.ReadHealth()
 	if err != nil {
 		return err
 	}
+
+	err = config.Validate()
+	if err != nil {
+		return err
+	}
+
 	_, port, err := net.SplitHostPort(config.ServerAddress)
 	if err != nil {
 		return err

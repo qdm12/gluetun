@@ -3,16 +3,16 @@ package privateinternetaccess
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (p *PIA) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	var defaultCipher, defaultAuth, X509CRL, certificate string
-	switch settings.EncPreset {
+	switch *settings.PIAEncPreset {
 	case constants.PIAEncryptionPresetNormal:
 		defaultCipher = constants.AES128cbc
 		defaultAuth = constants.SHA1
@@ -34,8 +34,9 @@ func (p *PIA) BuildConf(connection models.Connection,
 		settings.Ciphers = []string{defaultCipher}
 	}
 
-	if settings.Auth == "" {
-		settings.Auth = defaultAuth
+	auth := *settings.Auth
+	if auth == "" {
+		auth = defaultAuth
 	}
 
 	lines = []string{
@@ -43,12 +44,13 @@ func (p *PIA) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// PIA specific
 		"remote-cert-tls server",
 		"reneg-sec 0",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
+		"auth " + auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -66,25 +68,21 @@ func (p *PIA) BuildConf(connection models.Connection,
 		lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 	}
 
-	if settings.Auth != "" {
-		lines = append(lines, "auth "+settings.Auth)
-	}
-
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "explicit-exit-notify")
 	}
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if settings.MSSFix > 0 {
-		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
+	if *settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(*settings.MSSFix)))
 	}
 
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}

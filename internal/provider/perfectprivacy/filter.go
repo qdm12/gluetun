@@ -1,12 +1,12 @@
 package perfectprivacy
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Perfectprivacy) filterServers(selection configuration.ServerSelection) (
+func (p *Perfectprivacy) filterServers(selection settings.ServerSelection) (
 	servers []models.PerfectprivacyServer, err error) {
 	for _, server := range p.servers {
 		switch {

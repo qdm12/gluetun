@@ -1,17 +1,17 @@
 package cyberghost
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (c *Cyberghost) GetConnection(selection configuration.ServerSelection) (
+func (c *Cyberghost) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	const port = 443
 	protocol := constants.UDP
-	if selection.OpenVPN.TCP {
+	if *selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 

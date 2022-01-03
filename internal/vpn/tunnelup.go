@@ -26,7 +26,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		}
 	}
 
-	if l.dnsLooper.GetSettings().Enabled {
+	if *l.dnsLooper.GetSettings().DoT.Enabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	}
 

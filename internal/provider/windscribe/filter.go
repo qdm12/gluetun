@@ -1,12 +1,12 @@
 package windscribe
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (w *Windscribe) filterServers(selection configuration.ServerSelection) (
+func (w *Windscribe) filterServers(selection settings.ServerSelection) (
 	servers []models.WindscribeServer, err error) {
 	for _, server := range w.servers {
 		switch {

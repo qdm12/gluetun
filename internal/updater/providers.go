@@ -48,7 +48,7 @@ func (u *updater) updateExpressvpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Expressvpn.Servers))
 	servers, warnings, err := expressvpn.GetServers(
 		ctx, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("ExpressVPN: " + warning)
 		}
@@ -70,7 +70,7 @@ func (u *updater) updateFastestvpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Fastestvpn.Servers))
 	servers, warnings, err := fastestvpn.GetServers(
 		ctx, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("FastestVPN: " + warning)
 		}
@@ -92,7 +92,7 @@ func (u *updater) updateHideMyAss(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.HideMyAss.Servers))
 	servers, warnings, err := hidemyass.GetServers(
 		ctx, u.client, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("HideMyAss: " + warning)
 		}
@@ -114,7 +114,7 @@ func (u *updater) updateIpvanish(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Ipvanish.Servers))
 	servers, warnings, err := ipvanish.GetServers(
 		ctx, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Ipvanish: " + warning)
 		}
@@ -136,7 +136,7 @@ func (u *updater) updateIvpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Ivpn.Servers))
 	servers, warnings, err := ivpn.GetServers(
 		ctx, u.client, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Ivpn: " + warning)
 		}
@@ -173,7 +173,7 @@ func (u *updater) updateMullvad(ctx context.Context) (err error) {
 func (u *updater) updateNordvpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Nordvpn.Servers))
 	servers, warnings, err := nordvpn.GetServers(ctx, u.client, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("NordVPN: " + warning)
 		}
@@ -194,7 +194,7 @@ func (u *updater) updateNordvpn(ctx context.Context) (err error) {
 func (u *updater) updatePerfectprivacy(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Perfectprivacy.Servers))
 	servers, warnings, err := perfectprivacy.GetServers(ctx, u.unzipper, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn(constants.Perfectprivacy + ": " + warning)
 		}
@@ -232,7 +232,7 @@ func (u *updater) updatePrivado(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Privado.Servers))
 	servers, warnings, err := privado.GetServers(
 		ctx, u.unzipper, u.client, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Privado: " + warning)
 		}
@@ -254,7 +254,7 @@ func (u *updater) updatePrivatevpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Privatevpn.Servers))
 	servers, warnings, err := privatevpn.GetServers(
 		ctx, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("PrivateVPN: " + warning)
 		}
@@ -275,7 +275,7 @@ func (u *updater) updatePrivatevpn(ctx context.Context) (err error) {
 func (u *updater) updateProtonvpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Privatevpn.Servers))
 	servers, warnings, err := protonvpn.GetServers(ctx, u.client, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("ProtonVPN: " + warning)
 		}
@@ -297,7 +297,7 @@ func (u *updater) updatePurevpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Purevpn.Servers))
 	servers, warnings, err := purevpn.GetServers(
 		ctx, u.client, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("PureVPN: " + warning)
 		}
@@ -319,7 +319,7 @@ func (u *updater) updateSurfshark(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Surfshark.Servers))
 	servers, warnings, err := surfshark.GetServers(
 		ctx, u.unzipper, u.client, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Surfshark: " + warning)
 		}
@@ -341,7 +341,7 @@ func (u *updater) updateTorguard(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Torguard.Servers))
 	servers, warnings, err := torguard.GetServers(
 		ctx, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("Torguard: " + warning)
 		}
@@ -363,7 +363,7 @@ func (u *updater) updateVPNUnlimited(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.VPNUnlimited.Servers))
 	servers, warnings, err := vpnunlimited.GetServers(
 		ctx, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn(constants.VPNUnlimited + ": " + warning)
 		}
@@ -385,7 +385,7 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Vyprvpn.Servers))
 	servers, warnings, err := vyprvpn.GetServers(
 		ctx, u.unzipper, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("VyprVPN: " + warning)
 		}
@@ -406,7 +406,7 @@ func (u *updater) updateVyprvpn(ctx context.Context) (err error) {
 func (u *updater) updateWevpn(ctx context.Context) (err error) {
 	minServers := getMinServers(len(u.servers.Wevpn.Servers))
 	servers, warnings, err := wevpn.GetServers(ctx, u.presolver, minServers)
-	if u.options.CLI {
+	if *u.options.CLI {
 		for _, warning := range warnings {
 			u.logger.Warn("WeVPN: " + warning)
 		}

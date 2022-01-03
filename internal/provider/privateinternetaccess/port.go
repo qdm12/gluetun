@@ -4,21 +4,23 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-func getPort(openvpnSelection configuration.OpenVPNSelection) (
+func getPort(openvpnSelection settings.OpenVPNSelection) (
 	port uint16, err error) {
-	if openvpnSelection.CustomPort == 0 {
-		return getDefaultPort(openvpnSelection.TCP, openvpnSelection.EncPreset), nil
+	customPort := *openvpnSelection.CustomPort
+	tcp := *openvpnSelection.TCP
+	if customPort == 0 {
+		return getDefaultPort(tcp, *openvpnSelection.PIAEncPreset), nil
 	}
 
-	if err := checkPort(openvpnSelection.CustomPort, openvpnSelection.TCP); err != nil {
+	if err := checkPort(customPort, tcp); err != nil {
 		return 0, err
 	}
 
-	return openvpnSelection.CustomPort, nil
+	return customPort, nil
 }
 
 func getDefaultPort(tcp bool, encryptionPreset string) (port uint16) {

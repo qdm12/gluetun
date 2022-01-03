@@ -1,12 +1,12 @@
 package expressvpn
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Provider) GetConnection(selection configuration.ServerSelection) (
+func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	port := getPort(selection)
 	protocol := utils.GetProtocol(selection)
@@ -33,7 +33,7 @@ func (p *Provider) GetConnection(selection configuration.ServerSelection) (
 	return utils.PickConnection(connections, selection, p.randSource)
 }
 
-func getPort(selection configuration.ServerSelection) (port uint16) {
+func getPort(selection settings.ServerSelection) (port uint16) {
 	const (
 		defaultOpenVPNTCP = 0
 		defaultOpenVPNUDP = 1195

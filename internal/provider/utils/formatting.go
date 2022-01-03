@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
@@ -16,13 +16,13 @@ func commaJoin(slice []string) string {
 
 var ErrNoServerFound = errors.New("no server found")
 
-func NoServerFoundError(selection configuration.ServerSelection) (err error) {
+func NoServerFoundError(selection settings.ServerSelection) (err error) {
 	var messageParts []string
 
 	messageParts = append(messageParts, "VPN "+selection.VPN)
 
 	protocol := constants.UDP
-	if selection.OpenVPN.TCP {
+	if *selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 	messageParts = append(messageParts, "protocol "+protocol)
@@ -57,7 +57,7 @@ func NoServerFoundError(selection configuration.ServerSelection) (err error) {
 		messageParts = append(messageParts, part)
 	}
 
-	if selection.Owned {
+	if *selection.OwnedOnly {
 		messageParts = append(messageParts, "owned servers only")
 	}
 
@@ -105,12 +105,12 @@ func NoServerFoundError(selection configuration.ServerSelection) (err error) {
 		messageParts = append(messageParts, part)
 	}
 
-	if selection.OpenVPN.EncPreset != "" {
-		part := "encryption preset " + selection.OpenVPN.EncPreset
+	if *selection.OpenVPN.PIAEncPreset != "" {
+		part := "encryption preset " + *selection.OpenVPN.PIAEncPreset
 		messageParts = append(messageParts, part)
 	}
 
-	if selection.FreeOnly {
+	if *selection.FreeOnly {
 		messageParts = append(messageParts, "free tier only")
 	}
 

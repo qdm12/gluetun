@@ -7,14 +7,14 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 type state struct {
 	status     models.LoopStatus
-	settings   configuration.ShadowSocks
+	settings   settings.Shadowsocks
 	statusMu   sync.RWMutex
 	settingsMu sync.RWMutex
 }
@@ -84,13 +84,13 @@ func (l *looper) SetStatus(ctx context.Context, status models.LoopStatus) (
 	}
 }
 
-func (l *looper) GetSettings() (settings configuration.ShadowSocks) {
+func (l *looper) GetSettings() (settings settings.Shadowsocks) {
 	l.state.settingsMu.RLock()
 	defer l.state.settingsMu.RUnlock()
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(ctx context.Context, settings configuration.ShadowSocks) (
+func (l *looper) SetSettings(ctx context.Context, settings settings.Shadowsocks) (
 	outcome string) {
 	l.state.settingsMu.Lock()
 	settingsUnchanged := reflect.DeepEqual(settings, l.state.settings)
@@ -98,8 +98,8 @@ func (l *looper) SetSettings(ctx context.Context, settings configuration.ShadowS
 		l.state.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
-	newEnabled := settings.Enabled
-	previousEnabled := l.state.settings.Enabled
+	newEnabled := *settings.Enabled
+	previousEnabled := *l.state.settings.Enabled
 	l.state.settings = settings
 	l.state.settingsMu.Unlock()
 	// Either restart or set changed status

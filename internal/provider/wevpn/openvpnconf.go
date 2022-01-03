@@ -3,20 +3,21 @@ package wevpn
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (w *Wevpn) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
 		settings.Ciphers = []string{constants.AES256gcm}
 	}
 
-	if settings.Auth == "" {
-		settings.Auth = constants.SHA512
+	auth := *settings.Auth
+	if auth == "" {
+		auth = constants.SHA512
 	}
 
 	lines = []string{
@@ -24,7 +25,7 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// Wevpn specific
 		"ping 30",
@@ -32,7 +33,7 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		"redirect-gateway def1 bypass-dhcp",
 		"reneg-sec 0",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"auth " + settings.Auth,
+		"auth " + auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -52,17 +53,17 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 
 	lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if settings.MSSFix > 0 {
-		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
+	if *settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(*settings.MSSFix)))
 	}
 
-	if settings.IPv6 {
+	if *settings.IPv6 {
 		lines = append(lines, "tun-ipv6")
 	} else {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
@@ -70,7 +71,7 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnKey(
-		settings.ClientKey)...)
+		*settings.ClientKey)...)
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.WevpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnCert(

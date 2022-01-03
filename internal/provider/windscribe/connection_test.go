@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
@@ -18,12 +18,12 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 
 	testCases := map[string]struct {
 		servers    []models.WindscribeServer
-		selection  configuration.ServerSelection
+		selection  settings.ServerSelection
 		connection models.Connection
 		err        error
 	}{
 		"no server available": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
 			},
 			err: errors.New("no server found: for VPN openvpn; protocol udp"),
@@ -41,7 +41,7 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 			},
 		},
 		"target IP": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
 			},
 			servers: []models.WindscribeServer{
@@ -56,7 +56,7 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 			},
 		},
 		"with filter": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			},
 			servers: []models.WindscribeServer{

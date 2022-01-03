@@ -32,7 +32,7 @@ func (s Settings) Validate(allServers models.AllServers) (err error) {
 		"public ip check": s.PublicIP.validate,
 		"shadowsocks":     s.Shadowsocks.validate,
 		"system":          s.System.validate,
-		"updater":         s.Updater.validate,
+		"updater":         s.Updater.Validate,
 		"version":         s.Version.validate,
 		"VPN": func() error {
 			return s.VPN.validate(allServers)
@@ -52,7 +52,7 @@ func (s Settings) Validate(allServers models.AllServers) (err error) {
 func (s *Settings) copy() (copied Settings) {
 	return Settings{
 		ControlServer: s.ControlServer.copy(),
-		DNS:           s.DNS.copy(),
+		DNS:           s.DNS.Copy(),
 		Firewall:      s.Firewall.copy(),
 		Health:        s.Health.copy(),
 		HTTPProxy:     s.HTTPProxy.copy(),

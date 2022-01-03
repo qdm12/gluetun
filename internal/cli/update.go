@@ -6,11 +6,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
@@ -19,6 +21,8 @@ import (
 
 var (
 	ErrModeUnspecified         = errors.New("at least one of -enduser or -maintainer must be specified")
+	ErrDNSAddress              = errors.New("DNS address is not valid")
+	ErrNoProviderSpecified     = errors.New("no provider was specified")
 	ErrNewStorage              = errors.New("cannot create storage")
 	ErrUpdateServerInformation = errors.New("cannot update server information")
 	ErrWriteToFile             = errors.New("cannot write updated information to file")
@@ -34,44 +38,44 @@ type UpdaterLogger interface {
 	Error(s string)
 }
 
+func boolPtr(b bool) *bool { return &b }
+
 func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
-	options := configuration.Updater{CLI: true}
+	options := settings.Updater{CLI: boolPtr(true)}
 	var endUserMode, maintainerMode, updateAll bool
+	var dnsAddress, csvProviders string
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
 		"Write results to ./internal/storage/servers.json to modify the program (for maintainers)")
-	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
+	flagSet.StringVar(&dnsAddress, "dns", "8.8.8.8", "DNS resolver address to use")
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
-	flagSet.BoolVar(&options.Cyberghost, "cyberghost", false, "Update Cyberghost servers")
-	flagSet.BoolVar(&options.Expressvpn, "expressvpn", false, "Update ExpressVPN servers")
-	flagSet.BoolVar(&options.Fastestvpn, "fastestvpn", false, "Update FastestVPN servers")
-	flagSet.BoolVar(&options.HideMyAss, "hidemyass", false, "Update HideMyAss servers")
-	flagSet.BoolVar(&options.Ipvanish, "ipvanish", false, "Update IpVanish servers")
-	flagSet.BoolVar(&options.Ivpn, "ivpn", false, "Update IVPN servers")
-	flagSet.BoolVar(&options.Mullvad, "mullvad", false, "Update Mullvad servers")
-	flagSet.BoolVar(&options.Nordvpn, "nordvpn", false, "Update Nordvpn servers")
-	flagSet.BoolVar(&options.Perfectprivacy, "perfectprivacy", false, "Update Perfect Privacy servers")
-	flagSet.BoolVar(&options.PIA, "pia", false, "Update Private Internet Access post-summer 2020 servers")
-	flagSet.BoolVar(&options.Privado, "privado", false, "Update Privado servers")
-	flagSet.BoolVar(&options.Privatevpn, "privatevpn", false, "Update Private VPN servers")
-	flagSet.BoolVar(&options.Protonvpn, "protonvpn", false, "Update Protonvpn servers")
-	flagSet.BoolVar(&options.Purevpn, "purevpn", false, "Update Purevpn servers")
-	flagSet.BoolVar(&options.Surfshark, "surfshark", false, "Update Surfshark servers")
-	flagSet.BoolVar(&options.Torguard, "torguard", false, "Update Torguard servers")
-	flagSet.BoolVar(&options.VPNUnlimited, "vpnunlimited", false, "Update VPN Unlimited servers")
-	flagSet.BoolVar(&options.Vyprvpn, "vyprvpn", false, "Update Vyprvpn servers")
-	flagSet.BoolVar(&options.Wevpn, "wevpn", false, "Update WeVPN servers")
-	flagSet.BoolVar(&options.Windscribe, "windscribe", false, "Update Windscribe servers")
+	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
+
 	if !endUserMode && !maintainerMode {
 		return ErrModeUnspecified
 	}
 
+	options.DNSAddress = net.ParseIP(dnsAddress)
+	if options.DNSAddress == nil {
+		return fmt.Errorf("%w: %s", ErrDNSAddress, dnsAddress)
+	}
+
 	if updateAll {
-		options.EnableAll()
+		options.Providers = constants.AllProviders()
+	} else {
+		if csvProviders == "" {
+			return ErrNoProviderSpecified
+		}
+		options.Providers = strings.Split(csvProviders, ",")
+	}
+
+	err := options.Validate()
+	if err != nil {
+		return fmt.Errorf("options validation failed: %w", err)
 	}
 
 	const clientTimeout = 10 * time.Second

@@ -18,8 +18,8 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 	timer.Stop()
 	timerIsStopped := true
 	settings := l.GetSettings()
-	if settings.UpdatePeriod > 0 {
-		timer.Reset(settings.UpdatePeriod)
+	if period := *settings.DoT.UpdatePeriod; period > 0 {
+		timer.Reset(period)
 		timerIsStopped = false
 	}
 	lastTick := time.Unix(0, 0)
@@ -47,14 +47,14 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			_, _ = l.statusManager.ApplyStatus(ctx, constants.Running)
 
 			settings := l.GetSettings()
-			timer.Reset(settings.UpdatePeriod)
+			timer.Reset(*settings.DoT.UpdatePeriod)
 		case <-l.updateTicker:
 			if !timer.Stop() {
 				<-timer.C
 			}
 			timerIsStopped = true
 			settings := l.GetSettings()
-			newUpdatePeriod := settings.UpdatePeriod
+			newUpdatePeriod := *settings.DoT.UpdatePeriod
 			if newUpdatePeriod == 0 {
 				continue
 			}
