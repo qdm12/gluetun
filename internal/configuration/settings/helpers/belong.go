@@ -20,6 +20,7 @@ var ErrValueNotOneOf = errors.New("value is not one of the possible choices")
 func AreAllOneOf(values, choices []string) (err error) {
 	set := make(map[string]struct{}, len(choices))
 	for _, choice := range choices {
+		choice = strings.ToLower(choice)
 		set[choice] = struct{}{}
 	}
 
