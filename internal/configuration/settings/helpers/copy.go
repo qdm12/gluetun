@@ -80,12 +80,7 @@ func CopyIP(original net.IP) (copied net.IP) {
 	return copied
 }
 
-func CopyIPNet(original *net.IPNet) (copied *net.IPNet) {
-	if original == nil {
-		return nil
-	}
-
-	copied = new(net.IPNet)
+func CopyIPNet(original net.IPNet) (copied net.IPNet) {
 	if original.IP != nil {
 		copied.IP = make(net.IP, len(original.IP))
 		copy(copied.IP, original.IP)
@@ -96,6 +91,16 @@ func CopyIPNet(original *net.IPNet) (copied *net.IPNet) {
 		copy(copied.Mask, original.Mask)
 	}
 
+	return copied
+}
+
+func CopyIPNetPtr(original *net.IPNet) (copied *net.IPNet) {
+	if original == nil {
+		return nil
+	}
+
+	copied = new(net.IPNet)
+	*copied = CopyIPNet(*original)
 	return copied
 }
 
@@ -139,8 +144,8 @@ func CopyUint16Slice(original []uint16) (copied []uint16) {
 	return copied
 }
 
-func CopyIPNetSlice(original []*net.IPNet) (copied []*net.IPNet) {
-	copied = make([]*net.IPNet, len(original))
+func CopyIPNetSlice(original []net.IPNet) (copied []net.IPNet) {
+	copied = make([]net.IPNet, len(original))
 	for i := range original {
 		copied[i] = CopyIPNet(original[i])
 	}

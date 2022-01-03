@@ -21,7 +21,7 @@ type Wireguard struct {
 	// It cannot be nil in the internal state.
 	PreSharedKey *string `json:"presharedkey,omitempty"`
 	// Addresses are the Wireguard interface addresses.
-	Addresses []*net.IPNet `json:"addresses,omitempty"`
+	Addresses []net.IPNet `json:"addresses,omitempty"`
 	// Interface is the name of the Wireguard interface
 	// to create. It cannot be the empty string in the
 	// internal state.
@@ -65,7 +65,7 @@ func (w Wireguard) validate(vpnProvider string) (err error) {
 		return ErrWireguardInterfaceAddressNotSet
 	}
 	for i, ipNet := range w.Addresses {
-		if ipNet == nil || ipNet.IP == nil || ipNet.Mask == nil {
+		if ipNet.IP == nil || ipNet.Mask == nil {
 			return fmt.Errorf("%w: for address at index %d: %s",
 				ErrWireguardInterfaceAddressNotSet, i, ipNet.String())
 		}

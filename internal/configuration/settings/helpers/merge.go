@@ -139,13 +139,10 @@ func MergeUint16Slices(a, b []uint16) (result []uint16) {
 	return result
 }
 
-func MergeIPNetsSlices(a, b []*net.IPNet) (result []*net.IPNet) {
+func MergeIPNetsSlices(a, b []net.IPNet) (result []net.IPNet) {
 	seen := make(map[string]struct{}, len(a)+len(b))
-	result = make([]*net.IPNet, 0, len(a)+len(b))
+	result = make([]net.IPNet, 0, len(a)+len(b))
 	for _, ipNet := range a {
-		if ipNet == nil {
-			continue
-		}
 		key := ipNet.String()
 		if _, ok := seen[key]; ok {
 			continue // duplicate
@@ -154,9 +151,6 @@ func MergeIPNetsSlices(a, b []*net.IPNet) (result []*net.IPNet) {
 		seen[key] = struct{}{}
 	}
 	for _, ipNet := range b {
-		if ipNet == nil {
-			continue
-		}
 		key := ipNet.String()
 		if _, ok := seen[key]; ok {
 			continue // duplicate

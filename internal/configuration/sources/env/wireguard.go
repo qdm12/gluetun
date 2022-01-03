@@ -23,18 +23,18 @@ func readWireguard() (wireguard settings.Wireguard, err error) {
 	return wireguard, nil
 }
 
-func readWireguardAddresses() (addresses []*net.IPNet, err error) {
+func readWireguardAddresses() (addresses []net.IPNet, err error) {
 	addressesCSV := os.Getenv("WIREGUARD_ADDRESS")
 	addressStrings := strings.Split(addressesCSV, ",")
-	addresses = make([]*net.IPNet, len(addressStrings))
+	addresses = make([]net.IPNet, len(addressStrings))
 	for i, addressString := range addressStrings {
-		var ip net.IP
-		ip, addresses[i], err = net.ParseCIDR(addressString)
+		ip, ipNet, err := net.ParseCIDR(addressString)
 		if err != nil {
 			return nil, fmt.Errorf("environment variable WIREGUARD_ADDRESS: address %s: %w",
 				addressString, err)
 		}
-		addresses[i].IP = ip
+		ipNet.IP = ip
+		addresses[i] = *ipNet
 	}
 
 	return addresses, nil

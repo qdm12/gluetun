@@ -9,11 +9,11 @@ import (
 
 // Firewall contains settings to customize the firewall operation.
 type Firewall struct {
-	VPNInputPorts   []uint16     `json:"vpn_input_ports,omitempty"`
-	InputPorts      []uint16     `json:"input_ports,omitempty"`
-	OutboundSubnets []*net.IPNet `json:"outbount_subnets,omitempty"`
-	Enabled         *bool        `json:"enabled,omitempty"`
-	Debug           *bool        `json:"debug,omitempty"`
+	VPNInputPorts   []uint16    `json:"vpn_input_ports,omitempty"`
+	InputPorts      []uint16    `json:"input_ports,omitempty"`
+	OutboundSubnets []net.IPNet `json:"outbount_subnets,omitempty"`
+	Enabled         *bool       `json:"enabled,omitempty"`
+	Debug           *bool       `json:"debug,omitempty"`
 }
 
 func (f Firewall) validate() (err error) {

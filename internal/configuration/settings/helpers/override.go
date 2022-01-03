@@ -105,11 +105,11 @@ func OverrideWithUint16Slice(existing, other []uint16) (result []uint16) {
 	return result
 }
 
-func OverrideWithIPNetsSlice(existing, other []*net.IPNet) (result []*net.IPNet) {
+func OverrideWithIPNetsSlice(existing, other []net.IPNet) (result []net.IPNet) {
 	if other == nil {
 		return existing
 	}
-	result = make([]*net.IPNet, len(other))
+	result = make([]net.IPNet, len(other))
 	copy(result, other)
 	return result
 }

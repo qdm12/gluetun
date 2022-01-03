@@ -78,19 +78,19 @@ var (
 	ErrIPNetParsing = errors.New("cannot parse IP network")
 )
 
-func stringsToIPNets(ss []string) (ipNets []*net.IPNet, err error) {
+func stringsToIPNets(ss []string) (ipNets []net.IPNet, err error) {
 	if len(ss) == 0 {
 		return nil, nil
 	}
-	ipNets = make([]*net.IPNet, len(ss))
+	ipNets = make([]net.IPNet, len(ss))
 	for i, s := range ss {
-		var ip net.IP
-		ip, ipNets[i], err = net.ParseCIDR(s)
+		ip, ipNet, err := net.ParseCIDR(s)
 		if err != nil {
 			return nil, fmt.Errorf("%w: %s: %s",
 				ErrIPNetParsing, s, err)
 		}
-		ipNets[i].IP = ip
+		ipNet.IP = ip
+		ipNets[i] = *ipNet
 	}
 	return ipNets, nil
 }
