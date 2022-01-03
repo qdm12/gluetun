@@ -72,7 +72,7 @@ func (v *VPN) overrideWith(other VPN) {
 }
 
 func (v *VPN) setDefaults() {
-	v.Type = constants.OpenVPN
+	v.Type = helpers.DefaultString(v.Type, constants.OpenVPN)
 	v.Provider.setDefaults()
 	v.OpenVPN.setDefaults(*v.Provider.Name)
 	v.Wireguard.setDefaults()
