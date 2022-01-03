@@ -2,6 +2,8 @@ package secrets
 
 import "github.com/qdm12/gluetun/internal/configuration/settings"
 
+var _ settings.Source = (*Reader)(nil)
+
 type Reader struct {
 }
 
