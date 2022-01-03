@@ -18,6 +18,7 @@ type Unbound struct {
 	VerbosityLevel        *uint8
 	VerbosityDetailsLevel *uint8
 	ValidationLogLevel    *uint8
+	Username              string
 	Allowed               []netaddr.IPPrefix
 }
 
@@ -96,6 +97,7 @@ func (u Unbound) copy() (copied Unbound) {
 		VerbosityLevel:        helpers.CopyUint8Ptr(u.VerbosityLevel),
 		VerbosityDetailsLevel: helpers.CopyUint8Ptr(u.VerbosityDetailsLevel),
 		ValidationLogLevel:    helpers.CopyUint8Ptr(u.ValidationLogLevel),
+		Username:              u.Username,
 		Allowed:               helpers.CopyIPPrefixSlice(u.Allowed),
 	}
 }
@@ -107,6 +109,7 @@ func (u *Unbound) mergeWith(other Unbound) {
 	u.VerbosityLevel = helpers.MergeWithUint8(u.VerbosityLevel, other.VerbosityLevel)
 	u.VerbosityDetailsLevel = helpers.MergeWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
 	u.ValidationLogLevel = helpers.MergeWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Username = helpers.MergeWithString(u.Username, other.Username)
 	u.Allowed = helpers.MergeIPPrefixesSlices(u.Allowed, other.Allowed)
 }
 
@@ -117,6 +120,7 @@ func (u *Unbound) overrideWith(other Unbound) {
 	u.VerbosityLevel = helpers.OverrideWithUint8(u.VerbosityLevel, other.VerbosityLevel)
 	u.VerbosityDetailsLevel = helpers.OverrideWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
 	u.ValidationLogLevel = helpers.OverrideWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Username = helpers.OverrideWithString(u.Username, other.Username)
 	u.Allowed = helpers.OverrideWithIPPrefixesSlice(u.Allowed, other.Allowed)
 }
 
@@ -145,5 +149,6 @@ func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {
 		AccessControl: unbound.AccessControlSettings{
 			Allowed: u.Allowed,
 		},
+		Username: u.Username,
 	}, nil
 }
