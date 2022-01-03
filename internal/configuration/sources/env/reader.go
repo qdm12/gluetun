@@ -2,6 +2,8 @@ package env
 
 import "github.com/qdm12/gluetun/internal/configuration/settings"
 
+var _ settings.Source = (*Reader)(nil)
+
 type Reader struct {
 	warner Warner
 }
@@ -32,7 +34,7 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 		return settings, err
 	}
 
-	settings.Health, err = r.readHealth()
+	settings.Health, err = r.ReadHealth()
 	if err != nil {
 		return settings, err
 	}

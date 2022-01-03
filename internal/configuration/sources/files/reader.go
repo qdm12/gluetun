@@ -2,8 +2,9 @@ package files
 
 import "github.com/qdm12/gluetun/internal/configuration/settings"
 
-type Reader struct {
-}
+var _ settings.Source = (*Reader)(nil)
+
+type Reader struct{}
 
 func New() *Reader {
 	return &Reader{}

@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (r *Reader) readHealth() (health settings.Health, err error) {
+func (r *Reader) ReadHealth() (health settings.Health, err error) {
 	health.ServerAddress = os.Getenv("HEALTH_SERVER_ADDRESS")
 	health.AddressToPing = os.Getenv("HEALTH_ADDRESS_TO_PING")
 

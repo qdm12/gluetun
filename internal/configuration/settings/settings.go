@@ -23,6 +23,7 @@ type Settings struct {
 
 type Source interface {
 	Read() (settings Settings, err error)
+	ReadHealth() (settings Health, err error)
 }
 
 // New populates a settings object using the sources
