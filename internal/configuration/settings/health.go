@@ -21,7 +21,7 @@ type Health struct {
 	VPN           HealthyWait `json:"vpn_wait"`
 }
 
-func (h Health) validate() (err error) {
+func (h Health) Validate() (err error) {
 	uid := os.Getuid()
 	_, err = address.Validate(h.ServerAddress,
 		address.OptionListening(uid))
@@ -46,24 +46,24 @@ func (h *Health) copy() (copied Health) {
 	}
 }
 
-// mergeWith merges the other settings into any
+// MergeWith merges the other settings into any
 // unset field of the receiver settings object.
-func (h *Health) mergeWith(other Health) {
+func (h *Health) MergeWith(other Health) {
 	h.ServerAddress = helpers.MergeWithString(h.ServerAddress, other.ServerAddress)
 	h.AddressToPing = helpers.MergeWithString(h.AddressToPing, other.AddressToPing)
 	h.VPN.mergeWith(other.VPN)
 }
 
-// overrideWith overrides fields of the receiver
+// OverrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
-func (h *Health) overrideWith(other Health) {
+func (h *Health) OverrideWith(other Health) {
 	h.ServerAddress = helpers.OverrideWithString(h.ServerAddress, other.ServerAddress)
 	h.AddressToPing = helpers.OverrideWithString(h.AddressToPing, other.AddressToPing)
 	h.VPN.overrideWith(other.VPN)
 }
 
-func (h *Health) setDefaults() {
+func (h *Health) SetDefaults() {
 	h.ServerAddress = helpers.DefaultString(h.ServerAddress, "127.0.0.1:9999")
 	h.AddressToPing = helpers.DefaultString(h.AddressToPing, "github.com")
 	h.VPN.setDefaults()

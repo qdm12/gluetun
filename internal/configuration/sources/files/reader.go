@@ -1,8 +1,11 @@
 package files
 
-import "github.com/qdm12/gluetun/internal/configuration/settings"
+import (
+	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/configuration/sources"
+)
 
-var _ settings.Source = (*Reader)(nil)
+var _ sources.Source = (*Reader)(nil)
 
 type Reader struct{}
 

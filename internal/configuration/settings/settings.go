@@ -21,39 +21,12 @@ type Settings struct {
 	VPN           VPN           `json:"vpn"`
 }
 
-type Source interface {
-	Read() (settings Settings, err error)
-	ReadHealth() (settings Health, err error)
-}
-
-// New populates a settings object using the sources
-// starting from the first source and merging in
-// unset fields with the next sources.
-// It uses the allServers to validate the settings values.
-func New(allServers models.AllServers, sources ...Source) (settings Settings, err error) {
-	for _, source := range sources {
-		settingsFromSource, err := source.Read()
-		if err != nil {
-			return settings, err
-		}
-		settings.mergeWith(settingsFromSource)
-	}
-	settings.setDefaults()
-
-	err = settings.validate(allServers)
-	if err != nil {
-		return settings, err
-	}
-
-	return settings, nil
-}
-
-func (s Settings) validate(allServers models.AllServers) (err error) {
+func (s Settings) Validate(allServers models.AllServers) (err error) {
 	nameToValidation := map[string]func() error{
 		"control server":  s.ControlServer.validate,
 		"dns":             s.DNS.validate,
 		"firewall":        s.Firewall.validate,
-		"health":          s.Health.validate,
+		"health":          s.Health.Validate,
 		"http proxy":      s.HTTPProxy.validate,
 		"log":             s.Log.validate,
 		"public ip check": s.PublicIP.validate,
@@ -93,11 +66,11 @@ func (s *Settings) copy() (copied Settings) {
 	}
 }
 
-func (s *Settings) mergeWith(other Settings) {
+func (s *Settings) MergeWith(other Settings) {
 	s.ControlServer.mergeWith(other.ControlServer)
 	s.DNS.mergeWith(other.DNS)
 	s.Firewall.mergeWith(other.Firewall)
-	s.Health.mergeWith(other.Health)
+	s.Health.MergeWith(other.Health)
 	s.HTTPProxy.mergeWith(other.HTTPProxy)
 	s.Log.mergeWith(other.Log)
 	s.PublicIP.mergeWith(other.PublicIP)
@@ -114,7 +87,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.ControlServer.overrideWith(other.ControlServer)
 	patchedSettings.DNS.overrideWith(other.DNS)
 	patchedSettings.Firewall.overrideWith(other.Firewall)
-	patchedSettings.Health.overrideWith(other.Health)
+	patchedSettings.Health.OverrideWith(other.Health)
 	patchedSettings.HTTPProxy.overrideWith(other.HTTPProxy)
 	patchedSettings.Log.overrideWith(other.Log)
 	patchedSettings.PublicIP.overrideWith(other.PublicIP)
@@ -123,7 +96,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Updater.overrideWith(other.Updater)
 	patchedSettings.Version.overrideWith(other.Version)
 	patchedSettings.VPN.overrideWith(other.VPN)
-	err = patchedSettings.validate(allServers)
+	err = patchedSettings.Validate(allServers)
 	if err != nil {
 		return err
 	}
@@ -131,11 +104,11 @@ func (s *Settings) OverrideWith(other Settings,
 	return nil
 }
 
-func (s *Settings) setDefaults() {
+func (s *Settings) SetDefaults() {
 	s.ControlServer.setDefaults()
 	s.DNS.setDefaults()
 	s.Firewall.setDefaults()
-	s.Health.setDefaults()
+	s.Health.SetDefaults()
 	s.HTTPProxy.setDefaults()
 	s.Log.setDefaults()
 	s.PublicIP.setDefaults()
