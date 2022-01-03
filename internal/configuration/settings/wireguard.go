@@ -28,7 +28,7 @@ type Wireguard struct {
 	Interface string `json:"interface,omitempty"`
 }
 
-var regexpInterfaceName = regexp.MustCompile(`^[a-z_0-9]+$`)
+var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 
 // Validate validates Wireguard settings.
 // It should only be ran if the VPN type chosen is Wireguard.
@@ -72,7 +72,7 @@ func (w Wireguard) validate(vpnProvider string) (err error) {
 	}
 
 	// Validate interface
-	if regexpInterfaceName.MatchString(w.Interface) {
+	if !regexpInterfaceName.MatchString(w.Interface) {
 		return fmt.Errorf("%w: '%s' does not match regex '%s'",
 			ErrWireguardInterfaceNotValid, w.Interface, regexpInterfaceName)
 	}
