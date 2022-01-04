@@ -125,8 +125,6 @@ func (u *Unbound) overrideWith(other Unbound) {
 	u.Allowed = helpers.OverrideWithIPPrefixesSlice(u.Allowed, other.Allowed)
 }
 
-// TODO check JSON of netaddr.IPPrefix
-
 func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {
 	providers := make([]provider.Provider, len(u.Providers))
 	for i := range providers {
