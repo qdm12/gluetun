@@ -17,7 +17,7 @@ type DoT struct {
 	// UpdatePeriod is the period to update DNS block
 	// lists and cryptographic files for DNSSEC validation.
 	// It can be set to 0 to disable the update.
-	// It defaults to TODO and cannot be nil in
+	// It defaults to 24h and cannot be nil in
 	// the internal state.
 	UpdatePeriod *time.Duration
 	// Unbound contains settings to configure Unbound.
