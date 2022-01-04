@@ -1,11 +1,13 @@
 package vpnunlimited
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/openvpn/parse"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
@@ -65,10 +67,18 @@ func (p *Provider) BuildConf(connection models.Connection,
 
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.VPNUnlimitedCertificateAuthority)...)
-	lines = append(lines, utils.WrapOpenvpnCert(
-		*settings.ClientCrt)...)
-	lines = append(lines, utils.WrapOpenvpnKey(
-		*settings.ClientKey)...)
+
+	certData, err := parse.ExtractCert([]byte(*settings.ClientCrt))
+	if err != nil {
+		return nil, fmt.Errorf("client cert is not valid: %w", err)
+	}
+	lines = append(lines, utils.WrapOpenvpnCert(certData)...)
+
+	keyData, err := parse.ExtractPrivateKey([]byte(*settings.ClientKey))
+	if err != nil {
+		return nil, fmt.Errorf("client key is not valid: %w", err)
+	}
+	lines = append(lines, utils.WrapOpenvpnKey(keyData)...)
 
 	lines = append(lines, "")
 

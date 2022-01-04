@@ -114,7 +114,6 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 		}
 	}
 	if *o.ClientCrt != "" {
-		// TODO parse it downstream since it's raw now
 		_, err = parse.ExtractCert([]byte(*o.ClientCrt))
 		if err != nil {
 			return fmt.Errorf("%w: %s", ErrOpenVPNClientCertNotValid, err)
@@ -132,7 +131,6 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 		}
 	}
 	if *o.ClientKey != "" {
-		// TODO parse it downstream since it's raw now
 		_, err = parse.ExtractPrivateKey([]byte(*o.ClientKey))
 		if err != nil {
 			return fmt.Errorf("%w: %s", ErrOpenVPNClientKeyNotValid, err)

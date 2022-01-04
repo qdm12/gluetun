@@ -1,11 +1,13 @@
 package wevpn
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/openvpn/parse"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
@@ -70,8 +72,12 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 
-	lines = append(lines, utils.WrapOpenvpnKey(
-		*settings.ClientKey)...)
+	keyData, err := parse.ExtractPrivateKey([]byte(*settings.ClientKey))
+	if err != nil {
+		return nil, fmt.Errorf("client key is not valid: %w", err)
+	}
+	lines = append(lines, utils.WrapOpenvpnKey(keyData)...)
+
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.WevpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnCert(
