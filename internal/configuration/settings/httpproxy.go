@@ -12,26 +12,26 @@ import (
 type HTTPProxy struct {
 	// User is the username to use for the HTTP proxy.
 	// It cannot be nil in the internal state.
-	User *string `json:"user,omitempty"`
+	User *string
 	// Password is the password to use for the HTTP proxy.
 	// It cannot be nil in the internal state.
-	Password *string `json:"password,omitempty"`
+	Password *string
 	// ListeningAddress is the listening address
 	// of the HTTP proxy server.
 	// It cannot be the empty string in the internal state.
-	ListeningAddress string `json:"listening_address,omitempty"`
+	ListeningAddress string
 	// Enabled is true if the HTTP proxy server should run,
 	// and false otherwise. It cannot be nil in the
 	// internal state.
-	Enabled *bool `json:"enabled,omitempty"`
+	Enabled *bool
 	// Stealth is true if the HTTP proxy server should hide
 	// each request has been proxied to the destination.
 	// It cannot be nil in the internal state.
-	Stealth *bool `json:"stealth,omitempty"`
+	Stealth *bool
 	// Log is true if the HTTP proxy server should log
 	// each request/response. It cannot be nil in the
 	// internal state.
-	Log *bool `json:"log,omitempty"`
+	Log *bool
 }
 
 func (h HTTPProxy) validate() (err error) {

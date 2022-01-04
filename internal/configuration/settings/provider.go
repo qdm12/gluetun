@@ -12,12 +12,12 @@ import (
 type Provider struct {
 	// Name is the VPN service provider name.
 	// It cannot be nil in the internal state.
-	Name *string `json:"name,omitempty"`
+	Name *string
 	// ServerSelection is the settings to
 	// select the VPN server.
-	ServerSelection ServerSelection `json:"server_selection"`
+	ServerSelection ServerSelection
 	// PortForwarding is the settings about port forwarding.
-	PortForwarding PortForwarding `json:"port_forwarding"`
+	PortForwarding PortForwarding
 }
 
 func (p Provider) validate(vpnType string, allServers models.AllServers) (err error) {

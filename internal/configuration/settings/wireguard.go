@@ -14,18 +14,18 @@ import (
 type Wireguard struct {
 	// PrivateKey is the Wireguard client peer private key.
 	// It cannot be nil in the internal state.
-	PrivateKey *string `json:"privatekey,omitempty"`
+	PrivateKey *string
 	// PreSharedKey is the Wireguard pre-shared key.
 	// It can be the empty string to indicate there
 	// is no pre-shared key.
 	// It cannot be nil in the internal state.
-	PreSharedKey *string `json:"presharedkey,omitempty"`
+	PreSharedKey *string
 	// Addresses are the Wireguard interface addresses.
-	Addresses []net.IPNet `json:"addresses,omitempty"`
+	Addresses []net.IPNet
 	// Interface is the name of the Wireguard interface
 	// to create. It cannot be the empty string in the
 	// internal state.
-	Interface string `json:"interface,omitempty"`
+	Interface string
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)

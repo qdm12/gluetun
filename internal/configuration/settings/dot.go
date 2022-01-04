@@ -13,7 +13,7 @@ type DoT struct {
 	// Enabled is true if the DoT server should be running
 	// and used. It defaults to true, and cannot be nil
 	// in the internal state.
-	Enabled *bool `json:"enabled"`
+	Enabled *bool
 	// UpdatePeriod is the period to update DNS block
 	// lists and cryptographic files for DNSSEC validation.
 	// It can be set to 0 to disable the update.

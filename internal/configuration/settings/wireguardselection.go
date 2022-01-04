@@ -16,18 +16,18 @@ type WireguardSelection struct {
 	// To indicate it should not be used, it should be set
 	// to the empty net.IP{} slice. It can never be nil
 	// in the internal state.
-	EndpointIP net.IP `json:"endpoint_ip,omitempty"`
+	EndpointIP net.IP
 	// EndpointPort is a the server port to use for the VPN server.
 	// It is optional for VPN providers IVPN, Mullvad
 	// and Windscribe, and compulsory for the others.
 	// When optional, it can be set to 0 to indicate not use
 	// a custom endpoint port. It cannot be nil in the internal
 	// state.
-	EndpointPort *uint16 `json:"port,omitempty"`
+	EndpointPort *uint16
 	// PublicKey is the server public key.
 	// It is only used with VPN providers generating Wireguard
 	// configurations specific to each server and user.
-	PublicKey string `json:"publickey,omitempty"`
+	PublicKey string
 }
 
 // Validate validates WireguardSelection settings.

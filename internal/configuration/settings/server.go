@@ -13,10 +13,10 @@ type ControlServer struct {
 	// It can be set to 0 to bind to a random port.
 	// It cannot be nil in the internal state.
 	// TODO change to address
-	Port *uint16 `json:"port,omitempty"`
+	Port *uint16
 	// Log can be true or false to enable logging on requests.
 	// It cannot be nil in the internal state.
-	Log *bool `json:"log,omitempty"`
+	Log *bool
 }
 
 func (c ControlServer) validate() (err error) {

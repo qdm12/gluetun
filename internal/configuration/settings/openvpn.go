@@ -13,68 +13,68 @@ import (
 type OpenVPN struct {
 	// Version is the OpenVPN version to run.
 	// It can only be "2.4" or "2.5".
-	Version string `json:"version,omitempty"`
+	Version string
 	// User is the OpenVPN authentication username.
 	// It cannot be an empty string in the internal state
 	// if OpenVPN is used.
-	User string `json:"user,omitempty"`
+	User string
 	// Password is the OpenVPN authentication password.
 	// It cannot be an empty string in the internal state
 	// if OpenVPN is used.
-	Password string `json:"password,omitempty"`
+	Password string
 	// ConfFile is a custom OpenVPN configuration file path.
 	// It can be set to the empty string for it to be ignored.
 	// It cannot be nil in the internal state.
-	ConfFile *string `json:"conf_file,omitempty"`
+	ConfFile *string
 	// Ciphers is a list of ciphers to use for OpenVPN,
 	// different from the ones specified by the VPN
 	// service provider configuration files.
-	Ciphers []string `json:"ciphers,omitempty"`
+	Ciphers []string
 	// Auth is an auth algorithm to use in OpenVPN instead
 	// of the one specified by the VPN service provider.
 	// It cannot be nil in the internal state.
 	// It is ignored if it is set to the empty string.
-	Auth *string `json:"auth,omitempty"`
+	Auth *string
 	// ClientCrt is the OpenVPN client certificate.
 	// This is notably used by Cyberghost.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
-	ClientCrt *string `json:"client_crt,omitempty"`
+	ClientCrt *string
 	// ClientKey is the OpenVPN client key.
 	// This is used by Cyberghost and VPN Unlimited.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
-	ClientKey *string `json:"client_key,omitempty"`
+	ClientKey *string
 	// PIAEncPreset is the encryption preset for
 	// Private Internet Access. It can be set to an
 	// empty string for other providers.
-	PIAEncPreset *string `json:"pia_encryption_preset,omitempty"`
+	PIAEncPreset *string
 	// IPv6 is set to true if IPv6 routing should be
 	// set to be tunnel in OpenVPN, and false otherwise.
 	// It cannot be nil in the internal state.
-	IPv6 *bool `json:"ipv6,omitempty"` // TODO automate like with Wireguard
+	IPv6 *bool // TODO automate like with Wireguard
 	// MSSFix is the value (0 to 10000) to set for the
 	// mssfix option for OpenVPN.
 	// It cannot be nil in the internal state.
-	MSSFix *uint16 `json:"mssfix,omitempty"`
+	MSSFix *uint16
 	// Interface is the OpenVPN device interface name.
 	// It cannot be an empty string in the internal state.
-	Interface string `json:"interface,omitempty"`
+	Interface string
 	// Root is true if OpenVPN is to be run as root,
 	// and false otherwise. It cannot be nil in the
 	// internal state.
-	Root *bool `json:"run_as_root,omitempty"`
+	Root *bool
 	// ProcUser is the OpenVPN process OS username
 	// to use. It cannot be nil in the internal state.
 	// This is set and injected at runtime.
 	// TODO only use ProcUser and not Root field.
-	ProcUser string `json:"procuser,omitempty"`
+	ProcUser string
 	// Verbosity is the OpenVPN verbosity level from 0 to 6.
 	// It cannot be nil in the internal state.
-	Verbosity *int `json:"verbosity,omitempty"`
+	Verbosity *int
 	// Flags is a slice of additional flags to be passed
 	// to the OpenVPN program.
-	Flags []string `json:"flags,omitempty"`
+	Flags []string
 }
 
 func (o OpenVPN) validate(vpnProvider string) (err error) {

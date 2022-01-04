@@ -13,12 +13,12 @@ type PublicIP struct {
 	// Period is the period to get the public IP address.
 	// It can be set to 0 to disable periodic checking.
 	// It cannot be nil for the internal state.
-	Period *time.Duration `json:"period,omitempty"`
+	Period *time.Duration
 	// IPFilepath is the public IP address status file path
 	// to use. It can be the empty string to indicate not
 	// to write to a file. It cannot be nil for the
 	// internal state
-	IPFilepath *string `json:"ip_filepath,omitempty"`
+	IPFilepath *string
 }
 
 func (p PublicIP) validate() (err error) {

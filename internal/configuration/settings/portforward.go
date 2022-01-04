@@ -13,12 +13,12 @@ import (
 type PortForwarding struct {
 	// Enabled is true if port forwarding should be activated.
 	// It cannot be nil for the internal state.
-	Enabled *bool `json:"enabled,omitempty"`
+	Enabled *bool
 	// Filepath is the port forwarding status file path
 	// to use. It can be the empty string to indicate not
 	// to write to a file. It cannot be nil for the
 	// internal state
-	Filepath *string `json:"filepath,omitempty"`
+	Filepath *string
 }
 
 func (p PortForwarding) validate(vpnProvider string) (err error) {

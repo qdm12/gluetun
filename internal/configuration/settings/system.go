@@ -6,9 +6,9 @@ import (
 
 // System contains settings to configure system related elements.
 type System struct {
-	PUID     *uint16 `json:"puid,omitempty"`
-	PGID     *uint16 `json:"pgid,omitempty"`
-	Timezone string  `json:"timezone,omitempty"`
+	PUID     *uint16
+	PGID     *uint16
+	Timezone string
 }
 
 // Validate validates System settings.

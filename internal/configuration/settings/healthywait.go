@@ -10,12 +10,12 @@ type HealthyWait struct {
 	// Initial is the initial duration to wait for the program
 	// to be healthy before taking action.
 	// It cannot be nil in the internal state.
-	Initial *time.Duration `json:"initial,omitempty"`
+	Initial *time.Duration
 	// Addition is the duration to add to the Initial duration
 	// after Initial has expired to wait longer for the program
 	// to be healthy.
 	// It cannot be nil in the internal state.
-	Addition *time.Duration `json:"addition,omitempty"`
+	Addition *time.Duration
 }
 
 func (h HealthyWait) validate() (err error) {

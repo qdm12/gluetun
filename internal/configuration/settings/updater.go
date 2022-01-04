@@ -15,19 +15,19 @@ type Updater struct {
 	// Period is the period for which the updater
 	// should run. It can be set to 0 to disable the
 	// updater. It cannot be nil in the internal state.
-	Period *time.Duration `json:"period,omitempty"`
+	Period *time.Duration
 	// DNSAddress is the DNS server address to use
 	// to resolve VPN server hostnames to IP addresses.
 	// It cannot be nil in the internal state.
-	DNSAddress net.IP `json:"dns_address,omitempty"`
+	DNSAddress net.IP
 	// Providers is the list of VPN service providers
 	// to update server information for.
-	Providers []string `json:"providers,omitempty"`
+	Providers []string
 	// CLI is to precise the updater is running in CLI
 	// mode. This is set automatically and cannot be set
 	// by settings sources. It cannot be nil in the
 	// internal state.
-	CLI *bool `json:"-"`
+	CLI *bool
 }
 
 func (u Updater) Validate() (err error) {

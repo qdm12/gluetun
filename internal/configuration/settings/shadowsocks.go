@@ -9,7 +9,7 @@ import (
 type Shadowsocks struct {
 	// Enabled is true if the server should be running.
 	// It defaults to false, and cannot be nil in the internal state.
-	Enabled *bool `json:"enabled"`
+	Enabled *bool
 	// Settings are settings for the TCP+UDP server.
 	tcpudp.Settings
 }

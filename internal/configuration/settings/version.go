@@ -9,7 +9,7 @@ import (
 type Version struct {
 	// Enabled is true if the version information should
 	// be fetched from Github.
-	Enabled *bool `json:"enabled,omitempty"`
+	Enabled *bool
 }
 
 func (u Version) validate() (err error) {

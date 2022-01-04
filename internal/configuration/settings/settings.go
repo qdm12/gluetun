@@ -7,18 +7,18 @@ import (
 )
 
 type Settings struct {
-	ControlServer ControlServer `json:"control_server"`
-	DNS           DNS           `json:"dns"`
-	Firewall      Firewall      `json:"firewall"`
-	Health        Health        `json:"health"`
-	HTTPProxy     HTTPProxy     `json:"http_proxy"`
-	Log           Log           `json:"log"`
-	PublicIP      PublicIP      `json:"public_ip"`
-	Shadowsocks   Shadowsocks   `json:"shadowsocks"`
-	System        System        `json:"system"`
-	Updater       Updater       `json:"updater"`
-	Version       Version       `json:"version"`
-	VPN           VPN           `json:"vpn"`
+	ControlServer ControlServer
+	DNS           DNS
+	Firewall      Firewall
+	Health        Health
+	HTTPProxy     HTTPProxy
+	Log           Log
+	PublicIP      PublicIP
+	Shadowsocks   Shadowsocks
+	System        System
+	Updater       Updater
+	Version       Version
+	VPN           VPN
 }
 
 func (s Settings) Validate(allServers models.AllServers) (err error) {

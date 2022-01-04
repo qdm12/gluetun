@@ -13,46 +13,46 @@ type ServerSelection struct { //nolint:maligned
 	// VPN is the VPN type which can be 'openvpn'
 	// or 'wireguard'. It cannot be the empty string
 	// in the internal state.
-	VPN string `json:"vpn,omitempty"`
+	VPN string
 	// TargetIP is the server endpoint IP address to use.
 	// It will override any IP address from the picked
 	// built-in server. It cannot be nil in the internal
 	// state, and can be set to an empty net.IP{} to indicate
 	// there is not target IP address to use.
-	TargetIP net.IP `json:"target_ip,omitempty"`
+	TargetIP net.IP
 	// Counties is the list of countries to filter VPN servers with.
-	Countries []string `json:"countries,omitempty"`
+	Countries []string
 	// Regions is the list of regions to filter VPN servers with.
-	Regions []string `json:"regions,omitempty"`
+	Regions []string
 	// Cities is the list of cities to filter VPN servers with.
-	Cities []string `json:"cities,omitempty"`
+	Cities []string
 	// ISPs is the list of ISP names to filter VPN servers with.
-	ISPs []string `json:"isps,omitempty"`
+	ISPs []string
 	// Names is the list of server names to filter VPN servers with.
-	Names []string `json:"names,omitempty"`
+	Names []string
 	// Numbers is the list of server numbers to filter VPN servers with.
-	Numbers []uint16 `json:"numbers,omitempty"`
+	Numbers []uint16
 	// Hostnames is the list of hostnames to filter VPN servers with.
-	Hostnames []string `json:"hostnames,omitempty"`
+	Hostnames []string
 	// OwnedOnly is true if only VPN provider owned servers
 	// should be filtered. This is used with Mullvad.
-	OwnedOnly *bool `json:"owned,omitempty"`
+	OwnedOnly *bool
 	// FreeOnly is true if only free VPN servers
 	// should be filtered. This is used with ProtonVPN.
-	FreeOnly *bool `json:"free_only,omitempty"`
+	FreeOnly *bool
 	// FreeOnly is true if only free VPN servers
 	// should be filtered. This is used with ProtonVPN.
-	StreamOnly *bool `json:"stream_only,omitempty"`
+	StreamOnly *bool
 	// MultiHopOnly is true if only multihop VPN servers
 	// should be filtered. This is used with Surfshark.
-	MultiHopOnly *bool `json:"multihop_only,omitempty"`
+	MultiHopOnly *bool
 
 	// OpenVPN contains settings to select OpenVPN servers
 	// and the final connection.
-	OpenVPN OpenVPNSelection `json:"openvpn"`
+	OpenVPN OpenVPNSelection
 	// Wireguard contains settings to select Wireguard servers
 	// and the final connection.
-	Wireguard WireguardSelection `json:"wireguard"`
+	Wireguard WireguardSelection
 }
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,

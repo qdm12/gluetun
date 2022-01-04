@@ -13,10 +13,10 @@ type VPN struct {
 	// Type is the VPN type and can only be
 	// 'openvpn' or 'wireguard'. It cannot be the
 	// empty string in the internal state.
-	Type      string    `json:"type,omitempty"`
-	Provider  Provider  `json:"provider"`
-	OpenVPN   OpenVPN   `json:"openvpn"`
-	Wireguard Wireguard `json:"wireguard"`
+	Type      string
+	Provider  Provider
+	OpenVPN   OpenVPN
+	Wireguard Wireguard
 }
 
 // Validate validates VPN settings.

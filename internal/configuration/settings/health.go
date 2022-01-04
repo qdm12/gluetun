@@ -13,12 +13,12 @@ type Health struct {
 	// ServerAddress is the listening address
 	// for the health check server.
 	// It cannot be the empty string in the internal state.
-	ServerAddress string `json:"server_address,omitempty"`
+	ServerAddress string
 	// AddressToPing is the IP address or domain name to
 	// ping periodically for the health check.
 	// It cannot be the empty string in the internal state.
-	AddressToPing string      `json:"address_to_ping,omitempty"`
-	VPN           HealthyWait `json:"vpn_wait"`
+	AddressToPing string
+	VPN           HealthyWait
 }
 
 func (h Health) Validate() (err error) {

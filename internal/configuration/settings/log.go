@@ -9,7 +9,7 @@ import (
 type Log struct {
 	// Level is the log level of the logger.
 	// It cannot be nil in the internal state.
-	Level *logging.Level `json:"level,omitempty"`
+	Level *logging.Level
 }
 
 func (l Log) validate() (err error) {
