@@ -53,8 +53,8 @@ type OpenVPN struct {
 	// set to be tunnel in OpenVPN, and false otherwise.
 	// It cannot be nil in the internal state.
 	IPv6 *bool // TODO automate like with Wireguard
-	// MSSFix is the value (0 to 10000) to set for the
-	// mssfix option for OpenVPN.
+	// MSSFix is the value (1 to 10000) to set for the
+	// mssfix option for OpenVPN. It is ignored if set to 0.
 	// It cannot be nil in the internal state.
 	MSSFix *uint16
 	// Interface is the OpenVPN device interface name.
@@ -227,7 +227,11 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	if vpnProvider == constants.Mullvad {
 		o.Password = "m"
 	}
+
+	o.ConfFile = helpers.DefaultStringPtr(o.ConfFile, "")
 	o.Auth = helpers.DefaultStringPtr(o.Auth, "")
+	o.ClientCrt = helpers.DefaultStringPtr(o.ClientCrt, "")
+	o.ClientKey = helpers.DefaultStringPtr(o.ClientKey, "")
 
 	var defaultEncPreset string
 	if vpnProvider == constants.PrivateInternetAccess {
@@ -236,6 +240,7 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
 
 	o.IPv6 = helpers.DefaultBool(o.IPv6, false)
+	o.MSSFix = helpers.DefaultUint16(o.MSSFix, 0)
 	o.Interface = helpers.DefaultString(o.Interface, "tun0")
 	o.Root = helpers.DefaultBool(o.Root, true)
 	o.ProcUser = helpers.DefaultString(o.ProcUser, "root")
