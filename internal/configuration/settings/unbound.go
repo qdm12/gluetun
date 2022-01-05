@@ -48,6 +48,8 @@ func (u *Unbound) setDefaults() {
 			netaddr.IPPrefixFrom(netaddr.IPv6Raw([16]byte{}), 0),
 		}
 	}
+
+	u.Username = helpers.DefaultString(u.Username, "root")
 }
 
 var (
