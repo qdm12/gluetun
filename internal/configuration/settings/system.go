@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 // System contains settings to configure system related elements.
@@ -40,4 +41,21 @@ func (s *System) setDefaults() {
 	const defaultID = 1000
 	s.PUID = helpers.DefaultUint16(s.PUID, defaultID)
 	s.PGID = helpers.DefaultUint16(s.PGID, defaultID)
+}
+
+func (s System) String() string {
+	return s.toLinesNode().String()
+}
+
+func (s System) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("OS Alpine settings:")
+
+	node.Appendf("Process UID: %d", *s.PUID)
+	node.Appendf("Process GID: %d", *s.PGID)
+
+	if s.Timezone != "" {
+		node.Appendf("Timezone: %s", s.Timezone)
+	}
+
+	return node
 }

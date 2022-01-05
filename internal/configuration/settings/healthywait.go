@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 type HealthyWait struct {
@@ -51,4 +52,15 @@ func (h *HealthyWait) setDefaults() {
 	const additionDurationDefault = 5 * time.Second
 	h.Initial = helpers.DefaultDuration(h.Initial, initialDurationDefault)
 	h.Addition = helpers.DefaultDuration(h.Addition, additionDurationDefault)
+}
+
+func (h HealthyWait) String() string {
+	return h.toLinesNode("Health").String()
+}
+
+func (h HealthyWait) toLinesNode(kind string) (node *gotree.Node) {
+	node = gotree.New(kind + " wait durations:")
+	node.Appendf("Initial duration: %s", *h.Initial)
+	node.Appendf("Additional duration: %s", *h.Addition)
+	return node
 }

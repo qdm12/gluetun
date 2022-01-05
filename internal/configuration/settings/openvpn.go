@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/openvpn/parse"
+	"github.com/qdm12/gotree"
 )
 
 // OpenVPN contains settings to configure the OpenVPN client.
@@ -245,4 +246,66 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.Root = helpers.DefaultBool(o.Root, true)
 	o.ProcUser = helpers.DefaultString(o.ProcUser, "root")
 	o.Verbosity = helpers.DefaultInt(o.Verbosity, 1)
+}
+
+func (o OpenVPN) String() string {
+	return o.toLinesNode().String()
+}
+
+func (o OpenVPN) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("OpenVPN server selection settings:")
+	node.Appendf("OpenVPN version: %s", o.Version)
+	node.Appendf("User: %s", helpers.ObfuscatePassword(o.User))
+	node.Appendf("Password: %s", helpers.ObfuscatePassword(o.Password))
+
+	if *o.ConfFile != "" {
+		node.Appendf("Custom configuration file: %s", *o.ConfFile)
+	}
+
+	if len(o.Ciphers) > 0 {
+		node.Appendf("Ciphers: %s", o.Ciphers)
+	}
+
+	if *o.Auth != "" {
+		node.Appendf("Auth: %s", *o.Auth)
+	}
+
+	if *o.ClientCrt != "" {
+		node.Appendf("Client crt: %s", helpers.ObfuscateData(*o.ClientCrt))
+	}
+
+	if *o.ClientKey != "" {
+		node.Appendf("Client key: %s", helpers.ObfuscateData(*o.ClientKey))
+	}
+
+	if *o.PIAEncPreset != "" {
+		node.Appendf("Private Internet Access encryption preset: %s", *o.PIAEncPreset)
+	}
+
+	node.Appendf("Tunnel IPv6: %s", helpers.BoolPtrToYesNo(o.IPv6))
+
+	if *o.MSSFix > 0 {
+		node.Appendf("MSS Fix: %d", *o.MSSFix)
+	}
+
+	if o.Interface != "" {
+		node.Appendf("Network interface: %s", o.Interface)
+	}
+
+	processUser := "root"
+	if !*o.Root {
+		processUser = "some non root user" // TODO
+		if o.ProcUser != "" {
+			processUser = o.ProcUser
+		}
+	}
+	node.Appendf("Run OpenVPN as: %s", processUser)
+
+	node.Appendf("Verbosity level: %d", *o.Verbosity)
+
+	if len(o.Flags) > 0 {
+		node.Appendf("Flags: %s", o.Flags)
+	}
+
+	return node
 }

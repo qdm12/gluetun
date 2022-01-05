@@ -3,6 +3,7 @@ package settings
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/gotree"
 )
 
 // Log contains settings to configure the logger.
@@ -37,4 +38,14 @@ func (l *Log) overrideWith(other Log) {
 
 func (l *Log) setDefaults() {
 	l.Level = helpers.DefaultLogLevel(l.Level, logging.LevelInfo)
+}
+
+func (l Log) String() string {
+	return l.toLinesNode().String()
+}
+
+func (l Log) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Log settings:")
+	node.Appendf("Log level: %s", l.Level.String())
+	return node
 }

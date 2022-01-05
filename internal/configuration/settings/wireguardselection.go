@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
@@ -118,4 +119,26 @@ func (w *WireguardSelection) overrideWith(other WireguardSelection) {
 func (w *WireguardSelection) setDefaults() {
 	w.EndpointIP = helpers.DefaultIP(w.EndpointIP, net.IP{})
 	w.EndpointPort = helpers.DefaultUint16(w.EndpointPort, 0)
+}
+
+func (w WireguardSelection) String() string {
+	return w.toLinesNode().String()
+}
+
+func (w WireguardSelection) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Wireguard selection settings:")
+
+	if len(w.EndpointIP) > 0 {
+		node.Appendf("Endpoint IP address: %s", w.EndpointIP)
+	}
+
+	if *w.EndpointPort != 0 {
+		node.Appendf("Endpoint port: %d", *w.EndpointPort)
+	}
+
+	if w.PublicKey != "" {
+		node.Appendf("Server public key: %s", w.PublicKey)
+	}
+
+	return node
 }

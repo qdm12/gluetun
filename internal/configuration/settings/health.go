@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 	"github.com/qdm12/govalid/address"
 )
 
@@ -67,4 +68,16 @@ func (h *Health) SetDefaults() {
 	h.ServerAddress = helpers.DefaultString(h.ServerAddress, "127.0.0.1:9999")
 	h.AddressToPing = helpers.DefaultString(h.AddressToPing, "github.com")
 	h.VPN.setDefaults()
+}
+
+func (h Health) String() string {
+	return h.toLinesNode().String()
+}
+
+func (h Health) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Health settings:")
+	node.Appendf("Server listening address: %s", h.ServerAddress)
+	node.Appendf("Address to ping: %s", h.AddressToPing)
+	node.AppendNode(h.VPN.toLinesNode("VPN"))
+	return node
 }

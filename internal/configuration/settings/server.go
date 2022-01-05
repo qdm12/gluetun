@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 // ControlServer contains settings to customize the control server operation.
@@ -56,4 +57,15 @@ func (c *ControlServer) setDefaults() {
 	const defaultPort = 8000
 	c.Port = helpers.DefaultUint16(c.Port, defaultPort)
 	c.Log = helpers.DefaultBool(c.Log, true)
+}
+
+func (c ControlServer) String() string {
+	return c.toLinesNode().String()
+}
+
+func (c ControlServer) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Control server settings:")
+	node.Appendf("Listening port: %d", *c.Port)
+	node.Appendf("Logging: %s", helpers.BoolPtrToYesNo(c.Log))
+	return node
 }

@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 // DNS contains settings to configure DNS.
@@ -66,4 +67,16 @@ func (d *DNS) setDefaults() {
 	d.ServerAddress = helpers.DefaultIP(d.ServerAddress, localhost)
 	d.KeepNameserver = helpers.DefaultBool(d.KeepNameserver, false)
 	d.DoT.setDefaults()
+}
+
+func (d DNS) String() string {
+	return d.toLinesNode().String()
+}
+
+func (d DNS) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("DNS settings:")
+	node.Appendf("DNS server address to use: %s", d.ServerAddress)
+	node.Appendf("Keep existing nameserver(s): %s", helpers.BoolPtrToYesNo(d.KeepNameserver))
+	node.AppendNode(d.DoT.toLinesNode())
+	return node
 }

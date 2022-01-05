@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gotree"
 )
 
 // PortForwarding contains settings for port forwarding.
@@ -62,5 +63,27 @@ func (p *PortForwarding) overrideWith(other PortForwarding) {
 }
 
 func (p *PortForwarding) setDefaults() {
+	p.Enabled = helpers.DefaultBool(p.Enabled, false)
 	p.Filepath = helpers.DefaultStringPtr(p.Filepath, "/tmp/gluetun/forwarded_port")
+}
+
+func (p PortForwarding) String() string {
+	return p.toLinesNode().String()
+}
+
+func (p PortForwarding) toLinesNode() (node *gotree.Node) {
+	if !*p.Enabled {
+		return nil
+	}
+
+	node = gotree.New("Automatic port forwarding settings:")
+	node.Appendf("Enabled: yes")
+
+	filepath := *p.Filepath
+	if filepath == "" {
+		filepath = "[not set]"
+	}
+	node.Appendf("Forwarded port file path: %s", filepath)
+
+	return node
 }

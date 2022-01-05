@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 // DoT contains settings to configure the DoT server.
@@ -85,4 +86,28 @@ func (d *DoT) setDefaults() {
 	d.UpdatePeriod = helpers.DefaultDuration(d.UpdatePeriod, defaultUpdatePeriod)
 	d.Unbound.setDefaults()
 	d.Blacklist.setDefaults()
+}
+
+func (d DoT) String() string {
+	return d.toLinesNode().String()
+}
+
+func (d DoT) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("DNS over TLS settings:")
+
+	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(d.Enabled))
+	if !*d.Enabled {
+		return node
+	}
+
+	update := "disabled"
+	if *d.UpdatePeriod > 0 {
+		update = "every " + d.UpdatePeriod.String()
+	}
+	node.Appendf("Update period: %s", update)
+
+	node.AppendNode(d.Unbound.toLinesNode())
+	node.AppendNode(d.Blacklist.toLinesNode())
+
+	return node
 }

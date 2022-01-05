@@ -6,6 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gotree"
 )
 
 // Provider contains settings specific to a VPN provider.
@@ -76,4 +77,16 @@ func (p *Provider) setDefaults() {
 	p.Name = helpers.DefaultStringPtr(p.Name, constants.PrivateInternetAccess)
 	p.ServerSelection.setDefaults(*p.Name)
 	p.PortForwarding.setDefaults()
+}
+
+func (p Provider) String() string {
+	return p.toLinesNode().String()
+}
+
+func (p Provider) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("VPN provider settings:")
+	node.Appendf("Name: %s", *p.Name)
+	node.AppendNode(p.ServerSelection.toLinesNode())
+	node.AppendNode(p.PortForwarding.toLinesNode())
+	return node
 }

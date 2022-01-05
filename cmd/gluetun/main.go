@@ -217,7 +217,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	// logger.Info(allSettings.String()) TODO
+	logger.Info(allSettings.String())
 
 	if err := os.MkdirAll("/tmp/gluetun", 0644); err != nil {
 		return err

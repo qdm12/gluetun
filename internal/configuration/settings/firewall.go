@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 // Firewall contains settings to customize the firewall operation.
@@ -73,4 +74,44 @@ func (f *Firewall) overrideWith(other Firewall) {
 func (f *Firewall) setDefaults() {
 	f.Enabled = helpers.DefaultBool(f.Enabled, true)
 	f.Debug = helpers.DefaultBool(f.Debug, false)
+}
+
+func (f Firewall) String() string {
+	return f.toLinesNode().String()
+}
+
+func (f Firewall) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Firewall settings:")
+
+	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(f.Enabled))
+	if !*f.Enabled {
+		return node
+	}
+
+	if *f.Debug {
+		node.Appendf("Debug mode: on")
+	}
+
+	if len(f.VPNInputPorts) > 0 {
+		vpnInputPortsNode := node.Appendf("VPN input ports:")
+		for _, port := range f.VPNInputPorts {
+			vpnInputPortsNode.Appendf("%d", port)
+		}
+	}
+
+	if len(f.InputPorts) > 0 {
+		inputPortsNode := node.Appendf("Input ports:")
+		for _, port := range f.InputPorts {
+			inputPortsNode.Appendf("%d", port)
+		}
+	}
+
+	if len(f.OutboundSubnets) > 0 {
+		outboundSubnets := node.Appendf("Outbound subnets:")
+		for _, subnet := range f.OutboundSubnets {
+			outboundSubnets.Appendf("%s", subnet)
+		}
+	}
+
+	return node
 }

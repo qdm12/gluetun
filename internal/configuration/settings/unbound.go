@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 	"inet.af/netaddr"
 )
 
@@ -162,4 +163,31 @@ func (u Unbound) GetFirstPlaintextIPv4() (ipv4 net.IP, err error) {
 	}
 
 	return provider.DNS().IPv4[0], nil
+}
+
+func (u Unbound) String() string {
+	return u.toLinesNode().String()
+}
+
+func (u Unbound) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Unbound settings:")
+
+	authServers := node.Appendf("Authoritative servers:")
+	for _, provider := range u.Providers {
+		authServers.Appendf(provider)
+	}
+
+	node.Appendf("Caching: %s", helpers.BoolPtrToYesNo(u.Caching))
+	node.Appendf("IPv6: %s", helpers.BoolPtrToYesNo(u.IPv6))
+	node.Appendf("Verbosity level: %d", *u.VerbosityLevel)
+	node.Appendf("Verbosity details level: %d", *u.VerbosityDetailsLevel)
+	node.Appendf("Validation log level: %d", *u.ValidationLogLevel)
+	node.Appendf("System user: %s", u.Username)
+
+	allowedNetworks := node.Appendf("Allowed networks:")
+	for _, network := range u.Allowed {
+		allowedNetworks.Appendf(network.String())
+	}
+
+	return node
 }

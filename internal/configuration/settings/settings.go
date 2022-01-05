@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gotree"
 )
 
 type Settings struct {
@@ -117,4 +118,27 @@ func (s *Settings) SetDefaults() {
 	s.Updater.setDefaults()
 	s.Version.setDefaults()
 	s.VPN.setDefaults()
+}
+
+func (s Settings) String() string {
+	return s.toLinesNode().String()
+}
+
+func (s Settings) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Settings summary:")
+
+	node.AppendNode(s.VPN.toLinesNode())
+	node.AppendNode(s.DNS.toLinesNode())
+	node.AppendNode(s.Firewall.toLinesNode())
+	node.AppendNode(s.Log.toLinesNode())
+	node.AppendNode(s.Health.toLinesNode())
+	node.AppendNode(s.Shadowsocks.toLinesNode())
+	node.AppendNode(s.HTTPProxy.toLinesNode())
+	node.AppendNode(s.ControlServer.toLinesNode())
+	node.AppendNode(s.System.toLinesNode())
+	node.AppendNode(s.PublicIP.toLinesNode())
+	node.AppendNode(s.Updater.toLinesNode())
+	node.AppendNode(s.Version.toLinesNode())
+
+	return node
 }

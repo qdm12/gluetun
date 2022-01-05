@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/dns/pkg/blacklist"
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 	"inet.af/netaddr"
 )
 
@@ -92,4 +93,46 @@ func (b DNSBlacklist) ToBlacklistFormat() (settings blacklist.BuilderSettings, e
 		AddBlockedIPs:        b.AddBlockedIPs,
 		AddBlockedIPPrefixes: b.AddBlockedIPPrefixes,
 	}, nil
+}
+
+func (b DNSBlacklist) String() string {
+	return b.toLinesNode().String()
+}
+
+func (b DNSBlacklist) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("DNS filtering settings:")
+
+	node.Appendf("Block malicious: %s", helpers.BoolPtrToYesNo(b.BlockMalicious))
+	node.Appendf("Block ads: %s", helpers.BoolPtrToYesNo(b.BlockAds))
+	node.Appendf("Block surveillance: %s", helpers.BoolPtrToYesNo(b.BlockSurveillance))
+
+	if len(b.AllowedHosts) > 0 {
+		allowedHostsNode := node.Appendf("Allowed hosts:")
+		for _, host := range b.AllowedHosts {
+			allowedHostsNode.Appendf(host)
+		}
+	}
+
+	if len(b.AddBlockedHosts) > 0 {
+		blockedHostsNode := node.Appendf("Blocked hosts:")
+		for _, host := range b.AddBlockedHosts {
+			blockedHostsNode.Appendf(host)
+		}
+	}
+
+	if len(b.AddBlockedIPs) > 0 {
+		blockedIPsNode := node.Appendf("Blocked IP addresses:")
+		for _, ip := range b.AddBlockedIPs {
+			blockedIPsNode.Appendf(ip.String())
+		}
+	}
+
+	if len(b.AddBlockedIPPrefixes) > 0 {
+		blockedIPPrefixesNode := node.Appendf("Blocked IP networks:")
+		for _, ipNetwork := range b.AddBlockedIPPrefixes {
+			blockedIPPrefixesNode.Appendf(ipNetwork.String())
+		}
+	}
+
+	return node
 }

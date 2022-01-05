@@ -3,10 +3,12 @@ package settings
 import (
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gotree"
 )
 
 type ServerSelection struct { //nolint:maligned
@@ -307,4 +309,71 @@ func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.MultiHopOnly = helpers.DefaultBool(ss.MultiHopOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
 	ss.Wireguard.setDefaults()
+}
+
+func (ss ServerSelection) String() string {
+	return ss.toLinesNode().String()
+}
+
+func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Server selection settings:")
+	node.Appendf("VPN type: %s", ss.VPN)
+	if len(ss.TargetIP) > 0 {
+		node.Appendf("Target IP address: %s", ss.TargetIP)
+	}
+
+	if len(ss.Countries) > 0 {
+		node.Appendf("Countries: %s", strings.Join(ss.Countries, ", "))
+	}
+
+	if len(ss.Regions) > 0 {
+		node.Appendf("Regions: %s", strings.Join(ss.Regions, ", "))
+	}
+
+	if len(ss.Cities) > 0 {
+		node.Appendf("Cities: %s", strings.Join(ss.Cities, ", "))
+	}
+
+	if len(ss.ISPs) > 0 {
+		node.Appendf("ISPs: %s", strings.Join(ss.ISPs, ", "))
+	}
+
+	if len(ss.Names) > 0 {
+		node.Appendf("Server names: %s", strings.Join(ss.Names, ", "))
+	}
+
+	if len(ss.Numbers) > 0 {
+		numbersNode := node.Appendf("Server numbers:")
+		for _, number := range ss.Numbers {
+			numbersNode.Appendf("%d", number)
+		}
+	}
+
+	if len(ss.Hostnames) > 0 {
+		node.Appendf("Hostnames: %s", strings.Join(ss.Hostnames, ", "))
+	}
+
+	if *ss.OwnedOnly {
+		node.Appendf("Owned only servers: yes")
+	}
+
+	if *ss.FreeOnly {
+		node.Appendf("Free only servers: yes")
+	}
+
+	if *ss.StreamOnly {
+		node.Appendf("Stream only servers: yes")
+	}
+
+	if *ss.MultiHopOnly {
+		node.Appendf("Multi-hop only servers: yes")
+	}
+
+	if ss.VPN == constants.OpenVPN {
+		node.AppendNode(ss.OpenVPN.toLinesNode())
+	} else {
+		node.AppendNode(ss.Wireguard.toLinesNode())
+	}
+
+	return node
 }

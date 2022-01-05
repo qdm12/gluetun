@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 // Version contains settings to configure the version
@@ -37,4 +38,16 @@ func (v *Version) overrideWith(other Version) {
 
 func (v *Version) setDefaults() {
 	v.Enabled = helpers.DefaultBool(v.Enabled, true)
+}
+
+func (v Version) String() string {
+	return v.toLinesNode().String()
+}
+
+func (v Version) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Version settings:")
+
+	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(v.Enabled))
+
+	return node
 }

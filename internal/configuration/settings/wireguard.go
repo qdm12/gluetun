@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
@@ -107,4 +108,31 @@ func (w *Wireguard) setDefaults() {
 	w.PrivateKey = helpers.DefaultStringPtr(w.PrivateKey, "")
 	w.PreSharedKey = helpers.DefaultStringPtr(w.PreSharedKey, "")
 	w.Interface = helpers.DefaultString(w.Interface, "wg0")
+}
+
+func (w Wireguard) String() string {
+	return w.toLinesNode().String()
+}
+
+func (w Wireguard) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Wireguard settings:")
+
+	if *w.PrivateKey != "" {
+		s := helpers.ObfuscateWireguardKey(*w.PrivateKey)
+		node.Appendf("Private key: %s", s)
+	}
+
+	if *w.PreSharedKey != "" {
+		s := helpers.ObfuscateWireguardKey(*w.PreSharedKey)
+		node.Appendf("Pre-shared key: %s", s)
+	}
+
+	addressesNode := node.Appendf("Interface addresses:")
+	for _, address := range w.Addresses {
+		addressesNode.Appendf(address.String())
+	}
+
+	node.Appendf("Network interface: %s", w.Interface)
+
+	return node
 }

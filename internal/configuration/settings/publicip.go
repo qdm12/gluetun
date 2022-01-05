@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 )
 
 // PublicIP contains settings for port forwarding.
@@ -13,6 +14,7 @@ type PublicIP struct {
 	// Period is the period to get the public IP address.
 	// It can be set to 0 to disable periodic checking.
 	// It cannot be nil for the internal state.
+	// TODO change to value and add enabled field
 	Period *time.Duration
 	// IPFilepath is the public IP address status file path
 	// to use. It can be the empty string to indicate not
@@ -59,4 +61,29 @@ func (p *PublicIP) setDefaults() {
 	const defaultPeriod = 12 * time.Hour
 	p.Period = helpers.DefaultDuration(p.Period, defaultPeriod)
 	p.IPFilepath = helpers.DefaultStringPtr(p.IPFilepath, "/tmp/gluetun/ip")
+}
+
+func (p PublicIP) String() string {
+	return p.toLinesNode().String()
+}
+
+func (p PublicIP) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Public IP settings:")
+
+	if *p.Period == 0 {
+		node.Appendf("Enabled: no")
+		return node
+	}
+
+	updatePeriod := "disabled"
+	if *p.Period > 0 {
+		updatePeriod = "every " + p.Period.String()
+	}
+	node.Appendf("Fetching: %s", updatePeriod)
+
+	if *p.IPFilepath != "" {
+		node.Appendf("IP file path: %s", *p.IPFilepath)
+	}
+
+	return node
 }

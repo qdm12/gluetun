@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gotree"
 )
 
 type OpenVPNSelection struct {
@@ -143,4 +144,27 @@ func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
 		defaultEncPreset = constants.PIAEncryptionPresetStrong
 	}
 	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
+}
+
+func (o OpenVPNSelection) String() string {
+	return o.toLinesNode().String()
+}
+
+func (o OpenVPNSelection) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("OpenVPN server selection settings:")
+	node.Appendf("Protocol: %s", helpers.TCPPtrToString(o.TCP))
+
+	if *o.CustomPort != 0 {
+		node.Appendf("Custom port: %d", *o.CustomPort)
+	}
+
+	if *o.PIAEncPreset != "" {
+		node.Appendf("Private Internet Access encryption preset: %s", *o.PIAEncPreset)
+	}
+
+	if *o.ConfFile != "" {
+		node.Appendf("Custom configuration file: %s", *o.ConfFile)
+	}
+
+	return node
 }

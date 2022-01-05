@@ -3,10 +3,12 @@ package settings
 import (
 	"fmt"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gotree"
 )
 
 // Updater contains settings to configure the VPN
@@ -15,6 +17,7 @@ type Updater struct {
 	// Period is the period for which the updater
 	// should run. It can be set to 0 to disable the
 	// updater. It cannot be nil in the internal state.
+	// TODO change to value and add Enabled field.
 	Period *time.Duration
 	// DNSAddress is the DNS server address to use
 	// to resolve VPN server hostnames to IP addresses.
@@ -86,4 +89,25 @@ func (u *Updater) setDefaults() {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
 	u.DNSAddress = helpers.DefaultIP(u.DNSAddress, net.IPv4(1, 1, 1, 1))
 	u.CLI = helpers.DefaultBool(u.CLI, false)
+}
+
+func (u Updater) String() string {
+	return u.toLinesNode().String()
+}
+
+func (u Updater) toLinesNode() (node *gotree.Node) {
+	if *u.Period == 0 {
+		return nil
+	}
+
+	node = gotree.New("Server data updater settings:")
+	node.Appendf("Update period: %s", *u.Period)
+	node.Appendf("DNS address: %s", u.DNSAddress)
+	node.Appendf("Providers to update: %s", strings.Join(u.Providers, ", "))
+
+	if *u.CLI {
+		node.Appendf("CLI mode: enabled")
+	}
+
+	return node
 }

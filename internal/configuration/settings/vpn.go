@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gotree"
 )
 
 type VPN struct {
@@ -76,4 +77,22 @@ func (v *VPN) setDefaults() {
 	v.Provider.setDefaults()
 	v.OpenVPN.setDefaults(*v.Provider.Name)
 	v.Wireguard.setDefaults()
+}
+
+func (v VPN) String() string {
+	return v.toLinesNode().String()
+}
+
+func (v VPN) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("VPN settings:")
+
+	node.AppendNode(v.Provider.toLinesNode())
+
+	if v.Type == constants.OpenVPN {
+		node.AppendNode(v.OpenVPN.toLinesNode())
+	} else {
+		node.AppendNode(v.Wireguard.toLinesNode())
+	}
+
+	return node
 }

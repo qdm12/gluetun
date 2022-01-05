@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gotree"
 	"github.com/qdm12/govalid/address"
 )
 
@@ -88,4 +89,24 @@ func (h *HTTPProxy) setDefaults() {
 	h.Enabled = helpers.DefaultBool(h.Enabled, false)
 	h.Stealth = helpers.DefaultBool(h.Stealth, false)
 	h.Log = helpers.DefaultBool(h.Log, false)
+}
+
+func (h HTTPProxy) String() string {
+	return h.toLinesNode().String()
+}
+
+func (h HTTPProxy) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("HTTP proxy settings:")
+	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(h.Enabled))
+	if !*h.Enabled {
+		return node
+	}
+
+	node.Appendf("Listening address: %s", h.ListeningAddress)
+	node.Appendf("User: %s", *h.User)
+	node.Appendf("Password: %s", helpers.ObfuscatePassword(*h.Password))
+	node.Appendf("Stealth mode: %s", helpers.BoolPtrToYesNo(h.Stealth))
+	node.Appendf("Log: %s", helpers.BoolPtrToYesNo(h.Log))
+
+	return node
 }
