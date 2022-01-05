@@ -9,7 +9,7 @@ import (
 )
 
 func (r *Reader) readDNS() (dns settings.DNS, err error) {
-	dns.ServerAddress, err = readDNSServerAddress()
+	dns.ServerAddress, err = r.readDNSServerAddress()
 	if err != nil {
 		return dns, err
 	}
@@ -27,7 +27,7 @@ func (r *Reader) readDNS() (dns settings.DNS, err error) {
 	return dns, nil
 }
 
-func readDNSServerAddress() (address net.IP, err error) {
+func (r *Reader) readDNSServerAddress() (address net.IP, err error) {
 	s := os.Getenv("DNS_PLAINTEXT_ADDRESS")
 	if s == "" {
 		return nil, nil
@@ -36,6 +36,15 @@ func readDNSServerAddress() (address net.IP, err error) {
 	address = net.ParseIP(s)
 	if address == nil {
 		return nil, fmt.Errorf("environment variable DNS_PLAINTEXT_ADDRESS: %w: %s", ErrIPAddressParse, s)
+	}
+
+	// TODO remove in v4
+	if !address.Equal(net.IPv4(127, 0, 0, 1)) { //nolint:gomnd
+		r.warner.Warn("DNS_PLAINTEXT_ADDRESS is set to " + s +
+			" so the DNS over TLS (DoT) server will not be used." +
+			" The default value changed to 127.0.0.1 so it uses the internal DoT server." +
+			" If the DoT server fails to start, the IPv4 address of the first plaintext DNS server" +
+			" corresponding to the first DoT provider chosen is used.")
 	}
 
 	return address, nil
