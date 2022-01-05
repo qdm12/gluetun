@@ -100,6 +100,10 @@ func MergeWithLogLevel(existing, other *logging.Level) (result *logging.Level) {
 }
 
 func MergeStringSlices(a, b []string) (result []string) {
+	if a == nil && b == nil {
+		return nil
+	}
+
 	seen := make(map[string]struct{}, len(a)+len(b))
 	result = make([]string, 0, len(a)+len(b))
 	for _, s := range a {
@@ -120,6 +124,10 @@ func MergeStringSlices(a, b []string) (result []string) {
 }
 
 func MergeUint16Slices(a, b []uint16) (result []uint16) {
+	if a == nil && b == nil {
+		return nil
+	}
+
 	seen := make(map[uint16]struct{}, len(a)+len(b))
 	result = make([]uint16, 0, len(a)+len(b))
 	for _, n := range a {
@@ -140,6 +148,10 @@ func MergeUint16Slices(a, b []uint16) (result []uint16) {
 }
 
 func MergeIPNetsSlices(a, b []net.IPNet) (result []net.IPNet) {
+	if a == nil && b == nil {
+		return nil
+	}
+
 	seen := make(map[string]struct{}, len(a)+len(b))
 	result = make([]net.IPNet, 0, len(a)+len(b))
 	for _, ipNet := range a {
@@ -162,6 +174,10 @@ func MergeIPNetsSlices(a, b []net.IPNet) (result []net.IPNet) {
 }
 
 func MergeNetaddrIPsSlices(a, b []netaddr.IP) (result []netaddr.IP) {
+	if a == nil && b == nil {
+		return nil
+	}
+
 	seen := make(map[string]struct{}, len(a)+len(b))
 	result = make([]netaddr.IP, 0, len(a)+len(b))
 	for _, ip := range a {
@@ -184,6 +200,10 @@ func MergeNetaddrIPsSlices(a, b []netaddr.IP) (result []netaddr.IP) {
 }
 
 func MergeIPPrefixesSlices(a, b []netaddr.IPPrefix) (result []netaddr.IPPrefix) {
+	if a == nil && b == nil {
+		return nil
+	}
+
 	seen := make(map[string]struct{}, len(a)+len(b))
 	result = make([]netaddr.IPPrefix, 0, len(a)+len(b))
 	for _, ipPrefix := range a {
