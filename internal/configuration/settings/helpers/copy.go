@@ -133,18 +133,30 @@ func CopyIPPrefix(original netaddr.IPPrefix) (copied netaddr.IPPrefix) {
 }
 
 func CopyStringSlice(original []string) (copied []string) {
+	if original == nil {
+		return nil
+	}
+
 	copied = make([]string, len(original))
 	copy(copied, original)
 	return copied
 }
 
 func CopyUint16Slice(original []uint16) (copied []uint16) {
+	if original == nil {
+		return nil
+	}
+
 	copied = make([]uint16, len(original))
 	copy(copied, original)
 	return copied
 }
 
 func CopyIPNetSlice(original []net.IPNet) (copied []net.IPNet) {
+	if original == nil {
+		return nil
+	}
+
 	copied = make([]net.IPNet, len(original))
 	for i := range original {
 		copied[i] = CopyIPNet(original[i])
@@ -153,6 +165,10 @@ func CopyIPNetSlice(original []net.IPNet) (copied []net.IPNet) {
 }
 
 func CopyIPPrefixSlice(original []netaddr.IPPrefix) (copied []netaddr.IPPrefix) {
+	if original == nil {
+		return nil
+	}
+
 	copied = make([]netaddr.IPPrefix, len(original))
 	for i := range original {
 		copied[i] = CopyIPPrefix(original[i])
