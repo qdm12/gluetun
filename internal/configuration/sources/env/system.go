@@ -54,7 +54,7 @@ func (r *Reader) readID(key, retroKey string) (
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w: %s: %s",
 			idEnvKey, ErrSystemIDNotValid, idString, err)
-	} else if idInt < 0 || idInt > 2^16 {
+	} else if idInt < 0 || idInt > 65535 {
 		return nil, fmt.Errorf("environment variable %s: %w: %d: must be between 0 and 65535",
 			idEnvKey, ErrSystemIDNotValid, idInt)
 	}
