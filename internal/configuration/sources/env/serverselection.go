@@ -49,8 +49,8 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 			if err != nil {
 				return ss, fmt.Errorf("%w: %s",
 					ErrServerNumberNotValid, numberString)
-			} else if number < 0 || number > 2^16 {
-				return ss, fmt.Errorf("%w: %d must be between 0 and 2^16",
+			} else if number < 0 || number > 65535 {
+				return ss, fmt.Errorf("%w: %d must be between 0 and 65535",
 					ErrServerNumberNotValid, number)
 			}
 			numbers[i] = uint16(number)

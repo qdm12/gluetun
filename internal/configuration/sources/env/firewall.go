@@ -65,7 +65,7 @@ func stringsToPorts(ss []string) (ports []uint16, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: %s: %s",
 				ErrPortParsing, s, err)
-		} else if port < 1 || port > 2^16 {
+		} else if port < 1 || port > 65535 {
 			return nil, fmt.Errorf("%w: must be between 1 and 65535: %d",
 				ErrPortValue, port)
 		}
