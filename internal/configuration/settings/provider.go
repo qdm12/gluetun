@@ -21,7 +21,8 @@ type Provider struct {
 	PortForwarding PortForwarding
 }
 
-func (p Provider) validate(vpnType string, allServers models.AllServers) (err error) {
+// TODO v4 remove pointer for receiver (because of Surfshark).
+func (p *Provider) validate(vpnType string, allServers models.AllServers) (err error) {
 	// Validate Name
 	var validNames []string
 	if vpnType == constants.OpenVPN {

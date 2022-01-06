@@ -22,7 +22,10 @@ type Settings struct {
 	VPN           VPN
 }
 
-func (s Settings) Validate(allServers models.AllServers) (err error) {
+// Validate validates all the settings and returns an error
+// if one of them is not valid.
+// TODO v4 remove pointer for receiver (because of Surfshark).
+func (s *Settings) Validate(allServers models.AllServers) (err error) {
 	nameToValidation := map[string]func() error{
 		"control server":  s.ControlServer.validate,
 		"dns":             s.DNS.validate,

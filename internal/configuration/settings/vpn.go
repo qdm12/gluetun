@@ -20,8 +20,8 @@ type VPN struct {
 	Wireguard Wireguard
 }
 
-// Validate validates VPN settings.
-func (v VPN) validate(allServers models.AllServers) (err error) {
+// TODO v4 remove pointer for receiver (because of Surfshark).
+func (v *VPN) validate(allServers models.AllServers) (err error) {
 	// Validate Type
 	validVPNTypes := []string{constants.OpenVPN, constants.Wireguard}
 	if !helpers.IsOneOf(v.Type, validVPNTypes...) {
