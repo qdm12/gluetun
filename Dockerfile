@@ -102,7 +102,7 @@ ENV VPNSP=pia \
     ISP= \
     OWNED=no \
     # # Private Internet Access only:
-    PIA_ENCRYPTION=strong \
+    PIA_ENCRYPTION= \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # # Cyberghost only:
