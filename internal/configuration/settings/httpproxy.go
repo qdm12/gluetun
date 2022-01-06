@@ -85,7 +85,7 @@ func (h *HTTPProxy) overrideWith(other HTTPProxy) {
 func (h *HTTPProxy) setDefaults() {
 	h.User = helpers.DefaultStringPtr(h.User, "")
 	h.Password = helpers.DefaultStringPtr(h.Password, "")
-	h.ListeningAddress = helpers.DefaultString(h.ListeningAddress, "")
+	h.ListeningAddress = helpers.DefaultString(h.ListeningAddress, ":8888")
 	h.Enabled = helpers.DefaultBool(h.Enabled, false)
 	h.Stealth = helpers.DefaultBool(h.Stealth, false)
 	h.Log = helpers.DefaultBool(h.Log, false)
