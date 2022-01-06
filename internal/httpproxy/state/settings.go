@@ -4,7 +4,7 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
@@ -14,10 +14,10 @@ type SettingsGetSetter interface {
 }
 
 type SettingsGetter interface {
-	GetSettings() (settings configuration.HTTPProxy)
+	GetSettings() (settings settings.HTTPProxy)
 }
 
-func (s *State) GetSettings() (settings configuration.HTTPProxy) {
+func (s *State) GetSettings() (settings settings.HTTPProxy) {
 	s.settingsMu.RLock()
 	defer s.settingsMu.RUnlock()
 	return s.settings
@@ -25,19 +25,19 @@ func (s *State) GetSettings() (settings configuration.HTTPProxy) {
 
 type SettingsSetter interface {
 	SetSettings(ctx context.Context,
-		settings configuration.HTTPProxy) (outcome string)
+		settings settings.HTTPProxy) (outcome string)
 }
 
 func (s *State) SetSettings(ctx context.Context,
-	settings configuration.HTTPProxy) (outcome string) {
+	settings settings.HTTPProxy) (outcome string) {
 	s.settingsMu.Lock()
 	settingsUnchanged := reflect.DeepEqual(settings, s.settings)
 	if settingsUnchanged {
 		s.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
-	newEnabled := settings.Enabled
-	previousEnabled := s.settings.Enabled
+	newEnabled := *settings.Enabled
+	previousEnabled := *s.settings.Enabled
 	s.settings = settings
 	s.settingsMu.Unlock()
 	// Either restart or set changed status

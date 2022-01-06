@@ -16,7 +16,7 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 	timer := time.NewTimer(time.Hour)
 	timer.Stop() // 1 hour, cannot be a race condition
 	timerIsStopped := true
-	if period := l.state.GetSettings().Period; period > 0 {
+	if period := *l.state.GetSettings().Period; period > 0 {
 		timerIsStopped = false
 		timer.Reset(period)
 	}
@@ -31,13 +31,13 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 		case <-timer.C:
 			lastTick = l.timeNow()
 			_, _ = l.ApplyStatus(ctx, constants.Running)
-			timer.Reset(l.state.GetSettings().Period)
+			timer.Reset(*l.state.GetSettings().Period)
 		case <-l.updateTicker:
 			if !timerIsStopped && !timer.Stop() {
 				<-timer.C
 			}
 			timerIsStopped = true
-			period := l.state.GetSettings().Period
+			period := *l.state.GetSettings().Period
 			if period == 0 {
 				continue
 			}

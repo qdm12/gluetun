@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
@@ -18,53 +18,55 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 
 	testCases := map[string]struct {
 		servers    []models.WindscribeServer
-		selection  configuration.ServerSelection
+		selection  settings.ServerSelection
 		connection models.Connection
 		err        error
 	}{
 		"no server available": {
-			selection: configuration.ServerSelection{
-				VPN: constants.OpenVPN,
-			},
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			selection: settings.ServerSelection{}.WithDefaults(constants.Windscribe),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
 			servers: []models.WindscribeServer{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Windscribe),
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1194,
 				Protocol: constants.UDP,
 			},
 		},
 		"target IP": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
-			},
+			}.WithDefaults(constants.Windscribe),
 			servers: []models.WindscribeServer{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1194,
 				Protocol: constants.UDP,
 			},
 		},
 		"with filter": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			},
+			}.WithDefaults(constants.Windscribe),
 			servers: []models.WindscribeServer{
-				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+				{VPN: constants.OpenVPN, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
+				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1194,
 				Protocol: constants.UDP,

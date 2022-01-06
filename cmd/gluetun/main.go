@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -17,7 +16,11 @@ import (
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/sources"
+	"github.com/qdm12/gluetun/internal/configuration/sources/env"
+	"github.com/qdm12/gluetun/internal/configuration/sources/files"
+	"github.com/qdm12/gluetun/internal/configuration/sources/mux"
+	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -37,7 +40,6 @@ import (
 	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/golibs/logging"
-	"github.com/qdm12/golibs/params"
 	"github.com/qdm12/goshutdown"
 	"github.com/qdm12/goshutdown/goroutine"
 	"github.com/qdm12/goshutdown/group"
@@ -77,12 +79,16 @@ func main() {
 	tun := tun.New()
 	netLinker := netlink.New()
 	cli := cli.New()
-	env := params.New()
 	cmder := command.NewCmder()
+
+	envReader := env.New(logger)
+	filesReader := files.New()
+	secretsReader := secrets.New()
+	muxReader := mux.New(envReader, filesReader, secretsReader)
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, env, tun, netLinker, cmder, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, muxReader, tun, netLinker, cmder, cli)
 	}()
 
 	select {
@@ -122,17 +128,17 @@ var (
 
 //nolint:gocognit,gocyclo
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.ParentLogger, env params.Interface,
+	args []string, logger logging.ParentLogger, source sources.Source,
 	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,
 	cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
-			return cli.HealthCheck(ctx, env, logger)
+			return cli.HealthCheck(ctx, source, logger)
 		case "clientkey":
 			return cli.ClientKey(args[2:])
 		case "openvpnconfig":
-			return cli.OpenvpnConfig(logger, env)
+			return cli.OpenvpnConfig(logger, source)
 		case "update":
 			return cli.Update(ctx, args[2:], logger)
 		case "format-servers":
@@ -142,7 +148,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	announcementExp, err := time.Parse(time.RFC3339, "2021-10-02T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2021-02-15T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -153,7 +159,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		BuildDate:    buildInfo.Created,
-		Announcement: "Wireguard is now supported for Mullvad, IVPN and Windscribe!",
+		Announcement: "Large settings parsing refactoring merged on 2022-01-06, please report any issue!",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
@@ -163,23 +169,28 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		fmt.Println(line)
 	}
 
+	allSettings, err := source.Read()
+	if err != nil {
+		return err
+	}
+
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storageLogger := logger.NewChild(logging.Settings{Prefix: "storage: "})
 	storage, err := storage.New(storageLogger, constants.ServersData)
 	if err != nil {
 		return err
 	}
+
 	allServers := storage.GetServers()
 
-	var allSettings configuration.Settings
-	err = allSettings.Read(env, allServers,
-		logger.NewChild(logging.Settings{Prefix: "configuration: "}))
+	err = allSettings.Validate(allServers)
 	if err != nil {
 		return err
 	}
-	logger.PatchLevel(allSettings.Log.Level)
 
-	puid, pgid := allSettings.System.PUID, allSettings.System.PGID
+	logger.PatchLevel(*allSettings.Log.Level)
+
+	puid, pgid := int(*allSettings.System.PUID), int(*allSettings.System.PGID)
 
 	const clientTimeout = 15 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
@@ -225,15 +236,15 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	// set it for Unbound
 	// TODO remove this when migrating to qdm12/dns v2
-	allSettings.DNS.Unbound.Username = nonRootUsername
+	allSettings.DNS.DoT.Unbound.Username = nonRootUsername
 	allSettings.VPN.OpenVPN.ProcUser = nonRootUsername
 
 	if err := os.Chown("/etc/unbound", puid, pgid); err != nil {
 		return err
 	}
 
-	firewallLogLevel := allSettings.Log.Level
-	if allSettings.Firewall.Debug {
+	firewallLogLevel := *allSettings.Log.Level
+	if *allSettings.Firewall.Debug {
 		firewallLogLevel = logging.LevelDebug
 	}
 	routingLogger := logger.NewChild(logging.Settings{
@@ -292,7 +303,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	if allSettings.Firewall.Enabled {
+	if *allSettings.Firewall.Enabled {
 		err := firewallConf.SetEnabled(ctx, true) // disabled by default
 		if err != nil {
 			return err
@@ -361,7 +372,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,
 		allServers, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
-		buildInfo, allSettings.VersionInformation)
+		buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
 		"vpn", goroutine.OptionTimeout(time.Second))
 	go vpnLooper.Run(vpnCtx, vpnDone)
@@ -388,15 +399,15 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go httpProxyLooper.Run(httpProxyCtx, httpProxyDone)
 	otherGroupHandler.Add(httpProxyHandler)
 
-	shadowsocksLooper := shadowsocks.NewLooper(allSettings.ShadowSocks,
+	shadowsocksLooper := shadowsocks.NewLooper(allSettings.Shadowsocks,
 		logger.NewChild(logging.Settings{Prefix: "shadowsocks: "}))
 	shadowsocksHandler, shadowsocksCtx, shadowsocksDone := goshutdown.NewGoRoutineHandler(
 		"shadowsocks proxy", goroutine.OptionTimeout(defaultShutdownTimeout))
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 	otherGroupHandler.Add(shadowsocksHandler)
 
-	controlServerAddress := ":" + strconv.Itoa(int(allSettings.ControlServer.Port))
-	controlServerLogging := allSettings.ControlServer.Log
+	controlServerAddress := fmt.Sprintf(":%d", allSettings.ControlServer.Port)
+	controlServerLogging := *allSettings.ControlServer.Log
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	httpServer := server.New(httpServerCtx, controlServerAddress, controlServerLogging,

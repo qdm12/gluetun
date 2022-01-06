@@ -3,7 +3,7 @@ package state
 import (
 	"sync"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/publicip/models"
 )
@@ -16,7 +16,7 @@ type Manager interface {
 }
 
 func New(statusApplier loopstate.Applier,
-	settings configuration.PublicIP,
+	settings settings.PublicIP,
 	updateTicker chan<- struct{}) *State {
 	return &State{
 		statusApplier: statusApplier,
@@ -28,7 +28,7 @@ func New(statusApplier loopstate.Applier,
 type State struct {
 	statusApplier loopstate.Applier
 
-	settings   configuration.PublicIP
+	settings   settings.PublicIP
 	settingsMu sync.RWMutex
 
 	ipData   models.IPInfoData

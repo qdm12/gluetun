@@ -3,22 +3,25 @@ package fastestvpn
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (f *Fastestvpn) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
 		settings.Ciphers = []string{constants.AES256cbc}
 	}
-	if settings.Auth == "" {
-		settings.Auth = constants.SHA256
+	auth := *settings.Auth
+	if auth == "" {
+		auth = constants.SHA256
 	}
-	if settings.MSSFix == 0 {
-		settings.MSSFix = 1450
+
+	mssFix := *settings.MSSFix
+	if mssFix == 0 {
+		mssFix = 1450
 	}
 
 	lines = []string{
@@ -26,14 +29,14 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// Fastestvpn specific
-		"mssfix " + strconv.Itoa(int(settings.MSSFix)), // defaults to 1450
+		"mssfix " + strconv.Itoa(int(mssFix)), // defaults to 1450
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 		"key-direction 1",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"auth " + settings.Auth,
+		"auth " + auth,
 		"comp-lzo",
 		"reneg-sec 0",
 
@@ -58,13 +61,13 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		lines = append(lines, "ping 15")          // FastestVPN specific
 	}
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}

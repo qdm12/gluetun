@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -68,7 +68,7 @@ const (
 	defaultBackoffTime = 15 * time.Second
 )
 
-func NewLoop(vpnSettings configuration.VPN, vpnInputPorts []uint16,
+func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
 	allServers models.AllServers, openvpnConf openvpn.Interface,
 	netLinker netlink.NetLinker, fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper, starter command.Starter,

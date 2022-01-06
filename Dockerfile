@@ -102,7 +102,7 @@ ENV VPNSP=pia \
     ISP= \
     OWNED=no \
     # # Private Internet Access only:
-    PIA_ENCRYPTION=strong \
+    PIA_ENCRYPTION= \
     PORT_FORWARDING=off \
     PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # # Cyberghost only:
@@ -143,12 +143,12 @@ ENV VPNSP=pia \
     BLOCK_ADS=off \
     UNBLOCK= \
     DNS_UPDATE_PERIOD=24h \
-    DNS_PLAINTEXT_ADDRESS=1.1.1.1 \
+    DNS_PLAINTEXT_ADDRESS=127.0.0.1 \
     DNS_KEEP_NAMESERVER=off \
     # HTTP proxy
     HTTPPROXY= \
     HTTPPROXY_LOG=off \
-    HTTPPROXY_PORT=8888 \
+    HTTPPROXY_LISTENING_ADDRESS=":8888" \
     HTTPPROXY_USER= \
     HTTPPROXY_PASSWORD= \
     HTTPPROXY_USER_SECRETFILE=/run/secrets/httpproxy_user \

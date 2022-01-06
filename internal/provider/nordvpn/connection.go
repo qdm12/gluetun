@@ -1,17 +1,17 @@
 package nordvpn
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (n *Nordvpn) GetConnection(selection configuration.ServerSelection) (
+func (n *Nordvpn) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	var port uint16 = 1194
 	protocol := constants.UDP
-	if selection.OpenVPN.TCP {
+	if *selection.OpenVPN.TCP {
 		port = 443
 		protocol = constants.TCP
 	}

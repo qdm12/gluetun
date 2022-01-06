@@ -8,7 +8,7 @@ import (
 
 	"github.com/qdm12/dns/pkg/blacklist"
 	"github.com/qdm12/dns/pkg/unbound"
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns/state"
 	"github.com/qdm12/gluetun/internal/loopstate"
@@ -46,8 +46,8 @@ type Loop struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLoop(conf unbound.Configurator, settings configuration.DNS, client *http.Client,
-	logger Logger) *Loop {
+func NewLoop(conf unbound.Configurator, settings settings.DNS,
+	client *http.Client, logger Logger) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})

@@ -6,7 +6,7 @@ import (
 )
 
 func (l *Loop) removePortForwardedFile() {
-	filepath := l.state.GetSettings().Filepath
+	filepath := *l.state.GetSettings().Filepath
 	l.logger.Info("removing port file " + filepath)
 	if err := os.Remove(filepath); err != nil {
 		l.logger.Error(err.Error())
@@ -14,7 +14,7 @@ func (l *Loop) removePortForwardedFile() {
 }
 
 func (l *Loop) writePortForwardedFile(port uint16) {
-	filepath := l.state.GetSettings().Filepath
+	filepath := *l.state.GetSettings().Filepath
 	l.logger.Info("writing port file " + filepath)
 	if err := writePortForwardedToFile(filepath, port); err != nil {
 		l.logger.Error(err.Error())

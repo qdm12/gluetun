@@ -31,7 +31,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		unboundCancel := func() { waitError <- nil }
 		closeStreams := func() {}
 
-		for l.GetSettings().Enabled {
+		for *l.GetSettings().DoT.Enabled {
 			var err error
 			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx)
 			if err == nil {
@@ -54,7 +54,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			l.logAndWait(ctx, err)
 		}
 
-		if !l.GetSettings().Enabled {
+		if !*l.GetSettings().DoT.Enabled {
 			const fallback = false
 			l.useUnencryptedDNS(fallback)
 		}

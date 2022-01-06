@@ -1,12 +1,12 @@
 package privado
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Privado) filterServers(selection configuration.ServerSelection) (
+func (p *Privado) filterServers(selection settings.ServerSelection) (
 	servers []models.PrivadoServer, err error) {
 	for _, server := range p.servers {
 		switch {

@@ -1,12 +1,12 @@
 package privatevpn
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Privatevpn) filterServers(selection configuration.ServerSelection) (
+func (p *Privatevpn) filterServers(selection settings.ServerSelection) (
 	servers []models.PrivatevpnServer, err error) {
 	for _, server := range p.servers {
 		switch {

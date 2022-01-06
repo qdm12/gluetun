@@ -3,7 +3,7 @@ package state
 import (
 	"sync"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/loopstate"
 )
 
@@ -16,7 +16,7 @@ type Manager interface {
 }
 
 func New(statusApplier loopstate.Applier,
-	settings configuration.PortForwarding) *State {
+	settings settings.PortForwarding) *State {
 	return &State{
 		statusApplier: statusApplier,
 		settings:      settings,
@@ -26,7 +26,7 @@ func New(statusApplier loopstate.Applier,
 type State struct {
 	statusApplier loopstate.Applier
 
-	settings   configuration.PortForwarding
+	settings   settings.PortForwarding
 	settingsMu sync.RWMutex
 
 	portForwarded   uint16

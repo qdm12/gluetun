@@ -52,7 +52,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-ctx.Done():
 				getCancel()
 				close(errorCh)
-				filepath := l.state.GetSettings().IPFilepath
+				filepath := *l.state.GetSettings().IPFilepath
 				l.logger.Info("Removing ip file " + filepath)
 				if err := os.Remove(filepath); err != nil {
 					l.logger.Error(err.Error())
@@ -83,7 +83,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				result.SetIP(ip)
 				l.state.SetData(result)
 
-				filepath := l.state.GetSettings().IPFilepath
+				filepath := *l.state.GetSettings().IPFilepath
 				err = persistPublicIP(filepath, ip.String(), l.puid, l.pgid)
 				if err != nil {
 					l.logger.Error(err.Error())

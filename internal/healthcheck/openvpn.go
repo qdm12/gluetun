@@ -19,6 +19,6 @@ func (s *Server) onUnhealthyVPN(ctx context.Context) {
 		s.vpn.healthyWait.String() + ": restarting VPN")
 	_, _ = s.vpn.looper.ApplyStatus(ctx, constants.Stopped)
 	_, _ = s.vpn.looper.ApplyStatus(ctx, constants.Running)
-	s.vpn.healthyWait += s.config.VPN.Addition
+	s.vpn.healthyWait += *s.config.VPN.Addition
 	s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 }

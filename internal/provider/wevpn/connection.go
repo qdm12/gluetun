@@ -1,12 +1,12 @@
 package wevpn
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (w *Wevpn) GetConnection(selection configuration.ServerSelection) (
+func (w *Wevpn) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	port := getPort(selection)
 	protocol := utils.GetProtocol(selection)
@@ -32,7 +32,7 @@ func (w *Wevpn) GetConnection(selection configuration.ServerSelection) (
 	return utils.PickConnection(connections, selection, w.randSource)
 }
 
-func getPort(selection configuration.ServerSelection) (port uint16) {
+func getPort(selection settings.ServerSelection) (port uint16) {
 	const (
 		defaultOpenVPNTCP = 1195
 		defaultOpenVPNUDP = 1194

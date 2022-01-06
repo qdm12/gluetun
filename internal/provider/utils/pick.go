@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"net"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -17,15 +17,15 @@ import (
 // Otherwise, it picks a random connection from the pool of connections
 // and sets the target IP address as the IP if this one is set.
 func PickConnection(connections []models.Connection,
-	selection configuration.ServerSelection, randSource rand.Source) (
+	selection settings.ServerSelection, randSource rand.Source) (
 	connection models.Connection, err error) {
-	if selection.TargetIP != nil && selection.VPN == constants.Wireguard {
+	if len(selection.TargetIP) > 0 && selection.VPN == constants.Wireguard {
 		// we need the right public key
 		return getTargetIPConnection(connections, selection.TargetIP)
 	}
 
 	connection = pickRandomConnection(connections, randSource)
-	if selection.TargetIP != nil {
+	if len(selection.TargetIP) > 0 {
 		connection.IP = selection.TargetIP
 	}
 

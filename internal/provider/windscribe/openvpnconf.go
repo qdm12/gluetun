@@ -3,14 +3,14 @@ package windscribe
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (w *Windscribe) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
 		settings.Ciphers = []string{
 			constants.AES256gcm,
@@ -19,8 +19,9 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		}
 	}
 
-	if settings.Auth == "" {
-		settings.Auth = constants.SHA512
+	auth := *settings.Auth
+	if auth == "" {
+		auth = constants.SHA512
 	}
 
 	lines = []string{
@@ -28,7 +29,7 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// Windscribe specific
 		"ping 10",
@@ -37,7 +38,7 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		"key-direction 1",
 		"reneg-sec 0",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"auth " + settings.Auth,
+		"auth " + auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -57,17 +58,17 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 		lines = append(lines, "explicit-exit-notify")
 	}
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if settings.MSSFix > 0 {
-		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
+	if *settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(*settings.MSSFix)))
 	}
 
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}

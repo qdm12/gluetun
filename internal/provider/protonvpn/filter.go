@@ -3,12 +3,12 @@ package protonvpn
 import (
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Protonvpn) filterServers(selection configuration.ServerSelection) (
+func (p *Protonvpn) filterServers(selection settings.ServerSelection) (
 	servers []models.ProtonvpnServer, err error) {
 	for _, server := range p.servers {
 		switch {
@@ -18,7 +18,7 @@ func (p *Protonvpn) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
 			utils.FilterByPossibilities(server.Name, selection.Names),
-			selection.FreeOnly && !strings.Contains(strings.ToLower(server.Name), "free"):
+			*selection.FreeOnly && !strings.Contains(strings.ToLower(server.Name), "free"):
 		default:
 			servers = append(servers, server)
 		}

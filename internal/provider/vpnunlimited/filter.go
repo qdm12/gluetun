@@ -1,12 +1,12 @@
 package vpnunlimited
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Provider) filterServers(selection configuration.ServerSelection) (
+func (p *Provider) filterServers(selection settings.ServerSelection) (
 	servers []models.VPNUnlimitedServer, err error) {
 	for _, server := range p.servers {
 		switch {
@@ -14,8 +14,8 @@ func (p *Provider) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.Country, selection.Countries),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			selection.FreeOnly && !server.Free,
-			selection.StreamOnly && !server.Stream,
+			*selection.FreeOnly && !server.Free,
+			*selection.StreamOnly && !server.Stream,
 			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)

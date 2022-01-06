@@ -1,12 +1,12 @@
 package wevpn
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (w *Wevpn) filterServers(selection configuration.ServerSelection) (
+func (w *Wevpn) filterServers(selection settings.ServerSelection) (
 	servers []models.WevpnServer, err error) {
 	for _, server := range w.servers {
 		switch {

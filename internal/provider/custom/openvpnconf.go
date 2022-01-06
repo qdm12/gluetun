@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -15,8 +15,8 @@ import (
 var ErrExtractData = errors.New("failed extracting information from custom configuration file")
 
 func (p *Provider) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
-	lines, _, err = p.extractor.Data(settings.ConfFile)
+	settings settings.OpenVPN) (lines []string, err error) {
+	lines, _, err = p.extractor.Data(*settings.ConfFile)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrExtractData, err)
 	}
@@ -27,7 +27,7 @@ func (p *Provider) BuildConf(connection models.Connection,
 }
 
 func modifyConfig(lines []string, connection models.Connection,
-	settings configuration.OpenVPN) (modified []string) {
+	settings settings.OpenVPN) (modified []string) {
 	// Remove some lines
 	for _, line := range lines {
 		switch {
@@ -52,9 +52,9 @@ func modifyConfig(lines []string, connection models.Connection,
 			// Remove values eventually modified
 			len(settings.Ciphers) > 0 && hasPrefixOneOf(line,
 				"cipher ", "ncp-ciphers ", "data-ciphers ", "data-ciphers-fallback "),
-			settings.Auth != "" && strings.HasPrefix(line, "auth "),
-			settings.MSSFix > 0 && strings.HasPrefix(line, "mssfix "),
-			!settings.IPv6 && hasPrefixOneOf(line, "tun-ipv6",
+			*settings.Auth != "" && strings.HasPrefix(line, "auth "),
+			*settings.MSSFix > 0 && strings.HasPrefix(line, "mssfix "),
+			!*settings.IPv6 && hasPrefixOneOf(line, "tun-ipv6",
 				`pull-filter ignore "route-ipv6"`,
 				`pull-filter ignore "ifconfig-ipv6"`):
 		default:
@@ -74,21 +74,21 @@ func modifyConfig(lines []string, connection models.Connection,
 	if settings.User != "" {
 		modified = append(modified, "auth-user-pass "+constants.OpenVPNAuthConf)
 	}
-	modified = append(modified, "verb "+strconv.Itoa(settings.Verbosity))
+	modified = append(modified, "verb "+strconv.Itoa(*settings.Verbosity))
 	if len(settings.Ciphers) > 0 {
 		modified = append(modified, utils.CipherLines(settings.Ciphers, settings.Version)...)
 	}
-	if settings.Auth != "" {
-		modified = append(modified, "auth "+settings.Auth)
+	if *settings.Auth != "" {
+		modified = append(modified, "auth "+*settings.Auth)
 	}
-	if settings.MSSFix > 0 {
-		modified = append(modified, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
+	if *settings.MSSFix > 0 {
+		modified = append(modified, "mssfix "+strconv.Itoa(int(*settings.MSSFix)))
 	}
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		modified = append(modified, `pull-filter ignore "route-ipv6"`)
 		modified = append(modified, `pull-filter ignore "ifconfig-ipv6"`)
 	}
-	if !settings.Root {
+	if !*settings.Root {
 		modified = append(modified, "user "+settings.ProcUser)
 		modified = append(modified, "persist-tun")
 		modified = append(modified, "persist-key")

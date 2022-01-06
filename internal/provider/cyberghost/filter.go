@@ -3,14 +3,14 @@ package cyberghost
 import (
 	"errors"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 var ErrGroupMismatchesProtocol = errors.New("server group does not match protocol")
 
-func (c *Cyberghost) filterServers(selection configuration.ServerSelection) (
+func (c *Cyberghost) filterServers(selection settings.ServerSelection) (
 	servers []models.CyberghostServer, err error) {
 	for _, server := range c.servers {
 		switch {

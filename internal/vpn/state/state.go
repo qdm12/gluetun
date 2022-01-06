@@ -3,7 +3,7 @@ package state
 import (
 	"sync"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -13,11 +13,11 @@ var _ Manager = (*State)(nil)
 type Manager interface {
 	SettingsGetSetter
 	ServersGetterSetter
-	GetSettingsAndServers() (vpn configuration.VPN, allServers models.AllServers)
+	GetSettingsAndServers() (vpn settings.VPN, allServers models.AllServers)
 }
 
 func New(statusApplier loopstate.Applier,
-	vpn configuration.VPN, allServers models.AllServers) *State {
+	vpn settings.VPN, allServers models.AllServers) *State {
 	return &State{
 		statusApplier: statusApplier,
 		vpn:           vpn,
@@ -28,14 +28,14 @@ func New(statusApplier loopstate.Applier,
 type State struct {
 	statusApplier loopstate.Applier
 
-	vpn        configuration.VPN
+	vpn        settings.VPN
 	settingsMu sync.RWMutex
 
 	allServers   models.AllServers
 	allServersMu sync.RWMutex
 }
 
-func (s *State) GetSettingsAndServers() (vpn configuration.VPN,
+func (s *State) GetSettingsAndServers() (vpn settings.VPN,
 	allServers models.AllServers) {
 	s.settingsMu.RLock()
 	s.allServersMu.RLock()

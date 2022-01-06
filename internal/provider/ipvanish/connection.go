@@ -3,7 +3,7 @@ package ipvanish
 import (
 	"errors"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -11,11 +11,11 @@ import (
 
 var ErrProtocolUnsupported = errors.New("network protocol is not supported")
 
-func (i *Ipvanish) GetConnection(selection configuration.ServerSelection) (
+func (i *Ipvanish) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	const port = 443
 	const protocol = constants.UDP
-	if selection.OpenVPN.TCP {
+	if *selection.OpenVPN.TCP {
 		return connection, ErrProtocolUnsupported
 	}
 

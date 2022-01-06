@@ -3,20 +3,21 @@ package privado
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (p *Privado) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
 		settings.Ciphers = []string{constants.AES256cbc}
 	}
 
-	if settings.Auth == "" {
-		settings.Auth = constants.SHA256
+	auth := *settings.Auth
+	if auth == "" {
+		auth = constants.SHA256
 	}
 
 	lines = []string{
@@ -24,14 +25,14 @@ func (p *Privado) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// Privado specific
 		"ping 10",
 		"tls-cipher TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-DHE-DSS-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA",
 		"verify-x509-name " + connection.Hostname + " name",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"auth " + settings.Auth,
+		"auth " + auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -47,21 +48,21 @@ func (p *Privado) BuildConf(connection models.Connection,
 
 	lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if settings.MSSFix > 0 {
-		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
+	if *settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(*settings.MSSFix)))
 	}
 
 	if connection.Protocol == constants.UDP {
 		lines = append(lines, "explicit-exit-notify")
 	}
 
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}

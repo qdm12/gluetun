@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
@@ -18,15 +18,13 @@ func Test_Provider_GetConnection(t *testing.T) {
 
 	testCases := map[string]struct {
 		servers    []models.ExpressvpnServer
-		selection  configuration.ServerSelection
+		selection  settings.ServerSelection
 		connection models.Connection
 		err        error
 	}{
 		"no server available": {
-			selection: configuration.ServerSelection{
-				VPN: constants.OpenVPN,
-			},
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			selection: settings.ServerSelection{}.WithDefaults(constants.Expressvpn),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
 			servers: []models.ExpressvpnServer{
@@ -34,37 +32,41 @@ func Test_Provider_GetConnection(t *testing.T) {
 				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Expressvpn),
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1195,
 				Protocol: constants.UDP,
 			},
 		},
 		"target IP": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1195,
 				Protocol: constants.UDP,
 			},
 		},
 		"with filter": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1195,
 				Protocol: constants.UDP,

@@ -3,25 +3,27 @@ package surfshark
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (s *Surfshark) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
 		settings.Ciphers = []string{constants.AES256gcm}
 	}
 
-	if settings.Auth == "" {
-		settings.Auth = constants.SHA512
+	auth := *settings.Auth
+	if auth == "" {
+		auth = constants.SHA512
 	}
 
-	const defaultMSSFix = 1450
-	if settings.MSSFix == 0 {
-		settings.MSSFix = defaultMSSFix
+	mssFix := *settings.MSSFix
+	if mssFix == 0 {
+		const defaultMSSFix = 1450
+		mssFix = defaultMSSFix
 	}
 
 	lines = []string{
@@ -29,17 +31,17 @@ func (s *Surfshark) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// Surfshark specific
 		"tun-mtu-extra 32",
-		"mssfix " + strconv.Itoa(int(settings.MSSFix)),
+		"mssfix " + strconv.Itoa(int(mssFix)),
 		"ping 15",
 		"remote-cert-tls server",
 		"reneg-sec 0",
 		"key-direction 1",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"auth " + settings.Auth,
+		"auth " + auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -59,13 +61,13 @@ func (s *Surfshark) BuildConf(connection models.Connection,
 		lines = append(lines, "explicit-exit-notify")
 	}
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}

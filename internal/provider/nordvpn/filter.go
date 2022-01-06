@@ -3,12 +3,12 @@ package nordvpn
 import (
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (n *Nordvpn) filterServers(selection configuration.ServerSelection) (
+func (n *Nordvpn) filterServers(selection settings.ServerSelection) (
 	servers []models.NordvpnServer, err error) {
 	selectedNumbers := make([]string, len(selection.Numbers))
 	for i := range selection.Numbers {

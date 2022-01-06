@@ -1,16 +1,18 @@
 package cyberghost
 
 import (
+	"fmt"
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/openvpn/parse"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 func (c *Cyberghost) BuildConf(connection models.Connection,
-	settings configuration.OpenVPN) (lines []string, err error) {
+	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
 		settings.Ciphers = []string{
 			constants.AES256gcm,
@@ -19,8 +21,9 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		}
 	}
 
-	if settings.Auth == "" {
-		settings.Auth = constants.SHA256
+	auth := *settings.Auth
+	if auth == "" {
+		auth = constants.SHA256
 	}
 
 	lines = []string{
@@ -28,13 +31,13 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		"nobind",
 		"tls-exit",
 		"dev " + settings.Interface,
-		"verb " + strconv.Itoa(settings.Verbosity),
+		"verb " + strconv.Itoa(*settings.Verbosity),
 
 		// Cyberghost specific
 		"ping 10",
 		"remote-cert-tls server",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
-		"auth " + settings.Auth,
+		"auth " + auth,
 
 		// Added constant values
 		"auth-nocache",
@@ -54,27 +57,35 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 		lines = append(lines, "explicit-exit-notify")
 	}
 
-	if !settings.Root {
+	if !*settings.Root {
 		lines = append(lines, "user "+settings.ProcUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
 
-	if settings.MSSFix > 0 {
-		lines = append(lines, "mssfix "+strconv.Itoa(int(settings.MSSFix)))
+	if *settings.MSSFix > 0 {
+		lines = append(lines, "mssfix "+strconv.Itoa(int(*settings.MSSFix)))
 	}
 
-	if !settings.IPv6 {
+	if !*settings.IPv6 {
 		lines = append(lines, `pull-filter ignore "route-ipv6"`)
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.CyberghostCertificate)...)
-	lines = append(lines, utils.WrapOpenvpnCert(
-		settings.ClientCrt)...)
-	lines = append(lines, utils.WrapOpenvpnKey(
-		settings.ClientKey)...)
+
+	certData, err := parse.ExtractCert([]byte(*settings.ClientCrt))
+	if err != nil {
+		return nil, fmt.Errorf("client cert is not valid: %w", err)
+	}
+	lines = append(lines, utils.WrapOpenvpnCert(certData)...)
+
+	keyData, err := parse.ExtractPrivateKey([]byte(*settings.ClientKey))
+	if err != nil {
+		return nil, fmt.Errorf("client key is not valid: %w", err)
+	}
+	lines = append(lines, utils.WrapOpenvpnKey(keyData)...)
 
 	lines = append(lines, "")
 

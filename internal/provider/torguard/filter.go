@@ -1,12 +1,12 @@
 package torguard
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (t *Torguard) filterServers(selection configuration.ServerSelection) (
+func (t *Torguard) filterServers(selection settings.ServerSelection) (
 	servers []models.TorguardServer, err error) {
 	for _, server := range t.servers {
 		switch {

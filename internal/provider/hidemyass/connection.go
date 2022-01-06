@@ -1,23 +1,23 @@
 package hidemyass
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (h *HideMyAss) GetConnection(selection configuration.ServerSelection) (
+func (h *HideMyAss) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	var port uint16 = 553
 	protocol := constants.UDP
-	if selection.OpenVPN.TCP {
+	if *selection.OpenVPN.TCP {
 		protocol = constants.TCP
 		port = 8080
 	}
 
-	if selection.OpenVPN.CustomPort > 0 {
-		port = selection.OpenVPN.CustomPort
+	if *selection.OpenVPN.CustomPort > 0 {
+		port = *selection.OpenVPN.CustomPort
 	}
 
 	servers, err := h.filterServers(selection)

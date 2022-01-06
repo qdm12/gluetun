@@ -3,10 +3,13 @@ package utils
 import (
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/stretchr/testify/assert"
 )
+
+func boolPtr(b bool) *bool       { return &b }
+func uint16Ptr(n uint16) *uint16 { return &n }
 
 func Test_GetPort(t *testing.T) {
 	t.Parallel()
@@ -18,47 +21,53 @@ func Test_GetPort(t *testing.T) {
 	)
 
 	testCases := map[string]struct {
-		selection configuration.ServerSelection
+		selection settings.ServerSelection
 		port      uint16
 	}{
 		"default": {
-			port: defaultOpenVPNUDP,
+			selection: settings.ServerSelection{}.WithDefaults(""),
+			port:      defaultOpenVPNUDP,
 		},
 		"OpenVPN UDP": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
+				OpenVPN: settings.OpenVPNSelection{
+					CustomPort: uint16Ptr(0),
+					TCP:        boolPtr(false),
+				},
 			},
 			port: defaultOpenVPNUDP,
 		},
 		"OpenVPN TCP": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
-				OpenVPN: configuration.OpenVPNSelection{
-					TCP: true,
+				OpenVPN: settings.OpenVPNSelection{
+					CustomPort: uint16Ptr(0),
+					TCP:        boolPtr(true),
 				},
 			},
 			port: defaultOpenVPNTCP,
 		},
 		"OpenVPN custom port": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
-				OpenVPN: configuration.OpenVPNSelection{
-					CustomPort: 1234,
+				OpenVPN: settings.OpenVPNSelection{
+					CustomPort: uint16Ptr(1234),
 				},
 			},
 			port: 1234,
 		},
 		"Wireguard": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
-			},
+			}.WithDefaults(""),
 			port: defaultWireguard,
 		},
 		"Wireguard custom port": {
-			selection: configuration.ServerSelection{
+			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
-				Wireguard: configuration.WireguardSelection{
-					EndpointPort: 1234,
+				Wireguard: settings.WireguardSelection{
+					EndpointPort: uint16Ptr(1234),
 				},
 			},
 			port: 1234,

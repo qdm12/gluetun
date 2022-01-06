@@ -1,12 +1,12 @@
 package mullvad
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (m *Mullvad) GetConnection(selection configuration.ServerSelection) (
+func (m *Mullvad) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	port := getPort(selection)
 	protocol := utils.GetProtocol(selection)
@@ -33,7 +33,7 @@ func (m *Mullvad) GetConnection(selection configuration.ServerSelection) (
 	return utils.PickConnection(connections, selection, m.randSource)
 }
 
-func getPort(selection configuration.ServerSelection) (port uint16) {
+func getPort(selection settings.ServerSelection) (port uint16) {
 	const (
 		defaultOpenVPNTCP = 443
 		defaultOpenVPNUDP = 1194

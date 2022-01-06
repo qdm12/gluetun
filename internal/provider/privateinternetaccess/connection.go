@@ -1,16 +1,16 @@
 package privateinternetaccess
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *PIA) GetConnection(selection configuration.ServerSelection) (
+func (p *PIA) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	protocol := constants.UDP
-	if selection.OpenVPN.TCP {
+	if *selection.OpenVPN.TCP {
 		protocol = constants.TCP
 	}
 

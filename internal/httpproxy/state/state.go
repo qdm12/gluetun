@@ -3,7 +3,7 @@ package state
 import (
 	"sync"
 
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/loopstate"
 )
 
@@ -14,7 +14,7 @@ type Manager interface {
 }
 
 func New(statusApplier loopstate.Applier,
-	settings configuration.HTTPProxy) *State {
+	settings settings.HTTPProxy) *State {
 	return &State{
 		statusApplier: statusApplier,
 		settings:      settings,
@@ -23,6 +23,6 @@ func New(statusApplier loopstate.Applier,
 
 type State struct {
 	statusApplier loopstate.Applier
-	settings      configuration.HTTPProxy
+	settings      settings.HTTPProxy
 	settingsMu    sync.RWMutex
 }

@@ -1,12 +1,12 @@
 package surfshark
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (s *Surfshark) filterServers(selection configuration.ServerSelection) (
+func (s *Surfshark) filterServers(selection settings.ServerSelection) (
 	servers []models.SurfsharkServer, err error) {
 	for _, server := range s.servers {
 		switch {
@@ -16,7 +16,7 @@ func (s *Surfshark) filterServers(selection configuration.ServerSelection) (
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
 			utils.FilterByProtocol(selection, server.TCP, server.UDP),
-			selection.MultiHopOnly && !server.MultiHop:
+			*selection.MultiHopOnly && !server.MultiHop:
 		default:
 			servers = append(servers, server)
 		}
