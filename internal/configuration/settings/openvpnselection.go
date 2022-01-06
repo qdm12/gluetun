@@ -99,7 +99,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		validEncryptionPresets := []string{
 			constants.PIAEncryptionPresetNone,
 			constants.PIAEncryptionPresetNormal,
-			constants.PIACertificateStrong,
+			constants.PIAEncryptionPresetStrong,
 		}
 		if !helpers.IsOneOf(*o.PIAEncPreset, validEncryptionPresets...) {
 			return fmt.Errorf("%w: %s; valid presets are %s",
