@@ -25,11 +25,16 @@ func Test_GetPort(t *testing.T) {
 		port      uint16
 	}{
 		"default": {
-			port: defaultOpenVPNUDP,
+			selection: settings.ServerSelection{}.WithDefaults(""),
+			port:      defaultOpenVPNUDP,
 		},
 		"OpenVPN UDP": {
 			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
+				OpenVPN: settings.OpenVPNSelection{
+					CustomPort: uint16Ptr(0),
+					TCP:        boolPtr(false),
+				},
 			},
 			port: defaultOpenVPNUDP,
 		},
@@ -37,7 +42,8 @@ func Test_GetPort(t *testing.T) {
 			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
-					TCP: boolPtr(true),
+					CustomPort: uint16Ptr(0),
+					TCP:        boolPtr(true),
 				},
 			},
 			port: defaultOpenVPNTCP,
@@ -54,7 +60,7 @@ func Test_GetPort(t *testing.T) {
 		"Wireguard": {
 			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
-			},
+			}.WithDefaults(""),
 			port: defaultWireguard,
 		},
 		"Wireguard custom port": {

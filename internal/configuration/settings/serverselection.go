@@ -377,3 +377,10 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 
 	return node
 }
+
+// WithDefaults is a shorthand using setDefaults.
+// It's used in unit tests in other packages.
+func (ss ServerSelection) WithDefaults(provider string) ServerSelection {
+	ss.setDefaults(provider)
+	return ss
+}

@@ -21,6 +21,9 @@ func Test_GetProtocol(t *testing.T) {
 		"OpenVPN UDP": {
 			selection: settings.ServerSelection{
 				VPN: constants.OpenVPN,
+				OpenVPN: settings.OpenVPNSelection{
+					TCP: boolPtr(false),
+				},
 			},
 			protocol: constants.UDP,
 		},

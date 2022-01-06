@@ -24,27 +24,26 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
-			},
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			selection: settings.ServerSelection{}.WithDefaults(constants.Mullvad),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
 			servers: []models.MullvadServer{
-				{Hostname: "a"},
-				{Hostname: "b"},
-				{Hostname: "c"},
+				{VPN: constants.OpenVPN, Hostname: "a"},
+				{VPN: constants.OpenVPN, Hostname: "b"},
+				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Mullvad),
 			filtered: []models.MullvadServer{
-				{Hostname: "a"},
-				{Hostname: "b"},
-				{Hostname: "c"},
+				{VPN: constants.OpenVPN, Hostname: "a"},
+				{VPN: constants.OpenVPN, Hostname: "b"},
+				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
 		},
 		"filter OpenVPN out": {
 			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
-			},
+			}.WithDefaults(constants.Mullvad),
 			servers: []models.MullvadServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.Wireguard, Hostname: "b"},
@@ -57,66 +56,66 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
-			},
+			}.WithDefaults(constants.Mullvad),
 			servers: []models.MullvadServer{
-				{Country: "a"},
-				{Country: "b"},
-				{Country: "c"},
+				{VPN: constants.OpenVPN, Country: "a"},
+				{VPN: constants.OpenVPN, Country: "b"},
+				{VPN: constants.OpenVPN, Country: "c"},
 			},
 			filtered: []models.MullvadServer{
-				{Country: "b"},
+				{VPN: constants.OpenVPN, Country: "b"},
 			},
 		},
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			},
+			}.WithDefaults(constants.Mullvad),
 			servers: []models.MullvadServer{
-				{City: "a"},
-				{City: "b"},
-				{City: "c"},
+				{VPN: constants.OpenVPN, City: "a"},
+				{VPN: constants.OpenVPN, City: "b"},
+				{VPN: constants.OpenVPN, City: "c"},
 			},
 			filtered: []models.MullvadServer{
-				{City: "b"},
+				{VPN: constants.OpenVPN, City: "b"},
 			},
 		},
 		"filter by ISP": {
 			selection: settings.ServerSelection{
 				ISPs: []string{"b"},
-			},
+			}.WithDefaults(constants.Mullvad),
 			servers: []models.MullvadServer{
-				{ISP: "a"},
-				{ISP: "b"},
-				{ISP: "c"},
+				{VPN: constants.OpenVPN, ISP: "a"},
+				{VPN: constants.OpenVPN, ISP: "b"},
+				{VPN: constants.OpenVPN, ISP: "c"},
 			},
 			filtered: []models.MullvadServer{
-				{ISP: "b"},
+				{VPN: constants.OpenVPN, ISP: "b"},
 			},
 		},
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			},
+			}.WithDefaults(constants.Mullvad),
 			servers: []models.MullvadServer{
-				{Hostname: "a"},
-				{Hostname: "b"},
-				{Hostname: "c"},
+				{VPN: constants.OpenVPN, Hostname: "a"},
+				{VPN: constants.OpenVPN, Hostname: "b"},
+				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
 			filtered: []models.MullvadServer{
-				{Hostname: "b"},
+				{VPN: constants.OpenVPN, Hostname: "b"},
 			},
 		},
 		"filter by owned": {
 			selection: settings.ServerSelection{
 				OwnedOnly: boolPtr(true),
-			},
+			}.WithDefaults(constants.Mullvad),
 			servers: []models.MullvadServer{
-				{Hostname: "a"},
-				{Hostname: "b", Owned: true},
-				{Hostname: "c"},
+				{VPN: constants.OpenVPN, Hostname: "a"},
+				{VPN: constants.OpenVPN, Hostname: "b", Owned: true},
+				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
 			filtered: []models.MullvadServer{
-				{Hostname: "b", Owned: true},
+				{VPN: constants.OpenVPN, Hostname: "b", Owned: true},
 			},
 		},
 	}

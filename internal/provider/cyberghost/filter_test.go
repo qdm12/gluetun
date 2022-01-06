@@ -22,7 +22,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 		err             error
 	}{
 		"no server": {
-			selection: settings.ServerSelection{VPN: constants.OpenVPN},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Cyberghost),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"servers without filter defaults to UDP": {
@@ -32,6 +32,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 				{Country: "c", UDP: true},
 				{Country: "d", UDP: true},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Country: "c", UDP: true},
 				{Country: "d", UDP: true},
@@ -48,7 +49,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
-			},
+			}.WithDefaults(constants.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Country: "a", TCP: true},
 				{Country: "b", TCP: true},
@@ -63,7 +64,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 			},
 			selection: settings.ServerSelection{
 				Countries: []string{"a", "c"},
-			},
+			}.WithDefaults(constants.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Country: "a", UDP: true},
 				{Country: "c", UDP: true},
@@ -77,7 +78,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 			},
 			selection: settings.ServerSelection{
 				Hostnames: []string{"a", "c"},
-			},
+			}.WithDefaults(constants.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "c", UDP: true},

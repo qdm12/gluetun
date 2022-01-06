@@ -309,3 +309,10 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 
 	return node
 }
+
+// WithDefaults is a shorthand using setDefaults.
+// It's used in unit tests in other packages.
+func (o OpenVPN) WithDefaults(provider string) OpenVPN {
+	o.setDefaults(provider)
+	return o
+}

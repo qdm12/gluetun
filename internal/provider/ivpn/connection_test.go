@@ -23,18 +23,18 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 		err        error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
-			},
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
 			servers: []models.IvpnServer{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
-				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
-				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1194,
 				Protocol: constants.UDP,
@@ -43,13 +43,14 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 		"target IP": {
 			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
-			},
+			}.WithDefaults(constants.Ivpn),
 			servers: []models.IvpnServer{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
-				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
-				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
+				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1194,
 				Protocol: constants.UDP,
@@ -58,13 +59,14 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 		"with filter": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			},
+			}.WithDefaults(constants.Ivpn),
 			servers: []models.IvpnServer{
-				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
-				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
-				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1194,
 				Protocol: constants.UDP,

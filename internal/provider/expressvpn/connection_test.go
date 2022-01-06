@@ -23,10 +23,8 @@ func Test_Provider_GetConnection(t *testing.T) {
 		err        error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
-			},
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			selection: settings.ServerSelection{}.WithDefaults(constants.Expressvpn),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
 			servers: []models.ExpressvpnServer{
@@ -34,7 +32,9 @@ func Test_Provider_GetConnection(t *testing.T) {
 				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Expressvpn),
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1195,
 				Protocol: constants.UDP,
@@ -43,13 +43,14 @@ func Test_Provider_GetConnection(t *testing.T) {
 		"target IP": {
 			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1195,
 				Protocol: constants.UDP,
@@ -58,13 +59,14 @@ func Test_Provider_GetConnection(t *testing.T) {
 		"with filter": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
+				Type:     constants.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1195,
 				Protocol: constants.UDP,

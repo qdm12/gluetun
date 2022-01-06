@@ -24,73 +24,72 @@ func Test_Ivpn_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
-			},
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
 			servers: []models.IvpnServer{
-				{Hostname: "a", UDP: true},
-				{Hostname: "b", UDP: true},
-				{Hostname: "c", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
 			filtered: []models.IvpnServer{
-				{Hostname: "a", UDP: true},
-				{Hostname: "b", UDP: true},
-				{Hostname: "c", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
 			},
 		},
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
-			},
+			}.WithDefaults(constants.Ivpn),
 			servers: []models.IvpnServer{
-				{Country: "a", UDP: true},
-				{Country: "b", UDP: true},
-				{Country: "c", UDP: true},
+				{VPN: constants.OpenVPN, Country: "a", UDP: true},
+				{VPN: constants.OpenVPN, Country: "b", UDP: true},
+				{VPN: constants.OpenVPN, Country: "c", UDP: true},
 			},
 			filtered: []models.IvpnServer{
-				{Country: "b", UDP: true},
+				{VPN: constants.OpenVPN, Country: "b", UDP: true},
 			},
 		},
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			},
+			}.WithDefaults(constants.Ivpn),
 			servers: []models.IvpnServer{
-				{City: "a", UDP: true},
-				{City: "b", UDP: true},
-				{City: "c", UDP: true},
+				{VPN: constants.OpenVPN, City: "a", UDP: true},
+				{VPN: constants.OpenVPN, City: "b", UDP: true},
+				{VPN: constants.OpenVPN, City: "c", UDP: true},
 			},
 			filtered: []models.IvpnServer{
-				{City: "b", UDP: true},
+				{VPN: constants.OpenVPN, City: "b", UDP: true},
 			},
 		},
 		"filter by ISP": {
 			selection: settings.ServerSelection{
 				ISPs: []string{"b"},
-			},
+			}.WithDefaults(constants.Ivpn),
 			servers: []models.IvpnServer{
-				{ISP: "a", UDP: true},
-				{ISP: "b", UDP: true},
-				{ISP: "c", UDP: true},
+				{VPN: constants.OpenVPN, ISP: "a", UDP: true},
+				{VPN: constants.OpenVPN, ISP: "b", UDP: true},
+				{VPN: constants.OpenVPN, ISP: "c", UDP: true},
 			},
 			filtered: []models.IvpnServer{
-				{ISP: "b", UDP: true},
+				{VPN: constants.OpenVPN, ISP: "b", UDP: true},
 			},
 		},
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			},
+			}.WithDefaults(constants.Ivpn),
 			servers: []models.IvpnServer{
-				{Hostname: "a", UDP: true},
-				{Hostname: "b", UDP: true},
-				{Hostname: "c", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
 			},
 			filtered: []models.IvpnServer{
-				{Hostname: "b", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
 			},
 		},
 		"filter by protocol": {
@@ -98,14 +97,14 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
-			},
+			}.WithDefaults(constants.Ivpn),
 			servers: []models.IvpnServer{
-				{Hostname: "a", UDP: true},
-				{Hostname: "b", UDP: true, TCP: true},
-				{Hostname: "c", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: constants.OpenVPN, Hostname: "b", UDP: true, TCP: true},
+				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
 			},
 			filtered: []models.IvpnServer{
-				{Hostname: "b", UDP: true, TCP: true},
+				{VPN: constants.OpenVPN, Hostname: "b", UDP: true, TCP: true},
 			},
 		},
 	}

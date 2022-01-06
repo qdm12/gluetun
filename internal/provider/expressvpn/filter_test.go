@@ -24,10 +24,8 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
-			},
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			selection: settings.ServerSelection{}.WithDefaults(constants.Expressvpn),
+			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
 			servers: []models.ExpressvpnServer{
@@ -35,6 +33,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
 			},
+			selection: settings.ServerSelection{}.WithDefaults(constants.Expressvpn),
 			filtered: []models.ExpressvpnServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
@@ -44,7 +43,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{Country: "a", UDP: true},
 				{Country: "b", UDP: true},
@@ -57,7 +56,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{City: "a", UDP: true},
 				{City: "b", UDP: true},
@@ -70,7 +69,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
@@ -85,7 +84,7 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
-			},
+			}.WithDefaults(constants.Expressvpn),
 			servers: []models.ExpressvpnServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true, TCP: true},
