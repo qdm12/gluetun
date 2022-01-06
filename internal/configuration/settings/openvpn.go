@@ -145,7 +145,7 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 			ErrOpenVPNMSSFixIsTooHigh, *o.MSSFix, maxMSSFix)
 	}
 
-	if regexpInterfaceName.MatchString(o.Interface) {
+	if !regexpInterfaceName.MatchString(o.Interface) {
 		return fmt.Errorf("%w: '%s' does not match regex '%s'",
 			ErrOpenVPNInterfaceNotValid, o.Interface, regexpInterfaceName)
 	}
