@@ -85,9 +85,9 @@ func (r *Reader) readHTTProxyListeningAddress() (listeningAddress string) {
 	}
 
 	// Retro-compatibility
-	s = os.Getenv("HTTPPROXY_PORT")
+	s = os.Getenv("HTTPROXY_PORT")
 	if s != "" {
-		r.onRetroActive("HTTPPROXY_PORT", "HTTPPROXY_LISTENING_ADDRESS")
+		r.onRetroActive("HTTPROXY_PORT", "HTTPPROXY_LISTENING_ADDRESS")
 		return ":" + s
 	}
 
