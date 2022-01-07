@@ -406,7 +406,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 	otherGroupHandler.Add(shadowsocksHandler)
 
-	controlServerAddress := fmt.Sprintf(":%d", allSettings.ControlServer.Port)
+	controlServerAddress := fmt.Sprintf(":%d", *allSettings.ControlServer.Port)
 	controlServerLogging := *allSettings.ControlServer.Log
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
