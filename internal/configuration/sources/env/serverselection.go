@@ -64,7 +64,7 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		return ss, fmt.Errorf("environment variable OWNED: %w", err)
 	}
 
-	// VPNUnlimited only
+	// VPNUnlimited and ProtonVPN only
 	ss.FreeOnly, err = envToBoolPtr("FREE_ONLY")
 	if err != nil {
 		return ss, fmt.Errorf("environment variable FREE_ONLY: %w", err)
