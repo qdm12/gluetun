@@ -253,7 +253,7 @@ func (o OpenVPN) String() string {
 }
 
 func (o OpenVPN) toLinesNode() (node *gotree.Node) {
-	node = gotree.New("OpenVPN server selection settings:")
+	node = gotree.New("OpenVPN settings:")
 	node.Appendf("OpenVPN version: %s", o.Version)
 	node.Appendf("User: %s", helpers.ObfuscatePassword(o.User))
 	node.Appendf("Password: %s", helpers.ObfuscatePassword(o.Password))

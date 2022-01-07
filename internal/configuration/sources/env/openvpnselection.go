@@ -13,6 +13,11 @@ import (
 
 func (r *Reader) readOpenVPNSelection() (
 	selection settings.OpenVPNSelection, err error) {
+	confFile := os.Getenv("OPENVPN_CUSTOM_CONFIG")
+	if confFile != "" {
+		selection.ConfFile = &confFile
+	}
+
 	selection.TCP, err = r.readOpenVPNProtocol()
 	if err != nil {
 		return selection, err
