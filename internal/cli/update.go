@@ -73,6 +73,8 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		options.Providers = strings.Split(csvProviders, ",")
 	}
 
+	options.SetDefaults()
+
 	err := options.Validate()
 	if err != nil {
 		return fmt.Errorf("options validation failed: %w", err)

@@ -118,7 +118,7 @@ func (s *Settings) SetDefaults() {
 	s.PublicIP.setDefaults()
 	s.Shadowsocks.setDefaults()
 	s.System.setDefaults()
-	s.Updater.setDefaults()
+	s.Updater.SetDefaults()
 	s.Version.setDefaults()
 	s.VPN.setDefaults()
 }

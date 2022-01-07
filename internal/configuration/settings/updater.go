@@ -85,7 +85,7 @@ func (u *Updater) overrideWith(other Updater) {
 	u.CLI = helpers.MergeWithBool(u.CLI, other.CLI)
 }
 
-func (u *Updater) setDefaults() {
+func (u *Updater) SetDefaults() {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
 	u.DNSAddress = helpers.DefaultIP(u.DNSAddress, net.IPv4(1, 1, 1, 1))
 	u.CLI = helpers.DefaultBool(u.CLI, false)
