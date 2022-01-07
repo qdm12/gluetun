@@ -11,8 +11,12 @@ import (
 
 func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err error) {
 	provider.Name = readVPNServiceProvider(vpnType)
+	var providerName string
+	if provider.Name != nil {
+		providerName = *provider.Name
+	}
 
-	provider.ServerSelection, err = r.readServerSelection(*provider.Name, vpnType)
+	provider.ServerSelection, err = r.readServerSelection(providerName, vpnType)
 	if err != nil {
 		return provider, fmt.Errorf("cannot read server selection settings: %w", err)
 	}
@@ -28,7 +32,7 @@ func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err e
 func readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
 	s := strings.ToLower(os.Getenv("VPNSP"))
 	switch {
-	case vpnType == constants.OpenVPN &&
+	case vpnType != constants.Wireguard &&
 		os.Getenv("OPENVPN_CUSTOM_CONFIG") != "": // retro compatibility
 		return stringPtr(constants.Custom)
 	case s == "":

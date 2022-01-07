@@ -68,6 +68,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 	var countryChoices, regionChoices, cityChoices,
 		ispChoices, nameChoices, hostnameChoices []string
 	switch vpnServiceProvider {
+	case constants.Custom:
 	case constants.Cyberghost:
 		servers := allServers.GetCyberghost()
 		countryChoices = constants.CyberghostCountryChoices(servers)
@@ -177,7 +178,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		cityChoices = constants.WindscribeCityChoices(servers)
 		hostnameChoices = constants.WindscribeHostnameChoices(servers)
 	default:
-		return fmt.Errorf("%w: %s", ErrVPNProviderNameNotValid, ss.VPN)
+		return fmt.Errorf("%w: %s", ErrVPNProviderNameNotValid, vpnServiceProvider)
 	}
 
 	err = validateServerFilters(*ss, countryChoices, regionChoices, cityChoices,
@@ -186,14 +187,16 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		return err // already wrapped error
 	}
 
-	err = ss.OpenVPN.validate(vpnServiceProvider)
-	if err != nil {
-		return fmt.Errorf("OpenVPN server selection settings validation failed: %w", err)
-	}
-
-	err = ss.Wireguard.validate(vpnServiceProvider)
-	if err != nil {
-		return fmt.Errorf("Wireguard server selection settings validation failed: %w", err)
+	if ss.VPN == constants.OpenVPN {
+		err = ss.OpenVPN.validate(vpnServiceProvider)
+		if err != nil {
+			return fmt.Errorf("OpenVPN server selection settings validation failed: %w", err)
+		}
+	} else {
+		err = ss.Wireguard.validate(vpnServiceProvider)
+		if err != nil {
+			return fmt.Errorf("Wireguard server selection settings validation failed: %w", err)
+		}
 	}
 
 	return nil
