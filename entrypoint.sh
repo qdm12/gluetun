@@ -341,6 +341,7 @@ done
 
 printf "[INFO] Launching qBittorrent\n"
 qbittorrent-nox --webui-port=$WEBUI_PORT -d --profile=/config
+sleep 30s
 status=$?
 printf "\n =========================================\n"
 
@@ -349,5 +350,5 @@ while : ; do
   if [ -z "${proc}" ]; then
     exit
   fi
-	sleep 10s
+  sleep 10s
 done
