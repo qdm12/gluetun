@@ -79,33 +79,17 @@ func (r *Reader) readHTTProxyPassword() (user *string) {
 }
 
 func (r *Reader) readHTTProxyListeningAddress() (listeningAddress string) {
-	s := os.Getenv("HTTPPROXY_LISTENING_ADDRESS")
-	if s != "" {
-		return s
-	}
-
 	// Retro-compatibility
-	s = os.Getenv("HTTPROXY_PORT")
-	if s != "" {
-		r.onRetroActive("HTTPROXY_PORT", "HTTPPROXY_LISTENING_ADDRESS")
-		return ":" + s
+	retroKeys := []string{"PROXY_PORT", "TINYPROXY_PORT", "HTTPPROXY_PORT"}
+	for _, retroKey := range retroKeys {
+		s := os.Getenv(retroKey)
+		if s != "" {
+			r.onRetroActive(retroKey, "HTTPPROXY_LISTENING_ADDRESS")
+			return ":" + s
+		}
 	}
 
-	// Retro-compatibility
-	s = os.Getenv("TINYPROXY_PORT")
-	if s != "" {
-		r.onRetroActive("TINYPROXY_PORT", "HTTPPROXY_LISTENING_ADDRESS")
-		return ":" + s
-	}
-
-	// Retro-compatibility
-	s = os.Getenv("PROXY_PORT")
-	if s != "" {
-		r.onRetroActive("PROXY_PORT", "HTTPPROXY_LISTENING_ADDRESS")
-		return ":" + s
-	}
-
-	return ""
+	return os.Getenv("HTTPPROXY_LISTENING_ADDRESS")
 }
 
 func (r *Reader) readHTTProxyEnabled() (enabled *bool, err error) {
