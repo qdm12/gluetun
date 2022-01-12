@@ -13,17 +13,18 @@
   </a>
 </p>
 
+> :warning: Your qbittorrent.conf may not be compatible with 4.4.0 and may need to be deleted 
 
 *Lightweight qBittorrent & Private Internet Access VPN client*
 
-[![PIA Docker OpenVPN](https://github.com/j4ym0/pia-qbittorrent-docker/raw/master/readme/title.png)](https://hub.docker.com/r/qmcgaw/private-internet-access/)
+[![PIA Docker OpenVPN](https://github.com/j4ym0/pia-qbittorrent-docker/raw/master/readme/title.png)](https://hub.docker.com/r/j4ym0/pia-qbittorrent/)
 
 
 
 <details><summary>Click to show base components</summary><p>
 
-- [Ubuntu 18.04](https://ubuntu.com) for a base image
-- [Alpine 3.12.0](https://alpinelinux.org/) for a base image
+- [Ubuntu 20.04](https://ubuntu.com) for a base image
+- [Alpine 3.15.0](https://alpinelinux.org/) for a base image
 - [OpenVPN 2.4.4](https://packages.ubuntu.com/bionic/openvpn) to tunnel to PIA nextgen servers
 - [IPtables 1.6.1](https://packages.ubuntu.com/bionic/iptables) enforces the container to communicate only through the VPN or with other containers in its virtual network (acts as a killswitch)
 
@@ -45,7 +46,6 @@
 - Downloads & config Volumes
 - The *iptables* firewall allows traffic only with needed PIA servers (IP addresses, port, protocol) combinations
 - OpenVPN reconnects automatically on failure
-- Docker healthcheck pings the PIA DNS 209.222.18.222 and google.com to verify the connection is up
 
 
 ## Setup
@@ -89,6 +89,9 @@ try [http://checkmyip.torrentprivacy.com/](http://checkmyip.torrentprivacy.com/)
 | `PASSWORD` | | Your PIA password |
 | `WEBUI_PORT` | `8888` | `1024` to `65535` internal port for HTTP proxy |
 ! `DNS_SERVERS` | `209.222.18.222,209.222.18.218,103.196.38.38,103.196.38.39` | DNS servers to use, comma separated
+
+PIA DNS Servers 209.222.18.222 and 209.222.18.218
+Handshake DNS Servers 103.196.38.38 and 103.196.38.39
 
 ## Connect to it
 
