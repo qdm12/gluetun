@@ -86,16 +86,18 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 			ErrOpenVPNVersionIsNotValid, o.Version, strings.Join(validVersions, ", "))
 	}
 
-	if o.User == "" {
+	isCustom := vpnProvider == constants.Custom
+
+	if !isCustom && o.User == "" {
 		return ErrOpenVPNUserIsEmpty
 	}
 
-	if o.Password == "" {
+	if !isCustom && o.Password == "" {
 		return ErrOpenVPNPasswordIsEmpty
 	}
 
 	// Validate ConfFile
-	if vpnProvider == constants.Custom {
+	if isCustom {
 		if *o.ConfFile == "" {
 			return fmt.Errorf("%w: no file path specified", ErrOpenVPNConfigFile)
 		}
