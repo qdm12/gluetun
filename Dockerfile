@@ -156,7 +156,7 @@ ENV VPNSP=pia \
     # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
-    SHADOWSOCKS_ADDRESS=":8388" \
+    SHADOWSOCKS_LISTENING_ADDRESS=":8388" \
     SHADOWSOCKS_PASSWORD= \
     SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
     SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
