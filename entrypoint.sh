@@ -341,7 +341,7 @@ done
 
 printf "[INFO] Launching qBittorrent\n"
 qbittorrent-nox --webui-port=$WEBUI_PORT -d --profile=/config
-sleep 30s
+sleep 10s
 status=$?
 printf "\n =========================================\n"
 
