@@ -20,21 +20,41 @@ EXPOSE 8888
 ENV DEBIAN_FRONTEND noninteractive
 
 # Ok lets install everything
-RUN apk add --no-cache -t .build-deps boost-thread boost-system boost-dev g++ make automake autoconf libtool libressl-dev qt5-qttools-dev curl unzip dumb-init && \
-	apk add --no-cache ca-certificates libressl qt5-qtbase iptables openvpn ack bind-tools python3 && \
+RUN apk add --no-cache -t .build-deps autoconf automake build-base cmake curl git libtool linux-headers perl pkgconf python3-dev re2c tar unzip icu-dev libexecinfo-dev openssl-dev qt5-qtbase-dev qt5-qttools-dev zlib-dev qt5-qtsvg-dev && \
+	apk add --no-cache ca-certificates libexecinfo libressl qt5-qtbase iptables openvpn ack bind-tools python3 && \
 	if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
-	mkdir /tmp/libtorrent && \
+  curl -sNLk --retry 5 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz | tar xzC /tmp && \
+  mkdir /tmp/ninja && \
+  curl -sSL --retry 5 https://github.com/ninja-build/ninja/archive/refs/tags/v1.10.2.tar.gz | tar xzC /tmp/ninja && \
+	cd /tmp/ninja/*ninja* && \
+  cmake -Wno-dev -B build \
+  	-D CMAKE_CXX_STANDARD=17 \
+  	-D CMAKE_INSTALL_PREFIX="/usr/local" && \
+  cmake --build build && \
+  cmake --install build && \
+  mkdir /tmp/libtorrent && \
   curl -sSL --retry 5 https://github.com/arvidn/libtorrent/archive/v1.2.15.tar.gz | tar xzC /tmp/libtorrent && \
 	cd /tmp/libtorrent/*lib* && \
-  ./autotool.sh && \
-  ./configure --disable-debug --enable-encryption && \
-  make clean && \
-  make install -j$(nproc) && \
-	mkdir /tmp/qbittorrent && \
+  cmake -Wno-dev -G Ninja -B build \
+    -D CMAKE_BUILD_TYPE="Release" \
+    -D CMAKE_CXX_STANDARD=17 \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_76_0/" \
+    -D CMAKE_INSTALL_LIBDIR="lib" \
+    -D CMAKE_INSTALL_PREFIX="/usr/local" && \
+  cmake --build build && \
+  cmake --install build && \
+  mkdir /tmp/qbittorrent && \
   curl -sSL --retry 5 https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.4.0 | tar xzC /tmp/qbittorrent && \
 	cd /tmp/qbittorrent/*qBittorrent* && \
-	./configure --disable-gui && \
-  make install -j$(nproc) && \
+  cmake -Wno-dev -G Ninja -B build \
+    -D CMAKE_BUILD_TYPE="release" \
+    -D GUI=OFF \
+    -D CMAKE_CXX_STANDARD=17 \
+    -D BOOST_INCLUDEDIR="/tmp/boost_1_76_0/" \
+    -D CMAKE_CXX_STANDARD_LIBRARIES="/usr/lib/libexecinfo.so" \
+    -D CMAKE_INSTALL_PREFIX="/usr/local" && \
+  cmake --build build && \
+  cmake --install build && \
   mkdir /tmp/openvpn && \
   cd /tmp/openvpn && \
   curl -sSL --retry 5 https://www.privateinternetaccess.com/openvpn/openvpn.zip -o openvpn-nextgen.zip && \
