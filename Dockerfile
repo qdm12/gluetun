@@ -170,9 +170,9 @@ ENV VPNSP=pia \
     TZ= \
     PUID= \
     PGID=
-ENTRYPOINT ["/entrypoint"]
+ENTRYPOINT ["/gluetun-entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
-HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /entrypoint healthcheck
+HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /gluetun-entrypoint healthcheck
 ARG TARGETPLATFORM
 RUN apk add --no-cache --update -l apk-tools && \
     apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.12/main" openvpn==2.4.11-r0 && \
@@ -186,4 +186,4 @@ RUN apk add --no-cache --update -l apk-tools && \
     deluser openvpn && \
     deluser unbound && \
     mkdir /gluetun
-COPY --from=build /tmp/gobuild/entrypoint /entrypoint
+COPY --from=build /tmp/gobuild/entrypoint /gluetun-entrypoint
