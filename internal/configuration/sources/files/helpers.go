@@ -3,6 +3,7 @@ package files
 import (
 	"io"
 	"os"
+	"strings"
 )
 
 // ReadFromFile reads the content of the file as a string.
@@ -27,5 +28,7 @@ func ReadFromFile(filepath string) (s *string, err error) {
 	}
 
 	content := string(b)
+	content = strings.TrimSuffix(content, "\r\n")
+	content = strings.TrimSuffix(content, "\n")
 	return &content, nil
 }
