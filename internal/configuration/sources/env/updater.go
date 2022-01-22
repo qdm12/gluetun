@@ -22,7 +22,12 @@ func readUpdater() (updater settings.Updater, err error) {
 	}
 
 	// TODO use current provider being used
-	updater.Providers = constants.AllProviders()
+	for _, provider := range constants.AllProviders() {
+		if provider == constants.Custom {
+			continue
+		}
+		updater.Providers = append(updater.Providers, provider)
+	}
 
 	return updater, nil
 }

@@ -65,7 +65,12 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	}
 
 	if updateAll {
-		options.Providers = constants.AllProviders()
+		for _, provider := range constants.AllProviders() {
+			if provider == constants.Custom {
+				continue
+			}
+			options.Providers = append(options.Providers, provider)
+		}
 	} else {
 		if csvProviders == "" {
 			return ErrNoProviderSpecified
