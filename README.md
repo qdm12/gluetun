@@ -98,6 +98,7 @@ version: "3"
 services:
   gluetun:
     image: qmcgaw/gluetun
+    container_name: gluetun
     cap_add:
       - NET_ADMIN
     ports:
