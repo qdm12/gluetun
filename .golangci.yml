@@ -35,6 +35,10 @@ issues:
       path: "openvpnconf.go"
       linters:
         - ifshort
+    - linters:
+        - lll
+      source: "^//go:generate "
+
 linters:
   enable:
     # - cyclop

@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"net"
+	"net/http"
 	"time"
 
 	"github.com/qdm12/golibs/logging"
@@ -26,6 +27,13 @@ func MergeWithString(existing, other string) (result string) {
 	return other
 }
 
+func MergeWithInt(existing, other int) (result int) {
+	if existing != 0 {
+		return existing
+	}
+	return other
+}
+
 func MergeWithStringPtr(existing, other *string) (result *string) {
 	if existing != nil {
 		return existing
@@ -37,7 +45,7 @@ func MergeWithStringPtr(existing, other *string) (result *string) {
 	return result
 }
 
-func MergeWithInt(existing, other *int) (result *int) {
+func MergeWithIntPtr(existing, other *int) (result *int) {
 	if existing != nil {
 		return existing
 	} else if other == nil {
@@ -97,6 +105,13 @@ func MergeWithLogLevel(existing, other *logging.Level) (result *logging.Level) {
 	result = new(logging.Level)
 	*result = *other
 	return result
+}
+
+func MergeWithHTTPHandler(existing, other http.Handler) (result http.Handler) {
+	if existing != nil {
+		return existing
+	}
+	return other
 }
 
 func MergeStringSlices(a, b []string) (result []string) {

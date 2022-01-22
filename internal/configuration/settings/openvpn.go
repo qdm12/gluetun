@@ -199,7 +199,7 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.Interface = helpers.MergeWithString(o.Interface, other.Interface)
 	o.Root = helpers.MergeWithBool(o.Root, other.Root)
 	o.ProcUser = helpers.MergeWithString(o.ProcUser, other.ProcUser)
-	o.Verbosity = helpers.MergeWithInt(o.Verbosity, other.Verbosity)
+	o.Verbosity = helpers.MergeWithIntPtr(o.Verbosity, other.Verbosity)
 	o.Flags = helpers.MergeStringSlices(o.Flags, other.Flags)
 }
 
@@ -221,7 +221,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.Interface = helpers.OverrideWithString(o.Interface, other.Interface)
 	o.Root = helpers.OverrideWithBool(o.Root, other.Root)
 	o.ProcUser = helpers.OverrideWithString(o.ProcUser, other.ProcUser)
-	o.Verbosity = helpers.OverrideWithInt(o.Verbosity, other.Verbosity)
+	o.Verbosity = helpers.OverrideWithIntPtr(o.Verbosity, other.Verbosity)
 	o.Flags = helpers.OverrideWithStringSlice(o.Flags, other.Flags)
 }
 

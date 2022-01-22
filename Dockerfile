@@ -165,6 +165,11 @@ ENV VPNSP=pia \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \
     PUBLICIP_PERIOD=12h \
+    # Pprof
+    PPROF_ENABLED=no \
+    PPROF_BLOCK_PROFILE_RATE=0 \
+    PPROF_MUTEX_PROFILE_RATE=0 \
+    PPROF_HTTP_SERVER_ADDRESS=":6060" \
     # Extras
     VERSION_INFORMATION=on \
     TZ= \

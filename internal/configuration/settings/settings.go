@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/pprof"
 	"github.com/qdm12/gotree"
 )
 
@@ -20,6 +21,7 @@ type Settings struct {
 	Updater       Updater
 	Version       Version
 	VPN           VPN
+	Pprof         pprof.Settings
 }
 
 // Validate validates all the settings and returns an error
@@ -38,6 +40,7 @@ func (s *Settings) Validate(allServers models.AllServers) (err error) {
 		"system":          s.System.validate,
 		"updater":         s.Updater.Validate,
 		"version":         s.Version.validate,
+		// Pprof validation done in pprof constructor
 		"VPN": func() error {
 			return s.VPN.validate(allServers)
 		},
@@ -67,6 +70,7 @@ func (s *Settings) copy() (copied Settings) {
 		Updater:       s.Updater.copy(),
 		Version:       s.Version.copy(),
 		VPN:           s.VPN.copy(),
+		Pprof:         s.Pprof.Copy(),
 	}
 }
 
@@ -83,6 +87,7 @@ func (s *Settings) MergeWith(other Settings) {
 	s.Updater.mergeWith(other.Updater)
 	s.Version.mergeWith(other.Version)
 	s.VPN.mergeWith(other.VPN)
+	s.Pprof.MergeWith(other.Pprof)
 }
 
 func (s *Settings) OverrideWith(other Settings,
@@ -100,6 +105,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Updater.overrideWith(other.Updater)
 	patchedSettings.Version.overrideWith(other.Version)
 	patchedSettings.VPN.overrideWith(other.VPN)
+	patchedSettings.Pprof.MergeWith(other.Pprof)
 	err = patchedSettings.Validate(allServers)
 	if err != nil {
 		return err
@@ -121,6 +127,7 @@ func (s *Settings) SetDefaults() {
 	s.Updater.SetDefaults()
 	s.Version.setDefaults()
 	s.VPN.setDefaults()
+	s.Pprof.SetDefaults()
 }
 
 func (s Settings) String() string {
@@ -142,6 +149,7 @@ func (s Settings) toLinesNode() (node *gotree.Node) {
 	node.AppendNode(s.PublicIP.toLinesNode())
 	node.AppendNode(s.Updater.toLinesNode())
 	node.AppendNode(s.Version.toLinesNode())
+	node.AppendNode(s.Pprof.ToLinesNode())
 
 	return node
 }

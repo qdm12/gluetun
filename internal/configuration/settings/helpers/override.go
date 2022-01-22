@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"net"
+	"net/http"
 	"time"
 
 	"github.com/qdm12/golibs/logging"
@@ -24,6 +25,13 @@ func OverrideWithString(existing, other string) (result string) {
 	return other
 }
 
+func OverrideWithInt(existing, other int) (result int) {
+	if other == 0 {
+		return existing
+	}
+	return other
+}
+
 func OverrideWithStringPtr(existing, other *string) (result *string) {
 	if other == nil {
 		return existing
@@ -33,7 +41,7 @@ func OverrideWithStringPtr(existing, other *string) (result *string) {
 	return result
 }
 
-func OverrideWithInt(existing, other *int) (result *int) {
+func OverrideWithIntPtr(existing, other *int) (result *int) {
 	if other == nil {
 		return existing
 	}
@@ -85,6 +93,13 @@ func OverrideWithLogLevel(existing, other *logging.Level) (result *logging.Level
 	result = new(logging.Level)
 	*result = *other
 	return result
+}
+
+func OverrideWithHTTPHandler(existing, other http.Handler) (result http.Handler) {
+	if other != nil {
+		return other
+	}
+	return existing
 }
 
 func OverrideWithStringSlice(existing, other []string) (result []string) {

@@ -30,6 +30,7 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
+	"github.com/qdm12/gluetun/internal/pprof"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
@@ -190,6 +191,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	logger.PatchLevel(*allSettings.Log.Level)
 
+	allSettings.Pprof.HTTPServer.Logger = logger
+	pprofServer, err := pprof.New(allSettings.Pprof)
+	if err != nil {
+		return fmt.Errorf("cannot create Pprof server: %w", err)
+	}
+
 	puid, pgid := int(*allSettings.System.PUID), int(*allSettings.System.PGID)
 
 	const clientTimeout = 15 * time.Second
@@ -333,6 +340,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlGroupHandler := goshutdown.NewGroupHandler("control", defaultGroupOptions...)
 	tickersGroupHandler := goshutdown.NewGroupHandler("tickers", defaultGroupOptions...)
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupOptions...)
+
+	pprofReady := make(chan struct{})
+	pprofHandler, pprofCtx, pprofDone := goshutdown.NewGoRoutineHandler("pprof server")
+	go pprofServer.Run(pprofCtx, pprofReady, pprofDone)
+	otherGroupHandler.Add(pprofHandler)
+	<-pprofReady
 
 	portForwardLogger := logger.NewChild(logging.Settings{Prefix: "port forwarding: "})
 	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
