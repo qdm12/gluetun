@@ -34,7 +34,7 @@ var (
 
 func (d DoT) validate() (err error) {
 	const minUpdatePeriod = 30 * time.Second
-	if *d.UpdatePeriod < minUpdatePeriod {
+	if *d.UpdatePeriod != 0 && *d.UpdatePeriod < minUpdatePeriod {
 		return fmt.Errorf("%w: %s must be bigger than %s",
 			ErrDoTUpdatePeriodTooShort, *d.UpdatePeriod, minUpdatePeriod)
 	}
