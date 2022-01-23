@@ -97,12 +97,12 @@ jobs:
       - name: Check for semver tag
         id: semvercheck
         run: |
-          if [[ ${{ github.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ${{ github.ref }} =~ ^refs\/tags\/v0\.[0-9]+\.[0-9]+$ ]]; then
             MATCH=true
           else
             MATCH=false
           fi
-          if [[ ! ${{ github.ref }} =~ ^refs/tags/v0\. ]]; then
+          if [[ ${{ github.ref }} =~ ^refs\/tags\/v[1-9]+\.[0-9]+\.[0-9]+$ ]]; then
             MATCH=$MATCH_nonzero
           fi
           echo ::set-output name=match::$MATCH
