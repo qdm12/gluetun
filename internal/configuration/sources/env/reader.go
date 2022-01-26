@@ -82,6 +82,11 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 		return settings, err
 	}
 
+	settings.Pprof, err = readPprof()
+	if err != nil {
+		return settings, err
+	}
+
 	return settings, nil
 }
 

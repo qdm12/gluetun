@@ -21,6 +21,14 @@ func envToCSV(envKey string) (values []string) {
 	return lowerAndSplit(csv)
 }
 
+func envToInt(envKey string) (n int, err error) {
+	s := os.Getenv(envKey)
+	if s == "" {
+		return 0, nil
+	}
+	return strconv.Atoi(s)
+}
+
 func envToStringPtr(envKey string) (stringPtr *string) {
 	s := os.Getenv(envKey)
 	if s == "" {
