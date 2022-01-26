@@ -89,10 +89,13 @@ func (u *Updater) overrideWith(other Updater) {
 	u.CLI = helpers.MergeWithBool(u.CLI, other.CLI)
 }
 
-func (u *Updater) SetDefaults() {
+func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
 	u.DNSAddress = helpers.DefaultIP(u.DNSAddress, net.IPv4(1, 1, 1, 1))
 	u.CLI = helpers.DefaultBool(u.CLI, false)
+	if len(u.Providers) == 0 {
+		u.Providers = []string{vpnProvider}
+	}
 }
 
 func (u Updater) String() string {
@@ -100,7 +103,7 @@ func (u Updater) String() string {
 }
 
 func (u Updater) toLinesNode() (node *gotree.Node) {
-	if *u.Period == 0 {
+	if *u.Period == 0 || len(u.Providers) == 0 {
 		return nil
 	}
 

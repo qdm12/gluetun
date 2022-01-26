@@ -78,7 +78,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		options.Providers = strings.Split(csvProviders, ",")
 	}
 
-	options.SetDefaults()
+	options.SetDefaults(options.Providers[0])
 
 	err := options.Validate()
 	if err != nil {

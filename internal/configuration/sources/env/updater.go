@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func readUpdater() (updater settings.Updater, err error) {
@@ -21,13 +20,7 @@ func readUpdater() (updater settings.Updater, err error) {
 		return updater, err
 	}
 
-	// TODO use current provider being used
-	for _, provider := range constants.AllProviders() {
-		if provider == constants.Custom {
-			continue
-		}
-		updater.Providers = append(updater.Providers, provider)
-	}
+	updater.Providers = envToCSV("UPDATER_VPN_SERVICE_PROVIDERS")
 
 	return updater, nil
 }
