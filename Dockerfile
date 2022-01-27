@@ -162,6 +162,7 @@ ENV VPNSP=pia \
     SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
     # Server data updater
     UPDATER_PERIOD=0 \
+    UPDATER_VPN_SERVICE_PROVIDERS= \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \
     PUBLICIP_PERIOD=12h \

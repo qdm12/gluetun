@@ -93,7 +93,7 @@ func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
 	u.DNSAddress = helpers.DefaultIP(u.DNSAddress, net.IPv4(1, 1, 1, 1))
 	u.CLI = helpers.DefaultBool(u.CLI, false)
-	if len(u.Providers) == 0 {
+	if len(u.Providers) == 0 && vpnProvider != constants.Custom {
 		u.Providers = []string{vpnProvider}
 	}
 }
