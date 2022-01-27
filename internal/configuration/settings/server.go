@@ -2,7 +2,9 @@ package settings
 
 import (
 	"fmt"
+	"net"
 	"os"
+	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gotree"
@@ -10,22 +12,30 @@ import (
 
 // ControlServer contains settings to customize the control server operation.
 type ControlServer struct {
-	// Port is the listening port to use.
-	// It can be set to 0 to bind to a random port.
+	// Address is the listening address to use.
 	// It cannot be nil in the internal state.
-	// TODO change to address
-	Port *uint16
+	Address *string
 	// Log can be true or false to enable logging on requests.
 	// It cannot be nil in the internal state.
 	Log *bool
 }
 
 func (c ControlServer) validate() (err error) {
+	_, portStr, err := net.SplitHostPort(*c.Address)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrControlServerAddress, err)
+	}
+
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrControlServerPort, err)
+	}
+
 	uid := os.Getuid()
-	const maxPrivilegedPort uint16 = 1023
-	if uid != 0 && *c.Port <= maxPrivilegedPort {
+	const maxPrivilegedPort = 1023
+	if uid != 0 && port <= maxPrivilegedPort {
 		return fmt.Errorf("%w: %d when running with user ID %d",
-			ErrControlServerPrivilegedPort, *c.Port, uid)
+			ErrControlServerPrivilegedPort, port, uid)
 	}
 
 	return nil
@@ -33,15 +43,15 @@ func (c ControlServer) validate() (err error) {
 
 func (c *ControlServer) copy() (copied ControlServer) {
 	return ControlServer{
-		Port: helpers.CopyUint16Ptr(c.Port),
-		Log:  helpers.CopyBoolPtr(c.Log),
+		Address: helpers.CopyStringPtr(c.Address),
+		Log:     helpers.CopyBoolPtr(c.Log),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (c *ControlServer) mergeWith(other ControlServer) {
-	c.Port = helpers.MergeWithUint16(c.Port, other.Port)
+	c.Address = helpers.MergeWithStringPtr(c.Address, other.Address)
 	c.Log = helpers.MergeWithBool(c.Log, other.Log)
 }
 
@@ -49,13 +59,12 @@ func (c *ControlServer) mergeWith(other ControlServer) {
 // settings object with any field set in the other
 // settings.
 func (c *ControlServer) overrideWith(other ControlServer) {
-	c.Port = helpers.MergeWithUint16(c.Port, other.Port)
-	c.Log = helpers.MergeWithBool(c.Log, other.Log)
+	c.Address = helpers.OverrideWithStringPtr(c.Address, other.Address)
+	c.Log = helpers.OverrideWithBool(c.Log, other.Log)
 }
 
 func (c *ControlServer) setDefaults() {
-	const defaultPort = 8000
-	c.Port = helpers.DefaultUint16(c.Port, defaultPort)
+	c.Address = helpers.DefaultStringPtr(c.Address, ":8000")
 	c.Log = helpers.DefaultBool(c.Log, true)
 }
 
@@ -65,7 +74,7 @@ func (c ControlServer) String() string {
 
 func (c ControlServer) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Control server settings:")
-	node.Appendf("Listening port: %d", *c.Port)
+	node.Appendf("Listening address: %s", *c.Address)
 	node.Appendf("Logging: %s", helpers.BoolPtrToYesNo(c.Log))
 	return node
 }

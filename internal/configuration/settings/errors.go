@@ -4,6 +4,8 @@ import "errors"
 
 var (
 	ErrCityNotValid                    = errors.New("the city specified is not valid")
+	ErrControlServerAddress            = errors.New("listening address it not valid")
+	ErrControlServerPort               = errors.New("listening port it not valid")
 	ErrControlServerPrivilegedPort     = errors.New("cannot use privileged port without running as root")
 	ErrCountryNotValid                 = errors.New("the country specified is not valid")
 	ErrFirewallZeroPort                = errors.New("cannot have a zero port to block")
@@ -33,6 +35,7 @@ var (
 	ErrSystemPGIDNotValid              = errors.New("process group id is not valid")
 	ErrSystemPUIDNotValid              = errors.New("process user id is not valid")
 	ErrSystemTimezoneNotValid          = errors.New("timezone is not valid")
+	ErrUpdaterPeriodTooSmall           = errors.New("VPN server data updater period is too small")
 	ErrVPNProviderNameNotValid         = errors.New("VPN provider name is not valid")
 	ErrVPNTypeNotValid                 = errors.New("VPN type is not valid")
 	ErrWireguardEndpointIPNotSet       = errors.New("endpoint IP is not set")
@@ -46,6 +49,4 @@ var (
 	ErrWireguardPrivateKeyNotValid     = errors.New("private key is not valid")
 	ErrWireguardPublicKeyNotSet        = errors.New("public key is not set")
 	ErrWireguardPublicKeyNotValid      = errors.New("public key is not valid")
-
-	ErrUpdaterPeriodTooSmall = errors.New("VPN server data updater period is too small")
 )

@@ -160,6 +160,8 @@ ENV VPNSP=pia \
     SHADOWSOCKS_PASSWORD= \
     SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
     SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
+    # Control server
+    HTTP_CONTROL_SERVER_ADDRESS=":8000" \
     # Server data updater
     UPDATER_PERIOD=0 \
     UPDATER_VPN_SERVICE_PROVIDERS= \

@@ -75,7 +75,7 @@ func Test_Settings_String(t *testing.T) {
 ├── HTTP proxy settings:
 |   └── Enabled: no
 ├── Control server settings:
-|   ├── Listening port: 8000
+|   ├── Listening address: :8000
 |   └── Logging: yes
 ├── OS Alpine settings:
 |   ├── Process UID: 1000

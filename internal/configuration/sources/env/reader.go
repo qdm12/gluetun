@@ -77,7 +77,7 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 		return settings, err
 	}
 
-	settings.ControlServer, err = readControlServer()
+	settings.ControlServer, err = r.readControlServer()
 	if err != nil {
 		return settings, err
 	}
