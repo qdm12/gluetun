@@ -59,9 +59,9 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 	}
 
 	// Mullvad only
-	ss.OwnedOnly, err = envToBoolPtr("OWNED")
+	ss.OwnedOnly, err = r.readOwnedOnly()
 	if err != nil {
-		return ss, fmt.Errorf("environment variable OWNED: %w", err)
+		return ss, err
 	}
 
 	// VPNUnlimited and ProtonVPN only
@@ -112,4 +112,22 @@ func readOpenVPNTargetIP() (ip net.IP, err error) {
 	}
 
 	return ip, nil
+}
+
+func (r *Reader) readOwnedOnly() (ownedOnly *bool, err error) {
+	// Retro-compatibility
+	ownedOnly, err = envToBoolPtr("OWNED")
+	if err != nil {
+		r.onRetroActive("OWNED", "OWNED_ONLY")
+		return nil, fmt.Errorf("environment variable OWNED: %w", err)
+	} else if ownedOnly != nil {
+		r.onRetroActive("OWNED", "OWNED_ONLY")
+		return ownedOnly, nil
+	}
+
+	ownedOnly, err = envToBoolPtr("OWNED_ONLY")
+	if err != nil {
+		return nil, fmt.Errorf("environment variable OWNED_ONLY: %w", err)
+	}
+	return ownedOnly, nil
 }

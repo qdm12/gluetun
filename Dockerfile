@@ -100,7 +100,7 @@ ENV VPNSP=pia \
     SERVER_HOSTNAME= \
     # # Mullvad only:
     ISP= \
-    OWNED=no \
+    OWNED_ONLY=no \
     # # Private Internet Access only:
     PIA_ENCRYPTION= \
     PORT_FORWARDING=off \
