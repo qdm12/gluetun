@@ -61,8 +61,8 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 		lines = append(lines, "ping 15")          // FastestVPN specific
 	}
 
-	if !*settings.Root {
-		lines = append(lines, "user "+settings.ProcUser)
+	if settings.ProcessUser != "root" {
+		lines = append(lines, "user "+settings.ProcessUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}

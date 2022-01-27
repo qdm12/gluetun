@@ -61,15 +61,10 @@ type OpenVPN struct {
 	// Interface is the OpenVPN device interface name.
 	// It cannot be an empty string in the internal state.
 	Interface string
-	// Root is true if OpenVPN is to be run as root,
-	// and false otherwise. It cannot be nil in the
-	// internal state.
-	Root *bool
-	// ProcUser is the OpenVPN process OS username
-	// to use. It cannot be nil in the internal state.
-	// This is set and injected at runtime.
-	// TODO only use ProcUser and not Root field.
-	ProcUser string
+	// ProcessUser is the OpenVPN process OS username
+	// to use. It cannot be empty in the internal state.
+	// It defaults to 'root'.
+	ProcessUser string
 	// Verbosity is the OpenVPN verbosity level from 0 to 6.
 	// It cannot be nil in the internal state.
 	Verbosity *int
@@ -175,8 +170,7 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 		IPv6:         helpers.CopyBoolPtr(o.IPv6),
 		MSSFix:       helpers.CopyUint16Ptr(o.MSSFix),
 		Interface:    o.Interface,
-		Root:         helpers.CopyBoolPtr(o.Root),
-		ProcUser:     o.ProcUser,
+		ProcessUser:  o.ProcessUser,
 		Verbosity:    helpers.CopyIntPtr(o.Verbosity),
 		Flags:        helpers.CopyStringSlice(o.Flags),
 	}
@@ -197,8 +191,7 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.IPv6 = helpers.MergeWithBool(o.IPv6, other.IPv6)
 	o.MSSFix = helpers.MergeWithUint16(o.MSSFix, other.MSSFix)
 	o.Interface = helpers.MergeWithString(o.Interface, other.Interface)
-	o.Root = helpers.MergeWithBool(o.Root, other.Root)
-	o.ProcUser = helpers.MergeWithString(o.ProcUser, other.ProcUser)
+	o.ProcessUser = helpers.MergeWithString(o.ProcessUser, other.ProcessUser)
 	o.Verbosity = helpers.MergeWithIntPtr(o.Verbosity, other.Verbosity)
 	o.Flags = helpers.MergeStringSlices(o.Flags, other.Flags)
 }
@@ -219,8 +212,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.IPv6 = helpers.OverrideWithBool(o.IPv6, other.IPv6)
 	o.MSSFix = helpers.OverrideWithUint16(o.MSSFix, other.MSSFix)
 	o.Interface = helpers.OverrideWithString(o.Interface, other.Interface)
-	o.Root = helpers.OverrideWithBool(o.Root, other.Root)
-	o.ProcUser = helpers.OverrideWithString(o.ProcUser, other.ProcUser)
+	o.ProcessUser = helpers.OverrideWithString(o.ProcessUser, other.ProcessUser)
 	o.Verbosity = helpers.OverrideWithIntPtr(o.Verbosity, other.Verbosity)
 	o.Flags = helpers.OverrideWithStringSlice(o.Flags, other.Flags)
 }
@@ -245,8 +237,7 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.IPv6 = helpers.DefaultBool(o.IPv6, false)
 	o.MSSFix = helpers.DefaultUint16(o.MSSFix, 0)
 	o.Interface = helpers.DefaultString(o.Interface, "tun0")
-	o.Root = helpers.DefaultBool(o.Root, true)
-	o.ProcUser = helpers.DefaultString(o.ProcUser, "root")
+	o.ProcessUser = helpers.DefaultString(o.ProcessUser, "root")
 	o.Verbosity = helpers.DefaultInt(o.Verbosity, 1)
 }
 
@@ -294,14 +285,7 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 		node.Appendf("Network interface: %s", o.Interface)
 	}
 
-	processUser := "root"
-	if !*o.Root {
-		processUser = "some non root user" // TODO
-		if o.ProcUser != "" {
-			processUser = o.ProcUser
-		}
-	}
-	node.Appendf("Run OpenVPN as: %s", processUser)
+	node.Appendf("Run OpenVPN as: %s", o.ProcessUser)
 
 	node.Appendf("Verbosity level: %d", *o.Verbosity)
 

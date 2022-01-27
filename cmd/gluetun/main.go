@@ -244,7 +244,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	// set it for Unbound
 	// TODO remove this when migrating to qdm12/dns v2
 	allSettings.DNS.DoT.Unbound.Username = nonRootUsername
-	allSettings.VPN.OpenVPN.ProcUser = nonRootUsername
+	allSettings.VPN.OpenVPN.ProcessUser = nonRootUsername
 
 	if err := os.Chown("/etc/unbound", puid, pgid); err != nil {
 		return err

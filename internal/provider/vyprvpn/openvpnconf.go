@@ -54,8 +54,8 @@ func (v *Vyprvpn) BuildConf(connection models.Connection,
 		lines = append(lines, "explicit-exit-notify")
 	}
 
-	if !*settings.Root {
-		lines = append(lines, "user "+settings.ProcUser)
+	if settings.ProcessUser != "root" {
+		lines = append(lines, "user "+settings.ProcessUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}

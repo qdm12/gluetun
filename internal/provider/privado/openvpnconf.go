@@ -48,8 +48,8 @@ func (p *Privado) BuildConf(connection models.Connection,
 
 	lines = append(lines, utils.CipherLines(settings.Ciphers, settings.Version)...)
 
-	if !*settings.Root {
-		lines = append(lines, "user "+settings.ProcUser)
+	if settings.ProcessUser != "root" {
+		lines = append(lines, "user "+settings.ProcessUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}

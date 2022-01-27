@@ -88,8 +88,8 @@ func modifyConfig(lines []string, connection models.Connection,
 		modified = append(modified, `pull-filter ignore "route-ipv6"`)
 		modified = append(modified, `pull-filter ignore "ifconfig-ipv6"`)
 	}
-	if !*settings.Root {
-		modified = append(modified, "user "+settings.ProcUser)
+	if settings.ProcessUser != "root" {
+		modified = append(modified, "user "+settings.ProcessUser)
 		modified = append(modified, "persist-tun")
 		modified = append(modified, "persist-key")
 	}

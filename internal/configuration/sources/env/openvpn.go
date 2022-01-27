@@ -52,12 +52,10 @@ func (r *Reader) readOpenVPN() (
 
 	openVPN.Interface = os.Getenv("OPENVPN_INTERFACE")
 
-	openVPN.Root, err = envToBoolPtr("OPENVPN_ROOT")
+	openVPN.ProcessUser, err = r.readOpenVPNProcessUser()
 	if err != nil {
-		return openVPN, fmt.Errorf("environment variable OPENVPN_ROOT: %w", err)
+		return openVPN, err
 	}
-
-	// TODO ProcUser once Root is deprecated.
 
 	openVPN.Verbosity, err = envToIntPtr("OPENVPN_VERBOSITY")
 	if err != nil {
@@ -122,4 +120,22 @@ func (r *Reader) readPIAEncryptionPreset() (presetPtr *string) {
 	}
 
 	return nil
+}
+
+func (r *Reader) readOpenVPNProcessUser() (processUser string, err error) {
+	// Retro-compatibility
+	root, err := envToBoolPtr("OPENVPN_ROOT")
+	if err != nil {
+		r.onRetroActive("OPENVPN_ROOT", "OPENVPN_PROCESS_USER")
+		return "", fmt.Errorf("environment variable OPENVPN_ROOT: %w", err)
+	} else if root != nil {
+		r.onRetroActive("OPENVPN_ROOT", "OPENVPN_PROCESS_USER")
+		if *root {
+			return "root", nil
+		}
+		const defaultNonRootUser = "nonrootuser"
+		return defaultNonRootUser, nil
+	}
+
+	return os.Getenv("OPENVPN_PROCESS_USER"), nil
 }

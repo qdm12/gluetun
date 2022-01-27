@@ -58,8 +58,8 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 		lines = append(lines, `pull-filter ignore "ifconfig-ipv6"`)
 	}
 
-	if !*settings.Root {
-		lines = append(lines, "user "+settings.ProcUser)
+	if settings.ProcessUser != "root" {
+		lines = append(lines, "user "+settings.ProcessUser)
 		lines = append(lines, "persist-tun")
 		lines = append(lines, "persist-key")
 	}
