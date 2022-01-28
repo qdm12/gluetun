@@ -12,7 +12,7 @@ import (
 
 func (r *Reader) readWireguardSelection() (
 	selection settings.WireguardSelection, err error) {
-	selection.EndpointIP, err = readWireguardEndpointIP()
+	selection.EndpointIP, err = r.readWireguardEndpointIP()
 	if err != nil {
 		return selection, err
 	}
@@ -29,16 +29,28 @@ func (r *Reader) readWireguardSelection() (
 
 var ErrIPAddressParse = errors.New("cannot parse IP address")
 
-func readWireguardEndpointIP() (endpointIP net.IP, err error) {
-	s := os.Getenv("WIREGUARD_ENDPOINT_IP")
+func (r *Reader) readWireguardEndpointIP() (endpointIP net.IP, err error) {
+	const currentKey = "VPN_ENDPOINT_IP"
+	key := "WIREGUARD_ENDPOINT_IP"
+	s := os.Getenv(key) // Retro-compatibility
 	if s == "" {
-		return nil, nil
+		key = currentKey
+		s = os.Getenv(key)
+		if s == "" {
+			return nil, nil
+		}
 	}
+
+	if key != currentKey {
+		r.onRetroActive(key, currentKey)
+	}
+
 	endpointIP = net.ParseIP(s)
 	if endpointIP == nil {
-		return nil, fmt.Errorf("environment variable WIREGUARD_ENDPOINT_IP: %w: %s",
-			ErrIPAddressParse, s)
+		return nil, fmt.Errorf("environment variable %s: %w: %s",
+			key, ErrIPAddressParse, s)
 	}
+
 	return endpointIP, nil
 }
 

@@ -20,7 +20,7 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 	ss settings.ServerSelection, err error) {
 	ss.VPN = vpnType
 
-	ss.TargetIP, err = readOpenVPNTargetIP()
+	ss.TargetIP, err = r.readOpenVPNTargetIP()
 	if err != nil {
 		return ss, err
 	}
@@ -99,16 +99,23 @@ var (
 	ErrInvalidIP = errors.New("invalid IP address")
 )
 
-func readOpenVPNTargetIP() (ip net.IP, err error) {
-	s := os.Getenv("OPENVPN_TARGET_IP")
+func (r *Reader) readOpenVPNTargetIP() (ip net.IP, err error) {
+	envKey := "OPENVPN_TARGET_IP"
+	s := os.Getenv(envKey) // Retro-compatibility
 	if s == "" {
-		return nil, nil
+		envKey = "VPN_ENDPOINT_IP"
+		s = os.Getenv(envKey)
+		if s == "" {
+			return nil, nil
+		}
+	} else {
+		r.onRetroActive("OPENVPN_TARGET_IP", "VPN_ENDPOINT_IP")
 	}
 
 	ip = net.ParseIP(s)
 	if ip == nil {
-		return nil, fmt.Errorf("environment variable OPENVPN_TARGET_IP: %w: %s",
-			ErrInvalidIP, s)
+		return nil, fmt.Errorf("environment variable %s: %w: %s",
+			envKey, ErrInvalidIP, s)
 	}
 
 	return ip, nil
