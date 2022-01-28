@@ -53,7 +53,7 @@ func getWireguardConnection(selection settings.ServerSelection) (
 	}
 }
 
-// Port found is overridden by custom port set with `PORT` or `WIREGUARD_ENDPOINT_PORT`.
+// Port found is overridden by custom port set with `VPN_ENDPOINT_PORT`.
 func getPort(foundPort uint16, selection settings.ServerSelection) (port uint16) {
 	return utils.GetPort(selection, foundPort, foundPort, foundPort)
 }

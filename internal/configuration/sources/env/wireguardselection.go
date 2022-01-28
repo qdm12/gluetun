@@ -55,16 +55,23 @@ func (r *Reader) readWireguardEndpointIP() (endpointIP net.IP, err error) {
 }
 
 func (r *Reader) readWireguardCustomPort() (customPort *uint16, err error) {
-	key := "WIREGUARD_ENDPOINT_PORT"
+	const currentKey = "VPN_ENDPOINT_PORT"
+	key := "WIREGUARD_PORT" // Retro-compatibility
 	s := os.Getenv(key)
 	if s == "" {
-		// Retro-compatibility
-		key = "WIREGUARD_PORT"
+		key = "WIREGUARD_ENDPOINT_PORT" // Retro-compatibility
 		s = os.Getenv(key)
 		if s == "" {
-			return nil, nil //nolint:nilnil
+			key = currentKey
+			s = os.Getenv(key)
+			if s == "" {
+				return nil, nil //nolint:nilnil
+			}
 		}
-		r.onRetroActive("WIREGUARD_PORT", "WIREGUARD_ENDPOINT_PORT")
+	}
+
+	if key != currentKey {
+		r.onRetroActive(key, currentKey)
 	}
 
 	customPort = new(uint16)

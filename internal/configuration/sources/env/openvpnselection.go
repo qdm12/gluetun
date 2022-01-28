@@ -61,16 +61,23 @@ func (r *Reader) readOpenVPNProtocol() (tcp *bool, err error) {
 }
 
 func (r *Reader) readOpenVPNCustomPort() (customPort *uint16, err error) {
-	key := "OPENVPN_PORT"
-	s := os.Getenv(key)
+	const currentKey = "VPN_ENDPOINT_PORT"
+	key := "PORT"
+	s := os.Getenv(key) // Retro-compatibility
 	if s == "" {
-		// Retro-compatibility
-		key = "PORT"
+		key = "OPENVPN_PORT" // Retro-compatibility
 		s = os.Getenv(key)
 		if s == "" {
-			return nil, nil //nolint:nilnil
+			key = currentKey
+			s = os.Getenv(key)
+			if s == "" {
+				return nil, nil //nolint:nilnil
+			}
 		}
-		r.onRetroActive("PORT", "OPENVPN_PORT")
+	}
+
+	if key != currentKey {
+		r.onRetroActive(key, currentKey)
 	}
 
 	customPort = new(uint16)
