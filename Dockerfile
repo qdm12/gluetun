@@ -24,17 +24,15 @@ RUN apk add --no-cache -t .build-deps autoconf automake build-base cmake curl gi
 	apk add --no-cache ca-certificates libexecinfo libressl qt5-qtbase iptables openvpn ack bind-tools python3 && \
 	if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
   curl -sNLk --retry 5 https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz | tar xzC /tmp && \
-  mkdir /tmp/ninja && \
-  curl -sSL --retry 5 https://github.com/ninja-build/ninja/archive/refs/tags/v1.10.2.tar.gz | tar xzC /tmp/ninja && \
-	cd /tmp/ninja/*ninja* && \
+  curl -sSL --retry 5 https://github.com/ninja-build/ninja/archive/refs/tags/v1.10.2.tar.gz | tar xzC /tmp && \
+	cd /tmp/*ninja* && \
   cmake -Wno-dev -B build \
   	-D CMAKE_CXX_STANDARD=17 \
   	-D CMAKE_INSTALL_PREFIX="/usr/local" && \
   cmake --build build && \
   cmake --install build && \
-  mkdir /tmp/libtorrent && \
-  curl -sSL --retry 5 https://github.com/arvidn/libtorrent/archive/v1.2.15.tar.gz | tar xzC /tmp/libtorrent && \
-	cd /tmp/libtorrent/*lib* && \
+  curl -sSL --retry 5 https://github.com/arvidn/libtorrent/archive/v1.2.15.tar.gz | tar xzC /tmp && \
+	cd /tmp/*libtorrent* && \
   cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="Release" \
     -D CMAKE_CXX_STANDARD=17 \
@@ -43,9 +41,8 @@ RUN apk add --no-cache -t .build-deps autoconf automake build-base cmake curl gi
     -D CMAKE_INSTALL_PREFIX="/usr/local" && \
   cmake --build build && \
   cmake --install build && \
-  mkdir /tmp/qbittorrent && \
-  curl -sSL --retry 5 https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.4.0 | tar xzC /tmp/qbittorrent && \
-	cd /tmp/qbittorrent/*qBittorrent* && \
+  curl -sSL --retry 5 https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.4.0 | tar xzC /tmp && \
+	cd /tmp/*qBittorrent* && \
   cmake -Wno-dev -G Ninja -B build \
     -D CMAKE_BUILD_TYPE="release" \
     -D GUI=OFF \

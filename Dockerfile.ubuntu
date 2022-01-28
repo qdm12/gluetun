@@ -1,5 +1,5 @@
 # Latest version of ubuntu
-FROM ubuntu:20.04
+FROM ubuntu:21.04
 
 ENV USER= \
     PASSWORD= \
@@ -22,27 +22,34 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
     apt-get install --no-install-recommends -y apt-utils software-properties-common && \
-    apt-get install --no-install-recommends -y unzip build-essential pkg-config automake automake autoconf libtool git zlib1g-dev libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev libssl-dev libgeoip-dev curl cmake qtbase5-dev qttools5-dev-tools libqt5svg5-dev && \
-  	apt-get install --no-install-recommends -y ca-certificates openvpn openvpn-systemd-resolved wget ca-certificates iptables dnsutils iputils-ping net-tools ack && \
-  	mkdir /tmp/libtorrent && \
-    curl -sSL https://github.com/arvidn/libtorrent/archive/v1.2.13.tar.gz | tar xzC /tmp/libtorrent && \
-  	cd /tmp/libtorrent/*lib* && \
-    ./autotool.sh && \
-    ./configure --disable-debug --enable-encryption && \
-    make clean && \
-    make install -j$(nproc) && \
-  	mkdir /tmp/qbittorrent && \
-    curl -sSL https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.3.9 | tar xzC /tmp/qbittorrent && \
-  	cd /tmp/qbittorrent/*qBittorrent* && \
-    ./configure --disable-gui && \
-  	make install -j$(nproc) && \
+    apt-get install --no-install-recommends -y build-essential libexecs-dev cmake git ninja-build pkg-config libboost-dev libssl-dev zlib1g-dev qtbase5-dev qttools5-dev libqt5svg5-dev curl git perl python3-dev tar unzip && \
+  	apt-get install --no-install-recommends -y ca-certificates openvpn openvpn-systemd-resolved wget ca-certificates iptables dnsutils iputils-ping net-tools ack python3-minimal && \
+    curl -sSL --retry 5 https://github.com/arvidn/libtorrent/archive/v1.2.15.tar.gz | tar xzC /tmp && \
+  	cd /tmp/*libtorrent* && \
+    cmake -Wno-dev -G Ninja -B build \
+      -D CMAKE_BUILD_TYPE="Release" \
+      -D CMAKE_CXX_STANDARD=17 \
+      -D BOOST_INCLUDEDIR="/tmp/boost_1_76_0/" \
+      -D CMAKE_INSTALL_LIBDIR="lib" \
+      -D CMAKE_INSTALL_PREFIX="/usr/local" && \
+    cmake --build build && \
+    cmake --install build && \
+    curl -sSL --retry 5 https://api.github.com/repos/qbittorrent/qBittorrent/tarball/release-4.4.0 | tar xzC /tmp && \
+  	cd /tmp/*qBittorrent* && \
+    cmake -Wno-dev -G Ninja -B build \
+      -D CMAKE_BUILD_TYPE="release" \
+      -D GUI=OFF \
+      -D CMAKE_CXX_STANDARD=17 \
+      -D CMAKE_INSTALL_PREFIX="/usr/local" && \
+    cmake --build build && \
+    cmake --install build && \
     mkdir /tmp/openvpn && \
     cd /tmp/openvpn && \
     curl -sSL https://www.privateinternetaccess.com/openvpn/openvpn.zip -o openvpn-nextgen.zip && \
     mkdir -p /openvpn/target && \
     unzip -q openvpn-nextgen.zip -d /openvpn/nextgen && \
     rm *.zip &&  \
-    apt-get purge -y -qq unzip software-properties-common wget apt-utils build-essential pkg-config automake libtool git zlib1g-dev libboost-dev libboost-system-dev libboost-chrono-dev libboost-random-dev libssl-dev libgeoip-dev curl cmake qtbase5-dev qttools5-dev-tools libqt5svg5-dev && \
+    apt-get purge -y -qq wget software-properties-common apt-utils cmake git ninja-build pkg-config libboost-dev libssl-dev zlib1g-dev qtbase5-dev qttools5-dev libqt5svg5-dev curl git python3-dev unzip && \
     apt-get clean -qq && \
     apt-get autoclean -qq && \
     rm -rf /*.zip /tmp/* /var/tmp/* /var/lib/apt/lists/*
