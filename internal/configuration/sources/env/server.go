@@ -34,18 +34,16 @@ func readControlServerLog() (enabled *bool, err error) {
 }
 
 func (r *Reader) readControlServerAddress() (address *string) {
-	// Retro-compatibility
-	s := os.Getenv("HTTP_CONTROL_SERVER_PORT")
-	if s != "" {
-		r.onRetroActive("HTTP_CONTROL_SERVER_PORT", "HTTP_CONTROL_SERVER_ADDRESS")
-		address = new(string)
-		*address = ":" + s
-		return address
-	}
-
-	s = os.Getenv("HTTP_CONTROL_SERVER_ADDRESS")
+	key, s := r.getEnvWithRetro("HTTP_CONTROL_SERVER_ADDRESS", "HTTP_CONTROL_SERVER_PORT")
 	if s == "" {
 		return nil
 	}
-	return &s
+
+	if key == "HTTP_CONTROL_SERVER_ADDRESS" {
+		return &s
+	}
+
+	address = new(string)
+	*address = ":" + s
+	return address
 }

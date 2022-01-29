@@ -35,17 +35,9 @@ func readPublicIPPeriod() (period *time.Duration, err error) {
 }
 
 func (r *Reader) readPublicIPFilepath() (filepath *string) {
-	// Retro-compatibility
-	s := os.Getenv("IP_STATUS_FILE")
-	if s != "" {
-		r.onRetroActive("IP_STATUS_FILE", "PUBLICIP_FILE")
-		return &s
-	}
-
-	s = os.Getenv("PUBLICIP_FILE")
+	_, s := r.getEnvWithRetro("PUBLICIP_FILE", "IP_STATUS_FILE")
 	if s != "" {
 		return &s
 	}
-
 	return nil
 }

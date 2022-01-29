@@ -30,7 +30,7 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		// Retro-compatibility
 		countriesCSV = os.Getenv("REGION")
 		if countriesCSV != "" {
-		r.onRetroActive("REGION", "COUNTRY")
+			r.onRetroActive("REGION", "COUNTRY")
 		}
 	}
 	if countriesCSV != "" {
@@ -102,18 +102,7 @@ var (
 )
 
 func (r *Reader) readOpenVPNTargetIP() (ip net.IP, err error) {
-	envKey := "OPENVPN_TARGET_IP"
-	s := os.Getenv(envKey) // Retro-compatibility
-	if s == "" {
-		envKey = "VPN_ENDPOINT_IP"
-		s = os.Getenv(envKey)
-		if s == "" {
-			return nil, nil
-		}
-	} else {
-		r.onRetroActive("OPENVPN_TARGET_IP", "VPN_ENDPOINT_IP")
-	}
-
+	envKey, s := r.getEnvWithRetro("VPN_ENDPOINT_IP", "OPENVPN_TARGET_IP")
 	ip = net.ParseIP(s)
 	if ip == nil {
 		return nil, fmt.Errorf("environment variable %s: %w: %s",
@@ -124,19 +113,10 @@ func (r *Reader) readOpenVPNTargetIP() (ip net.IP, err error) {
 }
 
 func (r *Reader) readOwnedOnly() (ownedOnly *bool, err error) {
-	// Retro-compatibility
-	ownedOnly, err = envToBoolPtr("OWNED")
+	envKey, _ := r.getEnvWithRetro("OWNED_ONLY", "OWNED")
+	ownedOnly, err = envToBoolPtr(envKey)
 	if err != nil {
-		r.onRetroActive("OWNED", "OWNED_ONLY")
-		return nil, fmt.Errorf("environment variable OWNED: %w", err)
-	} else if ownedOnly != nil {
-		r.onRetroActive("OWNED", "OWNED_ONLY")
-		return ownedOnly, nil
-	}
-
-	ownedOnly, err = envToBoolPtr("OWNED_ONLY")
-	if err != nil {
-		return nil, fmt.Errorf("environment variable OWNED_ONLY: %w", err)
+		return nil, fmt.Errorf("environment variable %s: %w", envKey, err)
 	}
 	return ownedOnly, nil
 }

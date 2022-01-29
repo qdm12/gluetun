@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/govalid/binary"
 	"inet.af/netaddr"
 )
 
@@ -36,23 +37,18 @@ func (r *Reader) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 }
 
 func (r *Reader) readBlockSurveillance() (blocked *bool, err error) {
-	blocked, err = envToBoolPtr("BLOCK_NSA")
-	if err != nil {
-		r.onRetroActive("BLOCK_NSA", "BLOCK_SURVEILLANCE")
-		return nil, fmt.Errorf("environment variable BLOCK_NSA: %w", err)
-	} else if blocked != nil {
-		r.onRetroActive("BLOCK_NSA", "BLOCK_SURVEILLANCE")
-		return blocked, nil
+	key, value := r.getEnvWithRetro("BLOCK_SURVEILLANCE", "BLOCK_NSA")
+	if value == "" {
+		return nil, nil //nolint:nilnil
 	}
 
-	blocked, err = envToBoolPtr("BLOCK_SURVEILLANCE")
+	blocked = new(bool)
+	*blocked, err = binary.Validate(key)
 	if err != nil {
-		return nil, fmt.Errorf("environment variable BLOCK_SURVEILLANCE: %w", err)
-	}
-		return blocked, nil
+		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}
 
-	return nil, nil //nolint:nilnil
+	return blocked, nil
 }
 
 var (

@@ -30,15 +30,9 @@ func (r *Reader) ReadHealth() (health settings.Health, err error) {
 }
 
 func (r *Reader) readDurationWithRetro(envKey, retroEnvKey string) (d *time.Duration, err error) {
-	s := os.Getenv(retroEnvKey)
+	envKey, s := r.getEnvWithRetro(envKey, retroEnvKey)
 	if s == "" {
-		s = os.Getenv(envKey)
-		if s == "" {
-			return nil, nil //nolint:nilnil
-		}
-	} else {
-		r.onRetroActive(envKey, retroEnvKey)
-		envKey = retroEnvKey
+		return nil, nil //nolint:nilnil
 	}
 
 	d = new(time.Duration)

@@ -2,7 +2,6 @@ package env
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
@@ -25,23 +24,20 @@ func (r *Reader) readShadowsocks() (shadowsocks settings.Shadowsocks, err error)
 }
 
 func (r *Reader) readShadowsocksAddress() (address string) {
-	// Retro-compatibility
-	portString := os.Getenv("SHADOWSOCKS_PORT")
-	if portString != "" {
-		r.onRetroActive("SHADOWSOCKS_PORT", "SHADOWSOCKS_LISTENING_ADDRESS")
-		return ":" + portString
+	key, value := r.getEnvWithRetro("SHADOWSOCKS_LISTENING_ADDRESS", "SHADOWSOCKS_PORT")
+	if value == "" {
+		return ""
 	}
 
-	return os.Getenv("SHADOWSOCKS_LISTENING_ADDRESS")
+	if key == "SHADOWSOCKS_LISTENING_ADDRESS" {
+		return value
+	}
+
+	// Retro-compatibility
+	return ":" + value
 }
 
 func (r *Reader) readShadowsocksCipher() (cipher string) {
-	// Retro-compatibility
-	cipher = os.Getenv("SHADOWSOCKS_METHOD")
-	if cipher != "" {
-		r.onRetroActive("SHADOWSOCKS_METHOD", "SHADOWSOCKS_CIPHER")
+	_, cipher = r.getEnvWithRetro("SHADOWSOCKS_CIPHER", "SHADOWSOCKS_METHOD")
 	return cipher
-	}
-
-	return os.Getenv("SHADOWSOCKS_CIPHER")
 }

@@ -1,6 +1,8 @@
 package env
 
 import (
+	"os"
+
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/configuration/sources"
 )
@@ -94,4 +96,25 @@ func (r *Reader) onRetroActive(oldKey, newKey string) {
 	r.warner.Warn(
 		"You are using the old environment variable " + oldKey +
 			", please consider changing it to " + newKey)
+}
+
+// getEnvWithRetro returns the first environment variable
+// key and corresponding non empty value from the environment
+// variable keys given. It first goes through the retroKeys
+// and end on returning the value corresponding to the currentKey.
+// Note retroKeys should be in order from oldest to most
+// recent retro-compatibility key.
+func (r *Reader) getEnvWithRetro(currentKey string,
+	retroKeys ...string) (key, value string) {
+	// We check retro-compatibility keys first since
+	// the current key might be set in the Dockerfile.
+	for _, key = range retroKeys {
+		value = os.Getenv(key)
+		if value != "" {
+			r.onRetroActive(key, currentKey)
+			return key, value
+		}
+	}
+
+	return currentKey, os.Getenv(currentKey)
 }

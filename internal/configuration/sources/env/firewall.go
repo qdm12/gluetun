@@ -22,16 +22,8 @@ func (r *Reader) readFirewall() (firewall settings.Firewall, err error) {
 		return firewall, fmt.Errorf("environment variable FIREWALL_INPUT_PORTS: %w", err)
 	}
 
-	outboundSubnetsKey := "FIREWALL_OUTBOUND_SUBNETS"
+	outboundSubnetsKey, _ := r.getEnvWithRetro("FIREWALL_OUTBOUND_SUBNETS", "EXTRA_SUBNETS")
 	outboundSubnetStrings := envToCSV(outboundSubnetsKey)
-	if len(outboundSubnetStrings) == 0 {
-		// Retro-compatibility
-		outboundSubnetStrings = envToCSV("EXTRA_SUBNETS")
-		if len(outboundSubnetStrings) > 0 {
-			outboundSubnetsKey = "EXTRA_SUBNETS"
-			r.onRetroActive("EXTRA_SUBNETS", "FIREWALL_OUTBOUND_SUBNETS")
-		}
-	}
 	firewall.OutboundSubnets, err = stringsToIPNets(outboundSubnetStrings)
 	if err != nil {
 		return firewall, fmt.Errorf("environment variable %s: %w", outboundSubnetsKey, err)

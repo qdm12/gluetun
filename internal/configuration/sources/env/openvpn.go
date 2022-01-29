@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/govalid/binary"
 )
 
 func (r *Reader) readOpenVPN() (
@@ -66,29 +67,13 @@ func (r *Reader) readOpenVPN() (
 }
 
 func (r *Reader) readOpenVPNUser() (user string) {
-	user = os.Getenv("OPENVPN_USER")
-	if user == "" {
-		// Retro-compatibility
-		user = os.Getenv("USER")
-		if user != "" {
-			r.onRetroActive("USER", "OPENVPN_USER")
-		}
-	}
+	_, user = r.getEnvWithRetro("OPENVPN_USER", "USER")
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
 	return strings.ReplaceAll(user, " ", "")
 }
 
 func (r *Reader) readOpenVPNPassword() (password string) {
-	password = os.Getenv("OPENVPN_PASSWORD")
-	if password != "" {
-		return password
-	}
-
-	// Retro-compatibility
-	password = os.Getenv("PASSWORD")
-	if password != "" {
-		r.onRetroActive("PASSWORD", "OPENVPN_PASSWORD")
-	}
+	_, password = r.getEnvWithRetro("OPENVPN_PASSWORD", "PASSWORD")
 	return password
 }
 
@@ -107,35 +92,30 @@ func readBase64OrNil(envKey string) (valueOrNil *string, err error) {
 }
 
 func (r *Reader) readPIAEncryptionPreset() (presetPtr *string) {
-	preset := strings.ToLower(os.Getenv("PIA_ENCRYPTION"))
+	_, preset := r.getEnvWithRetro("PIA_ENCRYPTION", "ENCRYPTION")
 	if preset != "" {
 		return &preset
 	}
-
-	// Retro-compatibility
-	preset = strings.ToLower(os.Getenv("ENCRYPTION"))
-	if preset != "" {
-		r.onRetroActive("ENCRYPTION", "PIA_ENCRYPTION")
-		return &preset
-	}
-
 	return nil
 }
 
 func (r *Reader) readOpenVPNProcessUser() (processUser string, err error) {
-	// Retro-compatibility
-	root, err := envToBoolPtr("OPENVPN_ROOT")
-	if err != nil {
-		r.onRetroActive("OPENVPN_ROOT", "OPENVPN_PROCESS_USER")
-		return "", fmt.Errorf("environment variable OPENVPN_ROOT: %w", err)
-	} else if root != nil {
-		r.onRetroActive("OPENVPN_ROOT", "OPENVPN_PROCESS_USER")
-		if *root {
-			return "root", nil
-		}
-		const defaultNonRootUser = "nonrootuser"
-		return defaultNonRootUser, nil
+	key, value := r.getEnvWithRetro("OPENVPN_PROCESS_USER", "OPENVPN_ROOT")
+	if key == "OPENVPN_PROCESS_USER" {
+		return value, nil
 	}
 
-	return os.Getenv("OPENVPN_PROCESS_USER"), nil
+	// Retro-compatibility
+	if value == "" {
+		return "", nil
+	}
+	root, err := binary.Validate(value)
+	if err != nil {
+		return "", fmt.Errorf("environment variable %s: %w", key, err)
+	}
+	if root {
+		return "root", nil
+	}
+	const defaultNonRootUser = "nonrootuser"
+	return defaultNonRootUser, nil
 }

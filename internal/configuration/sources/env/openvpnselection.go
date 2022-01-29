@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -36,17 +35,7 @@ func (r *Reader) readOpenVPNSelection() (
 var ErrOpenVPNProtocolNotValid = errors.New("OpenVPN protocol is not valid")
 
 func (r *Reader) readOpenVPNProtocol() (tcp *bool, err error) {
-		// Retro-compatibility
-	envKey := "PROTOCOL"
-	protocol := strings.ToLower(os.Getenv("PROTOCOL"))
-	if protocol == "" {
-		protocol = strings.ToLower(os.Getenv("OPENVPN_PROTOCOL"))
-		if protocol != "" {
-			envKey = "OPENVPN_PROTOCOL"
-		}
-	} else {
-			r.onRetroActive("PROTOCOL", "OPENVPN_PROTOCOL")
-		}
+	envKey, protocol := r.getEnvWithRetro("OPENVPN_PROTOCOL", "PROTOCOL")
 
 	switch protocol {
 	case "":
@@ -62,23 +51,9 @@ func (r *Reader) readOpenVPNProtocol() (tcp *bool, err error) {
 }
 
 func (r *Reader) readOpenVPNCustomPort() (customPort *uint16, err error) {
-	const currentKey = "VPN_ENDPOINT_PORT"
-	key := "PORT"
-	s := os.Getenv(key) // Retro-compatibility
+	key, s := r.getEnvWithRetro("VPN_ENDPOINT_PORT", "PORT", "OPENVPN_PORT")
 	if s == "" {
-		key = "OPENVPN_PORT" // Retro-compatibility
-		s = os.Getenv(key)
-		if s == "" {
-			key = currentKey
-			s = os.Getenv(key)
-			if s == "" {
-				return nil, nil //nolint:nilnil
-			}
-		}
-	}
-
-	if key != currentKey {
-		r.onRetroActive(key, currentKey)
+		return nil, nil //nolint:nilnil
 	}
 
 	customPort = new(uint16)

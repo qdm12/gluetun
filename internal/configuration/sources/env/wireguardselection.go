@@ -30,19 +30,9 @@ func (r *Reader) readWireguardSelection() (
 var ErrIPAddressParse = errors.New("cannot parse IP address")
 
 func (r *Reader) readWireguardEndpointIP() (endpointIP net.IP, err error) {
-	const currentKey = "VPN_ENDPOINT_IP"
-	key := "WIREGUARD_ENDPOINT_IP"
-	s := os.Getenv(key) // Retro-compatibility
+	key, s := r.getEnvWithRetro("VPN_ENDPOINT_IP", "WIREGUARD_ENDPOINT_IP")
 	if s == "" {
-		key = currentKey
-		s = os.Getenv(key)
-		if s == "" {
-			return nil, nil
-		}
-	}
-
-	if key != currentKey {
-		r.onRetroActive(key, currentKey)
+		return nil, nil
 	}
 
 	endpointIP = net.ParseIP(s)
@@ -55,23 +45,9 @@ func (r *Reader) readWireguardEndpointIP() (endpointIP net.IP, err error) {
 }
 
 func (r *Reader) readWireguardCustomPort() (customPort *uint16, err error) {
-	const currentKey = "VPN_ENDPOINT_PORT"
-	key := "WIREGUARD_PORT" // Retro-compatibility
-	s := os.Getenv(key)
+	key, s := r.getEnvWithRetro("VPN_ENDPOINT_PORT", "WIREGUARD_ENDPOINT_PORT")
 	if s == "" {
-		key = "WIREGUARD_ENDPOINT_PORT" // Retro-compatibility
-		s = os.Getenv(key)
-		if s == "" {
-			key = currentKey
-			s = os.Getenv(key)
-			if s == "" {
-				return nil, nil //nolint:nilnil
-			}
-		}
-	}
-
-	if key != currentKey {
-		r.onRetroActive(key, currentKey)
+		return nil, nil //nolint:nilnil
 	}
 
 	customPort = new(uint16)

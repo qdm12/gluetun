@@ -35,17 +35,7 @@ var ErrSystemIDNotValid = errors.New("system ID is not valid")
 
 func (r *Reader) readID(key, retroKey string) (
 	id *uint16, err error) {
-	idEnvKey := key
-	idString := os.Getenv(key)
-	if idString == "" {
-		// retro-compatibility
-		idString = os.Getenv(retroKey)
-		if idString != "" {
-			idEnvKey = retroKey
-			r.onRetroActive(retroKey, key)
-		}
-	}
-
+	idEnvKey, idString := r.getEnvWithRetro(key, retroKey)
 	if idString == "" {
 		return nil, nil //nolint:nilnil
 	}
