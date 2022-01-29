@@ -19,11 +19,12 @@ type PIA struct {
 
 func New(servers []models.PIAServer, randSource rand.Source,
 	timeNow func() time.Time) *PIA {
+	const jsonPortForwardPath = "/gluetun/piaportforward.json"
 	return &PIA{
 		servers:         servers,
 		timeNow:         timeNow,
 		randSource:      randSource,
-		portForwardPath: constants.PIAPortForward,
+		portForwardPath: jsonPortForwardPath,
 		authFilePath:    constants.OpenVPNAuthConf,
 	}
 }

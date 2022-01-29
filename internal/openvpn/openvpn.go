@@ -26,7 +26,7 @@ func New(logger Infoer, cmder command.RunStarter,
 	return &Configurator{
 		logger:       logger,
 		cmder:        cmder,
-		configPath:   constants.OpenVPNConf,
+		configPath:   configPath,
 		authFilePath: constants.OpenVPNAuthConf,
 		puid:         puid,
 		pgid:         pgid,

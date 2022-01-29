@@ -302,9 +302,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	if err := tun.Check(constants.TunnelDevice); err != nil {
+	const tunDevice = "/dev/net/tun"
+	if err := tun.Check(tunDevice); err != nil {
 		logger.Info(err.Error() + "; creating it...")
-		err = tun.Create(constants.TunnelDevice)
+		err = tun.Create(tunDevice)
 		if err != nil {
 			return err
 		}

@@ -30,7 +30,7 @@ func start(ctx context.Context, starter command.Starter, version string, flags [
 		return nil, nil, nil, fmt.Errorf("%w: %s", ErrVersionUnknown, version)
 	}
 
-	args := []string{"--config", constants.OpenVPNConf}
+	args := []string{"--config", configPath}
 	args = append(args, flags...)
 	cmd := exec.CommandContext(ctx, bin, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
