@@ -36,16 +36,17 @@ func (r *Reader) readOpenVPNSelection() (
 var ErrOpenVPNProtocolNotValid = errors.New("OpenVPN protocol is not valid")
 
 func (r *Reader) readOpenVPNProtocol() (tcp *bool, err error) {
-	envKey := "OPENVPN_PROTOCOL"
-	protocol := strings.ToLower(os.Getenv("OPENVPN_PROTOCOL"))
-	if protocol == "" {
 		// Retro-compatibility
-		protocol = strings.ToLower(os.Getenv("PROTOCOL"))
+	envKey := "PROTOCOL"
+	protocol := strings.ToLower(os.Getenv("PROTOCOL"))
+	if protocol == "" {
+		protocol = strings.ToLower(os.Getenv("OPENVPN_PROTOCOL"))
 		if protocol != "" {
-			envKey = "PROTOCOL"
+			envKey = "OPENVPN_PROTOCOL"
+		}
+	} else {
 			r.onRetroActive("PROTOCOL", "OPENVPN_PROTOCOL")
 		}
-	}
 
 	switch protocol {
 	case "":

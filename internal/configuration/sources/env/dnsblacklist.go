@@ -36,18 +36,19 @@ func (r *Reader) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 }
 
 func (r *Reader) readBlockSurveillance() (blocked *bool, err error) {
-	blocked, err = envToBoolPtr("BLOCK_SURVEILLANCE")
-	if err != nil {
-		return nil, fmt.Errorf("environment variable BLOCK_SURVEILLANCE: %w", err)
-	} else if blocked != nil {
-		return blocked, nil
-	}
-
 	blocked, err = envToBoolPtr("BLOCK_NSA")
 	if err != nil {
+		r.onRetroActive("BLOCK_NSA", "BLOCK_SURVEILLANCE")
 		return nil, fmt.Errorf("environment variable BLOCK_NSA: %w", err)
 	} else if blocked != nil {
 		r.onRetroActive("BLOCK_NSA", "BLOCK_SURVEILLANCE")
+		return blocked, nil
+	}
+
+	blocked, err = envToBoolPtr("BLOCK_SURVEILLANCE")
+	if err != nil {
+		return nil, fmt.Errorf("environment variable BLOCK_SURVEILLANCE: %w", err)
+	}
 		return blocked, nil
 	}
 

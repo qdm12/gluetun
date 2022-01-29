@@ -93,12 +93,14 @@ func (r *Reader) readHTTProxyListeningAddress() (listeningAddress string) {
 }
 
 func (r *Reader) readHTTProxyEnabled() (enabled *bool, err error) {
-	s := strings.ToLower(os.Getenv("HTTPPROXY"))
+	// Retro-compatibility
+	s := strings.ToLower(os.Getenv("PROXY"))
 	if s != "" {
+		r.onRetroActive("PROXY", "HTTPPROXY")
 		enabled = new(bool)
 		*enabled, err = binary.Validate(s)
 		if err != nil {
-			return nil, fmt.Errorf("environment variable HTTPPROXY: %w", err)
+			return nil, fmt.Errorf("environment variable PROXY: %w", err)
 		}
 		return enabled, nil
 	}
@@ -115,14 +117,12 @@ func (r *Reader) readHTTProxyEnabled() (enabled *bool, err error) {
 		return enabled, nil
 	}
 
-	// Retro-compatibility
-	s = strings.ToLower(os.Getenv("PROXY"))
+	s = strings.ToLower(os.Getenv("HTTPPROXY"))
 	if s != "" {
-		r.onRetroActive("PROXY", "HTTPPROXY")
 		enabled = new(bool)
 		*enabled, err = binary.Validate(s)
 		if err != nil {
-			return nil, fmt.Errorf("environment variable PROXY: %w", err)
+			return nil, fmt.Errorf("environment variable HTTPPROXY: %w", err)
 		}
 		return enabled, nil
 	}
@@ -131,18 +131,20 @@ func (r *Reader) readHTTProxyEnabled() (enabled *bool, err error) {
 }
 
 func (r *Reader) readHTTProxyLog() (enabled *bool, err error) {
-	s := strings.ToLower(os.Getenv("HTTPPROXY_LOG"))
+	// Retro-compatibility
+	retroOption := binary.OptionEnabled("on", "info", "connect", "notice")
+	s := strings.ToLower(os.Getenv("PROXY_LOG_LEVEL"))
 	if s != "" {
+		r.onRetroActive("PROXY_LOG_LEVEL", "HTTPPROXY_LOG")
 		enabled = new(bool)
-		*enabled, err = binary.Validate(s)
+		*enabled, err = binary.Validate(s, retroOption)
 		if err != nil {
-			return nil, fmt.Errorf("environment variable HTTPPROXY_LOG: %w", err)
+			return nil, fmt.Errorf("environment variable PROXY_LOG_LEVEL: %w", err)
 		}
 		return enabled, nil
 	}
 
 	// Retro-compatibility
-	retroOption := binary.OptionEnabled("on", "info", "connect", "notice")
 	s = strings.ToLower(os.Getenv("TINYPROXY_LOG"))
 	if s != "" {
 		r.onRetroActive("TINYPROXY_LOG", "HTTPPROXY_LOG")
@@ -154,14 +156,12 @@ func (r *Reader) readHTTProxyLog() (enabled *bool, err error) {
 		return enabled, nil
 	}
 
-	// Retro-compatibility
-	s = strings.ToLower(os.Getenv("PROXY_LOG_LEVEL"))
+	s = strings.ToLower(os.Getenv("HTTPPROXY_LOG"))
 	if s != "" {
-		r.onRetroActive("PROXY_LOG_LEVEL", "HTTPPROXY_LOG")
 		enabled = new(bool)
-		*enabled, err = binary.Validate(s, retroOption)
+		*enabled, err = binary.Validate(s)
 		if err != nil {
-			return nil, fmt.Errorf("environment variable PROXY_LOG_LEVEL: %w", err)
+			return nil, fmt.Errorf("environment variable HTTPPROXY_LOG: %w", err)
 		}
 		return enabled, nil
 	}

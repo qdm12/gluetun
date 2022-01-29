@@ -25,11 +25,6 @@ func (r *Reader) readShadowsocks() (shadowsocks settings.Shadowsocks, err error)
 }
 
 func (r *Reader) readShadowsocksAddress() (address string) {
-	address = os.Getenv("SHADOWSOCKS_LISTENING_ADDRESS")
-	if address != "" {
-		return address
-	}
-
 	// Retro-compatibility
 	portString := os.Getenv("SHADOWSOCKS_PORT")
 	if portString != "" {
@@ -37,18 +32,16 @@ func (r *Reader) readShadowsocksAddress() (address string) {
 		return ":" + portString
 	}
 
-	return ""
+	return os.Getenv("SHADOWSOCKS_LISTENING_ADDRESS")
 }
 
 func (r *Reader) readShadowsocksCipher() (cipher string) {
-	cipher = os.Getenv("SHADOWSOCKS_CIPHER")
-	if cipher != "" {
-		return cipher
-	}
 	// Retro-compatibility
 	cipher = os.Getenv("SHADOWSOCKS_METHOD")
 	if cipher != "" {
 		r.onRetroActive("SHADOWSOCKS_METHOD", "SHADOWSOCKS_CIPHER")
-	}
 	return cipher
+	}
+
+	return os.Getenv("SHADOWSOCKS_CIPHER")
 }
