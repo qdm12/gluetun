@@ -6,7 +6,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/govalid/binary"
-	"github.com/qdm12/govalid/port"
 )
 
 func (r *Reader) readControlServer() (controlServer settings.ControlServer, err error) {
@@ -15,10 +14,7 @@ func (r *Reader) readControlServer() (controlServer settings.ControlServer, err 
 		return controlServer, err
 	}
 
-	controlServer.Address, err = r.readControlServerAddress()
-	if err != nil {
-		return controlServer, err
-	}
+	controlServer.Address = r.readControlServerAddress()
 
 	return controlServer, nil
 }
@@ -37,23 +33,19 @@ func readControlServerLog() (enabled *bool, err error) {
 	return &log, nil
 }
 
-func (r *Reader) readControlServerAddress() (address *string, err error) {
+func (r *Reader) readControlServerAddress() (address *string) {
 	// Retro-compatibility
 	s := os.Getenv("HTTP_CONTROL_SERVER_PORT")
 	if s != "" {
 		r.onRetroActive("HTTP_CONTROL_SERVER_PORT", "HTTP_CONTROL_SERVER_ADDRESS")
-		port, err := port.Validate(s)
-		if err != nil {
-			return nil, fmt.Errorf("environment variable HTTP_CONTROL_SERVER_PORT: %w", err)
-		}
 		address = new(string)
-		*address = ":" + fmt.Sprint(port)
-		return address, nil
+		*address = ":" + s
+		return address
 	}
 
 	s = os.Getenv("HTTP_CONTROL_SERVER_ADDRESS")
 	if s == "" {
-		return nil, nil //nolint:nilnil
+		return nil
 	}
-	return &s, nil
+	return &s
 }
