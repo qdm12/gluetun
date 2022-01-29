@@ -28,8 +28,10 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 	countriesCSV := os.Getenv("COUNTRY")
 	if vpnProvider == constants.Cyberghost && countriesCSV == "" {
 		// Retro-compatibility
-		r.onRetroActive("REGION", "COUNTRY")
 		countriesCSV = os.Getenv("REGION")
+		if countriesCSV != "" {
+		r.onRetroActive("REGION", "COUNTRY")
+		}
 	}
 	if countriesCSV != "" {
 		ss.Countries = lowerAndSplit(countriesCSV)
