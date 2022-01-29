@@ -21,7 +21,7 @@ func (r *Reader) readVPN() (vpn settings.VPN, err error) {
 		return vpn, fmt.Errorf("cannot read OpenVPN settings: %w", err)
 	}
 
-	vpn.Wireguard, err = readWireguard()
+	vpn.Wireguard, err = r.readWireguard()
 	if err != nil {
 		return vpn, fmt.Errorf("cannot read Wireguard settings: %w", err)
 	}

@@ -10,7 +10,7 @@ type StartData struct {
 	PortForwarder provider.PortForwarder
 	Gateway       net.IP // needed for PIA
 	ServerName    string // needed for PIA
-	Interface     string // tun0 or wg0 for example
+	Interface     string // tun0 for example
 }
 
 type StartDataGetterSetter interface {

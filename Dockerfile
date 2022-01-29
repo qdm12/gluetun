@@ -71,6 +71,7 @@ ENV VPNSP=pia \
     # Common VPN options
     VPN_ENDPOINT_IP= \
     VPN_ENDPOINT_PORT= \
+    VPN_INTERFACE=tun0 \
     # OpenVPN
     OPENVPN_PROTOCOL=udp \
     OPENVPN_USER= \
@@ -85,13 +86,11 @@ ENV VPNSP=pia \
     OPENVPN_PROCESS_USER= \
     OPENVPN_IPV6=off \
     OPENVPN_CUSTOM_CONFIG= \
-    OPENVPN_INTERFACE=tun0 \
     # Wireguard
     WIREGUARD_PRIVATE_KEY= \
     WIREGUARD_PRESHARED_KEY= \
     WIREGUARD_PUBLIC_KEY= \
     WIREGUARD_ADDRESS= \
-    WIREGUARD_INTERFACE=wg0 \
     # VPN server filtering
     REGION= \
     COUNTRY= \

@@ -51,7 +51,7 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_MSSFIX: %w", err)
 	}
 
-	openVPN.Interface = os.Getenv("OPENVPN_INTERFACE")
+	_, openVPN.Interface = r.getEnvWithRetro("VPN_INTERFACE", "OPENVPN_INTERFACE")
 
 	openVPN.ProcessUser, err = r.readOpenVPNProcessUser()
 	if err != nil {
