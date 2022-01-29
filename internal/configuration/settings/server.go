@@ -33,7 +33,7 @@ func (c ControlServer) validate() (err error) {
 
 	uid := os.Getuid()
 	const maxPrivilegedPort = 1023
-	if uid != 0 && port <= maxPrivilegedPort {
+	if uid != 0 && port != 0 && port <= maxPrivilegedPort {
 		return fmt.Errorf("%w: %d when running with user ID %d",
 			ErrControlServerPrivilegedPort, port, uid)
 	}
