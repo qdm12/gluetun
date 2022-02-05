@@ -35,7 +35,8 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		}
 	}
 
-	ss.Regions = envToCSV("REGION")
+	_, regionsCSV := r.getEnvWithRetro("SERVER_REGIONS", "REGION")
+	ss.Regions = lowerAndSplit(regionsCSV)
 
 	_, citiesCSV := r.getEnvWithRetro("SERVER_CITIES", "CITY")
 	ss.Cities = lowerAndSplit(citiesCSV)
