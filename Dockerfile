@@ -109,7 +109,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # # Nordvpn only:
     SERVER_NUMBER= \
     # # PIA and ProtonVPN only:
-    SERVER_NAME= \
+    SERVER_NAMES= \
     # # ProtonVPN only:
     FREE_ONLY= \
     # # Surfshark only:
