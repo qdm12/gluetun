@@ -94,7 +94,9 @@ func readBase64OrNil(envKey string) (valueOrNil *string, err error) {
 }
 
 func (r *Reader) readPIAEncryptionPreset() (presetPtr *string) {
-	_, preset := r.getEnvWithRetro("PIA_ENCRYPTION", "ENCRYPTION")
+	_, preset := r.getEnvWithRetro(
+		"PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET",
+		"PIA_ENCRYPTION", "ENCRYPTION")
 	if preset != "" {
 		return &preset
 	}
