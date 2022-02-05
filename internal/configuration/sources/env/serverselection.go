@@ -25,16 +25,13 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		return ss, err
 	}
 
-	countriesCSV := os.Getenv("COUNTRY")
-	if vpnProvider == constants.Cyberghost && countriesCSV == "" {
-		// Retro-compatibility
-		countriesCSV = os.Getenv("REGION")
-		if countriesCSV != "" {
+	ss.Countries = envToCSV("COUNTRY")
+	if vpnProvider == constants.Cyberghost && len(ss.Countries) == 0 {
+		// Retro-compatibility for Cyberghost using the REGION variable
+		ss.Countries = envToCSV("REGION")
+		if len(ss.Countries) > 0 {
 			r.onRetroActive("REGION", "COUNTRY")
 		}
-	}
-	if countriesCSV != "" {
-		ss.Countries = lowerAndSplit(countriesCSV)
 	}
 
 	ss.Regions = envToCSV("REGION")
