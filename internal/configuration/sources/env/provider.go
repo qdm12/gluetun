@@ -21,7 +21,7 @@ func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err e
 		return provider, fmt.Errorf("cannot read server selection settings: %w", err)
 	}
 
-	provider.PortForwarding, err = readPortForward()
+	provider.PortForwarding, err = r.readPortForward()
 	if err != nil {
 		return provider, fmt.Errorf("cannot read port forwarding settings: %w", err)
 	}
