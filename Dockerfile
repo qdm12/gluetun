@@ -102,7 +102,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # # Private Internet Access only:
     PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET= \
     PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING=off \
-    PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
+    PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # # Cyberghost only:
     OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
