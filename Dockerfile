@@ -93,7 +93,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     WIREGUARD_ADDRESSES= \
     # VPN server filtering
     REGION= \
-    COUNTRY= \
+    SERVER_COUNTRIES= \
     CITY= \
     SERVER_HOSTNAME= \
     # # Mullvad only:
