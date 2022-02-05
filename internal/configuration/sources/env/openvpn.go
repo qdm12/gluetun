@@ -23,7 +23,9 @@ func (r *Reader) readOpenVPN() (
 		openVPN.ConfFile = &confFile
 	}
 
-	openVPN.Ciphers = envToCSV("OPENVPN_CIPHER")
+	_, ciphersCSV := r.getEnvWithRetro("OPENVPN_CIPHERS", "OPENVPN_CIPHER")
+	openVPN.Ciphers = strings.Split(ciphersCSV, ",")
+
 	auth := os.Getenv("OPENVPN_AUTH")
 	if auth != "" {
 		openVPN.Auth = &auth
