@@ -66,7 +66,7 @@ LABEL \
     org.opencontainers.image.source="https://github.com/qdm12/gluetun" \
     org.opencontainers.image.title="VPN swiss-knife like client for multiple VPN providers" \
     org.opencontainers.image.description="VPN swiss-knife like client to tunnel to multiple VPN servers using OpenVPN, IPtables, DNS over TLS, Shadowsocks, an HTTP proxy and Alpine Linux"
-ENV VPNSP=pia \
+ENV VPN_SERVICE_PROVIDER=pia \
     VPN_TYPE=openvpn \
     # Common VPN options
     VPN_ENDPOINT_IP= \

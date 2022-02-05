@@ -10,7 +10,7 @@ import (
 )
 
 func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err error) {
-	provider.Name = readVPNServiceProvider(vpnType)
+	provider.Name = r.readVPNServiceProvider(vpnType)
 	var providerName string
 	if provider.Name != nil {
 		providerName = *provider.Name
@@ -29,8 +29,9 @@ func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err e
 	return provider, nil
 }
 
-func readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
-	s := strings.ToLower(os.Getenv("VPNSP"))
+func (r *Reader) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
+	_, s := r.getEnvWithRetro("VPN_SERVICE_PROVIDER", "VPNSP")
+	s = strings.ToLower(s)
 	switch {
 	case vpnType != constants.Wireguard &&
 		os.Getenv("OPENVPN_CUSTOM_CONFIG") != "": // retro compatibility

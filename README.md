@@ -110,7 +110,7 @@ services:
       - /yourpath:/gluetun
     environment:
       # See https://github.com/qdm12/gluetun/wiki
-      - VPNSP=ivpn
+      - VPN_SERVICE_PROVIDER=ivpn
       - VPN_TYPE=openvpn
       # OpenVPN:
       - OPENVPN_USER=
