@@ -94,7 +94,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # VPN server filtering
     REGION= \
     SERVER_COUNTRIES= \
-    CITY= \
+    SERVER_CITIES= \
     SERVER_HOSTNAME= \
     # # Mullvad only:
     ISP= \
