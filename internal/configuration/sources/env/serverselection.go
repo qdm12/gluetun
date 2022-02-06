@@ -109,6 +109,10 @@ var (
 
 func (r *Reader) readOpenVPNTargetIP() (ip net.IP, err error) {
 	envKey, s := r.getEnvWithRetro("VPN_ENDPOINT_IP", "OPENVPN_TARGET_IP")
+	if s == "" {
+		return nil, nil
+	}
+
 	ip = net.ParseIP(s)
 	if ip == nil {
 		return nil, fmt.Errorf("environment variable %s: %w: %s",
