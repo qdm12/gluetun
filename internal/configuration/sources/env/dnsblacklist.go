@@ -17,7 +17,7 @@ func (r *Reader) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 
 	blacklist.BlockSurveillance, err = r.readBlockSurveillance()
 	if err != nil {
-		return blacklist, fmt.Errorf("environment variable BLOCK_MALICIOUS: %w", err)
+		return blacklist, err
 	}
 
 	blacklist.BlockAds, err = envToBoolPtr("BLOCK_ADS")
@@ -43,7 +43,7 @@ func (r *Reader) readBlockSurveillance() (blocked *bool, err error) {
 	}
 
 	blocked = new(bool)
-	*blocked, err = binary.Validate(key)
+	*blocked, err = binary.Validate(value)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}
