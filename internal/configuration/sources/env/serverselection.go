@@ -25,8 +25,8 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		return ss, err
 	}
 
-	_, countriesCSV := r.getEnvWithRetro("SERVER_COUNTRIES", "COUNTRY")
-	ss.Countries = lowerAndSplit(countriesCSV)
+	countriesKey, _ := r.getEnvWithRetro("SERVER_COUNTRIES", "COUNTRY")
+	ss.Countries = envToCSV(countriesKey)
 	if vpnProvider == constants.Cyberghost && len(ss.Countries) == 0 {
 		// Retro-compatibility for Cyberghost using the REGION variable
 		ss.Countries = envToCSV("REGION")
@@ -35,19 +35,19 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		}
 	}
 
-	_, regionsCSV := r.getEnvWithRetro("SERVER_REGIONS", "REGION")
-	ss.Regions = lowerAndSplit(regionsCSV)
+	regionsKey, _ := r.getEnvWithRetro("SERVER_REGIONS", "REGION")
+	ss.Regions = envToCSV(regionsKey)
 
-	_, citiesCSV := r.getEnvWithRetro("SERVER_CITIES", "CITY")
-	ss.Cities = lowerAndSplit(citiesCSV)
+	citiesKey, _ := r.getEnvWithRetro("SERVER_CITIES", "CITY")
+	ss.Cities = envToCSV(citiesKey)
 
 	ss.ISPs = envToCSV("ISP")
 
-	_, hostnamesCSV := r.getEnvWithRetro("SERVER_HOSTNAMES", "SERVER_HOSTNAME")
-	ss.Hostnames = lowerAndSplit(hostnamesCSV)
+	hostnamesKey, _ := r.getEnvWithRetro("SERVER_HOSTNAMES", "SERVER_HOSTNAME")
+	ss.Hostnames = envToCSV(hostnamesKey)
 
-	_, namesCSV := r.getEnvWithRetro("SERVER_NAMES", "SERVER_NAME")
-	ss.Names = lowerAndSplit(namesCSV)
+	serverNamesKey, _ := r.getEnvWithRetro("SERVER_NAMES", "SERVER_NAME")
+	ss.Names = envToCSV(serverNamesKey)
 
 	if csv := os.Getenv("SERVER_NUMBER"); csv != "" {
 		numbersStrings := strings.Split(csv, ",")
