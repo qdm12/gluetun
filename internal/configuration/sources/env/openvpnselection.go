@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -37,7 +38,7 @@ var ErrOpenVPNProtocolNotValid = errors.New("OpenVPN protocol is not valid")
 func (r *Reader) readOpenVPNProtocol() (tcp *bool, err error) {
 	envKey, protocol := r.getEnvWithRetro("OPENVPN_PROTOCOL", "PROTOCOL")
 
-	switch protocol {
+	switch strings.ToLower(protocol) {
 	case "":
 		return nil, nil //nolint:nilnil
 	case constants.UDP:
