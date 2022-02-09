@@ -2,6 +2,7 @@ package env
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
@@ -39,5 +40,5 @@ func (r *Reader) readShadowsocksAddress() (address string) {
 
 func (r *Reader) readShadowsocksCipher() (cipher string) {
 	_, cipher = r.getEnvWithRetro("SHADOWSOCKS_CIPHER", "SHADOWSOCKS_METHOD")
-	return cipher
+	return strings.ToLower(cipher)
 }
