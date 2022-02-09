@@ -175,6 +175,50 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
+	// Note: no need to validate minimal settings for the firewall:
+	// - global log level is parsed from source
+	// - firewall Debug and Enabled are booleans parsed from source
+
+	logger.PatchLevel(*allSettings.Log.Level)
+
+	routingLogger := logger.NewChild(logging.Settings{
+		Prefix: "routing: ",
+	})
+	if *allSettings.Firewall.Debug { // To remove in v4
+		routingLogger.PatchLevel(logging.LevelDebug)
+	}
+	routingConf := routing.New(netLinker, routingLogger)
+
+	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
+	if err != nil {
+		return err
+	}
+
+	localNetworks, err := routingConf.LocalNetworks()
+	if err != nil {
+		return err
+	}
+
+	defaultIP, err := routingConf.DefaultIP()
+	if err != nil {
+		return err
+	}
+
+	firewallLogger := logger.NewChild(logging.Settings{
+		Prefix: "firewall: ",
+	})
+	if *allSettings.Firewall.Debug { // To remove in v4
+		firewallLogger.PatchLevel(logging.LevelDebug)
+	}
+	firewallConf := firewall.NewConfig(firewallLogger, cmder,
+		defaultInterface, defaultGateway, localNetworks, defaultIP)
+	if *allSettings.Firewall.Enabled {
+		err = firewallConf.SetEnabled(ctx, true)
+		if err != nil {
+			return err
+		}
+	}
+
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storageLogger := logger.NewChild(logging.Settings{Prefix: "storage: "})
 	storage, err := storage.New(storageLogger, constants.ServersData)
@@ -188,8 +232,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	if err != nil {
 		return err
 	}
-
-	logger.PatchLevel(*allSettings.Log.Level)
 
 	allSettings.Pprof.HTTPServer.Logger = logger
 	pprofServer, err := pprof.New(allSettings.Pprof)
@@ -250,38 +292,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	firewallLogLevel := *allSettings.Log.Level
-	if *allSettings.Firewall.Debug {
-		firewallLogLevel = logging.LevelDebug
-	}
-	routingLogger := logger.NewChild(logging.Settings{
-		Prefix: "routing: ",
-		Level:  firewallLogLevel,
-	})
-	routingConf := routing.New(netLinker, routingLogger)
-
-	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
-	if err != nil {
-		return err
-	}
-
-	localNetworks, err := routingConf.LocalNetworks()
-	if err != nil {
-		return err
-	}
-
-	defaultIP, err := routingConf.DefaultIP()
-	if err != nil {
-		return err
-	}
-
-	firewallLogger := logger.NewChild(logging.Settings{
-		Prefix: "firewall: ",
-		Level:  firewallLogLevel,
-	})
-	firewallConf := firewall.NewConfig(firewallLogger, cmder,
-		defaultInterface, defaultGateway, localNetworks, defaultIP)
-
 	if err := routingConf.Setup(); err != nil {
 		if strings.Contains(err.Error(), "operation not permitted") {
 			logger.Warn("💡 Tip: Are you passing NET_ADMIN capability to gluetun?")
@@ -306,13 +316,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	if err := tun.Check(tunDevice); err != nil {
 		logger.Info(err.Error() + "; creating it...")
 		err = tun.Create(tunDevice)
-		if err != nil {
-			return err
-		}
-	}
-
-	if *allSettings.Firewall.Enabled {
-		err := firewallConf.SetEnabled(ctx, true) // disabled by default
 		if err != nil {
 			return err
 		}
