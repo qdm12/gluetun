@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gluetun/internal/configuration/settings/validation"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
@@ -71,84 +72,84 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 	case constants.Custom:
 	case constants.Cyberghost:
 		servers := allServers.GetCyberghost()
-		countryChoices = constants.CyberghostCountryChoices(servers)
-		hostnameChoices = constants.CyberghostHostnameChoices(servers)
+		countryChoices = validation.CyberghostCountryChoices(servers)
+		hostnameChoices = validation.CyberghostHostnameChoices(servers)
 	case constants.Expressvpn:
 		servers := allServers.GetExpressvpn()
-		countryChoices = constants.ExpressvpnCountriesChoices(servers)
-		cityChoices = constants.ExpressvpnCityChoices(servers)
-		hostnameChoices = constants.ExpressvpnHostnameChoices(servers)
+		countryChoices = validation.ExpressvpnCountriesChoices(servers)
+		cityChoices = validation.ExpressvpnCityChoices(servers)
+		hostnameChoices = validation.ExpressvpnHostnameChoices(servers)
 	case constants.Fastestvpn:
 		servers := allServers.GetFastestvpn()
-		countryChoices = constants.FastestvpnCountriesChoices(servers)
-		hostnameChoices = constants.FastestvpnHostnameChoices(servers)
+		countryChoices = validation.FastestvpnCountriesChoices(servers)
+		hostnameChoices = validation.FastestvpnHostnameChoices(servers)
 	case constants.HideMyAss:
 		servers := allServers.GetHideMyAss()
-		countryChoices = constants.HideMyAssCountryChoices(servers)
-		regionChoices = constants.HideMyAssRegionChoices(servers)
-		cityChoices = constants.HideMyAssCityChoices(servers)
-		hostnameChoices = constants.HideMyAssHostnameChoices(servers)
+		countryChoices = validation.HideMyAssCountryChoices(servers)
+		regionChoices = validation.HideMyAssRegionChoices(servers)
+		cityChoices = validation.HideMyAssCityChoices(servers)
+		hostnameChoices = validation.HideMyAssHostnameChoices(servers)
 	case constants.Ipvanish:
 		servers := allServers.GetIpvanish()
-		countryChoices = constants.IpvanishCountryChoices(servers)
-		cityChoices = constants.IpvanishCityChoices(servers)
-		hostnameChoices = constants.IpvanishHostnameChoices(servers)
+		countryChoices = validation.IpvanishCountryChoices(servers)
+		cityChoices = validation.IpvanishCityChoices(servers)
+		hostnameChoices = validation.IpvanishHostnameChoices(servers)
 	case constants.Ivpn:
 		servers := allServers.GetIvpn()
-		countryChoices = constants.IvpnCountryChoices(servers)
-		cityChoices = constants.IvpnCityChoices(servers)
-		ispChoices = constants.IvpnISPChoices(servers)
-		hostnameChoices = constants.IvpnHostnameChoices(servers)
+		countryChoices = validation.IvpnCountryChoices(servers)
+		cityChoices = validation.IvpnCityChoices(servers)
+		ispChoices = validation.IvpnISPChoices(servers)
+		hostnameChoices = validation.IvpnHostnameChoices(servers)
 	case constants.Mullvad:
 		servers := allServers.GetMullvad()
-		countryChoices = constants.MullvadCountryChoices(servers)
-		cityChoices = constants.MullvadCityChoices(servers)
-		ispChoices = constants.MullvadISPChoices(servers)
-		hostnameChoices = constants.MullvadHostnameChoices(servers)
+		countryChoices = validation.MullvadCountryChoices(servers)
+		cityChoices = validation.MullvadCityChoices(servers)
+		ispChoices = validation.MullvadISPChoices(servers)
+		hostnameChoices = validation.MullvadHostnameChoices(servers)
 	case constants.Nordvpn:
 		servers := allServers.GetNordvpn()
-		regionChoices = constants.NordvpnRegionChoices(servers)
-		hostnameChoices = constants.NordvpnHostnameChoices(servers)
+		regionChoices = validation.NordvpnRegionChoices(servers)
+		hostnameChoices = validation.NordvpnHostnameChoices(servers)
 	case constants.Perfectprivacy:
 		servers := allServers.GetPerfectprivacy()
-		cityChoices = constants.PerfectprivacyCityChoices(servers)
+		cityChoices = validation.PerfectprivacyCityChoices(servers)
 	case constants.Privado:
 		servers := allServers.GetPrivado()
-		countryChoices = constants.PrivadoCountryChoices(servers)
-		regionChoices = constants.PrivadoRegionChoices(servers)
-		cityChoices = constants.PrivadoCityChoices(servers)
-		hostnameChoices = constants.PrivadoHostnameChoices(servers)
+		countryChoices = validation.PrivadoCountryChoices(servers)
+		regionChoices = validation.PrivadoRegionChoices(servers)
+		cityChoices = validation.PrivadoCityChoices(servers)
+		hostnameChoices = validation.PrivadoHostnameChoices(servers)
 	case constants.PrivateInternetAccess:
 		servers := allServers.GetPia()
-		regionChoices = constants.PIAGeoChoices(servers)
-		hostnameChoices = constants.PIAHostnameChoices(servers)
-		nameChoices = constants.PIANameChoices(servers)
+		regionChoices = validation.PIAGeoChoices(servers)
+		hostnameChoices = validation.PIAHostnameChoices(servers)
+		nameChoices = validation.PIANameChoices(servers)
 	case constants.Privatevpn:
 		servers := allServers.GetPrivatevpn()
-		countryChoices = constants.PrivatevpnCountryChoices(servers)
-		cityChoices = constants.PrivatevpnCityChoices(servers)
-		hostnameChoices = constants.PrivatevpnHostnameChoices(servers)
+		countryChoices = validation.PrivatevpnCountryChoices(servers)
+		cityChoices = validation.PrivatevpnCityChoices(servers)
+		hostnameChoices = validation.PrivatevpnHostnameChoices(servers)
 	case constants.Protonvpn:
 		servers := allServers.GetProtonvpn()
-		countryChoices = constants.ProtonvpnCountryChoices(servers)
-		regionChoices = constants.ProtonvpnRegionChoices(servers)
-		cityChoices = constants.ProtonvpnCityChoices(servers)
-		nameChoices = constants.ProtonvpnNameChoices(servers)
-		hostnameChoices = constants.ProtonvpnHostnameChoices(servers)
+		countryChoices = validation.ProtonvpnCountryChoices(servers)
+		regionChoices = validation.ProtonvpnRegionChoices(servers)
+		cityChoices = validation.ProtonvpnCityChoices(servers)
+		nameChoices = validation.ProtonvpnNameChoices(servers)
+		hostnameChoices = validation.ProtonvpnHostnameChoices(servers)
 	case constants.Purevpn:
 		servers := allServers.GetPurevpn()
-		countryChoices = constants.PurevpnCountryChoices(servers)
-		regionChoices = constants.PurevpnRegionChoices(servers)
-		cityChoices = constants.PurevpnCityChoices(servers)
-		hostnameChoices = constants.PurevpnHostnameChoices(servers)
+		countryChoices = validation.PurevpnCountryChoices(servers)
+		regionChoices = validation.PurevpnRegionChoices(servers)
+		cityChoices = validation.PurevpnCityChoices(servers)
+		hostnameChoices = validation.PurevpnHostnameChoices(servers)
 	case constants.Surfshark:
 		servers := allServers.GetSurfshark()
-		countryChoices = constants.SurfsharkCountryChoices(servers)
-		cityChoices = constants.SurfsharkCityChoices(servers)
-		hostnameChoices = constants.SurfsharkHostnameChoices(servers)
-		regionChoices = constants.SurfsharkRegionChoices(servers)
+		countryChoices = validation.SurfsharkCountryChoices(servers)
+		cityChoices = validation.SurfsharkCityChoices(servers)
+		hostnameChoices = validation.SurfsharkHostnameChoices(servers)
+		regionChoices = validation.SurfsharkRegionChoices(servers)
 		// TODO v4 remove
-		regionChoices = append(regionChoices, constants.SurfsharkRetroLocChoices(servers)...)
+		regionChoices = append(regionChoices, validation.SurfsharkRetroLocChoices()...)
 		if err := helpers.AreAllOneOf(ss.Regions, regionChoices); err != nil {
 			return fmt.Errorf("%w: %s", ErrRegionNotValid, err)
 		}
@@ -157,26 +158,26 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		*ss = surfsharkRetroRegion(*ss)
 	case constants.Torguard:
 		servers := allServers.GetTorguard()
-		countryChoices = constants.TorguardCountryChoices(servers)
-		cityChoices = constants.TorguardCityChoices(servers)
-		hostnameChoices = constants.TorguardHostnameChoices(servers)
+		countryChoices = validation.TorguardCountryChoices(servers)
+		cityChoices = validation.TorguardCityChoices(servers)
+		hostnameChoices = validation.TorguardHostnameChoices(servers)
 	case constants.VPNUnlimited:
 		servers := allServers.GetVPNUnlimited()
-		countryChoices = constants.VPNUnlimitedCountryChoices(servers)
-		cityChoices = constants.VPNUnlimitedCityChoices(servers)
-		hostnameChoices = constants.VPNUnlimitedHostnameChoices(servers)
+		countryChoices = validation.VPNUnlimitedCountryChoices(servers)
+		cityChoices = validation.VPNUnlimitedCityChoices(servers)
+		hostnameChoices = validation.VPNUnlimitedHostnameChoices(servers)
 	case constants.Vyprvpn:
 		servers := allServers.GetVyprvpn()
-		regionChoices = constants.VyprvpnRegionChoices(servers)
+		regionChoices = validation.VyprvpnRegionChoices(servers)
 	case constants.Wevpn:
 		servers := allServers.GetWevpn()
-		cityChoices = constants.WevpnCityChoices(servers)
-		hostnameChoices = constants.WevpnHostnameChoices(servers)
+		cityChoices = validation.WevpnCityChoices(servers)
+		hostnameChoices = validation.WevpnHostnameChoices(servers)
 	case constants.Windscribe:
 		servers := allServers.GetWindscribe()
-		regionChoices = constants.WindscribeRegionChoices(servers)
-		cityChoices = constants.WindscribeCityChoices(servers)
-		hostnameChoices = constants.WindscribeHostnameChoices(servers)
+		regionChoices = validation.WindscribeRegionChoices(servers)
+		cityChoices = validation.WindscribeCityChoices(servers)
+		hostnameChoices = validation.WindscribeHostnameChoices(servers)
 	default:
 		return fmt.Errorf("%w: %s", ErrVPNProviderNameNotValid, vpnServiceProvider)
 	}

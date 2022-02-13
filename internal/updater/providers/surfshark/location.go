@@ -20,3 +20,12 @@ func getHostInformation(host string, hostnameToLocation map[string]models.Surfsh
 
 	return locationData, nil
 }
+
+func hostToLocation(locationData []models.SurfsharkLocationData) (
+	hostToLocation map[string]models.SurfsharkLocationData) {
+	hostToLocation = make(map[string]models.SurfsharkLocationData, len(locationData))
+	for _, data := range locationData {
+		hostToLocation[data.Hostname] = data
+	}
+	return hostToLocation
+}

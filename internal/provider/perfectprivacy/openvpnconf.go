@@ -80,9 +80,9 @@ func (p *Perfectprivacy) BuildConf(connection models.Connection,
 	lines = append(lines, utils.WrapOpenvpnCert(
 		constants.PerfectprivacyCert)...)
 	lines = append(lines, utils.WrapOpenvpnKey(
-		constants.PerfectprivacyPrivateKey)...)
+		constants.PerfectprivacyKey)...)
 	lines = append(lines, utils.WrapOpenvpnTLSCrypt(
-		constants.PerfectprivacyTLSCryptOpenvpnStaticKeyV1)...)
+		constants.PerfectprivacyTLSCrypt)...)
 
 	lines = append(lines, "")
 

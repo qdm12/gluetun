@@ -18,7 +18,8 @@ func addServersFromAPI(ctx context.Context, client *http.Client,
 		return err
 	}
 
-	hostToLocation := constants.SurfsharkHostToLocation()
+	locationData := constants.SurfsharkLocationData()
+	hostToLocation := hostToLocation(locationData)
 
 	const tcp, udp = true, true
 	for _, serverData := range data {

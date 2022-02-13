@@ -17,17 +17,17 @@ func (p *PIA) BuildConf(connection models.Connection,
 		defaultCipher = constants.AES128cbc
 		defaultAuth = constants.SHA1
 		X509CRL = constants.PiaX509CRLNormal
-		certificate = constants.PIACertificateNormal
+		certificate = constants.PiaCANormal
 	case constants.PIAEncryptionPresetNone:
 		defaultCipher = "none"
 		defaultAuth = "none"
 		X509CRL = constants.PiaX509CRLNormal
-		certificate = constants.PIACertificateNormal
+		certificate = constants.PiaCANormal
 	default: // strong
 		defaultCipher = constants.AES256cbc
 		defaultAuth = constants.SHA256
 		X509CRL = constants.PiaX509CRLStrong
-		certificate = constants.PIACertificateStrong
+		certificate = constants.PiaCAStrong
 	}
 
 	if len(settings.Ciphers) == 0 {

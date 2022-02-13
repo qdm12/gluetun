@@ -67,9 +67,9 @@ func (p *Privatevpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.PrivatevpnCertificate)...)
+		constants.PrivatevpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.PrivatevpnOpenvpnStaticKeyV1)...)
+		constants.PrivatevpnTLSAuth)...)
 
 	lines = append(lines, "")
 

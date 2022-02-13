@@ -66,13 +66,13 @@ func (p *Purevpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.PurevpnCertificateAuthority)...)
+		constants.PurevpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnCert(
-		constants.PurevpnCertificate)...)
+		constants.PurevpnCert)...)
 	lines = append(lines, utils.WrapOpenvpnKey(
 		constants.PurevpnKey)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.PurevpnOpenvpnStaticKeyV1)...)
+		constants.PurevpnTLSAuth)...)
 
 	lines = append(lines, "")
 

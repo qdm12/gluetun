@@ -20,7 +20,7 @@ func Test_newHTTPClient(t *testing.T) {
 
 	const serverName = "testserver"
 
-	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
+	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PiaCAStrong)
 	require.NoError(t, err)
 	certificate, err := x509.ParseCertificate(certificateBytes)
 	require.NoError(t, err)

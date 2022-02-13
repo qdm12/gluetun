@@ -65,7 +65,7 @@ func (v *Vyprvpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.VyprvpnCertificate)...)
+		constants.VyprvpnCA)...)
 
 	lines = append(lines, "")
 

@@ -6,7 +6,8 @@ import (
 
 // getRemainingServers finds extra servers not found in the API or in the ZIP file.
 func getRemainingServers(hts hostToServer) {
-	hostnameToLocationLeft := constants.SurfsharkHostToLocation()
+	locationData := constants.SurfsharkLocationData()
+	hostnameToLocationLeft := hostToLocation(locationData)
 	for _, hostnameDone := range hts.toHostsSlice() {
 		delete(hostnameToLocationLeft, hostnameDone)
 	}

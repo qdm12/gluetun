@@ -66,7 +66,7 @@ func (p *Provider) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.VPNUnlimitedCertificateAuthority)...)
+		constants.VPNUnlimitedCA)...)
 
 	certData, err := parse.ExtractCert([]byte(*settings.ClientCrt))
 	if err != nil {

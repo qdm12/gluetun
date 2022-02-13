@@ -74,9 +74,9 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.NordvpnCertificate)...)
+		constants.NordvpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.NordvpnOpenvpnStaticKeyV1)...)
+		constants.NordvpnTLSAuth)...)
 
 	lines = append(lines, "")
 

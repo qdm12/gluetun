@@ -73,7 +73,7 @@ func (c *Cyberghost) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.CyberghostCertificate)...)
+		constants.CyberghostCA)...)
 
 	certData, err := parse.ExtractCert([]byte(*settings.ClientCrt))
 	if err != nil {

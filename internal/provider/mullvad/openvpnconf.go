@@ -74,7 +74,7 @@ func (m *Mullvad) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.MullvadCertificate)...)
+		constants.MullvadCA)...)
 
 	lines = append(lines, "")
 

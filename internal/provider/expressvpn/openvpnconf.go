@@ -78,7 +78,7 @@ func (p *Provider) BuildConf(connection models.Connection,
 	lines = append(lines, utils.WrapOpenvpnRSAKey(
 		constants.ExpressvpnRSAKey)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.ExpressvpnTLSAuthOpenvpnStaticKeyV1)...)
+		constants.ExpressvpnTLSAuth)...)
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.ExpressvpnCA)...)
 

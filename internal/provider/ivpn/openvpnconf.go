@@ -73,7 +73,7 @@ func (i *Ivpn) BuildConf(connection models.Connection,
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.IvpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.IvpnOpenvpnStaticKeyV1)...)
+		constants.IvpnTLSAuth)...)
 
 	lines = append(lines, "")
 

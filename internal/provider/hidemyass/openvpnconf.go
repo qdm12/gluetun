@@ -67,9 +67,9 @@ func (h *HideMyAss) BuildConf(connection models.Connection,
 	lines = append(lines, utils.WrapOpenvpnCA(
 		constants.HideMyAssCA)...)
 	lines = append(lines, utils.WrapOpenvpnCert(
-		constants.HideMyAssCertificate)...)
+		constants.HideMyAssCert)...)
 	lines = append(lines, utils.WrapOpenvpnRSAKey(
-		constants.HideMyAssRSAPrivateKey)...)
+		constants.HideMyAssRSAKey)...)
 
 	lines = append(lines, "")
 

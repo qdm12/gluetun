@@ -73,9 +73,9 @@ func (s *Surfshark) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.SurfsharkCertificate)...)
+		constants.SurfsharkCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.SurfsharkOpenvpnStaticKeyV1)...)
+		constants.SurfsharkTLSAuth)...)
 
 	lines = append(lines, "")
 

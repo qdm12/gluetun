@@ -73,9 +73,9 @@ func (p *Protonvpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.ProtonvpnCertificate)...)
+		constants.ProtonvpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.ProtonvpnOpenvpnStaticKeyV1)...)
+		constants.ProtonvpnTLSAuth)...)
 
 	lines = append(lines, "")
 

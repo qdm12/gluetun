@@ -74,9 +74,9 @@ func (w *Windscribe) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.WindscribeCertificate)...)
+		constants.WindscribeCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.WindscribeOpenvpnStaticKeyV1)...)
+		constants.WindscribeTLSAuth)...)
 
 	lines = append(lines, "")
 

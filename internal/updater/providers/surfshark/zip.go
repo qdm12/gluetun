@@ -24,7 +24,8 @@ func addOpenVPNServersFromZip(ctx context.Context,
 		hostnamesDoneSet[hostname] = struct{}{}
 	}
 
-	hostToLocation := constants.SurfsharkHostToLocation()
+	locationData := constants.SurfsharkLocationData()
+	hostToLocation := hostToLocation(locationData)
 
 	for fileName, content := range contents {
 		if !strings.HasSuffix(fileName, ".ovpn") {

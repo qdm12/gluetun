@@ -76,9 +76,9 @@ func (t *Torguard) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.TorguardCertificate)...)
+		constants.TorguardCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.TorguardOpenvpnStaticKeyV1)...)
+		constants.TorguardTLSAuth)...)
 
 	lines = append(lines, "")
 

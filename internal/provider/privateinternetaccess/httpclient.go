@@ -18,7 +18,7 @@ var (
 )
 
 func newHTTPClient(serverName string) (client *http.Client, err error) {
-	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PIACertificateStrong)
+	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PiaCAStrong)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrParseCertificate, err)
 	}

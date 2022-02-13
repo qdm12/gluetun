@@ -73,9 +73,9 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 	}
 
 	lines = append(lines, utils.WrapOpenvpnCA(
-		constants.FastestvpnCertificate)...)
+		constants.FastestvpnCA)...)
 	lines = append(lines, utils.WrapOpenvpnTLSAuth(
-		constants.FastestvpnOpenvpnStaticKeyV1)...)
+		constants.FastestvpnTLSAuth)...)
 
 	lines = append(lines, "")
 
