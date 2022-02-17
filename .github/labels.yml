@@ -73,6 +73,8 @@
 - name: ":cloud: Torguard"
   color: "cfe8d4"
   description: ""
+- name: ":cloud: VPNSecure.me"
+  color: "cfe8d4"
 - name: ":cloud: VPNUnlimited"
   color: "cfe8d4"
   description: ""

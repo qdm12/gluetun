@@ -40,6 +40,11 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_KEY: %w", err)
 	}
 
+	openVPN.EncryptedKey, err = readBase64OrNil("OPENVPN_ENCRYPTED_KEY")
+	if err != nil {
+		return openVPN, fmt.Errorf("environment variable OPENVPN_ENCRYPTED_KEY: %w", err)
+	}
+
 	openVPN.PIAEncPreset = r.readPIAEncryptionPreset()
 
 	openVPN.IPv6, err = envToBoolPtr("OPENVPN_IPV6")

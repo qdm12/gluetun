@@ -88,6 +88,19 @@ func Test_FilterServers(t *testing.T) {
 				{Free: true, VPN: vpn.OpenVPN, UDP: true},
 			},
 		},
+		"filter by premium only": {
+			selection: settings.ServerSelection{
+				PremiumOnly: boolPtr(true),
+			}.WithDefaults(providers.Surfshark),
+			servers: []models.Server{
+				{Premium: false, VPN: vpn.OpenVPN, UDP: true},
+				{Premium: true, VPN: vpn.OpenVPN, UDP: true},
+				{Premium: false, VPN: vpn.OpenVPN, UDP: true},
+			},
+			filtered: []models.Server{
+				{Premium: true, VPN: vpn.OpenVPN, UDP: true},
+			},
+		},
 		"filter by stream only": {
 			selection: settings.ServerSelection{
 				StreamOnly: boolPtr(true),

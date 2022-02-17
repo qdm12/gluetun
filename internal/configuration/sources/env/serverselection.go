@@ -77,6 +77,12 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		return ss, fmt.Errorf("environment variable FREE_ONLY: %w", err)
 	}
 
+	// VPNSecure only
+	ss.PremiumOnly, err = envToBoolPtr("PREMIUM_ONLY")
+	if err != nil {
+		return ss, fmt.Errorf("environment variable PREMIUM_ONLY: %w", err)
+	}
+
 	// VPNUnlimited only
 	ss.MultiHopOnly, err = envToBoolPtr("MULTIHOP_ONLY")
 	if err != nil {

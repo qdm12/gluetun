@@ -115,6 +115,9 @@ ENV VPN_SERVICE_PROVIDER=pia \
     OPENVPN_KEY= \
     OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
+    # # VPNSecure only:
+    OPENVPN_ENCRYPTED_KEY= \
+    OPENVPN_ENCRYPTED_KEY_SECRETFILE=/run/secrets/openvpn_encrypted_key \
     # # Nordvpn only:
     SERVER_NUMBER= \
     # # PIA only:
@@ -123,6 +126,8 @@ ENV VPN_SERVICE_PROVIDER=pia \
     FREE_ONLY= \
     # # Surfshark only:
     MULTIHOP_ONLY= \
+    # # VPN Secure only:
+    PREMIUM_ONLY= \
     # Firewall
     FIREWALL=on \
     FIREWALL_VPN_INPUT_PORTS= \

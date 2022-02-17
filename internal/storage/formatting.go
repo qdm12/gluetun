@@ -114,6 +114,10 @@ func noServerFoundError(selection settings.ServerSelection) (err error) {
 		messageParts = append(messageParts, "free tier only")
 	}
 
+	if *selection.PremiumOnly {
+		messageParts = append(messageParts, "premium tier only")
+	}
+
 	message := "for " + strings.Join(messageParts, "; ")
 
 	return fmt.Errorf("%w: %s", ErrNoServerFound, message)

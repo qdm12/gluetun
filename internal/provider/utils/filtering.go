@@ -40,6 +40,10 @@ func filterServer(server models.Server,
 		return true
 	}
 
+	if *selection.PremiumOnly && !server.Premium {
+		return true
+	}
+
 	if *selection.StreamOnly && !server.Stream {
 		return true
 	}

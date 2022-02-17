@@ -22,6 +22,7 @@ const (
 	SlickVPN              = "slickvpn"
 	Surfshark             = "surfshark"
 	Torguard              = "torguard"
+	VPNSecure             = "vpn secure"
 	VPNUnlimited          = "vpn unlimited"
 	Vyprvpn               = "vyprvpn"
 	Wevpn                 = "wevpn"
@@ -48,6 +49,7 @@ func All() []string {
 		SlickVPN,
 		Surfshark,
 		Torguard,
+		VPNSecure,
 		VPNUnlimited,
 		Vyprvpn,
 		Wevpn,
