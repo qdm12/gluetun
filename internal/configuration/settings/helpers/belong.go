@@ -15,9 +15,16 @@ func IsOneOf(value string, choices ...string) (ok bool) {
 	return false
 }
 
-var ErrValueNotOneOf = errors.New("value is not one of the possible choices")
+var (
+	ErrNoChoice      = errors.New("one or more values is set but there is no possible value available")
+	ErrValueNotOneOf = errors.New("value is not one of the possible choices")
+)
 
 func AreAllOneOf(values, choices []string) (err error) {
+	if len(values) > 0 && len(choices) == 0 {
+		return ErrNoChoice
+	}
+
 	set := make(map[string]struct{}, len(choices))
 	for _, choice := range choices {
 		choice = strings.ToLower(choice)
