@@ -14,7 +14,6 @@ import (
 )
 
 var (
-	ErrFetchAPI         = errors.New("failed fetching API")
 	ErrNotEnoughServers = errors.New("not enough servers found")
 )
 
@@ -23,7 +22,7 @@ func GetServers(ctx context.Context, client *http.Client,
 	servers []models.IvpnServer, warnings []string, err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s", ErrFetchAPI, err)
+		return nil, nil, fmt.Errorf("failed fetching API: %w", err)
 	}
 
 	hosts := make([]string, 0, len(data.Servers))

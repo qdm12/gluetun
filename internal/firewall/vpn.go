@@ -23,7 +23,7 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 		return nil
 	}
 
-	c.logger.Info("setting VPN connection through firewall...")
+	c.logger.Info("allowing VPN connection...")
 
 	if c.vpnConnection.Equal(connection) {
 		return nil
@@ -32,14 +32,14 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 	remove := true
 	if c.vpnConnection.IP != nil {
 		if err := c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, c.vpnConnection, remove); err != nil {
-			c.logger.Error("cannot remove outdated VPN connection through firewall: " + err.Error())
+			c.logger.Error("cannot remove outdated VPN connection rule: " + err.Error())
 		}
 	}
 	c.vpnConnection = models.Connection{}
 
 	if c.vpnIntf != "" {
 		if err = c.acceptOutputThroughInterface(ctx, c.vpnIntf, remove); err != nil {
-			c.logger.Error("cannot remove outdated VPN interface from firewall: " + err.Error())
+			c.logger.Error("cannot remove outdated VPN interface rule: " + err.Error())
 		}
 	}
 	c.vpnIntf = ""
@@ -47,7 +47,7 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 	remove = false
 
 	if err := c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, connection, remove); err != nil {
-		return fmt.Errorf("cannot set VPN connection through firewall: %w", err)
+		return fmt.Errorf("cannot allow output traffic through VPN connection: %w", err)
 	}
 	c.vpnConnection = connection
 

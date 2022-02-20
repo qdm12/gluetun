@@ -26,7 +26,8 @@ func (u *unzipper) FetchAndExtract(ctx context.Context, url string) (
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %s for %s", ErrHTTPStatusCodeNotOK, response.Status, url)
+		return nil, fmt.Errorf("%w: %s: %d %s", ErrHTTPStatusCodeNotOK,
+			url, response.StatusCode, response.Status)
 	}
 
 	b, err := io.ReadAll(response.Body)

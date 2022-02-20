@@ -16,10 +16,7 @@ import (
 
 var (
 	ErrIPTablesVersionTooShort = errors.New("iptables version string is too short")
-	ErrIPTables                = errors.New("failed iptables command")
 	ErrPolicyUnknown           = errors.New("unknown policy")
-	ErrClearRules              = errors.New("cannot clear all rules")
-	ErrSetIPtablesPolicies     = errors.New("cannot set iptables policies")
 	ErrNeedIP6Tables           = errors.New("ip6tables is required, please upgrade your kernel to support it")
 )
 
@@ -79,33 +76,30 @@ func (c *Config) runIptablesInstruction(ctx context.Context, instruction string)
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "iptables", flags...)
 	if output, err := c.runner.Run(cmd); err != nil {
-		return fmt.Errorf("%w \"iptables %s\": %s: %s", ErrIPTables, instruction, output, err)
+		return fmt.Errorf("command failed: \"iptables %s\": %s: %w", instruction, output, err)
 	}
 	return nil
 }
 
 func (c *Config) clearAllRules(ctx context.Context) error {
-	if err := c.runMixedIptablesInstructions(ctx, []string{
+	return c.runMixedIptablesInstructions(ctx, []string{
 		"--flush",        // flush all chains
 		"--delete-chain", // delete all chains
-	}); err != nil {
-		return fmt.Errorf("%w: %s", ErrClearRules, err.Error())
-	}
-	return nil
+	})
 }
 
 func (c *Config) setIPv4AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:
-		return fmt.Errorf("%w: %s: %s", ErrSetIPtablesPolicies, ErrPolicyUnknown, policy)
+		return fmt.Errorf("%w: %s", ErrPolicyUnknown, policy)
 	}
 	if err := c.runIptablesInstructions(ctx, []string{
 		"--policy INPUT " + policy,
 		"--policy OUTPUT " + policy,
 		"--policy FORWARD " + policy,
 	}); err != nil {
-		return fmt.Errorf("%w: %s", ErrSetIPtablesPolicies, err)
+		return err
 	}
 	return nil
 }

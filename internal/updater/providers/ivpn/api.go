@@ -9,11 +9,7 @@ import (
 )
 
 var (
-	errBuildRequest          = errors.New("cannot build HTTP request")
-	errDoRequest             = errors.New("failed doing HTTP request")
-	errHTTPStatusCodeNotOK   = errors.New("HTTP status code not OK")
-	errUnmarshalResponseBody = errors.New("failed unmarshaling response body")
-	errCloseBody             = errors.New("failed closing HTTP body")
+	errHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 )
 
 type apiData struct {
@@ -40,12 +36,12 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return data, fmt.Errorf("%w: %s", errBuildRequest, err)
+		return data, err
 	}
 
 	response, err := client.Do(request)
 	if err != nil {
-		return data, fmt.Errorf("%w: %s", errDoRequest, err)
+		return data, err
 	}
 
 	if response.StatusCode != http.StatusOK {
@@ -57,11 +53,11 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&data); err != nil {
 		_ = response.Body.Close()
-		return data, fmt.Errorf("%w: %s", errUnmarshalResponseBody, err)
+		return data, fmt.Errorf("failed unmarshaling response body: %w", err)
 	}
 
 	if err := response.Body.Close(); err != nil {
-		return data, fmt.Errorf("%w: %s", errCloseBody, err)
+		return data, fmt.Errorf("cannot close response body: %w", err)
 	}
 
 	return data, nil

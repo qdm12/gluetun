@@ -33,13 +33,13 @@ func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (
 		}
 		const remove = true
 		if err := c.acceptInputToPort(ctx, existingIntf, port, remove); err != nil {
-			return fmt.Errorf("cannot remove old allowed port %d through interface %s: %w", port, existingIntf, err)
+			return fmt.Errorf("cannot remove old allowed port %d: %w", port, err)
 		}
 	}
 
 	const remove = false
 	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-		return fmt.Errorf("cannot set allowed port %d through interface %s: %w", port, intf, err)
+		return fmt.Errorf("cannot allow input to port %d: %w", port, err)
 	}
 	c.allowedInputPorts[port] = intf
 
@@ -60,7 +60,7 @@ func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 		return nil
 	}
 
-	c.logger.Info("removing allowed port " + strconv.Itoa(int(port)) + " through firewall...")
+	c.logger.Info("removing allowed port " + strconv.Itoa(int(port)) + " ...")
 
 	intf, ok := c.allowedInputPorts[port]
 	if !ok {
@@ -69,7 +69,7 @@ func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 
 	const remove = true
 	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-		return fmt.Errorf("cannot remove allowed port %d through interface %s: %w", port, intf, err)
+		return fmt.Errorf("cannot remove allowed port %d: %w", port, err)
 	}
 	delete(c.allowedInputPorts, port)
 

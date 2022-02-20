@@ -1,7 +1,6 @@
 package routing
 
 import (
-	"errors"
 	"fmt"
 	"net"
 
@@ -11,10 +10,6 @@ import (
 const (
 	outboundTable    = 199
 	outboundPriority = 99
-)
-
-var (
-	errAddOutboundSubnet = errors.New("cannot add outbound subnet to routes")
 )
 
 type OutboundRoutesSetter interface {
@@ -48,7 +43,7 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 
 	err = r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errAddOutboundSubnet, err)
+		return fmt.Errorf("cannot add outbound subnet to routes: %w", err)
 	}
 
 	return nil
@@ -68,7 +63,7 @@ func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 		err = r.deleteIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {
 			warnings = append(warnings,
-				errRuleDelete.Error()+": for subnet "+subNet.String()+": "+err.Error())
+				"cannot delete rule: for subnet "+subNet.String()+": "+err.Error())
 			continue
 		}
 
@@ -83,16 +78,14 @@ func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
 	for i, subnet := range subnets {
 		err := r.addRouteVia(subnet, defaultGateway, defaultInterfaceName, outboundTable)
 		if err != nil {
-			return fmt.Errorf("%w: for subnet %s: %s",
-				errRouteAdd, subnet, err)
+			return fmt.Errorf("cannot add route for subnet %s: %w", subnet, err)
 		}
 
 		ruleSrcNet := (*net.IPNet)(nil)
 		ruleDstNet := &subnets[i]
 		err = r.addIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {
-			return fmt.Errorf("%w: for subnet %s: %s",
-				errRuleAdd, subnet, err)
+			return fmt.Errorf("cannot add rule: for subnet %s: %w", subnet, err)
 		}
 
 		r.outboundSubnets = append(r.outboundSubnets, subnet)

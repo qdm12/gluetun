@@ -35,8 +35,6 @@ func (s *Storage) readFromFile(filepath string, hardcoded models.AllServers) (
 }
 
 var (
-	errDecodeVersions = errors.New("cannot decode versions")
-	errDecodeServers  = errors.New("cannot decode servers")
 	errDecodeProvider = errors.New("cannot decode servers for provider")
 )
 
@@ -44,12 +42,12 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 	servers models.AllServers, err error) {
 	var versions allVersions
 	if err := json.Unmarshal(b, &versions); err != nil {
-		return servers, fmt.Errorf("%w: %s", errDecodeVersions, err)
+		return servers, fmt.Errorf("cannot decode versions: %w", err)
 	}
 
 	var rawMessages allJSONRawMessages
 	if err := json.Unmarshal(b, &rawMessages); err != nil {
-		return servers, fmt.Errorf("%w: %s", errDecodeServers, err)
+		return servers, fmt.Errorf("cannot decode servers: %w", err)
 	}
 
 	// TODO simplify with generics in Go 1.18

@@ -27,6 +27,6 @@ func (l *Loop) firewallAllowPort(ctx context.Context) {
 	startData := l.state.GetStartData()
 	err := l.portAllower.SetAllowedPort(ctx, port, startData.Interface)
 	if err != nil {
-		l.logger.Error("cannot allow port through firewall: " + err.Error())
+		l.logger.Error("cannot allow port: " + err.Error())
 	}
 }

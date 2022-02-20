@@ -2,16 +2,10 @@ package vpn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/portforward"
-)
-
-var (
-	errObtainVPNLocalGateway = errors.New("cannot obtain VPN local gateway IP")
-	errStartPortForwarding   = errors.New("cannot start port forwarding")
 )
 
 func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err error) {
@@ -22,7 +16,7 @@ func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err 
 	// only used for PIA for now
 	gateway, err := l.routing.VPNLocalGatewayIP(data.vpnIntf)
 	if err != nil {
-		return fmt.Errorf("%w: for interface %s: %s", errObtainVPNLocalGateway, data.vpnIntf, err)
+		return fmt.Errorf("cannot obtain VPN local gateway IP for interface %s: %w", data.vpnIntf, err)
 	}
 	l.logger.Info("VPN gateway IP address: " + gateway.String())
 
@@ -34,7 +28,7 @@ func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err 
 	}
 	_, err = l.portForward.Start(ctx, pfData)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errStartPortForwarding, err)
+		return fmt.Errorf("cannot start port forwarding: %w", err)
 	}
 
 	return nil

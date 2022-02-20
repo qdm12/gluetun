@@ -14,8 +14,6 @@ import (
 )
 
 var (
-	ErrGetZip           = errors.New("cannot get OpenVPN ZIP file")
-	ErrGetAPI           = errors.New("cannot fetch server information from API")
 	ErrNotEnoughServers = errors.New("not enough servers found")
 )
 
@@ -26,12 +24,12 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 
 	err = addServersFromAPI(ctx, client, hts)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s", ErrGetAPI, err)
+		return nil, nil, fmt.Errorf("cannot fetch server information from API: %w", err)
 	}
 
 	warnings, err = addOpenVPNServersFromZip(ctx, unzipper, hts)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s", ErrGetZip, err)
+		return nil, nil, fmt.Errorf("cannot get OpenVPN ZIP file: %w", err)
 	}
 
 	getRemainingServers(hts)

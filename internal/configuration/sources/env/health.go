@@ -38,9 +38,7 @@ func (r *Reader) readDurationWithRetro(envKey, retroEnvKey string) (d *time.Dura
 	d = new(time.Duration)
 	*d, err = time.ParseDuration(s)
 	if err != nil {
-		return nil, fmt.Errorf(
-			"environment variable %s: %w",
-			envKey, err)
+		return nil, fmt.Errorf("environment variable %s: %w", envKey, err)
 	}
 
 	return d, nil

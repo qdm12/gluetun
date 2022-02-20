@@ -23,12 +23,12 @@ type ControlServer struct {
 func (c ControlServer) validate() (err error) {
 	_, portStr, err := net.SplitHostPort(*c.Address)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrControlServerAddress, err)
+		return fmt.Errorf("listening address is not valid: %w", err)
 	}
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrControlServerPort, err)
+		return fmt.Errorf("listening port it not valid: %w", err)
 	}
 
 	uid := os.Getuid()

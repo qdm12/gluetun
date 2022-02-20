@@ -33,8 +33,7 @@ func addServersFromAPI(ctx context.Context, client *http.Client,
 }
 
 var (
-	ErrHTTPStatusCodeNotOK   = errors.New("HTTP status code not OK")
-	ErrUnmarshalResponseBody = errors.New("failed unmarshaling response body")
+	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 )
 
 type serverData struct {
@@ -66,7 +65,7 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&servers); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrUnmarshalResponseBody, err)
+		return nil, fmt.Errorf("failed unmarshaling response body: %w", err)
 	}
 
 	if err := response.Body.Close(); err != nil {

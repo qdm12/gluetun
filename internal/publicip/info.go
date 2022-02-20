@@ -38,7 +38,8 @@ func Info(ctx context.Context, client *http.Client, ip net.IP) ( //nolint:interf
 	case http.StatusTooManyRequests:
 		return result, fmt.Errorf("%w: %s", ErrTooManyRequests, baseURL)
 	default:
-		return result, fmt.Errorf("%w: %d", ErrBadHTTPStatus, response.StatusCode)
+		return result, fmt.Errorf("%w: %d %s", ErrBadHTTPStatus,
+			response.StatusCode, response.Status)
 	}
 
 	decoder := json.NewDecoder(response.Body)

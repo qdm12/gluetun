@@ -1,16 +1,10 @@
 package storage
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 
 	"github.com/qdm12/gluetun/internal/models"
-)
-
-var (
-	ErrCannotReadFile  = errors.New("cannot read servers from file")
-	ErrCannotWriteFile = errors.New("cannot write servers to file")
 )
 
 func countServers(allServers models.AllServers) int {
@@ -39,7 +33,7 @@ func countServers(allServers models.AllServers) int {
 func (s *Storage) SyncServers() (err error) {
 	serversOnFile, err := s.readFromFile(s.filepath, s.hardcodedServers)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrCannotReadFile, err)
+		return fmt.Errorf("cannot read servers from file: %w", err)
 	}
 
 	hardcodedCount := countServers(s.hardcodedServers)
@@ -64,7 +58,7 @@ func (s *Storage) SyncServers() (err error) {
 	}
 
 	if err := flushToFile(s.filepath, s.mergedServers); err != nil {
-		return fmt.Errorf("%w: %s", ErrCannotWriteFile, err)
+		return fmt.Errorf("cannot write servers to file: %w", err)
 	}
 	return nil
 }

@@ -33,7 +33,7 @@ func (p PublicIP) validate() (err error) {
 	if *p.IPFilepath != "" { // optional
 		_, err := filepath.Abs(*p.IPFilepath)
 		if err != nil {
-			return fmt.Errorf("%w: %s", ErrPublicIPFilepathNotValid, err)
+			return fmt.Errorf("filepath is not valid: %w", err)
 		}
 	}
 

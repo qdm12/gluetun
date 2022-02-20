@@ -98,7 +98,7 @@ func Test_extractDataFromLine(t *testing.T) {
 		},
 		"extract proto error": {
 			line:  "proto bad",
-			isErr: errExtractProto,
+			isErr: errProtocolNotSupported,
 		},
 		"extract proto success": {
 			line:     "proto tcp",
@@ -106,7 +106,7 @@ func Test_extractDataFromLine(t *testing.T) {
 		},
 		"extract remote error": {
 			line:  "remote bad",
-			isErr: errExtractRemote,
+			isErr: errHostNotIP,
 		},
 		"extract remote success": {
 			line:     "remote 1.2.3.4 1194 udp",
@@ -213,15 +213,15 @@ func Test_extractRemote(t *testing.T) {
 		},
 		"port is zero": {
 			line: "remote 1.2.3.4 0",
-			err:  errors.New("port is not valid: not between 1 and 65535: 0"),
+			err:  errors.New("port is not valid: 0 must be between 1 and 65535"),
 		},
 		"port is minus one": {
 			line: "remote 1.2.3.4 -1",
-			err:  errors.New("port is not valid: not between 1 and 65535: -1"),
+			err:  errors.New("port is not valid: -1 must be between 1 and 65535"),
 		},
 		"port is over 65535": {
 			line: "remote 1.2.3.4 65536",
-			err:  errors.New("port is not valid: not between 1 and 65535: 65536"),
+			err:  errors.New("port is not valid: 65536 must be between 1 and 65535"),
 		},
 		"IP host and port": {
 			line: "remote 1.2.3.4 8000",

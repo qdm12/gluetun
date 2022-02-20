@@ -18,7 +18,7 @@ func (p *Provider) BuildConf(connection models.Connection,
 	settings settings.OpenVPN) (lines []string, err error) {
 	lines, _, err = p.extractor.Data(*settings.ConfFile)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrExtractData, err)
+		return nil, fmt.Errorf("failed extracting information from custom configuration file: %w", err)
 	}
 
 	lines = modifyConfig(lines, connection, settings)

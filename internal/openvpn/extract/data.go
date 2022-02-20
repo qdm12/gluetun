@@ -17,12 +17,12 @@ func (e *Extractor) Data(filepath string) (lines []string,
 	connection models.Connection, err error) {
 	lines, err = readCustomConfigLines(filepath)
 	if err != nil {
-		return nil, connection, fmt.Errorf("%w: %s", ErrRead, err)
+		return nil, connection, fmt.Errorf("cannot read configuration file: %w", err)
 	}
 
 	connection, err = extractDataFromLines(lines)
 	if err != nil {
-		return nil, connection, fmt.Errorf("%w: %s", ErrExtractConnection, err)
+		return nil, connection, fmt.Errorf("cannot extract connection from file: %w", err)
 	}
 
 	return lines, connection, nil

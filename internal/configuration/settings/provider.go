@@ -43,12 +43,12 @@ func (p *Provider) validate(vpnType string, allServers models.AllServers) (err e
 
 	err = p.ServerSelection.validate(*p.Name, allServers)
 	if err != nil {
-		return fmt.Errorf("server selection settings validation failed: %w", err)
+		return fmt.Errorf("server selection: %w", err)
 	}
 
 	err = p.PortForwarding.validate(*p.Name)
 	if err != nil {
-		return fmt.Errorf("port forwarding settings validation failed: %w", err)
+		return fmt.Errorf("port forwarding: %w", err)
 	}
 
 	return nil

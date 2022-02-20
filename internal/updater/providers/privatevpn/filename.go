@@ -44,8 +44,7 @@ func parseFilename(fileName string) (
 	parts := strings.Split(s, "-")
 	const minParts = 2
 	if len(parts) < minParts {
-		return "", "", fmt.Errorf("%w: %s",
-			errNotEnoughParts, fileName)
+		return "", "", fmt.Errorf("%w: %s", errNotEnoughParts, fileName)
 	}
 	countryCode, city = parts[0], parts[1]
 

@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -13,18 +12,14 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-var (
-	ErrParseCertificate = errors.New("cannot parse X509 certificate")
-)
-
 func newHTTPClient(serverName string) (client *http.Client, err error) {
 	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PiaCAStrong)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrParseCertificate, err)
+		return nil, fmt.Errorf("cannot parse X509 certificate: %w", err)
 	}
 	certificate, err := x509.ParseCertificate(certificateBytes)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrParseCertificate, err)
+		return nil, fmt.Errorf("cannot parse X509 certificate: %w", err)
 	}
 
 	//nolint:gomnd

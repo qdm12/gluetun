@@ -20,12 +20,9 @@ import (
 )
 
 var (
-	ErrModeUnspecified         = errors.New("at least one of -enduser or -maintainer must be specified")
-	ErrDNSAddress              = errors.New("DNS address is not valid")
-	ErrNoProviderSpecified     = errors.New("no provider was specified")
-	ErrNewStorage              = errors.New("cannot create storage")
-	ErrUpdateServerInformation = errors.New("cannot update server information")
-	ErrWriteToFile             = errors.New("cannot write updated information to file")
+	ErrModeUnspecified     = errors.New("at least one of -enduser or -maintainer must be specified")
+	ErrDNSAddress          = errors.New("DNS address is not valid")
+	ErrNoProviderSpecified = errors.New("no provider was specified")
 )
 
 type Updater interface {
@@ -90,25 +87,25 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrNewStorage, err)
+		return fmt.Errorf("cannot create servers storage: %w", err)
 	}
 	currentServers := storage.GetServers()
 
 	updater := updater.New(options, httpClient, currentServers, logger)
 	allServers, err := updater.UpdateServers(ctx)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUpdateServerInformation, err)
+		return fmt.Errorf("cannot update server information: %w", err)
 	}
 
 	if endUserMode {
 		if err := storage.FlushToFile(allServers); err != nil {
-			return fmt.Errorf("%w: %s", ErrWriteToFile, err)
+			return fmt.Errorf("cannot write updated information to file: %w", err)
 		}
 	}
 
 	if maintainerMode {
 		if err := writeToEmbeddedJSON(c.repoServersPath, allServers); err != nil {
-			return fmt.Errorf("%w: %s", ErrWriteToFile, err)
+			return fmt.Errorf("cannot write updated information to file: %w", err)
 		}
 	}
 

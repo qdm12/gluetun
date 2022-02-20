@@ -48,25 +48,20 @@ func extractDataFromLines(lines []string) (
 	return connection, nil
 }
 
-var (
-	errExtractProto  = errors.New("failed extracting protocol from proto line")
-	errExtractRemote = errors.New("failed extracting from remote line")
-)
-
 func extractDataFromLine(line string) (
 	ip net.IP, port uint16, protocol string, err error) {
 	switch {
 	case strings.HasPrefix(line, "proto "):
 		protocol, err = extractProto(line)
 		if err != nil {
-			return nil, 0, "", fmt.Errorf("%w: %s", errExtractProto, err)
+			return nil, 0, "", fmt.Errorf("failed extracting protocol from proto line: %w", err)
 		}
 		return nil, 0, protocol, nil
 
 	case strings.HasPrefix(line, "remote "):
 		ip, port, protocol, err = extractRemote(line)
 		if err != nil {
-			return nil, 0, "", fmt.Errorf("%w: %s", errExtractRemote, err)
+			return nil, 0, "", fmt.Errorf("failed extracting from remote line: %w", err)
 		}
 		return ip, port, protocol, nil
 	}
@@ -122,7 +117,7 @@ func extractRemote(line string) (ip net.IP, port uint16,
 		if err != nil {
 			return nil, 0, "", fmt.Errorf("%w: %s", errPortNotValid, line)
 		} else if portInt < 1 || portInt > 65535 {
-			return nil, 0, "", fmt.Errorf("%w: not between 1 and 65535: %d", errPortNotValid, portInt)
+			return nil, 0, "", fmt.Errorf("%w: %d must be between 1 and 65535", errPortNotValid, portInt)
 		}
 		port = uint16(portInt)
 	}

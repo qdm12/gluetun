@@ -12,24 +12,21 @@ type Checker interface {
 }
 
 var (
-	ErrTUNNotAvailable = errors.New("TUN device is not available")
-	ErrTUNStat         = errors.New("cannot stat TUN file")
-	ErrTUNInfo         = errors.New("cannot get syscall stat info of TUN file")
-	ErrTUNBadRdev      = errors.New("TUN file has an unexpected rdev")
-	ErrTUNClose        = errors.New("cannot close TUN device")
+	ErrTUNInfo    = errors.New("cannot get syscall stat info of TUN file")
+	ErrTUNBadRdev = errors.New("TUN file has an unexpected rdev")
 )
 
 // Check checks the tunnel device specified by path is present and accessible.
 func (t *Tun) Check(path string) error {
 	f, err := os.OpenFile(path, os.O_RDWR, 0)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrTUNNotAvailable, err)
+		return fmt.Errorf("TUN device is not available: %w", err)
 	}
 	defer f.Close()
 
 	info, err := f.Stat()
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrTUNStat, err)
+		return fmt.Errorf("cannot stat TUN file: %w", err)
 	}
 
 	sys, ok := info.Sys().(*syscall.Stat_t)
@@ -44,7 +41,7 @@ func (t *Tun) Check(path string) error {
 	}
 
 	if err := f.Close(); err != nil {
-		return fmt.Errorf("%w: %s", ErrTUNClose, err)
+		return fmt.Errorf("cannot close TUN device: %w", err)
 	}
 
 	return nil

@@ -50,14 +50,14 @@ func (w Wireguard) validate(vpnProvider string) (err error) {
 	}
 	_, err = wgtypes.ParseKey(*w.PrivateKey)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrWireguardPrivateKeyNotValid, err)
+		return fmt.Errorf("private key is not valid: %w", err)
 	}
 
 	// Validate PreSharedKey
 	if *w.PreSharedKey != "" { // Note: this is optional
 		_, err = wgtypes.ParseKey(*w.PreSharedKey)
 		if err != nil {
-			return fmt.Errorf("%w: %s", ErrWireguardPreSharedKeyNotValid, err)
+			return fmt.Errorf("pre-shared key is not valid: %w", err)
 		}
 	}
 

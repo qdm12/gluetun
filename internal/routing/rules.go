@@ -2,17 +2,10 @@ package routing
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"net"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-)
-
-var (
-	errRulesList  = errors.New("cannot list rules")
-	errRuleAdd    = errors.New("cannot add rule")
-	errRuleDelete = errors.New("cannot delete rule")
 )
 
 func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {
@@ -27,7 +20,7 @@ func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {
 
 	existingRules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errRulesList, err)
+		return fmt.Errorf("cannot list rules: %w", err)
 	}
 	for i := range existingRules {
 		if !rulesAreEqual(&existingRules[i], rule) {
@@ -37,7 +30,7 @@ func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {
 	}
 
 	if err := r.netLinker.RuleAdd(rule); err != nil {
-		return fmt.Errorf("%w: for rule: %s", err, rule)
+		return fmt.Errorf("cannot add rule %s: %w", rule, err)
 	}
 	return nil
 }
@@ -54,14 +47,14 @@ func (r *Routing) deleteIPRule(src, dst *net.IPNet, table, priority int) error {
 
 	existingRules, err := r.netLinker.RuleList(netlink.FAMILY_ALL)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errRulesList, err)
+		return fmt.Errorf("cannot list rules: %w", err)
 	}
 	for i := range existingRules {
 		if !rulesAreEqual(&existingRules[i], rule) {
 			continue
 		}
 		if err := r.netLinker.RuleDel(rule); err != nil {
-			return fmt.Errorf("%w: for rule: %s", err, rule)
+			return fmt.Errorf("cannot delete rule %s: %w", rule, err)
 		}
 	}
 	return nil

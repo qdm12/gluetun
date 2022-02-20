@@ -49,7 +49,7 @@ func (s *Settings) Validate(allServers models.AllServers) (err error) {
 	for name, validation := range nameToValidation {
 		err = validation()
 		if err != nil {
-			return fmt.Errorf("failed validating %s settings: %w", name, err)
+			return fmt.Errorf("%s settings: %w", name, err)
 		}
 	}
 

@@ -18,9 +18,6 @@ type ServersFormatter interface {
 var (
 	ErrFormatNotRecognized = errors.New("format is not recognized")
 	ErrProviderUnspecified = errors.New("VPN provider to format was not specified")
-	ErrOpenOutputFile      = errors.New("cannot open output file")
-	ErrWriteOutput         = errors.New("cannot write to output file")
-	ErrCloseOutputFile     = errors.New("cannot close output file")
 )
 
 func (c *CLI) FormatServers(args []string) error {
@@ -62,7 +59,7 @@ func (c *CLI) FormatServers(args []string) error {
 	logger := newNoopLogger()
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrNewStorage, err)
+		return fmt.Errorf("cannot create servers storage: %w", err)
 	}
 	currentServers := storage.GetServers()
 
@@ -115,18 +112,18 @@ func (c *CLI) FormatServers(args []string) error {
 	output = filepath.Clean(output)
 	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrOpenOutputFile, err)
+		return fmt.Errorf("cannot open output file: %w", err)
 	}
 
 	_, err = fmt.Fprint(file, formatted)
 	if err != nil {
 		_ = file.Close()
-		return fmt.Errorf("%w: %s", ErrWriteOutput, err)
+		return fmt.Errorf("cannot write to output file: %w", err)
 	}
 
 	err = file.Close()
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrCloseOutputFile, err)
+		return fmt.Errorf("cannot close output file: %w", err)
 	}
 
 	return nil

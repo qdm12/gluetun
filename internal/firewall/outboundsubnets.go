@@ -23,7 +23,7 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 		return nil
 	}
 
-	c.logger.Info("setting allowed subnets through firewall...")
+	c.logger.Info("setting allowed subnets...")
 
 	subnetsToAdd, subnetsToRemove := subnet.FindSubnetsToChange(c.outboundSubnets, subnets)
 	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
@@ -32,7 +32,7 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 
 	c.removeOutboundSubnets(ctx, subnetsToRemove)
 	if err := c.addOutboundSubnets(ctx, subnetsToAdd); err != nil {
-		return fmt.Errorf("cannot set allowed subnets through firewall: %w", err)
+		return fmt.Errorf("cannot set allowed outbound subnets: %w", err)
 	}
 
 	return nil
@@ -42,7 +42,7 @@ func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet)
 	const remove = true
 	for _, subNet := range subnets {
 		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subNet, remove); err != nil {
-			c.logger.Error("cannot remove outdated outbound subnet through firewall: " + err.Error())
+			c.logger.Error("cannot remove outdated outbound subnet: " + err.Error())
 			continue
 		}
 		c.outboundSubnets = subnet.RemoveSubnetFromSubnets(c.outboundSubnets, subNet)
@@ -53,7 +53,7 @@ func (c *Config) addOutboundSubnets(ctx context.Context, subnets []net.IPNet) er
 	const remove = false
 	for _, subnet := range subnets {
 		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subnet, remove); err != nil {
-			return fmt.Errorf("cannot add allowed subnet through firewall: %w", err)
+			return err
 		}
 		c.outboundSubnets = append(c.outboundSubnets, subnet)
 	}

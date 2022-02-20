@@ -53,7 +53,7 @@ func Test_Wireguard_addRoute(t *testing.T) {
 				Table:     firewallMark,
 			},
 			routeAddErr: errDummy,
-			err:         errors.New("dummy: when adding route: {Ifindex: 88 Dst: 1.2.3.4/32 Src: <nil> Gw: <nil> Flags: [] Table: 51820 Realm: 0}"), //nolint:lll
+			err:         errors.New("cannot add route {Ifindex: 88 Dst: 1.2.3.4/32 Src: <nil> Gw: <nil> Flags: [] Table: 51820 Realm: 0}: dummy"), //nolint:lll
 		},
 	}
 

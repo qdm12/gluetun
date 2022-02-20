@@ -19,7 +19,7 @@ func (w *Wireguard) addRoute(link netlink.Link, dst *net.IPNet,
 
 	err = w.netlink.RouteAdd(route)
 	if err != nil {
-		return fmt.Errorf("%w: when adding route: %s", err, route)
+		return fmt.Errorf("cannot add route %s: %w", route, err)
 	}
 
 	return err

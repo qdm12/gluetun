@@ -116,18 +116,18 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 	if *ss.MultiHopOnly &&
 		vpnServiceProvider != constants.Surfshark {
 		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrStreamOnlyNotSupported, vpnServiceProvider)
+			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
 	}
 
 	if ss.VPN == constants.OpenVPN {
 		err = ss.OpenVPN.validate(vpnServiceProvider)
 		if err != nil {
-			return fmt.Errorf("OpenVPN server selection settings validation failed: %w", err)
+			return fmt.Errorf("OpenVPN server selection settings: %w", err)
 		}
 	} else {
 		err = ss.Wireguard.validate(vpnServiceProvider)
 		if err != nil {
-			return fmt.Errorf("Wireguard server selection settings validation failed: %w", err)
+			return fmt.Errorf("Wireguard server selection settings: %w", err)
 		}
 	}
 

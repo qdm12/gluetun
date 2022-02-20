@@ -55,8 +55,7 @@ func stringsToPorts(ss []string) (ports []uint16, err error) {
 	for i, s := range ss {
 		port, err := strconv.Atoi(s)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s: %s",
-				ErrPortParsing, s, err)
+			return nil, fmt.Errorf("%w: %s: %s", ErrPortParsing, s, err)
 		} else if port < 1 || port > 65535 {
 			return nil, fmt.Errorf("%w: must be between 1 and 65535: %d",
 				ErrPortValue, port)
@@ -66,10 +65,6 @@ func stringsToPorts(ss []string) (ports []uint16, err error) {
 	return ports, nil
 }
 
-var (
-	ErrIPNetParsing = errors.New("cannot parse IP network")
-)
-
 func stringsToIPNets(ss []string) (ipNets []net.IPNet, err error) {
 	if len(ss) == 0 {
 		return nil, nil
@@ -78,8 +73,7 @@ func stringsToIPNets(ss []string) (ipNets []net.IPNet, err error) {
 	for i, s := range ss {
 		ip, ipNet, err := net.ParseCIDR(s)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s: %s",
-				ErrIPNetParsing, s, err)
+			return nil, fmt.Errorf("cannot parse IP network %q: %w", s, err)
 		}
 		ipNet.IP = ip
 		ipNets[i] = *ipNet

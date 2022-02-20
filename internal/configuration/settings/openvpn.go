@@ -93,17 +93,17 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 
 	err = validateOpenVPNConfigFilepath(isCustom, *o.ConfFile)
 	if err != nil {
-		return err
+		return fmt.Errorf("custom configuration file: %w", err)
 	}
 
 	err = validateOpenVPNClientCertificate(vpnProvider, *o.ClientCrt)
 	if err != nil {
-		return err
+		return fmt.Errorf("client certificate: %w", err)
 	}
 
 	err = validateOpenVPNClientKey(vpnProvider, *o.ClientKey)
 	if err != nil {
-		return err
+		return fmt.Errorf("client key: %w", err)
 	}
 
 	const maxMSSFix = 10000
@@ -132,12 +132,12 @@ func validateOpenVPNConfigFilepath(isCustom bool,
 	}
 
 	if confFile == "" {
-		return fmt.Errorf("%w: no file path specified", ErrOpenVPNConfigFile)
+		return ErrFilepathMissing
 	}
 
 	err = helpers.FileExists(confFile)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrOpenVPNConfigFile, err)
+		return err
 	}
 
 	return nil
@@ -150,7 +150,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 		constants.Cyberghost,
 		constants.VPNUnlimited:
 		if clientCert == "" {
-			return ErrOpenVPNClientCertMissing
+			return ErrMissingValue
 		}
 	}
 
@@ -160,7 +160,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 
 	_, err = parse.ExtractCert([]byte(clientCert))
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrOpenVPNClientCertNotValid, err)
+		return err
 	}
 	return nil
 }
@@ -172,7 +172,7 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 		constants.VPNUnlimited,
 		constants.Wevpn:
 		if clientKey == "" {
-			return ErrOpenVPNClientKeyMissing
+			return ErrMissingValue
 		}
 	}
 
@@ -182,7 +182,7 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 
 	_, err = parse.ExtractPrivateKey([]byte(clientKey))
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrOpenVPNClientKeyNotValid, err)
+		return err
 	}
 	return nil
 }

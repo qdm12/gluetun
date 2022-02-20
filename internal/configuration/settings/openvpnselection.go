@@ -33,14 +33,16 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	if confFile := *o.ConfFile; confFile != "" {
 		err := helpers.FileExists(confFile)
 		if err != nil {
-			return fmt.Errorf("%w: %s", ErrOpenVPNConfigFile, err)
+			return fmt.Errorf("configuration file: %w", err)
 		}
 	}
 
 	// Validate TCP
 	if *o.TCP && helpers.IsOneOf(vpnProvider,
+		constants.Ipvanish,
 		constants.Perfectprivacy,
 		constants.Privado,
+		constants.VPNUnlimited,
 		constants.Vyprvpn,
 	) {
 		return fmt.Errorf("%w: for VPN service provider %s",

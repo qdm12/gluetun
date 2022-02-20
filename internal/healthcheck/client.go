@@ -45,5 +45,6 @@ func (c *Client) Check(ctx context.Context, url string) error {
 	if err != nil {
 		return err
 	}
-	return fmt.Errorf("%w: %s: %s", ErrHTTPStatusNotOK, response.Status, string(b))
+	return fmt.Errorf("%w: %d %s: %s", ErrHTTPStatusNotOK,
+		response.StatusCode, response.Status, string(b))
 }

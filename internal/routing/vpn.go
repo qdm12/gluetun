@@ -21,7 +21,7 @@ type VPNDestinationIPGetter interface {
 func (r *Routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
+		return nil, fmt.Errorf("cannot list routes: %w", err)
 	}
 
 	defaultLinkIndex := -1
@@ -53,12 +53,12 @@ type VPNLocalGatewayIPGetter interface {
 func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrRoutesList, err)
+		return nil, fmt.Errorf("cannot list routes: %w", err)
 	}
 	for _, route := range routes {
 		link, err := r.netLinker.LinkByIndex(route.LinkIndex)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s", ErrLinkByIndex, err)
+			return nil, fmt.Errorf("cannot find link at index %d: %w", route.LinkIndex, err)
 		}
 		interfaceName := link.Attrs().Name
 		if interfaceName == vpnIntf &&

@@ -11,7 +11,6 @@ import (
 )
 
 var (
-	ErrIP6Tables       = errors.New("failed ip6tables command")
 	ErrIP6NotSupported = errors.New("ip6tables not supported")
 )
 
@@ -44,18 +43,18 @@ func (c *Config) runIP6tablesInstruction(ctx context.Context, instruction string
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, "ip6tables", flags...)
 	if output, err := c.runner.Run(cmd); err != nil {
-		return fmt.Errorf("%w: \"ip6tables %s\": %s: %s", ErrIP6Tables, instruction, output, err)
+		return fmt.Errorf("command failed: \"ip6tables %s\": %s: %w", instruction, output, err)
 	}
 	return nil
 }
 
-var errPolicyNotValid = errors.New("policy is not valid")
+var ErrPolicyNotValid = errors.New("policy is not valid")
 
 func (c *Config) setIPv6AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:
-		return fmt.Errorf("%w: %s", errPolicyNotValid, policy)
+		return fmt.Errorf("%w: %s", ErrPolicyNotValid, policy)
 	}
 	return c.runIP6tablesInstructions(ctx, []string{
 		"--policy INPUT " + policy,

@@ -27,13 +27,12 @@ func (h Health) Validate() (err error) {
 	_, err = address.Validate(h.ServerAddress,
 		address.OptionListening(uid))
 	if err != nil {
-		return fmt.Errorf("%w: %s",
-			ErrServerAddressNotValid, err)
+		return fmt.Errorf("server listening address is not valid: %w", err)
 	}
 
 	err = h.VPN.validate()
 	if err != nil {
-		return fmt.Errorf("health VPN settings validation failed: %w", err)
+		return fmt.Errorf("health VPN settings: %w", err)
 	}
 
 	return nil

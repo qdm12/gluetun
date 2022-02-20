@@ -41,8 +41,7 @@ func (h HTTPProxy) validate() (err error) {
 	uid := os.Getuid()
 	_, err = address.Validate(h.ListeningAddress, address.OptionListening(uid))
 	if err != nil {
-		return fmt.Errorf("%w: %s",
-			ErrServerAddressNotValid, h.ListeningAddress)
+		return fmt.Errorf("%w: %s", ErrServerAddressNotValid, h.ListeningAddress)
 	}
 
 	return nil

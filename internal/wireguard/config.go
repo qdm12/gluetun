@@ -1,7 +1,6 @@
 package wireguard
 
 import (
-	"errors"
 	"fmt"
 	"net"
 
@@ -9,20 +8,15 @@ import (
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
-var (
-	errMakeConfig      = errors.New("cannot make device configuration")
-	errConfigureDevice = errors.New("cannot configure device")
-)
-
 func configureDevice(client *wgctrl.Client, settings Settings) (err error) {
 	deviceConfig, err := makeDeviceConfig(settings)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errMakeConfig, err)
+		return fmt.Errorf("cannot make device configuration: %w", err)
 	}
 
 	err = client.ConfigureDevice(settings.InterfaceName, deviceConfig)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errConfigureDevice, err)
+		return fmt.Errorf("cannot configure device: %w", err)
 	}
 
 	return nil

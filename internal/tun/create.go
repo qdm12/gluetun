@@ -1,7 +1,6 @@
 package tun
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,12 +11,6 @@ import (
 type Creator interface {
 	Create(path string) error
 }
-
-var (
-	ErrMknod       = errors.New("cannot create TUN device file node")
-	ErrUnixOpen    = errors.New("cannot Unix Open TUN device file")
-	ErrSetNonBlock = errors.New("cannot set non block to TUN device file descriptor")
-)
 
 // Create creates a TUN device at the path specified.
 func (t *Tun) Create(path string) error {
@@ -33,18 +26,18 @@ func (t *Tun) Create(path string) error {
 	dev := unix.Mkdev(major, minor)
 	err := t.mknod(path, unix.S_IFCHR, int(dev))
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrMknod, err)
+		return fmt.Errorf("cannot create TUN device file node: %w", err)
 	}
 
 	fd, err := unix.Open(path, 0, 0)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUnixOpen, err)
+		return fmt.Errorf("cannot Unix Open TUN device file: %w", err)
 	}
 
 	const nonBlocking = true
 	err = unix.SetNonblock(fd, nonBlocking)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrSetNonBlock, err)
+		return fmt.Errorf("cannot set non block to TUN device file descriptor: %w", err)
 	}
 
 	return nil

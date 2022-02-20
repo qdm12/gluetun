@@ -26,7 +26,7 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 	for _, source := range r.sources {
 		settingsFromSource, err := source.Read()
 		if err != nil {
-			return settings, fmt.Errorf("cannot read from source %T: %w", source, err)
+			return settings, fmt.Errorf("reading from source %T: %w", source, err)
 		}
 		settings.MergeWith(settingsFromSource)
 	}
@@ -42,7 +42,7 @@ func (r *Reader) ReadHealth() (settings settings.Health, err error) {
 	for _, source := range r.sources {
 		settingsFromSource, err := source.ReadHealth()
 		if err != nil {
-			return settings, fmt.Errorf("cannot read from source %T: %w", source, err)
+			return settings, fmt.Errorf("reading from source %T: %w", source, err)
 		}
 		settings.MergeWith(settingsFromSource)
 	}

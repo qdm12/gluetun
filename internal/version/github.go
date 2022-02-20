@@ -41,7 +41,8 @@ func getGithubReleases(ctx context.Context, client *http.Client) (releases []git
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %s", errHTTPStatusCode, response.Status)
+		return nil, fmt.Errorf("%w: %d %s", errHTTPStatusCode,
+			response.StatusCode, response.Status)
 	}
 
 	decoder := json.NewDecoder(response.Body)

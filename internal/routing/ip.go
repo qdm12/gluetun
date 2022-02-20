@@ -13,18 +13,16 @@ func IPIsPrivate(ip net.IP) bool {
 
 var (
 	errInterfaceIPNotFound = errors.New("IP address not found for interface")
-	errInterfaceListAddr   = errors.New("cannot list interface addresses")
-	errInterfaceNotFound   = errors.New("network interface not found")
 )
 
 func (r *Routing) assignedIP(interfaceName string) (ip net.IP, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s: %s", errInterfaceNotFound, interfaceName, err)
+		return nil, fmt.Errorf("network interface %s not found: %w", interfaceName, err)
 	}
 	addresses, err := iface.Addrs()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s: %s", errInterfaceListAddr, interfaceName, err)
+		return nil, fmt.Errorf("cannot list interface %s addresses: %w", interfaceName, err)
 	}
 	for _, address := range addresses {
 		switch value := address.(type) {

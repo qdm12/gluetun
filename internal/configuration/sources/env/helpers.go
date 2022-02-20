@@ -2,7 +2,6 @@ package env
 
 import (
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -115,13 +114,11 @@ func lowerAndSplit(csv string) (values []string) {
 	return strings.Split(csv, ",")
 }
 
-var ErrDecodeBase64 = errors.New("cannot decode base64 string")
-
 func decodeBase64(b64String string) (decoded string, err error) {
 	b, err := base64.StdEncoding.DecodeString(b64String)
 	if err != nil {
-		return "", fmt.Errorf("%w: %s: %s",
-			ErrDecodeBase64, b64String, err)
+		return "", fmt.Errorf("cannot decode base64 string %q: %w",
+			b64String, err)
 	}
 	return string(b), nil
 }

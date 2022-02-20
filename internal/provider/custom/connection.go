@@ -13,7 +13,6 @@ import (
 
 var (
 	ErrVPNTypeNotSupported = errors.New("VPN type not supported for custom provider")
-	ErrExtractConnection   = errors.New("cannot extract connection")
 )
 
 // GetConnection gets the connection from the OpenVPN configuration file.
@@ -34,7 +33,7 @@ func getOpenVPNConnection(extractor extract.Interface,
 	connection models.Connection, err error) {
 	_, connection, err = extractor.Data(*selection.OpenVPN.ConfFile)
 	if err != nil {
-		return connection, fmt.Errorf("%w: %s", ErrExtractConnection, err)
+		return connection, fmt.Errorf("cannot extract connection: %w", err)
 	}
 
 	connection.Port = getPort(connection.Port, selection)

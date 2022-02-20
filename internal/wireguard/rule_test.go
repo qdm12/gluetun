@@ -51,7 +51,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				SuppressPrefixlen: -1,
 			},
 			ruleAddErr: errDummy,
-			err:        errors.New("dummy: when adding rule: ip rule 987: from all to all table 456"),
+			err:        errors.New("cannot add rule ip rule 987: from all to all table 456: dummy"),
 		},
 		"rule delete error": {
 			expectedRule: &netlink.Rule{
@@ -66,7 +66,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				SuppressPrefixlen: -1,
 			},
 			ruleDelErr: errDummy,
-			cleanupErr: errors.New("dummy: when deleting rule: ip rule 987: from all to all table 456"),
+			cleanupErr: errors.New("cannot delete rule ip rule 987: from all to all table 456: dummy"),
 		},
 	}
 

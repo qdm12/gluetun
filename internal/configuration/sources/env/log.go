@@ -48,7 +48,7 @@ func parseLogLevel(s string) (level logging.Level, err error) {
 		return logging.LevelError, nil
 	default:
 		return level, fmt.Errorf(
-			"%w: %s: can be one of: debug, info, warning or error",
+			"%w: %q is not valid and can be one of debug, info, warning or error",
 			ErrLogLevelUnknown, s)
 	}
 }

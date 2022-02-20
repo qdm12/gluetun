@@ -66,7 +66,6 @@ func (r *repeat) Resolve(ctx context.Context, host string, settings RepeatSettin
 var (
 	ErrMaxNoNew = errors.New("reached the maximum number of no new update")
 	ErrMaxFails = errors.New("reached the maximum number of consecutive failures")
-	ErrTimeout  = errors.New("reached the timeout")
 )
 
 func (r *repeat) resolveOnce(ctx, timedCtx context.Context, host string,
@@ -120,7 +119,7 @@ func (r *repeat) resolveOnce(ctx, timedCtx context.Context, host string,
 			return noNewCounter, failCounter, err
 		}
 		return noNewCounter, failCounter,
-			fmt.Errorf("%w: %s", ErrTimeout, timedCtx.Err())
+			fmt.Errorf("reached the timeout: %w", timedCtx.Err())
 	}
 }
 

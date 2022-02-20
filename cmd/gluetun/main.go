@@ -56,11 +56,6 @@ var (
 	created = "an unknown date"
 )
 
-var (
-	errSetupRouting = errors.New("cannot setup routing")
-	errCreateUser   = errors.New("cannot create user")
-)
-
 func main() {
 	buildInfo := models.BuildInformation{
 		Version: version,
@@ -278,7 +273,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const defaultUsername = "nonrootuser"
 	nonRootUsername, err := alpineConf.CreateUser(defaultUsername, puid)
 	if err != nil {
-		return fmt.Errorf("%w: %s", errCreateUser, err)
+		return fmt.Errorf("cannot create user: %w", err)
 	}
 	if nonRootUsername != defaultUsername {
 		logger.Info("using existing username " + nonRootUsername + " corresponding to user id " + fmt.Sprint(puid))
@@ -296,7 +291,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		if strings.Contains(err.Error(), "operation not permitted") {
 			logger.Warn("💡 Tip: Are you passing NET_ADMIN capability to gluetun?")
 		}
-		return fmt.Errorf("%w: %s", errSetupRouting, err)
+		return fmt.Errorf("cannot setup routing: %w", err)
 	}
 	defer func() {
 		logger.Info("routing cleanup...")

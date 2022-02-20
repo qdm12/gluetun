@@ -1,15 +1,7 @@
 package routing
 
 import (
-	"errors"
 	"fmt"
-)
-
-var (
-	ErrDefaultRoute          = errors.New("cannot get default route")
-	ErrAddInboundFromDefault = errors.New("cannot add routes for inbound traffic from default IP")
-	ErrDelInboundFromDefault = errors.New("cannot remove routes for inbound traffic from default IP")
-	ErrSubnetsOutboundSet    = errors.New("cannot set outbound subnets routes")
 )
 
 type Setuper interface {
@@ -19,7 +11,7 @@ type Setuper interface {
 func (r *Routing) Setup() (err error) {
 	defaultInterfaceName, defaultGateway, err := r.DefaultRoute()
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrDefaultRoute, err)
+		return fmt.Errorf("cannot get default route: %w", err)
 	}
 
 	touched := false
@@ -35,14 +27,14 @@ func (r *Routing) Setup() (err error) {
 
 	err = r.routeInboundFromDefault(defaultGateway, defaultInterfaceName)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrAddInboundFromDefault, err)
+		return fmt.Errorf("cannot add routes for inbound traffic from default IP: %w", err)
 	}
 
 	r.stateMutex.RLock()
 	outboundSubnets := r.outboundSubnets
 	r.stateMutex.RUnlock()
 	if err := r.setOutboundRoutes(outboundSubnets, defaultInterfaceName, defaultGateway); err != nil {
-		return fmt.Errorf("%w: %s", ErrSubnetsOutboundSet, err)
+		return fmt.Errorf("cannot set outbound subnets routes: %w", err)
 	}
 
 	return nil
@@ -55,16 +47,16 @@ type TearDowner interface {
 func (r *Routing) TearDown() error {
 	defaultInterfaceName, defaultGateway, err := r.DefaultRoute()
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrDefaultRoute, err)
+		return fmt.Errorf("cannot get default route: %w", err)
 	}
 
 	err = r.unrouteInboundFromDefault(defaultGateway, defaultInterfaceName)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrDelInboundFromDefault, err)
+		return fmt.Errorf("cannot remove routes for inbound traffic from default IP: %w", err)
 	}
 
 	if err := r.setOutboundRoutes(nil, defaultInterfaceName, defaultGateway); err != nil {
-		return fmt.Errorf("%w: %s", ErrSubnetsOutboundSet, err)
+		return fmt.Errorf("cannot set outbound subnets routes: %w", err)
 	}
 
 	return nil

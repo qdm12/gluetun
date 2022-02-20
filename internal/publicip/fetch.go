@@ -56,12 +56,13 @@ func (f *Fetch) FetchPublicIP(ctx context.Context) (ip net.IP, err error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w from %s: %s", ErrBadStatusCode, url, response.Status)
+		return nil, fmt.Errorf("%w from %s: %d %s", ErrBadStatusCode,
+			url, response.StatusCode, response.Status)
 	}
 
 	content, err := io.ReadAll(response.Body)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrCannotReadBody, err)
+		return nil, fmt.Errorf("cannot ready response body: %w", err)
 	}
 
 	s := strings.ReplaceAll(string(content), "\n", "")

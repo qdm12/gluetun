@@ -2,7 +2,6 @@ package vpn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -13,11 +12,6 @@ import (
 	"github.com/qdm12/gluetun/internal/wireguard"
 )
 
-var (
-	errGetServer       = errors.New("failed finding a VPN server")
-	errCreateWireguard = errors.New("failed creating Wireguard")
-)
-
 // setupWireguard sets Wireguard up using the configurators and settings given.
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
 func setupWireguard(ctx context.Context, netlinker netlink.NetLinker,
@@ -26,7 +20,7 @@ func setupWireguard(ctx context.Context, netlinker netlink.NetLinker,
 	wireguarder wireguard.Wireguarder, serverName string, err error) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection)
 	if err != nil {
-		return nil, "", fmt.Errorf("%w: %s", errGetServer, err)
+		return nil, "", fmt.Errorf("failed finding a VPN server: %w", err)
 	}
 
 	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard)
@@ -37,12 +31,12 @@ func setupWireguard(ctx context.Context, netlinker netlink.NetLinker,
 
 	wireguarder, err = wireguard.New(wireguardSettings, netlinker, logger)
 	if err != nil {
-		return nil, "", fmt.Errorf("%w: %s", errCreateWireguard, err)
+		return nil, "", fmt.Errorf("failed creating Wireguard: %w", err)
 	}
 
 	err = fw.SetVPNConnection(ctx, connection, settings.Wireguard.Interface)
 	if err != nil {
-		return nil, "", fmt.Errorf("%w: %s", errFirewall, err)
+		return nil, "", fmt.Errorf("failed setting firewall: %w", err)
 	}
 
 	return wireguarder, connection.Hostname, nil

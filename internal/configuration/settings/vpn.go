@@ -31,18 +31,18 @@ func (v *VPN) validate(allServers models.AllServers) (err error) {
 
 	err = v.Provider.validate(v.Type, allServers)
 	if err != nil {
-		return fmt.Errorf("provider settings validation failed: %w", err)
+		return fmt.Errorf("provider settings: %w", err)
 	}
 
 	if v.Type == constants.OpenVPN {
 		err := v.OpenVPN.validate(*v.Provider.Name)
 		if err != nil {
-			return fmt.Errorf("OpenVPN settings validation failed: %w", err)
+			return fmt.Errorf("OpenVPN settings: %w", err)
 		}
 	} else {
 		err := v.Wireguard.validate(*v.Provider.Name)
 		if err != nil {
-			return fmt.Errorf("Wireguard settings validation failed: %w", err)
+			return fmt.Errorf("Wireguard settings: %w", err)
 		}
 	}
 

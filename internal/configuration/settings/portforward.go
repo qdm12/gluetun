@@ -38,7 +38,7 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 	if *p.Filepath != "" { // optional
 		_, err := filepath.Abs(*p.Filepath)
 		if err != nil {
-			return fmt.Errorf("%w: %s", ErrPortForwardingFilepathNotValid, err)
+			return fmt.Errorf("filepath is not valid: %w", err)
 		}
 	}
 

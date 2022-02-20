@@ -20,7 +20,7 @@ func (r *Reader) readDNS() (dns settings.DNS, err error) {
 
 	dns.DoT, err = r.readDoT()
 	if err != nil {
-		return dns, fmt.Errorf("cannot read DoT settings: %w", err)
+		return dns, fmt.Errorf("DoT settings: %w", err)
 	}
 
 	return dns, nil
