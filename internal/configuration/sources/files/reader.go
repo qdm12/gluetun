@@ -13,6 +13,8 @@ func New() *Reader {
 	return &Reader{}
 }
 
+func (r *Reader) String() string { return "files" }
+
 func (r *Reader) Read() (settings settings.Settings, err error) {
 	settings.VPN, err = r.readVPN()
 	if err != nil {
