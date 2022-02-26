@@ -44,6 +44,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
 
+      - uses: reviewdog/action-misspell@v1
+        with:
+          locale: "US"
+          level: error
+
       - name: Linting
         run: docker build --target lint .
 
