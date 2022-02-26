@@ -97,13 +97,8 @@ jobs:
       - name: Check for semver tag
         id: semvercheck
         run: |
-          if [[ ${{ github.ref }} =~ ^refs\/tags\/v0\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ${{ github.ref }} =~ ^refs\/tags\/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             MATCH=true
-          else
-            MATCH=false
-          fi
-          if [[ ${{ github.ref }} =~ ^refs\/tags\/v[1-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            MATCH=$MATCH_nonzero
           fi
           echo ::set-output name=match::$MATCH
 
@@ -120,8 +115,6 @@ jobs:
             qmcgaw/private-internet-access
           tags: |
             type=ref,event=branch,enable=${{ github.ref != 'refs/heads/master' }}
-            type=ref,event=pr
-            type=ref,event=tag,enable=${{ !startsWith(steps.semvercheck.outputs.match, 'true') }}
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}},enable=${{ startsWith(steps.semvercheck.outputs.match, 'true') }}
             type=semver,pattern=v{{major}}.{{minor}},enable=${{ startsWith(steps.semvercheck.outputs.match, 'true') }}
             type=semver,pattern=v{{major}},enable=${{ startsWith(steps.semvercheck.outputs.match, 'true_nonzero') }}
