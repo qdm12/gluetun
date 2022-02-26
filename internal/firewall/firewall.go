@@ -33,7 +33,8 @@ type Config struct { //nolint:maligned
 	localIP          net.IP
 
 	// Fixed state
-	ip6Tables       bool
+	ipTables        string
+	ip6Tables       string
 	customRulesPath string
 
 	// State
@@ -45,20 +46,28 @@ type Config struct { //nolint:maligned
 	stateMutex        sync.Mutex
 }
 
-// NewConfig creates a new Config instance.
-func NewConfig(logger Logger, runner command.Runner,
-	defaultInterface string, defaultGateway net.IP,
-	localNetworks []routing.LocalNetwork, localIP net.IP) *Config {
+// NewConfig creates a new Config instance and returns an error
+// if no iptables implementation is available.
+func NewConfig(ctx context.Context, logger Logger,
+	runner command.Runner, defaultInterface string,
+	defaultGateway net.IP, localNetworks []routing.LocalNetwork,
+	localIP net.IP) (config *Config, err error) {
+	iptables, err := findIptablesSupported(ctx, runner)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Config{
 		runner:            runner,
 		logger:            logger,
 		allowedInputPorts: make(map[uint16]string),
-		ip6Tables:         ip6tablesSupported(context.Background(), runner),
+		ipTables:          iptables,
+		ip6Tables:         findIP6tablesSupported(ctx, runner),
 		customRulesPath:   "/iptables/post-rules.txt",
 		// Obtained from routing
 		defaultInterface: defaultInterface,
 		defaultGateway:   defaultGateway,
 		localNetworks:    localNetworks,
 		localIP:          localIP,
-	}
+	}, nil
 }

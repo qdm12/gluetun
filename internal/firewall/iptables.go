@@ -15,10 +15,30 @@ import (
 )
 
 var (
+	ErrIPTablesNotSupported    = errors.New("no iptables supported found")
 	ErrIPTablesVersionTooShort = errors.New("iptables version string is too short")
 	ErrPolicyUnknown           = errors.New("unknown policy")
 	ErrNeedIP6Tables           = errors.New("ip6tables is required, please upgrade your kernel to support it")
 )
+
+func findIptablesSupported(ctx context.Context, runner command.Runner) (iptablesPath string, err error) {
+	binsToTry := []string{"iptables", "iptables-nft"}
+
+	for _, iptablesPath = range binsToTry {
+		cmd := exec.CommandContext(ctx, iptablesPath, "-L")
+		_, err = runner.Run(cmd)
+		if err == nil {
+			break
+		}
+	}
+
+	if err != nil {
+		return "", fmt.Errorf("%w: from %s: last error is %s",
+			ErrIPTablesNotSupported, strings.Join(binsToTry, ", "), err)
+	}
+
+	return iptablesPath, nil
+}
 
 func appendOrDelete(remove bool) string {
 	if remove {
@@ -71,12 +91,13 @@ func (c *Config) runIptablesInstruction(ctx context.Context, instruction string)
 	c.iptablesMutex.Lock() // only one iptables command at once
 	defer c.iptablesMutex.Unlock()
 
-	c.logger.Debug("iptables " + instruction)
+	c.logger.Debug(c.ipTables + " " + instruction)
 
 	flags := strings.Fields(instruction)
-	cmd := exec.CommandContext(ctx, "iptables", flags...)
+	cmd := exec.CommandContext(ctx, c.ipTables, flags...) // #nosec G204
 	if output, err := c.runner.Run(cmd); err != nil {
-		return fmt.Errorf("command failed: \"iptables %s\": %s: %w", instruction, output, err)
+		return fmt.Errorf("command failed: \"%s %s\": %s: %w",
+			c.ipTables, instruction, output, err)
 	}
 	return nil
 }
@@ -124,7 +145,7 @@ func (c *Config) acceptInputToSubnet(ctx context.Context, intf string, destinati
 	if isIP4Subnet {
 		return c.runIptablesInstruction(ctx, instruction)
 	}
-	if !c.ip6Tables {
+	if c.ip6Tables == "" {
 		return fmt.Errorf("accept input to subnet %s: %w", destination, ErrNeedIP6Tables)
 	}
 	return c.runIP6tablesInstruction(ctx, instruction)
@@ -151,7 +172,7 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 	isIPv4 := connection.IP.To4() != nil
 	if isIPv4 {
 		return c.runIptablesInstruction(ctx, instruction)
-	} else if !c.ip6Tables {
+	} else if c.ip6Tables == "" {
 		return fmt.Errorf("accept output to VPN server: %w", ErrNeedIP6Tables)
 	}
 	return c.runIP6tablesInstruction(ctx, instruction)
@@ -172,7 +193,7 @@ func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
 
 	if doIPv4 {
 		return c.runIptablesInstruction(ctx, instruction)
-	} else if !c.ip6Tables {
+	} else if c.ip6Tables == "" {
 		return fmt.Errorf("accept output from %s to %s: %w", sourceIP, destinationSubnet, ErrNeedIP6Tables)
 	}
 	return c.runIP6tablesInstruction(ctx, instruction)
@@ -223,9 +244,15 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 		case strings.HasPrefix(line, "iptables "):
 			ipv4 = true
 			rule = strings.TrimPrefix(line, "iptables ")
+		case strings.HasPrefix(line, "iptables-nft "):
+			ipv4 = true
+			rule = strings.TrimPrefix(line, "iptables-nft ")
 		case strings.HasPrefix(line, "ip6tables "):
 			ipv4 = false
 			rule = strings.TrimPrefix(line, "ip6tables ")
+		case strings.HasPrefix(line, "ip6tables-nft "):
+			ipv4 = false
+			rule = strings.TrimPrefix(line, "ip6tables-nft ")
 		default:
 			continue
 		}
@@ -237,7 +264,7 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 		switch {
 		case ipv4:
 			err = c.runIptablesInstruction(ctx, rule)
-		case !c.ip6Tables:
+		case c.ip6Tables == "":
 			err = fmt.Errorf("cannot run user ip6tables rule: %w", ErrNeedIP6Tables)
 		default: // ipv6
 			err = c.runIP6tablesInstruction(ctx, rule)

@@ -205,8 +205,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	if *allSettings.Firewall.Debug { // To remove in v4
 		firewallLogger.PatchLevel(logging.LevelDebug)
 	}
-	firewallConf := firewall.NewConfig(firewallLogger, cmder,
+	firewallConf, err := firewall.NewConfig(ctx, firewallLogger, cmder,
 		defaultInterface, defaultGateway, localNetworks, defaultIP)
+	if err != nil {
+		return err
+	}
+
 	if *allSettings.Firewall.Enabled {
 		err = firewallConf.SetEnabled(ctx, true)
 		if err != nil {
