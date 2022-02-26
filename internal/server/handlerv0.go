@@ -22,7 +22,7 @@ func newHandlerV0(ctx context.Context, logger infoWarner,
 }
 
 type handlerV0 struct {
-	ctx     context.Context
+	ctx     context.Context //nolint:containedctx
 	logger  infoWarner
 	vpn     vpn.Looper
 	dns     dns.Looper

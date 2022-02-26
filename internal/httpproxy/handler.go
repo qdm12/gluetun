@@ -25,7 +25,7 @@ func newHandler(ctx context.Context, wg *sync.WaitGroup, logger Logger,
 }
 
 type handler struct {
-	ctx                context.Context
+	ctx                context.Context //nolint:containedctx
 	wg                 *sync.WaitGroup
 	client             *http.Client
 	logger             Logger

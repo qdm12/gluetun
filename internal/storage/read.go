@@ -38,7 +38,7 @@ var (
 	errDecodeProvider = errors.New("cannot decode servers for provider")
 )
 
-func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers) ( //nolint:gocognit,gocyclo
+func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers) ( //nolint:gocognit,gocyclo,maintidx
 	servers models.AllServers, err error) {
 	var versions allVersions
 	if err := json.Unmarshal(b, &versions); err != nil {

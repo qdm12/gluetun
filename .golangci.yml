@@ -9,6 +9,7 @@ issues:
         - dupl
         - maligned
         - goerr113
+        - containedctx
     - path: internal/server/
       linters:
         - dupl
@@ -49,9 +50,12 @@ linters:
     - asciicheck
     - bidichk
     - bodyclose
+    - containedctx
+    - decorder
     - dogsled
     - dupl
     - durationcheck
+    - errchkjson
     - errname
     - exhaustive
     - exportloopref
@@ -71,9 +75,11 @@ linters:
     - gomoddirectives
     - goprintffuncname
     - gosec
+    - grouper
     - ifshort
     - importas
     - lll
+    - maintidx
     - makezero
     - misspell
     - nakedret

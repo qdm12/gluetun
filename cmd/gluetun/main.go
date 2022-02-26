@@ -122,7 +122,7 @@ var (
 	errCommandUnknown = errors.New("command is unknown")
 )
 
-//nolint:gocognit,gocyclo
+//nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger logging.ParentLogger, source sources.Source,
 	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,

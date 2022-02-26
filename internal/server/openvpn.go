@@ -21,7 +21,7 @@ func newOpenvpnHandler(ctx context.Context, looper vpn.Looper,
 }
 
 type openvpnHandler struct {
-	ctx    context.Context
+	ctx    context.Context //nolint:containedctx
 	looper vpn.Looper
 	pf     portforward.Getter
 	warner warner

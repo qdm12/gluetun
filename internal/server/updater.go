@@ -21,7 +21,7 @@ func newUpdaterHandler(
 }
 
 type updaterHandler struct {
-	ctx    context.Context
+	ctx    context.Context //nolint:containedctx
 	looper updater.Looper
 	warner warner
 }

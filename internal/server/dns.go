@@ -19,7 +19,7 @@ func newDNSHandler(ctx context.Context, looper dns.Looper,
 }
 
 type dnsHandler struct {
-	ctx    context.Context
+	ctx    context.Context //nolint:containedctx
 	looper dns.Looper
 	warner warner
 }
