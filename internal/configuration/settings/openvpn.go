@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
@@ -73,6 +74,8 @@ type OpenVPN struct {
 	Flags []string
 }
 
+var ivpnAccountID = regexp.MustCompile(`^(i|ivpn)\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}$`)
+
 func (o OpenVPN) validate(vpnProvider string) (err error) {
 	// Validate version
 	validVersions := []string{constants.Openvpn24, constants.Openvpn25}
@@ -87,7 +90,10 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 		return ErrOpenVPNUserIsEmpty
 	}
 
-	if !isCustom && o.Password == "" {
+	passwordRequired := !isCustom &&
+		(vpnProvider != constants.Ivpn || !ivpnAccountID.MatchString(o.User))
+
+	if passwordRequired && o.Password == "" {
 		return ErrOpenVPNPasswordIsEmpty
 	}
 
