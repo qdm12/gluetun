@@ -42,7 +42,7 @@ jobs:
     env:
       DOCKER_BUILDKIT: "1"
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
 
       - uses: reviewdog/action-misspell@v1
         with:
@@ -89,7 +89,7 @@ jobs:
     needs: [verify]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
 
       # extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action

@@ -21,7 +21,7 @@ jobs:
     env:
       DOCKER_BUILDKIT: "1"
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
 
       - name: Build test image
         run: docker build --target test -t test-container .
