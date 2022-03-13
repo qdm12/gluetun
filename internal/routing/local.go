@@ -20,39 +20,6 @@ type LocalNetwork struct {
 	IP            net.IP
 }
 
-type LocalSubnetGetter interface {
-	LocalSubnet() (defaultSubnet net.IPNet, err error)
-}
-
-func (r *Routing) LocalSubnet() (defaultSubnet net.IPNet, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
-	if err != nil {
-		return defaultSubnet, fmt.Errorf("cannot list routes: %w", err)
-	}
-
-	defaultLinkIndex := -1
-	for _, route := range routes {
-		if route.Dst == nil {
-			defaultLinkIndex = route.LinkIndex
-			break
-		}
-	}
-	if defaultLinkIndex == -1 {
-		return defaultSubnet, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
-	}
-
-	for _, route := range routes {
-		if route.Gw != nil || route.LinkIndex != defaultLinkIndex {
-			continue
-		}
-		defaultSubnet = *route.Dst
-		r.logger.Info("local subnet found: " + defaultSubnet.String())
-		return defaultSubnet, nil
-	}
-
-	return defaultSubnet, fmt.Errorf("%w: in %d routes", ErrSubnetDefaultNotFound, len(routes))
-}
-
 type LocalNetworksGetter interface {
 	LocalNetworks() (localNetworks []LocalNetwork, err error)
 }
