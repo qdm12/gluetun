@@ -13,56 +13,60 @@ var (
 )
 
 type DefaultRouteGetter interface {
-	DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error)
+	DefaultRoutes() (defaultRoutes []DefaultRoute, err error)
 }
 
-func (r *Routing) DefaultRoute() (defaultInterface string, defaultGateway net.IP, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
-	if err != nil {
-		return "", nil, fmt.Errorf("cannot list routes: %w", err)
-	}
-	for _, route := range routes {
-		if route.Dst == nil {
-			defaultGateway = route.Gw
-			linkIndex := route.LinkIndex
-			link, err := r.netLinker.LinkByIndex(linkIndex)
-			if err != nil {
-				return "", nil, fmt.Errorf("cannot obtain link by index: for default route at index %d: %w", linkIndex, err)
-			}
-			attributes := link.Attrs()
-			defaultInterface = attributes.Name
-			r.logger.Info("default route found: interface " + defaultInterface +
-				", gateway " + defaultGateway.String())
-			return defaultInterface, defaultGateway, nil
-		}
-	}
-	return "", nil, fmt.Errorf("%w: in %d route(s)", ErrRouteDefaultNotFound, len(routes))
+type DefaultRoute struct {
+	NetInterface string
+	Gateway      net.IP
+	AssignedIP   net.IP
 }
 
-type DefaultIPGetter interface {
-	DefaultIP() (defaultIP net.IP, err error)
+func (d DefaultRoute) String() string {
+	return fmt.Sprintf("interface %s, gateway %s and assigned IP %s",
+		d.NetInterface, d.Gateway, d.AssignedIP)
 }
 
-func (r *Routing) DefaultIP() (ip net.IP, err error) {
+func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return nil, fmt.Errorf("cannot list routes: %w", err)
 	}
 
-	defaultLinkName := ""
 	for _, route := range routes {
 		if route.Dst == nil {
+			defaultRoute := DefaultRoute{
+				Gateway: route.Gw,
+			}
 			linkIndex := route.LinkIndex
 			link, err := r.netLinker.LinkByIndex(linkIndex)
 			if err != nil {
-				return nil, fmt.Errorf("cannot find link by index: for default route at index %d: %w", linkIndex, err)
+				return nil, fmt.Errorf("cannot obtain link by index: for default route at index %d: %w", linkIndex, err)
 			}
-			defaultLinkName = link.Attrs().Name
+			attributes := link.Attrs()
+			defaultRoute.NetInterface = attributes.Name
+
+			defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface)
+			if err != nil {
+				return nil, fmt.Errorf("cannot get assigned IP of %s: %w", defaultRoute.NetInterface, err)
+			}
+
+			r.logger.Info("default route found: " + defaultRoute.String())
+			defaultRoutes = append(defaultRoutes, defaultRoute)
 		}
 	}
-	if defaultLinkName == "" {
-		return nil, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
+
+	if len(defaultRoutes) == 0 {
+		return nil, fmt.Errorf("%w: in %d route(s)", ErrRouteDefaultNotFound, len(routes))
 	}
 
-	return r.assignedIP(defaultLinkName)
+	return defaultRoutes, nil
+}
+
+func DefaultRoutesInterfaces(defaultRoutes []DefaultRoute) (interfaces []string) {
+	interfaces = make([]string, len(defaultRoutes))
+	for i := range defaultRoutes {
+		interfaces[i] = defaultRoutes[i].NetInterface
+	}
+	return interfaces
 }

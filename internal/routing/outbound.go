@@ -17,15 +17,15 @@ type OutboundRoutesSetter interface {
 }
 
 func (r *Routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
-	defaultInterface, defaultGateway, err := r.DefaultRoute()
+	defaultRoutes, err := r.DefaultRoutes()
 	if err != nil {
 		return err
 	}
-	return r.setOutboundRoutes(outboundSubnets, defaultInterface, defaultGateway)
+	return r.setOutboundRoutes(outboundSubnets, defaultRoutes)
 }
 
 func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
-	defaultInterfaceName string, defaultGateway net.IP) (err error) {
+	defaultRoutes []DefaultRoute) (err error) {
 	r.stateMutex.Lock()
 	defer r.stateMutex.Unlock()
 
@@ -36,12 +36,12 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 		return nil
 	}
 
-	warnings := r.removeOutboundSubnets(subnetsToRemove, defaultInterfaceName, defaultGateway)
+	warnings := r.removeOutboundSubnets(subnetsToRemove, defaultRoutes)
 	for _, warning := range warnings {
 		r.logger.Warn("cannot remove outdated outbound subnet from routing: " + warning)
 	}
 
-	err = r.addOutboundSubnets(subnetsToAdd, defaultInterfaceName, defaultGateway)
+	err = r.addOutboundSubnets(subnetsToAdd, defaultRoutes)
 	if err != nil {
 		return fmt.Errorf("cannot add outbound subnet to routes: %w", err)
 	}
@@ -50,17 +50,19 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 }
 
 func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
-	defaultInterfaceName string, defaultGateway net.IP) (warnings []string) {
+	defaultRoutes []DefaultRoute) (warnings []string) {
 	for i, subNet := range subnets {
-		err := r.deleteRouteVia(subNet, defaultGateway, defaultInterfaceName, outboundTable)
-		if err != nil {
-			warnings = append(warnings, err.Error())
-			continue
+		for _, defaultRoute := range defaultRoutes {
+			err := r.deleteRouteVia(subNet, defaultRoute.Gateway, defaultRoute.NetInterface, outboundTable)
+			if err != nil {
+				warnings = append(warnings, err.Error())
+				continue
+			}
 		}
 
 		ruleSrcNet := (*net.IPNet)(nil)
 		ruleDstNet := &subnets[i]
-		err = r.deleteIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
+		err := r.deleteIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {
 			warnings = append(warnings,
 				"cannot delete rule: for subnet "+subNet.String()+": "+err.Error())
@@ -74,11 +76,13 @@ func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 }
 
 func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
-	defaultInterfaceName string, defaultGateway net.IP) error {
+	defaultRoutes []DefaultRoute) (err error) {
 	for i, subnet := range subnets {
-		err := r.addRouteVia(subnet, defaultGateway, defaultInterfaceName, outboundTable)
-		if err != nil {
-			return fmt.Errorf("cannot add route for subnet %s: %w", subnet, err)
+		for _, defaultRoute := range defaultRoutes {
+			err = r.addRouteVia(subnet, defaultRoute.Gateway, defaultRoute.NetInterface, outboundTable)
+			if err != nil {
+				return fmt.Errorf("cannot add route for subnet %s: %w", subnet, err)
+			}
 		}
 
 		ruleSrcNet := (*net.IPNet)(nil)

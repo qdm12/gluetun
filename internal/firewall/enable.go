@@ -96,13 +96,9 @@ func (c *Config) enable(ctx context.Context) (err error) {
 	if err = c.acceptEstablishedRelatedTraffic(ctx, remove); err != nil {
 		return err
 	}
-	if c.vpnConnection.IP != nil {
-		if err = c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, c.vpnConnection, remove); err != nil {
-			return err
-		}
-		if err = c.acceptOutputThroughInterface(ctx, c.vpnIntf, remove); err != nil {
-			return err
-		}
+
+	if err = c.allowVPNIP(ctx); err != nil {
+		return err
 	}
 
 	for _, network := range c.localNetworks {
@@ -111,10 +107,8 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		}
 	}
 
-	for _, subnet := range c.outboundSubnets {
-		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subnet, remove); err != nil {
-			return err
-		}
+	if err = c.allowOutboundSubnets(ctx); err != nil {
+		return err
 	}
 
 	// Allows packets from any IP address to go through eth0 / local network
@@ -125,15 +119,57 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		}
 	}
 
-	for port, intf := range c.allowedInputPorts {
-		if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-			return err
-		}
+	if err = c.allowInputPorts(ctx); err != nil {
+		return err
 	}
 
 	if err := c.runUserPostRules(ctx, c.customRulesPath, remove); err != nil {
 		return fmt.Errorf("cannot run user defined post firewall rules: %w", err)
 	}
 
+	return nil
+}
+
+func (c *Config) allowVPNIP(ctx context.Context) (err error) {
+	if c.vpnConnection.IP == nil {
+		return nil
+	}
+
+	const remove = false
+	for _, defaultRoute := range c.defaultRoutes {
+		err = c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove)
+		if err != nil {
+			return fmt.Errorf("cannot accept output traffic through VPN: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func (c *Config) allowOutboundSubnets(ctx context.Context) (err error) {
+	for _, subnet := range c.outboundSubnets {
+		for _, defaultRoute := range c.defaultRoutes {
+			const remove = false
+			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
+				defaultRoute.AssignedIP, subnet, remove)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (c *Config) allowInputPorts(ctx context.Context) (err error) {
+	for port, netInterfaces := range c.allowedInputPorts {
+		for netInterface := range netInterfaces {
+			const remove = false
+			err = c.acceptInputToPort(ctx, netInterface, port, remove)
+			if err != nil {
+				return fmt.Errorf("cannot accept input port %d on interface %s: %w",
+					port, netInterface, err)
+			}
+		}
+	}
 	return nil
 }

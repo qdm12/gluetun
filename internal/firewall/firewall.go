@@ -23,14 +23,12 @@ type Configurator interface {
 }
 
 type Config struct { //nolint:maligned
-	runner           command.Runner
-	logger           Logger
-	iptablesMutex    sync.Mutex
-	ip6tablesMutex   sync.Mutex
-	defaultInterface string
-	defaultGateway   net.IP
-	localNetworks    []routing.LocalNetwork
-	localIP          net.IP
+	runner         command.Runner
+	logger         Logger
+	iptablesMutex  sync.Mutex
+	ip6tablesMutex sync.Mutex
+	defaultRoutes  []routing.DefaultRoute
+	localNetworks  []routing.LocalNetwork
 
 	// Fixed state
 	ipTables        string
@@ -42,16 +40,15 @@ type Config struct { //nolint:maligned
 	vpnConnection     models.Connection
 	vpnIntf           string
 	outboundSubnets   []net.IPNet
-	allowedInputPorts map[uint16]string // port to interface mapping
+	allowedInputPorts map[uint16]map[string]struct{} // port to interfaces set mapping
 	stateMutex        sync.Mutex
 }
 
 // NewConfig creates a new Config instance and returns an error
 // if no iptables implementation is available.
 func NewConfig(ctx context.Context, logger Logger,
-	runner command.Runner, defaultInterface string,
-	defaultGateway net.IP, localNetworks []routing.LocalNetwork,
-	localIP net.IP) (config *Config, err error) {
+	runner command.Runner, defaultRoutes []routing.DefaultRoute,
+	localNetworks []routing.LocalNetwork) (config *Config, err error) {
 	iptables, err := findIptablesSupported(ctx, runner)
 	if err != nil {
 		return nil, err
@@ -60,14 +57,12 @@ func NewConfig(ctx context.Context, logger Logger,
 	return &Config{
 		runner:            runner,
 		logger:            logger,
-		allowedInputPorts: make(map[uint16]string),
+		allowedInputPorts: make(map[uint16]map[string]struct{}),
 		ipTables:          iptables,
 		ip6Tables:         findIP6tablesSupported(ctx, runner),
 		customRulesPath:   "/iptables/post-rules.txt",
 		// Obtained from routing
-		defaultInterface: defaultInterface,
-		defaultGateway:   defaultGateway,
-		localNetworks:    localNetworks,
-		localIP:          localIP,
+		defaultRoutes: defaultRoutes,
+		localNetworks: localNetworks,
 	}, nil
 }

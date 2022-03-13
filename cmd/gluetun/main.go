@@ -184,17 +184,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	routingConf := routing.New(netLinker, routingLogger)
 
-	defaultInterface, defaultGateway, err := routingConf.DefaultRoute()
+	defaultRoutes, err := routingConf.DefaultRoutes()
 	if err != nil {
 		return err
 	}
 
 	localNetworks, err := routingConf.LocalNetworks()
-	if err != nil {
-		return err
-	}
-
-	defaultIP, err := routingConf.DefaultIP()
 	if err != nil {
 		return err
 	}
@@ -206,7 +201,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		firewallLogger.PatchLevel(logging.LevelDebug)
 	}
 	firewallConf, err := firewall.NewConfig(ctx, firewallLogger, cmder,
-		defaultInterface, defaultGateway, localNetworks, defaultIP)
+		defaultRoutes, localNetworks)
 	if err != nil {
 		return err
 	}
@@ -321,9 +316,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	for _, port := range allSettings.Firewall.InputPorts {
-		err = firewallConf.SetAllowedPort(ctx, port, defaultInterface)
-		if err != nil {
-			return err
+		for _, defaultRoute := range defaultRoutes {
+			err = firewallConf.SetAllowedPort(ctx, port, defaultRoute.NetInterface)
+			if err != nil {
+				return err
+			}
 		}
 	} // TODO move inside firewall?
 

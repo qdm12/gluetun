@@ -15,7 +15,6 @@ type ReadWriter interface {
 
 type Reader interface {
 	DefaultRouteGetter
-	DefaultIPGetter
 	LocalSubnetGetter
 	LocalNetworksGetter
 	VPNGetter

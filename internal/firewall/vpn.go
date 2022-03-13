@@ -31,8 +31,10 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 
 	remove := true
 	if c.vpnConnection.IP != nil {
-		if err := c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, c.vpnConnection, remove); err != nil {
-			c.logger.Error("cannot remove outdated VPN connection rule: " + err.Error())
+		for _, defaultRoute := range c.defaultRoutes {
+			if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove); err != nil {
+				c.logger.Error("cannot remove outdated VPN connection rule: " + err.Error())
+			}
 		}
 	}
 	c.vpnConnection = models.Connection{}
@@ -46,8 +48,10 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 
 	remove = false
 
-	if err := c.acceptOutputTrafficToVPN(ctx, c.defaultInterface, connection, remove); err != nil {
-		return fmt.Errorf("cannot allow output traffic through VPN connection: %w", err)
+	for _, defaultRoute := range c.defaultRoutes {
+		if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, connection, remove); err != nil {
+			return fmt.Errorf("cannot allow output traffic through VPN connection: %w", err)
+		}
 	}
 	c.vpnConnection = connection
 

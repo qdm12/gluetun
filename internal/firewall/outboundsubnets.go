@@ -41,9 +41,13 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet) {
 	const remove = true
 	for _, subNet := range subnets {
-		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subNet, remove); err != nil {
-			c.logger.Error("cannot remove outdated outbound subnet: " + err.Error())
-			continue
+		for _, defaultRoute := range c.defaultRoutes {
+			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
+				defaultRoute.AssignedIP, subNet, remove)
+			if err != nil {
+				c.logger.Error("cannot remove outdated outbound subnet: " + err.Error())
+				continue
+			}
 		}
 		c.outboundSubnets = subnet.RemoveSubnetFromSubnets(c.outboundSubnets, subNet)
 	}
@@ -52,8 +56,12 @@ func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet)
 func (c *Config) addOutboundSubnets(ctx context.Context, subnets []net.IPNet) error {
 	const remove = false
 	for _, subnet := range subnets {
-		if err := c.acceptOutputFromIPToSubnet(ctx, c.defaultInterface, c.localIP, subnet, remove); err != nil {
-			return err
+		for _, defaultRoute := range c.defaultRoutes {
+			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
+				defaultRoute.AssignedIP, subnet, remove)
+			if err != nil {
+				return err
+			}
 		}
 		c.outboundSubnets = append(c.outboundSubnets, subnet)
 	}

@@ -21,27 +21,30 @@ func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (
 
 	if !c.enabled {
 		c.logger.Info("firewall disabled, only updating allowed ports internal state")
-		c.allowedInputPorts[port] = intf
+		existingInterfaces, ok := c.allowedInputPorts[port]
+		if !ok {
+			existingInterfaces = make(map[string]struct{})
+		}
+		existingInterfaces[intf] = struct{}{}
+		c.allowedInputPorts[port] = existingInterfaces
+		return nil
+	}
+
+	netInterfaces, has := c.allowedInputPorts[port]
+	if !has {
+		netInterfaces = make(map[string]struct{})
+	} else if _, exists := netInterfaces[intf]; exists {
 		return nil
 	}
 
 	c.logger.Info("setting allowed input port " + fmt.Sprint(port) + " through interface " + intf + "...")
 
-	if existingIntf, ok := c.allowedInputPorts[port]; ok {
-		if intf == existingIntf {
-			return nil
-		}
-		const remove = true
-		if err := c.acceptInputToPort(ctx, existingIntf, port, remove); err != nil {
-			return fmt.Errorf("cannot remove old allowed port %d: %w", port, err)
-		}
-	}
-
 	const remove = false
 	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-		return fmt.Errorf("cannot allow input to port %d: %w", port, err)
+		return fmt.Errorf("cannot allow input to port %d through interface %s: %w",
+			port, intf, err)
 	}
-	c.allowedInputPorts[port] = intf
+	netInterfaces[intf] = struct{}{}
 
 	return nil
 }
@@ -60,17 +63,24 @@ func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 		return nil
 	}
 
-	c.logger.Info("removing allowed port " + strconv.Itoa(int(port)) + " ...")
+	c.logger.Info("removing allowed port " + strconv.Itoa(int(port)) + "...")
 
-	intf, ok := c.allowedInputPorts[port]
+	interfacesSet, ok := c.allowedInputPorts[port]
 	if !ok {
 		return nil
 	}
 
 	const remove = true
-	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-		return fmt.Errorf("cannot remove allowed port %d: %w", port, err)
+	for netInterface := range interfacesSet {
+		err := c.acceptInputToPort(ctx, netInterface, port, remove)
+		if err != nil {
+			return fmt.Errorf("cannot remove allowed port %d on interface %s: %w",
+				port, netInterface, err)
+		}
+		delete(interfacesSet, netInterface)
 	}
+
+	// All interfaces were removed successfully, so remove the port entry.
 	delete(c.allowedInputPorts, port)
 
 	return nil

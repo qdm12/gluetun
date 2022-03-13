@@ -9,9 +9,9 @@ type Setuper interface {
 }
 
 func (r *Routing) Setup() (err error) {
-	defaultInterfaceName, defaultGateway, err := r.DefaultRoute()
+	defaultRoutes, err := r.DefaultRoutes()
 	if err != nil {
-		return fmt.Errorf("cannot get default route: %w", err)
+		return fmt.Errorf("cannot get default routes: %w", err)
 	}
 
 	touched := false
@@ -25,7 +25,7 @@ func (r *Routing) Setup() (err error) {
 
 	touched = true
 
-	err = r.routeInboundFromDefault(defaultGateway, defaultInterfaceName)
+	err = r.routeInboundFromDefault(defaultRoutes)
 	if err != nil {
 		return fmt.Errorf("cannot add routes for inbound traffic from default IP: %w", err)
 	}
@@ -33,7 +33,7 @@ func (r *Routing) Setup() (err error) {
 	r.stateMutex.RLock()
 	outboundSubnets := r.outboundSubnets
 	r.stateMutex.RUnlock()
-	if err := r.setOutboundRoutes(outboundSubnets, defaultInterfaceName, defaultGateway); err != nil {
+	if err := r.setOutboundRoutes(outboundSubnets, defaultRoutes); err != nil {
 		return fmt.Errorf("cannot set outbound subnets routes: %w", err)
 	}
 
@@ -45,17 +45,17 @@ type TearDowner interface {
 }
 
 func (r *Routing) TearDown() error {
-	defaultInterfaceName, defaultGateway, err := r.DefaultRoute()
+	defaultRoutes, err := r.DefaultRoutes()
 	if err != nil {
 		return fmt.Errorf("cannot get default route: %w", err)
 	}
 
-	err = r.unrouteInboundFromDefault(defaultGateway, defaultInterfaceName)
+	err = r.unrouteInboundFromDefault(defaultRoutes)
 	if err != nil {
 		return fmt.Errorf("cannot remove routes for inbound traffic from default IP: %w", err)
 	}
 
-	if err := r.setOutboundRoutes(nil, defaultInterfaceName, defaultGateway); err != nil {
+	if err := r.setOutboundRoutes(nil, defaultRoutes); err != nil {
 		return fmt.Errorf("cannot set outbound subnets routes: %w", err)
 	}
 
