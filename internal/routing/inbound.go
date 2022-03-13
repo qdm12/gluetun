@@ -18,12 +18,12 @@ func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err err
 	}
 
 	defaultDestinationIPv4 := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
-	// TODO IPv6
+	defaultDestinationIPv6 := net.IPNet{IP: net.IPv6zero, Mask: net.IPMask(net.IPv6zero)}
 
 	for _, defaultRoute := range defaultRoutes {
 		defaultDestination := defaultDestinationIPv4
 		if defaultRoute.Family == netlink.FAMILY_V6 {
-			continue // skip IPv6 default routes
+			defaultDestination = defaultDestinationIPv6
 		}
 
 		err := r.addRouteVia(defaultDestination, defaultRoute.Gateway, defaultRoute.NetInterface, inboundTable)
@@ -37,12 +37,12 @@ func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err err
 
 func (r *Routing) unrouteInboundFromDefault(defaultRoutes []DefaultRoute) (err error) {
 	defaultDestinationIPv4 := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
-	// TODO IPv6
+	defaultDestinationIPv6 := net.IPNet{IP: net.IPv6zero, Mask: net.IPMask(net.IPv6zero)}
 
 	for _, defaultRoute := range defaultRoutes {
 		defaultDestination := defaultDestinationIPv4
 		if defaultRoute.Family == netlink.FAMILY_V6 {
-			continue // skip IPv6 default routes
+			defaultDestination = defaultDestinationIPv6
 		}
 
 		err := r.deleteRouteVia(defaultDestination, defaultRoute.Gateway, defaultRoute.NetInterface, inboundTable)
