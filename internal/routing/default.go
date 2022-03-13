@@ -20,6 +20,7 @@ type DefaultRoute struct {
 	NetInterface string
 	Gateway      net.IP
 	AssignedIP   net.IP
+	Family       int
 }
 
 func (d DefaultRoute) String() string {
@@ -37,6 +38,7 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 		if route.Dst == nil {
 			defaultRoute := DefaultRoute{
 				Gateway: route.Gw,
+				Family:  route.Family,
 			}
 			linkIndex := route.LinkIndex
 			link, err := r.netLinker.LinkByIndex(linkIndex)
