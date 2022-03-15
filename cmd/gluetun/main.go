@@ -64,7 +64,8 @@ func main() {
 	}
 
 	background := context.Background()
-	signalCtx, stop := signal.NotifyContext(background, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
 	ctx, cancel := context.WithCancel(background)
 
 	logger := logging.New(logging.Settings{
@@ -88,13 +89,11 @@ func main() {
 	}()
 
 	select {
-	case <-signalCtx.Done():
-		stop()
+	case signal := <-signalCh:
 		fmt.Println("")
-		logger.Warn("Caught OS signal, shutting down")
+		logger.Warn("Caught OS signal " + signal.String() + ", shutting down")
 		cancel()
 	case err := <-errorCh:
-		stop()
 		close(errorCh)
 		if err == nil { // expected exit such as healthcheck
 			os.Exit(0)
@@ -113,6 +112,8 @@ func main() {
 		logger.Info("Shutdown successful")
 	case <-timer.C:
 		logger.Warn("Shutdown timed out")
+	case signal := <-signalCh:
+		logger.Warn("Caught OS signal " + signal.String() + ", forcing shut down")
 	}
 
 	os.Exit(1)
