@@ -84091,16 +84091,8 @@
   },
   "privatevpn": {
     "version": 1,
-    "timestamp": 1627008341,
+    "timestamp": 1647425952,
     "servers": [
-      {
-        "country": "Argentina",
-        "city": "BuenosAires",
-        "hostname": "ar-bue.pvdata.host",
-        "ip": [
-          "181.119.160.59"
-        ]
-      },
       {
         "country": "Australia",
         "city": "Melbourne",
@@ -84156,16 +84148,6 @@
         "ip": [
           "37.120.237.163",
           "87.101.92.131"
-        ]
-      },
-      {
-        "country": "Canada",
-        "city": "Toronto1",
-        "hostname": "ca-tor.pvdata.host",
-        "ip": [
-          "45.148.7.3",
-          "45.148.7.6",
-          "45.148.7.8"
         ]
       },
       {
@@ -84262,11 +84244,35 @@
         ]
       },
       {
+        "country": "Greece",
+        "city": "Athens",
+        "hostname": "gr-ath.pvdata.host",
+        "ip": [
+          "154.57.3.33"
+        ]
+      },
+      {
         "country": "Hong Kong",
         "city": "HongKong",
         "hostname": "hk-hon.pvdata.host",
         "ip": [
           "84.17.37.58"
+        ]
+      },
+      {
+        "country": "Hungary",
+        "city": "Budapest",
+        "hostname": "hu-bud.pvdata.host",
+        "ip": [
+          "185.104.187.67"
+        ]
+      },
+      {
+        "country": "Iceland",
+        "city": "Reykjavik",
+        "hostname": "is-rey.pvdata.host",
+        "ip": [
+          "82.221.113.210"
         ]
       },
       {
@@ -84286,6 +84292,14 @@
         ]
       },
       {
+        "country": "Isle of Man",
+        "city": "Ballasalla",
+        "hostname": "im-bal.pvdata.host",
+        "ip": [
+          "81.27.96.89"
+        ]
+      },
+      {
         "country": "Italy",
         "city": "Milan",
         "hostname": "it-mil.pvdata.host",
@@ -84301,7 +84315,8 @@
         "city": "Tokyo1",
         "hostname": "jp-tok.pvdata.host",
         "ip": [
-          "89.187.160.154"
+          "89.187.160.154",
+          "89.187.161.142"
         ]
       },
       {
@@ -84317,7 +84332,7 @@
         "city": "Riga",
         "hostname": "lv-rig.pvdata.host",
         "ip": [
-          "80.233.134.165"
+          "217.199.103.164"
         ]
       },
       {
@@ -84325,7 +84340,7 @@
         "city": "Siauliai",
         "hostname": "lt-sia.pvdata.host",
         "ip": [
-          "5.199.171.93"
+          "185.64.104.48"
         ]
       },
       {
@@ -84477,8 +84492,8 @@
         ]
       },
       {
-        "country": "Singapore",
-        "city": "Singapore",
+        "country": "Slovakia",
+        "city": "Bratislava",
         "hostname": "sg-sin.pvdata.host",
         "ip": [
           "143.244.33.81"
@@ -84490,18 +84505,6 @@
         "hostname": "sk-bra.pvdata.host",
         "ip": [
           "46.29.2.168"
-        ]
-      },
-      {
-        "country": "South Africa",
-        "city": "Johannesburg",
-        "hostname": "us-nyc.pvdata.host",
-        "ip": [
-          "45.130.86.3",
-          "45.130.86.5",
-          "45.130.86.8",
-          "45.130.86.10",
-          "45.130.86.12"
         ]
       },
       {
@@ -84548,6 +84551,13 @@
       {
         "country": "Sweden",
         "city": "Stockholm",
+        "ip": [
+          "193.180.119.2"
+        ]
+      },
+      {
+        "country": "Sweden",
+        "city": "Stockholm",
         "hostname": "se-sto.pvdata.host",
         "ip": [
           "45.130.87.3",
@@ -84558,6 +84568,15 @@
           "45.130.87.14",
           "45.130.87.16",
           "45.130.87.18"
+        ]
+      },
+      {
+        "country": "Switzerland",
+        "city": "Zurich1",
+        "hostname": "ch-zur.pvdata.host",
+        "ip": [
+          "217.212.245.92",
+          "217.212.245.93"
         ]
       },
       {
@@ -84703,6 +84722,18 @@
         "hostname": "us-mia.pvdata.host",
         "ip": [
           "195.181.163.139"
+        ]
+      },
+      {
+        "country": "United States",
+        "city": "NewYork1",
+        "hostname": "us-nyc.pvdata.host",
+        "ip": [
+          "45.130.86.3",
+          "45.130.86.5",
+          "45.130.86.8",
+          "45.130.86.10",
+          "45.130.86.12"
         ]
       },
       {
