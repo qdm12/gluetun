@@ -13,9 +13,9 @@ func resolveHosts(ctx context.Context, presolver resolver.Parallel,
 	warnings []string, err error) {
 	const (
 		maxFailRatio = 0.1
-		maxDuration  = 3 * time.Second
+		maxDuration  = 30 * time.Second
 		maxNoNew     = 1
-		maxFails     = 2
+		maxFails     = 5
 	)
 	settings := resolver.ParallelSettings{
 		MaxFailRatio: maxFailRatio,
