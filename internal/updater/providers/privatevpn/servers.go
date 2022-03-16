@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -32,6 +33,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	countryCodes := constants.CountryCodes()
 
 	hts := make(hostToServer)
+	noHostnameServers := make([]models.PrivatevpnServer, 0, 1) // there is only one for now
 
 	for fileName, content := range contents {
 		if !strings.HasSuffix(fileName, ".ovpn") {
@@ -53,19 +55,32 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 		if warning != "" {
 			warnings = append(warnings, warning)
 		}
-		if err != nil {
-			// treat error as warning and go to next file
+		if err == nil { // found host
+			hts.add(host, country, city)
+			continue
+		}
+
+		ip, warning, extractIPErr := openvpn.ExtractIP(content)
+		if warning != "" {
+			warnings = append(warnings, warning)
+		}
+		if extractIPErr != nil {
+			// treat extract host error as warning and go to next file
 			warning := err.Error() + " in " + fileName
 			warnings = append(warnings, warning)
 			continue
 		}
-
-		hts.add(host, country, city)
+		server := models.PrivatevpnServer{
+			Country: country,
+			City:    city,
+			IPs:     []net.IP{ip},
+		}
+		noHostnameServers = append(noHostnameServers, server)
 	}
 
-	if len(hts) < minServers {
+	if len(noHostnameServers)+len(hts) < minServers {
 		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(hts), minServers)
+			ErrNotEnoughServers, len(servers)+len(hts), minServers)
 	}
 
 	hosts := hts.toHostsSlice()
@@ -79,6 +94,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	hts.adaptWithIPs(hostToIPs)
 
 	servers = hts.toServersSlice()
+	servers = append(servers, noHostnameServers...)
 
 	sortServers(servers)
 
