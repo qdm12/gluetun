@@ -114,13 +114,12 @@ type PrivatevpnServer struct {
 }
 
 type ProtonvpnServer struct {
-	Country  string   `json:"country,omitempty"`
-	Region   string   `json:"region,omitempty"`
-	City     string   `json:"city,omitempty"`
-	Name     string   `json:"name,omitempty"`
-	Hostname string   `json:"hostname,omitempty"`
-	EntryIP  net.IP   `json:"entry_ip,omitempty"`
-	ExitIPs  []net.IP `json:"exit_ip,omitempty"` // TODO verify it matches with public IP once connected
+	Country  string `json:"country,omitempty"`
+	Region   string `json:"region,omitempty"`
+	City     string `json:"city,omitempty"`
+	Name     string `json:"name,omitempty"`
+	Hostname string `json:"hostname,omitempty"`
+	EntryIP  net.IP `json:"entry_ip,omitempty"`
 }
 
 type PurevpnServer struct {

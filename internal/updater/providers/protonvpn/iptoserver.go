@@ -9,7 +9,7 @@ import (
 type ipToServer map[string]models.ProtonvpnServer
 
 func (its ipToServer) add(country, region, city, name, hostname string,
-	entryIP, exitIP net.IP) {
+	entryIP net.IP) {
 	key := entryIP.String()
 
 	server, ok := its[key]
@@ -20,9 +20,6 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 		server.Name = name
 		server.Hostname = hostname
 		server.EntryIP = entryIP
-		server.ExitIPs = []net.IP{exitIP}
-	} else {
-		server.ExitIPs = append(server.ExitIPs, exitIP)
 	}
 
 	its[key] = server

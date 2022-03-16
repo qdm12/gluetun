@@ -74,7 +74,6 @@ func Test_AllServers_GetCopy(t *testing.T) {
 		Protonvpn: ProtonvpnServers{
 			Servers: []ProtonvpnServer{{
 				EntryIP: net.IP{1, 2, 3, 4},
-				ExitIPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
 		Purevpn: PurevpnServers{

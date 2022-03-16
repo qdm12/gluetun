@@ -47,7 +47,6 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 
 			hostname := physicalServer.Domain
 			entryIP := physicalServer.EntryIP
-			exitIP := physicalServer.ExitIP
 
 			// Note: for multi-hop use the server name or hostname
 			// instead of the country
@@ -57,7 +56,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 				warnings = append(warnings, warning)
 			}
 
-			ipToServer.add(country, region, city, name, hostname, entryIP, exitIP)
+			ipToServer.add(country, region, city, name, hostname, entryIP)
 		}
 	}
 
