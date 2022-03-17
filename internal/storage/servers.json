@@ -84756,7 +84756,7 @@
   },
   "protonvpn": {
     "version": 2,
-    "timestamp": 1647423369,
+    "timestamp": 1647545110,
     "servers": [
       {
         "country": "Argentina",
@@ -84793,7 +84793,7 @@
       {
         "country": "Australia",
         "name": "CH-AU#1",
-        "hostname": "ch-au-01a.protonvpn.com",
+        "hostname": "ch-au-01a.protonvpn.net",
         "entry_ip": "185.159.157.50"
       },
       {
@@ -84811,7 +84811,7 @@
       {
         "country": "Australia",
         "name": "SE-AU#1",
-        "hostname": "se-au-01a.protonvpn.com",
+        "hostname": "se-au-01a.protonvpn.net",
         "entry_ip": "185.159.156.55"
       },
       {
@@ -84886,14 +84886,14 @@
         "country": "Australia",
         "city": "Sydney",
         "name": "AU#13",
-        "hostname": "au-13.protonvpn.com",
+        "hostname": "au-13.protonvpn.net",
         "entry_ip": "103.212.227.123"
       },
       {
         "country": "Australia",
         "city": "Sydney",
         "name": "AU#14",
-        "hostname": "lxc-au-04.protonvpn.com",
+        "hostname": "node-au-04.protonvpn.net",
         "entry_ip": "103.212.227.122"
       },
       {
@@ -84913,13 +84913,13 @@
       {
         "country": "Austria",
         "name": "CH-AT#1",
-        "hostname": "ch-at-01a.protonvpn.com",
+        "hostname": "ch-at-01a.protonvpn.net",
         "entry_ip": "185.159.157.34"
       },
       {
         "country": "Austria",
         "name": "CH-AT#1",
-        "hostname": "ch-at-01b.protonvpn.com",
+        "hostname": "ch-at-01b.protonvpn.net",
         "entry_ip": "185.159.157.35"
       },
       {
@@ -85011,13 +85011,13 @@
       {
         "country": "Belgium",
         "name": "IS-BE#1",
-        "hostname": "is-be-01a.protonvpn.com",
+        "hostname": "is-be-01a.protonvpn.net",
         "entry_ip": "185.159.158.127"
       },
       {
         "country": "Belgium",
         "name": "IS-BE#1",
-        "hostname": "is-be-01c.protonvpn.com",
+        "hostname": "is-be-01c.protonvpn.net",
         "entry_ip": "185.159.158.129"
       },
       {
@@ -85198,7 +85198,7 @@
       {
         "country": "Canada",
         "name": "SE-CA#1",
-        "hostname": "se-ca-01a.protonvpn.com",
+        "hostname": "se-ca-01a.protonvpn.net",
         "entry_ip": "185.159.156.51"
       },
       {
@@ -85476,7 +85476,7 @@
       {
         "country": "Denmark",
         "name": "CH-DK#1",
-        "hostname": "ch-dk-01a.protonvpn.com",
+        "hostname": "ch-dk-01a.protonvpn.net",
         "entry_ip": "185.159.157.36"
       },
       {
@@ -85626,7 +85626,7 @@
       {
         "country": "France",
         "name": "CH-FR#1",
-        "hostname": "ch-fr-01b.protonvpn.com",
+        "hostname": "ch-fr-01b.protonvpn.net",
         "entry_ip": "185.159.157.126"
       },
       {
@@ -85823,19 +85823,6 @@
         "entry_ip": "194.59.249.18"
       },
       {
-        "country": "Georgia",
-        "name": "IS-GE#1",
-        "hostname": "is-ge-01a.protonvpn.com",
-        "entry_ip": "185.159.158.182"
-      },
-      {
-        "country": "Georgia",
-        "city": "Tbilisi",
-        "name": "GE#1",
-        "hostname": "node-ge-01.protonvpn.net",
-        "entry_ip": "194.135.119.7"
-      },
-      {
         "country": "Germany",
         "name": "CH-DE#1",
         "hostname": "ch-de-01a.protonvpn.net",
@@ -85897,6 +85884,12 @@
       },
       {
         "country": "Germany",
+        "name": "SE-DE#1",
+        "hostname": "se-de-01a.protonvpn.com",
+        "entry_ip": "185.159.156.98"
+      },
+      {
+        "country": "Germany",
         "city": "Berlin",
         "name": "DE#13",
         "hostname": "de-13.protonvpn.net",
@@ -85922,6 +85915,13 @@
         "name": "DE#34",
         "hostname": "node-de-07.protonvpn.net",
         "entry_ip": "37.120.217.82"
+      },
+      {
+        "country": "Germany",
+        "city": "Berlin",
+        "name": "DE#90",
+        "hostname": "node-de-15.protonvpn.net",
+        "entry_ip": "89.36.76.130"
       },
       {
         "country": "Germany",
@@ -86175,6 +86175,12 @@
       {
         "country": "India",
         "name": "CH-IN#1",
+        "hostname": "ch-in-01a.protonvpn.net",
+        "entry_ip": "185.159.157.185"
+      },
+      {
+        "country": "India",
+        "name": "CH-IN#1",
         "hostname": "ch-in-01b.protonvpn.com",
         "entry_ip": "185.159.157.64"
       },
@@ -86183,6 +86189,20 @@
         "name": "CH-IN#1",
         "hostname": "ch-in-01c.protonvpn.com",
         "entry_ip": "185.159.157.40"
+      },
+      {
+        "country": "India",
+        "city": "Mumbai",
+        "name": "IN#11",
+        "hostname": "in-11.protonvpn.net",
+        "entry_ip": "43.251.180.195"
+      },
+      {
+        "country": "India",
+        "city": "Mumbai",
+        "name": "IN#13",
+        "hostname": "node-in-03.protonvpn.net",
+        "entry_ip": "43.251.180.194"
       },
       {
         "country": "India",
@@ -86395,15 +86415,15 @@
       },
       {
         "country": "Japan",
-        "name": "JP-FREE#3",
-        "hostname": "lxc-jp-13.protonvpn.com",
-        "entry_ip": "45.14.71.5"
+        "name": "JP-FREE#2",
+        "hostname": "node-jp-16.protonvpn.net",
+        "entry_ip": "138.199.22.102"
       },
       {
         "country": "Japan",
-        "name": "JP-FREE#4",
-        "hostname": "node-jp-18.protonvpn.net",
-        "entry_ip": "138.199.21.193"
+        "name": "JP-FREE#3",
+        "hostname": "lxc-jp-13.protonvpn.com",
+        "entry_ip": "45.14.71.5"
       },
       {
         "country": "Japan",
@@ -86422,12 +86442,6 @@
         "name": "JP-FREE#7",
         "hostname": "lxc-jp-15.protonvpn.com",
         "entry_ip": "45.14.71.7"
-      },
-      {
-        "country": "Japan",
-        "name": "SE-JP#1",
-        "hostname": "se-jp-01a.protonvpn.com",
-        "entry_ip": "185.159.156.56"
       },
       {
         "country": "Japan",
@@ -86663,7 +86677,7 @@
       {
         "country": "Netherlands",
         "name": "CH-NL#1",
-        "hostname": "ch-nl-01c.protonvpn.com",
+        "hostname": "ch-nl-01c.protonvpn.net",
         "entry_ip": "185.159.157.178"
       },
       {
@@ -86693,7 +86707,7 @@
       {
         "country": "Netherlands",
         "name": "IS-NL#1",
-        "hostname": "is-nl-01d.protonvpn.com",
+        "hostname": "is-nl-01d.protonvpn.net",
         "entry_ip": "185.159.158.135"
       },
       {
@@ -86777,7 +86791,7 @@
       {
         "country": "Netherlands",
         "name": "NL-FREE#18",
-        "hostname": "lxc-nl-23.protonvpn.com",
+        "hostname": "node-nl-23.protonvpn.net",
         "entry_ip": "89.38.97.115"
       },
       {
@@ -86819,7 +86833,7 @@
       {
         "country": "Netherlands",
         "name": "NL-FREE#25",
-        "hostname": "lxc-nl-16.protonvpn.com",
+        "hostname": "node-nl-16.protonvpn.net",
         "entry_ip": "192.40.57.226"
       },
       {
@@ -87217,7 +87231,7 @@
       {
         "country": "New Zealand",
         "name": "SE-NZ#1",
-        "hostname": "se-nz-01b.protonvpn.com",
+        "hostname": "se-nz-01b.protonvpn.net",
         "entry_ip": "185.159.156.41"
       },
       {
@@ -87282,7 +87296,7 @@
       {
         "country": "Norway",
         "name": "SE-NO#1",
-        "hostname": "se-no-01a.protonvpn.com",
+        "hostname": "se-no-01a.protonvpn.net",
         "entry_ip": "185.159.156.48"
       },
       {
@@ -87632,7 +87646,7 @@
       {
         "country": "Singapore",
         "name": "CH-SG#1",
-        "hostname": "ch-sg-01f.protonvpn.com",
+        "hostname": "ch-sg-01f.protonvpn.net",
         "entry_ip": "185.159.157.58"
       },
       {
@@ -87644,7 +87658,7 @@
       {
         "country": "Singapore",
         "name": "SE-SG#1",
-        "hostname": "se-sg-01a.protonvpn.com",
+        "hostname": "se-sg-01a.protonvpn.net",
         "entry_ip": "185.159.156.53"
       },
       {
@@ -88099,7 +88113,7 @@
       {
         "country": "United Kingdom",
         "name": "CH-UK#1",
-        "hostname": "ch-uk-01h.protonvpn.com",
+        "hostname": "ch-uk-01h.protonvpn.net",
         "entry_ip": "185.159.157.16"
       },
       {
@@ -88111,7 +88125,7 @@
       {
         "country": "United Kingdom",
         "name": "IS-UK#1",
-        "hostname": "is-uk-01a.protonvpn.com",
+        "hostname": "is-uk-01a.protonvpn.net",
         "entry_ip": "185.159.158.171"
       },
       {
@@ -88222,14 +88236,14 @@
         "country": "United Kingdom",
         "city": "Manchester",
         "name": "UK#17",
-        "hostname": "uk-17.protonvpn.com",
+        "hostname": "uk-17.protonvpn.net",
         "entry_ip": "217.138.196.19"
       },
       {
         "country": "United Kingdom",
         "city": "Manchester",
         "name": "UK#20",
-        "hostname": "lxc-uk-05.protonvpn.com",
+        "hostname": "node-uk-05.protonvpn.net",
         "entry_ip": "217.138.196.18"
       },
       {
@@ -88249,7 +88263,7 @@
       {
         "country": "United States",
         "name": "CH-US#1",
-        "hostname": "ch-us-01a.protonvpn.com",
+        "hostname": "ch-us-01a.protonvpn.net",
         "entry_ip": "185.159.157.175"
       },
       {
@@ -88279,7 +88293,7 @@
       {
         "country": "United States",
         "name": "CH-US#1",
-        "hostname": "ch-us-01h.protonvpn.com",
+        "hostname": "ch-us-01h.protonvpn.net",
         "entry_ip": "185.159.157.30"
       },
       {
@@ -88315,7 +88329,7 @@
       {
         "country": "United States",
         "name": "CH-US#1",
-        "hostname": "ch-us-01v.protonvpn.com",
+        "hostname": "ch-us-01v.protonvpn.net",
         "entry_ip": "185.159.157.142"
       },
       {
@@ -88357,7 +88371,7 @@
       {
         "country": "United States",
         "name": "CH-US#1",
-        "hostname": "ch-us-02c.protonvpn.com",
+        "hostname": "ch-us-02c.protonvpn.net",
         "entry_ip": "185.159.157.159"
       },
       {
@@ -88525,7 +88539,7 @@
       {
         "country": "United States",
         "name": "SE-US#1",
-        "hostname": "se-us-01e.protonvpn.com",
+        "hostname": "se-us-01e.protonvpn.net",
         "entry_ip": "185.159.156.63"
       },
       {
@@ -88608,6 +88622,12 @@
       },
       {
         "country": "United States",
+        "name": "US-FREE#13",
+        "hostname": "node-us-54.protonvpn.net",
+        "entry_ip": "38.132.103.146"
+      },
+      {
+        "country": "United States",
         "name": "US-FREE#14",
         "hostname": "lxc-us-70.protonvpn.com",
         "entry_ip": "89.187.170.159"
@@ -88645,26 +88665,8 @@
       {
         "country": "United States",
         "name": "US-FREE#2",
-        "hostname": "lxc-us-55.protonvpn.com",
-        "entry_ip": "45.87.214.114"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#2",
-        "hostname": "lxc-us-61.protonvpn.com",
-        "entry_ip": "84.17.45.156"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#2",
         "hostname": "lxc-us-72.protonvpn.com",
         "entry_ip": "89.187.185.161"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#2",
-        "hostname": "lxc-us-91.protonvpn.com",
-        "entry_ip": "45.87.214.106"
       },
       {
         "country": "United States",
@@ -88699,7 +88701,7 @@
       {
         "country": "United States",
         "name": "US-FREE#25",
-        "hostname": "lxc-us-83.protonvpn.com",
+        "hostname": "node-us-83.protonvpn.net",
         "entry_ip": "107.152.101.210"
       },
       {
@@ -88729,12 +88731,6 @@
       {
         "country": "United States",
         "name": "US-FREE#3",
-        "hostname": "lxc-us-56.protonvpn.com",
-        "entry_ip": "89.187.171.225"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#3",
         "hostname": "lxc-us-60.protonvpn.com",
         "entry_ip": "195.181.163.1"
       },
@@ -88752,51 +88748,51 @@
       },
       {
         "country": "United States",
+        "name": "US-FREE#32",
+        "hostname": "node-us-76.protonvpn.net",
+        "entry_ip": "193.148.18.58"
+      },
+      {
+        "country": "United States",
+        "name": "US-FREE#34",
+        "hostname": "lxc-us-91.protonvpn.com",
+        "entry_ip": "45.87.214.106"
+      },
+      {
+        "country": "United States",
+        "name": "US-FREE#35",
+        "hostname": "lxc-us-117.protonvpn.com",
+        "entry_ip": "209.58.147.18"
+      },
+      {
+        "country": "United States",
+        "name": "US-FREE#36",
+        "hostname": "lxc-us-55.protonvpn.com",
+        "entry_ip": "45.87.214.114"
+      },
+      {
+        "country": "United States",
+        "name": "US-FREE#37",
+        "hostname": "lxc-us-61.protonvpn.com",
+        "entry_ip": "84.17.45.156"
+      },
+      {
+        "country": "United States",
+        "name": "US-FREE#38",
+        "hostname": "lxc-us-56.protonvpn.com",
+        "entry_ip": "89.187.171.225"
+      },
+      {
+        "country": "United States",
         "name": "US-FREE#4",
         "hostname": "lxc-us-47.protonvpn.com",
         "entry_ip": "45.89.173.194"
       },
       {
         "country": "United States",
-        "name": "US-FREE#4",
-        "hostname": "lxc-us-86.protonvpn.com",
-        "entry_ip": "162.253.68.114"
-      },
-      {
-        "country": "United States",
         "name": "US-FREE#5",
         "hostname": "lxc-us-45.protonvpn.com",
         "entry_ip": "217.138.206.82"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#5",
-        "hostname": "lxc-us-76.protonvpn.com",
-        "entry_ip": "193.148.18.58"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#5",
-        "hostname": "lxc-us-78.protonvpn.com",
-        "entry_ip": "193.148.18.74"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#5",
-        "hostname": "node-us-54.protonvpn.net",
-        "entry_ip": "38.132.103.146"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#6",
-        "hostname": "lxc-us-117.protonvpn.com",
-        "entry_ip": "209.58.147.18"
-      },
-      {
-        "country": "United States",
-        "name": "US-FREE#6",
-        "hostname": "node-us-133.protonvpn.net",
-        "entry_ip": "37.19.200.1"
       },
       {
         "country": "United States",
@@ -89037,14 +89033,14 @@
         "country": "United States",
         "city": "Los Angeles",
         "name": "US-CA#17",
-        "hostname": "us-ca-17.protonvpn.com",
+        "hostname": "us-ca-17.protonvpn.net",
         "entry_ip": "45.152.182.131"
       },
       {
         "country": "United States",
         "city": "Los Angeles",
         "name": "US-CA#20",
-        "hostname": "lxc-us-48.protonvpn.com",
+        "hostname": "node-us-48.protonvpn.net",
         "entry_ip": "45.152.182.130"
       },
       {
@@ -89459,6 +89455,13 @@
         "name": "US-NY#8",
         "hostname": "lxc-us-32.protonvpn.com",
         "entry_ip": "108.62.49.157"
+      },
+      {
+        "country": "United States",
+        "city": "Phoenix",
+        "name": "US-AZ#10",
+        "hostname": "node-us-126.protonvpn.net",
+        "entry_ip": "193.37.254.66"
       },
       {
         "country": "United States",
