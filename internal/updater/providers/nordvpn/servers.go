@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -47,7 +48,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 			Region:   jsonServer.Country,
 			Hostname: jsonServer.Domain,
 			Number:   number,
-			IP:       ip,
+			IPs:      []net.IP{ip},
 			TCP:      jsonServer.Features.TCP,
 			UDP:      jsonServer.Features.UDP,
 		}

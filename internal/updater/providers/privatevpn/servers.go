@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -60,7 +59,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 			continue
 		}
 
-		ip, warning, extractIPErr := openvpn.ExtractIP(content)
+		ips, extractIPErr := openvpn.ExtractIPs(content)
 		if warning != "" {
 			warnings = append(warnings, warning)
 		}
@@ -73,7 +72,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 		server := models.PrivatevpnServer{
 			Country: country,
 			City:    city,
-			IPs:     []net.IP{ip},
+			IPs:     ips,
 		}
 		noHostnameServers = append(noHostnameServers, server)
 	}

@@ -63,7 +63,6 @@ type IvpnServer struct {
 type MullvadServer struct {
 	VPN      string   `json:"vpn,omitempty"`
 	IPs      []net.IP `json:"ips,omitempty"`
-	IPsV6    []net.IP `json:"ipsv6,omitempty"`
 	Country  string   `json:"country,omitempty"`
 	City     string   `json:"city,omitempty"`
 	Hostname string   `json:"hostname,omitempty"`
@@ -73,12 +72,12 @@ type MullvadServer struct {
 }
 
 type NordvpnServer struct { //nolint:maligned
-	Region   string `json:"region,omitempty"`
-	Hostname string `json:"hostname,omitempty"`
-	Number   uint16 `json:"number,omitempty"`
-	IP       net.IP `json:"ip,omitempty"`
-	TCP      bool   `json:"tcp,omitempty"`
-	UDP      bool   `json:"udp,omitempty"`
+	Region   string   `json:"region,omitempty"`
+	Hostname string   `json:"hostname,omitempty"`
+	Number   uint16   `json:"number,omitempty"`
+	IPs      []net.IP `json:"ips,omitempty"`
+	TCP      bool     `json:"tcp,omitempty"`
+	UDP      bool     `json:"udp,omitempty"`
 }
 
 type PerfectprivacyServer struct {
@@ -89,11 +88,11 @@ type PerfectprivacyServer struct {
 }
 
 type PrivadoServer struct {
-	Country  string `json:"country,omitempty"`
-	Region   string `json:"region,omitempty"`
-	City     string `json:"city,omitempty"`
-	Hostname string `json:"hostname,omitempty"`
-	IP       net.IP `json:"ip,omitempty"`
+	Country  string   `json:"country,omitempty"`
+	Region   string   `json:"region,omitempty"`
+	City     string   `json:"city,omitempty"`
+	Hostname string   `json:"hostname,omitempty"`
+	IPs      []net.IP `json:"ip,omitempty"`
 }
 
 type PIAServer struct {
@@ -110,16 +109,16 @@ type PrivatevpnServer struct {
 	Country  string   `json:"country,omitempty"`
 	City     string   `json:"city,omitempty"`
 	Hostname string   `json:"hostname,omitempty"`
-	IPs      []net.IP `json:"ip,omitempty"`
+	IPs      []net.IP `json:"ips,omitempty"`
 }
 
 type ProtonvpnServer struct {
-	Country  string `json:"country,omitempty"`
-	Region   string `json:"region,omitempty"`
-	City     string `json:"city,omitempty"`
-	Name     string `json:"server_name,omitempty"`
-	Hostname string `json:"hostname,omitempty"`
-	EntryIP  net.IP `json:"entry_ip,omitempty"`
+	Country  string   `json:"country,omitempty"`
+	Region   string   `json:"region,omitempty"`
+	City     string   `json:"city,omitempty"`
+	Name     string   `json:"server_name,omitempty"`
+	Hostname string   `json:"hostname,omitempty"`
+	IPs      []net.IP `json:"ips,omitempty"`
 }
 
 type PurevpnServer struct {
