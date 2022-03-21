@@ -66,7 +66,7 @@ func Test_Settings_String(t *testing.T) {
 |   └── Log level: INFO
 ├── Health settings:
 |   ├── Server listening address: 127.0.0.1:9999
-|   ├── Address to ping: github.com
+|   ├── Target address: github.com:443
 |   └── VPN wait durations:
 |       ├── Initial duration: 6s
 |       └── Additional duration: 5s

@@ -2,40 +2,90 @@ package healthcheck
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"net"
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func Test_healthCheck(t *testing.T) {
+func Test_Server_healthCheck(t *testing.T) {
 	t.Parallel()
 
-	canceledCtx, cancel := context.WithCancel(context.Background())
-	cancel()
+	t.Run("canceled real dialer", func(t *testing.T) {
+		t.Parallel()
 
-	someErr := errors.New("error")
+		dialer := &net.Dialer{}
+		const address = "github.com:443"
+
+		server := &Server{
+			dialer: dialer,
+			config: settings.Health{
+				TargetAddress: address,
+			},
+		}
+
+		canceledCtx, cancel := context.WithCancel(context.Background())
+		cancel()
+
+		err := server.healthCheck(canceledCtx)
+
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "operation was canceled")
+	})
+
+	t.Run("dial localhost:0", func(t *testing.T) {
+		t.Parallel()
+
+		listener, err := net.Listen("tcp4", "localhost:0")
+		require.NoError(t, err)
+		t.Cleanup(func() {
+			err = listener.Close()
+			assert.NoError(t, err)
+		})
+
+		listeningAddress := listener.Addr()
+
+		dialer := &net.Dialer{}
+		server := &Server{
+			dialer: dialer,
+			config: settings.Health{
+				TargetAddress: listeningAddress.String(),
+			},
+		}
+
+		const timeout = 100 * time.Millisecond
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		err = server.healthCheck(ctx)
+
+		assert.NoError(t, err)
+	})
+}
+
+func Test_makeAddressToDial(t *testing.T) {
+	t.Parallel()
 
 	testCases := map[string]struct {
-		ctx      context.Context
-		runErr   error
-		stopCall bool
-		err      error
+		address       string
+		addressToDial string
+		err           error
 	}{
-		"success": {
-			ctx: context.Background(),
+		"host without port": {
+			address:       "test.com",
+			addressToDial: "test.com:443",
 		},
-		"error": {
-			ctx:    context.Background(),
-			runErr: someErr,
-			err:    someErr,
+		"host with port": {
+			address:       "test.com:80",
+			addressToDial: "test.com:80",
 		},
-		"context canceled": {
-			ctx:      canceledCtx,
-			stopCall: true,
-			err:      context.Canceled,
+		"bad address": {
+			address: "test.com::",
+			err:     fmt.Errorf("cannot split host and port from address: address test.com::: too many colons in address"), //nolint:lll
 		},
 	}
 
@@ -43,54 +93,15 @@ func Test_healthCheck(t *testing.T) {
 		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			ctrl := gomock.NewController(t)
 
-			stopped := make(chan struct{})
+			addressToDial, err := makeAddressToDial(testCase.address)
 
-			pinger := NewMockPinger(ctrl)
-			pinger.EXPECT().Run().DoAndReturn(func() error {
-				if testCase.stopCall {
-					<-stopped
-				}
-				return testCase.runErr
-			})
-
-			if testCase.stopCall {
-				pinger.EXPECT().Stop().DoAndReturn(func() {
-					close(stopped)
-				})
+			assert.Equal(t, testCase.addressToDial, addressToDial)
+			if testCase.err != nil {
+				assert.EqualError(t, err, testCase.err.Error())
+			} else {
+				assert.NoError(t, err)
 			}
-
-			err := healthCheck(testCase.ctx, pinger)
-
-			assert.ErrorIs(t, testCase.err, err)
 		})
 	}
-
-	t.Run("canceled real pinger", func(t *testing.T) {
-		t.Parallel()
-
-		pinger := newPinger("github.com")
-
-		canceledCtx, cancel := context.WithCancel(context.Background())
-		cancel()
-
-		err := healthCheck(canceledCtx, pinger)
-
-		assert.ErrorIs(t, context.Canceled, err)
-	})
-
-	t.Run("ping 127.0.0.1", func(t *testing.T) {
-		t.Parallel()
-
-		pinger := newPinger("127.0.0.1")
-
-		const timeout = 100 * time.Millisecond
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-
-		err := healthCheck(ctx, pinger)
-
-		assert.NoError(t, err)
-	})
 }
