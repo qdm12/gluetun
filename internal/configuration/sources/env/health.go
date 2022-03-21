@@ -10,7 +10,10 @@ import (
 
 func (r *Reader) ReadHealth() (health settings.Health, err error) {
 	health.ServerAddress = os.Getenv("HEALTH_SERVER_ADDRESS")
-	health.AddressToPing = os.Getenv("HEALTH_ADDRESS_TO_PING")
+	health.TargetAddress = os.Getenv("HEALTH_ADDRESS_TO_PING")
+	if health.TargetAddress == "" {
+		health.TargetAddress = os.Getenv("HEALTH_TARGET_ADDRESS")
+	}
 
 	health.VPN.Initial, err = r.readDurationWithRetro(
 		"HEALTH_VPN_DURATION_INITIAL",
