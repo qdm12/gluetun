@@ -3,6 +3,9 @@ package healthcheck
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"net"
 	"time"
 )
 
@@ -14,7 +17,12 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 	for {
 		previousErr := s.handler.getErr()
 
-		err := healthCheck(ctx, s.pinger)
+		const healthcheckTimeout = 3 * time.Second
+		healthcheckCtx, healthcheckCancel := context.WithTimeout(
+			ctx, healthcheckTimeout)
+		err := s.healthCheck(healthcheckCtx)
+		healthcheckCancel()
+
 		s.handler.setErr(err)
 
 		if previousErr != nil && err == nil {
@@ -56,23 +64,40 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 	}
 }
 
-func healthCheck(ctx context.Context, pinger Pinger) (err error) {
+func (s *Server) healthCheck(ctx context.Context) (err error) {
 	// TODO use mullvad API if current provider is Mullvad
-	// If we run without root, you need to run this on the gluetun binary:
-	// setcap cap_net_raw=+ep /path/to/your/compiled/binary
-	// Alternatively, we could have a separate binary just for healthcheck to
-	// reduce attack surface.
-	errCh := make(chan error)
-	go func() {
-		errCh <- pinger.Run()
-	}()
 
-	select {
-	case <-ctx.Done():
-		pinger.Stop()
-		<-errCh
-		return ctx.Err()
-	case err = <-errCh:
+	address, err := makeAddressToDial(s.config.TargetAddress)
+	if err != nil {
 		return err
 	}
+
+	const dialNetwork = "tcp4"
+	connection, err := s.dialer.DialContext(ctx, dialNetwork, address)
+	if err != nil {
+		return fmt.Errorf("cannot dial: %w", err)
+	}
+
+	err = connection.Close()
+	if err != nil {
+		return fmt.Errorf("cannot close connection: %w", err)
+	}
+
+	return nil
+}
+
+func makeAddressToDial(address string) (addressToDial string, err error) {
+	host, port, err := net.SplitHostPort(address)
+	if err != nil {
+		addrErr := new(net.AddrError)
+		ok := errors.As(err, &addrErr)
+		if !ok || addrErr.Err != "missing port in address" {
+			return "", fmt.Errorf("cannot split host and port from address: %w", err)
+		}
+		host = address
+		const defaultPort = "443"
+		port = defaultPort
+	}
+	address = net.JoinHostPort(host, port)
+	return address, nil
 }

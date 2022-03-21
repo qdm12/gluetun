@@ -2,6 +2,7 @@ package healthcheck
 
 import (
 	"context"
+	"net"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/vpn"
@@ -16,7 +17,7 @@ type ServerRunner interface {
 type Server struct {
 	logger  Logger
 	handler *handler
-	pinger  Pinger
+	dialer  *net.Dialer
 	config  settings.Health
 	vpn     vpnHealth
 }
@@ -26,7 +27,7 @@ func NewServer(config settings.Health,
 	return &Server{
 		logger:  logger,
 		handler: newHandler(),
-		pinger:  newPinger(config.AddressToPing),
+		dialer:  &net.Dialer{},
 		config:  config,
 		vpn: vpnHealth{
 			looper:      vpnLooper,
