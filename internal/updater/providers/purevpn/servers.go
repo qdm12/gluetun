@@ -22,7 +22,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 func GetServers(ctx context.Context, client *http.Client,
 	unzipper unzip.Unzipper, presolver resolver.Parallel, minServers int) (
 	servers []models.PurevpnServer, warnings []string, err error) {
-	const url = "https://s3-us-west-1.amazonaws.com/heartbleed/windows/New+OVPN+Files.zip"
+	const url = "https://d32d3g1fvkpl8y.cloudfront.net/heartbleed/windows/New+OVPN+Files.zip"
 	contents, err := unzipper.FetchAndExtract(ctx, url)
 	if err != nil {
 		return nil, nil, err

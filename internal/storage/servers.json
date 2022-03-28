@@ -89602,992 +89602,2033 @@
   },
   "purevpn": {
     "version": 2,
-    "timestamp": 1622644308,
+    "timestamp": 1648496036,
     "servers": [
       {
+        "country": "Albania",
+        "region": "Tirana",
+        "city": "Tirana",
+        "hostname": "al2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "31.171.153.69",
+          "31.171.153.71"
+        ]
+      },
+      {
+        "country": "Albania",
+        "region": "Tirana",
+        "city": "Tirana",
+        "hostname": "al2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "31.171.154.18",
+          "46.243.224.4"
+        ]
+      },
+      {
         "country": "Australia",
         "region": "New South Wales",
         "city": "Sydney",
-        "hostname": "au-sd2-ovpn-tcp.pointtoserver.com",
+        "hostname": "ausd2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "43.245.163.82",
-          "46.243.245.4"
+          "103.76.165.50",
+          "103.76.165.51"
         ]
       },
       {
         "country": "Australia",
         "region": "New South Wales",
         "city": "Sydney",
-        "hostname": "au-sd2-ovpn-udp.pointtoserver.com",
+        "hostname": "ausd2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "43.245.161.80",
-          "43.245.161.81",
-          "43.245.161.82",
-          "43.245.161.86"
+          "103.76.165.50",
+          "103.76.165.51",
+          "103.76.165.57"
         ]
       },
       {
         "country": "Australia",
-        "region": "Western Australia",
-        "city": "Perth",
-        "hostname": "au2-ovpn-tcp.pointtoserver.com",
+        "region": "New South Wales",
+        "city": "Sydney",
+        "hostname": "nz2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "43.250.205.50"
+          "221.121.135.180",
+          "221.121.135.182"
         ]
       },
       {
         "country": "Australia",
-        "region": "Western Australia",
-        "city": "Perth",
-        "hostname": "au2-ovpn-udp.pointtoserver.com",
+        "region": "Victoria",
+        "city": "Melbourne",
+        "hostname": "au2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "118.127.59.226",
+          "223.252.60.3",
+          "223.252.60.202"
+        ]
+      },
+      {
+        "country": "Australia",
+        "region": "Victoria",
+        "city": "Melbourne",
+        "hostname": "aume2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "27.50.74.6",
+          "118.127.59.226",
+          "118.127.62.3"
+        ]
+      },
+      {
+        "country": "Australia",
+        "region": "Victoria",
+        "city": "Melbourne",
+        "hostname": "aume2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "43.250.205.50",
-          "43.250.205.61"
+          "27.50.74.4",
+          "27.50.74.6"
         ]
       },
       {
         "country": "Australia",
         "region": "Western Australia",
         "city": "Perth",
-        "hostname": "au2-pe-ovpn-tcp.pointtoserver.com",
+        "hostname": "au2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "43.250.205.20",
+          "43.250.205.42",
+          "118.127.62.3"
+        ]
+      },
+      {
+        "country": "Australia",
+        "region": "Western Australia",
+        "city": "Perth",
+        "hostname": "au2-pe-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
           "43.250.205.50",
-          "43.250.205.51"
+          "43.250.205.51",
+          "43.250.205.52"
         ]
       },
       {
         "country": "Australia",
         "region": "Western Australia",
         "city": "Perth",
-        "hostname": "au2-pe-ovpn-udp.pointtoserver.com",
+        "hostname": "au2-pe-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "43.250.205.34"
+          "43.250.205.34",
+          "43.250.205.50",
+          "43.250.205.51",
+          "43.250.205.63"
         ]
       },
       {
         "country": "Austria",
         "region": "Vienna",
         "city": "Vienna",
-        "hostname": "at2-ovpn-tcp.pointtoserver.com",
+        "hostname": "at2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "217.64.127.251",
-          "217.64.127.252"
+          "5.254.80.197",
+          "5.254.80.199"
         ]
       },
       {
         "country": "Austria",
         "region": "Vienna",
         "city": "Vienna",
-        "hostname": "at2-ovpn-udp.pointtoserver.com",
+        "hostname": "at2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "37.120.212.219",
-          "217.64.127.252"
+          "5.254.80.197"
+        ]
+      },
+      {
+        "country": "Belgium",
+        "region": "Brussels Capital",
+        "city": "Brussels",
+        "hostname": "be2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "37.120.218.218",
+          "77.243.191.3"
         ]
       },
       {
         "country": "Belgium",
         "region": "Flanders",
         "city": "Zaventem",
-        "hostname": "vleu-be2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "217.138.211.87",
-          "217.138.211.116",
-          "217.138.221.117"
-        ]
-      },
-      {
-        "country": "Brazil",
-        "region": "São Paulo",
-        "city": "São Paulo",
-        "hostname": "br2-ovpn-tcp.pointtoserver.com",
+        "hostname": "be2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "181.41.201.83",
-          "181.41.201.84"
+          "77.243.191.3"
+        ]
+      },
+      {
+        "country": "Belgium",
+        "region": "Wallonia",
+        "city": "Virton",
+        "hostname": "ao2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.94.84.4"
+        ]
+      },
+      {
+        "country": "Belgium",
+        "region": "Wallonia",
+        "city": "Virton",
+        "hostname": "ao2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.94.84.4",
+          "172.94.84.6"
         ]
       },
       {
         "country": "Brazil",
         "region": "São Paulo",
         "city": "São Paulo",
-        "hostname": "br2-ovpn-udp.pointtoserver.com",
+        "hostname": "br2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "138.99.210.6",
+          "138.99.210.7",
+          "177.54.144.165"
+        ]
+      },
+      {
+        "country": "Brazil",
+        "region": "São Paulo",
+        "city": "São Paulo",
+        "hostname": "br2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "138.99.210.4",
-          "181.41.201.75",
-          "181.41.201.82",
-          "181.41.201.83"
+          "138.99.210.6",
+          "138.99.210.7"
         ]
       },
       {
         "country": "Bulgaria",
         "region": "Sofia-Capital",
         "city": "Sofia",
-        "hostname": "vleu-be2-ovpn-tcp.pointtoserver.com",
+        "hostname": "bg2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "217.138.221.114"
+          "217.138.221.114",
+          "217.138.221.123"
+        ]
+      },
+      {
+        "country": "Bulgaria",
+        "region": "Sofia-Capital",
+        "city": "Sofia",
+        "hostname": "bg2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "217.138.221.10"
         ]
       },
       {
         "country": "Canada",
         "region": "British Columbia",
         "city": "Vancouver",
-        "hostname": "cav2-ovpn-tcp.pointtoserver.com",
+        "hostname": "ca2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "66.115.147.34"
+          "107.181.177.170"
         ]
       },
       {
         "country": "Canada",
         "region": "British Columbia",
         "city": "Vancouver",
-        "hostname": "cav2-ovpn-udp.pointtoserver.com",
+        "hostname": "ca2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "107.181.177.170"
+        ]
+      },
+      {
+        "country": "Canada",
+        "region": "British Columbia",
+        "city": "Vancouver",
+        "hostname": "cav2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "107.181.177.170"
+        ]
+      },
+      {
+        "country": "Canada",
+        "region": "British Columbia",
+        "city": "Vancouver",
+        "hostname": "cav2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
           "66.115.147.34",
           "66.115.147.35",
           "66.115.147.37",
           "66.115.147.38",
+          "66.115.147.39",
           "66.115.147.40",
-          "66.115.147.43"
+          "66.115.147.41",
+          "66.115.147.42",
+          "66.115.147.43",
+          "107.181.177.170",
+          "107.181.177.232",
+          "107.181.177.233",
+          "107.181.177.234",
+          "107.181.177.235",
+          "107.181.177.236",
+          "107.181.177.237",
+          "107.181.177.238"
         ]
       },
       {
         "country": "Canada",
-        "region": "Ontario",
-        "city": "Toronto",
-        "hostname": "ca2-ovpn-tcp.pointtoserver.com",
+        "region": "Quebec",
+        "city": "Montréal",
+        "hostname": "caq2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "104.200.138.212"
+          "45.74.61.4",
+          "45.74.61.5",
+          "146.70.27.230"
         ]
       },
       {
         "country": "Canada",
-        "region": "Ontario",
-        "city": "Toronto",
-        "hostname": "ca2-ovpn-udp.pointtoserver.com",
+        "region": "Quebec",
+        "city": "Montréal",
+        "hostname": "caq2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "104.200.138.213",
-          "104.200.138.214",
-          "104.200.138.216"
+          "45.74.61.5",
+          "146.70.27.231"
+        ]
+      },
+      {
+        "country": "Costa Rica",
+        "region": "San José",
+        "city": "San José",
+        "hostname": "cr2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "143.202.160.146"
+        ]
+      },
+      {
+        "country": "Costa Rica",
+        "region": "San José",
+        "city": "San José",
+        "hostname": "cr2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "143.202.160.146",
+          "172.111.170.130"
         ]
       },
       {
         "country": "Czech Republic",
         "region": "Hlavní město Praha",
         "city": "Prague",
-        "hostname": "cz2-ovpn-tcp.pointtoserver.com",
+        "hostname": "cz2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "185.156.174.36"
+          "185.156.174.35"
         ]
       },
       {
         "country": "Czech Republic",
         "region": "Hlavní město Praha",
         "city": "Prague",
-        "hostname": "cz2-ovpn-udp.pointtoserver.com",
+        "hostname": "cz2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "185.156.174.38",
-          "217.138.199.252"
+          "89.187.191.247"
+        ]
+      },
+      {
+        "country": "Denmark",
+        "region": "Capital Region",
+        "city": "Ballerup",
+        "hostname": "dk2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "146.70.89.38",
+          "146.70.89.39",
+          "146.70.89.55"
+        ]
+      },
+      {
+        "country": "Estonia",
+        "region": "Harjumaa",
+        "city": "Tallinn",
+        "hostname": "ee2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "185.174.159.101"
+        ]
+      },
+      {
+        "country": "Estonia",
+        "region": "Harjumaa",
+        "city": "Tallinn",
+        "hostname": "ee2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "185.174.159.85",
+          "185.174.159.101",
+          "185.174.159.102"
+        ]
+      },
+      {
+        "country": "Finland",
+        "region": "Satakunta",
+        "city": "Pori",
+        "hostname": "fi2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "85.208.3.34",
+          "85.208.3.35"
+        ]
+      },
+      {
+        "country": "Finland",
+        "region": "Satakunta",
+        "city": "Pori",
+        "hostname": "fi2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "85.208.3.34",
+          "85.208.3.35"
+        ]
+      },
+      {
+        "country": "France",
+        "region": "Provence-Alpes-Côte d'Azur",
+        "city": "Marseille",
+        "hostname": "cy2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "178.170.136.4",
+          "185.191.206.195"
         ]
       },
       {
         "country": "France",
         "region": "Île-de-France",
         "city": "Paris",
-        "hostname": "fr2-ovpn-tcp.pointtoserver.com",
+        "hostname": "fr2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "45.152.181.68"
+          "37.19.217.120",
+          "37.19.217.136"
         ]
       },
       {
         "country": "France",
         "region": "Île-de-France",
         "city": "Paris",
-        "hostname": "fr2-ovpn-udp.pointtoserver.com",
+        "hostname": "fr2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "45.152.181.67",
-          "45.152.181.70"
+          "37.19.217.120",
+          "37.19.217.136"
+        ]
+      },
+      {
+        "country": "Georgia",
+        "region": "T'bilisi",
+        "city": "Tbilisi",
+        "hostname": "ge2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "104.250.182.38",
+          "104.250.182.39",
+          "104.250.182.68"
+        ]
+      },
+      {
+        "country": "Georgia",
+        "region": "T'bilisi",
+        "city": "Tbilisi",
+        "hostname": "ge2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "104.250.182.39"
         ]
       },
       {
         "country": "Germany",
         "region": "Hesse",
         "city": "Frankfurt am Main",
-        "hostname": "de2-ovpn-tcp.pointtoserver.com",
+        "hostname": "af2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "5.254.88.213"
+          "172.111.208.6",
+          "172.111.208.7"
         ]
       },
       {
         "country": "Germany",
         "region": "Hesse",
         "city": "Frankfurt am Main",
-        "hostname": "de2-ovpn-udp.pointtoserver.com",
+        "hostname": "af2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "5.254.82.50",
-          "5.254.82.52"
+          "172.111.208.6",
+          "172.111.208.7"
         ]
       },
       {
-        "country": "Hong Kong",
-        "region": "Central and Western",
-        "city": "Hong Kong",
-        "hostname": "hk2-ovpn-tcp.pointtoserver.com",
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "bd2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "103.109.103.59",
-          "103.109.103.60",
-          "119.81.228.109"
+          "103.46.140.134"
         ]
       },
       {
-        "country": "Hong Kong",
-        "region": "Central and Western",
-        "city": "Hong Kong",
-        "hostname": "hk2-ovpn-udp.pointtoserver.com",
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "bd2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "172.111.168.4"
+          "103.46.140.4",
+          "103.46.140.6"
         ]
       },
       {
-        "country": "Hong Kong",
-        "region": "Central and Western",
-        "city": "Hong Kong",
-        "hostname": "vlap-ph2-ovpn-tcp.pointtoserver.com",
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "bs2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "36.255.97.3",
-          "129.227.119.84"
+          "172.94.20.6",
+          "172.94.20.35"
+        ]
+      },
+      {
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "bs2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.94.20.35",
+          "172.94.20.37"
+        ]
+      },
+      {
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "de2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "5.254.14.196",
+          "5.254.18.132",
+          "5.254.18.139",
+          "5.254.61.202"
+        ]
+      },
+      {
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "de2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "5.254.18.132",
+          "5.254.18.139",
+          "5.254.61.202",
+          "5.254.61.203",
+          "5.254.61.206",
+          "138.199.38.54",
+          "156.146.33.246"
+        ]
+      },
+      {
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "dz2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.111.243.19",
+          "172.111.243.21"
+        ]
+      },
+      {
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "dz2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.111.243.4",
+          "172.111.243.21"
+        ]
+      },
+      {
+        "country": "Germany",
+        "region": "Hesse",
+        "city": "Frankfurt am Main",
+        "hostname": "th2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "141.101.174.253",
+          "141.101.174.254"
+        ]
+      },
+      {
+        "country": "Greece",
+        "region": "Attica",
+        "city": "Athens",
+        "hostname": "gr2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "194.150.167.227",
+          "194.150.167.228"
         ]
       },
       {
         "country": "Hong Kong",
         "region": "Central and Western",
         "city": "Hong Kong",
-        "hostname": "vlap-ph2-ovpn-udp.pointtoserver.com",
+        "hostname": "hk2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "103.109.103.85",
+          "103.109.103.103",
+          "103.109.103.104"
+        ]
+      },
+      {
+        "country": "Hong Kong",
+        "region": "Central and Western",
+        "city": "Hong Kong",
+        "hostname": "hk2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "36.255.97.3"
+          "103.109.103.86",
+          "103.109.103.87",
+          "103.109.103.89",
+          "103.109.103.103",
+          "103.109.103.104"
+        ]
+      },
+      {
+        "country": "Hungary",
+        "region": "Budapest",
+        "city": "Budapest",
+        "hostname": "hu2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "217.138.192.137"
+        ]
+      },
+      {
+        "country": "Hungary",
+        "region": "Budapest",
+        "city": "Budapest",
+        "hostname": "hu2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "217.138.192.136",
+          "217.138.192.137"
+        ]
+      },
+      {
+        "country": "Iceland",
+        "region": "Capital Region",
+        "city": "Reykjavík",
+        "hostname": "is2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "192.253.250.133"
+        ]
+      },
+      {
+        "country": "India",
+        "region": "Tamil Nadu",
+        "city": "Chennai",
+        "hostname": "in2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "169.38.75.149",
+          "169.38.97.241",
+          "169.38.129.21"
+        ]
+      },
+      {
+        "country": "India",
+        "region": "Tamil Nadu",
+        "city": "Chennai",
+        "hostname": "in2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "169.38.75.149",
+          "169.38.75.150",
+          "169.38.97.241",
+          "169.38.97.242"
+        ]
+      },
+      {
+        "country": "Indonesia",
+        "region": "Jakarta",
+        "city": "Jakarta",
+        "hostname": "id2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "103.60.9.132",
+          "103.60.9.134"
+        ]
+      },
+      {
+        "country": "Indonesia",
+        "region": "Jakarta",
+        "city": "Jakarta",
+        "hostname": "id2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "103.60.9.132",
+          "103.60.9.134"
+        ]
+      },
+      {
+        "country": "Ireland",
+        "region": "Leinster",
+        "city": "Dublin",
+        "hostname": "ie2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "77.81.139.4",
+          "77.81.139.6",
+          "146.70.94.101"
+        ]
+      },
+      {
+        "country": "Ireland",
+        "region": "Leinster",
+        "city": "Dublin",
+        "hostname": "ie2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "77.81.139.4",
+          "77.81.139.6",
+          "146.70.94.100",
+          "146.70.94.101"
+        ]
+      },
+      {
+        "country": "Italy",
+        "region": "Lombardy",
+        "city": "Longhignana",
+        "hostname": "it2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "185.183.105.117",
+          "185.183.105.119"
         ]
       },
       {
         "country": "Italy",
         "region": "Lombardy",
         "city": "Milan",
-        "hostname": "it2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
-        "ips": [
-          "172.111.173.3"
-        ]
-      },
-      {
-        "country": "Italy",
-        "region": "Lombardy",
-        "city": "Milan",
-        "hostname": "it2-ovpn-udp.pointtoserver.com",
+        "hostname": "it2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "172.111.173.3"
+          "138.199.54.196"
         ]
       },
       {
         "country": "Japan",
         "region": "Tokyo",
         "city": "Tokyo",
-        "hostname": "jp2-ovpn.pointtoserver.com",
+        "hostname": "jp2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "185.242.4.59"
+          "199.254.199.156",
+          "199.254.199.165"
+        ]
+      },
+      {
+        "country": "Kenya",
+        "region": "Nairobi Area",
+        "city": "Nairobi",
+        "hostname": "ke2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "62.12.116.87"
+        ]
+      },
+      {
+        "country": "Kenya",
+        "region": "Nairobi Area",
+        "city": "Nairobi",
+        "hostname": "ke2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "62.12.116.86",
+          "62.12.116.87"
         ]
       },
       {
         "country": "Korea",
-        "region": "Gangwon-do",
-        "city": "Hongch’ŏn",
-        "hostname": "kr2-ovpn.pointtoserver.com",
+        "region": "Seoul",
+        "city": "Seoul",
+        "hostname": "kr2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "43.226.231.4",
-          "43.226.231.6"
+          "23.238.168.22"
+        ]
+      },
+      {
+        "country": "Latvia",
+        "region": "Riga",
+        "city": "Riga",
+        "hostname": "lv2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "141.101.134.4",
+          "141.101.134.6"
+        ]
+      },
+      {
+        "country": "Latvia",
+        "region": "Riga",
+        "city": "Riga",
+        "hostname": "lv2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "213.21.198.19",
+          "213.21.198.21",
+          "213.21.209.4",
+          "213.21.209.6"
+        ]
+      },
+      {
+        "country": "Lithuania",
+        "region": "Vilnius",
+        "city": "Vilnius",
+        "hostname": "lt2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "85.206.165.146"
+        ]
+      },
+      {
+        "country": "Lithuania",
+        "region": "Vilnius",
+        "city": "Vilnius",
+        "hostname": "lt2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "85.206.165.146",
+          "85.206.165.147"
+        ]
+      },
+      {
+        "country": "Luxembourg",
+        "region": "Luxembourg",
+        "city": "Luxembourg",
+        "hostname": "lu2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "45.147.161.137",
+          "45.147.161.139",
+          "92.223.89.17"
+        ]
+      },
+      {
+        "country": "Luxembourg",
+        "region": "Luxembourg",
+        "city": "Luxembourg",
+        "hostname": "lu2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "45.147.161.139",
+          "92.223.89.21"
         ]
       },
       {
         "country": "Malaysia",
         "region": "Kuala Lumpur",
         "city": "Kuala Lumpur",
-        "hostname": "my2-ovpn-tcp.pointtoserver.com",
+        "hostname": "my2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "103.55.10.134"
+          "103.28.91.150",
+          "103.28.91.151",
+          "103.117.20.24",
+          "103.117.20.25",
+          "103.117.20.184"
         ]
       },
       {
         "country": "Malaysia",
         "region": "Kuala Lumpur",
         "city": "Kuala Lumpur",
-        "hostname": "my2-ovpn-udp.pointtoserver.com",
+        "hostname": "my2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "103.28.90.32"
+          "103.117.20.184"
         ]
       },
       {
-        "country": "Netherlands",
-        "region": "North Holland",
-        "city": "Amsterdam",
-        "hostname": "nl2-ovpn-tcp.pointtoserver.com",
+        "country": "Mexico",
+        "region": "Mexico City",
+        "city": "Mexico City",
+        "hostname": "mx2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "5.254.73.172",
-          "5.254.73.252",
-          "92.119.179.195",
-          "206.123.147.4"
+          "104.243.245.252",
+          "169.57.6.244",
+          "169.57.6.245"
         ]
       },
       {
-        "country": "Netherlands",
-        "region": "North Holland",
-        "city": "Amsterdam",
-        "hostname": "nl2-ovpn-udp.pointtoserver.com",
+        "country": "Mexico",
+        "region": "Mexico City",
+        "city": "Mexico City",
+        "hostname": "mx2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "5.254.73.171",
-          "5.254.73.202",
-          "92.119.179.195",
-          "206.123.147.4"
+          "104.243.245.254"
+        ]
+      },
+      {
+        "country": "Moldova",
+        "region": "Chișinău Municipality",
+        "city": "Chisinau",
+        "hostname": "md2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "178.175.130.28"
         ]
       },
       {
         "country": "Netherlands",
         "region": "North Holland",
         "city": "Amsterdam",
-        "hostname": "vlap-th2-ovpn-tcp.pointtoserver.com",
+        "hostname": "eg2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "104.37.6.4"
+          "45.74.55.4",
+          "45.74.55.6"
         ]
       },
       {
         "country": "Netherlands",
         "region": "North Holland",
         "city": "Amsterdam",
-        "hostname": "vlap-th2-ovpn-udp.pointtoserver.com",
+        "hostname": "eg2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "104.37.6.4"
+          "45.74.55.4"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "mc2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "206.123.130.132",
+          "206.123.130.134"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "mc2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "206.123.130.4",
+          "206.123.130.6"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "nl2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "194.127.173.229",
+          "194.127.173.245"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "nl2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "138.199.7.50",
+          "194.127.173.227",
+          "194.127.173.244"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "om2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.94.94.7"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "om2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.94.94.5",
+          "172.94.94.7"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "pa2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.94.87.132",
+          "172.94.87.134"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "pa2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.94.87.6",
+          "172.94.87.69"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "pr2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "104.250.183.134"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "pr2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "104.250.183.4"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "vg2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "104.243.253.134"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "vg2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "104.243.253.4",
+          "104.243.253.6"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "vn2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.111.197.4",
+          "172.111.197.6"
+        ]
+      },
+      {
+        "country": "Netherlands",
+        "region": "North Holland",
+        "city": "Amsterdam",
+        "hostname": "vn2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.111.197.4",
+          "172.111.197.6"
+        ]
+      },
+      {
+        "country": "New Zealand",
+        "region": "Auckland",
+        "city": "Auckland",
+        "hostname": "nz2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "103.76.164.168",
+          "221.121.135.182"
+        ]
+      },
+      {
+        "country": "Nigeria",
+        "region": "Lagos",
+        "city": "Lagos",
+        "hostname": "ng2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "102.68.85.35",
+          "102.68.85.37"
+        ]
+      },
+      {
+        "country": "Nigeria",
+        "region": "Lagos",
+        "city": "Lagos",
+        "hostname": "ng2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "102.68.85.35",
+          "102.68.85.37"
         ]
       },
       {
         "country": "Norway",
         "region": "Oslo",
         "city": "Oslo",
-        "hostname": "vleu-no2-ovpn-tcp.pointtoserver.com",
+        "hostname": "no2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "82.102.22.212"
+          "95.174.66.18"
         ]
       },
       {
         "country": "Norway",
         "region": "Oslo",
         "city": "Oslo",
-        "hostname": "vleu-no2-ovpn-udp.pointtoserver.com",
+        "hostname": "no2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "82.102.22.212"
+          "95.174.66.18",
+          "185.125.170.26",
+          "185.125.170.44"
         ]
       },
       {
         "country": "Poland",
         "region": "Mazovia",
         "city": "Warsaw",
-        "hostname": "pl2-ovpn.pointtoserver.com",
+        "hostname": "pl2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "5.253.206.251"
+          "217.138.209.115",
+          "217.138.209.116"
         ]
       },
       {
         "country": "Portugal",
         "region": "Lisbon",
         "city": "Lisbon",
-        "hostname": "Pt2-ovpn.pointtoserver.com",
+        "hostname": "pt2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "5.154.174.3"
+          "91.205.230.37"
         ]
       },
       {
-        "country": "Russian Federation",
-        "region": "St.-Petersburg",
-        "city": "Saint Petersburg",
-        "hostname": "ru2-ovpn-tcp.pointtoserver.com",
+        "country": "Romania",
+        "region": "Bucureşti",
+        "city": "Bucharest",
+        "hostname": "md2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "94.242.54.23",
-          "206.123.139.4"
+          "141.101.172.4",
+          "141.101.172.6"
+        ]
+      },
+      {
+        "country": "Romania",
+        "region": "Bucureşti",
+        "city": "Bucuresti",
+        "hostname": "ro2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "5.254.67.28"
+        ]
+      },
+      {
+        "country": "Romania",
+        "region": "Bucureşti",
+        "city": "Bucuresti",
+        "hostname": "ro2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "5.254.67.28",
+          "37.221.171.98",
+          "185.195.19.226"
         ]
       },
       {
         "country": "Russian Federation",
-        "region": "St.-Petersburg",
-        "city": "Saint Petersburg",
-        "hostname": "ru2-ovpn-udp.pointtoserver.com",
+        "region": "Moscow",
+        "city": "Moscow",
+        "hostname": "ru2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "5.188.170.234",
+          "5.188.170.235"
+        ]
+      },
+      {
+        "country": "Russian Federation",
+        "region": "Moscow",
+        "city": "Moscow",
+        "hostname": "ru2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "94.242.54.23",
-          "206.123.139.4"
+          "5.188.170.235",
+          "92.223.106.89",
+          "92.223.106.101"
+        ]
+      },
+      {
+        "country": "Serbia",
+        "region": "Central Serbia",
+        "city": "Belgrade",
+        "hostname": "rs2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "152.89.160.201",
+          "152.89.160.202"
+        ]
+      },
+      {
+        "country": "Serbia",
+        "region": "Central Serbia",
+        "city": "Belgrade",
+        "hostname": "rs2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "152.89.160.201",
+          "152.89.160.202"
         ]
       },
       {
         "country": "Singapore",
         "region": "Singapore",
         "city": "Singapore",
-        "hostname": "sg2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
+        "hostname": "bn2-auto-udp.ptoserver.com",
+        "udp": true,
         "ips": [
-          "84.247.49.181"
+          "185.128.24.146",
+          "185.128.24.147"
         ]
       },
       {
         "country": "Singapore",
         "region": "Singapore",
         "city": "Singapore",
-        "hostname": "sg2-ovpn-udp.pointtoserver.com",
+        "hostname": "ph2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "84.247.49.196"
+        ]
+      },
+      {
+        "country": "Singapore",
+        "region": "Singapore",
+        "city": "Singapore",
+        "hostname": "ph2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "37.120.208.147",
-          "37.120.208.148"
+          "146.70.29.196",
+          "146.70.29.198"
+        ]
+      },
+      {
+        "country": "Singapore",
+        "region": "Singapore",
+        "city": "Singapore",
+        "hostname": "sg2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "146.70.67.56",
+          "146.70.67.70",
+          "146.70.67.71"
+        ]
+      },
+      {
+        "country": "Singapore",
+        "region": "Singapore",
+        "city": "Singapore",
+        "hostname": "sg2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "146.70.67.55",
+          "146.70.67.56",
+          "146.70.67.71"
+        ]
+      },
+      {
+        "country": "Slovakia",
+        "region": "Bratislavský Kraj",
+        "city": "Bratislava",
+        "hostname": "sk2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "149.7.226.110",
+          "149.7.226.111"
+        ]
+      },
+      {
+        "country": "Slovakia",
+        "region": "Bratislavský Kraj",
+        "city": "Bratislava",
+        "hostname": "sk2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "185.76.8.194"
         ]
       },
       {
         "country": "South Africa",
         "region": "Gauteng",
         "city": "Johannesburg",
-        "hostname": "za2-ovpn.pointtoserver.com",
+        "hostname": "za2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "102.165.3.33",
-          "102.165.3.34"
+          "104.243.241.8",
+          "104.243.241.15"
+        ]
+      },
+      {
+        "country": "Spain",
+        "region": "Madrid",
+        "city": "Madrid",
+        "hostname": "es2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "185.230.124.148"
         ]
       },
       {
         "country": "Sweden",
         "region": "Stockholm",
         "city": "Stockholm",
-        "hostname": "se2-ovpn-tcp.pointtoserver.com",
+        "hostname": "se2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "45.12.220.123",
-          "86.106.103.178",
-          "86.106.103.179"
+          "138.199.55.5",
+          "138.199.55.6"
         ]
       },
       {
         "country": "Sweden",
         "region": "Stockholm",
         "city": "Stockholm",
-        "hostname": "se2-ovpn-udp.pointtoserver.com",
+        "hostname": "se2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "45.12.220.125",
-          "86.106.103.183"
+          "138.199.55.6",
+          "138.199.55.17"
         ]
       },
       {
         "country": "Switzerland",
         "region": "Zurich",
         "city": "Zürich",
-        "hostname": "ch2-ovpn-tcp.pointtoserver.com",
+        "hostname": "ch2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "45.12.222.98",
-          "45.12.222.99"
+          "45.12.222.36"
         ]
       },
       {
         "country": "Switzerland",
         "region": "Zurich",
         "city": "Zürich",
-        "hostname": "ch2-ovpn-udp.pointtoserver.com",
+        "hostname": "ch2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "45.12.222.100",
-          "45.12.222.102",
-          "45.12.222.106",
-          "45.12.222.107"
+          "152.89.162.122",
+          "152.89.162.124"
         ]
       },
       {
         "country": "Taiwan",
         "region": "Taiwan",
-        "city": "Taipei",
-        "hostname": "tw2-ovpn-tcp.pointtoserver.com",
+        "city": "Xinying",
+        "hostname": "tw2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "128.1.155.178"
+          "116.206.73.21",
+          "116.206.73.23",
+          "116.206.73.53",
+          "116.206.73.55"
         ]
       },
       {
         "country": "Taiwan",
         "region": "Taiwan",
-        "city": "Taipei",
-        "hostname": "tw2-ovpn-udp.pointtoserver.com",
+        "city": "Xinying",
+        "hostname": "tw2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "128.1.155.178"
+          "116.206.73.23",
+          "116.206.73.53"
+        ]
+      },
+      {
+        "country": "Thailand",
+        "region": "Bangkok",
+        "city": "Bangkok",
+        "hostname": "th2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "116.206.126.72",
+          "141.101.174.253"
+        ]
+      },
+      {
+        "country": "Turkey",
+        "region": "Istanbul",
+        "city": "Istanbul",
+        "hostname": "tr2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "87.249.139.144"
+        ]
+      },
+      {
+        "country": "Turkey",
+        "region": "Istanbul",
+        "city": "Istanbul",
+        "hostname": "tr2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "87.249.139.144"
+        ]
+      },
+      {
+        "country": "Ukraine",
+        "region": "Odessa",
+        "city": "Odessa",
+        "hostname": "ua2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "188.72.101.8",
+          "188.72.101.9"
+        ]
+      },
+      {
+        "country": "Ukraine",
+        "region": "Odessa",
+        "city": "Odessa",
+        "hostname": "ua2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "188.72.101.8",
+          "188.72.101.9"
+        ]
+      },
+      {
+        "country": "United Arab Emirates",
+        "region": "Dubai",
+        "city": "Dubai",
+        "hostname": "ae2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "217.138.193.22"
+        ]
+      },
+      {
+        "country": "United Arab Emirates",
+        "region": "Dubai",
+        "city": "Dubai",
+        "hostname": "ae2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "176.125.231.130",
+          "217.138.193.22"
         ]
       },
       {
         "country": "United Kingdom",
         "region": "England",
         "city": "London",
-        "hostname": "ukg2-ovpn-tcp.pointtoserver.com",
+        "hostname": "uk2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "45.74.0.4"
+          "5.253.114.245",
+          "138.199.31.199"
         ]
       },
       {
         "country": "United Kingdom",
         "region": "England",
         "city": "London",
-        "hostname": "ukl2-ovpn-tcp.pointtoserver.com",
+        "hostname": "uk2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "138.199.31.198"
+        ]
+      },
+      {
+        "country": "United Kingdom",
+        "region": "England",
+        "city": "London",
+        "hostname": "ukl2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "45.74.0.4"
+          "5.254.55.157",
+          "77.247.124.21",
+          "178.159.14.247",
+          "195.181.164.198"
         ]
       },
       {
         "country": "United Kingdom",
         "region": "England",
-        "city": "Manchester",
-        "hostname": "ukg2-ovpn-udp.pointtoserver.com",
+        "city": "London",
+        "hostname": "ukl2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "89.238.165.148",
-          "89.238.165.149"
+          "5.254.55.157",
+          "138.199.31.198",
+          "178.159.14.247"
         ]
       },
       {
         "country": "United Kingdom",
         "region": "England",
         "city": "Manchester",
-        "hostname": "ukl2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "89.238.165.148",
-          "89.238.165.149"
-        ]
-      },
-      {
-        "country": "United Kingdom",
-        "region": "England",
-        "city": "Manchester",
-        "hostname": "ukm2-ovpn-tcp.pointtoserver.com",
+        "hostname": "ukm2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "188.72.89.4"
+          "45.74.12.241",
+          "45.74.12.242",
+          "194.37.98.117"
         ]
       },
       {
         "country": "United Kingdom",
         "region": "England",
         "city": "Manchester",
-        "hostname": "ukm2-ovpn-udp.pointtoserver.com",
+        "hostname": "ukm2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "188.72.89.4"
+          "45.74.12.241",
+          "45.74.12.242",
+          "45.74.12.243",
+          "45.74.12.245",
+          "45.74.12.246",
+          "45.74.12.247",
+          "45.74.12.248",
+          "139.28.176.246"
         ]
       },
       {
         "country": "United States",
         "region": "California",
         "city": "Los Angeles",
-        "hostname": "usla2-ovpn-tcp.pointtoserver.com",
+        "hostname": "usca2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "89.45.4.2"
+          "138.199.35.69",
+          "138.199.35.70",
+          "138.199.35.81",
+          "138.199.35.82"
         ]
       },
       {
         "country": "United States",
         "region": "California",
         "city": "Los Angeles",
-        "hostname": "vlus-mx2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
-        "ips": [
-          "104.243.243.131"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "California",
-        "city": "Los Angeles",
-        "hostname": "vlus-mx2-ovpn-udp.pointtoserver.com",
+        "hostname": "usca2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "104.243.243.131"
+          "138.199.35.70",
+          "138.199.35.82"
         ]
       },
       {
         "country": "United States",
         "region": "California",
-        "city": "San Jose",
-        "hostname": "ussf2-ovpn-tcp.pointtoserver.com",
+        "city": "Los Angeles",
+        "hostname": "usphx2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "141.101.166.4"
+          "37.120.150.100",
+          "37.120.150.138"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "California",
+        "city": "Los Angeles",
+        "hostname": "usphx2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "37.120.150.30",
+          "37.120.150.100",
+          "37.120.150.138",
+          "37.120.150.139",
+          "37.120.150.140",
+          "37.120.150.142"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "California",
+        "city": "San Francisco",
+        "hostname": "ussf2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "185.124.240.181",
+          "185.124.240.182"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "California",
+        "city": "San Francisco",
+        "hostname": "ussf2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "185.124.240.181",
+          "185.124.240.187"
         ]
       },
       {
         "country": "United States",
         "region": "Florida",
         "city": "Miami",
-        "hostname": "usfl2-ovpn-tcp.pointtoserver.com",
+        "hostname": "usfl2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "5.254.79.100",
-          "5.254.79.116"
+          "5.254.46.20",
+          "5.254.79.184",
+          "86.106.87.114"
         ]
       },
       {
         "country": "United States",
         "region": "Florida",
         "city": "Miami",
-        "hostname": "usfl2-ovpn-udp.pointtoserver.com",
+        "hostname": "usfl2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "5.254.79.114",
-          "5.254.79.115"
+          "5.254.79.180",
+          "5.254.79.181",
+          "86.106.87.115",
+          "86.106.87.117"
         ]
       },
       {
         "country": "United States",
         "region": "Georgia",
-        "city": "Cumming",
-        "hostname": "in2-ovpn-udp.pointtoserver.com",
+        "city": "Atlanta",
+        "hostname": "usga2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "66.115.179.18",
+          "173.0.64.4"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Georgia",
+        "city": "Atlanta",
+        "hostname": "usga2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "169.38.69.12"
+          "66.115.179.18",
+          "66.115.179.19",
+          "66.115.179.20",
+          "66.115.179.22"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Illinois",
+        "city": "Chicago",
+        "hostname": "usil2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.111.225.5",
+          "172.111.225.6",
+          "199.116.115.98"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Illinois",
+        "city": "Chicago",
+        "hostname": "usil2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "74.119.146.106",
+          "172.111.225.4",
+          "172.111.225.5",
+          "172.111.225.6",
+          "199.116.115.98"
         ]
       },
       {
         "country": "United States",
         "region": "New Jersey",
-        "city": "Piscataway",
-        "hostname": "usny2-ovpn-udp.pointtoserver.com",
+        "city": "Hanover",
+        "hostname": "aw2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.111.183.4",
+          "172.111.183.6"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "New Jersey",
+        "city": "Hanover",
+        "hostname": "aw2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "209.127.184.71",
-          "209.127.184.73",
-          "209.127.184.74",
-          "209.127.184.76"
+          "172.111.183.6"
         ]
       },
       {
         "country": "United States",
-        "region": "New York",
-        "city": "New York City",
-        "hostname": "usnj2-ovpn-tcp.pointtoserver.com",
+        "region": "New Jersey",
+        "city": "Whippany",
+        "hostname": "ar2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "172.94.72.4"
+          "172.111.152.132",
+          "172.111.152.134"
         ]
       },
       {
         "country": "United States",
-        "region": "New York",
-        "city": "New York City",
-        "hostname": "usnj2-ovpn-udp.pointtoserver.com",
+        "region": "New Jersey",
+        "city": "Whippany",
+        "hostname": "ar2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "172.94.72.4"
+          "172.111.152.4",
+          "172.111.152.6"
         ]
       },
       {
         "country": "United States",
         "region": "New York",
         "city": "New York City",
-        "hostname": "usny2-ovpn-tcp.pointtoserver.com",
+        "hostname": "bo2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "141.101.153.4"
+          "172.111.241.4",
+          "172.111.241.6"
         ]
       },
       {
         "country": "United States",
         "region": "New York",
         "city": "New York City",
-        "hostname": "ussf2-ovpn-udp.pointtoserver.com",
+        "hostname": "bo2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "172.94.72.4",
-          "172.94.86.4"
+          "172.111.241.4",
+          "172.111.241.6"
         ]
       },
       {
         "country": "United States",
         "region": "New York",
         "city": "New York City",
-        "hostname": "uswdc2-ovpn-udp.pointtoserver.com",
+        "hostname": "us-global-udp2.ptoserver.com",
         "udp": true,
         "ips": [
-          "172.94.72.4",
-          "172.94.86.4"
+          "172.98.85.10",
+          "172.98.85.11"
         ]
       },
       {
         "country": "United States",
         "region": "New York",
         "city": "New York City",
-        "hostname": "vlus-pa2-ovpn-tcp.pointtoserver.com",
+        "hostname": "usnj2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "172.111.149.4"
+          "172.98.85.9",
+          "199.36.221.74"
         ]
       },
       {
         "country": "United States",
         "region": "New York",
         "city": "New York City",
-        "hostname": "vlus-pa2-ovpn-udp.pointtoserver.com",
+        "hostname": "usnj2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "172.111.149.4"
+          "143.244.44.145",
+          "172.98.85.9",
+          "172.98.85.14"
         ]
       },
       {
         "country": "United States",
-        "region": "Pennsylvania",
-        "city": "Pittsburgh",
-        "hostname": "in2-ovpn-tcp.pointtoserver.com",
+        "region": "New York",
+        "city": "New York City",
+        "hostname": "usny2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "104.250.160.132"
+          "91.246.58.147",
+          "185.195.58.230"
         ]
       },
       {
         "country": "United States",
-        "region": "Texas",
-        "city": "Allen",
-        "hostname": "usga2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
+        "region": "New York",
+        "city": "New York City",
+        "hostname": "usny2-auto-udp.ptoserver.com",
+        "udp": true,
         "ips": [
-          "172.94.108.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Texas",
-        "city": "Allen",
-        "hostname": "usil2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
-        "ips": [
-          "172.94.108.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Texas",
-        "city": "Dallas",
-        "hostname": "ustx2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
-        "ips": [
-          "208.84.155.100",
-          "208.84.155.101"
+          "91.246.58.147",
+          "185.195.58.230",
+          "185.195.58.231",
+          "185.195.58.236"
         ]
       },
       {
         "country": "United States",
         "region": "Texas",
         "city": "Dallas",
-        "hostname": "ustx2-ovpn-udp.pointtoserver.com",
-        "udp": true,
+        "hostname": "us-global-tcp2.ptoserver.com",
+        "tcp": true,
         "ips": [
-          "104.217.255.185",
-          "104.217.255.186"
+          "45.35.115.66",
+          "172.98.85.9",
+          "198.8.80.209"
         ]
       },
       {
         "country": "United States",
-        "region": "Virginia",
-        "city": "Centreville",
-        "hostname": "usva2-ovpn-udp.pointtoserver.com",
+        "region": "Texas",
+        "city": "Dallas",
+        "hostname": "ustx2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "23.236.193.68",
+          "23.236.193.70"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Texas",
+        "city": "Dallas",
+        "hostname": "ustx2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "5.254.109.115",
-          "37.221.173.212"
+          "23.236.193.73",
+          "23.236.193.75",
+          "45.35.115.68",
+          "104.217.249.148",
+          "104.217.251.142"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Texas",
+        "city": "Houston",
+        "hostname": "bb2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.111.228.6"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Texas",
+        "city": "Houston",
+        "hostname": "bb2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.111.228.4",
+          "172.111.228.6"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Texas",
+        "city": "Houston",
+        "hostname": "bh2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.111.226.132",
+          "172.111.226.134"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Texas",
+        "city": "Houston",
+        "hostname": "bh2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.111.226.4",
+          "172.111.226.6"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Texas",
+        "city": "Houston",
+        "hostname": "bm2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "172.111.229.132",
+          "172.111.229.134"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Texas",
+        "city": "Houston",
+        "hostname": "bm2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.111.229.4",
+          "172.111.229.6"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Utah",
+        "city": "Salt Lake City",
+        "hostname": "usut2-auto-tcp.ptoserver.com",
+        "tcp": true,
+        "ips": [
+          "173.244.208.73"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Utah",
+        "city": "Salt Lake City",
+        "hostname": "usut2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "104.200.131.218",
+          "104.200.131.219"
         ]
       },
       {
         "country": "United States",
         "region": "Virginia",
         "city": "Reston",
-        "hostname": "usva2-ovpn-tcp.pointtoserver.com",
+        "hostname": "usva2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "5.254.77.26",
-          "5.254.77.27"
+          "5.254.77.10"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Virginia",
+        "city": "Reston",
+        "hostname": "usva2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "5.254.77.8",
+          "5.254.77.13"
+        ]
+      },
+      {
+        "country": "United States",
+        "region": "Virginia",
+        "city": "Reston",
+        "hostname": "uswdc2-auto-udp.ptoserver.com",
+        "udp": true,
+        "ips": [
+          "172.106.7.102",
+          "172.106.128.243",
+          "172.106.128.244",
+          "172.106.129.244",
+          "172.106.129.246"
         ]
       },
       {
         "country": "United States",
         "region": "Washington",
         "city": "Seattle",
-        "hostname": "ussa2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "172.94.86.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "us2-ovpn-tcp.pointtoserver.com",
+        "hostname": "ussa2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "46.243.249.4"
+          "138.199.43.4",
+          "138.199.43.6",
+          "198.8.80.20",
+          "198.8.80.209"
         ]
       },
       {
         "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "us2-ovpn-udp.pointtoserver.com",
+        "region": "Washington",
+        "city": "Seattle",
+        "hostname": "ussa2-auto-udp.ptoserver.com",
         "udp": true,
         "ips": [
-          "141.101.169.4",
-          "172.94.72.4",
-          "172.94.86.4"
+          "138.199.43.4",
+          "192.3.53.11",
+          "192.3.53.13",
+          "192.3.53.14",
+          "192.3.53.15"
         ]
       },
       {
         "country": "United States",
         "region": "Washington, D.C.",
         "city": "Washington",
-        "hostname": "usga2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "141.101.169.4",
-          "172.94.86.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "usil2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "141.101.169.4",
-          "172.94.72.4",
-          "172.94.86.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "usla2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "141.101.169.4",
-          "172.94.72.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "usphx2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "141.101.169.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "ussa2-ovpn-tcp.pointtoserver.com",
+        "hostname": "uswdc2-auto-tcp.ptoserver.com",
         "tcp": true,
         "ips": [
-          "46.243.249.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "usut2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
-        "ips": [
-          "46.243.249.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "usut2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "141.101.169.4",
-          "172.94.72.4",
-          "172.94.86.4"
-        ]
-      },
-      {
-        "country": "United States",
-        "region": "Washington, D.C.",
-        "city": "Washington",
-        "hostname": "uswdc2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
-        "ips": [
-          "46.243.249.4"
-        ]
-      },
-      {
-        "country": "Vietnam",
-        "region": "Hanoi",
-        "city": "Hanoi",
-        "hostname": "vlap-vn2-ovpn-tcp.pointtoserver.com",
-        "tcp": true,
-        "ips": [
-          "192.253.249.132"
-        ]
-      },
-      {
-        "country": "Vietnam",
-        "region": "Hanoi",
-        "city": "Hanoi",
-        "hostname": "vlap-vn2-ovpn-udp.pointtoserver.com",
-        "udp": true,
-        "ips": [
-          "192.253.249.132"
+          "172.106.128.244"
         ]
       }
     ]
