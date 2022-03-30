@@ -26,7 +26,6 @@ type Settings struct {
 
 func (s *Settings) SetDefaults() {
 	s.Enabled = helpers.DefaultBool(s.Enabled, false)
-	s.HTTPServer.Name = helpers.DefaultStringPtr(s.HTTPServer.Name, "pprof")
 	s.HTTPServer.Address = helpers.DefaultString(s.HTTPServer.Address, "localhost:6060")
 	s.HTTPServer.SetDefaults()
 }

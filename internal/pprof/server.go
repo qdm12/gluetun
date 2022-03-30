@@ -26,9 +26,6 @@ func New(settings Settings) (server *httpserver.Server, err error) {
 	handler.Handle("/debug/pprof/goroutine", pprof.Handler("goroutine"))
 	handler.Handle("/debug/pprof/heap", pprof.Handler("heap"))
 	handler.Handle("/debug/pprof/threadcreate", pprof.Handler("threadcreate"))
-
-	httpServerName := "pprof"
-	settings.HTTPServer.Name = &httpServerName
 	settings.HTTPServer.Handler = handler
 
 	settings.SetDefaults()

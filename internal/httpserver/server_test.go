@@ -29,14 +29,12 @@ func Test_New(t *testing.T) {
 		},
 		"filled settings": {
 			settings: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			expected: &Server{
-				name:            "name",
 				address:         ":8001",
 				handler:         someHandler,
 				logger:          someLogger,

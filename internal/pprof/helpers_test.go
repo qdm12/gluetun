@@ -8,7 +8,6 @@ import (
 )
 
 func boolPtr(b bool) *bool                       { return &b }
-func stringPtr(s string) *string                 { return &s }
 func durationPtr(d time.Duration) *time.Duration { return &d }
 
 var _ gomock.Matcher = (*regexMatcher)(nil)

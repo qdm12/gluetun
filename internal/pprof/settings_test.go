@@ -21,7 +21,6 @@ func Test_Settings_SetDefaults(t *testing.T) {
 			expected: Settings{
 				Enabled: boolPtr(false),
 				HTTPServer: httpserver.Settings{
-					Name:            stringPtr("pprof"),
 					Address:         "localhost:6060",
 					ShutdownTimeout: durationPtr(3 * time.Second),
 				},
@@ -33,7 +32,6 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				BlockProfileRate: 1,
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
-					Name:            stringPtr("custom"),
 					Address:         ":6061",
 					ShutdownTimeout: durationPtr(time.Second),
 				},
@@ -43,7 +41,6 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				BlockProfileRate: 1,
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
-					Name:            stringPtr("custom"),
 					Address:         ":6061",
 					ShutdownTimeout: durationPtr(time.Second),
 				},
@@ -77,7 +74,6 @@ func Test_Settings_Copy(t *testing.T) {
 				BlockProfileRate: 1,
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
-					Name:            stringPtr("custom"),
 					Address:         ":6061",
 					ShutdownTimeout: durationPtr(time.Second),
 				},
@@ -87,7 +83,6 @@ func Test_Settings_Copy(t *testing.T) {
 				BlockProfileRate: 1,
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
-					Name:            stringPtr("custom"),
 					Address:         ":6061",
 					ShutdownTimeout: durationPtr(time.Second),
 				},
@@ -325,7 +320,6 @@ func Test_Settings_String(t *testing.T) {
 				BlockProfileRate: 2,
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
-					Name:            stringPtr("name"),
 					Address:         ":8000",
 					ShutdownTimeout: durationPtr(time.Second),
 				},
@@ -333,7 +327,7 @@ func Test_Settings_String(t *testing.T) {
 			s: `Pprof settings:
 ├── Block profile rate: 2
 ├── Mutex profile rate: 1
-└── Name HTTP server settings:
+└── HTTP server settings:
     ├── Listening address: :8000
     └── Shutdown timeout: 1s`,
 		},

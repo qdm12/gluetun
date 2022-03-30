@@ -23,12 +23,12 @@ func (s *Server) Run(ctx context.Context, ready chan<- struct{}, done chan<- str
 			return
 		}
 
-		s.logger.Warn(s.name + " http server shutting down: " + ctx.Err().Error())
+		s.logger.Warn("http server shutting down: " + ctx.Err().Error())
 		shutdownCtx, cancel := context.WithTimeout(
 			context.Background(), s.shutdownTimeout)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
-			s.logger.Error(s.name + " http server failed shutting down within " +
+			s.logger.Error("http server failed shutting down within " +
 				s.shutdownTimeout.String())
 		}
 	}()
@@ -47,7 +47,7 @@ func (s *Server) Run(ctx context.Context, ready chan<- struct{}, done chan<- str
 	close(s.addressSet)
 
 	// note: no further write so no need to mutex
-	s.logger.Info(s.name + " http server listening on " + s.address)
+	s.logger.Info("http server listening on " + s.address)
 	close(ready)
 
 	err = server.Serve(listener)

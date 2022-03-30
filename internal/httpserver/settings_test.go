@@ -21,19 +21,16 @@ func Test_Settings_SetDefaults(t *testing.T) {
 		"empty settings": {
 			settings: Settings{},
 			expected: Settings{
-				Name:            stringPtr(""),
 				Address:         ":8000",
 				ShutdownTimeout: durationPtr(defaultTimeout),
 			},
 		},
 		"filled settings": {
 			settings: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			expected: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				ShutdownTimeout: durationPtr(time.Second),
 			},
@@ -65,14 +62,12 @@ func Test_Settings_Copy(t *testing.T) {
 		"empty settings": {},
 		"filled settings": {
 			settings: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			expected: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
@@ -107,14 +102,12 @@ func Test_Settings_MergeWith(t *testing.T) {
 		"merge empty with empty": {},
 		"merge empty with filled": {
 			other: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			expected: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
@@ -123,14 +116,12 @@ func Test_Settings_MergeWith(t *testing.T) {
 		},
 		"merge filled with empty": {
 			settings: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			expected: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
@@ -165,14 +156,12 @@ func Test_Settings_OverrideWith(t *testing.T) {
 		"override empty with empty": {},
 		"override empty with filled": {
 			other: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			expected: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
@@ -181,14 +170,12 @@ func Test_Settings_OverrideWith(t *testing.T) {
 		},
 		"override filled with empty": {
 			settings: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			expected: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
@@ -197,19 +184,16 @@ func Test_Settings_OverrideWith(t *testing.T) {
 		},
 		"override filled with filled": {
 			settings: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8001",
 				Handler:         someHandler,
 				Logger:          someLogger,
 				ShutdownTimeout: durationPtr(time.Second),
 			},
 			other: Settings{
-				Name:            stringPtr("name2"),
 				Address:         ":8002",
 				ShutdownTimeout: durationPtr(time.Hour),
 			},
 			expected: Settings{
-				Name:            stringPtr("name2"),
 				Address:         ":8002",
 				Handler:         someHandler,
 				Logger:          someLogger,
@@ -307,11 +291,10 @@ func Test_Settings_String(t *testing.T) {
 	}{
 		"all values": {
 			settings: Settings{
-				Name:            stringPtr("name"),
 				Address:         ":8000",
 				ShutdownTimeout: durationPtr(time.Second),
 			},
-			s: `Name HTTP server settings:
+			s: `HTTP server settings:
 ├── Listening address: :8000
 └── Shutdown timeout: 1s`,
 		},

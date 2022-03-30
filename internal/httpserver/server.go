@@ -29,7 +29,6 @@ type AddressGetter interface {
 // Server is an HTTP server implementation, which uses
 // the HTTP handler provided.
 type Server struct {
-	name            string
 	address         string
 	addressSet      chan struct{}
 	handler         http.Handler
@@ -47,7 +46,6 @@ func New(settings Settings) (s *Server, err error) {
 	}
 
 	return &Server{
-		name:            *settings.Name,
 		address:         settings.Address,
 		addressSet:      make(chan struct{}),
 		handler:         settings.Handler,

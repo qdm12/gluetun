@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
@@ -14,9 +13,6 @@ import (
 )
 
 type Settings struct {
-	// Name is the server name to use in logs.
-	// It defaults to the empty string.
-	Name *string
 	// Address is the server listening address.
 	// It defaults to :8000.
 	Address string
@@ -32,7 +28,6 @@ type Settings struct {
 }
 
 func (s *Settings) SetDefaults() {
-	s.Name = helpers.DefaultStringPtr(s.Name, "")
 	s.Address = helpers.DefaultString(s.Address, ":8000")
 	const defaultShutdownTimeout = 3 * time.Second
 	s.ShutdownTimeout = helpers.DefaultDuration(s.ShutdownTimeout, defaultShutdownTimeout)
@@ -40,7 +35,6 @@ func (s *Settings) SetDefaults() {
 
 func (s Settings) Copy() Settings {
 	return Settings{
-		Name:            helpers.CopyStringPtr(s.Name),
 		Address:         s.Address,
 		Handler:         s.Handler,
 		Logger:          s.Logger,
@@ -49,7 +43,6 @@ func (s Settings) Copy() Settings {
 }
 
 func (s *Settings) MergeWith(other Settings) {
-	s.Name = helpers.MergeWithStringPtr(s.Name, other.Name)
 	s.Address = helpers.MergeWithString(s.Address, other.Address)
 	s.Handler = helpers.MergeWithHTTPHandler(s.Handler, other.Handler)
 	if s.Logger == nil {
@@ -59,7 +52,6 @@ func (s *Settings) MergeWith(other Settings) {
 }
 
 func (s *Settings) OverrideWith(other Settings) {
-	s.Name = helpers.OverrideWithStringPtr(s.Name, other.Name)
 	s.Address = helpers.OverrideWithString(s.Address, other.Address)
 	s.Handler = helpers.OverrideWithHTTPHandler(s.Handler, other.Handler)
 	if other.Logger != nil {
@@ -100,7 +92,7 @@ func (s Settings) Validate() (err error) {
 }
 
 func (s Settings) ToLinesNode() (node *gotree.Node) {
-	node = gotree.New("%s HTTP server settings:", strings.Title(*s.Name))
+	node = gotree.New("HTTP server settings:")
 	node.Appendf("Listening address: %s", s.Address)
 	node.Appendf("Shutdown timeout: %s", *s.ShutdownTimeout)
 	return node
