@@ -6,11 +6,6 @@ type Logger interface {
 	errorer
 }
 
-type infoErrorer interface {
-	infoer
-	errorer
-}
-
 type infoWarner interface {
 	infoer
 	warner

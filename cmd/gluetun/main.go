@@ -424,10 +424,15 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlServerLogging := *allSettings.ControlServer.Log
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
-	httpServer := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
+	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.NewChild(logging.Settings{Prefix: "http server: "}),
 		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper)
-	go httpServer.Run(httpServerCtx, httpServerDone)
+	if err != nil {
+		return fmt.Errorf("cannot setup control server: %w", err)
+	}
+	httpServerReady := make(chan struct{})
+	go httpServer.Run(httpServerCtx, httpServerReady, httpServerDone)
+	<-httpServerReady
 	controlGroupHandler.Add(httpServerHandler)
 
 	healthLogger := logger.NewChild(logging.Settings{Prefix: "healthcheck: "})
