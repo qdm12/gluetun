@@ -15,40 +15,10 @@ import (
 )
 
 var (
-	ErrIPTablesNotSupported    = errors.New("no iptables supported found")
-	ErrNetAdminMissing         = errors.New("NET_ADMIN capability is missing")
 	ErrIPTablesVersionTooShort = errors.New("iptables version string is too short")
 	ErrPolicyUnknown           = errors.New("unknown policy")
 	ErrNeedIP6Tables           = errors.New("ip6tables is required, please upgrade your kernel to support it")
 )
-
-func findIptablesSupported(ctx context.Context, runner command.Runner) (iptablesPath string, err error) {
-	binsToTry := []string{"iptables", "iptables-nft"}
-
-	var errMessage string
-	for _, iptablesPath = range binsToTry {
-		cmd := exec.CommandContext(ctx, iptablesPath, "-L")
-		errMessage, err = runner.Run(cmd)
-		if err == nil {
-			break
-		}
-
-		const permissionDeniedString = "Permission denied (you must be root)"
-		if strings.Contains(errMessage, permissionDeniedString) {
-			return "", fmt.Errorf("%w: %s (%s)", ErrNetAdminMissing, errMessage, err)
-		}
-
-		errMessage = fmt.Sprintf("%s (%s)", errMessage, err)
-	}
-
-	if err != nil {
-		return "", fmt.Errorf("%w: from %s: last error is: %s",
-			ErrIPTablesNotSupported, strings.Join(binsToTry, ", "),
-			errMessage)
-	}
-
-	return iptablesPath, nil
-}
 
 func appendOrDelete(remove bool) string {
 	if remove {

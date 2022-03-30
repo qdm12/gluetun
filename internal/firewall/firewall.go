@@ -49,7 +49,12 @@ type Config struct { //nolint:maligned
 func NewConfig(ctx context.Context, logger Logger,
 	runner command.Runner, defaultRoutes []routing.DefaultRoute,
 	localNetworks []routing.LocalNetwork) (config *Config, err error) {
-	iptables, err := findIptablesSupported(ctx, runner)
+	iptables, err := checkIptablesSupport(ctx, runner, "iptables", "iptables-nft")
+	if err != nil {
+		return nil, err
+	}
+
+	ip6tables, err := findIP6tablesSupported(ctx, runner)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +64,7 @@ func NewConfig(ctx context.Context, logger Logger,
 		logger:            logger,
 		allowedInputPorts: make(map[uint16]map[string]struct{}),
 		ipTables:          iptables,
-		ip6Tables:         findIP6tablesSupported(ctx, runner),
+		ip6Tables:         ip6tables,
 		customRulesPath:   "/iptables/post-rules.txt",
 		// Obtained from routing
 		defaultRoutes: defaultRoutes,

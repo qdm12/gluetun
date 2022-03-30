@@ -14,23 +14,14 @@ import (
 // and returns the iptables path that is supported. If none work, an
 // empty string path is returned.
 func findIP6tablesSupported(ctx context.Context, runner command.Runner) (
-	ip6tablesPath string) {
-	binsToTry := []string{"ip6tables", "ip6tables-nft"}
-
-	var err error
-	for _, ip6tablesPath = range binsToTry {
-		cmd := exec.CommandContext(ctx, ip6tablesPath, "-L")
-		_, err = runner.Run(cmd)
-		if err == nil {
-			break
-		}
+	ip6tablesPath string, err error) {
+	ip6tablesPath, err = checkIptablesSupport(ctx, runner, "ip6tables", "ip6tables-nft")
+	if errors.Is(err, ErrIPTablesNotSupported) {
+		return "", nil
+	} else if err != nil {
+		return "", err
 	}
-
-	if err != nil {
-		return ""
-	}
-
-	return ip6tablesPath
+	return ip6tablesPath, nil
 }
 
 func (c *Config) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
