@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/log"
 	"inet.af/netaddr"
 )
 
@@ -96,13 +96,13 @@ func MergeWithDuration(existing, other *time.Duration) (result *time.Duration) {
 	return other
 }
 
-func MergeWithLogLevel(existing, other *logging.Level) (result *logging.Level) {
+func MergeWithLogLevel(existing, other *log.Level) (result *log.Level) {
 	if existing != nil {
 		return existing
 	} else if other == nil {
 		return nil
 	}
-	result = new(logging.Level)
+	result = new(log.Level)
 	*result = *other
 	return result
 }

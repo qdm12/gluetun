@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/log"
 	"inet.af/netaddr"
 )
 
@@ -62,11 +62,11 @@ func CopyDurationPtr(original *time.Duration) (copied *time.Duration) {
 	return copied
 }
 
-func CopyLogLevelPtr(original *logging.Level) (copied *logging.Level) {
+func CopyLogLevelPtr(original *log.Level) (copied *log.Level) {
 	if original == nil {
 		return nil
 	}
-	copied = new(logging.Level)
+	copied = new(log.Level)
 	*copied = *original
 	return copied
 }

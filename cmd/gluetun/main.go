@@ -40,12 +40,12 @@ import (
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/command"
-	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/goshutdown"
 	"github.com/qdm12/goshutdown/goroutine"
 	"github.com/qdm12/goshutdown/group"
 	"github.com/qdm12/goshutdown/order"
 	"github.com/qdm12/gosplash"
+	"github.com/qdm12/log"
 	"github.com/qdm12/updated/pkg/dnscrypto"
 )
 
@@ -68,9 +68,7 @@ func main() {
 	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
 	ctx, cancel := context.WithCancel(background)
 
-	logger := logging.New(logging.Settings{
-		Level: logging.LevelInfo,
-	})
+	logger := log.New(log.SetLevel(log.LevelInfo))
 
 	args := os.Args
 	tun := tun.New()
@@ -125,7 +123,7 @@ var (
 
 //nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger logging.ParentLogger, source sources.Source,
+	args []string, logger log.LoggerInterface, source sources.Source,
 	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,
 	cli cli.CLIer) error {
 	if len(args) > 1 { // cli operation
@@ -175,13 +173,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	// - global log level is parsed from source
 	// - firewall Debug and Enabled are booleans parsed from source
 
-	logger.PatchLevel(*allSettings.Log.Level)
+	logger.Patch(log.SetLevel(*allSettings.Log.Level))
 
-	routingLogger := logger.NewChild(logging.Settings{
-		Prefix: "routing: ",
-	})
+	routingLogger := logger.New(log.SetComponent("routing"))
 	if *allSettings.Firewall.Debug { // To remove in v4
-		routingLogger.PatchLevel(logging.LevelDebug)
+		routingLogger.Patch(log.SetLevel(log.LevelDebug))
 	}
 	routingConf := routing.New(netLinker, routingLogger)
 
@@ -195,11 +191,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	firewallLogger := logger.NewChild(logging.Settings{
-		Prefix: "firewall: ",
-	})
+	firewallLogger := logger.New(log.SetComponent("firewall"))
 	if *allSettings.Firewall.Debug { // To remove in v4
-		firewallLogger.PatchLevel(logging.LevelDebug)
+		firewallLogger.Patch(log.SetLevel(log.LevelDebug))
 	}
 	firewallConf, err := firewall.NewConfig(ctx, firewallLogger, cmder,
 		defaultRoutes, localNetworks)
@@ -215,7 +209,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
-	storageLogger := logger.NewChild(logging.Settings{Prefix: "storage: "})
+	storageLogger := logger.New(log.SetComponent("storage"))
 	storage, err := storage.New(storageLogger, constants.ServersData)
 	if err != nil {
 		return err
@@ -228,7 +222,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	allSettings.Pprof.HTTPServer.Logger = logger
+	allSettings.Pprof.HTTPServer.Logger = logger.New(log.SetComponent("pprof"))
 	pprofServer, err := pprof.New(allSettings.Pprof)
 	if err != nil {
 		return fmt.Errorf("cannot create Pprof server: %w", err)
@@ -241,7 +235,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	// Create configurators
 	alpineConf := alpine.New()
 	ovpnConf := openvpn.New(
-		logger.NewChild(logging.Settings{Prefix: "openvpn configurator: "}),
+		logger.New(log.SetComponent("openvpn configurator")),
 		cmder, puid, pgid)
 	dnsCrypto := dnscrypto.New(httpClient, "", "")
 	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
@@ -294,9 +288,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("cannot setup routing: %w", err)
 	}
 	defer func() {
-		logger.Info("routing cleanup...")
+		routingLogger.Info("routing cleanup...")
 		if err := routingConf.TearDown(); err != nil {
-			logger.Error("cannot teardown routing: " + err.Error())
+			routingLogger.Error("cannot teardown routing: " + err.Error())
 		}
 	}()
 
@@ -348,14 +342,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	otherGroupHandler.Add(pprofHandler)
 	<-pprofReady
 
-	portForwardLogger := logger.NewChild(logging.Settings{Prefix: "port forwarding: "})
+	portForwardLogger := logger.New(log.SetComponent("port forwarding"))
 	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
 		httpClient, firewallConf, portForwardLogger)
 	portForwardHandler, portForwardCtx, portForwardDone := goshutdown.NewGoRoutineHandler(
 		"port forwarding", goroutine.OptionTimeout(time.Second))
 	go portForwardLooper.Run(portForwardCtx, portForwardDone)
 
-	unboundLogger := logger.NewChild(logging.Settings{Prefix: "dns over tls: "})
+	unboundLogger := logger.New(log.SetComponent("dns over tls"))
 	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
 		unboundLogger)
 	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
@@ -370,7 +364,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlGroupHandler.Add(dnsTickerHandler)
 
 	publicIPLooper := publicip.NewLoop(httpClient,
-		logger.NewChild(logging.Settings{Prefix: "ip getter: "}),
+		logger.New(log.SetComponent("ip getter")),
 		allSettings.PublicIP, puid, pgid)
 	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
 		"public IP", goroutine.OptionTimeout(defaultShutdownTimeout))
@@ -382,7 +376,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
-	vpnLogger := logger.NewChild(logging.Settings{Prefix: "vpn: "})
+	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,
 		allServers, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
@@ -393,7 +387,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
 		allServers, storage, vpnLooper.SetServers, httpClient,
-		logger.NewChild(logging.Settings{Prefix: "updater: "}))
+		logger.New(log.SetComponent("updater")))
 	updaterHandler, updaterCtx, updaterDone := goshutdown.NewGoRoutineHandler(
 		"updater", goroutine.OptionTimeout(defaultShutdownTimeout))
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker
@@ -406,7 +400,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlGroupHandler.Add(updaterTickerHandler)
 
 	httpProxyLooper := httpproxy.NewLoop(
-		logger.NewChild(logging.Settings{Prefix: "http proxy: "}),
+		logger.New(log.SetComponent("http proxy")),
 		allSettings.HTTPProxy)
 	httpProxyHandler, httpProxyCtx, httpProxyDone := goshutdown.NewGoRoutineHandler(
 		"http proxy", goroutine.OptionTimeout(defaultShutdownTimeout))
@@ -414,7 +408,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	otherGroupHandler.Add(httpProxyHandler)
 
 	shadowsocksLooper := shadowsocks.NewLooper(allSettings.Shadowsocks,
-		logger.NewChild(logging.Settings{Prefix: "shadowsocks: "}))
+		logger.New(log.SetComponent("shadowsocks")))
 	shadowsocksHandler, shadowsocksCtx, shadowsocksDone := goshutdown.NewGoRoutineHandler(
 		"shadowsocks proxy", goroutine.OptionTimeout(defaultShutdownTimeout))
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
@@ -425,7 +419,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
-		logger.NewChild(logging.Settings{Prefix: "http server: "}),
+		logger.New(log.SetComponent("http server")),
 		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper)
 	if err != nil {
 		return fmt.Errorf("cannot setup control server: %w", err)
@@ -435,7 +429,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	<-httpServerReady
 	controlGroupHandler.Add(httpServerHandler)
 
-	healthLogger := logger.NewChild(logging.Settings{Prefix: "healthcheck: "})
+	healthLogger := logger.New(log.SetComponent("healthcheck"))
 	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, vpnLooper)
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", goroutine.OptionTimeout(defaultShutdownTimeout))

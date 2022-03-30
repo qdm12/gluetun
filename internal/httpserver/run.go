@@ -23,7 +23,6 @@ func (s *Server) Run(ctx context.Context, ready chan<- struct{}, done chan<- str
 			return
 		}
 
-		s.logger.Warn("http server shutting down: " + ctx.Err().Error())
 		shutdownCtx, cancel := context.WithTimeout(
 			context.Background(), s.shutdownTimeout)
 		defer cancel()

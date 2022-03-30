@@ -23,7 +23,6 @@ func Test_Server(t *testing.T) {
 	logger := NewMockLogger(ctrl)
 
 	logger.EXPECT().Info(newRegexMatcher("^http server listening on 127.0.0.1:[1-9][0-9]{0,4}$"))
-	logger.EXPECT().Warn("http server shutting down: context canceled")
 
 	const httpServerShutdownTimeout = 10 * time.Second // 10s in case test worker is slow
 	settings := Settings{

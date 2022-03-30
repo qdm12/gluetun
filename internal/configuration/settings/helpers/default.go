@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/log"
 )
 
 func DefaultInt(existing *int, defaultValue int) (
@@ -74,12 +74,12 @@ func DefaultDuration(existing *time.Duration,
 	return result
 }
 
-func DefaultLogLevel(existing *logging.Level,
-	defaultValue logging.Level) (result *logging.Level) {
+func DefaultLogLevel(existing *log.Level,
+	defaultValue log.Level) (result *log.Level) {
 	if existing != nil {
 		return existing
 	}
-	result = new(logging.Level)
+	result = new(log.Level)
 	*result = defaultValue
 	return result
 }

@@ -2,15 +2,15 @@ package settings
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/golibs/logging"
 	"github.com/qdm12/gotree"
+	"github.com/qdm12/log"
 )
 
 // Log contains settings to configure the logger.
 type Log struct {
 	// Level is the log level of the logger.
 	// It cannot be nil in the internal state.
-	Level *logging.Level
+	Level *log.Level
 }
 
 func (l Log) validate() (err error) {
@@ -37,7 +37,7 @@ func (l *Log) overrideWith(other Log) {
 }
 
 func (l *Log) setDefaults() {
-	l.Level = helpers.DefaultLogLevel(l.Level, logging.LevelInfo)
+	l.Level = helpers.DefaultLogLevel(l.Level, log.LevelInfo)
 }
 
 func (l Log) String() string {

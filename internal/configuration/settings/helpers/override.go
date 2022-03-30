@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/log"
 	"inet.af/netaddr"
 )
 
@@ -86,11 +86,11 @@ func OverrideWithDuration(existing, other *time.Duration) (result *time.Duration
 	return result
 }
 
-func OverrideWithLogLevel(existing, other *logging.Level) (result *logging.Level) {
+func OverrideWithLogLevel(existing, other *log.Level) (result *log.Level) {
 	if other == nil {
 		return existing
 	}
-	result = new(logging.Level)
+	result = new(log.Level)
 	*result = *other
 	return result
 }

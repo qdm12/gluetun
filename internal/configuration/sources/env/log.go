@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/golibs/logging"
+	"github.com/qdm12/log"
 )
 
 func readLog() (log settings.Log, err error) {
@@ -19,13 +19,13 @@ func readLog() (log settings.Log, err error) {
 	return log, nil
 }
 
-func readLogLevel() (level *logging.Level, err error) {
+func readLogLevel() (level *log.Level, err error) {
 	s := os.Getenv("LOG_LEVEL")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}
 
-	level = new(logging.Level)
+	level = new(log.Level)
 	*level, err = parseLogLevel(s)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable LOG_LEVEL: %w", err)
@@ -36,16 +36,16 @@ func readLogLevel() (level *logging.Level, err error) {
 
 var ErrLogLevelUnknown = errors.New("log level is unknown")
 
-func parseLogLevel(s string) (level logging.Level, err error) {
+func parseLogLevel(s string) (level log.Level, err error) {
 	switch strings.ToLower(s) {
 	case "debug":
-		return logging.LevelDebug, nil
+		return log.LevelDebug, nil
 	case "info":
-		return logging.LevelInfo, nil
+		return log.LevelInfo, nil
 	case "warning":
-		return logging.LevelWarn, nil
+		return log.LevelWarn, nil
 	case "error":
-		return logging.LevelError, nil
+		return log.LevelError, nil
 	default:
 		return level, fmt.Errorf(
 			"%w: %q is not valid and can be one of debug, info, warning or error",
