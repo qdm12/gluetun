@@ -64,6 +64,11 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_VERBOSITY: %w", err)
 	}
 
+	flagsStr := os.Getenv("OPENVPN_FLAGS")
+	if flagsStr != "" {
+		openVPN.Flags = strings.Fields(flagsStr)
+	}
+
 	return openVPN, nil
 }
 
