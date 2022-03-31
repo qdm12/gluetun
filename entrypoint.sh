@@ -234,7 +234,7 @@ printf "$VPN_DEVICE\n"
 # FIREWALL
 ############################################
 printf "[INFO] Setting firewall\n"
-printf " * Blocking everyting\n"
+printf " * Blocking everything\n"
 printf "   * Deleting all iptables rules..."
 iptables --flush
 exitOnError $?
@@ -325,7 +325,7 @@ printf "[INFO] Checking qBittorrent config\n"
 if [ ! -e /config/qBittorrent/config/qBittorrent.conf ]; then
 	mkdir -p /config/qBittorrent/config && cp /qBittorrent.conf /config/qBittorrent/config/qBittorrent.conf
 	chmod 755 /config/qBittorrent/config/qBittorrent.conf
-	printf " * copying default qBittorrent config\n"
+	printf " * Copying default qBittorrent config\n"
 fi
 
 # Wait until vpn is up
