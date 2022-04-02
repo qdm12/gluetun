@@ -4670,7 +4670,7 @@
   },
   "fastestvpn": {
     "version": 1,
-    "timestamp": 1632576585,
+    "timestamp": 1648914596,
     "servers": [
       {
         "hostname": "au.jumptoserver.com",
@@ -4804,12 +4804,12 @@
         ]
       },
       {
-        "hostname": "de1.jumptoserver.com",
+        "hostname": "de2.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "country": "Germany",
         "ips": [
-          "83.143.245.254"
+          "146.0.42.4"
         ]
       },
       {
@@ -4831,12 +4831,12 @@
         ]
       },
       {
-        "hostname": "in50.jumptoserver.com",
+        "hostname": "in2.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "country": "India",
         "ips": [
-          "103.104.74.32"
+          "103.73.191.110"
         ]
       },
       {
@@ -4845,7 +4845,7 @@
         "udp": true,
         "country": "India-stream",
         "ips": [
-          "103.104.74.30"
+          "103.73.191.107"
         ]
       },
       {
@@ -4863,7 +4863,7 @@
         "udp": true,
         "country": "Japan",
         "ips": [
-          "202.239.38.147"
+          "103.75.118.82"
         ]
       },
       {
@@ -4873,6 +4873,24 @@
         "country": "Luxembourg",
         "ips": [
           "94.242.195.147"
+        ]
+      },
+      {
+        "hostname": "my.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "country": "Malaysia",
+        "ips": [
+          "103.75.116.180"
+        ]
+      },
+      {
+        "hostname": "mx.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "country": "Mexico",
+        "ips": [
+          "216.238.73.193"
         ]
       },
       {
@@ -5097,7 +5115,7 @@
         "udp": true,
         "country": "US-Chicago",
         "ips": [
-          "38.98.159.11"
+          "172.107.222.242"
         ]
       },
       {
@@ -5106,7 +5124,7 @@
         "udp": true,
         "country": "US-Chicago",
         "ips": [
-          "38.98.159.10"
+          "172.107.222.243"
         ]
       },
       {
@@ -5133,7 +5151,7 @@
         "udp": true,
         "country": "US-Los.Angeles",
         "ips": [
-          "64.31.35.222"
+          "109.236.60.123"
         ]
       },
       {
