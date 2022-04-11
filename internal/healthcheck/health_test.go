@@ -19,7 +19,7 @@ func Test_Server_healthCheck(t *testing.T) {
 		t.Parallel()
 
 		dialer := &net.Dialer{}
-		const address = "github.com:443"
+		const address = "cloudflare.com:443"
 
 		server := &Server{
 			dialer: dialer,

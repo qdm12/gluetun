@@ -65,7 +65,7 @@ func (h *Health) OverrideWith(other Health) {
 
 func (h *Health) SetDefaults() {
 	h.ServerAddress = helpers.DefaultString(h.ServerAddress, "127.0.0.1:9999")
-	h.TargetAddress = helpers.DefaultString(h.TargetAddress, "github.com:443")
+	h.TargetAddress = helpers.DefaultString(h.TargetAddress, "cloudflare.com:443")
 	h.VPN.setDefaults()
 }
 
