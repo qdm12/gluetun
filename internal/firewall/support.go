@@ -22,7 +22,7 @@ func checkIptablesSupport(ctx context.Context, runner command.Runner,
 	var errMessage string
 	testInterfaceName := randomInterfaceName()
 	for _, iptablesPath = range iptablesPathsToTry {
-		cmd := exec.CommandContext(ctx, iptablesPath, "-A", "INPUT", "-i", testInterfaceName, "-j", "DROP")
+		cmd := exec.CommandContext(ctx, iptablesPath, "-A", "OUTPUT", "-o", testInterfaceName, "-j", "DROP")
 		errMessage, err = runner.Run(cmd)
 		if err == nil {
 			break
@@ -42,7 +42,7 @@ func checkIptablesSupport(ctx context.Context, runner command.Runner,
 	}
 
 	// Cleanup test rule
-	cmd := exec.CommandContext(ctx, iptablesPath, "-D", "INPUT", "-i", testInterfaceName, "-j", "DROP")
+	cmd := exec.CommandContext(ctx, iptablesPath, "-D", "OUTPUT", "-o", testInterfaceName, "-j", "DROP")
 	errMessage, err = runner.Run(cmd)
 	if err != nil {
 		return "", fmt.Errorf("%w: %s (%s)", ErrTestRuleCleanup, errMessage, err)
