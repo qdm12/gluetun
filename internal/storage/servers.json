@@ -79449,86 +79449,34 @@
   },
   "pia": {
     "version": 6,
-    "timestamp": 1627008339,
+    "timestamp": 1649712532,
     "servers": [
       {
         "region": "AU Melbourne",
         "hostname": "aus-melbourne.privacy.network",
-        "server_name": "melbourne403",
+        "server_name": "melbourne429",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "181.214.215.58",
-          "181.214.215.35"
+          "154.6.151.48",
+          "154.6.151.65",
+          "154.6.151.58",
+          "154.6.151.52",
+          "154.6.151.64",
+          "154.6.151.53"
         ]
       },
       {
         "region": "AU Melbourne",
         "hostname": "aus-melbourne.privacy.network",
-        "server_name": "melbourne405",
+        "server_name": "melbourne432",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "181.214.215.115",
-          "181.214.215.119",
-          "181.214.215.126",
-          "181.214.215.124"
-        ]
-      },
-      {
-        "region": "AU Melbourne",
-        "hostname": "aus-melbourne.privacy.network",
-        "server_name": "melbourne406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "181.214.215.153",
-          "181.214.215.149"
-        ]
-      },
-      {
-        "region": "AU Melbourne",
-        "hostname": "aus-melbourne.privacy.network",
-        "server_name": "melbourne407",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "181.214.215.163",
-          "181.214.215.183",
-          "181.214.215.189",
-          "181.214.215.166"
-        ]
-      },
-      {
-        "region": "AU Melbourne",
-        "hostname": "aus-melbourne.privacy.network",
-        "server_name": "melbourne409",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "181.214.215.244",
-          "181.214.215.253",
-          "181.214.215.247",
-          "181.214.215.243"
-        ]
-      },
-      {
-        "region": "AU Melbourne",
-        "hostname": "aus-melbourne.privacy.network",
-        "server_name": "melbourne410",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "181.214.199.26",
-          "181.214.199.9",
-          "181.214.199.24",
-          "181.214.199.10"
+          "154.6.151.157",
+          "154.6.151.141"
         ]
       },
       {
@@ -79539,89 +79487,14 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "179.61.228.47",
-          "179.61.228.6",
-          "179.61.228.9"
-        ]
-      },
-      {
-        "region": "AU Perth",
-        "hostname": "aus-perth.privacy.network",
-        "server_name": "perth404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "179.61.228.116",
-          "179.61.228.126",
-          "179.61.228.108"
-        ]
-      },
-      {
-        "region": "AU Perth",
-        "hostname": "aus-perth.privacy.network",
-        "server_name": "perth405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "179.61.228.177",
-          "179.61.228.166",
-          "179.61.228.167",
-          "179.61.228.178"
-        ]
-      },
-      {
-        "region": "AU Sydney",
-        "hostname": "au-sydney.privacy.network",
-        "server_name": "sydney406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "202.130.32.20",
-          "202.130.32.29",
-          "202.130.32.27",
-          "202.130.32.24"
-        ]
-      },
-      {
-        "region": "AU Sydney",
-        "hostname": "au-sydney.privacy.network",
-        "server_name": "sydney426",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "191.101.210.143",
-          "191.101.210.135",
-          "191.101.210.154",
-          "191.101.210.136"
-        ]
-      },
-      {
-        "region": "AU Sydney",
-        "hostname": "au-sydney.privacy.network",
-        "server_name": "sydney429",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "191.101.210.237",
-          "191.101.210.225",
-          "191.101.210.240"
-        ]
-      },
-      {
-        "region": "AU Sydney",
-        "hostname": "au-sydney.privacy.network",
-        "server_name": "sydney430",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.16.81.45",
-          "154.16.81.65"
+          "179.61.228.36",
+          "179.61.228.10",
+          "179.61.228.48",
+          "179.61.228.51",
+          "179.61.228.27",
+          "179.61.228.28",
+          "179.61.228.49",
+          "179.61.228.20"
         ]
       },
       {
@@ -79632,24 +79505,24 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.16.81.104",
-          "154.16.81.117",
-          "154.16.81.100",
-          "154.16.81.116"
+          "154.16.81.103",
+          "154.16.81.114"
         ]
       },
       {
         "region": "AU Sydney",
         "hostname": "au-sydney.privacy.network",
-        "server_name": "sydney434",
+        "server_name": "sydney435",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.16.81.177",
-          "154.16.81.167",
-          "154.16.81.164",
-          "154.16.81.160"
+          "154.16.81.190",
+          "154.16.81.196",
+          "154.16.81.215",
+          "154.16.81.191",
+          "154.16.81.211",
+          "154.16.81.210"
         ]
       },
       {
@@ -79660,25 +79533,10 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "31.171.154.132",
           "31.171.154.134",
-          "31.171.154.139",
-          "31.171.154.135"
-        ]
-      },
-      {
-        "region": "Albania",
-        "hostname": "al.privacy.network",
-        "server_name": "tirana402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "31.171.154.126",
-          "31.171.154.116",
-          "31.171.154.119",
-          "31.171.154.115",
-          "31.171.154.118"
+          "31.171.154.142",
+          "31.171.154.135",
+          "31.171.154.141"
         ]
       },
       {
@@ -79689,10 +79547,7 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "31.171.154.77",
-          "31.171.154.69",
-          "31.171.154.72",
-          "31.171.154.67"
+          "31.171.154.69"
         ]
       },
       {
@@ -79703,24 +79558,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "31.171.154.59",
-          "31.171.154.60",
-          "31.171.154.51",
-          "31.171.154.62"
-        ]
-      },
-      {
-        "region": "Algeria",
-        "hostname": "dz.privacy.network",
-        "server_name": "algiers403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "176.125.228.3",
-          "176.125.228.6",
-          "176.125.228.8",
-          "176.125.228.10"
+          "31.171.154.52",
+          "31.171.154.56"
         ]
       },
       {
@@ -79731,10 +79570,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "176.125.228.17",
+          "176.125.228.19",
+          "176.125.228.16",
+          "176.125.228.23",
+          "176.125.228.21",
+          "176.125.228.25",
           "176.125.228.18",
           "176.125.228.15",
-          "176.125.228.20",
           "176.125.228.26"
         ]
       },
@@ -79747,79 +79589,10 @@
         "port_forward": true,
         "ips": [
           "188.241.82.8",
-          "188.241.82.13",
+          "188.241.82.4",
           "188.241.82.6",
           "188.241.82.5",
-          "188.241.82.9"
-        ]
-      },
-      {
-        "region": "Andorra",
-        "hostname": "ad.privacy.network",
-        "server_name": "andorra404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.241.82.17",
-          "188.241.82.25",
-          "188.241.82.19"
-        ]
-      },
-      {
-        "region": "Andorra",
-        "hostname": "ad.privacy.network",
-        "server_name": "andorra405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.241.82.37",
-          "188.241.82.39",
-          "188.241.82.29",
-          "188.241.82.35"
-        ]
-      },
-      {
-        "region": "Argentina",
-        "hostname": "ar.privacy.network",
-        "server_name": "buenosaires405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "146.70.38.13",
-          "146.70.38.20",
-          "146.70.38.10",
-          "146.70.38.9"
-        ]
-      },
-      {
-        "region": "Argentina",
-        "hostname": "ar.privacy.network",
-        "server_name": "buenosaires406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "146.70.38.148",
-          "146.70.38.143",
-          "146.70.38.138",
-          "146.70.38.139",
-          "146.70.38.136"
-        ]
-      },
-      {
-        "region": "Argentina",
-        "hostname": "ar.privacy.network",
-        "server_name": "buenosaires407",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "146.70.38.29",
-          "146.70.38.38",
-          "146.70.38.27"
+          "188.241.82.11"
         ]
       },
       {
@@ -79830,9 +79603,23 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "146.70.38.59",
-          "146.70.38.54",
-          "146.70.38.57"
+          "146.70.38.45",
+          "146.70.38.43"
+        ]
+      },
+      {
+        "region": "Argentina",
+        "hostname": "ar.privacy.network",
+        "server_name": "buenosaires410",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "146.70.38.97",
+          "146.70.38.93",
+          "146.70.38.89",
+          "146.70.38.96",
+          "146.70.38.94"
         ]
       },
       {
@@ -79843,10 +79630,12 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "185.253.160.14",
           "185.253.160.6",
+          "185.253.160.4",
+          "185.253.160.9",
           "185.253.160.8",
-          "185.253.160.13"
+          "185.253.160.13",
+          "185.253.160.12"
         ]
       },
       {
@@ -79857,11 +79646,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.60.14",
-          "156.146.60.16",
-          "156.146.60.4",
-          "156.146.60.30",
-          "156.146.60.8"
+          "156.146.60.18",
+          "156.146.60.20"
         ]
       },
       {
@@ -79872,23 +79658,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.60.74",
           "156.146.60.77",
-          "89.187.168.4",
-          "156.146.60.66"
-        ]
-      },
-      {
-        "region": "Bahamas",
-        "hostname": "bahamas.privacy.network",
-        "server_name": "bahamas403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "95.181.238.15",
-          "95.181.238.23",
-          "95.181.238.17"
+          "156.146.60.72",
+          "156.146.60.89",
+          "156.146.60.74",
+          "156.146.60.87"
         ]
       },
       {
@@ -79899,23 +79673,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.238.8",
-          "95.181.238.10",
-          "95.181.238.4",
-          "95.181.238.9"
-        ]
-      },
-      {
-        "region": "Bahamas",
-        "hostname": "bahamas.privacy.network",
-        "server_name": "bahamas405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "95.181.238.33",
-          "95.181.238.35",
-          "95.181.238.28"
+          "95.181.238.5",
+          "95.181.238.4"
         ]
       },
       {
@@ -79926,10 +79685,31 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.238.49",
-          "95.181.238.44",
           "95.181.238.43",
-          "95.181.238.40"
+          "95.181.238.49"
+        ]
+      },
+      {
+        "region": "Bahamas",
+        "hostname": "bahamas.privacy.network",
+        "server_name": "bahamas407",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "95.181.238.56",
+          "95.181.238.53"
+        ]
+      },
+      {
+        "region": "Bahamas",
+        "hostname": "bahamas.privacy.network",
+        "server_name": "bahamas409",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "95.181.238.77"
         ]
       },
       {
@@ -79940,41 +79720,26 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "84.252.93.15",
           "84.252.93.6",
           "84.252.93.9",
-          "84.252.93.7",
-          "84.252.93.5"
+          "84.252.93.11",
+          "84.252.93.15",
+          "84.252.93.12",
+          "84.252.93.8",
+          "84.252.93.5",
+          "84.252.93.14"
         ]
       },
       {
         "region": "Belgium",
         "hostname": "brussels.privacy.network",
-        "server_name": "brussels405",
+        "server_name": "brussels403",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "194.110.115.13",
-          "194.110.115.6",
-          "194.110.115.14",
-          "194.110.115.7"
-        ]
-      },
-      {
-        "region": "Belgium",
-        "hostname": "brussels.privacy.network",
-        "server_name": "brussels406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "194.110.115.23",
-          "194.110.115.24",
-          "194.110.115.18",
-          "194.110.115.28",
-          "194.110.115.30",
-          "194.110.115.25"
+          "5.253.205.156",
+          "5.253.205.146"
         ]
       },
       {
@@ -79985,37 +79750,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "91.90.123.37",
-          "91.90.123.35",
-          "91.90.123.43"
-        ]
-      },
-      {
-        "region": "Belgium",
-        "hostname": "brussels.privacy.network",
-        "server_name": "brussels410",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "91.90.123.30",
-          "91.90.123.29",
-          "91.90.123.25",
-          "91.90.123.26"
-        ]
-      },
-      {
-        "region": "Belgium",
-        "hostname": "brussels.privacy.network",
-        "server_name": "brussels411",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "91.90.123.55",
-          "91.90.123.60",
-          "91.90.123.57",
-          "91.90.123.58"
+          "91.90.123.45",
+          "91.90.123.41",
+          "91.90.123.42",
+          "91.90.123.46",
+          "91.90.123.37"
         ]
       },
       {
@@ -80026,9 +79765,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "185.212.111.89",
-          "185.212.111.79",
-          "185.212.111.83"
+          "185.212.111.80",
+          "185.212.111.78",
+          "185.212.111.90",
+          "185.212.111.83",
+          "185.212.111.85"
         ]
       },
       {
@@ -80039,51 +79780,7 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "185.212.111.5",
-          "185.212.111.64",
-          "185.212.111.70",
-          "185.212.111.63"
-        ]
-      },
-      {
-        "region": "Brazil",
-        "hostname": "br.privacy.network",
-        "server_name": "saopaolo401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "45.133.180.237",
-          "45.133.180.234",
-          "45.133.180.236",
-          "45.133.180.235"
-        ]
-      },
-      {
-        "region": "Brazil",
-        "hostname": "br.privacy.network",
-        "server_name": "saopaolo402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.241.177.59",
-          "188.241.177.58",
-          "188.241.177.57",
-          "188.241.177.55"
-        ]
-      },
-      {
-        "region": "Brazil",
-        "hostname": "br.privacy.network",
-        "server_name": "saopaolo403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.241.177.119",
-          "188.241.177.115",
-          "188.241.177.117"
+          "185.212.111.74"
         ]
       },
       {
@@ -80094,208 +79791,83 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "45.133.180.250",
-          "45.133.180.244",
-          "45.133.180.245"
+          "188.241.177.109",
+          "188.241.177.178",
+          "188.241.177.179"
+        ]
+      },
+      {
+        "region": "Brazil",
+        "hostname": "br.privacy.network",
+        "server_name": "saopaolo407",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "138.199.58.16",
+          "138.199.58.12",
+          "138.199.58.5",
+          "138.199.58.3"
         ]
       },
       {
         "region": "Bulgaria",
         "hostname": "sofia.privacy.network",
-        "server_name": "sofia402",
+        "server_name": "sofia404",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "217.138.221.83",
-          "217.138.221.84",
-          "217.138.221.90",
-          "217.138.221.94"
-        ]
-      },
-      {
-        "region": "Bulgaria",
-        "hostname": "sofia.privacy.network",
-        "server_name": "sofia403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "217.138.221.75",
-          "217.138.221.70",
-          "217.138.221.68",
-          "217.138.221.73"
+          "37.19.203.134",
+          "37.19.203.132",
+          "37.19.203.137",
+          "37.19.203.130",
+          "37.19.203.138"
         ]
       },
       {
         "region": "CA Montreal",
         "hostname": "ca-montreal.privacy.network",
-        "server_name": "montreal402",
+        "server_name": "montreal403",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "172.98.71.70",
-          "172.98.71.124",
-          "172.98.71.128",
-          "172.98.71.117"
+          "172.98.71.39",
+          "172.98.71.42"
         ]
       },
       {
         "region": "CA Montreal",
         "hostname": "ca-montreal.privacy.network",
-        "server_name": "montreal404",
+        "server_name": "montreal417",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "172.98.71.155",
-          "172.98.71.150",
-          "172.98.71.134",
-          "172.98.71.170"
-        ]
-      },
-      {
-        "region": "CA Montreal",
-        "hostname": "ca-montreal.privacy.network",
-        "server_name": "montreal405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "172.98.71.213",
-          "172.98.71.200",
-          "172.98.71.249",
-          "172.98.71.207",
-          "172.98.71.215"
-        ]
-      },
-      {
-        "region": "CA Montreal",
-        "hostname": "ca-montreal.privacy.network",
-        "server_name": "montreal406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "199.36.223.54",
-          "199.36.223.65",
-          "199.36.223.36",
-          "199.36.223.70"
-        ]
-      },
-      {
-        "region": "CA Montreal",
-        "hostname": "ca-montreal.privacy.network",
-        "server_name": "montreal410",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "199.36.223.198",
-          "199.36.223.235",
-          "199.36.223.233",
-          "199.36.223.237",
-          "199.36.223.224",
-          "199.36.223.218",
-          "199.36.223.220"
+          "172.98.71.167",
+          "172.98.71.177",
+          "172.98.71.179",
+          "172.98.71.188",
+          "172.98.71.180",
+          "172.98.71.175"
         ]
       },
       {
         "region": "CA Ontario",
         "hostname": "ca-ontario.privacy.network",
-        "server_name": "ontario401",
+        "server_name": "ontario402",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "172.83.47.73",
-          "172.83.47.98",
-          "172.83.47.100",
-          "172.83.47.113"
-        ]
-      },
-      {
-        "region": "CA Ontario",
-        "hostname": "ca-ontario.privacy.network",
-        "server_name": "ontario403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "172.98.92.54",
-          "172.98.92.47",
-          "172.98.92.19"
-        ]
-      },
-      {
-        "region": "CA Ontario",
-        "hostname": "ca-ontario.privacy.network",
-        "server_name": "ontario405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "172.98.80.95",
-          "172.98.80.94",
-          "172.98.80.89"
-        ]
-      },
-      {
-        "region": "CA Ontario",
-        "hostname": "ca-ontario.privacy.network",
-        "server_name": "ontario407",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "172.98.80.64",
-          "172.98.80.45",
-          "172.98.80.49",
-          "172.98.80.60"
-        ]
-      },
-      {
-        "region": "CA Ontario",
-        "hostname": "ca-ontario.privacy.network",
-        "server_name": "ontario409",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "66.115.145.234",
-          "66.115.145.244",
-          "66.115.145.240",
-          "66.115.145.228"
-        ]
-      },
-      {
-        "region": "CA Toronto",
-        "hostname": "ca-toronto.privacy.network",
-        "server_name": "toronto402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "66.115.142.59",
-          "66.115.142.37",
-          "66.115.142.63",
-          "66.115.142.55",
-          "66.115.142.56"
-        ]
-      },
-      {
-        "region": "CA Toronto",
-        "hostname": "ca-toronto.privacy.network",
-        "server_name": "toronto414",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.3.40.10",
-          "154.3.40.8",
-          "154.3.40.6",
-          "154.3.40.28"
+          "172.83.47.136",
+          "172.83.47.151",
+          "172.83.47.168",
+          "172.83.47.140",
+          "172.83.47.142",
+          "172.83.47.159",
+          "172.83.47.139"
         ]
       },
       {
@@ -80306,105 +79878,38 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.3.40.59",
-          "154.3.40.60",
-          "154.3.40.39",
-          "154.3.40.57"
-        ]
-      },
-      {
-        "region": "CA Toronto",
-        "hostname": "ca-toronto.privacy.network",
-        "server_name": "toronto416",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.3.40.85",
-          "154.3.40.88",
-          "154.3.40.90"
-        ]
-      },
-      {
-        "region": "CA Toronto",
-        "hostname": "ca-toronto.privacy.network",
-        "server_name": "toronto420",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.3.40.206",
-          "154.3.40.207",
-          "154.3.40.189",
-          "154.3.40.208"
+          "154.3.40.55",
+          "154.3.40.56",
+          "154.3.40.43",
+          "154.3.40.50",
+          "154.3.40.45"
         ]
       },
       {
         "region": "CA Vancouver",
         "hostname": "ca-vancouver.privacy.network",
-        "server_name": "vancouver401",
+        "server_name": "vancouver411",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "162.216.47.57",
-          "162.216.47.9",
-          "162.216.47.43"
+          "208.78.42.133",
+          "208.78.42.144"
         ]
       },
       {
         "region": "CA Vancouver",
         "hostname": "ca-vancouver.privacy.network",
-        "server_name": "vancouver405",
+        "server_name": "vancouver419",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "162.216.47.186",
-          "162.216.47.167",
-          "162.216.47.180"
-        ]
-      },
-      {
-        "region": "CA Vancouver",
-        "hostname": "ca-vancouver.privacy.network",
-        "server_name": "vancouver406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "162.216.47.217",
-          "162.216.47.250",
-          "162.216.47.196",
-          "162.216.47.243",
-          "162.216.47.236"
-        ]
-      },
-      {
-        "region": "CA Vancouver",
-        "hostname": "ca-vancouver.privacy.network",
-        "server_name": "vancouver409",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "172.98.89.204",
-          "172.98.89.225",
-          "172.98.89.234",
-          "172.98.89.233"
-        ]
-      },
-      {
-        "region": "CA Vancouver",
-        "hostname": "ca-vancouver.privacy.network",
-        "server_name": "vancouver412",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "208.78.42.235",
-          "208.78.42.199",
-          "208.78.42.209"
+          "208.78.42.164",
+          "208.78.42.174",
+          "208.78.42.161",
+          "208.78.42.176",
+          "208.78.42.181"
         ]
       },
       {
@@ -80415,10 +79920,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.215.235.110",
-          "188.215.235.99",
-          "188.215.235.105",
-          "188.215.235.109"
+          "188.215.235.108",
+          "188.215.235.101"
         ]
       },
       {
@@ -80430,35 +79933,93 @@
         "port_forward": true,
         "ips": [
           "188.215.235.117",
-          "188.215.235.120",
-          "188.215.235.116",
-          "188.215.235.119"
+          "188.215.235.125",
+          "188.215.235.118",
+          "188.215.235.126"
+        ]
+      },
+      {
+        "region": "Chile",
+        "hostname": "santiago.privacy.network",
+        "server_name": "chile401",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "146.70.11.21",
+          "146.70.11.27"
+        ]
+      },
+      {
+        "region": "Chile",
+        "hostname": "santiago.privacy.network",
+        "server_name": "chile402",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "146.70.11.29",
+          "146.70.11.36",
+          "146.70.11.31",
+          "146.70.11.33",
+          "146.70.11.35"
         ]
       },
       {
         "region": "China",
         "hostname": "china.privacy.network",
-        "server_name": "china404",
+        "server_name": "china407",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.241.80.13",
-          "188.241.80.14"
+          "188.241.80.50",
+          "188.241.80.47",
+          "188.241.80.54",
+          "188.241.80.44",
+          "188.241.80.52",
+          "188.241.80.49"
         ]
       },
       {
-        "region": "China",
-        "hostname": "china.privacy.network",
-        "server_name": "china405",
+        "region": "Colombia",
+        "hostname": "bogota.privacy.network",
+        "server_name": "colombia402",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.241.80.28",
-          "188.241.80.17",
-          "188.241.80.18",
-          "188.241.80.26"
+          "146.70.9.51",
+          "146.70.9.45",
+          "146.70.9.53",
+          "146.70.9.47",
+          "146.70.9.44"
+        ]
+      },
+      {
+        "region": "Colombia",
+        "hostname": "bogota.privacy.network",
+        "server_name": "columbia401",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "146.70.9.40"
+        ]
+      },
+      {
+        "region": "Costa Rica",
+        "hostname": "sanjose.privacy.network",
+        "server_name": "costarica401",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "146.70.10.16",
+          "146.70.10.21",
+          "146.70.10.18",
+          "146.70.10.27",
+          "146.70.10.23"
         ]
       },
       {
@@ -80469,10 +80030,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "146.70.8.143",
-          "146.70.8.136",
-          "146.70.8.133",
-          "146.70.8.144"
+          "146.70.8.144",
+          "146.70.8.140",
+          "146.70.8.141",
+          "146.70.8.134",
+          "146.70.8.139",
+          "146.70.8.142",
+          "146.70.8.135"
         ]
       },
       {
@@ -80483,38 +80047,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
+          "185.253.162.7",
           "185.253.162.5",
-          "185.253.162.6",
-          "185.253.162.10",
-          "185.253.162.9"
-        ]
-      },
-      {
-        "region": "Czech Republic",
-        "hostname": "czech.privacy.network",
-        "server_name": "prague401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.39.78",
-          "212.102.38.215",
-          "212.102.39.99",
-          "212.102.39.76"
-        ]
-      },
-      {
-        "region": "Czech Republic",
-        "hostname": "czech.privacy.network",
-        "server_name": "prague402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.39.138",
-          "212.102.39.139",
-          "212.102.39.150",
-          "212.102.39.140"
+          "185.253.162.3",
+          "185.253.162.12",
+          "185.253.162.6"
         ]
       },
       {
@@ -80526,118 +80063,38 @@
         "port_forward": true,
         "ips": [
           "212.102.39.215",
-          "212.102.39.209",
-          "212.102.39.208"
+          "212.102.39.198",
+          "212.102.39.207",
+          "212.102.39.205",
+          "212.102.39.196",
+          "212.102.39.66",
+          "212.102.39.216"
         ]
       },
       {
         "region": "DE Berlin",
         "hostname": "de-berlin.privacy.network",
-        "server_name": "berlin418",
+        "server_name": "berlin416",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.13.1.43",
-          "154.13.1.34",
-          "154.13.1.37"
+          "154.13.1.11",
+          "154.13.1.9",
+          "154.13.1.12",
+          "154.13.1.4"
         ]
       },
       {
         "region": "DE Berlin",
         "hostname": "de-berlin.privacy.network",
-        "server_name": "berlin419",
+        "server_name": "berlin425",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.13.1.57",
-          "154.13.1.58",
-          "154.13.1.49",
-          "154.13.1.55",
-          "154.13.1.54"
-        ]
-      },
-      {
-        "region": "DE Berlin",
-        "hostname": "de-berlin.privacy.network",
-        "server_name": "berlin420",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.13.1.64",
-          "154.13.1.73",
-          "154.13.1.70",
-          "154.13.1.65"
-        ]
-      },
-      {
-        "region": "DE Berlin",
-        "hostname": "de-berlin.privacy.network",
-        "server_name": "berlin422",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.13.1.96",
-          "154.13.1.94",
-          "154.13.1.106",
-          "154.13.1.97"
-        ]
-      },
-      {
-        "region": "DE Berlin",
-        "hostname": "de-berlin.privacy.network",
-        "server_name": "berlin424",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.13.1.137",
-          "154.13.1.130",
-          "154.13.1.135",
-          "154.13.1.136"
-        ]
-      },
-      {
-        "region": "DE Frankfurt",
-        "hostname": "de-frankfurt.privacy.network",
-        "server_name": "frankfurt402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "195.181.170.226",
-          "212.102.57.204",
-          "212.102.57.215",
-          "212.102.57.205"
-        ]
-      },
-      {
-        "region": "DE Frankfurt",
-        "hostname": "de-frankfurt.privacy.network",
-        "server_name": "frankfurt405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.57.13",
-          "212.102.57.16",
-          "212.102.57.8",
-          "212.102.57.20"
-        ]
-      },
-      {
-        "region": "DE Frankfurt",
-        "hostname": "de-frankfurt.privacy.network",
-        "server_name": "frankfurt407",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "138.199.18.140",
-          "138.199.18.143"
+          "154.13.1.145",
+          "154.13.1.141"
         ]
       },
       {
@@ -80648,9 +80105,12 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "138.199.18.68",
-          "138.199.18.90",
-          "138.199.18.67"
+          "138.199.18.66",
+          "138.199.18.79",
+          "138.199.18.62",
+          "138.199.18.80",
+          "138.199.18.88",
+          "138.199.18.68"
         ]
       },
       {
@@ -80661,65 +80121,96 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "212.102.57.144",
-          "212.102.57.160",
-          "212.102.57.165",
-          "212.102.57.145"
+          "212.102.57.158",
+          "212.102.57.141"
         ]
       },
       {
-        "region": "Denmark",
-        "hostname": "denmark.privacy.network",
-        "server_name": "copenhagen402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.126.94.79",
-          "188.126.94.93",
-          "188.126.94.86",
-          "188.126.94.73"
-        ]
-      },
-      {
-        "region": "Denmark",
-        "hostname": "denmark.privacy.network",
-        "server_name": "copenhagen403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.126.94.115",
-          "188.126.94.119",
-          "188.126.94.126",
-          "188.126.94.110"
-        ]
-      },
-      {
-        "region": "Denmark",
-        "hostname": "denmark.privacy.network",
-        "server_name": "copenhagen404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.126.94.176",
-          "188.126.94.189",
-          "188.126.94.185",
-          "188.126.94.167"
-        ]
-      },
-      {
-        "region": "Denmark",
+        "region": "DK Copenhagen",
         "hostname": "denmark.privacy.network",
         "server_name": "copenhagen405",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.126.94.47",
-          "188.126.94.40",
-          "188.126.94.38"
+          "188.126.94.59",
+          "188.126.94.46",
+          "188.126.94.39",
+          "188.126.94.61",
+          "188.126.94.36",
+          "188.126.94.42",
+          "188.126.94.44"
+        ]
+      },
+      {
+        "region": "DK Streaming Optimized",
+        "hostname": "denmark-2.privacy.network",
+        "server_name": "copenhagen408",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "46.246.106.37",
+          "46.246.106.45",
+          "46.246.106.41",
+          "46.246.106.43",
+          "46.246.106.40"
+        ]
+      },
+      {
+        "region": "ES Madrid",
+        "hostname": "spain.privacy.network",
+        "server_name": "madrid401",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "212.102.49.73",
+          "212.102.49.86"
+        ]
+      },
+      {
+        "region": "ES Madrid",
+        "hostname": "spain.privacy.network",
+        "server_name": "madrid402",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "212.102.49.12",
+          "212.102.49.24",
+          "212.102.49.30",
+          "212.102.49.22",
+          "212.102.49.18",
+          "212.102.49.9"
+        ]
+      },
+      {
+        "region": "ES Valencia",
+        "hostname": "es-valencia.privacy.network",
+        "server_name": "valencia401",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "196.196.150.21",
+          "196.196.150.24",
+          "196.196.150.29",
+          "196.196.150.23",
+          "196.196.150.27",
+          "196.196.150.20"
+        ]
+      },
+      {
+        "region": "ES Valencia",
+        "hostname": "es-valencia.privacy.network",
+        "server_name": "valencia402",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "196.196.150.62",
+          "196.196.150.52"
         ]
       },
       {
@@ -80730,40 +80221,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
+          "188.214.122.100",
+          "188.214.122.104",
+          "188.214.122.106",
+          "188.214.122.102",
+          "188.214.122.109",
           "188.214.122.108",
-          "188.214.122.107",
-          "188.214.122.110",
-          "188.214.122.103",
-          "188.214.122.100"
-        ]
-      },
-      {
-        "region": "Egypt",
-        "hostname": "egypt.privacy.network",
-        "server_name": "cairo402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.214.122.125",
-          "188.214.122.118",
-          "188.214.122.120",
-          "188.214.122.126"
-        ]
-      },
-      {
-        "region": "Estonia",
-        "hostname": "ee.privacy.network",
-        "server_name": "talinn401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "77.247.111.141",
-          "77.247.111.136",
-          "77.247.111.134",
-          "77.247.111.139",
-          "77.247.111.138"
+          "188.214.122.110"
         ]
       },
       {
@@ -80774,11 +80238,22 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.153.31.74",
-          "95.153.31.73",
-          "95.153.31.68",
-          "95.153.31.67",
-          "95.153.31.77"
+          "95.153.31.71",
+          "95.153.31.72"
+        ]
+      },
+      {
+        "region": "Estonia",
+        "hostname": "ee.privacy.network",
+        "server_name": "talinn403",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "95.153.32.3",
+          "95.153.32.11",
+          "95.153.32.12",
+          "95.153.32.13"
         ]
       },
       {
@@ -80789,10 +80264,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.126.89.38",
-          "188.126.89.44",
-          "188.126.89.59",
-          "188.126.89.39"
+          "188.126.89.41",
+          "188.126.89.43"
         ]
       },
       {
@@ -80803,25 +80276,12 @@
         "udp": true,
         "port_forward": true,
         "ips": [
+          "188.126.89.136",
+          "188.126.89.135",
           "188.126.89.154",
+          "188.126.89.146",
           "188.126.89.137",
-          "188.126.89.155",
-          "188.126.89.153"
-        ]
-      },
-      {
-        "region": "FI Helsinki",
-        "hostname": "fi.privacy.network",
-        "server_name": "helsinki404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.126.89.85",
-          "188.126.89.88",
-          "188.126.89.78",
-          "188.126.89.77",
-          "188.126.89.73"
+          "188.126.89.140"
         ]
       },
       {
@@ -80832,9 +80292,14 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.126.89.29",
           "188.126.89.19",
-          "188.126.89.9"
+          "188.126.89.7",
+          "188.126.89.17",
+          "188.126.89.15",
+          "188.126.89.10",
+          "188.126.89.26",
+          "188.126.89.13",
+          "188.126.89.12"
         ]
       },
       {
@@ -80845,36 +80310,10 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.63.146",
-          "156.146.63.144",
           "156.146.63.157",
-          "156.146.63.140"
-        ]
-      },
-      {
-        "region": "France",
-        "hostname": "france.privacy.network",
-        "server_name": "paris404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "156.146.63.6",
-          "156.146.63.9",
-          "156.146.63.13"
-        ]
-      },
-      {
-        "region": "France",
-        "hostname": "france.privacy.network",
-        "server_name": "paris410",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "191.101.217.37",
-          "191.101.217.28",
-          "191.101.217.33"
+          "156.146.63.158",
+          "156.146.63.142",
+          "156.146.63.135"
         ]
       },
       {
@@ -80885,9 +80324,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "191.101.31.27",
-          "191.101.31.15",
-          "191.101.31.10"
+          "191.101.31.16",
+          "191.101.31.32"
         ]
       },
       {
@@ -80898,10 +80336,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "191.101.31.54",
-          "191.101.31.55",
-          "191.101.31.67",
-          "191.101.31.65"
+          "191.101.31.50",
+          "191.101.31.69"
         ]
       },
       {
@@ -80912,11 +80348,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.236.3",
-          "95.181.236.6",
-          "95.181.236.13",
+          "95.181.236.12",
+          "95.181.236.10",
+          "95.181.236.7",
+          "95.181.236.9",
           "95.181.236.5",
-          "95.181.236.9"
+          "95.181.236.11",
+          "95.181.236.4"
         ]
       },
       {
@@ -80927,9 +80365,10 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.57.3.85",
+          "154.57.3.86",
           "154.57.3.90",
-          "154.57.3.84"
+          "154.57.3.79",
+          "154.57.3.87"
         ]
       },
       {
@@ -80940,38 +80379,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.57.3.99",
           "154.57.3.97",
-          "154.57.3.93",
-          "154.57.3.95"
-        ]
-      },
-      {
-        "region": "Greenland",
-        "hostname": "greenland.privacy.network",
-        "server_name": "greenland403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "91.90.120.143",
-          "91.90.120.136",
-          "91.90.120.140",
-          "91.90.120.138"
-        ]
-      },
-      {
-        "region": "Greenland",
-        "hostname": "greenland.privacy.network",
-        "server_name": "greenland404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "91.90.120.157",
-          "91.90.120.148",
-          "91.90.120.156",
-          "91.90.120.158"
+          "154.57.3.98"
         ]
       },
       {
@@ -80982,69 +80391,51 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "91.90.120.168",
           "91.90.120.170",
-          "91.90.120.165",
-          "91.90.120.171",
           "91.90.120.164"
         ]
       },
       {
         "region": "Greenland",
         "hostname": "greenland.privacy.network",
-        "server_name": "greenland406",
+        "server_name": "greenland408",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "91.90.120.184",
-          "91.90.120.178",
-          "91.90.120.176",
-          "91.90.120.189",
-          "91.90.120.187"
+          "91.90.120.214",
+          "91.90.120.215",
+          "91.90.120.212",
+          "91.90.120.209",
+          "91.90.120.219",
+          "91.90.120.218"
         ]
       },
       {
         "region": "Hong Kong",
         "hostname": "hk.privacy.network",
-        "server_name": "china403",
+        "server_name": "hongkong404",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "86.107.104.218",
-          "86.107.104.220",
-          "86.107.104.217",
-          "86.107.104.214",
-          "86.107.104.215"
+          "86.107.104.248",
+          "86.107.104.245",
+          "86.107.104.244",
+          "86.107.104.250",
+          "86.107.104.249"
         ]
       },
       {
         "region": "Hong Kong",
         "hostname": "hk.privacy.network",
-        "server_name": "hongkong402",
+        "server_name": "hongkong405",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "86.107.104.233",
-          "86.107.104.227",
-          "86.107.104.229"
-        ]
-      },
-      {
-        "region": "Hong Kong",
-        "hostname": "hk.privacy.network",
-        "server_name": "hongkong403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "91.219.213.8",
-          "91.219.213.29",
-          "91.219.213.6",
-          "91.219.213.9",
-          "91.219.213.27"
+          "91.219.213.28",
+          "91.219.213.23"
         ]
       },
       {
@@ -81055,11 +80446,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "217.138.192.221",
-          "217.138.192.219",
           "217.138.192.218",
-          "217.138.192.222",
-          "217.138.192.220"
+          "217.138.192.222"
         ]
       },
       {
@@ -81070,11 +80458,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "86.106.74.124",
-          "86.106.74.115",
-          "86.106.74.116",
-          "86.106.74.117",
-          "86.106.74.123"
+          "86.106.74.120",
+          "86.106.74.122"
         ]
       },
       {
@@ -81085,22 +80470,9 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.41.4",
-          "156.146.41.19",
-          "156.146.41.6"
-        ]
-      },
-      {
-        "region": "IT Milano",
-        "hostname": "italy.privacy.network",
-        "server_name": "milano403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "156.146.41.74",
-          "156.146.41.66",
-          "156.146.41.76"
+          "156.146.41.24",
+          "156.146.41.14",
+          "156.146.41.22"
         ]
       },
       {
@@ -81111,24 +80483,9 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.41.217",
-          "156.146.41.205",
-          "156.146.41.196",
-          "156.146.41.194"
-        ]
-      },
-      {
-        "region": "IT Streaming Optimized",
-        "hostname": "italy-2.privacy.network",
-        "server_name": "milano405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "138.199.54.48",
-          "138.199.54.47",
-          "138.199.54.34",
-          "138.199.54.37"
+          "156.146.41.206",
+          "156.146.41.216",
+          "156.146.41.221"
         ]
       },
       {
@@ -81139,24 +80496,38 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "138.199.54.53",
+          "138.199.54.56",
           "138.199.54.64",
-          "138.199.54.58",
-          "138.199.54.63",
-          "138.199.54.57"
+          "138.199.54.59",
+          "138.199.54.60",
+          "138.199.54.51",
+          "138.199.54.52",
+          "138.199.54.50",
+          "138.199.54.61"
         ]
       },
       {
         "region": "Iceland",
         "hostname": "is.privacy.network",
-        "server_name": "reykjavik402",
+        "server_name": "reykjavik401",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "45.133.193.90",
-          "45.133.193.87",
-          "45.133.193.91"
+          "45.133.193.38",
+          "45.133.193.44"
+        ]
+      },
+      {
+        "region": "Iceland",
+        "hostname": "is.privacy.network",
+        "server_name": "reykjavik403",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "45.133.193.68",
+          "45.133.193.71"
         ]
       },
       {
@@ -81167,81 +80538,78 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "45.133.193.57",
-          "45.133.193.56",
-          "45.133.193.51",
-          "45.133.193.59",
-          "45.133.193.58"
+          "45.133.193.55",
+          "45.133.193.53",
+          "45.133.193.59"
         ]
       },
       {
         "region": "India",
         "hostname": "in.privacy.network",
-        "server_name": "mumbai401",
+        "server_name": "mumbai409",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "45.120.139.34",
-          "45.120.139.36",
-          "45.120.139.4",
-          "45.120.139.37"
+          "196.247.240.133",
+          "196.247.240.139"
         ]
       },
       {
         "region": "India",
         "hostname": "in.privacy.network",
-        "server_name": "mumbai402",
+        "server_name": "mumbai410",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "45.120.139.134",
-          "45.120.139.126",
-          "45.120.139.125",
-          "45.120.139.133"
+          "196.247.240.151",
+          "196.247.240.147"
         ]
       },
       {
         "region": "India",
         "hostname": "in.privacy.network",
-        "server_name": "mumbai403",
+        "server_name": "mumbai411",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "103.150.187.3",
-          "103.150.187.15",
-          "103.150.187.6",
-          "103.150.187.4"
+          "196.247.240.158",
+          "196.247.240.162",
+          "196.247.240.168",
+          "196.247.240.161"
         ]
       },
       {
-        "region": "India",
-        "hostname": "in.privacy.network",
-        "server_name": "mumbai407",
+        "region": "Indonesia",
+        "hostname": "jakarta.privacy.network",
+        "server_name": "indonesia401",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "103.150.187.23",
-          "103.150.187.17",
-          "103.150.187.20",
-          "103.150.187.29"
+          "146.70.14.31",
+          "146.70.14.23",
+          "146.70.14.25",
+          "146.70.14.32",
+          "146.70.14.21",
+          "146.70.14.27",
+          "146.70.14.20"
         ]
       },
       {
         "region": "Ireland",
         "hostname": "ireland.privacy.network",
-        "server_name": "dublin404",
+        "server_name": "dublin403",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "193.56.252.30",
-          "193.56.252.29",
-          "193.56.252.26",
-          "193.56.252.19"
+          "193.56.252.37",
+          "193.56.252.46",
+          "193.56.252.41",
+          "193.56.252.39"
         ]
       },
       {
@@ -81252,50 +80620,20 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "193.56.252.6",
-          "193.56.252.8",
-          "193.56.252.5"
+          "193.56.252.5",
+          "193.56.252.9"
         ]
       },
       {
         "region": "Ireland",
         "hostname": "ireland.privacy.network",
-        "server_name": "dublin406",
+        "server_name": "dublin407",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "193.56.252.216",
-          "193.56.252.221",
-          "193.56.252.215"
-        ]
-      },
-      {
-        "region": "Ireland",
-        "hostname": "ireland.privacy.network",
-        "server_name": "dublin408",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "193.56.252.249",
-          "193.56.252.246",
-          "193.56.252.250",
-          "193.56.252.247",
-          "193.56.252.244"
-        ]
-      },
-      {
-        "region": "Ireland",
-        "hostname": "ireland.privacy.network",
-        "server_name": "dublin409",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.241.178.45",
-          "188.241.178.43",
-          "188.241.178.38"
+          "193.56.252.230",
+          "193.56.252.233"
         ]
       },
       {
@@ -81306,82 +80644,29 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "91.90.124.19",
+          "91.90.124.4",
+          "91.90.124.8",
+          "91.90.124.15",
+          "91.90.124.6",
+          "91.90.124.11",
           "91.90.124.7",
-          "91.90.124.9",
-          "91.90.124.14",
-          "91.90.124.10",
-          "91.90.124.4"
+          "91.90.124.17"
         ]
       },
       {
         "region": "Israel",
         "hostname": "israel.privacy.network",
-        "server_name": "jerusalem402",
+        "server_name": "jerusalem412",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "185.77.248.28",
-          "185.77.248.26",
-          "185.77.248.23",
-          "185.77.248.27"
-        ]
-      },
-      {
-        "region": "Israel",
-        "hostname": "israel.privacy.network",
-        "server_name": "jerusalem404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "185.77.248.64",
-          "185.77.248.58",
-          "185.77.248.63"
-        ]
-      },
-      {
-        "region": "Israel",
-        "hostname": "israel.privacy.network",
-        "server_name": "jerusalem405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "185.77.248.66",
-          "185.77.248.74",
-          "185.77.248.73",
-          "185.77.248.68"
-        ]
-      },
-      {
-        "region": "Israel",
-        "hostname": "israel.privacy.network",
-        "server_name": "jerusalem406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "185.77.248.84",
-          "185.77.248.85",
-          "185.77.248.79",
-          "185.77.248.88"
-        ]
-      },
-      {
-        "region": "Israel",
-        "hostname": "israel.privacy.network",
-        "server_name": "jerusalem407",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "185.77.248.94",
-          "185.77.248.93",
-          "185.77.248.95",
-          "185.77.248.100",
-          "185.77.248.96"
+          "185.191.204.111",
+          "185.191.204.107",
+          "185.191.204.115",
+          "185.191.204.124",
+          "185.191.204.123",
+          "185.191.204.120"
         ]
       },
       {
@@ -81392,10 +80677,10 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "138.199.39.3",
-          "138.199.39.5",
           "138.199.39.2",
-          "138.199.39.4"
+          "138.199.39.5",
+          "138.199.39.4",
+          "138.199.39.3"
         ]
       },
       {
@@ -81406,25 +80691,10 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.34.153",
-          "156.146.34.138",
-          "156.146.34.147",
-          "156.146.34.139"
-        ]
-      },
-      {
-        "region": "JP Tokyo",
-        "hostname": "japan.privacy.network",
-        "server_name": "tokyo402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "156.146.34.66",
-          "156.146.34.67",
-          "156.146.34.73",
-          "156.146.34.88",
-          "156.146.34.90"
+          "156.146.34.132",
+          "156.146.34.148",
+          "156.146.34.154",
+          "156.146.34.146"
         ]
       },
       {
@@ -81435,9 +80705,10 @@
         "udp": true,
         "port_forward": true,
         "ips": [
+          "156.146.34.12",
+          "156.146.34.24",
           "156.146.34.8",
-          "156.146.34.5",
-          "156.146.34.14"
+          "156.146.34.21"
         ]
       },
       {
@@ -81448,40 +80719,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "62.133.47.8",
-          "62.133.47.6",
           "62.133.47.5",
+          "62.133.47.12",
+          "62.133.47.3",
+          "62.133.47.8",
           "62.133.47.4"
-        ]
-      },
-      {
-        "region": "Latvia",
-        "hostname": "lv.privacy.network",
-        "server_name": "riga401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "109.248.149.14",
-          "109.248.149.7",
-          "109.248.149.10",
-          "109.248.149.5",
-          "109.248.149.8"
-        ]
-      },
-      {
-        "region": "Latvia",
-        "hostname": "lv.privacy.network",
-        "server_name": "riga402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "46.183.218.135",
-          "46.183.218.133",
-          "46.183.218.134",
-          "46.183.218.141",
-          "46.183.218.137"
         ]
       },
       {
@@ -81492,51 +80734,27 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "46.183.218.149",
+          "46.183.218.148",
+          "46.183.218.152",
           "46.183.218.150",
-          "46.183.218.155",
-          "46.183.218.147"
+          "46.183.218.149",
+          "46.183.218.153"
         ]
       },
       {
         "region": "Liechtenstein",
         "hostname": "liechtenstein.privacy.network",
-        "server_name": "liechtenstein403",
+        "server_name": "liechtenstein401",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "91.90.122.17",
-          "91.90.122.9",
-          "91.90.122.19",
-          "91.90.122.18",
-          "91.90.122.14"
-        ]
-      },
-      {
-        "region": "Lithuania",
-        "hostname": "lt.privacy.network",
-        "server_name": "vilnius401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "85.206.165.164",
-          "85.206.165.175",
-          "85.206.165.163"
-        ]
-      },
-      {
-        "region": "Lithuania",
-        "hostname": "lt.privacy.network",
-        "server_name": "vilnius402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "85.206.165.104",
-          "85.206.165.103",
-          "85.206.165.99"
+          "91.90.122.21",
+          "91.90.122.32",
+          "91.90.122.26",
+          "91.90.122.31",
+          "91.90.122.25",
+          "91.90.122.22"
         ]
       },
       {
@@ -81547,40 +80765,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "85.206.165.118",
-          "85.206.165.123",
-          "85.206.165.116",
-          "85.206.165.113",
-          "85.206.165.126"
-        ]
-      },
-      {
-        "region": "Luxembourg",
-        "hostname": "lu.privacy.network",
-        "server_name": "luxembourg404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "5.253.204.108",
-          "5.253.204.109",
-          "5.253.204.110",
-          "5.253.204.105"
-        ]
-      },
-      {
-        "region": "Luxembourg",
-        "hostname": "lu.privacy.network",
-        "server_name": "luxembourg405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "5.253.204.125",
-          "5.253.204.118",
-          "5.253.204.116",
-          "5.253.204.124",
-          "5.253.204.119"
+          "194.32.122.62",
+          "194.32.122.69",
+          "194.32.122.61",
+          "194.32.122.73",
+          "194.32.122.66"
         ]
       },
       {
@@ -81591,25 +80780,12 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "5.253.204.136",
-          "5.253.204.137",
-          "5.253.204.134",
-          "5.253.204.135"
-        ]
-      },
-      {
-        "region": "Luxembourg",
-        "hostname": "lu.privacy.network",
-        "server_name": "luxembourg407",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "5.253.204.150",
-          "5.253.204.148",
-          "5.253.204.149",
-          "5.253.204.158",
-          "5.253.204.153"
+          "5.253.204.140",
+          "5.253.204.132",
+          "5.253.204.138",
+          "5.253.204.141",
+          "5.253.204.139",
+          "5.253.204.142"
         ]
       },
       {
@@ -81620,38 +80796,28 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "84.252.92.5",
-          "84.252.92.9",
-          "84.252.92.6",
-          "84.252.92.3"
+          "84.252.92.12",
+          "84.252.92.8",
+          "84.252.92.3",
+          "84.252.92.14",
+          "84.252.92.15",
+          "84.252.92.9"
         ]
       },
       {
-        "region": "Macedonia",
-        "hostname": "mk.privacy.network",
-        "server_name": "macedonia401",
+        "region": "Malaysia",
+        "hostname": "kualalumpur.privacy.network",
+        "server_name": "malaysia401",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "185.225.28.119",
-          "185.225.28.120",
-          "185.225.28.123",
-          "185.225.28.117"
-        ]
-      },
-      {
-        "region": "Macedonia",
-        "hostname": "mk.privacy.network",
-        "server_name": "macedonia402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "185.225.28.136",
-          "185.225.28.133",
-          "185.225.28.137",
-          "185.225.28.134"
+          "146.70.15.28",
+          "146.70.15.30",
+          "146.70.15.20",
+          "146.70.15.21",
+          "146.70.15.19",
+          "146.70.15.29"
         ]
       },
       {
@@ -81662,38 +80828,25 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "176.125.230.5",
+          "176.125.230.10",
+          "176.125.230.13",
           "176.125.230.9",
-          "176.125.230.3",
-          "176.125.230.10"
+          "176.125.230.5",
+          "176.125.230.11",
+          "176.125.230.14",
+          "176.125.230.15"
         ]
       },
       {
         "region": "Mexico",
         "hostname": "mexico.privacy.network",
-        "server_name": "mexico405",
+        "server_name": "mexico403",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "77.81.142.39",
-          "77.81.142.38",
-          "77.81.142.34",
-          "77.81.142.33"
-        ]
-      },
-      {
-        "region": "Mexico",
-        "hostname": "mexico.privacy.network",
-        "server_name": "mexico406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "77.81.142.47",
-          "77.81.142.49",
-          "77.81.142.50",
-          "77.81.142.55"
+          "77.81.142.10",
+          "77.81.142.9"
         ]
       },
       {
@@ -81704,37 +80857,20 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "77.81.142.74",
           "77.81.142.69",
-          "77.81.142.67"
+          "77.81.142.64",
+          "77.81.142.70"
         ]
       },
       {
         "region": "Mexico",
         "hostname": "mexico.privacy.network",
-        "server_name": "mexico409",
+        "server_name": "mexico408",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "77.81.142.94",
-          "77.81.142.96",
-          "77.81.142.98",
-          "77.81.142.97"
-        ]
-      },
-      {
-        "region": "Mexico",
-        "hostname": "mexico.privacy.network",
-        "server_name": "mexico411",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "77.81.142.120",
-          "77.81.142.123",
-          "77.81.142.125",
-          "77.81.142.119"
+          "77.81.142.89"
         ]
       },
       {
@@ -81745,10 +80881,24 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "178.175.129.36",
-          "178.175.129.37",
+          "178.175.129.41",
+          "178.175.129.35",
           "178.175.129.46",
-          "178.175.129.38"
+          "178.175.129.38",
+          "178.175.129.36",
+          "178.175.129.43"
+        ]
+      },
+      {
+        "region": "Moldova",
+        "hostname": "md.privacy.network",
+        "server_name": "chisinau402",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "178.175.128.40",
+          "178.175.128.36"
         ]
       },
       {
@@ -81759,10 +80909,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.233.13",
+          "95.181.233.4",
+          "95.181.233.12",
           "95.181.233.10",
-          "95.181.233.3",
-          "95.181.233.9"
+          "95.181.233.9",
+          "95.181.233.8"
         ]
       },
       {
@@ -81774,9 +80925,8 @@
         "port_forward": true,
         "ips": [
           "185.253.163.13",
-          "185.253.163.7",
-          "185.253.163.15",
-          "185.253.163.6"
+          "185.253.163.11",
+          "185.253.163.10"
         ]
       },
       {
@@ -81787,26 +80937,9 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "185.253.163.18",
-          "185.253.163.19",
-          "185.253.163.23",
-          "185.253.163.30"
-        ]
-      },
-      {
-        "region": "Montenegro",
-        "hostname": "montenegro.privacy.network",
-        "server_name": "montenegro403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "176.125.229.8",
-          "176.125.229.3",
-          "176.125.229.9",
-          "176.125.229.14",
-          "176.125.229.6",
-          "176.125.229.15"
+          "185.253.163.30",
+          "185.253.163.26",
+          "185.253.163.28"
         ]
       },
       {
@@ -81818,9 +80951,11 @@
         "port_forward": true,
         "ips": [
           "95.181.232.8",
-          "95.181.232.3",
-          "95.181.232.6",
-          "95.181.232.7"
+          "95.181.232.9",
+          "95.181.232.7",
+          "95.181.232.4",
+          "95.181.232.10",
+          "95.181.232.6"
         ]
       },
       {
@@ -81831,67 +80966,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "212.102.35.28",
+          "212.102.35.6",
           "212.102.35.20",
-          "212.102.35.15",
-          "212.102.35.13"
-        ]
-      },
-      {
-        "region": "Netherlands",
-        "hostname": "nl-amsterdam.privacy.network",
-        "server_name": "amsterdam412",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "143.244.41.200",
-          "143.244.41.197",
-          "143.244.41.194",
-          "143.244.41.203"
-        ]
-      },
-      {
-        "region": "Netherlands",
-        "hostname": "nl-amsterdam.privacy.network",
-        "server_name": "amsterdam424",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.34.244",
-          "212.102.34.238",
-          "212.102.34.250",
-          "212.102.34.247",
-          "212.102.34.246"
-        ]
-      },
-      {
-        "region": "Netherlands",
-        "hostname": "nl-amsterdam.privacy.network",
-        "server_name": "amsterdam427",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "181.214.206.83",
-          "181.214.206.57",
-          "181.214.206.54",
-          "181.214.206.59"
-        ]
-      },
-      {
-        "region": "Netherlands",
-        "hostname": "nl-amsterdam.privacy.network",
-        "server_name": "amsterdam428",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "181.214.206.99",
-          "181.214.206.89",
-          "181.214.206.97",
-          "181.214.206.126"
+          "212.102.35.29",
+          "212.102.35.3",
+          "212.102.35.22",
+          "212.102.35.4",
+          "212.102.35.15"
         ]
       },
       {
@@ -81902,10 +80983,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "179.61.240.49",
-          "179.61.240.7",
-          "179.61.240.58",
-          "179.61.240.19"
+          "179.61.240.22",
+          "179.61.240.59"
         ]
       },
       {
@@ -81917,94 +80996,55 @@
         "port_forward": true,
         "ips": [
           "179.61.240.107",
-          "179.61.240.104",
-          "179.61.240.109",
-          "179.61.240.106",
-          "179.61.240.88"
-        ]
-      },
-      {
-        "region": "New Zealand",
-        "hostname": "nz.privacy.network",
-        "server_name": "newzealand405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "179.61.240.188",
-          "179.61.240.189",
-          "179.61.240.183",
-          "179.61.240.136"
+          "179.61.240.77",
+          "179.61.240.85",
+          "179.61.240.98",
+          "179.61.240.70",
+          "179.61.240.119"
         ]
       },
       {
         "region": "Nigeria",
         "hostname": "nigeria.privacy.network",
-        "server_name": "nigeria403",
+        "server_name": "nigeria405",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "102.165.25.93",
-          "102.165.25.90",
-          "102.165.25.88"
+          "146.70.65.132",
+          "146.70.65.136",
+          "146.70.65.140",
+          "146.70.65.133",
+          "146.70.65.139"
         ]
       },
       {
         "region": "Nigeria",
         "hostname": "nigeria.privacy.network",
-        "server_name": "nigeria404",
+        "server_name": "nigeria406",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "102.165.25.125",
-          "102.165.25.118",
-          "102.165.25.123",
-          "102.165.25.124"
+          "146.70.65.150",
+          "146.70.65.155"
         ]
       },
       {
-        "region": "Norway",
-        "hostname": "no.privacy.network",
-        "server_name": "oslo401",
+        "region": "North Macedonia",
+        "hostname": "mk.privacy.network",
+        "server_name": "macedonia402",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "46.246.122.47",
-          "46.246.122.56",
-          "46.246.122.49",
-          "46.246.122.58",
-          "46.246.122.59"
-        ]
-      },
-      {
-        "region": "Norway",
-        "hostname": "no.privacy.network",
-        "server_name": "oslo402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "46.246.122.67",
-          "46.246.122.68",
-          "46.246.122.84",
-          "46.246.122.78"
-        ]
-      },
-      {
-        "region": "Norway",
-        "hostname": "no.privacy.network",
-        "server_name": "oslo403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "46.246.122.120",
-          "46.246.122.104",
-          "46.246.122.116",
-          "46.246.122.100"
+          "185.225.28.142",
+          "185.225.28.136",
+          "185.225.28.140",
+          "185.225.28.137",
+          "185.225.28.132",
+          "185.225.28.139",
+          "185.225.28.141"
         ]
       },
       {
@@ -82015,23 +81055,14 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "46.246.122.169",
-          "46.246.122.170",
-          "46.246.122.164"
-        ]
-      },
-      {
-        "region": "Panama",
-        "hostname": "panama.privacy.network",
-        "server_name": "panama403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "91.90.126.9",
-          "91.90.126.3",
-          "91.90.126.7",
-          "91.90.126.10"
+          "46.246.122.180",
+          "46.246.122.185",
+          "46.246.122.190",
+          "46.246.122.173",
+          "46.246.122.164",
+          "46.246.122.189",
+          "46.246.122.183",
+          "46.246.122.168"
         ]
       },
       {
@@ -82042,23 +81073,9 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "91.90.126.22",
-          "91.90.126.26",
-          "91.90.126.34",
-          "91.90.126.32"
-        ]
-      },
-      {
-        "region": "Panama",
-        "hostname": "panama.privacy.network",
-        "server_name": "panama405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "91.90.126.40",
-          "91.90.126.38",
-          "91.90.126.45"
+          "91.90.126.23",
+          "91.90.126.31",
+          "91.90.126.26"
         ]
       },
       {
@@ -82069,26 +81086,9 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "91.90.126.54",
-          "91.90.126.64",
-          "91.90.126.57",
+          "91.90.126.59",
           "91.90.126.62",
-          "91.90.126.56"
-        ]
-      },
-      {
-        "region": "Philippines",
-        "hostname": "philippines.privacy.network",
-        "server_name": "philippines401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.214.125.141",
-          "188.214.125.133",
-          "188.214.125.134",
-          "188.214.125.139",
-          "188.214.125.140"
+          "91.90.126.64"
         ]
       },
       {
@@ -82099,23 +81099,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.214.125.157",
-          "188.214.125.154",
-          "188.214.125.155"
-        ]
-      },
-      {
-        "region": "Poland",
-        "hostname": "poland.privacy.network",
-        "server_name": "warsaw410",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "138.199.59.40",
-          "138.199.59.38",
-          "138.199.59.45",
-          "138.199.59.59"
+          "188.214.125.155",
+          "188.214.125.156",
+          "188.214.125.149",
+          "188.214.125.150",
+          "188.214.125.158",
+          "188.214.125.151",
+          "188.214.125.147"
         ]
       },
       {
@@ -82126,65 +81116,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "138.199.59.199",
-          "138.199.59.217",
-          "138.199.59.220",
+          "138.199.59.195",
+          "138.199.59.194",
+          "138.199.59.207",
+          "138.199.59.218",
+          "138.199.59.202",
           "138.199.59.213",
-          "138.199.59.208"
-        ]
-      },
-      {
-        "region": "Portugal",
-        "hostname": "pt.privacy.network",
-        "server_name": "lisbon401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "89.26.241.84",
-          "89.26.241.75",
-          "89.26.241.83",
-          "89.26.241.77",
-          "89.26.241.78"
-        ]
-      },
-      {
-        "region": "Portugal",
-        "hostname": "pt.privacy.network",
-        "server_name": "lisbon402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "89.26.241.94",
-          "89.26.241.93"
-        ]
-      },
-      {
-        "region": "Portugal",
-        "hostname": "pt.privacy.network",
-        "server_name": "lisbon403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "89.26.241.133",
-          "89.26.241.137",
-          "89.26.241.135"
-        ]
-      },
-      {
-        "region": "Portugal",
-        "hostname": "pt.privacy.network",
-        "server_name": "lisbon404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "89.26.241.107",
-          "89.26.241.108",
-          "89.26.241.103",
-          "89.26.241.114"
+          "138.199.59.222"
         ]
       },
       {
@@ -82195,11 +81133,12 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "146.70.59.8",
-          "146.70.59.34",
-          "146.70.59.23",
+          "146.70.59.10",
+          "146.70.59.9",
           "146.70.59.25",
-          "146.70.59.5"
+          "146.70.59.12",
+          "146.70.59.11",
+          "146.70.59.16"
         ]
       },
       {
@@ -82210,11 +81149,22 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.234.7",
-          "95.181.234.3",
-          "95.181.234.4",
-          "95.181.234.6",
-          "95.181.234.13"
+          "95.181.234.8",
+          "95.181.234.12",
+          "95.181.234.4"
+        ]
+      },
+      {
+        "region": "Qatar",
+        "hostname": "qatar.privacy.network",
+        "server_name": "qatar404",
+        "tcp": true,
+        "udp": true,
+        "port_forward": true,
+        "ips": [
+          "95.181.234.20",
+          "95.181.234.22",
+          "95.181.234.23"
         ]
       },
       {
@@ -82225,10 +81175,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "143.244.52.28",
-          "143.244.52.8",
           "143.244.52.9",
-          "143.244.52.16"
+          "143.244.52.8"
         ]
       },
       {
@@ -82239,64 +81187,27 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "143.244.54.128",
-          "143.244.54.134"
-        ]
-      },
-      {
-        "region": "Romania",
-        "hostname": "ro.privacy.network",
-        "server_name": "romania408",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "143.244.54.83",
-          "143.244.54.86",
-          "143.244.54.73",
-          "143.244.54.70"
-        ]
-      },
-      {
-        "region": "Romania",
-        "hostname": "ro.privacy.network",
-        "server_name": "romania409",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "143.244.54.8",
-          "143.244.54.25",
-          "143.244.54.23"
+          "143.244.54.130",
+          "143.244.54.120",
+          "143.244.54.123",
+          "143.244.54.149",
+          "143.244.54.133",
+          "143.244.54.135"
         ]
       },
       {
         "region": "SE Stockholm",
         "hostname": "sweden.privacy.network",
-        "server_name": "stockholm401",
+        "server_name": "stockholm403",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "195.246.120.23",
-          "195.246.120.13",
-          "195.246.120.17",
-          "195.246.120.39",
-          "195.246.120.9"
-        ]
-      },
-      {
-        "region": "SE Stockholm",
-        "hostname": "sweden.privacy.network",
-        "server_name": "stockholm402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "195.246.120.59",
-          "195.246.120.70",
-          "195.246.120.57",
-          "195.246.120.60"
+          "195.246.120.80",
+          "195.246.120.77",
+          "195.246.120.100",
+          "195.246.120.89",
+          "195.246.120.92"
         ]
       },
       {
@@ -82307,39 +81218,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "195.246.120.134",
-          "195.246.120.136",
-          "195.246.120.114",
-          "195.246.120.120"
-        ]
-      },
-      {
-        "region": "SE Stockholm",
-        "hostname": "sweden.privacy.network",
-        "server_name": "stockholm405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "46.246.3.190",
-          "46.246.3.193",
-          "46.246.3.184",
-          "46.246.3.187",
-          "46.246.3.197"
-        ]
-      },
-      {
-        "region": "SE Stockholm",
-        "hostname": "sweden.privacy.network",
-        "server_name": "stockholm406",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "46.246.3.245",
-          "46.246.3.225",
-          "46.246.3.239",
-          "46.246.3.233"
+          "195.246.120.123",
+          "195.246.120.124"
         ]
       },
       {
@@ -82350,11 +81230,13 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "46.246.41.167",
-          "46.246.41.166",
-          "46.246.41.174",
           "46.246.41.168",
-          "46.246.41.171"
+          "46.246.41.173",
+          "46.246.41.166",
+          "46.246.41.170",
+          "46.246.41.172",
+          "46.246.41.171",
+          "46.246.41.174"
         ]
       },
       {
@@ -82365,10 +81247,12 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.235.15",
-          "95.181.235.16",
-          "95.181.235.10",
-          "95.181.235.6"
+          "95.181.235.6",
+          "95.181.235.13",
+          "95.181.235.11",
+          "95.181.235.14",
+          "95.181.235.8",
+          "95.181.235.10"
         ]
       },
       {
@@ -82380,36 +81264,12 @@
         "port_forward": true,
         "ips": [
           "37.120.193.245",
-          "37.120.193.246",
+          "37.120.193.253",
+          "37.120.193.254",
+          "37.120.193.249",
+          "37.120.193.247",
           "37.120.193.243",
-          "37.120.193.250"
-        ]
-      },
-      {
-        "region": "Serbia",
-        "hostname": "rs.privacy.network",
-        "server_name": "belgrade402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "37.120.193.229",
-          "37.120.193.230",
-          "37.120.193.234",
-          "37.120.193.227"
-        ]
-      },
-      {
-        "region": "Singapore",
-        "hostname": "sg.privacy.network",
-        "server_name": "singapore401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "156.146.57.185",
-          "156.146.57.174",
-          "156.146.57.177"
+          "37.120.193.246"
         ]
       },
       {
@@ -82420,10 +81280,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.57.139",
-          "156.146.57.134",
-          "156.146.57.120",
-          "156.146.57.138"
+          "156.146.57.131",
+          "156.146.57.120"
         ]
       },
       {
@@ -82434,10 +81292,10 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.57.46",
+          "156.146.57.67",
+          "156.146.57.47",
           "156.146.57.39",
-          "156.146.57.68",
-          "156.146.57.57"
+          "156.146.57.40"
         ]
       },
       {
@@ -82448,9 +81306,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "138.199.24.14",
-          "138.199.24.15",
-          "138.199.24.10"
+          "138.199.24.25",
+          "138.199.24.23"
         ]
       },
       {
@@ -82462,118 +81319,43 @@
         "port_forward": true,
         "ips": [
           "37.120.221.93",
-          "37.120.221.90",
-          "37.120.221.87",
-          "37.120.221.88"
+          "37.120.221.89",
+          "37.120.221.88",
+          "37.120.221.84",
+          "37.120.221.83",
+          "37.120.221.94",
+          "37.120.221.90"
         ]
       },
       {
-        "region": "Slovakia",
-        "hostname": "sk.privacy.network",
-        "server_name": "bratislava402",
+        "region": "Slovenia",
+        "hostname": "slovenia.privacy.network",
+        "server_name": "slovenia402",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "37.120.221.218",
-          "37.120.221.216",
-          "37.120.221.215"
-        ]
-      },
-      {
-        "region": "South Africa",
-        "hostname": "za.privacy.network",
-        "server_name": "johannesburg401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.16.93.34",
-          "154.16.93.38",
-          "154.16.93.40",
-          "154.16.93.45",
-          "154.16.93.36"
+          "195.80.150.132",
+          "195.80.150.142",
+          "195.80.150.141",
+          "195.80.150.135",
+          "195.80.150.131",
+          "195.80.150.136"
         ]
       },
       {
         "region": "South Africa",
         "hostname": "za.privacy.network",
-        "server_name": "johannesburg402",
+        "server_name": "johannesburg407",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "154.16.93.195",
-          "154.16.93.197",
-          "154.16.93.204"
-        ]
-      },
-      {
-        "region": "South Africa",
-        "hostname": "za.privacy.network",
-        "server_name": "johannesburg403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "154.16.93.226",
-          "154.16.93.234",
-          "154.16.93.228",
-          "154.16.93.233"
-        ]
-      },
-      {
-        "region": "Spain",
-        "hostname": "spain.privacy.network",
-        "server_name": "madrid401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "195.181.167.43",
-          "212.102.49.73",
-          "212.102.49.83",
-          "212.102.49.84"
-        ]
-      },
-      {
-        "region": "Spain",
-        "hostname": "spain.privacy.network",
-        "server_name": "madrid402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.49.19",
-          "212.102.49.26",
-          "212.102.49.16",
-          "212.102.49.29"
-        ]
-      },
-      {
-        "region": "Spain",
-        "hostname": "spain.privacy.network",
-        "server_name": "madrid403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.49.218",
-          "212.102.49.190"
-        ]
-      },
-      {
-        "region": "Spain",
-        "hostname": "spain.privacy.network",
-        "server_name": "madrid404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.49.137",
-          "212.102.49.159",
-          "212.102.49.158",
-          "212.102.49.134"
+          "196.240.127.206",
+          "196.240.127.207",
+          "196.240.127.211",
+          "196.240.127.210",
+          "196.240.127.205"
         ]
       },
       {
@@ -82584,52 +81366,28 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.239.7",
-          "95.181.239.8",
-          "95.181.239.13",
           "95.181.239.3",
-          "95.181.239.5"
+          "95.181.239.10",
+          "95.181.239.5",
+          "95.181.239.11",
+          "95.181.239.4",
+          "95.181.239.8"
         ]
       },
       {
         "region": "Switzerland",
         "hostname": "swiss.privacy.network",
-        "server_name": "zurich403",
+        "server_name": "zurich402",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "212.102.37.134",
-          "212.102.37.110",
-          "212.102.37.120",
-          "212.102.37.108"
-        ]
-      },
-      {
-        "region": "Switzerland",
-        "hostname": "swiss.privacy.network",
-        "server_name": "zurich404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.37.48",
-          "212.102.37.73",
-          "212.102.37.54",
-          "212.102.37.55"
-        ]
-      },
-      {
-        "region": "Switzerland",
-        "hostname": "swiss.privacy.network",
-        "server_name": "zurich405",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.36.26",
-          "212.102.36.15",
-          "212.102.36.30"
+          "212.102.37.197",
+          "212.102.37.181",
+          "212.102.37.205",
+          "212.102.37.201",
+          "212.102.37.178",
+          "212.102.37.183"
         ]
       },
       {
@@ -82640,80 +81398,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.62.143",
-          "156.146.62.138"
-        ]
-      },
-      {
-        "region": "Switzerland",
-        "hostname": "swiss.privacy.network",
-        "server_name": "zurich407",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "156.146.62.208",
-          "156.146.62.199",
-          "156.146.62.195",
-          "156.146.62.209",
-          "156.146.62.203"
-        ]
-      },
-      {
-        "region": "Switzerland",
-        "hostname": "swiss.privacy.network",
-        "server_name": "zurich408",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.36.176",
-          "212.102.36.173",
-          "212.102.36.169",
-          "212.102.36.185"
-        ]
-      },
-      {
-        "region": "Taiwan",
-        "hostname": "taiwan.privacy.network",
-        "server_name": "taiwan401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.214.106.68",
-          "188.214.106.76",
-          "188.214.106.74",
-          "188.214.106.75"
-        ]
-      },
-      {
-        "region": "Taiwan",
-        "hostname": "taiwan.privacy.network",
-        "server_name": "taiwan402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.214.106.85",
-          "188.214.106.88",
-          "188.214.106.87",
-          "188.214.106.93"
-        ]
-      },
-      {
-        "region": "Taiwan",
-        "hostname": "taiwan.privacy.network",
-        "server_name": "taiwan403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.214.106.137",
-          "188.214.106.135",
-          "188.214.106.157",
-          "188.214.106.136",
-          "188.214.106.133"
+          "156.146.62.134",
+          "156.146.62.153"
         ]
       },
       {
@@ -82724,23 +81410,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.214.106.169",
-          "188.214.106.173",
-          "188.214.106.167"
-        ]
-      },
-      {
-        "region": "Turkey",
-        "hostname": "tr.privacy.network",
-        "server_name": "istanbul401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.213.34.74",
-          "188.213.34.67",
-          "188.213.34.70",
-          "188.213.34.77"
+          "188.214.106.166",
+          "188.214.106.168",
+          "188.214.106.167",
+          "188.214.106.163",
+          "188.214.106.164"
         ]
       },
       {
@@ -82751,50 +81425,25 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.213.34.83",
-          "188.213.34.94",
           "188.213.34.87",
-          "188.213.34.89"
+          "188.213.34.89",
+          "188.213.34.85",
+          "188.213.34.84",
+          "188.213.34.93"
         ]
       },
       {
         "region": "UK London",
         "hostname": "uk-london.privacy.network",
-        "server_name": "london402",
+        "server_name": "london408",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "212.102.63.156",
-          "212.102.63.158",
-          "212.102.63.154"
-        ]
-      },
-      {
-        "region": "UK London",
-        "hostname": "uk-london.privacy.network",
-        "server_name": "london404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.52.78",
-          "212.102.52.86",
-          "212.102.52.67",
-          "212.102.52.85"
-        ]
-      },
-      {
-        "region": "UK London",
-        "hostname": "uk-london.privacy.network",
-        "server_name": "london409",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "181.215.176.49",
-          "181.215.176.37",
-          "181.215.176.46"
+          "194.110.13.26",
+          "194.110.13.22",
+          "194.110.13.19",
+          "194.110.13.12"
         ]
       },
       {
@@ -82805,91 +81454,31 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "181.215.176.95"
+          "181.215.176.68"
         ]
       },
       {
         "region": "UK London",
         "hostname": "uk-london.privacy.network",
-        "server_name": "london411",
+        "server_name": "london434",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "138.199.29.14",
-          "138.199.29.24",
-          "138.199.28.249"
-        ]
-      },
-      {
-        "region": "UK London",
-        "hostname": "uk-london.privacy.network",
-        "server_name": "london433",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "194.110.13.58",
-          "194.110.13.43",
-          "194.110.13.46"
+          "194.110.13.87",
+          "194.110.13.95"
         ]
       },
       {
         "region": "UK Manchester",
         "hostname": "uk-manchester.privacy.network",
-        "server_name": "manchester419",
+        "server_name": "manchester401",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "45.133.172.15",
-          "45.133.172.8",
-          "45.133.172.25",
-          "45.133.172.17"
-        ]
-      },
-      {
-        "region": "UK Manchester",
-        "hostname": "uk-manchester.privacy.network",
-        "server_name": "manchester421",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "45.133.172.90",
-          "45.133.172.80",
-          "45.133.172.96",
-          "45.133.172.75",
-          "45.133.172.79"
-        ]
-      },
-      {
-        "region": "UK Manchester",
-        "hostname": "uk-manchester.privacy.network",
-        "server_name": "manchester425",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "45.133.172.219",
-          "45.133.172.223",
-          "45.133.172.204",
-          "45.133.172.210",
-          "45.133.172.208"
-        ]
-      },
-      {
-        "region": "UK Manchester",
-        "hostname": "uk-manchester.privacy.network",
-        "server_name": "manchester426",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "45.133.172.250",
-          "45.133.172.244",
-          "45.133.172.245",
-          "45.133.172.228"
+          "193.239.84.44",
+          "193.239.84.38"
         ]
       },
       {
@@ -82900,50 +81489,11 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "45.133.173.28",
-          "45.133.173.19",
+          "45.133.173.5",
           "45.133.173.24",
+          "45.133.173.7",
+          "45.133.173.18",
           "45.133.173.16"
-        ]
-      },
-      {
-        "region": "UK Southampton",
-        "hostname": "uk-southampton.privacy.network",
-        "server_name": "southampton402",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "143.244.37.133",
-          "143.244.37.159",
-          "143.244.37.154"
-        ]
-      },
-      {
-        "region": "UK Southampton",
-        "hostname": "uk-southampton.privacy.network",
-        "server_name": "southampton403",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "143.244.37.68",
-          "143.244.37.70",
-          "143.244.37.80",
-          "143.244.37.64",
-          "143.244.37.67"
-        ]
-      },
-      {
-        "region": "UK Southampton",
-        "hostname": "uk-southampton.privacy.network",
-        "server_name": "southampton404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "143.244.37.24",
-          "143.244.37.28"
         ]
       },
       {
@@ -82954,11 +81504,8 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "143.244.36.70",
-          "143.244.36.77",
-          "143.244.36.80",
-          "143.244.36.84",
-          "143.244.36.78"
+          "143.244.36.61",
+          "143.244.36.86"
         ]
       },
       {
@@ -82969,10 +81516,9 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "143.244.38.83",
+          "143.244.38.67",
           "143.244.38.70",
-          "143.244.38.75",
-          "143.244.38.64"
+          "143.244.38.68"
         ]
       },
       {
@@ -82983,92 +81529,25 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "143.244.38.10",
-          "143.244.38.5"
+          "143.244.38.27",
+          "143.244.38.19"
         ]
       },
       {
         "region": "UK Streaming Optimized",
         "hostname": "uk-2.privacy.network",
-        "server_name": "london419",
+        "server_name": "london435",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "138.199.28.9",
-          "138.199.28.10",
-          "138.199.28.4",
-          "138.199.28.8",
-          "138.199.28.5"
-        ]
-      },
-      {
-        "region": "UK Streaming Optimized",
-        "hostname": "uk-2.privacy.network",
-        "server_name": "london430",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "138.199.29.142",
-          "138.199.29.146",
-          "138.199.29.143",
-          "138.199.29.145"
-        ]
-      },
-      {
-        "region": "UK Streaming Optimized",
-        "hostname": "uk-2.privacy.network",
-        "server_name": "london441",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "138.199.30.159",
-          "138.199.30.158",
-          "138.199.30.177",
-          "138.199.30.156",
-          "138.199.30.163"
-        ]
-      },
-      {
-        "region": "UK Streaming Optimized",
-        "hostname": "uk-2.privacy.network",
-        "server_name": "southampton409",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.52.4",
-          "212.102.52.3",
-          "212.102.52.6",
-          "212.102.52.5"
-        ]
-      },
-      {
-        "region": "UK Streaming Optimized",
-        "hostname": "uk-2.privacy.network",
-        "server_name": "southampton410",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "212.102.53.83",
-          "212.102.53.84",
-          "212.102.53.86",
-          "212.102.53.88"
-        ]
-      },
-      {
-        "region": "US Atlanta",
-        "hostname": "us-atlanta.privacy.network",
-        "server_name": "atlanta411",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.21.22.9",
-          "154.21.22.23",
-          "154.21.22.33"
+          "138.199.30.187",
+          "138.199.30.184",
+          "138.199.30.205",
+          "138.199.30.189",
+          "138.199.30.191",
+          "138.199.30.197",
+          "138.199.30.185"
         ]
       },
       {
@@ -83079,9 +81558,7 @@
         "udp": true,
         "ips": [
           "154.21.22.208",
-          "154.21.22.205",
-          "154.21.22.198",
-          "154.21.22.203"
+          "154.21.22.225"
         ]
       },
       {
@@ -83091,84 +81568,46 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.21.76",
-          "154.21.21.83",
-          "154.21.21.77",
-          "154.21.21.97"
+          "154.21.21.80",
+          "154.21.21.76"
         ]
       },
       {
         "region": "US Atlanta",
         "hostname": "us-atlanta.privacy.network",
-        "server_name": "atlanta426",
+        "server_name": "atlanta423",
         "tcp": true,
         "udp": true,
         "ips": [
-          "156.146.46.218",
-          "156.146.46.220",
-          "156.146.46.200",
-          "156.146.46.206",
-          "156.146.46.227"
+          "154.21.21.134",
+          "154.21.21.151"
         ]
       },
       {
         "region": "US Atlanta",
         "hostname": "us-atlanta.privacy.network",
-        "server_name": "atlanta428",
+        "server_name": "atlanta425",
         "tcp": true,
         "udp": true,
         "ips": [
-          "156.146.46.87",
-          "156.146.46.73"
+          "156.146.47.25",
+          "156.146.47.16"
         ]
       },
       {
-        "region": "US California",
-        "hostname": "us-california.privacy.network",
-        "server_name": "losangeles404",
+        "region": "US Baltimore",
+        "hostname": "us-baltimore.privacy.network",
+        "server_name": "baltimore401",
         "tcp": true,
         "udp": true,
         "ips": [
-          "84.17.45.10",
-          "84.17.45.4",
-          "84.17.45.15"
-        ]
-      },
-      {
-        "region": "US California",
-        "hostname": "us-california.privacy.network",
-        "server_name": "losangeles413",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "102.129.145.123",
-          "102.129.145.117",
-          "102.129.145.120"
-        ]
-      },
-      {
-        "region": "US California",
-        "hostname": "us-california.privacy.network",
-        "server_name": "losangeles414",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "102.129.145.136",
-          "102.129.145.139",
-          "102.129.145.150"
-        ]
-      },
-      {
-        "region": "US California",
-        "hostname": "us-california.privacy.network",
-        "server_name": "losangeles430",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "102.129.145.188",
-          "102.129.145.189",
-          "102.129.145.174",
-          "102.129.145.166"
+          "149.57.16.24",
+          "149.57.16.18",
+          "149.57.16.25",
+          "149.57.16.8",
+          "149.57.16.32",
+          "149.57.16.30",
+          "149.57.16.22"
         ]
       },
       {
@@ -83178,371 +81617,204 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "191.96.106.163",
-          "191.96.106.166",
-          "191.96.106.179"
+          "191.96.106.185",
+          "191.96.106.184",
+          "191.96.106.177",
+          "191.96.106.164",
+          "191.96.106.169",
+          "191.96.106.186"
+        ]
+      },
+      {
+        "region": "US California",
+        "hostname": "us-california.privacy.network",
+        "server_name": "losangeles437",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "191.96.106.213",
+          "191.96.106.193"
         ]
       },
       {
         "region": "US Chicago",
         "hostname": "us-chicago.privacy.network",
-        "server_name": "chicago407",
+        "server_name": "chicago412",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.28.56",
-          "154.21.28.93",
-          "154.21.28.64",
-          "154.21.28.54"
+          "154.21.23.82",
+          "154.21.23.65"
         ]
       },
       {
         "region": "US Chicago",
         "hostname": "us-chicago.privacy.network",
-        "server_name": "chicago413",
+        "server_name": "chicago415",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.23.124",
-          "154.21.23.107",
-          "154.21.23.106",
-          "154.21.23.134"
+          "154.21.23.237",
+          "154.21.23.213"
         ]
       },
       {
         "region": "US Chicago",
         "hostname": "us-chicago.privacy.network",
-        "server_name": "chicago414",
+        "server_name": "chicago419",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.23.187",
-          "154.21.23.186",
-          "154.21.23.188"
+          "154.21.114.154",
+          "154.21.114.161"
         ]
       },
       {
         "region": "US Chicago",
         "hostname": "us-chicago.privacy.network",
-        "server_name": "chicago417",
+        "server_name": "chicago420",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.114.89",
-          "154.21.114.54",
-          "154.21.114.73",
-          "154.21.114.94"
-        ]
-      },
-      {
-        "region": "US Chicago",
-        "hostname": "us-chicago.privacy.network",
-        "server_name": "chicago421",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.21.114.248",
-          "154.21.114.244",
-          "154.21.114.235",
-          "154.21.114.237"
+          "154.21.114.192",
+          "154.21.114.220"
         ]
       },
       {
         "region": "US Denver",
         "hostname": "us-denver.privacy.network",
-        "server_name": "denver402",
+        "server_name": "denver413",
         "tcp": true,
         "udp": true,
         "ips": [
-          "70.39.126.153",
-          "70.39.126.133",
-          "70.39.126.150"
-        ]
-      },
-      {
-        "region": "US Denver",
-        "hostname": "us-denver.privacy.network",
-        "server_name": "denver403",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "70.39.116.209",
-          "70.39.116.240",
-          "70.39.116.236",
-          "70.39.116.217"
-        ]
-      },
-      {
-        "region": "US Denver",
-        "hostname": "us-denver.privacy.network",
-        "server_name": "denver407",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "70.39.108.206",
-          "70.39.108.228",
-          "70.39.108.233"
-        ]
-      },
-      {
-        "region": "US Denver",
-        "hostname": "us-denver.privacy.network",
-        "server_name": "denver409",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "70.39.113.229",
-          "70.39.113.198",
-          "70.39.113.245",
-          "70.39.113.228",
-          "70.39.113.236"
-        ]
-      },
-      {
-        "region": "US Denver",
-        "hostname": "us-denver.privacy.network",
-        "server_name": "denver411",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.210.77",
-          "37.19.210.74",
-          "37.19.210.69"
+          "70.39.92.60",
+          "70.39.92.51",
+          "70.39.92.47",
+          "70.39.92.49",
+          "70.39.92.39",
+          "70.39.92.35",
+          "70.39.92.52"
         ]
       },
       {
         "region": "US East",
         "hostname": "us-newjersey.privacy.network",
-        "server_name": "newjersey418",
+        "server_name": "newjersey428",
         "tcp": true,
         "udp": true,
         "ips": [
-          "37.19.197.203",
-          "37.19.197.217",
-          "37.19.197.190"
+          "102.165.16.104",
+          "102.165.16.102",
+          "102.165.16.103",
+          "102.165.16.100",
+          "102.165.16.105",
+          "102.165.16.110"
         ]
       },
       {
         "region": "US East",
         "hostname": "us-newjersey.privacy.network",
-        "server_name": "newjersey432",
+        "server_name": "newjersey430",
         "tcp": true,
         "udp": true,
         "ips": [
-          "102.165.16.229",
-          "102.165.16.233",
-          "102.165.16.234"
+          "102.165.16.169",
+          "102.165.16.176"
         ]
       },
       {
-        "region": "US East",
-        "hostname": "us-newjersey.privacy.network",
-        "server_name": "newjersey434",
+        "region": "US East Streaming Optimized",
+        "hostname": "us-streaming.privacy.network",
+        "server_name": "newjersey420",
         "tcp": true,
         "udp": true,
         "ips": [
-          "191.96.185.59",
-          "191.96.185.45",
-          "191.96.185.43",
-          "191.96.185.47"
-        ]
-      },
-      {
-        "region": "US East",
-        "hostname": "us-newjersey.privacy.network",
-        "server_name": "newjersey435",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "191.96.185.88",
-          "191.96.185.86",
-          "191.96.185.89",
-          "191.96.185.73"
-        ]
-      },
-      {
-        "region": "US East",
-        "hostname": "us-newjersey.privacy.network",
-        "server_name": "newjersey436",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "191.96.185.104",
-          "191.96.185.129",
-          "191.96.185.109"
+          "37.19.197.161",
+          "37.19.197.171",
+          "37.19.197.168",
+          "37.19.197.184",
+          "37.19.197.185",
+          "37.19.197.178",
+          "37.19.197.179"
         ]
       },
       {
         "region": "US Florida",
         "hostname": "us-florida.privacy.network",
-        "server_name": "miami405",
+        "server_name": "miami417",
         "tcp": true,
         "udp": true,
         "ips": [
-          "143.244.34.206",
-          "143.244.34.209",
-          "143.244.34.195",
-          "143.244.34.196"
+          "102.129.152.22",
+          "102.129.152.21"
         ]
       },
       {
         "region": "US Florida",
         "hostname": "us-florida.privacy.network",
-        "server_name": "miami418",
+        "server_name": "miami424",
         "tcp": true,
         "udp": true,
         "ips": [
-          "102.129.152.57",
-          "102.129.152.58",
-          "102.129.152.49",
-          "102.129.152.56",
-          "102.129.152.48"
+          "102.129.153.67",
+          "102.129.153.47",
+          "102.129.153.59"
         ]
       },
       {
         "region": "US Florida",
         "hostname": "us-florida.privacy.network",
-        "server_name": "miami421",
+        "server_name": "miami426",
         "tcp": true,
         "udp": true,
         "ips": [
-          "102.129.152.133",
-          "102.129.152.158",
-          "102.129.152.139",
-          "102.129.152.135",
-          "102.129.152.150"
+          "102.129.153.129",
+          "102.129.153.106"
         ]
       },
       {
-        "region": "US Florida",
-        "hostname": "us-florida.privacy.network",
-        "server_name": "miami423",
+        "region": "US Honolulu",
+        "hostname": "us-honolulu.privacy.network",
+        "server_name": "honolulu401",
         "tcp": true,
         "udp": true,
         "ips": [
-          "102.129.153.18",
-          "102.129.153.25",
-          "102.129.153.30"
-        ]
-      },
-      {
-        "region": "US Florida",
-        "hostname": "us-florida.privacy.network",
-        "server_name": "miami428",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "102.129.153.188",
-          "102.129.153.164",
-          "102.129.153.179"
+          "149.57.29.11",
+          "149.57.29.14",
+          "149.57.29.31",
+          "149.57.29.13",
+          "149.57.29.8",
+          "149.57.29.10",
+          "149.57.29.25",
+          "149.57.29.30"
         ]
       },
       {
         "region": "US Houston",
         "hostname": "us-houston.privacy.network",
-        "server_name": "houston419",
+        "server_name": "houston433",
         "tcp": true,
         "udp": true,
         "ips": [
-          "191.96.67.28",
-          "191.96.67.5",
-          "191.96.67.24",
-          "191.96.67.23"
-        ]
-      },
-      {
-        "region": "US Houston",
-        "hostname": "us-houston.privacy.network",
-        "server_name": "houston423",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "191.96.67.156",
-          "191.96.67.138",
-          "191.96.67.137",
-          "191.96.67.136",
-          "191.96.67.139"
-        ]
-      },
-      {
-        "region": "US Houston",
-        "hostname": "us-houston.privacy.network",
-        "server_name": "houston424",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "191.96.67.166",
-          "191.96.67.179",
-          "191.96.67.178",
-          "191.96.67.187",
-          "191.96.67.188"
-        ]
-      },
-      {
-        "region": "US Houston",
-        "hostname": "us-houston.privacy.network",
-        "server_name": "houston425",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "191.96.67.206",
-          "191.96.67.205",
-          "191.96.67.210",
-          "191.96.67.204",
-          "191.96.67.195"
-        ]
-      },
-      {
-        "region": "US Houston",
-        "hostname": "us-houston.privacy.network",
-        "server_name": "houston427",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "181.214.227.23",
-          "181.214.227.16",
-          "181.214.227.4",
-          "181.214.227.9"
+          "37.19.221.36",
+          "37.19.221.30",
+          "37.19.221.50",
+          "37.19.221.31",
+          "37.19.221.29",
+          "37.19.221.52",
+          "37.19.221.44",
+          "37.19.221.34"
         ]
       },
       {
         "region": "US Las Vegas",
         "hostname": "us-lasvegas.privacy.network",
-        "server_name": "lasvegas402",
+        "server_name": "lasvegas423",
         "tcp": true,
         "udp": true,
         "ips": [
-          "45.89.173.182",
-          "45.89.173.180",
-          "45.89.173.179",
-          "45.89.173.181"
-        ]
-      },
-      {
-        "region": "US Las Vegas",
-        "hostname": "us-lasvegas.privacy.network",
-        "server_name": "lasvegas404",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "82.102.31.199",
-          "82.102.31.200",
-          "82.102.31.204",
-          "82.102.31.196",
-          "82.102.31.198"
-        ]
-      },
-      {
-        "region": "US Las Vegas",
-        "hostname": "us-lasvegas.privacy.network",
-        "server_name": "lasvegas407",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "79.110.53.10",
-          "79.110.53.14",
-          "79.110.53.7",
-          "79.110.53.6"
+          "191.101.61.114",
+          "191.101.61.120"
         ]
       },
       {
@@ -83552,76 +81824,24 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "173.239.226.155",
-          "173.239.226.180",
-          "173.239.226.168",
-          "173.239.226.189",
-          "173.239.226.177"
-        ]
-      },
-      {
-        "region": "US Las Vegas",
-        "hostname": "us-lasvegas.privacy.network",
-        "server_name": "lasvegas427",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "173.239.226.199",
-          "173.239.226.200",
-          "173.239.226.239",
-          "173.239.226.196",
-          "173.239.226.218"
+          "173.239.226.160",
+          "173.239.226.184",
+          "173.239.226.139",
+          "173.239.226.169",
+          "173.239.226.187"
         ]
       },
       {
         "region": "US New York",
         "hostname": "us-newyorkcity.privacy.network",
-        "server_name": "newyork420",
+        "server_name": "newyork434",
         "tcp": true,
         "udp": true,
         "ips": [
-          "138.199.10.87",
-          "138.199.10.69",
-          "138.199.10.64",
-          "138.199.10.73",
-          "138.199.10.66"
-        ]
-      },
-      {
-        "region": "US New York",
-        "hostname": "us-newyorkcity.privacy.network",
-        "server_name": "newyork432",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.198.137",
-          "37.19.198.149",
-          "37.19.198.150",
-          "37.19.198.134"
-        ]
-      },
-      {
-        "region": "US New York",
-        "hostname": "us-newyorkcity.privacy.network",
-        "server_name": "newyork433",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.198.75",
-          "37.19.198.80"
-        ]
-      },
-      {
-        "region": "US New York",
-        "hostname": "us-newyorkcity.privacy.network",
-        "server_name": "newyork435",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "191.96.150.59",
-          "191.96.150.19",
-          "191.96.150.48",
-          "191.96.150.55"
+          "37.19.198.103",
+          "37.19.198.111",
+          "37.19.198.92",
+          "37.19.198.104"
         ]
       },
       {
@@ -83631,290 +81851,143 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.16.192.77",
-          "154.16.192.93",
+          "154.16.192.96",
           "154.16.192.89"
         ]
       },
       {
         "region": "US New York",
         "hostname": "us-newyorkcity.privacy.network",
-        "server_name": "newyork441",
+        "server_name": "newyork442",
         "tcp": true,
         "udp": true,
         "ips": [
-          "191.96.227.34",
-          "191.96.227.15",
-          "191.96.227.49",
-          "191.96.227.45"
+          "191.96.227.69",
+          "191.96.227.84"
+        ]
+      },
+      {
+        "region": "US Salt Lake City",
+        "hostname": "us-saltlakecity.privacy.network",
+        "server_name": "saltlake401",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "149.57.29.146",
+          "149.57.29.131",
+          "149.57.29.135",
+          "149.57.29.149",
+          "149.57.29.136",
+          "149.57.29.133"
+        ]
+      },
+      {
+        "region": "US Salt Lake City",
+        "hostname": "us-saltlakecity.privacy.network",
+        "server_name": "saltlake402",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "149.57.29.165",
+          "149.57.29.183"
         ]
       },
       {
         "region": "US Seattle",
         "hostname": "us-seattle.privacy.network",
-        "server_name": "seattle406",
+        "server_name": "seattle414",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.9.128.66",
-          "154.9.128.89",
-          "154.9.128.90",
-          "154.9.128.83"
+          "154.21.20.83",
+          "154.21.20.85"
         ]
       },
       {
         "region": "US Seattle",
         "hostname": "us-seattle.privacy.network",
-        "server_name": "seattle408",
+        "server_name": "seattle416",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.9.128.147",
-          "154.9.128.143",
-          "154.9.128.148",
-          "154.9.128.137"
+          "154.21.20.150"
         ]
       },
       {
         "region": "US Seattle",
         "hostname": "us-seattle.privacy.network",
-        "server_name": "seattle415",
+        "server_name": "seattle422",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.20.107",
-          "154.21.20.120",
-          "154.21.20.115",
-          "154.21.20.104"
-        ]
-      },
-      {
-        "region": "US Seattle",
-        "hostname": "us-seattle.privacy.network",
-        "server_name": "seattle417",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.21.20.168",
-          "154.21.20.183",
-          "154.21.20.178",
-          "154.21.20.175",
-          "154.21.20.173"
-        ]
-      },
-      {
-        "region": "US Seattle",
-        "hostname": "us-seattle.privacy.network",
-        "server_name": "seattle424",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "212.102.47.167",
-          "212.102.47.160"
+          "156.146.48.210",
+          "156.146.48.227",
+          "156.146.48.222",
+          "156.146.48.228"
         ]
       },
       {
         "region": "US Silicon Valley",
         "hostname": "us-siliconvalley.privacy.network",
-        "server_name": "siliconvalley406",
+        "server_name": "siliconvalley401",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.212.249",
-          "154.21.212.229",
-          "154.21.212.234"
+          "154.21.212.38",
+          "154.21.212.26",
+          "154.21.212.41",
+          "154.21.212.4",
+          "154.21.212.34"
         ]
       },
       {
         "region": "US Silicon Valley",
         "hostname": "us-siliconvalley.privacy.network",
-        "server_name": "siliconvalley408",
+        "server_name": "siliconvalley403",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.21.208.43",
-          "154.21.208.38",
-          "154.21.208.36"
-        ]
-      },
-      {
-        "region": "US Silicon Valley",
-        "hostname": "us-siliconvalley.privacy.network",
-        "server_name": "siliconvalley415",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.21.216.89",
-          "154.21.216.55",
-          "154.21.216.60",
-          "154.21.216.54",
-          "154.21.216.59"
-        ]
-      },
-      {
-        "region": "US Silicon Valley",
-        "hostname": "us-siliconvalley.privacy.network",
-        "server_name": "siliconvalley417",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.21.216.169",
-          "154.21.216.176",
-          "154.21.216.188",
-          "154.21.216.186"
-        ]
-      },
-      {
-        "region": "US Silicon Valley",
-        "hostname": "us-siliconvalley.privacy.network",
-        "server_name": "siliconvalley419",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.165.27",
-          "66.115.165.48",
-          "66.115.165.50",
-          "66.115.165.49"
-        ]
-      },
-      {
-        "region": "US Streaming Optimized",
-        "hostname": "us-streaming.privacy.network",
-        "server_name": "newjersey419",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.197.155",
-          "37.19.197.143",
-          "37.19.197.150"
-        ]
-      },
-      {
-        "region": "US Streaming Optimized",
-        "hostname": "us-streaming.privacy.network",
-        "server_name": "newjersey420",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.197.165",
-          "37.19.197.186",
-          "37.19.197.164",
-          "37.19.197.175"
+          "154.21.212.124",
+          "154.21.212.123"
         ]
       },
       {
         "region": "US Texas",
         "hostname": "us-texas.privacy.network",
-        "server_name": "dallas405",
+        "server_name": "dallas411",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.3.251.69",
-          "154.3.251.77",
-          "154.3.251.90",
-          "154.3.251.78",
-          "154.3.251.79"
+          "154.29.131.68",
+          "154.29.131.89",
+          "154.29.131.63",
+          "154.29.131.72"
         ]
       },
       {
         "region": "US Texas",
         "hostname": "us-texas.privacy.network",
-        "server_name": "dallas413",
+        "server_name": "dallas429",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.29.131.158",
-          "154.29.131.169",
-          "154.29.131.155"
-        ]
-      },
-      {
-        "region": "US Texas",
-        "hostname": "us-texas.privacy.network",
-        "server_name": "dallas414",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.29.131.206",
-          "154.29.131.197"
-        ]
-      },
-      {
-        "region": "US Texas",
-        "hostname": "us-texas.privacy.network",
-        "server_name": "dallas419",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.3.250.235",
-          "154.3.250.229",
-          "154.3.250.219",
-          "154.3.250.199"
-        ]
-      },
-      {
-        "region": "US Texas",
-        "hostname": "us-texas.privacy.network",
-        "server_name": "dallas425",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "156.146.39.25",
-          "156.146.39.5",
-          "156.146.39.23",
-          "156.146.39.27"
+          "156.146.39.136",
+          "156.146.39.150",
+          "156.146.39.138",
+          "156.146.39.146"
         ]
       },
       {
         "region": "US Washington DC",
         "hostname": "us-washingtondc.privacy.network",
-        "server_name": "washington433",
+        "server_name": "washington443",
         "tcp": true,
         "udp": true,
         "ips": [
-          "154.3.44.39",
-          "154.3.44.64",
-          "154.3.44.47",
-          "154.3.44.49"
-        ]
-      },
-      {
-        "region": "US Washington DC",
-        "hostname": "us-washingtondc.privacy.network",
-        "server_name": "washington434",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.3.44.88",
-          "154.3.44.76",
-          "154.3.44.77",
-          "154.3.44.80"
-        ]
-      },
-      {
-        "region": "US Washington DC",
-        "hostname": "us-washingtondc.privacy.network",
-        "server_name": "washington435",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.3.44.119",
-          "154.3.44.105",
-          "154.3.44.114",
-          "154.3.44.113"
-        ]
-      },
-      {
-        "region": "US Washington DC",
-        "hostname": "us-washingtondc.privacy.network",
-        "server_name": "washington437",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "154.3.44.175",
-          "154.3.44.174",
-          "154.3.44.176",
-          "154.3.44.180"
+          "38.70.11.123",
+          "38.70.11.111",
+          "38.70.11.127",
+          "38.70.11.100"
         ]
       },
       {
@@ -83924,10 +81997,18 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "38.70.11.185",
-          "38.70.11.175",
-          "38.70.11.184",
-          "38.70.11.190"
+          "38.70.11.184"
+        ]
+      },
+      {
+        "region": "US Washington DC",
+        "hostname": "us-washingtondc.privacy.network",
+        "server_name": "washington451",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "149.18.24.32",
+          "149.18.24.52"
         ]
       },
       {
@@ -83937,49 +82018,29 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "184.170.241.28",
-          "184.170.241.48",
-          "184.170.241.13",
-          "184.170.241.27",
-          "184.170.241.63"
+          "184.170.241.51"
         ]
       },
       {
         "region": "US West",
         "hostname": "us3.privacy.network",
-        "server_name": "phoenix408",
+        "server_name": "phoenix407",
         "tcp": true,
         "udp": true,
         "ips": [
-          "172.98.87.205",
-          "172.98.87.200",
-          "172.98.87.248"
+          "184.170.241.94",
+          "184.170.241.76"
         ]
       },
       {
         "region": "US West",
         "hostname": "us3.privacy.network",
-        "server_name": "phoenix409",
+        "server_name": "phoenix411",
         "tcp": true,
         "udp": true,
         "ips": [
-          "172.98.87.146",
-          "172.98.87.155",
-          "172.98.87.139",
-          "172.98.87.188"
-        ]
-      },
-      {
-        "region": "US West",
-        "hostname": "us3.privacy.network",
-        "server_name": "phoenix412",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.184.169",
-          "107.181.184.203",
-          "107.181.184.250",
-          "107.181.184.165"
+          "184.170.252.226",
+          "184.170.252.199"
         ]
       },
       {
@@ -83989,24 +82050,59 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "184.170.242.156",
-          "184.170.242.145",
-          "184.170.242.143",
-          "184.170.242.150",
-          "184.170.242.137"
+          "184.170.242.187",
+          "184.170.242.198"
         ]
       },
       {
-        "region": "Ukraine",
-        "hostname": "ua.privacy.network",
-        "server_name": "kiev405",
+        "region": "US West Streaming Optimized",
+        "hostname": "us-streaming-2.privacy.network",
+        "server_name": "siliconvalley407",
         "tcp": true,
         "udp": true,
-        "port_forward": true,
         "ips": [
-          "156.146.50.143",
-          "156.146.50.137",
-          "156.146.50.153"
+          "154.21.212.195",
+          "154.21.212.207",
+          "154.21.212.204",
+          "154.21.212.201",
+          "154.21.212.206"
+        ]
+      },
+      {
+        "region": "US West Streaming Optimized",
+        "hostname": "us-streaming-2.privacy.network",
+        "server_name": "siliconvalley418",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "154.21.216.246",
+          "154.21.216.214"
+        ]
+      },
+      {
+        "region": "US Wilmington",
+        "hostname": "us-wilmington.privacy.network",
+        "server_name": "wilmington401",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "149.57.16.139",
+          "149.57.16.144"
+        ]
+      },
+      {
+        "region": "US Wilmington",
+        "hostname": "us-wilmington.privacy.network",
+        "server_name": "wilmington402",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "149.57.16.174",
+          "149.57.16.170",
+          "149.57.16.181",
+          "149.57.16.189",
+          "149.57.16.162",
+          "149.57.16.178"
         ]
       },
       {
@@ -84017,78 +82113,47 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "156.146.50.164",
-          "156.146.50.160",
-          "156.146.50.185",
-          "156.146.50.166"
+          "156.146.50.169",
+          "156.146.50.175",
+          "156.146.50.174",
+          "156.146.50.166",
+          "156.146.50.183",
+          "156.146.50.161",
+          "156.146.50.163"
         ]
       },
       {
         "region": "United Arab Emirates",
         "hostname": "ae.privacy.network",
-        "server_name": "dubai403",
+        "server_name": "dubai402",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "217.138.193.146",
-          "217.138.193.154",
-          "217.138.193.149"
-        ]
-      },
-      {
-        "region": "United Arab Emirates",
-        "hostname": "ae.privacy.network",
-        "server_name": "dubai404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "217.138.193.165",
-          "217.138.193.169",
-          "217.138.193.173"
+          "146.70.102.5",
+          "146.70.102.3",
+          "146.70.102.4",
+          "146.70.102.10",
+          "146.70.102.8",
+          "146.70.102.13",
+          "146.70.102.6"
         ]
       },
       {
         "region": "Venezuela",
         "hostname": "venezuela.privacy.network",
-        "server_name": "venezuela403",
+        "server_name": "venezuela406",
         "tcp": true,
         "udp": true,
         "port_forward": true,
         "ips": [
-          "95.181.237.9",
-          "95.181.237.8",
-          "95.181.237.5",
-          "95.181.237.6"
-        ]
-      },
-      {
-        "region": "Venezuela",
-        "hostname": "venezuela.privacy.network",
-        "server_name": "venezuela404",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "95.181.237.23",
-          "95.181.237.16",
-          "95.181.237.20",
-          "95.181.237.25"
-        ]
-      },
-      {
-        "region": "Vietnam",
-        "hostname": "vietnam.privacy.network",
-        "server_name": "vietnam401",
-        "tcp": true,
-        "udp": true,
-        "port_forward": true,
-        "ips": [
-          "188.214.152.78",
-          "188.214.152.73",
-          "188.214.152.75",
-          "188.214.152.69"
+          "95.181.237.45",
+          "95.181.237.42",
+          "95.181.237.50",
+          "95.181.237.40",
+          "95.181.237.43",
+          "95.181.237.47",
+          "95.181.237.39"
         ]
       },
       {
@@ -84099,10 +82164,12 @@
         "udp": true,
         "port_forward": true,
         "ips": [
-          "188.214.152.89",
           "188.214.152.90",
-          "188.214.152.87",
-          "188.214.152.94"
+          "188.214.152.94",
+          "188.214.152.86",
+          "188.214.152.91",
+          "188.214.152.89",
+          "188.214.152.85"
         ]
       }
     ]
