@@ -5,7 +5,6 @@ HideMyAss, IPVanish, IVPN, Mullvad, NordVPN, Perfect Privacy, Privado, Private I
 ProtonVPN, PureVPN, Surfshark, TorGuard, VPNUnlimited, VyprVPN, WeVPN and Windscribe VPN servers
 using Go, OpenVPN or Wireguard, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
 
-**ANNOUNCEMENT**: Large settings refactor merged on 2022-06-01, please file issues if you find any problem!
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
