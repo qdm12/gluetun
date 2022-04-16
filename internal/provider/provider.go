@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/custom"
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
@@ -53,47 +53,47 @@ type PortForwarder interface {
 func New(provider string, allServers models.AllServers, timeNow func() time.Time) Provider {
 	randSource := rand.NewSource(timeNow().UnixNano())
 	switch provider {
-	case constants.Custom:
+	case providers.Custom:
 		return custom.New()
-	case constants.Cyberghost:
+	case providers.Cyberghost:
 		return cyberghost.New(allServers.Cyberghost.Servers, randSource)
-	case constants.Expressvpn:
+	case providers.Expressvpn:
 		return expressvpn.New(allServers.Expressvpn.Servers, randSource)
-	case constants.Fastestvpn:
+	case providers.Fastestvpn:
 		return fastestvpn.New(allServers.Fastestvpn.Servers, randSource)
-	case constants.HideMyAss:
+	case providers.HideMyAss:
 		return hidemyass.New(allServers.HideMyAss.Servers, randSource)
-	case constants.Ipvanish:
+	case providers.Ipvanish:
 		return ipvanish.New(allServers.Ipvanish.Servers, randSource)
-	case constants.Ivpn:
+	case providers.Ivpn:
 		return ivpn.New(allServers.Ivpn.Servers, randSource)
-	case constants.Mullvad:
+	case providers.Mullvad:
 		return mullvad.New(allServers.Mullvad.Servers, randSource)
-	case constants.Nordvpn:
+	case providers.Nordvpn:
 		return nordvpn.New(allServers.Nordvpn.Servers, randSource)
-	case constants.Perfectprivacy:
+	case providers.Perfectprivacy:
 		return perfectprivacy.New(allServers.Perfectprivacy.Servers, randSource)
-	case constants.Privado:
+	case providers.Privado:
 		return privado.New(allServers.Privado.Servers, randSource)
-	case constants.PrivateInternetAccess:
+	case providers.PrivateInternetAccess:
 		return privateinternetaccess.New(allServers.Pia.Servers, randSource, timeNow)
-	case constants.Privatevpn:
+	case providers.Privatevpn:
 		return privatevpn.New(allServers.Privatevpn.Servers, randSource)
-	case constants.Protonvpn:
+	case providers.Protonvpn:
 		return protonvpn.New(allServers.Protonvpn.Servers, randSource)
-	case constants.Purevpn:
+	case providers.Purevpn:
 		return purevpn.New(allServers.Purevpn.Servers, randSource)
-	case constants.Surfshark:
+	case providers.Surfshark:
 		return surfshark.New(allServers.Surfshark.Servers, randSource)
-	case constants.Torguard:
+	case providers.Torguard:
 		return torguard.New(allServers.Torguard.Servers, randSource)
-	case constants.VPNUnlimited:
+	case providers.VPNUnlimited:
 		return vpnunlimited.New(allServers.VPNUnlimited.Servers, randSource)
-	case constants.Vyprvpn:
+	case providers.Vyprvpn:
 		return vyprvpn.New(allServers.Vyprvpn.Servers, randSource)
-	case constants.Wevpn:
+	case providers.Wevpn:
 		return wevpn.New(allServers.Wevpn.Servers, randSource)
-	case constants.Windscribe:
+	case providers.Windscribe:
 		return windscribe.New(allServers.Windscribe.Servers, randSource)
 	default:
 		panic("provider " + provider + " is unknown") // should never occur

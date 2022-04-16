@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gotree"
 )
 
@@ -42,8 +42,8 @@ func (u Updater) Validate() (err error) {
 
 	for i, provider := range u.Providers {
 		valid := false
-		for _, validProvider := range constants.AllProviders() {
-			if validProvider == constants.Custom {
+		for _, validProvider := range providers.All() {
+			if validProvider == providers.Custom {
 				continue
 			}
 
@@ -93,7 +93,7 @@ func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
 	u.DNSAddress = helpers.DefaultIP(u.DNSAddress, net.IPv4(1, 1, 1, 1))
 	u.CLI = helpers.DefaultBool(u.CLI, false)
-	if len(u.Providers) == 0 && vpnProvider != constants.Custom {
+	if len(u.Providers) == 0 && vpnProvider != providers.Custom {
 		u.Providers = []string{vpnProvider}
 	}
 }

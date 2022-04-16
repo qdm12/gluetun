@@ -3,7 +3,7 @@ package windscribe
 import (
 	"math/rand"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,6 +18,6 @@ func New(servers []models.WindscribeServer, randSource rand.Source) *Windscribe 
 	return &Windscribe{
 		servers:         servers,
 		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(constants.Windscribe),
+		NoPortForwarder: utils.NewNoPortForwarding(providers.Windscribe),
 	}
 }

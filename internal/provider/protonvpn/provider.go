@@ -3,7 +3,7 @@ package protonvpn
 import (
 	"math/rand"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,6 +18,6 @@ func New(servers []models.ProtonvpnServer, randSource rand.Source) *Protonvpn {
 	return &Protonvpn{
 		servers:         servers,
 		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(constants.Protonvpn),
+		NoPortForwarder: utils.NewNoPortForwarding(providers.Protonvpn),
 	}
 }

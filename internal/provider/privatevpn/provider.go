@@ -3,7 +3,7 @@ package privatevpn
 import (
 	"math/rand"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,6 +18,6 @@ func New(servers []models.PrivatevpnServer, randSource rand.Source) *Privatevpn 
 	return &Privatevpn{
 		servers:         servers,
 		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(constants.Privatevpn),
+		NoPortForwarder: utils.NewNoPortForwarding(providers.Privatevpn),
 	}
 }

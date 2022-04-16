@@ -6,7 +6,7 @@ import (
 	"regexp"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
@@ -35,10 +35,10 @@ var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 // It should only be ran if the VPN type chosen is Wireguard.
 func (w Wireguard) validate(vpnProvider string) (err error) {
 	if !helpers.IsOneOf(vpnProvider,
-		constants.Custom,
-		constants.Ivpn,
-		constants.Mullvad,
-		constants.Windscribe,
+		providers.Custom,
+		providers.Ivpn,
+		providers.Mullvad,
+		providers.Windscribe,
 	) {
 		// do not validate for VPN provider not supporting Wireguard
 		return nil

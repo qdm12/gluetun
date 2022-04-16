@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -42,7 +43,7 @@ func Test_modifyConfig(t *testing.T) {
 				ProcessUser: "procuser",
 				Interface:   "tun3",
 				Verbosity:   intPtr(0),
-			}.WithDefaults(constants.Custom),
+			}.WithDefaults(providers.Custom),
 			connection: models.Connection{
 				IP:       net.IPv4(1, 2, 3, 4),
 				Port:     1194,

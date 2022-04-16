@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gotree"
 )
 
@@ -39,11 +40,11 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 
 	// Validate TCP
 	if *o.TCP && helpers.IsOneOf(vpnProvider,
-		constants.Ipvanish,
-		constants.Perfectprivacy,
-		constants.Privado,
-		constants.VPNUnlimited,
-		constants.Vyprvpn,
+		providers.Ipvanish,
+		providers.Perfectprivacy,
+		providers.Privado,
+		providers.VPNUnlimited,
+		providers.Vyprvpn,
 	) {
 		return fmt.Errorf("%w: for VPN service provider %s",
 			ErrOpenVPNTCPNotSupported, vpnProvider)
@@ -53,33 +54,33 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	if *o.CustomPort != 0 {
 		switch vpnProvider {
 		// no restriction on port
-		case constants.Cyberghost, constants.HideMyAss,
-			constants.PrivateInternetAccess, constants.Privatevpn,
-			constants.Protonvpn, constants.Torguard:
+		case providers.Cyberghost, providers.HideMyAss,
+			providers.PrivateInternetAccess, providers.Privatevpn,
+			providers.Protonvpn, providers.Torguard:
 		// no custom port allowed
-		case constants.Expressvpn, constants.Fastestvpn,
-			constants.Ipvanish, constants.Nordvpn,
-			constants.Privado, constants.Purevpn,
-			constants.Surfshark, constants.VPNUnlimited,
-			constants.Vyprvpn:
+		case providers.Expressvpn, providers.Fastestvpn,
+			providers.Ipvanish, providers.Nordvpn,
+			providers.Privado, providers.Purevpn,
+			providers.Surfshark, providers.VPNUnlimited,
+			providers.Vyprvpn:
 			return fmt.Errorf("%w: for VPN service provider %s",
 				ErrOpenVPNCustomPortNotAllowed, vpnProvider)
 		default:
 			var allowedTCP, allowedUDP []uint16
 			switch vpnProvider {
-			case constants.Ivpn:
+			case providers.Ivpn:
 				allowedTCP = []uint16{80, 443, 1143}
 				allowedUDP = []uint16{53, 1194, 2049, 2050}
-			case constants.Mullvad:
+			case providers.Mullvad:
 				allowedTCP = []uint16{80, 443, 1401}
 				allowedUDP = []uint16{53, 1194, 1195, 1196, 1197, 1300, 1301, 1302, 1303, 1400}
-			case constants.Perfectprivacy:
+			case providers.Perfectprivacy:
 				allowedTCP = []uint16{44, 443, 4433}
 				allowedUDP = []uint16{44, 443, 4433}
-			case constants.Wevpn:
+			case providers.Wevpn:
 				allowedTCP = []uint16{53, 1195, 1199, 2018}
 				allowedUDP = []uint16{80, 1194, 1198}
-			case constants.Windscribe:
+			case providers.Windscribe:
 				allowedTCP = []uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783}
 				allowedUDP = []uint16{53, 80, 123, 443, 1194, 54783}
 			}
@@ -97,7 +98,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	}
 
 	// Validate EncPreset
-	if vpnProvider == constants.PrivateInternetAccess {
+	if vpnProvider == providers.PrivateInternetAccess {
 		validEncryptionPresets := []string{
 			constants.PIAEncryptionPresetNone,
 			constants.PIAEncryptionPresetNormal,
@@ -142,7 +143,7 @@ func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
 	o.CustomPort = helpers.DefaultUint16(o.CustomPort, 0)
 
 	var defaultEncPreset string
-	if vpnProvider == constants.PrivateInternetAccess {
+	if vpnProvider == providers.PrivateInternetAccess {
 		defaultEncPreset = constants.PIAEncryptionPresetStrong
 	}
 	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)

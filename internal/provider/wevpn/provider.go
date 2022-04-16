@@ -3,7 +3,7 @@ package wevpn
 import (
 	"math/rand"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,6 +18,6 @@ func New(servers []models.WevpnServer, randSource rand.Source) *Wevpn {
 	return &Wevpn{
 		servers:         servers,
 		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(constants.Wevpn),
+		NoPortForwarder: utils.NewNoPortForwarding(providers.Wevpn),
 	}
 }

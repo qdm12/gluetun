@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,7 +24,7 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 		err        error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Windscribe),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Windscribe),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
@@ -32,7 +33,7 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Windscribe),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Windscribe),
 			connection: models.Connection{
 				Type:     constants.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
@@ -43,7 +44,7 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 		"target IP": {
 			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
-			}.WithDefaults(constants.Windscribe),
+			}.WithDefaults(providers.Windscribe),
 			servers: []models.WindscribeServer{
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
@@ -59,7 +60,7 @@ func Test_Windscribe_GetConnection(t *testing.T) {
 		"with filter": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			}.WithDefaults(constants.Windscribe),
+			}.WithDefaults(providers.Windscribe),
 			servers: []models.WindscribeServer{
 				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
 				{VPN: constants.OpenVPN, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},

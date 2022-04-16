@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,7 +22,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 		err             error
 	}{
 		"no server": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Cyberghost),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Cyberghost),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"servers without filter defaults to UDP": {
@@ -32,7 +32,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 				{Country: "c", UDP: true},
 				{Country: "d", UDP: true},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Cyberghost),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Country: "c", UDP: true},
 				{Country: "d", UDP: true},
@@ -49,7 +49,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
-			}.WithDefaults(constants.Cyberghost),
+			}.WithDefaults(providers.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Country: "a", TCP: true},
 				{Country: "b", TCP: true},
@@ -64,7 +64,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 			},
 			selection: settings.ServerSelection{
 				Countries: []string{"a", "c"},
-			}.WithDefaults(constants.Cyberghost),
+			}.WithDefaults(providers.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Country: "a", UDP: true},
 				{Country: "c", UDP: true},
@@ -78,7 +78,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 			},
 			selection: settings.ServerSelection{
 				Hostnames: []string{"a", "c"},
-			}.WithDefaults(constants.Cyberghost),
+			}.WithDefaults(providers.Cyberghost),
 			filteredServers: []models.CyberghostServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "c", UDP: true},

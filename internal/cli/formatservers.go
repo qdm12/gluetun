@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/storage"
 )
 
@@ -28,26 +29,26 @@ func (c *CLI) FormatServers(args []string) error {
 	flagSet := flag.NewFlagSet("markdown", flag.ExitOnError)
 	flagSet.StringVar(&format, "format", "markdown", "Format to use which can be: 'markdown'")
 	flagSet.StringVar(&output, "output", "/dev/stdout", "Output file to write the formatted data to")
-	flagSet.BoolVar(&cyberghost, "cyberghost", false, "Format Cyberghost servers")
-	flagSet.BoolVar(&expressvpn, "expressvpn", false, "Format ExpressVPN servers")
-	flagSet.BoolVar(&fastestvpn, "fastestvpn", false, "Format FastestVPN servers")
-	flagSet.BoolVar(&hideMyAss, "hidemyass", false, "Format HideMyAss servers")
-	flagSet.BoolVar(&ipvanish, "ipvanish", false, "Format IpVanish servers")
-	flagSet.BoolVar(&ivpn, "ivpn", false, "Format IVPN servers")
-	flagSet.BoolVar(&mullvad, "mullvad", false, "Format Mullvad servers")
-	flagSet.BoolVar(&nordvpn, "nordvpn", false, "Format Nordvpn servers")
-	flagSet.BoolVar(&perfectPrivacy, "perfectprivacy", false, "Format Perfect Privacy servers")
-	flagSet.BoolVar(&pia, "pia", false, "Format Private Internet Access servers")
-	flagSet.BoolVar(&privado, "privado", false, "Format Privado servers")
-	flagSet.BoolVar(&privatevpn, "privatevpn", false, "Format Private VPN servers")
-	flagSet.BoolVar(&protonvpn, "protonvpn", false, "Format Protonvpn servers")
-	flagSet.BoolVar(&purevpn, "purevpn", false, "Format Purevpn servers")
-	flagSet.BoolVar(&surfshark, "surfshark", false, "Format Surfshark servers")
-	flagSet.BoolVar(&torguard, "torguard", false, "Format Torguard servers")
-	flagSet.BoolVar(&vpnUnlimited, "vpnunlimited", false, "Format VPN Unlimited servers")
-	flagSet.BoolVar(&vyprvpn, "vyprvpn", false, "Format Vyprvpn servers")
-	flagSet.BoolVar(&wevpn, "wevpn", false, "Format WeVPN servers")
-	flagSet.BoolVar(&windscribe, "windscribe", false, "Format Windscribe servers")
+	flagSet.BoolVar(&cyberghost, providers.Cyberghost, false, "Format Cyberghost servers")
+	flagSet.BoolVar(&expressvpn, providers.Expressvpn, false, "Format ExpressVPN servers")
+	flagSet.BoolVar(&fastestvpn, providers.Fastestvpn, false, "Format FastestVPN servers")
+	flagSet.BoolVar(&hideMyAss, providers.HideMyAss, false, "Format HideMyAss servers")
+	flagSet.BoolVar(&ipvanish, providers.Ipvanish, false, "Format IpVanish servers")
+	flagSet.BoolVar(&ivpn, providers.Ivpn, false, "Format IVPN servers")
+	flagSet.BoolVar(&mullvad, providers.Mullvad, false, "Format Mullvad servers")
+	flagSet.BoolVar(&nordvpn, providers.Nordvpn, false, "Format Nordvpn servers")
+	flagSet.BoolVar(&perfectPrivacy, providers.Perfectprivacy, false, "Format Perfect Privacy servers")
+	flagSet.BoolVar(&pia, providers.PrivateInternetAccess, false, "Format Private Internet Access servers")
+	flagSet.BoolVar(&privado, providers.Privado, false, "Format Privado servers")
+	flagSet.BoolVar(&privatevpn, providers.Privatevpn, false, "Format Private VPN servers")
+	flagSet.BoolVar(&protonvpn, providers.Protonvpn, false, "Format Protonvpn servers")
+	flagSet.BoolVar(&purevpn, providers.Purevpn, false, "Format Purevpn servers")
+	flagSet.BoolVar(&surfshark, providers.Surfshark, false, "Format Surfshark servers")
+	flagSet.BoolVar(&torguard, providers.Torguard, false, "Format Torguard servers")
+	flagSet.BoolVar(&vpnUnlimited, providers.VPNUnlimited, false, "Format VPN Unlimited servers")
+	flagSet.BoolVar(&vyprvpn, providers.Vyprvpn, false, "Format Vyprvpn servers")
+	flagSet.BoolVar(&wevpn, providers.Wevpn, false, "Format WeVPN servers")
+	flagSet.BoolVar(&windscribe, providers.Windscribe, false, "Format Windscribe servers")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}

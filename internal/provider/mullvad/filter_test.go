@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +25,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Mullvad),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Mullvad),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
@@ -33,7 +34,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Mullvad),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Mullvad),
 			filtered: []models.MullvadServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
@@ -43,7 +44,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		"filter OpenVPN out": {
 			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
-			}.WithDefaults(constants.Mullvad),
+			}.WithDefaults(providers.Mullvad),
 			servers: []models.MullvadServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.Wireguard, Hostname: "b"},
@@ -56,7 +57,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
-			}.WithDefaults(constants.Mullvad),
+			}.WithDefaults(providers.Mullvad),
 			servers: []models.MullvadServer{
 				{VPN: constants.OpenVPN, Country: "a"},
 				{VPN: constants.OpenVPN, Country: "b"},
@@ -69,7 +70,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			}.WithDefaults(constants.Mullvad),
+			}.WithDefaults(providers.Mullvad),
 			servers: []models.MullvadServer{
 				{VPN: constants.OpenVPN, City: "a"},
 				{VPN: constants.OpenVPN, City: "b"},
@@ -82,7 +83,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		"filter by ISP": {
 			selection: settings.ServerSelection{
 				ISPs: []string{"b"},
-			}.WithDefaults(constants.Mullvad),
+			}.WithDefaults(providers.Mullvad),
 			servers: []models.MullvadServer{
 				{VPN: constants.OpenVPN, ISP: "a"},
 				{VPN: constants.OpenVPN, ISP: "b"},
@@ -95,7 +96,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			}.WithDefaults(constants.Mullvad),
+			}.WithDefaults(providers.Mullvad),
 			servers: []models.MullvadServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
@@ -108,7 +109,7 @@ func Test_Mullvad_filterServers(t *testing.T) {
 		"filter by owned": {
 			selection: settings.ServerSelection{
 				OwnedOnly: boolPtr(true),
-			}.WithDefaults(constants.Mullvad),
+			}.WithDefaults(providers.Mullvad),
 			servers: []models.MullvadServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b", Owned: true},

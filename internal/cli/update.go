@@ -14,6 +14,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
@@ -62,8 +63,8 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	}
 
 	if updateAll {
-		for _, provider := range constants.AllProviders() {
-			if provider == constants.Custom {
+		for _, provider := range providers.All() {
+			if provider == providers.Custom {
 				continue
 			}
 			options.Providers = append(options.Providers, provider)

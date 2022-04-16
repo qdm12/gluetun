@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
@@ -70,47 +70,47 @@ func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 
 func (u *updater) getUpdateFunction(provider string) (updateFunction updateFunc) {
 	switch provider {
-	case constants.Custom:
+	case providers.Custom:
 		panic("cannot update custom provider")
-	case constants.Cyberghost:
+	case providers.Cyberghost:
 		return func(ctx context.Context) (err error) { return u.updateCyberghost(ctx) }
-	case constants.Expressvpn:
+	case providers.Expressvpn:
 		return func(ctx context.Context) (err error) { return u.updateExpressvpn(ctx) }
-	case constants.Fastestvpn:
+	case providers.Fastestvpn:
 		return func(ctx context.Context) (err error) { return u.updateFastestvpn(ctx) }
-	case constants.HideMyAss:
+	case providers.HideMyAss:
 		return func(ctx context.Context) (err error) { return u.updateHideMyAss(ctx) }
-	case constants.Ipvanish:
+	case providers.Ipvanish:
 		return func(ctx context.Context) (err error) { return u.updateIpvanish(ctx) }
-	case constants.Ivpn:
+	case providers.Ivpn:
 		return func(ctx context.Context) (err error) { return u.updateIvpn(ctx) }
-	case constants.Mullvad:
+	case providers.Mullvad:
 		return func(ctx context.Context) (err error) { return u.updateMullvad(ctx) }
-	case constants.Nordvpn:
+	case providers.Nordvpn:
 		return func(ctx context.Context) (err error) { return u.updateNordvpn(ctx) }
-	case constants.Perfectprivacy:
+	case providers.Perfectprivacy:
 		return func(ctx context.Context) (err error) { return u.updatePerfectprivacy(ctx) }
-	case constants.Privado:
+	case providers.Privado:
 		return func(ctx context.Context) (err error) { return u.updatePrivado(ctx) }
-	case constants.PrivateInternetAccess:
+	case providers.PrivateInternetAccess:
 		return func(ctx context.Context) (err error) { return u.updatePIA(ctx) }
-	case constants.Privatevpn:
+	case providers.Privatevpn:
 		return func(ctx context.Context) (err error) { return u.updatePrivatevpn(ctx) }
-	case constants.Protonvpn:
+	case providers.Protonvpn:
 		return func(ctx context.Context) (err error) { return u.updateProtonvpn(ctx) }
-	case constants.Purevpn:
+	case providers.Purevpn:
 		return func(ctx context.Context) (err error) { return u.updatePurevpn(ctx) }
-	case constants.Surfshark:
+	case providers.Surfshark:
 		return func(ctx context.Context) (err error) { return u.updateSurfshark(ctx) }
-	case constants.Torguard:
+	case providers.Torguard:
 		return func(ctx context.Context) (err error) { return u.updateTorguard(ctx) }
-	case constants.VPNUnlimited:
+	case providers.VPNUnlimited:
 		return func(ctx context.Context) (err error) { return u.updateVPNUnlimited(ctx) }
-	case constants.Vyprvpn:
+	case providers.Vyprvpn:
 		return func(ctx context.Context) (err error) { return u.updateVyprvpn(ctx) }
-	case constants.Wevpn:
+	case providers.Wevpn:
 		return func(ctx context.Context) (err error) { return u.updateWevpn(ctx) }
-	case constants.Windscribe:
+	case providers.Windscribe:
 		return func(ctx context.Context) (err error) { return u.updateWindscribe(ctx) }
 	default:
 		panic("provider " + provider + " is unknown")

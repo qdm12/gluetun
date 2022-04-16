@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/configuration/settings/validation"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
 )
@@ -90,15 +91,15 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 	}
 
 	if *ss.OwnedOnly &&
-		vpnServiceProvider != constants.Mullvad {
+		vpnServiceProvider != providers.Mullvad {
 		return fmt.Errorf("%w: for VPN service provider %s",
 			ErrOwnedOnlyNotSupported, vpnServiceProvider)
 	}
 
 	if *ss.FreeOnly &&
 		!helpers.IsOneOf(vpnServiceProvider,
-			constants.Protonvpn,
-			constants.VPNUnlimited,
+			providers.Protonvpn,
+			providers.VPNUnlimited,
 		) {
 		return fmt.Errorf("%w: for VPN service provider %s",
 			ErrFreeOnlyNotSupported, vpnServiceProvider)
@@ -106,15 +107,15 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 
 	if *ss.StreamOnly &&
 		!helpers.IsOneOf(vpnServiceProvider,
-			constants.Protonvpn,
-			constants.VPNUnlimited,
+			providers.Protonvpn,
+			providers.VPNUnlimited,
 		) {
 		return fmt.Errorf("%w: for VPN service provider %s",
 			ErrStreamOnlyNotSupported, vpnServiceProvider)
 	}
 
 	if *ss.MultiHopOnly &&
-		vpnServiceProvider != constants.Surfshark {
+		vpnServiceProvider != providers.Surfshark {
 		return fmt.Errorf("%w: for VPN service provider %s",
 			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
 	}
@@ -140,80 +141,80 @@ func getLocationFilterChoices(vpnServiceProvider string, ss *ServerSelection,
 	ispChoices, nameChoices, hostnameChoices []string,
 	err error) {
 	switch vpnServiceProvider {
-	case constants.Custom:
-	case constants.Cyberghost:
+	case providers.Custom:
+	case providers.Cyberghost:
 		servers := allServers.GetCyberghost()
 		countryChoices = validation.CyberghostCountryChoices(servers)
 		hostnameChoices = validation.CyberghostHostnameChoices(servers)
-	case constants.Expressvpn:
+	case providers.Expressvpn:
 		servers := allServers.GetExpressvpn()
 		countryChoices = validation.ExpressvpnCountriesChoices(servers)
 		cityChoices = validation.ExpressvpnCityChoices(servers)
 		hostnameChoices = validation.ExpressvpnHostnameChoices(servers)
-	case constants.Fastestvpn:
+	case providers.Fastestvpn:
 		servers := allServers.GetFastestvpn()
 		countryChoices = validation.FastestvpnCountriesChoices(servers)
 		hostnameChoices = validation.FastestvpnHostnameChoices(servers)
-	case constants.HideMyAss:
+	case providers.HideMyAss:
 		servers := allServers.GetHideMyAss()
 		countryChoices = validation.HideMyAssCountryChoices(servers)
 		regionChoices = validation.HideMyAssRegionChoices(servers)
 		cityChoices = validation.HideMyAssCityChoices(servers)
 		hostnameChoices = validation.HideMyAssHostnameChoices(servers)
-	case constants.Ipvanish:
+	case providers.Ipvanish:
 		servers := allServers.GetIpvanish()
 		countryChoices = validation.IpvanishCountryChoices(servers)
 		cityChoices = validation.IpvanishCityChoices(servers)
 		hostnameChoices = validation.IpvanishHostnameChoices(servers)
-	case constants.Ivpn:
+	case providers.Ivpn:
 		servers := allServers.GetIvpn()
 		countryChoices = validation.IvpnCountryChoices(servers)
 		cityChoices = validation.IvpnCityChoices(servers)
 		ispChoices = validation.IvpnISPChoices(servers)
 		hostnameChoices = validation.IvpnHostnameChoices(servers)
-	case constants.Mullvad:
+	case providers.Mullvad:
 		servers := allServers.GetMullvad()
 		countryChoices = validation.MullvadCountryChoices(servers)
 		cityChoices = validation.MullvadCityChoices(servers)
 		ispChoices = validation.MullvadISPChoices(servers)
 		hostnameChoices = validation.MullvadHostnameChoices(servers)
-	case constants.Nordvpn:
+	case providers.Nordvpn:
 		servers := allServers.GetNordvpn()
 		regionChoices = validation.NordvpnRegionChoices(servers)
 		hostnameChoices = validation.NordvpnHostnameChoices(servers)
-	case constants.Perfectprivacy:
+	case providers.Perfectprivacy:
 		servers := allServers.GetPerfectprivacy()
 		cityChoices = validation.PerfectprivacyCityChoices(servers)
-	case constants.Privado:
+	case providers.Privado:
 		servers := allServers.GetPrivado()
 		countryChoices = validation.PrivadoCountryChoices(servers)
 		regionChoices = validation.PrivadoRegionChoices(servers)
 		cityChoices = validation.PrivadoCityChoices(servers)
 		hostnameChoices = validation.PrivadoHostnameChoices(servers)
-	case constants.PrivateInternetAccess:
+	case providers.PrivateInternetAccess:
 		servers := allServers.GetPia()
 		regionChoices = validation.PIAGeoChoices(servers)
 		hostnameChoices = validation.PIAHostnameChoices(servers)
 		nameChoices = validation.PIANameChoices(servers)
-	case constants.Privatevpn:
+	case providers.Privatevpn:
 		servers := allServers.GetPrivatevpn()
 		countryChoices = validation.PrivatevpnCountryChoices(servers)
 		cityChoices = validation.PrivatevpnCityChoices(servers)
 		hostnameChoices = validation.PrivatevpnHostnameChoices(servers)
-	case constants.Protonvpn:
+	case providers.Protonvpn:
 		servers := allServers.GetProtonvpn()
 		countryChoices = validation.ProtonvpnCountryChoices(servers)
 		regionChoices = validation.ProtonvpnRegionChoices(servers)
 		cityChoices = validation.ProtonvpnCityChoices(servers)
 		nameChoices = validation.ProtonvpnNameChoices(servers)
 		hostnameChoices = validation.ProtonvpnHostnameChoices(servers)
-	case constants.Purevpn:
+	case providers.Purevpn:
 		servers := allServers.GetPurevpn()
 		countryChoices = validation.PurevpnCountryChoices(servers)
 		regionChoices = validation.PurevpnRegionChoices(servers)
 		cityChoices = validation.PurevpnCityChoices(servers)
 		hostnameChoices = validation.PurevpnHostnameChoices(servers)
-	case constants.Surfshark:
+	case providers.Surfshark:
 		servers := allServers.GetSurfshark()
 		countryChoices = validation.SurfsharkCountryChoices(servers)
 		cityChoices = validation.SurfsharkCityChoices(servers)
@@ -227,24 +228,24 @@ func getLocationFilterChoices(vpnServiceProvider string, ss *ServerSelection,
 		// Retro compatibility
 		// TODO remove in v4
 		*ss = surfsharkRetroRegion(*ss)
-	case constants.Torguard:
+	case providers.Torguard:
 		servers := allServers.GetTorguard()
 		countryChoices = validation.TorguardCountryChoices(servers)
 		cityChoices = validation.TorguardCityChoices(servers)
 		hostnameChoices = validation.TorguardHostnameChoices(servers)
-	case constants.VPNUnlimited:
+	case providers.VPNUnlimited:
 		servers := allServers.GetVPNUnlimited()
 		countryChoices = validation.VPNUnlimitedCountryChoices(servers)
 		cityChoices = validation.VPNUnlimitedCityChoices(servers)
 		hostnameChoices = validation.VPNUnlimitedHostnameChoices(servers)
-	case constants.Vyprvpn:
+	case providers.Vyprvpn:
 		servers := allServers.GetVyprvpn()
 		regionChoices = validation.VyprvpnRegionChoices(servers)
-	case constants.Wevpn:
+	case providers.Wevpn:
 		servers := allServers.GetWevpn()
 		cityChoices = validation.WevpnCityChoices(servers)
 		hostnameChoices = validation.WevpnHostnameChoices(servers)
-	case constants.Windscribe:
+	case providers.Windscribe:
 		servers := allServers.GetWindscribe()
 		regionChoices = validation.WindscribeRegionChoices(servers)
 		cityChoices = validation.WindscribeCityChoices(servers)

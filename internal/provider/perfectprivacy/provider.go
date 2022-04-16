@@ -3,7 +3,7 @@ package perfectprivacy
 import (
 	"math/rand"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,6 +18,6 @@ func New(servers []models.PerfectprivacyServer, randSource rand.Source) *Perfect
 	return &Perfectprivacy{
 		servers:         servers,
 		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(constants.Perfectprivacy),
+		NoPortForwarder: utils.NewNoPortForwarding(providers.Perfectprivacy),
 	}
 }

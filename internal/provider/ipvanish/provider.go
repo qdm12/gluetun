@@ -3,7 +3,7 @@ package ipvanish
 import (
 	"math/rand"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,6 +18,6 @@ func New(servers []models.IpvanishServer, randSource rand.Source) *Ipvanish {
 	return &Ipvanish{
 		servers:         servers,
 		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(constants.Ipvanish),
+		NoPortForwarder: utils.NewNoPortForwarding(providers.Ipvanish),
 	}
 }

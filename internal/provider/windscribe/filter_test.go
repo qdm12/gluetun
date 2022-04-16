@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,7 +23,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Windscribe),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Windscribe),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
@@ -31,7 +32,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Windscribe),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Windscribe),
 			filtered: []models.WindscribeServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
@@ -41,7 +42,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 		"filter OpenVPN out": {
 			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
-			}.WithDefaults(constants.Windscribe),
+			}.WithDefaults(providers.Windscribe),
 			servers: []models.WindscribeServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.Wireguard, Hostname: "b"},
@@ -54,7 +55,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 		"filter by region": {
 			selection: settings.ServerSelection{
 				Regions: []string{"b"},
-			}.WithDefaults(constants.Windscribe),
+			}.WithDefaults(providers.Windscribe),
 			servers: []models.WindscribeServer{
 				{VPN: constants.OpenVPN, Region: "a"},
 				{VPN: constants.OpenVPN, Region: "b"},
@@ -67,7 +68,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			}.WithDefaults(constants.Windscribe),
+			}.WithDefaults(providers.Windscribe),
 			servers: []models.WindscribeServer{
 				{VPN: constants.OpenVPN, City: "a"},
 				{VPN: constants.OpenVPN, City: "b"},
@@ -80,7 +81,7 @@ func Test_Windscribe_filterServers(t *testing.T) {
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			}.WithDefaults(constants.Windscribe),
+			}.WithDefaults(providers.Windscribe),
 			servers: []models.WindscribeServer{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},

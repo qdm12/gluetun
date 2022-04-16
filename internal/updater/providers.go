@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/updater/providers/cyberghost"
 	"github.com/qdm12/gluetun/internal/updater/providers/expressvpn"
 	"github.com/qdm12/gluetun/internal/updater/providers/fastestvpn"
@@ -196,7 +196,7 @@ func (u *updater) updatePerfectprivacy(ctx context.Context) (err error) {
 	servers, warnings, err := perfectprivacy.GetServers(ctx, u.unzipper, minServers)
 	if *u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn(constants.Perfectprivacy + ": " + warning)
+			u.logger.Warn(providers.Perfectprivacy + ": " + warning)
 		}
 	}
 	if err != nil {
@@ -365,7 +365,7 @@ func (u *updater) updateVPNUnlimited(ctx context.Context) (err error) {
 		ctx, u.unzipper, u.presolver, minServers)
 	if *u.options.CLI {
 		for _, warning := range warnings {
-			u.logger.Warn(constants.VPNUnlimited + ": " + warning)
+			u.logger.Warn(providers.VPNUnlimited + ": " + warning)
 		}
 	}
 	if err != nil {

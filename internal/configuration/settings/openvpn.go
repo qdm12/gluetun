@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/openvpn/parse"
 	"github.com/qdm12/gotree"
 )
@@ -84,14 +85,14 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 			ErrOpenVPNVersionIsNotValid, o.Version, strings.Join(validVersions, ", "))
 	}
 
-	isCustom := vpnProvider == constants.Custom
+	isCustom := vpnProvider == providers.Custom
 
 	if !isCustom && o.User == "" {
 		return ErrOpenVPNUserIsEmpty
 	}
 
 	passwordRequired := !isCustom &&
-		(vpnProvider != constants.Ivpn || !ivpnAccountID.MatchString(o.User))
+		(vpnProvider != providers.Ivpn || !ivpnAccountID.MatchString(o.User))
 
 	if passwordRequired && o.Password == "" {
 		return ErrOpenVPNPasswordIsEmpty
@@ -153,8 +154,8 @@ func validateOpenVPNClientCertificate(vpnProvider,
 	clientCert string) (err error) {
 	switch vpnProvider {
 	case
-		constants.Cyberghost,
-		constants.VPNUnlimited:
+		providers.Cyberghost,
+		providers.VPNUnlimited:
 		if clientCert == "" {
 			return ErrMissingValue
 		}
@@ -174,9 +175,9 @@ func validateOpenVPNClientCertificate(vpnProvider,
 func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 	switch vpnProvider {
 	case
-		constants.Cyberghost,
-		constants.VPNUnlimited,
-		constants.Wevpn:
+		providers.Cyberghost,
+		providers.VPNUnlimited,
+		providers.Wevpn:
 		if clientKey == "" {
 			return ErrMissingValue
 		}
@@ -256,7 +257,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.Version = helpers.DefaultString(o.Version, constants.Openvpn25)
-	if vpnProvider == constants.Mullvad {
+	if vpnProvider == providers.Mullvad {
 		o.Password = "m"
 	}
 
@@ -266,7 +267,7 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.ClientKey = helpers.DefaultStringPtr(o.ClientKey, "")
 
 	var defaultEncPreset string
-	if vpnProvider == constants.PrivateInternetAccess {
+	if vpnProvider == providers.PrivateInternetAccess {
 		defaultEncPreset = constants.PIAEncryptionPresetStrong
 	}
 	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)

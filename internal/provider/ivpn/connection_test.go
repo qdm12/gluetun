@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,7 +24,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 		err        error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Ivpn),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
@@ -32,7 +33,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Ivpn),
 			connection: models.Connection{
 				Type:     constants.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
@@ -43,7 +44,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 		"target IP": {
 			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
-			}.WithDefaults(constants.Ivpn),
+			}.WithDefaults(providers.Ivpn),
 			servers: []models.IvpnServer{
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
@@ -59,7 +60,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 		"with filter": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			}.WithDefaults(constants.Ivpn),
+			}.WithDefaults(providers.Ivpn),
 			servers: []models.IvpnServer{
 				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{VPN: constants.OpenVPN, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},

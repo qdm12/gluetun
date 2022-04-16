@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 )
 
 var (
@@ -27,7 +27,7 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 
 	countriesKey, _ := r.getEnvWithRetro("SERVER_COUNTRIES", "COUNTRY")
 	ss.Countries = envToCSV(countriesKey)
-	if vpnProvider == constants.Cyberghost && len(ss.Countries) == 0 {
+	if vpnProvider == providers.Cyberghost && len(ss.Countries) == 0 {
 		// Retro-compatibility for Cyberghost using the REGION variable
 		ss.Countries = envToCSV("REGION")
 		if len(ss.Countries) > 0 {

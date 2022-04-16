@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Surfshark),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Surfshark),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
@@ -33,7 +33,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Surfshark),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Surfshark),
 			filtered: []models.SurfsharkServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
@@ -43,7 +43,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 		"filter by region": {
 			selection: settings.ServerSelection{
 				Regions: []string{"b"},
-			}.WithDefaults(constants.Surfshark),
+			}.WithDefaults(providers.Surfshark),
 			servers: []models.SurfsharkServer{
 				{Region: "a", UDP: true},
 				{Region: "b", UDP: true},
@@ -56,7 +56,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
-			}.WithDefaults(constants.Surfshark),
+			}.WithDefaults(providers.Surfshark),
 			servers: []models.SurfsharkServer{
 				{Country: "a", UDP: true},
 				{Country: "b", UDP: true},
@@ -69,7 +69,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			}.WithDefaults(constants.Surfshark),
+			}.WithDefaults(providers.Surfshark),
 			servers: []models.SurfsharkServer{
 				{City: "a", UDP: true},
 				{City: "b", UDP: true},
@@ -82,7 +82,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			}.WithDefaults(constants.Surfshark),
+			}.WithDefaults(providers.Surfshark),
 			servers: []models.SurfsharkServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
@@ -97,7 +97,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
-			}.WithDefaults(constants.Surfshark),
+			}.WithDefaults(providers.Surfshark),
 			servers: []models.SurfsharkServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true, TCP: true},
@@ -110,7 +110,7 @@ func Test_Surfshark_filterServers(t *testing.T) {
 		"filter by multihop only": {
 			selection: settings.ServerSelection{
 				MultiHopOnly: boolPtr(true),
-			}.WithDefaults(constants.Surfshark),
+			}.WithDefaults(providers.Surfshark),
 			servers: []models.SurfsharkServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", MultiHop: true, UDP: true},

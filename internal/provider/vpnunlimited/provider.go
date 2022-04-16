@@ -3,7 +3,7 @@ package vpnunlimited
 import (
 	"math/rand"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,6 +18,6 @@ func New(servers []models.VPNUnlimitedServer, randSource rand.Source) *Provider 
 	return &Provider{
 		servers:         servers,
 		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(constants.VPNUnlimited),
+		NoPortForwarder: utils.NewNoPortForwarding(providers.VPNUnlimited),
 	}
 }

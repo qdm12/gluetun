@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gotree"
 )
 
@@ -28,7 +28,7 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 	}
 
 	// Validate Enabled
-	validProviders := []string{constants.PrivateInternetAccess}
+	validProviders := []string{providers.PrivateInternetAccess}
 	if !helpers.IsOneOf(vpnProvider, validProviders...) {
 		return fmt.Errorf("%w: for provider %s, it is only available for %s",
 			ErrPortForwardingEnabled, vpnProvider, strings.Join(validProviders, ", "))

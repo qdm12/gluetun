@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
@@ -36,8 +36,8 @@ type WireguardSelection struct {
 func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	// Validate EndpointIP
 	switch vpnProvider {
-	case constants.Ivpn, constants.Mullvad, constants.Windscribe: // endpoint IP addresses are baked in
-	case constants.Custom:
+	case providers.Ivpn, providers.Mullvad, providers.Windscribe: // endpoint IP addresses are baked in
+	case providers.Custom:
 		if len(w.EndpointIP) == 0 {
 			return ErrWireguardEndpointIPNotSet
 		}
@@ -47,23 +47,23 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	// Validate EndpointPort
 	switch vpnProvider {
 	// EndpointPort is required
-	case constants.Custom:
+	case providers.Custom:
 		if *w.EndpointPort == 0 {
 			return ErrWireguardEndpointPortNotSet
 		}
-	case constants.Ivpn, constants.Mullvad, constants.Windscribe:
+	case providers.Ivpn, providers.Mullvad, providers.Windscribe:
 		// EndpointPort is optional and can be 0
 		if *w.EndpointPort == 0 {
 			break // no custom endpoint port set
 		}
-		if vpnProvider == constants.Mullvad {
+		if vpnProvider == providers.Mullvad {
 			break // no restriction on custom endpoint port value
 		}
 		var allowed []uint16
 		switch vpnProvider {
-		case constants.Ivpn:
+		case providers.Ivpn:
 			allowed = []uint16{2049, 2050, 53, 30587, 41893, 48574, 58237}
-		case constants.Windscribe:
+		case providers.Windscribe:
 			allowed = []uint16{53, 80, 123, 443, 1194, 65142}
 		}
 
@@ -78,8 +78,8 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 
 	// Validate PublicKey
 	switch vpnProvider {
-	case constants.Ivpn, constants.Mullvad, constants.Windscribe: // public keys are baked in
-	case constants.Custom:
+	case providers.Ivpn, providers.Mullvad, providers.Windscribe: // public keys are baked in
+	case providers.Custom:
 		if w.PublicKey == "" {
 			return ErrWireguardPublicKeyNotSet
 		}

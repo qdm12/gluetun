@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
 )
@@ -26,14 +27,14 @@ func (p *Provider) validate(vpnType string, allServers models.AllServers) (err e
 	// Validate Name
 	var validNames []string
 	if vpnType == constants.OpenVPN {
-		validNames = constants.AllProviders()
+		validNames = providers.All()
 		validNames = append(validNames, "pia") // Retro-compatibility
 	} else { // Wireguard
 		validNames = []string{
-			constants.Custom,
-			constants.Ivpn,
-			constants.Mullvad,
-			constants.Windscribe,
+			providers.Custom,
+			providers.Ivpn,
+			providers.Mullvad,
+			providers.Windscribe,
 		}
 	}
 	if !helpers.IsOneOf(*p.Name, validNames...) {
@@ -75,7 +76,7 @@ func (p *Provider) overrideWith(other Provider) {
 }
 
 func (p *Provider) setDefaults() {
-	p.Name = helpers.DefaultStringPtr(p.Name, constants.PrivateInternetAccess)
+	p.Name = helpers.DefaultStringPtr(p.Name, providers.PrivateInternetAccess)
 	p.ServerSelection.setDefaults(*p.Name)
 	p.PortForwarding.setDefaults()
 }

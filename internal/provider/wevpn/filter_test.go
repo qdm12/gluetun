@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ func Test_Wevpn_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Wevpn),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Wevpn),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
@@ -33,7 +33,7 @@ func Test_Wevpn_filterServers(t *testing.T) {
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Wevpn),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Wevpn),
 			filtered: []models.WevpnServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
@@ -43,7 +43,7 @@ func Test_Wevpn_filterServers(t *testing.T) {
 		"filter by protocol": {
 			selection: settings.ServerSelection{
 				OpenVPN: settings.OpenVPNSelection{TCP: boolPtr(true)},
-			}.WithDefaults(constants.Wevpn),
+			}.WithDefaults(providers.Wevpn),
 			servers: []models.WevpnServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", TCP: true},
@@ -56,7 +56,7 @@ func Test_Wevpn_filterServers(t *testing.T) {
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			}.WithDefaults(constants.Wevpn),
+			}.WithDefaults(providers.Wevpn),
 			servers: []models.WevpnServer{
 				{City: "a", UDP: true},
 				{City: "b", UDP: true},
@@ -69,7 +69,7 @@ func Test_Wevpn_filterServers(t *testing.T) {
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			}.WithDefaults(constants.Wevpn),
+			}.WithDefaults(providers.Wevpn),
 			servers: []models.WevpnServer{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},

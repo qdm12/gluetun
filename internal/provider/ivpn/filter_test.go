@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +25,7 @@ func Test_Ivpn_filterServers(t *testing.T) {
 		err       error
 	}{
 		"no server available": {
-			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Ivpn),
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
@@ -33,7 +34,7 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
 				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(constants.Ivpn),
+			selection: settings.ServerSelection{}.WithDefaults(providers.Ivpn),
 			filtered: []models.IvpnServer{
 				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
 				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
@@ -43,7 +44,7 @@ func Test_Ivpn_filterServers(t *testing.T) {
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
-			}.WithDefaults(constants.Ivpn),
+			}.WithDefaults(providers.Ivpn),
 			servers: []models.IvpnServer{
 				{VPN: constants.OpenVPN, Country: "a", UDP: true},
 				{VPN: constants.OpenVPN, Country: "b", UDP: true},
@@ -56,7 +57,7 @@ func Test_Ivpn_filterServers(t *testing.T) {
 		"filter by city": {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
-			}.WithDefaults(constants.Ivpn),
+			}.WithDefaults(providers.Ivpn),
 			servers: []models.IvpnServer{
 				{VPN: constants.OpenVPN, City: "a", UDP: true},
 				{VPN: constants.OpenVPN, City: "b", UDP: true},
@@ -69,7 +70,7 @@ func Test_Ivpn_filterServers(t *testing.T) {
 		"filter by ISP": {
 			selection: settings.ServerSelection{
 				ISPs: []string{"b"},
-			}.WithDefaults(constants.Ivpn),
+			}.WithDefaults(providers.Ivpn),
 			servers: []models.IvpnServer{
 				{VPN: constants.OpenVPN, ISP: "a", UDP: true},
 				{VPN: constants.OpenVPN, ISP: "b", UDP: true},
@@ -82,7 +83,7 @@ func Test_Ivpn_filterServers(t *testing.T) {
 		"filter by hostname": {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
-			}.WithDefaults(constants.Ivpn),
+			}.WithDefaults(providers.Ivpn),
 			servers: []models.IvpnServer{
 				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
 				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
@@ -97,7 +98,7 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
-			}.WithDefaults(constants.Ivpn),
+			}.WithDefaults(providers.Ivpn),
 			servers: []models.IvpnServer{
 				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
 				{VPN: constants.OpenVPN, Hostname: "b", UDP: true, TCP: true},
