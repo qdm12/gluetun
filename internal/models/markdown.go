@@ -30,7 +30,6 @@ const (
 	hostnameHeader    = "Hostname"
 	tcpHeader         = "TCP"
 	udpHeader         = "UDP"
-	retroLocHeader    = "Retro region" // TODO
 	multiHopHeader    = "MultiHop"
 	freeHeader        = "Free"
 	streamHeader      = "Stream"
@@ -65,8 +64,6 @@ func (s *Server) ToMarkdown(headers ...string) (markdown string) {
 			fields[i] = boolToMarkdown(s.TCP)
 		case udpHeader:
 			fields[i] = boolToMarkdown(s.UDP)
-		case retroLocHeader:
-			fields[i] = s.RetroLoc
 		case multiHopHeader:
 			fields[i] = boolToMarkdown(s.MultiHop)
 		case freeHeader:
@@ -119,7 +116,7 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	case providers.Privado:
 		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader}
 	case providers.PrivateInternetAccess:
-		return []string{regionHeader, hostnameHeader, tcpHeader, udpHeader}
+		return []string{regionHeader, hostnameHeader, tcpHeader, udpHeader, portForwardHeader}
 	case providers.Privatevpn:
 		return []string{countryHeader, cityHeader, hostnameHeader}
 	case providers.Protonvpn:
