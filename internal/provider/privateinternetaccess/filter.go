@@ -13,7 +13,7 @@ func (p *PIA) filterServers(selection settings.ServerSelection) (
 		case
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			utils.FilterByPossibilities(server.ServerName, selection.Names),
+			utils.FilterByPossibilities(server.ServerName, selection.Names), // TODO remove in v4
 			utils.FilterByProtocol(selection, server.TCP, server.UDP):
 		default:
 			servers = append(servers, server)

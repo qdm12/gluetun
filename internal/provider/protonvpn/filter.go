@@ -17,7 +17,7 @@ func (p *Protonvpn) filterServers(selection settings.ServerSelection) (
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			utils.FilterByPossibilities(server.ServerName, selection.Names),
+			utils.FilterByPossibilities(server.ServerName, selection.Names), // TODO remove in v4
 			*selection.FreeOnly && !strings.Contains(strings.ToLower(server.ServerName), "free"):
 		default:
 			servers = append(servers, server)

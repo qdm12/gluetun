@@ -20,7 +20,7 @@ func PIAHostnameChoices(servers []models.Server) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PIANameChoices(servers []models.Server) (choices []string) {
+func PIANameChoices(servers []models.Server) (choices []string) { // TODO remove in v4
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].ServerName
