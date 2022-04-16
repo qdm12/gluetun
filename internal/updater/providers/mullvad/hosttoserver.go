@@ -50,7 +50,7 @@ func (hts hostToServer) add(data serverData) (err error) {
 		if ipv4 == nil || ipv4.To4() == nil {
 			return fmt.Errorf("%w: %s", ErrParseIPv4, data.IPv4)
 		}
-		server.IPs = []net.IP{ipv4}
+		server.IPs = append(server.IPs, ipv4)
 	}
 
 	if data.IPv6 != "" {
@@ -58,7 +58,7 @@ func (hts hostToServer) add(data serverData) (err error) {
 		if ipv6 == nil || ipv6.To4() != nil {
 			return fmt.Errorf("%w: %s", ErrParseIPv6, data.IPv6)
 		}
-		server.IPsV6 = []net.IP{ipv6}
+		server.IPs = append(server.IPs, ipv6)
 	}
 
 	server.Country = data.Country
@@ -77,7 +77,6 @@ func (hts hostToServer) toServersSlice() (servers []models.MullvadServer) {
 	servers = make([]models.MullvadServer, 0, len(hts))
 	for _, server := range hts {
 		server.IPs = uniqueSortedIPs(server.IPs)
-		server.IPsV6 = uniqueSortedIPs(server.IPsV6)
 		servers = append(servers, server)
 	}
 	return servers

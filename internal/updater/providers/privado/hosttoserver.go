@@ -25,23 +25,17 @@ func (hts hostToServer) toHostsSlice() (hosts []string) {
 	return hosts
 }
 
-func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]net.IP) (
-	warnings []string) {
+func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]net.IP) {
 	for host, IPs := range hostToIPs {
-		if len(IPs) > 1 {
-			warning := "more than one IP address found for host " + host
-			warnings = append(warnings, warning)
-		}
 		server := hts[host]
-		server.IP = IPs[0]
+		server.IPs = IPs
 		hts[host] = server
 	}
 	for host, server := range hts {
-		if server.IP == nil {
+		if len(server.IPs) == 0 {
 			delete(hts, host)
 		}
 	}
-	return warnings
 }
 
 func (hts hostToServer) toServersSlice() (servers []models.PrivadoServer) {

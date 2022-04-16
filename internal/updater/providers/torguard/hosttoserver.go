@@ -8,14 +8,18 @@ import (
 
 type hostToServer map[string]models.TorguardServer
 
-func (hts hostToServer) add(host, country, city string, tcp, udp bool, ip net.IP) {
+func (hts hostToServer) add(host, country, city string,
+	tcp, udp bool, ips []net.IP) {
 	server, ok := hts[host]
 	if !ok {
 		server.Hostname = host
 		server.Country = country
 		server.City = city
-		server.IPs = append(server.IPs, ip) // used if DNS resolution fails downstream
+		server.IPs = ips // used if DNS resolution fails downstream
+	} else {
+		server.IPs = append(server.IPs, ips...)
 	}
+
 	if tcp {
 		server.TCP = tcp
 	}

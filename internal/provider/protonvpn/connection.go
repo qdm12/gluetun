@@ -24,13 +24,16 @@ func (p *Protonvpn) GetConnection(selection settings.ServerSelection) (
 		return connection, err
 	}
 
-	connections := make([]models.Connection, len(servers))
-	for i := range servers {
-		connections[i] = models.Connection{
-			Type:     selection.VPN,
-			IP:       servers[i].EntryIP,
-			Port:     port,
-			Protocol: protocol,
+	connections := make([]models.Connection, 0, len(servers))
+	for _, server := range servers {
+		for _, ip := range server.IPs {
+			connection := models.Connection{
+				Type:     selection.VPN,
+				IP:       ip,
+				Port:     port,
+				Protocol: protocol,
+			}
+			connections = append(connections, connection)
 		}
 	}
 

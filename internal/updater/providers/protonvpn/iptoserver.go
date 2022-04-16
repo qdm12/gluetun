@@ -19,7 +19,9 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 		server.City = city
 		server.Name = name
 		server.Hostname = hostname
-		server.EntryIP = entryIP
+		server.IPs = []net.IP{entryIP}
+	} else {
+		server.IPs = append(server.IPs, entryIP)
 	}
 
 	its[key] = server

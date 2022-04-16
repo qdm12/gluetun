@@ -62,8 +62,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 		return nil, warnings, err
 	}
 
-	newWarnings = hts.adaptWithIPs(hostToIPs)
-	warnings = append(warnings, newWarnings...)
+	hts.adaptWithIPs(hostToIPs)
 
 	servers = hts.toServersSlice()
 
