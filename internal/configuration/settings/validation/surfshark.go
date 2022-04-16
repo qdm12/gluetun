@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func SurfsharkRegionChoices(servers []models.SurfsharkServer) (choices []string) {
+func SurfsharkRegionChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -15,7 +15,7 @@ func SurfsharkRegionChoices(servers []models.SurfsharkServer) (choices []string)
 	return makeUnique(choices)
 }
 
-func SurfsharkCountryChoices(servers []models.SurfsharkServer) (choices []string) {
+func SurfsharkCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -23,7 +23,7 @@ func SurfsharkCountryChoices(servers []models.SurfsharkServer) (choices []string
 	return makeUnique(choices)
 }
 
-func SurfsharkCityChoices(servers []models.SurfsharkServer) (choices []string) {
+func SurfsharkCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -31,7 +31,7 @@ func SurfsharkCityChoices(servers []models.SurfsharkServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func SurfsharkHostnameChoices(servers []models.SurfsharkServer) (choices []string) {
+func SurfsharkHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

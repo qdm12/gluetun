@@ -7,7 +7,7 @@ import (
 )
 
 func (t *Torguard) filterServers(selection settings.ServerSelection) (
-	servers []models.TorguardServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range t.servers {
 		switch {
 		case

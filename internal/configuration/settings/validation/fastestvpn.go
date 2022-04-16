@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func FastestvpnCountriesChoices(servers []models.FastestvpnServer) (choices []string) {
+func FastestvpnCountriesChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -12,7 +12,7 @@ func FastestvpnCountriesChoices(servers []models.FastestvpnServer) (choices []st
 	return makeUnique(choices)
 }
 
-func FastestvpnHostnameChoices(servers []models.FastestvpnServer) (choices []string) {
+func FastestvpnHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

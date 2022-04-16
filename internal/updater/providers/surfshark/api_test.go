@@ -37,7 +37,7 @@ func Test_addServersFromAPI(t *testing.T) {
 				{"connectionName":"host1","region":"region1","country":"country1","location":"location1"},
 				{"connectionName":"host2","region":"region2","country":"country1","location":"location2"}
 			]`)),
-			expected: map[string]models.SurfsharkServer{
+			expected: map[string]models.Server{
 				"existinghost": {Hostname: "existinghost"},
 				"host1": {
 					Region:   "region1",

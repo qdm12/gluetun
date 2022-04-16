@@ -6,16 +6,16 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func sortServers(servers []models.ProtonvpnServer) {
+func sortServers(servers []models.Server) {
 	sort.Slice(servers, func(i, j int) bool {
 		a, b := servers[i], servers[j]
 		if a.Country == b.Country { //nolint:nestif
 			if a.Region == b.Region {
 				if a.City == b.City {
-					if a.Name == b.Name {
+					if a.ServerName == b.ServerName {
 						return a.Hostname < b.Hostname
 					}
-					return a.Name < b.Name
+					return a.ServerName < b.ServerName
 				}
 				return a.City < b.City
 			}

@@ -18,7 +18,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.TorguardServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	const tcpURL = "https://torguard.net/downloads/OpenVPN-TCP-Linux.zip"
 	tcpContents, err := unzipper.FetchAndExtract(ctx, tcpURL)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 )
 
 func (p *Perfectprivacy) filterServers(selection settings.ServerSelection) (
-	servers []models.PerfectprivacyServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range p.servers {
 		switch {
 		case

@@ -9,12 +9,12 @@ import (
 )
 
 type Cyberghost struct {
-	servers    []models.CyberghostServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.CyberghostServer, randSource rand.Source) *Cyberghost {
+func New(servers []models.Server, randSource rand.Source) *Cyberghost {
 	return &Cyberghost{
 		servers:         servers,
 		randSource:      randSource,

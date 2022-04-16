@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func sortServers(servers []models.HideMyAssServer) {
+func sortServers(servers []models.Server) {
 	sort.Slice(servers, func(i, j int) bool {
 		if servers[i].Country == servers[j].Country {
 			if servers[i].Region == servers[j].Region {

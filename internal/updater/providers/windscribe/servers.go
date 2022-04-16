@@ -19,7 +19,7 @@ var (
 )
 
 func GetServers(ctx context.Context, client *http.Client, minServers int) (
-	servers []models.WindscribeServer, err error) {
+	servers []models.Server, err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 				if node.IP2 != nil {
 					ips = append(ips, node.IP2)
 				}
-				server := models.WindscribeServer{
+				server := models.Server{
 					VPN:      constants.OpenVPN,
 					Region:   region,
 					City:     city,

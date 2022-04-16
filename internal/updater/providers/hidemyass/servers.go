@@ -16,7 +16,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, client *http.Client,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.HideMyAssServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	tcpHostToURL, udpHostToURL, err := getAllHostToURL(ctx, client)
 	if err != nil {
 		return nil, nil, err
@@ -34,7 +34,7 @@ func GetServers(ctx context.Context, client *http.Client,
 		return nil, warnings, err
 	}
 
-	servers = make([]models.HideMyAssServer, 0, len(hostToIPs))
+	servers = make([]models.Server, 0, len(hostToIPs))
 	for host, IPs := range hostToIPs {
 		tcpURL, tcp := tcpHostToURL[host]
 		udpURL, udp := udpHostToURL[host]
@@ -50,7 +50,7 @@ func GetServers(ctx context.Context, client *http.Client,
 		}
 		country, region, city := parseOpenvpnURL(url, protocol)
 
-		server := models.HideMyAssServer{
+		server := models.Server{
 			Country:  country,
 			Region:   region,
 			City:     city,

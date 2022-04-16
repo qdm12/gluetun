@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func IpvanishCountryChoices(servers []models.IpvanishServer) (choices []string) {
+func IpvanishCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -12,7 +12,7 @@ func IpvanishCountryChoices(servers []models.IpvanishServer) (choices []string) 
 	return makeUnique(choices)
 }
 
-func IpvanishCityChoices(servers []models.IpvanishServer) (choices []string) {
+func IpvanishCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -20,7 +20,7 @@ func IpvanishCityChoices(servers []models.IpvanishServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func IpvanishHostnameChoices(servers []models.IpvanishServer) (choices []string) {
+func IpvanishHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

@@ -7,7 +7,7 @@ import (
 )
 
 func (m *Mullvad) filterServers(selection settings.ServerSelection) (
-	servers []models.MullvadServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range m.servers {
 		switch {
 		case

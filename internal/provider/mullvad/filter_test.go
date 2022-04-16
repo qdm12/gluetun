@@ -19,9 +19,9 @@ func Test_Mullvad_filterServers(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers   []models.MullvadServer
+		servers   []models.Server
 		selection settings.ServerSelection
-		filtered  []models.MullvadServer
+		filtered  []models.Server
 		err       error
 	}{
 		"no server available": {
@@ -29,13 +29,13 @@ func Test_Mullvad_filterServers(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Mullvad),
-			filtered: []models.MullvadServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
@@ -45,12 +45,12 @@ func Test_Mullvad_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.Wireguard, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
-			filtered: []models.MullvadServer{
+			filtered: []models.Server{
 				{VPN: constants.Wireguard, Hostname: "b"},
 			},
 		},
@@ -58,12 +58,12 @@ func Test_Mullvad_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Country: "a"},
 				{VPN: constants.OpenVPN, Country: "b"},
 				{VPN: constants.OpenVPN, Country: "c"},
 			},
-			filtered: []models.MullvadServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, Country: "b"},
 			},
 		},
@@ -71,12 +71,12 @@ func Test_Mullvad_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, City: "a"},
 				{VPN: constants.OpenVPN, City: "b"},
 				{VPN: constants.OpenVPN, City: "c"},
 			},
-			filtered: []models.MullvadServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, City: "b"},
 			},
 		},
@@ -84,12 +84,12 @@ func Test_Mullvad_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				ISPs: []string{"b"},
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, ISP: "a"},
 				{VPN: constants.OpenVPN, ISP: "b"},
 				{VPN: constants.OpenVPN, ISP: "c"},
 			},
-			filtered: []models.MullvadServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, ISP: "b"},
 			},
 		},
@@ -97,12 +97,12 @@ func Test_Mullvad_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
-			filtered: []models.MullvadServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "b"},
 			},
 		},
@@ -110,12 +110,12 @@ func Test_Mullvad_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				OwnedOnly: boolPtr(true),
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b", Owned: true},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
-			filtered: []models.MullvadServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "b", Owned: true},
 			},
 		},

@@ -18,7 +18,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.VyprvpnServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	const url = "https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip"
 	contents, err := unzipper.FetchAndExtract(ctx, url)
 	if err != nil {

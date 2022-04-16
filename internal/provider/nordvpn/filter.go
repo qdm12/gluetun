@@ -9,7 +9,7 @@ import (
 )
 
 func (n *Nordvpn) filterServers(selection settings.ServerSelection) (
-	servers []models.NordvpnServer, err error) {
+	servers []models.Server, err error) {
 	selectedNumbers := make([]string, len(selection.Numbers))
 	for i := range selection.Numbers {
 		selectedNumbers[i] = strconv.Itoa(int(selection.Numbers[i]))

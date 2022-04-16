@@ -2,7 +2,7 @@ package validation
 
 import "github.com/qdm12/gluetun/internal/models"
 
-func PrivadoCountryChoices(servers []models.PrivadoServer) (choices []string) {
+func PrivadoCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -10,7 +10,7 @@ func PrivadoCountryChoices(servers []models.PrivadoServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PrivadoRegionChoices(servers []models.PrivadoServer) (choices []string) {
+func PrivadoRegionChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -18,7 +18,7 @@ func PrivadoRegionChoices(servers []models.PrivadoServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PrivadoCityChoices(servers []models.PrivadoServer) (choices []string) {
+func PrivadoCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -26,7 +26,7 @@ func PrivadoCityChoices(servers []models.PrivadoServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PrivadoHostnameChoices(servers []models.PrivadoServer) (choices []string) {
+func PrivadoHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

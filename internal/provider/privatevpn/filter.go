@@ -7,7 +7,7 @@ import (
 )
 
 func (p *Privatevpn) filterServers(selection settings.ServerSelection) (
-	servers []models.PrivatevpnServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range p.servers {
 		switch {
 		case

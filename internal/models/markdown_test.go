@@ -3,43 +3,54 @@ package models
 import (
 	"testing"
 
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_CyberghostServers_ToMarkdown(t *testing.T) {
+func Test_Servers_ToMarkdown(t *testing.T) {
 	t.Parallel()
 
-	servers := CyberghostServers{
-		Servers: []CyberghostServer{
-			{Country: "a", UDP: true, Hostname: "xa"},
-			{Country: "b", TCP: true, Hostname: "xb"},
+	testCases := map[string]struct {
+		provider         string
+		servers          Servers
+		expectedMarkdown string
+	}{
+		providers.Cyberghost: {
+			provider: providers.Cyberghost,
+			servers: Servers{
+				Servers: []Server{
+					{Country: "a", UDP: true, Hostname: "xa"},
+					{Country: "b", TCP: true, Hostname: "xb"},
+				},
+			},
+			expectedMarkdown: "| Country | Hostname | TCP | UDP |\n" +
+				"| --- | --- | --- | --- |\n" +
+				"| a | `xa` | ❌ | ✅ |\n" +
+				"| b | `xb` | ✅ | ❌ |\n",
+		},
+		providers.Fastestvpn: {
+			provider: providers.Fastestvpn,
+			servers: Servers{
+				Servers: []Server{
+					{Country: "a", Hostname: "xa", TCP: true},
+					{Country: "b", Hostname: "xb", UDP: true},
+				},
+			},
+			expectedMarkdown: "| Country | Hostname | TCP | UDP |\n" +
+				"| --- | --- | --- | --- |\n" +
+				"| a | `xa` | ✅ | ❌ |\n" +
+				"| b | `xb` | ❌ | ✅ |\n",
 		},
 	}
 
-	markdown := servers.ToMarkdown()
-	const expected = "| Country | Hostname | TCP | UDP |\n" +
-		"| --- | --- | --- | --- |\n" +
-		"| a | `xa` | ❌ | ✅ |\n" +
-		"| b | `xb` | ✅ | ❌ |\n"
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-	assert.Equal(t, expected, markdown)
-}
+			markdown := testCase.servers.ToMarkdown(testCase.provider)
 
-func Test_FastestvpnServers_ToMarkdown(t *testing.T) {
-	t.Parallel()
-
-	servers := FastestvpnServers{
-		Servers: []FastestvpnServer{
-			{Country: "a", Hostname: "xa", TCP: true},
-			{Country: "b", Hostname: "xb", UDP: true},
-		},
+			assert.Equal(t, testCase.expectedMarkdown, markdown)
+		})
 	}
-
-	markdown := servers.ToMarkdown()
-	const expected = "| Country | Hostname | TCP | UDP |\n" +
-		"| --- | --- | --- | --- |\n" +
-		"| a | `xa` | ✅ | ❌ |\n" +
-		"| b | `xb` | ❌ | ✅ |\n"
-
-	assert.Equal(t, expected, markdown)
 }

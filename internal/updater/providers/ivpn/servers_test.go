@@ -38,7 +38,7 @@ func Test_GetServers(t *testing.T) {
 		resolveErr      error
 
 		// Output
-		servers  []models.IvpnServer
+		servers  []models.Server
 		warnings []string
 		err      error
 	}{
@@ -84,7 +84,7 @@ func Test_GetServers(t *testing.T) {
 				"hostc": {{5, 5, 5, 5}, {6, 6, 6, 6}},
 			},
 			resolveWarnings: []string{"resolve warning"},
-			servers: []models.IvpnServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Country: "Country1",
 					City: "City A", Hostname: "hosta", TCP: true, UDP: true,
 					IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},

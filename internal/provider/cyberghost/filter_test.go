@@ -16,9 +16,9 @@ func boolPtr(b bool) *bool { return &b }
 func Test_Cyberghost_filterServers(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		servers         []models.CyberghostServer
+		servers         []models.Server
 		selection       settings.ServerSelection
-		filteredServers []models.CyberghostServer
+		filteredServers []models.Server
 		err             error
 	}{
 		"no server": {
@@ -26,20 +26,20 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"servers without filter defaults to UDP": {
-			servers: []models.CyberghostServer{
+			servers: []models.Server{
 				{Country: "a", TCP: true},
 				{Country: "b", TCP: true},
 				{Country: "c", UDP: true},
 				{Country: "d", UDP: true},
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Cyberghost),
-			filteredServers: []models.CyberghostServer{
+			filteredServers: []models.Server{
 				{Country: "c", UDP: true},
 				{Country: "d", UDP: true},
 			},
 		},
 		"servers with TCP selection": {
-			servers: []models.CyberghostServer{
+			servers: []models.Server{
 				{Country: "a", TCP: true},
 				{Country: "b", TCP: true},
 				{Country: "c", UDP: true},
@@ -50,13 +50,13 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 					TCP: boolPtr(true),
 				},
 			}.WithDefaults(providers.Cyberghost),
-			filteredServers: []models.CyberghostServer{
+			filteredServers: []models.Server{
 				{Country: "a", TCP: true},
 				{Country: "b", TCP: true},
 			},
 		},
 		"servers with regions filter": {
-			servers: []models.CyberghostServer{
+			servers: []models.Server{
 				{Country: "a", UDP: true},
 				{Country: "b", UDP: true},
 				{Country: "c", UDP: true},
@@ -65,13 +65,13 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Countries: []string{"a", "c"},
 			}.WithDefaults(providers.Cyberghost),
-			filteredServers: []models.CyberghostServer{
+			filteredServers: []models.Server{
 				{Country: "a", UDP: true},
 				{Country: "c", UDP: true},
 			},
 		},
 		"servers with hostnames filter": {
-			servers: []models.CyberghostServer{
+			servers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
@@ -79,7 +79,7 @@ func Test_Cyberghost_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"a", "c"},
 			}.WithDefaults(providers.Cyberghost),
-			filteredServers: []models.CyberghostServer{
+			filteredServers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "c", UDP: true},
 			},

@@ -9,12 +9,12 @@ import (
 )
 
 type Privatevpn struct {
-	servers    []models.PrivatevpnServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.PrivatevpnServer, randSource rand.Source) *Privatevpn {
+func New(servers []models.Server, randSource rand.Source) *Privatevpn {
 	return &Privatevpn{
 		servers:         servers,
 		randSource:      randSource,

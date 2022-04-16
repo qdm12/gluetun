@@ -7,7 +7,7 @@ import (
 )
 
 func (w *Windscribe) filterServers(selection settings.ServerSelection) (
-	servers []models.WindscribeServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range w.servers {
 		switch {
 		case

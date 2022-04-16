@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type nameToServer map[string]models.PIAServer
+type nameToServer map[string]models.Server
 
 func (nts nameToServer) add(name, hostname, region string,
 	tcp, udp, portForward bool, ip net.IP) (change bool) {
@@ -46,8 +46,8 @@ func (nts nameToServer) add(name, hostname, region string,
 	return change
 }
 
-func (nts nameToServer) toServersSlice() (servers []models.PIAServer) {
-	servers = make([]models.PIAServer, 0, len(nts))
+func (nts nameToServer) toServersSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(nts))
 	for _, server := range nts {
 		servers = append(servers, server)
 	}

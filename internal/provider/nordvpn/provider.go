@@ -9,12 +9,12 @@ import (
 )
 
 type Nordvpn struct {
-	servers    []models.NordvpnServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.NordvpnServer, randSource rand.Source) *Nordvpn {
+func New(servers []models.Server, randSource rand.Source) *Nordvpn {
 	return &Nordvpn{
 		servers:         servers,
 		randSource:      randSource,

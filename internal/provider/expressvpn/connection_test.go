@@ -18,7 +18,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers    []models.ExpressvpnServer
+		servers    []models.Server
 		selection  settings.ServerSelection
 		connection models.Connection
 		err        error
@@ -28,7 +28,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
@@ -45,7 +45,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
 			}.WithDefaults(providers.Expressvpn),
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
@@ -61,7 +61,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Expressvpn),
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},

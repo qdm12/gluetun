@@ -9,12 +9,12 @@ import (
 )
 
 type Provider struct {
-	servers    []models.VPNUnlimitedServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.VPNUnlimitedServer, randSource rand.Source) *Provider {
+func New(servers []models.Server, randSource rand.Source) *Provider {
 	return &Provider{
 		servers:         servers,
 		randSource:      randSource,

@@ -9,12 +9,12 @@ import (
 )
 
 type Torguard struct {
-	servers    []models.TorguardServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.TorguardServer, randSource rand.Source) *Torguard {
+func New(servers []models.Server, randSource rand.Source) *Torguard {
 	return &Torguard{
 		servers:         servers,
 		randSource:      randSource,

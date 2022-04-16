@@ -19,13 +19,13 @@ var (
 )
 
 func GetServers(ctx context.Context, client *http.Client, minServers int) (
-	servers []models.NordvpnServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	servers = make([]models.NordvpnServer, 0, len(data))
+	servers = make([]models.Server, 0, len(data))
 
 	for _, jsonServer := range data {
 		if !jsonServer.Features.TCP && !jsonServer.Features.UDP {
@@ -44,7 +44,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 			return nil, nil, err
 		}
 
-		server := models.NordvpnServer{
+		server := models.Server{
 			Region:   jsonServer.Country,
 			Hostname: jsonServer.Domain,
 			Number:   number,

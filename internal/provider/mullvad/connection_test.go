@@ -18,7 +18,7 @@ func Test_Mullvad_GetConnection(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers    []models.MullvadServer
+		servers    []models.Server
 		selection  settings.ServerSelection
 		connection models.Connection
 		err        error
@@ -28,7 +28,7 @@ func Test_Mullvad_GetConnection(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
@@ -45,7 +45,7 @@ func Test_Mullvad_GetConnection(t *testing.T) {
 			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
@@ -61,7 +61,7 @@ func Test_Mullvad_GetConnection(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Mullvad),
-			servers: []models.MullvadServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
 				{VPN: constants.OpenVPN, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
 				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},

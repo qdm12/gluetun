@@ -28,244 +28,98 @@ func (a AllServers) GetCopy() (servers AllServers) {
 	return servers
 }
 
-func (a *AllServers) GetCyberghost() (servers []CyberghostServer) {
-	if a.Cyberghost.Servers == nil {
-		return nil
-	}
-	servers = make([]CyberghostServer, len(a.Cyberghost.Servers))
-	for i, serverToCopy := range a.Cyberghost.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetCyberghost() (servers []Server) {
+	return copyServers(a.Cyberghost.Servers)
 }
 
-func (a *AllServers) GetExpressvpn() (servers []ExpressvpnServer) {
-	if a.Expressvpn.Servers == nil {
-		return nil
-	}
-	servers = make([]ExpressvpnServer, len(a.Expressvpn.Servers))
-	for i, serverToCopy := range a.Expressvpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetExpressvpn() (servers []Server) {
+	return copyServers(a.Expressvpn.Servers)
 }
 
-func (a *AllServers) GetFastestvpn() (servers []FastestvpnServer) {
-	if a.Fastestvpn.Servers == nil {
-		return nil
-	}
-	servers = make([]FastestvpnServer, len(a.Fastestvpn.Servers))
-	for i, serverToCopy := range a.Fastestvpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetFastestvpn() (servers []Server) {
+	return copyServers(a.Fastestvpn.Servers)
 }
 
-func (a *AllServers) GetHideMyAss() (servers []HideMyAssServer) {
-	if a.HideMyAss.Servers == nil {
-		return nil
-	}
-	servers = make([]HideMyAssServer, len(a.HideMyAss.Servers))
-	for i, serverToCopy := range a.HideMyAss.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetHideMyAss() (servers []Server) {
+	return copyServers(a.HideMyAss.Servers)
 }
 
-func (a *AllServers) GetIpvanish() (servers []IpvanishServer) {
-	if a.Ipvanish.Servers == nil {
-		return nil
-	}
-	servers = make([]IpvanishServer, len(a.Ipvanish.Servers))
-	for i, serverToCopy := range a.Ipvanish.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetIpvanish() (servers []Server) {
+	return copyServers(a.Ipvanish.Servers)
 }
 
-func (a *AllServers) GetIvpn() (servers []IvpnServer) {
-	if a.Ivpn.Servers == nil {
-		return nil
-	}
-	servers = make([]IvpnServer, len(a.Ivpn.Servers))
-	for i, serverToCopy := range a.Ivpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetIvpn() (servers []Server) {
+	return copyServers(a.Ivpn.Servers)
 }
 
-func (a *AllServers) GetMullvad() (servers []MullvadServer) {
-	if a.Mullvad.Servers == nil {
-		return nil
-	}
-	servers = make([]MullvadServer, len(a.Mullvad.Servers))
-	for i, serverToCopy := range a.Mullvad.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetMullvad() (servers []Server) {
+	return copyServers(a.Mullvad.Servers)
 }
 
-func (a *AllServers) GetNordvpn() (servers []NordvpnServer) {
-	if a.Nordvpn.Servers == nil {
-		return nil
-	}
-	servers = make([]NordvpnServer, len(a.Nordvpn.Servers))
-	for i, serverToCopy := range a.Nordvpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetNordvpn() (servers []Server) {
+	return copyServers(a.Nordvpn.Servers)
 }
 
-func (a *AllServers) GetPerfectprivacy() (servers []PerfectprivacyServer) {
-	if a.Perfectprivacy.Servers == nil {
-		return nil
-	}
-	servers = make([]PerfectprivacyServer, len(a.Perfectprivacy.Servers))
-	for i, serverToCopy := range a.Perfectprivacy.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetPerfectprivacy() (servers []Server) {
+	return copyServers(a.Perfectprivacy.Servers)
 }
 
-func (a *AllServers) GetPia() (servers []PIAServer) {
-	if a.Pia.Servers == nil {
-		return nil
-	}
-	servers = make([]PIAServer, len(a.Pia.Servers))
-	for i, serverToCopy := range a.Pia.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetPia() (servers []Server) {
+	return copyServers(a.Pia.Servers)
 }
 
-func (a *AllServers) GetPrivado() (servers []PrivadoServer) {
-	if a.Privado.Servers == nil {
-		return nil
-	}
-	servers = make([]PrivadoServer, len(a.Privado.Servers))
-	for i, serverToCopy := range a.Privado.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetPrivado() (servers []Server) {
+	return copyServers(a.Privado.Servers)
 }
 
-func (a *AllServers) GetPrivatevpn() (servers []PrivatevpnServer) {
-	if a.Privatevpn.Servers == nil {
-		return nil
-	}
-	servers = make([]PrivatevpnServer, len(a.Privatevpn.Servers))
-	for i, serverToCopy := range a.Privatevpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetPrivatevpn() (servers []Server) {
+	return copyServers(a.Privatevpn.Servers)
 }
 
-func (a *AllServers) GetProtonvpn() (servers []ProtonvpnServer) {
-	if a.Protonvpn.Servers == nil {
-		return nil
-	}
-	servers = make([]ProtonvpnServer, len(a.Protonvpn.Servers))
-	for i, serverToCopy := range a.Protonvpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetProtonvpn() (servers []Server) {
+	return copyServers(a.Protonvpn.Servers)
 }
 
-func (a *AllServers) GetPurevpn() (servers []PurevpnServer) {
-	if a.Purevpn.Servers == nil {
-		return nil
-	}
-	servers = make([]PurevpnServer, len(a.Purevpn.Servers))
-	for i, serverToCopy := range a.Purevpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetPurevpn() (servers []Server) {
+	return copyServers(a.Purevpn.Servers)
 }
 
-func (a *AllServers) GetSurfshark() (servers []SurfsharkServer) {
-	if a.Surfshark.Servers == nil {
-		return nil
-	}
-	servers = make([]SurfsharkServer, len(a.Surfshark.Servers))
-	for i, serverToCopy := range a.Surfshark.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetSurfshark() (servers []Server) {
+	return copyServers(a.Surfshark.Servers)
 }
 
-func (a *AllServers) GetTorguard() (servers []TorguardServer) {
-	if a.Torguard.Servers == nil {
-		return nil
-	}
-	servers = make([]TorguardServer, len(a.Torguard.Servers))
-	for i, serverToCopy := range a.Torguard.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetTorguard() (servers []Server) {
+	return copyServers(a.Torguard.Servers)
 }
 
-func (a *AllServers) GetVPNUnlimited() (servers []VPNUnlimitedServer) {
-	if a.VPNUnlimited.Servers == nil {
-		return nil
-	}
-	servers = make([]VPNUnlimitedServer, len(a.VPNUnlimited.Servers))
-	for i, serverToCopy := range a.VPNUnlimited.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetVPNUnlimited() (servers []Server) {
+	return copyServers(a.VPNUnlimited.Servers)
 }
 
-func (a *AllServers) GetVyprvpn() (servers []VyprvpnServer) {
-	if a.Vyprvpn.Servers == nil {
-		return nil
-	}
-	servers = make([]VyprvpnServer, len(a.Vyprvpn.Servers))
-	for i, serverToCopy := range a.Vyprvpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetVyprvpn() (servers []Server) {
+	return copyServers(a.Vyprvpn.Servers)
 }
 
-func (a *AllServers) GetWevpn() (servers []WevpnServer) {
-	if a.Windscribe.Servers == nil {
-		return nil
-	}
-	servers = make([]WevpnServer, len(a.Wevpn.Servers))
-	for i, serverToCopy := range a.Wevpn.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
-	}
-	return servers
+func (a *AllServers) GetWevpn() (servers []Server) {
+	return copyServers(a.Wevpn.Servers)
 }
 
-func (a *AllServers) GetWindscribe() (servers []WindscribeServer) {
-	if a.Windscribe.Servers == nil {
+func (a *AllServers) GetWindscribe() (servers []Server) {
+	return copyServers(a.Windscribe.Servers)
+}
+
+func copyServers(servers []Server) (serversCopy []Server) {
+	if servers == nil {
 		return nil
 	}
-	servers = make([]WindscribeServer, len(a.Windscribe.Servers))
-	for i, serverToCopy := range a.Windscribe.Servers {
-		servers[i] = serverToCopy
-		servers[i].IPs = copyIPs(serverToCopy.IPs)
+
+	serversCopy = make([]Server, len(servers))
+	for i, server := range servers {
+		serversCopy[i] = server
+		serversCopy[i].IPs = copyIPs(server.IPs)
 	}
-	return servers
+
+	return serversCopy
 }
 
 func copyIPs(toCopy []net.IP) (copied []net.IP) {

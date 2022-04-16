@@ -9,12 +9,12 @@ import (
 )
 
 type Surfshark struct {
-	servers    []models.SurfsharkServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.SurfsharkServer, randSource rand.Source) *Surfshark {
+func New(servers []models.Server, randSource rand.Source) *Surfshark {
 	return &Surfshark{
 		servers:         servers,
 		randSource:      randSource,

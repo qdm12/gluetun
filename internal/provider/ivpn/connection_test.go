@@ -18,7 +18,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers    []models.IvpnServer
+		servers    []models.Server
 		selection  settings.ServerSelection
 		connection models.Connection
 		err        error
@@ -28,7 +28,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
-			servers: []models.IvpnServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
@@ -45,7 +45,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 			selection: settings.ServerSelection{
 				TargetIP: net.IPv4(2, 2, 2, 2),
 			}.WithDefaults(providers.Ivpn),
-			servers: []models.IvpnServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{VPN: constants.OpenVPN, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
@@ -61,7 +61,7 @@ func Test_Ivpn_GetConnection(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Ivpn),
-			servers: []models.IvpnServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, UDP: true},
 				{VPN: constants.OpenVPN, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, UDP: true},
 				{VPN: constants.OpenVPN, Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},

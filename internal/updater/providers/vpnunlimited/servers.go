@@ -16,7 +16,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.VPNUnlimitedServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	// Hardcoded data from a user provided ZIP file since it's behind a login wall
 	hts, warnings := getHostToServer()
 

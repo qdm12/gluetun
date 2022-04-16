@@ -9,12 +9,12 @@ import (
 )
 
 type Ipvanish struct {
-	servers    []models.IpvanishServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.IpvanishServer, randSource rand.Source) *Ipvanish {
+func New(servers []models.Server, randSource rand.Source) *Ipvanish {
 	return &Ipvanish{
 		servers:         servers,
 		randSource:      randSource,

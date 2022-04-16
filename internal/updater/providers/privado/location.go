@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/publicip"
 )
 
-func setLocationInfo(ctx context.Context, client *http.Client, servers []models.PrivadoServer) (err error) {
+func setLocationInfo(ctx context.Context, client *http.Client, servers []models.Server) (err error) {
 	// Get public IP address information
 	ipsToGetInfo := make([]net.IP, 0, len(servers))
 	for _, server := range servers {

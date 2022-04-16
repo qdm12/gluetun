@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Surfshark) filterServers(selection settings.ServerSelection) (
-	servers []models.SurfsharkServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range s.servers {
 		switch {
 		case

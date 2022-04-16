@@ -18,9 +18,9 @@ var (
 )
 
 func GetServers(ctx context.Context, presolver resolver.Parallel, minServers int) (
-	servers []models.WevpnServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	cities := getAvailableCities()
-	servers = make([]models.WevpnServer, 0, len(cities))
+	servers = make([]models.Server, 0, len(cities))
 	hostnames := make([]string, len(cities))
 	hostnameToCity := make(map[string]string, len(cities))
 
@@ -43,7 +43,7 @@ func GetServers(ctx context.Context, presolver resolver.Parallel, minServers int
 
 	for hostname, ips := range hostnameToIPs {
 		city := hostnameToCity[hostname]
-		server := models.WevpnServer{
+		server := models.Server{
 			City:     city,
 			Hostname: hostname,
 			UDP:      true,

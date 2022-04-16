@@ -47,7 +47,7 @@ func Test_hostToServer_add(t *testing.T) {
 			udp:     true,
 			expectedHTS: hostToServer{
 				"existing host": {},
-				"host": models.IpvanishServer{
+				"host": models.Server{
 					Hostname: "host",
 					Country:  "country",
 					City:     "city",
@@ -58,7 +58,7 @@ func Test_hostToServer_add(t *testing.T) {
 		},
 		"extend existing server": {
 			initialHTS: hostToServer{
-				"host": models.IpvanishServer{
+				"host": models.Server{
 					Hostname: "host",
 					Country:  "country",
 					City:     "city",
@@ -71,7 +71,7 @@ func Test_hostToServer_add(t *testing.T) {
 			tcp:     false,
 			udp:     true,
 			expectedHTS: hostToServer{
-				"host": models.IpvanishServer{
+				"host": models.Server{
 					Hostname: "host",
 					Country:  "country",
 					City:     "city",
@@ -138,14 +138,14 @@ func Test_hostToServer_adaptWithIPs(t *testing.T) {
 				"A": {{1, 2, 3, 4}},
 			},
 			expectedHTS: hostToServer{
-				"A": models.IpvanishServer{
+				"A": models.Server{
 					IPs: []net.IP{{1, 2, 3, 4}},
 				},
 			},
 		},
 		"add IPs to existing server": {
 			initialHTS: hostToServer{
-				"A": models.IpvanishServer{
+				"A": models.Server{
 					Country: "country",
 				},
 			},
@@ -153,7 +153,7 @@ func Test_hostToServer_adaptWithIPs(t *testing.T) {
 				"A": {{1, 2, 3, 4}},
 			},
 			expectedHTS: hostToServer{
-				"A": models.IpvanishServer{
+				"A": models.Server{
 					Country: "country",
 					IPs:     []net.IP{{1, 2, 3, 4}},
 				},
@@ -161,7 +161,7 @@ func Test_hostToServer_adaptWithIPs(t *testing.T) {
 		},
 		"remove server without IP": {
 			initialHTS: hostToServer{
-				"A": models.IpvanishServer{
+				"A": models.Server{
 					Country: "country",
 				},
 			},
@@ -183,18 +183,18 @@ func Test_hostToServer_toServersSlice(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
 		hts     hostToServer
-		servers []models.IpvanishServer
+		servers []models.Server
 	}{
 		"empty host to server": {
 			hts:     hostToServer{},
-			servers: []models.IpvanishServer{},
+			servers: []models.Server{},
 		},
 		"multiple servers": {
 			hts: hostToServer{
 				"A": {Country: "A"},
 				"B": {Country: "B"},
 			},
-			servers: []models.IpvanishServer{
+			servers: []models.Server{
 				{Country: "A"},
 				{Country: "B"},
 			},

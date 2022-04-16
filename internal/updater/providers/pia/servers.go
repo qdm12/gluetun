@@ -15,7 +15,7 @@ import (
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, client *http.Client, minServers int) (
-	servers []models.PIAServer, err error) {
+	servers []models.Server, err error) {
 	nts := make(nameToServer)
 
 	noChangeCounter := 0

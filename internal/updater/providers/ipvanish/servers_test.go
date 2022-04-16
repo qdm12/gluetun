@@ -34,7 +34,7 @@ func Test_GetServers(t *testing.T) {
 		resolveErr      error
 
 		// Output
-		servers  []models.IpvanishServer
+		servers  []models.Server
 		warnings []string
 		err      error
 	}{
@@ -109,7 +109,7 @@ func Test_GetServers(t *testing.T) {
 				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
 			},
 			resolveWarnings: []string{"resolve warning"},
-			servers: []models.IpvanishServer{
+			servers: []models.Server{
 				{Country: "Canada", City: "City A", Hostname: "hosta", UDP: true, IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
 				{Country: "Luxembourg", City: "City B", Hostname: "hostb", UDP: true, IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
 			},

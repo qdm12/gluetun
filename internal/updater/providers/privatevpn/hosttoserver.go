@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type hostToServer map[string]models.PrivatevpnServer
+type hostToServer map[string]models.Server
 
 // TODO check if server supports TCP and UDP.
 func (hts hostToServer) add(host, country, city string) {
@@ -41,8 +41,8 @@ func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]net.IP) {
 	}
 }
 
-func (hts hostToServer) toServersSlice() (servers []models.PrivatevpnServer) {
-	servers = make([]models.PrivatevpnServer, 0, len(hts))
+func (hts hostToServer) toServersSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(hts))
 	for _, server := range hts {
 		servers = append(servers, server)
 	}

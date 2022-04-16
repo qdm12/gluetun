@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func HideMyAssCountryChoices(servers []models.HideMyAssServer) (choices []string) {
+func HideMyAssCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -12,7 +12,7 @@ func HideMyAssCountryChoices(servers []models.HideMyAssServer) (choices []string
 	return makeUnique(choices)
 }
 
-func HideMyAssRegionChoices(servers []models.HideMyAssServer) (choices []string) {
+func HideMyAssRegionChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -20,7 +20,7 @@ func HideMyAssRegionChoices(servers []models.HideMyAssServer) (choices []string)
 	return makeUnique(choices)
 }
 
-func HideMyAssCityChoices(servers []models.HideMyAssServer) (choices []string) {
+func HideMyAssCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -28,7 +28,7 @@ func HideMyAssCityChoices(servers []models.HideMyAssServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func HideMyAssHostnameChoices(servers []models.HideMyAssServer) (choices []string) {
+func HideMyAssHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
