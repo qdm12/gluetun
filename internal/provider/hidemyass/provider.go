@@ -9,12 +9,12 @@ import (
 )
 
 type HideMyAss struct {
-	servers    []models.HideMyAssServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.HideMyAssServer, randSource rand.Source) *HideMyAss {
+func New(servers []models.Server, randSource rand.Source) *HideMyAss {
 	return &HideMyAss{
 		servers:         servers,
 		randSource:      randSource,

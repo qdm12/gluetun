@@ -9,12 +9,12 @@ import (
 )
 
 type Wevpn struct {
-	servers    []models.WevpnServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.WevpnServer, randSource rand.Source) *Wevpn {
+func New(servers []models.Server, randSource rand.Source) *Wevpn {
 	return &Wevpn{
 		servers:         servers,
 		randSource:      randSource,

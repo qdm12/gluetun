@@ -5,8 +5,8 @@ import (
 )
 
 //nolint:lll
-func hardcodedServers() (servers []models.ExpressvpnServer) {
-	return []models.ExpressvpnServer{
+func hardcodedServers() (servers []models.Server) {
+	return []models.Server{
 		{Country: "Albania", Hostname: "albania-ca-version-2.expressnetw.com"},
 		{Country: "Algeria", Hostname: "algeria-ca-version-2.expressnetw.com"},
 		{Country: "Andorra", Hostname: "andorra-ca-version-2.expressnetw.com"},

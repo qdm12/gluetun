@@ -10,7 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type hostToServer map[string]models.MullvadServer
+type hostToServer map[string]models.Server
 
 var (
 	ErrNoIP                = errors.New("no IP address for VPN server")
@@ -73,8 +73,8 @@ func (hts hostToServer) add(data serverData) (err error) {
 	return nil
 }
 
-func (hts hostToServer) toServersSlice() (servers []models.MullvadServer) {
-	servers = make([]models.MullvadServer, 0, len(hts))
+func (hts hostToServer) toServersSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(hts))
 	for _, server := range hts {
 		server.IPs = uniqueSortedIPs(server.IPs)
 		servers = append(servers, server)

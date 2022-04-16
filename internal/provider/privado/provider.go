@@ -9,12 +9,12 @@ import (
 )
 
 type Privado struct {
-	servers    []models.PrivadoServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.PrivadoServer, randSource rand.Source) *Privado {
+func New(servers []models.Server, randSource rand.Source) *Privado {
 	return &Privado{
 		servers:         servers,
 		randSource:      randSource,

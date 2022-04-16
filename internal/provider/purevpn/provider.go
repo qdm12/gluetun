@@ -9,12 +9,12 @@ import (
 )
 
 type Purevpn struct {
-	servers    []models.PurevpnServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.PurevpnServer, randSource rand.Source) *Purevpn {
+func New(servers []models.Server, randSource rand.Source) *Purevpn {
 	return &Purevpn{
 		servers:         servers,
 		randSource:      randSource,

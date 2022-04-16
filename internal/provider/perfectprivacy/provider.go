@@ -9,12 +9,12 @@ import (
 )
 
 type Perfectprivacy struct {
-	servers    []models.PerfectprivacyServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.PerfectprivacyServer, randSource rand.Source) *Perfectprivacy {
+func New(servers []models.Server, randSource rand.Source) *Perfectprivacy {
 	return &Perfectprivacy{
 		servers:         servers,
 		randSource:      randSource,

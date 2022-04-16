@@ -15,7 +15,7 @@ import (
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, client *http.Client, minServers int) (
-	servers []models.ProtonvpnServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return nil, nil, err

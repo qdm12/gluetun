@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type hostToServer map[string]models.CyberghostServer
+type hostToServer map[string]models.Server
 
 func getPossibleServers() (possibleServers hostToServer) {
 	groupIDToProtocol := getGroupIDToProtocol()
@@ -24,7 +24,7 @@ func getPossibleServers() (possibleServers hostToServer) {
 		for countryCode, country := range possibleCountryCodes {
 			const domain = "cg-dialup.net"
 			possibleHost := groupID + "-" + countryCode + "." + domain
-			possibleServer := models.CyberghostServer{
+			possibleServer := models.Server{
 				Hostname: possibleHost,
 				Country:  country,
 				TCP:      protocol == constants.TCP,
@@ -58,8 +58,8 @@ func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]net.IP) {
 	}
 }
 
-func (hts hostToServer) toSlice() (servers []models.CyberghostServer) {
-	servers = make([]models.CyberghostServer, 0, len(hts))
+func (hts hostToServer) toSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(hts))
 	for _, server := range hts {
 		servers = append(servers, server)
 	}

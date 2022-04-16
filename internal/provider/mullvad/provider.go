@@ -9,12 +9,12 @@ import (
 )
 
 type Mullvad struct {
-	servers    []models.MullvadServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.MullvadServer, randSource rand.Source) *Mullvad {
+func New(servers []models.Server, randSource rand.Source) *Mullvad {
 	return &Mullvad{
 		servers:         servers,
 		randSource:      randSource,

@@ -7,7 +7,7 @@ import (
 )
 
 func (i *Ivpn) filterServers(selection settings.ServerSelection) (
-	servers []models.IvpnServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range i.servers {
 		switch {
 		case

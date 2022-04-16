@@ -8,7 +8,7 @@ import (
 )
 
 func getHostToServer() (hts hostToServer, warnings []string) {
-	shortHTS := map[string]models.VPNUnlimitedServer{
+	shortHTS := map[string]models.Server{
 		"ae": {},
 		"ar": {},
 		"at": {},

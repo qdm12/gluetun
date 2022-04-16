@@ -9,12 +9,12 @@ import (
 )
 
 type Windscribe struct {
-	servers    []models.WindscribeServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.WindscribeServer, randSource rand.Source) *Windscribe {
+func New(servers []models.Server, randSource rand.Source) *Windscribe {
 	return &Windscribe{
 		servers:         servers,
 		randSource:      randSource,

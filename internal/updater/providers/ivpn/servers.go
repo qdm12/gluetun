@@ -19,7 +19,7 @@ var (
 
 func GetServers(ctx context.Context, client *http.Client,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.IvpnServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed fetching API: %w", err)
@@ -49,7 +49,7 @@ func GetServers(ctx context.Context, client *http.Client,
 		return nil, warnings, err
 	}
 
-	servers = make([]models.IvpnServer, 0, len(hosts))
+	servers = make([]models.Server, 0, len(hosts))
 	for _, serverData := range data.Servers {
 		vpnType := constants.OpenVPN
 		hostname := serverData.Hostnames.OpenVPN
@@ -62,7 +62,7 @@ func GetServers(ctx context.Context, client *http.Client,
 			wgPubKey = serverData.WgPubKey
 		}
 
-		server := models.IvpnServer{
+		server := models.Server{
 			VPN:      vpnType,
 			Country:  serverData.Country,
 			City:     serverData.City,

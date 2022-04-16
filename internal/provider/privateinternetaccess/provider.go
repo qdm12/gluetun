@@ -9,7 +9,7 @@ import (
 )
 
 type PIA struct {
-	servers    []models.PIAServer
+	servers    []models.Server
 	randSource rand.Source
 	timeNow    func() time.Time
 	// Port forwarding
@@ -17,7 +17,7 @@ type PIA struct {
 	authFilePath    string
 }
 
-func New(servers []models.PIAServer, randSource rand.Source,
+func New(servers []models.Server, randSource rand.Source,
 	timeNow func() time.Time) *PIA {
 	const jsonPortForwardPath = "/gluetun/piaportforward.json"
 	return &PIA{

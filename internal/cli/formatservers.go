@@ -67,45 +67,45 @@ func (c *CLI) FormatServers(args []string) error {
 	var formatted string
 	switch {
 	case cyberghost:
-		formatted = currentServers.Cyberghost.ToMarkdown()
+		formatted = currentServers.Cyberghost.ToMarkdown(providers.Cyberghost)
 	case expressvpn:
-		formatted = currentServers.Expressvpn.ToMarkdown()
+		formatted = currentServers.Expressvpn.ToMarkdown(providers.Expressvpn)
 	case fastestvpn:
-		formatted = currentServers.Fastestvpn.ToMarkdown()
+		formatted = currentServers.Fastestvpn.ToMarkdown(providers.Fastestvpn)
 	case hideMyAss:
-		formatted = currentServers.HideMyAss.ToMarkdown()
+		formatted = currentServers.HideMyAss.ToMarkdown(providers.HideMyAss)
 	case ipvanish:
-		formatted = currentServers.Ipvanish.ToMarkdown()
+		formatted = currentServers.Ipvanish.ToMarkdown(providers.Ipvanish)
 	case ivpn:
-		formatted = currentServers.Ivpn.ToMarkdown()
+		formatted = currentServers.Ivpn.ToMarkdown(providers.Ivpn)
 	case mullvad:
-		formatted = currentServers.Mullvad.ToMarkdown()
+		formatted = currentServers.Mullvad.ToMarkdown(providers.Mullvad)
 	case nordvpn:
-		formatted = currentServers.Nordvpn.ToMarkdown()
+		formatted = currentServers.Nordvpn.ToMarkdown(providers.Nordvpn)
 	case perfectPrivacy:
-		formatted = currentServers.Perfectprivacy.ToMarkdown()
+		formatted = currentServers.Perfectprivacy.ToMarkdown(providers.Perfectprivacy)
 	case pia:
-		formatted = currentServers.Pia.ToMarkdown()
+		formatted = currentServers.Pia.ToMarkdown(providers.PrivateInternetAccess)
 	case privado:
-		formatted = currentServers.Privado.ToMarkdown()
+		formatted = currentServers.Privado.ToMarkdown(providers.Privado)
 	case privatevpn:
-		formatted = currentServers.Privatevpn.ToMarkdown()
+		formatted = currentServers.Privatevpn.ToMarkdown(providers.Privatevpn)
 	case protonvpn:
-		formatted = currentServers.Protonvpn.ToMarkdown()
+		formatted = currentServers.Protonvpn.ToMarkdown(providers.Protonvpn)
 	case purevpn:
-		formatted = currentServers.Purevpn.ToMarkdown()
+		formatted = currentServers.Purevpn.ToMarkdown(providers.Purevpn)
 	case surfshark:
-		formatted = currentServers.Surfshark.ToMarkdown()
+		formatted = currentServers.Surfshark.ToMarkdown(providers.Surfshark)
 	case torguard:
-		formatted = currentServers.Torguard.ToMarkdown()
+		formatted = currentServers.Torguard.ToMarkdown(providers.Torguard)
 	case vpnUnlimited:
-		formatted = currentServers.VPNUnlimited.ToMarkdown()
+		formatted = currentServers.VPNUnlimited.ToMarkdown(providers.VPNUnlimited)
 	case vyprvpn:
-		formatted = currentServers.Vyprvpn.ToMarkdown()
+		formatted = currentServers.Vyprvpn.ToMarkdown(providers.Vyprvpn)
 	case wevpn:
-		formatted = currentServers.Wevpn.ToMarkdown()
+		formatted = currentServers.Wevpn.ToMarkdown(providers.Wevpn)
 	case windscribe:
-		formatted = currentServers.Windscribe.ToMarkdown()
+		formatted = currentServers.Windscribe.ToMarkdown(providers.Windscribe)
 	default:
 		return ErrProviderUnspecified
 	}

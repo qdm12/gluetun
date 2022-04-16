@@ -15,7 +15,7 @@ import (
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper, minServers int) (
-	servers []models.PerfectprivacyServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	zipURL := url.URL{
 		Scheme: "https",
 		Host:   "www.perfect-privacy.com",

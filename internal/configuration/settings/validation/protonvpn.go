@@ -2,7 +2,7 @@ package validation
 
 import "github.com/qdm12/gluetun/internal/models"
 
-func ProtonvpnCountryChoices(servers []models.ProtonvpnServer) (choices []string) {
+func ProtonvpnCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -10,7 +10,7 @@ func ProtonvpnCountryChoices(servers []models.ProtonvpnServer) (choices []string
 	return makeUnique(choices)
 }
 
-func ProtonvpnRegionChoices(servers []models.ProtonvpnServer) (choices []string) {
+func ProtonvpnRegionChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -18,7 +18,7 @@ func ProtonvpnRegionChoices(servers []models.ProtonvpnServer) (choices []string)
 	return makeUnique(choices)
 }
 
-func ProtonvpnCityChoices(servers []models.ProtonvpnServer) (choices []string) {
+func ProtonvpnCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -26,15 +26,15 @@ func ProtonvpnCityChoices(servers []models.ProtonvpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func ProtonvpnNameChoices(servers []models.ProtonvpnServer) (choices []string) {
+func ProtonvpnNameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
-		choices[i] = servers[i].Name
+		choices[i] = servers[i].ServerName
 	}
 	return makeUnique(choices)
 }
 
-func ProtonvpnHostnameChoices(servers []models.ProtonvpnServer) (choices []string) {
+func ProtonvpnHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

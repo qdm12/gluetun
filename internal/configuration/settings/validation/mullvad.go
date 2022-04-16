@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func MullvadCountryChoices(servers []models.MullvadServer) (choices []string) {
+func MullvadCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -12,7 +12,7 @@ func MullvadCountryChoices(servers []models.MullvadServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func MullvadCityChoices(servers []models.MullvadServer) (choices []string) {
+func MullvadCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -20,7 +20,7 @@ func MullvadCityChoices(servers []models.MullvadServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func MullvadHostnameChoices(servers []models.MullvadServer) (choices []string) {
+func MullvadHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
@@ -28,7 +28,7 @@ func MullvadHostnameChoices(servers []models.MullvadServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func MullvadISPChoices(servers []models.MullvadServer) (choices []string) {
+func MullvadISPChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].ISP

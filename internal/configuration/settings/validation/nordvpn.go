@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func NordvpnRegionChoices(servers []models.NordvpnServer) (choices []string) {
+func NordvpnRegionChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -12,7 +12,7 @@ func NordvpnRegionChoices(servers []models.NordvpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func NordvpnHostnameChoices(servers []models.NordvpnServer) (choices []string) {
+func NordvpnHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

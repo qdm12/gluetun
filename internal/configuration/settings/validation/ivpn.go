@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func IvpnCountryChoices(servers []models.IvpnServer) (choices []string) {
+func IvpnCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -12,7 +12,7 @@ func IvpnCountryChoices(servers []models.IvpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func IvpnCityChoices(servers []models.IvpnServer) (choices []string) {
+func IvpnCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -20,7 +20,7 @@ func IvpnCityChoices(servers []models.IvpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func IvpnISPChoices(servers []models.IvpnServer) (choices []string) {
+func IvpnISPChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].ISP
@@ -28,7 +28,7 @@ func IvpnISPChoices(servers []models.IvpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func IvpnHostnameChoices(servers []models.IvpnServer) (choices []string) {
+func IvpnHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

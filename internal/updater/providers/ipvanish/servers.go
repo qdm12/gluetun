@@ -18,7 +18,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.IpvanishServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	const url = "https://www.ipvanish.com/software/configs/configs.zip"
 	contents, err := unzipper.FetchAndExtract(ctx, url)
 	if err != nil {

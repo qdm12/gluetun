@@ -2,7 +2,7 @@ package validation
 
 import "github.com/qdm12/gluetun/internal/models"
 
-func PurevpnRegionChoices(servers []models.PurevpnServer) (choices []string) {
+func PurevpnRegionChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -10,7 +10,7 @@ func PurevpnRegionChoices(servers []models.PurevpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PurevpnCountryChoices(servers []models.PurevpnServer) (choices []string) {
+func PurevpnCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -18,7 +18,7 @@ func PurevpnCountryChoices(servers []models.PurevpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PurevpnCityChoices(servers []models.PurevpnServer) (choices []string) {
+func PurevpnCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -26,7 +26,7 @@ func PurevpnCityChoices(servers []models.PurevpnServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PurevpnHostnameChoices(servers []models.PurevpnServer) (choices []string) {
+func PurevpnHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

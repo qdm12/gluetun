@@ -10,100 +10,100 @@ import (
 
 func Test_AllServers_GetCopy(t *testing.T) {
 	allServers := AllServers{
-		Cyberghost: CyberghostServers{
+		Cyberghost: Servers{
 			Version: 2,
-			Servers: []CyberghostServer{{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Expressvpn: ExpressvpnServers{
-			Servers: []ExpressvpnServer{{
+		Expressvpn: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Fastestvpn: FastestvpnServers{
-			Servers: []FastestvpnServer{{
+		Fastestvpn: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		HideMyAss: HideMyAssServers{
-			Servers: []HideMyAssServer{{
+		HideMyAss: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Ipvanish: IpvanishServers{
-			Servers: []IpvanishServer{{
+		Ipvanish: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Ivpn: IvpnServers{
-			Servers: []IvpnServer{{
+		Ivpn: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Mullvad: MullvadServers{
-			Servers: []MullvadServer{{
+		Mullvad: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Nordvpn: NordvpnServers{
-			Servers: []NordvpnServer{{
+		Nordvpn: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Perfectprivacy: PerfectprivacyServers{
-			Servers: []PerfectprivacyServer{{
+		Perfectprivacy: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Privado: PrivadoServers{
-			Servers: []PrivadoServer{{
+		Privado: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Pia: PiaServers{
-			Servers: []PIAServer{{
+		Pia: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Privatevpn: PrivatevpnServers{
-			Servers: []PrivatevpnServer{{
+		Privatevpn: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Protonvpn: ProtonvpnServers{
-			Servers: []ProtonvpnServer{{
+		Protonvpn: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Purevpn: PurevpnServers{
+		Purevpn: Servers{
 			Version: 1,
-			Servers: []PurevpnServer{{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Surfshark: SurfsharkServers{
-			Servers: []SurfsharkServer{{
+		Surfshark: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Torguard: TorguardServers{
-			Servers: []TorguardServer{{
+		Torguard: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		VPNUnlimited: VPNUnlimitedServers{
-			Servers: []VPNUnlimitedServer{{
+		VPNUnlimited: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Vyprvpn: VyprvpnServers{
-			Servers: []VyprvpnServer{{
+		Vyprvpn: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
-		Windscribe: WindscribeServers{
-			Servers: []WindscribeServer{{
+		Windscribe: Servers{
+			Servers: []Server{{
 				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
@@ -116,8 +116,8 @@ func Test_AllServers_GetCopy(t *testing.T) {
 
 func Test_AllServers_GetVyprvpn(t *testing.T) {
 	allServers := AllServers{
-		Vyprvpn: VyprvpnServers{
-			Servers: []VyprvpnServer{
+		Vyprvpn: Servers{
+			Servers: []Server{
 				{Hostname: "a", IPs: []net.IP{{1, 1, 1, 1}}},
 				{Hostname: "b", IPs: []net.IP{{2, 2, 2, 2}}},
 			},
@@ -126,7 +126,7 @@ func Test_AllServers_GetVyprvpn(t *testing.T) {
 
 	servers := allServers.GetVyprvpn()
 
-	expectedServers := []VyprvpnServer{
+	expectedServers := []Server{
 		{Hostname: "a", IPs: []net.IP{{1, 1, 1, 1}}},
 		{Hostname: "b", IPs: []net.IP{{2, 2, 2, 2}}},
 	}

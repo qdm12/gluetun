@@ -9,12 +9,12 @@ import (
 )
 
 type Fastestvpn struct {
-	servers    []models.FastestvpnServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.FastestvpnServer, randSource rand.Source) *Fastestvpn {
+func New(servers []models.Server, randSource rand.Source) *Fastestvpn {
 	return &Fastestvpn{
 		servers:         servers,
 		randSource:      randSource,

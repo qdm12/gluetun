@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func VPNUnlimitedCountryChoices(servers []models.VPNUnlimitedServer) (choices []string) {
+func VPNUnlimitedCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -12,7 +12,7 @@ func VPNUnlimitedCountryChoices(servers []models.VPNUnlimitedServer) (choices []
 	return makeUnique(choices)
 }
 
-func VPNUnlimitedCityChoices(servers []models.VPNUnlimitedServer) (choices []string) {
+func VPNUnlimitedCityChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].City
@@ -20,7 +20,7 @@ func VPNUnlimitedCityChoices(servers []models.VPNUnlimitedServer) (choices []str
 	return makeUnique(choices)
 }
 
-func VPNUnlimitedHostnameChoices(servers []models.VPNUnlimitedServer) (choices []string) {
+func VPNUnlimitedHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

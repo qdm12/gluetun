@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type ipToServer map[string]models.ProtonvpnServer
+type ipToServer map[string]models.Server
 
 func (its ipToServer) add(country, region, city, name, hostname string,
 	entryIP net.IP) {
@@ -17,7 +17,7 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 		server.Country = country
 		server.Region = region
 		server.City = city
-		server.Name = name
+		server.ServerName = name
 		server.Hostname = hostname
 		server.IPs = []net.IP{entryIP}
 	} else {
@@ -27,8 +27,8 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 	its[key] = server
 }
 
-func (its ipToServer) toServersSlice() (servers []models.ProtonvpnServer) {
-	servers = make([]models.ProtonvpnServer, 0, len(its))
+func (its ipToServer) toServersSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(its))
 	for _, server := range its {
 		servers = append(servers, server)
 	}

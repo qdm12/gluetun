@@ -17,9 +17,9 @@ func Test_Windscribe_filterServers(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers   []models.WindscribeServer
+		servers   []models.Server
 		selection settings.ServerSelection
-		filtered  []models.WindscribeServer
+		filtered  []models.Server
 		err       error
 	}{
 		"no server available": {
@@ -27,13 +27,13 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
-			servers: []models.WindscribeServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Windscribe),
-			filtered: []models.WindscribeServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
@@ -43,12 +43,12 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				VPN: constants.Wireguard,
 			}.WithDefaults(providers.Windscribe),
-			servers: []models.WindscribeServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.Wireguard, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
-			filtered: []models.WindscribeServer{
+			filtered: []models.Server{
 				{VPN: constants.Wireguard, Hostname: "b"},
 			},
 		},
@@ -56,12 +56,12 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Regions: []string{"b"},
 			}.WithDefaults(providers.Windscribe),
-			servers: []models.WindscribeServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Region: "a"},
 				{VPN: constants.OpenVPN, Region: "b"},
 				{VPN: constants.OpenVPN, Region: "c"},
 			},
-			filtered: []models.WindscribeServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, Region: "b"},
 			},
 		},
@@ -69,12 +69,12 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
 			}.WithDefaults(providers.Windscribe),
-			servers: []models.WindscribeServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, City: "a"},
 				{VPN: constants.OpenVPN, City: "b"},
 				{VPN: constants.OpenVPN, City: "c"},
 			},
-			filtered: []models.WindscribeServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, City: "b"},
 			},
 		},
@@ -82,12 +82,12 @@ func Test_Windscribe_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Windscribe),
-			servers: []models.WindscribeServer{
+			servers: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "a"},
 				{VPN: constants.OpenVPN, Hostname: "b"},
 				{VPN: constants.OpenVPN, Hostname: "c"},
 			},
-			filtered: []models.WindscribeServer{
+			filtered: []models.Server{
 				{VPN: constants.OpenVPN, Hostname: "b"},
 			},
 		},

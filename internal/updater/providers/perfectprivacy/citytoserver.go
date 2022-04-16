@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type cityToServer map[string]models.PerfectprivacyServer
+type cityToServer map[string]models.Server
 
 func (cts cityToServer) add(city string, ips []net.IP) {
 	server, ok := cts[city]
@@ -36,8 +36,8 @@ func (cts cityToServer) add(city string, ips []net.IP) {
 	cts[city] = server
 }
 
-func (cts cityToServer) toServersSlice() (servers []models.PerfectprivacyServer) {
-	servers = make([]models.PerfectprivacyServer, 0, len(cts))
+func (cts cityToServer) toServersSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(cts))
 	for _, server := range cts {
 		servers = append(servers, server)
 	}

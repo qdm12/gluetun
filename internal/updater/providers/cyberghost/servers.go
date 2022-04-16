@@ -10,7 +10,7 @@ import (
 )
 
 func GetServers(ctx context.Context, presolver resolver.Parallel,
-	minServers int) (servers []models.CyberghostServer, err error) {
+	minServers int) (servers []models.Server, err error) {
 	possibleServers := getPossibleServers()
 
 	possibleHosts := possibleServers.hostsSlice()

@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func PIAGeoChoices(servers []models.PIAServer) (choices []string) {
+func PIAGeoChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Region
@@ -12,7 +12,7 @@ func PIAGeoChoices(servers []models.PIAServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PIAHostnameChoices(servers []models.PIAServer) (choices []string) {
+func PIAHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname
@@ -20,7 +20,7 @@ func PIAHostnameChoices(servers []models.PIAServer) (choices []string) {
 	return makeUnique(choices)
 }
 
-func PIANameChoices(servers []models.PIAServer) (choices []string) {
+func PIANameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].ServerName

@@ -14,7 +14,7 @@ import (
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, client *http.Client, minServers int) (
-	servers []models.MullvadServer, err error) {
+	servers []models.Server, err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return nil, err

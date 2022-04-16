@@ -9,7 +9,7 @@ import (
 )
 
 func (p *Protonvpn) filterServers(selection settings.ServerSelection) (
-	servers []models.ProtonvpnServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range p.servers {
 		switch {
 		case
@@ -17,8 +17,8 @@ func (p *Protonvpn) filterServers(selection settings.ServerSelection) (
 			utils.FilterByPossibilities(server.Region, selection.Regions),
 			utils.FilterByPossibilities(server.City, selection.Cities),
 			utils.FilterByPossibilities(server.Hostname, selection.Hostnames),
-			utils.FilterByPossibilities(server.Name, selection.Names),
-			*selection.FreeOnly && !strings.Contains(strings.ToLower(server.Name), "free"):
+			utils.FilterByPossibilities(server.ServerName, selection.Names),
+			*selection.FreeOnly && !strings.Contains(strings.ToLower(server.ServerName), "free"):
 		default:
 			servers = append(servers, server)
 		}

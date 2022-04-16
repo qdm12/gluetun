@@ -7,7 +7,7 @@ import (
 )
 
 func (w *Wevpn) filterServers(selection settings.ServerSelection) (
-	servers []models.WevpnServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range w.servers {
 		switch {
 		case

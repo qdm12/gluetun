@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func CyberghostCountryChoices(servers []models.CyberghostServer) (choices []string) {
+func CyberghostCountryChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Country
@@ -12,7 +12,7 @@ func CyberghostCountryChoices(servers []models.CyberghostServer) (choices []stri
 	return makeUnique(choices)
 }
 
-func CyberghostHostnameChoices(servers []models.CyberghostServer) (choices []string) {
+func CyberghostHostnameChoices(servers []models.Server) (choices []string) {
 	choices = make([]string, len(servers))
 	for i := range servers {
 		choices[i] = servers[i].Hostname

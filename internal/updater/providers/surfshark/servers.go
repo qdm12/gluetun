@@ -19,7 +19,7 @@ var (
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	client *http.Client, presolver resolver.Parallel, minServers int) (
-	servers []models.SurfsharkServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	hts := make(hostToServer)
 
 	err = addServersFromAPI(ctx, client, hts)

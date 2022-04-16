@@ -7,7 +7,7 @@ import (
 )
 
 func (f *Fastestvpn) filterServers(selection settings.ServerSelection) (
-	servers []models.FastestvpnServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range f.servers {
 		switch {
 		case

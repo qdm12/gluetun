@@ -11,7 +11,7 @@ import (
 var ErrGroupMismatchesProtocol = errors.New("server group does not match protocol")
 
 func (c *Cyberghost) filterServers(selection settings.ServerSelection) (
-	servers []models.CyberghostServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range c.servers {
 		switch {
 		case

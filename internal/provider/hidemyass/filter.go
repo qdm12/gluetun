@@ -7,7 +7,7 @@ import (
 )
 
 func (h *HideMyAss) filterServers(selection settings.ServerSelection) (
-	servers []models.HideMyAssServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range h.servers {
 		switch {
 		case

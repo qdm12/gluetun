@@ -7,7 +7,7 @@ import (
 )
 
 func (v *Vyprvpn) filterServers(selection settings.ServerSelection) (
-	servers []models.VyprvpnServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range v.servers {
 		switch {
 		case

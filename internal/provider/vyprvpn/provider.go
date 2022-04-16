@@ -9,12 +9,12 @@ import (
 )
 
 type Vyprvpn struct {
-	servers    []models.VyprvpnServer
+	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.VyprvpnServer, randSource rand.Source) *Vyprvpn {
+func New(servers []models.Server, randSource rand.Source) *Vyprvpn {
 	return &Vyprvpn{
 		servers:         servers,
 		randSource:      randSource,

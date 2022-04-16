@@ -7,7 +7,7 @@ import (
 )
 
 func (p *Purevpn) filterServers(selection settings.ServerSelection) (
-	servers []models.PurevpnServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range p.servers {
 		switch {
 		case

@@ -19,7 +19,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.PrivatevpnServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	const url = "https://privatevpn.com/client/PrivateVPN-TUN.zip"
 	contents, err := unzipper.FetchAndExtract(ctx, url)
 	if err != nil {
@@ -32,7 +32,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	countryCodes := constants.CountryCodes()
 
 	hts := make(hostToServer)
-	noHostnameServers := make([]models.PrivatevpnServer, 0, 1) // there is only one for now
+	noHostnameServers := make([]models.Server, 0, 1) // there is only one for now
 
 	for fileName, content := range contents {
 		if !strings.HasSuffix(fileName, ".ovpn") {
@@ -69,7 +69,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 			warnings = append(warnings, warning)
 			continue
 		}
-		server := models.PrivatevpnServer{
+		server := models.Server{
 			Country: country,
 			City:    city,
 			IPs:     ips,

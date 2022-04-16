@@ -18,9 +18,9 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers   []models.ExpressvpnServer
+		servers   []models.Server
 		selection settings.ServerSelection
-		filtered  []models.ExpressvpnServer
+		filtered  []models.Server
 		err       error
 	}{
 		"no server available": {
@@ -28,13 +28,13 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Expressvpn),
-			filtered: []models.ExpressvpnServer{
+			filtered: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
@@ -44,12 +44,12 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
 			}.WithDefaults(providers.Expressvpn),
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{Country: "a", UDP: true},
 				{Country: "b", UDP: true},
 				{Country: "c", UDP: true},
 			},
-			filtered: []models.ExpressvpnServer{
+			filtered: []models.Server{
 				{Country: "b", UDP: true},
 			},
 		},
@@ -57,12 +57,12 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
 			}.WithDefaults(providers.Expressvpn),
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{City: "a", UDP: true},
 				{City: "b", UDP: true},
 				{City: "c", UDP: true},
 			},
-			filtered: []models.ExpressvpnServer{
+			filtered: []models.Server{
 				{City: "b", UDP: true},
 			},
 		},
@@ -70,12 +70,12 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Expressvpn),
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
 			},
-			filtered: []models.ExpressvpnServer{
+			filtered: []models.Server{
 				{Hostname: "b", UDP: true},
 			},
 		},
@@ -85,12 +85,12 @@ func Test_Expressvpn_filterServers(t *testing.T) {
 					TCP: boolPtr(true),
 				},
 			}.WithDefaults(providers.Expressvpn),
-			servers: []models.ExpressvpnServer{
+			servers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true, TCP: true},
 				{Hostname: "c", UDP: true},
 			},
-			filtered: []models.ExpressvpnServer{
+			filtered: []models.Server{
 				{Hostname: "b", UDP: true, TCP: true},
 			},
 		},

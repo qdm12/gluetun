@@ -10,18 +10,18 @@ import (
 func Test_sortServers(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		initialServers []models.WevpnServer
-		sortedServers  []models.WevpnServer
+		initialServers []models.Server
+		sortedServers  []models.Server
 	}{
 		"no server": {},
 		"sorted servers": {
-			initialServers: []models.WevpnServer{
+			initialServers: []models.Server{
 				{City: "A", Hostname: "A"},
 				{City: "A", Hostname: "B"},
 				{City: "A", Hostname: "A"},
 				{City: "B", Hostname: "A"},
 			},
-			sortedServers: []models.WevpnServer{
+			sortedServers: []models.Server{
 				{City: "A", Hostname: "A"},
 				{City: "A", Hostname: "A"},
 				{City: "A", Hostname: "B"},

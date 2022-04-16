@@ -18,9 +18,9 @@ func Test_Wevpn_filterServers(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers   []models.WevpnServer
+		servers   []models.Server
 		selection settings.ServerSelection
-		filtered  []models.WevpnServer
+		filtered  []models.Server
 		err       error
 	}{
 		"no server available": {
@@ -28,13 +28,13 @@ func Test_Wevpn_filterServers(t *testing.T) {
 			err:       errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
 		"no filter": {
-			servers: []models.WevpnServer{
+			servers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Wevpn),
-			filtered: []models.WevpnServer{
+			filtered: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
@@ -44,12 +44,12 @@ func Test_Wevpn_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				OpenVPN: settings.OpenVPNSelection{TCP: boolPtr(true)},
 			}.WithDefaults(providers.Wevpn),
-			servers: []models.WevpnServer{
+			servers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", TCP: true},
 				{Hostname: "c", UDP: true},
 			},
-			filtered: []models.WevpnServer{
+			filtered: []models.Server{
 				{Hostname: "b", TCP: true},
 			},
 		},
@@ -57,12 +57,12 @@ func Test_Wevpn_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Cities: []string{"b"},
 			}.WithDefaults(providers.Wevpn),
-			servers: []models.WevpnServer{
+			servers: []models.Server{
 				{City: "a", UDP: true},
 				{City: "b", UDP: true},
 				{City: "c", UDP: true},
 			},
-			filtered: []models.WevpnServer{
+			filtered: []models.Server{
 				{City: "b", UDP: true},
 			},
 		},
@@ -70,12 +70,12 @@ func Test_Wevpn_filterServers(t *testing.T) {
 			selection: settings.ServerSelection{
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Wevpn),
-			servers: []models.WevpnServer{
+			servers: []models.Server{
 				{Hostname: "a", UDP: true},
 				{Hostname: "b", UDP: true},
 				{Hostname: "c", UDP: true},
 			},
-			filtered: []models.WevpnServer{
+			filtered: []models.Server{
 				{Hostname: "b", UDP: true},
 			},
 		},

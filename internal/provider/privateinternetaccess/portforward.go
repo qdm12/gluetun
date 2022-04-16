@@ -29,7 +29,7 @@ var (
 func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 	logger utils.Logger, gateway net.IP, serverName string) (
 	port uint16, err error) {
-	var server models.PIAServer
+	var server models.Server
 	for _, server = range p.servers {
 		if server.ServerName == serverName {
 			break

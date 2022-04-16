@@ -7,7 +7,7 @@ import (
 )
 
 func (i *Ipvanish) filterServers(selection settings.ServerSelection) (
-	servers []models.IpvanishServer, err error) {
+	servers []models.Server, err error) {
 	for _, server := range i.servers {
 		switch {
 		case

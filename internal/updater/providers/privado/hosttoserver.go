@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type hostToServer map[string]models.PrivadoServer
+type hostToServer map[string]models.Server
 
 func (hts hostToServer) add(host string) {
 	server, ok := hts[host]
@@ -38,8 +38,8 @@ func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]net.IP) {
 	}
 }
 
-func (hts hostToServer) toServersSlice() (servers []models.PrivadoServer) {
-	servers = make([]models.PrivadoServer, 0, len(hts))
+func (hts hostToServer) toServersSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(hts))
 	for _, server := range hts {
 		servers = append(servers, server)
 	}

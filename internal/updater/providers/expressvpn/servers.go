@@ -16,7 +16,7 @@ var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	presolver resolver.Parallel, minServers int) (
-	servers []models.ExpressvpnServer, warnings []string, err error) {
+	servers []models.Server, warnings []string, err error) {
 	servers = hardcodedServers()
 
 	hosts := make([]string, len(servers))
