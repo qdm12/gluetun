@@ -108,7 +108,6 @@ func (a *AllServers) GetMullvad() (servers []MullvadServer) {
 	for i, serverToCopy := range a.Mullvad.Servers {
 		servers[i] = serverToCopy
 		servers[i].IPs = copyIPs(serverToCopy.IPs)
-		servers[i].IPsV6 = copyIPs(serverToCopy.IPsV6)
 	}
 	return servers
 }
@@ -120,7 +119,7 @@ func (a *AllServers) GetNordvpn() (servers []NordvpnServer) {
 	servers = make([]NordvpnServer, len(a.Nordvpn.Servers))
 	for i, serverToCopy := range a.Nordvpn.Servers {
 		servers[i] = serverToCopy
-		servers[i].IP = copyIP(serverToCopy.IP)
+		servers[i].IPs = copyIPs(serverToCopy.IPs)
 	}
 	return servers
 }
@@ -156,7 +155,7 @@ func (a *AllServers) GetPrivado() (servers []PrivadoServer) {
 	servers = make([]PrivadoServer, len(a.Privado.Servers))
 	for i, serverToCopy := range a.Privado.Servers {
 		servers[i] = serverToCopy
-		servers[i].IP = copyIP(serverToCopy.IP)
+		servers[i].IPs = copyIPs(serverToCopy.IPs)
 	}
 	return servers
 }
@@ -180,7 +179,7 @@ func (a *AllServers) GetProtonvpn() (servers []ProtonvpnServer) {
 	servers = make([]ProtonvpnServer, len(a.Protonvpn.Servers))
 	for i, serverToCopy := range a.Protonvpn.Servers {
 		servers[i] = serverToCopy
-		servers[i].EntryIP = copyIP(serverToCopy.EntryIP)
+		servers[i].IPs = copyIPs(serverToCopy.IPs)
 	}
 	return servers
 }

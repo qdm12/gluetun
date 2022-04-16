@@ -73,21 +73,6 @@ func ExtractIPs(b []byte) (ips []net.IP, err error) {
 	return ips, nil
 }
 
-func ExtractIP(b []byte) (ip net.IP, warning string, err error) {
-	ips, err := ExtractIPs(b)
-	if err != nil {
-		return nil, "", err
-	}
-
-	if len(ips) > 1 {
-		warning = fmt.Sprintf(
-			"only using the first IP address %s and discarding %d other hosts",
-			ips[0], len(ips)-1)
-	}
-
-	return ips[0], warning, nil
-}
-
 func extractRemoteHosts(content []byte, rejectIP, rejectDomain bool) (hosts []string) {
 	lines := strings.Split(string(content), "\n")
 	for _, line := range lines {

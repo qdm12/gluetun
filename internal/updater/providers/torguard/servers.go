@@ -90,10 +90,7 @@ func addServerFromOvpn(fileName string, content []byte,
 		return warnings
 	}
 
-	ip, warning, err := openvpn.ExtractIP(content)
-	if warning != "" {
-		warnings = append(warnings, warning)
-	}
+	ips, err := openvpn.ExtractIPs(content)
 	if err != nil {
 		// treat error as warning and go to next file
 		warning := err.Error() + " in " + fileName
@@ -101,6 +98,6 @@ func addServerFromOvpn(fileName string, content []byte,
 		return warnings
 	}
 
-	hts.add(host, country, city, tcp, udp, ip)
+	hts.add(host, country, city, tcp, udp, ips)
 	return warnings
 }

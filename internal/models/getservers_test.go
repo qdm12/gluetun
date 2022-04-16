@@ -48,7 +48,7 @@ func Test_AllServers_GetCopy(t *testing.T) {
 		},
 		Nordvpn: NordvpnServers{
 			Servers: []NordvpnServer{{
-				IP: net.IP{1, 2, 3, 4},
+				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
 		Perfectprivacy: PerfectprivacyServers{
@@ -58,7 +58,7 @@ func Test_AllServers_GetCopy(t *testing.T) {
 		},
 		Privado: PrivadoServers{
 			Servers: []PrivadoServer{{
-				IP: net.IP{1, 2, 3, 4},
+				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
 		Pia: PiaServers{
@@ -73,7 +73,7 @@ func Test_AllServers_GetCopy(t *testing.T) {
 		},
 		Protonvpn: ProtonvpnServers{
 			Servers: []ProtonvpnServer{{
-				EntryIP: net.IP{1, 2, 3, 4},
+				IPs: []net.IP{{1, 2, 3, 4}},
 			}},
 		},
 		Purevpn: PurevpnServers{

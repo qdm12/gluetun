@@ -16,9 +16,13 @@ func (m *Mullvad) GetConnection(selection settings.ServerSelection) (
 		return connection, err
 	}
 
-	var connections []models.Connection
+	connections := make([]models.Connection, 0, len(servers))
 	for _, server := range servers {
 		for _, IP := range server.IPs {
+			if IP.To4() == nil {
+				// do not use IPv6 connections for now
+				continue
+			}
 			connection := models.Connection{
 				Type:     selection.VPN,
 				IP:       IP,

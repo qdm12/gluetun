@@ -11,9 +11,9 @@ import (
 
 func setLocationInfo(ctx context.Context, client *http.Client, servers []models.PrivadoServer) (err error) {
 	// Get public IP address information
-	ipsToGetInfo := make([]net.IP, len(servers))
-	for i := range servers {
-		ipsToGetInfo[i] = servers[i].IP
+	ipsToGetInfo := make([]net.IP, 0, len(servers))
+	for _, server := range servers {
+		ipsToGetInfo = append(ipsToGetInfo, server.IPs...)
 	}
 	ipsInfo, err := publicip.MultiInfo(ctx, client, ipsToGetInfo)
 	if err != nil {
