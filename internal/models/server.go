@@ -117,7 +117,7 @@ type ProtonvpnServer struct {
 	Country  string `json:"country,omitempty"`
 	Region   string `json:"region,omitempty"`
 	City     string `json:"city,omitempty"`
-	Name     string `json:"name,omitempty"`
+	Name     string `json:"server_name,omitempty"`
 	Hostname string `json:"hostname,omitempty"`
 	EntryIP  net.IP `json:"entry_ip,omitempty"`
 }
