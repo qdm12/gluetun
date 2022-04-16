@@ -8,7 +8,7 @@
         "vscode"
     ],
     "shutdownAction": "stopCompose",
-    "postCreateCommand": "~/.windows.sh && go mod download && go mod tidy",
+    "postCreateCommand": "source ~/.windows.sh && go mod download && go mod tidy",
     "workspaceFolder": "/workspace",
     "extensions": [
         "golang.go",
@@ -25,6 +25,7 @@
         "bajdzis.vscode-database", // Supports connections to mysql or postgres, over SSL, socked
         "IBM.output-colorizer", // Colorize your output/test logs
         "mohsen1.prettify-json", // Prettify JSON data
+        "github.copilot",
     ],
     "settings": {
         "files.eol": "\n",
