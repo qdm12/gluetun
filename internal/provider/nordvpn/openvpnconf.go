@@ -41,7 +41,7 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 		"key-direction 1",
 		"auth-user-pass " + constants.OpenVPNAuthConf,
 		"auth " + auth,
-		"comp-lzo", // Required, NordVPN does not work without it
+		"comp-lzo no", // Explicitly disable compression
 
 		// Added constant values
 		"auth-nocache",
