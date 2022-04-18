@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,7 +26,7 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 	}{
 		"no server available": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 			}.WithDefaults(providers.Wevpn),
 			err: errors.New("no server found: for VPN openvpn; protocol udp"),
 		},
@@ -37,7 +38,7 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Wevpn),
 			connection: models.Connection{
-				Type:     constants.OpenVPN,
+				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1194,
 				Protocol: constants.UDP,
@@ -53,7 +54,7 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				{UDP: true, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
 			connection: models.Connection{
-				Type:     constants.OpenVPN,
+				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1194,
 				Protocol: constants.UDP,
@@ -69,7 +70,7 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				{UDP: true, Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
 			},
 			connection: models.Connection{
-				Type:     constants.OpenVPN,
+				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1194,
 				Protocol: constants.UDP,

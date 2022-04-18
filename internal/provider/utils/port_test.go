@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,7 +30,7 @@ func Test_GetPort(t *testing.T) {
 		},
 		"OpenVPN UDP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					CustomPort: uint16Ptr(0),
 					TCP:        boolPtr(false),
@@ -40,7 +40,7 @@ func Test_GetPort(t *testing.T) {
 		},
 		"OpenVPN TCP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					CustomPort: uint16Ptr(0),
 					TCP:        boolPtr(true),
@@ -50,7 +50,7 @@ func Test_GetPort(t *testing.T) {
 		},
 		"OpenVPN custom port": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					CustomPort: uint16Ptr(1234),
 				},
@@ -59,13 +59,13 @@ func Test_GetPort(t *testing.T) {
 		},
 		"Wireguard": {
 			selection: settings.ServerSelection{
-				VPN: constants.Wireguard,
+				VPN: vpn.Wireguard,
 			}.WithDefaults(""),
 			port: defaultWireguard,
 		},
 		"Wireguard custom port": {
 			selection: settings.ServerSelection{
-				VPN: constants.Wireguard,
+				VPN: vpn.Wireguard,
 				Wireguard: settings.WireguardSelection{
 					EndpointPort: uint16Ptr(1234),
 				},

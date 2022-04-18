@@ -8,8 +8,8 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/configuration/settings/validation"
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
 )
@@ -70,7 +70,7 @@ var (
 func (ss *ServerSelection) validate(vpnServiceProvider string,
 	allServers models.AllServers) (err error) {
 	switch ss.VPN {
-	case constants.OpenVPN, constants.Wireguard:
+	case vpn.OpenVPN, vpn.Wireguard:
 	default:
 		return fmt.Errorf("%w: %s", ErrVPNTypeNotValid, ss.VPN)
 	}
@@ -120,7 +120,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
 	}
 
-	if ss.VPN == constants.OpenVPN {
+	if ss.VPN == vpn.OpenVPN {
 		err = ss.OpenVPN.validate(vpnServiceProvider)
 		if err != nil {
 			return fmt.Errorf("OpenVPN server selection settings: %w", err)
@@ -348,7 +348,7 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 }
 
 func (ss *ServerSelection) setDefaults(vpnProvider string) {
-	ss.VPN = helpers.DefaultString(ss.VPN, constants.OpenVPN)
+	ss.VPN = helpers.DefaultString(ss.VPN, vpn.OpenVPN)
 	ss.TargetIP = helpers.DefaultIP(ss.TargetIP, net.IP{})
 	ss.OwnedOnly = helpers.DefaultBool(ss.OwnedOnly, false)
 	ss.FreeOnly = helpers.DefaultBool(ss.FreeOnly, false)
@@ -416,7 +416,7 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 		node.Appendf("Multi-hop only servers: yes")
 	}
 
-	if ss.VPN == constants.OpenVPN {
+	if ss.VPN == vpn.OpenVPN {
 		node.AppendNode(ss.OpenVPN.toLinesNode())
 	} else {
 		node.AppendNode(ss.Wireguard.toLinesNode())

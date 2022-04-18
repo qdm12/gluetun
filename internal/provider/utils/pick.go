@@ -7,7 +7,7 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -25,7 +25,7 @@ func PickConnection(connections []models.Connection,
 		return connection, ErrNoConnectionToPickFrom
 	}
 
-	if len(selection.TargetIP) > 0 && selection.VPN == constants.Wireguard {
+	if len(selection.TargetIP) > 0 && selection.VPN == vpn.Wireguard {
 		// we need the right public key
 		return getTargetIPConnection(connections, selection.TargetIP)
 	}

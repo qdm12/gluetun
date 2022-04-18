@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,7 +21,7 @@ func Test_GetProtocol(t *testing.T) {
 		},
 		"OpenVPN UDP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(false),
 				},
@@ -29,7 +30,7 @@ func Test_GetProtocol(t *testing.T) {
 		},
 		"OpenVPN TCP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
@@ -38,7 +39,7 @@ func Test_GetProtocol(t *testing.T) {
 		},
 		"Wireguard": {
 			selection: settings.ServerSelection{
-				VPN: constants.Wireguard,
+				VPN: vpn.Wireguard,
 			},
 			protocol: constants.UDP,
 		},
@@ -67,21 +68,21 @@ func Test_FilterByProtocol(t *testing.T) {
 	}{
 		"Wireguard and server has UDP": {
 			selection: settings.ServerSelection{
-				VPN: constants.Wireguard,
+				VPN: vpn.Wireguard,
 			},
 			serverUDP: true,
 			filtered:  false,
 		},
 		"Wireguard and server has not UDP": {
 			selection: settings.ServerSelection{
-				VPN: constants.Wireguard,
+				VPN: vpn.Wireguard,
 			},
 			serverUDP: false,
 			filtered:  true,
 		},
 		"OpenVPN UDP and server has UDP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(false),
 				},
@@ -91,7 +92,7 @@ func Test_FilterByProtocol(t *testing.T) {
 		},
 		"OpenVPN UDP and server has not UDP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(false),
 				},
@@ -101,7 +102,7 @@ func Test_FilterByProtocol(t *testing.T) {
 		},
 		"OpenVPN TCP and server has TCP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},
@@ -111,7 +112,7 @@ func Test_FilterByProtocol(t *testing.T) {
 		},
 		"OpenVPN TCP and server has not TCP": {
 			selection: settings.ServerSelection{
-				VPN: constants.OpenVPN,
+				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					TCP: boolPtr(true),
 				},

@@ -9,7 +9,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -40,7 +40,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 					ips = append(ips, node.IP2)
 				}
 				server := models.Server{
-					VPN:      constants.OpenVPN,
+					VPN:      vpn.OpenVPN,
 					Region:   region,
 					City:     city,
 					Hostname: node.Hostname,
@@ -55,7 +55,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 					return nil, fmt.Errorf("%w: for node %s", ErrNoWireguardKey, node.Hostname)
 				}
 
-				server.VPN = constants.Wireguard
+				server.VPN = vpn.Wireguard
 				server.OvpnX509 = ""
 				server.WgPubKey = wgPubKey
 				server.IPs = []net.IP{node.IP3}

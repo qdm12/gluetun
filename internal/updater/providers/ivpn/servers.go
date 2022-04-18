@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
@@ -51,12 +51,12 @@ func GetServers(ctx context.Context, client *http.Client,
 
 	servers = make([]models.Server, 0, len(hosts))
 	for _, serverData := range data.Servers {
-		vpnType := constants.OpenVPN
+		vpnType := vpn.OpenVPN
 		hostname := serverData.Hostnames.OpenVPN
 		tcp := true
 		wgPubKey := ""
 		if hostname == "" {
-			vpnType = constants.Wireguard
+			vpnType = vpn.Wireguard
 			hostname = serverData.Hostnames.Wireguard
 			tcp = false
 			wgPubKey = serverData.WgPubKey

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
 )
@@ -23,7 +23,7 @@ type VPN struct {
 // TODO v4 remove pointer for receiver (because of Surfshark).
 func (v *VPN) validate(allServers models.AllServers) (err error) {
 	// Validate Type
-	validVPNTypes := []string{constants.OpenVPN, constants.Wireguard}
+	validVPNTypes := []string{vpn.OpenVPN, vpn.Wireguard}
 	if !helpers.IsOneOf(v.Type, validVPNTypes...) {
 		return fmt.Errorf("%w: %q and can only be one of %s",
 			ErrVPNTypeNotValid, v.Type, strings.Join(validVPNTypes, ", "))
@@ -34,7 +34,7 @@ func (v *VPN) validate(allServers models.AllServers) (err error) {
 		return fmt.Errorf("provider settings: %w", err)
 	}
 
-	if v.Type == constants.OpenVPN {
+	if v.Type == vpn.OpenVPN {
 		err := v.OpenVPN.validate(*v.Provider.Name)
 		if err != nil {
 			return fmt.Errorf("OpenVPN settings: %w", err)
@@ -73,7 +73,7 @@ func (v *VPN) overrideWith(other VPN) {
 }
 
 func (v *VPN) setDefaults() {
-	v.Type = helpers.DefaultString(v.Type, constants.OpenVPN)
+	v.Type = helpers.DefaultString(v.Type, vpn.OpenVPN)
 	v.Provider.setDefaults()
 	v.OpenVPN.setDefaults(*v.Provider.Name)
 	v.Wireguard.setDefaults()
@@ -88,7 +88,7 @@ func (v VPN) toLinesNode() (node *gotree.Node) {
 
 	node.AppendNode(v.Provider.toLinesNode())
 
-	if v.Type == constants.OpenVPN {
+	if v.Type == vpn.OpenVPN {
 		node.AppendNode(v.OpenVPN.toLinesNode())
 	} else {
 		node.AppendNode(v.Wireguard.toLinesNode())

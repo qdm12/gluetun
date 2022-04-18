@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
 )
@@ -26,7 +26,7 @@ type Provider struct {
 func (p *Provider) validate(vpnType string, allServers models.AllServers) (err error) {
 	// Validate Name
 	var validNames []string
-	if vpnType == constants.OpenVPN {
+	if vpnType == vpn.OpenVPN {
 		validNames = providers.All()
 		validNames = append(validNames, "pia") // Retro-compatibility
 	} else { // Wireguard

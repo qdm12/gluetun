@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,15 +30,15 @@ func Test_Ivpn_filterServers(t *testing.T) {
 		},
 		"no filter": {
 			servers: []models.Server{
-				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
-				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
-				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "b", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "c", UDP: true},
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Ivpn),
 			filtered: []models.Server{
-				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
-				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
-				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "b", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "c", UDP: true},
 			},
 		},
 		"filter by country": {
@@ -46,12 +46,12 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				Countries: []string{"b"},
 			}.WithDefaults(providers.Ivpn),
 			servers: []models.Server{
-				{VPN: constants.OpenVPN, Country: "a", UDP: true},
-				{VPN: constants.OpenVPN, Country: "b", UDP: true},
-				{VPN: constants.OpenVPN, Country: "c", UDP: true},
+				{VPN: vpn.OpenVPN, Country: "a", UDP: true},
+				{VPN: vpn.OpenVPN, Country: "b", UDP: true},
+				{VPN: vpn.OpenVPN, Country: "c", UDP: true},
 			},
 			filtered: []models.Server{
-				{VPN: constants.OpenVPN, Country: "b", UDP: true},
+				{VPN: vpn.OpenVPN, Country: "b", UDP: true},
 			},
 		},
 		"filter by city": {
@@ -59,12 +59,12 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				Cities: []string{"b"},
 			}.WithDefaults(providers.Ivpn),
 			servers: []models.Server{
-				{VPN: constants.OpenVPN, City: "a", UDP: true},
-				{VPN: constants.OpenVPN, City: "b", UDP: true},
-				{VPN: constants.OpenVPN, City: "c", UDP: true},
+				{VPN: vpn.OpenVPN, City: "a", UDP: true},
+				{VPN: vpn.OpenVPN, City: "b", UDP: true},
+				{VPN: vpn.OpenVPN, City: "c", UDP: true},
 			},
 			filtered: []models.Server{
-				{VPN: constants.OpenVPN, City: "b", UDP: true},
+				{VPN: vpn.OpenVPN, City: "b", UDP: true},
 			},
 		},
 		"filter by ISP": {
@@ -72,12 +72,12 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				ISPs: []string{"b"},
 			}.WithDefaults(providers.Ivpn),
 			servers: []models.Server{
-				{VPN: constants.OpenVPN, ISP: "a", UDP: true},
-				{VPN: constants.OpenVPN, ISP: "b", UDP: true},
-				{VPN: constants.OpenVPN, ISP: "c", UDP: true},
+				{VPN: vpn.OpenVPN, ISP: "a", UDP: true},
+				{VPN: vpn.OpenVPN, ISP: "b", UDP: true},
+				{VPN: vpn.OpenVPN, ISP: "c", UDP: true},
 			},
 			filtered: []models.Server{
-				{VPN: constants.OpenVPN, ISP: "b", UDP: true},
+				{VPN: vpn.OpenVPN, ISP: "b", UDP: true},
 			},
 		},
 		"filter by hostname": {
@@ -85,12 +85,12 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Ivpn),
 			servers: []models.Server{
-				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
-				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
-				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "b", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "c", UDP: true},
 			},
 			filtered: []models.Server{
-				{VPN: constants.OpenVPN, Hostname: "b", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "b", UDP: true},
 			},
 		},
 		"filter by protocol": {
@@ -100,12 +100,12 @@ func Test_Ivpn_filterServers(t *testing.T) {
 				},
 			}.WithDefaults(providers.Ivpn),
 			servers: []models.Server{
-				{VPN: constants.OpenVPN, Hostname: "a", UDP: true},
-				{VPN: constants.OpenVPN, Hostname: "b", UDP: true, TCP: true},
-				{VPN: constants.OpenVPN, Hostname: "c", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "a", UDP: true},
+				{VPN: vpn.OpenVPN, Hostname: "b", UDP: true, TCP: true},
+				{VPN: vpn.OpenVPN, Hostname: "c", UDP: true},
 			},
 			filtered: []models.Server{
-				{VPN: constants.OpenVPN, Hostname: "b", UDP: true, TCP: true},
+				{VPN: vpn.OpenVPN, Hostname: "b", UDP: true, TCP: true},
 			},
 		},
 	}

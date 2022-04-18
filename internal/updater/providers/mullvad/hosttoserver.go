@@ -6,7 +6,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -35,9 +35,9 @@ func (hts hostToServer) add(data serverData) (err error) {
 
 	switch data.Type {
 	case "openvpn":
-		server.VPN = constants.OpenVPN
+		server.VPN = vpn.OpenVPN
 	case "wireguard":
-		server.VPN = constants.Wireguard
+		server.VPN = vpn.Wireguard
 	case "bridge":
 		// ignore bridge servers
 		return nil

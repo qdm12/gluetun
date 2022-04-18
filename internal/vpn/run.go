@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/log"
 )
@@ -36,7 +37,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		var serverName, vpnInterface string
 		var err error
 		subLogger := l.logger.New(log.SetComponent(settings.Type))
-		if settings.Type == constants.OpenVPN {
+		if settings.Type == vpn.OpenVPN {
 			vpnInterface = settings.OpenVPN.Interface
 			vpnRunner, serverName, err = setupOpenVPN(ctx, l.fw,
 				l.openvpnConf, providerConf, settings, l.starter, subLogger)

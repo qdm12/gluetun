@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -19,9 +20,9 @@ var (
 func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	switch selection.VPN {
-	case constants.OpenVPN:
+	case vpn.OpenVPN:
 		return getOpenVPNConnection(p.extractor, selection)
-	case constants.Wireguard:
+	case vpn.Wireguard:
 		return getWireguardConnection(selection), nil
 	default:
 		return connection, fmt.Errorf("%w: %s", ErrVPNTypeNotSupported, selection.VPN)
@@ -44,7 +45,7 @@ func getWireguardConnection(selection settings.ServerSelection) (
 	connection models.Connection) {
 	port := getPort(*selection.Wireguard.EndpointPort, selection)
 	return models.Connection{
-		Type:     constants.Wireguard,
+		Type:     vpn.Wireguard,
 		IP:       selection.Wireguard.EndpointIP,
 		Port:     port,
 		Protocol: constants.UDP,

@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/resolver/mock_resolver"
@@ -85,13 +85,13 @@ func Test_GetServers(t *testing.T) {
 			},
 			resolveWarnings: []string{"resolve warning"},
 			servers: []models.Server{
-				{VPN: constants.OpenVPN, Country: "Country1",
+				{VPN: vpn.OpenVPN, Country: "Country1",
 					City: "City A", Hostname: "hosta", TCP: true, UDP: true,
 					IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
-				{VPN: constants.OpenVPN, Country: "Country2",
+				{VPN: vpn.OpenVPN, Country: "Country2",
 					City: "City B", Hostname: "hostb", TCP: true, UDP: true,
 					IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
-				{VPN: constants.Wireguard,
+				{VPN: vpn.Wireguard,
 					Country: "Country3", City: "City C",
 					Hostname: "hostc", UDP: true,
 					WgPubKey: "xyz",

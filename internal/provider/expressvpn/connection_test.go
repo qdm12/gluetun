@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,7 +36,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Expressvpn),
 			connection: models.Connection{
-				Type:     constants.OpenVPN,
+				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1195,
 				Protocol: constants.UDP,
@@ -51,7 +52,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
-				Type:     constants.OpenVPN,
+				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1195,
 				Protocol: constants.UDP,
@@ -67,7 +68,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, UDP: true},
 			},
 			connection: models.Connection{
-				Type:     constants.OpenVPN,
+				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1195,
 				Protocol: constants.UDP,
