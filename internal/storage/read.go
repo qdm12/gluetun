@@ -204,6 +204,7 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 		if err != nil {
 			return servers, err
 		}
+		element.target.SetDefaults()
 	}
 
 	return servers, nil

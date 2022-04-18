@@ -2,6 +2,8 @@ package models
 
 import (
 	"net"
+
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
 type Server struct {
@@ -25,4 +27,16 @@ type Server struct {
 	Stream      bool     `json:"stream,omitempty"`
 	PortForward bool     `json:"port_forward,omitempty"`
 	IPs         []net.IP `json:"ips,omitempty"`
+}
+
+func (s *Server) setDefaults() {
+	// TODO v4 precise these in servers.json rather than here
+	if s.VPN == "" {
+		s.VPN = vpn.OpenVPN
+	}
+
+	if s.VPN == vpn.Wireguard {
+		s.UDP = true
+		s.TCP = false
+	}
 }
