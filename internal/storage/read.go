@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -34,11 +36,7 @@ func (s *Storage) readFromFile(filepath string, hardcoded models.AllServers) (
 	return s.extractServersFromBytes(b, hardcoded)
 }
 
-var (
-	errDecodeProvider = errors.New("cannot decode servers for provider")
-)
-
-func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers) ( //nolint:gocognit,gocyclo,maintidx
+func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers) (
 	servers models.AllServers, err error) {
 	var versions allVersions
 	if err := json.Unmarshal(b, &versions); err != nil {
@@ -50,186 +48,183 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 		return servers, fmt.Errorf("cannot decode servers: %w", err)
 	}
 
-	// TODO simplify with generics in Go 1.18
+	type element struct {
+		provider      string
+		hardcoded     models.Servers
+		serverVersion serverVersion
+		rawMessage    json.RawMessage
+		target        *models.Servers
+	}
+	elements := []element{
+		{
+			provider:      providers.Cyberghost,
+			hardcoded:     hardcoded.Cyberghost,
+			serverVersion: versions.Cyberghost,
+			rawMessage:    rawMessages.Cyberghost,
+			target:        &servers.Cyberghost,
+		},
+		{
+			provider:      providers.Expressvpn,
+			hardcoded:     hardcoded.Expressvpn,
+			serverVersion: versions.Expressvpn,
+			rawMessage:    rawMessages.Expressvpn,
+			target:        &servers.Expressvpn,
+		},
+		{
+			provider:      providers.Fastestvpn,
+			hardcoded:     hardcoded.Fastestvpn,
+			serverVersion: versions.Fastestvpn,
+			rawMessage:    rawMessages.Fastestvpn,
+			target:        &servers.Fastestvpn,
+		},
+		{
+			provider:      providers.HideMyAss,
+			hardcoded:     hardcoded.HideMyAss,
+			serverVersion: versions.HideMyAss,
+			rawMessage:    rawMessages.HideMyAss,
+			target:        &servers.HideMyAss,
+		},
+		{
+			provider:      providers.Ipvanish,
+			hardcoded:     hardcoded.Ipvanish,
+			serverVersion: versions.Ipvanish,
+			rawMessage:    rawMessages.Ipvanish,
+			target:        &servers.Ipvanish,
+		},
+		{
+			provider:      providers.Ivpn,
+			hardcoded:     hardcoded.Ivpn,
+			serverVersion: versions.Ivpn,
+			rawMessage:    rawMessages.Ivpn,
+			target:        &servers.Ivpn,
+		},
+		{
+			provider:      providers.Mullvad,
+			hardcoded:     hardcoded.Mullvad,
+			serverVersion: versions.Mullvad,
+			rawMessage:    rawMessages.Mullvad,
+			target:        &servers.Mullvad,
+		},
+		{
+			provider:      providers.Nordvpn,
+			hardcoded:     hardcoded.Nordvpn,
+			serverVersion: versions.Nordvpn,
+			rawMessage:    rawMessages.Nordvpn,
+			target:        &servers.Nordvpn,
+		},
+		{
+			provider:      providers.Perfectprivacy,
+			hardcoded:     hardcoded.Perfectprivacy,
+			serverVersion: versions.Perfectprivacy,
+			rawMessage:    rawMessages.Perfectprivacy,
+			target:        &servers.Perfectprivacy,
+		},
+		{
+			provider:      providers.Privado,
+			hardcoded:     hardcoded.Privado,
+			serverVersion: versions.Privado,
+			rawMessage:    rawMessages.Privado,
+			target:        &servers.Privado,
+		},
+		{
+			provider:      providers.PrivateInternetAccess,
+			hardcoded:     hardcoded.Pia,
+			serverVersion: versions.Pia,
+			rawMessage:    rawMessages.Pia,
+			target:        &servers.Pia,
+		},
+		{
+			provider:      providers.Privatevpn,
+			hardcoded:     hardcoded.Privatevpn,
+			serverVersion: versions.Privatevpn,
+			rawMessage:    rawMessages.Privatevpn,
+			target:        &servers.Privatevpn,
+		},
+		{
+			provider:      providers.Protonvpn,
+			hardcoded:     hardcoded.Protonvpn,
+			serverVersion: versions.Protonvpn,
+			rawMessage:    rawMessages.Protonvpn,
+			target:        &servers.Protonvpn,
+		},
+		{
+			provider:      providers.Purevpn,
+			hardcoded:     hardcoded.Purevpn,
+			serverVersion: versions.Purevpn,
+			rawMessage:    rawMessages.Purevpn,
+			target:        &servers.Purevpn,
+		},
+		{
+			provider:      providers.Surfshark,
+			hardcoded:     hardcoded.Surfshark,
+			serverVersion: versions.Surfshark,
+			rawMessage:    rawMessages.Surfshark,
+			target:        &servers.Surfshark,
+		},
+		{
+			provider:      providers.Torguard,
+			hardcoded:     hardcoded.Torguard,
+			serverVersion: versions.Torguard,
+			rawMessage:    rawMessages.Torguard,
+			target:        &servers.Torguard,
+		},
+		{
+			provider:      providers.VPNUnlimited,
+			hardcoded:     hardcoded.VPNUnlimited,
+			serverVersion: versions.VPNUnlimited,
+			rawMessage:    rawMessages.VPNUnlimited,
+			target:        &servers.VPNUnlimited,
+		},
+		{
+			provider:      providers.Vyprvpn,
+			hardcoded:     hardcoded.Vyprvpn,
+			serverVersion: versions.Vyprvpn,
+			rawMessage:    rawMessages.Vyprvpn,
+			target:        &servers.Vyprvpn,
+		},
+		{
+			provider:      providers.Wevpn,
+			hardcoded:     hardcoded.Wevpn,
+			serverVersion: versions.Wevpn,
+			rawMessage:    rawMessages.Wevpn,
+			target:        &servers.Wevpn,
+		},
+		{
+			provider:      providers.Windscribe,
+			hardcoded:     hardcoded.Windscribe,
+			serverVersion: versions.Windscribe,
+			rawMessage:    rawMessages.Windscribe,
+			target:        &servers.Windscribe,
+		},
+	}
 
-	if hardcoded.Cyberghost.Version != versions.Cyberghost.Version {
-		s.logVersionDiff("Cyberghost", hardcoded.Cyberghost.Version, versions.Cyberghost.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Cyberghost, &servers.Cyberghost)
+	for _, element := range elements {
+		*element.target, err = s.readServers(element.provider,
+			element.hardcoded, element.serverVersion, element.rawMessage)
 		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Cyberghost", err)
+			return servers, err
 		}
 	}
 
-	if hardcoded.Expressvpn.Version != versions.Expressvpn.Version {
-		s.logVersionDiff("Expressvpn", hardcoded.Expressvpn.Version, versions.Expressvpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Expressvpn, &servers.Expressvpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Expressvpn", err)
-		}
+	return servers, nil
+}
+
+var (
+	errDecodeProvider = errors.New("cannot decode servers for provider")
+)
+
+func (s *Storage) readServers(provider string, hardcoded models.Servers,
+	serverVersion serverVersion, rawMessage json.RawMessage) (
+	servers models.Servers, err error) {
+	provider = strings.Title(provider)
+	if hardcoded.Version != serverVersion.Version {
+		s.logVersionDiff(provider, hardcoded.Version, serverVersion.Version)
+		return servers, nil
 	}
 
-	if hardcoded.Fastestvpn.Version != versions.Fastestvpn.Version {
-		s.logVersionDiff("Fastestvpn", hardcoded.Fastestvpn.Version, versions.Fastestvpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Fastestvpn, &servers.Fastestvpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Fastestvpn", err)
-		}
-	}
-
-	if hardcoded.HideMyAss.Version != versions.HideMyAss.Version {
-		s.logVersionDiff("HideMyAss", hardcoded.HideMyAss.Version, versions.HideMyAss.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.HideMyAss, &servers.HideMyAss)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "HideMyAss", err)
-		}
-	}
-
-	if hardcoded.Ipvanish.Version != versions.Ipvanish.Version {
-		s.logVersionDiff("Ipvanish", hardcoded.Ipvanish.Version, versions.Ipvanish.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Ipvanish, &servers.Ipvanish)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Ipvanish", err)
-		}
-	}
-
-	if hardcoded.Ivpn.Version != versions.Ivpn.Version {
-		s.logVersionDiff("Ivpn", hardcoded.Ivpn.Version, versions.Ivpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Ivpn, &servers.Ivpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Ivpn", err)
-		}
-	}
-
-	if hardcoded.Mullvad.Version != versions.Mullvad.Version {
-		s.logVersionDiff("Mullvad", hardcoded.Mullvad.Version, versions.Mullvad.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Mullvad, &servers.Mullvad)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Mullvad", err)
-		}
-	}
-
-	if hardcoded.Nordvpn.Version != versions.Nordvpn.Version {
-		s.logVersionDiff("Nordvpn", hardcoded.Nordvpn.Version, versions.Nordvpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Nordvpn, &servers.Nordvpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Nordvpn", err)
-		}
-	}
-
-	if hardcoded.Perfectprivacy.Version != versions.Perfectprivacy.Version {
-		s.logVersionDiff("Perfect Privacy", hardcoded.Perfectprivacy.Version, versions.Perfectprivacy.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Perfectprivacy, &servers.Perfectprivacy)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Perfect Privacy", err)
-		}
-	}
-
-	if hardcoded.Privado.Version != versions.Privado.Version {
-		s.logVersionDiff("Privado", hardcoded.Privado.Version, versions.Privado.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Privado, &servers.Privado)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Privado", err)
-		}
-	}
-
-	if hardcoded.Pia.Version != versions.Pia.Version {
-		s.logVersionDiff("Pia", hardcoded.Pia.Version, versions.Pia.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Pia, &servers.Pia)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Pia", err)
-		}
-	}
-
-	if hardcoded.Privatevpn.Version != versions.Privatevpn.Version {
-		s.logVersionDiff("Privatevpn", hardcoded.Privatevpn.Version, versions.Privatevpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Privatevpn, &servers.Privatevpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Privatevpn", err)
-		}
-	}
-
-	if hardcoded.Protonvpn.Version != versions.Protonvpn.Version {
-		s.logVersionDiff("Protonvpn", hardcoded.Protonvpn.Version, versions.Protonvpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Protonvpn, &servers.Protonvpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Protonvpn", err)
-		}
-	}
-
-	if hardcoded.Purevpn.Version != versions.Purevpn.Version {
-		s.logVersionDiff("Purevpn", hardcoded.Purevpn.Version, versions.Purevpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Purevpn, &servers.Purevpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Purevpn", err)
-		}
-	}
-
-	if hardcoded.Surfshark.Version != versions.Surfshark.Version {
-		s.logVersionDiff("Surfshark", hardcoded.Surfshark.Version, versions.Surfshark.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Surfshark, &servers.Surfshark)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Surfshark", err)
-		}
-	}
-
-	if hardcoded.Torguard.Version != versions.Torguard.Version {
-		s.logVersionDiff("Torguard", hardcoded.Torguard.Version, versions.Torguard.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Torguard, &servers.Torguard)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Torguard", err)
-		}
-	}
-
-	if hardcoded.VPNUnlimited.Version != versions.VPNUnlimited.Version {
-		s.logVersionDiff("VPNUnlimited", hardcoded.VPNUnlimited.Version, versions.VPNUnlimited.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.VPNUnlimited, &servers.VPNUnlimited)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "VPNUnlimited", err)
-		}
-	}
-
-	if hardcoded.Vyprvpn.Version != versions.Vyprvpn.Version {
-		s.logVersionDiff("Vyprvpn", hardcoded.Vyprvpn.Version, versions.Vyprvpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Vyprvpn, &servers.Vyprvpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Vyprvpn", err)
-		}
-	}
-
-	if hardcoded.Wevpn.Version != versions.Wevpn.Version {
-		s.logVersionDiff("Wevpn", hardcoded.Wevpn.Version, versions.Wevpn.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Wevpn, &servers.Wevpn)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Wevpn", err)
-		}
-	}
-
-	if hardcoded.Windscribe.Version != versions.Windscribe.Version {
-		s.logVersionDiff("Windscribe", hardcoded.Windscribe.Version, versions.Windscribe.Version)
-	} else {
-		err = json.Unmarshal(rawMessages.Windscribe, &servers.Windscribe)
-		if err != nil {
-			return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, "Windscribe", err)
-		}
+	err = json.Unmarshal(rawMessage, &servers)
+	if err != nil {
+		return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, provider, err)
 	}
 
 	return servers, nil
