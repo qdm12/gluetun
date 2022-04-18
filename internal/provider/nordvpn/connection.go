@@ -16,7 +16,7 @@ func (n *Nordvpn) GetConnection(selection settings.ServerSelection) (
 		protocol = constants.TCP
 	}
 
-	servers, err := n.filterServers(selection)
+	servers, err := utils.FilterServers(n.servers, selection)
 	if err != nil {
 		return connection, err
 	}

@@ -15,7 +15,7 @@ func (c *Cyberghost) GetConnection(selection settings.ServerSelection) (
 		protocol = constants.TCP
 	}
 
-	servers, err := c.filterServers(selection)
+	servers, err := utils.FilterServers(c.servers, selection)
 	if err != nil {
 		return connection, err
 	}

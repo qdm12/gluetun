@@ -12,7 +12,7 @@ func (i *Ipvanish) GetConnection(selection settings.ServerSelection) (
 	const port = 443
 	const protocol = constants.UDP
 
-	servers, err := i.filterServers(selection)
+	servers, err := utils.FilterServers(i.servers, selection)
 	if err != nil {
 		return connection, err
 	}

@@ -12,7 +12,7 @@ func (p *Privado) GetConnection(selection settings.ServerSelection) (
 	const port = 1194
 	const protocol = constants.UDP
 
-	servers, err := p.filterServers(selection)
+	servers, err := utils.FilterServers(p.servers, selection)
 	if err != nil {
 		return connection, err
 	}

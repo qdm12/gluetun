@@ -16,7 +16,7 @@ func (p *Purevpn) GetConnection(selection settings.ServerSelection) (
 		port = 80
 	}
 
-	servers, err := p.filterServers(selection)
+	servers, err := utils.FilterServers(p.servers, selection)
 	if err != nil {
 		return connection, err
 	}

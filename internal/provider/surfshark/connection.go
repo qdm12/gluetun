@@ -16,7 +16,7 @@ func (s *Surfshark) GetConnection(selection settings.ServerSelection) (
 		port = 1443
 	}
 
-	servers, err := s.filterServers(selection)
+	servers, err := utils.FilterServers(s.servers, selection)
 	if err != nil {
 		return connection, err
 	}

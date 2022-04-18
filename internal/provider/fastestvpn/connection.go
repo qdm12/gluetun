@@ -15,7 +15,7 @@ func (f *Fastestvpn) GetConnection(selection settings.ServerSelection) (
 		protocol = constants.TCP
 	}
 
-	servers, err := f.filterServers(selection)
+	servers, err := utils.FilterServers(f.servers, selection)
 	if err != nil {
 		return connection, err
 	}

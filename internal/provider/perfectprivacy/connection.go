@@ -15,7 +15,7 @@ func (p *Perfectprivacy) GetConnection(selection settings.ServerSelection) (
 	}
 	protocol := utils.GetProtocol(selection)
 
-	servers, err := p.filterServers(selection)
+	servers, err := utils.FilterServers(p.servers, selection)
 	if err != nil {
 		return connection, err
 	}

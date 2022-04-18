@@ -1,7 +1,6 @@
 package wevpn
 
 import (
-	"errors"
 	"math/rand"
 	"net"
 	"testing"
@@ -11,8 +10,8 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/utils"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Wevpn_GetConnection(t *testing.T) {
@@ -22,19 +21,21 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 		servers    []models.Server
 		selection  settings.ServerSelection
 		connection models.Connection
-		err        error
+		errWrapped error
+		errMessage string
 	}{
 		"no server available": {
 			selection: settings.ServerSelection{
 				VPN: vpn.OpenVPN,
 			}.WithDefaults(providers.Wevpn),
-			err: errors.New("no server found: for VPN openvpn; protocol udp"),
+			errWrapped: utils.ErrNoServerFound,
+			errMessage: "no server found: for VPN openvpn; protocol udp",
 		},
 		"no filter": {
 			servers: []models.Server{
-				{UDP: true, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{UDP: true, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{UDP: true, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, VPN: vpn.OpenVPN, UDP: true},
+				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, VPN: vpn.OpenVPN, UDP: true},
+				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, VPN: vpn.OpenVPN, UDP: true},
 			},
 			selection: settings.ServerSelection{}.WithDefaults(providers.Wevpn),
 			connection: models.Connection{
@@ -49,9 +50,9 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				TargetIP: net.IPv4(2, 2, 2, 2),
 			}.WithDefaults(providers.Wevpn),
 			servers: []models.Server{
-				{UDP: true, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{UDP: true, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{UDP: true, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, VPN: vpn.OpenVPN, UDP: true},
+				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, VPN: vpn.OpenVPN, UDP: true},
+				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, VPN: vpn.OpenVPN, UDP: true},
 			},
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
@@ -65,9 +66,9 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				Hostnames: []string{"b"},
 			}.WithDefaults(providers.Wevpn),
 			servers: []models.Server{
-				{UDP: true, Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{UDP: true, Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{UDP: true, Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, VPN: vpn.OpenVPN, UDP: true},
+				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, VPN: vpn.OpenVPN, UDP: true},
+				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, VPN: vpn.OpenVPN, UDP: true},
 			},
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
@@ -89,11 +90,9 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 
 			connection, err := m.GetConnection(testCase.selection)
 
-			if testCase.err != nil {
-				require.Error(t, err)
-				assert.Equal(t, testCase.err.Error(), err.Error())
-			} else {
-				assert.NoError(t, err)
+			assert.ErrorIs(t, err, testCase.errWrapped)
+			if testCase.errWrapped != nil {
+				assert.EqualError(t, err, testCase.errMessage)
 			}
 
 			assert.Equal(t, testCase.connection, connection)

@@ -11,7 +11,7 @@ func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	port := getPort(selection)
 	protocol := utils.GetProtocol(selection)
 
-	servers, err := p.filterServers(selection)
+	servers, err := utils.FilterServers(p.servers, selection)
 	if err != nil {
 		return connection, err
 	}

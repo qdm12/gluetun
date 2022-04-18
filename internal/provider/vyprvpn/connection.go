@@ -12,7 +12,7 @@ func (v *Vyprvpn) GetConnection(selection settings.ServerSelection) (
 	const port = 443
 	const protocol = constants.UDP
 
-	servers, err := v.filterServers(selection)
+	servers, err := utils.FilterServers(v.servers, selection)
 	if err != nil {
 		return connection, err
 	}

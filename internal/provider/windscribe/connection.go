@@ -11,7 +11,7 @@ func (w *Windscribe) GetConnection(selection settings.ServerSelection) (
 	port := getPort(selection)
 	protocol := utils.GetProtocol(selection)
 
-	servers, err := w.filterServers(selection)
+	servers, err := utils.FilterServers(w.servers, selection)
 	if err != nil {
 		return connection, err
 	}

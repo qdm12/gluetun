@@ -19,7 +19,7 @@ func (t *Torguard) GetConnection(selection settings.ServerSelection) (
 		port = *selection.OpenVPN.CustomPort
 	}
 
-	servers, err := t.filterServers(selection)
+	servers, err := utils.FilterServers(t.servers, selection)
 	if err != nil {
 		return connection, err
 	}

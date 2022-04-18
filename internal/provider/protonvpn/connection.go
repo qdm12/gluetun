@@ -19,7 +19,7 @@ func (p *Protonvpn) GetConnection(selection settings.ServerSelection) (
 		return connection, err
 	}
 
-	servers, err := p.filterServers(selection)
+	servers, err := utils.FilterServers(p.servers, selection)
 	if err != nil {
 		return connection, err
 	}

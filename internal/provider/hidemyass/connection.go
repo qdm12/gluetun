@@ -20,7 +20,7 @@ func (h *HideMyAss) GetConnection(selection settings.ServerSelection) (
 		port = *selection.OpenVPN.CustomPort
 	}
 
-	servers, err := h.filterServers(selection)
+	servers, err := utils.FilterServers(h.servers, selection)
 	if err != nil {
 		return connection, err
 	}

@@ -11,7 +11,7 @@ func (i *Ivpn) GetConnection(selection settings.ServerSelection) (
 	port := getPort(selection)
 	protocol := utils.GetProtocol(selection)
 
-	servers, err := i.filterServers(selection)
+	servers, err := utils.FilterServers(i.servers, selection)
 	if err != nil {
 		return connection, err
 	}
