@@ -32,11 +32,17 @@ type Server struct {
 func (s *Server) setDefaults() {
 	// TODO v4 precise these in servers.json rather than here
 	if s.VPN == "" {
+		// If the VPN protocol isn't specified, assume it is OpenVPN.
 		s.VPN = vpn.OpenVPN
 	}
 
-	if s.VPN == vpn.Wireguard {
+	if !s.UDP && !s.TCP {
+		// If UDP and TCP are not precised:
+		// For OpenVPN, assume TCP and UDP are supported
+		// For Wireguard, UDP must be supported.
 		s.UDP = true
-		s.TCP = false
+		if s.VPN == vpn.OpenVPN {
+			s.TCP = true
+		}
 	}
 }
