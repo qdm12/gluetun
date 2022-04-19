@@ -8,38 +8,6 @@ import (
 
 func (i *Ivpn) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
-	port := getPort(selection)
-	protocol := utils.GetProtocol(selection)
-
-	servers, err := utils.FilterServers(i.servers, selection)
-	if err != nil {
-		return connection, err
-	}
-
-	var connections []models.Connection
-	for _, server := range servers {
-		for _, IP := range server.IPs {
-			connection := models.Connection{
-				Type:     selection.VPN,
-				IP:       IP,
-				Port:     port,
-				Protocol: protocol,
-				Hostname: server.Hostname,
-				PubKey:   server.WgPubKey, // Wireguard only
-			}
-			connections = append(connections, connection)
-		}
-	}
-
-	return utils.PickConnection(connections, selection, i.randSource)
-}
-
-func getPort(selection settings.ServerSelection) (port uint16) {
-	const (
-		defaultOpenVPNTCP = 443
-		defaultOpenVPNUDP = 1194
-		defaultWireguard  = 58237
-	)
-	return utils.GetPort(selection, defaultOpenVPNTCP,
-		defaultOpenVPNUDP, defaultWireguard)
+	defaults := utils.NewConnectionDefaults(443, 1194, 58237) //nolint:gomnd
+	return utils.GetConnection(i.servers, selection, defaults, i.randSource)
 }

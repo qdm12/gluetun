@@ -9,34 +9,16 @@ import (
 
 func (p *PIA) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
-	protocol := constants.UDP
-	if *selection.OpenVPN.TCP {
-		protocol = constants.TCP
+	// Set port defaults depending on encryption preset.
+	var defaults utils.ConnectionDefaults
+	switch *selection.OpenVPN.PIAEncPreset {
+	case constants.PIAEncryptionPresetNone, constants.PIAEncryptionPresetNormal:
+		defaults.OpenVPNTCPPort = 502
+		defaults.OpenVPNUDPPort = 1198
+	case constants.PIAEncryptionPresetStrong:
+		defaults.OpenVPNTCPPort = 501
+		defaults.OpenVPNUDPPort = 1197
 	}
 
-	port, err := getPort(selection.OpenVPN)
-	if err != nil {
-		return connection, err
-	}
-
-	servers, err := utils.FilterServers(p.servers, selection)
-	if err != nil {
-		return connection, err
-	}
-
-	var connections []models.Connection
-	for _, server := range servers {
-		for _, IP := range server.IPs {
-			connection := models.Connection{
-				Type:     selection.VPN,
-				IP:       IP,
-				Port:     port,
-				Protocol: protocol,
-				Hostname: server.ServerName, // used for port forwarding TLS
-			}
-			connections = append(connections, connection)
-		}
-	}
-
-	return utils.PickConnection(connections, selection, p.randSource)
+	return utils.GetConnection(p.servers, selection, defaults, p.randSource)
 }

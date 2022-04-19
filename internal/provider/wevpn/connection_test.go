@@ -29,7 +29,7 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				VPN: vpn.OpenVPN,
 			}.WithDefaults(providers.Wevpn),
 			errWrapped: utils.ErrNoServerFound,
-			errMessage: "no server found: for VPN openvpn; protocol udp",
+			errMessage: "cannot filter servers: no server found: for VPN openvpn; protocol udp",
 		},
 		"no filter": {
 			servers: []models.Server{
@@ -74,6 +74,7 @@ func Test_Wevpn_GetConnection(t *testing.T) {
 				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(2, 2, 2, 2),
 				Port:     1194,
+				Hostname: "b",
 				Protocol: constants.UDP,
 			},
 		},

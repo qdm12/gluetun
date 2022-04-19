@@ -8,30 +8,6 @@ import (
 
 func (p *Perfectprivacy) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
-	const defaultPort uint16 = 443
-	port := defaultPort
-	if *selection.OpenVPN.CustomPort > 0 {
-		port = *selection.OpenVPN.CustomPort
-	}
-	protocol := utils.GetProtocol(selection)
-
-	servers, err := utils.FilterServers(p.servers, selection)
-	if err != nil {
-		return connection, err
-	}
-
-	var connections []models.Connection
-	for _, server := range servers {
-		for _, IP := range server.IPs {
-			connection := models.Connection{
-				Type:     selection.VPN,
-				IP:       IP,
-				Port:     port,
-				Protocol: protocol,
-			}
-			connections = append(connections, connection)
-		}
-	}
-
-	return utils.PickConnection(connections, selection, p.randSource)
+	defaults := utils.NewConnectionDefaults(443, 443, 0) //nolint:gomnd
+	return utils.GetConnection(p.servers, selection, defaults, p.randSource)
 }

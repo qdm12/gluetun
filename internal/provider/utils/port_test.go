@@ -21,12 +21,19 @@ func Test_GetPort(t *testing.T) {
 	)
 
 	testCases := map[string]struct {
-		selection settings.ServerSelection
-		port      uint16
+		selection         settings.ServerSelection
+		defaultOpenVPNTCP uint16
+		defaultOpenVPNUDP uint16
+		defaultWireguard  uint16
+		port              uint16
+		panics            string
 	}{
 		"default": {
-			selection: settings.ServerSelection{}.WithDefaults(""),
-			port:      defaultOpenVPNUDP,
+			selection:         settings.ServerSelection{}.WithDefaults(""),
+			defaultOpenVPNTCP: defaultOpenVPNTCP,
+			defaultOpenVPNUDP: defaultOpenVPNUDP,
+			defaultWireguard:  defaultWireguard,
+			port:              defaultOpenVPNUDP,
 		},
 		"OpenVPN UDP": {
 			selection: settings.ServerSelection{
@@ -36,7 +43,20 @@ func Test_GetPort(t *testing.T) {
 					TCP:        boolPtr(false),
 				},
 			},
-			port: defaultOpenVPNUDP,
+			defaultOpenVPNTCP: defaultOpenVPNTCP,
+			defaultOpenVPNUDP: defaultOpenVPNUDP,
+			defaultWireguard:  defaultWireguard,
+			port:              defaultOpenVPNUDP,
+		},
+		"OpenVPN UDP no default port defined": {
+			selection: settings.ServerSelection{
+				VPN: vpn.OpenVPN,
+				OpenVPN: settings.OpenVPNSelection{
+					CustomPort: uint16Ptr(0),
+					TCP:        boolPtr(false),
+				},
+			},
+			panics: "no default OpenVPN UDP port is defined!",
 		},
 		"OpenVPN TCP": {
 			selection: settings.ServerSelection{
@@ -46,7 +66,18 @@ func Test_GetPort(t *testing.T) {
 					TCP:        boolPtr(true),
 				},
 			},
-			port: defaultOpenVPNTCP,
+			defaultOpenVPNTCP: defaultOpenVPNTCP,
+			port:              defaultOpenVPNTCP,
+		},
+		"OpenVPN TCP no default port defined": {
+			selection: settings.ServerSelection{
+				VPN: vpn.OpenVPN,
+				OpenVPN: settings.OpenVPNSelection{
+					CustomPort: uint16Ptr(0),
+					TCP:        boolPtr(true),
+				},
+			},
+			panics: "no default OpenVPN TCP port is defined!",
 		},
 		"OpenVPN custom port": {
 			selection: settings.ServerSelection{
@@ -61,7 +92,8 @@ func Test_GetPort(t *testing.T) {
 			selection: settings.ServerSelection{
 				VPN: vpn.Wireguard,
 			}.WithDefaults(""),
-			port: defaultWireguard,
+			defaultWireguard: defaultWireguard,
+			port:             defaultWireguard,
 		},
 		"Wireguard custom port": {
 			selection: settings.ServerSelection{
@@ -70,7 +102,14 @@ func Test_GetPort(t *testing.T) {
 					EndpointPort: uint16Ptr(1234),
 				},
 			},
-			port: 1234,
+			defaultWireguard: defaultWireguard,
+			port:             1234,
+		},
+		"Wireguard no default port defined": {
+			selection: settings.ServerSelection{
+				VPN: vpn.Wireguard,
+			}.WithDefaults(""),
+			panics: "no default Wireguard port is defined!",
 		},
 	}
 
@@ -79,8 +118,20 @@ func Test_GetPort(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
+			if testCase.panics != "" {
+				assert.PanicsWithValue(t, testCase.panics, func() {
+					_ = GetPort(testCase.selection,
+						testCase.defaultOpenVPNTCP,
+						testCase.defaultOpenVPNUDP,
+						testCase.defaultWireguard)
+				})
+				return
+			}
+
 			port := GetPort(testCase.selection,
-				defaultOpenVPNTCP, defaultOpenVPNUDP, defaultWireguard)
+				testCase.defaultOpenVPNTCP,
+				testCase.defaultOpenVPNUDP,
+				testCase.defaultWireguard)
 
 			assert.Equal(t, testCase.port, port)
 		})

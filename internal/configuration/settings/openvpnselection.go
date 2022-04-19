@@ -77,6 +77,12 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			case providers.Perfectprivacy:
 				allowedTCP = []uint16{44, 443, 4433}
 				allowedUDP = []uint16{44, 443, 4433}
+			case providers.PrivateInternetAccess:
+				allowedTCP = []uint16{80, 110, 443}
+				allowedUDP = []uint16{53, 1194, 1197, 1198, 8080, 9201}
+			case providers.Protonvpn:
+				allowedTCP = []uint16{443, 5995, 8443}
+				allowedUDP = []uint16{80, 443, 1194, 4569, 5060}
 			case providers.Wevpn:
 				allowedTCP = []uint16{53, 1195, 1199, 2018}
 				allowedUDP = []uint16{80, 1194, 1198}

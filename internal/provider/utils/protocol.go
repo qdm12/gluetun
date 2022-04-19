@@ -6,14 +6,14 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
-func GetProtocol(selection settings.ServerSelection) (protocol string) {
+func getProtocol(selection settings.ServerSelection) (protocol string) {
 	if selection.VPN == vpn.OpenVPN && *selection.OpenVPN.TCP {
 		return constants.TCP
 	}
 	return constants.UDP
 }
 
-func FilterByProtocol(selection settings.ServerSelection,
+func filterByProtocol(selection settings.ServerSelection,
 	serverTCP, serverUDP bool) (filtered bool) {
 	switch selection.VPN {
 	case vpn.Wireguard:

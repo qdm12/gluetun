@@ -9,7 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
-	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 var (
@@ -37,23 +36,21 @@ func getOpenVPNConnection(extractor extract.Interface,
 		return connection, fmt.Errorf("cannot extract connection: %w", err)
 	}
 
-	connection.Port = getPort(connection.Port, selection)
+	customPort := *selection.OpenVPN.CustomPort
+	if customPort > 0 {
+		connection.Port = customPort
+	}
+
 	return connection, nil
 }
 
 func getWireguardConnection(selection settings.ServerSelection) (
 	connection models.Connection) {
-	port := getPort(*selection.Wireguard.EndpointPort, selection)
 	return models.Connection{
 		Type:     vpn.Wireguard,
 		IP:       selection.Wireguard.EndpointIP,
-		Port:     port,
+		Port:     *selection.Wireguard.EndpointPort,
 		Protocol: constants.UDP,
 		PubKey:   selection.Wireguard.PublicKey,
 	}
-}
-
-// Port found is overridden by custom port set with `VPN_ENDPOINT_PORT`.
-func getPort(foundPort uint16, selection settings.ServerSelection) (port uint16) {
-	return utils.GetPort(selection, foundPort, foundPort, foundPort)
 }

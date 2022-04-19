@@ -34,7 +34,7 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if FilterByProtocol(selection, server.TCP, server.UDP) {
+	if filterByProtocol(selection, server.TCP, server.UDP) {
 		return true
 	}
 

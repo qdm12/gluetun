@@ -8,41 +8,6 @@ import (
 
 func (m *Mullvad) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
-	port := getPort(selection)
-	protocol := utils.GetProtocol(selection)
-
-	servers, err := utils.FilterServers(m.servers, selection)
-	if err != nil {
-		return connection, err
-	}
-
-	connections := make([]models.Connection, 0, len(servers))
-	for _, server := range servers {
-		for _, IP := range server.IPs {
-			if IP.To4() == nil {
-				// do not use IPv6 connections for now
-				continue
-			}
-			connection := models.Connection{
-				Type:     selection.VPN,
-				IP:       IP,
-				Port:     port,
-				Protocol: protocol,
-				PubKey:   server.WgPubKey, // Wireguard only
-			}
-			connections = append(connections, connection)
-		}
-	}
-
-	return utils.PickConnection(connections, selection, m.randSource)
-}
-
-func getPort(selection settings.ServerSelection) (port uint16) {
-	const (
-		defaultOpenVPNTCP = 443
-		defaultOpenVPNUDP = 1194
-		defaultWireguard  = 51820
-	)
-	return utils.GetPort(selection, defaultOpenVPNTCP,
-		defaultOpenVPNUDP, defaultWireguard)
+	defaults := utils.NewConnectionDefaults(443, 1194, 51820) //nolint:gomnd
+	return utils.GetConnection(m.servers, selection, defaults, m.randSource)
 }

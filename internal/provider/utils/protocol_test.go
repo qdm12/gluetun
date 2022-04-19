@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_GetProtocol(t *testing.T) {
+func Test_getProtocol(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
@@ -50,14 +50,14 @@ func Test_GetProtocol(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			protocol := GetProtocol(testCase.selection)
+			protocol := getProtocol(testCase.selection)
 
 			assert.Equal(t, testCase.protocol, protocol)
 		})
 	}
 }
 
-func Test_FilterByProtocol(t *testing.T) {
+func Test_filterByProtocol(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
@@ -127,7 +127,7 @@ func Test_FilterByProtocol(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			filtered := FilterByProtocol(testCase.selection,
+			filtered := filterByProtocol(testCase.selection,
 				testCase.serverTCP, testCase.serverUDP)
 
 			assert.Equal(t, testCase.filtered, filtered)
