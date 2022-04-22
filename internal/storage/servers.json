@@ -26980,7 +26980,7 @@
     ]
   },
   "mullvad": {
-    "version": 3,
+    "version": 4,
     "timestamp": 1647425081,
     "servers": [
       {
@@ -35373,7 +35373,7 @@
     ]
   },
   "nordvpn": {
-    "version": 3,
+    "version": 4,
     "timestamp": 1650212427,
     "servers": [
       {
@@ -90826,7 +90826,7 @@
     ]
   },
   "pia": {
-    "version": 6,
+    "version": 7,
     "timestamp": 1649712532,
     "servers": [
       {
@@ -93553,7 +93553,7 @@
     ]
   },
   "privatevpn": {
-    "version": 1,
+    "version": 2,
     "timestamp": 1650661388,
     "servers": [
       {
