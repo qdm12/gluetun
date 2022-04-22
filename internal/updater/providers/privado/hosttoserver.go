@@ -14,6 +14,7 @@ func (hts hostToServer) add(host string) {
 		return
 	}
 	server.Hostname = host
+	server.UDP = true
 	hts[host] = server
 }
 

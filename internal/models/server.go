@@ -35,14 +35,4 @@ func (s *Server) setDefaults() {
 		// If the VPN protocol isn't specified, assume it is OpenVPN.
 		s.VPN = vpn.OpenVPN
 	}
-
-	if !s.UDP && !s.TCP {
-		// If UDP and TCP are not precised:
-		// For OpenVPN, assume TCP and UDP are supported
-		// For Wireguard, UDP must be supported.
-		s.UDP = true
-		if s.VPN == vpn.OpenVPN {
-			s.TCP = true
-		}
-	}
 }

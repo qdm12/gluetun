@@ -73,6 +73,8 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 			Country: country,
 			City:    city,
 			IPs:     ips,
+			UDP:     true,
+			TCP:     true,
 		}
 		noHostnameServers = append(noHostnameServers, server)
 	}

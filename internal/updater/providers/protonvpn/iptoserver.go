@@ -19,6 +19,8 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 		server.City = city
 		server.ServerName = name
 		server.Hostname = hostname
+		server.UDP = true
+		server.TCP = true
 		server.IPs = []net.IP{entryIP}
 	} else {
 		server.IPs = append(server.IPs, entryIP)

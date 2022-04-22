@@ -41,6 +41,8 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 				}
 				server := models.Server{
 					VPN:      vpn.OpenVPN,
+					TCP:      true,
+					UDP:      true,
 					Region:   region,
 					City:     city,
 					Hostname: node.Hostname,
@@ -56,6 +58,8 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 				}
 
 				server.VPN = vpn.Wireguard
+				server.UDP = true
+				server.TCP = false
 				server.OvpnX509 = ""
 				server.WgPubKey = wgPubKey
 				server.IPs = []net.IP{node.IP3}

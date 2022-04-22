@@ -17,6 +17,8 @@ func (hts hostToServer) add(host, country, city string) {
 	server.Hostname = host
 	server.Country = country
 	server.City = city
+	server.UDP = true
+	server.TCP = true
 	hts[host] = server
 }
 
