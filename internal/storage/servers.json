@@ -93554,391 +93554,686 @@
   },
   "privatevpn": {
     "version": 1,
-    "timestamp": 1647425952,
+    "timestamp": 1650661388,
     "servers": [
+      {
+        "country": "Argentina",
+        "city": "BuenosAires",
+        "hostname": "ar-bue.pvdata.host",
+        "ips": [
+          "181.119.160.59"
+        ]
+      },
       {
         "country": "Australia",
         "city": "Melbourne",
-        "hostname": "au-mel.pvdata.host"
+        "hostname": "au-mel.pvdata.host",
+        "ips": [
+          "103.231.88.203"
+        ]
       },
       {
         "country": "Australia",
         "city": "Sydney1",
-        "hostname": "au-syd.pvdata.host"
+        "hostname": "au-syd.pvdata.host",
+        "ips": [
+          "143.244.63.96"
+        ]
       },
       {
         "country": "Austria",
         "city": "Wien",
-        "hostname": "at-wie.pvdata.host"
+        "hostname": "at-wie.pvdata.host",
+        "ips": [
+          "185.9.19.91"
+        ]
       },
       {
         "country": "Belgium",
         "city": "Brussels",
-        "hostname": "be-bru.pvdata.host"
+        "hostname": "be-bru.pvdata.host",
+        "ips": [
+          "185.104.186.211"
+        ]
       },
       {
         "country": "Brazil",
         "city": "SaoPaulo",
-        "hostname": "br-sao.pvdata.host"
+        "hostname": "br-sao.pvdata.host",
+        "ips": [
+          "45.162.230.59"
+        ]
       },
       {
         "country": "Bulgaria",
         "city": "Sofia",
-        "hostname": "bg-sof.pvdata.host"
+        "hostname": "bg-sof.pvdata.host",
+        "ips": [
+          "185.94.192.163"
+        ]
       },
       {
         "country": "Canada",
         "city": "Montreal",
-        "hostname": "ca-mon.pvdata.host"
+        "hostname": "ca-mon.pvdata.host",
+        "ips": [
+          "37.120.237.163",
+          "87.101.92.131"
+        ]
+      },
+      {
+        "country": "Canada",
+        "city": "Toronto1",
+        "hostname": "ca-tor.pvdata.host",
+        "ips": [
+          "45.148.7.3",
+          "45.148.7.6",
+          "45.148.7.8"
+        ]
       },
       {
         "country": "Canada",
         "city": "Vancouver",
-        "hostname": "ca-van.pvdata.host"
+        "hostname": "ca-van.pvdata.host",
+        "ips": [
+          "74.3.160.19"
+        ]
       },
       {
         "country": "Chile",
         "city": "Santiago",
-        "hostname": "cl-san.pvdata.host"
+        "hostname": "cl-san.pvdata.host",
+        "ips": [
+          "216.241.14.227"
+        ]
       },
       {
         "country": "Colombia",
         "city": "Bogota",
-        "hostname": "co-bog.pvdata.host"
+        "hostname": "co-bog.pvdata.host",
+        "ips": [
+          "201.217.220.27"
+        ]
       },
       {
         "country": "Costa Rica",
         "city": "SanJose",
-        "hostname": "cr-san.pvdata.host"
+        "hostname": "cr-san.pvdata.host",
+        "ips": [
+          "190.10.8.218"
+        ]
       },
       {
         "country": "Croatia",
         "city": "Zagreb",
-        "hostname": "hr-zag.pvdata.host"
+        "hostname": "hr-zag.pvdata.host",
+        "ips": [
+          "85.10.56.127"
+        ]
       },
       {
         "country": "Cyprus",
         "city": "Nicosia",
-        "hostname": "cy-nic.pvdata.host"
+        "hostname": "cy-nic.pvdata.host",
+        "ips": [
+          "185.173.226.47"
+        ]
       },
       {
         "country": "Czech Republic",
         "city": "Prague",
-        "hostname": "cz-pra.pvdata.host"
+        "hostname": "cz-pra.pvdata.host",
+        "ips": [
+          "185.156.174.179"
+        ]
       },
       {
         "country": "Denmark",
         "city": "Copenhagen",
-        "hostname": "dk-cop.pvdata.host"
+        "hostname": "dk-cop.pvdata.host",
+        "ips": [
+          "62.115.255.188",
+          "62.115.255.189"
+        ]
       },
       {
         "country": "France",
         "city": "Paris1",
-        "hostname": "fr-par.pvdata.host"
+        "hostname": "fr-par.pvdata.host",
+        "ips": [
+          "80.239.199.102",
+          "80.239.199.103",
+          "80.239.199.104",
+          "80.239.199.105"
+        ]
       },
       {
         "country": "Germany",
         "city": "Frankfurt1",
-        "hostname": "de-fra.pvdata.host"
+        "hostname": "de-fra.pvdata.host",
+        "ips": [
+          "193.180.119.130",
+          "193.180.119.131"
+        ]
       },
       {
         "country": "Germany",
         "city": "Nuremberg",
-        "hostname": "de-nur.pvdata.host"
+        "hostname": "de-nur.pvdata.host",
+        "ips": [
+          "185.89.36.3"
+        ]
       },
       {
         "country": "Greece",
         "city": "Athens",
-        "hostname": "gr-ath.pvdata.host"
+        "hostname": "gr-ath.pvdata.host",
+        "ips": [
+          "154.57.3.33"
+        ]
       },
       {
         "country": "Hong Kong",
         "city": "HongKong",
-        "hostname": "hk-hon.pvdata.host"
+        "hostname": "hk-hon.pvdata.host",
+        "ips": [
+          "84.17.37.58"
+        ]
       },
       {
         "country": "Hungary",
         "city": "Budapest",
-        "hostname": "hu-bud.pvdata.host"
+        "hostname": "hu-bud.pvdata.host",
+        "ips": [
+          "185.104.187.67"
+        ]
       },
       {
         "country": "Iceland",
         "city": "Reykjavik",
-        "hostname": "is-rey.pvdata.host"
+        "hostname": "is-rey.pvdata.host",
+        "ips": [
+          "82.221.113.210"
+        ]
       },
       {
         "country": "Indonesia",
         "city": "Jakarta",
-        "hostname": "id-jak.pvdata.host"
+        "hostname": "id-jak.pvdata.host",
+        "ips": [
+          "23.248.170.136"
+        ]
       },
       {
         "country": "Ireland",
         "city": "Dublin",
-        "hostname": "ie-dub.pvdata.host"
+        "hostname": "ie-dub.pvdata.host",
+        "ips": [
+          "217.138.222.67"
+        ]
       },
       {
         "country": "Isle of Man",
         "city": "Ballasalla",
-        "hostname": "im-bal.pvdata.host"
+        "hostname": "im-bal.pvdata.host",
+        "ips": [
+          "81.27.96.89"
+        ]
       },
       {
         "country": "Italy",
-        "city": "Milan",
-        "hostname": "it-mil.pvdata.host"
+        "city": "Milan1",
+        "hostname": "it-mil.pvdata.host",
+        "ips": [
+          "45.130.85.3",
+          "45.130.85.6",
+          "217.212.240.90",
+          "217.212.240.91",
+          "217.212.240.92",
+          "217.212.240.93"
+        ]
       },
       {
         "country": "Japan",
         "city": "Tokyo1",
-        "hostname": "jp-tok.pvdata.host"
+        "hostname": "jp-tok.pvdata.host",
+        "ips": [
+          "89.187.160.154",
+          "89.187.161.142"
+        ]
       },
       {
         "country": "Korea",
         "city": "Seoul",
-        "hostname": "kr-seo.pvdata.host"
+        "hostname": "kr-seo.pvdata.host",
+        "ips": [
+          "92.223.73.37"
+        ]
       },
       {
         "country": "Latvia",
         "city": "Riga",
-        "hostname": "lv-rig.pvdata.host"
+        "hostname": "lv-rig.pvdata.host",
+        "ips": [
+          "217.199.103.164"
+        ]
       },
       {
         "country": "Lithuania",
         "city": "Siauliai",
-        "hostname": "lt-sia.pvdata.host"
+        "hostname": "lt-sia.pvdata.host",
+        "ips": [
+          "185.64.104.48"
+        ]
       },
       {
         "country": "Luxembourg",
         "city": "Steinsel",
-        "hostname": "lu-ste.pvdata.host"
+        "hostname": "lu-ste.pvdata.host",
+        "ips": [
+          "94.242.250.71"
+        ]
       },
       {
         "country": "Malaysia",
         "city": "KualaLumpur",
-        "hostname": "my-kua.pvdata.host"
+        "hostname": "my-kua.pvdata.host",
+        "ips": [
+          "128.1.160.184"
+        ]
       },
       {
         "country": "Malta",
         "city": "Qormi",
-        "hostname": "mt-qor.pvdata.host"
+        "hostname": "mt-qor.pvdata.host",
+        "ips": [
+          "130.185.255.25"
+        ]
       },
       {
         "country": "Mexico",
         "city": "MexicoCity",
-        "hostname": "mx-mex.pvdata.host"
+        "hostname": "mx-mex.pvdata.host",
+        "ips": [
+          "190.60.16.28"
+        ]
       },
       {
         "country": "Moldova",
         "city": "Chisinau",
-        "hostname": "md-chi.pvdata.host"
+        "hostname": "md-chi.pvdata.host",
+        "ips": [
+          "178.17.172.99"
+        ]
       },
       {
         "country": "Netherlands",
         "city": "Amsterdam1",
-        "hostname": "nl-ams.pvdata.host"
+        "hostname": "nl-ams.pvdata.host",
+        "ips": [
+          "193.180.119.194",
+          "193.180.119.195",
+          "193.180.119.196",
+          "193.180.119.197"
+        ]
       },
       {
         "country": "New Zealand",
         "city": "Auckland",
-        "hostname": "nz-auc.pvdata.host"
+        "hostname": "nz-auc.pvdata.host",
+        "ips": [
+          "45.252.191.34"
+        ]
       },
       {
         "country": "Norway",
         "city": "Oslo",
-        "hostname": "no-osl.pvdata.host"
+        "hostname": "no-osl.pvdata.host",
+        "ips": [
+          "91.205.186.26"
+        ]
       },
       {
         "country": "Panama",
         "city": "PanamaCity",
-        "hostname": "pa-pan.pvdata.host"
+        "hostname": "pa-pan.pvdata.host",
+        "ips": [
+          "200.110.155.235"
+        ]
       },
       {
         "country": "Peru",
         "city": "Lima",
-        "hostname": "pe-lim.pvdata.host"
+        "hostname": "pe-lim.pvdata.host",
+        "ips": [
+          "170.0.81.107"
+        ]
       },
       {
         "country": "Philippines",
         "city": "Manila",
-        "hostname": "ph-man.pvdata.host"
+        "hostname": "ph-man.pvdata.host",
+        "ips": [
+          "128.1.209.12"
+        ]
       },
       {
         "country": "Poland",
         "city": "Torun",
-        "hostname": "pl-tor.pvdata.host"
+        "hostname": "pl-tor.pvdata.host",
+        "ips": [
+          "91.236.55.255",
+          "185.72.199.130"
+        ]
       },
       {
         "country": "Portugal",
         "city": "Lisbon",
-        "hostname": "pt-lis.pvdata.host"
+        "hostname": "pt-lis.pvdata.host",
+        "ips": [
+          "130.185.85.107"
+        ]
       },
       {
         "country": "Romania",
         "city": "Bukarest",
-        "hostname": "ro-buk.pvdata.host"
+        "hostname": "ro-buk.pvdata.host",
+        "ips": [
+          "89.40.181.203"
+        ]
       },
       {
         "country": "Russian Federation",
         "city": "Krasnoyarsk",
-        "hostname": "ru-kra.pvdata.host"
+        "hostname": "ru-kra.pvdata.host",
+        "ips": [
+          "92.223.87.11"
+        ]
       },
       {
         "country": "Russian Federation",
         "city": "Moscow",
-        "hostname": "ru-mos.pvdata.host"
+        "hostname": "ru-mos.pvdata.host",
+        "ips": [
+          "92.223.103.138"
+        ]
       },
       {
         "country": "Russian Federation",
         "city": "StPetersburg",
-        "hostname": "ru-pet.pvdata.host"
+        "hostname": "ru-pet.pvdata.host",
+        "ips": [
+          "95.213.148.99"
+        ]
       },
       {
         "country": "Serbia",
         "city": "Belgrade",
-        "hostname": "rs-bel.pvdata.host"
+        "hostname": "rs-bel.pvdata.host",
+        "ips": [
+          "141.98.103.166"
+        ]
+      },
+      {
+        "country": "Singapore",
+        "city": "Singapore",
+        "hostname": "sg-sin.pvdata.host",
+        "ips": [
+          "143.244.33.81"
+        ]
       },
       {
         "country": "Slovakia",
         "city": "Bratislava",
-        "hostname": "sg-sin.pvdata.host"
-      },
-      {
-        "country": "Slovakia",
-        "city": "Bratislava",
-        "hostname": "sk-bra.pvdata.host"
+        "hostname": "sk-bra.pvdata.host",
+        "ips": [
+          "46.29.2.168"
+        ]
       },
       {
         "country": "South Africa",
         "city": "Johannesburg",
-        "hostname": "za-joh.pvdata.host"
+        "hostname": "za-joh.pvdata.host",
+        "ips": [
+          "129.232.185.115",
+          "129.232.209.235"
+        ]
       },
       {
         "country": "Spain",
         "city": "Madrid",
-        "hostname": "es-mad.pvdata.host"
+        "hostname": "es-mad.pvdata.host",
+        "ips": [
+          "217.212.244.92",
+          "217.212.244.93"
+        ]
       },
       {
         "country": "Sweden",
         "city": "Gothenburg",
-        "hostname": "se-got.pvdata.host"
+        "hostname": "se-got.pvdata.host",
+        "ips": [
+          "193.187.91.19",
+          "193.187.91.21"
+        ]
       },
       {
         "country": "Sweden",
         "city": "Kista",
-        "hostname": "se-kis.pvdata.host"
-      },
-      {
-        "country": "Sweden",
-        "city": "Stockholm"
+        "hostname": "se-kis.pvdata.host",
+        "ips": [
+          "193.187.88.216",
+          "193.187.88.217",
+          "193.187.88.218",
+          "193.187.88.219",
+          "193.187.88.220",
+          "193.187.88.221",
+          "193.187.88.222"
+        ]
       },
       {
         "country": "Sweden",
         "city": "Stockholm",
-        "hostname": "se-sto.pvdata.host"
+        "ips": [
+          "193.180.119.2"
+        ]
+      },
+      {
+        "country": "Sweden",
+        "city": "Stockholm",
+        "hostname": "se-sto.pvdata.host",
+        "ips": [
+          "45.130.87.3",
+          "45.130.87.5",
+          "45.130.87.7",
+          "45.130.87.9",
+          "45.130.87.12",
+          "45.130.87.14",
+          "45.130.87.16",
+          "45.130.87.18"
+        ]
       },
       {
         "country": "Switzerland",
         "city": "Zurich1",
-        "hostname": "ch-zur.pvdata.host"
+        "hostname": "ch-zur.pvdata.host",
+        "ips": [
+          "217.212.245.92",
+          "217.212.245.93"
+        ]
       },
       {
         "country": "Taiwan",
         "city": "Taipei",
-        "hostname": "tw-tai.pvdata.host"
+        "hostname": "tw-tai.pvdata.host",
+        "ips": [
+          "2.58.241.51"
+        ]
       },
       {
         "country": "Thailand",
         "city": "Bangkok",
-        "hostname": "th-ban.pvdata.host"
+        "hostname": "th-ban.pvdata.host",
+        "ips": [
+          "103.27.203.234"
+        ]
       },
       {
         "country": "Turkey",
         "city": "Istanbul",
-        "hostname": "tr-ist.pvdata.host"
+        "hostname": "tr-ist.pvdata.host",
+        "ips": [
+          "92.38.180.28"
+        ]
       },
       {
         "country": "Ukraine",
         "city": "Kiev",
-        "hostname": "ua-kie.pvdata.host"
+        "hostname": "ua-kie.pvdata.host",
+        "ips": [
+          "192.121.68.131"
+        ]
       },
       {
         "country": "Ukraine",
         "city": "Nikolaev",
-        "hostname": "ua-nik.pvdata.host"
+        "hostname": "ua-nik.pvdata.host",
+        "ips": [
+          "194.54.83.21"
+        ]
       },
       {
         "country": "United Arab Emirates",
         "city": "Dubai",
-        "hostname": "ae-dub.pvdata.host"
+        "hostname": "ae-dub.pvdata.host",
+        "ips": [
+          "45.9.249.59"
+        ]
       },
       {
         "country": "United Kingdom",
         "city": "London1",
-        "hostname": "uk-lon.pvdata.host"
+        "hostname": "uk-lon.pvdata.host",
+        "ips": [
+          "193.180.119.66",
+          "193.180.119.67",
+          "193.180.119.68",
+          "193.180.119.69",
+          "193.180.119.70",
+          "193.180.119.72"
+        ]
       },
       {
         "country": "United Kingdom",
         "city": "London2",
-        "hostname": "uk-lon2.pvdata.host"
+        "hostname": "uk-lon2.pvdata.host",
+        "ips": [
+          "185.41.242.67"
+        ]
       },
       {
         "country": "United Kingdom",
         "city": "London7",
-        "hostname": "uk-lon7.pvdata.host"
+        "hostname": "uk-lon7.pvdata.host",
+        "ips": [
+          "185.125.204.179"
+        ]
       },
       {
         "country": "United Kingdom",
         "city": "Manchester",
-        "hostname": "uk-man.pvdata.host"
+        "hostname": "uk-man.pvdata.host",
+        "ips": [
+          "185.206.227.181"
+        ]
       },
       {
         "country": "United States",
         "city": "Atlanta",
-        "hostname": "us-atl.pvdata.host"
+        "hostname": "us-atl.pvdata.host",
+        "ips": [
+          "89.187.170.130",
+          "138.199.2.53"
+        ]
       },
       {
         "country": "United States",
         "city": "Buffalo",
-        "hostname": "us-buf.pvdata.host"
+        "hostname": "us-buf.pvdata.host",
+        "ips": [
+          "172.245.13.115",
+          "192.210.199.35"
+        ]
       },
       {
         "country": "United States",
         "city": "Chicago1",
-        "hostname": "us-chi.pvdata.host"
+        "hostname": "us-chi.pvdata.host",
+        "ips": [
+          "143.244.60.90",
+          "185.93.1.114"
+        ]
       },
       {
         "country": "United States",
         "city": "Dallas",
-        "hostname": "us-dal.pvdata.host"
+        "hostname": "us-dal.pvdata.host",
+        "ips": [
+          "89.187.164.97"
+        ]
       },
       {
         "country": "United States",
         "city": "LasVegas",
-        "hostname": "us-las.pvdata.host"
+        "hostname": "us-las.pvdata.host",
+        "ips": [
+          "82.102.30.19"
+        ]
       },
       {
         "country": "United States",
         "city": "LosAngeles",
-        "hostname": "us-los.pvdata.host"
+        "hostname": "us-los.pvdata.host",
+        "ips": [
+          "89.187.185.78",
+          "185.152.67.132"
+        ]
       },
       {
         "country": "United States",
         "city": "Miami",
-        "hostname": "us-mia.pvdata.host"
+        "hostname": "us-mia.pvdata.host",
+        "ips": [
+          "195.181.163.139"
+        ]
       },
       {
         "country": "United States",
         "city": "NewYork1",
-        "hostname": "us-nyc.pvdata.host"
+        "hostname": "us-nyc.pvdata.host",
+        "ips": [
+          "45.130.86.3",
+          "45.130.86.5",
+          "45.130.86.8",
+          "45.130.86.10",
+          "45.130.86.12"
+        ]
       },
       {
         "country": "United States",
         "city": "Phoenix",
-        "hostname": "us-pho.pvdata.host"
+        "hostname": "us-pho.pvdata.host",
+        "ips": [
+          "82.102.30.131"
+        ]
       },
       {
         "country": "Vietnam",
         "city": "HoChiMinhCity",
-        "hostname": "vn-hoc.pvdata.host"
+        "hostname": "vn-hoc.pvdata.host",
+        "ips": [
+          "210.2.64.5"
+        ]
       }
     ]
   },
