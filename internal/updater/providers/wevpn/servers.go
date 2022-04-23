@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
@@ -44,6 +45,7 @@ func GetServers(ctx context.Context, presolver resolver.Parallel, minServers int
 	for hostname, ips := range hostnameToIPs {
 		city := hostnameToCity[hostname]
 		server := models.Server{
+			VPN:      vpn.OpenVPN,
 			City:     city,
 			Hostname: hostname,
 			UDP:      true,

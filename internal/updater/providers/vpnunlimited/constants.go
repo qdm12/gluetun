@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -144,6 +145,7 @@ func getHostToServer() (hts hostToServer, warnings []string) {
 
 	countryCodesMap := constants.CountryCodes()
 	for shortHost, server := range shortHTS {
+		server.VPN = vpn.OpenVPN
 		server.UDP = true
 		server.Hostname = shortHost + ".vpnunlimitedapp.com"
 		countryCode := strings.Split(shortHost, "-")[0]

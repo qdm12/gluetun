@@ -4,6 +4,7 @@ import (
 	"net"
 	"sort"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -12,6 +13,7 @@ type hostToServer map[string]models.Server
 func (hts hostToServer) add(host, country, city string, tcp, udp bool) {
 	server, ok := hts[host]
 	if !ok {
+		server.VPN = vpn.OpenVPN
 		server.Hostname = host
 		server.Country = country
 		server.City = city

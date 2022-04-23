@@ -4,6 +4,7 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -25,6 +26,7 @@ func getPossibleServers() (possibleServers hostToServer) {
 			const domain = "cg-dialup.net"
 			possibleHost := groupID + "-" + countryCode + "." + domain
 			possibleServer := models.Server{
+				VPN:      vpn.OpenVPN,
 				Hostname: possibleHost,
 				Country:  country,
 				TCP:      protocol == constants.TCP,

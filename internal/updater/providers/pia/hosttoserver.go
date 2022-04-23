@@ -3,6 +3,7 @@ package pia
 import (
 	"net"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -13,6 +14,7 @@ func (nts nameToServer) add(name, hostname, region string,
 	server, ok := nts[name]
 	if !ok {
 		change = true
+		server.VPN = vpn.OpenVPN
 		server.ServerName = name
 		server.Hostname = hostname
 		server.Region = region

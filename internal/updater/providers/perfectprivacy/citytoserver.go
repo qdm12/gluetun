@@ -3,6 +3,7 @@ package perfectprivacy
 import (
 	"net"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -11,6 +12,7 @@ type cityToServer map[string]models.Server
 func (cts cityToServer) add(city string, ips []net.IP) {
 	server, ok := cts[city]
 	if !ok {
+		server.VPN = vpn.OpenVPN
 		server.City = city
 		server.IPs = ips
 		server.TCP = true

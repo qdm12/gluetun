@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
@@ -51,6 +52,7 @@ func GetServers(ctx context.Context, client *http.Client,
 		country, region, city := parseOpenvpnURL(url, protocol)
 
 		server := models.Server{
+			VPN:      vpn.OpenVPN,
 			Country:  country,
 			Region:   region,
 			City:     city,

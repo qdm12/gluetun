@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -40,6 +41,7 @@ func Test_addServersFromAPI(t *testing.T) {
 			expected: map[string]models.Server{
 				"existinghost": {Hostname: "existinghost"},
 				"host1": {
+					VPN:      vpn.OpenVPN,
 					Region:   "region1",
 					Country:  "country1",
 					City:     "location1",
@@ -48,6 +50,7 @@ func Test_addServersFromAPI(t *testing.T) {
 					UDP:      true,
 				},
 				"host2": {
+					VPN:      vpn.OpenVPN,
 					Region:   "region2",
 					Country:  "country1",
 					City:     "location2",

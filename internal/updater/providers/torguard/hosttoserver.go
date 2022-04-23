@@ -3,6 +3,7 @@ package torguard
 import (
 	"net"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -12,6 +13,7 @@ func (hts hostToServer) add(host, country, city string,
 	tcp, udp bool, ips []net.IP) {
 	server, ok := hts[host]
 	if !ok {
+		server.VPN = vpn.OpenVPN
 		server.Hostname = host
 		server.Country = country
 		server.City = city

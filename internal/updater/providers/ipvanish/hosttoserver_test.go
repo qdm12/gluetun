@@ -4,6 +4,7 @@ import (
 	"net"
 	"testing"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
 )
@@ -28,6 +29,7 @@ func Test_hostToServer_add(t *testing.T) {
 			udp:        true,
 			expectedHTS: hostToServer{
 				"host": {
+					VPN:      vpn.OpenVPN,
 					Hostname: "host",
 					Country:  "country",
 					City:     "city",
@@ -48,6 +50,7 @@ func Test_hostToServer_add(t *testing.T) {
 			expectedHTS: hostToServer{
 				"existing host": {},
 				"host": models.Server{
+					VPN:      vpn.OpenVPN,
 					Hostname: "host",
 					Country:  "country",
 					City:     "city",
@@ -59,6 +62,7 @@ func Test_hostToServer_add(t *testing.T) {
 		"extend existing server": {
 			initialHTS: hostToServer{
 				"host": models.Server{
+					VPN:      vpn.OpenVPN,
 					Hostname: "host",
 					Country:  "country",
 					City:     "city",
@@ -72,6 +76,7 @@ func Test_hostToServer_add(t *testing.T) {
 			udp:     true,
 			expectedHTS: hostToServer{
 				"host": models.Server{
+					VPN:      vpn.OpenVPN,
 					Hostname: "host",
 					Country:  "country",
 					City:     "city",

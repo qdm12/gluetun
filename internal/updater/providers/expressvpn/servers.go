@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
@@ -37,6 +38,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 		if len(server.IPs) == 0 {
 			continue
 		}
+		server.VPN = vpn.OpenVPN
 		server.UDP = true // no TCP support
 		servers[i] = server
 		i++

@@ -3,6 +3,7 @@ package protonvpn
 import (
 	"net"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -14,6 +15,7 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 
 	server, ok := its[key]
 	if !ok {
+		server.VPN = vpn.OpenVPN
 		server.Country = country
 		server.Region = region
 		server.City = city

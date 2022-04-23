@@ -3,6 +3,7 @@ package privado
 import (
 	"net"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -13,6 +14,7 @@ func (hts hostToServer) add(host string) {
 	if ok {
 		return
 	}
+	server.VPN = vpn.OpenVPN
 	server.Hostname = host
 	server.UDP = true
 	hts[host] = server
