@@ -24,7 +24,6 @@ type InfoErrorer interface {
 func New(logger InfoErrorer, filepath string) (storage *Storage, err error) {
 	// error returned covered by unit test
 	harcodedServers, _ := parseHardcodedServers()
-	harcodedServers.SetDefaults()
 
 	storage = &Storage{
 		hardcodedServers: harcodedServers,
