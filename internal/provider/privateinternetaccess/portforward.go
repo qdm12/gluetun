@@ -243,8 +243,8 @@ func fetchToken(ctx context.Context, client *http.Client,
 	}
 
 	errSubstitutions := map[string]string{
-		username: "<username>",
-		password: "<password>",
+		url.QueryEscape(username): "<username>",
+		url.QueryEscape(password): "<password>",
 	}
 
 	url := url.URL{
@@ -315,7 +315,7 @@ func getOpenvpnCredentials(authFilePath string) (
 
 func fetchPortForwardData(ctx context.Context, client *http.Client, gateway net.IP, token string) (
 	port uint16, signature string, expiration time.Time, err error) {
-	errSubstitutions := map[string]string{token: "<token>"}
+	errSubstitutions := map[string]string{url.QueryEscape(token): "<token>"}
 
 	queryParams := make(url.Values)
 	queryParams.Add("token", token)
@@ -376,7 +376,7 @@ func bindPort(ctx context.Context, client *http.Client, gateway net.IP, data pia
 	queryParams := make(url.Values)
 	queryParams.Add("payload", payload)
 	queryParams.Add("signature", data.Signature)
-	url := url.URL{
+	bindPortURL := url.URL{
 		Scheme:   "https",
 		Host:     net.JoinHostPort(gateway.String(), "19999"),
 		Path:     "/bindPort",
@@ -384,11 +384,11 @@ func bindPort(ctx context.Context, client *http.Client, gateway net.IP, data pia
 	}
 
 	errSubstitutions := map[string]string{
-		payload:        "<payload>",
-		data.Signature: "<signature>",
+		url.QueryEscape(payload):        "<payload>",
+		url.QueryEscape(data.Signature): "<signature>",
 	}
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, bindPortURL.String(), nil)
 	if err != nil {
 		return replaceInErr(err, errSubstitutions)
 	}
@@ -409,7 +409,7 @@ func bindPort(ctx context.Context, client *http.Client, gateway net.IP, data pia
 		Message string `json:"message"`
 	}
 	if err := decoder.Decode(&responseData); err != nil {
-		return fmt.Errorf("cannot unmarshal response: from %s: %w", url.String(), err)
+		return fmt.Errorf("cannot unmarshal response: from %s: %w", bindPortURL.String(), err)
 	}
 
 	if responseData.Status != "OK" {
