@@ -19,7 +19,7 @@ func (r *Reader) ReadHealth() (health settings.Health, err error) {
 		return health, err
 	}
 
-	health.VPN.Initial, err = r.readDurationWithRetro(
+	health.VPN.Addition, err = r.readDurationWithRetro(
 		"HEALTH_VPN_DURATION_ADDITION",
 		"HEALTH_OPENVPN_DURATION_ADDITION")
 	if err != nil {
