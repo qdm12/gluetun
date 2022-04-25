@@ -47,10 +47,7 @@ func (p *PIA) PortForward(ctx context.Context, client *http.Client,
 		return 0, ErrServerNameEmpty
 	}
 
-	privateIPClient, err := newHTTPClient(serverName)
-	if err != nil {
-		return 0, fmt.Errorf("cannot create custom HTTP client: %w", err)
-	}
+	privateIPClient := newHTTPClient(serverName)
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
 	if err != nil {
@@ -95,10 +92,7 @@ var (
 
 func (p *PIA) KeepPortForward(ctx context.Context, client *http.Client,
 	port uint16, gateway net.IP, serverName string) (err error) {
-	privateIPClient, err := newHTTPClient(serverName)
-	if err != nil {
-		return fmt.Errorf("cannot create custom HTTP client: %w", err)
-	}
+	privateIPClient := newHTTPClient(serverName)
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
 	if err != nil {

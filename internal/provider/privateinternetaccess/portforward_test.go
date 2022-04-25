@@ -1,52 +1,15 @@
 package privateinternetaccess
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"net/http"
 	"testing"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func Test_newHTTPClient(t *testing.T) {
-	t.Parallel()
-
-	const serverName = "testserver"
-
-	certificateBytes, err := base64.StdEncoding.DecodeString(constants.PiaCAStrong)
-	require.NoError(t, err)
-	certificate, err := x509.ParseCertificate(certificateBytes)
-	require.NoError(t, err)
-	rootCAs := x509.NewCertPool()
-	rootCAs.AddCert(certificate)
-	expectedRootCAsSubjects := rootCAs.Subjects()
-
-	expectedPIATransportTLSConfig := &tls.Config{
-		// Can't directly compare RootCAs because of private fields
-		RootCAs:    nil,
-		MinVersion: tls.VersionTLS12,
-		ServerName: serverName,
-	}
-
-	piaClient, err := newHTTPClient(serverName)
-
-	require.NoError(t, err)
-
-	// Verify pia transport TLS config is set
-	piaTransport, ok := piaClient.Transport.(*http.Transport)
-	require.True(t, ok)
-	rootCAsSubjects := piaTransport.TLSClientConfig.RootCAs.Subjects()
-	assert.Equal(t, expectedRootCAsSubjects, rootCAsSubjects)
-	piaTransport.TLSClientConfig.RootCAs = nil
-	assert.Equal(t, expectedPIATransportTLSConfig, piaTransport.TLSClientConfig)
-}
 
 func Test_unpackPayload(t *testing.T) {
 	t.Parallel()
