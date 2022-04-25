@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"net"
 )
 
@@ -26,14 +25,6 @@ func (c *Connection) Equal(other Connection) bool {
 	return c.IP.Equal(other.IP) && c.Port == other.Port &&
 		c.Protocol == other.Protocol && c.Hostname == other.Hostname &&
 		c.PubKey == other.PubKey
-}
-
-func (c Connection) OpenVPNRemoteLine() (line string) {
-	return "remote " + c.IP.String() + " " + fmt.Sprint(c.Port)
-}
-
-func (c Connection) OpenVPNProtoLine() (line string) {
-	return "proto " + c.Protocol
 }
 
 // UpdateEmptyWith updates each field of the connection where the

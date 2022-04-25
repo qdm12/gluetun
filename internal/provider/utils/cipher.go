@@ -7,6 +7,10 @@ import (
 )
 
 func CipherLines(ciphers []string, version string) (lines []string) {
+	if len(ciphers) == 0 {
+		return nil
+	}
+
 	switch version {
 	case constants.Openvpn24:
 		return []string{

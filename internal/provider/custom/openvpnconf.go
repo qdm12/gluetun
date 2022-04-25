@@ -15,8 +15,8 @@ import (
 var ErrExtractData = errors.New("failed extracting information from custom configuration file")
 
 func (p *Provider) BuildConf(connection models.Connection,
-	settings settings.OpenVPN) (lines []string, err error) {
-	lines, _, err = p.extractor.Data(*settings.ConfFile)
+	settings settings.OpenVPN) (lines []string) {
+	lines, _, err := p.extractor.Data(*settings.ConfFile)
 	if err != nil {
 		// Configuration file is already validated in settings validation in
 		// internal/configuration/settings/openvpn.go in `validateOpenVPNConfigFilepath`.
@@ -26,7 +26,7 @@ func (p *Provider) BuildConf(connection models.Connection,
 
 	lines = modifyConfig(lines, connection, settings)
 
-	return lines, nil
+	return lines
 }
 
 func modifyConfig(lines []string, connection models.Connection,
@@ -66,8 +66,8 @@ func modifyConfig(lines []string, connection models.Connection,
 	}
 
 	// Add values
-	modified = append(modified, connection.OpenVPNProtoLine())
-	modified = append(modified, connection.OpenVPNRemoteLine())
+	modified = append(modified, "proto "+connection.Protocol)
+	modified = append(modified, fmt.Sprintf("remote %s %d", connection.IP, connection.Port))
 	modified = append(modified, "dev "+settings.Interface)
 	modified = append(modified, "mute-replay-warnings")
 	modified = append(modified, "auth-nocache")
