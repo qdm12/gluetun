@@ -40445,7 +40445,7 @@
   },
   "nordvpn": {
     "version": 5,
-    "timestamp": 1650212427,
+    "timestamp": 1650970830,
     "servers": [
       {
         "vpn": "openvpn",
@@ -41666,6 +41666,17 @@
         "udp": true,
         "ips": [
           "103.1.212.35"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Australia",
+        "number": 703,
+        "hostname": "au703.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "103.1.212.43"
         ]
       },
       {
@@ -44487,34 +44498,12 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 39,
-        "hostname": "ca-us39.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "86.106.90.211"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 40,
         "hostname": "ca-us40.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
           "86.106.90.212"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 41,
-        "hostname": "ca-us41.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "86.106.90.214"
         ]
       },
       {
@@ -44740,17 +44729,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 944,
-        "hostname": "ca944.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.219"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 950,
         "hostname": "ca950.nordvpn.com",
         "tcp": true,
@@ -44872,314 +44850,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 973,
-        "hostname": "ca973.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.131"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 974,
-        "hostname": "ca974.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.134"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 975,
-        "hostname": "ca975.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.137"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 976,
-        "hostname": "ca976.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.140"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 977,
-        "hostname": "ca977.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.143"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 978,
-        "hostname": "ca978.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.148"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 979,
-        "hostname": "ca979.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.151"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 980,
-        "hostname": "ca980.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.154"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 981,
-        "hostname": "ca981.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.157"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 982,
-        "hostname": "ca982.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.160"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 983,
-        "hostname": "ca983.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.163"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 984,
-        "hostname": "ca984.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.166"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 985,
-        "hostname": "ca985.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.169"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 986,
-        "hostname": "ca986.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.172"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 987,
-        "hostname": "ca987.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.175"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 989,
-        "hostname": "ca989.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.181"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 991,
-        "hostname": "ca991.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.187"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 992,
-        "hostname": "ca992.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.190"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 993,
-        "hostname": "ca993.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.193"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 995,
-        "hostname": "ca995.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.199"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 996,
-        "hostname": "ca996.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.202"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 997,
-        "hostname": "ca997.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.205"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 998,
-        "hostname": "ca998.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.208"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 999,
-        "hostname": "ca999.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.211"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1000,
-        "hostname": "ca1000.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.214"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1001,
-        "hostname": "ca1001.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.217"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1002,
-        "hostname": "ca1002.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.147.220"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1003,
-        "hostname": "ca1003.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.226"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 1004,
         "hostname": "ca1004.nordvpn.com",
         "tcp": true,
@@ -45208,28 +44878,6 @@
         "udp": true,
         "ips": [
           "87.101.92.77"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1010,
-        "hostname": "ca1010.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.194"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1011,
-        "hostname": "ca1011.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.210"
         ]
       },
       {
@@ -45477,105 +45125,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 1037,
-        "hostname": "ca1037.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.3"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1038,
-        "hostname": "ca1038.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.6"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1040,
-        "hostname": "ca1040.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.12"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1041,
-        "hostname": "ca1041.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.15"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1042,
-        "hostname": "ca1042.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.18"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1043,
-        "hostname": "ca1043.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.21"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1044,
-        "hostname": "ca1044.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.24"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1045,
-        "hostname": "ca1045.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.27"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1046,
-        "hostname": "ca1046.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.30"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 1047,
         "hostname": "ca1047.nordvpn.com",
         "tcp": true,
@@ -45615,39 +45164,6 @@
         "udp": true,
         "ips": [
           "139.28.218.3"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1057,
-        "hostname": "ca1057.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.169"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1058,
-        "hostname": "ca1058.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.171"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1059,
-        "hostname": "ca1059.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.173"
         ]
       },
       {
@@ -45763,127 +45279,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 1087,
-        "hostname": "ca1087.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.175"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1088,
-        "hostname": "ca1088.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.177"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1089,
-        "hostname": "ca1089.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.179"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1090,
-        "hostname": "ca1090.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.181"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1091,
-        "hostname": "ca1091.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.67"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1093,
-        "hostname": "ca1093.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.73"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1094,
-        "hostname": "ca1094.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.76"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1095,
-        "hostname": "ca1095.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.79"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1096,
-        "hostname": "ca1096.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.82"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1097,
-        "hostname": "ca1097.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.85"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1098,
-        "hostname": "ca1098.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.88"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 1099,
         "hostname": "ca1099.nordvpn.com",
         "tcp": true,
@@ -45961,72 +45356,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 1114,
-        "hostname": "ca1114.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.183"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1115,
-        "hostname": "ca1115.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.185"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1116,
-        "hostname": "ca1116.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.187"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1117,
-        "hostname": "ca1117.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.214"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1118,
-        "hostname": "ca1118.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.216"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1119,
-        "hostname": "ca1119.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.218"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 1187,
         "hostname": "ca1187.nordvpn.com",
         "tcp": true,
@@ -46099,61 +45428,6 @@
         "udp": true,
         "ips": [
           "5.181.233.11"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1202,
-        "hostname": "ca1202.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.220"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1203,
-        "hostname": "ca1203.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.222"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1204,
-        "hostname": "ca1204.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.224"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1205,
-        "hostname": "ca1205.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.226"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1206,
-        "hostname": "ca1206.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.228"
         ]
       },
       {
@@ -46390,61 +45664,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 1242,
-        "hostname": "ca1242.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.232"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1243,
-        "hostname": "ca1243.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.236"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1244,
-        "hostname": "ca1244.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.240"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1245,
-        "hostname": "ca1245.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.244"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1246,
-        "hostname": "ca1246.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.248"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 1257,
         "hostname": "ca1257.nordvpn.com",
         "tcp": true,
@@ -46566,39 +45785,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 1276,
-        "hostname": "ca1276.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.3"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1277,
-        "hostname": "ca1277.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.6"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1278,
-        "hostname": "ca1278.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.9"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 1286,
         "hostname": "ca1286.nordvpn.com",
         "tcp": true,
@@ -46671,83 +45857,6 @@
         "udp": true,
         "ips": [
           "162.253.71.227"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1295,
-        "hostname": "ca1295.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.12"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1296,
-        "hostname": "ca1296.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.15"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1298,
-        "hostname": "ca1298.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.99"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1299,
-        "hostname": "ca1299.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.102"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1300,
-        "hostname": "ca1300.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.105"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1301,
-        "hostname": "ca1301.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "104.200.132.108"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1303,
-        "hostname": "ca1303.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.3"
         ]
       },
       {
@@ -46907,94 +46016,6 @@
       {
         "vpn": "openvpn",
         "region": "Canada",
-        "number": 1321,
-        "hostname": "ca1321.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.6"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1322,
-        "hostname": "ca1322.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.9"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1323,
-        "hostname": "ca1323.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.12"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1324,
-        "hostname": "ca1324.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.15"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1325,
-        "hostname": "ca1325.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.18"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1326,
-        "hostname": "ca1326.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.21"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1327,
-        "hostname": "ca1327.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.24"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1329,
-        "hostname": "ca1329.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "107.181.177.35"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
         "number": 1330,
         "hostname": "ca1330.nordvpn.com",
         "tcp": true,
@@ -47067,61 +46088,6 @@
         "udp": true,
         "ips": [
           "104.200.138.44"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1340,
-        "hostname": "ca1340.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.67"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1342,
-        "hostname": "ca1342.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.73"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1343,
-        "hostname": "ca1343.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.76"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1344,
-        "hostname": "ca1344.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.79"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1345,
-        "hostname": "ca1345.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.82"
         ]
       },
       {
@@ -47232,50 +46198,6 @@
         "udp": true,
         "ips": [
           "45.133.182.211"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1365,
-        "hostname": "ca1365.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.85"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1366,
-        "hostname": "ca1366.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.88"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1367,
-        "hostname": "ca1367.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.91"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1368,
-        "hostname": "ca1368.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "208.78.41.94"
         ]
       },
       {
@@ -47507,160 +46429,6 @@
         "udp": true,
         "ips": [
           "217.138.200.171"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1421,
-        "hostname": "ca1421.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.99"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1423,
-        "hostname": "ca1423.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.105"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1424,
-        "hostname": "ca1424.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.108"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1425,
-        "hostname": "ca1425.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.111"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1426,
-        "hostname": "ca1426.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.114"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1427,
-        "hostname": "ca1427.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.117"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1428,
-        "hostname": "ca1428.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.120"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1429,
-        "hostname": "ca1429.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.83.40.123"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1430,
-        "hostname": "ca1430.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.227"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1431,
-        "hostname": "ca1431.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.230"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1432,
-        "hostname": "ca1432.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.233"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1433,
-        "hostname": "ca1433.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.236"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1434,
-        "hostname": "ca1434.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.239"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Canada",
-        "number": 1435,
-        "hostname": "ca1435.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.115.146.242"
         ]
       },
       {
@@ -49437,6 +48205,17 @@
       {
         "vpn": "openvpn",
         "region": "Chile",
+        "number": 23,
+        "hostname": "cl23.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.228.209.115"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Chile",
         "number": 24,
         "hostname": "cl24.nordvpn.com",
         "tcp": true,
@@ -49938,6 +48717,28 @@
         "udp": true,
         "ips": [
           "185.191.206.176"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Cyprus",
+        "number": 31,
+        "hostname": "cy31.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "193.19.204.129"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Cyprus",
+        "number": 32,
+        "hostname": "cy32.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "193.19.204.145"
         ]
       },
       {
@@ -52176,160 +50977,6 @@
       {
         "vpn": "openvpn",
         "region": "France",
-        "number": 598,
-        "hostname": "fr598.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.195"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 599,
-        "hostname": "fr599.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.198"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 600,
-        "hostname": "fr600.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.201"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 601,
-        "hostname": "fr601.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.204"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 602,
-        "hostname": "fr602.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.207"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 603,
-        "hostname": "fr603.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.210"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 604,
-        "hostname": "fr604.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.213"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 605,
-        "hostname": "fr605.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.216"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 606,
-        "hostname": "fr606.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.219"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 607,
-        "hostname": "fr607.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.221"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 608,
-        "hostname": "fr608.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.132"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 609,
-        "hostname": "fr609.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.135"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 610,
-        "hostname": "fr610.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.138"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
-        "number": 611,
-        "hostname": "fr611.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.40.183.141"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "France",
         "number": 622,
         "hostname": "fr622.nordvpn.com",
         "tcp": true,
@@ -54041,6 +52688,160 @@
         "udp": true,
         "ips": [
           "138.199.15.71"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 868,
+        "hostname": "fr868.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.195"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 869,
+        "hostname": "fr869.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.203"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 870,
+        "hostname": "fr870.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.211"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 871,
+        "hostname": "fr871.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.219"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 872,
+        "hostname": "fr872.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.227"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 873,
+        "hostname": "fr873.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.235"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 874,
+        "hostname": "fr874.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.243"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 875,
+        "hostname": "fr875.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.251"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 876,
+        "hostname": "fr876.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.105.155"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 877,
+        "hostname": "fr877.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.68.99"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 878,
+        "hostname": "fr878.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.68.107"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 879,
+        "hostname": "fr879.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.68.155"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 880,
+        "hostname": "fr880.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.68.179"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "France",
+        "number": 881,
+        "hostname": "fr881.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.68.187"
         ]
       },
       {
@@ -55977,17 +54778,6 @@
         "udp": true,
         "ips": [
           "146.70.62.235"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Germany",
-        "number": 1058,
-        "hostname": "de1058.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "146.70.62.243"
         ]
       },
       {
@@ -58302,226 +57092,6 @@
       },
       {
         "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 131,
-        "hostname": "ie131.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.75"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 132,
-        "hostname": "ie132.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.83"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 133,
-        "hostname": "ie133.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.91"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 134,
-        "hostname": "ie134.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.99"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 135,
-        "hostname": "ie135.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.107"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 136,
-        "hostname": "ie136.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.115"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 137,
-        "hostname": "ie137.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.123"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 138,
-        "hostname": "ie138.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.131"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 139,
-        "hostname": "ie139.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.139"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 140,
-        "hostname": "ie140.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.147"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 141,
-        "hostname": "ie141.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.155"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 142,
-        "hostname": "ie142.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.163"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 143,
-        "hostname": "ie143.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.171"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 144,
-        "hostname": "ie144.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.179"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 145,
-        "hostname": "ie145.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.187"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 146,
-        "hostname": "ie146.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.56.252.195"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 149,
-        "hostname": "ie149.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "146.70.90.3"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 150,
-        "hostname": "ie150.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "146.70.90.11"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 151,
-        "hostname": "ie151.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "146.70.90.19"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Ireland",
-        "number": 152,
-        "hostname": "ie152.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "146.70.90.27"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "region": "Israel",
         "number": 19,
         "hostname": "il19.nordvpn.com",
@@ -58562,17 +57132,6 @@
         "udp": true,
         "ips": [
           "185.191.204.132"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Israel",
-        "number": 39,
-        "hostname": "il39.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.191.207.51"
         ]
       },
       {
@@ -58628,6 +57187,17 @@
         "udp": true,
         "ips": [
           "185.191.207.163"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Israel",
+        "number": 45,
+        "hostname": "il45.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.191.207.168"
         ]
       },
       {
@@ -60514,17 +59084,6 @@
       {
         "vpn": "openvpn",
         "region": "Malaysia",
-        "number": 38,
-        "hostname": "my38.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "202.87.221.252"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Malaysia",
         "number": 39,
         "hostname": "my39.nordvpn.com",
         "tcp": true,
@@ -61030,10 +59589,44 @@
       },
       {
         "vpn": "openvpn",
+        "region": "Moldova",
+        "number": 19,
+        "hostname": "md19.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "178.175.141.209"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Moldova",
+        "number": 20,
+        "hostname": "md20.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "178.175.141.225"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Moldova",
+        "number": 21,
+        "hostname": "md21.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "178.175.141.241"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "region": "Netherlands",
         "number": 4,
         "hostname": "nl-onion4.nordvpn.com",
         "tcp": true,
+        "udp": true,
         "ips": [
           "217.23.9.213"
         ]
@@ -65716,6 +64309,28 @@
       {
         "vpn": "openvpn",
         "region": "Singapore",
+        "number": 472,
+        "hostname": "sg472.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.162.97"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Singapore",
+        "number": 473,
+        "hostname": "sg473.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.162.93"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Singapore",
         "number": 474,
         "hostname": "sg474.nordvpn.com",
         "tcp": true,
@@ -65826,6 +64441,17 @@
       {
         "vpn": "openvpn",
         "region": "Singapore",
+        "number": 489,
+        "hostname": "sg489.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.162.193"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Singapore",
         "number": 490,
         "hostname": "sg490.nordvpn.com",
         "tcp": true,
@@ -65848,6 +64474,17 @@
       {
         "vpn": "openvpn",
         "region": "Singapore",
+        "number": 492,
+        "hostname": "sg492.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.162.197"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Singapore",
         "number": 493,
         "hostname": "sg493.nordvpn.com",
         "tcp": true,
@@ -65865,6 +64502,17 @@
         "udp": true,
         "ips": [
           "103.107.198.123"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Singapore",
+        "number": 495,
+        "hostname": "sg495.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.162.113"
         ]
       },
       {
@@ -67389,17 +66037,6 @@
         "vpn": "openvpn",
         "region": "Sweden",
         "number": 8,
-        "hostname": "se-nl8.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "86.106.103.27"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Sweden",
-        "number": 8,
         "hostname": "se-ch8.nordvpn.com",
         "tcp": true,
         "udp": true,
@@ -67410,12 +66047,12 @@
       {
         "vpn": "openvpn",
         "region": "Sweden",
-        "number": 9,
-        "hostname": "se-ch9.nordvpn.com",
+        "number": 8,
+        "hostname": "se-nl8.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "86.106.103.124"
+          "86.106.103.27"
         ]
       },
       {
@@ -67427,6 +66064,17 @@
         "udp": true,
         "ips": [
           "86.106.103.123"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Sweden",
+        "number": 9,
+        "hostname": "se-ch9.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "86.106.103.124"
         ]
       },
       {
@@ -68709,17 +67357,6 @@
         "vpn": "openvpn",
         "region": "Switzerland",
         "number": 8,
-        "hostname": "ch-nl8.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "217.138.203.251"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Switzerland",
-        "number": 8,
         "hostname": "ch-se8.nordvpn.com",
         "tcp": true,
         "udp": true,
@@ -68730,12 +67367,12 @@
       {
         "vpn": "openvpn",
         "region": "Switzerland",
-        "number": 10,
-        "hostname": "ch-nl10.nordvpn.com",
+        "number": 8,
+        "hostname": "ch-nl8.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "91.132.136.220"
+          "217.138.203.251"
         ]
       },
       {
@@ -68752,12 +67389,12 @@
       {
         "vpn": "openvpn",
         "region": "Switzerland",
-        "number": 11,
-        "hostname": "ch-se11.nordvpn.com",
+        "number": 10,
+        "hostname": "ch-nl10.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "217.138.203.211"
+          "91.132.136.220"
         ]
       },
       {
@@ -68774,12 +67411,12 @@
       {
         "vpn": "openvpn",
         "region": "Switzerland",
-        "number": 12,
-        "hostname": "ch-se12.nordvpn.com",
+        "number": 11,
+        "hostname": "ch-se11.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "195.242.213.228"
+          "217.138.203.211"
         ]
       },
       {
@@ -68791,6 +67428,17 @@
         "udp": true,
         "ips": [
           "195.242.213.227"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Switzerland",
+        "number": 12,
+        "hostname": "ch-se12.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "195.242.213.228"
         ]
       },
       {
@@ -68941,6 +67589,7 @@
         "region": "Switzerland",
         "number": 240,
         "hostname": "ch240.nordvpn.com",
+        "tcp": true,
         "udp": true,
         "ips": [
           "195.242.213.147"
@@ -70162,6 +68811,7 @@
         "number": 62,
         "hostname": "tw62.nordvpn.com",
         "tcp": true,
+        "udp": true,
         "ips": [
           "185.189.160.73"
         ]
@@ -71644,17 +70294,6 @@
         "vpn": "openvpn",
         "region": "United Kingdom",
         "number": 10,
-        "hostname": "uk-fr10.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.35.30.163"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "United Kingdom",
-        "number": 10,
         "hostname": "uk-nl10.nordvpn.com",
         "tcp": true,
         "udp": true,
@@ -71665,12 +70304,12 @@
       {
         "vpn": "openvpn",
         "region": "United Kingdom",
-        "number": 11,
-        "hostname": "uk-nl11.nordvpn.com",
+        "number": 10,
+        "hostname": "uk-fr10.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "109.70.150.98"
+          "89.35.30.163"
         ]
       },
       {
@@ -71682,6 +70321,17 @@
         "udp": true,
         "ips": [
           "89.35.30.164"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United Kingdom",
+        "number": 11,
+        "hostname": "uk-nl11.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "109.70.150.98"
         ]
       },
       {
@@ -74173,6 +72823,17 @@
       {
         "vpn": "openvpn",
         "region": "United Kingdom",
+        "number": 2086,
+        "hostname": "uk2086.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.35.233.36"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United Kingdom",
         "number": 2087,
         "hostname": "uk2087.nordvpn.com",
         "tcp": true,
@@ -76450,17 +75111,6 @@
       {
         "vpn": "openvpn",
         "region": "United Kingdom",
-        "number": 2338,
-        "hostname": "uk2338.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.35.232.46"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "United Kingdom",
         "number": 2339,
         "hostname": "uk2339.nordvpn.com",
         "tcp": true,
@@ -76907,6 +75557,17 @@
         "udp": true,
         "ips": [
           "94.229.76.195"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United Kingdom",
+        "number": 2381,
+        "hostname": "uk2381.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "109.69.107.30"
         ]
       },
       {
@@ -78271,28 +76932,6 @@
         "udp": true,
         "ips": [
           "192.96.202.13"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "United States",
-        "number": 38,
-        "hostname": "us-ca38.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "92.119.177.11"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "United States",
-        "number": 39,
-        "hostname": "us-ca39.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "92.119.177.12"
         ]
       },
       {
@@ -80185,6 +78824,17 @@
         "udp": true,
         "ips": [
           "212.102.40.40"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 5485,
+        "hostname": "us5485.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "212.102.40.35"
         ]
       },
       {
@@ -92785,17 +91435,6 @@
       {
         "vpn": "openvpn",
         "region": "United States",
-        "number": 8995,
-        "hostname": "us8995.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "209.58.146.139"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "United States",
         "number": 8996,
         "hostname": "us8996.nordvpn.com",
         "tcp": true,
@@ -93635,7 +92274,6 @@
         "number": 9080,
         "hostname": "us9080.nordvpn.com",
         "tcp": true,
-        "udp": true,
         "ips": [
           "23.19.141.100"
         ]
@@ -95535,17 +94173,6 @@
       {
         "vpn": "openvpn",
         "region": "United States",
-        "number": 9303,
-        "hostname": "us9303.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.203.219.116"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "United States",
         "number": 9304,
         "hostname": "us9304.nordvpn.com",
         "tcp": true,
@@ -96839,17 +95466,6 @@
         "udp": true,
         "ips": [
           "185.202.221.140"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "United States",
-        "number": 9423,
-        "hostname": "us9423.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.202.221.142"
         ]
       },
       {
@@ -98929,6 +97545,710 @@
         "udp": true,
         "ips": [
           "50.117.77.250"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9629,
+        "hostname": "us9629.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "148.72.164.169"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9630,
+        "hostname": "us9630.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "148.72.168.125"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9631,
+        "hostname": "us9631.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "148.72.165.238"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9632,
+        "hostname": "us9632.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "148.72.173.54"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9633,
+        "hostname": "us9633.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "148.72.170.134"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9635,
+        "hostname": "us9635.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.18"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9636,
+        "hostname": "us9636.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.34"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9637,
+        "hostname": "us9637.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.50"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9638,
+        "hostname": "us9638.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.66"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9639,
+        "hostname": "us9639.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.82"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9640,
+        "hostname": "us9640.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.98"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9641,
+        "hostname": "us9641.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.114"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9642,
+        "hostname": "us9642.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.130"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9643,
+        "hostname": "us9643.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.146"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9644,
+        "hostname": "us9644.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.162"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9645,
+        "hostname": "us9645.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.178"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9646,
+        "hostname": "us9646.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.194"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9647,
+        "hostname": "us9647.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.210"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9648,
+        "hostname": "us9648.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.150.225"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9652,
+        "hostname": "us9652.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.34"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9653,
+        "hostname": "us9653.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.50"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9654,
+        "hostname": "us9654.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.66"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9655,
+        "hostname": "us9655.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.82"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9656,
+        "hostname": "us9656.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.98"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9657,
+        "hostname": "us9657.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.114"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9658,
+        "hostname": "us9658.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.130"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9659,
+        "hostname": "us9659.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.146"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9660,
+        "hostname": "us9660.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.162"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9661,
+        "hostname": "us9661.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.178"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9662,
+        "hostname": "us9662.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.194"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9663,
+        "hostname": "us9663.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.210"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9664,
+        "hostname": "us9664.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.225"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9665,
+        "hostname": "us9665.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "181.214.151.240"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9666,
+        "hostname": "us9666.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.1"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9667,
+        "hostname": "us9667.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.3"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9668,
+        "hostname": "us9668.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9669,
+        "hostname": "us9669.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.7"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9670,
+        "hostname": "us9670.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.9"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9671,
+        "hostname": "us9671.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.11"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9672,
+        "hostname": "us9672.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.13"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9673,
+        "hostname": "us9673.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.15"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9674,
+        "hostname": "us9674.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.17"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9675,
+        "hostname": "us9675.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.19"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9676,
+        "hostname": "us9676.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.21"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9677,
+        "hostname": "us9677.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.23"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9678,
+        "hostname": "us9678.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.25"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9679,
+        "hostname": "us9679.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.27"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9680,
+        "hostname": "us9680.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.29"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9681,
+        "hostname": "us9681.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.31"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9682,
+        "hostname": "us9682.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.33"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9683,
+        "hostname": "us9683.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.35"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9684,
+        "hostname": "us9684.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.37"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9686,
+        "hostname": "us9686.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.41"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9687,
+        "hostname": "us9687.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.43"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9688,
+        "hostname": "us9688.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.45"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9689,
+        "hostname": "us9689.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.47"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9690,
+        "hostname": "us9690.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.49"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9691,
+        "hostname": "us9691.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.51"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9692,
+        "hostname": "us9692.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.53"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9693,
+        "hostname": "us9693.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.55"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9694,
+        "hostname": "us9694.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.57"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9695,
+        "hostname": "us9695.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.59"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9696,
+        "hostname": "us9696.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.61"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "United States",
+        "number": 9697,
+        "hostname": "us9697.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "166.88.163.63"
         ]
       },
       {
