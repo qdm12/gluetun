@@ -12,7 +12,7 @@ import (
 func (n *Nordvpn) BuildConf(connection models.Connection,
 	settings settings.OpenVPN) (lines []string, err error) {
 	if len(settings.Ciphers) == 0 {
-		settings.Ciphers = []string{constants.AES256gcm, constants.AES256cbc}
+		settings.Ciphers = []string{constants.AES256cbc, constants.AES256gcm}
 	}
 
 	auth := *settings.Auth
