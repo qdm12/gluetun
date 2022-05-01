@@ -36,6 +36,15 @@ func DefaultUint16(existing *uint16, defaultValue uint16) (
 	*result = defaultValue
 	return result
 }
+func DefaultUint32(existing *uint32, defaultValue uint32) (
+	result *uint32) {
+	if existing != nil {
+		return existing
+	}
+	result = new(uint32)
+	*result = defaultValue
+	return result
+}
 
 func DefaultBool(existing *bool, defaultValue bool) (
 	result *bool) {

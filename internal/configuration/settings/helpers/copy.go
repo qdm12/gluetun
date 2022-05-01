@@ -44,6 +44,15 @@ func CopyUint16Ptr(original *uint16) (copied *uint16) {
 	return copied
 }
 
+func CopyUint32Ptr(original *uint32) (copied *uint32) {
+	if original == nil {
+		return nil
+	}
+	copied = new(uint32)
+	*copied = *original
+	return copied
+}
+
 func CopyIntPtr(original *int) (copied *int) {
 	if original == nil {
 		return nil

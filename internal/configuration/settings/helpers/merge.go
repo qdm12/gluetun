@@ -78,6 +78,17 @@ func MergeWithUint16(existing, other *uint16) (result *uint16) {
 	return result
 }
 
+func MergeWithUint32(existing, other *uint32) (result *uint32) {
+	if existing != nil {
+		return existing
+	} else if other == nil {
+		return nil
+	}
+	result = new(uint32)
+	*result = *other
+	return result
+}
+
 func MergeWithIP(existing, other net.IP) (result net.IP) {
 	if existing != nil {
 		return existing

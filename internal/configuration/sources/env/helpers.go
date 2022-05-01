@@ -135,5 +135,5 @@ func unsetEnvKeys(envKeys []string, err error) (newErr error) {
 }
 
 func stringPtr(s string) *string { return &s }
-func uint16Ptr(n uint16) *uint16 { return &n }
+func uint32Ptr(n uint32) *uint32 { return &n }
 func boolPtr(b bool) *bool       { return &b }

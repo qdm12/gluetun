@@ -68,6 +68,15 @@ func OverrideWithUint16(existing, other *uint16) (result *uint16) {
 	return result
 }
 
+func OverrideWithUint32(existing, other *uint32) (result *uint32) {
+	if other == nil {
+		return existing
+	}
+	result = new(uint32)
+	*result = *other
+	return result
+}
+
 func OverrideWithIP(existing, other net.IP) (result net.IP) {
 	if other == nil {
 		return existing
