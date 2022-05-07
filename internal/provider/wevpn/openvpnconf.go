@@ -2,7 +2,7 @@ package wevpn
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -13,9 +13,9 @@ func (w *Wevpn) BuildConf(connection models.Connection,
 		RemoteCertTLS: true,
 		AuthUserPass:  true,
 		Ciphers: []string{
-			constants.AES256gcm,
+			openvpn.AES256gcm,
 		},
-		Auth:          constants.SHA512,
+		Auth:          openvpn.SHA512,
 		Ping:          30, //nolint:gomnd
 		RenegDisabled: true,
 		CA:            "MIIDQjCCAiqgAwIBAgIUPppqnRZfvGGrT4GjXFE4Q29QzgowDQYJKoZIhvcNAQELBQAwEzERMA8GA1UEAwwIQ2hhbmdlTWUwHhcNMTkxMTA1MjMzMzIzWhcNMjkxMTAyMjMzMzIzWjATMREwDwYDVQQDDAhDaGFuZ2VNZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL5DFBJlTqhXukJFWlI8TNW9+HEQCZXhyVFvQhJFF2xIGVNx51XzqxiRANjVJZJrA68kV8az0v2Dxj0SFnRWDR6pOjjdp2CyHFcgHyfv+4MrsreAtkue86bB/1ECPWaoIwtaLnwI6SEmFZl98RlI9v4M/8IE4chOnMrM/F22+2OXI//TduvTcbyOMUiiouIP8UG1FB3J5FyuaW6qPZz2G0efDoaOI+E9LSxE87OoFrII7UqdHlWxRb3nUuPU1Ee4rN/d4tFyP4AvPKfsGhVOwyGG21IdRnbXIuDi0xytkCGOZ4j2bq5zqudnp4Izt6yJgdzZpQQWK3kSHB3qTT/Yzl8CAwEAAaOBjTCBijAdBgNVHQ4EFgQUXYkoo4WbkkvbgLVdGob9RScRf3AwTgYDVR0jBEcwRYAUXYkoo4WbkkvbgLVdGob9RScRf3ChF6QVMBMxETAPBgNVBAMMCENoYW5nZU1lghQ+mmqdFl+8YatPgaNcUThDb1DOCjAMBgNVHRMEBTADAQH/MAsGA1UdDwQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEAOr1XmyWBRYfTQPNvZZ+DjCfiRYzLOi2AGefZt/jETqPDF8deVbyL1fLhXZzuX+5Etlsil3PflJjpzc/FSeZRuYRaShtwF3j6I08Eww9rBkaCnsukMUcLtMOvhdAU8dUakcRA2wkQ7Z+TWdMBv5+/6MnX10An1fIz7bAy3btMEOPTEFLo8Bst1SxJtUMaqhUteSOJ1VorpK3CWfOFaXxbJAb4E0+3zt6Vsc8mY5tt6wAi8IqiN4WD79ZdvKxENK4FMkR1kNpBY97mvdf82rzpwiBuJgN5ywmH78Ghj+9T8nI6/UIqJ1y22IRYGv6dMif8fHo5WWhCv3qmCqqY8vwuxw==",             //nolint:lll

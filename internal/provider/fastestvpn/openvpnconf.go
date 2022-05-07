@@ -2,7 +2,7 @@ package fastestvpn
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -13,7 +13,7 @@ func (f *Fastestvpn) BuildConf(connection models.Connection,
 	providerSettings := utils.OpenVPNProviderSettings{
 		AuthUserPass: true,
 		Ciphers: []string{
-			constants.AES256cbc,
+			openvpn.AES256cbc,
 		},
 		MssFix:        1450,
 		TLSCipher:     "TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll

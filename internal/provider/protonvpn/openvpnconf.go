@@ -2,7 +2,7 @@ package protonvpn
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -14,9 +14,9 @@ func (p *Protonvpn) BuildConf(connection models.Connection,
 		RemoteCertTLS: true,
 		AuthUserPass:  true,
 		Ciphers: []string{
-			constants.AES256cbc,
+			openvpn.AES256cbc,
 		},
-		Auth:          constants.SHA512,
+		Auth:          openvpn.SHA512,
 		MssFix:        1450,
 		TunMTUExtra:   32,
 		RenegDisabled: true,

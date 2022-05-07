@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -75,7 +75,7 @@ func modifyConfig(lines []string, connection models.Connection,
 	modified = append(modified, "auth-retry nointeract")
 	modified = append(modified, "suppress-timestamps")
 	if settings.User != "" {
-		modified = append(modified, "auth-user-pass "+constants.OpenVPNAuthConf)
+		modified = append(modified, "auth-user-pass "+openvpn.AuthConf)
 	}
 	modified = append(modified, "verb "+strconv.Itoa(*settings.Verbosity))
 	if len(settings.Ciphers) > 0 {

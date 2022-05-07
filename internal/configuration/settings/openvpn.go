@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/openvpn/parse"
@@ -81,7 +81,7 @@ var ivpnAccountID = regexp.MustCompile(`^(i|ivpn)\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4
 
 func (o OpenVPN) validate(vpnProvider string) (err error) {
 	// Validate version
-	validVersions := []string{constants.Openvpn24, constants.Openvpn25}
+	validVersions := []string{openvpn.Openvpn24, openvpn.Openvpn25}
 	if !helpers.IsOneOf(o.Version, validVersions...) {
 		return fmt.Errorf("%w: %q can only be one of %s",
 			ErrOpenVPNVersionIsNotValid, o.Version, strings.Join(validVersions, ", "))
@@ -264,7 +264,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 }
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {
-	o.Version = helpers.DefaultString(o.Version, constants.Openvpn25)
+	o.Version = helpers.DefaultString(o.Version, openvpn.Openvpn25)
 	if vpnProvider == providers.Mullvad {
 		o.Password = "m"
 	}

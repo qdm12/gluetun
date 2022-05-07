@@ -2,7 +2,7 @@ package purevpn
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -13,7 +13,7 @@ func (p *Purevpn) BuildConf(connection models.Connection,
 		RemoteCertTLS: true,
 		AuthUserPass:  true,
 		Ciphers: []string{
-			constants.AES256gcm,
+			openvpn.AES256gcm,
 		},
 		//nolint:gomnd
 		Ping:    10,

@@ -3,7 +3,7 @@ package utils
 import (
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 )
 
 func CipherLines(ciphers []string, version string) (lines []string) {
@@ -12,7 +12,7 @@ func CipherLines(ciphers []string, version string) (lines []string) {
 	}
 
 	switch version {
-	case constants.Openvpn24:
+	case openvpn.Openvpn24:
 		return []string{
 			"cipher " + ciphers[0],
 			"ncp-ciphers " + strings.Join(ciphers, ":"),

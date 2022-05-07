@@ -2,7 +2,7 @@ package perfectprivacy
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -13,10 +13,10 @@ func (p *Perfectprivacy) BuildConf(connection models.Connection,
 	providerSettings := utils.OpenVPNProviderSettings{
 		AuthUserPass: true,
 		Ciphers: []string{
-			constants.AES256cbc,
-			constants.AES256gcm,
+			openvpn.AES256cbc,
+			openvpn.AES256gcm,
 		},
-		Auth:         constants.SHA512,
+		Auth:         openvpn.SHA512,
 		MssFix:       1450,
 		Ping:         5,
 		CA:           "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",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             //nolint:lll

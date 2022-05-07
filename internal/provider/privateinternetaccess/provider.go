@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -25,6 +25,6 @@ func New(servers []models.Server, randSource rand.Source,
 		timeNow:         timeNow,
 		randSource:      randSource,
 		portForwardPath: jsonPortForwardPath,
-		authFilePath:    constants.OpenVPNAuthConf,
+		authFilePath:    openvpn.AuthConf,
 	}
 }

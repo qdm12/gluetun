@@ -1,7 +1,7 @@
 package openvpn
 
 import (
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/golibs/command"
 )
 
@@ -27,7 +27,7 @@ func New(logger Infoer, cmder command.RunStarter,
 		logger:       logger,
 		cmder:        cmder,
 		configPath:   configPath,
-		authFilePath: constants.OpenVPNAuthConf,
+		authFilePath: openvpn.AuthConf,
 		puid:         puid,
 		pgid:         pgid,
 	}

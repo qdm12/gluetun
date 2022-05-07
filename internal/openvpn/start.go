@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/golibs/command"
 )
 
@@ -22,9 +22,9 @@ func start(ctx context.Context, starter command.Starter, version string, flags [
 	stdoutLines, stderrLines chan string, waitError chan error, err error) {
 	var bin string
 	switch version {
-	case constants.Openvpn24:
+	case openvpn.Openvpn24:
 		bin = binOpenvpn24
-	case constants.Openvpn25:
+	case openvpn.Openvpn25:
 		bin = binOpenvpn25
 	default:
 		return nil, nil, nil, fmt.Errorf("%w: %s", ErrVersionUnknown, version)

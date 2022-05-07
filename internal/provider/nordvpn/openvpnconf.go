@@ -2,7 +2,7 @@ package nordvpn
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -13,10 +13,10 @@ func (n *Nordvpn) BuildConf(connection models.Connection,
 	providerSettings := utils.OpenVPNProviderSettings{
 		AuthUserPass: true,
 		Ciphers: []string{
-			constants.AES256cbc,
-			constants.AES256gcm,
+			openvpn.AES256cbc,
+			openvpn.AES256gcm,
 		},
-		Auth:          constants.SHA512,
+		Auth:          openvpn.SHA512,
 		Ping:          15,
 		RemoteCertTLS: true,
 		MssFix:        1450,
