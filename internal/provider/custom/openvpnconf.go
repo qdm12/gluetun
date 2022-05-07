@@ -18,7 +18,10 @@ func (p *Provider) BuildConf(connection models.Connection,
 	settings settings.OpenVPN) (lines []string, err error) {
 	lines, _, err = p.extractor.Data(*settings.ConfFile)
 	if err != nil {
-		return nil, fmt.Errorf("failed extracting information from custom configuration file: %w", err)
+		// Configuration file is already validated in settings validation in
+		// internal/configuration/settings/openvpn.go in `validateOpenVPNConfigFilepath`.
+		// Therefore this error is the result of a programming error.
+		panic(fmt.Sprintf("failed extracting information from custom configuration file: %s", err))
 	}
 
 	lines = modifyConfig(lines, connection, settings)

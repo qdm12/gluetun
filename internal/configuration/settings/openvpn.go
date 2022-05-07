@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/openvpn/parse"
 	"github.com/qdm12/gotree"
 )
@@ -145,6 +146,12 @@ func validateOpenVPNConfigFilepath(isCustom bool,
 	err = helpers.FileExists(confFile)
 	if err != nil {
 		return err
+	}
+
+	extractor := extract.New()
+	_, _, err = extractor.Data(confFile)
+	if err != nil {
+		return fmt.Errorf("failed extracting information from custom configuration file: %w", err)
 	}
 
 	return nil
