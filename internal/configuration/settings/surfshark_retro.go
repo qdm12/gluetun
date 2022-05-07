@@ -3,15 +3,14 @@ package settings
 import (
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"
 )
 
 func surfsharkRetroRegion(selection ServerSelection) (
 	updatedSelection ServerSelection) {
-	locationData := constants.SurfsharkLocationData()
+	locationData := servers.LocationData()
 
-	retroToLocation := make(map[string]models.SurfsharkLocationData, len(locationData))
+	retroToLocation := make(map[string]servers.ServerLocation, len(locationData))
 	for _, data := range locationData {
 		if data.RetroLoc == "" {
 			continue

@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
@@ -24,7 +24,7 @@ func addOpenVPNServersFromZip(ctx context.Context,
 		hostnamesDoneSet[hostname] = struct{}{}
 	}
 
-	locationData := constants.SurfsharkLocationData()
+	locationData := servers.LocationData()
 	hostToLocation := hostToLocation(locationData)
 
 	for fileName, content := range contents {

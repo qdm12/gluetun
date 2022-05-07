@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"
 )
 
 // Note: no multi-hop and some servers are missing from their API.
@@ -18,7 +18,7 @@ func addServersFromAPI(ctx context.Context, client *http.Client,
 		return err
 	}
 
-	locationData := constants.SurfsharkLocationData()
+	locationData := servers.LocationData()
 	hostToLocation := hostToLocation(locationData)
 
 	const tcp, udp = true, true

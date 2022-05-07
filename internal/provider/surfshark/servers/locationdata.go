@@ -1,13 +1,20 @@
-package constants
+package servers
 
-import (
-	"github.com/qdm12/gluetun/internal/models"
-)
+// LocationData is required to keep location data on Surfshark
+// servers that are not obtained through their API.
+type ServerLocation struct {
+	Region   string
+	Country  string
+	City     string
+	RetroLoc string // TODO remove in v4
+	Hostname string
+	MultiHop bool
+}
 
 // TODO remove retroRegion and servers from API in v4.
-func SurfsharkLocationData() (data []models.SurfsharkLocationData) {
+func LocationData() (data []ServerLocation) {
 	//nolint:lll
-	return []models.SurfsharkLocationData{
+	return []ServerLocation{
 		{Region: "Asia Pacific", Country: "Australia", City: "Adelaide", RetroLoc: "Australia Adelaide", Hostname: "au-adl.prod.surfshark.com", MultiHop: false},
 		{Region: "Asia Pacific", Country: "Australia", City: "Brisbane", RetroLoc: "Australia Brisbane", Hostname: "au-bne.prod.surfshark.com", MultiHop: false},
 		{Region: "Asia Pacific", Country: "Australia", City: "Melbourne", RetroLoc: "Australia Melbourne", Hostname: "au-mel.prod.surfshark.com", MultiHop: false},
