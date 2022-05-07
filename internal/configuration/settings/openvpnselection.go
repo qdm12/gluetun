@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess/presets"
 	"github.com/qdm12/gotree"
 )
 
@@ -106,9 +106,9 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	// Validate EncPreset
 	if vpnProvider == providers.PrivateInternetAccess {
 		validEncryptionPresets := []string{
-			constants.PIAEncryptionPresetNone,
-			constants.PIAEncryptionPresetNormal,
-			constants.PIAEncryptionPresetStrong,
+			presets.None,
+			presets.Normal,
+			presets.Strong,
 		}
 		if !helpers.IsOneOf(*o.PIAEncPreset, validEncryptionPresets...) {
 			return fmt.Errorf("%w: %s; valid presets are %s",
@@ -150,7 +150,7 @@ func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
-		defaultEncPreset = constants.PIAEncryptionPresetStrong
+		defaultEncPreset = presets.Strong
 	}
 	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/openvpn/parse"
+	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess/presets"
 	"github.com/qdm12/gotree"
 )
 
@@ -275,7 +276,7 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
-		defaultEncPreset = constants.PIAEncryptionPresetStrong
+		defaultEncPreset = presets.Strong
 	}
 	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
 
