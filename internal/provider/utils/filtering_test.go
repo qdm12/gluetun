@@ -14,16 +14,12 @@ func Test_FilterServers(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		servers    []models.Server
-		selection  settings.ServerSelection
-		filtered   []models.Server
-		errMessage string
-		errWrapped error
+		servers   []models.Server
+		selection settings.ServerSelection
+		filtered  []models.Server
 	}{
 		"no server available": {
-			selection:  settings.ServerSelection{}.WithDefaults(providers.Mullvad),
-			errMessage: "no server found: for VPN openvpn; protocol udp",
-			errWrapped: ErrNoServerFound,
+			selection: settings.ServerSelection{}.WithDefaults(providers.Mullvad),
 		},
 		"no filter": {
 			servers: []models.Server{
@@ -216,12 +212,7 @@ func Test_FilterServers(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			filtered, err := FilterServers(testCase.servers, testCase.selection)
-
-			assert.ErrorIs(t, err, testCase.errWrapped)
-			if testCase.errWrapped != nil {
-				assert.EqualError(t, err, testCase.errMessage)
-			}
+			filtered := FilterServers(testCase.servers, testCase.selection)
 
 			assert.Equal(t, testCase.filtered, filtered)
 		})

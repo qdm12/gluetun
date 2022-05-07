@@ -26,8 +26,8 @@ func Test_Mullvad_GetConnection(t *testing.T) {
 	}{
 		"no server available": {
 			selection:  settings.ServerSelection{}.WithDefaults(providers.Mullvad),
-			errWrapped: utils.ErrNoServerFound,
-			errMessage: "cannot filter servers: no server found: for VPN openvpn; protocol udp",
+			errWrapped: utils.ErrNoServer,
+			errMessage: "no server",
 		},
 		"no filter": {
 			servers: []models.Server{

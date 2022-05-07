@@ -8,9 +8,7 @@ import (
 )
 
 func FilterServers(servers []models.Server,
-	selection settings.ServerSelection) (
-	filtered []models.Server, err error,
-) {
+	selection settings.ServerSelection) (filtered []models.Server) {
 	for _, server := range servers {
 		if filterServer(server, selection) {
 			continue
@@ -19,11 +17,7 @@ func FilterServers(servers []models.Server,
 		filtered = append(filtered, server)
 	}
 
-	if len(filtered) == 0 {
-		return nil, NoServerFoundError(selection)
-	}
-
-	return filtered, nil
+	return filtered
 }
 
 func filterServer(server models.Server,

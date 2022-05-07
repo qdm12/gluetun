@@ -24,10 +24,10 @@ func Test_Provider_GetConnection(t *testing.T) {
 		errWrapped error
 		errMessage string
 	}{
-		"no server available": {
+		"no server": {
 			selection:  settings.ServerSelection{}.WithDefaults(providers.Expressvpn),
-			errWrapped: utils.ErrNoServerFound,
-			errMessage: "cannot filter servers: no server found: for VPN openvpn; protocol udp",
+			errWrapped: utils.ErrNoServer,
+			errMessage: "no server",
 		},
 		"no filter": {
 			servers: []models.Server{

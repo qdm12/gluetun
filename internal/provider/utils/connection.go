@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"errors"
 	"math/rand"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -24,14 +24,20 @@ func NewConnectionDefaults(openvpnTCPPort, openvpnUDPPort,
 	}
 }
 
+var ErrNoServer = errors.New("no server")
+
 func GetConnection(servers []models.Server,
 	selection settings.ServerSelection,
 	defaults ConnectionDefaults,
 	randSource rand.Source) (
 	connection models.Connection, err error) {
-	servers, err = FilterServers(servers, selection)
-	if err != nil {
-		return connection, fmt.Errorf("cannot filter servers: %w", err)
+	if len(servers) == 0 {
+		return connection, ErrNoServer
+	}
+
+	servers = FilterServers(servers, selection)
+	if len(servers) == 0 {
+		return connection, NoServerFoundError(selection)
 	}
 
 	protocol := getProtocol(selection)
