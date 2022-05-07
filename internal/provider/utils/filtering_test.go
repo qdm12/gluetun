@@ -212,7 +212,7 @@ func Test_FilterServers(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			filtered := FilterServers(testCase.servers, testCase.selection)
+			filtered := filterServers(testCase.servers, testCase.selection)
 
 			assert.Equal(t, testCase.filtered, filtered)
 		})

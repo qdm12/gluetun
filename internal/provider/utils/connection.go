@@ -35,13 +35,13 @@ func GetConnection(servers []models.Server,
 		return connection, ErrNoServer
 	}
 
-	servers = FilterServers(servers, selection)
+	servers = filterServers(servers, selection)
 	if len(servers) == 0 {
-		return connection, NoServerFoundError(selection)
+		return connection, noServerFoundError(selection)
 	}
 
 	protocol := getProtocol(selection)
-	port := GetPort(selection, defaults.OpenVPNTCPPort,
+	port := getPort(selection, defaults.OpenVPNTCPPort,
 		defaults.OpenVPNUDPPort, defaults.WireguardPort)
 
 	connections := make([]models.Connection, 0, len(servers))
@@ -71,5 +71,5 @@ func GetConnection(servers []models.Server,
 		}
 	}
 
-	return PickConnection(connections, selection, randSource)
+	return pickConnection(connections, selection, randSource)
 }

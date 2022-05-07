@@ -13,12 +13,12 @@ import (
 
 var ErrNoConnectionToPickFrom = errors.New("no connection to pick from")
 
-// PickConnection picks a connection from a pool of connections.
+// pickConnection picks a connection from a pool of connections.
 // If the VPN protocol is Wireguard and the target IP is set,
 // it finds the connection corresponding to this target IP.
 // Otherwise, it picks a random connection from the pool of connections
 // and sets the target IP address as the IP if this one is set.
-func PickConnection(connections []models.Connection,
+func pickConnection(connections []models.Connection,
 	selection settings.ServerSelection, randSource rand.Source) (
 	connection models.Connection, err error) {
 	if len(connections) == 0 {

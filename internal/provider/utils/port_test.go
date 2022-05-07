@@ -120,7 +120,7 @@ func Test_GetPort(t *testing.T) {
 
 			if testCase.panics != "" {
 				assert.PanicsWithValue(t, testCase.panics, func() {
-					_ = GetPort(testCase.selection,
+					_ = getPort(testCase.selection,
 						testCase.defaultOpenVPNTCP,
 						testCase.defaultOpenVPNUDP,
 						testCase.defaultWireguard)
@@ -128,7 +128,7 @@ func Test_GetPort(t *testing.T) {
 				return
 			}
 
-			port := GetPort(testCase.selection,
+			port := getPort(testCase.selection,
 				testCase.defaultOpenVPNTCP,
 				testCase.defaultOpenVPNUDP,
 				testCase.defaultWireguard)

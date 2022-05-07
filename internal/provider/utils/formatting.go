@@ -16,7 +16,7 @@ func commaJoin(slice []string) string {
 
 var ErrNoServerFound = errors.New("no server found")
 
-func NoServerFoundError(selection settings.ServerSelection) (err error) {
+func noServerFoundError(selection settings.ServerSelection) (err error) {
 	var messageParts []string
 
 	messageParts = append(messageParts, "VPN "+selection.VPN)

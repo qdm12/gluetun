@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func FilterServers(servers []models.Server,
+func filterServers(servers []models.Server,
 	selection settings.ServerSelection) (filtered []models.Server) {
 	for _, server := range servers {
 		if filterServer(server, selection) {
