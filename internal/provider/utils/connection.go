@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -44,12 +45,20 @@ func GetConnection(servers []models.Server,
 				// do not use IPv6 connections for now
 				continue
 			}
+
+			hostname := server.Hostname
+			if selection.VPN == vpn.OpenVPN && server.OvpnX509 != "" {
+				// For Windscribe where hostname and
+				// OpenVPN x509 are not the same.
+				hostname = server.OvpnX509
+			}
+
 			connection := models.Connection{
 				Type:     selection.VPN,
 				IP:       ip,
 				Port:     port,
 				Protocol: protocol,
-				Hostname: server.Hostname,
+				Hostname: hostname,
 				PubKey:   server.WgPubKey, // Wireguard
 			}
 			connections = append(connections, connection)
