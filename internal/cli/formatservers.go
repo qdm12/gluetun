@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
@@ -21,34 +22,37 @@ var (
 	ErrProviderUnspecified = errors.New("VPN provider to format was not specified")
 )
 
+func addProviderFlag(flagSet *flag.FlagSet,
+	providerToFormat map[string]*bool, provider string) {
+	boolPtr, ok := providerToFormat[provider]
+	if !ok {
+		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
+	}
+	flagSet.BoolVar(boolPtr, provider, false, "Format "+strings.Title(provider)+" servers")
+}
+
+func getFormatForProvider(providerToFormat map[string]*bool, provider string) (format bool) {
+	formatPtr, ok := providerToFormat[provider]
+	if !ok {
+		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
+	}
+	return *formatPtr
+}
+
 func (c *CLI) FormatServers(args []string) error {
 	var format, output string
-	var cyberghost, expressvpn, fastestvpn, hideMyAss, ipvanish, ivpn, mullvad,
-		nordvpn, perfectPrivacy, pia, privado, privatevpn, protonvpn, purevpn, surfshark,
-		torguard, vpnUnlimited, vyprvpn, wevpn, windscribe bool
+	allProviders := providers.All()
+	providersToFormat := make(map[string]*bool, len(allProviders))
+	for _, provider := range allProviders {
+		value := false
+		providersToFormat[provider] = &value
+	}
 	flagSet := flag.NewFlagSet("markdown", flag.ExitOnError)
 	flagSet.StringVar(&format, "format", "markdown", "Format to use which can be: 'markdown'")
 	flagSet.StringVar(&output, "output", "/dev/stdout", "Output file to write the formatted data to")
-	flagSet.BoolVar(&cyberghost, providers.Cyberghost, false, "Format Cyberghost servers")
-	flagSet.BoolVar(&expressvpn, providers.Expressvpn, false, "Format ExpressVPN servers")
-	flagSet.BoolVar(&fastestvpn, providers.Fastestvpn, false, "Format FastestVPN servers")
-	flagSet.BoolVar(&hideMyAss, providers.HideMyAss, false, "Format HideMyAss servers")
-	flagSet.BoolVar(&ipvanish, providers.Ipvanish, false, "Format IpVanish servers")
-	flagSet.BoolVar(&ivpn, providers.Ivpn, false, "Format IVPN servers")
-	flagSet.BoolVar(&mullvad, providers.Mullvad, false, "Format Mullvad servers")
-	flagSet.BoolVar(&nordvpn, providers.Nordvpn, false, "Format Nordvpn servers")
-	flagSet.BoolVar(&perfectPrivacy, providers.Perfectprivacy, false, "Format Perfect Privacy servers")
-	flagSet.BoolVar(&pia, providers.PrivateInternetAccess, false, "Format Private Internet Access servers")
-	flagSet.BoolVar(&privado, providers.Privado, false, "Format Privado servers")
-	flagSet.BoolVar(&privatevpn, providers.Privatevpn, false, "Format Private VPN servers")
-	flagSet.BoolVar(&protonvpn, providers.Protonvpn, false, "Format Protonvpn servers")
-	flagSet.BoolVar(&purevpn, providers.Purevpn, false, "Format Purevpn servers")
-	flagSet.BoolVar(&surfshark, providers.Surfshark, false, "Format Surfshark servers")
-	flagSet.BoolVar(&torguard, providers.Torguard, false, "Format Torguard servers")
-	flagSet.BoolVar(&vpnUnlimited, providers.VPNUnlimited, false, "Format VPN Unlimited servers")
-	flagSet.BoolVar(&vyprvpn, providers.Vyprvpn, false, "Format Vyprvpn servers")
-	flagSet.BoolVar(&wevpn, providers.Wevpn, false, "Format WeVPN servers")
-	flagSet.BoolVar(&windscribe, providers.Windscribe, false, "Format Windscribe servers")
+	for _, provider := range allProviders {
+		addProviderFlag(flagSet, providersToFormat, provider)
+	}
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
@@ -66,45 +70,45 @@ func (c *CLI) FormatServers(args []string) error {
 
 	var formatted string
 	switch {
-	case cyberghost:
+	case getFormatForProvider(providersToFormat, providers.Cyberghost):
 		formatted = currentServers.Cyberghost.ToMarkdown(providers.Cyberghost)
-	case expressvpn:
+	case getFormatForProvider(providersToFormat, providers.Expressvpn):
 		formatted = currentServers.Expressvpn.ToMarkdown(providers.Expressvpn)
-	case fastestvpn:
+	case getFormatForProvider(providersToFormat, providers.Fastestvpn):
 		formatted = currentServers.Fastestvpn.ToMarkdown(providers.Fastestvpn)
-	case hideMyAss:
+	case getFormatForProvider(providersToFormat, providers.HideMyAss):
 		formatted = currentServers.HideMyAss.ToMarkdown(providers.HideMyAss)
-	case ipvanish:
+	case getFormatForProvider(providersToFormat, providers.Ipvanish):
 		formatted = currentServers.Ipvanish.ToMarkdown(providers.Ipvanish)
-	case ivpn:
+	case getFormatForProvider(providersToFormat, providers.Ivpn):
 		formatted = currentServers.Ivpn.ToMarkdown(providers.Ivpn)
-	case mullvad:
+	case getFormatForProvider(providersToFormat, providers.Mullvad):
 		formatted = currentServers.Mullvad.ToMarkdown(providers.Mullvad)
-	case nordvpn:
+	case getFormatForProvider(providersToFormat, providers.Nordvpn):
 		formatted = currentServers.Nordvpn.ToMarkdown(providers.Nordvpn)
-	case perfectPrivacy:
+	case getFormatForProvider(providersToFormat, providers.Perfectprivacy):
 		formatted = currentServers.Perfectprivacy.ToMarkdown(providers.Perfectprivacy)
-	case pia:
+	case getFormatForProvider(providersToFormat, providers.PrivateInternetAccess):
 		formatted = currentServers.Pia.ToMarkdown(providers.PrivateInternetAccess)
-	case privado:
+	case getFormatForProvider(providersToFormat, providers.Privado):
 		formatted = currentServers.Privado.ToMarkdown(providers.Privado)
-	case privatevpn:
+	case getFormatForProvider(providersToFormat, providers.Privatevpn):
 		formatted = currentServers.Privatevpn.ToMarkdown(providers.Privatevpn)
-	case protonvpn:
+	case getFormatForProvider(providersToFormat, providers.Protonvpn):
 		formatted = currentServers.Protonvpn.ToMarkdown(providers.Protonvpn)
-	case purevpn:
+	case getFormatForProvider(providersToFormat, providers.Purevpn):
 		formatted = currentServers.Purevpn.ToMarkdown(providers.Purevpn)
-	case surfshark:
+	case getFormatForProvider(providersToFormat, providers.Surfshark):
 		formatted = currentServers.Surfshark.ToMarkdown(providers.Surfshark)
-	case torguard:
+	case getFormatForProvider(providersToFormat, providers.Torguard):
 		formatted = currentServers.Torguard.ToMarkdown(providers.Torguard)
-	case vpnUnlimited:
+	case getFormatForProvider(providersToFormat, providers.VPNUnlimited):
 		formatted = currentServers.VPNUnlimited.ToMarkdown(providers.VPNUnlimited)
-	case vyprvpn:
+	case getFormatForProvider(providersToFormat, providers.Vyprvpn):
 		formatted = currentServers.Vyprvpn.ToMarkdown(providers.Vyprvpn)
-	case wevpn:
+	case getFormatForProvider(providersToFormat, providers.Wevpn):
 		formatted = currentServers.Wevpn.ToMarkdown(providers.Wevpn)
-	case windscribe:
+	case getFormatForProvider(providersToFormat, providers.Windscribe):
 		formatted = currentServers.Windscribe.ToMarkdown(providers.Windscribe)
 	default:
 		return ErrProviderUnspecified
