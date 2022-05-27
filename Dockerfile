@@ -30,15 +30,6 @@ FROM --platform=${BUILDPLATFORM} base AS lint
 COPY .golangci.yml ./
 RUN golangci-lint run --timeout=10m
 
-FROM --platform=${BUILDPLATFORM} base AS tidy
-RUN git init && \
-    git config user.email ci@localhost && \
-    git config user.name ci && \
-    git add -A && git commit -m ci && \
-    sed -i '/\/\/ indirect/d' go.mod && \
-    go mod tidy && \
-    git diff --exit-code -- go.mod
-
 FROM --platform=${BUILDPLATFORM} base AS build
 ARG TARGETPLATFORM
 ARG VERSION=unknown
