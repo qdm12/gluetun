@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"os"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/govalid/port"
@@ -22,7 +21,7 @@ func (r *Reader) readWireguardSelection() (
 		return selection, err
 	}
 
-	selection.PublicKey = os.Getenv("WIREGUARD_PUBLIC_KEY")
+	selection.PublicKey = getCleanedEnv("WIREGUARD_PUBLIC_KEY")
 
 	return selection, nil
 }

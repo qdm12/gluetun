@@ -3,7 +3,6 @@ package env
 import (
 	"fmt"
 	"net"
-	"os"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -26,7 +25,7 @@ func readUpdater() (updater settings.Updater, err error) {
 }
 
 func readUpdaterPeriod() (period *time.Duration, err error) {
-	s := os.Getenv("UPDATER_PERIOD")
+	s := getCleanedEnv("UPDATER_PERIOD")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

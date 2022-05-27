@@ -20,7 +20,3 @@ func setTestEnv(t *testing.T, key, value string) {
 	})
 	require.NoError(t, err)
 }
-
-func TestXxx(t *testing.T) {
-	t.Log(int(^uint32(0)))
-}

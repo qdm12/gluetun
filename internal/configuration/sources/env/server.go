@@ -2,7 +2,6 @@ package env
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/govalid/binary"
@@ -20,7 +19,7 @@ func (r *Reader) readControlServer() (controlServer settings.ControlServer, err 
 }
 
 func readControlServerLog() (enabled *bool, err error) {
-	s := os.Getenv("HTTP_CONTROL_SERVER_LOG")
+	s := getCleanedEnv("HTTP_CONTROL_SERVER_LOG")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

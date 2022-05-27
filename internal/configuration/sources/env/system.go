@@ -3,7 +3,6 @@ package env
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -26,7 +25,7 @@ func (r *Reader) readSystem() (system settings.System, err error) {
 		return system, err
 	}
 
-	system.Timezone = os.Getenv("TZ")
+	system.Timezone = getCleanedEnv("TZ")
 
 	return system, nil
 }

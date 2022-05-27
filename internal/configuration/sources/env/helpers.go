@@ -12,8 +12,18 @@ import (
 	"github.com/qdm12/govalid/integer"
 )
 
+// getCleanedEnv returns an environment variable value with
+// surrounding spaces and trailing new line characters removed.
+func getCleanedEnv(envKey string) (value string) {
+	value = os.Getenv(envKey)
+	value = strings.TrimSpace(value)
+	value = strings.TrimSuffix(value, "\r\n")
+	value = strings.TrimSuffix(value, "\n")
+	return value
+}
+
 func envToCSV(envKey string) (values []string) {
-	csv := os.Getenv(envKey)
+	csv := getCleanedEnv(envKey)
 	if csv == "" {
 		return nil
 	}
@@ -21,7 +31,7 @@ func envToCSV(envKey string) (values []string) {
 }
 
 func envToInt(envKey string) (n int, err error) {
-	s := os.Getenv(envKey)
+	s := getCleanedEnv(envKey)
 	if s == "" {
 		return 0, nil
 	}
@@ -29,7 +39,7 @@ func envToInt(envKey string) (n int, err error) {
 }
 
 func envToStringPtr(envKey string) (stringPtr *string) {
-	s := os.Getenv(envKey)
+	s := getCleanedEnv(envKey)
 	if s == "" {
 		return nil
 	}
@@ -37,7 +47,7 @@ func envToStringPtr(envKey string) (stringPtr *string) {
 }
 
 func envToBoolPtr(envKey string) (boolPtr *bool, err error) {
-	s := os.Getenv(envKey)
+	s := getCleanedEnv(envKey)
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}
@@ -49,7 +59,7 @@ func envToBoolPtr(envKey string) (boolPtr *bool, err error) {
 }
 
 func envToIntPtr(envKey string) (intPtr *int, err error) {
-	s := os.Getenv(envKey)
+	s := getCleanedEnv(envKey)
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}
@@ -61,7 +71,7 @@ func envToIntPtr(envKey string) (intPtr *int, err error) {
 }
 
 func envToUint8Ptr(envKey string) (uint8Ptr *uint8, err error) {
-	s := os.Getenv(envKey)
+	s := getCleanedEnv(envKey)
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}
@@ -78,7 +88,7 @@ func envToUint8Ptr(envKey string) (uint8Ptr *uint8, err error) {
 }
 
 func envToUint16Ptr(envKey string) (uint16Ptr *uint16, err error) {
-	s := os.Getenv(envKey)
+	s := getCleanedEnv(envKey)
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}
@@ -95,7 +105,7 @@ func envToUint16Ptr(envKey string) (uint16Ptr *uint16, err error) {
 }
 
 func envToDurationPtr(envKey string) (durationPtr *time.Duration, err error) {
-	s := os.Getenv(envKey)
+	s := getCleanedEnv(envKey)
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

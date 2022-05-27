@@ -2,7 +2,6 @@ package env
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/qdm12/gluetun/internal/pprof"
 )
@@ -23,7 +22,7 @@ func readPprof() (settings pprof.Settings, err error) {
 		return settings, fmt.Errorf("environment variable PPROF_MUTEX_PROFILE_RATE: %w", err)
 	}
 
-	settings.HTTPServer.Address = os.Getenv("PPROF_HTTP_SERVER_ADDRESS")
+	settings.HTTPServer.Address = getCleanedEnv("PPROF_HTTP_SERVER_ADDRESS")
 
 	return settings, nil
 }

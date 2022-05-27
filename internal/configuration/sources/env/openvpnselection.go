@@ -3,7 +3,6 @@ package env
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -13,7 +12,7 @@ import (
 
 func (r *Reader) readOpenVPNSelection() (
 	selection settings.OpenVPNSelection, err error) {
-	confFile := os.Getenv("OPENVPN_CUSTOM_CONFIG")
+	confFile := getCleanedEnv("OPENVPN_CUSTOM_CONFIG")
 	if confFile != "" {
 		selection.ConfFile = &confFile
 	}

@@ -2,7 +2,6 @@ package env
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -35,7 +34,7 @@ func (r *Reader) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string)
 	s = strings.ToLower(s)
 	switch {
 	case vpnType != vpn.Wireguard &&
-		os.Getenv("OPENVPN_CUSTOM_CONFIG") != "": // retro compatibility
+		getCleanedEnv("OPENVPN_CUSTOM_CONFIG") != "": // retro compatibility
 		return stringPtr(providers.Custom)
 	case s == "":
 		return nil

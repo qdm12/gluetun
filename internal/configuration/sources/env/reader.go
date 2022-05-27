@@ -1,8 +1,6 @@
 package env
 
 import (
-	"os"
-
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/configuration/sources"
 )
@@ -111,12 +109,12 @@ func (r *Reader) getEnvWithRetro(currentKey string,
 	// We check retro-compatibility keys first since
 	// the current key might be set in the Dockerfile.
 	for _, key = range retroKeys {
-		value = os.Getenv(key)
+		value = getCleanedEnv(key)
 		if value != "" {
 			r.onRetroActive(key, currentKey)
 			return key, value
 		}
 	}
 
-	return currentKey, os.Getenv(currentKey)
+	return currentKey, getCleanedEnv(currentKey)
 }

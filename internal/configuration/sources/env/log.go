@@ -3,7 +3,6 @@ package env
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -20,7 +19,7 @@ func readLog() (log settings.Log, err error) {
 }
 
 func readLogLevel() (level *log.Level, err error) {
-	s := os.Getenv("LOG_LEVEL")
+	s := getCleanedEnv("LOG_LEVEL")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

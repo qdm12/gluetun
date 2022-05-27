@@ -2,7 +2,6 @@ package env
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -20,7 +19,7 @@ func (r *Reader) readPublicIP() (publicIP settings.PublicIP, err error) {
 }
 
 func readPublicIPPeriod() (period *time.Duration, err error) {
-	s := os.Getenv("PUBLICIP_PERIOD")
+	s := getCleanedEnv("PUBLICIP_PERIOD")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

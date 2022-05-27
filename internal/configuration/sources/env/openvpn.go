@@ -2,7 +2,6 @@ package env
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -15,10 +14,10 @@ func (r *Reader) readOpenVPN() (
 		err = unsetEnvKeys([]string{"OPENVPN_CLIENTKEY", "OPENVPN_CLIENTCRT"}, err)
 	}()
 
-	openVPN.Version = os.Getenv("OPENVPN_VERSION")
+	openVPN.Version = getCleanedEnv("OPENVPN_VERSION")
 	openVPN.User = r.readOpenVPNUser()
 	openVPN.Password = r.readOpenVPNPassword()
-	confFile := os.Getenv("OPENVPN_CUSTOM_CONFIG")
+	confFile := getCleanedEnv("OPENVPN_CUSTOM_CONFIG")
 	if confFile != "" {
 		openVPN.ConfFile = &confFile
 	}
@@ -26,7 +25,7 @@ func (r *Reader) readOpenVPN() (
 	ciphersKey, _ := r.getEnvWithRetro("OPENVPN_CIPHERS", "OPENVPN_CIPHER")
 	openVPN.Ciphers = envToCSV(ciphersKey)
 
-	auth := os.Getenv("OPENVPN_AUTH")
+	auth := getCleanedEnv("OPENVPN_AUTH")
 	if auth != "" {
 		openVPN.Auth = &auth
 	}
@@ -65,7 +64,7 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_VERBOSITY: %w", err)
 	}
 
-	flagsStr := os.Getenv("OPENVPN_FLAGS")
+	flagsStr := getCleanedEnv("OPENVPN_FLAGS")
 	if flagsStr != "" {
 		openVPN.Flags = strings.Fields(flagsStr)
 	}
@@ -85,7 +84,7 @@ func (r *Reader) readOpenVPNPassword() (password string) {
 }
 
 func readBase64OrNil(envKey string) (valueOrNil *string, err error) {
-	value := os.Getenv(envKey)
+	value := getCleanedEnv(envKey)
 	if value == "" {
 		return nil, nil //nolint:nilnil
 	}

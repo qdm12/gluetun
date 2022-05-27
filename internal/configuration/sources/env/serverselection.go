@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"os"
 	"strconv"
 	"strings"
 
@@ -49,7 +48,7 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 	serverNamesKey, _ := r.getEnvWithRetro("SERVER_NAMES", "SERVER_NAME")
 	ss.Names = envToCSV(serverNamesKey)
 
-	if csv := os.Getenv("SERVER_NUMBER"); csv != "" {
+	if csv := getCleanedEnv("SERVER_NUMBER"); csv != "" {
 		numbersStrings := strings.Split(csv, ",")
 		numbers := make([]uint16, len(numbersStrings))
 		for i, numberString := range numbersStrings {

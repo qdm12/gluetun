@@ -2,14 +2,13 @@ package env
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
 func (r *Reader) ReadHealth() (health settings.Health, err error) {
-	health.ServerAddress = os.Getenv("HEALTH_SERVER_ADDRESS")
+	health.ServerAddress = getCleanedEnv("HEALTH_SERVER_ADDRESS")
 	_, health.TargetAddress = r.getEnvWithRetro("HEALTH_TARGET_ADDRESS", "HEALTH_ADDRESS_TO_PING")
 
 	health.VPN.Initial, err = r.readDurationWithRetro(
