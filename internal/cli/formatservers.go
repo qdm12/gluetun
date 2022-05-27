@@ -109,5 +109,5 @@ func formatServers(allServers models.AllServers, provider string) (formatted str
 	if !ok {
 		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
 	}
-	return servers.ToMarkdown(providers.Cyberghost)
+	return servers.ToMarkdown(provider)
 }
