@@ -15,9 +15,9 @@ func Test_makeDeviceLogger(t *testing.T) {
 
 	deviceLogger := makeDeviceLogger(logger)
 
-	logger.EXPECT().Debug("test 1")
+	logger.EXPECT().Debugf("test %d", 1)
 	deviceLogger.Verbosef("test %d", 1)
 
-	logger.EXPECT().Error("test 2")
+	logger.EXPECT().Errorf("test %d", 2)
 	deviceLogger.Errorf("test %d", 2)
 }
