@@ -38,7 +38,7 @@ import (
 // Provider contains methods to read and modify the openvpn configuration to connect as a client.
 type Provider interface {
 	GetConnection(selection settings.ServerSelection) (connection models.Connection, err error)
-	BuildConf(connection models.Connection, settings settings.OpenVPN) (lines []string)
+	OpenVPNConfig(connection models.Connection, settings settings.OpenVPN) (lines []string)
 	PortForwarder
 }
 

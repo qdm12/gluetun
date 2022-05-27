@@ -42,7 +42,7 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) e
 		return err
 	}
 
-	lines := providerConf.BuildConf(connection, allSettings.VPN.OpenVPN)
+	lines := providerConf.OpenVPNConfig(connection, allSettings.VPN.OpenVPN)
 
 	fmt.Println(strings.Join(lines, "\n"))
 	return nil

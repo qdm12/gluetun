@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Provider) BuildConf(connection models.Connection,
+func (p *Provider) OpenVPNConfig(connection models.Connection,
 	settings settings.OpenVPN) (lines []string) {
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,

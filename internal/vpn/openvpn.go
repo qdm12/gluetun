@@ -22,7 +22,7 @@ func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 		return nil, "", fmt.Errorf("failed finding a valid server connection: %w", err)
 	}
 
-	lines := providerConf.BuildConf(connection, settings.OpenVPN)
+	lines := providerConf.OpenVPNConfig(connection, settings.OpenVPN)
 
 	if err := openvpnConf.WriteConfig(lines); err != nil {
 		return nil, "", fmt.Errorf("failed writing configuration to file: %w", err)

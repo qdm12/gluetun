@@ -14,7 +14,7 @@ import (
 
 var ErrExtractData = errors.New("failed extracting information from custom configuration file")
 
-func (p *Provider) BuildConf(connection models.Connection,
+func (p *Provider) OpenVPNConfig(connection models.Connection,
 	settings settings.OpenVPN) (lines []string) {
 	lines, _, err := p.extractor.Data(*settings.ConfFile)
 	if err != nil {
