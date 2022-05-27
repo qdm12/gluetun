@@ -6,6 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func Test_parseFilename(t *testing.T) {
@@ -39,7 +41,8 @@ func Test_parseFilename(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			country, city, err := parseFilename(testCase.fileName, testCase.hostname)
+			titleCaser := cases.Title(language.English)
+			country, city, err := parseFilename(testCase.fileName, testCase.hostname, titleCaser)
 
 			if testCase.err != nil {
 				require.Error(t, err)

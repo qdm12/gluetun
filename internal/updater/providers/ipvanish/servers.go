@@ -12,6 +12,8 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
@@ -30,6 +32,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 
 	hts := make(hostToServer)
 
+	titleCaser := cases.Title(language.English)
 	for fileName, content := range contents {
 		if !strings.HasSuffix(fileName, ".ovpn") {
 			continue // not an OpenVPN file
@@ -54,7 +57,7 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 			continue
 		}
 
-		country, city, err := parseFilename(fileName, hostname)
+		country, city, err := parseFilename(fileName, hostname, titleCaser)
 		if err != nil {
 			// treat error as warning and go to next file
 			warning := err.Error() + " in " + fileName

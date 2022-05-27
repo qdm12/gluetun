@@ -1,8 +1,12 @@
 package torguard
 
-import "strings"
+import (
+	"strings"
 
-func parseFilename(fileName string) (country, city string) {
+	"golang.org/x/text/cases"
+)
+
+func parseFilename(fileName string, titleCaser cases.Caser) (country, city string) {
 	const prefix = "TorGuard."
 	const suffix = ".ovpn"
 	s := strings.TrimPrefix(fileName, prefix)
@@ -20,7 +24,7 @@ func parseFilename(fileName string) (country, city string) {
 		s = strings.ReplaceAll(s, "-", " ")
 		s = strings.ReplaceAll(s, ".", " ")
 		s = strings.ToLower(s)
-		s = strings.Title(s)
+		s = titleCaser.String(s)
 		city = s
 
 	default:

@@ -4,13 +4,14 @@ package updater
 import (
 	"context"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type Updater interface {
@@ -46,9 +47,11 @@ func New(settings settings.Updater, httpClient *http.Client,
 	}
 }
 
+var caser = cases.Title(language.English) //nolint:gochecknoglobals
+
 func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) {
 	for _, provider := range u.options.Providers {
-		u.logger.Info("updating " + strings.Title(provider) + " servers...")
+		u.logger.Info("updating " + caser.String(provider) + " servers...")
 		// TODO support servers offering only TCP or only UDP
 		// for NordVPN and PureVPN
 		warnings, err := u.updateProvider(ctx, provider)

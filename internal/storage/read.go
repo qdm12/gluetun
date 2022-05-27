@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // readFromFile reads the servers from server.json.
@@ -47,6 +48,7 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 
 	allProviders := providers.All()
 	servers.ProviderToServers = make(map[string]models.Servers, len(allProviders))
+	titleCaser := cases.Title(language.English)
 	for _, provider := range allProviders {
 		hardcoded, ok := hardcoded.ProviderToServers[provider]
 		if !ok {
@@ -62,7 +64,7 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 			continue
 		}
 
-		mergedServers, versionsMatch, err := s.readServers(provider, hardcoded, rawMessage)
+		mergedServers, versionsMatch, err := s.readServers(provider, hardcoded, rawMessage, titleCaser)
 		if err != nil {
 			return models.AllServers{}, err
 		} else if !versionsMatch {
@@ -81,8 +83,9 @@ var (
 )
 
 func (s *Storage) readServers(provider string, hardcoded models.Servers,
-	rawMessage json.RawMessage) (servers models.Servers, versionsMatch bool, err error) {
-	provider = strings.Title(provider)
+	rawMessage json.RawMessage, titleCaser cases.Caser) (servers models.Servers,
+	versionsMatch bool, err error) {
+	provider = titleCaser.String(provider)
 
 	var persistedServers models.Servers
 	err = json.Unmarshal(rawMessage, &persistedServers)

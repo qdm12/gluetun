@@ -12,6 +12,8 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type ServersFormatter interface {
@@ -24,13 +26,13 @@ var (
 	ErrMultipleProvidersToFormat = errors.New("more than one VPN provider to format were specified")
 )
 
-func addProviderFlag(flagSet *flag.FlagSet,
-	providerToFormat map[string]*bool, provider string) {
+func addProviderFlag(flagSet *flag.FlagSet, providerToFormat map[string]*bool,
+	provider string, titleCaser cases.Caser) {
 	boolPtr, ok := providerToFormat[provider]
 	if !ok {
 		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
 	}
-	flagSet.BoolVar(boolPtr, provider, false, "Format "+strings.Title(provider)+" servers")
+	flagSet.BoolVar(boolPtr, provider, false, "Format "+titleCaser.String(provider)+" servers")
 }
 
 func (c *CLI) FormatServers(args []string) error {
@@ -43,8 +45,9 @@ func (c *CLI) FormatServers(args []string) error {
 	flagSet := flag.NewFlagSet("markdown", flag.ExitOnError)
 	flagSet.StringVar(&format, "format", "markdown", "Format to use which can be: 'markdown'")
 	flagSet.StringVar(&output, "output", "/dev/stdout", "Output file to write the formatted data to")
+	titleCaser := cases.Title(language.English)
 	for _, provider := range allProviders {
-		addProviderFlag(flagSet, providersToFormat, provider)
+		addProviderFlag(flagSet, providersToFormat, provider, titleCaser)
 	}
 	if err := flagSet.Parse(args); err != nil {
 		return err
