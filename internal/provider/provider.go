@@ -51,50 +51,51 @@ type PortForwarder interface {
 }
 
 func New(provider string, allServers models.AllServers, timeNow func() time.Time) Provider {
+	serversSlice := allServers.ServersSlice(provider)
 	randSource := rand.NewSource(timeNow().UnixNano())
 	switch provider {
 	case providers.Custom:
 		return custom.New()
 	case providers.Cyberghost:
-		return cyberghost.New(allServers.Cyberghost.Servers, randSource)
+		return cyberghost.New(serversSlice, randSource)
 	case providers.Expressvpn:
-		return expressvpn.New(allServers.Expressvpn.Servers, randSource)
+		return expressvpn.New(serversSlice, randSource)
 	case providers.Fastestvpn:
-		return fastestvpn.New(allServers.Fastestvpn.Servers, randSource)
+		return fastestvpn.New(serversSlice, randSource)
 	case providers.HideMyAss:
-		return hidemyass.New(allServers.HideMyAss.Servers, randSource)
+		return hidemyass.New(serversSlice, randSource)
 	case providers.Ipvanish:
-		return ipvanish.New(allServers.Ipvanish.Servers, randSource)
+		return ipvanish.New(serversSlice, randSource)
 	case providers.Ivpn:
-		return ivpn.New(allServers.Ivpn.Servers, randSource)
+		return ivpn.New(serversSlice, randSource)
 	case providers.Mullvad:
-		return mullvad.New(allServers.Mullvad.Servers, randSource)
+		return mullvad.New(serversSlice, randSource)
 	case providers.Nordvpn:
-		return nordvpn.New(allServers.Nordvpn.Servers, randSource)
+		return nordvpn.New(serversSlice, randSource)
 	case providers.Perfectprivacy:
-		return perfectprivacy.New(allServers.Perfectprivacy.Servers, randSource)
+		return perfectprivacy.New(serversSlice, randSource)
 	case providers.Privado:
-		return privado.New(allServers.Privado.Servers, randSource)
+		return privado.New(serversSlice, randSource)
 	case providers.PrivateInternetAccess:
-		return privateinternetaccess.New(allServers.Pia.Servers, randSource, timeNow)
+		return privateinternetaccess.New(serversSlice, randSource, timeNow)
 	case providers.Privatevpn:
-		return privatevpn.New(allServers.Privatevpn.Servers, randSource)
+		return privatevpn.New(serversSlice, randSource)
 	case providers.Protonvpn:
-		return protonvpn.New(allServers.Protonvpn.Servers, randSource)
+		return protonvpn.New(serversSlice, randSource)
 	case providers.Purevpn:
-		return purevpn.New(allServers.Purevpn.Servers, randSource)
+		return purevpn.New(serversSlice, randSource)
 	case providers.Surfshark:
-		return surfshark.New(allServers.Surfshark.Servers, randSource)
+		return surfshark.New(serversSlice, randSource)
 	case providers.Torguard:
-		return torguard.New(allServers.Torguard.Servers, randSource)
+		return torguard.New(serversSlice, randSource)
 	case providers.VPNUnlimited:
-		return vpnunlimited.New(allServers.VPNUnlimited.Servers, randSource)
+		return vpnunlimited.New(serversSlice, randSource)
 	case providers.Vyprvpn:
-		return vyprvpn.New(allServers.Vyprvpn.Servers, randSource)
+		return vyprvpn.New(serversSlice, randSource)
 	case providers.Wevpn:
-		return wevpn.New(allServers.Wevpn.Servers, randSource)
+		return wevpn.New(serversSlice, randSource)
 	case providers.Windscribe:
-		return windscribe.New(allServers.Windscribe.Servers, randSource)
+		return windscribe.New(serversSlice, randSource)
 	default:
 		panic("provider " + provider + " is unknown") // should never occur
 	}

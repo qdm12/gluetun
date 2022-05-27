@@ -11,14 +11,14 @@ import (
 var _ Flusher = (*Storage)(nil)
 
 type Flusher interface {
-	FlushToFile(allServers models.AllServers) error
+	FlushToFile(allServers *models.AllServers) error
 }
 
-func (s *Storage) FlushToFile(allServers models.AllServers) error {
+func (s *Storage) FlushToFile(allServers *models.AllServers) error {
 	return flushToFile(s.filepath, allServers)
 }
 
-func flushToFile(path string, servers models.AllServers) error {
+func flushToFile(path string, servers *models.AllServers) error {
 	dirPath := filepath.Dir(path)
 	if err := os.MkdirAll(dirPath, 0644); err != nil {
 		return err

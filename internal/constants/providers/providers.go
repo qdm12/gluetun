@@ -26,9 +26,9 @@ const (
 	Windscribe            = "windscribe"
 )
 
+// All returns all the providers except the custom provider.
 func All() []string {
 	return []string{
-		Custom,
 		Cyberghost,
 		Expressvpn,
 		Fastestvpn,
@@ -50,4 +50,12 @@ func All() []string {
 		Wevpn,
 		Windscribe,
 	}
+}
+
+func AllWithCustom() []string {
+	allProviders := All()
+	allProvidersWithCustom := make([]string, len(allProviders)+1)
+	copy(allProvidersWithCustom, allProviders)
+	allProvidersWithCustom[len(allProvidersWithCustom)-1] = Custom
+	return allProvidersWithCustom
 }

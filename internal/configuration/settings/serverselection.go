@@ -140,118 +140,26 @@ func getLocationFilterChoices(vpnServiceProvider string, ss *ServerSelection,
 	countryChoices, regionChoices, cityChoices,
 	ispChoices, nameChoices, hostnameChoices []string,
 	err error) {
-	switch vpnServiceProvider {
-	case providers.Custom:
-	case providers.Cyberghost:
-		servers := allServers.GetCyberghost()
-		countryChoices = validation.ExtractCountries(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Expressvpn:
-		servers := allServers.GetExpressvpn()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Fastestvpn:
-		servers := allServers.GetFastestvpn()
-		countryChoices = validation.ExtractCountries(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.HideMyAss:
-		servers := allServers.GetHideMyAss()
-		countryChoices = validation.ExtractCountries(servers)
-		regionChoices = validation.ExtractRegions(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Ipvanish:
-		servers := allServers.GetIpvanish()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Ivpn:
-		servers := allServers.GetIvpn()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		ispChoices = validation.ExtractISPs(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Mullvad:
-		servers := allServers.GetMullvad()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		ispChoices = validation.ExtractISPs(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Nordvpn:
-		servers := allServers.GetNordvpn()
-		regionChoices = validation.ExtractRegions(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Perfectprivacy:
-		servers := allServers.GetPerfectprivacy()
-		cityChoices = validation.ExtractCities(servers)
-	case providers.Privado:
-		servers := allServers.GetPrivado()
-		countryChoices = validation.ExtractCountries(servers)
-		regionChoices = validation.ExtractRegions(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.PrivateInternetAccess:
-		servers := allServers.GetPia()
-		regionChoices = validation.ExtractRegions(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-		nameChoices = validation.ExtractServerNames(servers)
-	case providers.Privatevpn:
-		servers := allServers.GetPrivatevpn()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Protonvpn:
-		servers := allServers.GetProtonvpn()
-		countryChoices = validation.ExtractCountries(servers)
-		regionChoices = validation.ExtractRegions(servers)
-		cityChoices = validation.ExtractCities(servers)
-		nameChoices = validation.ExtractServerNames(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Purevpn:
-		servers := allServers.GetPurevpn()
-		countryChoices = validation.ExtractCountries(servers)
-		regionChoices = validation.ExtractRegions(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Surfshark:
-		servers := allServers.GetSurfshark()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-		regionChoices = validation.ExtractRegions(servers)
+	providerServers, ok := allServers.ProviderToServers[vpnServiceProvider]
+	if !ok {
+		panic(fmt.Sprintf("VPN service provider unknown: %s", vpnServiceProvider))
+	}
+	servers := providerServers.Servers
+	countryChoices = validation.ExtractCountries(servers)
+	regionChoices = validation.ExtractRegions(servers)
+	cityChoices = validation.ExtractCities(servers)
+	ispChoices = validation.ExtractISPs(servers)
+	nameChoices = validation.ExtractServerNames(servers)
+	hostnameChoices = validation.ExtractHostnames(servers)
+
+	if vpnServiceProvider == providers.Surfshark {
+		// // Retro compatibility
 		// TODO v4 remove
 		regionChoices = append(regionChoices, validation.SurfsharkRetroLocChoices()...)
 		if err := helpers.AreAllOneOf(ss.Regions, regionChoices); err != nil {
 			return nil, nil, nil, nil, nil, nil, fmt.Errorf("%w: %s", ErrRegionNotValid, err)
 		}
-		// Retro compatibility
-		// TODO remove in v4
 		*ss = surfsharkRetroRegion(*ss)
-	case providers.Torguard:
-		servers := allServers.GetTorguard()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.VPNUnlimited:
-		servers := allServers.GetVPNUnlimited()
-		countryChoices = validation.ExtractCountries(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Vyprvpn:
-		servers := allServers.GetVyprvpn()
-		regionChoices = validation.ExtractRegions(servers)
-	case providers.Wevpn:
-		servers := allServers.GetWevpn()
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	case providers.Windscribe:
-		servers := allServers.GetWindscribe()
-		regionChoices = validation.ExtractRegions(servers)
-		cityChoices = validation.ExtractCities(servers)
-		hostnameChoices = validation.ExtractHostnames(servers)
-	default:
-		return nil, nil, nil, nil, nil, nil, fmt.Errorf("%w: %s", ErrVPNProviderNameNotValid, vpnServiceProvider)
 	}
 
 	return countryChoices, regionChoices, cityChoices,

@@ -19,6 +19,9 @@ func ExtractCountries(servers []models.Server) (values []string) {
 	values = make([]string, 0, len(servers))
 	for _, server := range servers {
 		value := server.Country
+		if value == "" {
+			continue
+		}
 		_, alreadySeen := seen[value]
 		if alreadySeen {
 			continue
@@ -35,6 +38,9 @@ func ExtractRegions(servers []models.Server) (values []string) {
 	values = make([]string, 0, len(servers))
 	for _, server := range servers {
 		value := server.Region
+		if value == "" {
+			continue
+		}
 		_, alreadySeen := seen[value]
 		if alreadySeen {
 			continue
@@ -51,6 +57,9 @@ func ExtractCities(servers []models.Server) (values []string) {
 	values = make([]string, 0, len(servers))
 	for _, server := range servers {
 		value := server.City
+		if value == "" {
+			continue
+		}
 		_, alreadySeen := seen[value]
 		if alreadySeen {
 			continue
@@ -67,6 +76,9 @@ func ExtractISPs(servers []models.Server) (values []string) {
 	values = make([]string, 0, len(servers))
 	for _, server := range servers {
 		value := server.ISP
+		if value == "" {
+			continue
+		}
 		_, alreadySeen := seen[value]
 		if alreadySeen {
 			continue
@@ -83,6 +95,9 @@ func ExtractServerNames(servers []models.Server) (values []string) {
 	values = make([]string, 0, len(servers))
 	for _, server := range servers {
 		value := server.ServerName
+		if value == "" {
+			continue
+		}
 		_, alreadySeen := seen[value]
 		if alreadySeen {
 			continue
@@ -99,6 +114,9 @@ func ExtractHostnames(servers []models.Server) (values []string) {
 	values = make([]string, 0, len(servers))
 	for _, server := range servers {
 		value := server.Hostname
+		if value == "" {
+			continue
+		}
 		_, alreadySeen := seen[value]
 		if alreadySeen {
 			continue

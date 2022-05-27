@@ -28,29 +28,20 @@ func (s *Storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int6
 }
 
 func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
-	return models.AllServers{
-		Version:        hardcoded.Version,
-		Cyberghost:     s.mergeProviderServers(providers.Cyberghost, hardcoded.Cyberghost, persisted.Cyberghost),
-		Expressvpn:     s.mergeProviderServers(providers.Expressvpn, hardcoded.Expressvpn, persisted.Expressvpn),
-		Fastestvpn:     s.mergeProviderServers(providers.Fastestvpn, hardcoded.Fastestvpn, persisted.Fastestvpn),
-		HideMyAss:      s.mergeProviderServers(providers.HideMyAss, hardcoded.HideMyAss, persisted.HideMyAss),
-		Ipvanish:       s.mergeProviderServers(providers.Ipvanish, hardcoded.Ipvanish, persisted.Ipvanish),
-		Ivpn:           s.mergeProviderServers(providers.Ivpn, hardcoded.Ivpn, persisted.Ivpn),
-		Mullvad:        s.mergeProviderServers(providers.Mullvad, hardcoded.Mullvad, persisted.Mullvad),
-		Nordvpn:        s.mergeProviderServers(providers.Nordvpn, hardcoded.Nordvpn, persisted.Nordvpn),
-		Perfectprivacy: s.mergeProviderServers(providers.Perfectprivacy, hardcoded.Perfectprivacy, persisted.Perfectprivacy),
-		Privado:        s.mergeProviderServers(providers.Privado, hardcoded.Privado, persisted.Privado),
-		Pia:            s.mergeProviderServers(providers.PrivateInternetAccess, hardcoded.Pia, persisted.Pia),
-		Privatevpn:     s.mergeProviderServers(providers.Privatevpn, hardcoded.Privatevpn, persisted.Privatevpn),
-		Protonvpn:      s.mergeProviderServers(providers.Protonvpn, hardcoded.Protonvpn, persisted.Protonvpn),
-		Purevpn:        s.mergeProviderServers(providers.Purevpn, hardcoded.Purevpn, persisted.Purevpn),
-		Surfshark:      s.mergeProviderServers(providers.Surfshark, hardcoded.Surfshark, persisted.Surfshark),
-		Torguard:       s.mergeProviderServers(providers.Torguard, hardcoded.Torguard, persisted.Torguard),
-		VPNUnlimited:   s.mergeProviderServers(providers.VPNUnlimited, hardcoded.VPNUnlimited, persisted.VPNUnlimited),
-		Vyprvpn:        s.mergeProviderServers(providers.Vyprvpn, hardcoded.Vyprvpn, persisted.Vyprvpn),
-		Wevpn:          s.mergeProviderServers(providers.Wevpn, hardcoded.Wevpn, persisted.Wevpn),
-		Windscribe:     s.mergeProviderServers(providers.Windscribe, hardcoded.Windscribe, persisted.Windscribe),
+	allProviders := providers.All()
+	merged := models.AllServers{
+		Version:           hardcoded.Version,
+		ProviderToServers: make(map[string]models.Servers, len(allProviders)),
 	}
+
+	for _, provider := range allProviders {
+		hardcodedServers := hardcoded.ProviderToServers[provider]
+		persistedServers := persisted.ProviderToServers[provider]
+		merged.ProviderToServers[provider] = s.mergeProviderServers(provider,
+			hardcodedServers, persistedServers)
+	}
+
+	return merged
 }
 
 func (s *Storage) mergeProviderServers(provider string,

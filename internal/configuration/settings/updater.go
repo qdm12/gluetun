@@ -43,10 +43,6 @@ func (u Updater) Validate() (err error) {
 	for i, provider := range u.Providers {
 		valid := false
 		for _, validProvider := range providers.All() {
-			if validProvider == providers.Custom {
-				continue
-			}
-
 			if provider == validProvider {
 				valid = true
 				break

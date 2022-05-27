@@ -10,6 +10,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
 )
 
@@ -18,8 +19,9 @@ type ServersFormatter interface {
 }
 
 var (
-	ErrFormatNotRecognized = errors.New("format is not recognized")
-	ErrProviderUnspecified = errors.New("VPN provider to format was not specified")
+	ErrFormatNotRecognized       = errors.New("format is not recognized")
+	ErrProviderUnspecified       = errors.New("VPN provider to format was not specified")
+	ErrMultipleProvidersToFormat = errors.New("more than one VPN provider to format were specified")
 )
 
 func addProviderFlag(flagSet *flag.FlagSet,
@@ -31,21 +33,12 @@ func addProviderFlag(flagSet *flag.FlagSet,
 	flagSet.BoolVar(boolPtr, provider, false, "Format "+strings.Title(provider)+" servers")
 }
 
-func getFormatForProvider(providerToFormat map[string]*bool, provider string) (format bool) {
-	formatPtr, ok := providerToFormat[provider]
-	if !ok {
-		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
-	}
-	return *formatPtr
-}
-
 func (c *CLI) FormatServers(args []string) error {
 	var format, output string
 	allProviders := providers.All()
 	providersToFormat := make(map[string]*bool, len(allProviders))
 	for _, provider := range allProviders {
-		value := false
-		providersToFormat[provider] = &value
+		providersToFormat[provider] = new(bool)
 	}
 	flagSet := flag.NewFlagSet("markdown", flag.ExitOnError)
 	flagSet.StringVar(&format, "format", "markdown", "Format to use which can be: 'markdown'")
@@ -61,6 +54,24 @@ func (c *CLI) FormatServers(args []string) error {
 		return fmt.Errorf("%w: %s", ErrFormatNotRecognized, format)
 	}
 
+	// Verify only one provider is set to be formatted.
+	var providers []string
+	for provider, formatPtr := range providersToFormat {
+		if *formatPtr {
+			providers = append(providers, provider)
+		}
+	}
+	switch len(providers) {
+	case 0:
+		return ErrProviderUnspecified
+	case 1:
+	default:
+		return fmt.Errorf("%w: %d specified: %s",
+			ErrMultipleProvidersToFormat, len(providers),
+			strings.Join(providers, ", "))
+	}
+	providerToFormat := providers[0]
+
 	logger := newNoopLogger()
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
@@ -68,51 +79,7 @@ func (c *CLI) FormatServers(args []string) error {
 	}
 	currentServers := storage.GetServers()
 
-	var formatted string
-	switch {
-	case getFormatForProvider(providersToFormat, providers.Cyberghost):
-		formatted = currentServers.Cyberghost.ToMarkdown(providers.Cyberghost)
-	case getFormatForProvider(providersToFormat, providers.Expressvpn):
-		formatted = currentServers.Expressvpn.ToMarkdown(providers.Expressvpn)
-	case getFormatForProvider(providersToFormat, providers.Fastestvpn):
-		formatted = currentServers.Fastestvpn.ToMarkdown(providers.Fastestvpn)
-	case getFormatForProvider(providersToFormat, providers.HideMyAss):
-		formatted = currentServers.HideMyAss.ToMarkdown(providers.HideMyAss)
-	case getFormatForProvider(providersToFormat, providers.Ipvanish):
-		formatted = currentServers.Ipvanish.ToMarkdown(providers.Ipvanish)
-	case getFormatForProvider(providersToFormat, providers.Ivpn):
-		formatted = currentServers.Ivpn.ToMarkdown(providers.Ivpn)
-	case getFormatForProvider(providersToFormat, providers.Mullvad):
-		formatted = currentServers.Mullvad.ToMarkdown(providers.Mullvad)
-	case getFormatForProvider(providersToFormat, providers.Nordvpn):
-		formatted = currentServers.Nordvpn.ToMarkdown(providers.Nordvpn)
-	case getFormatForProvider(providersToFormat, providers.Perfectprivacy):
-		formatted = currentServers.Perfectprivacy.ToMarkdown(providers.Perfectprivacy)
-	case getFormatForProvider(providersToFormat, providers.PrivateInternetAccess):
-		formatted = currentServers.Pia.ToMarkdown(providers.PrivateInternetAccess)
-	case getFormatForProvider(providersToFormat, providers.Privado):
-		formatted = currentServers.Privado.ToMarkdown(providers.Privado)
-	case getFormatForProvider(providersToFormat, providers.Privatevpn):
-		formatted = currentServers.Privatevpn.ToMarkdown(providers.Privatevpn)
-	case getFormatForProvider(providersToFormat, providers.Protonvpn):
-		formatted = currentServers.Protonvpn.ToMarkdown(providers.Protonvpn)
-	case getFormatForProvider(providersToFormat, providers.Purevpn):
-		formatted = currentServers.Purevpn.ToMarkdown(providers.Purevpn)
-	case getFormatForProvider(providersToFormat, providers.Surfshark):
-		formatted = currentServers.Surfshark.ToMarkdown(providers.Surfshark)
-	case getFormatForProvider(providersToFormat, providers.Torguard):
-		formatted = currentServers.Torguard.ToMarkdown(providers.Torguard)
-	case getFormatForProvider(providersToFormat, providers.VPNUnlimited):
-		formatted = currentServers.VPNUnlimited.ToMarkdown(providers.VPNUnlimited)
-	case getFormatForProvider(providersToFormat, providers.Vyprvpn):
-		formatted = currentServers.Vyprvpn.ToMarkdown(providers.Vyprvpn)
-	case getFormatForProvider(providersToFormat, providers.Wevpn):
-		formatted = currentServers.Wevpn.ToMarkdown(providers.Wevpn)
-	case getFormatForProvider(providersToFormat, providers.Windscribe):
-		formatted = currentServers.Windscribe.ToMarkdown(providers.Windscribe)
-	default:
-		return ErrProviderUnspecified
-	}
+	formatted := formatServers(currentServers, providerToFormat)
 
 	output = filepath.Clean(output)
 	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
@@ -132,4 +99,12 @@ func (c *CLI) FormatServers(args []string) error {
 	}
 
 	return nil
+}
+
+func formatServers(allServers models.AllServers, provider string) (formatted string) {
+	servers, ok := allServers.ProviderToServers[provider]
+	if !ok {
+		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
+	}
+	return servers.ToMarkdown(providers.Cyberghost)
 }

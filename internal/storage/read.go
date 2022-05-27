@@ -38,172 +38,39 @@ func (s *Storage) readFromFile(filepath string, hardcoded models.AllServers) (
 
 func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers) (
 	servers models.AllServers, err error) {
-	var versions allVersions
-	if err := json.Unmarshal(b, &versions); err != nil {
-		return servers, fmt.Errorf("cannot decode versions: %w", err)
-	}
-
-	var rawMessages allJSONRawMessages
+	rawMessages := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(b, &rawMessages); err != nil {
 		return servers, fmt.Errorf("cannot decode servers: %w", err)
 	}
 
-	type element struct {
-		provider      string
-		hardcoded     models.Servers
-		serverVersion serverVersion
-		rawMessage    json.RawMessage
-		target        *models.Servers
-	}
-	elements := []element{
-		{
-			provider:      providers.Cyberghost,
-			hardcoded:     hardcoded.Cyberghost,
-			serverVersion: versions.Cyberghost,
-			rawMessage:    rawMessages.Cyberghost,
-			target:        &servers.Cyberghost,
-		},
-		{
-			provider:      providers.Expressvpn,
-			hardcoded:     hardcoded.Expressvpn,
-			serverVersion: versions.Expressvpn,
-			rawMessage:    rawMessages.Expressvpn,
-			target:        &servers.Expressvpn,
-		},
-		{
-			provider:      providers.Fastestvpn,
-			hardcoded:     hardcoded.Fastestvpn,
-			serverVersion: versions.Fastestvpn,
-			rawMessage:    rawMessages.Fastestvpn,
-			target:        &servers.Fastestvpn,
-		},
-		{
-			provider:      providers.HideMyAss,
-			hardcoded:     hardcoded.HideMyAss,
-			serverVersion: versions.HideMyAss,
-			rawMessage:    rawMessages.HideMyAss,
-			target:        &servers.HideMyAss,
-		},
-		{
-			provider:      providers.Ipvanish,
-			hardcoded:     hardcoded.Ipvanish,
-			serverVersion: versions.Ipvanish,
-			rawMessage:    rawMessages.Ipvanish,
-			target:        &servers.Ipvanish,
-		},
-		{
-			provider:      providers.Ivpn,
-			hardcoded:     hardcoded.Ivpn,
-			serverVersion: versions.Ivpn,
-			rawMessage:    rawMessages.Ivpn,
-			target:        &servers.Ivpn,
-		},
-		{
-			provider:      providers.Mullvad,
-			hardcoded:     hardcoded.Mullvad,
-			serverVersion: versions.Mullvad,
-			rawMessage:    rawMessages.Mullvad,
-			target:        &servers.Mullvad,
-		},
-		{
-			provider:      providers.Nordvpn,
-			hardcoded:     hardcoded.Nordvpn,
-			serverVersion: versions.Nordvpn,
-			rawMessage:    rawMessages.Nordvpn,
-			target:        &servers.Nordvpn,
-		},
-		{
-			provider:      providers.Perfectprivacy,
-			hardcoded:     hardcoded.Perfectprivacy,
-			serverVersion: versions.Perfectprivacy,
-			rawMessage:    rawMessages.Perfectprivacy,
-			target:        &servers.Perfectprivacy,
-		},
-		{
-			provider:      providers.Privado,
-			hardcoded:     hardcoded.Privado,
-			serverVersion: versions.Privado,
-			rawMessage:    rawMessages.Privado,
-			target:        &servers.Privado,
-		},
-		{
-			provider:      providers.PrivateInternetAccess,
-			hardcoded:     hardcoded.Pia,
-			serverVersion: versions.Pia,
-			rawMessage:    rawMessages.Pia,
-			target:        &servers.Pia,
-		},
-		{
-			provider:      providers.Privatevpn,
-			hardcoded:     hardcoded.Privatevpn,
-			serverVersion: versions.Privatevpn,
-			rawMessage:    rawMessages.Privatevpn,
-			target:        &servers.Privatevpn,
-		},
-		{
-			provider:      providers.Protonvpn,
-			hardcoded:     hardcoded.Protonvpn,
-			serverVersion: versions.Protonvpn,
-			rawMessage:    rawMessages.Protonvpn,
-			target:        &servers.Protonvpn,
-		},
-		{
-			provider:      providers.Purevpn,
-			hardcoded:     hardcoded.Purevpn,
-			serverVersion: versions.Purevpn,
-			rawMessage:    rawMessages.Purevpn,
-			target:        &servers.Purevpn,
-		},
-		{
-			provider:      providers.Surfshark,
-			hardcoded:     hardcoded.Surfshark,
-			serverVersion: versions.Surfshark,
-			rawMessage:    rawMessages.Surfshark,
-			target:        &servers.Surfshark,
-		},
-		{
-			provider:      providers.Torguard,
-			hardcoded:     hardcoded.Torguard,
-			serverVersion: versions.Torguard,
-			rawMessage:    rawMessages.Torguard,
-			target:        &servers.Torguard,
-		},
-		{
-			provider:      providers.VPNUnlimited,
-			hardcoded:     hardcoded.VPNUnlimited,
-			serverVersion: versions.VPNUnlimited,
-			rawMessage:    rawMessages.VPNUnlimited,
-			target:        &servers.VPNUnlimited,
-		},
-		{
-			provider:      providers.Vyprvpn,
-			hardcoded:     hardcoded.Vyprvpn,
-			serverVersion: versions.Vyprvpn,
-			rawMessage:    rawMessages.Vyprvpn,
-			target:        &servers.Vyprvpn,
-		},
-		{
-			provider:      providers.Wevpn,
-			hardcoded:     hardcoded.Wevpn,
-			serverVersion: versions.Wevpn,
-			rawMessage:    rawMessages.Wevpn,
-			target:        &servers.Wevpn,
-		},
-		{
-			provider:      providers.Windscribe,
-			hardcoded:     hardcoded.Windscribe,
-			serverVersion: versions.Windscribe,
-			rawMessage:    rawMessages.Windscribe,
-			target:        &servers.Windscribe,
-		},
-	}
+	// Note schema version is at map key "version" as number
 
-	for _, element := range elements {
-		*element.target, err = s.readServers(element.provider,
-			element.hardcoded, element.serverVersion, element.rawMessage)
-		if err != nil {
-			return servers, err
+	allProviders := providers.All()
+	servers.ProviderToServers = make(map[string]models.Servers, len(allProviders))
+	for _, provider := range allProviders {
+		hardcoded, ok := hardcoded.ProviderToServers[provider]
+		if !ok {
+			panic(fmt.Sprintf("provider %s not found in hardcoded servers map", provider))
 		}
+
+		rawMessage, ok := rawMessages[provider]
+		if !ok {
+			// If the provider is not found in the data bytes, just don't set it in
+			// the providers map. That way the hardcoded servers will override them.
+			// This is user provided and could come from different sources in the
+			// future (e.g. a file or API request).
+			continue
+		}
+
+		mergedServers, versionsMatch, err := s.readServers(provider, hardcoded, rawMessage)
+		if err != nil {
+			return models.AllServers{}, err
+		} else if !versionsMatch {
+			// mergedServers is the empty struct in this case, so don't set the key
+			// in the providerToServers map.
+			continue
+		}
+		servers.ProviderToServers[provider] = mergedServers
 	}
 
 	return servers, nil
@@ -214,73 +81,20 @@ var (
 )
 
 func (s *Storage) readServers(provider string, hardcoded models.Servers,
-	serverVersion serverVersion, rawMessage json.RawMessage) (
-	servers models.Servers, err error) {
+	rawMessage json.RawMessage) (servers models.Servers, versionsMatch bool, err error) {
 	provider = strings.Title(provider)
-	if hardcoded.Version != serverVersion.Version {
-		s.logVersionDiff(provider, hardcoded.Version, serverVersion.Version)
-		return servers, nil
-	}
 
-	err = json.Unmarshal(rawMessage, &servers)
+	var persistedServers models.Servers
+	err = json.Unmarshal(rawMessage, &persistedServers)
 	if err != nil {
-		return servers, fmt.Errorf("%w: %s: %s", errDecodeProvider, provider, err)
+		return servers, false, fmt.Errorf("%w: %s: %s", errDecodeProvider, provider, err)
 	}
 
-	return servers, nil
-}
+	versionsMatch = hardcoded.Version == persistedServers.Version
+	if !versionsMatch {
+		s.logVersionDiff(provider, hardcoded.Version, persistedServers.Version)
+		return servers, versionsMatch, nil
+	}
 
-// allVersions is a subset of models.AllServers structure used to track
-// versions to avoid unmarshaling errors.
-type allVersions struct {
-	Version        uint16        `json:"version"` // used for migration of the top level scheme
-	Cyberghost     serverVersion `json:"cyberghost"`
-	Expressvpn     serverVersion `json:"expressvpn"`
-	Fastestvpn     serverVersion `json:"fastestvpn"`
-	HideMyAss      serverVersion `json:"hidemyass"`
-	Ipvanish       serverVersion `json:"ipvanish"`
-	Ivpn           serverVersion `json:"ivpn"`
-	Mullvad        serverVersion `json:"mullvad"`
-	Nordvpn        serverVersion `json:"nordvpn"`
-	Perfectprivacy serverVersion `json:"perfect privacy"`
-	Privado        serverVersion `json:"privado"`
-	Pia            serverVersion `json:"private internet access"`
-	Privatevpn     serverVersion `json:"privatevpn"`
-	Protonvpn      serverVersion `json:"protonvpn"`
-	Purevpn        serverVersion `json:"purevpn"`
-	Surfshark      serverVersion `json:"surfshark"`
-	Torguard       serverVersion `json:"torguard"`
-	VPNUnlimited   serverVersion `json:"vpn unlimited"`
-	Vyprvpn        serverVersion `json:"vyprvpn"`
-	Wevpn          serverVersion `json:"wevpn"`
-	Windscribe     serverVersion `json:"windscribe"`
-}
-
-type serverVersion struct {
-	Version uint16 `json:"version"`
-}
-
-// allJSONRawMessages is to delay decoding of each provider servers.
-type allJSONRawMessages struct {
-	Version        uint16          `json:"version"` // used for migration of the top level scheme
-	Cyberghost     json.RawMessage `json:"cyberghost"`
-	Expressvpn     json.RawMessage `json:"expressvpn"`
-	Fastestvpn     json.RawMessage `json:"fastestvpn"`
-	HideMyAss      json.RawMessage `json:"hidemyass"`
-	Ipvanish       json.RawMessage `json:"ipvanish"`
-	Ivpn           json.RawMessage `json:"ivpn"`
-	Mullvad        json.RawMessage `json:"mullvad"`
-	Nordvpn        json.RawMessage `json:"nordvpn"`
-	Perfectprivacy json.RawMessage `json:"perfect privacy"`
-	Privado        json.RawMessage `json:"privado"`
-	Pia            json.RawMessage `json:"private internet access"`
-	Privatevpn     json.RawMessage `json:"privatevpn"`
-	Protonvpn      json.RawMessage `json:"protonvpn"`
-	Purevpn        json.RawMessage `json:"purevpn"`
-	Surfshark      json.RawMessage `json:"surfshark"`
-	Torguard       json.RawMessage `json:"torguard"`
-	VPNUnlimited   json.RawMessage `json:"vpn unlimited"`
-	Vyprvpn        json.RawMessage `json:"vyprvpn"`
-	Wevpn          json.RawMessage `json:"wevpn"`
-	Windscribe     json.RawMessage `json:"windscribe"`
+	return persistedServers, versionsMatch, nil
 }

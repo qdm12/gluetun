@@ -27,7 +27,7 @@ func (p *Provider) validate(vpnType string, allServers models.AllServers) (err e
 	// Validate Name
 	var validNames []string
 	if vpnType == vpn.OpenVPN {
-		validNames = providers.All()
+		validNames = providers.AllWithCustom()
 		validNames = append(validNames, "pia") // Retro-compatibility
 	} else { // Wireguard
 		validNames = []string{

@@ -63,12 +63,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	}
 
 	if updateAll {
-		for _, provider := range providers.All() {
-			if provider == providers.Custom {
-				continue
-			}
-			options.Providers = append(options.Providers, provider)
-		}
+		options.Providers = providers.All()
 	} else {
 		if csvProviders == "" {
 			return ErrNoProviderSpecified
@@ -99,13 +94,13 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	}
 
 	if endUserMode {
-		if err := storage.FlushToFile(allServers); err != nil {
+		if err := storage.FlushToFile(&allServers); err != nil {
 			return fmt.Errorf("cannot write updated information to file: %w", err)
 		}
 	}
 
 	if maintainerMode {
-		if err := writeToEmbeddedJSON(c.repoServersPath, allServers); err != nil {
+		if err := writeToEmbeddedJSON(c.repoServersPath, &allServers); err != nil {
 			return fmt.Errorf("cannot write updated information to file: %w", err)
 		}
 	}
@@ -114,7 +109,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 }
 
 func writeToEmbeddedJSON(repoServersPath string,
-	allServers models.AllServers) error {
+	allServers *models.AllServers) error {
 	const perms = 0600
 	f, err := os.OpenFile(repoServersPath,
 		os.O_TRUNC|os.O_WRONLY|os.O_CREATE, perms)

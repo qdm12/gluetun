@@ -4,140 +4,123 @@ import (
 	"net"
 	"testing"
 
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_AllServers_GetCopy(t *testing.T) {
 	allServers := AllServers{
-		Cyberghost: Servers{
-			Version: 2,
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Expressvpn: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Fastestvpn: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		HideMyAss: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Ipvanish: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Ivpn: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Mullvad: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Nordvpn: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Perfectprivacy: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Privado: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Pia: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Privatevpn: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Protonvpn: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Purevpn: Servers{
-			Version: 1,
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Surfshark: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Torguard: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		VPNUnlimited: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Vyprvpn: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
-		},
-		Windscribe: Servers{
-			Servers: []Server{{
-				IPs: []net.IP{{1, 2, 3, 4}},
-			}},
+		Version: 1,
+		ProviderToServers: map[string]Servers{
+			providers.Cyberghost: {
+				Version: 2,
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Expressvpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Fastestvpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.HideMyAss: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Ipvanish: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Ivpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Mullvad: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Nordvpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Perfectprivacy: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Privado: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.PrivateInternetAccess: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Privatevpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Protonvpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Purevpn: {
+				Version: 1,
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Surfshark: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Torguard: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.VPNUnlimited: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Vyprvpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Wevpn: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
+			providers.Windscribe: {
+				Servers: []Server{{
+					IPs: []net.IP{{1, 2, 3, 4}},
+				}},
+			},
 		},
 	}
 
 	servers := allServers.GetCopy()
 
 	assert.Equal(t, allServers, servers)
-}
-
-func Test_AllServers_GetVyprvpn(t *testing.T) {
-	allServers := AllServers{
-		Vyprvpn: Servers{
-			Servers: []Server{
-				{Hostname: "a", IPs: []net.IP{{1, 1, 1, 1}}},
-				{Hostname: "b", IPs: []net.IP{{2, 2, 2, 2}}},
-			},
-		},
-	}
-
-	servers := allServers.GetVyprvpn()
-
-	expectedServers := []Server{
-		{Hostname: "a", IPs: []net.IP{{1, 1, 1, 1}}},
-		{Hostname: "b", IPs: []net.IP{{2, 2, 2, 2}}},
-	}
-	assert.Equal(t, expectedServers, servers)
-
-	allServers.Vyprvpn.Servers[0].IPs[0][0] = 9
-	assert.NotEqual(t, 9, servers[0].IPs[0][0])
-
-	allServers.Vyprvpn.Servers[0].IPs[0][0] = 1
-	servers[0].IPs[0][0] = 9
-	assert.NotEqual(t, 9, allServers.Vyprvpn.Servers[0].IPs[0][0])
 }
 
 func Test_copyIPs(t *testing.T) {
