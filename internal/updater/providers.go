@@ -8,26 +8,26 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/providers/cyberghost"
-	"github.com/qdm12/gluetun/internal/updater/providers/expressvpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/fastestvpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/hidemyass"
-	"github.com/qdm12/gluetun/internal/updater/providers/ipvanish"
-	"github.com/qdm12/gluetun/internal/updater/providers/ivpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/mullvad"
-	"github.com/qdm12/gluetun/internal/updater/providers/nordvpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/perfectprivacy"
-	"github.com/qdm12/gluetun/internal/updater/providers/pia"
-	"github.com/qdm12/gluetun/internal/updater/providers/privado"
-	"github.com/qdm12/gluetun/internal/updater/providers/privatevpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/protonvpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/purevpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/surfshark"
-	"github.com/qdm12/gluetun/internal/updater/providers/torguard"
-	"github.com/qdm12/gluetun/internal/updater/providers/vpnunlimited"
-	"github.com/qdm12/gluetun/internal/updater/providers/vyprvpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/wevpn"
-	"github.com/qdm12/gluetun/internal/updater/providers/windscribe"
+	cyberghost "github.com/qdm12/gluetun/internal/provider/cyberghost/updater"
+	expressvpn "github.com/qdm12/gluetun/internal/provider/expressvpn/updater"
+	fastestvpn "github.com/qdm12/gluetun/internal/provider/fastestvpn/updater"
+	hidemyass "github.com/qdm12/gluetun/internal/provider/hidemyass/updater"
+	ipvanish "github.com/qdm12/gluetun/internal/provider/ipvanish/updater"
+	ivpn "github.com/qdm12/gluetun/internal/provider/ivpn/updater"
+	mullvad "github.com/qdm12/gluetun/internal/provider/mullvad/updater"
+	nordvpn "github.com/qdm12/gluetun/internal/provider/nordvpn/updater"
+	perfectprivacy "github.com/qdm12/gluetun/internal/provider/perfectprivacy/updater"
+	privado "github.com/qdm12/gluetun/internal/provider/privado/updater"
+	privateinternetaccess "github.com/qdm12/gluetun/internal/provider/privateinternetaccess/updater"
+	privatevpn "github.com/qdm12/gluetun/internal/provider/privatevpn/updater"
+	protonvpn "github.com/qdm12/gluetun/internal/provider/protonvpn/updater"
+	purevpn "github.com/qdm12/gluetun/internal/provider/purevpn/updater"
+	surfshark "github.com/qdm12/gluetun/internal/provider/surfshark/updater"
+	torguard "github.com/qdm12/gluetun/internal/provider/torguard/updater"
+	vpnunlimited "github.com/qdm12/gluetun/internal/provider/vpnunlimited/updater"
+	vyprvpn "github.com/qdm12/gluetun/internal/provider/vyprvpn/updater"
+	wevpn "github.com/qdm12/gluetun/internal/provider/wevpn/updater"
+	windscribe "github.com/qdm12/gluetun/internal/provider/windscribe/updater"
 )
 
 func (u *updater) updateProvider(ctx context.Context, provider string) (
@@ -75,7 +75,7 @@ func (u *updater) getServers(ctx context.Context, provider string,
 	case providers.Privado:
 		return privado.GetServers(ctx, u.unzipper, u.client, u.presolver, minServers)
 	case providers.PrivateInternetAccess:
-		servers, err = pia.GetServers(ctx, u.client, minServers)
+		servers, err = privateinternetaccess.GetServers(ctx, u.client, minServers)
 		return servers, nil, err
 	case providers.Privatevpn:
 		return privatevpn.GetServers(ctx, u.unzipper, u.presolver, minServers)

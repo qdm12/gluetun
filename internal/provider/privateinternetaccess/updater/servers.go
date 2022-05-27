@@ -1,6 +1,6 @@
 // Package pia contains code to obtain the server information
 // for the Private Internet Access provider.
-package pia
+package privateinternetaccess
 
 import (
 	"context"

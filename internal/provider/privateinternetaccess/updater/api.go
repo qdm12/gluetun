@@ -1,4 +1,4 @@
-package pia
+package privateinternetaccess
 
 import (
 	"bytes"
