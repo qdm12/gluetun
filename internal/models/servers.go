@@ -9,16 +9,16 @@ type AllServers struct {
 	Ipvanish       Servers `json:"ipvanish"`
 	Ivpn           Servers `json:"ivpn"`
 	Mullvad        Servers `json:"mullvad"`
-	Perfectprivacy Servers `json:"perfectprivacy"`
+	Perfectprivacy Servers `json:"perfect privacy"`
 	Nordvpn        Servers `json:"nordvpn"`
 	Privado        Servers `json:"privado"`
-	Pia            Servers `json:"pia"`
+	Pia            Servers `json:"private internet access"`
 	Privatevpn     Servers `json:"privatevpn"`
 	Protonvpn      Servers `json:"protonvpn"`
 	Purevpn        Servers `json:"purevpn"`
 	Surfshark      Servers `json:"surfshark"`
 	Torguard       Servers `json:"torguard"`
-	VPNUnlimited   Servers `json:"vpnunlimited"`
+	VPNUnlimited   Servers `json:"vpn unlimited"`
 	Vyprvpn        Servers `json:"vyprvpn"`
 	Wevpn          Servers `json:"wevpn"`
 	Windscribe     Servers `json:"windscribe"`

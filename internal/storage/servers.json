@@ -39989,8 +39989,8 @@
       }
     ]
   },
-  "perfectprivacy": {
-    "version": 2,
+  "perfect privacy": {
+    "version": 1,
     "timestamp": 1633357036,
     "servers": [
       {
@@ -100987,8 +100987,8 @@
       }
     ]
   },
-  "pia": {
-    "version": 8,
+  "private internet access": {
+    "version": 1,
     "timestamp": 1649712532,
     "servers": [
       {
@@ -121010,8 +121010,8 @@
       }
     ]
   },
-  "vpnunlimited": {
-    "version": 2,
+  "vpn unlimited": {
+    "version": 1,
     "timestamp": 1629490858,
     "servers": [
       {

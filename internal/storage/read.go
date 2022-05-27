@@ -242,15 +242,15 @@ type allVersions struct {
 	Ivpn           serverVersion `json:"ivpn"`
 	Mullvad        serverVersion `json:"mullvad"`
 	Nordvpn        serverVersion `json:"nordvpn"`
-	Perfectprivacy serverVersion `json:"perfectprivacy"`
+	Perfectprivacy serverVersion `json:"perfect privacy"`
 	Privado        serverVersion `json:"privado"`
-	Pia            serverVersion `json:"pia"`
+	Pia            serverVersion `json:"private internet access"`
 	Privatevpn     serverVersion `json:"privatevpn"`
 	Protonvpn      serverVersion `json:"protonvpn"`
 	Purevpn        serverVersion `json:"purevpn"`
 	Surfshark      serverVersion `json:"surfshark"`
 	Torguard       serverVersion `json:"torguard"`
-	VPNUnlimited   serverVersion `json:"vpnunlimited"`
+	VPNUnlimited   serverVersion `json:"vpn unlimited"`
 	Vyprvpn        serverVersion `json:"vyprvpn"`
 	Wevpn          serverVersion `json:"wevpn"`
 	Windscribe     serverVersion `json:"windscribe"`
@@ -271,15 +271,15 @@ type allJSONRawMessages struct {
 	Ivpn           json.RawMessage `json:"ivpn"`
 	Mullvad        json.RawMessage `json:"mullvad"`
 	Nordvpn        json.RawMessage `json:"nordvpn"`
-	Perfectprivacy json.RawMessage `json:"perfectprivacy"`
+	Perfectprivacy json.RawMessage `json:"perfect privacy"`
 	Privado        json.RawMessage `json:"privado"`
-	Pia            json.RawMessage `json:"pia"`
+	Pia            json.RawMessage `json:"private internet access"`
 	Privatevpn     json.RawMessage `json:"privatevpn"`
 	Protonvpn      json.RawMessage `json:"protonvpn"`
 	Purevpn        json.RawMessage `json:"purevpn"`
 	Surfshark      json.RawMessage `json:"surfshark"`
 	Torguard       json.RawMessage `json:"torguard"`
-	VPNUnlimited   json.RawMessage `json:"vpnunlimited"`
+	VPNUnlimited   json.RawMessage `json:"vpn unlimited"`
 	Vyprvpn        json.RawMessage `json:"vyprvpn"`
 	Wevpn          json.RawMessage `json:"wevpn"`
 	Windscribe     json.RawMessage `json:"windscribe"`
