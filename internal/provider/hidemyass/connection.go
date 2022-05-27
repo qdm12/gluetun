@@ -6,8 +6,8 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (h *HideMyAss) GetConnection(selection settings.ServerSelection) (
+func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	defaults := utils.NewConnectionDefaults(8080, 553, 0) //nolint:gomnd
-	return utils.GetConnection(h.servers, selection, defaults, h.randSource)
+	return utils.GetConnection(p.servers, selection, defaults, p.randSource)
 }

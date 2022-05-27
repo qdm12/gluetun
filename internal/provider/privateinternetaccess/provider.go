@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type PIA struct {
+type Provider struct {
 	servers    []models.Server
 	randSource rand.Source
 	timeNow    func() time.Time
@@ -18,9 +18,9 @@ type PIA struct {
 }
 
 func New(servers []models.Server, randSource rand.Source,
-	timeNow func() time.Time) *PIA {
+	timeNow func() time.Time) *Provider {
 	const jsonPortForwardPath = "/gluetun/piaportforward.json"
-	return &PIA{
+	return &Provider{
 		servers:         servers,
 		timeNow:         timeNow,
 		randSource:      randSource,

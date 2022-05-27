@@ -6,8 +6,8 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (w *Wevpn) GetConnection(selection settings.ServerSelection) (
+func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	defaults := utils.NewConnectionDefaults(1195, 1194, 0) //nolint:gomnd
-	return utils.GetConnection(w.servers, selection, defaults, w.randSource)
+	return utils.GetConnection(p.servers, selection, defaults, p.randSource)
 }

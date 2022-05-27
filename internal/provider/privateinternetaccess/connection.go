@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *PIA) GetConnection(selection settings.ServerSelection) (
+func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	// Set port defaults depending on encryption preset.
 	var defaults utils.ConnectionDefaults

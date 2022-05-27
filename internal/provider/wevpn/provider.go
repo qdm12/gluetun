@@ -8,14 +8,14 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-type Wevpn struct {
+type Provider struct {
 	servers    []models.Server
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.Server, randSource rand.Source) *Wevpn {
-	return &Wevpn{
+func New(servers []models.Server, randSource rand.Source) *Provider {
+	return &Provider{
 		servers:         servers,
 		randSource:      randSource,
 		NoPortForwarder: utils.NewNoPortForwarding(providers.Wevpn),

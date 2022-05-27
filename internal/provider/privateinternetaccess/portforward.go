@@ -26,7 +26,7 @@ var (
 )
 
 // PortForward obtains a VPN server side port forwarded from PIA.
-func (p *PIA) PortForward(ctx context.Context, client *http.Client,
+func (p *Provider) PortForward(ctx context.Context, client *http.Client,
 	logger utils.Logger, gateway net.IP, serverName string) (
 	port uint16, err error) {
 	var server models.Server
@@ -90,7 +90,7 @@ var (
 	ErrPortForwardedExpired = errors.New("port forwarded data expired")
 )
 
-func (p *PIA) KeepPortForward(ctx context.Context, client *http.Client,
+func (p *Provider) KeepPortForward(ctx context.Context, client *http.Client,
 	port uint16, gateway net.IP, serverName string) (err error) {
 	privateIPClient := newHTTPClient(serverName)
 
