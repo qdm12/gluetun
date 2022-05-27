@@ -141,7 +141,7 @@ func getLocationFilterChoices(vpnServiceProvider string, ss *ServerSelection,
 	ispChoices, nameChoices, hostnameChoices []string,
 	err error) {
 	providerServers, ok := allServers.ProviderToServers[vpnServiceProvider]
-	if !ok {
+	if !ok && vpnServiceProvider != providers.Custom {
 		panic(fmt.Sprintf("VPN service provider unknown: %s", vpnServiceProvider))
 	}
 	servers := providerServers.Servers

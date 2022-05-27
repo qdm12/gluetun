@@ -16,6 +16,10 @@ type AllServers struct {
 }
 
 func (a *AllServers) ServersSlice(provider string) []Server {
+	if provider == providers.Custom {
+		return nil
+	}
+
 	servers, ok := a.ProviderToServers[provider]
 	if !ok {
 		panic(fmt.Sprintf("provider %s not found in all servers", provider))
