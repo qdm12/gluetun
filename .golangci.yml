@@ -57,6 +57,7 @@ linters:
     - durationcheck
     - errchkjson
     - errname
+    - execinquery
     - exhaustive
     - exportloopref
     - forcetypeassert
@@ -88,6 +89,7 @@ linters:
     - nilnil
     - noctx
     - nolintlint
+    - nosprintfhostport
     - prealloc
     - predeclared
     - predeclared
