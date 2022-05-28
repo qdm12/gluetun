@@ -60,8 +60,14 @@ func Test_extractServersFromBytes(t *testing.T) {
 		"bad provider JSON": {
 			b:                 []byte(`{"cyberghost": "garbage"}`),
 			hardcodedVersions: populateProviderToVersion(1, map[string]uint16{}),
-			errMessage: "cannot decode servers for provider: Cyberghost: " +
-				"json: cannot unmarshal string into Go value of type models.Servers",
+			errMessage: "cannot decode servers version for provider Cyberghost: " +
+				"json: cannot unmarshal string into Go value of type struct { Version uint16 \"json:\\\"version\\\"\" }",
+		},
+		"bad servers array JSON": {
+			b:                 []byte(`{"cyberghost": {"version": 1, "servers": "garbage"}}`),
+			hardcodedVersions: populateProviderToVersion(1, map[string]uint16{}),
+			errMessage: "cannot decode servers for provider Cyberghost: " +
+				"json: cannot unmarshal string into Go struct field Servers.servers of type []models.Server",
 		},
 		"absent provider keys": {
 			b:                 []byte(`{}`),

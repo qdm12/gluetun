@@ -2,7 +2,6 @@ package storage
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -78,26 +77,37 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string
 	return servers, nil
 }
 
-var (
-	errDecodeProvider = errors.New("cannot decode servers for provider")
-)
-
 func (s *Storage) readServers(provider string, hardcodedVersion uint16,
 	rawMessage json.RawMessage, titleCaser cases.Caser) (servers models.Servers,
 	versionsMatch bool, err error) {
 	provider = titleCaser.String(provider)
 
-	var persistedServers models.Servers
-	err = json.Unmarshal(rawMessage, &persistedServers)
-	if err != nil {
-		return servers, false, fmt.Errorf("%w: %s: %s", errDecodeProvider, provider, err)
+	var versionObject struct {
+		Version uint16 `json:"version"`
 	}
 
-	versionsMatch = hardcodedVersion == persistedServers.Version
+	err = json.Unmarshal(rawMessage, &versionObject)
+	if err != nil {
+		return servers, false, fmt.Errorf("cannot decode servers version for provider %s: %w",
+			provider, err)
+	}
+
+	persistedVersion := versionObject.Version
+
+	versionsMatch = hardcodedVersion == persistedVersion
 	if !versionsMatch {
-		s.logVersionDiff(provider, hardcodedVersion, persistedServers.Version)
+		s.logger.Info(fmt.Sprintf(
+			"%s servers from file discarded because they have "+
+				"version %d and hardcoded servers have version %d",
+			provider, persistedVersion, hardcodedVersion))
 		return servers, versionsMatch, nil
 	}
 
-	return persistedServers, versionsMatch, nil
+	err = json.Unmarshal(rawMessage, &servers)
+	if err != nil {
+		return servers, false, fmt.Errorf("cannot decode servers for provider %s: %w",
+			provider, err)
+	}
+
+	return servers, versionsMatch, nil
 }

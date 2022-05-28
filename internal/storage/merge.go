@@ -1,20 +1,11 @@
 package storage
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 )
-
-func (s *Storage) logVersionDiff(provider string, hardcodedVersion, persistedVersion uint16) {
-	message := provider + " servers from file discarded because they have version " +
-		strconv.Itoa(int(persistedVersion)) +
-		" and hardcoded servers have version " +
-		strconv.Itoa(int(hardcodedVersion))
-	s.logger.Info(message)
-}
 
 func (s *Storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int64) {
 	diff := time.Unix(persistedUnix, 0).Sub(time.Unix(hardcodedUnix, 0))
