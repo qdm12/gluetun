@@ -4,16 +4,14 @@ package privatevpn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
-
-var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
@@ -23,7 +21,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 		return nil, err
 	} else if len(contents) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(contents), minServers)
+			common.ErrNotEnoughServers, len(contents), minServers)
 	}
 
 	countryCodes := constants.CountryCodes()
@@ -78,7 +76,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(noHostnameServers)+len(hts) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers)+len(hts), minServers)
+			common.ErrNotEnoughServers, len(servers)+len(hts), minServers)
 	}
 
 	hosts := hts.toHostsSlice()

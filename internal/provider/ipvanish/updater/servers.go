@@ -4,17 +4,15 @@ package ipvanish
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
-
-var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
@@ -24,7 +22,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 		return nil, err
 	} else if len(contents) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(contents), minServers)
+			common.ErrNotEnoughServers, len(contents), minServers)
 	}
 
 	hts := make(hostToServer)
@@ -64,7 +62,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(hts) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(hts), minServers)
+			common.ErrNotEnoughServers, len(hts), minServers)
 	}
 
 	hosts := hts.toHostsSlice()
@@ -82,7 +80,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(servers) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers), minServers)
+			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)

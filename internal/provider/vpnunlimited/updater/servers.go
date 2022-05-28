@@ -4,13 +4,11 @@ package vpnunlimited
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
-
-var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
@@ -35,7 +33,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(servers) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers), minServers)
+			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)

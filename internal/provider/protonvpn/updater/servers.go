@@ -4,14 +4,12 @@ package protonvpn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
-
-var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
@@ -29,7 +27,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if count < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, count, minServers)
+			common.ErrNotEnoughServers, count, minServers)
 	}
 
 	ipToServer := make(ipToServer, count)
@@ -60,7 +58,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(ipToServer) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(ipToServer), minServers)
+			common.ErrNotEnoughServers, len(ipToServer), minServers)
 	}
 
 	servers = ipToServer.toServersSlice()

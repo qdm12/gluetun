@@ -4,14 +4,10 @@ package surfshark
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/models"
-)
-
-var (
-	ErrNotEnoughServers = errors.New("not enough servers found")
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
@@ -48,7 +44,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(servers) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers), minServers)
+			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)

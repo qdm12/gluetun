@@ -10,11 +10,11 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 var (
-	ErrNotEnoughServers = errors.New("not enough servers found")
-	ErrNoWireguardKey   = errors.New("no wireguard public key found")
+	ErrNoWireguardKey = errors.New("no wireguard public key found")
 )
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
@@ -69,7 +69,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(servers) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers), minServers)
+			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)

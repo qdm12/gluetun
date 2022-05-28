@@ -2,16 +2,14 @@ package perfectprivacy
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
-
-var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
@@ -43,7 +41,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(cts) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(cts), minServers)
+			common.ErrNotEnoughServers, len(cts), minServers)
 	}
 
 	servers = cts.toServersSlice()

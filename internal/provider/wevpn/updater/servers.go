@@ -9,12 +9,12 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 var (
-	ErrGetZip           = errors.New("cannot get OpenVPN ZIP file")
-	ErrGetAPI           = errors.New("cannot fetch server information from API")
-	ErrNotEnoughServers = errors.New("not enough servers found")
+	ErrGetZip = errors.New("cannot get OpenVPN ZIP file")
+	ErrGetAPI = errors.New("cannot fetch server information from API")
 )
 
 func (u *Updater) GetServers(ctx context.Context, minServers int) (
@@ -40,7 +40,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	if len(hostnameToIPs) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			ErrNotEnoughServers, len(servers), minServers)
+			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	for hostname, ips := range hostnameToIPs {
