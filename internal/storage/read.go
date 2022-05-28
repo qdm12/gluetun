@@ -63,7 +63,8 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string
 			continue
 		}
 
-		mergedServers, versionsMatch, err := s.readServers(provider, hardcodedVersion, rawMessage, titleCaser)
+		mergedServers, versionsMatch, err := s.readServers(provider,
+			hardcodedVersion, rawMessage, titleCaser)
 		if err != nil {
 			return models.AllServers{}, err
 		} else if !versionsMatch {

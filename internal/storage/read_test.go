@@ -160,7 +160,7 @@ func Test_extractServersFromBytes(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 
-			logger := NewMockInfoErrorer(ctrl)
+			logger := NewMockInfoer(ctrl)
 			var previousLogCall *gomock.Call
 			for _, logged := range testCase.logged {
 				call := logger.EXPECT().Info(logged)

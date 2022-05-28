@@ -5,8 +5,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-//go:generate mockgen -destination=infoerrorer_mock_test.go -package $GOPACKAGE . InfoErrorer
-
 type Storage struct {
 	mergedServers models.AllServers
 	// this is stored in memory to avoid re-parsing
@@ -35,7 +33,7 @@ func New(logger Infoer, filepath string) (storage *Storage, err error) {
 		filepath:         filepath,
 	}
 
-	if err := storage.SyncServers(); err != nil {
+	if err := storage.syncServers(); err != nil {
 		return nil, err
 	}
 

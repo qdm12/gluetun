@@ -7,17 +7,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (s *Storage) logTimeDiff(provider string, persistedUnix, hardcodedUnix int64) {
-	diff := time.Unix(persistedUnix, 0).Sub(time.Unix(hardcodedUnix, 0))
-	if diff < 0 {
-		diff = -diff
-	}
-	diff = diff.Truncate(time.Second)
-	message := "Using " + provider + " servers from file which are " +
-		diff.String() + " more recent"
-	s.logger.Info(message)
-}
-
 func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
 	allProviders := providers.All()
 	merged := models.AllServers{
@@ -41,6 +30,14 @@ func (s *Storage) mergeProviderServers(provider string,
 		return hardcoded
 	}
 
-	s.logTimeDiff(provider, persisted.Timestamp, hardcoded.Timestamp)
+	diff := time.Unix(persisted.Timestamp, 0).Sub(time.Unix(hardcoded.Timestamp, 0))
+	if diff < 0 {
+		diff = -diff
+	}
+	diff = diff.Truncate(time.Second)
+	message := "Using " + provider + " servers from file which are " +
+		diff.String() + " more recent"
+	s.logger.Info(message)
+
 	return persisted
 }
