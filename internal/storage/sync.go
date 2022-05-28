@@ -14,8 +14,14 @@ func countServers(allServers models.AllServers) (count int) {
 	return count
 }
 
+// SyncServers merges the hardcoded servers with the ones from the file.
 func (s *Storage) SyncServers() (err error) {
-	serversOnFile, err := s.readFromFile(s.filepath, s.hardcodedServers)
+	hardcodedVersions := make(map[string]uint16, len(s.hardcodedServers.ProviderToServers))
+	for provider, servers := range s.hardcodedServers.ProviderToServers {
+		hardcodedVersions[provider] = servers.Version
+	}
+
+	serversOnFile, err := s.readFromFile(s.filepath, hardcodedVersions)
 	if err != nil {
 		return fmt.Errorf("cannot read servers from file: %w", err)
 	}

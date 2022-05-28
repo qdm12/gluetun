@@ -16,7 +16,7 @@ import (
 // readFromFile reads the servers from server.json.
 // It only reads servers that have the same version as the hardcoded servers version
 // to avoid JSON unmarshaling errors.
-func (s *Storage) readFromFile(filepath string, hardcoded models.AllServers) (
+func (s *Storage) readFromFile(filepath string, hardcodedVersions map[string]uint16) (
 	servers models.AllServers, err error) {
 	file, err := os.Open(filepath)
 	if os.IsNotExist(err) {
@@ -34,10 +34,10 @@ func (s *Storage) readFromFile(filepath string, hardcoded models.AllServers) (
 		return servers, err
 	}
 
-	return s.extractServersFromBytes(b, hardcoded)
+	return s.extractServersFromBytes(b, hardcodedVersions)
 }
 
-func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers) (
+func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string]uint16) (
 	servers models.AllServers, err error) {
 	rawMessages := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(b, &rawMessages); err != nil {
@@ -50,7 +50,7 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 	servers.ProviderToServers = make(map[string]models.Servers, len(allProviders))
 	titleCaser := cases.Title(language.English)
 	for _, provider := range allProviders {
-		hardcoded, ok := hardcoded.ProviderToServers[provider]
+		hardcodedVersion, ok := hardcodedVersions[provider]
 		if !ok {
 			panic(fmt.Sprintf("provider %s not found in hardcoded servers map", provider))
 		}
@@ -64,7 +64,7 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcoded models.AllServers)
 			continue
 		}
 
-		mergedServers, versionsMatch, err := s.readServers(provider, hardcoded, rawMessage, titleCaser)
+		mergedServers, versionsMatch, err := s.readServers(provider, hardcodedVersion, rawMessage, titleCaser)
 		if err != nil {
 			return models.AllServers{}, err
 		} else if !versionsMatch {
@@ -82,7 +82,7 @@ var (
 	errDecodeProvider = errors.New("cannot decode servers for provider")
 )
 
-func (s *Storage) readServers(provider string, hardcoded models.Servers,
+func (s *Storage) readServers(provider string, hardcodedVersion uint16,
 	rawMessage json.RawMessage, titleCaser cases.Caser) (servers models.Servers,
 	versionsMatch bool, err error) {
 	provider = titleCaser.String(provider)
@@ -93,9 +93,9 @@ func (s *Storage) readServers(provider string, hardcoded models.Servers,
 		return servers, false, fmt.Errorf("%w: %s: %s", errDecodeProvider, provider, err)
 	}
 
-	versionsMatch = hardcoded.Version == persistedServers.Version
+	versionsMatch = hardcodedVersion == persistedServers.Version
 	if !versionsMatch {
-		s.logVersionDiff(provider, hardcoded.Version, persistedServers.Version)
+		s.logVersionDiff(provider, hardcodedVersion, persistedServers.Version)
 		return servers, versionsMatch, nil
 	}
 

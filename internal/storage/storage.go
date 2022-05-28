@@ -8,7 +8,10 @@ import (
 //go:generate mockgen -destination=infoerrorer_mock_test.go -package $GOPACKAGE . InfoErrorer
 
 type Storage struct {
-	mergedServers    models.AllServers
+	mergedServers models.AllServers
+	// this is stored in memory to avoid re-parsing
+	// the embedded JSON file on every call to the
+	// SyncServers method.
 	hardcodedServers models.AllServers
 	logger           Infoer
 	filepath         string
@@ -22,11 +25,12 @@ type Infoer interface {
 // embedded servers file and the file on disk.
 // Passing an empty filepath disables writing servers to a file.
 func New(logger Infoer, filepath string) (storage *Storage, err error) {
-	// error returned covered by unit test
-	harcodedServers, _ := parseHardcodedServers()
+	// A unit test prevents any error from being returned
+	// and ensures all providers are part of the servers returned.
+	hardcodedServers, _ := parseHardcodedServers()
 
 	storage = &Storage{
-		hardcodedServers: harcodedServers,
+		hardcodedServers: hardcodedServers,
 		logger:           logger,
 		filepath:         filepath,
 	}
