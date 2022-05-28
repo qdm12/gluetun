@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 	"golang.zx2c4.com/wireguard/conn"
@@ -108,8 +109,15 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		// requires net.ipv6.conf.all.disable_ipv6=0
 		err = w.addRoute(link, allIPv6(), w.settings.FirewallMark)
 		if err != nil {
-			waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
-			return
+			if strings.Contains(err.Error(), "permission denied") {
+				w.logger.Errorf("cannot add route for IPv6 due to a permission denial. "+
+					"Ignoring and continuing execution; "+
+					"Please report to https://github.com/qdm12/gluetun/issues/998 if you find a fix. "+
+					"Full error string: %s", err)
+			} else {
+				waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
+				return
+			}
 		}
 	}
 
