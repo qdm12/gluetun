@@ -6,12 +6,20 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/updater"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/models"
 )
+
+type UpdaterLooper interface {
+	GetStatus() (status models.LoopStatus)
+	SetStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
+	SetSettings(settings settings.Updater) (outcome string)
+}
 
 func newUpdaterHandler(
 	ctx context.Context,
-	looper updater.Looper,
+	looper UpdaterLooper,
 	warner warner) http.Handler {
 	return &updaterHandler{
 		ctx:    ctx,
@@ -22,7 +30,7 @@ func newUpdaterHandler(
 
 type updaterHandler struct {
 	ctx    context.Context //nolint:containedctx
-	looper updater.Looper
+	looper UpdaterLooper
 	warner warner
 }
 

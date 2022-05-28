@@ -1,4 +1,4 @@
-package updater
+package loop
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
+	"github.com/qdm12/gluetun/internal/updater"
 )
 
 type Looper interface {
@@ -22,13 +23,17 @@ type Looper interface {
 	SetSettings(settings settings.Updater) (outcome string)
 }
 
+type Updater interface {
+	UpdateServers(ctx context.Context) (allServers models.AllServers, err error)
+}
+
 type looper struct {
 	state state
 	// Objects
 	updater       Updater
 	flusher       storage.Flusher
 	setAllServers func(allServers models.AllServers)
-	logger        infoErrorer
+	logger        Logger
 	// Internal channels and locks
 	loopLock     sync.Mutex
 	start        chan struct{}
@@ -44,6 +49,12 @@ type looper struct {
 
 const defaultBackoffTime = 5 * time.Second
 
+type Logger interface {
+	Info(s string)
+	Warn(s string)
+	Error(s string)
+}
+
 func NewLooper(settings settings.Updater, currentServers models.AllServers,
 	flusher storage.Flusher, setAllServers func(allServers models.AllServers),
 	client *http.Client, logger Logger) Looper {
@@ -52,7 +63,7 @@ func NewLooper(settings settings.Updater, currentServers models.AllServers,
 			status:   constants.Stopped,
 			settings: settings,
 		},
-		updater:       New(settings, client, currentServers, logger),
+		updater:       updater.New(settings, client, currentServers, logger),
 		flusher:       flusher,
 		setAllServers: setAllServers,
 		logger:        logger,

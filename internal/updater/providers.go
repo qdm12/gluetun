@@ -30,7 +30,7 @@ import (
 	windscribe "github.com/qdm12/gluetun/internal/provider/windscribe/updater"
 )
 
-func (u *updater) updateProvider(ctx context.Context, provider string) (
+func (u *Updater) updateProvider(ctx context.Context, provider string) (
 	warnings []string, err error) {
 	existingServers := u.getProviderServers(provider)
 	minServers := getMinServers(existingServers)
@@ -47,7 +47,7 @@ func (u *updater) updateProvider(ctx context.Context, provider string) (
 	return warnings, nil
 }
 
-func (u *updater) getServers(ctx context.Context, provider string,
+func (u *Updater) getServers(ctx context.Context, provider string,
 	minServers int) (servers []models.Server, warnings []string, err error) {
 	switch provider {
 	case providers.Custom:
@@ -101,7 +101,7 @@ func (u *updater) getServers(ctx context.Context, provider string,
 	}
 }
 
-func (u *updater) getProviderServers(provider string) (servers []models.Server) {
+func (u *Updater) getProviderServers(provider string) (servers []models.Server) {
 	providerServers, ok := u.servers.ProviderToServers[provider]
 	if !ok {
 		panic(fmt.Sprintf("provider %s is unknown", provider))
@@ -114,7 +114,7 @@ func getMinServers(servers []models.Server) (minServers int) {
 	return int(minRatio * float64(len(servers)))
 }
 
-func (u *updater) patchProvider(provider string, servers []models.Server) {
+func (u *Updater) patchProvider(provider string, servers []models.Server) {
 	providerServers, ok := u.servers.ProviderToServers[provider]
 	if !ok {
 		panic(fmt.Sprintf("provider %s is unknown", provider))

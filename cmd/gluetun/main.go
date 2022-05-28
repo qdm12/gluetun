@@ -37,7 +37,7 @@ import (
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tun"
-	"github.com/qdm12/gluetun/internal/updater"
+	updater "github.com/qdm12/gluetun/internal/updater/loop"
 	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/goshutdown"

@@ -6,12 +6,11 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
-	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/vpn"
 )
 
 func newHandlerV0(ctx context.Context, logger infoWarner,
-	vpn vpn.Looper, dns dns.Looper, updater updater.Looper) http.Handler {
+	vpn vpn.Looper, dns dns.Looper, updater UpdaterLooper) http.Handler {
 	return &handlerV0{
 		ctx:     ctx,
 		logger:  logger,
@@ -26,7 +25,7 @@ type handlerV0 struct {
 	logger  infoWarner
 	vpn     vpn.Looper
 	dns     dns.Looper
-	updater updater.Looper
+	updater UpdaterLooper
 }
 
 func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {

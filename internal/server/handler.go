@@ -9,7 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/publicip"
-	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/vpn"
 )
 
@@ -18,7 +17,7 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	vpnLooper vpn.Looper,
 	pfGetter portforward.Getter,
 	unboundLooper dns.Looper,
-	updaterLooper updater.Looper,
+	updaterLooper UpdaterLooper,
 	publicIPLooper publicip.Looper,
 ) http.Handler {
 	handler := &handler{}

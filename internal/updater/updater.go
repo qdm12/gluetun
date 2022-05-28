@@ -14,11 +14,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-type Updater interface {
-	UpdateServers(ctx context.Context) (allServers models.AllServers, err error)
-}
-
-type updater struct {
+type Updater struct {
 	// configuration
 	options settings.Updater
 
@@ -33,10 +29,16 @@ type updater struct {
 	unzipper  unzip.Unzipper
 }
 
+type Logger interface {
+	Info(s string)
+	Warn(s string)
+	Error(s string)
+}
+
 func New(settings settings.Updater, httpClient *http.Client,
-	currentServers models.AllServers, logger Logger) Updater {
+	currentServers models.AllServers, logger Logger) *Updater {
 	unzipper := unzip.New(httpClient)
-	return &updater{
+	return &Updater{
 		logger:    logger,
 		timeNow:   time.Now,
 		presolver: resolver.NewParallelResolver(settings.DNSAddress.String()),
@@ -49,7 +51,7 @@ func New(settings settings.Updater, httpClient *http.Client,
 
 var caser = cases.Title(language.English) //nolint:gochecknoglobals
 
-func (u *updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) {
+func (u *Updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) {
 	for _, provider := range u.options.Providers {
 		u.logger.Info("updating " + caser.String(provider) + " servers...")
 		// TODO support servers offering only TCP or only UDP
