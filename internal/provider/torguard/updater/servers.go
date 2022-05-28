@@ -10,27 +10,24 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
-	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
-func GetServers(ctx context.Context, unzipper unzip.Unzipper,
-	presolver resolver.Parallel, minServers int) (
-	servers []models.Server, warnings []string, err error) {
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
 	const tcpURL = "https://torguard.net/downloads/OpenVPN-TCP-Linux.zip"
-	tcpContents, err := unzipper.FetchAndExtract(ctx, tcpURL)
+	tcpContents, err := u.unzipper.FetchAndExtract(ctx, tcpURL)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	const udpURL = "https://torguard.net/downloads/OpenVPN-UDP-Linux.zip"
-	udpContents, err := unzipper.FetchAndExtract(ctx, udpURL)
+	udpContents, err := u.unzipper.FetchAndExtract(ctx, udpURL)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	hts := make(hostToServer)
@@ -38,26 +35,26 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 
 	for fileName, content := range tcpContents {
 		const tcp, udp = true, false
-		newWarnings := addServerFromOvpn(fileName, content, hts, tcp, udp, titleCaser)
-		warnings = append(warnings, newWarnings...)
+		warnings := addServerFromOvpn(fileName, content, hts, tcp, udp, titleCaser)
+		u.warnWarnings(warnings)
 	}
 
 	for fileName, content := range udpContents {
 		const tcp, udp = false, true
-		newWarnings := addServerFromOvpn(fileName, content, hts, tcp, udp, titleCaser)
-		warnings = append(warnings, newWarnings...)
+		warnings := addServerFromOvpn(fileName, content, hts, tcp, udp, titleCaser)
+		u.warnWarnings(warnings)
 	}
 
 	if len(hts) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(hts), minServers)
 	}
 
 	hosts := hts.toHostsSlice()
-	hostToIPs, newWarnings, err := resolveHosts(ctx, presolver, hosts, minServers)
-	warnings = append(warnings, newWarnings...)
+	hostToIPs, warnings, err := resolveHosts(ctx, u.presolver, hosts, minServers)
+	u.warnWarnings(warnings)
 	if err != nil {
-		return nil, warnings, err
+		return nil, err
 	}
 
 	hts.adaptWithIPs(hostToIPs)
@@ -65,13 +62,13 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	servers = hts.toServersSlice()
 
 	if len(servers) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }
 
 func addServerFromOvpn(fileName string, content []byte,
@@ -103,4 +100,10 @@ func addServerFromOvpn(fileName string, content []byte,
 
 	hts.add(host, country, city, tcp, udp, ips)
 	return warnings
+}
+
+func (u *Updater) warnWarnings(warnings []string) {
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 }

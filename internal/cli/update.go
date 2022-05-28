@@ -36,10 +36,8 @@ type UpdaterLogger interface {
 	Error(s string)
 }
 
-func boolPtr(b bool) *bool { return &b }
-
 func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
-	options := settings.Updater{CLI: boolPtr(true)}
+	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
 	var dnsAddress, csvProviders string
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)

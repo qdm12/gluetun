@@ -6,23 +6,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 var (
 	ErrNotEnoughServers = errors.New("not enough servers found")
 )
 
-func GetServers(ctx context.Context, client *http.Client,
-	presolver resolver.Parallel, minServers int) (
-	servers []models.Server, warnings []string, err error) {
-	data, err := fetchAPI(ctx, client)
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
+	data, err := fetchAPI(ctx, u.client)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed fetching API: %w", err)
+		return nil, fmt.Errorf("failed fetching API: %w", err)
 	}
 
 	hosts := make([]string, 0, len(data.Servers))
@@ -40,13 +37,16 @@ func GetServers(ctx context.Context, client *http.Client,
 	}
 
 	if len(hosts) < minServers {
-		return nil, nil, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(hosts), minServers)
 	}
 
-	hostToIPs, warnings, err := resolveHosts(ctx, presolver, hosts, minServers)
+	hostToIPs, warnings, err := resolveHosts(ctx, u.presolver, hosts, minServers)
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 	if err != nil {
-		return nil, warnings, err
+		return nil, err
 	}
 
 	servers = make([]models.Server, 0, len(hosts))
@@ -78,5 +78,5 @@ func GetServers(ctx context.Context, client *http.Client,
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }

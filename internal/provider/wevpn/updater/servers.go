@@ -9,7 +9,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 var (
@@ -18,8 +17,8 @@ var (
 	ErrNotEnoughServers = errors.New("not enough servers found")
 )
 
-func GetServers(ctx context.Context, presolver resolver.Parallel, minServers int) (
-	servers []models.Server, warnings []string, err error) {
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
 	cities := getAvailableCities()
 	servers = make([]models.Server, 0, len(cities))
 	hostnames := make([]string, len(cities))
@@ -31,14 +30,16 @@ func GetServers(ctx context.Context, presolver resolver.Parallel, minServers int
 		hostnameToCity[hostname] = city
 	}
 
-	hostnameToIPs, newWarnings, err := resolveHosts(ctx, presolver, hostnames, minServers)
-	warnings = append(warnings, newWarnings...)
+	hostnameToIPs, warnings, err := resolveHosts(ctx, u.presolver, hostnames, minServers)
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 	if err != nil {
-		return nil, warnings, err
+		return nil, err
 	}
 
 	if len(hostnameToIPs) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(servers), minServers)
 	}
 
@@ -56,5 +57,5 @@ func GetServers(ctx context.Context, presolver resolver.Parallel, minServers int
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }

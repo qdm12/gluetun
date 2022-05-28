@@ -6,39 +6,40 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
-	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 var (
 	ErrNotEnoughServers = errors.New("not enough servers found")
 )
 
-func GetServers(ctx context.Context, unzipper unzip.Unzipper,
-	client *http.Client, presolver resolver.Parallel, minServers int) (
-	servers []models.Server, warnings []string, err error) {
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
 	hts := make(hostToServer)
 
-	err = addServersFromAPI(ctx, client, hts)
+	err = addServersFromAPI(ctx, u.client, hts)
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot fetch server information from API: %w", err)
+		return nil, fmt.Errorf("cannot fetch server information from API: %w", err)
 	}
 
-	warnings, err = addOpenVPNServersFromZip(ctx, unzipper, hts)
+	warnings, err := addOpenVPNServersFromZip(ctx, u.unzipper, hts)
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 	if err != nil {
-		return nil, nil, fmt.Errorf("cannot get OpenVPN ZIP file: %w", err)
+		return nil, fmt.Errorf("cannot get OpenVPN ZIP file: %w", err)
 	}
 
 	getRemainingServers(hts)
 
 	hosts := hts.toHostsSlice()
-	hostToIPs, newWarnings, err := resolveHosts(ctx, presolver, hosts, minServers)
-	warnings = append(warnings, newWarnings...)
+	hostToIPs, warnings, err := resolveHosts(ctx, u.presolver, hosts, minServers)
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 	if err != nil {
-		return nil, warnings, err
+		return nil, err
 	}
 
 	hts.adaptWithIPs(hostToIPs)
@@ -46,11 +47,11 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	servers = hts.toServersSlice()
 
 	if len(servers) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }

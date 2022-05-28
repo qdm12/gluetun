@@ -10,23 +10,20 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
-	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
-func GetServers(ctx context.Context, unzipper unzip.Unzipper,
-	presolver resolver.Parallel, minServers int) (
-	servers []models.Server, warnings []string, err error) {
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
 	const url = "https://www.ipvanish.com/software/configs/configs.zip"
-	contents, err := unzipper.FetchAndExtract(ctx, url)
+	contents, err := u.unzipper.FetchAndExtract(ctx, url)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	} else if len(contents) < minServers {
-		return nil, nil, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(contents), minServers)
 	}
 
@@ -41,27 +38,24 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 		tcp, udp, err := openvpn.ExtractProto(content)
 		if err != nil {
 			// treat error as warning and go to next file
-			warning := err.Error() + ": in " + fileName
-			warnings = append(warnings, warning)
+			u.warner.Warn(err.Error() + " in " + fileName)
 			continue
 		}
 
 		hostname, warning, err := openvpn.ExtractHost(content)
 		if warning != "" {
-			warnings = append(warnings, warning)
+			u.warner.Warn(warning)
 		}
 		if err != nil {
 			// treat error as warning and go to next file
-			warning := err.Error() + " in " + fileName
-			warnings = append(warnings, warning)
+			u.warner.Warn(err.Error() + " in " + fileName)
 			continue
 		}
 
 		country, city, err := parseFilename(fileName, hostname, titleCaser)
 		if err != nil {
 			// treat error as warning and go to next file
-			warning := err.Error() + " in " + fileName
-			warnings = append(warnings, warning)
+			u.warner.Warn(err.Error() + " in " + fileName)
 			continue
 		}
 
@@ -69,15 +63,17 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	}
 
 	if len(hts) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(hts), minServers)
 	}
 
 	hosts := hts.toHostsSlice()
-	hostToIPs, newWarnings, err := resolveHosts(ctx, presolver, hosts, minServers)
-	warnings = append(warnings, newWarnings...)
+	hostToIPs, warnings, err := resolveHosts(ctx, u.presolver, hosts, minServers)
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 	if err != nil {
-		return nil, warnings, err
+		return nil, err
 	}
 
 	hts.adaptWithIPs(hostToIPs)
@@ -85,11 +81,11 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	servers = hts.toServersSlice()
 
 	if len(servers) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }

@@ -30,75 +30,76 @@ import (
 	windscribe "github.com/qdm12/gluetun/internal/provider/windscribe/updater"
 )
 
-func (u *Updater) updateProvider(ctx context.Context, provider string) (
-	warnings []string, err error) {
+func (u *Updater) updateProvider(ctx context.Context, provider string) (err error) {
 	existingServers := u.getProviderServers(provider)
 	minServers := getMinServers(existingServers)
-	servers, warnings, err := u.getServers(ctx, provider, minServers)
+	servers, err := u.getServers(ctx, provider, minServers)
 	if err != nil {
-		return warnings, err
+		return err
 	}
 
 	if reflect.DeepEqual(existingServers, servers) {
-		return warnings, nil
+		return nil
 	}
 
 	u.patchProvider(provider, servers)
-	return warnings, nil
+	return nil
 }
 
 func (u *Updater) getServers(ctx context.Context, provider string,
-	minServers int) (servers []models.Server, warnings []string, err error) {
+	minServers int) (servers []models.Server, err error) {
+	var providerUpdater interface {
+		GetServers(ctx context.Context, minServers int) (servers []models.Server, err error)
+	}
 	switch provider {
 	case providers.Custom:
 		panic("cannot update custom provider")
 	case providers.Cyberghost:
-		servers, err = cyberghost.GetServers(ctx, u.presolver, minServers)
-		return servers, nil, err
+		providerUpdater = cyberghost.New(u.presolver)
 	case providers.Expressvpn:
-		return expressvpn.GetServers(ctx, u.unzipper, u.presolver, minServers)
+		providerUpdater = expressvpn.New(u.unzipper, u.presolver, u.logger)
 	case providers.Fastestvpn:
-		return fastestvpn.GetServers(ctx, u.unzipper, u.presolver, minServers)
+		providerUpdater = fastestvpn.New(u.unzipper, u.presolver, u.logger)
 	case providers.HideMyAss:
-		return hidemyass.GetServers(ctx, u.client, u.presolver, minServers)
+		providerUpdater = hidemyass.New(u.client, u.presolver, u.logger)
 	case providers.Ipvanish:
-		return ipvanish.GetServers(ctx, u.unzipper, u.presolver, minServers)
+		providerUpdater = ipvanish.New(u.unzipper, u.presolver, u.logger)
 	case providers.Ivpn:
-		return ivpn.GetServers(ctx, u.client, u.presolver, minServers)
+		providerUpdater = ivpn.New(u.client, u.presolver, u.logger)
 	case providers.Mullvad:
-		servers, err = mullvad.GetServers(ctx, u.client, minServers)
-		return servers, nil, err
+		providerUpdater = mullvad.New(u.client)
 	case providers.Nordvpn:
-		return nordvpn.GetServers(ctx, u.client, minServers)
+		providerUpdater = nordvpn.New(u.client, u.logger)
 	case providers.Perfectprivacy:
-		return perfectprivacy.GetServers(ctx, u.unzipper, minServers)
+		providerUpdater = perfectprivacy.New(u.unzipper, u.logger)
 	case providers.Privado:
-		return privado.GetServers(ctx, u.unzipper, u.client, u.presolver, minServers)
+		providerUpdater = privado.New(u.client, u.unzipper, u.presolver, u.logger)
 	case providers.PrivateInternetAccess:
-		servers, err = privateinternetaccess.GetServers(ctx, u.client, minServers)
-		return servers, nil, err
+		providerUpdater = privateinternetaccess.New(u.client)
 	case providers.Privatevpn:
-		return privatevpn.GetServers(ctx, u.unzipper, u.presolver, minServers)
+		providerUpdater = privatevpn.New(u.unzipper, u.presolver, u.logger)
 	case providers.Protonvpn:
-		return protonvpn.GetServers(ctx, u.client, minServers)
+		providerUpdater = protonvpn.New(u.client, u.logger)
 	case providers.Purevpn:
-		return purevpn.GetServers(ctx, u.client, u.unzipper, u.presolver, minServers)
+		providerUpdater = purevpn.New(u.client, u.unzipper, u.presolver, u.logger)
 	case providers.Surfshark:
-		return surfshark.GetServers(ctx, u.unzipper, u.client, u.presolver, minServers)
+		providerUpdater = surfshark.New(u.client, u.unzipper, u.presolver, u.logger)
 	case providers.Torguard:
-		return torguard.GetServers(ctx, u.unzipper, u.presolver, minServers)
+		providerUpdater = torguard.New(u.unzipper, u.presolver, u.logger)
 	case providers.VPNUnlimited:
-		return vpnunlimited.GetServers(ctx, u.unzipper, u.presolver, minServers)
+		providerUpdater = vpnunlimited.New(u.unzipper, u.presolver, u.logger)
 	case providers.Vyprvpn:
-		return vyprvpn.GetServers(ctx, u.unzipper, u.presolver, minServers)
+		providerUpdater = vyprvpn.New(u.unzipper, u.presolver, u.logger)
 	case providers.Wevpn:
-		return wevpn.GetServers(ctx, u.presolver, minServers)
+		providerUpdater = wevpn.New(u.presolver, u.logger)
 	case providers.Windscribe:
-		servers, err = windscribe.GetServers(ctx, u.client, minServers)
-		return servers, nil, err
+		providerUpdater = windscribe.New(u.client, u.logger)
 	default:
 		panic("provider " + provider + " is unknown")
 	}
+
+	servers, err = providerUpdater.GetServers(ctx, minServers)
+	return servers, err
 }
 
 func (u *Updater) getProviderServers(provider string) (servers []models.Server) {

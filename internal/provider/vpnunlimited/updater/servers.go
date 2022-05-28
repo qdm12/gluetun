@@ -8,23 +8,25 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
-	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
-func GetServers(ctx context.Context, unzipper unzip.Unzipper,
-	presolver resolver.Parallel, minServers int) (
-	servers []models.Server, warnings []string, err error) {
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
 	// Hardcoded data from a user provided ZIP file since it's behind a login wall
 	hts, warnings := getHostToServer()
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 
 	hosts := hts.toHostsSlice()
-	hostToIPs, newWarnings, err := resolveHosts(ctx, presolver, hosts, minServers)
-	warnings = append(warnings, newWarnings...)
+	hostToIPs, warnings, err := resolveHosts(ctx, u.presolver, hosts, minServers)
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 	if err != nil {
-		return nil, warnings, err
+		return nil, err
 	}
 
 	hts.adaptWithIPs(hostToIPs)
@@ -32,11 +34,11 @@ func GetServers(ctx context.Context, unzipper unzip.Unzipper,
 	servers = hts.toServersSlice()
 
 	if len(servers) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }

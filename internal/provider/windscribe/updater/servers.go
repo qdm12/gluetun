@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -18,9 +17,9 @@ var (
 	ErrNoWireguardKey   = errors.New("no wireguard public key found")
 )
 
-func GetServers(ctx context.Context, client *http.Client, minServers int) (
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
-	data, err := fetchAPI(ctx, client)
+	data, err := fetchAPI(ctx, u.client)
 	if err != nil {
 		return nil, err
 	}

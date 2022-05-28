@@ -18,12 +18,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_GetServers(t *testing.T) {
+func Test_Updater_GetServers(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
 		// Inputs
 		minServers int
+
+		// Mocks
+		warnerBuilder func(ctrl *gomock.Controller) Warner
 
 		// From API
 		responseBody   string
@@ -38,15 +41,20 @@ func Test_GetServers(t *testing.T) {
 		resolveErr      error
 
 		// Output
-		servers  []models.Server
-		warnings []string
-		err      error
+		servers []models.Server
+		err     error
 	}{
 		"http response error": {
+			warnerBuilder:  func(ctrl *gomock.Controller) Warner { return nil },
 			responseStatus: http.StatusNoContent,
 			err:            errors.New("failed fetching API: HTTP status code not OK: 204 No Content"),
 		},
 		"resolve error": {
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("resolve warning")
+				return warner
+			},
 			responseBody: `{"servers":[
 				{"hostnames":{"openvpn":"hosta"}}
 			]}`,
@@ -56,11 +64,11 @@ func Test_GetServers(t *testing.T) {
 			resolveSettings: getResolveSettings(0),
 			resolveWarnings: []string{"resolve warning"},
 			resolveErr:      errors.New("dummy"),
-			warnings:        []string{"resolve warning"},
 			err:             errors.New("dummy"),
 		},
 		"not enough servers": {
-			minServers: 2,
+			minServers:    2,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner { return nil },
 			responseBody: `{"servers":[
 				{"hostnames":{"openvpn":"hosta"}}
 			]}`,
@@ -69,6 +77,11 @@ func Test_GetServers(t *testing.T) {
 		},
 		"success": {
 			minServers: 1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("resolve warning")
+				return warner
+			},
 			responseBody: `{"servers":[
 				{"country":"Country1","city":"City A","hostnames":{"openvpn":"hosta"}},
 				{"country":"Country2","city":"City B","hostnames":{"openvpn":"hostb"},"wg_public_key":"xyz"},
@@ -97,7 +110,6 @@ func Test_GetServers(t *testing.T) {
 					WgPubKey: "xyz",
 					IPs:      []net.IP{{5, 5, 5, 5}, {6, 6, 6, 6}}},
 			},
-			warnings: []string{"resolve warning"},
 		},
 	}
 	for name, testCase := range testCases {
@@ -126,10 +138,13 @@ func Test_GetServers(t *testing.T) {
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 
-			servers, warnings, err := GetServers(ctx, client, presolver, testCase.minServers)
+			warner := testCase.warnerBuilder(ctrl)
+
+			updater := New(client, presolver, warner)
+
+			servers, err := updater.GetServers(ctx, testCase.minServers)
 
 			assert.Equal(t, testCase.servers, servers)
-			assert.Equal(t, testCase.warnings, warnings)
 			if testCase.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, testCase.err.Error(), err.Error())

@@ -16,11 +16,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_GetServers(t *testing.T) {
+func Test_Updater_GetServers(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
 		// Inputs
 		minServers int
+
+		// Mocks
+		warnerBuilder func(ctrl *gomock.Controller) Warner
 
 		// Unzip
 		unzipContents map[string][]byte
@@ -35,48 +38,67 @@ func Test_GetServers(t *testing.T) {
 		resolveErr      error
 
 		// Output
-		servers  []models.Server
-		warnings []string
-		err      error
+		servers []models.Server
+		err     error
 	}{
 		"unzipper error": {
-			unzipErr: errors.New("dummy"),
-			err:      errors.New("dummy"),
+			warnerBuilder: func(ctrl *gomock.Controller) Warner { return nil },
+			unzipErr:      errors.New("dummy"),
+			err:           errors.New("dummy"),
 		},
 		"not enough unzip contents": {
 			minServers:    1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner { return nil },
 			unzipContents: map[string][]byte{},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"no openvpn file": {
 			minServers:    1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner { return nil },
 			unzipContents: map[string][]byte{"somefile.txt": {}},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"invalid proto": {
-			minServers:    1,
+			minServers: 1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("unknown protocol: invalid in badproto.ovpn")
+				return warner
+			},
 			unzipContents: map[string][]byte{"badproto.ovpn": []byte(`proto invalid`)},
-			warnings:      []string{"unknown protocol: invalid: in badproto.ovpn"},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"no host": {
-			minServers:    1,
+			minServers: 1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("remote host not found in nohost.ovpn")
+				return warner
+			},
 			unzipContents: map[string][]byte{"nohost.ovpn": []byte(``)},
-			warnings:      []string{"remote host not found in nohost.ovpn"},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"multiple hosts": {
 			minServers: 1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("only using the first host \"hosta\" and discarding 1 other hosts")
+				return warner
+			},
 			unzipContents: map[string][]byte{
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta\nremote hostb"),
 			},
 			expectResolve:   true,
 			hostsToResolve:  []string{"hosta"},
 			resolveSettings: getResolveSettings(1),
-			warnings:        []string{"only using the first host \"hosta\" and discarding 1 other hosts"},
 			err:             errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"resolve error": {
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("resolve warning")
+				return warner
+			},
 			unzipContents: map[string][]byte{
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta"),
 			},
@@ -85,19 +107,27 @@ func Test_GetServers(t *testing.T) {
 			resolveSettings: getResolveSettings(0),
 			resolveWarnings: []string{"resolve warning"},
 			resolveErr:      errors.New("dummy"),
-			warnings:        []string{"resolve warning"},
 			err:             errors.New("dummy"),
 		},
 		"filename parsing error": {
 			minServers: 1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("country code is unknown: unknown in ipvanish-unknown-City-A-hosta.ovpn")
+				return warner
+			},
 			unzipContents: map[string][]byte{
 				"ipvanish-unknown-City-A-hosta.ovpn": []byte("remote hosta"),
 			},
-			warnings: []string{"country code is unknown: unknown in ipvanish-unknown-City-A-hosta.ovpn"},
-			err:      errors.New("not enough servers found: 0 and expected at least 1"),
+			err: errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"success": {
 			minServers: 1,
+			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+				warner := NewMockWarner(ctrl)
+				warner.EXPECT().Warn("resolve warning")
+				return warner
+			},
 			unzipContents: map[string][]byte{
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta"),
 				"ipvanish-LU-City-B-hostb.ovpn": []byte("remote hostb"),
@@ -128,7 +158,6 @@ func Test_GetServers(t *testing.T) {
 					IPs:      []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}},
 				},
 			},
-			warnings: []string{"resolve warning"},
 		},
 	}
 	for name, testCase := range testCases {
@@ -150,10 +179,13 @@ func Test_GetServers(t *testing.T) {
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 
-			servers, warnings, err := GetServers(ctx, unzipper, presolver, testCase.minServers)
+			warner := testCase.warnerBuilder(ctrl)
+
+			updater := New(unzipper, presolver, warner)
+
+			servers, err := updater.GetServers(ctx, testCase.minServers)
 
 			assert.Equal(t, testCase.servers, servers)
-			assert.Equal(t, testCase.warnings, warnings)
 			if testCase.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, testCase.err.Error(), err.Error())

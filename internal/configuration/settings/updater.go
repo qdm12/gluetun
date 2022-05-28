@@ -26,11 +26,6 @@ type Updater struct {
 	// Providers is the list of VPN service providers
 	// to update server information for.
 	Providers []string
-	// CLI is to precise the updater is running in CLI
-	// mode. This is set automatically and cannot be set
-	// by settings sources. It cannot be nil in the
-	// internal state.
-	CLI *bool
 }
 
 func (u Updater) Validate() (err error) {
@@ -62,7 +57,6 @@ func (u *Updater) copy() (copied Updater) {
 		Period:     helpers.CopyDurationPtr(u.Period),
 		DNSAddress: helpers.CopyIP(u.DNSAddress),
 		Providers:  helpers.CopyStringSlice(u.Providers),
-		CLI:        u.CLI,
 	}
 }
 
@@ -72,7 +66,6 @@ func (u *Updater) mergeWith(other Updater) {
 	u.Period = helpers.MergeWithDuration(u.Period, other.Period)
 	u.DNSAddress = helpers.MergeWithIP(u.DNSAddress, other.DNSAddress)
 	u.Providers = helpers.MergeStringSlices(u.Providers, other.Providers)
-	u.CLI = helpers.MergeWithBool(u.CLI, other.CLI)
 }
 
 // overrideWith overrides fields of the receiver
@@ -82,13 +75,11 @@ func (u *Updater) overrideWith(other Updater) {
 	u.Period = helpers.OverrideWithDuration(u.Period, other.Period)
 	u.DNSAddress = helpers.OverrideWithIP(u.DNSAddress, other.DNSAddress)
 	u.Providers = helpers.OverrideWithStringSlice(u.Providers, other.Providers)
-	u.CLI = helpers.MergeWithBool(u.CLI, other.CLI)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
 	u.DNSAddress = helpers.DefaultIP(u.DNSAddress, net.IPv4(1, 1, 1, 1))
-	u.CLI = helpers.DefaultBool(u.CLI, false)
 	if len(u.Providers) == 0 && vpnProvider != providers.Custom {
 		u.Providers = []string{vpnProvider}
 	}
@@ -107,10 +98,6 @@ func (u Updater) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Update period: %s", *u.Period)
 	node.Appendf("DNS address: %s", u.DNSAddress)
 	node.Appendf("Providers to update: %s", strings.Join(u.Providers, ", "))
-
-	if *u.CLI {
-		node.Appendf("CLI mode: enabled")
-	}
 
 	return node
 }

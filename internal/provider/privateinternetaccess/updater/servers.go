@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -14,7 +13,7 @@ import (
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
-func GetServers(ctx context.Context, client *http.Client, minServers int) (
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	nts := make(nameToServer)
 
@@ -26,7 +25,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 	maxTimer := time.NewTimer(maxDuration)
 
 	for {
-		data, err := fetchAPI(ctx, client)
+		data, err := fetchAPI(ctx, u.client)
 		if err != nil {
 			return nil, err
 		}

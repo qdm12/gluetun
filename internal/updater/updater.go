@@ -56,12 +56,7 @@ func (u *Updater) UpdateServers(ctx context.Context) (allServers models.AllServe
 		u.logger.Info("updating " + caser.String(provider) + " servers...")
 		// TODO support servers offering only TCP or only UDP
 		// for NordVPN and PureVPN
-		warnings, err := u.updateProvider(ctx, provider)
-		if *u.options.CLI {
-			for _, warning := range warnings {
-				u.logger.Warn(provider + ": " + warning)
-			}
-		}
+		err := u.updateProvider(ctx, provider)
 		if err != nil {
 			if ctxErr := ctx.Err(); ctxErr != nil {
 				return allServers, ctxErr

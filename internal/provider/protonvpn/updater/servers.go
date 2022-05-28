@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
@@ -14,11 +13,11 @@ import (
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
 
-func GetServers(ctx context.Context, client *http.Client, minServers int) (
-	servers []models.Server, warnings []string, err error) {
-	data, err := fetchAPI(ctx, client)
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
+	data, err := fetchAPI(ctx, u.client)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	countryCodes := constants.CountryCodes()
@@ -29,7 +28,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 	}
 
 	if count < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, count, minServers)
 	}
 
@@ -40,8 +39,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 		name := logicalServer.Name
 		for _, physicalServer := range logicalServer.Servers {
 			if physicalServer.Status == 0 { // disabled so skip server
-				warnings = append(warnings,
-					"ignoring server "+physicalServer.Domain+" with status 0")
+				u.warner.Warn("ignoring server " + physicalServer.Domain + " with status 0")
 				continue
 			}
 
@@ -53,7 +51,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 			countryCode := logicalServer.ExitCountry
 			country, warning := codeToCountry(countryCode, countryCodes)
 			if warning != "" {
-				warnings = append(warnings, warning)
+				u.warner.Warn(warning)
 			}
 
 			ipToServer.add(country, region, city, name, hostname, entryIP)
@@ -61,7 +59,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 	}
 
 	if len(ipToServer) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(ipToServer), minServers)
 	}
 
@@ -69,7 +67,7 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }
 
 func getStringValue(ptr *string) string {

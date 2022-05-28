@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -19,30 +18,29 @@ var (
 	ErrNotEnoughServers = errors.New("not enough servers found")
 )
 
-func GetServers(ctx context.Context, client *http.Client, minServers int) (
-	servers []models.Server, warnings []string, err error) {
-	data, err := fetchAPI(ctx, client)
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
+	data, err := fetchAPI(ctx, u.client)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	servers = make([]models.Server, 0, len(data))
 
 	for _, jsonServer := range data {
 		if !jsonServer.Features.TCP && !jsonServer.Features.UDP {
-			warning := "server does not support TCP and UDP for openvpn: " + jsonServer.Name
-			warnings = append(warnings, warning)
+			u.warner.Warn("server does not support TCP and UDP for openvpn: " + jsonServer.Name)
 			continue
 		}
 
 		ip, err := parseIPv4(jsonServer.IPAddress)
 		if err != nil {
-			return nil, nil, fmt.Errorf("%w for server %s", err, jsonServer.Name)
+			return nil, fmt.Errorf("%w for server %s", err, jsonServer.Name)
 		}
 
 		number, err := parseServerName(jsonServer.Name)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		server := models.Server{
@@ -58,11 +56,11 @@ func GetServers(ctx context.Context, client *http.Client, minServers int) (
 	}
 
 	if len(servers) < minServers {
-		return nil, warnings, fmt.Errorf("%w: %d and expected at least %d",
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	sortServers(servers)
 
-	return servers, warnings, nil
+	return servers, nil
 }

@@ -6,15 +6,14 @@ import (
 	"context"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
-func GetServers(ctx context.Context, presolver resolver.Parallel,
-	minServers int) (servers []models.Server, err error) {
+func (u *Updater) GetServers(ctx context.Context, minServers int) (
+	servers []models.Server, err error) {
 	possibleServers := getPossibleServers()
 
 	possibleHosts := possibleServers.hostsSlice()
-	hostToIPs, err := resolveHosts(ctx, presolver, possibleHosts, minServers)
+	hostToIPs, err := resolveHosts(ctx, u.presolver, possibleHosts, minServers)
 	if err != nil {
 		return nil, err
 	}
