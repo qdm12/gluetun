@@ -33,6 +33,9 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
     env:
       DOCKER_BUILDKIT: "1"
     steps:
@@ -84,6 +87,9 @@ jobs:
         (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]')
       )
     needs: [verify]
+    permissions:
+      actions: read
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
