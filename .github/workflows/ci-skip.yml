@@ -1,0 +1,37 @@
+name: No trigger file paths
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - .github/workflows/ci.yml
+      - cmd/**
+      - internal/**
+      - pkg/**
+      - .dockerignore
+      - .golangci.yml
+      - Dockerfile
+      - go.mod
+      - go.sum
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - .github/workflows/ci.yml
+      - cmd/**
+      - internal/**
+      - pkg/**
+      - .dockerignore
+      - .golangci.yml
+      - Dockerfile
+      - go.mod
+      - go.sum
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - name: No trigger path triggered for required verify workflow.
+        run: exit 0
