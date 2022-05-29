@@ -32,16 +32,25 @@ on:
 
 jobs:
   verify:
-    # Only run if it's a push event or if it's a PR from this repository, and it is not dependabot.
-    if: |
-      github.actor != 'dependabot[bot]' &&
-      (github.event_name == 'push' ||
-      github.event_name == 'release' ||
-      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository))
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: "1"
     steps:
+      - name: Check for event validity
+        if: |
+          !((
+            github.event_name == 'push'
+          ) || (
+            github.event_name == 'release'
+          ) ||  (
+            github.event.pull_request.head.repo.full_name != github.repository
+          ) ||(
+            github.actor == 'dependabot[bot]' &&
+            github.event_name == 'pull_request' &&
+            github.event.pull_request.head.repo.full_name == github.repository
+          ))
+        run: echo "Not a valid event!" && exit 1
+
       - uses: actions/checkout@v3
 
       - uses: reviewdog/action-misspell@v1
@@ -62,27 +71,17 @@ jobs:
           -v "$(pwd)/coverage.txt:/tmp/gobuild/coverage.txt" \
           test-container
 
-      - name: Code security analysis
-        uses: snyk/actions/golang@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
       - name: Build final image
         run: docker build -t final-image .
 
-      # - name: Image security analysis
-      #   uses: snyk/actions/docker@master
-      #   env:
-      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      #   with:
-      #     image: final-image
-
   publish:
-    # Only run if it's a push event or if it's a PR from this repository
     if: |
-      github.event_name == 'push' ||
-      github.event_name == 'release' ||
-      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (
+        github.event_name == 'push' ||
+        github.event_name == 'release' ||
+        (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]')
+      )
     needs: [verify]
     runs-on: ubuntu-latest
     steps:
