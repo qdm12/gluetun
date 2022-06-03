@@ -49,20 +49,29 @@ func New(settings settings.Updater, httpClient *http.Client,
 	}
 }
 
-var caser = cases.Title(language.English) //nolint:gochecknoglobals
-
 func (u *Updater) UpdateServers(ctx context.Context) (allServers models.AllServers, err error) {
+	caser := cases.Title(language.English)
 	for _, provider := range u.options.Providers {
 		u.logger.Info("updating " + caser.String(provider) + " servers...")
 		// TODO support servers offering only TCP or only UDP
 		// for NordVPN and PureVPN
 		err := u.updateProvider(ctx, provider)
-		if err != nil {
-			if ctxErr := ctx.Err(); ctxErr != nil {
-				return allServers, ctxErr
-			}
-			u.logger.Error(err.Error())
+		if err == nil {
+			continue
 		}
+
+		// return the only error for the single provider.
+		if len(u.options.Providers) == 1 {
+			return allServers, err
+		}
+
+		// stop updating the next providers if context is canceled.
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			return allServers, ctxErr
+		}
+
+		// Log the error and continue updating the next provider.
+		u.logger.Error(err.Error())
 	}
 
 	return u.servers, nil

@@ -98,8 +98,7 @@ func (u *Updater) getServers(ctx context.Context, provider string,
 		panic("provider " + provider + " is unknown")
 	}
 
-	servers, err = providerUpdater.GetServers(ctx, minServers)
-	return servers, err
+	return providerUpdater.GetServers(ctx, minServers)
 }
 
 func (u *Updater) getProviderServers(provider string) (servers []models.Server) {

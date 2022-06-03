@@ -34,9 +34,5 @@ func resolveHosts(ctx context.Context, presolver resolver.Parallel,
 		return nil, err
 	}
 
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-
 	return hostToIPs, nil
 }
