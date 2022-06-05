@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Wevpn_GetConnection(t *testing.T) {
+func Test_Provider_GetConnection(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
