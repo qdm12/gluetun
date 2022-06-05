@@ -146,6 +146,7 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 
 	if connection.Protocol == constants.UDP {
 		lines.add("explicit-exit-notify")
+		lines.addLines(provider.UDPLines)
 	}
 
 	if settings.ProcessUser != "root" {
