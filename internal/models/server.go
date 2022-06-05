@@ -2,6 +2,7 @@ package models
 
 import (
 	"net"
+	"reflect"
 )
 
 type Server struct {
@@ -25,4 +26,29 @@ type Server struct {
 	Stream      bool     `json:"stream,omitempty"`
 	PortForward bool     `json:"port_forward,omitempty"`
 	IPs         []net.IP `json:"ips,omitempty"`
+}
+
+func (s *Server) Equal(other Server) (equal bool) {
+	if !ipsAreEqual(s.IPs, other.IPs) {
+		return false
+	}
+
+	serverCopy := *s
+	serverCopy.IPs = nil
+	other.IPs = nil
+	return reflect.DeepEqual(serverCopy, other)
+}
+
+func ipsAreEqual(a, b []net.IP) (equal bool) {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if !a[i].Equal(b[i]) {
+			return false
+		}
+	}
+
+	return true
 }

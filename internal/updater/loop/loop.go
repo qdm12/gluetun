@@ -9,7 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
 )
 
@@ -24,16 +23,14 @@ type Looper interface {
 }
 
 type Updater interface {
-	UpdateServers(ctx context.Context) (allServers models.AllServers, err error)
+	UpdateServers(ctx context.Context) (err error)
 }
 
 type looper struct {
 	state state
 	// Objects
-	updater       Updater
-	flusher       storage.Flusher
-	setAllServers func(allServers models.AllServers)
-	logger        Logger
+	updater Updater
+	logger  Logger
 	// Internal channels and locks
 	loopLock     sync.Mutex
 	start        chan struct{}
@@ -49,32 +46,35 @@ type looper struct {
 
 const defaultBackoffTime = 5 * time.Second
 
+type Storage interface {
+	SetServers(provider string, servers []models.Server) (err error)
+	GetServersCount(provider string) (count int)
+	ServersAreEqual(provider string, servers []models.Server) (equal bool)
+}
+
 type Logger interface {
 	Info(s string)
 	Warn(s string)
 	Error(s string)
 }
 
-func NewLooper(settings settings.Updater, currentServers models.AllServers,
-	flusher storage.Flusher, setAllServers func(allServers models.AllServers),
+func NewLooper(settings settings.Updater, storage Storage,
 	client *http.Client, logger Logger) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
 		},
-		updater:       updater.New(settings, client, currentServers, logger),
-		flusher:       flusher,
-		setAllServers: setAllServers,
-		logger:        logger,
-		start:         make(chan struct{}),
-		running:       make(chan models.LoopStatus),
-		stop:          make(chan struct{}),
-		stopped:       make(chan struct{}),
-		updateTicker:  make(chan struct{}),
-		timeNow:       time.Now,
-		timeSince:     time.Since,
-		backoffTime:   defaultBackoffTime,
+		updater:      updater.New(settings, client, storage, logger),
+		logger:       logger,
+		start:        make(chan struct{}),
+		running:      make(chan models.LoopStatus),
+		stop:         make(chan struct{}),
+		stopped:      make(chan struct{}),
+		updateTicker: make(chan struct{}),
+		timeNow:      time.Now,
+		timeSince:    time.Since,
+		backoffTime:  defaultBackoffTime,
 	}
 }
 
@@ -106,20 +106,19 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 	for ctx.Err() == nil {
 		updateCtx, updateCancel := context.WithCancel(ctx)
 
-		serversCh := make(chan models.AllServers)
 		errorCh := make(chan error)
 		runWg := &sync.WaitGroup{}
 		runWg.Add(1)
 		go func() {
 			defer runWg.Done()
-			servers, err := l.updater.UpdateServers(updateCtx)
+			err := l.updater.UpdateServers(updateCtx)
 			if err != nil {
 				if updateCtx.Err() == nil {
 					errorCh <- err
 				}
 				return
 			}
-			serversCh <- servers
+			l.state.setStatusWithLock(constants.Completed)
 		}()
 
 		if !crashed {
@@ -148,16 +147,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 				updateCancel()
 				runWg.Wait()
 				l.stopped <- struct{}{}
-			case servers := <-serversCh:
-				l.setAllServers(servers)
-				if err := l.flusher.FlushToFile(&servers); err != nil {
-					l.logger.Error(err.Error())
-				}
-				runWg.Wait()
-				l.state.setStatusWithLock(constants.Completed)
-				l.logger.Info("Updated servers information")
 			case err := <-errorCh:
-				close(serversCh)
 				runWg.Wait()
 				l.state.setStatusWithLock(constants.Crashed)
 				l.logAndWait(ctx, err)

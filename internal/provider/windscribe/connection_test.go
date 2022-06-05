@@ -1,41 +1,68 @@
 package windscribe
 
 import (
+	"errors"
 	"math/rand"
 	"net"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/provider/utils"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_Provider_GetConnection(t *testing.T) {
 	t.Parallel()
 
+	const provider = providers.Windscribe
+
+	errTest := errors.New("test error")
+	boolPtr := func(b bool) *bool { return &b }
+
 	testCases := map[string]struct {
-		servers    []models.Server
-		selection  settings.ServerSelection
-		connection models.Connection
-		errWrapped error
-		errMessage string
+		filteredServers []models.Server
+		storageErr      error
+		selection       settings.ServerSelection
+		connection      models.Connection
+		errWrapped      error
+		errMessage      string
+		panicMessage    string
 	}{
-		"no server available": {
-			selection:  settings.ServerSelection{}.WithDefaults(providers.Windscribe),
-			errWrapped: utils.ErrNoServer,
-			errMessage: "no server",
+		"error": {
+			storageErr: errTest,
+			errWrapped: errTest,
+			errMessage: "cannot filter servers: test error",
 		},
-		"no filter": {
-			servers: []models.Server{
-				{VPN: vpn.OpenVPN, UDP: true, IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
-				{VPN: vpn.OpenVPN, UDP: true, IPs: []net.IP{net.IPv4(2, 2, 2, 2)}},
-				{VPN: vpn.OpenVPN, UDP: true, IPs: []net.IP{net.IPv4(3, 3, 3, 3)}},
+		"default OpenVPN TCP port": {
+			filteredServers: []models.Server{
+				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
 			},
-			selection: settings.ServerSelection{}.WithDefaults(providers.Windscribe),
+			selection: settings.ServerSelection{
+				OpenVPN: settings.OpenVPNSelection{
+					TCP: boolPtr(true),
+				},
+			}.WithDefaults(provider),
+			connection: models.Connection{
+				Type:     vpn.OpenVPN,
+				IP:       net.IPv4(1, 1, 1, 1),
+				Port:     443,
+				Protocol: constants.TCP,
+			},
+		},
+		"default OpenVPN UDP port": {
+			filteredServers: []models.Server{
+				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+			},
+			selection: settings.ServerSelection{
+				OpenVPN: settings.OpenVPNSelection{
+					TCP: boolPtr(false),
+				},
+			}.WithDefaults(provider),
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
 				IP:       net.IPv4(1, 1, 1, 1),
@@ -43,36 +70,17 @@ func Test_Provider_GetConnection(t *testing.T) {
 				Protocol: constants.UDP,
 			},
 		},
-		"target IP": {
+		"default Wireguard port": {
+			filteredServers: []models.Server{
+				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+			},
 			selection: settings.ServerSelection{
-				TargetIP: net.IPv4(2, 2, 2, 2),
-			}.WithDefaults(providers.Windscribe),
-			servers: []models.Server{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, VPN: vpn.OpenVPN, UDP: true},
-				{IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, VPN: vpn.OpenVPN, UDP: true},
-				{IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, VPN: vpn.OpenVPN, UDP: true},
-			},
+				VPN: vpn.Wireguard,
+			}.WithDefaults(provider),
 			connection: models.Connection{
-				Type:     vpn.OpenVPN,
-				IP:       net.IPv4(2, 2, 2, 2),
+				Type:     vpn.Wireguard,
+				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1194,
-				Protocol: constants.UDP,
-			},
-		},
-		"with filter": {
-			selection: settings.ServerSelection{
-				Hostnames: []string{"b"},
-			}.WithDefaults(providers.Windscribe),
-			servers: []models.Server{
-				{Hostname: "a", IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, VPN: vpn.OpenVPN, UDP: true},
-				{Hostname: "b", IPs: []net.IP{net.IPv4(2, 2, 2, 2)}, VPN: vpn.OpenVPN, UDP: true},
-				{Hostname: "a", IPs: []net.IP{net.IPv4(3, 3, 3, 3)}, VPN: vpn.OpenVPN, UDP: true},
-			},
-			connection: models.Connection{
-				Type:     vpn.OpenVPN,
-				IP:       net.IPv4(2, 2, 2, 2),
-				Port:     1194,
-				Hostname: "b",
 				Protocol: constants.UDP,
 			},
 		},
@@ -82,10 +90,21 @@ func Test_Provider_GetConnection(t *testing.T) {
 		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+			ctrl := gomock.NewController(t)
 
+			storage := common.NewMockStorage(ctrl)
+			storage.EXPECT().FilterServers(provider, testCase.selection).
+				Return(testCase.filteredServers, testCase.storageErr)
 			randSource := rand.NewSource(0)
 
-			provider := New(testCase.servers, randSource)
+			provider := New(storage, randSource)
+
+			if testCase.panicMessage != "" {
+				assert.PanicsWithValue(t, testCase.panicMessage, func() {
+					_, _ = provider.GetConnection(testCase.selection)
+				})
+				return
+			}
 
 			connection, err := provider.GetConnection(testCase.selection)
 
@@ -93,6 +112,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 			if testCase.errWrapped != nil {
 				assert.EqualError(t, err, testCase.errMessage)
 			}
+
 			assert.Equal(t, testCase.connection, connection)
 		})
 	}

@@ -4,19 +4,19 @@ import (
 	"math/rand"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 type Provider struct {
-	servers    []models.Server
+	storage    common.Storage
 	randSource rand.Source
 	utils.NoPortForwarder
 }
 
-func New(servers []models.Server, randSource rand.Source) *Provider {
+func New(storage common.Storage, randSource rand.Source) *Provider {
 	return &Provider{
-		servers:         servers,
+		storage:         storage,
 		randSource:      randSource,
 		NoPortForwarder: utils.NewNoPortForwarding(providers.Cyberghost),
 	}

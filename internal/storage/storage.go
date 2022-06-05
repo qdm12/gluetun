@@ -2,11 +2,14 @@
 package storage
 
 import (
+	"sync"
+
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 type Storage struct {
 	mergedServers models.AllServers
+	mergedMutex   sync.RWMutex
 	// this is stored in memory to avoid re-parsing
 	// the embedded JSON file on every call to the
 	// SyncServers method.

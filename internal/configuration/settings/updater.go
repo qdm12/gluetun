@@ -35,17 +35,18 @@ func (u Updater) Validate() (err error) {
 			ErrUpdaterPeriodTooSmall, *u.Period, minPeriod)
 	}
 
-	for i, provider := range u.Providers {
+	validProviders := providers.All()
+	for _, provider := range u.Providers {
 		valid := false
-		for _, validProvider := range providers.All() {
+		for _, validProvider := range validProviders {
 			if provider == validProvider {
 				valid = true
 				break
 			}
 		}
 		if !valid {
-			return fmt.Errorf("%w: %s at index %d",
-				ErrVPNProviderNameNotValid, provider, i)
+			return fmt.Errorf("%w: %q can only be one of %s",
+				ErrVPNProviderNameNotValid, provider, helpers.ChoicesOrString(validProviders))
 		}
 	}
 

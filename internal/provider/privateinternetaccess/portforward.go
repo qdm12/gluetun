@@ -15,25 +15,24 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 	"github.com/qdm12/golibs/format"
 )
 
 var (
-	ErrGatewayIPIsNil  = errors.New("gateway IP address is nil")
-	ErrServerNameEmpty = errors.New("server name is empty")
+	ErrServerNameNotFound = errors.New("server name not found in servers")
+	ErrGatewayIPIsNil     = errors.New("gateway IP address is nil")
+	ErrServerNameEmpty    = errors.New("server name is empty")
 )
 
 // PortForward obtains a VPN server side port forwarded from PIA.
 func (p *Provider) PortForward(ctx context.Context, client *http.Client,
 	logger utils.Logger, gateway net.IP, serverName string) (
 	port uint16, err error) {
-	var server models.Server
-	for _, server = range p.servers {
-		if server.ServerName == serverName {
-			break
-		}
+	server, ok := p.storage.GetServerByName(providers.PrivateInternetAccess, serverName)
+	if !ok {
+		return 0, fmt.Errorf("%w: %s", ErrServerNameNotFound, serverName)
 	}
 
 	if !server.PortForward {

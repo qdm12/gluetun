@@ -10,7 +10,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -80,9 +79,8 @@ func (c *CLI) FormatServers(args []string) error {
 	if err != nil {
 		return fmt.Errorf("cannot create servers storage: %w", err)
 	}
-	currentServers := storage.GetServers()
 
-	formatted := formatServers(currentServers, providerToFormat)
+	formatted := storage.FormatToMarkdown(providerToFormat)
 
 	output = filepath.Clean(output)
 	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
@@ -102,12 +100,4 @@ func (c *CLI) FormatServers(args []string) error {
 	}
 
 	return nil
-}
-
-func formatServers(allServers models.AllServers, provider string) (formatted string) {
-	servers, ok := allServers.ProviderToServers[provider]
-	if !ok {
-		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
-	}
-	return servers.ToMarkdown(provider)
 }

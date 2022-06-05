@@ -27,12 +27,12 @@ type Looper interface {
 	loopstate.Getter
 	loopstate.Applier
 	SettingsGetSetter
-	ServersGetterSetter
 }
 
 type Loop struct {
 	statusManager loopstate.Manager
 	state         state.Manager
+	storage       Storage
 	// Fixed parameters
 	buildInfo     models.BuildInformation
 	versionInfo   bool
@@ -64,12 +64,17 @@ type firewallConfigurer interface {
 	firewall.PortAllower
 }
 
+type Storage interface {
+	FilterServers(provider string, selection settings.ServerSelection) (servers []models.Server, err error)
+	GetServerByName(provider, name string) (server models.Server, ok bool)
+}
+
 const (
 	defaultBackoffTime = 15 * time.Second
 )
 
 func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
-	allServers models.AllServers, openvpnConf openvpn.Interface,
+	storage Storage, openvpnConf openvpn.Interface,
 	netLinker netlink.NetLinker, fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper, starter command.Starter,
 	publicip publicip.Looper, dnsLooper dns.Looper,
@@ -81,11 +86,12 @@ func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
 	stopped := make(chan struct{})
 
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
-	state := state.New(statusManager, vpnSettings, allServers)
+	state := state.New(statusManager, vpnSettings)
 
 	return &Loop{
 		statusManager: statusManager,
 		state:         state,
+		storage:       storage,
 		buildInfo:     buildInfo,
 		versionInfo:   versionInfo,
 		vpnInputPorts: vpnInputPorts,

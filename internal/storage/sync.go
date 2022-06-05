@@ -29,6 +29,9 @@ func (s *Storage) syncServers() (err error) {
 	hardcodedCount := countServers(s.hardcodedServers)
 	countOnFile := countServers(serversOnFile)
 
+	s.mergedMutex.Lock()
+	defer s.mergedMutex.Unlock()
+
 	if countOnFile == 0 {
 		s.logger.Info(fmt.Sprintf(
 			"creating %s with %d hardcoded servers",
@@ -47,7 +50,8 @@ func (s *Storage) syncServers() (err error) {
 		return nil
 	}
 
-	if err := flushToFile(s.filepath, &s.mergedServers); err != nil {
+	err = s.flushToFile(s.filepath)
+	if err != nil {
 		return fmt.Errorf("cannot write servers to file: %w", err)
 	}
 	return nil

@@ -15,18 +15,6 @@ type AllServers struct {
 	ProviderToServers map[string]Servers
 }
 
-func (a *AllServers) ServersSlice(provider string) []Server {
-	if provider == providers.Custom {
-		return nil
-	}
-
-	servers, ok := a.ProviderToServers[provider]
-	if !ok {
-		panic(fmt.Sprintf("provider %s not found in all servers", provider))
-	}
-	return copyServers(servers.Servers)
-}
-
 var _ json.Marshaler = (*AllServers)(nil)
 
 // MarshalJSON marshals all servers to JSON.

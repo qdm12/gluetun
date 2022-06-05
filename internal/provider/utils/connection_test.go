@@ -1,23 +1,30 @@
 package utils
 
 import (
+	"errors"
 	"math/rand"
 	"net"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_GetConnection(t *testing.T) {
 	t.Parallel()
 
+	errTest := errors.New("test error")
+
 	testCases := map[string]struct {
-		servers         []models.Server
+		provider        string
+		filteredServers []models.Server
+		filterError     error
 		serverSelection settings.ServerSelection
 		defaults        ConnectionDefaults
 		randSource      rand.Source
@@ -25,25 +32,13 @@ func Test_GetConnection(t *testing.T) {
 		errWrapped      error
 		errMessage      string
 	}{
-		"no server": {
-			serverSelection: settings.ServerSelection{}.
-				WithDefaults(providers.Mullvad),
-			errWrapped: ErrNoServer,
-			errMessage: "no server",
-		},
-		"all servers filtered": {
-			servers: []models.Server{
-				{VPN: vpn.Wireguard},
-				{VPN: vpn.Wireguard},
-			},
-			serverSelection: settings.ServerSelection{
-				VPN: vpn.OpenVPN,
-			}.WithDefaults(providers.Mullvad),
-			errWrapped: ErrNoServerFound,
-			errMessage: "no server found: for VPN openvpn; protocol udp",
+		"storage filter error": {
+			filterError: errTest,
+			errWrapped:  errTest,
+			errMessage:  "cannot filter servers: test error",
 		},
 		"server without IPs": {
-			servers: []models.Server{
+			filteredServers: []models.Server{
 				{VPN: vpn.OpenVPN, UDP: true},
 				{VPN: vpn.OpenVPN, UDP: true},
 			},
@@ -58,7 +53,7 @@ func Test_GetConnection(t *testing.T) {
 			errMessage: "no connection to pick from",
 		},
 		"OpenVPN server with hostname": {
-			servers: []models.Server{
+			filteredServers: []models.Server{
 				{
 					VPN:      vpn.OpenVPN,
 					UDP:      true,
@@ -79,7 +74,7 @@ func Test_GetConnection(t *testing.T) {
 			},
 		},
 		"OpenVPN server with x509": {
-			servers: []models.Server{
+			filteredServers: []models.Server{
 				{
 					VPN:      vpn.OpenVPN,
 					UDP:      true,
@@ -101,7 +96,7 @@ func Test_GetConnection(t *testing.T) {
 			},
 		},
 		"server with IPv4 and IPv6": {
-			servers: []models.Server{
+			filteredServers: []models.Server{
 				{
 					VPN: vpn.OpenVPN,
 					UDP: true,
@@ -128,7 +123,7 @@ func Test_GetConnection(t *testing.T) {
 			},
 		},
 		"mixed servers": {
-			servers: []models.Server{
+			filteredServers: []models.Server{
 				{
 					VPN:      vpn.OpenVPN,
 					UDP:      true,
@@ -169,8 +164,14 @@ func Test_GetConnection(t *testing.T) {
 		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+			ctrl := gomock.NewController(t)
 
-			connection, err := GetConnection(testCase.servers,
+			storage := common.NewMockStorage(ctrl)
+			storage.EXPECT().
+				FilterServers(testCase.provider, testCase.serverSelection).
+				Return(testCase.filteredServers, testCase.filterError)
+
+			connection, err := GetConnection(testCase.provider, storage,
 				testCase.serverSelection, testCase.defaults,
 				testCase.randSource)
 

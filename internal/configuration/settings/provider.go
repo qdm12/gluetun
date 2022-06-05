@@ -6,7 +6,6 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
 )
 
@@ -23,7 +22,7 @@ type Provider struct {
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (p *Provider) validate(vpnType string, allServers models.AllServers) (err error) {
+func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 	// Validate Name
 	var validNames []string
 	if vpnType == vpn.OpenVPN {
@@ -42,7 +41,7 @@ func (p *Provider) validate(vpnType string, allServers models.AllServers) (err e
 			ErrVPNProviderNameNotValid, *p.Name, helpers.ChoicesOrString(validNames))
 	}
 
-	err = p.ServerSelection.validate(*p.Name, allServers)
+	err = p.ServerSelection.validate(*p.Name, storage)
 	if err != nil {
 		return fmt.Errorf("server selection: %w", err)
 	}

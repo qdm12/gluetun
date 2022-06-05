@@ -2,20 +2,17 @@ package cli
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
 )
@@ -83,41 +80,19 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	if err != nil {
 		return fmt.Errorf("cannot create servers storage: %w", err)
 	}
-	currentServers := storage.GetServers()
 
-	updater := updater.New(options, httpClient, currentServers, logger)
-	allServers, err := updater.UpdateServers(ctx)
+	updater := updater.New(options, httpClient, storage, logger)
+	err = updater.UpdateServers(ctx)
 	if err != nil {
 		return fmt.Errorf("cannot update server information: %w", err)
 	}
 
-	if endUserMode {
-		if err := storage.FlushToFile(&allServers); err != nil {
-			return fmt.Errorf("cannot write updated information to file: %w", err)
-		}
-	}
-
 	if maintainerMode {
-		if err := writeToEmbeddedJSON(c.repoServersPath, &allServers); err != nil {
-			return fmt.Errorf("cannot write updated information to file: %w", err)
+		err := storage.FlushToFile(c.repoServersPath)
+		if err != nil {
+			return fmt.Errorf("cannot write servers data to embedded JSON file: %w", err)
 		}
 	}
 
 	return nil
-}
-
-func writeToEmbeddedJSON(repoServersPath string,
-	allServers *models.AllServers) error {
-	const perms = 0600
-	f, err := os.OpenFile(repoServersPath,
-		os.O_TRUNC|os.O_WRONLY|os.O_CREATE, perms)
-	if err != nil {
-		return err
-	}
-
-	defer f.Close()
-
-	encoder := json.NewEncoder(f)
-	encoder.SetIndent("", "  ")
-	return encoder.Encode(allServers)
 }

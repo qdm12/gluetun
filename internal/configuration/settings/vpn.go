@@ -6,7 +6,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gotree"
 )
 
@@ -21,7 +20,7 @@ type VPN struct {
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (v *VPN) validate(allServers models.AllServers) (err error) {
+func (v *VPN) validate(storage Storage) (err error) {
 	// Validate Type
 	validVPNTypes := []string{vpn.OpenVPN, vpn.Wireguard}
 	if !helpers.IsOneOf(v.Type, validVPNTypes...) {
@@ -29,7 +28,7 @@ func (v *VPN) validate(allServers models.AllServers) (err error) {
 			ErrVPNTypeNotValid, v.Type, strings.Join(validVPNTypes, ", "))
 	}
 
-	err = v.Provider.validate(v.Type, allServers)
+	err = v.Provider.validate(v.Type, storage)
 	if err != nil {
 		return fmt.Errorf("provider settings: %w", err)
 	}

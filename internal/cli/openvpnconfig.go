@@ -25,18 +25,17 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) e
 	if err != nil {
 		return err
 	}
-	allServers := storage.GetServers()
 
 	allSettings, err := source.Read()
 	if err != nil {
 		return err
 	}
 
-	if err = allSettings.Validate(allServers); err != nil {
+	if err = allSettings.Validate(storage); err != nil {
 		return err
 	}
 
-	providerConf := provider.New(*allSettings.VPN.Provider.Name, allServers, time.Now)
+	providerConf := provider.New(*allSettings.VPN.Provider.Name, storage, time.Now)
 	connection, err := providerConf.GetConnection(allSettings.VPN.Provider.ServerSelection)
 	if err != nil {
 		return err

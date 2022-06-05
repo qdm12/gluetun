@@ -4,21 +4,20 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-
-	"github.com/qdm12/gluetun/internal/models"
 )
 
-var _ Flusher = (*Storage)(nil)
+// FlushToFile flushes the merged servers data to the file
+// specified by path, as indented JSON.
+func (s *Storage) FlushToFile(path string) error {
+	s.mergedMutex.RLock()
+	defer s.mergedMutex.RUnlock()
 
-type Flusher interface {
-	FlushToFile(allServers *models.AllServers) error
+	return s.flushToFile(path)
 }
 
-func (s *Storage) FlushToFile(allServers *models.AllServers) error {
-	return flushToFile(s.filepath, allServers)
-}
-
-func flushToFile(path string, servers *models.AllServers) error {
+// flushToFile flushes the merged servers data to the file
+// specified by path, as indented JSON. It is not thread-safe.
+func (s *Storage) flushToFile(path string) error {
 	dirPath := filepath.Dir(path)
 	if err := os.MkdirAll(dirPath, 0644); err != nil {
 		return err
@@ -28,11 +27,15 @@ func flushToFile(path string, servers *models.AllServers) error {
 	if err != nil {
 		return err
 	}
+
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(servers); err != nil {
+
+	err = encoder.Encode(&s.mergedServers)
+	if err != nil {
 		_ = file.Close()
 		return err
 	}
+
 	return file.Close()
 }

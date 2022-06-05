@@ -3,8 +3,6 @@ package updater
 import (
 	"context"
 	"fmt"
-	"reflect"
-	"time"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
@@ -31,18 +29,25 @@ import (
 )
 
 func (u *Updater) updateProvider(ctx context.Context, provider string) (err error) {
-	existingServers := u.getProviderServers(provider)
-	minServers := getMinServers(existingServers)
+	existingServersCount := u.storage.GetServersCount(provider)
+	minServers := getMinServers(existingServersCount)
 	servers, err := u.getServers(ctx, provider, minServers)
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot get servers: %w", err)
 	}
 
-	if reflect.DeepEqual(existingServers, servers) {
+	if u.storage.ServersAreEqual(provider, servers) {
 		return nil
 	}
 
-	u.patchProvider(provider, servers)
+	// Note the servers variable must NOT BE MUTATED after this call,
+	// since the implementation does not deep copy the servers.
+	// TODO set in storage in provider updater directly, server by server,
+	// to avoid accumulating server data in memory.
+	err = u.storage.SetServers(provider, servers)
+	if err != nil {
+		return fmt.Errorf("cannot set servers to storage: %w", err)
+	}
 	return nil
 }
 
@@ -101,25 +106,7 @@ func (u *Updater) getServers(ctx context.Context, provider string,
 	return providerUpdater.GetServers(ctx, minServers)
 }
 
-func (u *Updater) getProviderServers(provider string) (servers []models.Server) {
-	providerServers, ok := u.servers.ProviderToServers[provider]
-	if !ok {
-		panic(fmt.Sprintf("provider %s is unknown", provider))
-	}
-	return providerServers.Servers
-}
-
-func getMinServers(servers []models.Server) (minServers int) {
+func getMinServers(existingServersCount int) (minServers int) {
 	const minRatio = 0.8
-	return int(minRatio * float64(len(servers)))
-}
-
-func (u *Updater) patchProvider(provider string, servers []models.Server) {
-	providerServers, ok := u.servers.ProviderToServers[provider]
-	if !ok {
-		panic(fmt.Sprintf("provider %s is unknown", provider))
-	}
-	providerServers.Timestamp = time.Now().Unix()
-	providerServers.Servers = servers
-	u.servers.ProviderToServers[provider] = providerServers
+	return int(minRatio * float64(existingServersCount))
 }

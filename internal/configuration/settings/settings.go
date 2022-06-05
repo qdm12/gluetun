@@ -24,10 +24,14 @@ type Settings struct {
 	Pprof         pprof.Settings
 }
 
+type Storage interface {
+	GetFilterChoices(provider string) models.FilterChoices
+}
+
 // Validate validates all the settings and returns an error
 // if one of them is not valid.
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (s *Settings) Validate(allServers models.AllServers) (err error) {
+func (s *Settings) Validate(storage Storage) (err error) {
 	nameToValidation := map[string]func() error{
 		"control server":  s.ControlServer.validate,
 		"dns":             s.DNS.validate,
@@ -42,7 +46,7 @@ func (s *Settings) Validate(allServers models.AllServers) (err error) {
 		"version":         s.Version.validate,
 		// Pprof validation done in pprof constructor
 		"VPN": func() error {
-			return s.VPN.validate(allServers)
+			return s.VPN.validate(storage)
 		},
 	}
 
@@ -91,7 +95,7 @@ func (s *Settings) MergeWith(other Settings) {
 }
 
 func (s *Settings) OverrideWith(other Settings,
-	allServers models.AllServers) (err error) {
+	storage Storage) (err error) {
 	patchedSettings := s.copy()
 	patchedSettings.ControlServer.overrideWith(other.ControlServer)
 	patchedSettings.DNS.overrideWith(other.DNS)
@@ -106,7 +110,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Version.overrideWith(other.Version)
 	patchedSettings.VPN.overrideWith(other.VPN)
 	patchedSettings.Pprof.MergeWith(other.Pprof)
-	err = patchedSettings.Validate(allServers)
+	err = patchedSettings.Validate(storage)
 	if err != nil {
 		return err
 	}

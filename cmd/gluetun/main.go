@@ -215,9 +215,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	allServers := storage.GetServers()
-
-	err = allSettings.Validate(allServers)
+	err = allSettings.Validate(storage)
 	if err != nil {
 		return err
 	}
@@ -378,7 +376,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,
-		allServers, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
+		storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
@@ -386,8 +384,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go vpnLooper.Run(vpnCtx, vpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
-		allServers, storage, vpnLooper.SetServers, httpClient,
-		logger.New(log.SetComponent("updater")))
+		storage, httpClient, logger.New(log.SetComponent("updater")))
 	updaterHandler, updaterCtx, updaterDone := goshutdown.NewGoRoutineHandler(
 		"updater", goroutine.OptionTimeout(defaultShutdownTimeout))
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker

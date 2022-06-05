@@ -68,21 +68,19 @@ var (
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
-	allServers models.AllServers) (err error) {
+	storage Storage) (err error) {
 	switch ss.VPN {
 	case vpn.OpenVPN, vpn.Wireguard:
 	default:
 		return fmt.Errorf("%w: %s", ErrVPNTypeNotValid, ss.VPN)
 	}
 
-	countryChoices, regionChoices, cityChoices,
-		ispChoices, nameChoices, hostnameChoices, err := getLocationFilterChoices(vpnServiceProvider, ss, allServers)
+	filterChoices, err := getLocationFilterChoices(vpnServiceProvider, ss, storage)
 	if err != nil {
 		return err // already wrapped error
 	}
 
-	err = validateServerFilters(*ss, countryChoices, regionChoices, cityChoices,
-		ispChoices, nameChoices, hostnameChoices)
+	err = validateServerFilters(*ss, filterChoices)
 	if err != nil {
 		if errors.Is(err, helpers.ErrNoChoice) {
 			return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
@@ -135,63 +133,48 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 	return nil
 }
 
-func getLocationFilterChoices(vpnServiceProvider string, ss *ServerSelection,
-	allServers models.AllServers) (
-	countryChoices, regionChoices, cityChoices,
-	ispChoices, nameChoices, hostnameChoices []string,
+func getLocationFilterChoices(vpnServiceProvider string,
+	ss *ServerSelection, storage Storage) (filterChoices models.FilterChoices,
 	err error) {
-	providerServers, ok := allServers.ProviderToServers[vpnServiceProvider]
-	if !ok && vpnServiceProvider != providers.Custom {
-		panic(fmt.Sprintf("VPN service provider unknown: %s", vpnServiceProvider))
-	}
-	servers := providerServers.Servers
-	countryChoices = validation.ExtractCountries(servers)
-	regionChoices = validation.ExtractRegions(servers)
-	cityChoices = validation.ExtractCities(servers)
-	ispChoices = validation.ExtractISPs(servers)
-	nameChoices = validation.ExtractServerNames(servers)
-	hostnameChoices = validation.ExtractHostnames(servers)
+	filterChoices = storage.GetFilterChoices(vpnServiceProvider)
 
 	if vpnServiceProvider == providers.Surfshark {
 		// // Retro compatibility
 		// TODO v4 remove
-		regionChoices = append(regionChoices, validation.SurfsharkRetroLocChoices()...)
-		if err := helpers.AreAllOneOf(ss.Regions, regionChoices); err != nil {
-			return nil, nil, nil, nil, nil, nil, fmt.Errorf("%w: %s", ErrRegionNotValid, err)
+		filterChoices.Regions = append(filterChoices.Regions, validation.SurfsharkRetroLocChoices()...)
+		if err := helpers.AreAllOneOf(ss.Regions, filterChoices.Regions); err != nil {
+			return models.FilterChoices{}, fmt.Errorf("%w: %s", ErrRegionNotValid, err)
 		}
 		*ss = surfsharkRetroRegion(*ss)
 	}
 
-	return countryChoices, regionChoices, cityChoices,
-		ispChoices, nameChoices, hostnameChoices, nil
+	return filterChoices, nil
 }
 
 // validateServerFilters validates filters against the choices given as arguments.
 // Set an argument to nil to pass the check for a particular filter.
-func validateServerFilters(settings ServerSelection,
-	countryChoices, regionChoices, cityChoices, ispChoices,
-	nameChoices, hostnameChoices []string) (err error) {
-	if err := helpers.AreAllOneOf(settings.Countries, countryChoices); err != nil {
+func validateServerFilters(settings ServerSelection, filterChoices models.FilterChoices) (err error) {
+	if err := helpers.AreAllOneOf(settings.Countries, filterChoices.Countries); err != nil {
 		return fmt.Errorf("%w: %s", ErrCountryNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Regions, regionChoices); err != nil {
+	if err := helpers.AreAllOneOf(settings.Regions, filterChoices.Regions); err != nil {
 		return fmt.Errorf("%w: %s", ErrRegionNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Cities, cityChoices); err != nil {
+	if err := helpers.AreAllOneOf(settings.Cities, filterChoices.Cities); err != nil {
 		return fmt.Errorf("%w: %s", ErrCityNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.ISPs, ispChoices); err != nil {
+	if err := helpers.AreAllOneOf(settings.ISPs, filterChoices.ISPs); err != nil {
 		return fmt.Errorf("%w: %s", ErrISPNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Hostnames, hostnameChoices); err != nil {
+	if err := helpers.AreAllOneOf(settings.Hostnames, filterChoices.Hostnames); err != nil {
 		return fmt.Errorf("%w: %s", ErrHostnameNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Names, nameChoices); err != nil {
+	if err := helpers.AreAllOneOf(settings.Names, filterChoices.Names); err != nil {
 		return fmt.Errorf("%w: %s", ErrNameNotValid, err)
 	}
 
