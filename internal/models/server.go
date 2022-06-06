@@ -1,8 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"net"
 	"reflect"
+	"strings"
 )
 
 type Server struct {
@@ -25,6 +27,7 @@ type Server struct {
 	Free        bool     `json:"free,omitempty"`
 	Stream      bool     `json:"stream,omitempty"`
 	PortForward bool     `json:"port_forward,omitempty"`
+	Keep        bool     `json:"keep,omitempty"`
 	IPs         []net.IP `json:"ips,omitempty"`
 }
 
@@ -51,4 +54,16 @@ func ipsAreEqual(a, b []net.IP) (equal bool) {
 	}
 
 	return true
+}
+
+func (s *Server) Key() (key string) {
+	var protocols []string
+	if s.TCP {
+		protocols = append(protocols, "tcp")
+	}
+	if s.UDP {
+		protocols = append(protocols, "udp")
+	}
+
+	return fmt.Sprintf("%s-%s-%s", s.VPN, strings.Join(protocols, "-"), s.Hostname)
 }

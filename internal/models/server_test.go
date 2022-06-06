@@ -62,6 +62,7 @@ func Test_Server_Equal(t *testing.T) {
 				Stream:      true,
 				PortForward: true,
 				IPs:         []net.IP{net.IPv4(1, 2, 3, 4)},
+				Keep:        true,
 			},
 			b: Server{
 				VPN:         "vpn",
@@ -83,6 +84,7 @@ func Test_Server_Equal(t *testing.T) {
 				Stream:      true,
 				PortForward: true,
 				IPs:         []net.IP{net.IPv4(1, 2, 3, 4)},
+				Keep:        true,
 			},
 			equal: true,
 		},
