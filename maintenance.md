@@ -1,16 +1,14 @@
 # Maintenance
 
 - Rename `UNBLOCK` to `DOT_UNBOUND_UNBLOCK`
-- Move constants.*RegionChoices to a validation package
-- Common filtering functions
-- Refactor providers code to have one directory per VPN provider
+- Change `Run` methods to `Start`+`Stop`, returning channels rather than injecting them
 - Use DNS v2 beta
 - Go 1.18
   - gofumpt
   - Use netip
-- Split servers.json and compress it, use Git LFS
+- Split servers.json
 - DNS block lists as LFS and built in image
-- Finish HTTP server v1 or v2
+- Add HTTP server v3 as json rpc
 - Use `github.com/qdm12/ddns-updater/pkg/publicip`
 - Windows and Darwin development support
 
