@@ -39,6 +39,8 @@ func addOpenVPNServersFromZip(ctx context.Context,
 		if err != nil {
 			// treat error as warning and go to next file
 			warning := err.Error() + " in " + fileName
+			// TODO gather location data for IP address Openvpn files
+			// and process those when this error triggers.
 			warnings = append(warnings, warning)
 			continue
 		}
