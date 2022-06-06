@@ -9096,8 +9096,18 @@
   },
   "ipvanish": {
     "version": 2,
-    "timestamp": 1629490836,
+    "timestamp": 1654481343,
     "servers": [
+      {
+        "vpn": "openvpn",
+        "country": "Albania",
+        "city": "Tirana",
+        "hostname": "tia-c01.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "80.246.28.48"
+        ]
+      },
       {
         "vpn": "openvpn",
         "country": "Albania",
@@ -9136,6 +9146,26 @@
         "udp": true,
         "ips": [
           "80.246.28.9"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Albania",
+        "city": "Tirana",
+        "hostname": "tia-c06.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "80.246.28.50"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Albania",
+        "city": "Tirana",
+        "hostname": "tia-c07.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "80.246.28.52"
         ]
       },
       {
@@ -9976,6 +10006,16 @@
         "udp": true,
         "ips": [
           "216.131.110.166"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Austria",
+        "city": "Vienna",
+        "hostname": "vie-c13.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.110.35"
         ]
       },
       {
@@ -11382,56 +11422,6 @@
         "vpn": "openvpn",
         "country": "Finland",
         "city": "Helsinki",
-        "hostname": "hel-c06.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "185.117.118.165"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Finland",
-        "city": "Helsinki",
-        "hostname": "hel-c07.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "185.117.118.167"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Finland",
-        "city": "Helsinki",
-        "hostname": "hel-c08.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "185.117.118.169"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Finland",
-        "city": "Helsinki",
-        "hostname": "hel-c09.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "185.117.118.171"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Finland",
-        "city": "Helsinki",
-        "hostname": "hel-c10.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "185.117.118.173"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Finland",
-        "city": "Helsinki",
         "hostname": "hel-c13.ipvanish.com",
         "udp": true,
         "ips": [
@@ -11446,6 +11436,76 @@
         "udp": true,
         "ips": [
           "185.108.107.15"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "hostname": "hel-c15.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.108.107.59"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "hostname": "hel-c16.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.108.107.67"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "hostname": "hel-c17.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.108.107.73"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "hostname": "hel-c18.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.108.107.80"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "hostname": "hel-c19.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.108.107.86"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "hostname": "hel-c20.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.108.107.92"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "hostname": "hel-c21.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.108.107.98"
         ]
       },
       {
@@ -13382,40 +13442,10 @@
         "vpn": "openvpn",
         "country": "Luxembourg",
         "city": "Luxembourg",
-        "hostname": "lux-c07.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.68.22"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Luxembourg",
-        "city": "Luxembourg",
         "hostname": "lux-c08.ipvanish.com",
         "udp": true,
         "ips": [
           "216.131.68.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Luxembourg",
-        "city": "Luxembourg",
-        "hostname": "lux-c08.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.68.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Luxembourg",
-        "city": "Luxembourg",
-        "hostname": "lux-c09.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.68.34"
         ]
       },
       {
@@ -13442,100 +13472,120 @@
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c01.ipvanish.com",
+        "hostname": "kul-c11.ipvanish.com",
         "udp": true,
         "ips": [
-          "202.73.14.57"
+          "103.175.51.131"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c02.ipvanish.com",
+        "hostname": "kul-c12.ipvanish.com",
         "udp": true,
         "ips": [
-          "202.73.14.53"
+          "103.175.51.135"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c03.ipvanish.com",
+        "hostname": "kul-c13.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.246.112.197"
+          "103.175.51.139"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c04.ipvanish.com",
+        "hostname": "kul-c14.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.246.112.203"
+          "103.175.51.143"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c05.ipvanish.com",
+        "hostname": "kul-c15.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.246.112.209"
+          "103.175.51.147"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c06.ipvanish.com",
+        "hostname": "kul-c16.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.246.112.215"
+          "103.175.51.151"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c07.ipvanish.com",
+        "hostname": "kul-c17.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.243.212.165"
+          "103.175.51.169"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c08.ipvanish.com",
+        "hostname": "kul-c18.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.243.212.171"
+          "103.175.51.173"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c09.ipvanish.com",
+        "hostname": "kul-c19.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.243.212.177"
+          "103.175.51.177"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Kuala Lumpur",
-        "hostname": "kul-c10.ipvanish.com",
+        "hostname": "kul-c20.ipvanish.com",
         "udp": true,
         "ips": [
-          "103.243.212.183"
+          "103.175.51.181"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Malaysia",
+        "city": "Kuala Lumpur",
+        "hostname": "kul-c21.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "103.175.51.185"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Malaysia",
+        "city": "Kuala Lumpur",
+        "hostname": "kul-c22.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "103.175.51.161"
         ]
       },
       {
@@ -13582,10 +13632,20 @@
         "vpn": "openvpn",
         "country": "Moldova",
         "city": "Chisinau",
+        "hostname": "kiv-c01.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "178.175.129.186"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Moldova",
+        "city": "Chisinau",
         "hostname": "kiv-c02.ipvanish.com",
         "udp": true,
         "ips": [
-          "185.163.46.147"
+          "178.175.129.168"
         ]
       },
       {
@@ -13595,7 +13655,17 @@
         "hostname": "kiv-c03.ipvanish.com",
         "udp": true,
         "ips": [
-          "185.163.46.153"
+          "178.175.129.174"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Moldova",
+        "city": "Chisinau",
+        "hostname": "kiv-c04.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "178.175.129.180"
         ]
       },
       {
@@ -13756,6 +13826,16 @@
         "udp": true,
         "ips": [
           "216.131.88.91"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Netherlands",
+        "city": "Amsterdam",
+        "hostname": "ams-a17.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.88.97"
         ]
       },
       {
@@ -14316,56 +14396,6 @@
         "udp": true,
         "ips": [
           "116.90.74.213"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Nigeria",
-        "city": "Lagos",
-        "hostname": "los-c01.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "102.165.25.27"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Nigeria",
-        "city": "Lagos",
-        "hostname": "los-c02.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "102.165.25.4"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Nigeria",
-        "city": "Lagos",
-        "hostname": "los-c03.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "102.165.25.6"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Nigeria",
-        "city": "Lagos",
-        "hostname": "los-c04.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "102.165.25.8"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Nigeria",
-        "city": "Lagos",
-        "hostname": "los-c05.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "102.165.25.10"
         ]
       },
       {
@@ -15066,66 +15096,6 @@
         "udp": true,
         "ips": [
           "195.158.249.78"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Africa",
-        "city": "Johannesburg",
-        "hostname": "jnb-c17.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "154.16.93.66"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Africa",
-        "city": "Johannesburg",
-        "hostname": "jnb-c18.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "154.16.93.68"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Africa",
-        "city": "Johannesburg",
-        "hostname": "jnb-c19.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "154.16.93.70"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Africa",
-        "city": "Johannesburg",
-        "hostname": "jnb-c20.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "154.16.93.72"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Africa",
-        "city": "Johannesburg",
-        "hostname": "jnb-c21.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "154.16.93.74"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Africa",
-        "city": "Johannesburg",
-        "hostname": "jnb-c22.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "154.16.93.76"
         ]
       },
       {
@@ -15910,6 +15880,56 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Turkey",
+        "city": "Istanbul",
+        "hostname": "ist-c01.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "87.249.139.226"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Turkey",
+        "city": "Istanbul",
+        "hostname": "ist-c02.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "87.249.139.230"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Turkey",
+        "city": "Istanbul",
+        "hostname": "ist-c03.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "87.249.139.234"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Turkey",
+        "city": "Istanbul",
+        "hostname": "ist-c04.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "87.249.139.238"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Turkey",
+        "city": "Istanbul",
+        "hostname": "ist-c05.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "87.249.139.242"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "United Arab Emirates",
         "city": "Dubai",
         "hostname": "dxb-c01.ipvanish.com",
@@ -15926,6 +15946,26 @@
         "udp": true,
         "ips": [
           "45.9.250.117"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Arab Emirates",
+        "city": "Dubai",
+        "hostname": "dxb-c03.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "146.70.102.162"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Arab Emirates",
+        "city": "Dubai",
+        "hostname": "dxb-c04.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "146.70.102.168"
         ]
       },
       {
@@ -16066,6 +16106,66 @@
         "udp": true,
         "ips": [
           "78.110.173.164"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Kingdom",
+        "city": "Birmingham",
+        "hostname": "bhx-c15.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "78.110.173.166"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Kingdom",
+        "city": "Birmingham",
+        "hostname": "bhx-c16.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.103.99.70"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Kingdom",
+        "city": "Birmingham",
+        "hostname": "bhx-c17.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.103.99.76"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Kingdom",
+        "city": "Birmingham",
+        "hostname": "bhx-c18.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.103.99.82"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Kingdom",
+        "city": "Birmingham",
+        "hostname": "bhx-c19.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.103.99.88"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Kingdom",
+        "city": "Birmingham",
+        "hostname": "bhx-c20.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "185.103.99.94"
         ]
       },
       {
@@ -16672,56 +16772,6 @@
         "vpn": "openvpn",
         "country": "United Kingdom",
         "city": "London",
-        "hostname": "lon-a55.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.117.72"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "London",
-        "hostname": "lon-a56.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.117.78"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "London",
-        "hostname": "lon-a57.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.117.84"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "London",
-        "hostname": "lon-a58.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.117.90"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "London",
-        "hostname": "lon-a59.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.117.96"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "London",
         "hostname": "lon-a60.ipvanish.com",
         "udp": true,
         "ips": [
@@ -16736,26 +16786,6 @@
         "udp": true,
         "ips": [
           "176.67.85.12"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "London",
-        "hostname": "lon-a62.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "176.67.85.14"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "London",
-        "hostname": "lon-a63.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "176.67.85.16"
         ]
       },
       {
@@ -16816,46 +16846,6 @@
         "udp": true,
         "ips": [
           "176.67.85.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "Maidenhead",
-        "hostname": "lhr-c01.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "82.145.56.101"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "Maidenhead",
-        "hostname": "lhr-c02.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "82.145.56.107"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "Maidenhead",
-        "hostname": "lhr-c03.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "82.145.56.113"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "city": "Maidenhead",
-        "hostname": "lhr-c04.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "82.145.56.118"
         ]
       },
       {
@@ -18096,6 +18086,156 @@
         "udp": true,
         "ips": [
           "216.131.73.81"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b29.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.88"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b30.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.94"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b31.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.100"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b32.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.106"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b33.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.112"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b34.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.118"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b35.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.124"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b36.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.130"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b37.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.136"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b38.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.142"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b39.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.148"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b40.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.154"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b41.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.160"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b42.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.166"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Ashburn",
+        "hostname": "iad-b43.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.72.172"
         ]
       },
       {
@@ -19381,6 +19521,196 @@
       {
         "vpn": "openvpn",
         "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b44.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.88"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b45.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.94"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b46.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.100"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b47.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.106"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b48.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.112"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b49.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.118"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b50.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.124"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b51.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.130"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b52.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.136"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b53.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.142"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b54.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.148"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b55.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.154"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b56.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.160"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b57.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.166"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b58.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.172"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b59.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.178"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b60.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.184"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b61.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.190"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Atlanta",
+        "hostname": "atl-b62.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.75.196"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
         "city": "Boston",
         "hostname": "bos-c01.ipvanish.com",
         "udp": true,
@@ -19396,6 +19726,16 @@
         "udp": true,
         "ips": [
           "198.181.163.133"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
+        "hostname": "bos-c03.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.105.47"
         ]
       },
       {
@@ -19502,6 +19842,16 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Boston",
+        "hostname": "bos-c14.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "198.181.163.211"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
         "hostname": "bos-c15.ipvanish.com",
         "udp": true,
         "ips": [
@@ -19556,6 +19906,16 @@
         "udp": true,
         "ips": [
           "198.181.163.205"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
+        "hostname": "bos-c21.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "198.181.163.235"
         ]
       },
       {
@@ -19712,6 +20072,16 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Boston",
+        "hostname": "bos-c38.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "198.181.163.242"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
         "hostname": "bos-c39.ipvanish.com",
         "udp": true,
         "ips": [
@@ -19746,6 +20116,16 @@
         "udp": true,
         "ips": [
           "198.181.163.93"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
+        "hostname": "bos-c43.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "198.181.163.24"
         ]
       },
       {
@@ -19826,6 +20206,26 @@
         "udp": true,
         "ips": [
           "198.181.163.209"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
+        "hostname": "bos-c52.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "198.181.163.60"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
+        "hostname": "bos-c53.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "198.181.163.96"
         ]
       },
       {
@@ -20062,6 +20462,16 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Boston",
+        "hostname": "bos-c79.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.105.166"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Boston",
         "hostname": "bos-c80.ipvanish.com",
         "udp": true,
         "ips": [
@@ -20145,7 +20555,7 @@
         "hostname": "clt-c01.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.2"
+          "207.204.229.5"
         ]
       },
       {
@@ -20155,7 +20565,7 @@
         "hostname": "clt-c02.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.4"
+          "207.204.229.11"
         ]
       },
       {
@@ -20165,7 +20575,7 @@
         "hostname": "clt-c03.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.6"
+          "207.204.229.17"
         ]
       },
       {
@@ -20175,7 +20585,7 @@
         "hostname": "clt-c04.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.8"
+          "207.204.229.23"
         ]
       },
       {
@@ -20185,7 +20595,7 @@
         "hostname": "clt-c05.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.10"
+          "207.204.229.29"
         ]
       },
       {
@@ -20195,7 +20605,7 @@
         "hostname": "clt-c06.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.12"
+          "207.204.229.35"
         ]
       },
       {
@@ -20205,7 +20615,7 @@
         "hostname": "clt-c07.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.14"
+          "207.204.229.41"
         ]
       },
       {
@@ -20215,7 +20625,7 @@
         "hostname": "clt-c08.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.16"
+          "207.204.229.47"
         ]
       },
       {
@@ -20225,7 +20635,7 @@
         "hostname": "clt-c09.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.18"
+          "207.204.229.53"
         ]
       },
       {
@@ -20235,7 +20645,7 @@
         "hostname": "clt-c10.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.20"
+          "207.204.229.59"
         ]
       },
       {
@@ -20245,7 +20655,7 @@
         "hostname": "clt-c11.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.22"
+          "207.204.229.65"
         ]
       },
       {
@@ -20255,7 +20665,7 @@
         "hostname": "clt-c12.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.88.24"
+          "207.204.229.71"
         ]
       },
       {
@@ -21561,6 +21971,246 @@
       {
         "vpn": "openvpn",
         "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b42.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.86"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b43.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.92"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b44.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.98"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b45.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.104"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b46.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.110"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b47.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.116"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b48.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.122"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b49.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.128"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b50.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.134"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b51.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.140"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b52.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.146"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b53.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.152"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b54.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.158"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b55.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.164"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b56.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.170"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b57.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.176"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b58.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.182"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b59.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.188"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b60.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.194"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b61.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.200"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b62.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.206"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b63.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.212"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b64.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.218"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Chicago",
+        "hostname": "chi-b65.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.77.224"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
         "city": "Cincinnati",
         "hostname": "cvg-b01.ipvanish.com",
         "udp": true,
@@ -22781,6 +23431,206 @@
       {
         "vpn": "openvpn",
         "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b28.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.86"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b29.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.92"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b30.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.98"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b31.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.104"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b32.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.110"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b33.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.116"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b34.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.122"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b35.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.128"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b36.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.134"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b37.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.140"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b38.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.146"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b39.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.152"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b40.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.158"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b41.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.78.83"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b42.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.78.89"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b43.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.78.95"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b44.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.167"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b45.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.173"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b46.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.179"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Dallas",
+        "hostname": "dal-b47.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.79.185"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
         "city": "Denver",
         "hostname": "den-a01.ipvanish.com",
         "udp": true,
@@ -23115,7 +23965,7 @@
         "hostname": "hou-c01.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.3"
+          "207.204.248.13"
         ]
       },
       {
@@ -23125,7 +23975,7 @@
         "hostname": "hou-c02.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.5"
+          "207.204.248.19"
         ]
       },
       {
@@ -23135,7 +23985,7 @@
         "hostname": "hou-c03.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.7"
+          "207.204.248.25"
         ]
       },
       {
@@ -23145,7 +23995,7 @@
         "hostname": "hou-c04.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.9"
+          "207.204.248.31"
         ]
       },
       {
@@ -23155,7 +24005,7 @@
         "hostname": "hou-c05.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.11"
+          "207.204.248.37"
         ]
       },
       {
@@ -23165,7 +24015,7 @@
         "hostname": "hou-c06.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.13"
+          "207.204.248.43"
         ]
       },
       {
@@ -23175,7 +24025,7 @@
         "hostname": "hou-c07.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.15"
+          "207.204.248.49"
         ]
       },
       {
@@ -23185,7 +24035,7 @@
         "hostname": "hou-c08.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.17"
+          "207.204.248.55"
         ]
       },
       {
@@ -23195,7 +24045,17 @@
         "hostname": "hou-c09.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.19"
+          "207.204.248.61"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c10.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.248.67"
         ]
       },
       {
@@ -23205,7 +24065,7 @@
         "hostname": "hou-c11.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.65"
+          "207.204.248.73"
         ]
       },
       {
@@ -23215,7 +24075,7 @@
         "hostname": "hou-c12.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.67"
+          "207.204.248.79"
         ]
       },
       {
@@ -23225,7 +24085,7 @@
         "hostname": "hou-c13.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.69"
+          "207.204.248.85"
         ]
       },
       {
@@ -23235,7 +24095,7 @@
         "hostname": "hou-c14.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.71"
+          "207.204.248.91"
         ]
       },
       {
@@ -23245,7 +24105,7 @@
         "hostname": "hou-c15.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.73"
+          "207.204.248.97"
         ]
       },
       {
@@ -23255,7 +24115,7 @@
         "hostname": "hou-c16.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.75"
+          "207.204.248.103"
         ]
       },
       {
@@ -23265,7 +24125,7 @@
         "hostname": "hou-c17.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.77"
+          "207.204.248.109"
         ]
       },
       {
@@ -23275,7 +24135,7 @@
         "hostname": "hou-c18.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.79"
+          "207.204.248.115"
         ]
       },
       {
@@ -23285,7 +24145,7 @@
         "hostname": "hou-c19.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.117"
+          "207.204.248.121"
         ]
       },
       {
@@ -23295,7 +24155,7 @@
         "hostname": "hou-c20.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.119"
+          "207.204.248.127"
         ]
       },
       {
@@ -23305,7 +24165,7 @@
         "hostname": "hou-c21.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.121"
+          "207.204.248.133"
         ]
       },
       {
@@ -23315,7 +24175,7 @@
         "hostname": "hou-c22.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.123"
+          "207.204.248.139"
         ]
       },
       {
@@ -23325,7 +24185,7 @@
         "hostname": "hou-c23.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.125"
+          "207.204.248.145"
         ]
       },
       {
@@ -23335,7 +24195,7 @@
         "hostname": "hou-c24.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.127"
+          "207.204.248.151"
         ]
       },
       {
@@ -23345,7 +24205,17 @@
         "hostname": "hou-c25.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.129"
+          "207.204.248.157"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c26.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.248.163"
         ]
       },
       {
@@ -23355,7 +24225,7 @@
         "hostname": "hou-c27.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.133"
+          "207.204.248.169"
         ]
       },
       {
@@ -23365,7 +24235,7 @@
         "hostname": "hou-c28.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.171"
+          "207.204.248.175"
         ]
       },
       {
@@ -23375,7 +24245,7 @@
         "hostname": "hou-c29.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.173"
+          "207.204.248.181"
         ]
       },
       {
@@ -23385,7 +24255,7 @@
         "hostname": "hou-c30.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.175"
+          "207.204.248.187"
         ]
       },
       {
@@ -23395,7 +24265,7 @@
         "hostname": "hou-c31.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.177"
+          "207.204.248.193"
         ]
       },
       {
@@ -23405,7 +24275,7 @@
         "hostname": "hou-c32.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.179"
+          "207.204.248.199"
         ]
       },
       {
@@ -23415,7 +24285,17 @@
         "hostname": "hou-c33.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.87.181"
+          "207.204.248.205"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c34.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.248.211"
         ]
       },
       {
@@ -23425,7 +24305,7 @@
         "hostname": "hou-c35.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.4"
+          "207.204.248.217"
         ]
       },
       {
@@ -23435,7 +24315,7 @@
         "hostname": "hou-c36.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.10"
+          "207.204.248.223"
         ]
       },
       {
@@ -23445,7 +24325,7 @@
         "hostname": "hou-c37.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.16"
+          "207.204.248.229"
         ]
       },
       {
@@ -23455,7 +24335,7 @@
         "hostname": "hou-c38.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.22"
+          "207.204.248.235"
         ]
       },
       {
@@ -23465,7 +24345,7 @@
         "hostname": "hou-c39.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.28"
+          "207.204.248.241"
         ]
       },
       {
@@ -23475,7 +24355,7 @@
         "hostname": "hou-c40.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.34"
+          "207.204.248.247"
         ]
       },
       {
@@ -23485,7 +24365,7 @@
         "hostname": "hou-c41.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.40"
+          "207.204.248.253"
         ]
       },
       {
@@ -23495,7 +24375,17 @@
         "hostname": "hou-c42.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.46"
+          "207.204.249.9"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c43.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.249.15"
         ]
       },
       {
@@ -23505,7 +24395,7 @@
         "hostname": "hou-c44.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.64"
+          "207.204.249.21"
         ]
       },
       {
@@ -23515,7 +24405,7 @@
         "hostname": "hou-c45.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.58"
+          "207.204.249.27"
         ]
       },
       {
@@ -23525,7 +24415,7 @@
         "hostname": "hou-c46.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.94"
+          "207.204.248.254"
         ]
       },
       {
@@ -23535,7 +24425,7 @@
         "hostname": "hou-c47.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.70"
+          "207.204.249.38"
         ]
       },
       {
@@ -23545,7 +24435,7 @@
         "hostname": "hou-c48.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.76"
+          "207.204.249.44"
         ]
       },
       {
@@ -23555,7 +24445,7 @@
         "hostname": "hou-c49.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.82"
+          "207.204.249.50"
         ]
       },
       {
@@ -23565,7 +24455,47 @@
         "hostname": "hou-c50.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.90.88"
+          "207.204.249.56"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c51.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.249.62"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c52.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.249.68"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c53.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.249.74"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Houston",
+        "hostname": "hou-c54.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.249.80"
         ]
       },
       {
@@ -23575,7 +24505,7 @@
         "hostname": "las-c01.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.3"
+          "207.204.228.8"
         ]
       },
       {
@@ -23585,7 +24515,7 @@
         "hostname": "las-c02.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.9"
+          "207.204.228.14"
         ]
       },
       {
@@ -23595,7 +24525,7 @@
         "hostname": "las-c03.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.15"
+          "207.204.228.20"
         ]
       },
       {
@@ -23605,7 +24535,7 @@
         "hostname": "las-c04.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.21"
+          "207.204.228.26"
         ]
       },
       {
@@ -23615,7 +24545,7 @@
         "hostname": "las-c05.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.27"
+          "207.204.228.32"
         ]
       },
       {
@@ -23625,7 +24555,7 @@
         "hostname": "las-c06.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.33"
+          "207.204.228.38"
         ]
       },
       {
@@ -23635,7 +24565,7 @@
         "hostname": "las-c07.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.39"
+          "207.204.228.44"
         ]
       },
       {
@@ -23645,7 +24575,7 @@
         "hostname": "las-c08.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.45"
+          "207.204.228.50"
         ]
       },
       {
@@ -23655,7 +24585,7 @@
         "hostname": "las-c09.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.51"
+          "207.204.228.56"
         ]
       },
       {
@@ -23665,7 +24595,27 @@
         "hostname": "las-c10.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.59"
+          "207.204.228.62"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c11.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.68"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c12.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.74"
         ]
       },
       {
@@ -23675,7 +24625,7 @@
         "hostname": "las-c13.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.143"
+          "207.204.228.80"
         ]
       },
       {
@@ -23685,7 +24635,57 @@
         "hostname": "las-c14.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.147"
+          "207.204.228.242"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c15.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.86"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c16.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.92"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c17.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.98"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c18.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.104"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c19.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.110"
         ]
       },
       {
@@ -23755,7 +24755,7 @@
         "hostname": "las-c31.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.65"
+          "207.204.228.116"
         ]
       },
       {
@@ -23765,7 +24765,7 @@
         "hostname": "las-c32.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.71"
+          "207.204.228.122"
         ]
       },
       {
@@ -23775,7 +24775,7 @@
         "hostname": "las-c33.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.77"
+          "207.204.228.128"
         ]
       },
       {
@@ -23785,7 +24785,7 @@
         "hostname": "las-c34.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.83"
+          "207.204.228.134"
         ]
       },
       {
@@ -23795,7 +24795,7 @@
         "hostname": "las-c35.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.89"
+          "207.204.228.140"
         ]
       },
       {
@@ -23805,7 +24805,7 @@
         "hostname": "las-c36.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.95"
+          "207.204.228.146"
         ]
       },
       {
@@ -23815,7 +24815,7 @@
         "hostname": "las-c37.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.101"
+          "207.204.228.152"
         ]
       },
       {
@@ -23825,7 +24825,7 @@
         "hostname": "las-c38.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.107"
+          "207.204.228.158"
         ]
       },
       {
@@ -23835,7 +24835,7 @@
         "hostname": "las-c39.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.113"
+          "207.204.228.164"
         ]
       },
       {
@@ -23845,7 +24845,7 @@
         "hostname": "las-c40.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.119"
+          "207.204.228.170"
         ]
       },
       {
@@ -23855,7 +24855,7 @@
         "hostname": "las-c41.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.125"
+          "207.204.228.176"
         ]
       },
       {
@@ -23865,7 +24865,17 @@
         "hostname": "las-c42.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.131"
+          "207.204.228.182"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c43.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.188"
         ]
       },
       {
@@ -23875,7 +24885,7 @@
         "hostname": "las-c44.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.155"
+          "207.204.228.194"
         ]
       },
       {
@@ -23885,7 +24895,7 @@
         "hostname": "las-c45.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.161"
+          "207.204.228.200"
         ]
       },
       {
@@ -23895,7 +24905,7 @@
         "hostname": "las-c46.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.167"
+          "207.204.228.206"
         ]
       },
       {
@@ -23905,7 +24915,7 @@
         "hostname": "las-c47.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.173"
+          "207.204.228.212"
         ]
       },
       {
@@ -23915,7 +24925,7 @@
         "hostname": "las-c48.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.179"
+          "207.204.228.218"
         ]
       },
       {
@@ -23925,7 +24935,27 @@
         "hostname": "las-c49.ipvanish.com",
         "udp": true,
         "ips": [
-          "173.213.86.185"
+          "207.204.228.224"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c50.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.230"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Las Vegas",
+        "hostname": "las-c51.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "207.204.228.236"
         ]
       },
       {
