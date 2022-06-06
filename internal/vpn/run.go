@@ -96,8 +96,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.logger.Info("starting")
 				stayHere = false
 			case err := <-waitError: // unexpected error
-				close(waitError)
-
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
 				l.cleanup(context.Background(), portForwarding)
