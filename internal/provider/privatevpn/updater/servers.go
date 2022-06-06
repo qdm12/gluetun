@@ -5,6 +5,7 @@ package privatevpn
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -94,7 +95,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 	servers = hts.toServersSlice()
 	servers = append(servers, noHostnameServers...)
 
-	sortServers(servers)
+	sort.Sort(models.SortableServers(servers))
 
 	return servers, nil
 }

@@ -12,7 +12,7 @@ type ServerLocation struct {
 }
 
 // TODO remove retroRegion and servers from API in v4.
-func LocationData() (data []ServerLocation) {
+func LocationData() (data []ServerLocation) { //nolint:maintidx
 	//nolint:lll
 	return []ServerLocation{
 		{Region: "Asia Pacific", Country: "Australia", City: "Adelaide", RetroLoc: "Australia Adelaide", Hostname: "au-adl.prod.surfshark.com", MultiHop: false},

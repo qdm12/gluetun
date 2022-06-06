@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"sort"
+
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 // FlushToFile flushes the merged servers data to the file
@@ -30,6 +33,10 @@ func (s *Storage) flushToFile(path string) error {
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
+
+	for _, obj := range s.mergedServers.ProviderToServers {
+		sort.Sort(models.SortableServers(obj.Servers))
+	}
 
 	err = encoder.Encode(&s.mergedServers)
 	if err != nil {

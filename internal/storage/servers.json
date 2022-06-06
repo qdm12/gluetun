@@ -13382,26 +13382,6 @@
         "vpn": "openvpn",
         "country": "Luxembourg",
         "city": "Luxembourg",
-        "hostname": "lux-c08.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.68.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Luxembourg",
-        "city": "Luxembourg",
-        "hostname": "lux-c09.ipvanish.com",
-        "udp": true,
-        "ips": [
-          "216.131.68.34"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Luxembourg",
-        "city": "Luxembourg",
         "hostname": "lux-c07.ipvanish.com",
         "udp": true,
         "ips": [
@@ -13416,6 +13396,26 @@
         "udp": true,
         "ips": [
           "216.131.68.28"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Luxembourg",
+        "city": "Luxembourg",
+        "hostname": "lux-c08.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.68.28"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Luxembourg",
+        "city": "Luxembourg",
+        "hostname": "lux-c09.ipvanish.com",
+        "udp": true,
+        "ips": [
+          "216.131.68.34"
         ]
       },
       {
@@ -59247,22 +59247,22 @@
         "vpn": "openvpn",
         "region": "Netherlands",
         "number": 11,
-        "hostname": "nl-se11.nordvpn.com",
+        "hostname": "nl-ch11.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "213.232.87.174"
+          "213.232.87.146"
         ]
       },
       {
         "vpn": "openvpn",
         "region": "Netherlands",
         "number": 11,
-        "hostname": "nl-ch11.nordvpn.com",
+        "hostname": "nl-se11.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "213.232.87.146"
+          "213.232.87.174"
         ]
       },
       {
@@ -59280,17 +59280,6 @@
         "vpn": "openvpn",
         "region": "Netherlands",
         "number": 12,
-        "hostname": "nl-uk12.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "213.232.87.49"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Netherlands",
-        "number": 12,
         "hostname": "nl-se12.nordvpn.com",
         "tcp": true,
         "udp": true,
@@ -59301,12 +59290,12 @@
       {
         "vpn": "openvpn",
         "region": "Netherlands",
-        "number": 13,
-        "hostname": "nl-uk13.nordvpn.com",
+        "number": 12,
+        "hostname": "nl-uk12.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "213.232.87.50"
+          "213.232.87.49"
         ]
       },
       {
@@ -59318,6 +59307,17 @@
         "udp": true,
         "ips": [
           "213.232.87.145"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Netherlands",
+        "number": 13,
+        "hostname": "nl-uk13.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "213.232.87.50"
         ]
       },
       {
@@ -65605,17 +65605,6 @@
         "vpn": "openvpn",
         "region": "Sweden",
         "number": 9,
-        "hostname": "se-nl9.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "86.106.103.123"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Sweden",
-        "number": 9,
         "hostname": "se-ch9.nordvpn.com",
         "tcp": true,
         "udp": true,
@@ -65626,12 +65615,12 @@
       {
         "vpn": "openvpn",
         "region": "Sweden",
-        "number": 10,
-        "hostname": "se-nl10.nordvpn.com",
+        "number": 9,
+        "hostname": "se-nl9.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "91.132.138.75"
+          "86.106.103.123"
         ]
       },
       {
@@ -65643,6 +65632,17 @@
         "udp": true,
         "ips": [
           "91.132.138.76"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Sweden",
+        "number": 10,
+        "hostname": "se-nl10.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "91.132.138.75"
         ]
       },
       {
@@ -66903,17 +66903,6 @@
         "vpn": "openvpn",
         "region": "Switzerland",
         "number": 8,
-        "hostname": "ch-se8.nordvpn.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "217.138.203.252"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "region": "Switzerland",
-        "number": 8,
         "hostname": "ch-nl8.nordvpn.com",
         "tcp": true,
         "udp": true,
@@ -66924,12 +66913,12 @@
       {
         "vpn": "openvpn",
         "region": "Switzerland",
-        "number": 10,
-        "hostname": "ch-se10.nordvpn.com",
+        "number": 8,
+        "hostname": "ch-se8.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "91.132.136.219"
+          "217.138.203.252"
         ]
       },
       {
@@ -66941,6 +66930,17 @@
         "udp": true,
         "ips": [
           "91.132.136.220"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "region": "Switzerland",
+        "number": 10,
+        "hostname": "ch-se10.nordvpn.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "91.132.136.219"
         ]
       },
       {
@@ -69840,22 +69840,22 @@
         "vpn": "openvpn",
         "region": "United Kingdom",
         "number": 10,
-        "hostname": "uk-nl10.nordvpn.com",
+        "hostname": "uk-fr10.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "109.70.150.97"
+          "89.35.30.163"
         ]
       },
       {
         "vpn": "openvpn",
         "region": "United Kingdom",
         "number": 10,
-        "hostname": "uk-fr10.nordvpn.com",
+        "hostname": "uk-nl10.nordvpn.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "89.35.30.163"
+          "109.70.150.97"
         ]
       },
       {
@@ -117737,6 +117737,87 @@
     "servers": [
       {
         "vpn": "openvpn",
+        "country": "Albania",
+        "region": "Europe",
+        "city": "Tirana",
+        "hostname": "al-tia.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Albania",
+        "ips": [
+          "31.171.153.101",
+          "31.171.153.133",
+          "31.171.154.221",
+          "31.171.155.53",
+          "31.171.155.83",
+          "31.171.155.85"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Algeria",
+        "region": "Middle East and Africa",
+        "city": "Algiers",
+        "hostname": "dz-alg.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.144.3",
+          "62.197.144.5",
+          "62.197.144.8",
+          "62.197.144.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Andorra",
+        "region": "Europe",
+        "city": "Andorra la Vella",
+        "hostname": "ad-leu.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.152.3",
+          "62.197.152.5",
+          "62.197.152.8",
+          "62.197.152.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Argentina",
+        "region": "The Americas",
+        "city": "Buenos Aires",
+        "hostname": "ar-bua.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Argentina Buenos Aires",
+        "ips": [
+          "91.206.168.21",
+          "91.206.168.24",
+          "91.206.168.31",
+          "91.206.168.41",
+          "91.206.168.50",
+          "91.206.168.62"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Armenia",
+        "region": "Europe",
+        "city": "Yerevan",
+        "hostname": "am-evn.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "92.62.120.3",
+          "92.62.120.5",
+          "92.62.120.8",
+          "92.62.120.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Australia",
         "region": "Asia Pacific",
         "city": "Adelaide",
@@ -117832,745 +117913,14 @@
       },
       {
         "vpn": "openvpn",
-        "country": "Azerbaijan",
-        "region": "Asia Pacific",
-        "city": "Baku",
-        "hostname": "az-bak.prod.surfshark.com",
+        "country": "Australia US",
+        "region": "The Americas",
+        "hostname": "au-us.prod.surfshark.com",
         "tcp": true,
         "udp": true,
-        "retroloc": "Azerbaijan",
+        "retroloc": "Australia US",
         "ips": [
-          "62.212.239.19",
-          "85.132.101.155",
-          "94.20.154.51",
-          "94.20.154.53"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Bhutan",
-        "region": "Asia Pacific",
-        "city": "Thimphu",
-        "hostname": "bt-pbh.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.157.3",
-          "62.197.157.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Brunei",
-        "region": "Asia Pacific",
-        "city": "Begawan",
-        "hostname": "bn-bwn.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.158.3",
-          "62.197.158.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Combodia",
-        "region": "Asia Pacific",
-        "city": "Phnom Penh",
-        "hostname": "kh-pnh.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.146.3",
-          "62.197.146.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Hong Kong",
-        "region": "Asia Pacific",
-        "city": "Hong Kong",
-        "hostname": "hk-hkg.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Hong Kong",
-        "ips": [
-          "84.17.37.160",
-          "84.17.57.73",
-          "138.199.62.12",
-          "138.199.62.24",
-          "156.146.45.98",
-          "156.146.45.103",
-          "156.146.45.105",
-          "156.146.45.195",
-          "212.102.42.89",
-          "212.102.42.206"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "India",
-        "region": "Asia Pacific",
-        "city": "Chennai",
-        "hostname": "in-chn.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "India Chennai",
-        "ips": [
-          "103.94.27.99",
-          "103.108.117.116"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "India",
-        "region": "Asia Pacific",
-        "city": "Indore",
-        "hostname": "in-idr.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "India Indore",
-        "ips": [
-          "103.39.132.187",
-          "103.39.132.189",
-          "103.39.134.59",
-          "103.39.134.61",
-          "103.73.189.59",
-          "103.73.189.61",
-          "103.76.248.211",
-          "103.76.248.213",
-          "137.59.53.211",
-          "137.59.53.213"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "India",
-        "region": "Asia Pacific",
-        "city": "Mumbai",
-        "hostname": "in-mum.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "India Mumbai",
-        "ips": [
-          "129.227.219.12",
-          "129.227.219.22",
-          "129.227.219.24"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Indonesia",
-        "region": "Asia Pacific",
-        "city": "Jakarta",
-        "hostname": "id-jak.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Indonesia",
-        "ips": [
-          "103.120.66.216",
-          "103.120.66.219",
-          "103.120.66.229",
-          "103.120.66.231",
-          "103.120.66.233",
-          "103.148.242.175"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st004.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Japan Tokyo st004",
-        "ips": [
-          "217.138.212.19"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st007.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Japan Tokyo st007",
-        "ips": [
-          "82.102.28.125"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st014.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.187"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st015.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.22.153"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st016.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.177"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st017.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.179"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st018.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.182"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st019.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.184"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st020.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.167"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st021.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.169"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st022.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.162"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st023.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.19.205.164"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st024.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.2"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok-st025.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "89.187.161.4"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia Pacific",
-        "city": "Tokyo",
-        "hostname": "jp-tok.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Japan Tokyo",
-        "ips": [
-          "37.19.205.172",
-          "84.17.34.46",
-          "138.199.22.139",
-          "138.199.22.141",
-          "138.199.22.148",
-          "138.199.39.78"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Kazakhstan",
-        "region": "Asia Pacific",
-        "city": "Oral",
-        "hostname": "kz-ura.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Kazakhstan",
-        "ips": [
-          "5.189.202.16",
-          "5.189.202.126",
-          "5.189.202.128",
-          "5.189.202.144",
-          "5.189.202.151",
-          "5.189.202.153"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Laos",
-        "region": "Asia Pacific",
-        "city": "Vientiane",
-        "hostname": "la-vte.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.169.168.3"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Macau",
-        "region": "Asia Pacific",
-        "city": "Macao",
-        "hostname": "mo-mfm.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.154.5",
-          "62.197.154.8"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Malaysia",
-        "region": "Asia Pacific",
-        "city": "Kuala Lumpur",
-        "hostname": "my-kul.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Malaysia",
-        "ips": [
-          "42.0.30.156",
-          "42.0.30.177",
-          "111.90.140.143",
-          "111.90.145.109",
-          "111.90.145.116",
-          "111.90.158.137"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Mongolia",
-        "region": "Asia Pacific",
-        "city": "Ulaanbaatar",
-        "hostname": "mn-uln.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.155.3",
-          "62.197.155.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Myanmar",
-        "region": "Asia Pacific",
-        "city": "Naypyidaw",
-        "hostname": "mm-nyt.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.95.242.3",
-          "45.95.242.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Nepal",
-        "region": "Asia Pacific",
-        "city": "Kathmandu",
-        "hostname": "np-ktm.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.169.170.3",
-          "194.169.170.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "New Zealand",
-        "region": "Asia Pacific",
-        "city": "Auckland",
-        "hostname": "nz-akl.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "New Zealand",
-        "ips": [
-          "180.149.231.3",
-          "180.149.231.5",
-          "180.149.231.11",
-          "180.149.231.13",
-          "180.149.231.45",
-          "180.149.231.67",
-          "180.149.231.117",
-          "180.149.231.165"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Philippines",
-        "region": "Asia Pacific",
-        "city": "Manila",
-        "hostname": "ph-mnl.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Philippines",
-        "ips": [
-          "45.134.224.3",
-          "45.134.224.13",
-          "45.134.224.18",
-          "45.134.224.20",
-          "45.134.224.26",
-          "45.134.224.31"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng-mp001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Singapore mp001",
-        "ips": [
-          "206.189.94.229"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng-st005.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.60.175"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng-st006.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.60.177"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng-st007.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.60.170"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng-st008.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.60.172"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng-st009.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.60.180"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng-st010.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "138.199.60.182"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore",
-        "region": "Asia Pacific",
-        "city": "Singapore",
-        "hostname": "sg-sng.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Singapore",
-        "ips": [
-          "89.187.163.130",
-          "89.187.163.134",
-          "89.187.163.136",
-          "89.187.163.202",
-          "89.187.163.207",
-          "156.146.56.130",
-          "156.146.56.132",
-          "156.146.56.135"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore Hong Kong",
-        "region": "Asia Pacific",
-        "city": "Hong Kong",
-        "hostname": "sg-hk.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Singapore Hong Kong",
-        "ips": [
-          "206.189.83.129"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Singapore in",
-        "region": "Asia Pacific",
-        "hostname": "sg-in.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Singapore in",
-        "ips": [
-          "128.199.193.35"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Korea",
-        "region": "Asia Pacific",
-        "city": "Seoul",
-        "hostname": "kr-seo.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Korea",
-        "ips": [
-          "61.14.210.234",
-          "61.97.244.36",
-          "103.249.31.24",
-          "103.249.31.26",
-          "103.249.31.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Sri Lanka",
-        "region": "Asia Pacific",
-        "city": "Colombo",
-        "hostname": "lk-cmb.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.156.3"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Taiwan",
-        "region": "Asia Pacific",
-        "city": "Taichung City",
-        "hostname": "tw-tai.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Taiwan",
-        "ips": [
-          "2.58.241.149",
-          "2.58.242.45",
-          "2.58.242.173",
-          "103.152.151.19"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Thailand",
-        "region": "Asia Pacific",
-        "city": "Bangkok",
-        "hostname": "th-bkk.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Thailand",
-        "ips": [
-          "45.40.54.9",
-          "45.40.54.14",
-          "45.40.54.17",
-          "45.40.54.19",
-          "45.40.54.22",
-          "45.40.54.29",
-          "45.40.54.32",
-          "45.40.54.34",
-          "45.40.54.37",
-          "45.40.54.49"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Uzbekistan",
-        "region": "Asia Pacific",
-        "city": "Tashkent",
-        "hostname": "uz-tas.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "94.154.124.5",
-          "94.154.124.8"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Vietnam",
-        "region": "Asia Pacific",
-        "city": "Ho Chi Minh City",
-        "hostname": "vn-hcm.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Vietnam",
-        "ips": [
-          "212.119.34.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Albania",
-        "region": "Europe",
-        "city": "Tirana",
-        "hostname": "al-tia.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Albania",
-        "ips": [
-          "31.171.153.101",
-          "31.171.153.133",
-          "31.171.154.221",
-          "31.171.155.53",
-          "31.171.155.83",
-          "31.171.155.85"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Andorra",
-        "region": "Europe",
-        "city": "Andorra la Vella",
-        "hostname": "ad-leu.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.152.3",
-          "62.197.152.5",
-          "62.197.152.8",
-          "62.197.152.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Armenia",
-        "region": "Europe",
-        "city": "Yerevan",
-        "hostname": "am-evn.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "92.62.120.3",
-          "92.62.120.5",
-          "92.62.120.8",
-          "92.62.120.10"
+          "143.244.62.65"
         ]
       },
       {
@@ -118591,6 +117941,35 @@
           "87.249.133.66",
           "89.187.168.36",
           "89.187.168.44"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Azerbaijan",
+        "region": "Asia Pacific",
+        "city": "Baku",
+        "hostname": "az-bak.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Azerbaijan",
+        "ips": [
+          "62.212.239.19",
+          "85.132.101.155",
+          "94.20.154.51",
+          "94.20.154.53"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Bahamas",
+        "region": "The Americas",
+        "city": "Bahamas",
+        "hostname": "bs-nas.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.145.8",
+          "62.197.145.10"
         ]
       },
       {
@@ -118634,6 +118013,47 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Belize",
+        "region": "The Americas",
+        "city": "Belmopan",
+        "hostname": "bz-blp.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "212.119.33.3",
+          "212.119.33.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Bhutan",
+        "region": "Asia Pacific",
+        "city": "Thimphu",
+        "hostname": "bt-pbh.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.157.3",
+          "62.197.157.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Bolivia",
+        "region": "The Americas",
+        "city": "Sucre",
+        "hostname": "bo-sre.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.169.171.3",
+          "194.169.171.5",
+          "194.169.171.8",
+          "194.169.171.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Bosnia and Herzegovina",
         "region": "Europe",
         "city": "Sarajevo",
@@ -118652,6 +118072,38 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Brazil",
+        "region": "The Americas",
+        "city": "Sao Paulo",
+        "hostname": "br-sao.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Brazil",
+        "ips": [
+          "138.199.4.91",
+          "138.199.4.93",
+          "138.199.58.37",
+          "138.199.58.55",
+          "138.199.58.65",
+          "138.199.58.75",
+          "193.19.205.119"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Brunei",
+        "region": "Asia Pacific",
+        "city": "Begawan",
+        "hostname": "bn-bwn.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.158.3",
+          "62.197.158.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Bulgaria",
         "region": "Europe",
         "city": "Sofia",
@@ -118666,6 +118118,148 @@
           "146.70.53.213",
           "146.70.53.221",
           "217.138.221.205"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Canada",
+        "region": "The Americas",
+        "city": "Montreal",
+        "hostname": "ca-mon.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Canada Montreal",
+        "ips": [
+          "91.245.254.51",
+          "91.245.254.77",
+          "91.245.254.93",
+          "91.245.254.125",
+          "91.245.254.133",
+          "146.70.27.13"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Canada",
+        "region": "The Americas",
+        "city": "Toronto",
+        "hostname": "ca-tor-mp001.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Canada Toronto mp001",
+        "ips": [
+          "138.197.151.26"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Canada",
+        "region": "The Americas",
+        "city": "Toronto",
+        "hostname": "ca-tor.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Canada Toronto",
+        "ips": [
+          "37.19.211.17",
+          "37.19.211.19",
+          "37.19.211.24",
+          "37.19.211.62",
+          "37.19.211.74",
+          "37.19.211.104",
+          "37.19.211.117",
+          "37.19.211.119"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Canada",
+        "region": "The Americas",
+        "city": "Vancouver",
+        "hostname": "ca-van.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Canada Vancouver",
+        "ips": [
+          "66.115.147.67",
+          "66.115.147.79",
+          "198.8.92.69",
+          "198.8.92.79",
+          "208.78.41.197",
+          "208.78.41.200"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Canada US",
+        "region": "The Americas",
+        "hostname": "ca-us.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Canada US",
+        "ips": [
+          "159.203.57.80"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Chile",
+        "region": "The Americas",
+        "city": "Santiago",
+        "hostname": "cl-san.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Chile",
+        "ips": [
+          "31.169.121.5",
+          "31.169.121.19",
+          "31.169.121.21",
+          "31.169.121.24"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Colombia",
+        "region": "The Americas",
+        "city": "Bogota",
+        "hostname": "co-bog.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Colombia",
+        "ips": [
+          "45.129.32.5",
+          "45.129.32.29"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Combodia",
+        "region": "Asia Pacific",
+        "city": "Phnom Penh",
+        "hostname": "kh-pnh.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.146.3",
+          "62.197.146.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Costa Rica",
+        "region": "The Americas",
+        "city": "San Jose",
+        "hostname": "cr-sjn.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Costa Rica",
+        "ips": [
+          "176.227.241.21",
+          "176.227.241.24",
+          "176.227.241.29",
+          "176.227.241.31",
+          "176.227.241.33",
+          "176.227.241.35"
         ]
       },
       {
@@ -118740,6 +118334,36 @@
           "146.70.92.29",
           "146.70.92.43",
           "146.70.92.53"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Ecuador",
+        "region": "The Americas",
+        "city": "Quito",
+        "hostname": "ec-uio.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "92.62.122.3",
+          "92.62.122.5",
+          "92.62.122.8",
+          "92.62.122.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Egypt",
+        "region": "Middle East and Africa",
+        "city": "Cairo",
+        "hostname": "eg-cai.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.147.3",
+          "62.197.147.5",
+          "62.197.147.8",
+          "62.197.147.10"
         ]
       },
       {
@@ -119027,6 +118651,28 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Hong Kong",
+        "region": "Asia Pacific",
+        "city": "Hong Kong",
+        "hostname": "hk-hkg.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Hong Kong",
+        "ips": [
+          "84.17.37.160",
+          "84.17.57.73",
+          "138.199.62.12",
+          "138.199.62.24",
+          "156.146.45.98",
+          "156.146.45.103",
+          "156.146.45.105",
+          "156.146.45.195",
+          "212.102.42.89",
+          "212.102.42.206"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Hungary",
         "region": "Europe",
         "city": "Budapest",
@@ -119062,6 +118708,57 @@
       },
       {
         "vpn": "openvpn",
+        "country": "India",
+        "region": "Asia Pacific",
+        "city": "Chennai",
+        "hostname": "in-chn.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "India Chennai",
+        "ips": [
+          "103.94.27.99",
+          "103.108.117.116"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "India",
+        "region": "Asia Pacific",
+        "city": "Indore",
+        "hostname": "in-idr.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "India Indore",
+        "ips": [
+          "103.39.132.187",
+          "103.39.132.189",
+          "103.39.134.59",
+          "103.39.134.61",
+          "103.73.189.59",
+          "103.73.189.61",
+          "103.76.248.211",
+          "103.76.248.213",
+          "137.59.53.211",
+          "137.59.53.213"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "India",
+        "region": "Asia Pacific",
+        "city": "Mumbai",
+        "hostname": "in-mum.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "India Mumbai",
+        "ips": [
+          "129.227.219.12",
+          "129.227.219.22",
+          "129.227.219.24"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "India UK",
         "region": "Europe",
         "hostname": "in-uk.prod.surfshark.com",
@@ -119070,6 +118767,24 @@
         "retroloc": "India UK",
         "ips": [
           "134.209.148.122"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Indonesia",
+        "region": "Asia Pacific",
+        "city": "Jakarta",
+        "hostname": "id-jak.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Indonesia",
+        "ips": [
+          "103.120.66.216",
+          "103.120.66.219",
+          "103.120.66.229",
+          "103.120.66.231",
+          "103.120.66.233",
+          "103.148.242.175"
         ]
       },
       {
@@ -119088,6 +118803,23 @@
           "149.34.242.22",
           "149.34.242.77",
           "185.252.222.115"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Israel",
+        "region": "Middle East and Africa",
+        "city": "Tel Aviv",
+        "hostname": "il-tlv.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Israel",
+        "ips": [
+          "84.110.41.85",
+          "87.239.255.107",
+          "87.239.255.114",
+          "87.239.255.119",
+          "87.239.255.121"
         ]
       },
       {
@@ -119124,6 +118856,224 @@
           "185.217.71.195",
           "185.217.71.229",
           "217.138.219.251"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st004.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Japan Tokyo st004",
+        "ips": [
+          "217.138.212.19"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st007.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Japan Tokyo st007",
+        "ips": [
+          "82.102.28.125"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st014.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.187"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st015.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.22.153"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st016.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.177"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st017.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.179"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st018.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.182"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st019.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.184"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st020.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.167"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st021.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.169"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st022.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.162"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st023.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.19.205.164"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st024.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.2"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok-st025.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.161.4"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Japan Tokyo",
+        "ips": [
+          "37.19.205.172",
+          "84.17.34.46",
+          "138.199.22.139",
+          "138.199.22.141",
+          "138.199.22.148",
+          "138.199.39.78"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Kazakhstan",
+        "region": "Asia Pacific",
+        "city": "Oral",
+        "hostname": "kz-ura.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Kazakhstan",
+        "ips": [
+          "5.189.202.16",
+          "5.189.202.126",
+          "5.189.202.128",
+          "5.189.202.144",
+          "5.189.202.151",
+          "5.189.202.153"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Laos",
+        "region": "Asia Pacific",
+        "city": "Vientiane",
+        "hostname": "la-vte.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.169.168.3"
         ]
       },
       {
@@ -119188,6 +119138,37 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Macau",
+        "region": "Asia Pacific",
+        "city": "Macao",
+        "hostname": "mo-mfm.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.154.5",
+          "62.197.154.8"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Malaysia",
+        "region": "Asia Pacific",
+        "city": "Kuala Lumpur",
+        "hostname": "my-kul.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Malaysia",
+        "ips": [
+          "42.0.30.156",
+          "42.0.30.177",
+          "111.90.140.143",
+          "111.90.145.109",
+          "111.90.145.116",
+          "111.90.158.137"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Malta",
         "region": "Europe",
         "city": "Valletta",
@@ -119197,6 +119178,39 @@
         "ips": [
           "212.119.35.3",
           "212.119.35.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Marocco",
+        "region": "Middle East and Africa",
+        "city": "Rabat",
+        "hostname": "ma-rab.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.169.169.3",
+          "194.169.169.5",
+          "194.169.169.8",
+          "194.169.169.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Mexico",
+        "region": "The Americas",
+        "city": "Mexico City",
+        "hostname": "mx-mex.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Mexico City Mexico",
+        "ips": [
+          "194.41.112.3",
+          "194.41.112.5",
+          "194.41.112.14",
+          "194.41.112.24",
+          "194.41.112.26",
+          "194.41.112.35"
         ]
       },
       {
@@ -119230,6 +119244,19 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Mongolia",
+        "region": "Asia Pacific",
+        "city": "Ulaanbaatar",
+        "hostname": "mn-uln.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.155.3",
+          "62.197.155.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Montenegro",
         "region": "Europe",
         "city": "Podgorica",
@@ -119241,6 +119268,32 @@
           "62.197.159.5",
           "62.197.159.8",
           "62.197.159.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Myanmar",
+        "region": "Asia Pacific",
+        "city": "Naypyidaw",
+        "hostname": "mm-nyt.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.95.242.3",
+          "45.95.242.5"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Nepal",
+        "region": "Asia Pacific",
+        "city": "Kathmandu",
+        "hostname": "np-ktm.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.169.170.3",
+          "194.169.170.5"
         ]
       },
       {
@@ -119287,6 +119340,54 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Netherlands US",
+        "region": "The Americas",
+        "hostname": "nl-us.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Netherlands US",
+        "ips": [
+          "188.166.98.91"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "New Zealand",
+        "region": "Asia Pacific",
+        "city": "Auckland",
+        "hostname": "nz-akl.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "New Zealand",
+        "ips": [
+          "180.149.231.3",
+          "180.149.231.5",
+          "180.149.231.11",
+          "180.149.231.13",
+          "180.149.231.45",
+          "180.149.231.67",
+          "180.149.231.117",
+          "180.149.231.165"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Nigeria",
+        "region": "Middle East and Africa",
+        "city": "Lagos",
+        "hostname": "ng-lag.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Nigeria",
+        "ips": [
+          "213.109.151.3",
+          "213.109.151.5",
+          "213.109.151.8",
+          "213.109.151.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "North Macedonia",
         "region": "Europe",
         "city": "Skopje",
@@ -119315,6 +119416,70 @@
           "84.247.50.69",
           "91.219.215.37",
           "91.219.215.83"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Panama",
+        "region": "The Americas",
+        "city": "Panama",
+        "hostname": "pa-pac.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.244.139.3",
+          "185.244.139.5",
+          "185.244.139.7",
+          "185.244.139.9",
+          "185.244.139.12"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Paraguay",
+        "region": "The Americas",
+        "city": "Asunción",
+        "hostname": "py-asu.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.26.131.3",
+          "194.26.131.5",
+          "194.26.131.8",
+          "194.26.131.10"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Peru",
+        "region": "The Americas",
+        "city": "Lima",
+        "hostname": "pe-lim.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "193.218.35.3",
+          "193.218.35.5",
+          "193.218.35.7",
+          "193.218.35.12"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Philippines",
+        "region": "Asia Pacific",
+        "city": "Manila",
+        "hostname": "ph-mnl.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Philippines",
+        "ips": [
+          "45.134.224.3",
+          "45.134.224.13",
+          "45.134.224.18",
+          "45.134.224.20",
+          "45.134.224.26",
+          "45.134.224.31"
         ]
       },
       {
@@ -119426,6 +119591,124 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng-mp001.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Singapore mp001",
+        "ips": [
+          "206.189.94.229"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng-st005.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.60.175"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng-st006.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.60.177"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng-st007.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.60.170"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng-st008.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.60.172"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng-st009.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.60.180"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng-st010.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "138.199.60.182"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Singapore",
+        "ips": [
+          "89.187.163.130",
+          "89.187.163.134",
+          "89.187.163.136",
+          "89.187.163.202",
+          "89.187.163.207",
+          "156.146.56.130",
+          "156.146.56.132",
+          "156.146.56.135"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore Hong Kong",
+        "region": "Asia Pacific",
+        "city": "Hong Kong",
+        "hostname": "sg-hk.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Singapore Hong Kong",
+        "ips": [
+          "206.189.83.129"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Singapore Netherlands",
         "region": "Europe",
         "hostname": "sg-nl.prod.surfshark.com",
@@ -119434,6 +119717,18 @@
         "retroloc": "Singapore Netherlands",
         "ips": [
           "104.248.148.18"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Singapore in",
+        "region": "Asia Pacific",
+        "hostname": "sg-in.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Singapore in",
+        "ips": [
+          "128.199.193.35"
         ]
       },
       {
@@ -119468,6 +119763,41 @@
           "195.158.249.46",
           "195.158.249.50",
           "195.158.249.59"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "South Africa",
+        "region": "Middle East and Africa",
+        "city": "Johannesburg",
+        "hostname": "za-jnb.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "South Africa",
+        "ips": [
+          "102.165.47.130",
+          "102.165.47.138",
+          "154.16.93.51",
+          "154.16.93.53",
+          "154.127.50.136",
+          "154.127.50.140"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "South Korea",
+        "region": "Asia Pacific",
+        "city": "Seoul",
+        "hostname": "kr-seo.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Korea",
+        "ips": [
+          "61.14.210.234",
+          "61.97.244.36",
+          "103.249.31.24",
+          "103.249.31.26",
+          "103.249.31.28"
         ]
       },
       {
@@ -119527,6 +119857,18 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Sri Lanka",
+        "region": "Asia Pacific",
+        "city": "Colombo",
+        "hostname": "lk-cmb.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.197.156.3"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Sweden",
         "region": "Europe",
         "city": "Stockholm",
@@ -119557,6 +119899,44 @@
           "89.37.173.37",
           "156.146.62.44",
           "169.150.197.7"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Taiwan",
+        "region": "Asia Pacific",
+        "city": "Taichung City",
+        "hostname": "tw-tai.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Taiwan",
+        "ips": [
+          "2.58.241.149",
+          "2.58.242.45",
+          "2.58.242.173",
+          "103.152.151.19"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Thailand",
+        "region": "Asia Pacific",
+        "city": "Bangkok",
+        "hostname": "th-bkk.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Thailand",
+        "ips": [
+          "45.40.54.9",
+          "45.40.54.14",
+          "45.40.54.17",
+          "45.40.54.19",
+          "45.40.54.22",
+          "45.40.54.29",
+          "45.40.54.32",
+          "45.40.54.34",
+          "45.40.54.37",
+          "45.40.54.49"
         ]
       },
       {
@@ -119641,6 +120021,22 @@
           "143.244.46.246",
           "156.146.50.107",
           "156.146.50.109"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United Arab Emirates",
+        "region": "Middle East and Africa",
+        "city": "Dubai",
+        "hostname": "ae-dub.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "United Arab Emirates",
+        "ips": [
+          "146.70.102.181",
+          "176.125.231.3",
+          "176.125.231.21",
+          "176.125.231.27"
         ]
       },
       {
@@ -119792,428 +120188,6 @@
           "37.120.233.245",
           "103.219.21.32",
           "139.28.176.53"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Algeria",
-        "region": "Middle East and Africa",
-        "city": "Algiers",
-        "hostname": "dz-alg.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.144.3",
-          "62.197.144.5",
-          "62.197.144.8",
-          "62.197.144.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Egypt",
-        "region": "Middle East and Africa",
-        "city": "Cairo",
-        "hostname": "eg-cai.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.147.3",
-          "62.197.147.5",
-          "62.197.147.8",
-          "62.197.147.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Israel",
-        "region": "Middle East and Africa",
-        "city": "Tel Aviv",
-        "hostname": "il-tlv.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Israel",
-        "ips": [
-          "84.110.41.85",
-          "87.239.255.107",
-          "87.239.255.114",
-          "87.239.255.119",
-          "87.239.255.121"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Marocco",
-        "region": "Middle East and Africa",
-        "city": "Rabat",
-        "hostname": "ma-rab.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.169.169.3",
-          "194.169.169.5",
-          "194.169.169.8",
-          "194.169.169.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Nigeria",
-        "region": "Middle East and Africa",
-        "city": "Lagos",
-        "hostname": "ng-lag.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Nigeria",
-        "ips": [
-          "213.109.151.3",
-          "213.109.151.5",
-          "213.109.151.8",
-          "213.109.151.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "South Africa",
-        "region": "Middle East and Africa",
-        "city": "Johannesburg",
-        "hostname": "za-jnb.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "South Africa",
-        "ips": [
-          "102.165.47.130",
-          "102.165.47.138",
-          "154.16.93.51",
-          "154.16.93.53",
-          "154.127.50.136",
-          "154.127.50.140"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Arab Emirates",
-        "region": "Middle East and Africa",
-        "city": "Dubai",
-        "hostname": "ae-dub.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "United Arab Emirates",
-        "ips": [
-          "146.70.102.181",
-          "176.125.231.3",
-          "176.125.231.21",
-          "176.125.231.27"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Argentina",
-        "region": "The Americas",
-        "city": "Buenos Aires",
-        "hostname": "ar-bua.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Argentina Buenos Aires",
-        "ips": [
-          "91.206.168.21",
-          "91.206.168.24",
-          "91.206.168.31",
-          "91.206.168.41",
-          "91.206.168.50",
-          "91.206.168.62"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Australia US",
-        "region": "The Americas",
-        "hostname": "au-us.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Australia US",
-        "ips": [
-          "143.244.62.65"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Bahamas",
-        "region": "The Americas",
-        "city": "Bahamas",
-        "hostname": "bs-nas.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.197.145.8",
-          "62.197.145.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Belize",
-        "region": "The Americas",
-        "city": "Belmopan",
-        "hostname": "bz-blp.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "212.119.33.3",
-          "212.119.33.5"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Bolivia",
-        "region": "The Americas",
-        "city": "Sucre",
-        "hostname": "bo-sre.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.169.171.3",
-          "194.169.171.5",
-          "194.169.171.8",
-          "194.169.171.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Brazil",
-        "region": "The Americas",
-        "city": "Sao Paulo",
-        "hostname": "br-sao.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Brazil",
-        "ips": [
-          "138.199.4.91",
-          "138.199.4.93",
-          "138.199.58.37",
-          "138.199.58.55",
-          "138.199.58.65",
-          "138.199.58.75",
-          "193.19.205.119"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada",
-        "region": "The Americas",
-        "city": "Montreal",
-        "hostname": "ca-mon.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Canada Montreal",
-        "ips": [
-          "91.245.254.51",
-          "91.245.254.77",
-          "91.245.254.93",
-          "91.245.254.125",
-          "91.245.254.133",
-          "146.70.27.13"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada",
-        "region": "The Americas",
-        "city": "Toronto",
-        "hostname": "ca-tor-mp001.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Canada Toronto mp001",
-        "ips": [
-          "138.197.151.26"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada",
-        "region": "The Americas",
-        "city": "Toronto",
-        "hostname": "ca-tor.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Canada Toronto",
-        "ips": [
-          "37.19.211.17",
-          "37.19.211.19",
-          "37.19.211.24",
-          "37.19.211.62",
-          "37.19.211.74",
-          "37.19.211.104",
-          "37.19.211.117",
-          "37.19.211.119"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada",
-        "region": "The Americas",
-        "city": "Vancouver",
-        "hostname": "ca-van.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Canada Vancouver",
-        "ips": [
-          "66.115.147.67",
-          "66.115.147.79",
-          "198.8.92.69",
-          "198.8.92.79",
-          "208.78.41.197",
-          "208.78.41.200"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada US",
-        "region": "The Americas",
-        "hostname": "ca-us.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Canada US",
-        "ips": [
-          "159.203.57.80"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Chile",
-        "region": "The Americas",
-        "city": "Santiago",
-        "hostname": "cl-san.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Chile",
-        "ips": [
-          "31.169.121.5",
-          "31.169.121.19",
-          "31.169.121.21",
-          "31.169.121.24"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Colombia",
-        "region": "The Americas",
-        "city": "Bogota",
-        "hostname": "co-bog.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Colombia",
-        "ips": [
-          "45.129.32.5",
-          "45.129.32.29"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Costa Rica",
-        "region": "The Americas",
-        "city": "San Jose",
-        "hostname": "cr-sjn.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Costa Rica",
-        "ips": [
-          "176.227.241.21",
-          "176.227.241.24",
-          "176.227.241.29",
-          "176.227.241.31",
-          "176.227.241.33",
-          "176.227.241.35"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Ecuador",
-        "region": "The Americas",
-        "city": "Quito",
-        "hostname": "ec-uio.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "92.62.122.3",
-          "92.62.122.5",
-          "92.62.122.8",
-          "92.62.122.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Mexico",
-        "region": "The Americas",
-        "city": "Mexico City",
-        "hostname": "mx-mex.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Mexico City Mexico",
-        "ips": [
-          "194.41.112.3",
-          "194.41.112.5",
-          "194.41.112.14",
-          "194.41.112.24",
-          "194.41.112.26",
-          "194.41.112.35"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Netherlands US",
-        "region": "The Americas",
-        "hostname": "nl-us.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "retroloc": "Netherlands US",
-        "ips": [
-          "188.166.98.91"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Panama",
-        "region": "The Americas",
-        "city": "Panama",
-        "hostname": "pa-pac.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.244.139.3",
-          "185.244.139.5",
-          "185.244.139.7",
-          "185.244.139.9",
-          "185.244.139.12"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Paraguay",
-        "region": "The Americas",
-        "city": "Asunción",
-        "hostname": "py-asu.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "194.26.131.3",
-          "194.26.131.5",
-          "194.26.131.8",
-          "194.26.131.10"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Peru",
-        "region": "The Americas",
-        "city": "Lima",
-        "hostname": "pe-lim.prod.surfshark.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "193.218.35.3",
-          "193.218.35.5",
-          "193.218.35.7",
-          "193.218.35.12"
         ]
       },
       {
@@ -120770,6 +120744,19 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Uzbekistan",
+        "region": "Asia Pacific",
+        "city": "Tashkent",
+        "hostname": "uz-tas.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "94.154.124.5",
+          "94.154.124.8"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Venezuela",
         "region": "The Americas",
         "city": "Caracas",
@@ -120780,6 +120767,19 @@
           "45.149.3.5",
           "45.149.3.7",
           "45.149.3.14"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Vietnam",
+        "region": "Asia Pacific",
+        "city": "Ho Chi Minh City",
+        "hostname": "vn-hcm.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "retroloc": "Vietnam",
+        "ips": [
+          "212.119.34.5"
         ]
       }
     ]

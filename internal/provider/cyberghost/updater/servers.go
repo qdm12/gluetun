@@ -4,6 +4,7 @@ package cyberghost
 
 import (
 	"context"
+	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -22,6 +23,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 
 	servers = possibleServers.toSlice()
 
-	sortServers(servers)
+	sort.Sort(models.SortableServers(servers))
+
 	return servers, nil
 }

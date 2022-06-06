@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -91,7 +92,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 		servers[i].City = ipsInfo[i].City
 	}
 
-	sortServers(servers)
+	sort.Sort(models.SortableServers(servers))
 
 	return servers, nil
 }

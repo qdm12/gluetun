@@ -5,6 +5,7 @@ package surfshark
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
@@ -47,7 +48,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
-	sortServers(servers)
+	sort.Sort(models.SortableServers(servers))
 
 	return servers, nil
 }

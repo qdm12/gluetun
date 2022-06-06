@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"sort"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -60,7 +61,7 @@ func (u *Updater) GetServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
-	sortServers(servers)
+	sort.Sort(models.SortableServers(servers))
 
 	return servers, nil
 }
