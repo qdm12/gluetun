@@ -60,12 +60,13 @@ func GetConnection(provider string,
 			}
 
 			connection := models.Connection{
-				Type:     selection.VPN,
-				IP:       ip,
-				Port:     port,
-				Protocol: protocol,
-				Hostname: hostname,
-				PubKey:   server.WgPubKey, // Wireguard
+				Type:       selection.VPN,
+				IP:         ip,
+				Port:       port,
+				Protocol:   protocol,
+				Hostname:   hostname,
+				ServerName: server.ServerName,
+				PubKey:     server.WgPubKey, // Wireguard
 			}
 			connections = append(connections, connection)
 		}

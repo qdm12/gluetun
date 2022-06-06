@@ -41,5 +41,5 @@ func setupOpenVPN(ctx context.Context, fw firewall.VPNConnectionSetter,
 
 	runner = openvpn.NewRunner(settings.OpenVPN, starter, logger)
 
-	return runner, connection.Hostname, nil
+	return runner, connection.ServerName, nil
 }

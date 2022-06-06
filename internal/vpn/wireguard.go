@@ -39,5 +39,5 @@ func setupWireguard(ctx context.Context, netlinker netlink.NetLinker,
 		return nil, "", fmt.Errorf("failed setting firewall: %w", err)
 	}
 
-	return wireguarder, connection.Hostname, nil
+	return wireguarder, connection.ServerName, nil
 }

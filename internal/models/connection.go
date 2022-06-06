@@ -16,6 +16,8 @@ type Connection struct {
 	// Hostname is used for IPVanish, IVPN, Privado
 	// and Windscribe for TLS verification.
 	Hostname string `json:"hostname"`
+	// ServerName is used for PIA for port forwarding
+	ServerName string `json:"server_name,omitempty"`
 	// PubKey is the public key of the VPN server,
 	// used only for Wireguard.
 	PubKey string `json:"pubkey"`
@@ -24,7 +26,7 @@ type Connection struct {
 func (c *Connection) Equal(other Connection) bool {
 	return c.IP.Equal(other.IP) && c.Port == other.Port &&
 		c.Protocol == other.Protocol && c.Hostname == other.Hostname &&
-		c.PubKey == other.PubKey
+		c.ServerName == other.ServerName && c.PubKey == other.PubKey
 }
 
 // UpdateEmptyWith updates each field of the connection where the
