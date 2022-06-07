@@ -39,6 +39,7 @@ import (
 type Provider interface {
 	GetConnection(selection settings.ServerSelection) (connection models.Connection, err error)
 	OpenVPNConfig(connection models.Connection, settings settings.OpenVPN) (lines []string)
+	Name() string
 	PortForwarder
 }
 

@@ -17,3 +17,7 @@ func New() *Provider {
 		NoPortForwarder: utils.NewNoPortForwarding(providers.Custom),
 	}
 }
+
+func (p *Provider) Name() string {
+	return providers.Custom
+}

@@ -21,3 +21,7 @@ func New(storage common.Storage, randSource rand.Source) *Provider {
 		NoPortForwarder: utils.NewNoPortForwarding(providers.Privatevpn),
 	}
 }
+
+func (p *Provider) Name() string {
+	return providers.Privatevpn
+}

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
@@ -27,4 +28,8 @@ func New(storage common.Storage, randSource rand.Source,
 		portForwardPath: jsonPortForwardPath,
 		authFilePath:    openvpn.AuthConf,
 	}
+}
+
+func (p *Provider) Name() string {
+	return providers.PrivateInternetAccess
 }
