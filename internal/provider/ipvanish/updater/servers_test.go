@@ -183,7 +183,7 @@ func Test_Updater_GetServers(t *testing.T) {
 
 			updater := New(unzipper, presolver, warner)
 
-			servers, err := updater.GetServers(ctx, testCase.minServers)
+			servers, err := updater.FetchServers(ctx, testCase.minServers)
 
 			assert.Equal(t, testCase.servers, servers)
 			if testCase.err != nil {

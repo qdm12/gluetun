@@ -18,7 +18,7 @@ var (
 	ErrGetAPI = errors.New("cannot fetch server information from API")
 )
 
-func (u *Updater) GetServers(ctx context.Context, minServers int) (
+func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	cities := getAvailableCities()
 	servers = make([]models.Server, 0, len(cities))

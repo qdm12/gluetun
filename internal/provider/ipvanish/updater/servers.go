@@ -15,7 +15,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-func (u *Updater) GetServers(ctx context.Context, minServers int) (
+func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	const url = "https://www.ipvanish.com/software/configs/configs.zip"
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)

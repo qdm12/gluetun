@@ -11,7 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
-func (u *Updater) GetServers(ctx context.Context, minServers int) (
+func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	// Hardcoded data from a user provided ZIP file since it's behind a login wall
 	hts, warnings := getHostToServer()

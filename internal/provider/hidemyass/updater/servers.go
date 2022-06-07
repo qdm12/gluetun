@@ -12,7 +12,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
-func (u *Updater) GetServers(ctx context.Context, minServers int) (
+func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	tcpHostToURL, udpHostToURL, err := getAllHostToURL(ctx, u.client)
 	if err != nil {

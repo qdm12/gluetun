@@ -31,7 +31,7 @@ import (
 func (u *Updater) updateProvider(ctx context.Context, provider string) (err error) {
 	existingServersCount := u.storage.GetServersCount(provider)
 	minServers := getMinServers(existingServersCount)
-	servers, err := u.getServers(ctx, provider, minServers)
+	servers, err := u.fetchServers(ctx, provider, minServers)
 	if err != nil {
 		return fmt.Errorf("cannot get servers: %w", err)
 	}
@@ -51,10 +51,10 @@ func (u *Updater) updateProvider(ctx context.Context, provider string) (err erro
 	return nil
 }
 
-func (u *Updater) getServers(ctx context.Context, provider string,
+func (u *Updater) fetchServers(ctx context.Context, provider string,
 	minServers int) (servers []models.Server, err error) {
 	var providerUpdater interface {
-		GetServers(ctx context.Context, minServers int) (servers []models.Server, err error)
+		FetchServers(ctx context.Context, minServers int) (servers []models.Server, err error)
 	}
 	switch provider {
 	case providers.Custom:
@@ -103,7 +103,7 @@ func (u *Updater) getServers(ctx context.Context, provider string,
 		panic("provider " + provider + " is unknown")
 	}
 
-	return providerUpdater.GetServers(ctx, minServers)
+	return providerUpdater.FetchServers(ctx, minServers)
 }
 
 func getMinServers(existingServersCount int) (minServers int) {

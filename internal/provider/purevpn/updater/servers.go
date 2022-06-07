@@ -15,7 +15,7 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
 
-func (u *Updater) GetServers(ctx context.Context, minServers int) (
+func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	const url = "https://d32d3g1fvkpl8y.cloudfront.net/heartbleed/windows/New+OVPN+Files.zip"
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)

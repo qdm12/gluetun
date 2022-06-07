@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (u *Updater) GetServers(ctx context.Context, minServers int) (
+func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	possibleServers := getPossibleServers()
 

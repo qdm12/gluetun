@@ -15,7 +15,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-func (u *Updater) GetServers(ctx context.Context, minServers int) (
+func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	const tcpURL = "https://torguard.net/downloads/OpenVPN-TCP-Linux.zip"
 	tcpContents, err := u.unzipper.FetchAndExtract(ctx, tcpURL)
