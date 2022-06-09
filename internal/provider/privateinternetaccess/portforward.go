@@ -62,8 +62,6 @@ func (p *Provider) PortForward(ctx context.Context, client *http.Client,
 		if expired {
 			logger.Warn("Forwarded port data expired on " +
 				data.Expiration.Format(time.RFC1123) + ", getting another one")
-		} else {
-			logger.Info("Forwarded port data expires in " + format.FriendlyDuration(durationToExpiration))
 		}
 	}
 
