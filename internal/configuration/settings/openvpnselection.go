@@ -56,7 +56,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		// no restriction on port
 		case providers.Cyberghost, providers.HideMyAss,
 			providers.PrivateInternetAccess, providers.Privatevpn,
-			providers.Protonvpn, providers.Torguard:
+			providers.Torguard:
 		// no custom port allowed
 		case providers.Expressvpn, providers.Fastestvpn,
 			providers.Ipvanish, providers.Nordvpn,
