@@ -3,12 +3,12 @@ package ivpn
 import (
 	"net/http"
 
-	"github.com/qdm12/gluetun/internal/updater/resolver"
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 type Updater struct {
 	client    *http.Client
-	presolver resolver.Parallel
+	presolver common.ParallelResolver
 	warner    Warner
 }
 

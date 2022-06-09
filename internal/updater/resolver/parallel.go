@@ -7,20 +7,13 @@ import (
 	"net"
 )
 
-//go:generate mockgen -destination=mock_$GOPACKAGE/$GOFILE . Parallel
-
-type Parallel interface {
-	Resolve(ctx context.Context, hosts []string, minToFind int) (
-		hostToIPs map[string][]net.IP, warnings []string, err error)
-}
-
-type parallel struct {
-	repeatResolver Repeat
+type Parallel struct {
+	repeatResolver *Repeat
 	settings       ParallelSettings
 }
 
-func NewParallelResolver(settings ParallelSettings) Parallel {
-	return &parallel{
+func NewParallelResolver(settings ParallelSettings) *Parallel {
+	return &Parallel{
 		repeatResolver: NewRepeat(settings.Repeat),
 		settings:       settings,
 	}
@@ -46,7 +39,7 @@ var (
 	ErrMaxFailRatio = errors.New("maximum failure ratio reached")
 )
 
-func (pr *parallel) Resolve(ctx context.Context, hosts []string, minToFind int) (
+func (pr *Parallel) Resolve(ctx context.Context, hosts []string, minToFind int) (
 	hostToIPs map[string][]net.IP, warnings []string, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -108,7 +101,7 @@ func (pr *parallel) Resolve(ctx context.Context, hosts []string, minToFind int) 
 	return hostToIPs, warnings, nil
 }
 
-func (pr *parallel) resolveAsync(ctx context.Context, host string,
+func (pr *Parallel) resolveAsync(ctx context.Context, host string,
 	results chan<- parallelResult, errors chan<- error) {
 	IPs, err := pr.repeatResolver.Resolve(ctx, host)
 	if err != nil {

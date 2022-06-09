@@ -12,7 +12,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver/mock_resolver"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -128,7 +128,7 @@ func Test_Updater_GetServers(t *testing.T) {
 				}),
 			}
 
-			presolver := mock_resolver.NewMockParallel(ctrl)
+			presolver := common.NewMockParallelResolver(ctrl)
 			if testCase.expectResolve {
 				presolver.EXPECT().Resolve(ctx, testCase.hostsToResolve, testCase.minServers).
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)

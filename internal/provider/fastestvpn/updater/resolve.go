@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
-func newParallelResolver() resolver.Parallel {
+func newParallelResolver() *resolver.Parallel {
 	const (
 		maxFailRatio = 0.1
 		maxNoNew     = 1

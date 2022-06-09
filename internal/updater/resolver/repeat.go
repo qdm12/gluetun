@@ -10,17 +10,13 @@ import (
 	"time"
 )
 
-type Repeat interface {
-	Resolve(ctx context.Context, host string) (IPs []net.IP, err error)
-}
-
-type repeat struct {
+type Repeat struct {
 	resolver *net.Resolver
 	settings RepeatSettings
 }
 
-func NewRepeat(settings RepeatSettings) Repeat {
-	return &repeat{
+func NewRepeat(settings RepeatSettings) *Repeat {
+	return &Repeat{
 		resolver: newResolver(settings.Address),
 		settings: settings,
 	}
@@ -36,7 +32,7 @@ type RepeatSettings struct {
 	SortIPs  bool
 }
 
-func (r *repeat) Resolve(ctx context.Context, host string) (ips []net.IP, err error) {
+func (r *Repeat) Resolve(ctx context.Context, host string) (ips []net.IP, err error) {
 	timedCtx, cancel := context.WithTimeout(ctx, r.settings.MaxDuration)
 	defer cancel()
 
@@ -71,7 +67,7 @@ var (
 	ErrMaxFails = errors.New("reached the maximum number of consecutive failures")
 )
 
-func (r *repeat) resolveOnce(ctx, timedCtx context.Context, host string,
+func (r *Repeat) resolveOnce(ctx, timedCtx context.Context, host string,
 	settings RepeatSettings, uniqueIPs map[string]struct{}, noNewCounter, failCounter int) (
 	newNoNewCounter, newFailCounter int, err error) {
 	IPs, err := r.lookupIPs(timedCtx, host)
@@ -126,7 +122,7 @@ func (r *repeat) resolveOnce(ctx, timedCtx context.Context, host string,
 	}
 }
 
-func (r *repeat) lookupIPs(ctx context.Context, host string) (ips []net.IP, err error) {
+func (r *Repeat) lookupIPs(ctx context.Context, host string) (ips []net.IP, err error) {
 	addresses, err := r.resolver.LookupIPAddr(ctx, host)
 	if err != nil {
 		return nil, err

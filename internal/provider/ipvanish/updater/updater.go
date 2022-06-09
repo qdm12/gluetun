@@ -1,14 +1,14 @@
 package ipvanish
 
 import (
-	"github.com/qdm12/gluetun/internal/updater/resolver"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 type Updater struct {
 	unzipper  unzip.Unzipper
 	warner    Warner
-	presolver resolver.Parallel
+	presolver common.ParallelResolver
 }
 
 type Warner interface {

@@ -3,14 +3,14 @@ package surfshark
 import (
 	"net/http"
 
-	"github.com/qdm12/gluetun/internal/updater/resolver"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 type Updater struct {
 	client    *http.Client
 	unzipper  unzip.Unzipper
-	presolver resolver.Parallel
+	presolver common.ParallelResolver
 	warner    Warner
 }
 

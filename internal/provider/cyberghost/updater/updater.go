@@ -1,9 +1,11 @@
 package cyberghost
 
-import "github.com/qdm12/gluetun/internal/updater/resolver"
+import (
+	"github.com/qdm12/gluetun/internal/provider/common"
+)
 
 type Updater struct {
-	presolver resolver.Parallel
+	presolver common.ParallelResolver
 }
 
 func New() *Updater {
