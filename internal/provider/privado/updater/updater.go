@@ -19,11 +19,11 @@ type Warner interface {
 }
 
 func New(client *http.Client, unzipper unzip.Unzipper,
-	presolver resolver.Parallel, warner Warner) *Updater {
+	warner Warner) *Updater {
 	return &Updater{
 		client:    client,
 		unzipper:  unzipper,
-		presolver: presolver,
+		presolver: newParallelResolver(),
 		warner:    warner,
 	}
 }

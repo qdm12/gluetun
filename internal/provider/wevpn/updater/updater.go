@@ -13,9 +13,9 @@ type Warner interface {
 	Warn(s string)
 }
 
-func New(presolver resolver.Parallel, warner Warner) *Updater {
+func New(warner Warner) *Updater {
 	return &Updater{
-		presolver: presolver,
+		presolver: newParallelResolver(),
 		warner:    warner,
 	}
 }

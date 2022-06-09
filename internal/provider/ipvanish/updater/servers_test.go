@@ -9,7 +9,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/resolver/mock_resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip/mock_unzip"
 	"github.com/stretchr/testify/assert"
@@ -32,7 +31,6 @@ func Test_Updater_GetServers(t *testing.T) {
 		// Resolution
 		expectResolve   bool
 		hostsToResolve  []string
-		resolveSettings resolver.ParallelSettings
 		hostToIPs       map[string][]net.IP
 		resolveWarnings []string
 		resolveErr      error
@@ -88,10 +86,9 @@ func Test_Updater_GetServers(t *testing.T) {
 			unzipContents: map[string][]byte{
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta\nremote hostb"),
 			},
-			expectResolve:   true,
-			hostsToResolve:  []string{"hosta"},
-			resolveSettings: getResolveSettings(1),
-			err:             errors.New("not enough servers found: 0 and expected at least 1"),
+			expectResolve:  true,
+			hostsToResolve: []string{"hosta"},
+			err:            errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"resolve error": {
 			warnerBuilder: func(ctrl *gomock.Controller) Warner {
@@ -104,7 +101,6 @@ func Test_Updater_GetServers(t *testing.T) {
 			},
 			expectResolve:   true,
 			hostsToResolve:  []string{"hosta"},
-			resolveSettings: getResolveSettings(0),
 			resolveWarnings: []string{"resolve warning"},
 			resolveErr:      errors.New("dummy"),
 			err:             errors.New("dummy"),
@@ -132,9 +128,8 @@ func Test_Updater_GetServers(t *testing.T) {
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta"),
 				"ipvanish-LU-City-B-hostb.ovpn": []byte("remote hostb"),
 			},
-			expectResolve:   true,
-			hostsToResolve:  []string{"hosta", "hostb"},
-			resolveSettings: getResolveSettings(1),
+			expectResolve:  true,
+			hostsToResolve: []string{"hosta", "hostb"},
 			hostToIPs: map[string][]net.IP{
 				"hosta": {{1, 1, 1, 1}, {2, 2, 2, 2}},
 				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
@@ -175,13 +170,15 @@ func Test_Updater_GetServers(t *testing.T) {
 
 			presolver := mock_resolver.NewMockParallel(ctrl)
 			if testCase.expectResolve {
-				presolver.EXPECT().Resolve(ctx, testCase.hostsToResolve, testCase.resolveSettings).
+				presolver.EXPECT().Resolve(ctx, testCase.hostsToResolve, testCase.minServers).
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 
-			warner := testCase.warnerBuilder(ctrl)
-
-			updater := New(unzipper, presolver, warner)
+			updater := &Updater{
+				unzipper:  unzipper,
+				warner:    testCase.warnerBuilder(ctrl),
+				presolver: presolver,
+			}
 
 			servers, err := updater.FetchServers(ctx, testCase.minServers)
 

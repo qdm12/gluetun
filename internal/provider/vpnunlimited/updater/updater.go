@@ -15,11 +15,10 @@ type Warner interface {
 	Warn(s string)
 }
 
-func New(unzipper unzip.Unzipper, presolver resolver.Parallel,
-	warner Warner) *Updater {
+func New(unzipper unzip.Unzipper, warner Warner) *Updater {
 	return &Updater{
 		unzipper:  unzipper,
-		presolver: presolver,
+		presolver: newParallelResolver(),
 		warner:    warner,
 	}
 }

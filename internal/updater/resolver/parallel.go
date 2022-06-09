@@ -10,17 +10,19 @@ import (
 //go:generate mockgen -destination=mock_$GOPACKAGE/$GOFILE . Parallel
 
 type Parallel interface {
-	Resolve(ctx context.Context, hosts []string, settings ParallelSettings) (
+	Resolve(ctx context.Context, hosts []string, minToFind int) (
 		hostToIPs map[string][]net.IP, warnings []string, err error)
 }
 
 type parallel struct {
 	repeatResolver Repeat
+	settings       ParallelSettings
 }
 
-func NewParallelResolver(address string) Parallel {
+func NewParallelResolver(settings ParallelSettings) Parallel {
 	return &parallel{
-		repeatResolver: NewRepeat(address),
+		repeatResolver: NewRepeat(settings.Repeat),
+		settings:       settings,
 	}
 }
 
@@ -32,10 +34,6 @@ type ParallelSettings struct {
 	// This value is between 0 and 1. Note this is only
 	// applicable if FailEarly is not set to true.
 	MaxFailRatio float64
-	// MinFound is the minimum number of hosts to be found.
-	// If it is bigger than the number of hosts given, it
-	// is set to the number of hosts given.
-	MinFound int
 }
 
 type parallelResult struct {
@@ -48,13 +46,8 @@ var (
 	ErrMaxFailRatio = errors.New("maximum failure ratio reached")
 )
 
-func (pr *parallel) Resolve(ctx context.Context, hosts []string,
-	settings ParallelSettings) (hostToIPs map[string][]net.IP, warnings []string, err error) {
-	minFound := settings.MinFound
-	if minFound > len(hosts) {
-		minFound = len(hosts)
-	}
-
+func (pr *parallel) Resolve(ctx context.Context, hosts []string, minToFind int) (
+	hostToIPs map[string][]net.IP, warnings []string, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -64,16 +57,16 @@ func (pr *parallel) Resolve(ctx context.Context, hosts []string,
 	defer close(errors)
 
 	for _, host := range hosts {
-		go pr.resolveAsync(ctx, host, settings.Repeat, results, errors)
+		go pr.resolveAsync(ctx, host, results, errors)
 	}
 
 	hostToIPs = make(map[string][]net.IP, len(hosts))
-	maxFails := int(settings.MaxFailRatio * float64(len(hosts)))
+	maxFails := int(pr.settings.MaxFailRatio * float64(len(hosts)))
 
 	for range hosts {
 		select {
 		case newErr := <-errors:
-			if settings.FailEarly {
+			if pr.settings.FailEarly {
 				if err == nil {
 					// only set the error to the first error encountered
 					// and not the context canceled errors coming after.
@@ -100,14 +93,14 @@ func (pr *parallel) Resolve(ctx context.Context, hosts []string,
 		return nil, warnings, err
 	}
 
-	if len(hostToIPs) < minFound {
+	if len(hostToIPs) < minToFind {
 		return nil, warnings,
 			fmt.Errorf("%w: found %d hosts but expected at least %d",
-				ErrMinFound, len(hostToIPs), minFound)
+				ErrMinFound, len(hostToIPs), minToFind)
 	}
 
 	failureRatio := float64(len(warnings)) / float64(len(hosts))
-	if failureRatio > settings.MaxFailRatio {
+	if failureRatio > pr.settings.MaxFailRatio {
 		return hostToIPs, warnings,
 			fmt.Errorf("%w: %.2f failure ratio reached", ErrMaxFailRatio, failureRatio)
 	}
@@ -116,8 +109,8 @@ func (pr *parallel) Resolve(ctx context.Context, hosts []string,
 }
 
 func (pr *parallel) resolveAsync(ctx context.Context, host string,
-	settings RepeatSettings, results chan<- parallelResult, errors chan<- error) {
-	IPs, err := pr.repeatResolver.Resolve(ctx, host, settings)
+	results chan<- parallelResult, errors chan<- error) {
+	IPs, err := pr.repeatResolver.Resolve(ctx, host)
 	if err != nil {
 		errors <- err
 		return

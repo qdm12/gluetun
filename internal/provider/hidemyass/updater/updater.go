@@ -16,11 +16,10 @@ type Warner interface {
 	Warn(s string)
 }
 
-func New(client *http.Client, presolver resolver.Parallel,
-	warner Warner) *Updater {
+func New(client *http.Client, warner Warner) *Updater {
 	return &Updater{
 		client:    client,
-		presolver: presolver,
+		presolver: newParallelResolver(),
 		warner:    warner,
 	}
 }

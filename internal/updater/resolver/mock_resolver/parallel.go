@@ -10,7 +10,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	resolver "github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 // MockParallel is a mock of Parallel interface.
@@ -37,7 +36,7 @@ func (m *MockParallel) EXPECT() *MockParallelMockRecorder {
 }
 
 // Resolve mocks base method.
-func (m *MockParallel) Resolve(arg0 context.Context, arg1 []string, arg2 resolver.ParallelSettings) (map[string][]net.IP, []string, error) {
+func (m *MockParallel) Resolve(arg0 context.Context, arg1 []string, arg2 int) (map[string][]net.IP, []string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Resolve", arg0, arg1, arg2)
 	ret0, _ := ret[0].(map[string][]net.IP)

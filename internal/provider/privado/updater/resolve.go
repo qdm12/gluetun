@@ -1,25 +1,20 @@
 package privado
 
 import (
-	"context"
-	"net"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
-func resolveHosts(ctx context.Context, presolver resolver.Parallel,
-	hosts []string, minServers int) (hostToIPs map[string][]net.IP,
-	warnings []string, err error) {
+func newParallelResolver() (parallelResolver resolver.Parallel) {
 	const (
 		maxFailRatio = 0.1
 		maxDuration  = 30 * time.Second
-		maxNoNew     = 1
-		maxFails     = 5
+		maxNoNew     = 2
+		maxFails     = 2
 	)
 	settings := resolver.ParallelSettings{
 		MaxFailRatio: maxFailRatio,
-		MinFound:     minServers,
 		Repeat: resolver.RepeatSettings{
 			MaxDuration: maxDuration,
 			MaxNoNew:    maxNoNew,
@@ -27,5 +22,5 @@ func resolveHosts(ctx context.Context, presolver resolver.Parallel,
 			SortIPs:     true,
 		},
 	}
-	return presolver.Resolve(ctx, hosts, settings)
+	return resolver.NewParallelResolver(settings)
 }

@@ -8,7 +8,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -22,11 +21,10 @@ type Updater struct {
 	storage Storage
 
 	// Functions for tests
-	logger    Logger
-	timeNow   func() time.Time
-	presolver resolver.Parallel
-	client    *http.Client
-	unzipper  unzip.Unzipper
+	logger   Logger
+	timeNow  func() time.Time
+	client   *http.Client
+	unzipper unzip.Unzipper
 }
 
 type Storage interface {
@@ -45,13 +43,12 @@ func New(settings settings.Updater, httpClient *http.Client,
 	storage Storage, logger Logger) *Updater {
 	unzipper := unzip.New(httpClient)
 	return &Updater{
-		options:   settings,
-		storage:   storage,
-		logger:    logger,
-		timeNow:   time.Now,
-		presolver: resolver.NewParallelResolver(settings.DNSAddress.String()),
-		client:    httpClient,
-		unzipper:  unzipper,
+		options:  settings,
+		storage:  storage,
+		logger:   logger,
+		timeNow:  time.Now,
+		client:   httpClient,
+		unzipper: unzipper,
 	}
 }
 

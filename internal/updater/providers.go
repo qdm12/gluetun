@@ -60,17 +60,17 @@ func (u *Updater) fetchServers(ctx context.Context, provider string,
 	case providers.Custom:
 		panic("cannot update custom provider")
 	case providers.Cyberghost:
-		providerUpdater = cyberghost.New(u.presolver)
+		providerUpdater = cyberghost.New()
 	case providers.Expressvpn:
-		providerUpdater = expressvpn.New(u.unzipper, u.presolver, u.logger)
+		providerUpdater = expressvpn.New(u.unzipper, u.logger)
 	case providers.Fastestvpn:
-		providerUpdater = fastestvpn.New(u.unzipper, u.presolver, u.logger)
+		providerUpdater = fastestvpn.New(u.unzipper, u.logger)
 	case providers.HideMyAss:
-		providerUpdater = hidemyass.New(u.client, u.presolver, u.logger)
+		providerUpdater = hidemyass.New(u.client, u.logger)
 	case providers.Ipvanish:
-		providerUpdater = ipvanish.New(u.unzipper, u.presolver, u.logger)
+		providerUpdater = ipvanish.New(u.unzipper, u.logger)
 	case providers.Ivpn:
-		providerUpdater = ivpn.New(u.client, u.presolver, u.logger)
+		providerUpdater = ivpn.New(u.client, u.logger)
 	case providers.Mullvad:
 		providerUpdater = mullvad.New(u.client)
 	case providers.Nordvpn:
@@ -78,25 +78,25 @@ func (u *Updater) fetchServers(ctx context.Context, provider string,
 	case providers.Perfectprivacy:
 		providerUpdater = perfectprivacy.New(u.unzipper, u.logger)
 	case providers.Privado:
-		providerUpdater = privado.New(u.client, u.unzipper, u.presolver, u.logger)
+		providerUpdater = privado.New(u.client, u.unzipper, u.logger)
 	case providers.PrivateInternetAccess:
 		providerUpdater = privateinternetaccess.New(u.client)
 	case providers.Privatevpn:
-		providerUpdater = privatevpn.New(u.unzipper, u.presolver, u.logger)
+		providerUpdater = privatevpn.New(u.unzipper, u.logger)
 	case providers.Protonvpn:
 		providerUpdater = protonvpn.New(u.client, u.logger)
 	case providers.Purevpn:
-		providerUpdater = purevpn.New(u.client, u.unzipper, u.presolver, u.logger)
+		providerUpdater = purevpn.New(u.client, u.unzipper, u.logger)
 	case providers.Surfshark:
-		providerUpdater = surfshark.New(u.client, u.unzipper, u.presolver, u.logger)
+		providerUpdater = surfshark.New(u.client, u.unzipper, u.logger)
 	case providers.Torguard:
-		providerUpdater = torguard.New(u.unzipper, u.presolver, u.logger)
+		providerUpdater = torguard.New(u.unzipper, u.logger)
 	case providers.VPNUnlimited:
-		providerUpdater = vpnunlimited.New(u.unzipper, u.presolver, u.logger)
+		providerUpdater = vpnunlimited.New(u.unzipper, u.logger)
 	case providers.Vyprvpn:
-		providerUpdater = vyprvpn.New(u.unzipper, u.presolver, u.logger)
+		providerUpdater = vyprvpn.New(u.unzipper, u.logger)
 	case providers.Wevpn:
-		providerUpdater = wevpn.New(u.presolver, u.logger)
+		providerUpdater = wevpn.New(u.logger)
 	case providers.Windscribe:
 		providerUpdater = windscribe.New(u.client, u.logger)
 	default:

@@ -7,19 +7,18 @@ import (
 
 type Updater struct {
 	unzipper  unzip.Unzipper
-	presolver resolver.Parallel
 	warner    Warner
+	presolver resolver.Parallel
 }
 
 type Warner interface {
 	Warn(s string)
 }
 
-func New(unzipper unzip.Unzipper, presolver resolver.Parallel,
-	warner Warner) *Updater {
+func New(unzipper unzip.Unzipper, warner Warner) *Updater {
 	return &Updater{
 		unzipper:  unzipper,
-		presolver: presolver,
 		warner:    warner,
+		presolver: newParallelResolver(),
 	}
 }

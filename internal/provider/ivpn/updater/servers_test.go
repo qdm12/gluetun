@@ -12,7 +12,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/resolver/mock_resolver"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -35,7 +34,6 @@ func Test_Updater_GetServers(t *testing.T) {
 		// Resolution
 		expectResolve   bool
 		hostsToResolve  []string
-		resolveSettings resolver.ParallelSettings
 		hostToIPs       map[string][]net.IP
 		resolveWarnings []string
 		resolveErr      error
@@ -61,7 +59,6 @@ func Test_Updater_GetServers(t *testing.T) {
 			responseStatus:  http.StatusOK,
 			expectResolve:   true,
 			hostsToResolve:  []string{"hosta"},
-			resolveSettings: getResolveSettings(0),
 			resolveWarnings: []string{"resolve warning"},
 			resolveErr:      errors.New("dummy"),
 			err:             errors.New("dummy"),
@@ -87,10 +84,9 @@ func Test_Updater_GetServers(t *testing.T) {
 				{"country":"Country2","city":"City B","hostnames":{"openvpn":"hostb"},"wg_public_key":"xyz"},
 				{"country":"Country3","city":"City C","hostnames":{"wireguard":"hostc"},"wg_public_key":"xyz"}
 			]}`,
-			responseStatus:  http.StatusOK,
-			expectResolve:   true,
-			hostsToResolve:  []string{"hosta", "hostb", "hostc"},
-			resolveSettings: getResolveSettings(1),
+			responseStatus: http.StatusOK,
+			expectResolve:  true,
+			hostsToResolve: []string{"hosta", "hostb", "hostc"},
 			hostToIPs: map[string][]net.IP{
 				"hosta": {{1, 1, 1, 1}, {2, 2, 2, 2}},
 				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
@@ -134,13 +130,17 @@ func Test_Updater_GetServers(t *testing.T) {
 
 			presolver := mock_resolver.NewMockParallel(ctrl)
 			if testCase.expectResolve {
-				presolver.EXPECT().Resolve(ctx, testCase.hostsToResolve, testCase.resolveSettings).
+				presolver.EXPECT().Resolve(ctx, testCase.hostsToResolve, testCase.minServers).
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 
 			warner := testCase.warnerBuilder(ctrl)
 
-			updater := New(client, presolver, warner)
+			updater := &Updater{
+				client:    client,
+				presolver: presolver,
+				warner:    warner,
+			}
 
 			servers, err := updater.FetchServers(ctx, testCase.minServers)
 

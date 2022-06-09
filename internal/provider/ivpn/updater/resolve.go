@@ -1,14 +1,12 @@
 package ivpn
 
 import (
-	"context"
-	"net"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
-func getResolveSettings(minServers int) (settings resolver.ParallelSettings) {
+func newParallelResolver() (parallelResolver resolver.Parallel) {
 	const (
 		maxFailRatio    = 0.1
 		maxDuration     = 20 * time.Second
@@ -16,9 +14,8 @@ func getResolveSettings(minServers int) (settings resolver.ParallelSettings) {
 		maxNoNew        = 2
 		maxFails        = 2
 	)
-	return resolver.ParallelSettings{
+	settings := resolver.ParallelSettings{
 		MaxFailRatio: maxFailRatio,
-		MinFound:     minServers,
 		Repeat: resolver.RepeatSettings{
 			MaxDuration:     maxDuration,
 			BetweenDuration: betweenDuration,
@@ -27,11 +24,5 @@ func getResolveSettings(minServers int) (settings resolver.ParallelSettings) {
 			SortIPs:         true,
 		},
 	}
-}
-
-func resolveHosts(ctx context.Context, presolver resolver.Parallel,
-	hosts []string, minServers int) (hostToIPs map[string][]net.IP,
-	warnings []string, err error) {
-	settings := getResolveSettings(minServers)
-	return presolver.Resolve(ctx, hosts, settings)
+	return resolver.NewParallelResolver(settings)
 }
