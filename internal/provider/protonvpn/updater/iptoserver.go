@@ -14,20 +14,19 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 	key := entryIP.String()
 
 	server, ok := its[key]
-	if !ok {
-		server.VPN = vpn.OpenVPN
-		server.Country = country
-		server.Region = region
-		server.City = city
-		server.ServerName = name
-		server.Hostname = hostname
-		server.UDP = true
-		server.TCP = true
-		server.IPs = []net.IP{entryIP}
-	} else {
-		server.IPs = append(server.IPs, entryIP)
+	if ok {
+		return
 	}
 
+	server.VPN = vpn.OpenVPN
+	server.Country = country
+	server.Region = region
+	server.City = city
+	server.ServerName = name
+	server.Hostname = hostname
+	server.UDP = true
+	server.TCP = true
+	server.IPs = []net.IP{entryIP}
 	its[key] = server
 }
 
