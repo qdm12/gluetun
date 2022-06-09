@@ -2,7 +2,7 @@
 // Source: github.com/qdm12/gluetun/internal/provider/ivpn/updater (interfaces: Warner)
 
 // Package ivpn is a generated GoMock package.
-package ivpn
+package updater
 
 import (
 	reflect "reflect"

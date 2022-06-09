@@ -1,6 +1,6 @@
-// Package cyberghost contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the Cyberghost provider.
-package cyberghost
+package updater
 
 import (
 	"context"

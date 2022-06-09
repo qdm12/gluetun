@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
+	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 type OpenvpnConfigMaker interface {
@@ -35,7 +37,13 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) e
 		return err
 	}
 
-	providerConf := provider.New(*allSettings.VPN.Provider.Name, storage, time.Now)
+	// Unused by this CLI command
+	unzipper := (unzip.Unzipper)(nil)
+	client := (*http.Client)(nil)
+	warner := (Warner)(nil)
+
+	providerConf := provider.New(*allSettings.VPN.Provider.Name, storage, time.Now,
+		warner, client, unzipper)
 	connection, err := providerConf.GetConnection(allSettings.VPN.Provider.ServerSelection)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package wevpn
+package updater
 
 // getAvailableCities get available cities as listed on the WeVPN website.
 func getAvailableCities() (cities []string) {

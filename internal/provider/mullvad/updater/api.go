@@ -1,4 +1,4 @@
-package mullvad
+package updater
 
 import (
 	"context"

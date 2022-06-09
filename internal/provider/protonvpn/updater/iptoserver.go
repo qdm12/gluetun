@@ -1,4 +1,4 @@
-package protonvpn
+package updater
 
 import (
 	"net"

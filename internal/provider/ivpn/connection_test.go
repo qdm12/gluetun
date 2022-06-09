@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math/rand"
 	"net"
+	"net/http"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -96,7 +97,9 @@ func Test_Provider_GetConnection(t *testing.T) {
 				Return(testCase.filteredServers, testCase.storageErr)
 			randSource := rand.NewSource(0)
 
-			provider := New(storage, randSource)
+			client := (*http.Client)(nil)
+			warner := (common.Warner)(nil)
+			provider := New(storage, randSource, client, warner)
 
 			connection, err := provider.GetConnection(testCase.selection)
 

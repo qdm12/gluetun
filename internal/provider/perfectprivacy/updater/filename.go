@@ -1,4 +1,4 @@
-package perfectprivacy
+package updater
 
 import (
 	"strings"

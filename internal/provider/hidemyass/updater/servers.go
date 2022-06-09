@@ -1,6 +1,6 @@
-// Package hidemyass contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the HideMyAss provider.
-package hidemyass
+package updater
 
 import (
 	"context"

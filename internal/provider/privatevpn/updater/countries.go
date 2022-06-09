@@ -1,4 +1,4 @@
-package privatevpn
+package updater
 
 import "strings"
 

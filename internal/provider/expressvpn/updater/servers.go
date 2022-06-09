@@ -1,6 +1,6 @@
-// package expressvpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the ExpressVPN provider.
-package expressvpn
+package updater
 
 import (
 	"context"

@@ -1,6 +1,6 @@
-// Package mullvad contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the Mullvad provider.
-package mullvad
+package updater
 
 import (
 	"context"

@@ -23,7 +23,7 @@ type Looper interface {
 }
 
 type Updater interface {
-	UpdateServers(ctx context.Context) (err error)
+	UpdateServers(ctx context.Context, providers []string) (err error)
 }
 
 type looper struct {
@@ -46,26 +46,20 @@ type looper struct {
 
 const defaultBackoffTime = 5 * time.Second
 
-type Storage interface {
-	SetServers(provider string, servers []models.Server) (err error)
-	GetServersCount(provider string) (count int)
-	ServersAreEqual(provider string, servers []models.Server) (equal bool)
-}
-
 type Logger interface {
 	Info(s string)
 	Warn(s string)
 	Error(s string)
 }
 
-func NewLooper(settings settings.Updater, storage Storage,
+func NewLooper(settings settings.Updater, storage updater.Storage,
 	client *http.Client, logger Logger) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
 		},
-		updater:      updater.New(settings, client, storage, logger),
+		updater:      updater.New(client, storage, logger),
 		logger:       logger,
 		start:        make(chan struct{}),
 		running:      make(chan models.LoopStatus),
@@ -106,12 +100,14 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 	for ctx.Err() == nil {
 		updateCtx, updateCancel := context.WithCancel(ctx)
 
+		settings := l.GetSettings()
+
 		errorCh := make(chan error)
 		runWg := &sync.WaitGroup{}
 		runWg.Add(1)
 		go func() {
 			defer runWg.Done()
-			err := l.updater.UpdateServers(updateCtx)
+			err := l.updater.UpdateServers(updateCtx, settings.Providers)
 			if err != nil {
 				if updateCtx.Err() == nil {
 					errorCh <- err

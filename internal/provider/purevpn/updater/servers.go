@@ -1,6 +1,6 @@
-// Package purevpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the PureVPN provider.
-package purevpn
+package updater
 
 import (
 	"context"

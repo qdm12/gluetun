@@ -1,4 +1,4 @@
-package privado
+package updater
 
 import (
 	"time"

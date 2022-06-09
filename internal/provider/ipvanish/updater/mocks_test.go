@@ -2,7 +2,7 @@
 // Source: github.com/qdm12/gluetun/internal/provider/ipvanish/updater (interfaces: Warner)
 
 // Package ipvanish is a generated GoMock package.
-package ipvanish
+package updater
 
 import (
 	reflect "reflect"

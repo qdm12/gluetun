@@ -1,4 +1,4 @@
-package torguard
+package updater
 
 import (
 	"strings"

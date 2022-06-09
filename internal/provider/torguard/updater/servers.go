@@ -1,6 +1,6 @@
-// Package torguard contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the Torguard provider.
-package torguard
+package updater
 
 import (
 	"context"

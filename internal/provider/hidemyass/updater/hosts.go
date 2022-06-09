@@ -1,4 +1,4 @@
-package hidemyass
+package updater
 
 func getUniqueHosts(tcpHostToURL, udpHostToURL map[string]string) (
 	hosts []string) {

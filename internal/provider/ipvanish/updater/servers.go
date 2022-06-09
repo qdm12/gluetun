@@ -1,6 +1,6 @@
-// Package ipvanish contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the Surshark provider.
-package ipvanish
+package updater
 
 import (
 	"context"

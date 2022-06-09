@@ -1,4 +1,4 @@
-package surfshark
+package updater
 
 import (
 	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"

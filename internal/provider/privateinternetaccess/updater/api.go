@@ -1,4 +1,4 @@
-package privateinternetaccess
+package updater
 
 import (
 	"bytes"

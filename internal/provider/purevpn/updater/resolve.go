@@ -1,4 +1,4 @@
-package purevpn
+package updater
 
 import (
 	"time"

@@ -1,4 +1,4 @@
-package expressvpn
+package updater
 
 import (
 	"time"

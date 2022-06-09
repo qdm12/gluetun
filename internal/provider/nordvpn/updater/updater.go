@@ -1,4 +1,4 @@
-package nordvpn
+package updater
 
 import (
 	"net/http"

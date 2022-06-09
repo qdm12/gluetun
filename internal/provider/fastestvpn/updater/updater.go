@@ -1,4 +1,4 @@
-package fastestvpn
+package updater
 
 import (
 	"github.com/qdm12/gluetun/internal/provider/common"

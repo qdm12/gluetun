@@ -8,15 +8,13 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
 type Updater struct {
-	// configuration
-	options settings.Updater
-
 	// state
 	storage Storage
 
@@ -31,6 +29,9 @@ type Storage interface {
 	SetServers(provider string, servers []models.Server) (err error)
 	GetServersCount(provider string) (count int)
 	ServersAreEqual(provider string, servers []models.Server) (equal bool)
+	// Extra methods to match the provider.New storage interface
+	FilterServers(provider string, selection settings.ServerSelection) (filtered []models.Server, err error)
+	GetServerByName(provider string, name string) (server models.Server, ok bool)
 }
 
 type Logger interface {
@@ -39,11 +40,10 @@ type Logger interface {
 	Error(s string)
 }
 
-func New(settings settings.Updater, httpClient *http.Client,
+func New(httpClient *http.Client,
 	storage Storage, logger Logger) *Updater {
 	unzipper := unzip.New(httpClient)
 	return &Updater{
-		options:  settings,
 		storage:  storage,
 		logger:   logger,
 		timeNow:  time.Now,
@@ -52,19 +52,23 @@ func New(settings settings.Updater, httpClient *http.Client,
 	}
 }
 
-func (u *Updater) UpdateServers(ctx context.Context) (err error) {
+func (u *Updater) UpdateServers(ctx context.Context, providers []string) (err error) {
 	caser := cases.Title(language.English)
-	for _, provider := range u.options.Providers {
-		u.logger.Info("updating " + caser.String(provider) + " servers...")
+	for _, providerName := range providers {
+		u.logger.Info("updating " + caser.String(providerName) + " servers...")
+
+		fetcherStorage := (Storage)(nil) // unused
+		fetcher := provider.New(providerName, fetcherStorage, u.timeNow,
+			u.logger, u.client, u.unzipper)
 		// TODO support servers offering only TCP or only UDP
 		// for NordVPN and PureVPN
-		err := u.updateProvider(ctx, provider)
+		err := u.updateProvider(ctx, fetcher)
 		if err == nil {
 			continue
 		}
 
 		// return the only error for the single provider.
-		if len(u.options.Providers) == 1 {
+		if len(providers) == 1 {
 			return err
 		}
 

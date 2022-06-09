@@ -1,4 +1,4 @@
-package cyberghost
+package updater
 
 import (
 	"net"

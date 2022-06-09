@@ -92,7 +92,8 @@ func Test_Provider_GetConnection(t *testing.T) {
 				Return(testCase.filteredServers, testCase.storageErr)
 			randSource := rand.NewSource(0)
 
-			provider := New(storage, randSource)
+			warner := (common.Warner)(nil)
+			provider := New(storage, randSource, warner)
 
 			if testCase.panicMessage != "" {
 				assert.PanicsWithValue(t, testCase.panicMessage, func() {

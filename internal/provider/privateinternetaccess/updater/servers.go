@@ -1,6 +1,6 @@
-// Package pia contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the Private Internet Access provider.
-package privateinternetaccess
+package updater
 
 import (
 	"context"

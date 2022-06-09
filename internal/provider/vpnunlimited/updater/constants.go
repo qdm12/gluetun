@@ -1,4 +1,4 @@
-package vpnunlimited
+package updater
 
 import (
 	"strings"

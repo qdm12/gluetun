@@ -1,6 +1,6 @@
-// Package vyprvpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the VyprVPN provider.
-package vyprvpn
+package updater
 
 import (
 	"context"

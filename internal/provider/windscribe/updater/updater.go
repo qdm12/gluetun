@@ -1,4 +1,4 @@
-package windscribe
+package updater
 
 import (
 	"net/http"

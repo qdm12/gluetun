@@ -1,6 +1,6 @@
-// Package privatevpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the PrivateVPN provider.
-package privatevpn
+package updater
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package vyprvpn
+package updater
 
 import (
 	"time"

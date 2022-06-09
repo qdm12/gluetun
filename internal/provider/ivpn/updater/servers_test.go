@@ -1,4 +1,4 @@
-package ivpn
+package updater
 
 import (
 	"context"

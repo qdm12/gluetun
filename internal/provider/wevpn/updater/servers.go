@@ -1,6 +1,6 @@
-// package wevpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the WeVPN provider.
-package wevpn
+package updater
 
 import (
 	"context"

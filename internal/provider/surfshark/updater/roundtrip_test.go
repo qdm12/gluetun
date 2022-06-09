@@ -1,4 +1,4 @@
-package surfshark
+package updater
 
 import "net/http"
 

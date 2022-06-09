@@ -1,6 +1,6 @@
-// Package fastestvpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the FastestVPN provider.
-package fastestvpn
+package updater
 
 import (
 	"context"

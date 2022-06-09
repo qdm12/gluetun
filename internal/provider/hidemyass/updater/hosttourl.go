@@ -1,4 +1,4 @@
-package hidemyass
+package updater
 
 import (
 	"context"

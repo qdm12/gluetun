@@ -1,4 +1,4 @@
-package fastestvpn
+package updater
 
 import (
 	"time"

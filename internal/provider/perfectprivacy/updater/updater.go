@@ -1,4 +1,4 @@
-package perfectprivacy
+package updater
 
 import "github.com/qdm12/gluetun/internal/updater/unzip"
 

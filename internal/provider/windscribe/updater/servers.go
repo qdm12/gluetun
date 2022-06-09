@@ -1,6 +1,6 @@
-// Package windscribe contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the Windscribe provider.
-package windscribe
+package updater
 
 import (
 	"context"

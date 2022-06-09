@@ -1,6 +1,6 @@
-// Package nordvpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the NordVPN provider.
-package nordvpn
+package updater
 
 import (
 	"context"

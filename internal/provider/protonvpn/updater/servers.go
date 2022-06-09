@@ -1,6 +1,6 @@
-// Package protonvpn contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the ProtonVPN provider.
-package protonvpn
+package updater
 
 import (
 	"context"

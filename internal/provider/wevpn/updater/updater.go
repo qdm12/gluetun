@@ -1,4 +1,4 @@
-package wevpn
+package updater
 
 import "github.com/qdm12/gluetun/internal/provider/common"
 

@@ -11,6 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/provider/custom"
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
 	"github.com/qdm12/gluetun/internal/provider/expressvpn"
@@ -41,6 +42,8 @@ type Provider interface {
 	OpenVPNConfig(connection models.Connection, settings settings.OpenVPN) (lines []string)
 	Name() string
 	PortForwarder
+	FetchServers(ctx context.Context, minServers int) (
+		servers []models.Server, err error)
 }
 
 type PortForwarder interface {
@@ -57,7 +60,8 @@ type Storage interface {
 	GetServerByName(provider, name string) (server models.Server, ok bool)
 }
 
-func New(provider string, storage Storage, timeNow func() time.Time) Provider {
+func New(provider string, storage Storage, timeNow func() time.Time,
+	updaterWarner common.Warner, client *http.Client, unzipper common.Unzipper) Provider {
 	randSource := rand.NewSource(timeNow().UnixNano())
 	switch provider {
 	case providers.Custom:
@@ -65,43 +69,43 @@ func New(provider string, storage Storage, timeNow func() time.Time) Provider {
 	case providers.Cyberghost:
 		return cyberghost.New(storage, randSource)
 	case providers.Expressvpn:
-		return expressvpn.New(storage, randSource)
+		return expressvpn.New(storage, randSource, unzipper, updaterWarner)
 	case providers.Fastestvpn:
-		return fastestvpn.New(storage, randSource)
+		return fastestvpn.New(storage, randSource, unzipper, updaterWarner)
 	case providers.HideMyAss:
-		return hidemyass.New(storage, randSource)
+		return hidemyass.New(storage, randSource, client, updaterWarner)
 	case providers.Ipvanish:
-		return ipvanish.New(storage, randSource)
+		return ipvanish.New(storage, randSource, unzipper, updaterWarner)
 	case providers.Ivpn:
-		return ivpn.New(storage, randSource)
+		return ivpn.New(storage, randSource, client, updaterWarner)
 	case providers.Mullvad:
-		return mullvad.New(storage, randSource)
+		return mullvad.New(storage, randSource, client)
 	case providers.Nordvpn:
-		return nordvpn.New(storage, randSource)
+		return nordvpn.New(storage, randSource, client, updaterWarner)
 	case providers.Perfectprivacy:
-		return perfectprivacy.New(storage, randSource)
+		return perfectprivacy.New(storage, randSource, unzipper, updaterWarner)
 	case providers.Privado:
-		return privado.New(storage, randSource)
+		return privado.New(storage, randSource, client, unzipper, updaterWarner)
 	case providers.PrivateInternetAccess:
-		return privateinternetaccess.New(storage, randSource, timeNow)
+		return privateinternetaccess.New(storage, randSource, timeNow, client)
 	case providers.Privatevpn:
-		return privatevpn.New(storage, randSource)
+		return privatevpn.New(storage, randSource, unzipper, updaterWarner)
 	case providers.Protonvpn:
-		return protonvpn.New(storage, randSource)
+		return protonvpn.New(storage, randSource, client, updaterWarner)
 	case providers.Purevpn:
-		return purevpn.New(storage, randSource)
+		return purevpn.New(storage, randSource, client, unzipper, updaterWarner)
 	case providers.Surfshark:
-		return surfshark.New(storage, randSource)
+		return surfshark.New(storage, randSource, client, unzipper, updaterWarner)
 	case providers.Torguard:
-		return torguard.New(storage, randSource)
+		return torguard.New(storage, randSource, unzipper, updaterWarner)
 	case providers.VPNUnlimited:
-		return vpnunlimited.New(storage, randSource)
+		return vpnunlimited.New(storage, randSource, unzipper, updaterWarner)
 	case providers.Vyprvpn:
-		return vyprvpn.New(storage, randSource)
+		return vyprvpn.New(storage, randSource, unzipper, updaterWarner)
 	case providers.Wevpn:
-		return wevpn.New(storage, randSource)
+		return wevpn.New(storage, randSource, updaterWarner)
 	case providers.Windscribe:
-		return windscribe.New(storage, randSource)
+		return windscribe.New(storage, randSource, client, updaterWarner)
 	default:
 		panic("provider " + provider + " is unknown") // should never occur
 	}

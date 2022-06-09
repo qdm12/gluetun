@@ -1,4 +1,4 @@
-package ipvanish
+package updater
 
 import (
 	"net"

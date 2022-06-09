@@ -81,8 +81,8 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		return fmt.Errorf("cannot create servers storage: %w", err)
 	}
 
-	updater := updater.New(options, httpClient, storage, logger)
-	err = updater.UpdateServers(ctx)
+	updater := updater.New(httpClient, storage, logger)
+	err = updater.UpdateServers(ctx, options.Providers)
 	if err != nil {
 		return fmt.Errorf("cannot update server information: %w", err)
 	}

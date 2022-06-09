@@ -1,6 +1,6 @@
-// Package vpnunlimited contains code to obtain the server information
+// Package updater contains code to obtain the server information
 // for the VPNUnlimited provider.
-package vpnunlimited
+package updater
 
 import (
 	"context"
