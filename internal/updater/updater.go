@@ -15,6 +15,8 @@ import (
 )
 
 type Updater struct {
+	providers Providers
+
 	// state
 	storage Storage
 
@@ -23,6 +25,10 @@ type Updater struct {
 	timeNow  func() time.Time
 	client   *http.Client
 	unzipper unzip.Unzipper
+}
+
+type Providers interface {
+	Get(providerName string) provider.Provider
 }
 
 type Storage interface {
@@ -40,15 +46,16 @@ type Logger interface {
 	Error(s string)
 }
 
-func New(httpClient *http.Client,
-	storage Storage, logger Logger) *Updater {
+func New(httpClient *http.Client, storage Storage,
+	providers Providers, logger Logger) *Updater {
 	unzipper := unzip.New(httpClient)
 	return &Updater{
-		storage:  storage,
-		logger:   logger,
-		timeNow:  time.Now,
-		client:   httpClient,
-		unzipper: unzipper,
+		providers: providers,
+		storage:   storage,
+		logger:    logger,
+		timeNow:   time.Now,
+		client:    httpClient,
+		unzipper:  unzipper,
 	}
 }
 
@@ -57,9 +64,7 @@ func (u *Updater) UpdateServers(ctx context.Context, providers []string) (err er
 	for _, providerName := range providers {
 		u.logger.Info("updating " + caser.String(providerName) + " servers...")
 
-		fetcherStorage := (Storage)(nil) // unused
-		fetcher := provider.New(providerName, fetcherStorage, u.timeNow,
-			u.logger, u.client, u.unzipper)
+		fetcher := u.providers.Get(providerName)
 		// TODO support servers offering only TCP or only UDP
 		// for NordVPN and PureVPN
 		err := u.updateProvider(ctx, fetcher)

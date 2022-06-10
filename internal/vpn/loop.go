@@ -13,6 +13,7 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
+	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/vpn/state"
@@ -32,6 +33,7 @@ type Looper interface {
 type Loop struct {
 	statusManager loopstate.Manager
 	state         state.Manager
+	providers     Providers
 	storage       Storage
 	// Fixed parameters
 	buildInfo     models.BuildInformation
@@ -64,6 +66,10 @@ type firewallConfigurer interface {
 	firewall.PortAllower
 }
 
+type Providers interface {
+	Get(providerName string) provider.Provider
+}
+
 type Storage interface {
 	FilterServers(provider string, selection settings.ServerSelection) (servers []models.Server, err error)
 	GetServerByName(provider, name string) (server models.Server, ok bool)
@@ -74,7 +80,7 @@ const (
 )
 
 func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
-	storage Storage, openvpnConf openvpn.Interface,
+	providers Providers, storage Storage, openvpnConf openvpn.Interface,
 	netLinker netlink.NetLinker, fw firewallConfigurer, routing routing.VPNGetter,
 	portForward portforward.StartStopper, starter command.Starter,
 	publicip publicip.Looper, dnsLooper dns.Looper,
@@ -91,6 +97,7 @@ func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
 	return &Loop{
 		statusManager: statusManager,
 		state:         state,
+		providers:     providers,
 		storage:       storage,
 		buildInfo:     buildInfo,
 		versionInfo:   versionInfo,

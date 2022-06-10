@@ -52,14 +52,14 @@ type Logger interface {
 	Error(s string)
 }
 
-func NewLooper(settings settings.Updater, storage updater.Storage,
-	client *http.Client, logger Logger) Looper {
+func NewLooper(settings settings.Updater, providers updater.Providers,
+	storage updater.Storage, client *http.Client, logger Logger) Looper {
 	return &looper{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
 		},
-		updater:      updater.New(client, storage, logger),
+		updater:      updater.New(client, storage, providers, logger),
 		logger:       logger,
 		start:        make(chan struct{}),
 		running:      make(chan models.LoopStatus),

@@ -2,13 +2,9 @@ package vpn
 
 import (
 	"context"
-	"net/http"
-	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
-	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"github.com/qdm12/log"
 )
 
@@ -29,16 +25,10 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		return
 	}
 
-	// Updater only objects which are unused in this loop
-	updaterWarner := (log.LoggerInterface)(nil)
-	updaterClient := (*http.Client)(nil)
-	updaterUnzipper := (unzip.Unzipper)(nil)
-
 	for ctx.Err() == nil {
 		settings := l.state.GetSettings()
 
-		providerConf := provider.New(*settings.Provider.Name, l.storage, time.Now,
-			updaterWarner, updaterClient, updaterUnzipper)
+		providerConf := l.providers.Get(*settings.Provider.Name)
 
 		portForwarding := *settings.Provider.PortForwarding.Enabled
 		var vpnRunner vpnRunner

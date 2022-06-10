@@ -31,6 +31,7 @@ import (
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/pprof"
+	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
@@ -38,6 +39,7 @@ import (
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tun"
 	updater "github.com/qdm12/gluetun/internal/updater/loop"
+	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/goshutdown"
@@ -374,9 +376,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
 	tickersGroupHandler.Add(pubIPTickerHandler)
 
+	updaterLogger := logger.New(log.SetComponent("updater"))
+
+	unzipper := unzip.New(httpClient)
+	providers := provider.NewProviders(storage, time.Now, updaterLogger, httpClient, unzipper)
+
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,
-		storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
+		providers, storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
@@ -384,7 +391,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go vpnLooper.Run(vpnCtx, vpnDone)
 
 	updaterLooper := updater.NewLooper(allSettings.Updater,
-		storage, httpClient, logger.New(log.SetComponent("updater")))
+		providers, storage, httpClient, updaterLogger)
 	updaterHandler, updaterCtx, updaterDone := goshutdown.NewGoRoutineHandler(
 		"updater", goroutine.OptionTimeout(defaultShutdownTimeout))
 	// wait for updaterLooper.Restart() or its ticket launched with RunRestartTicker

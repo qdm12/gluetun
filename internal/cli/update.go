@@ -13,8 +13,10 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
+	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 var (
@@ -81,7 +83,11 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		return fmt.Errorf("cannot create servers storage: %w", err)
 	}
 
-	updater := updater.New(httpClient, storage, logger)
+	unzipper := unzip.New(httpClient)
+
+	providers := provider.NewProviders(storage, time.Now, logger, httpClient, unzipper)
+
+	updater := updater.New(httpClient, storage, providers, logger)
 	err = updater.UpdateServers(ctx, options.Providers)
 	if err != nil {
 		return fmt.Errorf("cannot update server information: %w", err)
