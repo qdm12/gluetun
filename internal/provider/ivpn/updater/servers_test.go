@@ -150,18 +150,18 @@ func Test_Updater_GetServers(t *testing.T) {
 				}),
 			}
 
-			presolver := common.NewMockParallelResolver(ctrl)
+			parallelResolver := common.NewMockParallelResolver(ctrl)
 			if testCase.expectResolve {
-				presolver.EXPECT().Resolve(ctx, testCase.resolveSettings).
+				parallelResolver.EXPECT().Resolve(ctx, testCase.resolveSettings).
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 
 			warner := testCase.warnerBuilder(ctrl)
 
 			updater := &Updater{
-				client:    client,
-				presolver: presolver,
-				warner:    warner,
+				client:           client,
+				parallelResolver: parallelResolver,
+				warner:           warner,
 			}
 
 			servers, err := updater.FetchServers(ctx, testCase.minServers)

@@ -199,16 +199,16 @@ func Test_Updater_GetServers(t *testing.T) {
 			unzipper.EXPECT().FetchAndExtract(ctx, zipURL).
 				Return(testCase.unzipContents, testCase.unzipErr)
 
-			presolver := common.NewMockParallelResolver(ctrl)
+			parallelResolver := common.NewMockParallelResolver(ctrl)
 			if testCase.expectResolve {
-				presolver.EXPECT().Resolve(ctx, testCase.resolverSettings).
+				parallelResolver.EXPECT().Resolve(ctx, testCase.resolverSettings).
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 
 			updater := &Updater{
-				unzipper:  unzipper,
-				warner:    testCase.warnerBuilder(ctrl),
-				presolver: presolver,
+				unzipper:         unzipper,
+				warner:           testCase.warnerBuilder(ctrl),
+				parallelResolver: parallelResolver,
 			}
 
 			servers, err := updater.FetchServers(ctx, testCase.minServers)

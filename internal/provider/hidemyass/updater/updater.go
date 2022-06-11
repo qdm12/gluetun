@@ -7,16 +7,16 @@ import (
 )
 
 type Updater struct {
-	client    *http.Client
-	presolver common.ParallelResolver
-	warner    common.Warner
+	client           *http.Client
+	parallelResolver common.ParallelResolver
+	warner           common.Warner
 }
 
 func New(client *http.Client, warner common.Warner,
 	parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
-		client:    client,
-		presolver: parallelResolver,
-		warner:    warner,
+		client:           client,
+		parallelResolver: parallelResolver,
+		warner:           warner,
 	}
 }

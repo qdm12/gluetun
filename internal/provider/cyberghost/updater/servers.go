@@ -17,7 +17,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 	possibleHosts := possibleServers.hostsSlice()
 	resolveSettings := parallelResolverSettings(possibleHosts)
-	hostToIPs, _, err := u.presolver.Resolve(ctx, resolveSettings)
+	hostToIPs, _, err := u.parallelResolver.Resolve(ctx, resolveSettings)
 	if err != nil {
 		return nil, err
 	}

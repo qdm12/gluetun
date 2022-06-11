@@ -7,18 +7,18 @@ import (
 )
 
 type Updater struct {
-	client    *http.Client
-	unzipper  common.Unzipper
-	presolver common.ParallelResolver
-	warner    common.Warner
+	client           *http.Client
+	unzipper         common.Unzipper
+	parallelResolver common.ParallelResolver
+	warner           common.Warner
 }
 
 func New(client *http.Client, unzipper common.Unzipper,
 	warner common.Warner, parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
-		client:    client,
-		unzipper:  unzipper,
-		presolver: parallelResolver,
-		warner:    warner,
+		client:           client,
+		unzipper:         unzipper,
+		parallelResolver: parallelResolver,
+		warner:           warner,
 	}
 }

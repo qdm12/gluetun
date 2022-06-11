@@ -5,16 +5,16 @@ import (
 )
 
 type Updater struct {
-	unzipper  common.Unzipper
-	warner    common.Warner
-	presolver common.ParallelResolver
+	unzipper         common.Unzipper
+	warner           common.Warner
+	parallelResolver common.ParallelResolver
 }
 
 func New(unzipper common.Unzipper, warner common.Warner,
 	parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
-		unzipper:  unzipper,
-		warner:    warner,
-		presolver: parallelResolver,
+		unzipper:         unzipper,
+		warner:           warner,
+		parallelResolver: parallelResolver,
 	}
 }

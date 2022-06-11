@@ -5,11 +5,11 @@ import (
 )
 
 type Updater struct {
-	presolver common.ParallelResolver
+	parallelResolver common.ParallelResolver
 }
 
 func New(parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
-		presolver: parallelResolver,
+		parallelResolver: parallelResolver,
 	}
 }
