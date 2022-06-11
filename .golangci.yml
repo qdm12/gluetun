@@ -7,38 +7,26 @@ issues:
     - path: _test\.go
       linters:
         - dupl
-        - maligned
         - goerr113
         - containedctx
-    - path: internal/server/
+    - path: "internal\\/server\\/.+\\.go"
       linters:
         - dupl
-    - path: internal/configuration/
+    - path: "internal\\/configuration\\/settings\\/.+\\.go"
       linters:
         - dupl
-    - path: internal/constants/
-      linters:
-        - dupl
-    - text: "exported: exported var Err*"
-      linters:
-        - revive
-    - text: "mnd: Magic number: 0644*"
+    - text: "^mnd: Magic number: 0[0-9]{3}, in <argument> detected$"
+      source: "^.+= os\\.OpenFile\\(.+, .+, 0[0-9]{3}\\)"
       linters:
         - gomnd
-    - text: "mnd: Magic number: 0400*"
+
+    - text: "^mnd: Magic number: 0[0-9]{3}, in <argument> detected$"
+      source: "^.+= os\\.MkdirAll\\(.+, 0[0-9]{3}\\)"
       linters:
         - gomnd
-    - text: "variable 'mssFix' is only used in the if-statement*"
-      path: "openvpnconf.go"
-      linters:
-        - ifshort
-    - text: "variable 'auth' is only used in the if-statement*"
-      path: "openvpnconf.go"
-      linters:
-        - ifshort
     - linters:
         - lll
-      source: "^//go:generate "
+      source: "^//go:generate .+$"
     - text: "returns interface \\(github\\.com\\/vishvananda\\/netlink\\.Link\\)"
       linters:
         - ireturn
