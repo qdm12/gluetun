@@ -99,7 +99,8 @@ func Test_Provider_GetConnection(t *testing.T) {
 
 			client := (*http.Client)(nil)
 			warner := (common.Warner)(nil)
-			provider := New(storage, randSource, client, warner)
+			parallelResolver := (common.ParallelResolver)(nil)
+			provider := New(storage, randSource, client, warner, parallelResolver)
 
 			connection, err := provider.GetConnection(testCase.selection)
 

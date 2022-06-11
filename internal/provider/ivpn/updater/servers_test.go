@@ -8,11 +8,13 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -33,7 +35,7 @@ func Test_Updater_GetServers(t *testing.T) {
 
 		// Resolution
 		expectResolve   bool
-		hostsToResolve  []string
+		resolveSettings resolver.ParallelSettings
 		hostToIPs       map[string][]net.IP
 		resolveWarnings []string
 		resolveErr      error
@@ -56,9 +58,19 @@ func Test_Updater_GetServers(t *testing.T) {
 			responseBody: `{"servers":[
 				{"hostnames":{"openvpn":"hosta"}}
 			]}`,
-			responseStatus:  http.StatusOK,
-			expectResolve:   true,
-			hostsToResolve:  []string{"hosta"},
+			responseStatus: http.StatusOK,
+			expectResolve:  true,
+			resolveSettings: resolver.ParallelSettings{
+				Hosts:        []string{"hosta"},
+				MaxFailRatio: 0.1,
+				Repeat: resolver.RepeatSettings{
+					MaxDuration:     20 * time.Second,
+					BetweenDuration: time.Second,
+					MaxNoNew:        2,
+					MaxFails:        2,
+					SortIPs:         true,
+				},
+			},
 			resolveWarnings: []string{"resolve warning"},
 			resolveErr:      errors.New("dummy"),
 			err:             errors.New("dummy"),
@@ -86,7 +98,17 @@ func Test_Updater_GetServers(t *testing.T) {
 			]}`,
 			responseStatus: http.StatusOK,
 			expectResolve:  true,
-			hostsToResolve: []string{"hosta", "hostb", "hostc"},
+			resolveSettings: resolver.ParallelSettings{
+				Hosts:        []string{"hosta", "hostb", "hostc"},
+				MaxFailRatio: 0.1,
+				Repeat: resolver.RepeatSettings{
+					MaxDuration:     20 * time.Second,
+					BetweenDuration: time.Second,
+					MaxNoNew:        2,
+					MaxFails:        2,
+					SortIPs:         true,
+				},
+			},
 			hostToIPs: map[string][]net.IP{
 				"hosta": {{1, 1, 1, 1}, {2, 2, 2, 2}},
 				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
@@ -130,7 +152,7 @@ func Test_Updater_GetServers(t *testing.T) {
 
 			presolver := common.NewMockParallelResolver(ctrl)
 			if testCase.expectResolve {
-				presolver.EXPECT().Resolve(ctx, testCase.hostsToResolve, testCase.minServers).
+				presolver.EXPECT().Resolve(ctx, testCase.resolveSettings).
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 

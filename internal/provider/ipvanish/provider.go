@@ -17,12 +17,13 @@ type Provider struct {
 }
 
 func New(storage common.Storage, randSource rand.Source,
-	unzipper common.Unzipper, updaterWarner common.Warner) *Provider {
+	unzipper common.Unzipper, updaterWarner common.Warner,
+	parallelResolver common.ParallelResolver) *Provider {
 	return &Provider{
 		storage:         storage,
 		randSource:      randSource,
 		NoPortForwarder: utils.NewNoPortForwarding(providers.Ipvanish),
-		Fetcher:         updater.New(unzipper, updaterWarner),
+		Fetcher:         updater.New(unzipper, updaterWarner, parallelResolver),
 	}
 }
 

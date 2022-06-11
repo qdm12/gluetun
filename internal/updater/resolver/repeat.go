@@ -12,13 +12,11 @@ import (
 
 type Repeat struct {
 	resolver *net.Resolver
-	settings RepeatSettings
 }
 
-func NewRepeat(settings RepeatSettings) *Repeat {
+func NewRepeat(resolverAddress string) *Repeat {
 	return &Repeat{
-		resolver: newResolver(settings.Address),
-		settings: settings,
+		resolver: newResolver(resolverAddress),
 	}
 }
 
@@ -32,8 +30,9 @@ type RepeatSettings struct {
 	SortIPs  bool
 }
 
-func (r *Repeat) Resolve(ctx context.Context, host string) (ips []net.IP, err error) {
-	timedCtx, cancel := context.WithTimeout(ctx, r.settings.MaxDuration)
+func (r *Repeat) Resolve(ctx context.Context, host string, settings RepeatSettings) (
+	ips []net.IP, err error) {
+	timedCtx, cancel := context.WithTimeout(ctx, settings.MaxDuration)
 	defer cancel()
 
 	noNewCounter := 0
@@ -44,7 +43,7 @@ func (r *Repeat) Resolve(ctx context.Context, host string) (ips []net.IP, err er
 		// TODO
 		// - one resolving every 100ms for round robin DNS responses
 		// - one every second for time based DNS cycling responses
-		noNewCounter, failCounter, err = r.resolveOnce(ctx, timedCtx, host, r.settings, uniqueIPs, noNewCounter, failCounter)
+		noNewCounter, failCounter, err = r.resolveOnce(ctx, timedCtx, host, settings, uniqueIPs, noNewCounter, failCounter)
 	}
 
 	if len(uniqueIPs) == 0 {
@@ -53,7 +52,7 @@ func (r *Repeat) Resolve(ctx context.Context, host string) (ips []net.IP, err er
 
 	ips = uniqueIPsToSlice(uniqueIPs)
 
-	if r.settings.SortIPs {
+	if settings.SortIPs {
 		sort.Slice(ips, func(i, j int) bool {
 			return bytes.Compare(ips[i], ips[j]) < 1
 		})

@@ -16,6 +16,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
@@ -71,17 +72,17 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		return fmt.Errorf("options validation failed: %w", err)
 	}
 
-	const clientTimeout = 10 * time.Second
-	httpClient := &http.Client{Timeout: clientTimeout}
-
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
 		return fmt.Errorf("cannot create servers storage: %w", err)
 	}
 
+	const clientTimeout = 10 * time.Second
+	httpClient := &http.Client{Timeout: clientTimeout}
 	unzipper := unzip.New(httpClient)
+	parallelResolver := resolver.NewParallelResolver(options.DNSAddress.String())
 
-	providers := provider.NewProviders(storage, time.Now, logger, httpClient, unzipper)
+	providers := provider.NewProviders(storage, time.Now, logger, httpClient, unzipper, parallelResolver)
 
 	updater := updater.New(httpClient, storage, providers, logger)
 	err = updater.UpdateServers(ctx, options.Providers)

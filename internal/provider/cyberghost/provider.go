@@ -16,12 +16,13 @@ type Provider struct {
 	common.Fetcher
 }
 
-func New(storage common.Storage, randSource rand.Source) *Provider {
+func New(storage common.Storage, randSource rand.Source,
+	parallelResolver common.ParallelResolver) *Provider {
 	return &Provider{
 		storage:         storage,
 		randSource:      randSource,
 		NoPortForwarder: utils.NewNoPortForwarding(providers.Cyberghost),
-		Fetcher:         updater.New(),
+		Fetcher:         updater.New(parallelResolver),
 	}
 }
 

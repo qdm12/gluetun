@@ -6,13 +6,14 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
-func newParallelResolver() *resolver.Parallel {
+func parallelResolverSettings(hosts []string) (settings resolver.ParallelSettings) {
 	const (
 		maxFailRatio = 0.1
 		maxNoNew     = 1
 		maxFails     = 2
 	)
-	settings := resolver.ParallelSettings{
+	return resolver.ParallelSettings{
+		Hosts:        hosts,
 		MaxFailRatio: maxFailRatio,
 		Repeat: resolver.RepeatSettings{
 			MaxDuration: time.Second,
@@ -21,5 +22,4 @@ func newParallelResolver() *resolver.Parallel {
 			SortIPs:     true,
 		},
 	}
-	return resolver.NewParallelResolver(settings)
 }

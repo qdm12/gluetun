@@ -38,12 +38,18 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(hosts), minServers)
 	}
 
-	hostToIPs, warnings, err := u.presolver.Resolve(ctx, hosts, minServers)
+	resolveSettings := parallelResolverSettings(hosts)
+	hostToIPs, warnings, err := u.presolver.Resolve(ctx, resolveSettings)
 	for _, warning := range warnings {
 		u.warner.Warn(warning)
 	}
 	if err != nil {
 		return nil, err
+	}
+
+	if len(hostToIPs) < minServers {
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
+			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	servers = make([]models.Server, 0, len(hosts))

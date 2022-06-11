@@ -8,8 +8,8 @@ type Updater struct {
 	presolver common.ParallelResolver
 }
 
-func New() *Updater {
+func New(parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
-		presolver: newParallelResolver(),
+		presolver: parallelResolver,
 	}
 }

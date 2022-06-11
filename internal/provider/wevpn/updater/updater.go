@@ -7,9 +7,9 @@ type Updater struct {
 	warner    common.Warner
 }
 
-func New(warner common.Warner) *Updater {
+func New(warner common.Warner, parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
-		presolver: newParallelResolver(),
+		presolver: parallelResolver,
 		warner:    warner,
 	}
 }

@@ -12,6 +12,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	settings "github.com/qdm12/gluetun/internal/configuration/settings"
 	models "github.com/qdm12/gluetun/internal/models"
+	resolver "github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 // MockParallelResolver is a mock of ParallelResolver interface.
@@ -38,9 +39,9 @@ func (m *MockParallelResolver) EXPECT() *MockParallelResolverMockRecorder {
 }
 
 // Resolve mocks base method.
-func (m *MockParallelResolver) Resolve(arg0 context.Context, arg1 []string, arg2 int) (map[string][]net.IP, []string, error) {
+func (m *MockParallelResolver) Resolve(arg0 context.Context, arg1 resolver.ParallelSettings) (map[string][]net.IP, []string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Resolve", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "Resolve", arg0, arg1)
 	ret0, _ := ret[0].(map[string][]net.IP)
 	ret1, _ := ret[1].([]string)
 	ret2, _ := ret[2].(error)
@@ -48,9 +49,9 @@ func (m *MockParallelResolver) Resolve(arg0 context.Context, arg1 []string, arg2
 }
 
 // Resolve indicates an expected call of Resolve.
-func (mr *MockParallelResolverMockRecorder) Resolve(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockParallelResolverMockRecorder) Resolve(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Resolve", reflect.TypeOf((*MockParallelResolver)(nil).Resolve), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Resolve", reflect.TypeOf((*MockParallelResolver)(nil).Resolve), arg0, arg1)
 }
 
 // MockStorage is a mock of Storage interface.

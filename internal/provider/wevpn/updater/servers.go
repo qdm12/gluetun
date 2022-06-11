@@ -31,7 +31,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		hostnameToCity[hostname] = city
 	}
 
-	hostnameToIPs, warnings, err := u.presolver.Resolve(ctx, hostnames, minServers)
+	resolverSettings := parallelResolverSettings(hostnames)
+	hostnameToIPs, warnings, err := u.presolver.Resolve(ctx, resolverSettings)
 	for _, warning := range warnings {
 		u.warner.Warn(warning)
 	}

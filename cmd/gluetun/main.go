@@ -39,6 +39,7 @@ import (
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tun"
 	updater "github.com/qdm12/gluetun/internal/updater/loop"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"github.com/qdm12/gluetun/internal/vpn"
 	"github.com/qdm12/golibs/command"
@@ -379,7 +380,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	updaterLogger := logger.New(log.SetComponent("updater"))
 
 	unzipper := unzip.New(httpClient)
-	providers := provider.NewProviders(storage, time.Now, updaterLogger, httpClient, unzipper)
+	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress.String())
+	providers := provider.NewProviders(storage, time.Now,
+		updaterLogger, httpClient, unzipper, parallelResolver)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,

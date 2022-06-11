@@ -60,7 +60,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	}
 
 	hosts := hts.toHostsSlice()
-	hostToIPs, warnings, err := u.presolver.Resolve(ctx, hosts, minServers)
+	resolveSettings := parallelResolverSettings(hosts)
+	hostToIPs, warnings, err := u.presolver.Resolve(ctx, resolveSettings)
 	for _, warning := range warnings {
 		u.warner.Warn(warning)
 	}
@@ -68,14 +69,14 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, err
 	}
 
-	hts.adaptWithIPs(hostToIPs)
-
-	servers = hts.toServersSlice()
-
-	if len(servers) < minServers {
+	if len(hostToIPs) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			common.ErrNotEnoughServers, len(servers), minServers)
 	}
+
+	hts.adaptWithIPs(hostToIPs)
+
+	servers = hts.toServersSlice()
 
 	// Get public IP address information
 	ipsToGetInfo := make([]net.IP, len(servers))

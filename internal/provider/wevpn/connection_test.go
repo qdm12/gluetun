@@ -93,7 +93,8 @@ func Test_Provider_GetConnection(t *testing.T) {
 			randSource := rand.NewSource(0)
 
 			warner := (common.Warner)(nil)
-			provider := New(storage, randSource, warner)
+			parallelResolver := (common.ParallelResolver)(nil)
+			provider := New(storage, randSource, warner, parallelResolver)
 
 			if testCase.panicMessage != "" {
 				assert.PanicsWithValue(t, testCase.panicMessage, func() {

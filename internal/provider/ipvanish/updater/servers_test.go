@@ -5,11 +5,13 @@ import (
 	"errors"
 	"net"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -28,11 +30,11 @@ func Test_Updater_GetServers(t *testing.T) {
 		unzipErr      error
 
 		// Resolution
-		expectResolve   bool
-		hostsToResolve  []string
-		hostToIPs       map[string][]net.IP
-		resolveWarnings []string
-		resolveErr      error
+		expectResolve    bool
+		resolverSettings resolver.ParallelSettings
+		hostToIPs        map[string][]net.IP
+		resolveWarnings  []string
+		resolveErr       error
 
 		// Output
 		servers []models.Server
@@ -85,9 +87,19 @@ func Test_Updater_GetServers(t *testing.T) {
 			unzipContents: map[string][]byte{
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta\nremote hostb"),
 			},
-			expectResolve:  true,
-			hostsToResolve: []string{"hosta"},
-			err:            errors.New("not enough servers found: 0 and expected at least 1"),
+			expectResolve: true,
+			resolverSettings: resolver.ParallelSettings{
+				Hosts:        []string{"hosta"},
+				MaxFailRatio: 0.1,
+				Repeat: resolver.RepeatSettings{
+					MaxDuration:     20 * time.Second,
+					BetweenDuration: time.Second,
+					MaxNoNew:        2,
+					MaxFails:        2,
+					SortIPs:         true,
+				},
+			},
+			err: errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"resolve error": {
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
@@ -98,8 +110,18 @@ func Test_Updater_GetServers(t *testing.T) {
 			unzipContents: map[string][]byte{
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta"),
 			},
-			expectResolve:   true,
-			hostsToResolve:  []string{"hosta"},
+			expectResolve: true,
+			resolverSettings: resolver.ParallelSettings{
+				Hosts:        []string{"hosta"},
+				MaxFailRatio: 0.1,
+				Repeat: resolver.RepeatSettings{
+					MaxDuration:     20 * time.Second,
+					BetweenDuration: time.Second,
+					MaxNoNew:        2,
+					MaxFails:        2,
+					SortIPs:         true,
+				},
+			},
 			resolveWarnings: []string{"resolve warning"},
 			resolveErr:      errors.New("dummy"),
 			err:             errors.New("dummy"),
@@ -127,8 +149,18 @@ func Test_Updater_GetServers(t *testing.T) {
 				"ipvanish-CA-City-A-hosta.ovpn": []byte("remote hosta"),
 				"ipvanish-LU-City-B-hostb.ovpn": []byte("remote hostb"),
 			},
-			expectResolve:  true,
-			hostsToResolve: []string{"hosta", "hostb"},
+			expectResolve: true,
+			resolverSettings: resolver.ParallelSettings{
+				Hosts:        []string{"hosta", "hostb"},
+				MaxFailRatio: 0.1,
+				Repeat: resolver.RepeatSettings{
+					MaxDuration:     20 * time.Second,
+					BetweenDuration: time.Second,
+					MaxNoNew:        2,
+					MaxFails:        2,
+					SortIPs:         true,
+				},
+			},
 			hostToIPs: map[string][]net.IP{
 				"hosta": {{1, 1, 1, 1}, {2, 2, 2, 2}},
 				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
@@ -169,7 +201,7 @@ func Test_Updater_GetServers(t *testing.T) {
 
 			presolver := common.NewMockParallelResolver(ctrl)
 			if testCase.expectResolve {
-				presolver.EXPECT().Resolve(ctx, testCase.hostsToResolve, testCase.minServers).
+				presolver.EXPECT().Resolve(ctx, testCase.resolverSettings).
 					Return(testCase.hostToIPs, testCase.resolveWarnings, testCase.resolveErr)
 			}
 

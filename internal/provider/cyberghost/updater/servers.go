@@ -4,9 +4,11 @@ package updater
 
 import (
 	"context"
+	"fmt"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
@@ -14,9 +16,15 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	possibleServers := getPossibleServers()
 
 	possibleHosts := possibleServers.hostsSlice()
-	hostToIPs, _, err := u.presolver.Resolve(ctx, possibleHosts, minServers)
+	resolveSettings := parallelResolverSettings(possibleHosts)
+	hostToIPs, _, err := u.presolver.Resolve(ctx, resolveSettings)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(hostToIPs) < minServers {
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
+			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
 	possibleServers.adaptWithIPs(hostToIPs)

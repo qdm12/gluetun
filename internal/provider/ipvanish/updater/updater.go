@@ -10,10 +10,11 @@ type Updater struct {
 	presolver common.ParallelResolver
 }
 
-func New(unzipper common.Unzipper, warner common.Warner) *Updater {
+func New(unzipper common.Unzipper, warner common.Warner,
+	parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
 		unzipper:  unzipper,
 		warner:    warner,
-		presolver: newParallelResolver(),
+		presolver: parallelResolver,
 	}
 }

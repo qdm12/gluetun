@@ -44,33 +44,36 @@ type Storage interface {
 }
 
 func NewProviders(storage Storage, timeNow func() time.Time,
-	updaterWarner common.Warner, client *http.Client, unzipper common.Unzipper) *Providers {
+	updaterWarner common.Warner, client *http.Client, unzipper common.Unzipper,
+	parallelResolver common.ParallelResolver) *Providers {
 	randSource := rand.NewSource(timeNow().UnixNano())
 
-	targetLength := len(providers.AllWithCustom())
-	providerNameToProvider := make(map[string]Provider, targetLength)
-	providerNameToProvider[providers.Custom] = custom.New()
-	providerNameToProvider[providers.Cyberghost] = cyberghost.New(storage, randSource)
-	providerNameToProvider[providers.Expressvpn] = expressvpn.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.Fastestvpn] = fastestvpn.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.HideMyAss] = hidemyass.New(storage, randSource, client, updaterWarner)
-	providerNameToProvider[providers.Ipvanish] = ipvanish.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.Ivpn] = ivpn.New(storage, randSource, client, updaterWarner)
-	providerNameToProvider[providers.Mullvad] = mullvad.New(storage, randSource, client)
-	providerNameToProvider[providers.Nordvpn] = nordvpn.New(storage, randSource, client, updaterWarner)
-	providerNameToProvider[providers.Perfectprivacy] = perfectprivacy.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.Privado] = privado.New(storage, randSource, client, unzipper, updaterWarner)
-	providerNameToProvider[providers.PrivateInternetAccess] = privateinternetaccess.New(storage, randSource, timeNow, client) //nolint:lll
-	providerNameToProvider[providers.Privatevpn] = privatevpn.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.Protonvpn] = protonvpn.New(storage, randSource, client, updaterWarner)
-	providerNameToProvider[providers.Purevpn] = purevpn.New(storage, randSource, client, unzipper, updaterWarner)
-	providerNameToProvider[providers.Surfshark] = surfshark.New(storage, randSource, client, unzipper, updaterWarner)
-	providerNameToProvider[providers.Torguard] = torguard.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.VPNUnlimited] = vpnunlimited.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.Vyprvpn] = vyprvpn.New(storage, randSource, unzipper, updaterWarner)
-	providerNameToProvider[providers.Wevpn] = wevpn.New(storage, randSource, updaterWarner)
-	providerNameToProvider[providers.Windscribe] = windscribe.New(storage, randSource, client, updaterWarner)
+	//nolint:lll
+	providerNameToProvider := map[string]Provider{
+		providers.Custom:                custom.New(),
+		providers.Cyberghost:            cyberghost.New(storage, randSource, parallelResolver),
+		providers.Expressvpn:            expressvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.Fastestvpn:            fastestvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.HideMyAss:             hidemyass.New(storage, randSource, client, updaterWarner, parallelResolver),
+		providers.Ipvanish:              ipvanish.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.Ivpn:                  ivpn.New(storage, randSource, client, updaterWarner, parallelResolver),
+		providers.Mullvad:               mullvad.New(storage, randSource, client),
+		providers.Nordvpn:               nordvpn.New(storage, randSource, client, updaterWarner),
+		providers.Perfectprivacy:        perfectprivacy.New(storage, randSource, unzipper, updaterWarner),
+		providers.Privado:               privado.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
+		providers.PrivateInternetAccess: privateinternetaccess.New(storage, randSource, timeNow, client),
+		providers.Privatevpn:            privatevpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.Protonvpn:             protonvpn.New(storage, randSource, client, updaterWarner, parallelResolver),
+		providers.Purevpn:               purevpn.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
+		providers.Surfshark:             surfshark.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
+		providers.Torguard:              torguard.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.VPNUnlimited:          vpnunlimited.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.Vyprvpn:               vyprvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.Wevpn:                 wevpn.New(storage, randSource, updaterWarner, parallelResolver),
+		providers.Windscribe:            windscribe.New(storage, randSource, client, updaterWarner),
+	}
 
+	targetLength := len(providers.AllWithCustom())
 	if len(providerNameToProvider) != targetLength {
 		// Programming sanity check
 		panic(fmt.Sprintf("invalid number of providers, expected %d but got %d",

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 type OpenvpnConfigLogger interface {
@@ -21,6 +23,11 @@ type OpenvpnConfigLogger interface {
 type Unzipper interface {
 	FetchAndExtract(ctx context.Context, url string) (
 		contents map[string][]byte, err error)
+}
+
+type ParallelResolver interface {
+	Resolve(ctx context.Context, settings resolver.ParallelSettings) (
+		hostToIPs map[string][]net.IP, warnings []string, err error)
 }
 
 func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) error {
@@ -42,8 +49,9 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) e
 	unzipper := (Unzipper)(nil)
 	client := (*http.Client)(nil)
 	warner := (Warner)(nil)
+	parallelResolver := (ParallelResolver)(nil)
 
-	providers := provider.NewProviders(storage, time.Now, warner, client, unzipper)
+	providers := provider.NewProviders(storage, time.Now, warner, client, unzipper, parallelResolver)
 	providerConf := providers.Get(*allSettings.VPN.Provider.Name)
 	connection, err := providerConf.GetConnection(allSettings.VPN.Provider.ServerSelection)
 	if err != nil {

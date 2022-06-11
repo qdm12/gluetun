@@ -12,10 +12,11 @@ type Updater struct {
 	warner    common.Warner
 }
 
-func New(client *http.Client, warner common.Warner) *Updater {
+func New(client *http.Client, warner common.Warner,
+	parallelResolver common.ParallelResolver) *Updater {
 	return &Updater{
 		client:    client,
-		presolver: newParallelResolver(),
+		presolver: parallelResolver,
 		warner:    warner,
 	}
 }

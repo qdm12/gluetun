@@ -9,17 +9,17 @@ import (
 
 type Parallel struct {
 	repeatResolver *Repeat
-	settings       ParallelSettings
 }
 
-func NewParallelResolver(settings ParallelSettings) *Parallel {
+func NewParallelResolver(resolverAddress string) *Parallel {
 	return &Parallel{
-		repeatResolver: NewRepeat(settings.Repeat),
-		settings:       settings,
+		repeatResolver: NewRepeat(resolverAddress),
 	}
 }
 
 type ParallelSettings struct {
+	// Hosts to resolve in parallel.
+	Hosts     []string
 	Repeat    RepeatSettings
 	FailEarly bool
 	// Maximum ratio of the hosts failing DNS resolution
@@ -39,7 +39,7 @@ var (
 	ErrMaxFailRatio = errors.New("maximum failure ratio reached")
 )
 
-func (pr *Parallel) Resolve(ctx context.Context, hosts []string, minToFind int) (
+func (pr *Parallel) Resolve(ctx context.Context, settings ParallelSettings) (
 	hostToIPs map[string][]net.IP, warnings []string, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -49,17 +49,17 @@ func (pr *Parallel) Resolve(ctx context.Context, hosts []string, minToFind int) 
 	errors := make(chan error)
 	defer close(errors)
 
-	for _, host := range hosts {
-		go pr.resolveAsync(ctx, host, results, errors)
+	for _, host := range settings.Hosts {
+		go pr.resolveAsync(ctx, host, settings.Repeat, results, errors)
 	}
 
-	hostToIPs = make(map[string][]net.IP, len(hosts))
-	maxFails := int(pr.settings.MaxFailRatio * float64(len(hosts)))
+	hostToIPs = make(map[string][]net.IP, len(settings.Hosts))
+	maxFails := int(settings.MaxFailRatio * float64(len(settings.Hosts)))
 
-	for range hosts {
+	for range settings.Hosts {
 		select {
 		case newErr := <-errors:
-			if pr.settings.FailEarly {
+			if settings.FailEarly {
 				if err == nil {
 					// only set the error to the first error encountered
 					// and not the context canceled errors coming after.
@@ -86,14 +86,8 @@ func (pr *Parallel) Resolve(ctx context.Context, hosts []string, minToFind int) 
 		return nil, warnings, err
 	}
 
-	if len(hostToIPs) < minToFind {
-		return nil, warnings,
-			fmt.Errorf("%w: found %d hosts but expected at least %d",
-				ErrMinFound, len(hostToIPs), minToFind)
-	}
-
-	failureRatio := float64(len(warnings)) / float64(len(hosts))
-	if failureRatio > pr.settings.MaxFailRatio {
+	failureRatio := float64(len(warnings)) / float64(len(settings.Hosts))
+	if failureRatio > settings.MaxFailRatio {
 		return hostToIPs, warnings,
 			fmt.Errorf("%w: %.2f failure ratio reached", ErrMaxFailRatio, failureRatio)
 	}
@@ -102,8 +96,8 @@ func (pr *Parallel) Resolve(ctx context.Context, hosts []string, minToFind int) 
 }
 
 func (pr *Parallel) resolveAsync(ctx context.Context, host string,
-	results chan<- parallelResult, errors chan<- error) {
-	IPs, err := pr.repeatResolver.Resolve(ctx, host)
+	settings RepeatSettings, results chan<- parallelResult, errors chan<- error) {
+	IPs, err := pr.repeatResolver.Resolve(ctx, host, settings)
 	if err != nil {
 		errors <- err
 		return

@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
 var ErrNotEnoughServers = errors.New("not enough servers found")
@@ -15,7 +16,7 @@ type Fetcher interface {
 }
 
 type ParallelResolver interface {
-	Resolve(ctx context.Context, hosts []string, minToFind int) (
+	Resolve(ctx context.Context, settings resolver.ParallelSettings) (
 		hostToIPs map[string][]net.IP, warnings []string, err error)
 }
 
