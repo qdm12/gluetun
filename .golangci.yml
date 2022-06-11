@@ -39,12 +39,14 @@ issues:
     - linters:
         - lll
       source: "^//go:generate "
+    - text: "returns interface \\(github\\.com\\/vishvananda\\/netlink\\.Link\\)"
+      linters:
+        - ireturn
 
 linters:
   enable:
     # - cyclop
     # - errorlint
-    # - ireturn
     # - varnamelen
     # - wrapcheck
     - asciicheck
@@ -79,6 +81,7 @@ linters:
     - grouper
     - ifshort
     - importas
+    - ireturn
     - lll
     - maintidx
     - makezero
