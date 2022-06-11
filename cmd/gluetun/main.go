@@ -380,7 +380,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	updaterLogger := logger.New(log.SetComponent("updater"))
 
 	unzipper := unzip.New(httpClient)
-	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress.String())
+	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
 	providers := provider.NewProviders(storage, time.Now,
 		updaterLogger, httpClient, unzipper, parallelResolver)
 

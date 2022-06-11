@@ -2,7 +2,6 @@ package env
 
 import (
 	"fmt"
-	"net"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -37,11 +36,11 @@ func readUpdaterPeriod() (period *time.Duration, err error) {
 	return period, nil
 }
 
-func readUpdaterDNSAddress() (ip net.IP, err error) {
+func readUpdaterDNSAddress() (address string, err error) {
 	// TODO this is currently using Cloudflare in
 	// plaintext to not be blocked by DNS over TLS by default.
 	// If a plaintext address is set in the DNS settings, this one will be used.
 	// use custom future encrypted DNS written in Go without blocking
 	// as it's too much trouble to start another parallel unbound instance for now.
-	return nil, nil
+	return "", nil
 }

@@ -2,7 +2,6 @@ package settings
 
 import (
 	"fmt"
-	"net"
 	"strings"
 	"time"
 
@@ -21,8 +20,8 @@ type Updater struct {
 	Period *time.Duration
 	// DNSAddress is the DNS server address to use
 	// to resolve VPN server hostnames to IP addresses.
-	// It cannot be nil in the internal state.
-	DNSAddress net.IP
+	// It cannot be the empty string in the internal state.
+	DNSAddress string
 	// Providers is the list of VPN service providers
 	// to update server information for.
 	Providers []string
@@ -56,7 +55,7 @@ func (u Updater) Validate() (err error) {
 func (u *Updater) copy() (copied Updater) {
 	return Updater{
 		Period:     helpers.CopyDurationPtr(u.Period),
-		DNSAddress: helpers.CopyIP(u.DNSAddress),
+		DNSAddress: u.DNSAddress,
 		Providers:  helpers.CopyStringSlice(u.Providers),
 	}
 }
@@ -65,7 +64,7 @@ func (u *Updater) copy() (copied Updater) {
 // unset field of the receiver settings object.
 func (u *Updater) mergeWith(other Updater) {
 	u.Period = helpers.MergeWithDuration(u.Period, other.Period)
-	u.DNSAddress = helpers.MergeWithIP(u.DNSAddress, other.DNSAddress)
+	u.DNSAddress = helpers.MergeWithString(u.DNSAddress, other.DNSAddress)
 	u.Providers = helpers.MergeStringSlices(u.Providers, other.Providers)
 }
 
@@ -74,13 +73,13 @@ func (u *Updater) mergeWith(other Updater) {
 // settings.
 func (u *Updater) overrideWith(other Updater) {
 	u.Period = helpers.OverrideWithDuration(u.Period, other.Period)
-	u.DNSAddress = helpers.OverrideWithIP(u.DNSAddress, other.DNSAddress)
+	u.DNSAddress = helpers.OverrideWithString(u.DNSAddress, other.DNSAddress)
 	u.Providers = helpers.OverrideWithStringSlice(u.Providers, other.Providers)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
-	u.DNSAddress = helpers.DefaultIP(u.DNSAddress, net.IPv4(1, 1, 1, 1))
+	u.DNSAddress = helpers.DefaultString(u.DNSAddress, "1.1.1.1:53")
 	if len(u.Providers) == 0 && vpnProvider != providers.Custom {
 		u.Providers = []string{vpnProvider}
 	}

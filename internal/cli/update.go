@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -22,7 +21,6 @@ import (
 
 var (
 	ErrModeUnspecified     = errors.New("at least one of -enduser or -maintainer must be specified")
-	ErrDNSAddress          = errors.New("DNS address is not valid")
 	ErrNoProviderSpecified = errors.New("no provider was specified")
 )
 
@@ -35,12 +33,12 @@ type UpdaterLogger interface {
 func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
 	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
-	var dnsAddress, csvProviders string
+	var csvProviders string
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
 		"Write results to ./internal/storage/servers.json to modify the program (for maintainers)")
-	flagSet.StringVar(&dnsAddress, "dns", "8.8.8.8", "DNS resolver address to use")
+	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
 	if err := flagSet.Parse(args); err != nil {
@@ -49,11 +47,6 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 
 	if !endUserMode && !maintainerMode {
 		return ErrModeUnspecified
-	}
-
-	options.DNSAddress = net.ParseIP(dnsAddress)
-	if options.DNSAddress == nil {
-		return fmt.Errorf("%w: %s", ErrDNSAddress, dnsAddress)
 	}
 
 	if updateAll {
@@ -80,7 +73,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	const clientTimeout = 10 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	unzipper := unzip.New(httpClient)
-	parallelResolver := resolver.NewParallelResolver(options.DNSAddress.String())
+	parallelResolver := resolver.NewParallelResolver(options.DNSAddress)
 
 	providers := provider.NewProviders(storage, time.Now, logger, httpClient, unzipper, parallelResolver)
 
