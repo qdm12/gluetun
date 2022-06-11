@@ -34,10 +34,6 @@ var (
 	ErrDeviceWaited      = errors.New("device waited for")
 )
 
-type Runner interface {
-	Run(ctx context.Context, waitError chan<- error, ready chan<- struct{})
-}
-
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
 func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<- struct{}) {
 	doIPv6, err := w.isIPv6Supported()

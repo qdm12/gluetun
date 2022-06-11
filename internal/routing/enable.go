@@ -4,10 +4,6 @@ import (
 	"fmt"
 )
 
-type Setuper interface {
-	Setup() (err error)
-}
-
 func (r *Routing) Setup() (err error) {
 	defaultRoutes, err := r.DefaultRoutes()
 	if err != nil {
@@ -38,10 +34,6 @@ func (r *Routing) Setup() (err error) {
 	}
 
 	return nil
-}
-
-type TearDowner interface {
-	TearDown() error
 }
 
 func (r *Routing) TearDown() error {

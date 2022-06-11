@@ -10,10 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/healthcheck"
 )
 
-type HealthChecker interface {
-	HealthCheck(ctx context.Context, source sources.Source, warner Warner) error
-}
-
 func (c *CLI) HealthCheck(ctx context.Context, source sources.Source, warner Warner) error {
 	// Extract the health server port from the configuration.
 	config, err := source.ReadHealth()

@@ -12,17 +12,7 @@ import (
 	shadowsockslib "github.com/qdm12/ss-server/pkg/tcpudp"
 )
 
-type Looper interface {
-	Run(ctx context.Context, done chan<- struct{})
-	SetStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-	GetStatus() (status models.LoopStatus)
-	GetSettings() (settings settings.Shadowsocks)
-	SetSettings(ctx context.Context, settings settings.Shadowsocks) (
-		outcome string)
-}
-
-type looper struct {
+type Loop struct {
 	state state
 	// Other objects
 	logger Logger
@@ -34,7 +24,7 @@ type looper struct {
 	backoffTime   time.Duration
 }
 
-func (l *looper) logAndWait(ctx context.Context, err error) {
+func (l *Loop) logAndWait(ctx context.Context, err error) {
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
@@ -52,8 +42,8 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLooper(settings settings.Shadowsocks, logger Logger) Looper {
-	return &looper{
+func NewLoop(settings settings.Shadowsocks, logger Logger) *Loop {
+	return &Loop{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
@@ -67,7 +57,7 @@ func NewLooper(settings settings.Shadowsocks, logger Logger) Looper {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
 	crashed := false

@@ -1,19 +1,14 @@
 package state
 
 import (
+	"context"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/loopstate"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
-var _ Manager = (*State)(nil)
-
-type Manager interface {
-	SettingsGetSetter
-}
-
-func New(statusApplier loopstate.Applier, vpn settings.VPN) *State {
+func New(statusApplier StatusApplier, vpn settings.VPN) *State {
 	return &State{
 		statusApplier: statusApplier,
 		vpn:           vpn,
@@ -21,8 +16,13 @@ func New(statusApplier loopstate.Applier, vpn settings.VPN) *State {
 }
 
 type State struct {
-	statusApplier loopstate.Applier
+	statusApplier StatusApplier
 
 	vpn        settings.VPN
 	settingsMu sync.RWMutex
+}
+
+type StatusApplier interface {
+	ApplyStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 }

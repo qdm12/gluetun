@@ -12,12 +12,6 @@ import (
 	"strings"
 )
 
-var _ Fetcher = (*Fetch)(nil)
-
-type Fetcher interface {
-	FetchPublicIP(ctx context.Context) (ip net.IP, err error)
-}
-
 type Fetch struct {
 	client   *http.Client
 	randIntn func(n int) int

@@ -1,14 +1,5 @@
 package state
 
-type PortForwardedGetterSetter interface {
-	PortForwardedGetter
-	SetPortForwarded(port uint16)
-}
-
-type PortForwardedGetter interface {
-	GetPortForwarded() (port uint16)
-}
-
 // GetPortForwarded is used by the control HTTP server
 // to obtain the port currently forwarded.
 func (s *State) GetPortForwarded() (port uint16) {

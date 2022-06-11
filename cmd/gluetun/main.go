@@ -126,8 +126,8 @@ var (
 //nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger log.LoggerInterface, source sources.Source,
-	tun tun.Interface, netLinker netlink.NetLinker, cmder command.RunStarter,
-	cli cli.CLIer) error {
+	tun Tun, netLinker netLinker, cmder command.RunStarter,
+	cli clier) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -390,7 +390,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"vpn", goroutine.OptionTimeout(time.Second))
 	go vpnLooper.Run(vpnCtx, vpnDone)
 
-	updaterLooper := updater.NewLooper(allSettings.Updater,
+	updaterLooper := updater.NewLoop(allSettings.Updater,
 		providers, storage, httpClient, updaterLogger)
 	updaterHandler, updaterCtx, updaterDone := goshutdown.NewGoRoutineHandler(
 		"updater", goroutine.OptionTimeout(defaultShutdownTimeout))
@@ -411,7 +411,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go httpProxyLooper.Run(httpProxyCtx, httpProxyDone)
 	otherGroupHandler.Add(httpProxyHandler)
 
-	shadowsocksLooper := shadowsocks.NewLooper(allSettings.Shadowsocks,
+	shadowsocksLooper := shadowsocks.NewLoop(allSettings.Shadowsocks,
 		logger.New(log.SetComponent("shadowsocks")))
 	shadowsocksHandler, shadowsocksCtx, shadowsocksDone := goshutdown.NewGoRoutineHandler(
 		"shadowsocks proxy", goroutine.OptionTimeout(defaultShutdownTimeout))
@@ -479,4 +479,39 @@ func printVersions(ctx context.Context, logger infoer,
 	}
 
 	return nil
+}
+
+type netLinker interface {
+	AddrList(link netlink.Link, family int) (
+		addresses []netlink.Addr, err error)
+	AddrAdd(link netlink.Link, addr *netlink.Addr) error
+	IsWireguardSupported() (ok bool, err error)
+	RouteList(link netlink.Link, family int) (
+		routes []netlink.Route, err error)
+	RouteAdd(route *netlink.Route) error
+	RouteDel(route *netlink.Route) error
+	RouteReplace(route *netlink.Route) error
+	RuleList(family int) (rules []netlink.Rule, err error)
+	RuleAdd(rule *netlink.Rule) error
+	RuleDel(rule *netlink.Rule) error
+	LinkList() (links []netlink.Link, err error)
+	LinkByName(name string) (link netlink.Link, err error)
+	LinkByIndex(index int) (link netlink.Link, err error)
+	LinkAdd(link netlink.Link) (err error)
+	LinkDel(link netlink.Link) (err error)
+	LinkSetUp(link netlink.Link) (err error)
+	LinkSetDown(link netlink.Link) (err error)
+}
+
+type clier interface {
+	ClientKey(args []string) error
+	FormatServers(args []string) error
+	OpenvpnConfig(logger cli.OpenvpnConfigLogger, source sources.Source) error
+	HealthCheck(ctx context.Context, source sources.Source, warner cli.Warner) error
+	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
+}
+
+type Tun interface {
+	Check(tunDevice string) error
+	Create(tunDevice string) error
 }

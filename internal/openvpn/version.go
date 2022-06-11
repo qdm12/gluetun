@@ -8,11 +8,6 @@ import (
 	"strings"
 )
 
-type VersionGetter interface {
-	Version24(ctx context.Context) (version string, err error)
-	Version25(ctx context.Context) (version string, err error)
-}
-
 func (c *Configurator) Version24(ctx context.Context) (version string, err error) {
 	return c.version(ctx, binOpenvpn24)
 }

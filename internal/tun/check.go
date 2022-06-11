@@ -7,10 +7,6 @@ import (
 	"syscall"
 )
 
-type Checker interface {
-	Check(path string) error
-}
-
 var (
 	ErrTUNInfo    = errors.New("cannot get syscall stat info of TUN file")
 	ErrTUNBadRdev = errors.New("TUN file has an unexpected rdev")

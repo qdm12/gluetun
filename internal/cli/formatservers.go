@@ -15,10 +15,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-type ServersFormatter interface {
-	FormatServers(args []string) error
-}
-
 var (
 	ErrFormatNotRecognized       = errors.New("format is not recognized")
 	ErrProviderUnspecified       = errors.New("VPN provider to format was not specified")

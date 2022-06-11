@@ -12,10 +12,6 @@ var (
 	ErrUserAlreadyExists = errors.New("user already exists")
 )
 
-type UserCreater interface {
-	CreateUser(username string, uid int) (createdUsername string, err error)
-}
-
 // CreateUser creates a user in Alpine with the given UID.
 func (a *Alpine) CreateUser(username string, uid int) (createdUsername string, err error) {
 	UIDStr := strconv.Itoa(uid)

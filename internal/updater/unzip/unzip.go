@@ -3,22 +3,15 @@
 package unzip
 
 import (
-	"context"
 	"net/http"
 )
 
-//go:generate mockgen -destination=mock_$GOPACKAGE/$GOFILE . Unzipper
-
-type Unzipper interface {
-	FetchAndExtract(ctx context.Context, url string) (contents map[string][]byte, err error)
-}
-
-type unzipper struct {
+type Unzipper struct {
 	client *http.Client
 }
 
-func New(client *http.Client) Unzipper {
-	return &unzipper{
+func New(client *http.Client) *Unzipper {
+	return &Unzipper{
 		client: client,
 	}
 }

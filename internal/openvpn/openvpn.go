@@ -5,14 +5,6 @@ import (
 	"github.com/qdm12/golibs/command"
 )
 
-var _ Interface = (*Configurator)(nil)
-
-type Interface interface {
-	VersionGetter
-	AuthWriter
-	Writer
-}
-
 type Configurator struct {
 	logger       Infoer
 	cmder        command.RunStarter

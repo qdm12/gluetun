@@ -7,10 +7,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type RestartTickerRunner interface {
-	RunRestartTicker(ctx context.Context, done chan<- struct{})
-}
-
 func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 	// Timer that acts as a ticker

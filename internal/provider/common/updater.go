@@ -20,7 +20,8 @@ type ParallelResolver interface {
 }
 
 type Unzipper interface {
-	FetchAndExtract(ctx context.Context, url string) (contents map[string][]byte, err error)
+	FetchAndExtract(ctx context.Context, url string) (
+		contents map[string][]byte, err error)
 }
 
 type Warner interface {

@@ -6,11 +6,6 @@ import (
 	"strconv"
 )
 
-type PortAllower interface {
-	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
-	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
-}
-
 func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()

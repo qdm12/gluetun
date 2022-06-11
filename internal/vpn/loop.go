@@ -6,33 +6,16 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/dns"
-	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/netlink"
-	"github.com/qdm12/gluetun/internal/openvpn"
-	"github.com/qdm12/gluetun/internal/portforward"
-	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/publicip"
-	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/vpn/state"
 	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/log"
 )
 
-var _ Looper = (*Loop)(nil)
-
-type Looper interface {
-	Runner
-	loopstate.Getter
-	loopstate.Applier
-	SettingsGetSetter
-}
-
 type Loop struct {
-	statusManager loopstate.Manager
-	state         state.Manager
+	statusManager statusManager
+	state         StateManager
 	providers     Providers
 	storage       Storage
 	// Fixed parameters
@@ -40,13 +23,13 @@ type Loop struct {
 	versionInfo   bool
 	vpnInputPorts []uint16 // TODO make changeable through stateful firewall
 	// Configurators
-	openvpnConf openvpn.Interface
-	netLinker   netlink.NetLinker
-	fw          firewallConfigurer
-	routing     routing.VPNGetter
-	portForward portforward.StartStopper
-	publicip    publicip.Looper
-	dnsLooper   dns.Looper
+	openvpnConf OpenVPN
+	netLinker   NetLinker
+	fw          Firewall
+	routing     Routing
+	portForward PortForward
+	publicip    PublicIPLoop
+	dnsLooper   DNSLoop
 	// Other objects
 	starter command.Starter // for OpenVPN
 	logger  log.LoggerInterface
@@ -61,29 +44,15 @@ type Loop struct {
 	backoffTime time.Duration
 }
 
-type firewallConfigurer interface {
-	firewall.VPNConnectionSetter
-	firewall.PortAllower
-}
-
-type Providers interface {
-	Get(providerName string) provider.Provider
-}
-
-type Storage interface {
-	FilterServers(provider string, selection settings.ServerSelection) (servers []models.Server, err error)
-	GetServerByName(provider, name string) (server models.Server, ok bool)
-}
-
 const (
 	defaultBackoffTime = 15 * time.Second
 )
 
 func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
-	providers Providers, storage Storage, openvpnConf openvpn.Interface,
-	netLinker netlink.NetLinker, fw firewallConfigurer, routing routing.VPNGetter,
-	portForward portforward.StartStopper, starter command.Starter,
-	publicip publicip.Looper, dnsLooper dns.Looper,
+	providers Providers, storage Storage, openvpnConf OpenVPN,
+	netLinker NetLinker, fw Firewall, routing Routing,
+	portForward PortForward, starter command.Starter,
+	publicip PublicIPLoop, dnsLooper DNSLoop,
 	logger log.LoggerInterface, client *http.Client,
 	buildInfo models.BuildInformation, versionInfo bool) *Loop {
 	start := make(chan struct{})

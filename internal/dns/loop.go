@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/qdm12/dns/pkg/blacklist"
-	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns/state"
@@ -15,20 +14,10 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-var _ Looper = (*Loop)(nil)
-
-type Looper interface {
-	Runner
-	RestartTickerRunner
-	loopstate.Applier
-	loopstate.Getter
-	SettingsGetSetter
-}
-
 type Loop struct {
-	statusManager loopstate.Manager
-	state         state.Manager
-	conf          unbound.Configurator
+	statusManager statusManager
+	state         stateManager
+	conf          Configurator
 	resolvConf    string
 	blockBuilder  blacklist.Builder
 	client        *http.Client
@@ -46,7 +35,7 @@ type Loop struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLoop(conf unbound.Configurator, settings settings.DNS,
+func NewLoop(conf Configurator, settings settings.DNS,
 	client *http.Client, logger Logger) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)

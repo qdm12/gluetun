@@ -12,10 +12,6 @@ const (
 	outboundPriority = 99
 )
 
-type OutboundRoutesSetter interface {
-	SetOutboundRoutes(outboundSubnets []net.IPNet) error
-}
-
 func (r *Routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 	defaultRoutes, err := r.DefaultRoutes()
 	if err != nil {

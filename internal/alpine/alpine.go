@@ -5,13 +5,6 @@ import (
 	"os/user"
 )
 
-var _ Alpiner = (*Alpine)(nil)
-
-type Alpiner interface {
-	UserCreater
-	VersionGetter
-}
-
 type Alpine struct {
 	alpineReleasePath string
 	passwdPath        string

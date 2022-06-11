@@ -11,22 +11,11 @@ import (
 	"github.com/qdm12/gluetun/internal/publicip/state"
 )
 
-var _ Looper = (*Loop)(nil)
-
-type Looper interface {
-	Runner
-	RestartTickerRunner
-	loopstate.Getter
-	loopstate.Applier
-	SettingsGetSetter
-	GetSetter
-}
-
 type Loop struct {
-	statusManager loopstate.Manager
-	state         state.Manager
+	statusManager statusManager
+	state         stateManager
 	// Objects
-	fetcher Fetcher
+	fetcher fetcher
 	client  *http.Client
 	logger  Logger
 	// Fixed settings

@@ -14,12 +14,6 @@ func (l *Loop) GetStatus() (status models.LoopStatus) {
 
 type StartData = state.StartData
 
-type StartStopper interface {
-	Start(ctx context.Context, data StartData) (
-		outcome string, err error)
-	Stop(ctx context.Context) (outcome string, err error)
-}
-
 func (l *Loop) Start(ctx context.Context, data StartData) (
 	outcome string, err error) {
 	l.startMu.Lock()

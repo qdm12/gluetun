@@ -6,9 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -24,26 +21,7 @@ type Updater struct {
 	logger   Logger
 	timeNow  func() time.Time
 	client   *http.Client
-	unzipper unzip.Unzipper
-}
-
-type Providers interface {
-	Get(providerName string) provider.Provider
-}
-
-type Storage interface {
-	SetServers(provider string, servers []models.Server) (err error)
-	GetServersCount(provider string) (count int)
-	ServersAreEqual(provider string, servers []models.Server) (equal bool)
-	// Extra methods to match the provider.New storage interface
-	FilterServers(provider string, selection settings.ServerSelection) (filtered []models.Server, err error)
-	GetServerByName(provider string, name string) (server models.Server, ok bool)
-}
-
-type Logger interface {
-	Info(s string)
-	Warn(s string)
-	Error(s string)
+	unzipper Unzipper
 }
 
 func New(httpClient *http.Client, storage Storage,

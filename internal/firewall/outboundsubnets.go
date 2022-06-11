@@ -8,10 +8,6 @@ import (
 	"github.com/qdm12/gluetun/internal/subnet"
 )
 
-type OutboundSubnetsSetter interface {
-	SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error)
-}
-
 func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()

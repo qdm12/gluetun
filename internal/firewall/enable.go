@@ -5,10 +5,6 @@ import (
 	"fmt"
 )
 
-type Enabler interface {
-	SetEnabled(ctx context.Context, enabled bool) (err error)
-}
-
 func (c *Config) SetEnabled(ctx context.Context, enabled bool) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()

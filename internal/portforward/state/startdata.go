@@ -13,23 +13,10 @@ type StartData struct {
 	Interface     string // tun0 for example
 }
 
-type StartDataGetterSetter interface {
-	StartDataGetter
-	StartDataSetter
-}
-
-type StartDataGetter interface {
-	GetStartData() (startData StartData)
-}
-
 func (s *State) GetStartData() (startData StartData) {
 	s.startDataMu.RLock()
 	defer s.startDataMu.RUnlock()
 	return s.startData
-}
-
-type StartDataSetter interface {
-	SetStartData(startData StartData)
 }
 
 func (s *State) SetStartData(startData StartData) {

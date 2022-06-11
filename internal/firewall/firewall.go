@@ -12,16 +12,6 @@ import (
 	"github.com/qdm12/golibs/command"
 )
 
-var _ Configurator = (*Config)(nil)
-
-// Configurator allows to change firewall rules and modify network routes.
-type Configurator interface {
-	Enabler
-	VPNConnectionSetter
-	PortAllower
-	OutboundSubnetsSetter
-}
-
 type Config struct { //nolint:maligned
 	runner         command.Runner
 	logger         Logger

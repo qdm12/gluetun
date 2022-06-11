@@ -1,12 +1,5 @@
 package wireguard
 
-var _ Wireguarder = (*Wireguard)(nil)
-
-type Wireguarder interface {
-	Runner
-	Runner
-}
-
 type Wireguard struct {
 	logger   Logger
 	settings Settings

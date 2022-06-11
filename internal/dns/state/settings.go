@@ -8,12 +8,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type SettingsGetSetter interface {
-	GetSettings() (settings settings.DNS)
-	SetSettings(ctx context.Context,
-		settings settings.DNS) (outcome string)
-}
-
 func (s *State) GetSettings() (settings settings.DNS) {
 	s.settingsMu.RLock()
 	defer s.settingsMu.RUnlock()

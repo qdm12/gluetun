@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -10,16 +11,16 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
-
-type OpenvpnConfigMaker interface {
-	OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) error
-}
 
 type OpenvpnConfigLogger interface {
 	Info(s string)
 	Warn(s string)
+}
+
+type Unzipper interface {
+	FetchAndExtract(ctx context.Context, url string) (
+		contents map[string][]byte, err error)
 }
 
 func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) error {
@@ -38,7 +39,7 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) e
 	}
 
 	// Unused by this CLI command
-	unzipper := (unzip.Unzipper)(nil)
+	unzipper := (Unzipper)(nil)
 	client := (*http.Client)(nil)
 	warner := (Warner)(nil)
 

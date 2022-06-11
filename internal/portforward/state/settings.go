@@ -9,12 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type SettingsGetSetter interface {
-	GetSettings() (settings settings.PortForwarding)
-	SetSettings(ctx context.Context,
-		settings settings.PortForwarding) (outcome string)
-}
-
 func (s *State) GetSettings() (settings settings.PortForwarding) {
 	s.settingsMu.RLock()
 	defer s.settingsMu.RUnlock()

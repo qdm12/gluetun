@@ -5,22 +5,20 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-
-	"github.com/qdm12/gluetun/internal/dns"
 )
 
-func newDNSHandler(ctx context.Context, looper dns.Looper,
+func newDNSHandler(ctx context.Context, loop DNSLoop,
 	warner warner) http.Handler {
 	return &dnsHandler{
 		ctx:    ctx,
-		looper: looper,
+		loop:   loop,
 		warner: warner,
 	}
 }
 
 type dnsHandler struct {
 	ctx    context.Context //nolint:containedctx
-	looper dns.Looper
+	loop   DNSLoop
 	warner warner
 }
 
@@ -42,7 +40,7 @@ func (h *dnsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *dnsHandler) getStatus(w http.ResponseWriter) {
-	status := h.looper.GetStatus()
+	status := h.loop.GetStatus()
 	encoder := json.NewEncoder(w)
 	data := statusWrapper{Status: string(status)}
 	if err := encoder.Encode(data); err != nil {
@@ -64,7 +62,7 @@ func (h *dnsHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	outcome, err := h.looper.ApplyStatus(h.ctx, status)
+	outcome, err := h.loop.ApplyStatus(h.ctx, status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

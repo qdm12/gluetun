@@ -8,14 +8,6 @@ import (
 	"github.com/qdm12/log"
 )
 
-type Runner interface {
-	Run(ctx context.Context, done chan<- struct{})
-}
-
-type vpnRunner interface {
-	Run(ctx context.Context, errCh chan<- error, ready chan<- struct{})
-}
-
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
@@ -31,7 +23,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		providerConf := l.providers.Get(*settings.Provider.Name)
 
 		portForwarding := *settings.Provider.PortForwarding.Enabled
-		var vpnRunner vpnRunner
+		var vpnRunner runner
 		var serverName, vpnInterface string
 		var err error
 		subLogger := l.logger.New(log.SetComponent(settings.Type))

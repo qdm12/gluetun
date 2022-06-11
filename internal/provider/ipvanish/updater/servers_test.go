@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/updater/unzip/mock_unzip"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +21,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		minServers int
 
 		// Mocks
-		warnerBuilder func(ctrl *gomock.Controller) Warner
+		warnerBuilder func(ctrl *gomock.Controller) common.Warner
 
 		// Unzip
 		unzipContents map[string][]byte
@@ -40,25 +39,25 @@ func Test_Updater_GetServers(t *testing.T) {
 		err     error
 	}{
 		"unzipper error": {
-			warnerBuilder: func(ctrl *gomock.Controller) Warner { return nil },
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner { return nil },
 			unzipErr:      errors.New("dummy"),
 			err:           errors.New("dummy"),
 		},
 		"not enough unzip contents": {
 			minServers:    1,
-			warnerBuilder: func(ctrl *gomock.Controller) Warner { return nil },
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner { return nil },
 			unzipContents: map[string][]byte{},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"no openvpn file": {
 			minServers:    1,
-			warnerBuilder: func(ctrl *gomock.Controller) Warner { return nil },
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner { return nil },
 			unzipContents: map[string][]byte{"somefile.txt": {}},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"invalid proto": {
 			minServers: 1,
-			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
 				warner := NewMockWarner(ctrl)
 				warner.EXPECT().Warn("unknown protocol: invalid in badproto.ovpn")
 				return warner
@@ -68,7 +67,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		},
 		"no host": {
 			minServers: 1,
-			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
 				warner := NewMockWarner(ctrl)
 				warner.EXPECT().Warn("remote host not found in nohost.ovpn")
 				return warner
@@ -78,7 +77,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		},
 		"multiple hosts": {
 			minServers: 1,
-			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
 				warner := NewMockWarner(ctrl)
 				warner.EXPECT().Warn("only using the first host \"hosta\" and discarding 1 other hosts")
 				return warner
@@ -91,7 +90,7 @@ func Test_Updater_GetServers(t *testing.T) {
 			err:            errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"resolve error": {
-			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
 				warner := NewMockWarner(ctrl)
 				warner.EXPECT().Warn("resolve warning")
 				return warner
@@ -107,7 +106,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		},
 		"filename parsing error": {
 			minServers: 1,
-			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
 				warner := NewMockWarner(ctrl)
 				warner.EXPECT().Warn("country code is unknown: unknown in ipvanish-unknown-City-A-hosta.ovpn")
 				return warner
@@ -119,7 +118,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		},
 		"success": {
 			minServers: 1,
-			warnerBuilder: func(ctrl *gomock.Controller) Warner {
+			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
 				warner := NewMockWarner(ctrl)
 				warner.EXPECT().Warn("resolve warning")
 				return warner
@@ -163,7 +162,7 @@ func Test_Updater_GetServers(t *testing.T) {
 
 			ctx := context.Background()
 
-			unzipper := mock_unzip.NewMockUnzipper(ctrl)
+			unzipper := common.NewMockUnzipper(ctrl)
 			const zipURL = "https://www.ipvanish.com/software/configs/configs.zip"
 			unzipper.EXPECT().FetchAndExtract(ctx, zipURL).
 				Return(testCase.unzipContents, testCase.unzipErr)

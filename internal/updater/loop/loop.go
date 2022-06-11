@@ -12,21 +12,11 @@ import (
 	"github.com/qdm12/gluetun/internal/updater"
 )
 
-type Looper interface {
-	Run(ctx context.Context, done chan<- struct{})
-	RunRestartTicker(ctx context.Context, done chan<- struct{})
-	GetStatus() (status models.LoopStatus)
-	SetStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-	GetSettings() (settings settings.Updater)
-	SetSettings(settings settings.Updater) (outcome string)
-}
-
 type Updater interface {
 	UpdateServers(ctx context.Context, providers []string) (err error)
 }
 
-type looper struct {
+type Loop struct {
 	state state
 	// Objects
 	updater Updater
@@ -52,9 +42,9 @@ type Logger interface {
 	Error(s string)
 }
 
-func NewLooper(settings settings.Updater, providers updater.Providers,
-	storage updater.Storage, client *http.Client, logger Logger) Looper {
-	return &looper{
+func NewLoop(settings settings.Updater, providers updater.Providers,
+	storage updater.Storage, client *http.Client, logger Logger) *Loop {
+	return &Loop{
 		state: state{
 			status:   constants.Stopped,
 			settings: settings,
@@ -72,7 +62,7 @@ func NewLooper(settings settings.Updater, providers updater.Providers,
 	}
 }
 
-func (l *looper) logAndWait(ctx context.Context, err error) {
+func (l *Loop) logAndWait(ctx context.Context, err error) {
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
@@ -88,7 +78,7 @@ func (l *looper) logAndWait(ctx context.Context, err error) {
 	}
 }
 
-func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
+func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 	crashed := false
 	select {
@@ -156,7 +146,7 @@ func (l *looper) Run(ctx context.Context, done chan<- struct{}) {
 	}
 }
 
-func (l *looper) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
+func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 	timer := time.NewTimer(time.Hour)
 	timer.Stop()

@@ -7,12 +7,6 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-type SettingsGetSetter interface {
-	GetSettings() (settings settings.PublicIP)
-	SetSettings(ctx context.Context,
-		settings settings.PublicIP) (outcome string)
-}
-
 func (s *State) GetSettings() (settings settings.PublicIP) {
 	s.settingsMu.RLock()
 	defer s.settingsMu.RUnlock()

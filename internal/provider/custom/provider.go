@@ -8,7 +8,7 @@ import (
 )
 
 type Provider struct {
-	extractor extract.Interface
+	extractor extractor
 	utils.NoPortForwarder
 	common.Fetcher
 }

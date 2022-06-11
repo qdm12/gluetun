@@ -5,18 +5,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/httpserver"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/portforward"
-	"github.com/qdm12/gluetun/internal/publicip"
-	"github.com/qdm12/gluetun/internal/vpn"
 )
 
 func New(ctx context.Context, address string, logEnabled bool, logger Logger,
-	buildInfo models.BuildInformation, openvpnLooper vpn.Looper,
-	pfGetter portforward.Getter, unboundLooper dns.Looper,
-	updaterLooper UpdaterLooper, publicIPLooper publicip.Looper) (server httpserver.Runner, err error) {
+	buildInfo models.BuildInformation, openvpnLooper VPNLooper,
+	pfGetter PortForwardedGetter, unboundLooper DNSLoop,
+	updaterLooper UpdaterLooper, publicIPLooper PublicIPLoop) (server *httpserver.Server, err error) {
 	handler := newHandler(ctx, logger, logEnabled, buildInfo,
 		openvpnLooper, pfGetter, unboundLooper, updaterLooper, publicIPLooper)
 

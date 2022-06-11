@@ -1,19 +1,14 @@
 package state
 
 import (
+	"context"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/loopstate"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
-var _ Manager = (*State)(nil)
-
-type Manager interface {
-	SettingsGetSetter
-}
-
-func New(statusApplier loopstate.Applier,
+func New(statusApplier StatusApplier,
 	settings settings.HTTPProxy) *State {
 	return &State{
 		statusApplier: statusApplier,
@@ -22,7 +17,12 @@ func New(statusApplier loopstate.Applier,
 }
 
 type State struct {
-	statusApplier loopstate.Applier
+	statusApplier StatusApplier
 	settings      settings.HTTPProxy
 	settingsMu    sync.RWMutex
+}
+
+type StatusApplier interface {
+	ApplyStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 }

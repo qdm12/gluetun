@@ -12,7 +12,7 @@ var (
 	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 )
 
-func (u *unzipper) FetchAndExtract(ctx context.Context, url string) (
+func (u *Unzipper) FetchAndExtract(ctx context.Context, url string) (
 	contents map[string][]byte, err error) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

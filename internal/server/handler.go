@@ -5,20 +5,16 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/portforward"
-	"github.com/qdm12/gluetun/internal/publicip"
-	"github.com/qdm12/gluetun/internal/vpn"
 )
 
 func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	buildInfo models.BuildInformation,
-	vpnLooper vpn.Looper,
-	pfGetter portforward.Getter,
-	unboundLooper dns.Looper,
+	vpnLooper VPNLooper,
+	pfGetter PortForwardedGetter,
+	unboundLooper DNSLoop,
 	updaterLooper UpdaterLooper,
-	publicIPLooper publicip.Looper,
+	publicIPLooper PublicIPLoop,
 ) http.Handler {
 	handler := &handler{}
 

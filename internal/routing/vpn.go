@@ -14,10 +14,6 @@ var (
 	ErrVPNLocalGatewayIPNotFound = errors.New("VPN local gateway IP address not found")
 )
 
-type VPNDestinationIPGetter interface {
-	VPNDestinationIP() (ip net.IP, err error)
-}
-
 func (r *Routing) VPNDestinationIP() (ip net.IP, err error) {
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
@@ -44,10 +40,6 @@ func (r *Routing) VPNDestinationIP() (ip net.IP, err error) {
 		}
 	}
 	return nil, fmt.Errorf("%w: in %d routes", ErrVPNDestinationIPNotFound, len(routes))
-}
-
-type VPNLocalGatewayIPGetter interface {
-	VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error)
 }
 
 func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {

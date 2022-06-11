@@ -4,10 +4,7 @@ import (
 	"context"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/httpproxy/state"
 )
-
-type SettingsGetSetter = state.SettingsGetSetter
 
 func (l *Loop) GetSettings() (settings settings.HTTPProxy) {
 	return l.state.GetSettings()

@@ -5,13 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-
-	"github.com/qdm12/gluetun/internal/portforward"
-	"github.com/qdm12/gluetun/internal/vpn"
 )
 
-func newOpenvpnHandler(ctx context.Context, looper vpn.Looper,
-	pfGetter portforward.Getter, w warner) http.Handler {
+func newOpenvpnHandler(ctx context.Context, looper VPNLooper,
+	pfGetter PortForwardedGetter, w warner) http.Handler {
 	return &openvpnHandler{
 		ctx:    ctx,
 		looper: looper,
@@ -22,8 +19,8 @@ func newOpenvpnHandler(ctx context.Context, looper vpn.Looper,
 
 type openvpnHandler struct {
 	ctx    context.Context //nolint:containedctx
-	looper vpn.Looper
-	pf     portforward.Getter
+	looper VPNLooper
+	pf     PortForwardedGetter
 	warner warner
 }
 

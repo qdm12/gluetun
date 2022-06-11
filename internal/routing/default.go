@@ -12,10 +12,6 @@ var (
 	ErrRouteDefaultNotFound = errors.New("default route not found")
 )
 
-type DefaultRouteGetter interface {
-	DefaultRoutes() (defaultRoutes []DefaultRoute, err error)
-}
-
 type DefaultRoute struct {
 	NetInterface string
 	Gateway      net.IP

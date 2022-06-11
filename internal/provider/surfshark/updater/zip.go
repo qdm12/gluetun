@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
-	"github.com/qdm12/gluetun/internal/updater/unzip"
 )
 
 func addOpenVPNServersFromZip(ctx context.Context,
-	unzipper unzip.Unzipper, hts hostToServer) (
+	unzipper common.Unzipper, hts hostToServer) (
 	warnings []string, err error) {
 	const url = "https://my.surfshark.com/vpn/api/v1/server/configurations"
 	contents, err := unzipper.FetchAndExtract(ctx, url)

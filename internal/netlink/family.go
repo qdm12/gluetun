@@ -13,10 +13,6 @@ const (
 	FAMILY_V6  = netlink.FAMILY_V6
 )
 
-type WireguardChecker interface {
-	IsWireguardSupported() (ok bool, err error)
-}
-
 func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
 	families, err := netlink.GenlFamilyList()
 	if err != nil {

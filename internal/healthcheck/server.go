@@ -5,14 +5,8 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/vpn"
+	"github.com/qdm12/gluetun/internal/models"
 )
-
-var _ ServerRunner = (*Server)(nil)
-
-type ServerRunner interface {
-	Run(ctx context.Context, done chan<- struct{})
-}
 
 type Server struct {
 	logger  Logger
@@ -23,15 +17,20 @@ type Server struct {
 }
 
 func NewServer(config settings.Health,
-	logger Logger, vpnLooper vpn.Looper) *Server {
+	logger Logger, vpnLoop StatusApplier) *Server {
 	return &Server{
 		logger:  logger,
 		handler: newHandler(),
 		dialer:  &net.Dialer{},
 		config:  config,
 		vpn: vpnHealth{
-			looper:      vpnLooper,
+			loop:        vpnLoop,
 			healthyWait: *config.VPN.Initial,
 		},
 	}
+}
+
+type StatusApplier interface {
+	ApplyStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 }

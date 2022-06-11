@@ -20,10 +20,6 @@ type LocalNetwork struct {
 	IP            net.IP
 }
 
-type LocalNetworksGetter interface {
-	LocalNetworks() (localNetworks []LocalNetwork, err error)
-}
-
 func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	links, err := r.netLinker.LinkList()
 	if err != nil {

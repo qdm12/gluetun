@@ -10,10 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 )
 
-type ClientKeyFormatter interface {
-	ClientKey(args []string) error
-}
-
 func (c *CLI) ClientKey(args []string) error {
 	flagSet := flag.NewFlagSet("clientkey", flag.ExitOnError)
 	filepath := flagSet.String("path", files.OpenVPNClientKeyPath, "file path to the client.key file")

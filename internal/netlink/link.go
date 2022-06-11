@@ -8,18 +8,6 @@ type (
 	Wireguard = netlink.Wireguard
 )
 
-var _ Linker = (*NetLink)(nil)
-
-type Linker interface {
-	LinkList() (links []netlink.Link, err error)
-	LinkByName(name string) (link netlink.Link, err error)
-	LinkByIndex(index int) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (err error)
-	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (err error)
-	LinkSetDown(link netlink.Link) (err error)
-}
-
 func (n *NetLink) LinkList() (links []Link, err error) {
 	return netlink.LinkList()
 }

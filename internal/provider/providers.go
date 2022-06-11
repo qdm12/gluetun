@@ -82,7 +82,7 @@ func NewProviders(storage Storage, timeNow func() time.Time,
 	}
 }
 
-func (p *Providers) Get(providerName string) (provider Provider) {
+func (p *Providers) Get(providerName string) (provider Provider) { //nolint:ireturn
 	provider, ok := p.providerNameToProvider[providerName]
 	if !ok {
 		panic(fmt.Sprintf("provider %q not found", providerName))

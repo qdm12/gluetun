@@ -1,21 +1,15 @@
 package state
 
 import (
+	"context"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/loopstate"
-	"github.com/qdm12/gluetun/internal/publicip/models"
+	"github.com/qdm12/gluetun/internal/models"
+	publicipmodels "github.com/qdm12/gluetun/internal/publicip/models"
 )
 
-var _ Manager = (*State)(nil)
-
-type Manager interface {
-	SettingsGetSetter
-	DataGetSetter
-}
-
-func New(statusApplier loopstate.Applier,
+func New(statusApplier StatusApplier,
 	settings settings.PublicIP,
 	updateTicker chan<- struct{}) *State {
 	return &State{
@@ -26,13 +20,18 @@ func New(statusApplier loopstate.Applier,
 }
 
 type State struct {
-	statusApplier loopstate.Applier
+	statusApplier StatusApplier
 
 	settings   settings.PublicIP
 	settingsMu sync.RWMutex
 
-	ipData   models.IPInfoData
+	ipData   publicipmodels.IPInfoData
 	ipDataMu sync.RWMutex
 
 	updateTicker chan<- struct{}
+}
+
+type StatusApplier interface {
+	ApplyStatus(ctx context.Context, status models.LoopStatus) (
+		outcome string, err error)
 }

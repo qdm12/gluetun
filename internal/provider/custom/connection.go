@@ -8,7 +8,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/openvpn/extract"
 )
 
 var (
@@ -28,7 +27,7 @@ func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	}
 }
 
-func getOpenVPNConnection(extractor extract.Interface,
+func getOpenVPNConnection(extractor extractor,
 	selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	_, connection, err = extractor.Data(*selection.OpenVPN.ConfFile)

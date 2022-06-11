@@ -25,10 +25,6 @@ var (
 	ErrNoProviderSpecified = errors.New("no provider was specified")
 )
 
-type Updater interface {
-	Update(ctx context.Context, args []string, logger UpdaterLogger) error
-}
-
 type UpdaterLogger interface {
 	Info(s string)
 	Warn(s string)

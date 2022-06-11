@@ -25,7 +25,7 @@ func (s *state) setStatusWithLock(status models.LoopStatus) {
 	s.status = status
 }
 
-func (l *looper) GetStatus() (status models.LoopStatus) {
+func (l *Loop) GetStatus() (status models.LoopStatus) {
 	l.state.statusMu.RLock()
 	defer l.state.statusMu.RUnlock()
 	return l.state.status
@@ -33,7 +33,7 @@ func (l *looper) GetStatus() (status models.LoopStatus) {
 
 var ErrInvalidStatus = errors.New("invalid status")
 
-func (l *looper) SetStatus(ctx context.Context, status models.LoopStatus) (outcome string, err error) {
+func (l *Loop) SetStatus(ctx context.Context, status models.LoopStatus) (outcome string, err error) {
 	l.state.statusMu.Lock()
 	defer l.state.statusMu.Unlock()
 	existingStatus := l.state.status
@@ -84,13 +84,13 @@ func (l *looper) SetStatus(ctx context.Context, status models.LoopStatus) (outco
 	}
 }
 
-func (l *looper) GetSettings() (settings settings.Updater) {
+func (l *Loop) GetSettings() (settings settings.Updater) {
 	l.state.periodMu.RLock()
 	defer l.state.periodMu.RUnlock()
 	return l.state.settings
 }
 
-func (l *looper) SetSettings(settings settings.Updater) (outcome string) {
+func (l *Loop) SetSettings(settings settings.Updater) (outcome string) {
 	l.state.periodMu.Lock()
 	defer l.state.periodMu.Unlock()
 	settingsUnchanged := reflect.DeepEqual(settings, l.state.settings)

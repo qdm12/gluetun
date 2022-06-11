@@ -12,12 +12,6 @@ var (
 	ErrHTTPStatusNotOK = errors.New("HTTP response status is not OK")
 )
 
-var _ Checker = (*Client)(nil)
-
-type Checker interface {
-	Check(ctx context.Context, url string) error
-}
-
 type Client struct {
 	httpClient *http.Client
 }

@@ -8,11 +8,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type SettingsGetSetter interface {
-	GetSettings() (vpn settings.VPN)
-	SetSettings(ctx context.Context, vpn settings.VPN) (outcome string)
-}
-
 func (s *State) GetSettings() (vpn settings.VPN) {
 	s.settingsMu.RLock()
 	vpn = s.vpn

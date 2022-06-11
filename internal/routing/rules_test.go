@@ -7,7 +7,6 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/netlink"
-	"github.com/qdm12/gluetun/internal/netlink/mock_netlink"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -118,7 +117,7 @@ func Test_Routing_addIPRule(t *testing.T) {
 			logger := NewMockLogger(ctrl)
 			logger.EXPECT().Debug(testCase.dbgMsg)
 
-			netLinker := mock_netlink.NewMockNetLinker(ctrl)
+			netLinker := NewMockNetLinker(ctrl)
 			netLinker.EXPECT().RuleList(netlink.FAMILY_ALL).
 				Return(testCase.ruleList.rules, testCase.ruleList.err)
 			if testCase.ruleAdd.expected {
@@ -236,7 +235,7 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			logger := NewMockLogger(ctrl)
 			logger.EXPECT().Debug(testCase.dbgMsg)
 
-			netLinker := mock_netlink.NewMockNetLinker(ctrl)
+			netLinker := NewMockNetLinker(ctrl)
 			netLinker.EXPECT().RuleList(netlink.FAMILY_ALL).
 				Return(testCase.ruleList.rules, testCase.ruleList.err)
 			if testCase.ruleDel.expected {

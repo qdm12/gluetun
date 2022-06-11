@@ -7,10 +7,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-type RestartTickerRunner interface {
-	RunRestartTicker(ctx context.Context, done chan<- struct{})
-}
-
 func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 	timer := time.NewTimer(time.Hour)
@@ -30,7 +26,7 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			return
 		case <-timer.C:
 			lastTick = l.timeNow()
-			_, _ = l.ApplyStatus(ctx, constants.Running)
+			_, _ = l.statusManager.ApplyStatus(ctx, constants.Running)
 			timer.Reset(*l.state.GetSettings().Period)
 		case <-l.updateTicker:
 			if !timerIsStopped && !timer.Stop() {

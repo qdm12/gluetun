@@ -9,14 +9,10 @@ import (
 type Updater struct {
 	client    *http.Client
 	presolver common.ParallelResolver
-	warner    Warner
+	warner    common.Warner
 }
 
-type Warner interface {
-	Warn(s string)
-}
-
-func New(client *http.Client, warner Warner) *Updater {
+func New(client *http.Client, warner common.Warner) *Updater {
 	return &Updater{
 		client:    client,
 		presolver: newParallelResolver(),

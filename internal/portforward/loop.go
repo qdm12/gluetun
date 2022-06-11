@@ -7,28 +7,17 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/loopstate"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/portforward/state"
 )
 
-var _ Looper = (*Loop)(nil)
-
-type Looper interface {
-	Runner
-	loopstate.Getter
-	StartStopper
-	SettingsGetSetter
-	Getter
-}
-
 type Loop struct {
-	statusManager loopstate.Manager
-	state         state.Manager
+	statusManager statusManager
+	state         StateManager
 	// Objects
 	client      *http.Client
-	portAllower firewall.PortAllower
+	portAllower PortAllower
 	logger      Logger
 	// Internal channels and locks
 	start       chan struct{}
@@ -43,7 +32,7 @@ type Loop struct {
 const defaultBackoffTime = 5 * time.Second
 
 func NewLoop(settings settings.PortForwarding,
-	client *http.Client, portAllower firewall.PortAllower,
+	client *http.Client, portAllower PortAllower,
 	logger Logger) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)

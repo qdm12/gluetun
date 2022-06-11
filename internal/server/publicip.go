@@ -4,19 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-
-	"github.com/qdm12/gluetun/internal/publicip"
 )
 
-func newPublicIPHandler(looper publicip.Looper, w warner) http.Handler {
+func newPublicIPHandler(loop PublicIPLoop, w warner) http.Handler {
 	return &publicIPHandler{
-		looper: looper,
+		loop:   loop,
 		warner: w,
 	}
 }
 
 type publicIPHandler struct {
-	looper publicip.Looper
+	loop   PublicIPLoop
 	warner warner
 }
 
@@ -36,7 +34,7 @@ func (h *publicIPHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *publicIPHandler) getPublicIP(w http.ResponseWriter) {
-	data := h.looper.GetData()
+	data := h.loop.GetData()
 	encoder := json.NewEncoder(w)
 	if err := encoder.Encode(data); err != nil {
 		h.warner.Warn(err.Error())

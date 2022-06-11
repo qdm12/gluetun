@@ -4,16 +4,6 @@ import "github.com/vishvananda/netlink"
 
 type Route = netlink.Route
 
-var _ Router = (*NetLink)(nil)
-
-type Router interface {
-	RouteList(link netlink.Link, family int) (
-		routes []netlink.Route, err error)
-	RouteAdd(route *netlink.Route) error
-	RouteDel(route *netlink.Route) error
-	RouteReplace(route *netlink.Route) error
-}
-
 func (n *NetLink) RouteList(link Link, family int) (
 	routes []Route, err error) {
 	return netlink.RouteList(link, family)

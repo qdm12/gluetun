@@ -9,11 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type Applier interface {
-	ApplyStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-}
-
 var ErrInvalidStatus = errors.New("invalid status")
 
 // ApplyStatus sends signals to the running loop depending on the

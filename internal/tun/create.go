@@ -8,10 +8,6 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-type Creator interface {
-	Create(path string) error
-}
-
 // Create creates a TUN device at the path specified.
 func (t *Tun) Create(path string) error {
 	parentDir := filepath.Dir(path)

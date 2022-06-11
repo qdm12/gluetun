@@ -7,11 +7,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type VPNConnectionSetter interface {
-	SetVPNConnection(ctx context.Context,
-		connection models.Connection, vpnIntf string) error
-}
-
 func (c *Config) SetVPNConnection(ctx context.Context,
 	connection models.Connection, vpnIntf string) (err error) {
 	c.stateMutex.Lock()
