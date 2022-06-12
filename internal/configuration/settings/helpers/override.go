@@ -32,6 +32,13 @@ func OverrideWithInt(existing, other int) (result int) {
 	return other
 }
 
+func OverrideWithFloat64(existing, other float64) (result float64) {
+	if other == 0 {
+		return existing
+	}
+	return other
+}
+
 func OverrideWithStringPtr(existing, other *string) (result *string) {
 	if other == nil {
 		return existing

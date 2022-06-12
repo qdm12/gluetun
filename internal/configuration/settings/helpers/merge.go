@@ -34,6 +34,13 @@ func MergeWithInt(existing, other int) (result int) {
 	return other
 }
 
+func MergeWithFloat64(existing, other float64) (result float64) {
+	if existing != 0 {
+		return existing
+	}
+	return other
+}
+
 func MergeWithStringPtr(existing, other *string) (result *string) {
 	if existing != nil {
 		return existing

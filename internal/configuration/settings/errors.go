@@ -10,6 +10,7 @@ var (
 	ErrFirewallZeroPort                = errors.New("cannot have a zero port to block")
 	ErrHostnameNotValid                = errors.New("the hostname specified is not valid")
 	ErrISPNotValid                     = errors.New("the ISP specified is not valid")
+	ErrMinRatioNotValid                = errors.New("minimum ratio is not valid")
 	ErrMissingValue                    = errors.New("missing value")
 	ErrNameNotValid                    = errors.New("the server name specified is not valid")
 	ErrOpenVPNClientKeyMissing         = errors.New("client key is missing")

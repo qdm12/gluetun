@@ -37,7 +37,8 @@ func New(httpClient *http.Client, storage Storage,
 	}
 }
 
-func (u *Updater) UpdateServers(ctx context.Context, providers []string) (err error) {
+func (u *Updater) UpdateServers(ctx context.Context, providers []string,
+	minRatio float64) (err error) {
 	caser := cases.Title(language.English)
 	for _, providerName := range providers {
 		u.logger.Info("updating " + caser.String(providerName) + " servers...")
@@ -45,7 +46,7 @@ func (u *Updater) UpdateServers(ctx context.Context, providers []string) (err er
 		fetcher := u.providers.Get(providerName)
 		// TODO support servers offering only TCP or only UDP
 		// for NordVPN and PureVPN
-		err := u.updateProvider(ctx, fetcher)
+		err := u.updateProvider(ctx, fetcher, minRatio)
 		if err == nil {
 			continue
 		}

@@ -22,6 +22,10 @@ type Updater struct {
 	// to resolve VPN server hostnames to IP addresses.
 	// It cannot be the empty string in the internal state.
 	DNSAddress string
+	// MinRatio is the minimum ratio of servers to
+	// find per provider, compared to the total current
+	// number of servers. It defaults to 0.8.
+	MinRatio float64
 	// Providers is the list of VPN service providers
 	// to update server information for.
 	Providers []string
@@ -32,6 +36,11 @@ func (u Updater) Validate() (err error) {
 	if *u.Period > 0 && *u.Period < minPeriod {
 		return fmt.Errorf("%w: %d must be larger than %s",
 			ErrUpdaterPeriodTooSmall, *u.Period, minPeriod)
+	}
+
+	if u.MinRatio <= 0 || u.MinRatio > 1 {
+		return fmt.Errorf("%w: %.2f must be between 0+ and 1",
+			ErrMinRatioNotValid, u.MinRatio)
 	}
 
 	validProviders := providers.All()
@@ -56,6 +65,7 @@ func (u *Updater) copy() (copied Updater) {
 	return Updater{
 		Period:     helpers.CopyDurationPtr(u.Period),
 		DNSAddress: u.DNSAddress,
+		MinRatio:   u.MinRatio,
 		Providers:  helpers.CopyStringSlice(u.Providers),
 	}
 }
@@ -65,6 +75,7 @@ func (u *Updater) copy() (copied Updater) {
 func (u *Updater) mergeWith(other Updater) {
 	u.Period = helpers.MergeWithDuration(u.Period, other.Period)
 	u.DNSAddress = helpers.MergeWithString(u.DNSAddress, other.DNSAddress)
+	u.MinRatio = helpers.MergeWithFloat64(u.MinRatio, other.MinRatio)
 	u.Providers = helpers.MergeStringSlices(u.Providers, other.Providers)
 }
 
@@ -74,12 +85,19 @@ func (u *Updater) mergeWith(other Updater) {
 func (u *Updater) overrideWith(other Updater) {
 	u.Period = helpers.OverrideWithDuration(u.Period, other.Period)
 	u.DNSAddress = helpers.OverrideWithString(u.DNSAddress, other.DNSAddress)
+	u.MinRatio = helpers.OverrideWithFloat64(u.MinRatio, other.MinRatio)
 	u.Providers = helpers.OverrideWithStringSlice(u.Providers, other.Providers)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = helpers.DefaultDuration(u.Period, 0)
 	u.DNSAddress = helpers.DefaultString(u.DNSAddress, "1.1.1.1:53")
+
+	if u.MinRatio == 0 {
+		const defaultMinRatio = 0.8
+		u.MinRatio = defaultMinRatio
+	}
+
 	if len(u.Providers) == 0 && vpnProvider != providers.Custom {
 		u.Providers = []string{vpnProvider}
 	}
@@ -97,6 +115,7 @@ func (u Updater) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Server data updater settings:")
 	node.Appendf("Update period: %s", *u.Period)
 	node.Appendf("DNS address: %s", u.DNSAddress)
+	node.Appendf("Minimum ratio: %.1f", u.MinRatio)
 	node.Appendf("Providers to update: %s", strings.Join(u.Providers, ", "))
 
 	return node

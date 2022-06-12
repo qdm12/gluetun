@@ -12,10 +12,11 @@ type Provider interface {
 	FetchServers(ctx context.Context, minServers int) (servers []models.Server, err error)
 }
 
-func (u *Updater) updateProvider(ctx context.Context, provider Provider) (err error) {
+func (u *Updater) updateProvider(ctx context.Context, provider Provider,
+	minRatio float64) (err error) {
 	providerName := provider.Name()
 	existingServersCount := u.storage.GetServersCount(providerName)
-	minServers := getMinServers(existingServersCount)
+	minServers := int(minRatio * float64(existingServersCount))
 	servers, err := provider.FetchServers(ctx, minServers)
 	if err != nil {
 		return fmt.Errorf("cannot get servers: %w", err)
@@ -34,9 +35,4 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider) (err er
 		return fmt.Errorf("cannot set servers to storage: %w", err)
 	}
 	return nil
-}
-
-func getMinServers(existingServersCount int) (minServers int) {
-	const minRatio = 0.8
-	return int(minRatio * float64(existingServersCount))
 }

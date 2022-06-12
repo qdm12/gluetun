@@ -41,6 +41,9 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
 		"Write results to ./internal/storage/servers.json to modify the program (for maintainers)")
 	flagSet.StringVar(&options.DNSAddress, "dns", "8.8.8.8", "DNS resolver address to use")
+	const defaultMinRatio = 0.8
+	flagSet.Float64Var(&options.MinRatio, "minratio", defaultMinRatio,
+		"Minimum ratio of servers to find for the update to succeed")
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
 	if err := flagSet.Parse(args); err != nil {
@@ -83,7 +86,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
 
 	updater := updater.New(httpClient, storage, providers, logger)
-	err = updater.UpdateServers(ctx, options.Providers)
+	err = updater.UpdateServers(ctx, options.Providers, options.MinRatio)
 	if err != nil {
 		return fmt.Errorf("cannot update server information: %w", err)
 	}

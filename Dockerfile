@@ -153,6 +153,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     HTTP_CONTROL_SERVER_ADDRESS=":8000" \
     # Server data updater
     UPDATER_PERIOD=0 \
+    UPDATER_MIN_RATIO=0.8 \
     UPDATER_VPN_SERVICE_PROVIDERS= \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \

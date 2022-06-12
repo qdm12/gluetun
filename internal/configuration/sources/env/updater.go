@@ -18,6 +18,11 @@ func readUpdater() (updater settings.Updater, err error) {
 		return updater, err
 	}
 
+	updater.MinRatio, err = envToFloat64("UPDATER_MIN_RATIO")
+	if err != nil {
+		return updater, fmt.Errorf("environment variable UPDATER_MIN_RATIO: %w", err)
+	}
+
 	updater.Providers = envToCSV("UPDATER_VPN_SERVICE_PROVIDERS")
 
 	return updater, nil

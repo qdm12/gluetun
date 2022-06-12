@@ -13,7 +13,7 @@ import (
 )
 
 type Updater interface {
-	UpdateServers(ctx context.Context, providers []string) (err error)
+	UpdateServers(ctx context.Context, providers []string, minRatio float64) (err error)
 }
 
 type Loop struct {
@@ -97,7 +97,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		runWg.Add(1)
 		go func() {
 			defer runWg.Done()
-			err := l.updater.UpdateServers(updateCtx, settings.Providers)
+			err := l.updater.UpdateServers(updateCtx, settings.Providers, settings.MinRatio)
 			if err != nil {
 				if updateCtx.Err() == nil {
 					errorCh <- err

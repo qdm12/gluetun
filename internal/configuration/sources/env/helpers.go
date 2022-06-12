@@ -38,6 +38,15 @@ func envToInt(envKey string) (n int, err error) {
 	return strconv.Atoi(s)
 }
 
+func envToFloat64(envKey string) (f float64, err error) {
+	s := getCleanedEnv(envKey)
+	if s == "" {
+		return 0, nil
+	}
+	const bits = 64
+	return strconv.ParseFloat(s, bits)
+}
+
 func envToStringPtr(envKey string) (stringPtr *string) {
 	s := getCleanedEnv(envKey)
 	if s == "" {
