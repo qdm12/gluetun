@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/golibs/format"
 )
 
 func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {
@@ -34,7 +35,7 @@ func (s *Storage) mergeProviderServers(provider string,
 		}
 		diff = diff.Truncate(time.Second)
 		message := "Using " + provider + " servers from file which are " +
-			diff.String() + " more recent"
+			format.FriendlyDuration(diff) + " more recent"
 		s.logger.Info(message)
 
 		return persisted
