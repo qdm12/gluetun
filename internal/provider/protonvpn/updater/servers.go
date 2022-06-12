@@ -35,6 +35,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	for _, logicalServer := range data.LogicalServers {
 		region := getStringValue(logicalServer.Region)
 		city := getStringValue(logicalServer.City)
+		// TODO v4 remove `name` field because of
+		// https://github.com/qdm12/gluetun/issues/1018#issuecomment-1151750179
 		name := logicalServer.Name
 		for _, physicalServer := range logicalServer.Servers {
 			if physicalServer.Status == 0 { // disabled so skip server

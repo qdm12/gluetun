@@ -99,7 +99,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
     # # Nordvpn only:
     SERVER_NUMBER= \
-    # # PIA and ProtonVPN only:
+    # # PIA only:
     SERVER_NAMES= \
     # # ProtonVPN only:
     FREE_ONLY= \
