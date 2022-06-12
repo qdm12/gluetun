@@ -14,8 +14,8 @@ import (
 )
 
 type Loop struct {
-	statusManager statusManager
-	state         StateManager
+	statusManager *loopstate.State
+	state         *state.State
 	providers     Providers
 	storage       Storage
 	// Fixed parameters

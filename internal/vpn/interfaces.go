@@ -32,11 +32,6 @@ type OpenVPN interface {
 	WriteAuthFile(user, password string) error
 }
 
-type StateManager interface {
-	GetSettings() (vpn settings.VPN)
-	SetSettings(ctx context.Context, vpn settings.VPN) (outcome string)
-}
-
 type Providers interface {
 	Get(providerName string) provider.Provider
 }
@@ -72,17 +67,4 @@ type PublicIPLoop interface {
 	ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		outcome string, err error)
 	SetData(data ipinfo.Response)
-}
-
-type statusManager interface {
-	GetStatus() (status models.LoopStatus)
-	SetStatus(status models.LoopStatus)
-	ApplyStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-	Lock()
-	Unlock()
-}
-
-type runner interface {
-	Run(ctx context.Context, waitError chan<- error, tunnelReady chan<- struct{})
 }

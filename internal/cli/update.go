@@ -12,6 +12,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 	"github.com/qdm12/gluetun/internal/storage"
@@ -76,9 +77,10 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	unzipper := unzip.New(httpClient)
 	parallelResolver := resolver.NewParallelResolver(options.DNSAddress)
 	ipFetcher := ipinfo.New(httpClient)
+	openvpnFileExtractor := extract.New()
 
 	providers := provider.NewProviders(storage, time.Now, logger, httpClient,
-		unzipper, parallelResolver, ipFetcher)
+		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
 
 	updater := updater.New(httpClient, storage, providers, logger)
 	err = updater.UpdateServers(ctx, options.Providers)

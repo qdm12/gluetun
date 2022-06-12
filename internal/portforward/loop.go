@@ -13,8 +13,8 @@ import (
 )
 
 type Loop struct {
-	statusManager statusManager
-	state         StateManager
+	statusManager *loopstate.State
+	state         *state.State
 	// Objects
 	client      *http.Client
 	portAllower PortAllower

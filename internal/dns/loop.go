@@ -15,8 +15,8 @@ import (
 )
 
 type Loop struct {
-	statusManager statusManager
-	state         stateManager
+	statusManager *loopstate.State
+	state         *state.State
 	conf          Configurator
 	resolvConf    string
 	blockBuilder  blacklist.Builder

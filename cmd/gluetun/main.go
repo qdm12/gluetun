@@ -29,6 +29,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn"
+	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/pprof"
 	"github.com/qdm12/gluetun/internal/provider"
@@ -383,8 +384,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	unzipper := unzip.New(httpClient)
 	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
-	providers := provider.NewProviders(storage, time.Now,
-		updaterLogger, httpClient, unzipper, parallelResolver, ipFetcher)
+	openvpnFileExtractor := extract.New()
+	providers := provider.NewProviders(storage, time.Now, updaterLogger,
+		httpClient, unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,

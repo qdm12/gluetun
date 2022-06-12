@@ -13,8 +13,8 @@ import (
 )
 
 type Loop struct {
-	statusManager statusManager
-	state         StateManager
+	statusManager *loopstate.State
+	state         *state.State
 	// Other objects
 	logger Logger
 	// Internal channels and locks
@@ -23,18 +23,6 @@ type Loop struct {
 	start         chan struct{}
 	userTrigger   bool
 	backoffTime   time.Duration
-}
-
-type statusManager interface {
-	GetStatus() (status models.LoopStatus)
-	SetStatus(status models.LoopStatus)
-	ApplyStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-}
-
-type StateManager interface {
-	GetSettings() settings.HTTPProxy
-	SetSettings(ctx context.Context, settings settings.HTTPProxy) (outcome string)
 }
 
 const defaultBackoffTime = 10 * time.Second

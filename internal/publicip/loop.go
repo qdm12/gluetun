@@ -11,8 +11,8 @@ import (
 )
 
 type Loop struct {
-	statusManager statusManager
-	state         stateManager
+	statusManager *loopstate.State
+	state         *state.State
 	// Objects
 	fetcher Fetcher
 	logger  Logger

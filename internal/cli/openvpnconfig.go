@@ -10,6 +10,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/sources"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 	"github.com/qdm12/gluetun/internal/storage"
@@ -56,9 +57,10 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) e
 	warner := (Warner)(nil)
 	parallelResolver := (ParallelResolver)(nil)
 	ipFetcher := (IPFetcher)(nil)
+	openvpnFileExtractor := extract.New()
 
 	providers := provider.NewProviders(storage, time.Now, warner, client,
-		unzipper, parallelResolver, ipFetcher)
+		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
 	providerConf := providers.Get(*allSettings.VPN.Provider.Name)
 	connection, err := providerConf.GetConnection(allSettings.VPN.Provider.ServerSelection)
 	if err != nil {

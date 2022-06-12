@@ -2,20 +2,19 @@ package custom
 
 import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 type Provider struct {
-	extractor extractor
+	extractor Extractor
 	utils.NoPortForwarder
 	common.Fetcher
 }
 
-func New() *Provider {
+func New(extractor Extractor) *Provider {
 	return &Provider{
-		extractor:       extract.New(),
+		extractor:       extractor,
 		NoPortForwarder: utils.NewNoPortForwarding(providers.Custom),
 		Fetcher:         utils.NewNoFetcher(providers.Custom),
 	}

@@ -27,7 +27,7 @@ func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	}
 }
 
-func getOpenVPNConnection(extractor extractor,
+func getOpenVPNConnection(extractor Extractor,
 	selection settings.ServerSelection) (
 	connection models.Connection, err error) {
 	_, connection, err = extractor.Data(*selection.OpenVPN.ConfFile)

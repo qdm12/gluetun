@@ -43,14 +43,20 @@ type Storage interface {
 	GetServerByName(provider, name string) (server models.Server, ok bool)
 }
 
+type Extractor interface {
+	Data(filepath string) (lines []string,
+		connection models.Connection, err error)
+}
+
 func NewProviders(storage Storage, timeNow func() time.Time,
 	updaterWarner common.Warner, client *http.Client, unzipper common.Unzipper,
-	parallelResolver common.ParallelResolver, ipFetcher common.IPFetcher) *Providers {
+	parallelResolver common.ParallelResolver, ipFetcher common.IPFetcher,
+	extractor custom.Extractor) *Providers {
 	randSource := rand.NewSource(timeNow().UnixNano())
 
 	//nolint:lll
 	providerNameToProvider := map[string]Provider{
-		providers.Custom:                custom.New(),
+		providers.Custom:                custom.New(extractor),
 		providers.Cyberghost:            cyberghost.New(storage, randSource, parallelResolver),
 		providers.Expressvpn:            expressvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.Fastestvpn:            fastestvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),

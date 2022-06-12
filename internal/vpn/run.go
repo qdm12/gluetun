@@ -23,7 +23,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		providerConf := l.providers.Get(*settings.Provider.Name)
 
 		portForwarding := *settings.Provider.PortForwarding.Enabled
-		var vpnRunner runner
+		var vpnRunner interface {
+			Run(ctx context.Context, waitError chan<- error, tunnelReady chan<- struct{})
+		}
 		var serverName, vpnInterface string
 		var err error
 		subLogger := l.logger.New(log.SetComponent(settings.Type))
