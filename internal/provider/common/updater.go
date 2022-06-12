@@ -6,6 +6,7 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/models"
+	publicipmodels "github.com/qdm12/gluetun/internal/publicip/models"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
@@ -27,4 +28,8 @@ type Unzipper interface {
 
 type Warner interface {
 	Warn(s string)
+}
+
+type IPFetcher interface {
+	FetchMultiInfo(ctx context.Context, ips []net.IP) (data []publicipmodels.IPInfoData, err error)
 }

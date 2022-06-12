@@ -2,10 +2,10 @@ package publicip
 
 import (
 	"context"
-	"net"
 	"os"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/publicip/models"
 )
 
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
@@ -21,17 +21,17 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		getCtx, getCancel := context.WithCancel(ctx)
 		defer getCancel()
 
-		ipCh := make(chan net.IP)
+		resultCh := make(chan models.IPInfoData)
 		errorCh := make(chan error)
 		go func() {
-			ip, err := l.fetcher.FetchPublicIP(getCtx)
+			result, err := l.fetcher.FetchInfo(getCtx, nil)
 			if err != nil {
 				if getCtx.Err() == nil {
 					errorCh <- err
 				}
 				return
 			}
-			ipCh <- ip
+			resultCh <- result
 		}()
 
 		if l.userTrigger {
@@ -64,30 +64,24 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				getCancel()
 				<-errorCh
 				l.stopped <- struct{}{}
-			case ip := <-ipCh:
+			case result := <-resultCh:
 				getCancel()
 
-				message := "Public IP address is " + ip.String()
-				result, err := Info(ctx, l.client, ip)
-				if err != nil {
-					l.logger.Warn(err.Error())
-				} else {
-					message += " (" + result.Country + ", " + result.Region + ", " + result.City + ")"
-				}
+				message := "Public IP address is " + result.IP.String()
+				message += " (" + result.Country + ", " + result.Region + ", " + result.City + ")"
 				l.logger.Info(message)
 
-				result.SetIP(ip)
 				l.state.SetData(result)
 
 				filepath := *l.state.GetSettings().IPFilepath
-				err = persistPublicIP(filepath, ip.String(), l.puid, l.pgid)
+				err := persistPublicIP(filepath, result.IP.String(), l.puid, l.pgid)
 				if err != nil {
 					l.logger.Error(err.Error())
 				}
 				l.statusManager.SetStatus(constants.Completed)
 			case err := <-errorCh:
 				getCancel()
-				close(ipCh)
+				close(resultCh)
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				stayHere = false

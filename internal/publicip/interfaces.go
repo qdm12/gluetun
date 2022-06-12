@@ -23,6 +23,7 @@ type stateManager interface {
 	SetSettings(ctx context.Context, settings settings.PublicIP) (outcome string)
 }
 
-type fetcher interface {
-	FetchPublicIP(ctx context.Context) (ip net.IP, err error)
+type Fetcher interface {
+	FetchInfo(ctx context.Context, ip net.IP) (
+		result publicipmodels.IPInfoData, err error)
 }

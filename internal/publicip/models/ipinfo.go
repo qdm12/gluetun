@@ -3,7 +3,7 @@ package models
 import "net"
 
 type IPInfoData struct {
-	IP       net.IP `json:"public_ip"`
+	IP       net.IP `json:"ip,omitempty"`
 	Region   string `json:"region,omitempty"`
 	Country  string `json:"country,omitempty"`
 	City     string `json:"city,omitempty"`
@@ -19,9 +19,4 @@ func (i IPInfoData) Copy() (copied IPInfoData) {
 	copied.IP = make(net.IP, len(i.IP))
 	copy(copied.IP, i.IP)
 	return copied
-}
-
-func (i *IPInfoData) SetIP(ip net.IP) {
-	i.IP = make(net.IP, len(ip))
-	copy(i.IP, ip)
 }

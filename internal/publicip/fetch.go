@@ -3,66 +3,74 @@ package publicip
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"math/rand"
 	"net"
 	"net/http"
 	"strings"
+
+	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/publicip/models"
 )
 
 type Fetch struct {
-	client   *http.Client
-	randIntn func(n int) int
+	client *http.Client
 }
 
 func NewFetch(client *http.Client) *Fetch {
 	return &Fetch{
-		client:   client,
-		randIntn: rand.Intn,
+		client: client,
 	}
 }
 
-var ErrParseIP = errors.New("cannot parse IP address")
+var (
+	ErrTooManyRequests = errors.New("too many requests sent for this month")
+	ErrBadHTTPStatus   = errors.New("bad HTTP status received")
+)
 
-func (f *Fetch) FetchPublicIP(ctx context.Context) (ip net.IP, err error) {
-	urls := []string{
-		"https://ifconfig.me/ip",
-		"http://ip1.dynupdate.no-ip.com:8245",
-		"http://ip1.dynupdate.no-ip.com",
-		"https://api.ipify.org",
-		"https://domains.google.com/checkip",
-		"https://ifconfig.io/ip",
-		"https://ipinfo.io/ip",
-	}
-	url := urls[f.randIntn(len(urls))]
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
+// FetchInfo obtains information on the ip address provided
+// using the ipinfo.io API. If the ip is nil, the public IP address
+// of the machine is used as the IP.
+func (f *Fetch) FetchInfo(ctx context.Context, ip net.IP) (
+	result models.IPInfoData, err error) {
+	const baseURL = "https://ipinfo.io/"
+	url := baseURL
+	if ip != nil {
+		url += ip.String()
 	}
 
-	response, err := f.client.Do(req)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return result, err
+	}
+
+	response, err := f.client.Do(request)
+	if err != nil {
+		return result, err
 	}
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w from %s: %d %s", ErrBadStatusCode,
-			url, response.StatusCode, response.Status)
+	switch response.StatusCode {
+	case http.StatusOK:
+	case http.StatusTooManyRequests:
+		return result, fmt.Errorf("%w from %s: %d %s",
+			ErrTooManyRequests, url, response.StatusCode, response.Status)
+	default:
+		return result, fmt.Errorf("%w from %s: %d %s",
+			ErrBadHTTPStatus, url, response.StatusCode, response.Status)
 	}
 
-	content, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, fmt.Errorf("cannot ready response body: %w", err)
+	decoder := json.NewDecoder(response.Body)
+	if err := decoder.Decode(&result); err != nil {
+		return result, fmt.Errorf("cannot decode response: %w", err)
 	}
 
-	s := strings.ReplaceAll(string(content), "\n", "")
-	ip = net.ParseIP(s)
-	if ip == nil {
-		return nil, fmt.Errorf("%w: %s", ErrParseIP, s)
+	countryCode := strings.ToLower(result.Country)
+	country, ok := constants.CountryCodes()[countryCode]
+	if ok {
+		result.Country = country
 	}
-	return ip, nil
+
+	return result, nil
 }

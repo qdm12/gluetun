@@ -364,7 +364,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go unboundLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
 	controlGroupHandler.Add(dnsTickerHandler)
 
-	publicIPLooper := publicip.NewLoop(httpClient,
+	ipFetcher := publicip.NewFetch(httpClient)
+	publicIPLooper := publicip.NewLoop(ipFetcher,
 		logger.New(log.SetComponent("ip getter")),
 		allSettings.PublicIP, puid, pgid)
 	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
@@ -382,7 +383,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	unzipper := unzip.New(httpClient)
 	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
 	providers := provider.NewProviders(storage, time.Now,
-		updaterLogger, httpClient, unzipper, parallelResolver)
+		updaterLogger, httpClient, unzipper, parallelResolver, ipFetcher)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,

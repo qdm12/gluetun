@@ -3,18 +3,17 @@ package publicip
 import (
 	"context"
 	"net"
-	"net/http"
 
 	"github.com/qdm12/gluetun/internal/publicip/models"
 )
 
-// MultiInfo obtains the public IP address information for every IP
+// FetchMultiInfo obtains the public IP address information for every IP
 // addresses provided and returns a slice of results with the corresponding
 // order as to the IP addresses slice order.
 // If an error is encountered, all the operations are canceled and
 // an error is returned, so the results returned should be considered
 // incomplete in this case.
-func MultiInfo(ctx context.Context, client *http.Client, ips []net.IP) (
+func (f *Fetch) FetchMultiInfo(ctx context.Context, ips []net.IP) (
 	results []models.IPInfoData, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -30,7 +29,7 @@ func MultiInfo(ctx context.Context, client *http.Client, ips []net.IP) (
 			aResult := asyncResult{
 				index: index,
 			}
-			aResult.result, aResult.err = Info(ctx, client, ip)
+			aResult.result, aResult.err = f.FetchInfo(ctx, ip)
 			resultsCh <- aResult
 		}(i, ip)
 	}

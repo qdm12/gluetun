@@ -68,7 +68,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 	servers = hts.toServersSlice()
 
-	if err := setLocationInfo(ctx, u.client, servers); err != nil {
+	if err := setLocationInfo(ctx, u.ipFetcher, servers); err != nil {
 		return nil, err
 	}
 

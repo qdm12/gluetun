@@ -45,7 +45,7 @@ type Storage interface {
 
 func NewProviders(storage Storage, timeNow func() time.Time,
 	updaterWarner common.Warner, client *http.Client, unzipper common.Unzipper,
-	parallelResolver common.ParallelResolver) *Providers {
+	parallelResolver common.ParallelResolver, ipFetcher common.IPFetcher) *Providers {
 	randSource := rand.NewSource(timeNow().UnixNano())
 
 	//nolint:lll
@@ -60,11 +60,11 @@ func NewProviders(storage Storage, timeNow func() time.Time,
 		providers.Mullvad:               mullvad.New(storage, randSource, client),
 		providers.Nordvpn:               nordvpn.New(storage, randSource, client, updaterWarner),
 		providers.Perfectprivacy:        perfectprivacy.New(storage, randSource, unzipper, updaterWarner),
-		providers.Privado:               privado.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
+		providers.Privado:               privado.New(storage, randSource, ipFetcher, unzipper, updaterWarner, parallelResolver),
 		providers.PrivateInternetAccess: privateinternetaccess.New(storage, randSource, timeNow, client),
 		providers.Privatevpn:            privatevpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.Protonvpn:             protonvpn.New(storage, randSource, client, updaterWarner, parallelResolver),
-		providers.Purevpn:               purevpn.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
+		providers.Purevpn:               purevpn.New(storage, randSource, ipFetcher, unzipper, updaterWarner, parallelResolver),
 		providers.Surfshark:             surfshark.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
 		providers.Torguard:              torguard.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.VPNUnlimited:          vpnunlimited.New(storage, randSource, unzipper, updaterWarner, parallelResolver),

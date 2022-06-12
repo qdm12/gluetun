@@ -1,7 +1,6 @@
 package publicip
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -15,8 +14,7 @@ type Loop struct {
 	statusManager statusManager
 	state         stateManager
 	// Objects
-	fetcher fetcher
-	client  *http.Client
+	fetcher Fetcher
 	logger  Logger
 	// Fixed settings
 	puid int
@@ -35,7 +33,7 @@ type Loop struct {
 
 const defaultBackoffTime = 5 * time.Second
 
-func NewLoop(client *http.Client, logger Logger,
+func NewLoop(fetcher Fetcher, logger Logger,
 	settings settings.PublicIP, puid, pgid int) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
@@ -50,8 +48,7 @@ func NewLoop(client *http.Client, logger Logger,
 		statusManager: statusManager,
 		state:         state,
 		// Objects
-		client:       client,
-		fetcher:      NewFetch(client),
+		fetcher:      fetcher,
 		logger:       logger,
 		puid:         puid,
 		pgid:         pgid,
