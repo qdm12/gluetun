@@ -15,7 +15,7 @@ require (
 	github.com/qdm12/log v0.1.0
 	github.com/qdm12/ss-server v0.4.0
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	github.com/vishvananda/netlink v1.1.1-0.20211129163951-9ada19101fc5
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
 	golang.org/x/text v0.3.7
