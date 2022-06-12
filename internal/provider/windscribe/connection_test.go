@@ -73,7 +73,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 		},
 		"default Wireguard port": {
 			filteredServers: []models.Server{
-				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}},
+				{IPs: []net.IP{net.IPv4(1, 1, 1, 1)}, WgPubKey: "x"},
 			},
 			selection: settings.ServerSelection{
 				VPN: vpn.Wireguard,
@@ -83,6 +83,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 				IP:       net.IPv4(1, 1, 1, 1),
 				Port:     1194,
 				Protocol: constants.UDP,
+				PubKey:   "x",
 			},
 		},
 	}

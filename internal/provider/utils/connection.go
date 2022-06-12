@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 
@@ -29,6 +30,10 @@ type Storage interface {
 		servers []models.Server, err error)
 }
 
+var (
+	ErrWireguardPublicKeyMissing = errors.New("wireguard public key is missing")
+)
+
 func GetConnection(provider string,
 	storage Storage,
 	selection settings.ServerSelection,
@@ -50,6 +55,11 @@ func GetConnection(provider string,
 			if ip.To4() == nil {
 				// do not use IPv6 connections for now
 				continue
+			}
+
+			if selection.VPN == vpn.Wireguard && server.WgPubKey == "" {
+				return connection, fmt.Errorf("%w: for server hostname %s and ip %s",
+					ErrWireguardPublicKeyMissing, server.Hostname, ip)
 			}
 
 			hostname := server.Hostname
