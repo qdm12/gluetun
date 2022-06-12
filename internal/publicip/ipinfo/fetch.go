@@ -1,5 +1,4 @@
-// Package publicip defines interfaces to get your public IP address.
-package publicip
+package ipinfo
 
 import (
 	"context"
@@ -11,14 +10,13 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/publicip/models"
 )
 
 type Fetch struct {
 	client *http.Client
 }
 
-func NewFetch(client *http.Client) *Fetch {
+func New(client *http.Client) *Fetch {
 	return &Fetch{
 		client: client,
 	}
@@ -33,7 +31,7 @@ var (
 // using the ipinfo.io API. If the ip is nil, the public IP address
 // of the machine is used as the IP.
 func (f *Fetch) FetchInfo(ctx context.Context, ip net.IP) (
-	result models.IPInfoData, err error) {
+	result Response, err error) {
 	const baseURL = "https://ipinfo.io/"
 	url := baseURL
 	if ip != nil {

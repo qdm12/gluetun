@@ -13,7 +13,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/publicip"
+	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
@@ -75,7 +75,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	httpClient := &http.Client{Timeout: clientTimeout}
 	unzipper := unzip.New(httpClient)
 	parallelResolver := resolver.NewParallelResolver(options.DNSAddress)
-	ipFetcher := publicip.NewFetch(httpClient)
+	ipFetcher := ipinfo.New(httpClient)
 
 	providers := provider.NewProviders(storage, time.Now, logger, httpClient,
 		unzipper, parallelResolver, ipFetcher)

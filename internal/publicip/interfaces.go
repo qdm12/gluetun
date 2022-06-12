@@ -6,7 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
-	publicipmodels "github.com/qdm12/gluetun/internal/publicip/models"
+	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 )
 
 type statusManager interface {
@@ -17,13 +17,13 @@ type statusManager interface {
 }
 
 type stateManager interface {
-	GetData() (data publicipmodels.IPInfoData)
-	SetData(data publicipmodels.IPInfoData)
+	GetData() (data ipinfo.Response)
+	SetData(data ipinfo.Response)
 	GetSettings() (settings settings.PublicIP)
 	SetSettings(ctx context.Context, settings settings.PublicIP) (outcome string)
 }
 
 type Fetcher interface {
 	FetchInfo(ctx context.Context, ip net.IP) (
-		result publicipmodels.IPInfoData, err error)
+		result ipinfo.Response, err error)
 }

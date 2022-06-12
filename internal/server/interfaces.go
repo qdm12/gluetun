@@ -5,7 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
-	publicipmodels "github.com/qdm12/gluetun/internal/publicip/models"
+	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 )
 
 type VPNLooper interface {
@@ -26,5 +26,5 @@ type PortForwardedGetter interface {
 }
 
 type PublicIPLoop interface {
-	GetData() (data publicipmodels.IPInfoData)
+	GetData() (data ipinfo.Response)
 }

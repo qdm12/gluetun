@@ -6,7 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
-	publicipmodels "github.com/qdm12/gluetun/internal/publicip/models"
+	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 )
 
 func New(statusApplier StatusApplier,
@@ -25,7 +25,7 @@ type State struct {
 	settings   settings.PublicIP
 	settingsMu sync.RWMutex
 
-	ipData   publicipmodels.IPInfoData
+	ipData   ipinfo.Response
 	ipDataMu sync.RWMutex
 
 	updateTicker chan<- struct{}

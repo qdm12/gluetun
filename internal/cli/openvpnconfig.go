@@ -11,7 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/sources"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/provider"
-	publicipmodels "github.com/qdm12/gluetun/internal/publicip/models"
+	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
@@ -32,7 +32,7 @@ type ParallelResolver interface {
 }
 
 type IPFetcher interface {
-	FetchMultiInfo(ctx context.Context, ips []net.IP) (data []publicipmodels.IPInfoData, err error)
+	FetchMultiInfo(ctx context.Context, ips []net.IP) (data []ipinfo.Response, err error)
 }
 
 func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) error {

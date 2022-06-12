@@ -1,8 +1,8 @@
-package models
+package ipinfo
 
 import "net"
 
-type IPInfoData struct {
+type Response struct {
 	IP       net.IP `json:"ip,omitempty"`
 	Region   string `json:"region,omitempty"`
 	Country  string `json:"country,omitempty"`
@@ -14,9 +14,9 @@ type IPInfoData struct {
 	Timezone string `json:"timezone,omitempty"`
 }
 
-func (i IPInfoData) Copy() (copied IPInfoData) {
-	copied = i
-	copied.IP = make(net.IP, len(i.IP))
-	copy(copied.IP, i.IP)
+func (r Response) Copy() (copied Response) {
+	copied = r
+	copied.IP = make(net.IP, len(r.IP))
+	copy(copied.IP, r.IP)
 	return copied
 }

@@ -1,10 +1,8 @@
-package publicip
+package ipinfo
 
 import (
 	"context"
 	"net"
-
-	"github.com/qdm12/gluetun/internal/publicip/models"
 )
 
 // FetchMultiInfo obtains the public IP address information for every IP
@@ -14,12 +12,12 @@ import (
 // an error is returned, so the results returned should be considered
 // incomplete in this case.
 func (f *Fetch) FetchMultiInfo(ctx context.Context, ips []net.IP) (
-	results []models.IPInfoData, err error) {
+	results []Response, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	type asyncResult struct {
 		index  int
-		result models.IPInfoData
+		result Response
 		err    error
 	}
 	resultsCh := make(chan asyncResult)
@@ -34,7 +32,7 @@ func (f *Fetch) FetchMultiInfo(ctx context.Context, ips []net.IP) (
 		}(i, ip)
 	}
 
-	results = make([]models.IPInfoData, len(ips))
+	results = make([]Response, len(ips))
 	for i := 0; i < len(ips); i++ {
 		aResult := <-resultsCh
 		if aResult.err != nil {
