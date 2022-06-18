@@ -2,7 +2,6 @@ package updater
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sort"
 
@@ -11,8 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
-
-var ErrNotEnoughServers = errors.New("not enough servers found")
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
@@ -53,7 +50,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		u.warner.Warn(warning)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("resolving hosts: %w", err)
 	}
 
 	if len(hostToIPs) < minServers {
