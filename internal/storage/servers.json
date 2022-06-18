@@ -106773,7 +106773,7 @@
   },
   "protonvpn": {
     "version": 4,
-    "timestamp": 1654812323,
+    "timestamp": 1655576932,
     "servers": [
       {
         "vpn": "openvpn",
@@ -106868,7 +106868,7 @@
         "vpn": "openvpn",
         "country": "Australia",
         "city": "Adelaide",
-        "server_name": "AU#38",
+        "server_name": "AU#37",
         "hostname": "node-au-09.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -106892,7 +106892,7 @@
         "vpn": "openvpn",
         "country": "Australia",
         "city": "Perth",
-        "server_name": "AU#18",
+        "server_name": "AU#17",
         "hostname": "node-au-05.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -106904,7 +106904,7 @@
         "vpn": "openvpn",
         "country": "Australia",
         "city": "Perth",
-        "server_name": "AU#32",
+        "server_name": "AU#29",
         "hostname": "node-au-08.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -107018,6 +107018,17 @@
       {
         "vpn": "openvpn",
         "country": "Belgium",
+        "server_name": "IS-BE#1",
+        "hostname": "is-be-01d.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.159.158.138"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Belgium",
         "city": "Brussels",
         "server_name": "BE#1",
         "hostname": "node-be-01.protonvpn.net",
@@ -107037,6 +107048,18 @@
         "udp": true,
         "ips": [
           "37.120.236.2"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Belgium",
+        "city": "Brussels",
+        "server_name": "BE#5",
+        "hostname": "node-be-02.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.128.133.226"
         ]
       },
       {
@@ -107306,7 +107329,7 @@
         "vpn": "openvpn",
         "country": "Canada",
         "city": "Toronto",
-        "server_name": "CA#63",
+        "server_name": "CA#61",
         "hostname": "node-ca-12.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -107342,35 +107365,12 @@
         "vpn": "openvpn",
         "country": "Canada",
         "city": "Vancouver",
-        "server_name": "CA#7",
+        "server_name": "CA#5",
         "hostname": "node-ca-02.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
           "172.83.40.66"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Chile",
-        "server_name": "IS-CL#1",
-        "hostname": "is-cl-01a.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.159.158.197"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Chile",
-        "city": "Santiago",
-        "server_name": "CL#20",
-        "hostname": "node-cl-03.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "66.90.76.178"
         ]
       },
       {
@@ -107388,7 +107388,7 @@
         "vpn": "openvpn",
         "country": "Colombia",
         "city": "Bogota",
-        "server_name": "CO#12",
+        "server_name": "CO#9",
         "hostname": "node-co-02.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -107411,7 +107411,7 @@
         "vpn": "openvpn",
         "country": "Costa Rica",
         "city": "San José",
-        "server_name": "CR#2",
+        "server_name": "CR#1",
         "hostname": "node-cr-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -107434,7 +107434,7 @@
         "vpn": "openvpn",
         "country": "Cyprus",
         "city": "Limassol",
-        "server_name": "CY#2",
+        "server_name": "CY#1",
         "hostname": "node-cy-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -107491,7 +107491,7 @@
         "vpn": "openvpn",
         "country": "Czech Republic",
         "city": "Prague",
-        "server_name": "CZ#16",
+        "server_name": "CZ#13",
         "hostname": "node-cz-03.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -107536,6 +107536,18 @@
         "vpn": "openvpn",
         "country": "Denmark",
         "city": "Copenhagen",
+        "server_name": "DK#1",
+        "hostname": "node-dk-01.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "95.174.65.2"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Denmark",
+        "city": "Copenhagen",
         "server_name": "DK#13",
         "hostname": "node-dk-03.protonvpn.net",
         "tcp": true,
@@ -107554,18 +107566,6 @@
         "udp": true,
         "ips": [
           "37.120.232.50"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Denmark",
-        "city": "Copenhagen",
-        "server_name": "DK#3",
-        "hostname": "node-dk-01.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "95.174.65.2"
         ]
       },
       {
@@ -107673,7 +107673,7 @@
         "vpn": "openvpn",
         "country": "Finland",
         "city": "Helsinki",
-        "server_name": "FI#2",
+        "server_name": "FI#1",
         "hostname": "node-fi-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108117,7 +108117,7 @@
         "vpn": "openvpn",
         "country": "Germany",
         "city": "Berlin",
-        "server_name": "DE#34",
+        "server_name": "DE#33",
         "hostname": "node-de-07.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108177,7 +108177,7 @@
         "vpn": "openvpn",
         "country": "Germany",
         "city": "Frankfurt",
-        "server_name": "DE#69",
+        "server_name": "DE#65",
         "hostname": "node-de-13.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108212,7 +108212,7 @@
         "vpn": "openvpn",
         "country": "Greece",
         "city": "Athens",
-        "server_name": "GR#4",
+        "server_name": "GR#1",
         "hostname": "node-gr-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108257,7 +108257,7 @@
         "vpn": "openvpn",
         "country": "Hong Kong",
         "city": "Hong Kong",
-        "server_name": "HK#15",
+        "server_name": "HK#14",
         "hostname": "node-hk-03.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108293,7 +108293,7 @@
         "vpn": "openvpn",
         "country": "Hong Kong",
         "city": "Hong Kong",
-        "server_name": "HK#9",
+        "server_name": "HK#6",
         "hostname": "node-hk-02.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108316,12 +108316,24 @@
         "vpn": "openvpn",
         "country": "Hungary",
         "city": "Budapest",
-        "server_name": "HU#4",
+        "server_name": "HU#1",
         "hostname": "node-hu-01.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
           "185.128.26.210"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Hungary",
+        "city": "Budapest",
+        "server_name": "HU#9",
+        "hostname": "node-hu-02.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "86.106.74.210"
         ]
       },
       {
@@ -108385,7 +108397,7 @@
         "vpn": "openvpn",
         "country": "India",
         "city": "Mumbai",
-        "server_name": "IN#13",
+        "server_name": "IN#11",
         "hostname": "node-in-03.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108397,7 +108409,7 @@
         "vpn": "openvpn",
         "country": "India",
         "city": "Pune",
-        "server_name": "IN#2",
+        "server_name": "IN#1",
         "hostname": "node-in-01b.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108442,7 +108454,7 @@
         "vpn": "openvpn",
         "country": "Ireland",
         "city": "Dublin",
-        "server_name": "IE#2",
+        "server_name": "IE#1",
         "hostname": "node-ie-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108524,24 +108536,24 @@
         "vpn": "openvpn",
         "country": "Italy",
         "city": "Milan",
-        "server_name": "IT#14",
-        "hostname": "node-it-03.protonvpn.net",
+        "server_name": "IT#1",
+        "hostname": "node-it-01.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
-          "185.94.193.146"
+          "185.128.27.98"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Italy",
         "city": "Milan",
-        "server_name": "IT#3",
-        "hostname": "node-it-01.protonvpn.net",
+        "server_name": "IT#13",
+        "hostname": "node-it-03.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
-          "185.128.27.98"
+          "185.94.193.146"
         ]
       },
       {
@@ -108604,7 +108616,7 @@
         "vpn": "openvpn",
         "country": "Japan",
         "city": "Osaka",
-        "server_name": "JP#54",
+        "server_name": "JP#51",
         "hostname": "node-jp-14.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108616,7 +108628,7 @@
         "vpn": "openvpn",
         "country": "Japan",
         "city": "Tokyo",
-        "server_name": "JP#45",
+        "server_name": "JP#43",
         "hostname": "node-jp-12.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108628,7 +108640,7 @@
         "vpn": "openvpn",
         "country": "Japan",
         "city": "Tokyo",
-        "server_name": "JP#69",
+        "server_name": "JP#59",
         "hostname": "node-jp-17.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108753,7 +108765,7 @@
         "vpn": "openvpn",
         "country": "Luxembourg",
         "city": "Luxembourg City",
-        "server_name": "LU#14",
+        "server_name": "LU#13",
         "hostname": "node-lu-03.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108788,7 +108800,7 @@
         "vpn": "openvpn",
         "country": "Malaysia",
         "city": "Johor Bahru",
-        "server_name": "MY#4",
+        "server_name": "MY#1",
         "hostname": "node-my-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -108810,6 +108822,17 @@
       {
         "vpn": "openvpn",
         "country": "Mexico",
+        "server_name": "CH-MX#1",
+        "hostname": "ch-mx-01b.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.159.157.193"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Mexico",
         "city": "Chiapas",
         "server_name": "MX#4",
         "hostname": "node-mx-01.protonvpn.net",
@@ -108817,6 +108840,18 @@
         "udp": true,
         "ips": [
           "191.96.145.238"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Mexico",
+        "city": "Mexico City",
+        "server_name": "MX#9",
+        "hostname": "node-mx-02.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "103.14.26.130"
         ]
       },
       {
@@ -108845,7 +108880,7 @@
         "vpn": "openvpn",
         "country": "Moldova",
         "city": "Chisinau",
-        "server_name": "MD#4",
+        "server_name": "MD#1",
         "hostname": "node-md-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109055,7 +109090,19 @@
         "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
-        "server_name": "NL#14",
+        "server_name": "NL#1",
+        "hostname": "node-nl-01.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "62.112.9.164"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Netherlands",
+        "city": "Amsterdam",
+        "server_name": "NL#13",
         "hostname": "node-nl-13.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109103,24 +109150,12 @@
         "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
-        "server_name": "NL#26",
+        "server_name": "NL#25",
         "hostname": "node-nl-18.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
           "192.40.57.236"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Netherlands",
-        "city": "Amsterdam",
-        "server_name": "NL#3",
-        "hostname": "node-nl-01.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "62.112.9.164"
         ]
       },
       {
@@ -109187,7 +109222,7 @@
         "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Amsterdam",
-        "server_name": "NL#58",
+        "server_name": "NL#57",
         "hostname": "node-nl-39.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109271,7 +109306,7 @@
         "vpn": "openvpn",
         "country": "Netherlands",
         "city": "Steenbergen",
-        "server_name": "NL#82",
+        "server_name": "NL#81",
         "hostname": "node-nl-46.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109305,7 +109340,7 @@
         "vpn": "openvpn",
         "country": "New Zealand",
         "city": "Auckland",
-        "server_name": "NZ#16",
+        "server_name": "NZ#13",
         "hostname": "node-nz-03.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109317,7 +109352,7 @@
         "vpn": "openvpn",
         "country": "New Zealand",
         "city": "Auckland",
-        "server_name": "NZ#8",
+        "server_name": "NZ#5",
         "hostname": "node-nz-02.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109455,7 +109490,7 @@
         "vpn": "openvpn",
         "country": "Peru",
         "city": "Lima",
-        "server_name": "PE#20",
+        "server_name": "PE#17",
         "hostname": "node-pe-03.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109592,7 +109627,7 @@
         "vpn": "openvpn",
         "country": "Portugal",
         "city": "Lisbon",
-        "server_name": "PT#8",
+        "server_name": "PT#5",
         "hostname": "node-pt-02b.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109683,24 +109718,24 @@
         "vpn": "openvpn",
         "country": "Russian Federation",
         "city": "Saint Petersburg",
-        "server_name": "RU#15",
-        "hostname": "node-ru-03.protonvpn.net",
+        "server_name": "RU#1",
+        "hostname": "node-ru-01.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
-          "5.8.16.146"
+          "5.8.16.234"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "Russian Federation",
         "city": "Saint Petersburg",
-        "server_name": "RU#3",
-        "hostname": "node-ru-01.protonvpn.net",
+        "server_name": "RU#15",
+        "hostname": "node-ru-03.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
-          "5.8.16.234"
+          "5.8.16.146"
         ]
       },
       {
@@ -109730,7 +109765,7 @@
         "vpn": "openvpn",
         "country": "Serbia",
         "city": "Belgrade",
-        "server_name": "RS#4",
+        "server_name": "RS#1",
         "hostname": "node-rs-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109890,7 +109925,7 @@
         "vpn": "openvpn",
         "country": "Singapore",
         "city": "Singapore",
-        "server_name": "SG#66",
+        "server_name": "SG#65",
         "hostname": "node-sg-13.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -109959,7 +109994,7 @@
         "vpn": "openvpn",
         "country": "Slovenia",
         "city": "Ljubljana",
-        "server_name": "SI#4",
+        "server_name": "SI#1",
         "hostname": "node-si-01.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -110086,7 +110121,19 @@
         "vpn": "openvpn",
         "country": "Sweden",
         "city": "Stockholm",
-        "server_name": "SE#23",
+        "server_name": "SE#1",
+        "hostname": "node-se-01.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "195.178.172.188"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Sweden",
+        "city": "Stockholm",
+        "server_name": "SE#17",
         "hostname": "node-se-05.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -110215,7 +110262,7 @@
         "vpn": "openvpn",
         "country": "Taiwan",
         "city": "Taichung City",
-        "server_name": "TW#16",
+        "server_name": "TW#13",
         "hostname": "node-tw-03.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -110990,17 +111037,6 @@
         "vpn": "openvpn",
         "country": "United States",
         "server_name": "SE-US#1",
-        "hostname": "se-us-01a.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.159.156.54"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "server_name": "SE-US#1",
         "hostname": "se-us-01b.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111100,6 +111136,17 @@
         "vpn": "openvpn",
         "country": "United States",
         "server_name": "SE-US#1",
+        "hostname": "se-us-01k.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.159.156.71"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "server_name": "SE-US#1",
         "hostname": "se-us-01l.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111180,7 +111227,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Atlanta",
-        "server_name": "US-GA#22",
+        "server_name": "US-GA#21",
         "hostname": "node-us-69.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111228,12 +111275,12 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Dallas",
-        "server_name": "US-TX#12",
-        "hostname": "node-us-57.protonvpn.net",
+        "server_name": "US-TX#17",
+        "hostname": "node-us-75.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
-          "89.187.175.132"
+          "89.187.175.129"
         ]
       },
       {
@@ -111252,7 +111299,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Dallas",
-        "server_name": "US-TX#26",
+        "server_name": "US-TX#25",
         "hostname": "node-us-109.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111275,8 +111322,20 @@
       {
         "vpn": "openvpn",
         "country": "United States",
+        "city": "Dallas",
+        "server_name": "US-TX#9",
+        "hostname": "node-us-57.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "89.187.175.132"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
         "city": "Denver",
-        "server_name": "US-CO#14",
+        "server_name": "US-CO#13",
         "hostname": "node-us-93.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111288,24 +111347,12 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Denver",
-        "server_name": "US-CO#18",
+        "server_name": "US-CO#17",
         "hostname": "node-us-94.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
           "212.102.44.166"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "city": "Denver",
-        "server_name": "US-CO#4",
-        "hostname": "node-us-58.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "84.17.63.8"
         ]
       },
       {
@@ -111348,7 +111395,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles",
-        "server_name": "US-CA#36",
+        "server_name": "US-CA#33",
         "hostname": "node-us-65.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111360,7 +111407,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles",
-        "server_name": "US-CA#44",
+        "server_name": "US-CA#41",
         "hostname": "node-us-66.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111372,7 +111419,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles",
-        "server_name": "US-CA#50",
+        "server_name": "US-CA#49",
         "hostname": "node-us-82.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111396,7 +111443,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles",
-        "server_name": "US-CA#58",
+        "server_name": "US-CA#57",
         "hostname": "node-us-96.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111408,7 +111455,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles",
-        "server_name": "US-CA#62",
+        "server_name": "US-CA#61",
         "hostname": "node-us-97.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111432,7 +111479,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Los Angeles",
-        "server_name": "US-CA#70",
+        "server_name": "US-CA#69",
         "hostname": "node-us-99.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111456,19 +111503,19 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Miami",
-        "server_name": "US-FL#12",
-        "hostname": "node-us-51.protonvpn.net",
+        "server_name": "US-FL#1",
+        "hostname": "node-us-50.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
-          "37.120.215.226"
+          "37.120.215.242"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "United States",
         "city": "Miami",
-        "server_name": "US-FL#20",
+        "server_name": "US-FL#17",
         "hostname": "node-us-63.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111480,7 +111527,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Miami",
-        "server_name": "US-FL#28",
+        "server_name": "US-FL#25",
         "hostname": "node-us-64.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111504,7 +111551,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Miami",
-        "server_name": "US-FL#38",
+        "server_name": "US-FL#37",
         "hostname": "node-us-100.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111516,19 +111563,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Miami",
-        "server_name": "US-FL#4",
-        "hostname": "node-us-50.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "37.120.215.242"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "city": "Miami",
-        "server_name": "US-FL#42",
+        "server_name": "US-FL#41",
         "hostname": "node-us-101.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111540,7 +111575,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Miami",
-        "server_name": "US-FL#46",
+        "server_name": "US-FL#45",
         "hostname": "node-us-102.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111552,12 +111587,24 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Miami",
-        "server_name": "US-FL#50",
+        "server_name": "US-FL#49",
         "hostname": "node-us-103.protonvpn.net",
         "tcp": true,
         "udp": true,
         "ips": [
           "193.27.12.250"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "United States",
+        "city": "Miami",
+        "server_name": "US-FL#9",
+        "hostname": "node-us-51.protonvpn.net",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.215.226"
         ]
       },
       {
@@ -111588,7 +111635,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "New York City",
-        "server_name": "US-NY#24",
+        "server_name": "US-NY#21",
         "hostname": "node-us-67.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111600,7 +111647,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "New York City",
-        "server_name": "US-NY#32",
+        "server_name": "US-NY#29",
         "hostname": "node-us-68.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111612,7 +111659,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "New York City",
-        "server_name": "US-NY#38",
+        "server_name": "US-NY#37",
         "hostname": "node-us-77.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111624,7 +111671,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "New York City",
-        "server_name": "US-NY#42",
+        "server_name": "US-NY#41",
         "hostname": "node-us-104.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111648,7 +111695,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "New York City",
-        "server_name": "US-NY#50",
+        "server_name": "US-NY#49",
         "hostname": "node-us-106.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111660,7 +111707,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "New York City",
-        "server_name": "US-NY#54",
+        "server_name": "US-NY#53",
         "hostname": "node-us-107.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111708,7 +111755,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Salt Lake City",
-        "server_name": "US-UT#26",
+        "server_name": "US-UT#25",
         "hostname": "node-us-110.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111720,7 +111767,7 @@
         "vpn": "openvpn",
         "country": "United States",
         "city": "Salt Lake City",
-        "server_name": "US-UT#30",
+        "server_name": "US-UT#29",
         "hostname": "node-us-111.protonvpn.net",
         "tcp": true,
         "udp": true,
@@ -111799,18 +111846,6 @@
         "udp": true,
         "ips": [
           "69.10.63.242"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "West",
-        "server_name": "US-CO#21-TOR",
-        "hostname": "us-co-21-tor.protonvpn.net",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "84.17.63.17"
         ]
       },
       {
