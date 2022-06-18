@@ -19,33 +19,13 @@ func Test_AllServers_MarshalJSON(t *testing.T) {
 		errWrapped error
 		errMessage string
 	}{
-		"empty": {
+		"no provider": {
 			allServers: &AllServers{
 				ProviderToServers: map[string]Servers{},
 			},
-			dataString: `{"version":0,` +
-				`"cyberghost":{"version":0,"timestamp":0},` +
-				`"expressvpn":{"version":0,"timestamp":0},` +
-				`"fastestvpn":{"version":0,"timestamp":0},` +
-				`"hidemyass":{"version":0,"timestamp":0},` +
-				`"ipvanish":{"version":0,"timestamp":0},` +
-				`"ivpn":{"version":0,"timestamp":0},` +
-				`"mullvad":{"version":0,"timestamp":0},` +
-				`"nordvpn":{"version":0,"timestamp":0},` +
-				`"perfect privacy":{"version":0,"timestamp":0},` +
-				`"privado":{"version":0,"timestamp":0},` +
-				`"private internet access":{"version":0,"timestamp":0},` +
-				`"privatevpn":{"version":0,"timestamp":0},` +
-				`"protonvpn":{"version":0,"timestamp":0},` +
-				`"purevpn":{"version":0,"timestamp":0},` +
-				`"surfshark":{"version":0,"timestamp":0},` +
-				`"torguard":{"version":0,"timestamp":0},` +
-				`"vpn unlimited":{"version":0,"timestamp":0},` +
-				`"vyprvpn":{"version":0,"timestamp":0},` +
-				`"wevpn":{"version":0,"timestamp":0},` +
-				`"windscribe":{"version":0,"timestamp":0}}`,
+			dataString: `{"version":0}`,
 		},
-		"two known providers": {
+		"two providers": {
 			allServers: &AllServers{
 				Version: 1,
 				ProviderToServers: map[string]Servers{
@@ -69,25 +49,7 @@ func Test_AllServers_MarshalJSON(t *testing.T) {
 			},
 			dataString: `{"version":1,` +
 				`"cyberghost":{"version":1,"timestamp":1000,"servers":[{"country":"A"},{"country":"B"}]},` +
-				`"expressvpn":{"version":0,"timestamp":0},` +
-				`"fastestvpn":{"version":0,"timestamp":0},` +
-				`"hidemyass":{"version":0,"timestamp":0},` +
-				`"ipvanish":{"version":0,"timestamp":0},` +
-				`"ivpn":{"version":0,"timestamp":0},` +
-				`"mullvad":{"version":0,"timestamp":0},` +
-				`"nordvpn":{"version":0,"timestamp":0},` +
-				`"perfect privacy":{"version":0,"timestamp":0},` +
-				`"privado":{"version":2,"timestamp":2000,"servers":[{"city":"C"},{"city":"D"}]},` +
-				`"private internet access":{"version":0,"timestamp":0},` +
-				`"privatevpn":{"version":0,"timestamp":0},` +
-				`"protonvpn":{"version":0,"timestamp":0},` +
-				`"purevpn":{"version":0,"timestamp":0},` +
-				`"surfshark":{"version":0,"timestamp":0},` +
-				`"torguard":{"version":0,"timestamp":0},` +
-				`"vpn unlimited":{"version":0,"timestamp":0},` +
-				`"vyprvpn":{"version":0,"timestamp":0},` +
-				`"wevpn":{"version":0,"timestamp":0},` +
-				`"windscribe":{"version":0,"timestamp":0}}`,
+				`"privado":{"version":2,"timestamp":2000,"servers":[{"city":"C"},{"city":"D"}]}}`,
 		},
 	}
 
@@ -96,27 +58,19 @@ func Test_AllServers_MarshalJSON(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			// Populate all providers in all servers
-			for _, provider := range providers.All() {
-				_, has := testCase.allServers.ProviderToServers[provider]
-				if !has {
-					testCase.allServers.ProviderToServers[provider] = Servers{}
-				}
-			}
-
 			data, err := testCase.allServers.MarshalJSON()
 			assert.ErrorIs(t, err, testCase.errWrapped)
 			if err != nil {
 				assert.EqualError(t, err, testCase.errMessage)
 			}
-			assert.Equal(t, testCase.dataString, string(data))
+			require.Equal(t, testCase.dataString, string(data))
 
 			data, err = json.Marshal(testCase.allServers)
 			assert.ErrorIs(t, err, testCase.errWrapped)
 			if err != nil {
 				assert.EqualError(t, err, testCase.errMessage)
 			}
-			assert.Equal(t, testCase.dataString, string(data))
+			require.Equal(t, testCase.dataString, string(data))
 
 			buffer := bytes.NewBuffer(nil)
 			encoder := json.NewEncoder(buffer)
@@ -186,4 +140,44 @@ func Test_AllServers_UnmarshalJSON(t *testing.T) {
 			assert.Equal(t, testCase.allServers, allServers)
 		})
 	}
+}
+
+func Test_AllServers_JSON_Marshal_Unmarshal(t *testing.T) {
+	t.Parallel()
+
+	allServers := &AllServers{
+		Version: 1,
+		ProviderToServers: map[string]Servers{
+			providers.Cyberghost: {
+				Version:   1,
+				Timestamp: 1000,
+				Servers: []Server{
+					{Country: "A"},
+					{Country: "B"},
+				},
+			},
+			providers.Privado: {
+				Version:   2,
+				Timestamp: 2000,
+				Servers: []Server{
+					{City: "C"},
+					{City: "D"},
+				},
+			},
+		},
+	}
+
+	buffer := bytes.NewBuffer(nil)
+	encoder := json.NewEncoder(buffer)
+	encoder.SetIndent("", "  ")
+
+	err := encoder.Encode(allServers)
+	require.NoError(t, err)
+
+	decoder := json.NewDecoder(buffer)
+	var result AllServers
+	err = decoder.Decode(&result)
+	require.NoError(t, err)
+
+	assert.Equal(t, allServers, &result)
 }
