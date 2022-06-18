@@ -8,8 +8,8 @@ import (
 // FetchMultiFiles fetches multiple Openvpn files in parallel and
 // parses them to extract each of their host. A mapping from host to
 // URL is returned.
-func FetchMultiFiles(ctx context.Context, client *http.Client, urls []string) (
-	hostToURL map[string]string, err error) {
+func FetchMultiFiles(ctx context.Context, client *http.Client, urls []string,
+	failEarly bool) (hostToURL map[string]string, errors []error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -22,14 +22,14 @@ func FetchMultiFiles(ctx context.Context, client *http.Client, urls []string) (
 
 	results := make(chan Result)
 	defer close(results)
-	errors := make(chan error)
-	defer close(errors)
+	errorsCh := make(chan error)
+	defer close(errorsCh)
 
 	for _, url := range urls {
 		go func(url string) {
 			host, err := FetchFile(ctx, client, url)
 			if err != nil {
-				errors <- err
+				errorsCh <- err
 				return
 			}
 			results <- Result{
@@ -41,19 +41,26 @@ func FetchMultiFiles(ctx context.Context, client *http.Client, urls []string) (
 
 	for range urls {
 		select {
-		case newErr := <-errors:
-			if err == nil { // only assign to the first error
-				err = newErr
-				cancel() // stop other operations, this will trigger other errors we ignore
-			}
 		case result := <-results:
 			hostToURL[result.host] = result.url
+		case err := <-errorsCh:
+			if !failEarly {
+				errors = append(errors, err)
+				break
+			}
+
+			if len(errors) == 0 {
+				errors = []error{err} // keep only the first error
+				// stop other operations, this will trigger other errors we ignore
+				cancel()
+			}
 		}
 	}
 
-	if err != nil {
-		return nil, err
+	if len(errors) > 0 && failEarly {
+		// we don't care about the result found
+		return nil, errors
 	}
 
-	return hostToURL, nil
+	return hostToURL, errors
 }

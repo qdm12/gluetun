@@ -43,6 +43,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		providers.Ipvanish,
 		providers.Perfectprivacy,
 		providers.Privado,
+		providers.SlickVPN,
 		providers.VPNUnlimited,
 		providers.Vyprvpn,
 	) {

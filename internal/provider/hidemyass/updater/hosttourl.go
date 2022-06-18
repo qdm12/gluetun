@@ -33,5 +33,11 @@ func getHostToURL(ctx context.Context, client *http.Client, protocol string) (
 		return nil, err
 	}
 
-	return openvpn.FetchMultiFiles(ctx, client, urls)
+	const failEarly = true
+	hostToURL, errors := openvpn.FetchMultiFiles(ctx, client, urls, failEarly)
+	if len(errors) > 0 {
+		return nil, errors[0]
+	}
+
+	return hostToURL, nil
 }
