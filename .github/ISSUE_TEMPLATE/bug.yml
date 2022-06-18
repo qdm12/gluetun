@@ -96,7 +96,7 @@ body:
     attributes:
       label: Share your logs
       description: No sensitive information is logged out except when running with `LOG_LEVEL=debug`.
-      render: log
+      render: plain text
     validations:
       required: true
   - type: textarea
