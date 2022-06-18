@@ -109,7 +109,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Updater.overrideWith(other.Updater)
 	patchedSettings.Version.overrideWith(other.Version)
 	patchedSettings.VPN.overrideWith(other.VPN)
-	patchedSettings.Pprof.MergeWith(other.Pprof)
+	patchedSettings.Pprof.OverrideWith(other.Pprof)
 	err = patchedSettings.Validate(storage)
 	if err != nil {
 		return err

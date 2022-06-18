@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Update a VPN provider servers data",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "cmd/gluetun/main.go",
+            "args": [
+                "update",
+                "-enduser",
+                "-providers",
+                "${input:provider}"
+            ],
+        }
+    ],
+    "inputs": [
+        {
+            "id": "provider",
+            "type": "promptString",
+            "description": "Please enter a provider (or comma separated list of providers)",
+        }
+    ]
+}
