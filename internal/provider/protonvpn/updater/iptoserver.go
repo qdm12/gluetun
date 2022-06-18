@@ -10,7 +10,7 @@ import (
 type ipToServer map[string]models.Server
 
 func (its ipToServer) add(country, region, city, name, hostname string,
-	entryIP net.IP) {
+	free bool, entryIP net.IP) {
 	key := entryIP.String()
 
 	server, ok := its[key]
@@ -24,6 +24,7 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 	server.City = city
 	server.ServerName = name
 	server.Hostname = hostname
+	server.Free = free
 	server.UDP = true
 	server.TCP = true
 	server.IPs = []net.IP{entryIP}

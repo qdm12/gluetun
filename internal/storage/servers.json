@@ -106773,7 +106773,7 @@
   },
   "protonvpn": {
     "version": 4,
-    "timestamp": 1655576932,
+    "timestamp": 1655576953,
     "servers": [
       {
         "vpn": "openvpn",
@@ -108586,6 +108586,7 @@
         "hostname": "node-jp-13.protonvpn.net",
         "tcp": true,
         "udp": true,
+        "free": true,
         "ips": [
           "45.14.71.5"
         ]
@@ -109016,6 +109017,7 @@
         "hostname": "node-nl-17.protonvpn.net",
         "tcp": true,
         "udp": true,
+        "free": true,
         "ips": [
           "192.40.57.231"
         ]
@@ -111183,6 +111185,7 @@
         "hostname": "node-us-41.protonvpn.net",
         "tcp": true,
         "udp": true,
+        "free": true,
         "ips": [
           "172.98.93.226"
         ]

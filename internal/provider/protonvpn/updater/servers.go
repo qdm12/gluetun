@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
@@ -47,6 +48,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			hostname := physicalServer.Domain
 			entryIP := physicalServer.EntryIP
 
+			lowerCaseName := strings.ToLower(name)
+			var free bool
+			if strings.Contains(hostname, "free") || strings.Contains(lowerCaseName, "free") {
+				free = true
+			}
+
 			// Note: for multi-hop use the server name or hostname
 			// instead of the country
 			countryCode := logicalServer.ExitCountry
@@ -55,7 +62,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 				u.warner.Warn(warning)
 			}
 
-			ipToServer.add(country, region, city, name, hostname, entryIP)
+			ipToServer.add(country, region, city, name, hostname, free, entryIP)
 		}
 	}
 
