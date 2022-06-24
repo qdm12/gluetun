@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/openvpn/parse"
+	"github.com/qdm12/gluetun/internal/openvpn/extract"
 )
 
 type OpenVPNProviderSettings struct {
@@ -186,13 +186,13 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 	}
 
 	if *settings.ClientCrt != "" {
-		certData, err := parse.ExtractCert([]byte(*settings.ClientCrt))
+		certData, err := extract.PEM([]byte(*settings.ClientCrt))
 		panicOnError(err, "cannot extract client crt")
 		lines.addLines(WrapOpenvpnCert(certData))
 	}
 
 	if *settings.ClientKey != "" {
-		keyData, err := parse.ExtractPrivateKey([]byte(*settings.ClientKey))
+		keyData, err := extract.PEM([]byte(*settings.ClientKey))
 		panicOnError(err, "cannot extract client private key")
 		lines.addLines(WrapOpenvpnKey(keyData))
 	}
