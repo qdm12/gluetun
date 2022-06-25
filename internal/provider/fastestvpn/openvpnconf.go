@@ -11,7 +11,8 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 	settings settings.OpenVPN) (lines []string) {
 	//nolint:gomnd
 	providerSettings := utils.OpenVPNProviderSettings{
-		AuthUserPass: true,
+		RemoteCertTLS: true,
+		AuthUserPass:  true,
 		Ciphers: []string{
 			openvpn.AES256cbc,
 		},
