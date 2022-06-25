@@ -7,7 +7,7 @@ import (
 )
 
 type Response struct {
-	IP       net.IP `json:"ip,omitempty"`
+	IP       net.IP `json:"public_ip,omitempty"`
 	Region   string `json:"region,omitempty"`
 	Country  string `json:"country,omitempty"`
 	City     string `json:"city,omitempty"`
