@@ -15,6 +15,9 @@ import (
 type Loop struct {
 	statusManager *loopstate.State
 	state         *state.State
+	// Fixed parameters
+	puid int
+	pgid int
 	// Objects
 	client      *http.Client
 	portAllower PortAllower
@@ -33,7 +36,7 @@ const defaultBackoffTime = 5 * time.Second
 
 func NewLoop(settings settings.PortForwarding,
 	client *http.Client, portAllower PortAllower,
-	logger Logger) *Loop {
+	logger Logger, puid, pgid int) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
@@ -45,6 +48,8 @@ func NewLoop(settings settings.PortForwarding,
 	return &Loop{
 		statusManager: statusManager,
 		state:         state,
+		puid:          puid,
+		pgid:          pgid,
 		// Objects
 		client:      client,
 		portAllower: portAllower,
