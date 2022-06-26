@@ -11,11 +11,11 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 	settings settings.OpenVPN) (lines []string) {
 	//nolint:gomnd
 	providerSettings := utils.OpenVPNProviderSettings{
-		RemoteCertTLS: true,
-		AuthUserPass:  true,
+		AuthUserPass: true,
 		Ciphers: []string{
 			openvpn.AES256cbc,
 		},
+		Auth:          openvpn.SHA256,
 		MssFix:        1450,
 		TLSCipher:     "TLS-DHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-DHE-RSA-WITH-AES-256-CBC-SHA:TLS-RSA-WITH-CAMELLIA-256-CBC-SHA:TLS-RSA-WITH-AES-256-CBC-SHA", //nolint:lll
 		AuthToken:     true,
