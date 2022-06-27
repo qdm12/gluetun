@@ -136,6 +136,10 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.add("mssfix", fmt.Sprint(mssFix))
 	}
 
+	if provider.Fragment > 0 {
+		lines.add("fragment", fmt.Sprint(provider.Fragment))
+	}
+
 	if provider.SndBuf > 0 {
 		lines.add("sndbuf", fmt.Sprint(provider.SndBuf))
 	}
