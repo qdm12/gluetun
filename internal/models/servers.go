@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"sort"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 )
@@ -35,12 +36,13 @@ func (a *AllServers) MarshalJSON() (data []byte, err error) {
 		return nil, fmt.Errorf("cannot write schema version string: %w", err)
 	}
 
-	for _, provider := range providers.All() {
-		servers, ok := a.ProviderToServers[provider]
-		if !ok {
-			panic(fmt.Sprintf("provider %s not found in all servers", provider))
-		}
+	sortedProviders := make(sort.StringSlice, 0, len(a.ProviderToServers))
+	for provider := range a.ProviderToServers {
+		sortedProviders = append(sortedProviders, provider)
+	}
+	sortedProviders.Sort()
 
+	for _, provider := range sortedProviders {
 		providerKey := fmt.Sprintf(`,"%s":`, provider)
 		_, err = buffer.WriteString(providerKey)
 		if err != nil {
@@ -48,6 +50,7 @@ func (a *AllServers) MarshalJSON() (data []byte, err error) {
 				providerKey, err)
 		}
 
+		servers := a.ProviderToServers[provider]
 		serversJSON, err := json.Marshal(servers)
 		if err != nil {
 			return nil, fmt.Errorf("failed encoding servers for provider %s: %w",

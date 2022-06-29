@@ -1,31 +1,32 @@
-package parse
+package extract
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-func Test_ExtractCert(t *testing.T) {
+func Test_PEM(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		b        []byte
-		certData string
-		err      error
+		b           []byte
+		encodedData string
+		errWrapped  error
+		errMessage  string
 	}{
 		"no input": {
-			err: errors.New("cannot extract PEM data: cannot decode PEM encoded block"),
+			errWrapped: errPEMDecode,
+			errMessage: "cannot decode PEM encoded block",
 		},
 		"bad input": {
-			b:   []byte{1, 2, 3},
-			err: errors.New("cannot extract PEM data: cannot decode PEM encoded block"),
+			b:          []byte{1, 2, 3},
+			errWrapped: errPEMDecode,
+			errMessage: "cannot decode PEM encoded block",
 		},
-		"valid key": {
-			b:        []byte(validCertPEM),
-			certData: validCertData,
+		"valid data": {
+			b:           []byte(validCertPEM),
+			encodedData: validCertData,
 		},
 	}
 
@@ -34,16 +35,13 @@ func Test_ExtractCert(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			certData, err := ExtractCert(testCase.b)
+			encodedData, err := PEM(testCase.b)
 
-			if testCase.err != nil {
-				require.Error(t, err)
-				assert.Equal(t, testCase.err.Error(), err.Error())
-			} else {
-				assert.NoError(t, err)
+			assert.Equal(t, testCase.encodedData, encodedData)
+			assert.ErrorIs(t, err, testCase.errWrapped)
+			if testCase.errWrapped != nil {
+				assert.EqualError(t, err, testCase.errMessage)
 			}
-
-			assert.Equal(t, testCase.certData, certData)
 		})
 	}
 }

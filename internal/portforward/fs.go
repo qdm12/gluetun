@@ -16,22 +16,22 @@ func (l *Loop) removePortForwardedFile() {
 func (l *Loop) writePortForwardedFile(port uint16) {
 	filepath := *l.state.GetSettings().Filepath
 	l.logger.Info("writing port file " + filepath)
-	if err := writePortForwardedToFile(filepath, port); err != nil {
-		l.logger.Error(err.Error())
+	if err := writePortForwardedToFile(filepath, port, l.puid, l.pgid); err != nil {
+		l.logger.Error("writing port forwarded to file: " + err.Error())
 	}
 }
 
-func writePortForwardedToFile(filepath string, port uint16) (err error) {
-	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+func writePortForwardedToFile(filepath string, port uint16, uid, gid int) (err error) {
+	const perms = os.FileMode(0644)
+	err = os.WriteFile(filepath, []byte(fmt.Sprint(port)), perms)
 	if err != nil {
-		return err
+		return fmt.Errorf("writing file: %w", err)
 	}
 
-	_, err = file.Write([]byte(fmt.Sprint(port)))
+	err = os.Chown(filepath, uid, gid)
 	if err != nil {
-		_ = file.Close()
-		return err
+		return fmt.Errorf("chowning file: %w", err)
 	}
 
-	return file.Close()
+	return nil
 }

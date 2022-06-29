@@ -347,7 +347,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	portForwardLogger := logger.New(log.SetComponent("port forwarding"))
 	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
-		httpClient, firewallConf, portForwardLogger)
+		httpClient, firewallConf, portForwardLogger, puid, pgid)
 	portForwardHandler, portForwardCtx, portForwardDone := goshutdown.NewGoRoutineHandler(
 		"port forwarding", goroutine.OptionTimeout(time.Second))
 	go portForwardLooper.Run(portForwardCtx, portForwardDone)

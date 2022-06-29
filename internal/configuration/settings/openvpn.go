@@ -9,7 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
-	"github.com/qdm12/gluetun/internal/openvpn/parse"
 	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess/presets"
 	"github.com/qdm12/gotree"
 )
@@ -173,7 +172,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 		return nil
 	}
 
-	_, err = parse.ExtractCert([]byte(clientCert))
+	_, err = extract.PEM([]byte(clientCert))
 	if err != nil {
 		return err
 	}
@@ -195,7 +194,7 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 		return nil
 	}
 
-	_, err = parse.ExtractPrivateKey([]byte(clientKey))
+	_, err = extract.PEM([]byte(clientKey))
 	if err != nil {
 		return err
 	}

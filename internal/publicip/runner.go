@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
@@ -21,7 +21,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		getCtx, getCancel := context.WithCancel(ctx)
 		defer getCancel()
 
-		resultCh := make(chan ipinfo.Response)
+		resultCh := make(chan models.PublicIP)
 		errorCh := make(chan error)
 		go func() {
 			result, err := l.fetcher.FetchInfo(getCtx, nil)
@@ -31,7 +31,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				}
 				return
 			}
-			resultCh <- result
+			resultCh <- result.ToPublicIPModel()
 		}()
 
 		if l.userTrigger {
