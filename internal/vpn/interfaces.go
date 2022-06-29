@@ -9,7 +9,6 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 )
 
 type Firewall interface {
@@ -66,5 +65,5 @@ type DNSLoop interface {
 type PublicIPLoop interface {
 	ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		outcome string, err error)
-	SetData(data ipinfo.Response)
+	SetData(data models.PublicIP)
 }

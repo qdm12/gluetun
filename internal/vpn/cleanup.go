@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 func (l *Loop) cleanup(ctx context.Context, pfEnabled bool) {
@@ -15,7 +15,7 @@ func (l *Loop) cleanup(ctx context.Context, pfEnabled bool) {
 		}
 	}
 
-	l.publicip.SetData(ipinfo.Response{}) // clear public IP address data
+	l.publicip.SetData(models.PublicIP{}) // clear public IP address data
 
 	if pfEnabled {
 		const pfTimeout = 100 * time.Millisecond
