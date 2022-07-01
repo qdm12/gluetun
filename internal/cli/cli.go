@@ -1,4 +1,3 @@
-// Package cli defines an interface CLI to run command line operations.
 package cli
 
 type CLI struct {

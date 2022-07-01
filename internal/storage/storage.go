@@ -1,4 +1,3 @@
-// Package storage defines interfaces to interact with the files persisted such as the list of servers.
 package storage
 
 import (

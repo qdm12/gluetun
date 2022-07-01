@@ -1,4 +1,3 @@
-// Package routing defines interfaces to interact with the ip routes using NETLINK.
 package routing
 
 import (

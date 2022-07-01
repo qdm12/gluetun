@@ -1,5 +1,3 @@
-// Package unzip defines the Unzipper which fetches and extract a zip file
-// containing multiple files.
 package unzip
 
 import (

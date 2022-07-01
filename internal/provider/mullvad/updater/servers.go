@@ -1,5 +1,3 @@
-// Package updater contains code to obtain the server information
-// for the Mullvad provider.
 package updater
 
 import (

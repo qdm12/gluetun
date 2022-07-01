@@ -1,4 +1,3 @@
-// Package server defines an interface to run the HTTP control server.
 package server
 
 import (

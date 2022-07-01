@@ -1,5 +1,3 @@
-// Package version implements functions to fetch information from
-// Github on newer version of the program available.
 package version
 
 import (

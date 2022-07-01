@@ -1,5 +1,3 @@
-// Package updater contains code to obtain the server information
-// for the NordVPN provider.
 package updater
 
 import (

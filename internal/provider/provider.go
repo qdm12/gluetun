@@ -1,4 +1,3 @@
-// Package provider defines interfaces to interact with each VPN provider.
 package provider
 
 import (

@@ -1,4 +1,3 @@
-// Package healthcheck defines the client and server side of the built in healthcheck.
 package healthcheck
 
 import (
