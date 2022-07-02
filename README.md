@@ -1,10 +1,6 @@
 # Gluetun VPN client
 
-*Lightweight swiss-knife-like VPN client to tunnel to Cyberghost, ExpressVPN, FastestVPN,
-HideMyAss, IPVanish, IVPN, Mullvad, NordVPN, Perfect Privacy, Privado, Private Internet Access, PrivateVPN,
-ProtonVPN, PureVPN, Surfshark, TorGuard, VPNUnlimited, VyprVPN, WeVPN and Windscribe VPN servers
-using Go, OpenVPN or Wireguard, iptables, DNS over TLS, ShadowSocks and an HTTP proxy*
-
+Lightweight swiss-knife-like VPN client to multiple VPN sercice providers
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
