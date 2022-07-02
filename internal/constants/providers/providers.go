@@ -5,6 +5,7 @@ const (
 	// VPN configurations.
 	Custom                = "custom"
 	Cyberghost            = "cyberghost"
+	Example               = "example"
 	Expressvpn            = "expressvpn"
 	Fastestvpn            = "fastestvpn"
 	HideMyAss             = "hidemyass"
