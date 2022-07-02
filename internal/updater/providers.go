@@ -2,6 +2,8 @@ package updater
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -12,6 +14,8 @@ type Provider interface {
 	FetchServers(ctx context.Context, minServers int) (servers []models.Server, err error)
 }
 
+var ErrServerHasNotEnoughInformation = errors.New("server has not enough information")
+
 func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	minRatio float64) (err error) {
 	providerName := provider.Name()
@@ -20,6 +24,17 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	servers, err := provider.FetchServers(ctx, minServers)
 	if err != nil {
 		return fmt.Errorf("cannot get servers: %w", err)
+	}
+
+	for _, server := range servers {
+		err := server.HasMinimumInformation()
+		if err != nil {
+			serverJSON, err := json.Marshal(server)
+			if err != nil {
+				panic(err)
+			}
+			return fmt.Errorf("server %s has not enough information: %w", serverJSON, err)
+		}
 	}
 
 	if u.storage.ServersAreEqual(providerName, servers) {

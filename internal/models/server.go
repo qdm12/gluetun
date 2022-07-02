@@ -1,10 +1,13 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"reflect"
 	"strings"
+
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
 type Server struct {
@@ -29,6 +32,31 @@ type Server struct {
 	PortForward bool     `json:"port_forward,omitempty"`
 	Keep        bool     `json:"keep,omitempty"`
 	IPs         []net.IP `json:"ips,omitempty"`
+}
+
+var (
+	ErrVPNFieldEmpty           = errors.New("vpn field is empty")
+	ErrHostnameFieldEmpty      = errors.New("hostname field is empty")
+	ErrIPsFieldEmpty           = errors.New("ips field is empty")
+	ErrNoNetworkProtocol       = errors.New("both TCP and UDP fields are false")
+	ErrWireguardPublicKeyEmpty = errors.New("wireguard public key field is empty")
+)
+
+func (s *Server) HasMinimumInformation() (err error) {
+	switch {
+	case s.VPN == "":
+		return ErrVPNFieldEmpty
+	case s.Hostname == "":
+		return ErrHostnameFieldEmpty
+	case len(s.IPs) == 0:
+		return ErrIPsFieldEmpty
+	case !s.TCP && !s.UDP:
+		return ErrNoNetworkProtocol
+	case s.VPN == vpn.Wireguard && s.WgPubKey == "":
+		return ErrWireguardPublicKeyEmpty
+	default:
+		return nil
+	}
 }
 
 func (s *Server) Equal(other Server) (equal bool) {
