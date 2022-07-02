@@ -20,20 +20,20 @@ func markdownTableHeading(legendFields ...string) (markdown string) {
 }
 
 const (
-	vpnHeader         = "VPN"
-	countryHeader     = "Country"
-	regionHeader      = "Region"
 	cityHeader        = "City"
-	ispHeader         = "ISP"
-	ownedHeader       = "Owned"
-	numberHeader      = "Number"
+	countryHeader     = "Country"
+	freeHeader        = "Free"
 	hostnameHeader    = "Hostname"
+	ispHeader         = "ISP"
+	multiHopHeader    = "MultiHop"
+	numberHeader      = "Number"
+	ownedHeader       = "Owned"
+	portForwardHeader = "Port forwarding"
+	regionHeader      = "Region"
+	streamHeader      = "Stream"
 	tcpHeader         = "TCP"
 	udpHeader         = "UDP"
-	multiHopHeader    = "MultiHop"
-	freeHeader        = "Free"
-	streamHeader      = "Stream"
-	portForwardHeader = "Port forwarding"
+	vpnHeader         = "VPN"
 )
 
 func (s *Server) ToMarkdown(headers ...string) (markdown string) {
@@ -44,34 +44,34 @@ func (s *Server) ToMarkdown(headers ...string) (markdown string) {
 	fields := make([]string, len(headers))
 	for i, header := range headers {
 		switch header {
-		case vpnHeader:
-			fields[i] = s.VPN
-		case countryHeader:
-			fields[i] = s.Country
-		case regionHeader:
-			fields[i] = s.Region
 		case cityHeader:
 			fields[i] = s.City
-		case ispHeader:
-			fields[i] = s.ISP
-		case ownedHeader:
-			fields[i] = boolToMarkdown(s.Owned)
-		case numberHeader:
-			fields[i] = fmt.Sprint(s.Number)
+		case countryHeader:
+			fields[i] = s.Country
+		case freeHeader:
+			fields[i] = boolToMarkdown(s.Free)
 		case hostnameHeader:
 			fields[i] = fmt.Sprintf("`%s`", s.Hostname)
+		case ispHeader:
+			fields[i] = s.ISP
+		case multiHopHeader:
+			fields[i] = boolToMarkdown(s.MultiHop)
+		case numberHeader:
+			fields[i] = fmt.Sprint(s.Number)
+		case ownedHeader:
+			fields[i] = boolToMarkdown(s.Owned)
+		case portForwardHeader:
+			fields[i] = boolToMarkdown(s.PortForward)
+		case regionHeader:
+			fields[i] = s.Region
+		case streamHeader:
+			fields[i] = boolToMarkdown(s.Stream)
 		case tcpHeader:
 			fields[i] = boolToMarkdown(s.TCP)
 		case udpHeader:
 			fields[i] = boolToMarkdown(s.UDP)
-		case multiHopHeader:
-			fields[i] = boolToMarkdown(s.MultiHop)
-		case freeHeader:
-			fields[i] = boolToMarkdown(s.Free)
-		case streamHeader:
-			fields[i] = boolToMarkdown(s.Stream)
-		case portForwardHeader:
-			fields[i] = boolToMarkdown(s.PortForward)
+		case vpnHeader:
+			fields[i] = s.VPN
 		}
 	}
 
