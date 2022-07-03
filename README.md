@@ -48,6 +48,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN sercice providers
   - Sponsor me on [github.com/sponsors/qdm12](https://github.com/sponsors/qdm12)
   - Donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw)
   - Drop me [an email](mailto:quentin.mcgaw@gmail.com)
+- **Want to add a VPN provider?** check [Development](https://github.com/qdm12/gluetun/wiki/Development) and [Add a provider](https://github.com/qdm12/gluetun/wiki/Add-a-provider)
 - Video:
 
   [![Video Gif](https://i.imgur.com/CetWunc.gif)](https://youtu.be/0F6I03LQcI4)
