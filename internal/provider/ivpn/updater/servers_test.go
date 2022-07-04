@@ -51,7 +51,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		},
 		"resolve error": {
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("resolve warning")
 				return warner
 			},
@@ -87,7 +87,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		"success": {
 			minServers: 1,
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("resolve warning")
 				return warner
 			},

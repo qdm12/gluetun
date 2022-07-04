@@ -60,7 +60,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		"invalid proto": {
 			minServers: 1,
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("unknown protocol: invalid in badproto.ovpn")
 				return warner
 			},
@@ -70,7 +70,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		"no host": {
 			minServers: 1,
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("remote host not found in nohost.ovpn")
 				return warner
 			},
@@ -80,7 +80,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		"multiple hosts": {
 			minServers: 1,
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("only using the first host \"hosta\" and discarding 1 other hosts")
 				return warner
 			},
@@ -103,7 +103,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		},
 		"resolve error": {
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("resolve warning")
 				return warner
 			},
@@ -129,7 +129,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		"filename parsing error": {
 			minServers: 1,
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("country code is unknown: unknown in ipvanish-unknown-City-A-hosta.ovpn")
 				return warner
 			},
@@ -141,7 +141,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		"success": {
 			minServers: 1,
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {
-				warner := NewMockWarner(ctrl)
+				warner := common.NewMockWarner(ctrl)
 				warner.EXPECT().Warn("resolve warning")
 				return warner
 			},
