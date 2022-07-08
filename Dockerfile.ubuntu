@@ -5,7 +5,7 @@ ENV USER= \
     PASSWORD= \
     REGION="Netherlands" \
     WEBUI_PORT=8888 \
-    DNS_SERVERS=209.222.18.222,209.222.18.218,103.196.38.38,103.196.38.39
+    DNS_SERVERS=84.200.69.80,84.200.70.40
 
 # Download Folder
 VOLUME /downloads
