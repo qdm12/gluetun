@@ -1,6 +1,6 @@
 # Gluetun VPN client
 
-Lightweight swiss-knife-like VPN client to multiple VPN sercice providers
+Lightweight swiss-knife-like VPN client to multiple VPN service providers
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
