@@ -35,8 +35,6 @@ linters:
   enable:
     # - cyclop
     # - errorlint
-    # - varnamelen
-    # - wrapcheck
     - asciicheck
     - bidichk
     - bodyclose
@@ -82,7 +80,6 @@ linters:
     - nolintlint
     - nosprintfhostport
     - prealloc
-    - predeclared
     - predeclared
     - promlinter
     - revive
