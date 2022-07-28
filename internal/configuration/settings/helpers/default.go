@@ -73,7 +73,15 @@ func DefaultStringPtr(existing *string, defaultValue string) (result *string) {
 	return result
 }
 
-func DefaultDuration(existing *time.Duration,
+func DefaultDuration(existing time.Duration,
+	defaultValue time.Duration) (result time.Duration) {
+	if existing != 0 {
+		return existing
+	}
+	return defaultValue
+}
+
+func DefaultDurationPtr(existing *time.Duration,
 	defaultValue time.Duration) (result *time.Duration) {
 	if existing != nil {
 		return existing

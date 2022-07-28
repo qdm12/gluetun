@@ -2,13 +2,11 @@ package pprof
 
 import (
 	"regexp"
-	"time"
 
 	gomock "github.com/golang/mock/gomock"
 )
 
-func boolPtr(b bool) *bool                       { return &b }
-func durationPtr(d time.Duration) *time.Duration { return &d }
+func boolPtr(b bool) *bool { return &b }
 
 var _ gomock.Matcher = (*regexMatcher)(nil)
 

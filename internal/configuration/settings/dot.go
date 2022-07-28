@@ -65,7 +65,7 @@ func (d *DoT) copy() (copied DoT) {
 // unset field of the receiver settings object.
 func (d *DoT) mergeWith(other DoT) {
 	d.Enabled = helpers.MergeWithBool(d.Enabled, other.Enabled)
-	d.UpdatePeriod = helpers.MergeWithDuration(d.UpdatePeriod, other.UpdatePeriod)
+	d.UpdatePeriod = helpers.MergeWithDurationPtr(d.UpdatePeriod, other.UpdatePeriod)
 	d.Unbound.mergeWith(other.Unbound)
 	d.Blacklist.mergeWith(other.Blacklist)
 }
@@ -75,7 +75,7 @@ func (d *DoT) mergeWith(other DoT) {
 // settings.
 func (d *DoT) overrideWith(other DoT) {
 	d.Enabled = helpers.OverrideWithBool(d.Enabled, other.Enabled)
-	d.UpdatePeriod = helpers.OverrideWithDuration(d.UpdatePeriod, other.UpdatePeriod)
+	d.UpdatePeriod = helpers.OverrideWithDurationPtr(d.UpdatePeriod, other.UpdatePeriod)
 	d.Unbound.overrideWith(other.Unbound)
 	d.Blacklist.overrideWith(other.Blacklist)
 }
@@ -83,7 +83,7 @@ func (d *DoT) overrideWith(other DoT) {
 func (d *DoT) setDefaults() {
 	d.Enabled = helpers.DefaultBool(d.Enabled, true)
 	const defaultUpdatePeriod = 24 * time.Hour
-	d.UpdatePeriod = helpers.DefaultDuration(d.UpdatePeriod, defaultUpdatePeriod)
+	d.UpdatePeriod = helpers.DefaultDurationPtr(d.UpdatePeriod, defaultUpdatePeriod)
 	d.Unbound.setDefaults()
 	d.Blacklist.setDefaults()
 }

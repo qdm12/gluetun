@@ -73,7 +73,7 @@ func (u *Updater) copy() (copied Updater) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (u *Updater) mergeWith(other Updater) {
-	u.Period = helpers.MergeWithDuration(u.Period, other.Period)
+	u.Period = helpers.MergeWithDurationPtr(u.Period, other.Period)
 	u.DNSAddress = helpers.MergeWithString(u.DNSAddress, other.DNSAddress)
 	u.MinRatio = helpers.MergeWithFloat64(u.MinRatio, other.MinRatio)
 	u.Providers = helpers.MergeStringSlices(u.Providers, other.Providers)
@@ -83,14 +83,14 @@ func (u *Updater) mergeWith(other Updater) {
 // settings object with any field set in the other
 // settings.
 func (u *Updater) overrideWith(other Updater) {
-	u.Period = helpers.OverrideWithDuration(u.Period, other.Period)
+	u.Period = helpers.OverrideWithDurationPtr(u.Period, other.Period)
 	u.DNSAddress = helpers.OverrideWithString(u.DNSAddress, other.DNSAddress)
 	u.MinRatio = helpers.OverrideWithFloat64(u.MinRatio, other.MinRatio)
 	u.Providers = helpers.OverrideWithStringSlice(u.Providers, other.Providers)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
-	u.Period = helpers.DefaultDuration(u.Period, 0)
+	u.Period = helpers.DefaultDurationPtr(u.Period, 0)
 	u.DNSAddress = helpers.DefaultString(u.DNSAddress, "1.1.1.1:53")
 
 	if u.MinRatio == 0 {

@@ -48,18 +48,18 @@ func (p *PublicIP) copy() (copied PublicIP) {
 }
 
 func (p *PublicIP) mergeWith(other PublicIP) {
-	p.Period = helpers.MergeWithDuration(p.Period, other.Period)
+	p.Period = helpers.MergeWithDurationPtr(p.Period, other.Period)
 	p.IPFilepath = helpers.MergeWithStringPtr(p.IPFilepath, other.IPFilepath)
 }
 
 func (p *PublicIP) overrideWith(other PublicIP) {
-	p.Period = helpers.OverrideWithDuration(p.Period, other.Period)
+	p.Period = helpers.OverrideWithDurationPtr(p.Period, other.Period)
 	p.IPFilepath = helpers.OverrideWithStringPtr(p.IPFilepath, other.IPFilepath)
 }
 
 func (p *PublicIP) setDefaults() {
 	const defaultPeriod = 12 * time.Hour
-	p.Period = helpers.DefaultDuration(p.Period, defaultPeriod)
+	p.Period = helpers.DefaultDurationPtr(p.Period, defaultPeriod)
 	p.IPFilepath = helpers.DefaultStringPtr(p.IPFilepath, "/tmp/gluetun/ip")
 }
 

@@ -93,7 +93,16 @@ func OverrideWithIP(existing, other net.IP) (result net.IP) {
 	return result
 }
 
-func OverrideWithDuration(existing, other *time.Duration) (result *time.Duration) {
+func OverrideWithDuration(existing, other time.Duration) (
+	result time.Duration) {
+	if other == 0 {
+		return existing
+	}
+	return other
+}
+
+func OverrideWithDurationPtr(existing, other *time.Duration) (
+	result *time.Duration) {
 	if other == nil {
 		return existing
 	}

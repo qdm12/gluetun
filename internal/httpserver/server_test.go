@@ -29,16 +29,20 @@ func Test_New(t *testing.T) {
 		},
 		"filled settings": {
 			settings: Settings{
-				Address:         ":8001",
-				Handler:         someHandler,
-				Logger:          someLogger,
-				ShutdownTimeout: durationPtr(time.Second),
+				Address:           ":8001",
+				Handler:           someHandler,
+				Logger:            someLogger,
+				ReadHeaderTimeout: time.Second,
+				ReadTimeout:       time.Second,
+				ShutdownTimeout:   time.Second,
 			},
 			expected: &Server{
-				address:         ":8001",
-				handler:         someHandler,
-				logger:          someLogger,
-				shutdownTimeout: time.Second,
+				address:           ":8001",
+				handler:           someHandler,
+				logger:            someLogger,
+				readHeaderTimeout: time.Second,
+				readTimeout:       time.Second,
+				shutdownTimeout:   time.Second,
 			},
 		},
 	}

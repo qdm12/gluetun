@@ -2,12 +2,9 @@ package httpserver
 
 import (
 	"regexp"
-	"time"
 
 	gomock "github.com/golang/mock/gomock"
 )
-
-func durationPtr(d time.Duration) *time.Duration { return &d }
 
 var _ Logger = (*testLogger)(nil)
 

@@ -3,6 +3,7 @@ package settings
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gotree"
@@ -33,6 +34,12 @@ type HTTPProxy struct {
 	// each request/response. It cannot be nil in the
 	// internal state.
 	Log *bool
+	// ReadHeaderTimeout is the HTTP header read timeout duration
+	// of the HTTP server. It defaults to 1 second if left unset.
+	ReadHeaderTimeout time.Duration
+	// ReadTimeout is the HTTP read timeout duration
+	// of the HTTP server. It defaults to 3 seconds if left unset.
+	ReadTimeout time.Duration
 }
 
 func (h HTTPProxy) validate() (err error) {
@@ -49,12 +56,14 @@ func (h HTTPProxy) validate() (err error) {
 
 func (h *HTTPProxy) copy() (copied HTTPProxy) {
 	return HTTPProxy{
-		User:             helpers.CopyStringPtr(h.User),
-		Password:         helpers.CopyStringPtr(h.Password),
-		ListeningAddress: h.ListeningAddress,
-		Enabled:          helpers.CopyBoolPtr(h.Enabled),
-		Stealth:          helpers.CopyBoolPtr(h.Stealth),
-		Log:              helpers.CopyBoolPtr(h.Log),
+		User:              helpers.CopyStringPtr(h.User),
+		Password:          helpers.CopyStringPtr(h.Password),
+		ListeningAddress:  h.ListeningAddress,
+		Enabled:           helpers.CopyBoolPtr(h.Enabled),
+		Stealth:           helpers.CopyBoolPtr(h.Stealth),
+		Log:               helpers.CopyBoolPtr(h.Log),
+		ReadHeaderTimeout: h.ReadHeaderTimeout,
+		ReadTimeout:       h.ReadTimeout,
 	}
 }
 
@@ -67,6 +76,8 @@ func (h *HTTPProxy) mergeWith(other HTTPProxy) {
 	h.Enabled = helpers.MergeWithBool(h.Enabled, other.Enabled)
 	h.Stealth = helpers.MergeWithBool(h.Stealth, other.Stealth)
 	h.Log = helpers.MergeWithBool(h.Log, other.Log)
+	h.ReadHeaderTimeout = helpers.MergeWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.MergeWithDuration(h.ReadTimeout, other.ReadTimeout)
 }
 
 // overrideWith overrides fields of the receiver
@@ -79,6 +90,8 @@ func (h *HTTPProxy) overrideWith(other HTTPProxy) {
 	h.Enabled = helpers.OverrideWithBool(h.Enabled, other.Enabled)
 	h.Stealth = helpers.OverrideWithBool(h.Stealth, other.Stealth)
 	h.Log = helpers.OverrideWithBool(h.Log, other.Log)
+	h.ReadHeaderTimeout = helpers.OverrideWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.OverrideWithDuration(h.ReadTimeout, other.ReadTimeout)
 }
 
 func (h *HTTPProxy) setDefaults() {
@@ -88,6 +101,10 @@ func (h *HTTPProxy) setDefaults() {
 	h.Enabled = helpers.DefaultBool(h.Enabled, false)
 	h.Stealth = helpers.DefaultBool(h.Stealth, false)
 	h.Log = helpers.DefaultBool(h.Log, false)
+	const defaultReadHeaderTimeout = time.Second
+	h.ReadHeaderTimeout = helpers.DefaultDuration(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
+	const defaultReadTimeout = 3 * time.Second
+	h.ReadTimeout = helpers.DefaultDuration(h.ReadTimeout, defaultReadTimeout)
 }
 
 func (h HTTPProxy) String() string {
@@ -106,6 +123,8 @@ func (h HTTPProxy) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Password: %s", helpers.ObfuscatePassword(*h.Password))
 	node.Appendf("Stealth mode: %s", helpers.BoolPtrToYesNo(h.Stealth))
 	node.Appendf("Log: %s", helpers.BoolPtrToYesNo(h.Log))
+	node.Appendf("Read header timeout: %s", h.ReadHeaderTimeout)
+	node.Appendf("Read timeout: %s", h.ReadTimeout)
 
 	return node
 }

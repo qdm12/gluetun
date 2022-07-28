@@ -9,11 +9,13 @@ import (
 // Server is an HTTP server implementation, which uses
 // the HTTP handler provided.
 type Server struct {
-	address         string
-	addressSet      chan struct{}
-	handler         http.Handler
-	logger          Logger
-	shutdownTimeout time.Duration
+	address           string
+	addressSet        chan struct{}
+	handler           http.Handler
+	logger            Logger
+	readHeaderTimeout time.Duration
+	readTimeout       time.Duration
+	shutdownTimeout   time.Duration
 }
 
 // New creates a new HTTP server with the given settings.
@@ -26,10 +28,12 @@ func New(settings Settings) (s *Server, err error) {
 	}
 
 	return &Server{
-		address:         settings.Address,
-		addressSet:      make(chan struct{}),
-		handler:         settings.Handler,
-		logger:          settings.Logger,
-		shutdownTimeout: *settings.ShutdownTimeout,
+		address:           settings.Address,
+		addressSet:        make(chan struct{}),
+		handler:           settings.Handler,
+		logger:            settings.Logger,
+		readHeaderTimeout: settings.ReadHeaderTimeout,
+		readTimeout:       settings.ReadTimeout,
+		shutdownTimeout:   settings.ShutdownTimeout,
 	}, nil
 }

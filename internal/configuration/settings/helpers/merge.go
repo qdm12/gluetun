@@ -107,7 +107,14 @@ func MergeWithIP(existing, other net.IP) (result net.IP) {
 	return result
 }
 
-func MergeWithDuration(existing, other *time.Duration) (result *time.Duration) {
+func MergeWithDuration(existing, other time.Duration) (result time.Duration) {
+	if existing != 0 {
+		return existing
+	}
+	return other
+}
+
+func MergeWithDurationPtr(existing, other *time.Duration) (result *time.Duration) {
 	if existing != nil {
 		return existing
 	}

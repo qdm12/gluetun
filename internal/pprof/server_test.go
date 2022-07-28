@@ -29,7 +29,7 @@ func Test_Server(t *testing.T) {
 		HTTPServer: httpserver.Settings{
 			Address:         address,
 			Logger:          logger,
-			ShutdownTimeout: durationPtr(httpServerShutdownTimeout),
+			ShutdownTimeout: httpServerShutdownTimeout,
 		},
 	}
 

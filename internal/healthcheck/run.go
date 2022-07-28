@@ -14,8 +14,10 @@ func (s *Server) Run(ctx context.Context, done chan<- struct{}) {
 	go s.runHealthcheckLoop(ctx, loopDone)
 
 	server := http.Server{
-		Addr:    s.config.ServerAddress,
-		Handler: s.handler,
+		Addr:              s.config.ServerAddress,
+		Handler:           s.handler,
+		ReadHeaderTimeout: s.config.ReadHeaderTimeout,
+		ReadTimeout:       s.config.ReadTimeout,
 	}
 	serverDone := make(chan struct{})
 	go func() {

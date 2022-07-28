@@ -21,8 +21,10 @@ func Test_Settings_SetDefaults(t *testing.T) {
 			expected: Settings{
 				Enabled: boolPtr(false),
 				HTTPServer: httpserver.Settings{
-					Address:         "localhost:6060",
-					ShutdownTimeout: durationPtr(3 * time.Second),
+					Address:           "localhost:6060",
+					ReadHeaderTimeout: 3 * time.Second,
+					ReadTimeout:       5 * time.Minute,
+					ShutdownTimeout:   3 * time.Second,
 				},
 			},
 		},
@@ -32,8 +34,10 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				BlockProfileRate: 1,
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
-					Address:         ":6061",
-					ShutdownTimeout: durationPtr(time.Second),
+					Address:           ":6061",
+					ReadHeaderTimeout: time.Second,
+					ReadTimeout:       time.Second,
+					ShutdownTimeout:   time.Second,
 				},
 			},
 			expected: Settings{
@@ -41,8 +45,10 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				BlockProfileRate: 1,
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
-					Address:         ":6061",
-					ShutdownTimeout: durationPtr(time.Second),
+					Address:           ":6061",
+					ReadHeaderTimeout: time.Second,
+					ReadTimeout:       time.Second,
+					ShutdownTimeout:   time.Second,
 				},
 			},
 		},
@@ -75,7 +81,7 @@ func Test_Settings_Copy(t *testing.T) {
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
 					Address:         ":6061",
-					ShutdownTimeout: durationPtr(time.Second),
+					ShutdownTimeout: time.Second,
 				},
 			},
 			expected: Settings{
@@ -84,7 +90,7 @@ func Test_Settings_Copy(t *testing.T) {
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
 					Address:         ":6061",
-					ShutdownTimeout: durationPtr(time.Second),
+					ShutdownTimeout: time.Second,
 				},
 			},
 		},
@@ -278,10 +284,12 @@ func Test_Settings_Validate(t *testing.T) {
 		"valid settings": {
 			settings: Settings{
 				HTTPServer: httpserver.Settings{
-					Address:         ":8000",
-					Handler:         http.NewServeMux(),
-					Logger:          &MockLogger{},
-					ShutdownTimeout: durationPtr(time.Second),
+					Address:           ":8000",
+					Handler:           http.NewServeMux(),
+					Logger:            &MockLogger{},
+					ReadHeaderTimeout: time.Second,
+					ReadTimeout:       time.Second,
+					ShutdownTimeout:   time.Second,
 				},
 			},
 		},
@@ -321,7 +329,7 @@ func Test_Settings_String(t *testing.T) {
 				MutexProfileRate: 1,
 				HTTPServer: httpserver.Settings{
 					Address:         ":8000",
-					ShutdownTimeout: durationPtr(time.Second),
+					ShutdownTimeout: time.Second,
 				},
 			},
 			s: `Pprof settings:
@@ -329,6 +337,8 @@ func Test_Settings_String(t *testing.T) {
 ├── Mutex profile rate: 1
 └── HTTP server settings:
     ├── Listening address: :8000
+    ├── Read header timeout: 0s
+    ├── Read timeout: 0s
     └── Shutdown timeout: 1s`,
 		},
 	}
