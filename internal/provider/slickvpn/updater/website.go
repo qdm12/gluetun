@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"regexp"
-	"strings"
 
-	"github.com/andybalholm/cascadia"
+	htmlutils "github.com/qdm12/gluetun/internal/updater/html"
 	"golang.org/x/net/html"
 )
+
+var ErrHTTPStatusCode = errors.New("HTTP status code is not OK")
 
 func fetchAndParseWebsite(ctx context.Context, client *http.Client) (
 	hostToData map[string]serverData, err error) {
@@ -26,7 +26,17 @@ func fetchAndParseWebsite(ctx context.Context, client *http.Client) (
 		return nil, fmt.Errorf("do HTTP request: %w", err)
 	}
 
-	hostToData, err = parseHTML(response.Body)
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %d %s", ErrHTTPStatusCode, response.StatusCode, response.Status)
+	}
+
+	rootNode, err := html.Parse(response.Body)
+	if err != nil {
+		_ = response.Body.Close()
+		return nil, fmt.Errorf("parsing HTML code: %w", err)
+	}
+
+	hostToData, err = parseHTML(rootNode)
 	if err != nil {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("parsing HTML: %w", err)
@@ -47,18 +57,18 @@ type serverData struct {
 	city    string
 }
 
-var (
-	locationTableSelector = cascadia.MustCompile(`table#location-table > tbody > tr`) //nolint:gochecknoglobals
-	ovpnHrefSelector      = cascadia.MustCompile(`a[href$='.ovpn']`)                  //nolint:gochecknoglobals
-)
-
-func parseHTML(body io.Reader) (hostToData map[string]serverData, err error) {
-	root, err := html.Parse(body)
-	if err != nil {
-		return nil, fmt.Errorf("parsing response body: %w", err)
+func parseHTML(rootNode *html.Node) (hostToData map[string]serverData, err error) {
+	locationTableNode := htmlutils.GetFirstNodeByID(rootNode, "location-table")
+	if locationTableNode == nil {
+		return nil, fmt.Errorf("unable to find html node with matching id")
 	}
 
-	rowNodes := cascadia.QueryAll(root, locationTableSelector)
+	tBodyNode := htmlutils.GetFirstNodeByType(locationTableNode, "tbody")
+	if tBodyNode == nil {
+		return nil, fmt.Errorf("unable to find tbody tag inside location table")
+	}
+
+	rowNodes := htmlutils.GetNodesByType(tBodyNode, "tr")
 	hostToData = make(map[string]serverData, len(rowNodes))
 
 	for _, rowNode := range rowNodes {
@@ -74,20 +84,19 @@ func parseHTML(body io.Reader) (hostToData map[string]serverData, err error) {
 		for cellNode := rowNode.FirstChild; cellNode != nil; cellNode = cellNode.NextSibling {
 			switch columnIndex {
 			case columnIndexContinent:
-				// TODO Translate continent to region
 				data.region = cellNode.FirstChild.Data
 			case columnIndexCountry:
 				data.country = cellNode.FirstChild.Data
 			case columnIndexCity:
 				data.city = cellNode.FirstChild.Data
 			case columnIndexConfig:
-				linkNodes := cascadia.QueryAll(cellNode, ovpnHrefSelector)
+				linkNodes := htmlutils.GetNodesByType(cellNode, "a")
 				for _, linkNode := range linkNodes {
-					if !strings.EqualFold(linkNode.FirstChild.Data, "openvpn") {
+					if htmlutils.GetText(linkNode) != "OpenVPN" {
 						continue
 					}
 
-					data.ovpnURL, err = getAttributeValue(linkNode, "href")
+					data.ovpnURL, err = htmlutils.GetAttr(linkNode, "href")
 					if err != nil {
 						return nil, fmt.Errorf("get attribute value: %w", err)
 					}

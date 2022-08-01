@@ -3,7 +3,6 @@ module github.com/qdm12/gluetun
 go 1.17
 
 require (
-	github.com/andybalholm/cascadia v1.3.1
 	github.com/breml/rootcerts v0.2.6
 	github.com/fatih/color v1.13.0
 	github.com/golang/mock v1.6.0
