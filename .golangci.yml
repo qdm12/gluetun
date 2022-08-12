@@ -51,6 +51,7 @@ linters:
   enable:
     # - cyclop
     # - errorlint
+    - asasalint
     - asciicheck
     - bidichk
     - bodyclose
@@ -106,6 +107,7 @@ linters:
     - tparallel
     - unconvert
     - unparam
+    - usestdlibvars
     - wastedassign
     - whitespace
 
