@@ -112,6 +112,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # # Cyberghost only:
     OPENVPN_CERT= \
+    OPENVPN_KEY= \
     OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
     OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
     # # Nordvpn only:

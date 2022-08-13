@@ -11,7 +11,7 @@ import (
 func (r *Reader) readOpenVPN() (
 	openVPN settings.OpenVPN, err error) {
 	defer func() {
-		err = unsetEnvKeys([]string{"OPENVPN_CLIENTKEY", "OPENVPN_CERT"}, err)
+		err = unsetEnvKeys([]string{"OPENVPN_KEY", "OPENVPN_CERT"}, err)
 	}()
 
 	openVPN.Version = getCleanedEnv("OPENVPN_VERSION")
@@ -35,9 +35,9 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_CERT: %w", err)
 	}
 
-	openVPN.ClientKey, err = readBase64OrNil("OPENVPN_CLIENTKEY")
+	openVPN.ClientKey, err = readBase64OrNil("OPENVPN_KEY")
 	if err != nil {
-		return openVPN, fmt.Errorf("environment variable OPENVPN_CLIENTKEY: %w", err)
+		return openVPN, fmt.Errorf("environment variable OPENVPN_KEY: %w", err)
 	}
 
 	openVPN.PIAEncPreset = r.readPIAEncryptionPreset()
