@@ -22,7 +22,7 @@ const (
 	SlickVPN              = "slickvpn"
 	Surfshark             = "surfshark"
 	Torguard              = "torguard"
-	VPNSecure             = "vpn secure"
+	VPNSecure             = "vpnsecure"
 	VPNUnlimited          = "vpn unlimited"
 	Vyprvpn               = "vyprvpn"
 	Wevpn                 = "wevpn"

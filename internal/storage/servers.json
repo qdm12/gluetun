@@ -118826,7 +118826,7 @@
       }
     ]
   },
-  "vpn secure": {
+  "vpnsecure": {
     "version": 1,
     "timestamp": 1655858488,
     "servers": [
