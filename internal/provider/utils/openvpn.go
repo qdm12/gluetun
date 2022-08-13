@@ -195,9 +195,9 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.addLines(WrapOpenvpnCert(certData))
 	}
 
-	if *settings.ClientKey != "" {
-		keyData, err := extract.PEM([]byte(*settings.ClientKey))
-		panicOnError(err, "cannot extract client private key")
+	if *settings.Key != "" {
+		keyData, err := extract.PEM([]byte(*settings.Key))
+		panicOnError(err, "cannot extract OpenVPN key")
 		lines.addLines(WrapOpenvpnKey(keyData))
 	}
 

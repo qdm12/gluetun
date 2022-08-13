@@ -35,7 +35,7 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_CERT: %w", err)
 	}
 
-	openVPN.ClientKey, err = readBase64OrNil("OPENVPN_KEY")
+	openVPN.Key, err = readBase64OrNil("OPENVPN_KEY")
 	if err != nil {
 		return openVPN, fmt.Errorf("environment variable OPENVPN_KEY: %w", err)
 	}

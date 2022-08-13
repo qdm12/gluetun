@@ -24,7 +24,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("cannot read password file: %w", err)
 	}
 
-	settings.ClientKey, err = readSecretFileAsStringPtr(
+	settings.Key, err = readSecretFileAsStringPtr(
 		"OPENVPN_CLIENTKEY_SECRETFILE",
 		"/run/secrets/openvpn_clientkey",
 	)
