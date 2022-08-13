@@ -11,7 +11,8 @@ import (
 func (r *Reader) readOpenVPN() (
 	openVPN settings.OpenVPN, err error) {
 	defer func() {
-		err = unsetEnvKeys([]string{"OPENVPN_KEY", "OPENVPN_CERT"}, err)
+		err = unsetEnvKeys([]string{"OPENVPN_KEY", "OPENVPN_CERT",
+			"OPENVPN_KEY_PASSPHRASE", "OPENVPN_ENCRYPTED_KEY"}, err)
 	}()
 
 	openVPN.Version = getCleanedEnv("OPENVPN_VERSION")
