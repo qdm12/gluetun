@@ -118,6 +118,8 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # # VPNSecure only:
     OPENVPN_ENCRYPTED_KEY= \
     OPENVPN_ENCRYPTED_KEY_SECRETFILE=/run/secrets/openvpn_encrypted_key \
+    OPENVPN_KEY_PASSPHRASE= \
+    OPENVPN_KEY_PASSPHRASE_SECRETFILE=/run/secrets/openvpn_key_passphrase \
     # # Nordvpn only:
     SERVER_NUMBER= \
     # # PIA only:

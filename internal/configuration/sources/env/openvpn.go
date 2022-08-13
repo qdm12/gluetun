@@ -45,6 +45,8 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_ENCRYPTED_KEY: %w", err)
 	}
 
+	openVPN.KeyPassphrase = r.readOpenVPNKeyPassphrase()
+
 	openVPN.PIAEncPreset = r.readPIAEncryptionPreset()
 
 	openVPN.IPv6, err = envToBoolPtr("OPENVPN_IPV6")
@@ -97,6 +99,15 @@ func (r *Reader) readOpenVPNPassword() (password *string) {
 	}
 
 	return password
+}
+
+func (r *Reader) readOpenVPNKeyPassphrase() (passphrase *string) {
+	passphrase = new(string)
+	*passphrase = getCleanedEnv("OPENVPN_KEY_PASSPHRASE")
+	if *passphrase == "" {
+		return nil
+	}
+	return passphrase
 }
 
 func readBase64OrNil(envKey string) (valueOrNil *string, err error) {

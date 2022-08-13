@@ -17,6 +17,7 @@ var (
 	ErrOpenVPNCustomPortNotAllowed     = errors.New("custom endpoint port is not allowed")
 	ErrOpenVPNEncryptionPresetNotValid = errors.New("PIA encryption preset is not valid")
 	ErrOpenVPNInterfaceNotValid        = errors.New("interface name is not valid")
+	ErrOpenVPNKeyPassphraseIsEmpty     = errors.New("key passphrase is empty")
 	ErrOpenVPNMSSFixIsTooHigh          = errors.New("mssfix option value is too high")
 	ErrOpenVPNPasswordIsEmpty          = errors.New("password is empty")
 	ErrOpenVPNTCPNotSupported          = errors.New("TCP protocol is not supported")

@@ -54,8 +54,12 @@ type OpenVPN struct {
 	// EncryptedKey is the content of an encrypted
 	// key for OpenVPN. It is used by VPN secure.
 	// It defaults to the empty string meaning it is not
-	// to be used.
+	// to be used. KeyPassphrase must be set if this one is set.
 	EncryptedKey *string
+	// KeyPassphrase is the key passphrase to be used by OpenVPN
+	// to decrypt the EncryptedPrivateKey. It defaults to the
+	// empty string and must be set if EncryptedPrivateKey is set.
+	KeyPassphrase *string
 	// PIAEncPreset is the encryption preset for
 	// Private Internet Access. It can be set to an
 	// empty string for other providers.
@@ -124,6 +128,10 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 	err = validateOpenVPNEncryptedKey(vpnProvider, *o.EncryptedKey)
 	if err != nil {
 		return fmt.Errorf("encrypted key: %w", err)
+	}
+
+	if *o.EncryptedKey != "" && *o.KeyPassphrase == "" {
+		return fmt.Errorf("%w", ErrOpenVPNKeyPassphraseIsEmpty)
 	}
 
 	const maxMSSFix = 10000
@@ -232,22 +240,23 @@ func validateOpenVPNEncryptedKey(vpnProvider,
 
 func (o *OpenVPN) copy() (copied OpenVPN) {
 	return OpenVPN{
-		Version:      o.Version,
-		User:         helpers.CopyStringPtr(o.User),
-		Password:     helpers.CopyStringPtr(o.Password),
-		ConfFile:     helpers.CopyStringPtr(o.ConfFile),
-		Ciphers:      helpers.CopyStringSlice(o.Ciphers),
-		Auth:         helpers.CopyStringPtr(o.Auth),
-		Cert:         helpers.CopyStringPtr(o.Cert),
-		Key:          helpers.CopyStringPtr(o.Key),
-		EncryptedKey: helpers.CopyStringPtr(o.EncryptedKey),
-		PIAEncPreset: helpers.CopyStringPtr(o.PIAEncPreset),
-		IPv6:         helpers.CopyBoolPtr(o.IPv6),
-		MSSFix:       helpers.CopyUint16Ptr(o.MSSFix),
-		Interface:    o.Interface,
-		ProcessUser:  o.ProcessUser,
-		Verbosity:    helpers.CopyIntPtr(o.Verbosity),
-		Flags:        helpers.CopyStringSlice(o.Flags),
+		Version:       o.Version,
+		User:          helpers.CopyStringPtr(o.User),
+		Password:      helpers.CopyStringPtr(o.Password),
+		ConfFile:      helpers.CopyStringPtr(o.ConfFile),
+		Ciphers:       helpers.CopyStringSlice(o.Ciphers),
+		Auth:          helpers.CopyStringPtr(o.Auth),
+		Cert:          helpers.CopyStringPtr(o.Cert),
+		Key:           helpers.CopyStringPtr(o.Key),
+		EncryptedKey:  helpers.CopyStringPtr(o.EncryptedKey),
+		KeyPassphrase: helpers.CopyStringPtr(o.KeyPassphrase),
+		PIAEncPreset:  helpers.CopyStringPtr(o.PIAEncPreset),
+		IPv6:          helpers.CopyBoolPtr(o.IPv6),
+		MSSFix:        helpers.CopyUint16Ptr(o.MSSFix),
+		Interface:     o.Interface,
+		ProcessUser:   o.ProcessUser,
+		Verbosity:     helpers.CopyIntPtr(o.Verbosity),
+		Flags:         helpers.CopyStringSlice(o.Flags),
 	}
 }
 
@@ -263,6 +272,7 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.Cert = helpers.MergeWithStringPtr(o.Cert, other.Cert)
 	o.Key = helpers.MergeWithStringPtr(o.Key, other.Key)
 	o.EncryptedKey = helpers.MergeWithStringPtr(o.EncryptedKey, other.EncryptedKey)
+	o.KeyPassphrase = helpers.MergeWithStringPtr(o.KeyPassphrase, other.KeyPassphrase)
 	o.PIAEncPreset = helpers.MergeWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
 	o.IPv6 = helpers.MergeWithBool(o.IPv6, other.IPv6)
 	o.MSSFix = helpers.MergeWithUint16(o.MSSFix, other.MSSFix)
@@ -285,6 +295,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.Cert = helpers.OverrideWithStringPtr(o.Cert, other.Cert)
 	o.Key = helpers.OverrideWithStringPtr(o.Key, other.Key)
 	o.EncryptedKey = helpers.OverrideWithStringPtr(o.EncryptedKey, other.EncryptedKey)
+	o.KeyPassphrase = helpers.OverrideWithStringPtr(o.KeyPassphrase, other.KeyPassphrase)
 	o.PIAEncPreset = helpers.OverrideWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
 	o.IPv6 = helpers.OverrideWithBool(o.IPv6, other.IPv6)
 	o.MSSFix = helpers.OverrideWithUint16(o.MSSFix, other.MSSFix)
@@ -308,6 +319,7 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.Cert = helpers.DefaultStringPtr(o.Cert, "")
 	o.Key = helpers.DefaultStringPtr(o.Key, "")
 	o.EncryptedKey = helpers.DefaultStringPtr(o.EncryptedKey, "")
+	o.KeyPassphrase = helpers.DefaultStringPtr(o.KeyPassphrase, "")
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
@@ -353,7 +365,8 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 	}
 
 	if *o.EncryptedKey != "" {
-		node.Appendf("Encrypted key: %s", helpers.ObfuscateData(*o.EncryptedKey))
+		node.Appendf("Encrypted key: %s (key passhrapse %s)",
+			helpers.ObfuscateData(*o.EncryptedKey), helpers.ObfuscatePassword(*o.KeyPassphrase))
 	}
 
 	if *o.PIAEncPreset != "" {
