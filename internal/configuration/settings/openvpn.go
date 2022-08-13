@@ -42,7 +42,7 @@ type OpenVPN struct {
 	// It is ignored if it is set to the empty string.
 	Auth *string
 	// Cert is the OpenVPN certificate for the <cert> block.
-	// This is notably used by Cyberghost.
+	// This is notably used by Cyberghost and VPN secure.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
 	Cert *string
@@ -182,6 +182,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 	switch vpnProvider {
 	case
 		providers.Cyberghost,
+		providers.VPNSecure,
 		providers.VPNUnlimited:
 		if clientCert == "" {
 			return ErrMissingValue
