@@ -19,13 +19,15 @@ type OpenVPN struct {
 	// It can only be "2.4" or "2.5".
 	Version string
 	// User is the OpenVPN authentication username.
-	// It cannot be an empty string in the internal state
-	// if OpenVPN is used.
-	User string
+	// It cannot be nil in the internal state if OpenVPN is used.
+	// It is usually required but in some cases can be the empty string
+	// to indicate no user+password authentication is needed.
+	User *string
 	// Password is the OpenVPN authentication password.
-	// It cannot be an empty string in the internal state
-	// if OpenVPN is used.
-	Password string
+	// It cannot be nil in the internal state if OpenVPN is used.
+	// It is usually required but in some cases can be the empty string
+	// to indicate no user+password authentication is needed.
+	Password *string
 	// ConfFile is a custom OpenVPN configuration file path.
 	// It can be set to the empty string for it to be ignored.
 	// It cannot be nil in the internal state.
@@ -88,14 +90,14 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 
 	isCustom := vpnProvider == providers.Custom
 
-	if !isCustom && o.User == "" {
+	if !isCustom && *o.User == "" {
 		return ErrOpenVPNUserIsEmpty
 	}
 
 	passwordRequired := !isCustom &&
-		(vpnProvider != providers.Ivpn || !ivpnAccountID.MatchString(o.User))
+		(vpnProvider != providers.Ivpn || !ivpnAccountID.MatchString(*o.User))
 
-	if passwordRequired && o.Password == "" {
+	if passwordRequired && *o.Password == "" {
 		return ErrOpenVPNPasswordIsEmpty
 	}
 
@@ -204,8 +206,8 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 func (o *OpenVPN) copy() (copied OpenVPN) {
 	return OpenVPN{
 		Version:      o.Version,
-		User:         o.User,
-		Password:     o.Password,
+		User:         helpers.CopyStringPtr(o.User),
+		Password:     helpers.CopyStringPtr(o.Password),
 		ConfFile:     helpers.CopyStringPtr(o.ConfFile),
 		Ciphers:      helpers.CopyStringSlice(o.Ciphers),
 		Auth:         helpers.CopyStringPtr(o.Auth),
@@ -225,8 +227,8 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 // unset field of the receiver settings object.
 func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.Version = helpers.MergeWithString(o.Version, other.Version)
-	o.User = helpers.MergeWithString(o.User, other.User)
-	o.Password = helpers.MergeWithString(o.Password, other.Password)
+	o.User = helpers.MergeWithStringPtr(o.User, other.User)
+	o.Password = helpers.MergeWithStringPtr(o.Password, other.Password)
 	o.ConfFile = helpers.MergeWithStringPtr(o.ConfFile, other.ConfFile)
 	o.Ciphers = helpers.MergeStringSlices(o.Ciphers, other.Ciphers)
 	o.Auth = helpers.MergeWithStringPtr(o.Auth, other.Auth)
@@ -246,8 +248,8 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 // settings.
 func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.Version = helpers.OverrideWithString(o.Version, other.Version)
-	o.User = helpers.OverrideWithString(o.User, other.User)
-	o.Password = helpers.OverrideWithString(o.Password, other.Password)
+	o.User = helpers.OverrideWithStringPtr(o.User, other.User)
+	o.Password = helpers.OverrideWithStringPtr(o.Password, other.Password)
 	o.ConfFile = helpers.OverrideWithStringPtr(o.ConfFile, other.ConfFile)
 	o.Ciphers = helpers.OverrideWithStringSlice(o.Ciphers, other.Ciphers)
 	o.Auth = helpers.OverrideWithStringPtr(o.Auth, other.Auth)
@@ -264,8 +266,11 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.Version = helpers.DefaultString(o.Version, openvpn.Openvpn25)
+	o.User = helpers.DefaultStringPtr(o.User, "")
 	if vpnProvider == providers.Mullvad {
-		o.Password = "m"
+		o.Password = helpers.DefaultStringPtr(o.Password, "m")
+	} else {
+		o.Password = helpers.DefaultStringPtr(o.Password, "")
 	}
 
 	o.ConfFile = helpers.DefaultStringPtr(o.ConfFile, "")
@@ -293,8 +298,8 @@ func (o OpenVPN) String() string {
 func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("OpenVPN settings:")
 	node.Appendf("OpenVPN version: %s", o.Version)
-	node.Appendf("User: %s", helpers.ObfuscatePassword(o.User))
-	node.Appendf("Password: %s", helpers.ObfuscatePassword(o.Password))
+	node.Appendf("User: %s", helpers.ObfuscatePassword(*o.User))
+	node.Appendf("Password: %s", helpers.ObfuscatePassword(*o.Password))
 
 	if *o.ConfFile != "" {
 		node.Appendf("Custom configuration file: %s", *o.ConfFile)

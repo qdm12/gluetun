@@ -36,7 +36,7 @@ func Test_modifyConfig(t *testing.T) {
 				"auth bla",
 			},
 			settings: settings.OpenVPN{
-				User:        "user",
+				User:        stringPtr("user"),
 				Ciphers:     []string{"cipher"},
 				Auth:        stringPtr("auth"),
 				MSSFix:      uint16Ptr(1000),

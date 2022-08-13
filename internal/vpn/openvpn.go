@@ -27,8 +27,8 @@ func setupOpenVPN(ctx context.Context, fw Firewall,
 		return nil, "", fmt.Errorf("failed writing configuration to file: %w", err)
 	}
 
-	if settings.OpenVPN.User != "" {
-		err := openvpnConf.WriteAuthFile(settings.OpenVPN.User, settings.OpenVPN.Password)
+	if *settings.OpenVPN.User != "" {
+		err := openvpnConf.WriteAuthFile(*settings.OpenVPN.User, *settings.OpenVPN.Password)
 		if err != nil {
 			return nil, "", fmt.Errorf("failed writing auth to file: %w", err)
 		}

@@ -74,7 +74,7 @@ func modifyConfig(lines []string, connection models.Connection,
 	modified = append(modified, "pull-filter ignore \"auth-token\"") // prevent auth failed loop
 	modified = append(modified, "auth-retry nointeract")
 	modified = append(modified, "suppress-timestamps")
-	if settings.User != "" {
+	if *settings.User != "" {
 		modified = append(modified, "auth-user-pass "+openvpn.AuthConf)
 	}
 	modified = append(modified, "verb "+strconv.Itoa(*settings.Verbosity))

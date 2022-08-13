@@ -72,14 +72,25 @@ func (r *Reader) readOpenVPN() (
 	return openVPN, nil
 }
 
-func (r *Reader) readOpenVPNUser() (user string) {
-	_, user = r.getEnvWithRetro("OPENVPN_USER", "USER")
+func (r *Reader) readOpenVPNUser() (user *string) {
+	user = new(string)
+	_, *user = r.getEnvWithRetro("OPENVPN_USER", "USER")
+	if *user == "" {
+		return nil
+	}
+
 	// Remove spaces in user ID to simplify user's life, thanks @JeordyR
-	return strings.ReplaceAll(user, " ", "")
+	*user = strings.ReplaceAll(*user, " ", "")
+	return user
 }
 
-func (r *Reader) readOpenVPNPassword() (password string) {
-	_, password = r.getEnvWithRetro("OPENVPN_PASSWORD", "PASSWORD")
+func (r *Reader) readOpenVPNPassword() (password *string) {
+	password = new(string)
+	_, *password = r.getEnvWithRetro("OPENVPN_PASSWORD", "PASSWORD")
+	if *password == "" {
+		return nil
+	}
+
 	return password
 }
 

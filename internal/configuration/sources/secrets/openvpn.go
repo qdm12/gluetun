@@ -8,7 +8,7 @@ import (
 
 func readOpenVPN() (
 	settings settings.OpenVPN, err error) {
-	settings.User, err = readSecretFileAsString(
+	settings.User, err = readSecretFileAsStringPtr(
 		"OPENVPN_USER_SECRETFILE",
 		"/run/secrets/openvpn_user",
 	)
@@ -16,7 +16,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("cannot read user file: %w", err)
 	}
 
-	settings.Password, err = readSecretFileAsString(
+	settings.Password, err = readSecretFileAsStringPtr(
 		"OPENVPN_PASSWORD_SECRETFILE",
 		"/run/secrets/openvpn_password",
 	)
