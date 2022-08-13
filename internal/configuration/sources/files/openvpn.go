@@ -19,7 +19,7 @@ func (r *Reader) readOpenVPN() (settings settings.OpenVPN, err error) {
 		return settings, fmt.Errorf("client key: %w", err)
 	}
 
-	settings.ClientCrt, err = ReadFromFile(OpenVPNClientCertificatePath)
+	settings.Cert, err = ReadFromFile(OpenVPNClientCertificatePath)
 	if err != nil {
 		return settings, fmt.Errorf("client certificate: %w", err)
 	}

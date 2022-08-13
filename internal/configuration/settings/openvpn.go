@@ -41,11 +41,11 @@ type OpenVPN struct {
 	// It cannot be nil in the internal state.
 	// It is ignored if it is set to the empty string.
 	Auth *string
-	// ClientCrt is the OpenVPN client certificate.
+	// Cert is the OpenVPN certificate for the <cert> block.
 	// This is notably used by Cyberghost.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
-	ClientCrt *string
+	Cert *string
 	// Key is the OpenVPN key.
 	// This is used by Cyberghost and VPN Unlimited.
 	// It can be set to the empty string to be ignored.
@@ -106,7 +106,7 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 		return fmt.Errorf("custom configuration file: %w", err)
 	}
 
-	err = validateOpenVPNClientCertificate(vpnProvider, *o.ClientCrt)
+	err = validateOpenVPNClientCertificate(vpnProvider, *o.Cert)
 	if err != nil {
 		return fmt.Errorf("client certificate: %w", err)
 	}
@@ -211,7 +211,7 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 		ConfFile:     helpers.CopyStringPtr(o.ConfFile),
 		Ciphers:      helpers.CopyStringSlice(o.Ciphers),
 		Auth:         helpers.CopyStringPtr(o.Auth),
-		ClientCrt:    helpers.CopyStringPtr(o.ClientCrt),
+		Cert:         helpers.CopyStringPtr(o.Cert),
 		Key:          helpers.CopyStringPtr(o.Key),
 		PIAEncPreset: helpers.CopyStringPtr(o.PIAEncPreset),
 		IPv6:         helpers.CopyBoolPtr(o.IPv6),
@@ -232,7 +232,7 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.ConfFile = helpers.MergeWithStringPtr(o.ConfFile, other.ConfFile)
 	o.Ciphers = helpers.MergeStringSlices(o.Ciphers, other.Ciphers)
 	o.Auth = helpers.MergeWithStringPtr(o.Auth, other.Auth)
-	o.ClientCrt = helpers.MergeWithStringPtr(o.ClientCrt, other.ClientCrt)
+	o.Cert = helpers.MergeWithStringPtr(o.Cert, other.Cert)
 	o.Key = helpers.MergeWithStringPtr(o.Key, other.Key)
 	o.PIAEncPreset = helpers.MergeWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
 	o.IPv6 = helpers.MergeWithBool(o.IPv6, other.IPv6)
@@ -253,7 +253,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.ConfFile = helpers.OverrideWithStringPtr(o.ConfFile, other.ConfFile)
 	o.Ciphers = helpers.OverrideWithStringSlice(o.Ciphers, other.Ciphers)
 	o.Auth = helpers.OverrideWithStringPtr(o.Auth, other.Auth)
-	o.ClientCrt = helpers.OverrideWithStringPtr(o.ClientCrt, other.ClientCrt)
+	o.Cert = helpers.OverrideWithStringPtr(o.Cert, other.Cert)
 	o.Key = helpers.OverrideWithStringPtr(o.Key, other.Key)
 	o.PIAEncPreset = helpers.OverrideWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
 	o.IPv6 = helpers.OverrideWithBool(o.IPv6, other.IPv6)
@@ -275,7 +275,7 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 
 	o.ConfFile = helpers.DefaultStringPtr(o.ConfFile, "")
 	o.Auth = helpers.DefaultStringPtr(o.Auth, "")
-	o.ClientCrt = helpers.DefaultStringPtr(o.ClientCrt, "")
+	o.Cert = helpers.DefaultStringPtr(o.Cert, "")
 	o.Key = helpers.DefaultStringPtr(o.Key, "")
 
 	var defaultEncPreset string
@@ -313,8 +313,8 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 		node.Appendf("Auth: %s", *o.Auth)
 	}
 
-	if *o.ClientCrt != "" {
-		node.Appendf("Client crt: %s", helpers.ObfuscateData(*o.ClientCrt))
+	if *o.Cert != "" {
+		node.Appendf("Client crt: %s", helpers.ObfuscateData(*o.Cert))
 	}
 
 	if *o.Key != "" {

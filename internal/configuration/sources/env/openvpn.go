@@ -30,7 +30,7 @@ func (r *Reader) readOpenVPN() (
 		openVPN.Auth = &auth
 	}
 
-	openVPN.ClientCrt, err = readBase64OrNil("OPENVPN_CERT")
+	openVPN.Cert, err = readBase64OrNil("OPENVPN_CERT")
 	if err != nil {
 		return openVPN, fmt.Errorf("environment variable OPENVPN_CERT: %w", err)
 	}

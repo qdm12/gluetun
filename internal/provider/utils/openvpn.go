@@ -189,9 +189,9 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.addLines(WrapOpenvpnTLSCrypt(provider.TLSCrypt))
 	}
 
-	if *settings.ClientCrt != "" {
-		certData, err := extract.PEM([]byte(*settings.ClientCrt))
-		panicOnError(err, "cannot extract client crt")
+	if *settings.Cert != "" {
+		certData, err := extract.PEM([]byte(*settings.Cert))
+		panicOnError(err, "cannot extract OpenVPN certificate")
 		lines.addLines(WrapOpenvpnCert(certData))
 	}
 
