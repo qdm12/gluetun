@@ -14,7 +14,8 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 		RemoteCertTLS: true,
 		AuthUserPass:  true,
 		Ping:          10,
-		Ciphers:       []string{openvpn.AES256cbc},
+		// note DES-CBC is not added since it's quite unsecure
+		Ciphers: []string{openvpn.AES256cbc, openvpn.AES128cbc},
 		ExtraLines: []string{
 			"comp-lzo",
 			"float",
