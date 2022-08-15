@@ -15,7 +15,8 @@ import (
 
 func fetchServers(ctx context.Context, client *http.Client,
 	warner common.Warner) (servers []models.Server, err error) {
-	rootNode, err := fetchHTML(ctx, client)
+	const url = "https://www.vpnsecure.me/vpn-locations/"
+	rootNode, err := htmlutils.Fetch(ctx, client, url)
 	if err != nil {
 		return nil, fmt.Errorf("fetching HTML code: %w", err)
 	}
@@ -29,39 +30,6 @@ func fetchServers(ctx context.Context, client *http.Client,
 	}
 
 	return servers, nil
-}
-
-var ErrHTTPStatusCode = errors.New("HTTP status code is not OK")
-
-func fetchHTML(ctx context.Context, client *http.Client) (rootNode *html.Node, err error) {
-	const url = "https://www.vpnsecure.me/vpn-locations/"
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := client.Do(request)
-	if err != nil {
-		return nil, err
-	}
-
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %d %s",
-			ErrHTTPStatusCode, response.StatusCode, response.Status)
-	}
-
-	rootNode, err = html.Parse(response.Body)
-	if err != nil {
-		_ = response.Body.Close()
-		return nil, fmt.Errorf("parsing HTML code: %w", err)
-	}
-
-	err = response.Body.Close()
-	if err != nil {
-		return nil, fmt.Errorf("closing response body: %w", err)
-	}
-
-	return rootNode, nil
 }
 
 var (
