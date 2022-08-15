@@ -76,6 +76,7 @@ func ExtractIPs(b []byte) (ips []net.IP, err error) {
 func extractRemoteHosts(content []byte, rejectIP, rejectDomain bool) (hosts []string) {
 	lines := strings.Split(string(content), "\n")
 	for _, line := range lines {
+		line = strings.TrimSpace(line)
 		if !strings.HasPrefix(line, "remote ") {
 			continue
 		}

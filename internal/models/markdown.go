@@ -123,6 +123,8 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, freeHeader}
 	case providers.Purevpn:
 		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}
+	case providers.SlickVPN:
+		return []string{regionHeader, countryHeader, cityHeader, hostnameHeader}
 	case providers.Surfshark:
 		return []string{regionHeader, countryHeader, cityHeader, hostnameHeader, multiHopHeader, tcpHeader, udpHeader}
 	case providers.Torguard:

@@ -17,6 +17,7 @@ require (
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
 	github.com/stretchr/testify v1.8.0
 	github.com/vishvananda/netlink v1.1.1-0.20211129163951-9ada19101fc5
+	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
 	golang.org/x/text v0.3.7
 	golang.zx2c4.com/wireguard v0.0.0-20210805125648-3957e9b9dd19
@@ -40,6 +41,5 @@ require (
 	go4.org/intern v0.0.0-20210108033219-3eb7198706b2 // indirect
 	go4.org/unsafe/assume-no-moving-gc v0.0.0-20220617031537-928513b29760 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
-	golang.org/x/net v0.0.0-20210504132125-bbd867fde50d // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
