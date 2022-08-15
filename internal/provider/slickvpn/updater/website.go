@@ -57,15 +57,19 @@ type serverData struct {
 	city    string
 }
 
+var (
+	errHTMLNodeNotFound = errors.New("HTML node not found")
+)
+
 func parseHTML(rootNode *html.Node) (hostToData map[string]serverData, err error) {
 	locationTableNode := htmlutils.GetFirstNodeByID(rootNode, "location-table")
 	if locationTableNode == nil {
-		return nil, fmt.Errorf("unable to find html node with matching id")
+		return nil, fmt.Errorf("%w: for id location-table", errHTMLNodeNotFound)
 	}
 
 	tBodyNode := htmlutils.GetFirstNodeByType(locationTableNode, "tbody")
 	if tBodyNode == nil {
-		return nil, fmt.Errorf("unable to find tbody tag inside location table")
+		return nil, fmt.Errorf("%w: tbody node within location table", errHTMLNodeNotFound)
 	}
 
 	rowNodes := htmlutils.GetNodesByType(tBodyNode, "tr")
@@ -132,23 +136,8 @@ func extractHostnameFromURL(url string) (hostname string, err error) {
 	matches := serverNameRegex.FindStringSubmatch(url)
 	const minMatches = 2
 	if len(matches) < minMatches {
-		return "", fmt.Errorf("%w: from %s", ErrExtractHostnameFromURL, url)
+		return "", fmt.Errorf("%w: %s", ErrExtractHostnameFromURL, url)
 	}
 	hostname = matches[1]
 	return hostname, nil
-}
-
-var (
-	ErrHTMLAttributeNotFound = errors.New("html attribute not found")
-)
-
-func getAttributeValue(node *html.Node, attributeKey string) (
-	attributeValue string, err error) {
-	for _, attr := range node.Attr {
-		if attr.Key == attributeKey {
-			return attr.Val, nil
-		}
-	}
-
-	return "", fmt.Errorf("%w: for key %s", ErrHTMLAttributeNotFound, attributeKey)
 }

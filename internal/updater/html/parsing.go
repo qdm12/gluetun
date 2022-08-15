@@ -1,4 +1,4 @@
-package htmlutils
+package html
 
 import (
 	"container/list"
@@ -16,26 +16,26 @@ func GetText(n *html.Node) string {
 	return n.FirstChild.Data
 }
 
-func GetAttr(n *html.Node, key string) (string, error) {
+func GetAttr(n *html.Node, key string) (attributeValue string, err error) {
 	for _, attr := range n.Attr {
 		if attr.Key == key {
 			return attr.Val, nil
 		}
 	}
 
-	return "", ErrAttrNotFound
+	return "", fmt.Errorf("%w: for attribute key %q", ErrAttrNotFound, key)
 }
 
-func CheckAttrMatch(n *html.Node, attrKey string, checkValue string) bool {
+func CheckAttrMatch(n *html.Node, attrKey string, checkValue string) (match bool) {
 	attrValue, err := GetAttr(n, attrKey)
 	return err == nil && attrValue == checkValue
 }
 
-func CheckID(n *html.Node, idValue string) bool {
+func CheckID(n *html.Node, idValue string) (match bool) {
 	return CheckAttrMatch(n, "id", idValue)
 }
 
-func CheckNodeType(n *html.Node, tagType string) bool {
+func CheckNodeTag(n *html.Node, tagType string) bool {
 	return n.Type == html.ElementNode && n.Data == tagType
 }
 
@@ -47,14 +47,14 @@ func GetFirstNodeByID(n *html.Node, idValue string) *html.Node {
 
 func GetFirstNodeByType(n *html.Node, nodeType string) *html.Node {
 	return bfs(n, func(n *html.Node) bool {
-		return CheckNodeType(n, nodeType)
+		return CheckNodeTag(n, nodeType)
 	})
 }
 
 func GetNodesByType(n *html.Node, nodeType string) []*html.Node {
 	nodes := []*html.Node{}
 	for childNode := n.FirstChild; childNode != nil; childNode = childNode.NextSibling {
-		if CheckNodeType(childNode, nodeType) {
+		if CheckNodeTag(childNode, nodeType) {
 			nodes = append(nodes, childNode)
 		}
 	}
