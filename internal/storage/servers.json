@@ -113319,7 +113319,7 @@
   },
   "slickvpn": {
     "version": 1,
-    "timestamp": 1655515504,
+    "timestamp": 1660572114,
     "servers": [
       {
         "vpn": "openvpn",
@@ -113367,6 +113367,28 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Australia",
+        "region": "Oceania",
+        "city": "Sydney",
+        "hostname": "gw1.syd2.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "172.105.173.66"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Australia",
+        "region": "Oceania",
+        "city": "Sydney",
+        "hostname": "gw2.syd2.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "172.105.168.12"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Austria",
         "region": "Europe",
         "city": "Graz",
@@ -113403,21 +113425,10 @@
         "country": "Brazil",
         "region": "South America",
         "city": "Sao Paulo",
-        "hostname": "gw1.gru1.slickvpn.com",
+        "hostname": "gw1.gru2.slickvpn.com",
         "udp": true,
         "ips": [
-          "187.45.186.34"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Bulgaria",
-        "region": "Europe",
-        "city": "Sofia",
-        "hostname": "gw1.sof1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "217.18.246.209"
+          "177.54.158.153"
         ]
       },
       {
@@ -113446,11 +113457,11 @@
         "vpn": "openvpn",
         "country": "Canada",
         "region": "North America",
-        "city": "Québec City",
-        "hostname": "gw1.yqb1.slickvpn.com",
+        "city": "Montreal",
+        "hostname": "gw2.yul2.slickvpn.com",
         "udp": true,
         "ips": [
-          "192.95.15.24"
+          "67.215.7.10"
         ]
       },
       {
@@ -113469,43 +113480,10 @@
         "country": "Canada",
         "region": "North America",
         "city": "Toronto",
-        "hostname": "gw1.yyz2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "208.92.235.23"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada",
-        "region": "North America",
-        "city": "Toronto",
         "hostname": "gw2.yyz1.slickvpn.com",
         "udp": true,
         "ips": [
           "172.105.9.120"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada",
-        "region": "North America",
-        "city": "Toronto",
-        "hostname": "gw3.yyz1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "198.144.157.100"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Canada",
-        "region": "North America",
-        "city": "Toronto",
-        "hostname": "gw4.yyz1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "198.144.157.12"
         ]
       },
       {
@@ -113539,6 +113517,17 @@
         "udp": true,
         "ips": [
           "46.36.36.51"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Czech Republic",
+        "region": "Europe",
+        "city": "Prague",
+        "hostname": "gw1.prg2.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "193.235.207.24"
         ]
       },
       {
@@ -113598,28 +113587,6 @@
       },
       {
         "vpn": "openvpn",
-        "country": "France",
-        "region": "Europe",
-        "city": "Paris",
-        "hostname": "gw1.cdg2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "185.26.239.97"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "France",
-        "region": "Europe",
-        "city": "Strasbourg",
-        "hostname": "gw1.sxb1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "94.23.94.216"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "Germany",
         "region": "Europe",
         "city": "Frankfurt",
@@ -113664,13 +113631,24 @@
       },
       {
         "vpn": "openvpn",
-        "country": "Hong Kong",
-        "region": "Asia",
-        "city": "Hong Kong",
-        "hostname": "gw1.hkg1.slickvpn.com",
+        "country": "Greece",
+        "region": "Europe",
+        "city": "Athens",
+        "hostname": "gw1.ath1.slickvpn.com",
         "udp": true,
         "ips": [
-          "117.18.73.46"
+          "185.226.65.178"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Greece",
+        "region": "Europe",
+        "city": "Thessaloniki",
+        "hostname": "gw1.skg1.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "192.71.166.19"
         ]
       },
       {
@@ -113721,33 +113699,11 @@
         "vpn": "openvpn",
         "country": "India",
         "region": "Asia",
-        "city": "Chennai/Madras",
-        "hostname": "gw1.maa1.slickvpn.com",
+        "city": "Mumbai",
+        "hostname": "gw1.bom1.slickvpn.com",
         "udp": true,
         "ips": [
-          "103.6.87.177"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "India",
-        "region": "Asia",
-        "city": "Pune",
-        "hostname": "gw1.pnq1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "103.250.184.224"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "India",
-        "region": "Asia",
-        "city": "Pune",
-        "hostname": "gw2.pnq1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "103.12.211.170"
+          "172.105.63.74"
         ]
       },
       {
@@ -113774,17 +113730,6 @@
       },
       {
         "vpn": "openvpn",
-        "country": "Ireland",
-        "region": "Europe",
-        "city": "Dublin",
-        "hostname": "gw1.dub2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "185.24.233.47"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "Israel",
         "region": "Asia",
         "city": "Tel Aviv Yafo",
@@ -113792,17 +113737,6 @@
         "udp": true,
         "ips": [
           "193.182.144.37"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Israel",
-        "region": "Asia",
-        "city": "Tel Aviv Yafo",
-        "hostname": "gw2.tlv1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "212.199.61.39"
         ]
       },
       {
@@ -113851,46 +113785,35 @@
       },
       {
         "vpn": "openvpn",
-        "country": "Japan",
-        "region": "Asia",
-        "city": "Tokyo",
-        "hostname": "gw1.nrt2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "106.186.23.145"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Latvia",
-        "region": "Europe",
-        "city": "Riga",
-        "hostname": "gw1.rix1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "94.100.6.77"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Luxembourg",
-        "region": "Europe",
-        "city": "Luxembourg",
-        "hostname": "gw1.lux1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "94.242.253.64"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "Malaysia",
         "region": "Asia",
         "city": "Kuala Lumpur",
-        "hostname": "gw1.kul3.slickvpn.com",
+        "hostname": "gw1.kul1.slickvpn.com",
         "udp": true,
         "ips": [
-          "103.1.149.144"
+          "117.53.155.94"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Moldova",
+        "region": "Europe",
+        "city": "Chisinau",
+        "hostname": "gw1.kiv1.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "192.121.87.27"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Netherlands",
+        "region": "Europe",
+        "city": "Amsterdam",
+        "hostname": "gw1.ams1.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "81.4.102.9"
         ]
       },
       {
@@ -113920,10 +113843,21 @@
         "country": "Netherlands",
         "region": "Europe",
         "city": "Amsterdam",
-        "hostname": "gw2.ams1.slickvpn.com",
+        "hostname": "gw1.ams4.slickvpn.com",
         "udp": true,
         "ips": [
-          "81.4.103.233"
+          "185.34.136.13"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Netherlands",
+        "region": "Europe",
+        "city": "Amsterdam",
+        "hostname": "gw2.ams3.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "151.236.14.57"
         ]
       },
       {
@@ -113952,44 +113886,11 @@
         "vpn": "openvpn",
         "country": "Poland",
         "region": "Europe",
-        "city": "Gdansk",
-        "hostname": "gw1.gdn1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "188.116.53.17"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Poland",
-        "region": "Europe",
-        "city": "Gdansk",
-        "hostname": "gw1.gdn2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "178.255.46.130"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Poland",
-        "region": "Europe",
         "city": "Warsaw",
         "hostname": "gw1.waw1.slickvpn.com",
         "udp": true,
         "ips": [
           "212.7.220.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Portugal",
-        "region": "Europe",
-        "city": "Lisbon",
-        "hostname": "gw1.lis1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "185.31.159.24"
         ]
       },
       {
@@ -114038,6 +113939,17 @@
       },
       {
         "vpn": "openvpn",
+        "country": "Serbia",
+        "region": "Europe",
+        "city": "Belgrade",
+        "hostname": "gw1.beg1.slickvpn.com",
+        "udp": true,
+        "ips": [
+          "194.71.126.18"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "Singapore",
         "region": "Asia",
         "city": "Singapore",
@@ -114082,24 +113994,13 @@
       },
       {
         "vpn": "openvpn",
-        "country": "South Africa",
-        "region": "Africa",
-        "city": "Cape Town",
-        "hostname": "gw1.cpt1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "160.119.253.197"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "Spain",
         "region": "Europe",
         "city": "Barcelona",
-        "hostname": "gw1.bcn2.slickvpn.com",
+        "hostname": "gw2.bcn2.slickvpn.com",
         "udp": true,
         "ips": [
-          "185.47.131.187"
+          "5.134.119.168"
         ]
       },
       {
@@ -114129,10 +114030,10 @@
         "country": "Sweden",
         "region": "Europe",
         "city": "Stockholm",
-        "hostname": "gw1.arn2.slickvpn.com",
+        "hostname": "gw1.arn1.slickvpn.com",
         "udp": true,
         "ips": [
-          "5.150.254.130"
+          "178.73.210.224"
         ]
       },
       {
@@ -114155,28 +114056,6 @@
         "udp": true,
         "ips": [
           "178.209.51.203"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Switzerland",
-        "region": "Europe",
-        "city": "Zurich",
-        "hostname": "gw1.zrh2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "116.203.118.89"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "Taiwan",
-        "region": "Asia",
-        "city": "Taipei",
-        "hostname": "gw1.tpe1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "60.251.29.13"
         ]
       },
       {
@@ -114205,11 +114084,11 @@
         "vpn": "openvpn",
         "country": "Turkey",
         "region": "Asia",
-        "city": "Istanbul",
-        "hostname": "gw1.ist1.slickvpn.com",
+        "city": "Bursa",
+        "hostname": "gw1.yei1.slickvpn.com",
         "udp": true,
         "ips": [
-          "45.123.118.83"
+          "45.123.119.43"
         ]
       },
       {
@@ -114287,39 +114166,6 @@
         "udp": true,
         "ips": [
           "176.58.120.179"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "region": "Europe",
-        "city": "London",
-        "hostname": "gw1.lhr3.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "37.235.54.125"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "region": "Europe",
-        "city": "London",
-        "hostname": "gw1.lhr4.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "185.42.221.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United Kingdom",
-        "region": "Europe",
-        "city": "London",
-        "hostname": "gw2.lhr1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "77.92.75.144"
         ]
       },
       {
@@ -114525,17 +114371,6 @@
         "country": "United States",
         "region": "North America",
         "city": "Dallas",
-        "hostname": "gw1.dfw4.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "65.99.193.210"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "North America",
-        "city": "Dallas",
         "hostname": "gw2.dfw3.slickvpn.com",
         "udp": true,
         "ips": [
@@ -114579,17 +114414,6 @@
         "vpn": "openvpn",
         "country": "United States",
         "region": "North America",
-        "city": "Fletcher",
-        "hostname": "gw1.avl2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "162.219.28.154"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "North America",
         "city": "Houston",
         "hostname": "gw2.hou1.slickvpn.com",
         "udp": true,
@@ -114606,28 +114430,6 @@
         "udp": true,
         "ips": [
           "192.187.101.186"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "North America",
-        "city": "Kansas City",
-        "hostname": "gw2.mci1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "50.115.174.34"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "North America",
-        "city": "Kansas City",
-        "hostname": "gw2.mci2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "69.197.148.23"
         ]
       },
       {
@@ -114668,17 +114470,6 @@
         "country": "United States",
         "region": "North America",
         "city": "Los Angeles",
-        "hostname": "gw1.lax3.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "104.255.171.53"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "North America",
-        "city": "Los Angeles",
         "hostname": "gw3.lax3.slickvpn.com",
         "udp": true,
         "ips": [
@@ -114690,10 +114481,10 @@
         "country": "United States",
         "region": "North America",
         "city": "Miami",
-        "hostname": "gw1.mia4.slickvpn.com",
+        "hostname": "gw2.mia3.slickvpn.com",
         "udp": true,
         "ips": [
-          "45.58.127.234"
+          "192.171.19.130"
         ]
       },
       {
@@ -114701,10 +114492,10 @@
         "country": "United States",
         "region": "North America",
         "city": "Miami",
-        "hostname": "gw2.mia3.slickvpn.com",
+        "hostname": "gw2.mia4.slickvpn.com",
         "udp": true,
         "ips": [
-          "192.171.19.130"
+          "199.127.62.98"
         ]
       },
       {
@@ -114738,17 +114529,6 @@
         "udp": true,
         "ips": [
           "206.221.178.210"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "North America",
-        "city": "New York",
-        "hostname": "gw2.lga2.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "216.155.149.202"
         ]
       },
       {
@@ -114832,17 +114612,6 @@
         "vpn": "openvpn",
         "country": "United States",
         "region": "North America",
-        "city": "Roseburg",
-        "hostname": "gw1.rbg1.slickvpn.com",
-        "udp": true,
-        "ips": [
-          "104.255.170.211"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "United States",
-        "region": "North America",
         "city": "Salt Lake City",
         "hostname": "gw2.slc1.slickvpn.com",
         "udp": true,
@@ -114877,10 +114646,10 @@
         "country": "United States",
         "region": "North America",
         "city": "Seattle",
-        "hostname": "gw1.sea2.slickvpn.com",
+        "hostname": "gw1.sea1.slickvpn.com",
         "udp": true,
         "ips": [
-          "167.88.112.78"
+          "107.181.191.68"
         ]
       },
       {
@@ -114888,10 +114657,10 @@
         "country": "United States",
         "region": "North America",
         "city": "Seattle",
-        "hostname": "gw2.sea1.slickvpn.com",
+        "hostname": "gw1.sea2.slickvpn.com",
         "udp": true,
         "ips": [
-          "50.22.146.42"
+          "167.88.112.78"
         ]
       },
       {
