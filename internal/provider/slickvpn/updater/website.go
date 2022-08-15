@@ -11,35 +11,44 @@ import (
 	"golang.org/x/net/html"
 )
 
-var ErrHTTPStatusCode = errors.New("HTTP status code is not OK")
-
-func fetchAndParseWebsite(ctx context.Context, client *http.Client) (
+func fetchServers(ctx context.Context, client *http.Client) (
 	hostToData map[string]serverData, err error) {
-	const url = "https://www.slickvpn.com/locations/"
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	rootNode, err := fetchHTML(ctx, client)
 	if err != nil {
-		return nil, fmt.Errorf("create HTTP request: %w", err)
-	}
-
-	response, err := client.Do(request)
-	if err != nil {
-		return nil, fmt.Errorf("do HTTP request: %w", err)
-	}
-
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %d %s", ErrHTTPStatusCode, response.StatusCode, response.Status)
-	}
-
-	rootNode, err := html.Parse(response.Body)
-	if err != nil {
-		_ = response.Body.Close()
-		return nil, fmt.Errorf("parsing HTML code: %w", err)
+		return nil, fmt.Errorf("fetching HTML code: %w", err)
 	}
 
 	hostToData, err = parseHTML(rootNode)
 	if err != nil {
-		_ = response.Body.Close()
 		return nil, fmt.Errorf("parsing HTML: %w", err)
+	}
+
+	return hostToData, nil
+}
+
+var ErrHTTPStatusCode = errors.New("HTTP status code is not OK")
+
+func fetchHTML(ctx context.Context, client *http.Client) (rootNode *html.Node, err error) {
+	const url = "https://www.slickvpn.com/locations/"
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %d %s",
+			ErrHTTPStatusCode, response.StatusCode, response.Status)
+	}
+
+	rootNode, err = html.Parse(response.Body)
+	if err != nil {
+		_ = response.Body.Close()
+		return nil, fmt.Errorf("parsing HTML code: %w", err)
 	}
 
 	err = response.Body.Close()
@@ -47,7 +56,7 @@ func fetchAndParseWebsite(ctx context.Context, client *http.Client) (
 		return nil, fmt.Errorf("closing response body: %w", err)
 	}
 
-	return hostToData, nil
+	return rootNode, nil
 }
 
 type serverData struct {
@@ -58,72 +67,100 @@ type serverData struct {
 }
 
 var (
-	errHTMLNodeNotFound = errors.New("HTML node not found")
+	ErrLocationTableNotFound = errors.New("HTML location table node not found")
+	ErrTbodyNotFound         = errors.New("HTML tbody node not found")
+	ErrExtractOpenVPNURL     = errors.New("failed extracting OpenVPN URL")
 )
 
 func parseHTML(rootNode *html.Node) (hostToData map[string]serverData, err error) {
-	locationTableNode := htmlutils.GetFirstNodeByID(rootNode, "location-table")
+	locationTableNode := htmlutils.BFS(rootNode, matchLocationTable)
 	if locationTableNode == nil {
-		return nil, fmt.Errorf("%w: for id location-table", errHTMLNodeNotFound)
+		return nil, htmlutils.WrapError(ErrLocationTableNotFound, rootNode)
 	}
 
-	tBodyNode := htmlutils.GetFirstNodeByType(locationTableNode, "tbody")
+	tBodyNode := htmlutils.BFS(locationTableNode, matchTbody)
 	if tBodyNode == nil {
-		return nil, fmt.Errorf("%w: tbody node within location table", errHTMLNodeNotFound)
+		return nil, htmlutils.WrapError(ErrTbodyNotFound, rootNode)
 	}
 
-	rowNodes := htmlutils.GetNodesByType(tBodyNode, "tr")
+	rowNodes := htmlutils.DirectChildren(tBodyNode, matchTr)
 	hostToData = make(map[string]serverData, len(rowNodes))
 
 	for _, rowNode := range rowNodes {
-		var hostname string
-		var data serverData
-		columnIndex := 0
-		const (
-			columnIndexContinent = 0
-			columnIndexCountry   = 1
-			columnIndexCity      = 2
-			columnIndexConfig    = 3
-		)
-		for cellNode := rowNode.FirstChild; cellNode != nil; cellNode = cellNode.NextSibling {
-			switch columnIndex {
-			case columnIndexContinent:
-				data.region = cellNode.FirstChild.Data
-			case columnIndexCountry:
-				data.country = cellNode.FirstChild.Data
-			case columnIndexCity:
-				data.city = cellNode.FirstChild.Data
-			case columnIndexConfig:
-				linkNodes := htmlutils.GetNodesByType(cellNode, "a")
-				for _, linkNode := range linkNodes {
-					if htmlutils.GetText(linkNode) != "OpenVPN" {
-						continue
-					}
-
-					data.ovpnURL, err = htmlutils.GetAttr(linkNode, "href")
-					if err != nil {
-						return nil, fmt.Errorf("get attribute value: %w", err)
-					}
-
-					hostname, err = extractHostnameFromURL(data.ovpnURL)
-					if err != nil {
-						return nil, fmt.Errorf("extract hostname from url: %w", err)
-					}
-
-					break
-				}
-			}
-
-			columnIndex++
-			if columnIndex == columnIndexConfig+1 {
-				break
-			}
+		hostname, data, err := parseRowNode(rowNode)
+		if err != nil {
+			return nil, fmt.Errorf("parsing row node: %w", err)
 		}
-
 		hostToData[hostname] = data
 	}
 
 	return hostToData, nil
+}
+
+func parseRowNode(rowNode *html.Node) (hostname string, data serverData, err error) {
+	columnIndex := 0
+	const (
+		columnIndexContinent = 0
+		columnIndexCountry   = 1
+		columnIndexCity      = 2
+		columnIndexConfig    = 3
+	)
+	for cellNode := rowNode.FirstChild; cellNode != nil; cellNode = cellNode.NextSibling {
+		if cellNode.FirstChild == nil {
+			continue
+		}
+
+		switch columnIndex {
+		case columnIndexContinent:
+			data.region = cellNode.FirstChild.Data
+		case columnIndexCountry:
+			data.country = cellNode.FirstChild.Data
+		case columnIndexCity:
+			data.city = cellNode.FirstChild.Data
+		case columnIndexConfig:
+			linkNodes := htmlutils.DirectChildren(cellNode, matchA)
+			for _, linkNode := range linkNodes {
+				if linkNode.FirstChild.Data != "OpenVPN" {
+					continue
+				}
+
+				data.ovpnURL = htmlutils.Attribute(linkNode, "href")
+				if data.ovpnURL == "" {
+					return "", data, htmlutils.WrapError(ErrExtractOpenVPNURL, linkNode)
+				}
+
+				hostname, err = extractHostnameFromURL(data.ovpnURL)
+				if err != nil {
+					return "", data, fmt.Errorf("extracting hostname from url: %w", err)
+				}
+
+				break
+			}
+		}
+
+		columnIndex++
+		if columnIndex == columnIndexConfig+1 {
+			break
+		}
+	}
+
+	return hostname, data, nil
+}
+
+func matchLocationTable(rootNode *html.Node) (match bool) {
+	return htmlutils.MatchID("location-table")(rootNode)
+}
+
+func matchTbody(locationTableNode *html.Node) (match bool) {
+	return htmlutils.MatchData("tbody")(locationTableNode)
+}
+
+func matchTr(tbodyNode *html.Node) (match bool) {
+	return htmlutils.MatchData("tr")(tbodyNode)
+}
+
+func matchA(cellNode *html.Node) (match bool) {
+	return htmlutils.MatchData("a")(cellNode)
 }
 
 var serverNameRegex = regexp.MustCompile(`^.+\/(?P<serverName>.+)\.ovpn$`)
@@ -136,7 +173,8 @@ func extractHostnameFromURL(url string) (hostname string, err error) {
 	matches := serverNameRegex.FindStringSubmatch(url)
 	const minMatches = 2
 	if len(matches) < minMatches {
-		return "", fmt.Errorf("%w: %s", ErrExtractHostnameFromURL, url)
+		return "", fmt.Errorf("%w: %s has less than 2 matches for %s",
+			ErrExtractHostnameFromURL, url, serverNameRegex)
 	}
 	hostname = matches[1]
 	return hostname, nil

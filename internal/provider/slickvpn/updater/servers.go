@@ -13,7 +13,7 @@ import (
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
-	hostToData, err := fetchAndParseWebsite(ctx, u.client)
+	hostToData, err := fetchServers(ctx, u.client)
 	if err != nil {
 		return nil, fmt.Errorf("fetching and parsing website: %w", err)
 	}
