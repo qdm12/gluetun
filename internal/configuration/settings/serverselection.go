@@ -45,6 +45,10 @@ type ServerSelection struct { //nolint:maligned
 	// FreeOnly is true if VPN servers that are not free should
 	// be filtered. This is used with ProtonVPN and VPN Unlimited.
 	FreeOnly *bool
+	// PremiumOnly is true if VPN servers that are not premium should
+	// be filtered. This is used with VPN Secure.
+	// TODO extend to providers using FreeOnly.
+	PremiumOnly *bool
 	// StreamOnly is true if VPN servers not for streaming should
 	// be filtered. This is used with VPNUnlimited.
 	StreamOnly *bool
@@ -63,8 +67,10 @@ type ServerSelection struct { //nolint:maligned
 var (
 	ErrOwnedOnlyNotSupported    = errors.New("owned only filter is not supported")
 	ErrFreeOnlyNotSupported     = errors.New("free only filter is not supported")
+	ErrPremiumOnlyNotSupported  = errors.New("premium only filter is not supported")
 	ErrStreamOnlyNotSupported   = errors.New("stream only filter is not supported")
 	ErrMultiHopOnlyNotSupported = errors.New("multi hop only filter is not supported")
+	ErrFreePremiumBothSet       = errors.New("free only and premium only filters are both set")
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
@@ -101,6 +107,18 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		) {
 		return fmt.Errorf("%w: for VPN service provider %s",
 			ErrFreeOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *ss.PremiumOnly &&
+		!helpers.IsOneOf(vpnServiceProvider,
+			providers.VPNSecure,
+		) {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrPremiumOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *ss.FreeOnly && *ss.PremiumOnly {
+		return ErrFreePremiumBothSet
 	}
 
 	if *ss.StreamOnly &&
@@ -194,6 +212,7 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 		Numbers:      helpers.CopyUint16Slice(ss.Numbers),
 		OwnedOnly:    helpers.CopyBoolPtr(ss.OwnedOnly),
 		FreeOnly:     helpers.CopyBoolPtr(ss.FreeOnly),
+		PremiumOnly:  helpers.CopyBoolPtr(ss.PremiumOnly),
 		StreamOnly:   helpers.CopyBoolPtr(ss.StreamOnly),
 		MultiHopOnly: helpers.CopyBoolPtr(ss.MultiHopOnly),
 		OpenVPN:      ss.OpenVPN.copy(),
@@ -213,6 +232,7 @@ func (ss *ServerSelection) mergeWith(other ServerSelection) {
 	ss.Numbers = helpers.MergeUint16Slices(ss.Numbers, other.Numbers)
 	ss.OwnedOnly = helpers.MergeWithBool(ss.OwnedOnly, other.OwnedOnly)
 	ss.FreeOnly = helpers.MergeWithBool(ss.FreeOnly, other.FreeOnly)
+	ss.PremiumOnly = helpers.MergeWithBool(ss.PremiumOnly, other.PremiumOnly)
 	ss.StreamOnly = helpers.MergeWithBool(ss.StreamOnly, other.StreamOnly)
 	ss.MultiHopOnly = helpers.MergeWithBool(ss.MultiHopOnly, other.MultiHopOnly)
 
@@ -232,6 +252,7 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.Numbers = helpers.OverrideWithUint16Slice(ss.Numbers, other.Numbers)
 	ss.OwnedOnly = helpers.OverrideWithBool(ss.OwnedOnly, other.OwnedOnly)
 	ss.FreeOnly = helpers.OverrideWithBool(ss.FreeOnly, other.FreeOnly)
+	ss.PremiumOnly = helpers.OverrideWithBool(ss.PremiumOnly, other.PremiumOnly)
 	ss.StreamOnly = helpers.OverrideWithBool(ss.StreamOnly, other.StreamOnly)
 	ss.MultiHopOnly = helpers.OverrideWithBool(ss.MultiHopOnly, other.MultiHopOnly)
 	ss.OpenVPN.overrideWith(other.OpenVPN)
@@ -243,6 +264,7 @@ func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.TargetIP = helpers.DefaultIP(ss.TargetIP, net.IP{})
 	ss.OwnedOnly = helpers.DefaultBool(ss.OwnedOnly, false)
 	ss.FreeOnly = helpers.DefaultBool(ss.FreeOnly, false)
+	ss.PremiumOnly = helpers.DefaultBool(ss.PremiumOnly, false)
 	ss.StreamOnly = helpers.DefaultBool(ss.StreamOnly, false)
 	ss.MultiHopOnly = helpers.DefaultBool(ss.MultiHopOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
@@ -297,6 +319,10 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 
 	if *ss.FreeOnly {
 		node.Appendf("Free only servers: yes")
+	}
+
+	if *ss.PremiumOnly {
+		node.Appendf("Premium only servers: yes")
 	}
 
 	if *ss.StreamOnly {

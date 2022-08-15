@@ -28,6 +28,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/slickvpn"
 	"github.com/qdm12/gluetun/internal/provider/surfshark"
 	"github.com/qdm12/gluetun/internal/provider/torguard"
+	"github.com/qdm12/gluetun/internal/provider/vpnsecure"
 	"github.com/qdm12/gluetun/internal/provider/vpnunlimited"
 	"github.com/qdm12/gluetun/internal/provider/vyprvpn"
 	"github.com/qdm12/gluetun/internal/provider/wevpn"
@@ -75,6 +76,7 @@ func NewProviders(storage Storage, timeNow func() time.Time,
 		providers.SlickVPN:              slickvpn.New(storage, randSource, client, updaterWarner, parallelResolver),
 		providers.Surfshark:             surfshark.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
 		providers.Torguard:              torguard.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
+		providers.VPNSecure:             vpnsecure.New(storage, randSource, client, updaterWarner, parallelResolver),
 		providers.VPNUnlimited:          vpnunlimited.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.Vyprvpn:               vyprvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.Wevpn:                 wevpn.New(storage, randSource, updaterWarner, parallelResolver),

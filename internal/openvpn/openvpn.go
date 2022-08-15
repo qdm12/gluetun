@@ -10,6 +10,7 @@ type Configurator struct {
 	cmder        command.RunStarter
 	configPath   string
 	authFilePath string
+	askPassPath  string
 	puid, pgid   int
 }
 
@@ -20,6 +21,7 @@ func New(logger Infoer, cmder command.RunStarter,
 		cmder:        cmder,
 		configPath:   configPath,
 		authFilePath: openvpn.AuthConf,
+		askPassPath:  openvpn.AskPassPath,
 		puid:         puid,
 		pgid:         pgid,
 	}

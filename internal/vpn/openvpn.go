@@ -34,6 +34,13 @@ func setupOpenVPN(ctx context.Context, fw Firewall,
 		}
 	}
 
+	if *settings.OpenVPN.KeyPassphrase != "" {
+		err := openvpnConf.WriteAskPassFile(*settings.OpenVPN.KeyPassphrase)
+		if err != nil {
+			return nil, "", fmt.Errorf("writing askpass file: %w", err)
+		}
+	}
+
 	if err := fw.SetVPNConnection(ctx, connection, settings.OpenVPN.Interface); err != nil {
 		return nil, "", fmt.Errorf("failed allowing VPN connection through firewall: %w", err)
 	}

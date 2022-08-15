@@ -60,8 +60,8 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		case providers.Expressvpn, providers.Fastestvpn,
 			providers.Ipvanish, providers.Nordvpn,
 			providers.Privado, providers.Purevpn,
-			providers.Surfshark, providers.VPNUnlimited,
-			providers.Vyprvpn:
+			providers.Surfshark, providers.VPNSecure,
+			providers.VPNUnlimited, providers.Vyprvpn:
 			return fmt.Errorf("%w: for VPN service provider %s",
 				ErrOpenVPNCustomPortNotAllowed, vpnProvider)
 		default:

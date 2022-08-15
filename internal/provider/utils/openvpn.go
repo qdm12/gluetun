@@ -189,6 +189,13 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.addLines(WrapOpenvpnTLSCrypt(provider.TLSCrypt))
 	}
 
+	if *settings.EncryptedKey != "" {
+		lines.add("askpass", openvpn.AskPassPath)
+		keyData, err := extract.PEM([]byte(*settings.EncryptedKey))
+		panicOnError(err, "cannot extract PEM encrypted key")
+		lines.addLines(WrapOpenvpnEncryptedKey(keyData))
+	}
+
 	if *settings.Cert != "" {
 		certData, err := extract.PEM([]byte(*settings.Cert))
 		panicOnError(err, "cannot extract OpenVPN certificate")
@@ -291,6 +298,16 @@ func WrapOpenvpnKey(clientKey string) (lines []string) {
 		"-----BEGIN PRIVATE KEY-----",
 		clientKey,
 		"-----END PRIVATE KEY-----",
+		"</key>",
+	}
+}
+
+func WrapOpenvpnEncryptedKey(encryptedKey string) (lines []string) {
+	return []string{
+		"<key>",
+		"-----BEGIN ENCRYPTED PRIVATE KEY-----",
+		encryptedKey,
+		"-----END ENCRYPTED PRIVATE KEY-----",
 		"</key>",
 	}
 }
