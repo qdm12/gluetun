@@ -10,7 +10,7 @@ import (
 
 func (s *State) GetSettings() (vpn settings.VPN) {
 	s.settingsMu.RLock()
-	vpn = s.vpn
+	vpn = s.vpn.Copy()
 	s.settingsMu.RUnlock()
 	return vpn
 }

@@ -5,21 +5,25 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
 func newVPNHandler(ctx context.Context, looper VPNLooper,
-	w warner) http.Handler {
+	storage Storage, w warner) http.Handler {
 	return &vpnHandler{
-		ctx:    ctx,
-		looper: looper,
-		warner: w,
+		ctx:     ctx,
+		looper:  looper,
+		storage: storage,
+		warner:  w,
 	}
 }
 
 type vpnHandler struct {
-	ctx    context.Context //nolint:containedctx
-	looper VPNLooper
-	warner warner
+	ctx     context.Context //nolint:containedctx
+	looper  VPNLooper
+	storage Storage
+	warner  warner
 }
 
 func (h *vpnHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +42,8 @@ func (h *vpnHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			h.getSettings(w)
+		case http.MethodPut:
+			h.patchSettings(w, r)
 		default:
 			http.Error(w, "method "+r.Method+" not supported", http.StatusBadRequest)
 		}
@@ -89,5 +95,34 @@ func (h *vpnHandler) getSettings(w http.ResponseWriter) {
 		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+}
+
+func (h *vpnHandler) patchSettings(w http.ResponseWriter, r *http.Request) {
+	var overrideSettings settings.VPN
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&overrideSettings)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = r.Body.Close()
+	if err != nil {
+		h.warner.Warn("closing body: " + err.Error())
+	}
+
+	updatedSettings := h.looper.GetSettings() // already copied
+	updatedSettings.OverrideWith(overrideSettings)
+	err = updatedSettings.Validate(h.storage)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	outcome := h.looper.SetSettings(h.ctx, updatedSettings)
+	_, err = w.Write([]byte(outcome))
+	if err != nil {
+		h.warner.Warn("writing response: " + err.Error())
 	}
 }

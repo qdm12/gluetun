@@ -12,6 +12,7 @@ type VPNLooper interface {
 	ApplyStatus(ctx context.Context, status models.LoopStatus) (
 		outcome string, err error)
 	GetSettings() (settings settings.VPN)
+	SetSettings(ctx context.Context, settings settings.VPN) (outcome string)
 }
 
 type DNSLoop interface {
@@ -26,4 +27,8 @@ type PortForwardedGetter interface {
 
 type PublicIPLoop interface {
 	GetData() (data models.PublicIP)
+}
+
+type Storage interface {
+	GetFilterChoices(provider string) models.FilterChoices
 }

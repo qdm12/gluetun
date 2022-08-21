@@ -431,7 +431,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.New(log.SetComponent("http server")),
-		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper)
+		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper, storage)
 	if err != nil {
 		return fmt.Errorf("cannot setup control server: %w", err)
 	}

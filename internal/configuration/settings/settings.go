@@ -46,7 +46,7 @@ func (s *Settings) Validate(storage Storage) (err error) {
 		"version":         s.Version.validate,
 		// Pprof validation done in pprof constructor
 		"VPN": func() error {
-			return s.VPN.validate(storage)
+			return s.VPN.Validate(storage)
 		},
 	}
 
@@ -73,7 +73,7 @@ func (s *Settings) copy() (copied Settings) {
 		System:        s.System.copy(),
 		Updater:       s.Updater.copy(),
 		Version:       s.Version.copy(),
-		VPN:           s.VPN.copy(),
+		VPN:           s.VPN.Copy(),
 		Pprof:         s.Pprof.Copy(),
 	}
 }
@@ -108,7 +108,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.System.overrideWith(other.System)
 	patchedSettings.Updater.overrideWith(other.Updater)
 	patchedSettings.Version.overrideWith(other.Version)
-	patchedSettings.VPN.overrideWith(other.VPN)
+	patchedSettings.VPN.OverrideWith(other.VPN)
 	patchedSettings.Pprof.OverrideWith(other.Pprof)
 	err = patchedSettings.Validate(storage)
 	if err != nil {

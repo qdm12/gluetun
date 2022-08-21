@@ -20,7 +20,7 @@ type VPN struct {
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (v *VPN) validate(storage Storage) (err error) {
+func (v *VPN) Validate(storage Storage) (err error) {
 	// Validate Type
 	validVPNTypes := []string{vpn.OpenVPN, vpn.Wireguard}
 	if !helpers.IsOneOf(v.Type, validVPNTypes...) {
@@ -48,7 +48,7 @@ func (v *VPN) validate(storage Storage) (err error) {
 	return nil
 }
 
-func (v *VPN) copy() (copied VPN) {
+func (v *VPN) Copy() (copied VPN) {
 	return VPN{
 		Type:      v.Type,
 		Provider:  v.Provider.copy(),
@@ -64,7 +64,7 @@ func (v *VPN) mergeWith(other VPN) {
 	v.Wireguard.mergeWith(other.Wireguard)
 }
 
-func (v *VPN) overrideWith(other VPN) {
+func (v *VPN) OverrideWith(other VPN) {
 	v.Type = helpers.OverrideWithString(v.Type, other.Type)
 	v.Provider.overrideWith(other.Provider)
 	v.OpenVPN.overrideWith(other.OpenVPN)
