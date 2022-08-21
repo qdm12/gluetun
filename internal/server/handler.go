@@ -18,13 +18,14 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 ) http.Handler {
 	handler := &handler{}
 
+	vpn := newVPNHandler(ctx, vpnLooper, logger)
 	openvpn := newOpenvpnHandler(ctx, vpnLooper, pfGetter, logger)
 	dns := newDNSHandler(ctx, unboundLooper, logger)
 	updater := newUpdaterHandler(ctx, updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)
 
 	handler.v0 = newHandlerV0(ctx, logger, vpnLooper, unboundLooper, updaterLooper)
-	handler.v1 = newHandlerV1(logger, buildInfo, openvpn, dns, updater, publicip)
+	handler.v1 = newHandlerV1(logger, buildInfo, vpn, openvpn, dns, updater, publicip)
 
 	handlerWithLog := withLogMiddleware(handler, logger, logging)
 	handler.setLogEnabled = handlerWithLog.setEnabled

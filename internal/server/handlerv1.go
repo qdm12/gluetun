@@ -10,10 +10,11 @@ import (
 )
 
 func newHandlerV1(w warner, buildInfo models.BuildInformation,
-	openvpn, dns, updater, publicip http.Handler) http.Handler {
+	vpn, openvpn, dns, updater, publicip http.Handler) http.Handler {
 	return &handlerV1{
 		warner:    w,
 		buildInfo: buildInfo,
+		vpn:       vpn,
 		openvpn:   openvpn,
 		dns:       dns,
 		updater:   updater,
@@ -24,6 +25,7 @@ func newHandlerV1(w warner, buildInfo models.BuildInformation,
 type handlerV1 struct {
 	warner    warner
 	buildInfo models.BuildInformation
+	vpn       http.Handler
 	openvpn   http.Handler
 	dns       http.Handler
 	updater   http.Handler
@@ -34,6 +36,8 @@ func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case r.RequestURI == "/version" && r.Method == http.MethodGet:
 		h.getVersion(w)
+	case strings.HasPrefix(r.RequestURI, "/vpn"):
+		h.vpn.ServeHTTP(w, r)
 	case strings.HasPrefix(r.RequestURI, "/openvpn"):
 		h.openvpn.ServeHTTP(w, r)
 	case strings.HasPrefix(r.RequestURI, "/dns"):
