@@ -44,10 +44,10 @@ func (h *updaterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPut:
 			h.setStatus(w, r)
 		default:
-			http.Error(w, "", http.StatusNotFound)
+			http.Error(w, "method "+r.Method+" not supported", http.StatusBadRequest)
 		}
 	default:
-		http.Error(w, "", http.StatusNotFound)
+		http.Error(w, "route "+r.RequestURI+" not supported", http.StatusBadRequest)
 	}
 }
 

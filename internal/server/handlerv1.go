@@ -44,7 +44,7 @@ func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.publicip.ServeHTTP(w, r)
 	default:
 		errString := fmt.Sprintf("%s %s not found", r.Method, r.RequestURI)
-		http.Error(w, errString, http.StatusNotFound)
+		http.Error(w, errString, http.StatusBadRequest)
 	}
 }
 

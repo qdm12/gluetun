@@ -28,7 +28,7 @@ type handlerV0 struct {
 
 func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "unversioned API: only supports GET method", http.StatusNotFound)
+		http.Error(w, "unversioned API: only supports GET method", http.StatusBadRequest)
 		return
 	}
 	switch r.RequestURI {
@@ -63,6 +63,6 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.logger.Warn(err.Error())
 		}
 	default:
-		http.Error(w, "unversioned API: requested URI not found", http.StatusNotFound)
+		http.Error(w, "unversioned API: requested URI not found", http.StatusBadRequest)
 	}
 }
