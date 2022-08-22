@@ -116,7 +116,14 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
 		return
 	}
+	ruleCleanup6, err := w.addRule6(
+		w.settings.RulePriority, w.settings.FirewallMark)
+	if err != nil {
+		waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
+		return
+	}
 	closers.add("removing rule", stepOne, ruleCleanup)
+	closers.add("removing rule", stepOne, ruleCleanup6)
 
 	w.logger.Info("Wireguard is up")
 	ready <- struct{}{}

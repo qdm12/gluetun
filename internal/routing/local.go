@@ -41,7 +41,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		return localNetworks, fmt.Errorf("%w: in %d links", ErrLinkLocalNotFound, len(links))
 	}
 
-	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_V4)
+	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
 		return localNetworks, fmt.Errorf("cannot list routes: %w", err)
 	}
@@ -65,7 +65,11 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		localNet.InterfaceName = link.Attrs().Name
 
-		ip, err := r.assignedIP(localNet.InterfaceName)
+		family := netlink.FAMILY_V6
+		if localNet.IPNet.IP.To4() != nil {
+			family = netlink.FAMILY_V4
+		}
+		ip, err := r.assignedIP(localNet.InterfaceName, family)
 		if err != nil {
 			return localNetworks, err
 		}

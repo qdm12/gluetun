@@ -14,8 +14,8 @@ func (c *Config) runMixedIptablesInstructions(ctx context.Context, instructions 
 }
 
 func (c *Config) runMixedIptablesInstruction(ctx context.Context, instruction string) error {
-	if err := c.runIptablesInstruction(ctx, instruction); err != nil {
+	if err := c.runIP6tablesInstruction(ctx, instruction); err != nil {
 		return err
 	}
-	return c.runIP6tablesInstruction(ctx, instruction)
+	return c.runIptablesInstruction(ctx, instruction)
 }
