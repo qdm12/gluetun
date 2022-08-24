@@ -29,23 +29,6 @@ issues:
     - text: "returns interface \\(github\\.com\\/vishvananda\\/netlink\\.Link\\)"
       linters:
         - ireturn
-    - text: "_main contains underscore\\. You should use mixedCap or MixedCap\\."
-      path: "cmd\\/gluetun\\/main\\.go"
-      linters:
-        - nosnakecase
-    - text: "O_[A-Z]+ contains underscore\\. You should use mixedCap or MixedCap\\."
-      linters:
-        - nosnakecase
-    - text: "Stat_t contains underscore\\. You should use mixedCap or MixedCap\\."
-      linters:
-        - nosnakecase
-    - text: "S_IFCHR contains underscore\\. You should use mixedCap or MixedCap\\."
-      linters:
-        - nosnakecase
-    - text: "FAMILY_(ALL|V4|V6) contains underscore\\. You should use mixedCap or MixedCap\\."
-      path: "internal\\/(netlink|routing|wireguard)\\/.+\\.go"
-      linters:
-        - nosnakecase
 
 linters:
   enable:
@@ -83,6 +66,7 @@ linters:
     - gosec
     - grouper
     - importas
+    - interfacebloat
     - ireturn
     - lll
     - maintidx
@@ -94,11 +78,11 @@ linters:
     - nilnil
     - noctx
     - nolintlint
-    - nosnakecase
     - nosprintfhostport
     - prealloc
     - predeclared
     - promlinter
+    - reassign
     - revive
     - rowserrcheck
     - sqlclosecheck
