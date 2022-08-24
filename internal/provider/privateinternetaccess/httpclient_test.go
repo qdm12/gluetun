@@ -30,7 +30,7 @@ func Test_newHTTPClient(t *testing.T) {
 	piaTransport, ok := piaClient.Transport.(*http.Transport)
 	require.True(t, ok)
 
-	subjects := piaTransport.TLSClientConfig.RootCAs.Subjects()
+	subjects := piaTransport.TLSClientConfig.RootCAs.Subjects() //nolint:staticcheck
 	assert.NotEmpty(t, subjects)
 	piaCertFound := false
 	for _, subject := range subjects {
