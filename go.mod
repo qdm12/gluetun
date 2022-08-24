@@ -1,6 +1,6 @@
 module github.com/qdm12/gluetun
 
-go 1.18
+go 1.19
 
 require (
 	github.com/breml/rootcerts v0.2.6
