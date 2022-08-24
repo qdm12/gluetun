@@ -83,7 +83,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 
 			netLinker.EXPECT().RuleAdd(testCase.expectedRule).
 				Return(testCase.ruleAddErr)
-			cleanup, err := wg.addRule(rulePriority, firewallMark)
+			cleanup, err := wg.addRule4(rulePriority, firewallMark)
 			if testCase.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, testCase.err.Error(), err.Error())

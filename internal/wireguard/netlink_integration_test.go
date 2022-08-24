@@ -76,7 +76,7 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 	rulePriority := 10000
 	const firewallMark = 999
 
-	cleanup, err := wg.addRule(rulePriority, firewallMark)
+	cleanup, err := wg.addRule4(rulePriority, firewallMark)
 	require.NoError(t, err)
 	defer func() {
 		err := cleanup()

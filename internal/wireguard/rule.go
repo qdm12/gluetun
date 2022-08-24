@@ -7,14 +7,14 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func (w *Wireguard) addRule(rulePriority, firewallMark int) (
+func (w *Wireguard) addRule4(rulePriority, firewallMark int) (
 	cleanup func() error, err error) {
 	rule := netlink.NewRule()
 	rule.Invert = true
 	rule.Priority = rulePriority
 	rule.Mark = firewallMark
 	rule.Table = firewallMark
-	rule.Family = unix.AF_INET //nolint:all
+	rule.Family = unix.AF_INET //nolint:nosnakecase
 	if err := w.netlink.RuleAdd(rule); err != nil {
 		return nil, fmt.Errorf("cannot add rule %s: %w", rule, err)
 	}
@@ -36,7 +36,7 @@ func (w *Wireguard) addRule6(rulePriority, firewallMark int) (
 	rule.Priority = rulePriority
 	rule.Mark = firewallMark
 	rule.Table = firewallMark
-	rule.Family = unix.AF_INET6 //nolint:all
+	rule.Family = unix.AF_INET6 //nolint:nosnakecase
 	if err := w.netlink.RuleAdd(rule); err != nil {
 		return nil, fmt.Errorf("cannot add rule %s: %w", rule, err)
 	}
