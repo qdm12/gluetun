@@ -2,7 +2,6 @@ package openvpn
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -39,7 +38,7 @@ func writeIfDifferent(path, content string, puid, pgid int) (err error) {
 	}
 
 	if writeData {
-		err = ioutil.WriteFile(path, []byte(content), perm)
+		err = os.WriteFile(path, []byte(content), perm)
 		if err != nil {
 			return fmt.Errorf("writing file: %w", err)
 		}

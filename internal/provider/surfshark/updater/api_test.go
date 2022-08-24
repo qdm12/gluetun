@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -34,7 +33,7 @@ func Test_addServersFromAPI(t *testing.T) {
 				"existinghost": {Hostname: "existinghost"},
 			},
 			responseStatus: http.StatusOK,
-			responseBody: ioutil.NopCloser(strings.NewReader(`[
+			responseBody: io.NopCloser(strings.NewReader(`[
 				{"connectionName":"host1","region":"region1","country":"country1","location":"location1"},
 				{"connectionName":"host2","region":"region2","country":"country1","location":"location2"}
 			]`)),
@@ -111,12 +110,12 @@ func Test_fetchAPI(t *testing.T) {
 		},
 		"no server": {
 			responseStatus: http.StatusOK,
-			responseBody:   ioutil.NopCloser(strings.NewReader(`[]`)),
+			responseBody:   io.NopCloser(strings.NewReader(`[]`)),
 			data:           []serverData{},
 		},
 		"success": {
 			responseStatus: http.StatusOK,
-			responseBody: ioutil.NopCloser(strings.NewReader(`[
+			responseBody: io.NopCloser(strings.NewReader(`[
 				{"connectionName":"host1","region":"region1","country":"country1","location":"location1"},
 				{"connectionName":"host2","region":"region2","country":"country1","location":"location2"}
 			]`)),

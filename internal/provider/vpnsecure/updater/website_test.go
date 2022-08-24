@@ -3,7 +3,6 @@ package updater
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -43,7 +42,7 @@ func Test_fetchServers(t *testing.T) {
 		"success": {
 			ctx:            context.Background(),
 			responseStatus: http.StatusOK,
-			responseBody: ioutil.NopCloser(strings.NewReader(`
+			responseBody: io.NopCloser(strings.NewReader(`
 			<div class="blk blk--white locations-list">
 				<div class="blk__i">
 					<div>

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -32,11 +31,11 @@ func Test_fetchAPI(t *testing.T) {
 		},
 		"no server": {
 			responseStatus: http.StatusOK,
-			responseBody:   ioutil.NopCloser(strings.NewReader(`{}`)),
+			responseBody:   io.NopCloser(strings.NewReader(`{}`)),
 		},
 		"success": {
 			responseStatus: http.StatusOK,
-			responseBody: ioutil.NopCloser(strings.NewReader(`{"servers":[
+			responseBody: io.NopCloser(strings.NewReader(`{"servers":[
 				{"country":"Country1","city":"City A","isp":"xyz","is_active":true,"hostnames":{"openvpn":"hosta"}},
 				{"country":"Country2","city":"City B","isp":"abc","is_active":false,"hostnames":{"openvpn":"hostb"}}
 			]}`)),

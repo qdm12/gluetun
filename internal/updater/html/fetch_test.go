@@ -3,7 +3,6 @@ package html
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -59,7 +58,7 @@ func Test_Fetch(t *testing.T) {
 			url:            "https://example.com/path",
 			responseStatus: http.StatusOK,
 			rootNode:       parseTestHTML(t, "some body"),
-			responseBody:   ioutil.NopCloser(strings.NewReader("some body")),
+			responseBody:   io.NopCloser(strings.NewReader("some body")),
 		},
 	}
 

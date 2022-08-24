@@ -3,7 +3,7 @@ package updater
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"strings"
@@ -145,7 +145,7 @@ func Test_Updater_GetServers(t *testing.T) {
 					return &http.Response{
 						StatusCode: testCase.responseStatus,
 						Status:     http.StatusText(testCase.responseStatus),
-						Body:       ioutil.NopCloser(strings.NewReader(testCase.responseBody)),
+						Body:       io.NopCloser(strings.NewReader(testCase.responseBody)),
 					}, nil
 				}),
 			}

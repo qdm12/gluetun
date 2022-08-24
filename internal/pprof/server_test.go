@@ -2,7 +2,7 @@ package pprof
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 	"time"
@@ -96,7 +96,7 @@ func Test_Server(t *testing.T) {
 		assert.Equalf(t, http.StatusOK, httpResult.response.StatusCode,
 			"unexpected status code for URL %s: %s", httpResult.url, http.StatusText(httpResult.response.StatusCode))
 
-		b, err := ioutil.ReadAll(httpResult.response.Body)
+		b, err := io.ReadAll(httpResult.response.Body)
 		require.NoErrorf(t, err, "unexpected error for URL %s: %s", httpResult.url, err)
 		assert.NotEmptyf(t, b, "response body is empty for URL %s", httpResult.url)
 
