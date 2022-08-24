@@ -30,15 +30,8 @@ func (r *Reader) readOpenVPN() (
 		openVPN.Auth = &auth
 	}
 
-	openVPN.ClientCrt, err = readBase64OrNil("OPENVPN_CLIENTCRT")
-	if err != nil {
-		return openVPN, fmt.Errorf("environment variable OPENVPN_CLIENTCRT: %w", err)
-	}
-
-	openVPN.ClientKey, err = readBase64OrNil("OPENVPN_CLIENTKEY")
-	if err != nil {
-		return openVPN, fmt.Errorf("environment variable OPENVPN_CLIENTKEY: %w", err)
-	}
+	openVPN.ClientCrt = envToStringPtr("OPENVPN_CLIENTCRT")
+	openVPN.ClientKey = envToStringPtr("OPENVPN_CLIENTKEY")
 
 	openVPN.PIAEncPreset = r.readPIAEncryptionPreset()
 
@@ -81,20 +74,6 @@ func (r *Reader) readOpenVPNUser() (user string) {
 func (r *Reader) readOpenVPNPassword() (password string) {
 	_, password = r.getEnvWithRetro("OPENVPN_PASSWORD", "PASSWORD")
 	return password
-}
-
-func readBase64OrNil(envKey string) (valueOrNil *string, err error) {
-	value := getCleanedEnv(envKey)
-	if value == "" {
-		return nil, nil //nolint:nilnil
-	}
-
-	decoded, err := decodeBase64(value)
-	if err != nil {
-		return nil, err
-	}
-
-	return &decoded, nil
 }
 
 func (r *Reader) readPIAEncryptionPreset() (presetPtr *string) {

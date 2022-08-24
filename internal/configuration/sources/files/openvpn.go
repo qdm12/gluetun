@@ -14,12 +14,12 @@ const (
 )
 
 func (r *Reader) readOpenVPN() (settings settings.OpenVPN, err error) {
-	settings.ClientKey, err = ReadFromFile(OpenVPNClientKeyPath)
+	settings.ClientKey, err = readPEMFile(OpenVPNClientKeyPath)
 	if err != nil {
 		return settings, fmt.Errorf("client key: %w", err)
 	}
 
-	settings.ClientCrt, err = ReadFromFile(OpenVPNClientCertificatePath)
+	settings.ClientCrt, err = readPEMFile(OpenVPNClientCertificatePath)
 	if err != nil {
 		return settings, fmt.Errorf("client certificate: %w", err)
 	}

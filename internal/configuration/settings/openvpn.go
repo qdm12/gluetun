@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"encoding/base64"
 	"fmt"
 	"regexp"
 	"strings"
@@ -172,7 +173,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 		return nil
 	}
 
-	_, err = extract.PEM([]byte(clientCert))
+	_, err = base64.StdEncoding.DecodeString(clientCert)
 	if err != nil {
 		return err
 	}
@@ -194,7 +195,7 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 		return nil
 	}
 
-	_, err = extract.PEM([]byte(clientKey))
+	_, err = base64.StdEncoding.DecodeString(clientKey)
 	if err != nil {
 		return err
 	}

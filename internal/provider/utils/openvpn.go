@@ -8,7 +8,6 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/openvpn/extract"
 )
 
 type OpenVPNProviderSettings struct {
@@ -190,15 +189,11 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 	}
 
 	if *settings.ClientCrt != "" {
-		certData, err := extract.PEM([]byte(*settings.ClientCrt))
-		panicOnError(err, "cannot extract client crt")
-		lines.addLines(WrapOpenvpnCert(certData))
+		lines.addLines(WrapOpenvpnCert(*settings.ClientCrt))
 	}
 
 	if *settings.ClientKey != "" {
-		keyData, err := extract.PEM([]byte(*settings.ClientKey))
-		panicOnError(err, "cannot extract client private key")
-		lines.addLines(WrapOpenvpnKey(keyData))
+		lines.addLines(WrapOpenvpnKey(*settings.ClientKey))
 	}
 
 	lines.addLines(provider.ExtraLines)
@@ -245,14 +240,6 @@ func defaultStringSlice(value, defaultValue []string) (
 	result = make([]string, len(defaultValue))
 	copy(result, defaultValue)
 	return result
-}
-
-func panicOnError(err error, context string) {
-	if err == nil {
-		return
-	}
-	panicMessage := fmt.Sprintf("%s: %s", context, err)
-	panic(panicMessage)
 }
 
 func WrapOpenvpnCA(certificate string) (lines []string) {

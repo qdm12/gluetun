@@ -1,10 +1,12 @@
 package secrets
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
+	"github.com/qdm12/gluetun/internal/openvpn/extract"
 )
 
 // getCleanedEnv returns an environment variable value with
@@ -39,4 +41,23 @@ func readSecretFileAsString(secretPathEnvKey, defaultSecretPath string) (
 		return "", nil
 	}
 	return *stringPtr, nil
+}
+
+func readPEMSecretFile(secretPathEnvKey, defaultSecretPath string) (
+	base64Ptr *string, err error) {
+	pemData, err := readSecretFileAsStringPtr(secretPathEnvKey, defaultSecretPath)
+	if err != nil {
+		return nil, fmt.Errorf("reading secret file: %w", err)
+	}
+
+	if pemData == nil {
+		return nil, nil //nolint:nilnil
+	}
+
+	base64Data, err := extract.PEM([]byte(*pemData))
+	if err != nil {
+		return nil, fmt.Errorf("extracting base64 encoded data from PEM content: %w", err)
+	}
+
+	return &base64Data, nil
 }

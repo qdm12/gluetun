@@ -1,7 +1,6 @@
 package env
 
 import (
-	"encoding/base64"
 	"fmt"
 	"os"
 	"strconv"
@@ -131,15 +130,6 @@ func envToDurationPtr(envKey string) (durationPtr *time.Duration, err error) {
 func lowerAndSplit(csv string) (values []string) {
 	csv = strings.ToLower(csv)
 	return strings.Split(csv, ",")
-}
-
-func decodeBase64(b64String string) (decoded string, err error) {
-	b, err := base64.StdEncoding.DecodeString(b64String)
-	if err != nil {
-		return "", fmt.Errorf("cannot decode base64 string %q: %w",
-			b64String, err)
-	}
-	return string(b), nil
 }
 
 func unsetEnvKeys(envKeys []string, err error) (newErr error) {
