@@ -15,17 +15,16 @@ const (
 )
 
 func (r *Reader) readOpenVPN() (settings settings.OpenVPN, err error) {
-	settings.Key, err = ReadFromFile(OpenVPNClientKeyPath)
+	settings.Key, err = readPEMFile(OpenVPNClientKeyPath)
 	if err != nil {
 		return settings, fmt.Errorf("client key: %w", err)
 	}
 
-	settings.Cert, err = ReadFromFile(OpenVPNClientCertificatePath)
+	settings.Cert, err = readPEMFile(OpenVPNClientCertificatePath)
 	if err != nil {
 		return settings, fmt.Errorf("client certificate: %w", err)
 	}
-
-	settings.EncryptedKey, err = ReadFromFile(openVPNEncryptedKey)
+	settings.EncryptedKey, err = readPEMFile(openVPNEncryptedKey)
 	if err != nil {
 		return settings, fmt.Errorf("reading encrypted key file: %w", err)
 	}

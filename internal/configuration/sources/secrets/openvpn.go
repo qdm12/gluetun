@@ -24,7 +24,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("cannot read password file: %w", err)
 	}
 
-	settings.Key, err = readSecretFileAsStringPtr(
+	settings.Key, err = readPEMSecretFile(
 		"OPENVPN_CLIENTKEY_SECRETFILE",
 		"/run/secrets/openvpn_clientkey",
 	)
@@ -32,7 +32,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("cannot read client key file: %w", err)
 	}
 
-	settings.EncryptedKey, err = readSecretFileAsStringPtr(
+	settings.EncryptedKey, err = readPEMSecretFile(
 		"OPENVPN_ENCRYPTED_KEY_SECRETFILE",
 		"/run/secrets/openvpn_encrypted_key",
 	)
@@ -48,7 +48,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("reading key passphrase file: %w", err)
 	}
 
-	settings.Cert, err = readSecretFileAsStringPtr(
+	settings.Cert, err = readPEMSecretFile(
 		"OPENVPN_CLIENTCRT_SECRETFILE",
 		"/run/secrets/openvpn_clientcrt",
 	)
