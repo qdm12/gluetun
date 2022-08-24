@@ -5,7 +5,7 @@ import (
 )
 
 // getRemainingServers finds extra servers not found in the API or in the ZIP file.
-func getRemainingServers(hts hostToServer) {
+func getRemainingServers(hts hostToServers) {
 	locationData := servers.LocationData()
 	hostnameToLocationLeft := hostToLocation(locationData)
 	for _, hostnameDone := range hts.toHostsSlice() {
@@ -13,9 +13,9 @@ func getRemainingServers(hts hostToServer) {
 	}
 
 	for hostname, locationData := range hostnameToLocationLeft {
-		// we assume the server supports TCP and UDP
+		// we assume the OpenVPN server supports both TCP and UDP
 		const tcp, udp = true, true
-		hts.add(hostname, locationData.Region, locationData.Country,
+		hts.addOpenVPN(hostname, locationData.Region, locationData.Country,
 			locationData.City, locationData.RetroLoc, tcp, udp)
 	}
 }

@@ -38,6 +38,7 @@ func (w Wireguard) validate(vpnProvider string) (err error) {
 		providers.Custom,
 		providers.Ivpn,
 		providers.Mullvad,
+		providers.Surfshark,
 		providers.Windscribe,
 	) {
 		// do not validate for VPN provider not supporting Wireguard

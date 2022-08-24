@@ -11,7 +11,7 @@ import (
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
-	hts := make(hostToServer)
+	hts := make(hostToServers)
 
 	err = addServersFromAPI(ctx, u.client, hts)
 	if err != nil {
@@ -37,13 +37,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	if err != nil {
 		return nil, err
 	}
-
-	if len(hostToIPs) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(servers), minServers)
-	}
-
 	hts.adaptWithIPs(hostToIPs)
+
+	if len(hts) < minServers {
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
+			common.ErrNotEnoughServers, len(hts), minServers)
+	}
 
 	servers = hts.toServersSlice()
 

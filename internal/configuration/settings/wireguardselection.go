@@ -19,7 +19,7 @@ type WireguardSelection struct {
 	// in the internal state.
 	EndpointIP net.IP
 	// EndpointPort is a the server port to use for the VPN server.
-	// It is optional for VPN providers IVPN, Mullvad
+	// It is optional for VPN providers IVPN, Mullvad, Surfshark
 	// and Windscribe, and compulsory for the others.
 	// When optional, it can be set to 0 to indicate not use
 	// a custom endpoint port. It cannot be nil in the internal
@@ -36,7 +36,9 @@ type WireguardSelection struct {
 func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	// Validate EndpointIP
 	switch vpnProvider {
-	case providers.Ivpn, providers.Mullvad, providers.Windscribe: // endpoint IP addresses are baked in
+	case providers.Ivpn, providers.Mullvad,
+		providers.Surfshark, providers.Windscribe:
+		// endpoint IP addresses are baked in
 	case providers.Custom:
 		if len(w.EndpointIP) == 0 {
 			return ErrWireguardEndpointIPNotSet
@@ -50,6 +52,11 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	case providers.Custom:
 		if *w.EndpointPort == 0 {
 			return ErrWireguardEndpointPortNotSet
+		}
+	// EndpointPort cannot be set
+	case providers.Surfshark:
+		if *w.EndpointPort != 0 {
+			return ErrWireguardEndpointPortSet
 		}
 	case providers.Ivpn, providers.Mullvad, providers.Windscribe:
 		// EndpointPort is optional and can be 0
@@ -78,7 +85,9 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 
 	// Validate PublicKey
 	switch vpnProvider {
-	case providers.Ivpn, providers.Mullvad, providers.Windscribe: // public keys are baked in
+	case providers.Ivpn, providers.Mullvad,
+		providers.Surfshark, providers.Windscribe:
+		// public keys are baked in
 	case providers.Custom:
 		if w.PublicKey == "" {
 			return ErrWireguardPublicKeyNotSet

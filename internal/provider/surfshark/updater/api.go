@@ -10,9 +10,9 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"
 )
 
-// Note: no multi-hop and some servers are missing from their API.
+// Note: no multi-hop and some OpenVPN servers are missing from their API.
 func addServersFromAPI(ctx context.Context, client *http.Client,
-	hts hostToServer) (err error) {
+	hts hostToServers) (err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return err
@@ -21,12 +21,18 @@ func addServersFromAPI(ctx context.Context, client *http.Client,
 	locationData := servers.LocationData()
 	hostToLocation := hostToLocation(locationData)
 
-	const tcp, udp = true, true
 	for _, serverData := range data {
 		locationData := hostToLocation[serverData.Host] // TODO remove in v4
 		retroLoc := locationData.RetroLoc               // empty string if the host has no retro-compatible region
-		hts.add(serverData.Host, serverData.Region, serverData.Country,
+
+		tcp, udp := true, true // OpenVPN servers from API supports both TCP and UDP
+		hts.addOpenVPN(serverData.Host, serverData.Region, serverData.Country,
 			serverData.Location, retroLoc, tcp, udp)
+
+		if serverData.PubKey != "" {
+			hts.addWireguard(serverData.Host, serverData.Region, serverData.Country,
+				serverData.Location, retroLoc, serverData.PubKey)
+		}
 	}
 
 	return nil
@@ -41,6 +47,7 @@ type serverData struct {
 	Region   string `json:"region"`
 	Country  string `json:"country"`
 	Location string `json:"location"`
+	PubKey   string `json:"pubKey"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (

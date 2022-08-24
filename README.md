@@ -61,7 +61,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - Supports: **Cyberghost**, **ExpressVPN**, **FastestVPN**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Perfect Privacy**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **SlickVPN**, **Surfshark**, **TorGuard**, **VPNSecure.me**, **VPNUnlimited**, **Vyprvpn**, **WeVPN**, **Windscribe** servers
 - Supports OpenVPN for all providers listed
 - Supports Wireguard both kernelspace and userspace
-  - For **Mullvad**, **Ivpn** and **Windscribe**
+  - For **Mullvad**, **Ivpn**, **Surfshark** and **Windscribe**
   - For **Torguard**, **VPN Unlimited** and **WeVPN** using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
   - For custom Wireguard configurations using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
   - More in progress, see [#134](https://github.com/qdm12/gluetun/issues/134)
