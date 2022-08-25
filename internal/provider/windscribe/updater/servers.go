@@ -56,7 +56,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 				}
 
 				server.VPN = vpn.Wireguard
-				server.UDP = true
+				server.UDP = false
 				server.TCP = false
 				server.OvpnX509 = ""
 				server.WgPubKey = wgPubKey

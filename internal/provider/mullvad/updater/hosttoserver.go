@@ -40,7 +40,6 @@ func (hts hostToServer) add(data serverData) (err error) {
 		server.TCP = true
 	case "wireguard":
 		server.VPN = vpn.Wireguard
-		server.UDP = true
 	case "bridge":
 		// ignore bridge servers
 		return nil

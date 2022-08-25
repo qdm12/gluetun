@@ -124,7 +124,7 @@ func Test_Updater_GetServers(t *testing.T) {
 					IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
 				{VPN: vpn.Wireguard,
 					Country: "Country3", City: "City C",
-					Hostname: "hostc", UDP: true,
+					Hostname: "hostc",
 					WgPubKey: "xyz",
 					IPs:      []net.IP{{5, 5, 5, 5}, {6, 6, 6, 6}}},
 			},

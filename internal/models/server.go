@@ -39,7 +39,8 @@ var (
 	ErrVPNFieldEmpty           = errors.New("vpn field is empty")
 	ErrHostnameFieldEmpty      = errors.New("hostname field is empty")
 	ErrIPsFieldEmpty           = errors.New("ips field is empty")
-	ErrNoNetworkProtocol       = errors.New("both TCP and UDP fields are false")
+	ErrNoNetworkProtocol       = errors.New("both TCP and UDP fields are false for OpenVPN")
+	ErrNetworkProtocolSet      = errors.New("no network protocol should be set")
 	ErrWireguardPublicKeyEmpty = errors.New("wireguard public key field is empty")
 )
 
@@ -51,7 +52,9 @@ func (s *Server) HasMinimumInformation() (err error) {
 		return ErrHostnameFieldEmpty
 	case len(s.IPs) == 0:
 		return ErrIPsFieldEmpty
-	case !s.TCP && !s.UDP:
+	case s.VPN == vpn.Wireguard && (s.TCP || s.UDP):
+		return ErrNetworkProtocolSet
+	case s.VPN == vpn.OpenVPN && !s.TCP && !s.UDP:
 		return ErrNoNetworkProtocol
 	case s.VPN == vpn.Wireguard && s.WgPubKey == "":
 		return ErrWireguardPublicKeyEmpty

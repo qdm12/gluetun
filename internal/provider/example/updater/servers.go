@@ -99,10 +99,10 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			Region:   serverData.Region,
 			City:     serverData.City,
 			WgPubKey: serverData.WgPubKey,
-			UDP:      true,
 		}
 		if serverData.OpenVPNHostname != "" {
 			server.VPN = vpn.OpenVPN
+			server.UDP = true
 			server.TCP = true
 			server.Hostname = serverData.OpenVPNHostname
 			server.IPs = hostToIPs[serverData.OpenVPNHostname]

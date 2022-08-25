@@ -52,27 +52,26 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 	servers = make([]models.Server, 0, len(hosts))
 	for _, serverData := range data.Servers {
-		vpnType := vpn.OpenVPN
-		hostname := serverData.Hostnames.OpenVPN
-		tcp := true
-		wgPubKey := ""
-		if hostname == "" {
-			vpnType = vpn.Wireguard
-			hostname = serverData.Hostnames.Wireguard
-			tcp = false
-			wgPubKey = serverData.WgPubKey
-		}
-
 		server := models.Server{
-			VPN:      vpnType,
-			Country:  serverData.Country,
-			City:     serverData.City,
-			ISP:      serverData.ISP,
-			Hostname: hostname,
-			WgPubKey: wgPubKey,
-			TCP:      tcp,
-			UDP:      true,
-			IPs:      hostToIPs[hostname],
+			Country: serverData.Country,
+			City:    serverData.City,
+			ISP:     serverData.ISP,
+		}
+		switch {
+		case serverData.Hostnames.OpenVPN != "":
+			server.Hostname = serverData.Hostnames.OpenVPN
+			server.VPN = vpn.OpenVPN
+			server.UDP = true
+			server.TCP = true
+			server.IPs = hostToIPs[server.Hostname]
+		case serverData.Hostnames.Wireguard != "":
+			server.Hostname = serverData.Hostnames.Wireguard
+			server.VPN = vpn.Wireguard
+			server.IPs = hostToIPs[server.Hostname]
+			server.WgPubKey = serverData.WgPubKey
+		default:
+			warning := fmt.Sprintf("server data %v has no OpenVPN nor Wireguard hostname", serverData)
+			warnings = append(warnings, warning)
 		}
 		servers = append(servers, server)
 	}
