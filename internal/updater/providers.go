@@ -29,9 +29,9 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	for _, server := range servers {
 		err := server.HasMinimumInformation()
 		if err != nil {
-			serverJSON, err := json.Marshal(server)
-			if err != nil {
-				panic(err)
+			serverJSON, jsonErr := json.Marshal(server)
+			if jsonErr != nil {
+				panic(jsonErr)
 			}
 			return fmt.Errorf("server %s has not enough information: %w", serverJSON, err)
 		}
