@@ -31,15 +31,18 @@ func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err e
 
 func (r *Reader) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
 	_, s := r.getEnvWithRetro("VPN_SERVICE_PROVIDER", "VPNSP")
-	s = strings.ToLower(s)
-	switch {
-	case vpnType != vpn.Wireguard &&
-		getCleanedEnv("OPENVPN_CUSTOM_CONFIG") != "": // retro compatibility
-		return stringPtr(providers.Custom)
-	case s == "":
+	if s == "" {
+		if vpnType != vpn.Wireguard && getCleanedEnv("OPENVPN_CUSTOM_CONFIG") != "" {
+			// retro compatibility
+			return stringPtr(providers.Custom)
+		}
 		return nil
-	case s == "pia": // retro compatibility
+	}
+
+	s = strings.ToLower(s)
+	if s == "pia" { // retro compatibility
 		return stringPtr(providers.PrivateInternetAccess)
 	}
+
 	return stringPtr(s)
 }
