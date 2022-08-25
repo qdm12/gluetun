@@ -52,7 +52,8 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if filterByProtocol(selection, server.TCP, server.UDP) {
+	if server.VPN != vpn.Wireguard &&
+		filterByProtocol(selection, server.TCP, server.UDP) {
 		return true
 	}
 
