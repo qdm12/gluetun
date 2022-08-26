@@ -24,6 +24,7 @@ require (
 	golang.org/x/text v0.11.0
 	golang.zx2c4.com/wireguard v0.0.0-20230325221338-052af4a8072b
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230215201556-9c5414ab4bde
+	gopkg.in/ini.v1 v1.67.0
 	inet.af/netaddr v0.0.0-20220811202034-502d2d690317
 )
 
