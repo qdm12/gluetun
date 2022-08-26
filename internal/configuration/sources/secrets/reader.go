@@ -4,15 +4,15 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-type Reader struct{}
+type Source struct{}
 
-func New() *Reader {
-	return &Reader{}
+func New() *Source {
+	return &Source{}
 }
 
-func (r *Reader) String() string { return "secret files" }
+func (s *Source) String() string { return "secret files" }
 
-func (r *Reader) Read() (settings settings.Settings, err error) {
+func (s *Source) Read() (settings settings.Settings, err error) {
 	settings.VPN, err = readVPN()
 	if err != nil {
 		return settings, err

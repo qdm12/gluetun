@@ -9,19 +9,19 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
-func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err error) {
-	provider.Name = r.readVPNServiceProvider(vpnType)
+func (s *Source) readProvider(vpnType string) (provider settings.Provider, err error) {
+	provider.Name = s.readVPNServiceProvider(vpnType)
 	var providerName string
 	if provider.Name != nil {
 		providerName = *provider.Name
 	}
 
-	provider.ServerSelection, err = r.readServerSelection(providerName, vpnType)
+	provider.ServerSelection, err = s.readServerSelection(providerName, vpnType)
 	if err != nil {
 		return provider, fmt.Errorf("server selection: %w", err)
 	}
 
-	provider.PortForwarding, err = r.readPortForward()
+	provider.PortForwarding, err = s.readPortForward()
 	if err != nil {
 		return provider, fmt.Errorf("port forwarding: %w", err)
 	}
@@ -29,9 +29,9 @@ func (r *Reader) readProvider(vpnType string) (provider settings.Provider, err e
 	return provider, nil
 }
 
-func (r *Reader) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
-	_, s := r.getEnvWithRetro("VPN_SERVICE_PROVIDER", "VPNSP")
-	if s == "" {
+func (s *Source) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
+	_, value := s.getEnvWithRetro("VPN_SERVICE_PROVIDER", "VPNSP")
+	if value == "" {
 		if vpnType != vpn.Wireguard && getCleanedEnv("OPENVPN_CUSTOM_CONFIG") != "" {
 			// retro compatibility
 			return stringPtr(providers.Custom)
@@ -39,10 +39,10 @@ func (r *Reader) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string)
 		return nil
 	}
 
-	s = strings.ToLower(s)
-	if s == "pia" { // retro compatibility
+	value = strings.ToLower(value)
+	if value == "pia" { // retro compatibility
 		return stringPtr(providers.PrivateInternetAccess)
 	}
 
-	return stringPtr(s)
+	return stringPtr(value)
 }

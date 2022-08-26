@@ -7,13 +7,13 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (r *Reader) readPublicIP() (publicIP settings.PublicIP, err error) {
+func (s *Source) readPublicIP() (publicIP settings.PublicIP, err error) {
 	publicIP.Period, err = readPublicIPPeriod()
 	if err != nil {
 		return publicIP, err
 	}
 
-	publicIP.IPFilepath = r.readPublicIPFilepath()
+	publicIP.IPFilepath = s.readPublicIPFilepath()
 
 	return publicIP, nil
 }
@@ -33,10 +33,10 @@ func readPublicIPPeriod() (period *time.Duration, err error) {
 	return period, nil
 }
 
-func (r *Reader) readPublicIPFilepath() (filepath *string) {
-	_, s := r.getEnvWithRetro("PUBLICIP_FILE", "IP_STATUS_FILE")
-	if s != "" {
-		return &s
+func (s *Source) readPublicIPFilepath() (filepath *string) {
+	_, value := s.getEnvWithRetro("PUBLICIP_FILE", "IP_STATUS_FILE")
+	if value != "" {
+		return &value
 	}
 	return nil
 }

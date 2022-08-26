@@ -7,26 +7,26 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-type Source interface {
+type ConfigSource interface {
 	Read() (settings settings.Settings, err error)
 	ReadHealth() (settings settings.Health, err error)
 	String() string
 }
 
-type Reader struct {
-	sources []Source
+type Source struct {
+	sources []ConfigSource
 }
 
-func New(sources ...Source) *Reader {
-	return &Reader{
+func New(sources ...ConfigSource) *Source {
+	return &Source{
 		sources: sources,
 	}
 }
 
-func (r *Reader) String() string {
-	sources := make([]string, len(r.sources))
-	for i := range r.sources {
-		sources[i] = r.sources[i].String()
+func (s *Source) String() string {
+	sources := make([]string, len(s.sources))
+	for i := range s.sources {
+		sources[i] = s.sources[i].String()
 	}
 	return strings.Join(sources, ", ")
 }
@@ -34,8 +34,8 @@ func (r *Reader) String() string {
 // Read reads the settings for each source, merging unset fields
 // with field set by the next source.
 // It then set defaults to remaining unset fields.
-func (r *Reader) Read() (settings settings.Settings, err error) {
-	for _, source := range r.sources {
+func (s *Source) Read() (settings settings.Settings, err error) {
+	for _, source := range s.sources {
 		settingsFromSource, err := source.Read()
 		if err != nil {
 			return settings, fmt.Errorf("reading from %s: %w", source, err)
@@ -50,8 +50,8 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 // with field set by the next source.
 // It then set defaults to remaining unset fields, and validate
 // all the fields.
-func (r *Reader) ReadHealth() (settings settings.Health, err error) {
-	for _, source := range r.sources {
+func (s *Source) ReadHealth() (settings settings.Health, err error) {
+	for _, source := range s.sources {
 		settingsFromSource, err := source.ReadHealth()
 		if err != nil {
 			return settings, fmt.Errorf("reading from %s: %w", source, err)

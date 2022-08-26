@@ -7,12 +7,12 @@ import (
 	"github.com/qdm12/govalid/binary"
 )
 
-func (r *Reader) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
-	httpProxy.User = r.readHTTProxyUser()
-	httpProxy.Password = r.readHTTProxyPassword()
-	httpProxy.ListeningAddress = r.readHTTProxyListeningAddress()
+func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
+	httpProxy.User = s.readHTTProxyUser()
+	httpProxy.Password = s.readHTTProxyPassword()
+	httpProxy.ListeningAddress = s.readHTTProxyListeningAddress()
 
-	httpProxy.Enabled, err = r.readHTTProxyEnabled()
+	httpProxy.Enabled, err = s.readHTTProxyEnabled()
 	if err != nil {
 		return httpProxy, err
 	}
@@ -22,7 +22,7 @@ func (r *Reader) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
 		return httpProxy, fmt.Errorf("environment variable HTTPPROXY_STEALTH: %w", err)
 	}
 
-	httpProxy.Log, err = r.readHTTProxyLog()
+	httpProxy.Log, err = s.readHTTProxyLog()
 	if err != nil {
 		return httpProxy, err
 	}
@@ -30,38 +30,38 @@ func (r *Reader) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
 	return httpProxy, nil
 }
 
-func (r *Reader) readHTTProxyUser() (user *string) {
-	_, s := r.getEnvWithRetro("HTTPPROXY_USER", "PROXY_USER", "TINYPROXY_USER")
-	if s != "" {
-		return &s
+func (s *Source) readHTTProxyUser() (user *string) {
+	_, value := s.getEnvWithRetro("HTTPPROXY_USER", "PROXY_USER", "TINYPROXY_USER")
+	if value != "" {
+		return &value
 	}
 	return nil
 }
 
-func (r *Reader) readHTTProxyPassword() (user *string) {
-	_, s := r.getEnvWithRetro("HTTPPROXY_PASSWORD", "PROXY_PASSWORD", "TINYPROXY_PASSWORD")
-	if s != "" {
-		return &s
+func (s *Source) readHTTProxyPassword() (user *string) {
+	_, value := s.getEnvWithRetro("HTTPPROXY_PASSWORD", "PROXY_PASSWORD", "TINYPROXY_PASSWORD")
+	if value != "" {
+		return &value
 	}
 	return nil
 }
 
-func (r *Reader) readHTTProxyListeningAddress() (listeningAddress string) {
-	key, value := r.getEnvWithRetro("HTTPPROXY_LISTENING_ADDRESS", "PROXY_PORT", "TINYPROXY_PORT", "HTTPPROXY_PORT")
+func (s *Source) readHTTProxyListeningAddress() (listeningAddress string) {
+	key, value := s.getEnvWithRetro("HTTPPROXY_LISTENING_ADDRESS", "PROXY_PORT", "TINYPROXY_PORT", "HTTPPROXY_PORT")
 	if key == "HTTPPROXY_LISTENING_ADDRESS" {
 		return value
 	}
 	return ":" + value
 }
 
-func (r *Reader) readHTTProxyEnabled() (enabled *bool, err error) {
-	key, s := r.getEnvWithRetro("HTTPPROXY", "PROXY", "TINYPROXY")
-	if s == "" {
+func (s *Source) readHTTProxyEnabled() (enabled *bool, err error) {
+	key, value := s.getEnvWithRetro("HTTPPROXY", "PROXY", "TINYPROXY")
+	if value == "" {
 		return nil, nil //nolint:nilnil
 	}
 
 	enabled = new(bool)
-	*enabled, err = binary.Validate(s)
+	*enabled, err = binary.Validate(value)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}
@@ -69,9 +69,9 @@ func (r *Reader) readHTTProxyEnabled() (enabled *bool, err error) {
 	return enabled, nil
 }
 
-func (r *Reader) readHTTProxyLog() (enabled *bool, err error) {
-	key, s := r.getEnvWithRetro("HTTPPROXY_LOG", "PROXY_LOG_LEVEL", "TINYPROXY_LOG")
-	if s == "" {
+func (s *Source) readHTTProxyLog() (enabled *bool, err error) {
+	key, value := s.getEnvWithRetro("HTTPPROXY_LOG", "PROXY_LOG_LEVEL", "TINYPROXY_LOG")
+	if value == "" {
 		return nil, nil //nolint:nilnil
 	}
 
@@ -82,7 +82,7 @@ func (r *Reader) readHTTProxyLog() (enabled *bool, err error) {
 	}
 
 	enabled = new(bool)
-	*enabled, err = binary.Validate(s, binaryOptions...)
+	*enabled, err = binary.Validate(value, binaryOptions...)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}

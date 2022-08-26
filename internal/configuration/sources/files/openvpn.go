@@ -14,7 +14,7 @@ const (
 	openVPNEncryptedKey          = "/gluetun/openvpn_encrypted_key"
 )
 
-func (r *Reader) readOpenVPN() (settings settings.OpenVPN, err error) {
+func (s *Source) readOpenVPN() (settings settings.OpenVPN, err error) {
 	settings.Key, err = readPEMFile(OpenVPNClientKeyPath)
 	if err != nil {
 		return settings, fmt.Errorf("client key: %w", err)

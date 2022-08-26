@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/govalid/binary"
 )
 
-func (r *Reader) readOpenVPN() (
+func (s *Source) readOpenVPN() (
 	openVPN settings.OpenVPN, err error) {
 	defer func() {
 		err = unsetEnvKeys([]string{"OPENVPN_KEY", "OPENVPN_CERT",
@@ -16,14 +16,14 @@ func (r *Reader) readOpenVPN() (
 	}()
 
 	openVPN.Version = getCleanedEnv("OPENVPN_VERSION")
-	openVPN.User = r.readOpenVPNUser()
-	openVPN.Password = r.readOpenVPNPassword()
+	openVPN.User = s.readOpenVPNUser()
+	openVPN.Password = s.readOpenVPNPassword()
 	confFile := getCleanedEnv("OPENVPN_CUSTOM_CONFIG")
 	if confFile != "" {
 		openVPN.ConfFile = &confFile
 	}
 
-	ciphersKey, _ := r.getEnvWithRetro("OPENVPN_CIPHERS", "OPENVPN_CIPHER")
+	ciphersKey, _ := s.getEnvWithRetro("OPENVPN_CIPHERS", "OPENVPN_CIPHER")
 	openVPN.Ciphers = envToCSV(ciphersKey)
 
 	auth := getCleanedEnv("OPENVPN_AUTH")
@@ -35,9 +35,9 @@ func (r *Reader) readOpenVPN() (
 	openVPN.Key = envToStringPtr("OPENVPN_KEY")
 	openVPN.EncryptedKey = envToStringPtr("OPENVPN_ENCRYPTED_KEY")
 
-	openVPN.KeyPassphrase = r.readOpenVPNKeyPassphrase()
+	openVPN.KeyPassphrase = s.readOpenVPNKeyPassphrase()
 
-	openVPN.PIAEncPreset = r.readPIAEncryptionPreset()
+	openVPN.PIAEncPreset = s.readPIAEncryptionPreset()
 
 	openVPN.IPv6, err = envToBoolPtr("OPENVPN_IPV6")
 	if err != nil {
@@ -49,9 +49,9 @@ func (r *Reader) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_MSSFIX: %w", err)
 	}
 
-	_, openVPN.Interface = r.getEnvWithRetro("VPN_INTERFACE", "OPENVPN_INTERFACE")
+	_, openVPN.Interface = s.getEnvWithRetro("VPN_INTERFACE", "OPENVPN_INTERFACE")
 
-	openVPN.ProcessUser, err = r.readOpenVPNProcessUser()
+	openVPN.ProcessUser, err = s.readOpenVPNProcessUser()
 	if err != nil {
 		return openVPN, err
 	}
@@ -69,9 +69,9 @@ func (r *Reader) readOpenVPN() (
 	return openVPN, nil
 }
 
-func (r *Reader) readOpenVPNUser() (user *string) {
+func (s *Source) readOpenVPNUser() (user *string) {
 	user = new(string)
-	_, *user = r.getEnvWithRetro("OPENVPN_USER", "USER")
+	_, *user = s.getEnvWithRetro("OPENVPN_USER", "USER")
 	if *user == "" {
 		return nil
 	}
@@ -81,9 +81,9 @@ func (r *Reader) readOpenVPNUser() (user *string) {
 	return user
 }
 
-func (r *Reader) readOpenVPNPassword() (password *string) {
+func (s *Source) readOpenVPNPassword() (password *string) {
 	password = new(string)
-	_, *password = r.getEnvWithRetro("OPENVPN_PASSWORD", "PASSWORD")
+	_, *password = s.getEnvWithRetro("OPENVPN_PASSWORD", "PASSWORD")
 	if *password == "" {
 		return nil
 	}
@@ -91,7 +91,7 @@ func (r *Reader) readOpenVPNPassword() (password *string) {
 	return password
 }
 
-func (r *Reader) readOpenVPNKeyPassphrase() (passphrase *string) {
+func (s *Source) readOpenVPNKeyPassphrase() (passphrase *string) {
 	passphrase = new(string)
 	*passphrase = getCleanedEnv("OPENVPN_KEY_PASSPHRASE")
 	if *passphrase == "" {
@@ -100,8 +100,8 @@ func (r *Reader) readOpenVPNKeyPassphrase() (passphrase *string) {
 	return passphrase
 }
 
-func (r *Reader) readPIAEncryptionPreset() (presetPtr *string) {
-	_, preset := r.getEnvWithRetro(
+func (s *Source) readPIAEncryptionPreset() (presetPtr *string) {
+	_, preset := s.getEnvWithRetro(
 		"PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET",
 		"PIA_ENCRYPTION", "ENCRYPTION")
 	if preset != "" {
@@ -110,8 +110,8 @@ func (r *Reader) readPIAEncryptionPreset() (presetPtr *string) {
 	return nil
 }
 
-func (r *Reader) readOpenVPNProcessUser() (processUser string, err error) {
-	key, value := r.getEnvWithRetro("OPENVPN_PROCESS_USER", "OPENVPN_ROOT")
+func (s *Source) readOpenVPNProcessUser() (processUser string, err error) {
+	key, value := s.getEnvWithRetro("OPENVPN_PROCESS_USER", "OPENVPN_ROOT")
 	if key == "OPENVPN_PROCESS_USER" {
 		return value, nil
 	}

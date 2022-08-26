@@ -74,8 +74,8 @@ func Test_Reader_readID(t *testing.T) {
 			setTestEnv(t, key, testCase.keyValue)
 			setTestEnv(t, retroKey, testCase.retroValue)
 
-			reader := &Reader{}
-			id, err := reader.readID(key, retroKey)
+			source := &Source{}
+			id, err := source.readID(key, retroKey)
 
 			assert.ErrorIs(t, err, testCase.errWrapped)
 			if err != nil {

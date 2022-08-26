@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (r *Reader) readFirewall() (firewall settings.Firewall, err error) {
+func (s *Source) readFirewall() (firewall settings.Firewall, err error) {
 	vpnInputPortStrings := envToCSV("FIREWALL_VPN_INPUT_PORTS")
 	firewall.VPNInputPorts, err = stringsToPorts(vpnInputPortStrings)
 	if err != nil {
@@ -22,7 +22,7 @@ func (r *Reader) readFirewall() (firewall settings.Firewall, err error) {
 		return firewall, fmt.Errorf("environment variable FIREWALL_INPUT_PORTS: %w", err)
 	}
 
-	outboundSubnetsKey, _ := r.getEnvWithRetro("FIREWALL_OUTBOUND_SUBNETS", "EXTRA_SUBNETS")
+	outboundSubnetsKey, _ := s.getEnvWithRetro("FIREWALL_OUTBOUND_SUBNETS", "EXTRA_SUBNETS")
 	outboundSubnetStrings := envToCSV(outboundSubnetsKey)
 	firewall.OutboundSubnets, err = stringsToIPNets(outboundSubnetStrings)
 	if err != nil {

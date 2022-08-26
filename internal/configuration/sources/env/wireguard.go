@@ -8,22 +8,22 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (r *Reader) readWireguard() (wireguard settings.Wireguard, err error) {
+func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	defer func() {
 		err = unsetEnvKeys([]string{"WIREGUARD_PRIVATE_KEY", "WIREGUARD_PRESHARED_KEY"}, err)
 	}()
 	wireguard.PrivateKey = envToStringPtr("WIREGUARD_PRIVATE_KEY")
 	wireguard.PreSharedKey = envToStringPtr("WIREGUARD_PRESHARED_KEY")
-	_, wireguard.Interface = r.getEnvWithRetro("VPN_INTERFACE", "WIREGUARD_INTERFACE")
-	wireguard.Addresses, err = r.readWireguardAddresses()
+	_, wireguard.Interface = s.getEnvWithRetro("VPN_INTERFACE", "WIREGUARD_INTERFACE")
+	wireguard.Addresses, err = s.readWireguardAddresses()
 	if err != nil {
 		return wireguard, err // already wrapped
 	}
 	return wireguard, nil
 }
 
-func (r *Reader) readWireguardAddresses() (addresses []net.IPNet, err error) {
-	key, addressesCSV := r.getEnvWithRetro("WIREGUARD_ADDRESSES", "WIREGUARD_ADDRESS")
+func (s *Source) readWireguardAddresses() (addresses []net.IPNet, err error) {
+	key, addressesCSV := s.getEnvWithRetro("WIREGUARD_ADDRESSES", "WIREGUARD_ADDRESS")
 	if addressesCSV == "" {
 		return nil, nil
 	}

@@ -9,13 +9,13 @@ import (
 	"inet.af/netaddr"
 )
 
-func (r *Reader) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error) {
+func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error) {
 	blacklist.BlockMalicious, err = envToBoolPtr("BLOCK_MALICIOUS")
 	if err != nil {
 		return blacklist, fmt.Errorf("environment variable BLOCK_MALICIOUS: %w", err)
 	}
 
-	blacklist.BlockSurveillance, err = r.readBlockSurveillance()
+	blacklist.BlockSurveillance, err = s.readBlockSurveillance()
 	if err != nil {
 		return blacklist, err
 	}
@@ -36,8 +36,8 @@ func (r *Reader) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 	return blacklist, nil
 }
 
-func (r *Reader) readBlockSurveillance() (blocked *bool, err error) {
-	key, value := r.getEnvWithRetro("BLOCK_SURVEILLANCE", "BLOCK_NSA")
+func (s *Source) readBlockSurveillance() (blocked *bool, err error) {
+	key, value := s.getEnvWithRetro("BLOCK_SURVEILLANCE", "BLOCK_NSA")
 	if value == "" {
 		return nil, nil //nolint:nilnil
 	}

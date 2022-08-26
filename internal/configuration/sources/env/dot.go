@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (r *Reader) readDoT() (dot settings.DoT, err error) {
+func (s *Source) readDoT() (dot settings.DoT, err error) {
 	dot.Enabled, err = envToBoolPtr("DOT")
 	if err != nil {
 		return dot, fmt.Errorf("environment variable DOT: %w", err)
@@ -22,7 +22,7 @@ func (r *Reader) readDoT() (dot settings.DoT, err error) {
 		return dot, err
 	}
 
-	dot.Blacklist, err = r.readDNSBlacklist()
+	dot.Blacklist, err = s.readDNSBlacklist()
 	if err != nil {
 		return dot, err
 	}

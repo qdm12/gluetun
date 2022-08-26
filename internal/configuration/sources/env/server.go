@@ -7,13 +7,13 @@ import (
 	"github.com/qdm12/govalid/binary"
 )
 
-func (r *Reader) readControlServer() (controlServer settings.ControlServer, err error) {
+func (s *Source) readControlServer() (controlServer settings.ControlServer, err error) {
 	controlServer.Log, err = readControlServerLog()
 	if err != nil {
 		return controlServer, err
 	}
 
-	controlServer.Address = r.readControlServerAddress()
+	controlServer.Address = s.readControlServerAddress()
 
 	return controlServer, nil
 }
@@ -32,17 +32,17 @@ func readControlServerLog() (enabled *bool, err error) {
 	return &log, nil
 }
 
-func (r *Reader) readControlServerAddress() (address *string) {
-	key, s := r.getEnvWithRetro("HTTP_CONTROL_SERVER_ADDRESS", "HTTP_CONTROL_SERVER_PORT")
-	if s == "" {
+func (s *Source) readControlServerAddress() (address *string) {
+	key, value := s.getEnvWithRetro("HTTP_CONTROL_SERVER_ADDRESS", "HTTP_CONTROL_SERVER_PORT")
+	if value == "" {
 		return nil
 	}
 
 	if key == "HTTP_CONTROL_SERVER_ADDRESS" {
-		return &s
+		return &value
 	}
 
 	address = new(string)
-	*address = ":" + s
+	*address = ":" + value
 	return address
 }

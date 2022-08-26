@@ -6,9 +6,9 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (r *Reader) readPortForward() (
+func (s *Source) readPortForward() (
 	portForwarding settings.PortForwarding, err error) {
-	key, _ := r.getEnvWithRetro(
+	key, _ := s.getEnvWithRetro(
 		"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING",
 		"PORT_FORWARDING")
 	portForwarding.Enabled, err = envToBoolPtr(key)
@@ -16,7 +16,7 @@ func (r *Reader) readPortForward() (
 		return portForwarding, fmt.Errorf("environment variable %s: %w", key, err)
 	}
 
-	_, value := r.getEnvWithRetro(
+	_, value := s.getEnvWithRetro(
 		"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE",
 		"PORT_FORWARDING_STATUS_FILE")
 	if value != "" {

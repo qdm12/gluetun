@@ -14,13 +14,13 @@ var (
 	ErrSystemTimezoneNotValid = errors.New("timezone is not valid")
 )
 
-func (r *Reader) readSystem() (system settings.System, err error) {
-	system.PUID, err = r.readID("PUID", "UID")
+func (s *Source) readSystem() (system settings.System, err error) {
+	system.PUID, err = s.readID("PUID", "UID")
 	if err != nil {
 		return system, err
 	}
 
-	system.PGID, err = r.readID("PGID", "GID")
+	system.PGID, err = s.readID("PGID", "GID")
 	if err != nil {
 		return system, err
 	}
@@ -32,9 +32,9 @@ func (r *Reader) readSystem() (system settings.System, err error) {
 
 var ErrSystemIDNotValid = errors.New("system ID is not valid")
 
-func (r *Reader) readID(key, retroKey string) (
+func (s *Source) readID(key, retroKey string) (
 	id *uint32, err error) {
-	idEnvKey, idString := r.getEnvWithRetro(key, retroKey)
+	idEnvKey, idString := s.getEnvWithRetro(key, retroKey)
 	if idString == "" {
 		return nil, nil //nolint:nilnil
 	}

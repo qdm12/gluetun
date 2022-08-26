@@ -15,37 +15,37 @@ var (
 	ErrServerNumberNotValid = errors.New("server number is not valid")
 )
 
-func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
+func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	ss settings.ServerSelection, err error) {
 	ss.VPN = vpnType
 
-	ss.TargetIP, err = r.readOpenVPNTargetIP()
+	ss.TargetIP, err = s.readOpenVPNTargetIP()
 	if err != nil {
 		return ss, err
 	}
 
-	countriesKey, _ := r.getEnvWithRetro("SERVER_COUNTRIES", "COUNTRY")
+	countriesKey, _ := s.getEnvWithRetro("SERVER_COUNTRIES", "COUNTRY")
 	ss.Countries = envToCSV(countriesKey)
 	if vpnProvider == providers.Cyberghost && len(ss.Countries) == 0 {
 		// Retro-compatibility for Cyberghost using the REGION variable
 		ss.Countries = envToCSV("REGION")
 		if len(ss.Countries) > 0 {
-			r.onRetroActive("REGION", "SERVER_COUNTRIES")
+			s.onRetroActive("REGION", "SERVER_COUNTRIES")
 		}
 	}
 
-	regionsKey, _ := r.getEnvWithRetro("SERVER_REGIONS", "REGION")
+	regionsKey, _ := s.getEnvWithRetro("SERVER_REGIONS", "REGION")
 	ss.Regions = envToCSV(regionsKey)
 
-	citiesKey, _ := r.getEnvWithRetro("SERVER_CITIES", "CITY")
+	citiesKey, _ := s.getEnvWithRetro("SERVER_CITIES", "CITY")
 	ss.Cities = envToCSV(citiesKey)
 
 	ss.ISPs = envToCSV("ISP")
 
-	hostnamesKey, _ := r.getEnvWithRetro("SERVER_HOSTNAMES", "SERVER_HOSTNAME")
+	hostnamesKey, _ := s.getEnvWithRetro("SERVER_HOSTNAMES", "SERVER_HOSTNAME")
 	ss.Hostnames = envToCSV(hostnamesKey)
 
-	serverNamesKey, _ := r.getEnvWithRetro("SERVER_NAMES", "SERVER_NAME")
+	serverNamesKey, _ := s.getEnvWithRetro("SERVER_NAMES", "SERVER_NAME")
 	ss.Names = envToCSV(serverNamesKey)
 
 	if csv := getCleanedEnv("SERVER_NUMBER"); csv != "" {
@@ -66,7 +66,7 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 	}
 
 	// Mullvad only
-	ss.OwnedOnly, err = r.readOwnedOnly()
+	ss.OwnedOnly, err = s.readOwnedOnly()
 	if err != nil {
 		return ss, err
 	}
@@ -95,12 +95,12 @@ func (r *Reader) readServerSelection(vpnProvider, vpnType string) (
 		return ss, fmt.Errorf("environment variable STREAM_ONLY: %w", err)
 	}
 
-	ss.OpenVPN, err = r.readOpenVPNSelection()
+	ss.OpenVPN, err = s.readOpenVPNSelection()
 	if err != nil {
 		return ss, err
 	}
 
-	ss.Wireguard, err = r.readWireguardSelection()
+	ss.Wireguard, err = s.readWireguardSelection()
 	if err != nil {
 		return ss, err
 	}
@@ -112,23 +112,23 @@ var (
 	ErrInvalidIP = errors.New("invalid IP address")
 )
 
-func (r *Reader) readOpenVPNTargetIP() (ip net.IP, err error) {
-	envKey, s := r.getEnvWithRetro("VPN_ENDPOINT_IP", "OPENVPN_TARGET_IP")
-	if s == "" {
+func (s *Source) readOpenVPNTargetIP() (ip net.IP, err error) {
+	envKey, value := s.getEnvWithRetro("VPN_ENDPOINT_IP", "OPENVPN_TARGET_IP")
+	if value == "" {
 		return nil, nil
 	}
 
-	ip = net.ParseIP(s)
+	ip = net.ParseIP(value)
 	if ip == nil {
 		return nil, fmt.Errorf("environment variable %s: %w: %s",
-			envKey, ErrInvalidIP, s)
+			envKey, ErrInvalidIP, value)
 	}
 
 	return ip, nil
 }
 
-func (r *Reader) readOwnedOnly() (ownedOnly *bool, err error) {
-	envKey, _ := r.getEnvWithRetro("OWNED_ONLY", "OWNED")
+func (s *Source) readOwnedOnly() (ownedOnly *bool, err error) {
+	envKey, _ := s.getEnvWithRetro("OWNED_ONLY", "OWNED")
 	ownedOnly, err = envToBoolPtr(envKey)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", envKey, err)

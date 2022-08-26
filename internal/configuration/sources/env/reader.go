@@ -4,7 +4,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-type Reader struct {
+type Source struct {
 	warner Warner
 }
 
@@ -12,36 +12,36 @@ type Warner interface {
 	Warn(s string)
 }
 
-func New(warner Warner) *Reader {
-	return &Reader{
+func New(warner Warner) *Source {
+	return &Source{
 		warner: warner,
 	}
 }
 
-func (r *Reader) String() string { return "environment variables" }
+func (s *Source) String() string { return "environment variables" }
 
-func (r *Reader) Read() (settings settings.Settings, err error) {
-	settings.VPN, err = r.readVPN()
+func (s *Source) Read() (settings settings.Settings, err error) {
+	settings.VPN, err = s.readVPN()
 	if err != nil {
 		return settings, err
 	}
 
-	settings.Firewall, err = r.readFirewall()
+	settings.Firewall, err = s.readFirewall()
 	if err != nil {
 		return settings, err
 	}
 
-	settings.System, err = r.readSystem()
+	settings.System, err = s.readSystem()
 	if err != nil {
 		return settings, err
 	}
 
-	settings.Health, err = r.ReadHealth()
+	settings.Health, err = s.ReadHealth()
 	if err != nil {
 		return settings, err
 	}
 
-	settings.HTTPProxy, err = r.readHTTPProxy()
+	settings.HTTPProxy, err = s.readHTTPProxy()
 	if err != nil {
 		return settings, err
 	}
@@ -51,7 +51,7 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 		return settings, err
 	}
 
-	settings.PublicIP, err = r.readPublicIP()
+	settings.PublicIP, err = s.readPublicIP()
 	if err != nil {
 		return settings, err
 	}
@@ -66,17 +66,17 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 		return settings, err
 	}
 
-	settings.Shadowsocks, err = r.readShadowsocks()
+	settings.Shadowsocks, err = s.readShadowsocks()
 	if err != nil {
 		return settings, err
 	}
 
-	settings.DNS, err = r.readDNS()
+	settings.DNS, err = s.readDNS()
 	if err != nil {
 		return settings, err
 	}
 
-	settings.ControlServer, err = r.readControlServer()
+	settings.ControlServer, err = s.readControlServer()
 	if err != nil {
 		return settings, err
 	}
@@ -89,8 +89,8 @@ func (r *Reader) Read() (settings settings.Settings, err error) {
 	return settings, nil
 }
 
-func (r *Reader) onRetroActive(oldKey, newKey string) {
-	r.warner.Warn(
+func (s *Source) onRetroActive(oldKey, newKey string) {
+	s.warner.Warn(
 		"You are using the old environment variable " + oldKey +
 			", please consider changing it to " + newKey)
 }
@@ -101,14 +101,14 @@ func (r *Reader) onRetroActive(oldKey, newKey string) {
 // and end on returning the value corresponding to the currentKey.
 // Note retroKeys should be in order from oldest to most
 // recent retro-compatibility key.
-func (r *Reader) getEnvWithRetro(currentKey string,
+func (s *Source) getEnvWithRetro(currentKey string,
 	retroKeys ...string) (key, value string) {
 	// We check retro-compatibility keys first since
 	// the current key might be set in the Dockerfile.
 	for _, key = range retroKeys {
 		value = getCleanedEnv(key)
 		if value != "" {
-			r.onRetroActive(key, currentKey)
+			s.onRetroActive(key, currentKey)
 			return key, value
 		}
 	}
