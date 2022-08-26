@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/sources"
 	"github.com/qdm12/gluetun/internal/healthcheck"
 )
 
-func (c *CLI) HealthCheck(ctx context.Context, source sources.Source, warner Warner) error {
+func (c *CLI) HealthCheck(ctx context.Context, source Source, warner Warner) error {
 	// Extract the health server port from the configuration.
 	config, err := source.ReadHealth()
 	if err != nil {

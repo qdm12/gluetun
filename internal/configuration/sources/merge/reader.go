@@ -5,16 +5,19 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/configuration/sources"
 )
 
-var _ sources.Source = (*Reader)(nil)
-
-type Reader struct {
-	sources []sources.Source
+type Source interface {
+	Read() (settings settings.Settings, err error)
+	ReadHealth() (settings settings.Health, err error)
+	String() string
 }
 
-func New(sources ...sources.Source) *Reader {
+type Reader struct {
+	sources []Source
+}
+
+func New(sources ...Source) *Reader {
 	return &Reader{
 		sources: sources,
 	}

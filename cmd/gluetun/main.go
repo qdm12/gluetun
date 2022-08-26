@@ -16,7 +16,7 @@ import (
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"
-	"github.com/qdm12/gluetun/internal/configuration/sources"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/configuration/sources/env"
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 	mux "github.com/qdm12/gluetun/internal/configuration/sources/merge"
@@ -128,7 +128,7 @@ var (
 
 //nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
-	args []string, logger log.LoggerInterface, source sources.Source,
+	args []string, logger log.LoggerInterface, source Source,
 	tun Tun, netLinker netLinker, cmder command.RunStarter,
 	cli clier) error {
 	if len(args) > 1 { // cli operation
@@ -529,12 +529,18 @@ type Linker interface {
 type clier interface {
 	ClientKey(args []string) error
 	FormatServers(args []string) error
-	OpenvpnConfig(logger cli.OpenvpnConfigLogger, source sources.Source) error
-	HealthCheck(ctx context.Context, source sources.Source, warner cli.Warner) error
+	OpenvpnConfig(logger cli.OpenvpnConfigLogger, source cli.Source) error
+	HealthCheck(ctx context.Context, source cli.Source, warner cli.Warner) error
 	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
 }
 
 type Tun interface {
 	Check(tunDevice string) error
 	Create(tunDevice string) error
+}
+
+type Source interface {
+	Read() (settings settings.Settings, err error)
+	ReadHealth() (health settings.Health, err error)
+	String() string
 }

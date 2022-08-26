@@ -2,10 +2,7 @@ package env
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/configuration/sources"
 )
-
-var _ sources.Source = (*Reader)(nil)
 
 type Reader struct {
 	warner Warner

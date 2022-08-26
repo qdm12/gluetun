@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/sources"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
@@ -36,7 +35,7 @@ type IPFetcher interface {
 	FetchMultiInfo(ctx context.Context, ips []net.IP) (data []ipinfo.Response, err error)
 }
 
-func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source sources.Source) error {
+func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source Source) error {
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
 		return err
