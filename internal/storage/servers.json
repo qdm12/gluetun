@@ -114751,7 +114751,7 @@
   },
   "surfshark": {
     "version": 4,
-    "timestamp": 1661346193,
+    "timestamp": 1661434029,
     "servers": [
       {
         "vpn": "openvpn",
@@ -114763,12 +114763,37 @@
         "udp": true,
         "retroloc": "Albania",
         "ips": [
+          "31.171.152.197",
+          "31.171.153.83",
+          "31.171.153.85",
           "31.171.153.99",
-          "31.171.153.131",
-          "31.171.153.133",
+          "31.171.154.99",
+          "31.171.154.101",
+          "31.171.154.219",
           "31.171.155.19",
-          "31.171.155.69",
-          "31.171.155.83"
+          "31.171.155.83",
+          "31.171.155.101"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Albania",
+        "region": "Europe",
+        "city": "Tirana",
+        "hostname": "al-tia.prod.surfshark.com",
+        "retroloc": "Albania",
+        "wgpubkey": "l8EOWPyzt/njrb74CADY4VOhns/TbUN6KFTbytHcFQw=",
+        "ips": [
+          "31.171.152.197",
+          "31.171.153.83",
+          "31.171.153.85",
+          "31.171.153.99",
+          "31.171.154.99",
+          "31.171.154.101",
+          "31.171.154.219",
+          "31.171.155.19",
+          "31.171.155.83",
+          "31.171.155.101"
         ]
       },
       {
@@ -114780,7 +114805,19 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "62.197.144.3",
+          "62.197.144.5",
+          "62.197.144.8",
+          "62.197.144.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Algeria",
+        "region": "Middle East and Africa",
+        "city": "Algiers",
+        "hostname": "dz-alg.prod.surfshark.com",
+        "wgpubkey": "KyFFiO8bY3wZGpxJf7aqEH3TrG+Jj4ZfNOyh2oS7ICU=",
+        "ips": [
           "62.197.144.5",
           "62.197.144.8",
           "62.197.144.10"
@@ -114796,7 +114833,23 @@
         "udp": true,
         "ips": [
           "62.197.152.3",
-          "62.197.152.5"
+          "62.197.152.5",
+          "62.197.152.8",
+          "62.197.152.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Andorra",
+        "region": "Europe",
+        "city": "Andorra la Vella",
+        "hostname": "ad-leu.prod.surfshark.com",
+        "wgpubkey": "alv2SqjLM8Aw5yz/7pGZydfALPfYzgwDquAe5dWX12s=",
+        "ips": [
+          "62.197.152.3",
+          "62.197.152.5",
+          "62.197.152.8",
+          "62.197.152.10"
         ]
       },
       {
@@ -114809,14 +114862,21 @@
         "udp": true,
         "retroloc": "Argentina Buenos Aires",
         "ips": [
-          "91.206.168.5",
-          "91.206.168.9",
-          "91.206.168.31",
-          "91.206.168.39",
-          "91.206.168.43",
-          "91.206.168.54",
-          "91.206.168.56",
-          "91.206.168.58"
+          "91.206.168.26",
+          "91.206.168.70"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Argentina",
+        "region": "The Americas",
+        "city": "Buenos Aires",
+        "hostname": "ar-bua.prod.surfshark.com",
+        "retroloc": "Argentina Buenos Aires",
+        "wgpubkey": "JeHzAD4ZNXnFw4TdG37pi8bHPy6CQQqeRXK09pMHVyU=",
+        "ips": [
+          "91.206.168.26",
+          "91.206.168.70"
         ]
       },
       {
@@ -114829,8 +114889,19 @@
         "udp": true,
         "ips": [
           "92.62.120.3",
-          "92.62.120.5",
-          "92.62.120.10"
+          "92.62.120.8"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Armenia",
+        "region": "Europe",
+        "city": "Yerevan",
+        "hostname": "am-evn.prod.surfshark.com",
+        "wgpubkey": "B+aSYrw7JSq7b60uK0nrMQGCiJ48QwiUp/aoRpYX2lU=",
+        "ips": [
+          "92.62.120.3",
+          "92.62.120.8"
         ]
       },
       {
@@ -114845,10 +114916,27 @@
         "ips": [
           "45.248.79.19",
           "45.248.79.21",
-          "45.248.79.37",
-          "45.248.79.51",
+          "45.248.79.35",
+          "45.248.79.53",
           "45.248.79.69",
-          "45.248.79.83"
+          "45.248.79.85"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Australia",
+        "region": "Asia Pacific",
+        "city": "Adelaide",
+        "hostname": "au-adl.prod.surfshark.com",
+        "retroloc": "Australia Adelaide",
+        "wgpubkey": "J7N3UrHc71+LJkn8gsI9Ja8YcpTXT8fV789LLKnIXAY=",
+        "ips": [
+          "45.248.79.19",
+          "45.248.79.21",
+          "45.248.79.35",
+          "45.248.79.53",
+          "45.248.79.69",
+          "45.248.79.85"
         ]
       },
       {
@@ -114861,11 +114949,28 @@
         "udp": true,
         "retroloc": "Australia Brisbane",
         "ips": [
-          "45.248.77.235",
-          "45.248.77.237",
-          "144.48.39.13",
-          "144.48.39.67",
+          "144.48.39.69",
           "144.48.39.83",
+          "144.48.39.85",
+          "144.48.39.123",
+          "144.48.39.125",
+          "144.48.39.133"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Australia",
+        "region": "Asia Pacific",
+        "city": "Brisbane",
+        "hostname": "au-bne.prod.surfshark.com",
+        "retroloc": "Australia Brisbane",
+        "wgpubkey": "Jo+U6dj+eAf8zdtoMqyYPmrJNVQj82mipH0mEDyfUXo=",
+        "ips": [
+          "144.48.39.69",
+          "144.48.39.83",
+          "144.48.39.85",
+          "144.48.39.123",
+          "144.48.39.125",
           "144.48.39.133"
         ]
       },
@@ -114879,12 +114984,21 @@
         "udp": true,
         "retroloc": "Australia Melbourne",
         "ips": [
-          "103.192.80.139",
-          "103.192.80.147",
-          "103.192.80.219",
           "103.192.80.243",
-          "103.192.80.245",
-          "103.192.80.253"
+          "103.192.80.245"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Australia",
+        "region": "Asia Pacific",
+        "city": "Melbourne",
+        "hostname": "au-mel.prod.surfshark.com",
+        "retroloc": "Australia Melbourne",
+        "wgpubkey": "yYX9yLjHOSWVAsaujcIVWAxF9wYMmHupG1RtJk+u21o=",
+        "ips": [
+          "103.192.80.243",
+          "103.192.80.245"
         ]
       },
       {
@@ -114901,10 +115015,25 @@
           "45.248.78.45",
           "124.150.139.35",
           "124.150.139.37",
-          "124.150.139.83",
           "124.150.139.85",
-          "124.150.139.123",
-          "124.150.139.125"
+          "124.150.139.181"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Australia",
+        "region": "Asia Pacific",
+        "city": "Perth",
+        "hostname": "au-per.prod.surfshark.com",
+        "retroloc": "Australia Perth",
+        "wgpubkey": "oD0TqnE/ETIpvMO8DZObjdLVRf3jhzG7qV5GtM8/Yik=",
+        "ips": [
+          "45.248.78.43",
+          "45.248.78.45",
+          "124.150.139.35",
+          "124.150.139.37",
+          "124.150.139.85",
+          "124.150.139.181"
         ]
       },
       {
@@ -114918,13 +115047,32 @@
         "retroloc": "Australia Sydney",
         "ips": [
           "45.248.76.125",
-          "45.248.76.195",
-          "45.248.76.197",
-          "45.248.76.205",
+          "45.248.76.203",
           "45.248.76.211",
-          "45.248.76.213",
+          "45.248.76.221",
+          "45.248.76.227",
+          "45.248.76.229",
           "45.248.76.237",
-          "180.149.228.163"
+          "180.149.228.171"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Australia",
+        "region": "Asia Pacific",
+        "city": "Sydney",
+        "hostname": "au-syd.prod.surfshark.com",
+        "retroloc": "Australia Sydney",
+        "wgpubkey": "Y5KM9kHdM0upMsIJWUQquOY1RgkWX69AHw/Dl5KyIk4=",
+        "ips": [
+          "45.248.76.125",
+          "45.248.76.203",
+          "45.248.76.211",
+          "45.248.76.221",
+          "45.248.76.227",
+          "45.248.76.229",
+          "45.248.76.237",
+          "180.149.228.171"
         ]
       },
       {
@@ -114949,14 +115097,25 @@
         "udp": true,
         "retroloc": "Austria",
         "ips": [
-          "37.19.195.76",
-          "37.19.195.87",
-          "87.249.133.7",
-          "87.249.133.12",
-          "87.249.133.66",
-          "89.187.168.44",
-          "89.187.168.46",
-          "89.187.168.54"
+          "37.19.195.83",
+          "87.249.133.19",
+          "87.249.133.22",
+          "87.249.133.24"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Austria",
+        "region": "Europe",
+        "city": "Vienna",
+        "hostname": "at-vie.prod.surfshark.com",
+        "retroloc": "Austria",
+        "wgpubkey": "dPZe8Jq3Hu0k07MDk+Y4+AS2XHSLYalyg91TSFXRYEA=",
+        "ips": [
+          "37.19.195.83",
+          "87.249.133.19",
+          "87.249.133.22",
+          "87.249.133.24"
         ]
       },
       {
@@ -114969,10 +115128,23 @@
         "udp": true,
         "retroloc": "Azerbaijan",
         "ips": [
-          "62.212.239.5",
+          "62.212.239.19",
           "62.212.239.43",
-          "62.212.239.67",
-          "94.20.21.85"
+          "62.212.239.69"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Azerbaijan",
+        "region": "Asia Pacific",
+        "city": "Baku",
+        "hostname": "az-bak.prod.surfshark.com",
+        "retroloc": "Azerbaijan",
+        "wgpubkey": "pvWYTFxIpqo25NGTertIIWnccS/sUQ6fIkqd8XJYzEI=",
+        "ips": [
+          "62.212.239.19",
+          "62.212.239.43",
+          "62.212.239.69"
         ]
       },
       {
@@ -114985,7 +115157,21 @@
         "udp": true,
         "ips": [
           "62.197.145.3",
-          "62.197.145.5"
+          "62.197.145.5",
+          "62.197.145.8"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Bahamas",
+        "region": "The Americas",
+        "city": "Bahamas",
+        "hostname": "bs-nas.prod.surfshark.com",
+        "wgpubkey": "uM3cUZiQ46nRLALqOQfBz2cqg+RyR/OIHH0Xvwf9wHY=",
+        "ips": [
+          "62.197.145.3",
+          "62.197.145.5",
+          "62.197.145.8"
         ]
       },
       {
@@ -114998,7 +115184,23 @@
         "udp": true,
         "ips": [
           "62.197.153.18",
-          "62.197.153.20"
+          "62.197.153.20",
+          "62.197.153.34",
+          "62.197.153.36"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Bangladesh",
+        "region": "Asia Pacific",
+        "city": "Dhaka",
+        "hostname": "bd-dac.prod.surfshark.com",
+        "wgpubkey": "6tOduT4iNbZyqKNzsSgDe/ckziO6101NPZwrnY5WpTk=",
+        "ips": [
+          "62.197.153.18",
+          "62.197.153.20",
+          "62.197.153.34",
+          "62.197.153.36"
         ]
       },
       {
@@ -115010,6 +115212,22 @@
         "tcp": true,
         "udp": true,
         "ips": [
+          "188.95.54.15",
+          "188.95.54.18",
+          "188.95.54.33",
+          "188.95.54.35"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Belgium",
+        "region": "Europe",
+        "city": "Antwerp",
+        "hostname": "be-anr.prod.surfshark.com",
+        "wgpubkey": "cTDaqf4qOaNGUbzt/qMRUCcOzL9wknQtG00po/bBt3Y=",
+        "ips": [
+          "188.95.54.15",
+          "188.95.54.18",
           "188.95.54.33",
           "188.95.54.35"
         ]
@@ -115024,8 +115242,29 @@
         "udp": true,
         "retroloc": "Belgium",
         "ips": [
-          "146.70.123.173",
-          "146.70.123.197"
+          "146.70.55.197",
+          "146.70.55.221",
+          "146.70.55.243",
+          "146.70.55.245",
+          "146.70.55.251",
+          "146.70.123.61"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Belgium",
+        "region": "Europe",
+        "city": "Brussels",
+        "hostname": "be-bru.prod.surfshark.com",
+        "retroloc": "Belgium",
+        "wgpubkey": "9wZOjtwuKEc0GBcvc3xJQ4Kjo8G3EMXu6zJRzbanOjc=",
+        "ips": [
+          "146.70.55.197",
+          "146.70.55.221",
+          "146.70.55.243",
+          "146.70.55.245",
+          "146.70.55.251",
+          "146.70.123.61"
         ]
       },
       {
@@ -115036,6 +115275,20 @@
         "hostname": "bz-blp.prod.surfshark.com",
         "tcp": true,
         "udp": true,
+        "ips": [
+          "212.119.33.3",
+          "212.119.33.5",
+          "212.119.33.8",
+          "212.119.33.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Belize",
+        "region": "The Americas",
+        "city": "Belmopan",
+        "hostname": "bz-blp.prod.surfshark.com",
+        "wgpubkey": "zcxA9gW+ism40rUoF5B4UPV655FLymJ1n4t0WogtZkU=",
         "ips": [
           "212.119.33.3",
           "212.119.33.5",
@@ -115059,6 +115312,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Bhutan",
+        "region": "Asia Pacific",
+        "city": "Thimphu",
+        "hostname": "bt-pbh.prod.surfshark.com",
+        "wgpubkey": "R/lGzro0Z8nbQWDVRJbfscimcUvbSrc/raIvXwfDoV4=",
+        "ips": [
+          "62.197.157.18",
+          "62.197.157.20",
+          "62.197.157.34",
+          "62.197.157.36"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Bolivia",
         "region": "The Americas",
@@ -115066,6 +115333,20 @@
         "hostname": "bo-sre.prod.surfshark.com",
         "tcp": true,
         "udp": true,
+        "ips": [
+          "194.169.171.3",
+          "194.169.171.5",
+          "194.169.171.8",
+          "194.169.171.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Bolivia",
+        "region": "The Americas",
+        "city": "Sucre",
+        "hostname": "bo-sre.prod.surfshark.com",
+        "wgpubkey": "YTVk+CUVWELH18qftzEURb8JJfLHfmIMewcx0p8hkT0=",
         "ips": [
           "194.169.171.3",
           "194.169.171.5",
@@ -115083,9 +115364,27 @@
         "udp": true,
         "retroloc": "Bosnia and Herzegovina",
         "ips": [
-          "185.99.3.98",
-          "185.99.3.118",
-          "185.99.3.141"
+          "185.99.3.100",
+          "185.99.3.102",
+          "185.99.3.108",
+          "185.99.3.214",
+          "185.164.34.252"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Bosnia and Herzegovina",
+        "region": "Europe",
+        "city": "Sarajevo",
+        "hostname": "ba-sjj.prod.surfshark.com",
+        "retroloc": "Bosnia and Herzegovina",
+        "wgpubkey": "hsm/ps/uxcsVNzT3OmV/l7ZWv+TRIS+IM+N6/nTymkw=",
+        "ips": [
+          "185.99.3.100",
+          "185.99.3.102",
+          "185.99.3.108",
+          "185.99.3.214",
+          "185.164.34.252"
         ]
       },
       {
@@ -115098,10 +115397,33 @@
         "udp": true,
         "retroloc": "Brazil",
         "ips": [
-          "138.199.4.91",
-          "138.199.58.67",
-          "138.199.58.83",
-          "138.199.58.99"
+          "138.199.58.33",
+          "138.199.58.42",
+          "138.199.58.57",
+          "138.199.58.72",
+          "138.199.58.88",
+          "138.199.58.97",
+          "138.199.58.99",
+          "193.19.205.121"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Brazil",
+        "region": "The Americas",
+        "city": "Sao Paulo",
+        "hostname": "br-sao.prod.surfshark.com",
+        "retroloc": "Brazil",
+        "wgpubkey": "IFTVXxhLEqVgZI/JGOPRtmrNUQW1DNljeBe8Ys7v90A=",
+        "ips": [
+          "138.199.58.33",
+          "138.199.58.42",
+          "138.199.58.57",
+          "138.199.58.72",
+          "138.199.58.88",
+          "138.199.58.97",
+          "138.199.58.99",
+          "193.19.205.121"
         ]
       },
       {
@@ -115118,6 +115440,18 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Brunei",
+        "region": "Asia Pacific",
+        "city": "Begawan",
+        "hostname": "bn-bwn.prod.surfshark.com",
+        "wgpubkey": "QE7hpHqVYWqohTmOnmYtKjUv4b6Bb8S2b9AF0EFl638=",
+        "ips": [
+          "62.197.158.18",
+          "62.197.158.20"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Bulgaria",
         "region": "Europe",
@@ -115127,7 +115461,23 @@
         "udp": true,
         "retroloc": "Bulgaria",
         "ips": [
-          "146.70.53.219"
+          "37.19.203.78",
+          "146.70.53.211",
+          "146.70.53.213"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Bulgaria",
+        "region": "Europe",
+        "city": "Sofia",
+        "hostname": "bg-sof.prod.surfshark.com",
+        "retroloc": "Bulgaria",
+        "wgpubkey": "LQFiCiZcPEoYasKRLbCfXp2fYYsj8wiMr/L9u6hYqSo=",
+        "ips": [
+          "37.19.203.78",
+          "146.70.53.211",
+          "146.70.53.213"
         ]
       },
       {
@@ -115140,14 +115490,12 @@
         "udp": true,
         "retroloc": "Canada Montreal",
         "ips": [
-          "91.245.254.3",
           "146.70.112.67",
           "146.70.112.69",
+          "146.70.112.83",
+          "146.70.112.85",
           "146.70.112.109",
-          "146.70.112.157",
-          "146.70.112.187",
-          "146.70.112.189",
-          "217.138.213.101"
+          "146.70.112.189"
         ]
       },
       {
@@ -115174,21 +115522,24 @@
         "retroloc": "Canada Toronto",
         "ips": [
           "37.19.211.7",
-          "37.19.211.9",
-          "37.19.211.29",
-          "37.19.211.47",
-          "37.19.211.52",
-          "37.19.211.59",
-          "37.19.211.69",
-          "37.19.211.72",
-          "37.19.211.89",
-          "37.19.211.109",
-          "37.19.211.114",
-          "37.19.211.117",
-          "37.19.211.132",
-          "37.19.211.135",
-          "138.199.57.36",
-          "138.199.57.44"
+          "37.19.211.84",
+          "37.19.211.87",
+          "37.19.211.117"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Canada",
+        "region": "The Americas",
+        "city": "Toronto",
+        "hostname": "ca-tor.prod.surfshark.com",
+        "retroloc": "Canada Toronto",
+        "wgpubkey": "W9bzkcL3fiV64vDpB4pbrz8QafNn3y5P9Yc/kQvy4TA=",
+        "ips": [
+          "37.19.211.7",
+          "37.19.211.84",
+          "37.19.211.87",
+          "37.19.211.117"
         ]
       },
       {
@@ -115201,8 +115552,25 @@
         "udp": true,
         "retroloc": "Canada Vancouver",
         "ips": [
-          "107.181.177.179",
-          "172.83.40.147"
+          "66.115.147.67",
+          "66.115.147.72",
+          "66.115.147.94",
+          "172.83.40.149"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Canada",
+        "region": "The Americas",
+        "city": "Vancouver",
+        "hostname": "ca-van.prod.surfshark.com",
+        "retroloc": "Canada Vancouver",
+        "wgpubkey": "o4HezxSsbNqJFJZj+VBw/QXFLpfNo7PZu8xe7H2hTw0=",
+        "ips": [
+          "66.115.147.67",
+          "66.115.147.72",
+          "66.115.147.94",
+          "172.83.40.149"
         ]
       },
       {
@@ -115228,7 +115596,24 @@
         "retroloc": "Chile",
         "ips": [
           "31.169.121.19",
-          "31.169.121.21"
+          "31.169.121.21",
+          "31.169.121.24",
+          "31.169.121.26"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Chile",
+        "region": "The Americas",
+        "city": "Santiago",
+        "hostname": "cl-san.prod.surfshark.com",
+        "retroloc": "Chile",
+        "wgpubkey": "FdTRnh0g+FYFPj5UURQIcDbygd+2gMRrslErfmZxdDo=",
+        "ips": [
+          "31.169.121.19",
+          "31.169.121.21",
+          "31.169.121.24",
+          "31.169.121.26"
         ]
       },
       {
@@ -115241,18 +115626,33 @@
         "udp": true,
         "retroloc": "Colombia",
         "ips": [
-          "45.129.32.13",
-          "45.129.32.15",
-          "45.129.32.32",
+          "45.129.32.22",
+          "45.129.32.29",
           "45.129.32.34",
-          "45.129.32.36",
+          "45.129.32.38",
           "45.129.32.45",
           "45.129.32.47",
           "45.129.32.52",
-          "45.129.32.57",
-          "45.129.32.59",
-          "45.129.32.62",
-          "45.129.32.64"
+          "45.129.32.54"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Colombia",
+        "region": "The Americas",
+        "city": "Bogota",
+        "hostname": "co-bog.prod.surfshark.com",
+        "retroloc": "Colombia",
+        "wgpubkey": "lLqqxZuCTtIpBjgZJYWzPQn/7st24iVpJN+/xS7jogs=",
+        "ips": [
+          "45.129.32.22",
+          "45.129.32.29",
+          "45.129.32.34",
+          "45.129.32.38",
+          "45.129.32.45",
+          "45.129.32.47",
+          "45.129.32.52",
+          "45.129.32.54"
         ]
       },
       {
@@ -115263,6 +115663,20 @@
         "hostname": "kh-pnh.prod.surfshark.com",
         "tcp": true,
         "udp": true,
+        "ips": [
+          "62.197.146.18",
+          "62.197.146.20",
+          "62.197.146.34",
+          "62.197.146.36"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Combodia",
+        "region": "Asia Pacific",
+        "city": "Phnom Penh",
+        "hostname": "kh-pnh.prod.surfshark.com",
+        "wgpubkey": "z2Ik8BG6XgosyYE/O4Vz4kiPTZyoWSlJvZtFeFlNclI=",
         "ips": [
           "62.197.146.18",
           "62.197.146.20",
@@ -115285,6 +115699,19 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Costa Rica",
+        "region": "The Americas",
+        "city": "San Jose",
+        "hostname": "cr-sjn.prod.surfshark.com",
+        "retroloc": "Costa Rica",
+        "wgpubkey": "HPggZ80tXf9TpiZzy8xih7PIWjexg4Kyg3lzUGXoDHU=",
+        "ips": [
+          "176.227.241.19",
+          "176.227.241.21"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Croatia",
         "region": "Europe",
@@ -115295,9 +115722,28 @@
         "retroloc": "Croatia",
         "ips": [
           "85.10.50.164",
+          "85.10.56.190",
           "85.10.56.192",
           "85.10.56.225",
-          "89.164.99.136"
+          "89.164.99.109",
+          "176.222.34.113"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Croatia",
+        "region": "Europe",
+        "city": "Zagreb",
+        "hostname": "hr-zag.prod.surfshark.com",
+        "retroloc": "Croatia",
+        "wgpubkey": "nIQmC5T4H0HX4yA2u/Z5rrbLQDAOLA+kFCdt8S94xXg=",
+        "ips": [
+          "85.10.50.164",
+          "85.10.56.190",
+          "85.10.56.192",
+          "85.10.56.225",
+          "89.164.99.109",
+          "176.222.34.113"
         ]
       },
       {
@@ -115310,10 +115756,25 @@
         "udp": true,
         "retroloc": "Cyprus",
         "ips": [
-          "193.19.204.78",
-          "193.19.204.80",
-          "193.19.204.82",
-          "193.19.204.84"
+          "193.19.204.70",
+          "193.19.204.74",
+          "193.19.204.86",
+          "193.19.204.88"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Cyprus",
+        "region": "Europe",
+        "city": "Nicosia",
+        "hostname": "cy-nic.prod.surfshark.com",
+        "retroloc": "Cyprus",
+        "wgpubkey": "kEAQgNChxGgrzoKPpCPFJKh0L1/5rXIq08KSY4g26zY=",
+        "ips": [
+          "193.19.204.70",
+          "193.19.204.74",
+          "193.19.204.86",
+          "193.19.204.88"
         ]
       },
       {
@@ -115326,9 +115787,32 @@
         "udp": true,
         "retroloc": "Czech Republic",
         "ips": [
+          "185.152.64.165",
           "185.180.14.147",
           "185.180.14.149",
+          "185.180.14.153",
+          "185.242.6.51",
           "185.242.6.69",
+          "185.242.6.93",
+          "185.242.6.117"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Czech Republic",
+        "region": "Europe",
+        "city": "Prague",
+        "hostname": "cz-prg.prod.surfshark.com",
+        "retroloc": "Czech Republic",
+        "wgpubkey": "c1bfP+OBTj6WUe8NDH8d6nDTwpQicopfdkHFx3BIaSk=",
+        "ips": [
+          "185.152.64.165",
+          "185.180.14.147",
+          "185.180.14.149",
+          "185.180.14.153",
+          "185.242.6.51",
+          "185.242.6.69",
+          "185.242.6.93",
           "185.242.6.117"
         ]
       },
@@ -115342,10 +115826,33 @@
         "udp": true,
         "retroloc": "Denmark",
         "ips": [
-          "146.70.42.147",
-          "146.70.42.149",
-          "146.70.42.179",
-          "146.70.92.3"
+          "146.70.42.139",
+          "146.70.42.155",
+          "146.70.42.181",
+          "146.70.92.13",
+          "146.70.92.19",
+          "146.70.92.43",
+          "146.70.92.51",
+          "146.70.92.59"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Denmark",
+        "region": "Europe",
+        "city": "Copenhagen",
+        "hostname": "dk-cph.prod.surfshark.com",
+        "retroloc": "Denmark",
+        "wgpubkey": "peDjRPEdHHmo0hGootZ9f+MQCEXmziFkLhMTl2PeXRM=",
+        "ips": [
+          "146.70.42.139",
+          "146.70.42.155",
+          "146.70.42.181",
+          "146.70.92.13",
+          "146.70.92.19",
+          "146.70.92.43",
+          "146.70.92.51",
+          "146.70.92.59"
         ]
       },
       {
@@ -115364,6 +115871,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Ecuador",
+        "region": "The Americas",
+        "city": "Quito",
+        "hostname": "ec-uio.prod.surfshark.com",
+        "wgpubkey": "LErFIOc3YBK1khnmwV+a6fBbYff2OS3h+wnIuOKZQTY=",
+        "ips": [
+          "92.62.122.3",
+          "92.62.122.5",
+          "92.62.122.8",
+          "92.62.122.10"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Egypt",
         "region": "Middle East and Africa",
@@ -115372,7 +115893,23 @@
         "tcp": true,
         "udp": true,
         "ips": [
+          "62.197.147.3",
           "62.197.147.5",
+          "62.197.147.8",
+          "62.197.147.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Egypt",
+        "region": "Middle East and Africa",
+        "city": "Cairo",
+        "hostname": "eg-cai.prod.surfshark.com",
+        "wgpubkey": "EKaIyCUV8aqCtRkV6jfkU1IicE5ZaU2RC4VKAdgjOyA=",
+        "ips": [
+          "62.197.147.3",
+          "62.197.147.5",
+          "62.197.147.8",
           "62.197.147.10"
         ]
       },
@@ -115386,11 +115923,29 @@
         "udp": true,
         "retroloc": "Estonia",
         "ips": [
-          "165.231.163.3",
-          "185.174.159.136",
-          "185.174.159.138",
-          "185.174.159.182",
-          "185.174.159.185"
+          "165.231.161.211",
+          "185.174.159.53",
+          "185.174.159.59",
+          "185.174.159.61",
+          "185.174.159.67",
+          "185.174.159.138"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Estonia",
+        "region": "Europe",
+        "city": "Tallinn",
+        "hostname": "ee-tll.prod.surfshark.com",
+        "retroloc": "Estonia",
+        "wgpubkey": "CsdrT+WfcMRPhrOWgZeHj9DQiQtJfYFci94K5ztjr2E=",
+        "ips": [
+          "165.231.161.211",
+          "185.174.159.53",
+          "185.174.159.59",
+          "185.174.159.61",
+          "185.174.159.67",
+          "185.174.159.138"
         ]
       },
       {
@@ -115403,12 +115958,29 @@
         "udp": true,
         "retroloc": "Finland",
         "ips": [
-          "196.196.203.83",
-          "196.196.203.85",
           "196.196.203.101",
-          "196.196.203.109",
-          "196.244.191.43",
-          "196.244.191.99"
+          "196.196.203.107",
+          "196.244.191.11",
+          "196.244.191.91",
+          "196.244.191.99",
+          "196.244.191.107"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Finland",
+        "region": "Europe",
+        "city": "Helsinki",
+        "hostname": "fi-hel.prod.surfshark.com",
+        "retroloc": "Finland",
+        "wgpubkey": "+nv/Z8I2VS0eRdZwkpQW3U9RmsboTz2MUF94jVg5w10=",
+        "ips": [
+          "196.196.203.101",
+          "196.196.203.107",
+          "196.244.191.11",
+          "196.244.191.91",
+          "196.244.191.99",
+          "196.244.191.107"
         ]
       },
       {
@@ -115421,14 +115993,29 @@
         "udp": true,
         "retroloc": "France Bordeaux",
         "ips": [
-          "185.108.106.24",
-          "185.108.106.67",
-          "185.108.106.69",
-          "185.108.106.140",
-          "185.108.106.154",
-          "185.108.106.166",
-          "185.108.106.174",
-          "185.108.106.176"
+          "185.108.106.72",
+          "185.108.106.102",
+          "185.108.106.144",
+          "185.108.106.150",
+          "185.108.106.169",
+          "185.108.106.188"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "France",
+        "region": "Europe",
+        "city": "Bordeaux",
+        "hostname": "fr-bod.prod.surfshark.com",
+        "retroloc": "France Bordeaux",
+        "wgpubkey": "ArE5eVIEOPellzFlGK/oOcHCGnB+AAv0Un4C100COmw=",
+        "ips": [
+          "185.108.106.72",
+          "185.108.106.102",
+          "185.108.106.144",
+          "185.108.106.150",
+          "185.108.106.169",
+          "185.108.106.188"
         ]
       },
       {
@@ -115441,10 +116028,37 @@
         "udp": true,
         "retroloc": "France Marseilles",
         "ips": [
-          "138.199.16.145",
-          "185.166.84.81",
-          "185.166.84.87",
-          "185.166.84.89"
+          "185.166.84.31",
+          "185.166.84.38",
+          "185.166.84.53",
+          "185.166.84.59",
+          "185.166.84.63",
+          "185.166.84.65",
+          "185.166.84.73",
+          "185.166.84.77",
+          "185.166.84.79",
+          "185.166.84.85"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "France",
+        "region": "Europe",
+        "city": "Marseille",
+        "hostname": "fr-mrs.prod.surfshark.com",
+        "retroloc": "France Marseilles",
+        "wgpubkey": "QYa3ZFLwWAHKiJzOcbM73K7KBE0tdJYuirbGb+uH0H0=",
+        "ips": [
+          "185.166.84.31",
+          "185.166.84.38",
+          "185.166.84.53",
+          "185.166.84.59",
+          "185.166.84.63",
+          "185.166.84.65",
+          "185.166.84.73",
+          "185.166.84.77",
+          "185.166.84.79",
+          "185.166.84.85"
         ]
       },
       {
@@ -115457,12 +116071,25 @@
         "udp": true,
         "retroloc": "France Paris",
         "ips": [
-          "84.17.43.211",
-          "85.204.70.111",
-          "85.204.70.113",
-          "143.244.57.117",
-          "146.70.18.93",
-          "194.110.113.235"
+          "85.204.70.91",
+          "85.204.70.117",
+          "185.246.211.69",
+          "185.246.211.103"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "France",
+        "region": "Europe",
+        "city": "Paris",
+        "hostname": "fr-par.prod.surfshark.com",
+        "retroloc": "France Paris",
+        "wgpubkey": "AsvLuvKKADdc67aA/vHA3vb61S6YnGGx2Pd4aP4wal8=",
+        "ips": [
+          "85.204.70.91",
+          "85.204.70.117",
+          "185.246.211.69",
+          "185.246.211.103"
         ]
       },
       {
@@ -115486,10 +116113,18 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "91.239.207.232",
-          "195.54.178.32",
-          "195.54.178.34",
-          "195.54.178.60"
+          "195.54.178.32"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Georgia",
+        "region": "Europe",
+        "city": "Tbilisi",
+        "hostname": "ge-tbs.prod.surfshark.com",
+        "wgpubkey": "L79E4IoaVZBXOyoMM82TvUIbiKlloRbUnT8R2Cl3PVM=",
+        "ips": [
+          "195.54.178.32"
         ]
       },
       {
@@ -115502,14 +116137,29 @@
         "udp": true,
         "retroloc": "Germany Berlin",
         "ips": [
-          "89.36.76.53",
-          "89.36.76.115",
-          "89.36.76.125",
-          "193.176.86.131",
-          "193.176.86.173",
-          "217.138.216.59",
-          "217.138.216.227",
-          "217.138.216.243"
+          "37.120.217.179",
+          "37.120.217.181",
+          "89.36.76.51",
+          "152.89.163.245",
+          "217.138.216.229",
+          "217.138.216.253"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Germany",
+        "region": "Europe",
+        "city": "Berlin",
+        "hostname": "de-ber.prod.surfshark.com",
+        "retroloc": "Germany Berlin",
+        "wgpubkey": "d3ldwEjnFcbLwD1o8uC5xC3DaSNek8DGeTpOb/h/IE4=",
+        "ips": [
+          "37.120.217.179",
+          "37.120.217.181",
+          "89.36.76.51",
+          "152.89.163.245",
+          "217.138.216.229",
+          "217.138.216.253"
         ]
       },
       {
@@ -115626,10 +116276,33 @@
         "udp": true,
         "retroloc": "Germany Frankfurt am Main",
         "ips": [
-          "91.238.82.32",
+          "45.136.153.199",
+          "91.199.118.48",
+          "91.238.82.66",
+          "91.238.82.88",
           "91.238.82.90",
-          "91.238.82.104",
-          "156.146.33.75"
+          "91.238.82.98",
+          "138.199.19.152",
+          "156.146.33.79"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Germany",
+        "region": "Europe",
+        "city": "Frankfurt am Main",
+        "hostname": "de-fra.prod.surfshark.com",
+        "retroloc": "Germany Frankfurt am Main",
+        "wgpubkey": "fJDA+OA6jzQxfRcoHfC27xz7m3C8/590fRjpntzSpGo=",
+        "ips": [
+          "45.136.153.199",
+          "91.199.118.48",
+          "91.238.82.66",
+          "91.238.82.88",
+          "91.238.82.90",
+          "91.238.82.98",
+          "138.199.19.152",
+          "156.146.33.79"
         ]
       },
       {
@@ -115666,9 +116339,32 @@
         "udp": true,
         "retroloc": "Greece",
         "ips": [
+          "91.240.243.9",
           "91.240.243.11",
-          "194.150.167.40",
+          "91.240.243.17",
+          "91.240.243.19",
+          "91.240.243.22",
           "194.150.167.46",
+          "194.150.167.52",
+          "194.150.167.54"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Greece",
+        "region": "Europe",
+        "city": "Athens",
+        "hostname": "gr-ath.prod.surfshark.com",
+        "retroloc": "Greece",
+        "wgpubkey": "bXnjQGLhuauvBMg51YIAhwX40YqNL2ImyEub5DpHaBk=",
+        "ips": [
+          "91.240.243.9",
+          "91.240.243.11",
+          "91.240.243.17",
+          "91.240.243.19",
+          "91.240.243.22",
+          "194.150.167.46",
+          "194.150.167.52",
           "194.150.167.54"
         ]
       },
@@ -115681,9 +116377,19 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "92.62.123.3",
           "92.62.123.5",
-          "92.62.123.8",
+          "92.62.123.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Greenland",
+        "region": "Europe",
+        "city": "Nuuk",
+        "hostname": "gl-goh.prod.surfshark.com",
+        "wgpubkey": "zPg3ZJ7OsztQ0CRSSvH5o2KVL1DYgDGW65DFwLsYwyw=",
+        "ips": [
+          "92.62.123.5",
           "92.62.123.10"
         ]
       },
@@ -115697,12 +116403,25 @@
         "udp": true,
         "retroloc": "Hong Kong",
         "ips": [
-          "84.17.37.160",
-          "84.17.57.66",
-          "138.199.62.9",
-          "156.146.45.98",
-          "212.102.42.194",
-          "212.102.42.199"
+          "138.199.62.14",
+          "156.146.45.105",
+          "156.146.45.111",
+          "156.146.45.153"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Hong Kong",
+        "region": "Asia Pacific",
+        "city": "Hong Kong",
+        "hostname": "hk-hkg.prod.surfshark.com",
+        "retroloc": "Hong Kong",
+        "wgpubkey": "JYHdktdtuM7inbtsxRKSDpnBVTWQ5+QLZ/cWWmf4VRg=",
+        "ips": [
+          "138.199.62.14",
+          "156.146.45.105",
+          "156.146.45.111",
+          "156.146.45.153"
         ]
       },
       {
@@ -115715,8 +116434,29 @@
         "udp": true,
         "retroloc": "Hungary",
         "ips": [
+          "146.70.120.11",
+          "146.70.120.13",
+          "146.70.120.19",
           "146.70.120.21",
-          "146.70.120.45"
+          "146.70.120.27",
+          "146.70.120.37"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Hungary",
+        "region": "Europe",
+        "city": "Budapest",
+        "hostname": "hu-bud.prod.surfshark.com",
+        "retroloc": "Hungary",
+        "wgpubkey": "Pk3+iZNP0uWkDTSmEHlUeSA3WyiFXLXgYgAQ5wNyIBk=",
+        "ips": [
+          "146.70.120.11",
+          "146.70.120.13",
+          "146.70.120.19",
+          "146.70.120.21",
+          "146.70.120.27",
+          "146.70.120.37"
         ]
       },
       {
@@ -115729,10 +116469,23 @@
         "udp": true,
         "retroloc": "Iceland",
         "ips": [
-          "45.133.193.123",
-          "45.133.193.125",
-          "45.133.193.219",
-          "45.133.193.221"
+          "45.133.193.109",
+          "45.133.193.195",
+          "45.133.193.211"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Iceland",
+        "region": "Europe",
+        "city": "Reykjavik",
+        "hostname": "is-rkv.prod.surfshark.com",
+        "retroloc": "Iceland",
+        "wgpubkey": "d0m2sIa0JGcxCBvoWDU77SjmPoiWI/oKoX1TL2f2fTA=",
+        "ips": [
+          "45.133.193.109",
+          "45.133.193.195",
+          "45.133.193.211"
         ]
       },
       {
@@ -115747,7 +116500,29 @@
           "92.62.121.35",
           "92.62.121.37",
           "92.62.121.51",
-          "92.62.121.53"
+          "92.62.121.53",
+          "92.62.121.67",
+          "92.62.121.69",
+          "92.62.121.83",
+          "92.62.121.85"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "India",
+        "region": "Asia Pacific",
+        "city": "Virtual Location",
+        "hostname": "in-vrt.prod.surfshark.com",
+        "wgpubkey": "AvyHyRd/P4AnYV/5hSrR+ATx+Ogt8CFe/r7WR+C6Uyo=",
+        "ips": [
+          "92.62.121.35",
+          "92.62.121.37",
+          "92.62.121.51",
+          "92.62.121.53",
+          "92.62.121.67",
+          "92.62.121.69",
+          "92.62.121.83",
+          "92.62.121.85"
         ]
       },
       {
@@ -115772,12 +116547,21 @@
         "udp": true,
         "retroloc": "Indonesia",
         "ips": [
-          "103.120.66.214",
-          "103.120.66.216",
-          "103.120.66.219",
-          "103.120.66.221",
-          "103.120.66.226",
-          "103.120.66.233"
+          "103.120.66.231",
+          "103.148.242.173"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Indonesia",
+        "region": "Asia Pacific",
+        "city": "Jakarta",
+        "hostname": "id-jak.prod.surfshark.com",
+        "retroloc": "Indonesia",
+        "wgpubkey": "qyghLDfpfyparp0M52OVcmhKckayOvbRO2DDLkgJqyk=",
+        "ips": [
+          "103.120.66.231",
+          "103.148.242.173"
         ]
       },
       {
@@ -115790,12 +116574,37 @@
         "udp": true,
         "retroloc": "Ireland",
         "ips": [
+          "84.247.48.211",
           "146.70.94.187",
-          "149.34.242.32",
+          "146.70.94.237",
+          "146.70.94.245",
           "149.34.242.34",
-          "149.34.242.39",
-          "149.34.242.77",
-          "149.34.242.92"
+          "149.34.242.92",
+          "149.34.242.99",
+          "149.34.242.104",
+          "149.34.242.107",
+          "149.34.242.109"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Ireland",
+        "region": "Europe",
+        "city": "Dublin",
+        "hostname": "ie-dub.prod.surfshark.com",
+        "retroloc": "Ireland",
+        "wgpubkey": "TjYxodFNdGlefxnWqe9vWWJHnz3meYWWhiIJyU8rgg8=",
+        "ips": [
+          "84.247.48.211",
+          "146.70.94.187",
+          "146.70.94.237",
+          "146.70.94.245",
+          "149.34.242.34",
+          "149.34.242.92",
+          "149.34.242.99",
+          "149.34.242.104",
+          "149.34.242.107",
+          "149.34.242.109"
         ]
       },
       {
@@ -115808,7 +116617,23 @@
         "udp": true,
         "ips": [
           "62.197.148.3",
-          "62.197.148.5"
+          "62.197.148.5",
+          "62.197.148.8",
+          "62.197.148.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Isle of Man",
+        "region": "Europe",
+        "city": "Douglas",
+        "hostname": "im-iom.prod.surfshark.com",
+        "wgpubkey": "PQKiTkyLs9+rvDkmhnHYBKUZAZwBpZYIZ7/mefvYKko=",
+        "ips": [
+          "62.197.148.3",
+          "62.197.148.5",
+          "62.197.148.8",
+          "62.197.148.10"
         ]
       },
       {
@@ -115823,11 +116648,23 @@
         "ips": [
           "84.110.41.83",
           "87.239.255.114",
-          "87.239.255.116",
           "87.239.255.119",
-          "169.150.227.135",
-          "169.150.227.137",
-          "169.150.227.140"
+          "169.150.227.135"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Israel",
+        "region": "Middle East and Africa",
+        "city": "Tel Aviv",
+        "hostname": "il-tlv.prod.surfshark.com",
+        "retroloc": "Israel",
+        "wgpubkey": "ZEG2fUrtohnVePblUlDM6wyyeTobzsABnMjTTFmqNUE=",
+        "ips": [
+          "84.110.41.83",
+          "87.239.255.114",
+          "87.239.255.119",
+          "169.150.227.135"
         ]
       },
       {
@@ -115840,12 +116677,29 @@
         "udp": true,
         "retroloc": "Italy Milan",
         "ips": [
-          "84.17.58.146",
-          "84.17.58.148",
-          "84.17.58.205",
-          "84.17.58.207",
-          "212.102.54.165",
-          "212.102.54.167"
+          "84.17.58.134",
+          "84.17.58.154",
+          "84.17.58.195",
+          "84.17.58.197",
+          "212.102.54.143",
+          "212.102.55.84"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Italy",
+        "region": "Europe",
+        "city": "Milan",
+        "hostname": "it-mil.prod.surfshark.com",
+        "retroloc": "Italy Milan",
+        "wgpubkey": "vIMHzH5FHdVkrhOOc0u/FySVhumaLC3XUk39Wk34LnE=",
+        "ips": [
+          "84.17.58.134",
+          "84.17.58.154",
+          "84.17.58.195",
+          "84.17.58.197",
+          "212.102.54.143",
+          "212.102.55.84"
         ]
       },
       {
@@ -115858,8 +116712,31 @@
         "udp": true,
         "retroloc": "Italy Rome",
         "ips": [
+          "37.120.207.93",
+          "37.120.207.155",
+          "37.120.207.157",
           "37.120.207.171",
-          "37.120.207.173"
+          "37.120.207.181",
+          "37.120.207.187",
+          "37.120.207.197"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Italy",
+        "region": "Europe",
+        "city": "Rome",
+        "hostname": "it-rom.prod.surfshark.com",
+        "retroloc": "Italy Rome",
+        "wgpubkey": "fqxSeDr7n249iywruwLMwkV3r36svPT1tLf9TJOTFAw=",
+        "ips": [
+          "37.120.207.93",
+          "37.120.207.155",
+          "37.120.207.157",
+          "37.120.207.171",
+          "37.120.207.181",
+          "37.120.207.187",
+          "37.120.207.197"
         ]
       },
       {
@@ -116042,14 +116919,33 @@
         "udp": true,
         "retroloc": "Japan Tokyo",
         "ips": [
-          "37.19.205.174",
-          "84.17.34.26",
-          "138.199.22.130",
-          "138.199.22.148",
-          "138.199.22.150",
+          "89.187.160.132",
+          "89.187.160.145",
+          "89.187.161.24",
+          "89.187.161.239",
+          "138.199.22.143",
           "138.199.39.66",
           "138.199.39.68",
-          "138.199.39.73"
+          "138.199.39.71"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Japan",
+        "region": "Asia Pacific",
+        "city": "Tokyo",
+        "hostname": "jp-tok.prod.surfshark.com",
+        "retroloc": "Japan Tokyo",
+        "wgpubkey": "YJSjrc/WWOjQUyUi4iYcHb7LsWWoCY+2fK8/8VtC/BY=",
+        "ips": [
+          "89.187.160.132",
+          "89.187.160.145",
+          "89.187.161.24",
+          "89.187.161.239",
+          "138.199.22.143",
+          "138.199.39.66",
+          "138.199.39.68",
+          "138.199.39.71"
         ]
       },
       {
@@ -116061,6 +116957,22 @@
         "tcp": true,
         "udp": true,
         "ips": [
+          "194.169.168.18",
+          "194.169.168.20",
+          "194.169.168.34",
+          "194.169.168.36"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Laos",
+        "region": "Asia Pacific",
+        "city": "Vientiane",
+        "hostname": "la-vte.prod.surfshark.com",
+        "wgpubkey": "yIlpSftvkSE2+T0uqxWl9HeQSrmPg+HkyvGLi55UqG0=",
+        "ips": [
+          "194.169.168.18",
+          "194.169.168.20",
           "194.169.168.34",
           "194.169.168.36"
         ]
@@ -116075,14 +116987,29 @@
         "udp": true,
         "retroloc": "Latvia",
         "ips": [
-          "80.246.31.69",
           "80.246.31.71",
           "80.246.31.74",
           "80.246.31.76",
-          "80.246.31.80",
-          "80.246.31.207",
-          "80.246.31.213",
-          "80.246.31.215"
+          "80.246.31.209",
+          "80.246.31.211",
+          "80.246.31.213"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Latvia",
+        "region": "Europe",
+        "city": "Riga",
+        "hostname": "lv-rig.prod.surfshark.com",
+        "retroloc": "Latvia",
+        "wgpubkey": "EmghYf9rIpwOQ0uIjIxgCXs/WwHJthNvPIv5iKseE3A=",
+        "ips": [
+          "80.246.31.71",
+          "80.246.31.74",
+          "80.246.31.76",
+          "80.246.31.209",
+          "80.246.31.211",
+          "80.246.31.213"
         ]
       },
       {
@@ -116096,7 +117023,22 @@
         "ips": [
           "62.197.150.3",
           "62.197.150.5",
-          "62.197.150.8"
+          "62.197.150.8",
+          "62.197.150.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Liechtenstein",
+        "region": "Europe",
+        "city": "Vaduz",
+        "hostname": "li-qvu.prod.surfshark.com",
+        "wgpubkey": "ZSCz5PqrLnu+Eu9wjiMDLscEHTBcfD0H3CGz0i8pXxc=",
+        "ips": [
+          "62.197.150.3",
+          "62.197.150.5",
+          "62.197.150.8",
+          "62.197.150.10"
         ]
       },
       {
@@ -116108,10 +117050,20 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "62.197.149.3",
-          "62.197.149.19",
-          "62.197.149.21",
-          "62.197.149.34"
+          "62.197.149.34",
+          "62.197.149.36"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Lithuania",
+        "region": "Europe",
+        "city": "Vilnius",
+        "hostname": "lt-vno.prod.surfshark.com",
+        "wgpubkey": "pC7xJD56uFFJ7qHpe3XvXXhjwZcoMco09ySHOg4h+iA=",
+        "ips": [
+          "62.197.149.34",
+          "62.197.149.36"
         ]
       },
       {
@@ -116124,9 +117076,24 @@
         "udp": true,
         "retroloc": "Luxembourg",
         "ips": [
-          "185.153.151.15",
-          "185.153.151.27",
           "185.153.151.33",
+          "185.153.151.37",
+          "185.153.151.41",
+          "185.153.151.43"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Luxembourg",
+        "region": "Europe",
+        "city": "Luxembourg",
+        "hostname": "lu-ste.prod.surfshark.com",
+        "retroloc": "Luxembourg",
+        "wgpubkey": "68JVBL/M2AYQ9gYHtcpmZ6Pl+ayhJjTL2sr6Ej1VEFg=",
+        "ips": [
+          "185.153.151.33",
+          "185.153.151.37",
+          "185.153.151.41",
           "185.153.151.43"
         ]
       },
@@ -116139,8 +117106,20 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "62.197.154.20",
-          "62.197.154.34"
+          "62.197.154.18",
+          "62.197.154.36"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Macau",
+        "region": "Asia Pacific",
+        "city": "Macao",
+        "hostname": "mo-mfm.prod.surfshark.com",
+        "wgpubkey": "uMD8IFggqtF0ZbviJJFMQFhR3R52mVqhoJmKPt+aACs=",
+        "ips": [
+          "62.197.154.18",
+          "62.197.154.36"
         ]
       },
       {
@@ -116153,11 +117132,28 @@
         "udp": true,
         "retroloc": "Malaysia",
         "ips": [
-          "42.0.30.150",
+          "42.0.30.211",
+          "42.0.30.213",
+          "42.0.30.215",
           "111.90.140.64",
-          "111.90.141.33",
-          "111.90.145.109",
-          "111.90.145.116",
+          "111.90.141.52",
+          "111.90.158.205"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Malaysia",
+        "region": "Asia Pacific",
+        "city": "Kuala Lumpur",
+        "hostname": "my-kul.prod.surfshark.com",
+        "retroloc": "Malaysia",
+        "wgpubkey": "AS84LXlJfgBwGHc70MvtGRxsMqNNucZ2pNOBayJUm04=",
+        "ips": [
+          "42.0.30.211",
+          "42.0.30.213",
+          "42.0.30.215",
+          "111.90.140.64",
+          "111.90.141.52",
           "111.90.158.205"
         ]
       },
@@ -116171,8 +117167,18 @@
         "udp": true,
         "ips": [
           "193.228.56.3",
-          "193.228.56.5",
-          "193.228.56.11",
+          "193.228.56.13"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Malta",
+        "region": "Europe",
+        "city": "Valletta",
+        "hostname": "mt-mla.prod.surfshark.com",
+        "wgpubkey": "c9EuAnWYvGUyFrzrV70Fph0onkFv2xe3Bc0gTCFuKRw=",
+        "ips": [
+          "193.228.56.3",
           "193.228.56.13"
         ]
       },
@@ -116187,6 +117193,21 @@
         "ips": [
           "194.169.169.3",
           "194.169.169.5",
+          "194.169.169.8",
+          "194.169.169.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Marocco",
+        "region": "Middle East and Africa",
+        "city": "Rabat",
+        "hostname": "ma-rab.prod.surfshark.com",
+        "wgpubkey": "Tl7KINtNnar9fVQD8LG2dswOEqSKmUP9ioimCjo6jHc=",
+        "ips": [
+          "194.169.169.3",
+          "194.169.169.5",
+          "194.169.169.8",
           "194.169.169.10"
         ]
       },
@@ -116200,12 +117221,25 @@
         "udp": true,
         "retroloc": "Mexico City Mexico",
         "ips": [
-          "194.41.112.19",
-          "194.41.112.24",
-          "194.41.112.26",
-          "194.41.112.28",
-          "194.41.112.33",
-          "194.41.112.39"
+          "194.41.112.5",
+          "194.41.112.14",
+          "194.41.112.16",
+          "194.41.112.19"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Mexico",
+        "region": "The Americas",
+        "city": "Mexico City",
+        "hostname": "mx-mex.prod.surfshark.com",
+        "retroloc": "Mexico City Mexico",
+        "wgpubkey": "g1XvxbJyZoNdqxm9xf04Lr/bxX9O3Rm5PUsUlzvnczs=",
+        "ips": [
+          "194.41.112.5",
+          "194.41.112.14",
+          "194.41.112.16",
+          "194.41.112.19"
         ]
       },
       {
@@ -116218,8 +117252,21 @@
         "udp": true,
         "retroloc": "Moldova",
         "ips": [
-          "178.175.128.235",
-          "194.33.40.112"
+          "194.33.40.112",
+          "194.33.40.114"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Moldova",
+        "region": "Europe",
+        "city": "Chisinau",
+        "hostname": "md-chi.prod.surfshark.com",
+        "retroloc": "Moldova",
+        "wgpubkey": "4Exn42t337sxoBzYHxgmDBNq+AhTYz6nvEj98TWY50Y=",
+        "ips": [
+          "194.33.40.112",
+          "194.33.40.114"
         ]
       },
       {
@@ -116231,7 +117278,20 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "62.197.151.3"
+          "62.197.151.3",
+          "62.197.151.5"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Monaco",
+        "region": "Europe",
+        "city": "Monte Carlo",
+        "hostname": "mc-mcm.prod.surfshark.com",
+        "wgpubkey": "rj9PNit3SCy52Knw0QmHUfN2W59nB4oMOtmOZq1q/Hc=",
+        "ips": [
+          "62.197.151.3",
+          "62.197.151.5"
         ]
       },
       {
@@ -116250,6 +117310,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Mongolia",
+        "region": "Asia Pacific",
+        "city": "Ulaanbaatar",
+        "hostname": "mn-uln.prod.surfshark.com",
+        "wgpubkey": "3nLHy4uBd2nBUDuAuR6AM58yHLiX2CAXg8kdgEr6tV4=",
+        "ips": [
+          "62.197.155.18",
+          "62.197.155.20",
+          "62.197.155.34",
+          "62.197.155.36"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Montenegro",
         "region": "Europe",
@@ -116258,10 +117332,20 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "62.197.159.3",
           "62.197.159.5",
-          "62.197.159.8",
-          "62.197.159.10"
+          "62.197.159.8"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Montenegro",
+        "region": "Europe",
+        "city": "Podgorica",
+        "hostname": "me-tgd.prod.surfshark.com",
+        "wgpubkey": "Jhiez1pdO7tqUX0OmUubd9SPfvUc/ypSLRzWiyr3SRM=",
+        "ips": [
+          "62.197.159.5",
+          "62.197.159.8"
         ]
       },
       {
@@ -116280,6 +117364,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Myanmar",
+        "region": "Asia Pacific",
+        "city": "Naypyidaw",
+        "hostname": "mm-nyt.prod.surfshark.com",
+        "wgpubkey": "tehGZzcmdK59x99I9dbfuWOHSxBdPsz5lB+uAoT75kE=",
+        "ips": [
+          "45.95.242.18",
+          "45.95.242.20",
+          "45.95.242.34",
+          "45.95.242.36"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Nepal",
         "region": "Asia Pacific",
@@ -116287,6 +117385,20 @@
         "hostname": "np-ktm.prod.surfshark.com",
         "tcp": true,
         "udp": true,
+        "ips": [
+          "194.169.170.18",
+          "194.169.170.20",
+          "194.169.170.34",
+          "194.169.170.36"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Nepal",
+        "region": "Asia Pacific",
+        "city": "Kathmandu",
+        "hostname": "np-ktm.prod.surfshark.com",
+        "wgpubkey": "UKMTmY99xrUwchQNucd1SW6CmIFsDH1JpxQStRWA1V4=",
         "ips": [
           "194.169.170.18",
           "194.169.170.20",
@@ -116330,14 +117442,37 @@
         "udp": true,
         "retroloc": "Netherlands Amsterdam",
         "ips": [
-          "81.19.208.68",
-          "81.19.209.59",
-          "89.46.223.76",
-          "89.46.223.212",
-          "143.244.42.71",
-          "143.244.42.86",
-          "143.244.42.96",
-          "178.239.173.47"
+          "81.19.208.56",
+          "81.19.209.20",
+          "81.19.209.98",
+          "89.46.223.82",
+          "89.46.223.88",
+          "89.46.223.100",
+          "89.46.223.229",
+          "143.244.42.81",
+          "143.244.42.110",
+          "178.239.173.43"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Netherlands",
+        "region": "Europe",
+        "city": "Amsterdam",
+        "hostname": "nl-ams.prod.surfshark.com",
+        "retroloc": "Netherlands Amsterdam",
+        "wgpubkey": "Lxg3jAOKcBA9tGBtB6vEWMFl5LUEB6AwOpuniYn1cig=",
+        "ips": [
+          "81.19.208.56",
+          "81.19.209.20",
+          "81.19.209.98",
+          "89.46.223.82",
+          "89.46.223.88",
+          "89.46.223.100",
+          "89.46.223.229",
+          "143.244.42.81",
+          "143.244.42.110",
+          "178.239.173.43"
         ]
       },
       {
@@ -116363,8 +117498,30 @@
         "retroloc": "New Zealand",
         "ips": [
           "180.149.231.3",
+          "180.149.231.11",
           "180.149.231.13",
           "180.149.231.43",
+          "180.149.231.45",
+          "180.149.231.69",
+          "180.149.231.115",
+          "180.149.231.117",
+          "180.149.231.165"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "New Zealand",
+        "region": "Asia Pacific",
+        "city": "Auckland",
+        "hostname": "nz-akl.prod.surfshark.com",
+        "retroloc": "New Zealand",
+        "wgpubkey": "xv8P19y0m9ojrLelCaPzGtaVv7tlPzLgZxvAD7lpYDg=",
+        "ips": [
+          "180.149.231.3",
+          "180.149.231.11",
+          "180.149.231.13",
+          "180.149.231.43",
+          "180.149.231.45",
           "180.149.231.69",
           "180.149.231.115",
           "180.149.231.117",
@@ -116388,6 +117545,21 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Nigeria",
+        "region": "Middle East and Africa",
+        "city": "Lagos",
+        "hostname": "ng-lag.prod.surfshark.com",
+        "retroloc": "Nigeria",
+        "wgpubkey": "mMmsmMyqtASb4V42H5nxyD8BgauWrNhCCZdBHCsbC00=",
+        "ips": [
+          "213.109.151.3",
+          "213.109.151.5",
+          "213.109.151.8",
+          "213.109.151.10"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "North Macedonia",
         "region": "Europe",
@@ -116397,12 +117569,29 @@
         "udp": true,
         "retroloc": "North Macedonia",
         "ips": [
+          "185.225.28.67",
           "185.225.28.83",
-          "185.225.28.85",
           "185.225.28.91",
-          "185.225.28.93",
-          "185.225.28.243",
-          "185.225.28.245"
+          "185.225.28.107",
+          "185.225.28.109",
+          "185.225.28.243"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "North Macedonia",
+        "region": "Europe",
+        "city": "Skopje",
+        "hostname": "mk-skp.prod.surfshark.com",
+        "retroloc": "North Macedonia",
+        "wgpubkey": "dZNq48noPkey9rwSbAU+masbafpDSaAmtAMaP+gzLxA=",
+        "ips": [
+          "185.225.28.67",
+          "185.225.28.83",
+          "185.225.28.91",
+          "185.225.28.107",
+          "185.225.28.109",
+          "185.225.28.243"
         ]
       },
       {
@@ -116415,10 +117604,46 @@
         "udp": true,
         "retroloc": "Norway",
         "ips": [
-          "146.70.103.197",
-          "146.70.103.227",
-          "146.70.103.235",
-          "146.70.103.253"
+          "146.70.103.195",
+          "146.70.103.251"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Norway",
+        "region": "Europe",
+        "city": "Oslo",
+        "hostname": "no-osl.prod.surfshark.com",
+        "retroloc": "Norway",
+        "wgpubkey": "pXfZi2vsdd88qrnqh+bwqHG4IYD42pj3T1wCm3PIGmw=",
+        "ips": [
+          "146.70.103.195",
+          "146.70.103.251"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Pakistan",
+        "region": "Asia Pacific",
+        "city": "Karachi",
+        "hostname": "pk-khi.prod.surfshark.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "113.203.221.3",
+          "113.203.221.5"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Pakistan",
+        "region": "Asia Pacific",
+        "city": "Karachi",
+        "hostname": "pk-khi.prod.surfshark.com",
+        "wgpubkey": "DLb7wUFYkOcx5iiNxbNquP5rH+EJdiQfrdFaQoojskU=",
+        "ips": [
+          "113.203.221.3",
+          "113.203.221.5"
         ]
       },
       {
@@ -116431,7 +117656,23 @@
         "udp": true,
         "ips": [
           "185.244.139.3",
-          "185.244.139.5"
+          "185.244.139.5",
+          "185.244.139.7",
+          "185.244.139.9"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Panama",
+        "region": "The Americas",
+        "city": "Panama",
+        "hostname": "pa-pac.prod.surfshark.com",
+        "wgpubkey": "9L1tbh/IHrrtImJnuEsVc1eN7xChlLzS6nCMaVyH/iQ=",
+        "ips": [
+          "185.244.139.3",
+          "185.244.139.5",
+          "185.244.139.7",
+          "185.244.139.9"
         ]
       },
       {
@@ -116443,8 +117684,24 @@
         "tcp": true,
         "udp": true,
         "ips": [
+          "194.26.131.3",
           "194.26.131.5",
-          "194.26.131.8"
+          "194.26.131.8",
+          "194.26.131.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Paraguay",
+        "region": "The Americas",
+        "city": "Asunción",
+        "hostname": "py-asu.prod.surfshark.com",
+        "wgpubkey": "vY6iX5ivkYIrIADMPQMtzR8onU7UYlB52XH5loAeDn0=",
+        "ips": [
+          "194.26.131.3",
+          "194.26.131.5",
+          "194.26.131.8",
+          "194.26.131.10"
         ]
       },
       {
@@ -116456,11 +117713,20 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "193.218.35.3",
-          "193.218.35.5",
           "193.218.35.9",
-          "193.218.35.12",
-          "193.218.35.17"
+          "193.218.35.19"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Peru",
+        "region": "The Americas",
+        "city": "Lima",
+        "hostname": "pe-lim.prod.surfshark.com",
+        "wgpubkey": "mR3GelqqkAL6IKKbzcdxJm3f3uyVNxdzCCtTcLT+wUc=",
+        "ips": [
+          "193.218.35.9",
+          "193.218.35.19"
         ]
       },
       {
@@ -116474,13 +117740,28 @@
         "retroloc": "Philippines",
         "ips": [
           "45.134.224.50",
-          "45.134.224.66",
+          "45.134.224.52",
           "45.134.224.68",
-          "45.134.224.82",
-          "45.134.224.84",
-          "45.134.224.100",
-          "45.134.224.130",
-          "45.134.224.132"
+          "45.134.224.98",
+          "45.134.224.114",
+          "45.134.224.116"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Philippines",
+        "region": "Asia Pacific",
+        "city": "Manila",
+        "hostname": "ph-mnl.prod.surfshark.com",
+        "retroloc": "Philippines",
+        "wgpubkey": "utXZy1ELBSQKa6s9/K/W4sV11Jod6sSLoikKqKRPyQs=",
+        "ips": [
+          "45.134.224.50",
+          "45.134.224.52",
+          "45.134.224.68",
+          "45.134.224.98",
+          "45.134.224.114",
+          "45.134.224.116"
         ]
       },
       {
@@ -116494,10 +117775,19 @@
         "retroloc": "Poland Gdansk",
         "ips": [
           "5.133.8.115",
-          "5.133.8.117",
-          "5.133.14.196",
-          "5.133.14.198",
-          "37.28.156.117",
+          "178.255.44.69"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Poland",
+        "region": "Europe",
+        "city": "Gdansk",
+        "hostname": "pl-gdn.prod.surfshark.com",
+        "retroloc": "Poland Gdansk",
+        "wgpubkey": "4lZhg/fKDCRLjvULGntx21qfebzQv5TJjZ1pc82sUgc=",
+        "ips": [
+          "5.133.8.115",
           "178.255.44.69"
         ]
       },
@@ -116512,13 +117802,28 @@
         "retroloc": "Poland Warsaw",
         "ips": [
           "45.128.38.131",
-          "45.128.38.139",
-          "45.134.212.228",
+          "45.128.38.133",
+          "45.128.38.141",
           "45.134.212.231",
-          "45.134.212.233",
           "138.199.17.135",
-          "138.199.17.137",
-          "185.246.208.176"
+          "185.246.208.182"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Poland",
+        "region": "Europe",
+        "city": "Warsaw",
+        "hostname": "pl-waw.prod.surfshark.com",
+        "retroloc": "Poland Warsaw",
+        "wgpubkey": "vBa3HK7QXietG64rHRLm085VMS2cAX2paeAaphB/SEU=",
+        "ips": [
+          "45.128.38.131",
+          "45.128.38.133",
+          "45.128.38.141",
+          "45.134.212.231",
+          "138.199.17.135",
+          "185.246.208.182"
         ]
       },
       {
@@ -116531,13 +117836,29 @@
         "udp": true,
         "retroloc": "Portugal Lisbon",
         "ips": [
-          "5.154.174.99",
+          "5.154.174.65",
+          "5.154.174.77",
           "5.154.174.101",
-          "91.205.230.144",
-          "91.205.230.172",
-          "91.205.230.174",
-          "91.205.230.178",
-          "91.250.240.146"
+          "5.154.174.117",
+          "91.205.230.164",
+          "91.205.230.178"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Portugal",
+        "region": "Europe",
+        "city": "Lisbon",
+        "hostname": "pt-lis.prod.surfshark.com",
+        "retroloc": "Portugal Lisbon",
+        "wgpubkey": "JgYlpt7jFh0FV2QO0QQ3yFfsnqikUq977V3cObFGTQ4=",
+        "ips": [
+          "5.154.174.65",
+          "5.154.174.77",
+          "5.154.174.101",
+          "5.154.174.117",
+          "91.205.230.164",
+          "91.205.230.178"
         ]
       },
       {
@@ -116550,10 +117871,33 @@
         "udp": true,
         "retroloc": "Portugal Porto",
         "ips": [
-          "194.39.127.163",
-          "194.39.127.171",
-          "194.39.127.173",
-          "194.39.127.193"
+          "194.39.127.38",
+          "194.39.127.151",
+          "194.39.127.181",
+          "194.39.127.193",
+          "194.39.127.231",
+          "194.39.127.233",
+          "194.39.127.240",
+          "194.39.127.242"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Portugal",
+        "region": "Europe",
+        "city": "Porto",
+        "hostname": "pt-opo.prod.surfshark.com",
+        "retroloc": "Portugal Porto",
+        "wgpubkey": "F24iHyEt6YSSaUry/nQAfIEOwXncH0RHUtkte0znvkE=",
+        "ips": [
+          "194.39.127.38",
+          "194.39.127.151",
+          "194.39.127.181",
+          "194.39.127.193",
+          "194.39.127.231",
+          "194.39.127.233",
+          "194.39.127.240",
+          "194.39.127.242"
         ]
       },
       {
@@ -116568,10 +117912,31 @@
         "ips": [
           "85.204.124.91",
           "85.204.124.93",
-          "185.102.217.155",
-          "185.102.217.157",
           "185.102.217.163",
-          "185.102.217.165"
+          "185.102.217.165",
+          "185.102.217.167",
+          "185.102.217.169",
+          "185.102.217.194",
+          "185.102.217.196"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Romania",
+        "region": "Europe",
+        "city": "Bucharest",
+        "hostname": "ro-buc.prod.surfshark.com",
+        "retroloc": "Romania",
+        "wgpubkey": "uRT3uSAUwvm7Rp+s3n5V9JibsKHKAZ/8+SU3psG8QxI=",
+        "ips": [
+          "85.204.124.91",
+          "85.204.124.93",
+          "185.102.217.163",
+          "185.102.217.165",
+          "185.102.217.167",
+          "185.102.217.169",
+          "185.102.217.194",
+          "185.102.217.196"
         ]
       },
       {
@@ -116585,9 +117950,24 @@
         "retroloc": "Serbia",
         "ips": [
           "146.70.111.91",
+          "146.70.111.93",
           "146.70.111.99",
-          "146.70.111.101",
-          "146.70.111.109"
+          "146.70.111.101"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Serbia",
+        "region": "Europe",
+        "city": "Belgrade",
+        "hostname": "rs-beg.prod.surfshark.com",
+        "retroloc": "Serbia",
+        "wgpubkey": "A3vmr6/umw5sP8anxNyipgi5oEnOnZdqB1K/cbQpMiI=",
+        "ips": [
+          "146.70.111.91",
+          "146.70.111.93",
+          "146.70.111.99",
+          "146.70.111.101"
         ]
       },
       {
@@ -116685,12 +118065,25 @@
         "udp": true,
         "retroloc": "Singapore",
         "ips": [
-          "89.187.163.130",
-          "89.187.163.195",
-          "89.187.163.200",
+          "89.187.162.184",
+          "89.187.163.197",
           "89.187.163.212",
-          "89.187.163.217",
-          "103.216.223.165"
+          "89.187.163.217"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Singapore",
+        "region": "Asia Pacific",
+        "city": "Singapore",
+        "hostname": "sg-sng.prod.surfshark.com",
+        "retroloc": "Singapore",
+        "wgpubkey": "MGfgkhJsMVMTO33h1wr76+z6gQr/93VcGdClfbaPsnU=",
+        "ips": [
+          "89.187.162.184",
+          "89.187.163.197",
+          "89.187.163.212",
+          "89.187.163.217"
         ]
       },
       {
@@ -116740,8 +118133,25 @@
         "udp": true,
         "retroloc": "Slovekia",
         "ips": [
-          "146.70.114.11",
-          "146.70.114.13"
+          "185.76.8.210",
+          "185.76.8.212",
+          "185.76.8.215",
+          "185.76.8.217"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Slovakia",
+        "region": "Europe",
+        "city": "Bratislava",
+        "hostname": "sk-bts.prod.surfshark.com",
+        "retroloc": "Slovekia",
+        "wgpubkey": "T5b7+uwUFqN5r1WsfBXURpSnYCYRLFAVreKkIQHGOlw=",
+        "ips": [
+          "185.76.8.210",
+          "185.76.8.212",
+          "185.76.8.215",
+          "185.76.8.217"
         ]
       },
       {
@@ -116754,8 +118164,25 @@
         "udp": true,
         "retroloc": "Slovenia",
         "ips": [
-          "195.158.249.40",
-          "195.158.249.42"
+          "195.158.249.36",
+          "195.158.249.48",
+          "195.158.249.59",
+          "195.158.249.61"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Slovenia",
+        "region": "Europe",
+        "city": "Ljubljana",
+        "hostname": "si-lju.prod.surfshark.com",
+        "retroloc": "Slovenia",
+        "wgpubkey": "yPdmxOfzm06fotkt/dlaAiyxWPaWfCuDPaUljNx+c38=",
+        "ips": [
+          "195.158.249.36",
+          "195.158.249.48",
+          "195.158.249.59",
+          "195.158.249.61"
         ]
       },
       {
@@ -116768,12 +118195,27 @@
         "udp": true,
         "retroloc": "South Africa",
         "ips": [
-          "154.16.93.51",
           "154.127.50.5",
-          "154.127.50.7",
           "154.127.50.9",
+          "154.127.50.11",
           "154.127.50.24",
-          "154.127.50.136"
+          "154.127.50.140"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "South Africa",
+        "region": "Middle East and Africa",
+        "city": "Johannesburg",
+        "hostname": "za-jnb.prod.surfshark.com",
+        "retroloc": "South Africa",
+        "wgpubkey": "Wj/fSWxNLs1igL1uTRp4zLFNohe4S1wqNTYRHevthUA=",
+        "ips": [
+          "154.127.50.5",
+          "154.127.50.9",
+          "154.127.50.11",
+          "154.127.50.24",
+          "154.127.50.140"
         ]
       },
       {
@@ -116786,12 +118228,31 @@
         "udp": true,
         "retroloc": "Korea",
         "ips": [
-          "27.255.75.21",
+          "61.97.244.36",
           "61.97.244.38",
           "61.255.174.210",
           "61.255.174.251",
           "61.255.174.253",
-          "103.249.31.26"
+          "103.249.31.24",
+          "103.249.31.28"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "South Korea",
+        "region": "Asia Pacific",
+        "city": "Seoul",
+        "hostname": "kr-seo.prod.surfshark.com",
+        "retroloc": "Korea",
+        "wgpubkey": "bD/m2mdKxJXG2wTkLsmWpiW8xZwkDdrrrwC44auOhQg=",
+        "ips": [
+          "61.97.244.36",
+          "61.97.244.38",
+          "61.255.174.210",
+          "61.255.174.251",
+          "61.255.174.253",
+          "103.249.31.24",
+          "103.249.31.28"
         ]
       },
       {
@@ -116804,14 +118265,29 @@
         "udp": true,
         "retroloc": "Spain Barcelona",
         "ips": [
-          "146.70.22.3",
-          "185.188.61.77",
-          "185.188.61.81",
-          "185.188.61.111",
-          "185.188.61.115",
-          "185.188.61.121",
-          "185.216.32.59",
-          "185.216.32.61"
+          "37.120.142.125",
+          "82.102.26.155",
+          "82.102.26.157",
+          "82.102.26.173",
+          "82.102.26.235",
+          "185.188.61.119"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Spain",
+        "region": "Europe",
+        "city": "Barcelona",
+        "hostname": "es-bcn.prod.surfshark.com",
+        "retroloc": "Spain Barcelona",
+        "wgpubkey": "3EC6079YDlzJKcNLdrm/t+JLG8hV3wPpoWE4MypjYnw=",
+        "ips": [
+          "37.120.142.125",
+          "82.102.26.155",
+          "82.102.26.157",
+          "82.102.26.173",
+          "82.102.26.235",
+          "185.188.61.119"
         ]
       },
       {
@@ -116824,10 +118300,29 @@
         "udp": true,
         "retroloc": "Spain Madrid",
         "ips": [
-          "45.134.213.241",
+          "45.134.213.243",
+          "82.102.17.181",
           "84.17.62.179",
-          "84.17.62.181",
-          "212.102.48.13"
+          "89.37.95.17",
+          "212.102.48.18",
+          "212.102.48.20"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Spain",
+        "region": "Europe",
+        "city": "Madrid",
+        "hostname": "es-mad.prod.surfshark.com",
+        "retroloc": "Spain Madrid",
+        "wgpubkey": "a30vOQfjwPzjRxGNi2dvSAMdaPHEYatR84cUjXKOwls=",
+        "ips": [
+          "45.134.213.243",
+          "82.102.17.181",
+          "84.17.62.179",
+          "89.37.95.17",
+          "212.102.48.18",
+          "212.102.48.20"
         ]
       },
       {
@@ -116840,12 +118335,37 @@
         "udp": true,
         "retroloc": "Spain Valencia",
         "ips": [
+          "193.19.207.84",
           "193.19.207.90",
           "193.19.207.92",
-          "193.19.207.98",
-          "193.19.207.104",
-          "193.19.207.112",
-          "193.19.207.114"
+          "193.19.207.94",
+          "193.19.207.96",
+          "193.19.207.106",
+          "193.19.207.108",
+          "196.196.150.71",
+          "196.196.150.99",
+          "196.196.150.101"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Spain",
+        "region": "Europe",
+        "city": "Valencia",
+        "hostname": "es-vlc.prod.surfshark.com",
+        "retroloc": "Spain Valencia",
+        "wgpubkey": "TlYKGW07dqFfedNfAnVIPv2WPfC54h96se+dcIDuNhU=",
+        "ips": [
+          "193.19.207.84",
+          "193.19.207.90",
+          "193.19.207.92",
+          "193.19.207.94",
+          "193.19.207.96",
+          "193.19.207.106",
+          "193.19.207.108",
+          "196.196.150.71",
+          "196.196.150.99",
+          "196.196.150.101"
         ]
       },
       {
@@ -116864,6 +118384,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Sri Lanka",
+        "region": "Asia Pacific",
+        "city": "Colombo",
+        "hostname": "lk-cmb.prod.surfshark.com",
+        "wgpubkey": "+8TxSpyyEGiZK6d/5V+94Zc7nxOV3F1ag7sM6AN86GY=",
+        "ips": [
+          "62.197.156.18",
+          "62.197.156.20",
+          "62.197.156.34",
+          "62.197.156.36"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Sweden",
         "region": "Europe",
@@ -116873,12 +118407,27 @@
         "udp": true,
         "retroloc": "Sweden",
         "ips": [
-          "146.70.21.173",
-          "185.76.9.34",
-          "185.76.9.36",
-          "185.76.9.49",
+          "146.70.21.171",
+          "185.76.9.41",
           "185.76.9.51",
-          "195.181.166.226"
+          "195.181.166.226",
+          "195.181.166.228"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Sweden",
+        "region": "Europe",
+        "city": "Stockholm",
+        "hostname": "se-sto.prod.surfshark.com",
+        "retroloc": "Sweden",
+        "wgpubkey": "oUFRc+2emXgogDVWnJF4RAzr72PyafCzMVeQOgG92lY=",
+        "ips": [
+          "146.70.21.171",
+          "185.76.9.41",
+          "185.76.9.51",
+          "195.181.166.226",
+          "195.181.166.228"
         ]
       },
       {
@@ -116891,14 +118440,29 @@
         "udp": true,
         "retroloc": "Switzerland",
         "ips": [
-          "84.17.53.168",
-          "84.17.53.212",
-          "84.17.53.214",
-          "84.17.53.216",
-          "84.17.53.219",
-          "89.37.173.49",
+          "89.37.173.27",
+          "89.37.173.29",
+          "89.37.173.45",
+          "156.146.62.46",
           "156.146.62.51",
-          "169.150.197.9"
+          "188.241.120.118"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Switzerland",
+        "region": "Europe",
+        "city": "Zurich",
+        "hostname": "ch-zur.prod.surfshark.com",
+        "retroloc": "Switzerland",
+        "wgpubkey": "qFuwaE8IyDbNBTNar3xAXRGaBdkTtmLh1uIGMJxTxUs=",
+        "ips": [
+          "89.37.173.27",
+          "89.37.173.29",
+          "89.37.173.45",
+          "156.146.62.46",
+          "156.146.62.51",
+          "188.241.120.118"
         ]
       },
       {
@@ -116911,12 +118475,29 @@
         "udp": true,
         "retroloc": "Taiwan",
         "ips": [
-          "2.58.241.3",
+          "2.58.241.45",
+          "2.58.241.131",
+          "2.58.242.51",
           "2.58.242.53",
-          "2.58.242.133",
-          "2.58.242.155",
-          "103.152.151.21",
-          "103.152.151.67"
+          "2.58.242.131",
+          "2.58.242.133"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Taiwan",
+        "region": "Asia Pacific",
+        "city": "Taichung City",
+        "hostname": "tw-tai.prod.surfshark.com",
+        "retroloc": "Taiwan",
+        "wgpubkey": "P0vaGUOUE7V5bbGOYY2WgQeZnTZEHvIr+dfebU7W4Ao=",
+        "ips": [
+          "2.58.241.45",
+          "2.58.241.131",
+          "2.58.242.51",
+          "2.58.242.53",
+          "2.58.242.131",
+          "2.58.242.133"
         ]
       },
       {
@@ -116929,11 +118510,22 @@
         "udp": true,
         "retroloc": "Thailand",
         "ips": [
-          "103.176.152.4",
-          "103.176.152.7",
-          "103.176.152.9",
           "103.176.152.22",
-          "103.176.152.24",
+          "103.176.152.27",
+          "103.176.152.29",
+          "103.176.152.39"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Thailand",
+        "region": "Asia Pacific",
+        "city": "Bangkok",
+        "hostname": "th-bkk.prod.surfshark.com",
+        "retroloc": "Thailand",
+        "wgpubkey": "OoFY46j/w4uQFyFu/OQ/h3x+ymJ1DJ4UR1fwGNxOxk0=",
+        "ips": [
+          "103.176.152.22",
           "103.176.152.27",
           "103.176.152.29",
           "103.176.152.39"
@@ -116949,11 +118541,23 @@
         "udp": true,
         "retroloc": "Turkey Istanbul",
         "ips": [
-          "45.136.155.50",
           "45.136.155.53",
           "45.136.155.55",
-          "87.249.139.178",
-          "87.249.139.180",
+          "87.249.139.183",
+          "87.249.139.185"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Turkey",
+        "region": "Europe",
+        "city": "Istanbul",
+        "hostname": "tr-ist.prod.surfshark.com",
+        "retroloc": "Turkey Istanbul",
+        "wgpubkey": "sF/TlxU9XaDN3QQBT/lu2Pw9qpD3XpDqLBfInBtff2A=",
+        "ips": [
+          "45.136.155.53",
+          "45.136.155.55",
           "87.249.139.183",
           "87.249.139.185"
         ]
@@ -117016,14 +118620,25 @@
         "udp": true,
         "retroloc": "Ukraine",
         "ips": [
-          "143.244.46.210",
-          "143.244.46.212",
-          "143.244.46.233",
-          "143.244.46.246",
-          "156.146.50.113",
-          "156.146.50.115",
-          "156.146.50.118",
-          "156.146.50.120"
+          "143.244.46.241",
+          "156.146.50.107",
+          "156.146.50.109",
+          "156.146.50.122"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Ukraine",
+        "region": "Europe",
+        "city": "Kyiv",
+        "hostname": "ua-iev.prod.surfshark.com",
+        "retroloc": "Ukraine",
+        "wgpubkey": "wy+PhWBP715KfBrsQR4P3JUalYc9a77FmZWQinwYLmo=",
+        "ips": [
+          "143.244.46.241",
+          "156.146.50.107",
+          "156.146.50.109",
+          "156.146.50.122"
         ]
       },
       {
@@ -117038,6 +118653,25 @@
         "ips": [
           "146.70.102.179",
           "146.70.102.181",
+          "146.70.102.187",
+          "146.70.102.189",
+          "146.70.102.203",
+          "146.70.102.205"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United Arab Emirates",
+        "region": "Middle East and Africa",
+        "city": "Dubai",
+        "hostname": "ae-dub.prod.surfshark.com",
+        "retroloc": "United Arab Emirates",
+        "wgpubkey": "6dZGkg0iAMgQuOCGknAgBAqDEeJeBQ4Of5eblO4aNC8=",
+        "ips": [
+          "146.70.102.179",
+          "146.70.102.181",
+          "146.70.102.187",
+          "146.70.102.189",
           "146.70.102.203",
           "146.70.102.205"
         ]
@@ -117053,15 +118687,26 @@
         "ips": [
           "188.240.57.87",
           "188.240.57.89",
-          "188.240.57.91",
           "188.240.57.93",
-          "188.240.57.101",
-          "188.240.57.105",
           "188.240.57.109",
-          "188.240.57.111",
           "188.240.57.115",
-          "188.240.57.119",
-          "188.240.57.125"
+          "188.240.57.119"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United Kingdom",
+        "region": "Europe",
+        "city": "Edinburgh",
+        "hostname": "uk-edi.prod.surfshark.com",
+        "wgpubkey": "f0fMBZNOzoTDfU28EKhtvYy3keiG5Jkh4fLBov1DI0U=",
+        "ips": [
+          "188.240.57.87",
+          "188.240.57.89",
+          "188.240.57.93",
+          "188.240.57.109",
+          "188.240.57.115",
+          "188.240.57.119"
         ]
       },
       {
@@ -117074,10 +118719,25 @@
         "udp": true,
         "retroloc": "UK Glasgow",
         "ips": [
-          "185.108.105.81",
-          "185.108.105.103",
-          "185.108.105.145",
-          "188.240.58.123"
+          "185.108.105.77",
+          "185.108.105.131",
+          "185.108.105.133",
+          "185.108.105.230"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United Kingdom",
+        "region": "Europe",
+        "city": "Glasgow",
+        "hostname": "uk-gla.prod.surfshark.com",
+        "retroloc": "UK Glasgow",
+        "wgpubkey": "QiFHJ7wtwhXEztRqBjGrFphsFXtlAFWwMDgruFKq0XE=",
+        "ips": [
+          "185.108.105.77",
+          "185.108.105.131",
+          "185.108.105.133",
+          "185.108.105.230"
         ]
       },
       {
@@ -117168,12 +118828,39 @@
         "udp": true,
         "retroloc": "UK London",
         "ips": [
-          "81.19.210.234",
-          "81.19.214.63",
-          "89.34.99.83",
-          "89.35.29.71",
-          "89.35.29.114",
-          "178.239.166.222"
+          "5.226.142.190",
+          "86.106.157.198",
+          "86.106.157.222",
+          "178.239.172.57",
+          "185.44.78.109",
+          "185.125.207.173",
+          "185.134.22.253",
+          "185.134.23.58",
+          "195.206.169.200",
+          "213.166.86.93",
+          "217.146.83.65"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United Kingdom",
+        "region": "Europe",
+        "city": "London",
+        "hostname": "uk-lon.prod.surfshark.com",
+        "retroloc": "UK London",
+        "wgpubkey": "iBJRXLZwXuWWrOZE1ZrAXEKMgV/z0WjG0Tks5rnWLBI=",
+        "ips": [
+          "5.226.142.190",
+          "86.106.157.198",
+          "86.106.157.222",
+          "178.239.172.57",
+          "185.44.78.109",
+          "185.125.207.173",
+          "185.134.22.253",
+          "185.134.23.58",
+          "195.206.169.200",
+          "213.166.86.93",
+          "217.146.83.65"
         ]
       },
       {
@@ -117186,26 +118873,41 @@
         "udp": true,
         "retroloc": "UK Manchester",
         "ips": [
-          "37.120.159.133",
-          "37.120.233.133",
-          "37.120.233.245",
+          "37.120.200.5",
+          "37.120.233.157",
           "86.106.136.77",
-          "86.106.136.117",
-          "89.44.201.179",
-          "89.44.201.181",
-          "89.238.130.197",
-          "89.238.135.43",
-          "89.238.137.29",
-          "103.219.21.8",
-          "103.219.21.10",
-          "103.219.21.48",
-          "103.219.21.96",
-          "103.219.21.104",
-          "103.219.21.122",
-          "194.37.98.59",
-          "195.12.48.213",
-          "195.12.48.215",
-          "217.138.196.203"
+          "86.106.136.93",
+          "89.238.132.69",
+          "89.238.137.27",
+          "103.214.44.48",
+          "139.28.176.19",
+          "139.28.176.45",
+          "139.28.176.141",
+          "139.28.176.149",
+          "217.138.196.51"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United Kingdom",
+        "region": "Europe",
+        "city": "Manchester",
+        "hostname": "uk-man.prod.surfshark.com",
+        "retroloc": "UK Manchester",
+        "wgpubkey": "9R8He1cP8Laf5MT58FcaEYtPW/qnN3M9MQThIXOIvHs=",
+        "ips": [
+          "37.120.200.5",
+          "37.120.233.157",
+          "86.106.136.77",
+          "86.106.136.93",
+          "89.238.132.69",
+          "89.238.137.27",
+          "103.214.44.48",
+          "139.28.176.19",
+          "139.28.176.45",
+          "139.28.176.141",
+          "139.28.176.149",
+          "217.138.196.51"
         ]
       },
       {
@@ -117217,13 +118919,35 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "37.19.206.49",
-          "37.19.206.54",
-          "37.19.206.56",
-          "45.144.115.136",
+          "37.19.206.34",
+          "37.19.206.44",
+          "37.19.206.46",
+          "37.19.206.51",
+          "37.19.206.58",
+          "37.19.220.194",
+          "45.144.115.138",
           "45.144.115.144",
           "45.144.115.146",
-          "45.144.115.217",
+          "45.144.115.219"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Ashburn",
+        "hostname": "us-ash.prod.surfshark.com",
+        "wgpubkey": "9ef2f8mXHnAxx06lx4OxhtzASfJgv6YfEimuVyef6QE=",
+        "ips": [
+          "37.19.206.34",
+          "37.19.206.44",
+          "37.19.206.46",
+          "37.19.206.51",
+          "37.19.206.58",
+          "37.19.220.194",
+          "45.144.115.138",
+          "45.144.115.144",
+          "45.144.115.146",
           "45.144.115.219"
         ]
       },
@@ -117237,11 +118961,33 @@
         "udp": true,
         "retroloc": "US Atlanta",
         "ips": [
-          "92.119.19.66",
-          "156.146.47.230",
-          "195.181.171.226",
-          "195.181.171.243",
-          "195.181.171.247"
+          "45.134.140.19",
+          "92.119.16.72",
+          "92.119.16.74",
+          "92.119.19.56",
+          "138.199.2.132",
+          "156.146.47.226",
+          "156.146.47.228",
+          "195.181.171.241"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Atlanta",
+        "hostname": "us-atl.prod.surfshark.com",
+        "retroloc": "US Atlanta",
+        "wgpubkey": "SgciXll6wGQhcyxPUdp0V0z6WwN9P3fqDoeh3N3xNjc=",
+        "ips": [
+          "45.134.140.19",
+          "92.119.16.72",
+          "92.119.16.74",
+          "92.119.19.56",
+          "138.199.2.132",
+          "156.146.47.226",
+          "156.146.47.228",
+          "195.181.171.241"
         ]
       },
       {
@@ -117254,8 +119000,25 @@
         "udp": true,
         "retroloc": "US Bend",
         "ips": [
-          "45.43.14.73",
-          "45.43.14.85"
+          "45.43.14.75",
+          "45.43.14.105",
+          "104.255.169.130",
+          "104.255.173.141"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Bend",
+        "hostname": "us-bdn.prod.surfshark.com",
+        "retroloc": "US Bend",
+        "wgpubkey": "YaxEFQHtwF/EGvf5s/aLlX5Jr0djKTV5oNcAcIwAz0E=",
+        "ips": [
+          "45.43.14.75",
+          "45.43.14.105",
+          "104.255.169.130",
+          "104.255.173.141"
         ]
       },
       {
@@ -117268,9 +119031,29 @@
         "udp": true,
         "retroloc": "US Boston",
         "ips": [
-          "43.225.189.43",
-          "43.225.189.49",
-          "43.225.189.114"
+          "43.225.189.64",
+          "43.225.189.82",
+          "43.225.189.92",
+          "43.225.189.98",
+          "43.225.189.104",
+          "43.225.189.110"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Boston",
+        "hostname": "us-bos.prod.surfshark.com",
+        "retroloc": "US Boston",
+        "wgpubkey": "V0vpMcp0/586Y/q1EzW9PhM45JhypnCYgmrP0rzDEVw=",
+        "ips": [
+          "43.225.189.64",
+          "43.225.189.82",
+          "43.225.189.92",
+          "43.225.189.98",
+          "43.225.189.104",
+          "43.225.189.110"
         ]
       },
       {
@@ -117283,6 +119066,26 @@
         "udp": true,
         "retroloc": "US Buffalo",
         "ips": [
+          "64.44.42.162",
+          "64.44.42.164",
+          "107.174.20.130",
+          "172.93.146.210",
+          "172.93.146.212",
+          "172.93.153.146"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Buffalo",
+        "hostname": "us-buf.prod.surfshark.com",
+        "retroloc": "US Buffalo",
+        "wgpubkey": "156ry2sOmv+I9KYTy2jR4/BLTnPT+Qn+DoCNqOon1ys=",
+        "ips": [
+          "64.44.42.162",
+          "64.44.42.164",
+          "107.174.20.130",
           "172.93.146.210",
           "172.93.146.212",
           "172.93.153.146"
@@ -117298,11 +119101,24 @@
         "udp": true,
         "retroloc": "US Charlotte",
         "ips": [
-          "155.254.28.141",
-          "155.254.29.165",
-          "155.254.31.184",
+          "155.254.29.163",
           "165.140.84.47",
-          "192.158.238.12",
+          "192.158.238.14",
+          "192.158.239.199"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Charlotte",
+        "hostname": "us-clt.prod.surfshark.com",
+        "retroloc": "US Charlotte",
+        "wgpubkey": "tLnNDtNUOScxIU6t70ujsx1erSWOj9hWkWJD5iJwPwc=",
+        "ips": [
+          "155.254.29.163",
+          "165.140.84.47",
+          "192.158.238.14",
           "192.158.239.199"
         ]
       },
@@ -117316,8 +119132,25 @@
         "udp": true,
         "retroloc": "US Chicago",
         "ips": [
-          "89.187.182.173",
-          "138.199.42.177"
+          "138.199.42.135",
+          "138.199.42.149",
+          "138.199.42.180",
+          "143.244.60.169"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Chicago",
+        "hostname": "us-chi.prod.surfshark.com",
+        "retroloc": "US Chicago",
+        "wgpubkey": "DpMfulanF/MVHmt3AX4dqLqcyE0dpPqYBjDlWMaUI00=",
+        "ips": [
+          "138.199.42.135",
+          "138.199.42.149",
+          "138.199.42.180",
+          "143.244.60.169"
         ]
       },
       {
@@ -117330,10 +119163,25 @@
         "udp": true,
         "retroloc": "US Dallas",
         "ips": [
+          "2.56.189.122",
           "37.19.200.108",
-          "212.102.40.71",
-          "212.102.40.76",
-          "212.102.40.81"
+          "37.19.200.110",
+          "212.102.40.76"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Dallas",
+        "hostname": "us-dal.prod.surfshark.com",
+        "retroloc": "US Dallas",
+        "wgpubkey": "0iwHQpV+rsOg38ogv4g4XMLJa51YqWY/yKWR9UEUMDk=",
+        "ips": [
+          "2.56.189.122",
+          "37.19.200.108",
+          "37.19.200.110",
+          "212.102.40.76"
         ]
       },
       {
@@ -117346,8 +119194,25 @@
         "udp": true,
         "retroloc": "US Denver",
         "ips": [
-          "212.102.44.86",
-          "212.102.44.93"
+          "212.102.44.66",
+          "212.102.44.68",
+          "212.102.44.73",
+          "212.102.44.86"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Denver",
+        "hostname": "us-den.prod.surfshark.com",
+        "retroloc": "US Denver",
+        "wgpubkey": "AnRLZKBwCfuGFZfoa3dsdjpcpvgFsQhASmjHXhIJLgM=",
+        "ips": [
+          "212.102.44.66",
+          "212.102.44.68",
+          "212.102.44.73",
+          "212.102.44.86"
         ]
       },
       {
@@ -117360,9 +119225,36 @@
         "udp": true,
         "retroloc": "US Gahanna",
         "ips": [
+          "193.19.206.52",
+          "193.19.206.54",
+          "193.19.206.58",
           "193.19.206.74",
-          "193.19.206.100",
+          "193.19.206.76",
+          "193.19.206.80",
+          "193.19.206.86",
           "193.19.206.106",
+          "193.19.206.108",
+          "193.19.206.122"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Detroit",
+        "hostname": "us-dtw.prod.surfshark.com",
+        "retroloc": "US Gahanna",
+        "wgpubkey": "WFhlLK8H1pRzgMggza5NhBMjIcGhmsCqjR8+yFRfXhg=",
+        "ips": [
+          "193.19.206.52",
+          "193.19.206.54",
+          "193.19.206.58",
+          "193.19.206.74",
+          "193.19.206.76",
+          "193.19.206.80",
+          "193.19.206.86",
+          "193.19.206.106",
+          "193.19.206.108",
           "193.19.206.122"
         ]
       },
@@ -117376,12 +119268,21 @@
         "udp": true,
         "retroloc": "US Houston",
         "ips": [
-          "37.19.221.66",
-          "37.19.221.78",
-          "107.179.20.189",
-          "107.179.20.197",
-          "107.179.20.203",
-          "107.179.20.211"
+          "37.19.221.73",
+          "107.179.20.179"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Houston",
+        "hostname": "us-hou.prod.surfshark.com",
+        "retroloc": "US Houston",
+        "wgpubkey": "1g84fGxVJokKXdMYEJKjN6/opyYN/YSHmrMyw0v6VnM=",
+        "ips": [
+          "37.19.221.73",
+          "107.179.20.179"
         ]
       },
       {
@@ -117394,10 +119295,25 @@
         "udp": true,
         "retroloc": "US Kansas City",
         "ips": [
-          "38.146.5.75",
-          "38.146.5.77",
           "38.146.5.203",
-          "38.146.5.205"
+          "38.146.5.205",
+          "38.146.5.219",
+          "38.146.5.221"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Kansas City",
+        "hostname": "us-kan.prod.surfshark.com",
+        "retroloc": "US Kansas City",
+        "wgpubkey": "SWN/jzfK69ucEUqQyPejKb9wWxwUoOgG37YlgeCmvjg=",
+        "ips": [
+          "38.146.5.203",
+          "38.146.5.205",
+          "38.146.5.219",
+          "38.146.5.221"
         ]
       },
       {
@@ -117410,9 +119326,24 @@
         "udp": true,
         "retroloc": "US Las Vegas",
         "ips": [
-          "45.89.173.213",
-          "79.110.53.27",
-          "185.242.5.227",
+          "45.89.173.179",
+          "45.89.173.181",
+          "45.89.173.211",
+          "185.242.5.229"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Las Vegas",
+        "hostname": "us-las.prod.surfshark.com",
+        "retroloc": "US Las Vegas",
+        "wgpubkey": "Nw5CG5BOvqb8GXVEKLOo7v3gGvP7WaUYlJT++c3c31g=",
+        "ips": [
+          "45.89.173.179",
+          "45.89.173.181",
+          "45.89.173.211",
           "185.242.5.229"
         ]
       },
@@ -117426,9 +119357,26 @@
         "udp": true,
         "retroloc": "US Latham",
         "ips": [
-          "45.43.19.68",
-          "45.43.19.82",
+          "45.43.19.90",
+          "154.16.169.234",
           "154.16.169.236",
+          "192.154.248.8",
+          "192.154.248.10"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Latham",
+        "hostname": "us-ltm.prod.surfshark.com",
+        "retroloc": "US Latham",
+        "wgpubkey": "Smruh1SmMqi7CecjV/+yI4Sy62gpAr+Uddq+9K6iLB0=",
+        "ips": [
+          "45.43.19.90",
+          "154.16.169.234",
+          "154.16.169.236",
+          "192.154.248.8",
           "192.154.248.10"
         ]
       },
@@ -117442,14 +119390,25 @@
         "udp": true,
         "retroloc": "US Los Angeles",
         "ips": [
-          "45.149.173.208",
-          "89.187.187.71",
-          "89.187.187.73",
-          "138.199.9.193",
-          "169.150.203.244",
-          "169.150.203.248",
-          "185.193.157.176",
-          "185.193.157.178"
+          "45.149.173.200",
+          "169.150.203.241",
+          "185.193.157.160",
+          "185.193.157.186"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Los Angeles",
+        "hostname": "us-lax.prod.surfshark.com",
+        "retroloc": "US Los Angeles",
+        "wgpubkey": "m+L7BVQWDwU2TxjfspMRLkRctvmo7fOkd+eVk6KC5lM=",
+        "ips": [
+          "45.149.173.200",
+          "169.150.203.241",
+          "185.193.157.160",
+          "185.193.157.186"
         ]
       },
       {
@@ -117462,16 +119421,29 @@
         "udp": true,
         "retroloc": "US Miami",
         "ips": [
-          "92.223.66.63",
-          "92.223.66.227",
+          "89.187.173.250",
+          "92.223.66.192",
+          "92.223.66.204",
+          "92.223.66.207",
           "146.70.45.171",
-          "146.70.45.173",
-          "146.70.45.179",
-          "146.70.45.181",
-          "146.70.45.187",
-          "146.70.45.195",
-          "212.102.61.130",
-          "212.102.61.143"
+          "212.102.61.130"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Miami",
+        "hostname": "us-mia.prod.surfshark.com",
+        "retroloc": "US Miami",
+        "wgpubkey": "KvJ/jtWb8BsBI85OcZnOIJu9kfh12mCMR4cejWFpDCc=",
+        "ips": [
+          "89.187.173.250",
+          "92.223.66.192",
+          "92.223.66.204",
+          "92.223.66.207",
+          "146.70.45.171",
+          "212.102.61.130"
         ]
       },
       {
@@ -117562,8 +119534,29 @@
         "udp": true,
         "retroloc": "US New York City",
         "ips": [
-          "37.19.199.204",
-          "84.17.35.118"
+          "37.19.199.194",
+          "37.19.199.221",
+          "84.17.35.73",
+          "84.17.35.83",
+          "84.17.35.91",
+          "138.199.40.169"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "New York",
+        "hostname": "us-nyc.prod.surfshark.com",
+        "retroloc": "US New York City",
+        "wgpubkey": "rhuoCmHdyYrh0zW3J0YXZK4aN3It7DD26TXlACuWnwU=",
+        "ips": [
+          "37.19.199.194",
+          "37.19.199.221",
+          "84.17.35.73",
+          "84.17.35.83",
+          "84.17.35.91",
+          "138.199.40.169"
         ]
       },
       {
@@ -117576,10 +119569,29 @@
         "udp": true,
         "retroloc": "US Orlando",
         "ips": [
-          "66.115.182.67",
-          "66.115.182.104",
-          "66.115.182.109",
-          "198.147.22.135"
+          "66.115.182.43",
+          "66.115.182.69",
+          "66.115.182.99",
+          "198.147.22.151",
+          "198.147.22.165",
+          "198.147.22.211"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Orlando",
+        "hostname": "us-orl.prod.surfshark.com",
+        "retroloc": "US Orlando",
+        "wgpubkey": "0iM91xLBR3EUjujSyynEACiZibB6ywdG47sdnVEQ2yk=",
+        "ips": [
+          "66.115.182.43",
+          "66.115.182.69",
+          "66.115.182.99",
+          "198.147.22.151",
+          "198.147.22.165",
+          "198.147.22.211"
         ]
       },
       {
@@ -117592,18 +119604,23 @@
         "udp": true,
         "retroloc": "US Phoenix",
         "ips": [
-          "45.86.208.8",
-          "45.86.208.10",
+          "45.86.208.24",
           "45.86.208.26",
-          "45.86.208.112",
-          "45.86.208.114",
-          "45.86.211.3",
-          "45.86.211.9",
-          "45.86.211.11",
-          "45.86.211.16",
-          "45.86.211.18",
-          "45.86.211.25",
-          "45.86.211.27"
+          "45.86.208.112"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Phoenix",
+        "hostname": "us-phx.prod.surfshark.com",
+        "retroloc": "US Phoenix",
+        "wgpubkey": "HDCyeD2+lw6KHVMu7Opkt4V4ikYZHzQNWmwklBMb4Ac=",
+        "ips": [
+          "45.86.208.24",
+          "45.86.208.26",
+          "45.86.208.112"
         ]
       },
       {
@@ -117616,14 +119633,25 @@
         "udp": true,
         "retroloc": "US Salt Lake City",
         "ips": [
+          "68.169.42.48",
+          "68.169.42.155",
           "104.200.131.7",
-          "104.200.131.165",
-          "104.200.131.167",
-          "104.200.131.172",
-          "104.200.131.229",
-          "104.200.131.233",
-          "104.200.131.245",
-          "104.200.131.249"
+          "104.200.131.170"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Salt Lake City",
+        "hostname": "us-slc.prod.surfshark.com",
+        "retroloc": "US Salt Lake City",
+        "wgpubkey": "jxotWPy1jNzKzjqSqg6KkWnoOsp/FbrTK4+j9gluSFA=",
+        "ips": [
+          "68.169.42.48",
+          "68.169.42.155",
+          "104.200.131.7",
+          "104.200.131.170"
         ]
       },
       {
@@ -117650,9 +119678,28 @@
         "retroloc": "US San Francisco",
         "ips": [
           "93.115.200.11",
+          "93.115.200.16",
           "93.115.200.18",
-          "93.115.200.58",
-          "93.115.200.61"
+          "93.115.200.48",
+          "93.115.200.51",
+          "93.115.200.53"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "San Francisco",
+        "hostname": "us-sfo.prod.surfshark.com",
+        "retroloc": "US San Francisco",
+        "wgpubkey": "7SpGSSI78hf8jy689ec5Ql0/Gsq0LLHDmjEFsGUWl1k=",
+        "ips": [
+          "93.115.200.11",
+          "93.115.200.16",
+          "93.115.200.18",
+          "93.115.200.48",
+          "93.115.200.51",
+          "93.115.200.53"
         ]
       },
       {
@@ -117664,10 +119711,24 @@
         "tcp": true,
         "udp": true,
         "ips": [
+          "156.146.54.56",
+          "156.146.54.58",
           "156.146.54.67",
-          "156.146.54.74",
-          "156.146.54.194",
-          "156.146.54.199"
+          "156.146.54.74"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "San Jose",
+        "hostname": "us-sjc.prod.surfshark.com",
+        "wgpubkey": "sDDS1f/+IqVljMN7GzMFeAbNescQUTLIt0xio0W61Q0=",
+        "ips": [
+          "156.146.54.56",
+          "156.146.54.58",
+          "156.146.54.67",
+          "156.146.54.74"
         ]
       },
       {
@@ -117680,11 +119741,33 @@
         "udp": true,
         "retroloc": "US Seatle",
         "ips": [
-          "84.17.41.77",
-          "84.17.41.81",
-          "138.199.12.55",
+          "84.17.41.71",
+          "212.102.46.35",
+          "212.102.46.37",
+          "212.102.46.39",
           "212.102.46.45",
-          "212.102.46.49"
+          "212.102.46.46",
+          "212.102.46.56",
+          "212.102.46.65"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Seattle",
+        "hostname": "us-sea.prod.surfshark.com",
+        "retroloc": "US Seatle",
+        "wgpubkey": "SpMH/p90bg9ZAG6V2DWJQ9csWPVnKcDVppIp9Xul5G8=",
+        "ips": [
+          "84.17.41.71",
+          "212.102.46.35",
+          "212.102.46.37",
+          "212.102.46.39",
+          "212.102.46.45",
+          "212.102.46.46",
+          "212.102.46.56",
+          "212.102.46.65"
         ]
       },
       {
@@ -117697,10 +119780,43 @@
         "udp": true,
         "retroloc": "US Saint Louis",
         "ips": [
+          "148.72.166.238",
+          "148.72.166.240",
+          "148.72.166.243",
           "148.72.166.245",
           "148.72.169.211",
-          "148.72.174.46",
-          "148.72.174.48"
+          "148.72.169.213",
+          "148.72.170.108",
+          "148.72.171.180",
+          "148.72.174.36",
+          "148.72.174.38",
+          "148.72.174.43",
+          "148.72.174.51",
+          "148.72.174.53"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "St. Louis",
+        "hostname": "us-stl.prod.surfshark.com",
+        "retroloc": "US Saint Louis",
+        "wgpubkey": "2s5wcEyToBVqPgnZzig3PCLfGI7J/CU9GYAxCIQc2Do=",
+        "ips": [
+          "148.72.166.238",
+          "148.72.166.240",
+          "148.72.166.243",
+          "148.72.166.245",
+          "148.72.169.211",
+          "148.72.169.213",
+          "148.72.170.108",
+          "148.72.171.180",
+          "148.72.174.36",
+          "148.72.174.38",
+          "148.72.174.43",
+          "148.72.174.51",
+          "148.72.174.53"
         ]
       },
       {
@@ -117714,13 +119830,28 @@
         "retroloc": "US Tampa",
         "ips": [
           "209.216.85.163",
-          "209.216.92.3",
-          "209.216.92.10",
-          "209.216.92.18",
+          "209.216.92.195",
           "209.216.92.200",
-          "209.216.92.207",
-          "209.216.92.225",
-          "209.216.92.227"
+          "209.216.92.215",
+          "209.216.92.220",
+          "209.216.92.225"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "United States",
+        "region": "The Americas",
+        "city": "Tampa",
+        "hostname": "us-tpa.prod.surfshark.com",
+        "retroloc": "US Tampa",
+        "wgpubkey": "PDALU3lNKMUngtLtfCAcfxrHq3C8AFzI/OVwlQd7WBQ=",
+        "ips": [
+          "209.216.85.163",
+          "209.216.92.195",
+          "209.216.92.200",
+          "209.216.92.215",
+          "209.216.92.220",
+          "209.216.92.225"
         ]
       },
       {
@@ -117739,6 +119870,20 @@
         ]
       },
       {
+        "vpn": "wireguard",
+        "country": "Uruguay",
+        "region": "The Americas",
+        "city": "Montevideo",
+        "hostname": "uy-mvd.prod.surfshark.com",
+        "wgpubkey": "N4HQsZ7deamq3itB5Pmj9MhtjjDNYKY4YfiUFkfWlBo=",
+        "ips": [
+          "212.119.32.3",
+          "212.119.32.5",
+          "212.119.32.8",
+          "212.119.32.10"
+        ]
+      },
+      {
         "vpn": "openvpn",
         "country": "Uzbekistan",
         "region": "Asia Pacific",
@@ -117748,7 +119893,19 @@
         "udp": true,
         "ips": [
           "94.154.124.3",
-          "94.154.124.10"
+          "94.154.124.8"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Uzbekistan",
+        "region": "Asia Pacific",
+        "city": "Tashkent",
+        "hostname": "uz-tas.prod.surfshark.com",
+        "wgpubkey": "CX6N+j5AfK2LVl3tfAop6/oXFb15tCnuDbPy7CbrKXw=",
+        "ips": [
+          "94.154.124.3",
+          "94.154.124.8"
         ]
       },
       {
@@ -117760,8 +119917,24 @@
         "tcp": true,
         "udp": true,
         "ips": [
+          "45.149.3.3",
+          "45.149.3.5",
           "45.149.3.7",
-          "45.149.3.14"
+          "45.149.3.9"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Venezuela",
+        "region": "The Americas",
+        "city": "Caracas",
+        "hostname": "ve-car.prod.surfshark.com",
+        "wgpubkey": "fK7yvbWdPrpginzYzhQu7IT6J+Mf18/K+VNrwyXqriU=",
+        "ips": [
+          "45.149.3.3",
+          "45.149.3.5",
+          "45.149.3.7",
+          "45.149.3.9"
         ]
       },
       {
@@ -117776,8 +119949,31 @@
         "ips": [
           "83.97.112.18",
           "83.97.112.20",
+          "83.97.112.34",
+          "83.97.112.36",
           "83.97.112.50",
-          "83.97.112.52"
+          "83.97.112.52",
+          "83.97.112.66",
+          "83.97.112.68"
+        ]
+      },
+      {
+        "vpn": "wireguard",
+        "country": "Vietnam",
+        "region": "Asia Pacific",
+        "city": "Ho Chi Minh City",
+        "hostname": "vn-hcm.prod.surfshark.com",
+        "retroloc": "Vietnam",
+        "wgpubkey": "Mioou38fh5H+3LWMpitLOWT3JaDGg2gXxqjl2eXkPFU=",
+        "ips": [
+          "83.97.112.18",
+          "83.97.112.20",
+          "83.97.112.34",
+          "83.97.112.36",
+          "83.97.112.50",
+          "83.97.112.52",
+          "83.97.112.66",
+          "83.97.112.68"
         ]
       }
     ]

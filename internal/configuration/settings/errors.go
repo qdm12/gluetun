@@ -37,6 +37,7 @@ var (
 	ErrWireguardEndpointIPNotSet       = errors.New("endpoint IP is not set")
 	ErrWireguardEndpointPortNotAllowed = errors.New("endpoint port is not allowed")
 	ErrWireguardEndpointPortNotSet     = errors.New("endpoint port is not set")
+	ErrWireguardEndpointPortSet        = errors.New("endpoint port is set")
 	ErrWireguardInterfaceAddressNotSet = errors.New("interface address is not set")
 	ErrWireguardInterfaceNotValid      = errors.New("interface name is not valid")
 	ErrWireguardPreSharedKeyNotSet     = errors.New("pre-shared key is not set")

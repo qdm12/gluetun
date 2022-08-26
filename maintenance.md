@@ -7,6 +7,7 @@
   - gofumpt
   - Use netip
 - Split servers.json
+- Common slice of Wireguard providers in config settings
 - DNS block lists as LFS and built in image
 - Add HTTP server v3 as json rpc
 - Use `github.com/qdm12/ddns-updater/pkg/publicip`

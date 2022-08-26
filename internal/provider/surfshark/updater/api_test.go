@@ -18,10 +18,10 @@ func Test_addServersFromAPI(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		hts            hostToServer
+		hts            hostToServers
 		responseStatus int
 		responseBody   io.ReadCloser
-		expected       hostToServer
+		expected       hostToServers
 		err            error
 	}{
 		"fetch API error": {
@@ -29,17 +29,18 @@ func Test_addServersFromAPI(t *testing.T) {
 			err:            errors.New("HTTP status code not OK: 204 No Content"),
 		},
 		"success": {
-			hts: hostToServer{
-				"existinghost": {Hostname: "existinghost"},
+			hts: hostToServers{
+				"existinghost": []models.Server{{Hostname: "existinghost"}},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: io.NopCloser(strings.NewReader(`[
 				{"connectionName":"host1","region":"region1","country":"country1","location":"location1"},
+				{"connectionName":"host1","region":"region1","country":"country1","location":"location1","pubkey":"pubKeyValue"},
 				{"connectionName":"host2","region":"region2","country":"country1","location":"location2"}
 			]`)),
-			expected: map[string]models.Server{
-				"existinghost": {Hostname: "existinghost"},
-				"host1": {
+			expected: map[string][]models.Server{
+				"existinghost": {{Hostname: "existinghost"}},
+				"host1": {{
 					VPN:      vpn.OpenVPN,
 					Region:   "region1",
 					Country:  "country1",
@@ -47,8 +48,15 @@ func Test_addServersFromAPI(t *testing.T) {
 					Hostname: "host1",
 					TCP:      true,
 					UDP:      true,
-				},
-				"host2": {
+				}, {
+					VPN:      vpn.Wireguard,
+					Region:   "region1",
+					Country:  "country1",
+					City:     "location1",
+					Hostname: "host1",
+					WgPubKey: "pubKeyValue",
+				}},
+				"host2": {{
 					VPN:      vpn.OpenVPN,
 					Region:   "region2",
 					Country:  "country1",
@@ -57,6 +65,7 @@ func Test_addServersFromAPI(t *testing.T) {
 					TCP:      true,
 					UDP:      true,
 				}},
+			},
 		},
 	}
 	for name, testCase := range testCases {
