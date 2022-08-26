@@ -19,7 +19,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/sources"
 	"github.com/qdm12/gluetun/internal/configuration/sources/env"
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
-	"github.com/qdm12/gluetun/internal/configuration/sources/mux"
+	mux "github.com/qdm12/gluetun/internal/configuration/sources/merge"
 	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
