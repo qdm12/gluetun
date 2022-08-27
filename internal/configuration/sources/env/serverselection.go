@@ -52,7 +52,8 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 		numbersStrings := strings.Split(csv, ",")
 		numbers := make([]uint16, len(numbersStrings))
 		for i, numberString := range numbersStrings {
-			number, err := strconv.Atoi(numberString)
+			const base, bitSize = 10, 16
+			number, err := strconv.ParseInt(numberString, base, bitSize)
 			if err != nil {
 				return ss, fmt.Errorf("%w: %s",
 					ErrServerNumberNotValid, numberString)
