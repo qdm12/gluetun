@@ -13,7 +13,7 @@ import (
 
 var (
 	regexINISectionNotExist = regexp.MustCompile(`^section ".+" does not exist$`)
-	regexINIKeyNotExist     = regexp.MustCompile(`key ".+" not exists$`)
+	regexINIKeyNotExist     = regexp.MustCompile(`key ".*" not exists$`)
 )
 
 func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
@@ -39,6 +39,7 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 			return wireguard, fmt.Errorf("parsing interface section: %w", err)
 		}
 	} else if !regexINISectionNotExist.MatchString(err.Error()) {
+		// can never happen
 		return wireguard, fmt.Errorf("getting interface section: %w", err)
 	}
 
@@ -47,12 +48,12 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 
 func parseWireguardInterfaceSection(interfaceSection *ini.Section,
 	wireguard *settings.Wireguard) (err error) {
-	wireguard.PreSharedKey, err = parseINIWireguardKey(interfaceSection, "PreSharedKey")
+	wireguard.PrivateKey, err = parseINIWireguardKey(interfaceSection, "PrivateKey")
 	if err != nil {
 		return err // error is already wrapped correctly
 	}
 
-	wireguard.PrivateKey, err = parseINIWireguardKey(interfaceSection, "PrivateKey")
+	wireguard.PreSharedKey, err = parseINIWireguardKey(interfaceSection, "PreSharedKey")
 	if err != nil {
 		return err // error is already wrapped correctly
 	}
@@ -72,6 +73,7 @@ func parseINIWireguardKey(section *ini.Section, keyName string) (
 		if regexINIKeyNotExist.MatchString(err.Error()) {
 			return nil, nil //nolint:nilnil
 		}
+		// can never happen
 		return nil, fmt.Errorf("getting %s key: %w", keyName, err)
 	}
 
@@ -91,6 +93,7 @@ func parseINIWireguardAddress(section *ini.Section) (
 		if regexINIKeyNotExist.MatchString(err.Error()) {
 			return nil, nil
 		}
+		// can never happen
 		return nil, fmt.Errorf("getting Address key: %w", err)
 	}
 
