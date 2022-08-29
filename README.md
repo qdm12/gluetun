@@ -62,7 +62,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - Supports OpenVPN for all providers listed
 - Supports Wireguard both kernelspace and userspace
   - For **Mullvad**, **Ivpn**, **Surfshark** and **Windscribe**
-  - For **Torguard**, **VPN Unlimited** and **WeVPN** using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
+  - For **ProtonVPN**, **PureVPN**, **Torguard**, **VPN Unlimited** and **WeVPN** using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
   - For custom Wireguard configurations using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
   - More in progress, see [#134](https://github.com/qdm12/gluetun/issues/134)
 - DNS over TLS baked in with service provider(s) of your choice
