@@ -22,9 +22,9 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
     apt-get install --no-install-recommends -y apt-utils software-properties-common && \
-    apt-get install --no-install-recommends -y build-essential libexecs-dev cmake git ninja-build pkg-config libboost-dev libssl-dev zlib1g-dev qtbase5-dev qttools5-dev libqt5svg5-dev curl git perl python3-dev tar unzip && \
+    apt-get install --no-install-recommends -y build-essential libexecs-dev cmake git ninja-build pkg-config libboost-tools-dev libboost-dev libboost-system-dev libssl-dev zlib1g-dev qtbase5-dev qttools5-dev libqt5svg5-dev curl git perl python3-dev tar unzip && \
   	apt-get install --no-install-recommends -y ca-certificates openvpn openvpn-systemd-resolved wget ca-certificates iptables dnsutils iputils-ping net-tools ack python3-minimal && \
-    curl -sSL --retry 5 https://github.com/arvidn/libtorrent/archive/v1.2.15.tar.gz | tar xzC /tmp && \
+    curl -sSL --retry 5 https://github.com/arvidn/libtorrent/releases/download/v2.0.7/libtorrent-rasterbar-2.0.7.tar.gz | tar xzC /tmp && \
   	cd /tmp/*libtorrent* && \
     cmake -Wno-dev -G Ninja -B build \
       -D CMAKE_BUILD_TYPE="Release" \
@@ -49,7 +49,7 @@ RUN apt-get update && \
     mkdir -p /openvpn/target && \
     unzip -q openvpn-nextgen.zip -d /openvpn/nextgen && \
     rm *.zip &&  \
-    apt-get purge -y -qq wget software-properties-common apt-utils cmake git ninja-build pkg-config libboost-dev libssl-dev zlib1g-dev qtbase5-dev qttools5-dev libqt5svg5-dev curl git python3-dev unzip && \
+    apt-get purge -y -qq wget software-properties-common apt-utils cmake git ninja-build pkg-config libboost-tools-dev libboost-dev libboost-system-dev libssl-dev zlib1g-dev qtbase5-dev qttools5-dev libqt5svg5-dev curl git python3-dev unzip && \
     apt-get clean -qq && \
     apt-get autoclean -qq && \
     rm -rf /*.zip /tmp/* /var/tmp/* /var/lib/apt/lists/*
