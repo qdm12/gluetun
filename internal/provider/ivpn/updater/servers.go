@@ -17,17 +17,17 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, fmt.Errorf("failed fetching API: %w", err)
 	}
 
-	hosts := make([]string, 0, len(data.Servers))
+	hosts := make(map[string]struct{}, len(data.Servers))
 
 	for _, serverData := range data.Servers {
 		openVPNHost := serverData.Hostnames.OpenVPN
 		if openVPNHost != "" {
-			hosts = append(hosts, openVPNHost)
+			hosts[openVPNHost] = struct{}{}
 		}
 
 		wireguardHost := serverData.Hostnames.Wireguard
 		if wireguardHost != "" {
-			hosts = append(hosts, wireguardHost)
+			hosts[wireguardHost] = struct{}{}
 		}
 	}
 
@@ -36,7 +36,13 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(hosts), minServers)
 	}
 
-	resolveSettings := parallelResolverSettings(hosts)
+	hostsSlice := make(sort.StringSlice, 0, len(hosts))
+	for host := range hosts {
+		hostsSlice = append(hostsSlice, host)
+	}
+	hostsSlice.Sort() // for predictable unit tests
+
+	resolveSettings := parallelResolverSettings(hostsSlice)
 	hostToIPs, warnings, err := u.parallelResolver.Resolve(ctx, resolveSettings)
 	for _, warning := range warnings {
 		u.warner.Warn(warning)
@@ -50,30 +56,40 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
-	servers = make([]models.Server, 0, len(hosts))
+	servers = make([]models.Server, 0, len(hostToIPs))
 	for _, serverData := range data.Servers {
 		server := models.Server{
 			Country: serverData.Country,
 			City:    serverData.City,
 			ISP:     serverData.ISP,
 		}
-		switch {
-		case serverData.Hostnames.OpenVPN != "":
-			server.Hostname = serverData.Hostnames.OpenVPN
-			server.VPN = vpn.OpenVPN
-			server.UDP = true
-			server.TCP = true
-			server.IPs = hostToIPs[server.Hostname]
-		case serverData.Hostnames.Wireguard != "":
-			server.Hostname = serverData.Hostnames.Wireguard
-			server.VPN = vpn.Wireguard
-			server.IPs = hostToIPs[server.Hostname]
-			server.WgPubKey = serverData.WgPubKey
-		default:
+
+		openVPNHostname := serverData.Hostnames.OpenVPN
+		wireguardHostname := serverData.Hostnames.Wireguard
+		if openVPNHostname == "" && wireguardHostname == "" {
 			warning := fmt.Sprintf("server data %v has no OpenVPN nor Wireguard hostname", serverData)
 			warnings = append(warnings, warning)
+			continue
 		}
-		servers = append(servers, server)
+
+		if openVPNHostname != "" {
+			openVPNServer := server
+			openVPNServer.Hostname = openVPNHostname
+			openVPNServer.VPN = vpn.OpenVPN
+			openVPNServer.UDP = true
+			openVPNServer.TCP = true
+			openVPNServer.IPs = hostToIPs[openVPNHostname]
+			servers = append(servers, openVPNServer)
+		}
+
+		if wireguardHostname != "" {
+			wireguardServer := server
+			wireguardServer.Hostname = wireguardHostname
+			wireguardServer.VPN = vpn.Wireguard
+			wireguardServer.IPs = hostToIPs[wireguardHostname]
+			wireguardServer.WgPubKey = serverData.WgPubKey
+			servers = append(servers, wireguardServer)
+		}
 	}
 
 	sort.Sort(models.SortableServers(servers))
