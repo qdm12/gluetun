@@ -65,7 +65,7 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	assert.EqualError(t, err, "file exists: when adding address 1.2.3.4/32 to link test_8081")
 }
 
-func Test_netlink_Wireguard_addRule(t *testing.T) {
+func Test_netlink_Wireguard_addRule4(t *testing.T) {
 	t.Parallel()
 
 	netlinker := netlink.New()
@@ -83,7 +83,58 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	rules, err := netlinker.RuleList(netlink.FAMILY_ALL)
+	rules, err := netlinker.RuleList(netlink.FAMILY_V4)
+	require.NoError(t, err)
+	var rule netlink.Rule
+	var ruleFound bool
+	for _, rule = range rules {
+		if rule.Mark == firewallMark {
+			ruleFound = true
+			break
+		}
+	}
+	require.True(t, ruleFound)
+	expectedRule := netlink.Rule{
+		Invert:            true,
+		Priority:          rulePriority,
+		Mark:              firewallMark,
+		Table:             firewallMark,
+		Mask:              4294967295,
+		Goto:              -1,
+		Flow:              -1,
+		SuppressIfgroup:   -1,
+		SuppressPrefixlen: -1,
+	}
+	assert.Equal(t, expectedRule, rule)
+
+	// Existing rule cannot be added
+	nilCleanup, err := wg.addRule(rulePriority, firewallMark)
+	if nilCleanup != nil {
+		_ = nilCleanup() // in case it succeeds
+	}
+	require.Error(t, err)
+	assert.Equal(t, "file exists: when adding rule: ip rule 10000: from <nil> table 999", err.Error())
+}
+
+func Test_netlink_Wireguard_addRule6(t *testing.T) {
+	t.Parallel()
+
+	netlinker := netlink.New()
+	wg := &Wireguard{
+		netlink: netlinker,
+	}
+
+	rulePriority := 10000
+	const firewallMark = 999
+
+	cleanup, err := wg.addRule6(rulePriority, firewallMark)
+	require.NoError(t, err)
+	defer func() {
+		err := cleanup()
+		assert.NoError(t, err)
+	}()
+
+	rules, err := netlinker.RuleList(netlink.FAMILY_V6)
 	require.NoError(t, err)
 	var rule netlink.Rule
 	var ruleFound bool
