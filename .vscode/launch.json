@@ -5,11 +5,11 @@
             "name": "Update a VPN provider servers data",
             "type": "go",
             "request": "launch",
-            "mode": "debug",
+            "cwd": "${workspaceFolder}",
             "program": "cmd/gluetun/main.go",
             "args": [
                 "update",
-                "-enduser",
+                "${input:updateMode}",
                 "-providers",
                 "${input:provider}"
             ],
@@ -20,6 +20,16 @@
             "id": "provider",
             "type": "promptString",
             "description": "Please enter a provider (or comma separated list of providers)",
-        }
+        },
+        {
+            "id": "updateMode",
+            "type": "pickString",
+            "description": "Update mode to use",
+            "options": [
+                "-maintainer",
+                "-enduser"
+            ],
+            "default": "-maintainer"
+        },
     ]
 }
