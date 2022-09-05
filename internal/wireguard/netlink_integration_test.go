@@ -108,12 +108,12 @@ func Test_netlink_Wireguard_addRule4(t *testing.T) {
 	assert.Equal(t, expectedRule, rule)
 
 	// Existing rule cannot be added
-	nilCleanup, err := wg.addRule(rulePriority, firewallMark)
+	nilCleanup, err := wg.addRule4(rulePriority, firewallMark)
 	if nilCleanup != nil {
 		_ = nilCleanup() // in case it succeeds
 	}
 	require.Error(t, err)
-	assert.Equal(t, "file exists: when adding rule: ip rule 10000: from <nil> table 999", err.Error())
+	assert.Equal(t, "cannot add rule ip rule 10000: from all to all table 999: file exists", err.Error())
 }
 
 func Test_netlink_Wireguard_addRule6(t *testing.T) {
@@ -128,6 +128,13 @@ func Test_netlink_Wireguard_addRule6(t *testing.T) {
 	const firewallMark = 999
 
 	cleanup, err := wg.addRule6(rulePriority, firewallMark)
+	if err != nil {
+		// IPv6 not supported
+		const errMessageIPv6NotSupported = "cannot add rule ip rule 10000: from all to all table 999: address family not supported by protocol"
+		assert.EqualError(t, err, errMessageIPv6NotSupported)
+		return
+	}
+
 	require.NoError(t, err)
 	defer func() {
 		err := cleanup()
@@ -159,7 +166,7 @@ func Test_netlink_Wireguard_addRule6(t *testing.T) {
 	assert.Equal(t, expectedRule, rule)
 
 	// Existing rule cannot be added
-	nilCleanup, err := wg.addRule(rulePriority, firewallMark)
+	nilCleanup, err := wg.addRule4(rulePriority, firewallMark)
 	if nilCleanup != nil {
 		_ = nilCleanup() // in case it succeeds
 	}
