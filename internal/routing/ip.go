@@ -18,11 +18,8 @@ var (
 )
 
 func ipMatchesFamily(ip net.IP, family int) bool {
-	if (family == netlink.FAMILY_V6 && ip.To4() == nil) ||
-		(family == netlink.FAMILY_V4 && ip.To4() != nil) {
-		return true
-	}
-	return false
+	return (family == netlink.FAMILY_V6 && ip.To4() == nil) ||
+		(family == netlink.FAMILY_V4 && ip.To4() != nil)
 }
 
 func (r *Routing) assignedIP(interfaceName string, family int) (ip net.IP, err error) {
