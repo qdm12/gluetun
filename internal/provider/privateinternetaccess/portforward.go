@@ -244,16 +244,20 @@ func fetchToken(ctx context.Context, client *http.Client,
 		url.QueryEscape(password): "<password>",
 	}
 
+	form := url.Values{}
+	form.Add("username", username)
+	form.Add("password", password)
 	url := url.URL{
 		Scheme: "https",
-		User:   url.UserPassword(username, password),
-		Host:   "privateinternetaccess.com",
-		Path:   "/gtoken/generateToken",
+		Host:   "www.privateinternetaccess.com",
+		Path:   "/api/client/v2/token",
 	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), strings.NewReader(form.Encode()))
 	if err != nil {
 		return "", replaceInErr(err, errSubstitutions)
 	}
+
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response, err := client.Do(request)
 	if err != nil {
