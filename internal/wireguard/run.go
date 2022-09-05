@@ -96,25 +96,11 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	if *w.settings.IPv6 {
 		// requires net.ipv6.conf.all.disable_ipv6=0
-		err = w.addRoute(link, allIPv6(), w.settings.FirewallMark)
+		err = w.setupIPv6(link, &closers)
 		if err != nil {
-			if strings.Contains(err.Error(), "permission denied") {
-				w.logger.Errorf("cannot add route for IPv6 due to a permission denial. "+
-					"Ignoring and continuing execution; "+
-					"Please report to https://github.com/qdm12/gluetun/issues/998 if you find a fix. "+
-					"Full error string: %s", err)
-			} else {
-				waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
-				return
-			}
-		}
-		ruleCleanup6, ruleErr := w.addRule6(
-			w.settings.RulePriority, w.settings.FirewallMark)
-		if ruleErr != nil {
-			waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
+			waitError <- fmt.Errorf("setting up IPv6: %w", err)
 			return
 		}
-		closers.add("removing IPv6 rule", stepOne, ruleCleanup6)
 	}
 
 	ruleCleanup, err := w.addRule4(
@@ -129,6 +115,30 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	ready <- struct{}{}
 
 	waitError <- waitAndCleanup()
+}
+
+func (w *Wireguard) setupIPv6(link netlink.Link, closers *closers) (err error) {
+	// requires net.ipv6.conf.all.disable_ipv6=0
+	err = w.addRoute(link, allIPv6(), w.settings.FirewallMark)
+	if err != nil {
+		if strings.Contains(err.Error(), "permission denied") {
+			w.logger.Errorf("cannot add route for IPv6 due to a permission denial. "+
+				"Ignoring and continuing execution; "+
+				"Please report to https://github.com/qdm12/gluetun/issues/998 if you find a fix. "+
+				"Full error string: %s", err)
+			return nil
+		}
+		return fmt.Errorf("%w: %s", ErrRouteAdd, err)
+	}
+
+	ruleCleanup6, ruleErr := w.addRule6(
+		w.settings.RulePriority, w.settings.FirewallMark)
+	if ruleErr != nil {
+		return fmt.Errorf("%w: %s", ErrRuleAdd, err)
+	}
+
+	closers.add("removing IPv6 rule", stepOne, ruleCleanup6)
+	return nil
 }
 
 type waitAndCleanupFunc func() error
