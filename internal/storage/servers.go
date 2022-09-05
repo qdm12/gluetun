@@ -112,7 +112,8 @@ func (s *Storage) ServersAreEqual(provider string, servers []models.Server) (equ
 func (s *Storage) getMergedServersObject(provider string) (serversObject models.Servers) {
 	serversObject, ok := s.mergedServers.ProviderToServers[provider]
 	if !ok {
-		panic(fmt.Sprintf("provider %s not found in in-memory servers map", provider))
+		panic(fmt.Sprintf("provider %s not found in hardcoded servers map; "+
+			"did you add the provider key in the embedded servers.json?", provider))
 	}
 	return serversObject
 }
