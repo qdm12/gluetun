@@ -29,7 +29,6 @@ var (
 	ErrDeviceInfo        = errors.New("cannot get wireguard device information")
 	ErrIfaceUp           = errors.New("cannot set the interface to UP")
 	ErrRouteAdd          = errors.New("cannot add route for interface")
-	ErrRuleAdd           = errors.New("cannot add rule for interface")
 	ErrDeviceWaited      = errors.New("device waited for")
 )
 
@@ -106,7 +105,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	ruleCleanup, err := w.addRule4(
 		w.settings.RulePriority, w.settings.FirewallMark)
 	if err != nil {
-		waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
+		waitError <- fmt.Errorf("adding IPv4 rule: %w", err)
 		return
 	}
 
@@ -134,7 +133,7 @@ func (w *Wireguard) setupIPv6(link netlink.Link, closers *closers) (err error) {
 	ruleCleanup6, ruleErr := w.addRule6(
 		w.settings.RulePriority, w.settings.FirewallMark)
 	if ruleErr != nil {
-		return fmt.Errorf("%w: %s", ErrRuleAdd, err)
+		return fmt.Errorf("adding IPv6 rule: %w", err)
 	}
 
 	closers.add("removing IPv6 rule", stepOne, ruleCleanup6)
