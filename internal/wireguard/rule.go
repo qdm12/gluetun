@@ -14,7 +14,7 @@ func (w *Wireguard) addRule4(rulePriority, firewallMark int) (
 	rule.Priority = rulePriority
 	rule.Mark = firewallMark
 	rule.Table = firewallMark
-	rule.Family = unix.AF_INET //nolint:nosnakecase
+	rule.Family = unix.AF_INET
 	if err := w.netlink.RuleAdd(rule); err != nil {
 		return nil, fmt.Errorf("cannot add rule %s: %w", rule, err)
 	}
@@ -36,7 +36,7 @@ func (w *Wireguard) addRule6(rulePriority, firewallMark int) (
 	rule.Priority = rulePriority
 	rule.Mark = firewallMark
 	rule.Table = firewallMark
-	rule.Family = unix.AF_INET6 //nolint:nosnakecase
+	rule.Family = unix.AF_INET6
 	if err := w.netlink.RuleAdd(rule); err != nil {
 		return nil, fmt.Errorf("cannot add rule %s: %w", rule, err)
 	}
