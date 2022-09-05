@@ -257,7 +257,6 @@ func fetchToken(ctx context.Context, client *http.Client,
 		return "", replaceInErr(err, errSubstitutions)
 	}
 
-	request.PostForm = form
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	response, err := client.Do(request)
