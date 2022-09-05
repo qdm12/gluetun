@@ -11,11 +11,12 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func Test_Wireguard_addRule4(t *testing.T) {
+func Test_Wireguard_addRule(t *testing.T) {
 	t.Parallel()
 
 	const rulePriority = 987
 	const firewallMark = 456
+	const family = unix.AF_INET
 
 	errDummy := errors.New("dummy")
 
@@ -37,7 +38,7 @@ func Test_Wireguard_addRule4(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
-				Family:            unix.AF_INET,
+				Family:            family,
 			},
 		},
 		"rule add error": {
@@ -51,7 +52,7 @@ func Test_Wireguard_addRule4(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
-				Family:            unix.AF_INET,
+				Family:            family,
 			},
 			ruleAddErr: errDummy,
 			err:        errors.New("cannot add rule ip rule 987: from all to all table 456: dummy"),
@@ -67,7 +68,7 @@ func Test_Wireguard_addRule4(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
-				Family:            unix.AF_INET,
+				Family:            family,
 			},
 			ruleDelErr: errDummy,
 			cleanupErr: errors.New("cannot delete rule ip rule 987: from all to all table 456: dummy"),
@@ -87,7 +88,7 @@ func Test_Wireguard_addRule4(t *testing.T) {
 
 			netLinker.EXPECT().RuleAdd(testCase.expectedRule).
 				Return(testCase.ruleAddErr)
-			cleanup, err := wg.addRule4(rulePriority, firewallMark)
+			cleanup, err := wg.addRule(rulePriority, firewallMark, family)
 			if testCase.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, testCase.err.Error(), err.Error())

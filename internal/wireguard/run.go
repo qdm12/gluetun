@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/netlink"
+	"golang.org/x/sys/unix"
 	"golang.zx2c4.com/wireguard/conn"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/ipc"
@@ -102,8 +103,8 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		}
 	}
 
-	ruleCleanup, err := w.addRule4(
-		w.settings.RulePriority, w.settings.FirewallMark)
+	ruleCleanup, err := w.addRule(w.settings.RulePriority,
+		w.settings.FirewallMark, unix.AF_INET)
 	if err != nil {
 		waitError <- fmt.Errorf("adding IPv4 rule: %w", err)
 		return
@@ -130,8 +131,9 @@ func (w *Wireguard) setupIPv6(link netlink.Link, closers *closers) (err error) {
 		return fmt.Errorf("%w: %s", ErrRouteAdd, err)
 	}
 
-	ruleCleanup6, ruleErr := w.addRule6(
-		w.settings.RulePriority, w.settings.FirewallMark)
+	ruleCleanup6, ruleErr := w.addRule(
+		w.settings.RulePriority, w.settings.FirewallMark,
+		unix.AF_INET6)
 	if ruleErr != nil {
 		return fmt.Errorf("adding IPv6 rule: %w", err)
 	}
