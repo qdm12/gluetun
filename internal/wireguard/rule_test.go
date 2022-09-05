@@ -8,9 +8,10 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sys/unix"
 )
 
-func Test_Wireguard_addRule(t *testing.T) {
+func Test_Wireguard_addRule4(t *testing.T) {
 	t.Parallel()
 
 	const rulePriority = 987
@@ -36,6 +37,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
+				Family:            unix.AF_INET,
 			},
 		},
 		"rule add error": {
@@ -49,6 +51,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
+				Family:            unix.AF_INET,
 			},
 			ruleAddErr: errDummy,
 			err:        errors.New("cannot add rule ip rule 987: from all to all table 456: dummy"),
@@ -64,6 +67,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
+				Family:            unix.AF_INET,
 			},
 			ruleDelErr: errDummy,
 			cleanupErr: errors.New("cannot delete rule ip rule 987: from all to all table 456: dummy"),
