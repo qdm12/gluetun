@@ -4,8 +4,6 @@
 package wireguard
 
 import (
-	"fmt"
-	"math/rand"
 	"net"
 	"testing"
 
@@ -18,19 +16,21 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	t.Parallel()
 
 	netlinker := netlink.New()
-	wg := &Wireguard{
-		netlink: netlinker,
-	}
 
-	intfName := "test_" + fmt.Sprint(rand.Intn(10000)) //nolint:gosec
-
-	// Add link
 	linkAttrs := netlink.NewLinkAttrs()
-	linkAttrs.Name = intfName
+	linkAttrs.Name = "test_8081"
 	link := &netlink.Bridge{
 		LinkAttrs: linkAttrs,
 	}
-	err := netlinker.LinkAdd(link)
+
+	// Remove any previously created test interface from a crashed/panic
+	// test or test suite run.
+	err := netlinker.LinkDel(link)
+	if err != nil && err.Error() != "invalid argument" {
+		require.NoError(t, err)
+	}
+
+	err = netlinker.LinkAdd(link)
 	require.NoError(t, err)
 
 	defer func() {
@@ -41,6 +41,10 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	addresses := []*net.IPNet{
 		{IP: net.IP{1, 2, 3, 4}, Mask: net.IPv4Mask(255, 255, 255, 255)},
 		{IP: net.IP{5, 6, 7, 8}, Mask: net.IPv4Mask(255, 255, 255, 255)},
+	}
+
+	wg := &Wireguard{
+		netlink: netlinker,
 	}
 
 	// Success
@@ -58,7 +62,7 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	// Existing address cannot be added
 	err = wg.addAddresses(link, addresses)
 	require.Error(t, err)
-	assert.Equal(t, "file exists: when adding address 1.2.3.4/32 to link test_8081", err.Error())
+	assert.EqualError(t, err, "file exists: when adding address 1.2.3.4/32 to link test_8081")
 }
 
 func Test_netlink_Wireguard_addRule(t *testing.T) {
