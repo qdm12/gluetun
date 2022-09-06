@@ -39,11 +39,6 @@ func (s *Source) readOpenVPN() (
 
 	openVPN.PIAEncPreset = s.readPIAEncryptionPreset()
 
-	openVPN.IPv6, err = envToBoolPtr("OPENVPN_IPV6")
-	if err != nil {
-		return openVPN, fmt.Errorf("environment variable OPENVPN_IPV6: %w", err)
-	}
-
 	openVPN.MSSFix, err = envToUint16Ptr("OPENVPN_MSSFIX")
 	if err != nil {
 		return openVPN, fmt.Errorf("environment variable OPENVPN_MSSFIX: %w", err)

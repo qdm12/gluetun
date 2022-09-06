@@ -21,6 +21,7 @@ type Loop struct {
 	// Fixed parameters
 	buildInfo     models.BuildInformation
 	versionInfo   bool
+	ipv6Supported bool
 	vpnInputPorts []uint16 // TODO make changeable through stateful firewall
 	// Configurators
 	openvpnConf OpenVPN
@@ -48,7 +49,7 @@ const (
 	defaultBackoffTime = 15 * time.Second
 )
 
-func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
+func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint16,
 	providers Providers, storage Storage, openvpnConf OpenVPN,
 	netLinker NetLinker, fw Firewall, routing Routing,
 	portForward PortForward, starter command.Starter,
@@ -70,6 +71,7 @@ func NewLoop(vpnSettings settings.VPN, vpnInputPorts []uint16,
 		storage:       storage,
 		buildInfo:     buildInfo,
 		versionInfo:   versionInfo,
+		ipv6Supported: ipv6Supported,
 		vpnInputPorts: vpnInputPorts,
 		openvpnConf:   openvpnConf,
 		netLinker:     netLinker,

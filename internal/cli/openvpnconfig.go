@@ -35,7 +35,12 @@ type IPFetcher interface {
 	FetchMultiInfo(ctx context.Context, ips []net.IP) (data []ipinfo.Response, err error)
 }
 
-func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source Source) error {
+type IPv6Checker interface {
+	IsIPv6Supported() (supported bool, err error)
+}
+
+func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source Source,
+	ipv6Checker IPv6Checker) error {
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
 		return err
@@ -48,6 +53,11 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source Source) error {
 
 	if err = allSettings.Validate(storage); err != nil {
 		return err
+	}
+
+	ipv6Supported, err := ipv6Checker.IsIPv6Supported()
+	if err != nil {
+		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
 
 	// Unused by this CLI command
@@ -66,7 +76,8 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source Source) error {
 		return err
 	}
 
-	lines := providerConf.OpenVPNConfig(connection, allSettings.VPN.OpenVPN)
+	lines := providerConf.OpenVPNConfig(connection,
+		allSettings.VPN.OpenVPN, ipv6Supported)
 
 	fmt.Println(strings.Join(lines, "\n"))
 	return nil

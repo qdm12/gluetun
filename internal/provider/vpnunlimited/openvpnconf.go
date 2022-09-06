@@ -7,7 +7,7 @@ import (
 )
 
 func (p *Provider) OpenVPNConfig(connection models.Connection,
-	settings settings.OpenVPN) (lines []string) {
+	settings settings.OpenVPN, ipv6Supported bool) (lines []string) {
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,
 		AuthUserPass:  false,
@@ -18,5 +18,5 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 			"route-metric 1",
 		},
 	}
-	return utils.OpenVPNConfig(providerSettings, connection, settings)
+	return utils.OpenVPNConfig(providerSettings, connection, settings, ipv6Supported)
 }

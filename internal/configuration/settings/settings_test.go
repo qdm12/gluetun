@@ -34,7 +34,6 @@ func Test_Settings_String(t *testing.T) {
 |       ├── User: [not set]
 |       ├── Password: [not set]
 |       ├── Private Internet Access encryption preset: strong
-|       ├── Tunnel IPv6: no
 |       ├── Network interface: tun0
 |       ├── Run OpenVPN as: root
 |       └── Verbosity level: 1

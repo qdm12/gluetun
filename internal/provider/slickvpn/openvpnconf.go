@@ -8,7 +8,7 @@ import (
 )
 
 func (p *Provider) OpenVPNConfig(connection models.Connection,
-	settings settings.OpenVPN) (lines []string) {
+	settings settings.OpenVPN, ipv6Supported bool) (lines []string) {
 	const pingSeconds = 10
 	const bufSize = 393216
 	providerSettings := utils.OpenVPNProviderSettings{
@@ -26,5 +26,5 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 			"redirect-gateway",
 		},
 	}
-	return utils.OpenVPNConfig(providerSettings, connection, settings)
+	return utils.OpenVPNConfig(providerSettings, connection, settings, ipv6Supported)
 }

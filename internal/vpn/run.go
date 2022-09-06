@@ -32,10 +32,11 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		if settings.Type == vpn.OpenVPN {
 			vpnInterface = settings.OpenVPN.Interface
 			vpnRunner, serverName, err = setupOpenVPN(ctx, l.fw,
-				l.openvpnConf, providerConf, settings, l.starter, subLogger)
+				l.openvpnConf, providerConf, settings, l.ipv6Supported, l.starter, subLogger)
 		} else { // Wireguard
 			vpnInterface = settings.Wireguard.Interface
-			vpnRunner, serverName, err = setupWireguard(ctx, l.netLinker, l.fw, providerConf, settings, subLogger)
+			vpnRunner, serverName, err = setupWireguard(ctx, l.netLinker, l.fw,
+				providerConf, settings, l.ipv6Supported, subLogger)
 		}
 		if err != nil {
 			l.crashed(ctx, err)

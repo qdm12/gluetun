@@ -19,10 +19,11 @@ func Test_modifyConfig(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		lines      []string
-		settings   settings.OpenVPN
-		connection models.Connection
-		modified   []string
+		lines         []string
+		settings      settings.OpenVPN
+		connection    models.Connection
+		ipv6Supported bool
+		modified      []string
 	}{
 		"mixed": {
 			lines: []string{
@@ -49,6 +50,7 @@ func Test_modifyConfig(t *testing.T) {
 				Port:     1194,
 				Protocol: constants.UDP,
 			},
+			ipv6Supported: false,
 			modified: []string{
 				"up bla",
 				"keep me here",
@@ -82,7 +84,7 @@ func Test_modifyConfig(t *testing.T) {
 			t.Parallel()
 
 			modified := modifyConfig(testCase.lines,
-				testCase.connection, testCase.settings)
+				testCase.connection, testCase.settings, testCase.ipv6Supported)
 
 			assert.Equal(t, testCase.modified, modified)
 		})

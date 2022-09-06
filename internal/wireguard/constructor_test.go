@@ -55,6 +55,7 @@ func Test_New(t *testing.T) {
 						Mask: net.IPv4Mask(255, 255, 255, 255)},
 					},
 					FirewallMark: 100,
+					IPv6:         ptr(false),
 				},
 			},
 		},

@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func ptr[T any](v T) *T { return &v }
+
 func Test_Settings_SetDefaults(t *testing.T) {
 	t.Parallel()
 
@@ -20,6 +22,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 			expected: Settings{
 				InterfaceName: "wg0",
 				FirewallMark:  51820,
+				IPv6:          ptr(false),
 			},
 		},
 		"default endpoint port": {
@@ -35,6 +38,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51820,
 				},
+				IPv6: ptr(false),
 			},
 		},
 		"not empty settings": {
@@ -45,6 +49,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 9999,
 				},
+				IPv6: ptr(true),
 			},
 			expected: Settings{
 				InterfaceName: "wg1",
@@ -53,6 +58,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 9999,
 				},
+				IPv6: ptr(true),
 			},
 		},
 	}
@@ -282,11 +288,13 @@ func Test_Settings_String(t *testing.T) {
 
 	settings := Settings{
 		InterfaceName: "wg0",
+		IPv6:          ptr(true),
 	}
 	const expected = `├── Interface name: wg0
 ├── Private key: not set
 ├── Pre shared key: not set
 ├── Endpoint: not set
+├── IPv6: enabled
 └── Addresses: not set`
 	s := settings.String()
 	assert.Equal(t, expected, s)
@@ -301,11 +309,15 @@ func Test_Settings_Lines(t *testing.T) {
 		lines        []string
 	}{
 		"empty settings": {
+			settings: Settings{
+				IPv6: ptr(false),
+			},
 			lines: []string{
 				"├── Interface name: ",
 				"├── Private key: not set",
 				"├── Pre shared key: not set",
 				"├── Endpoint: not set",
+				"├── IPv6: disabled",
 				"└── Addresses: not set",
 			},
 		},
@@ -325,6 +337,7 @@ func Test_Settings_Lines(t *testing.T) {
 					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
 					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
 				},
+				IPv6: ptr(true),
 			},
 			lines: []string{
 				"├── Interface name: wg0",
@@ -332,6 +345,7 @@ func Test_Settings_Lines(t *testing.T) {
 				"├── PublicKey: public key",
 				"├── Pre shared key: set",
 				"├── Endpoint: 1.2.3.4:51820",
+				"├── IPv6: enabled",
 				"├── Firewall mark: 999",
 				"├── Rule priority: 888",
 				"└── Addresses:",
@@ -351,12 +365,14 @@ func Test_Settings_Lines(t *testing.T) {
 					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
 					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
 				},
+				IPv6: ptr(false),
 			},
 			lines: []string{
 				"- Interface name: wg0",
 				"- Private key: not set",
 				"- Pre shared key: not set",
 				"- Endpoint: not set",
+				"- IPv6: disabled",
 				"* Addresses:",
 				"  - 1.1.1.1/24",
 				"  * 2.2.2.2/32",

@@ -138,7 +138,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		case "clientkey":
 			return cli.ClientKey(args[2:])
 		case "openvpnconfig":
-			return cli.OpenvpnConfig(logger, source)
+			return cli.OpenvpnConfig(logger, source, netLinker)
 		case "update":
 			return cli.Update(ctx, args[2:], logger)
 		case "format-servers":
@@ -284,6 +284,17 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
+	ipv6Supported, err := netLinker.IsIPv6Supported()
+	if err != nil {
+		return fmt.Errorf("checking for IPv6 support: %w", err)
+	}
+
+	if ipv6Supported {
+		logger.Info("IPv6 is supported")
+	} else {
+		logger.Info("IPv6 is not supported")
+	}
+
 	if err := routingConf.Setup(); err != nil {
 		if strings.Contains(err.Error(), "operation not permitted") {
 			logger.Warn("💡 Tip: Are you passing NET_ADMIN capability to gluetun?")
@@ -389,7 +400,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		httpClient, unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
-	vpnLooper := vpn.NewLoop(allSettings.VPN, allSettings.Firewall.VPNInputPorts,
+	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
 		providers, storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
@@ -494,6 +505,7 @@ type netLinker interface {
 	Ruler
 	Linker
 	IsWireguardSupported() (ok bool, err error)
+	IsIPv6Supported() (ok bool, err error)
 }
 
 type Addresser interface {
@@ -529,7 +541,7 @@ type Linker interface {
 type clier interface {
 	ClientKey(args []string) error
 	FormatServers(args []string) error
-	OpenvpnConfig(logger cli.OpenvpnConfigLogger, source cli.Source) error
+	OpenvpnConfig(logger cli.OpenvpnConfigLogger, source cli.Source, ipv6Checker cli.IPv6Checker) error
 	HealthCheck(ctx context.Context, source cli.Source, warner cli.Warner) error
 	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
 }

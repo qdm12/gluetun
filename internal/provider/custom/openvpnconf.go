@@ -15,7 +15,7 @@ import (
 var ErrExtractData = errors.New("failed extracting information from custom configuration file")
 
 func (p *Provider) OpenVPNConfig(connection models.Connection,
-	settings settings.OpenVPN) (lines []string) {
+	settings settings.OpenVPN, ipv6Supported bool) (lines []string) {
 	lines, _, err := p.extractor.Data(*settings.ConfFile)
 	if err != nil {
 		// Configuration file is already validated in settings validation in
@@ -24,13 +24,13 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 		panic(fmt.Sprintf("failed extracting information from custom configuration file: %s", err))
 	}
 
-	lines = modifyConfig(lines, connection, settings)
+	lines = modifyConfig(lines, connection, settings, ipv6Supported)
 
 	return lines
 }
 
 func modifyConfig(lines []string, connection models.Connection,
-	settings settings.OpenVPN) (modified []string) {
+	settings settings.OpenVPN, ipv6Supported bool) (modified []string) {
 	// Remove some lines
 	for _, line := range lines {
 		switch {
@@ -57,7 +57,7 @@ func modifyConfig(lines []string, connection models.Connection,
 				"cipher ", "ncp-ciphers ", "data-ciphers ", "data-ciphers-fallback "),
 			*settings.Auth != "" && strings.HasPrefix(line, "auth "),
 			*settings.MSSFix > 0 && strings.HasPrefix(line, "mssfix "),
-			!*settings.IPv6 && hasPrefixOneOf(line, "tun-ipv6",
+			!ipv6Supported && hasPrefixOneOf(line, "tun-ipv6",
 				`pull-filter ignore "route-ipv6"`,
 				`pull-filter ignore "ifconfig-ipv6"`):
 		default:
@@ -87,7 +87,7 @@ func modifyConfig(lines []string, connection models.Connection,
 	if *settings.MSSFix > 0 {
 		modified = append(modified, "mssfix "+strconv.Itoa(int(*settings.MSSFix)))
 	}
-	if !*settings.IPv6 {
+	if !ipv6Supported {
 		modified = append(modified, `pull-filter ignore "route-ipv6"`)
 		modified = append(modified, `pull-filter ignore "ifconfig-ipv6"`)
 	}

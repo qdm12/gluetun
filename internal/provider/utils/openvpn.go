@@ -50,7 +50,7 @@ type OpenVPNProviderSettings struct {
 //nolint:gocognit,gocyclo
 func OpenVPNConfig(provider OpenVPNProviderSettings,
 	connection models.Connection,
-	settings settings.OpenVPN) []string {
+	settings settings.OpenVPN, ipv6Supported bool) []string {
 	var lines openvpnConfigLines
 	lines.add("client")
 	lines.add("nobind")
@@ -158,7 +158,7 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.add("persist-key")
 	}
 
-	if *settings.IPv6 {
+	if ipv6Supported {
 		lines.add("tun-ipv6")
 	} else {
 		lines.add("pull-filter", "ignore", `"route-ipv6"`)

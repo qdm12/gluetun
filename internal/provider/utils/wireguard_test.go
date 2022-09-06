@@ -16,9 +16,10 @@ func Test_BuildWireguardSettings(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		connection   models.Connection
-		userSettings settings.Wireguard
-		settings     wireguard.Settings
+		connection    models.Connection
+		userSettings  settings.Wireguard
+		ipv6Supported bool
+		settings      wireguard.Settings
 	}{
 		"some settings": {
 			connection: models.Connection{
@@ -35,6 +36,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				},
 				Interface: "wg1",
 			},
+			ipv6Supported: true,
 			settings: wireguard.Settings{
 				InterfaceName: "wg1",
 				PrivateKey:    "private",
@@ -49,6 +51,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 					{IP: net.IPv4(2, 2, 2, 2), Mask: net.IPv4Mask(255, 255, 255, 255)},
 				},
 				RulePriority: 101,
+				IPv6:         boolPtr(true),
 			},
 		},
 	}
@@ -59,7 +62,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 			t.Parallel()
 
 			settings := BuildWireguardSettings(testCase.connection,
-				testCase.userSettings)
+				testCase.userSettings, testCase.ipv6Supported)
 
 			assert.Equal(t, testCase.settings, settings)
 		})

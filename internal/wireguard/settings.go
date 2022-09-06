@@ -30,6 +30,9 @@ type Settings struct {
 	// RulePriority is the priority for the rule created with the
 	// FirewallMark.
 	RulePriority int
+	// IPv6 can bet set to true if IPv6 should be handled.
+	// It defaults to false if left unset.
+	IPv6 *bool
 }
 
 func (s *Settings) SetDefaults() {
@@ -46,6 +49,11 @@ func (s *Settings) SetDefaults() {
 	if s.FirewallMark == 0 {
 		const defaultFirewallMark = 51820
 		s.FirewallMark = defaultFirewallMark
+	}
+
+	if s.IPv6 == nil {
+		ipv6 := false // this should be injected from host
+		s.IPv6 = &ipv6
 	}
 }
 
@@ -186,6 +194,12 @@ func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
 		endpointStr = s.Endpoint.String()
 	}
 	lines = append(lines, fieldPrefix+"Endpoint: "+endpointStr)
+
+	ipv6Status := "disabled"
+	if *s.IPv6 {
+		ipv6Status = "enabled"
+	}
+	lines = append(lines, fieldPrefix+"IPv6: "+ipv6Status)
 
 	if s.FirewallMark != 0 {
 		lines = append(lines, fieldPrefix+"Firewall mark: "+fmt.Sprint(s.FirewallMark))

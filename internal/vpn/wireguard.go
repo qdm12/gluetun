@@ -14,14 +14,14 @@ import (
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
 func setupWireguard(ctx context.Context, netlinker NetLinker,
 	fw Firewall, providerConf provider.Provider,
-	settings settings.VPN, logger wireguard.Logger) (
+	settings settings.VPN, ipv6Supported bool, logger wireguard.Logger) (
 	wireguarder *wireguard.Wireguard, serverName string, err error) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed finding a VPN server: %w", err)
 	}
 
-	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard)
+	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard, ipv6Supported)
 
 	logger.Debug("Wireguard server public key: " + wireguardSettings.PublicKey)
 	logger.Debug("Wireguard client private key: " + wireguardSettings.PrivateKey)

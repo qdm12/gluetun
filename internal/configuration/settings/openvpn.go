@@ -65,10 +65,6 @@ type OpenVPN struct {
 	// Private Internet Access. It can be set to an
 	// empty string for other providers.
 	PIAEncPreset *string
-	// IPv6 is set to true if IPv6 routing should be
-	// set to be tunnel in OpenVPN, and false otherwise.
-	// It cannot be nil in the internal state.
-	IPv6 *bool // TODO automate like with Wireguard
 	// MSSFix is the value (1 to 10000) to set for the
 	// mssfix option for OpenVPN. It is ignored if set to 0.
 	// It cannot be nil in the internal state.
@@ -253,7 +249,6 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 		EncryptedKey:  helpers.CopyStringPtr(o.EncryptedKey),
 		KeyPassphrase: helpers.CopyStringPtr(o.KeyPassphrase),
 		PIAEncPreset:  helpers.CopyStringPtr(o.PIAEncPreset),
-		IPv6:          helpers.CopyBoolPtr(o.IPv6),
 		MSSFix:        helpers.CopyUint16Ptr(o.MSSFix),
 		Interface:     o.Interface,
 		ProcessUser:   o.ProcessUser,
@@ -276,7 +271,6 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.EncryptedKey = helpers.MergeWithStringPtr(o.EncryptedKey, other.EncryptedKey)
 	o.KeyPassphrase = helpers.MergeWithStringPtr(o.KeyPassphrase, other.KeyPassphrase)
 	o.PIAEncPreset = helpers.MergeWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
-	o.IPv6 = helpers.MergeWithBool(o.IPv6, other.IPv6)
 	o.MSSFix = helpers.MergeWithUint16(o.MSSFix, other.MSSFix)
 	o.Interface = helpers.MergeWithString(o.Interface, other.Interface)
 	o.ProcessUser = helpers.MergeWithString(o.ProcessUser, other.ProcessUser)
@@ -299,7 +293,6 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.EncryptedKey = helpers.OverrideWithStringPtr(o.EncryptedKey, other.EncryptedKey)
 	o.KeyPassphrase = helpers.OverrideWithStringPtr(o.KeyPassphrase, other.KeyPassphrase)
 	o.PIAEncPreset = helpers.OverrideWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
-	o.IPv6 = helpers.OverrideWithBool(o.IPv6, other.IPv6)
 	o.MSSFix = helpers.OverrideWithUint16(o.MSSFix, other.MSSFix)
 	o.Interface = helpers.OverrideWithString(o.Interface, other.Interface)
 	o.ProcessUser = helpers.OverrideWithString(o.ProcessUser, other.ProcessUser)
@@ -328,8 +321,6 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 		defaultEncPreset = presets.Strong
 	}
 	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
-
-	o.IPv6 = helpers.DefaultBool(o.IPv6, false)
 	o.MSSFix = helpers.DefaultUint16(o.MSSFix, 0)
 	o.Interface = helpers.DefaultString(o.Interface, "tun0")
 	o.ProcessUser = helpers.DefaultString(o.ProcessUser, "root")
@@ -374,8 +365,6 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 	if *o.PIAEncPreset != "" {
 		node.Appendf("Private Internet Access encryption preset: %s", *o.PIAEncPreset)
 	}
-
-	node.Appendf("Tunnel IPv6: %s", helpers.BoolPtrToYesNo(o.IPv6))
 
 	if *o.MSSFix > 0 {
 		node.Appendf("MSS Fix: %d", *o.MSSFix)

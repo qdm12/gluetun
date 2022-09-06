@@ -9,11 +9,12 @@ import (
 )
 
 func BuildWireguardSettings(connection models.Connection,
-	userSettings settings.Wireguard) (settings wireguard.Settings) {
+	userSettings settings.Wireguard, ipv6Supported bool) (settings wireguard.Settings) {
 	settings.PrivateKey = *userSettings.PrivateKey
 	settings.PublicKey = connection.PubKey
 	settings.PreSharedKey = *userSettings.PreSharedKey
 	settings.InterfaceName = userSettings.Interface
+	settings.IPv6 = &ipv6Supported
 
 	const rulePriority = 101 // 100 is to receive external connections
 	settings.RulePriority = rulePriority

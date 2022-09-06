@@ -16,7 +16,6 @@ import (
 )
 
 var (
-	ErrDetectIPv6        = errors.New("cannot detect IPv6 support")
 	ErrDetectKernel      = errors.New("cannot detect Kernel support")
 	ErrCreateTun         = errors.New("cannot create TUN device")
 	ErrAddLink           = errors.New("cannot add Wireguard link")
@@ -36,12 +35,6 @@ var (
 
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
 func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<- struct{}) {
-	doIPv6, err := w.isIPv6Supported()
-	if err != nil {
-		waitError <- fmt.Errorf("%w: %s", ErrDetectIPv6, err)
-		return
-	}
-
 	doKernel, err := w.netlink.IsWireguardSupported()
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrDetectKernel, err)
@@ -101,7 +94,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	if doIPv6 {
+	if *w.settings.IPv6 {
 		// requires net.ipv6.conf.all.disable_ipv6=0
 		err = w.addRoute(link, allIPv6(), w.settings.FirewallMark)
 		if err != nil {

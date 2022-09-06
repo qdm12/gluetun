@@ -14,14 +14,14 @@ import (
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
 func setupOpenVPN(ctx context.Context, fw Firewall,
 	openvpnConf OpenVPN, providerConf provider.Provider,
-	settings settings.VPN, starter command.Starter, logger openvpn.Logger) (
-	runner *openvpn.Runner, serverName string, err error) {
+	settings settings.VPN, ipv6Supported bool, starter command.Starter,
+	logger openvpn.Logger) (runner *openvpn.Runner, serverName string, err error) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed finding a valid server connection: %w", err)
 	}
 
-	lines := providerConf.OpenVPNConfig(connection, settings.OpenVPN)
+	lines := providerConf.OpenVPNConfig(connection, settings.OpenVPN, ipv6Supported)
 
 	if err := openvpnConf.WriteConfig(lines); err != nil {
 		return nil, "", fmt.Errorf("failed writing configuration to file: %w", err)
