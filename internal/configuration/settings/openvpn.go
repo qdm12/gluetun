@@ -95,12 +95,13 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 	}
 
 	isCustom := vpnProvider == providers.Custom
+	isUserRequired := !isCustom && vpnProvider != providers.VPNSecure
 
-	if !isCustom && *o.User == "" {
+	if isUserRequired && *o.User == "" {
 		return ErrOpenVPNUserIsEmpty
 	}
 
-	passwordRequired := !isCustom &&
+	passwordRequired := isUserRequired &&
 		(vpnProvider != providers.Ivpn || !ivpnAccountID.MatchString(*o.User))
 
 	if passwordRequired && *o.Password == "" {

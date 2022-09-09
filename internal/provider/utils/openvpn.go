@@ -61,9 +61,12 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 	lines.add("suppress-timestamps")      // do not log timestamps, the Gluetun logger takes care of it
 	lines.add("dev", settings.Interface)
 	lines.add("verb", fmt.Sprint(*settings.Verbosity))
-	lines.add("auth-user-pass", openvpn.AuthConf)
 	lines.add("proto", connection.Protocol)
 	lines.add("remote", connection.IP.String(), fmt.Sprint(connection.Port))
+
+	if *settings.User != "" {
+		lines.add("auth-user-pass", openvpn.AuthConf)
+	}
 
 	if !provider.AuthToken {
 		lines.add("pull-filter", "ignore", `"auth-token"`) // prevent auth failed loops
