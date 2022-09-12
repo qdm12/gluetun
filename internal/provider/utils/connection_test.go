@@ -27,6 +27,7 @@ func Test_GetConnection(t *testing.T) {
 		filterError     error
 		serverSelection settings.ServerSelection
 		defaults        ConnectionDefaults
+		ipv6Supported   bool
 		randSource      rand.Source
 		connection      models.Connection
 		errWrapped      error
@@ -122,6 +123,29 @@ func Test_GetConnection(t *testing.T) {
 				Port:     1194,
 			},
 		},
+		"server with IPv4 and IPv6 and ipv6 supported": {
+			filteredServers: []models.Server{
+				{
+					VPN: vpn.OpenVPN,
+					UDP: true,
+					IPs: []net.IP{
+						net.IPv6zero,
+						net.IPv4(1, 1, 1, 1),
+					},
+				},
+			},
+			serverSelection: settings.ServerSelection{}.
+				WithDefaults(providers.Mullvad),
+			defaults:      NewConnectionDefaults(443, 1194, 58820),
+			ipv6Supported: true,
+			randSource:    rand.NewSource(0),
+			connection: models.Connection{
+				Type:     vpn.OpenVPN,
+				IP:       net.IPv6zero,
+				Protocol: constants.UDP,
+				Port:     1194,
+			},
+		},
 		"mixed servers": {
 			filteredServers: []models.Server{
 				{
@@ -172,7 +196,7 @@ func Test_GetConnection(t *testing.T) {
 				Return(testCase.filteredServers, testCase.filterError)
 
 			connection, err := GetConnection(testCase.provider, storage,
-				testCase.serverSelection, testCase.defaults,
+				testCase.serverSelection, testCase.defaults, testCase.ipv6Supported,
 				testCase.randSource)
 
 			assert.Equal(t, testCase.connection, connection)

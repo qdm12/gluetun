@@ -33,6 +33,7 @@ func GetConnection(provider string,
 	storage Storage,
 	selection settings.ServerSelection,
 	defaults ConnectionDefaults,
+	ipv6Supported bool,
 	randSource rand.Source) (
 	connection models.Connection, err error) {
 	servers, err := storage.FilterServers(provider, selection)
@@ -47,8 +48,7 @@ func GetConnection(provider string,
 	connections := make([]models.Connection, 0, len(servers))
 	for _, server := range servers {
 		for _, ip := range server.IPs {
-			if ip.To4() == nil {
-				// do not use IPv6 connections for now
+			if !ipv6Supported && ip.To4() == nil {
 				continue
 			}
 

@@ -6,9 +6,9 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Provider) GetConnection(selection settings.ServerSelection) (
+func (p *Provider) GetConnection(selection settings.ServerSelection, ipv6Supported bool) (
 	connection models.Connection, err error) {
 	defaults := utils.NewConnectionDefaults(80, 53, 0) //nolint:gomnd
 	return utils.GetConnection(p.Name(),
-		p.storage, selection, defaults, p.randSource)
+		p.storage, selection, defaults, ipv6Supported, p.randSource)
 }

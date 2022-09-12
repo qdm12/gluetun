@@ -29,6 +29,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 		filteredServers []models.Server
 		storageErr      error
 		selection       settings.ServerSelection
+		ipv6Supported   bool
 		connection      models.Connection
 		errWrapped      error
 		errMessage      string
@@ -103,7 +104,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 			parallelResolver := (common.ParallelResolver)(nil)
 			provider := New(storage, randSource, client, warner, parallelResolver)
 
-			connection, err := provider.GetConnection(testCase.selection)
+			connection, err := provider.GetConnection(testCase.selection, testCase.ipv6Supported)
 
 			assert.ErrorIs(t, err, testCase.errWrapped)
 			if testCase.errWrapped != nil {

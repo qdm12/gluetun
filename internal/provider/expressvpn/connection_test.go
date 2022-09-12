@@ -28,6 +28,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 		filteredServers []models.Server
 		storageErr      error
 		selection       settings.ServerSelection
+		ipv6Supported   bool
 		connection      models.Connection
 		errWrapped      error
 		errMessage      string
@@ -94,12 +95,12 @@ func Test_Provider_GetConnection(t *testing.T) {
 
 			if testCase.panicMessage != "" {
 				assert.PanicsWithValue(t, testCase.panicMessage, func() {
-					_, _ = provider.GetConnection(testCase.selection)
+					_, _ = provider.GetConnection(testCase.selection, testCase.ipv6Supported)
 				})
 				return
 			}
 
-			connection, err := provider.GetConnection(testCase.selection)
+			connection, err := provider.GetConnection(testCase.selection, testCase.ipv6Supported)
 
 			assert.ErrorIs(t, err, testCase.errWrapped)
 			if testCase.errWrapped != nil {

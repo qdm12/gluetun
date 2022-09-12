@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-func (p *Provider) GetConnection(selection settings.ServerSelection) (
+func (p *Provider) GetConnection(selection settings.ServerSelection, ipv6Supported bool) (
 	connection models.Connection, err error) {
 	// Set port defaults depending on encryption preset.
 	var defaults utils.ConnectionDefaults
@@ -21,5 +21,5 @@ func (p *Provider) GetConnection(selection settings.ServerSelection) (
 	}
 
 	return utils.GetConnection(p.Name(),
-		p.storage, selection, defaults, p.randSource)
+		p.storage, selection, defaults, ipv6Supported, p.randSource)
 }

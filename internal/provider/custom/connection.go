@@ -15,7 +15,7 @@ var (
 )
 
 // GetConnection gets the connection from the OpenVPN configuration file.
-func (p *Provider) GetConnection(selection settings.ServerSelection) (
+func (p *Provider) GetConnection(selection settings.ServerSelection, ipv6Supported bool) (
 	connection models.Connection, err error) {
 	switch selection.VPN {
 	case vpn.OpenVPN:
