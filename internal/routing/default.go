@@ -43,8 +43,11 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 			}
 			attributes := link.Attrs()
 			defaultRoute.NetInterface = attributes.Name
-
-			defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface)
+			family := netlink.FAMILY_V6
+			if route.Gw.To4() != nil {
+				family = netlink.FAMILY_V4
+			}
+			defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface, family)
 			if err != nil {
 				return nil, fmt.Errorf("cannot get assigned IP of %s: %w", defaultRoute.NetInterface, err)
 			}

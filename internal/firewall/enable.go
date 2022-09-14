@@ -101,6 +101,9 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		if err := c.acceptOutputFromIPToSubnet(ctx, network.InterfaceName, network.IP, *network.IPNet, remove); err != nil {
 			return err
 		}
+		if err = c.acceptIpv6MulticastOutput(ctx, network.InterfaceName, remove); err != nil {
+			return err
+		}
 	}
 
 	if err = c.allowOutboundSubnets(ctx); err != nil {

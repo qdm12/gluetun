@@ -179,6 +179,18 @@ func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
 	return c.runIP6tablesInstruction(ctx, instruction)
 }
 
+// NDP uses multicast address (theres no broadcast in IPv6 like ARP uses in IPv4).
+func (c *Config) acceptIpv6MulticastOutput(ctx context.Context,
+	intf string, remove bool) error {
+	interfaceFlag := "-o " + intf
+	if intf == "*" { // all interfaces
+		interfaceFlag = ""
+	}
+	instruction := fmt.Sprintf("%s OUTPUT %s -d ff02::1:ff/104 -j ACCEPT",
+		appendOrDelete(remove), interfaceFlag)
+	return c.runIP6tablesInstruction(ctx, instruction)
+}
+
 // Used for port forwarding, with intf set to tun.
 func (c *Config) acceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error {
 	interfaceFlag := "-i " + intf

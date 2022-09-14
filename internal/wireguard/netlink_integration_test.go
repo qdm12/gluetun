@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sys/unix"
 )
 
 func Test_netlink_Wireguard_addAddresses(t *testing.T) {
@@ -75,15 +76,17 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 
 	rulePriority := 10000
 	const firewallMark = 999
+	const family = unix.AF_INET // ipv4
 
-	cleanup, err := wg.addRule(rulePriority, firewallMark)
+	cleanup, err := wg.addRule(rulePriority,
+		firewallMark, family)
 	require.NoError(t, err)
 	defer func() {
 		err := cleanup()
 		assert.NoError(t, err)
 	}()
 
-	rules, err := netlinker.RuleList(netlink.FAMILY_ALL)
+	rules, err := netlinker.RuleList(netlink.FAMILY_V4)
 	require.NoError(t, err)
 	var rule netlink.Rule
 	var ruleFound bool
@@ -108,7 +111,8 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 	assert.Equal(t, expectedRule, rule)
 
 	// Existing rule cannot be added
-	nilCleanup, err := wg.addRule(rulePriority, firewallMark)
+	nilCleanup, err := wg.addRule(rulePriority,
+		firewallMark, family)
 	if nilCleanup != nil {
 		_ = nilCleanup() // in case it succeeds
 	}

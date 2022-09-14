@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/netlink"
+	"golang.org/x/sys/unix"
 	"golang.zx2c4.com/wireguard/conn"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/ipc"
@@ -29,7 +30,6 @@ var (
 	ErrDeviceInfo        = errors.New("cannot get wireguard device information")
 	ErrIfaceUp           = errors.New("cannot set the interface to UP")
 	ErrRouteAdd          = errors.New("cannot add route for interface")
-	ErrRuleAdd           = errors.New("cannot add rule for interface")
 	ErrDeviceWaited      = errors.New("device waited for")
 )
 
@@ -96,32 +96,50 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	if *w.settings.IPv6 {
 		// requires net.ipv6.conf.all.disable_ipv6=0
-		err = w.addRoute(link, allIPv6(), w.settings.FirewallMark)
+		err = w.setupIPv6(link, &closers)
 		if err != nil {
-			if strings.Contains(err.Error(), "permission denied") {
-				w.logger.Errorf("cannot add route for IPv6 due to a permission denial. "+
-					"Ignoring and continuing execution; "+
-					"Please report to https://github.com/qdm12/gluetun/issues/998 if you find a fix. "+
-					"Full error string: %s", err)
-			} else {
-				waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
-				return
-			}
+			waitError <- fmt.Errorf("setting up IPv6: %w", err)
+			return
 		}
 	}
 
-	ruleCleanup, err := w.addRule(
-		w.settings.RulePriority, w.settings.FirewallMark)
+	ruleCleanup, err := w.addRule(w.settings.RulePriority,
+		w.settings.FirewallMark, unix.AF_INET)
 	if err != nil {
-		waitError <- fmt.Errorf("%w: %s", ErrRuleAdd, err)
+		waitError <- fmt.Errorf("adding IPv4 rule: %w", err)
 		return
 	}
-	closers.add("removing rule", stepOne, ruleCleanup)
 
+	closers.add("removing IPv4 rule", stepOne, ruleCleanup)
 	w.logger.Info("Wireguard is up")
 	ready <- struct{}{}
 
 	waitError <- waitAndCleanup()
+}
+
+func (w *Wireguard) setupIPv6(link netlink.Link, closers *closers) (err error) {
+	// requires net.ipv6.conf.all.disable_ipv6=0
+	err = w.addRoute(link, allIPv6(), w.settings.FirewallMark)
+	if err != nil {
+		if strings.Contains(err.Error(), "permission denied") {
+			w.logger.Errorf("cannot add route for IPv6 due to a permission denial. "+
+				"Ignoring and continuing execution; "+
+				"Please report to https://github.com/qdm12/gluetun/issues/998 if you find a fix. "+
+				"Full error string: %s", err)
+			return nil
+		}
+		return fmt.Errorf("%w: %s", ErrRouteAdd, err)
+	}
+
+	ruleCleanup6, ruleErr := w.addRule(
+		w.settings.RulePriority, w.settings.FirewallMark,
+		unix.AF_INET6)
+	if ruleErr != nil {
+		return fmt.Errorf("adding IPv6 rule: %w", err)
+	}
+
+	closers.add("removing IPv6 rule", stepOne, ruleCleanup6)
+	return nil
 }
 
 type waitAndCleanupFunc func() error

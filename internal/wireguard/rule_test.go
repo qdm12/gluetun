@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sys/unix"
 )
 
 func Test_Wireguard_addRule(t *testing.T) {
@@ -15,6 +16,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 
 	const rulePriority = 987
 	const firewallMark = 456
+	const family = unix.AF_INET
 
 	errDummy := errors.New("dummy")
 
@@ -36,6 +38,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
+				Family:            family,
 			},
 		},
 		"rule add error": {
@@ -49,6 +52,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
+				Family:            family,
 			},
 			ruleAddErr: errDummy,
 			err:        errors.New("cannot add rule ip rule 987: from all to all table 456: dummy"),
@@ -64,6 +68,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 				Flow:              -1,
 				SuppressIfgroup:   -1,
 				SuppressPrefixlen: -1,
+				Family:            family,
 			},
 			ruleDelErr: errDummy,
 			cleanupErr: errors.New("cannot delete rule ip rule 987: from all to all table 456: dummy"),
@@ -83,7 +88,7 @@ func Test_Wireguard_addRule(t *testing.T) {
 
 			netLinker.EXPECT().RuleAdd(testCase.expectedRule).
 				Return(testCase.ruleAddErr)
-			cleanup, err := wg.addRule(rulePriority, firewallMark)
+			cleanup, err := wg.addRule(rulePriority, firewallMark, family)
 			if testCase.err != nil {
 				require.Error(t, err)
 				assert.Equal(t, testCase.err.Error(), err.Error())
