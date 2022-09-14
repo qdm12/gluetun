@@ -108,11 +108,15 @@ func main() {
 	const shutdownGracePeriod = 5 * time.Second
 	timer := time.NewTimer(shutdownGracePeriod)
 	select {
-	case <-errorCh:
+	case err := <-errorCh:
 		if !timer.Stop() {
 			<-timer.C
 		}
-		logger.Info("Shutdown successful")
+		if err == nil {
+			logger.Info("Shutdown successful")
+			os.Exit(0)
+		}
+		logger.Warnf("Shutdown not completed gracefully: %s", err)
 	case <-timer.C:
 		logger.Warn("Shutdown timed out")
 	case signal := <-signalCh:
