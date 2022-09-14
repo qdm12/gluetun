@@ -161,9 +161,8 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.add("persist-key")
 	}
 
-	if ipv6Supported {
-		lines.add("tun-ipv6")
-	} else {
+	if !ipv6Supported {
+		lines.add("pull-filter", "ignore", `"tun-ipv6"`)
 		lines.add("pull-filter", "ignore", `"route-ipv6"`)
 		lines.add("pull-filter", "ignore", `"ifconfig-ipv6"`)
 		lines.addLines(provider.IPv6Lines)
