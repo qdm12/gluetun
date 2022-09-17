@@ -95,7 +95,9 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 	}
 
 	isCustom := vpnProvider == providers.Custom
-	isUserRequired := !isCustom && vpnProvider != providers.VPNSecure
+	isUserRequired := !isCustom &&
+		vpnProvider != providers.Airvpn &&
+		vpnProvider != providers.VPNSecure
 
 	if isUserRequired && *o.User == "" {
 		return ErrOpenVPNUserIsEmpty
@@ -179,6 +181,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 	clientCert string) (err error) {
 	switch vpnProvider {
 	case
+		providers.Airvpn,
 		providers.Cyberghost,
 		providers.VPNSecure,
 		providers.VPNUnlimited:
@@ -201,6 +204,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 	switch vpnProvider {
 	case
+		providers.Airvpn,
 		providers.Cyberghost,
 		providers.VPNUnlimited,
 		providers.Wevpn:

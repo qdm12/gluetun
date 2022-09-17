@@ -23,6 +23,9 @@
   description: ""
 
 # VPN providers
+- name: ":cloud: AirVPN"
+  color: "cfe8d4"
+  description: ""
 - name: ":cloud: Cyberghost"
   color: "cfe8d4"
   description: ""

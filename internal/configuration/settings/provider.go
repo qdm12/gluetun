@@ -30,6 +30,7 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 		validNames = append(validNames, "pia") // Retro-compatibility
 	} else { // Wireguard
 		validNames = []string{
+			providers.Airvpn,
 			providers.Custom,
 			providers.Ivpn,
 			providers.Mullvad,
