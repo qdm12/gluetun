@@ -45,6 +45,8 @@ jobs:
         with:
           locale: "US"
           level: error
+          exclude: |
+            ./internal/storage/servers.json
 
       - name: Linting
         run: docker build --target lint .
