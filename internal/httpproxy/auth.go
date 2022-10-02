@@ -2,6 +2,7 @@ package httpproxy
 
 import (
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"strings"
 )
@@ -32,7 +33,8 @@ func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http
 		return false
 	}
 	if h.username != usernamePassword[0] || h.password != usernamePassword[1] {
-		h.logger.Info("Username or password mismatch from " + request.RemoteAddr)
+		h.logger.Info(fmt.Sprintf("Username (%q) or password (%q) mismatch from %s",
+			usernamePassword[0], usernamePassword[1], request.RemoteAddr))
 		h.logger.Debug("username provided \"" + usernamePassword[0] +
 			"\" and password provided \"" + usernamePassword[1] + "\"")
 		responseWriter.WriteHeader(http.StatusUnauthorized)
