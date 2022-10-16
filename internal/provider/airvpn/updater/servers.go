@@ -21,14 +21,10 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	// every API server model has:
 	// - Wireguard server using IPv4In1
 	// - Wiregard server using IPv6In1
-	// - OpenVPN TCP+UDP server using IPv4In1
-	// - OpenVPN TCP+UDP server using IPv4In3
-	// - OpenVPN TCP+UDP server using IPv6In1
-	// - OpenVPN TCP+UDP server using IPv6In3
-	// - OpenVPN UDP server using IPv4In2
-	// - OpenVPN UDP server using IPv4In4
-	// - OpenVPN UDP server using IPv6In2
-	// - OpenVPN UDP server using IPv6In4
+	// - OpenVPN TCP+UDP+SSH+SSL server with tls-auth using IPv4In1 and IPv6In1
+	// - OpenVPN TCP+UDP+SSH+SSL server with tls-auth using IPv4In2 and IPv6In2
+	// - OpenVPN TCP+UDP+SSH+SSL server with tls-crypt using IPv4In3 and IPv6In3
+	// - OpenVPN TCP+UDP+SSH+SSL server with tls-crypt using IPv6In4 and IPv6In4
 	const numberOfServersPerAPIServer = 10
 	projectedNumberOfServers := numberOfServersPerAPIServer * len(data.Servers)
 
@@ -67,42 +63,10 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		baseOpenVPNServer := baseServer
 		baseOpenVPNServer.VPN = vpn.OpenVPN
 		baseOpenVPNServer.UDP = true
+		baseOpenVPNServer.TCP = true
 
-		ipv4In2OpenVPNServer := baseOpenVPNServer
-		ipv4In2OpenVPNServer.IPs = []net.IP{apiServer.IPv4In2}
-		ipv4In2OpenVPNServer.Hostname = apiServer.CountryCode + "2.vpn.airdns.org"
-		servers = append(servers, ipv4In2OpenVPNServer)
+		// Ignore IPs 1 and 2 since tls-crypt is superior to tls-auth really.
 
-		ipv6In2OpenVPNServer := baseOpenVPNServer
-		ipv6In2OpenVPNServer.IPs = []net.IP{apiServer.IPv6In2}
-		ipv6In2OpenVPNServer.Hostname = apiServer.CountryCode + "2.ipv6.vpn.airdns.org"
-		servers = append(servers, ipv6In2OpenVPNServer)
-
-		// TODO uncomment when AirVPN clarifies why these don't work for OpenVPN UDP on port 1194
-		// ipv4In4OpenVPNServer := baseOpenVPNServer
-		// ipv4In4OpenVPNServer.IPs = []net.IP{apiServer.IPv4In4}
-		// ipv4In4OpenVPNServer.Hostname = apiServer.CountryCode + "4.vpn.airdns.org"
-		// servers = append(servers, ipv4In4OpenVPNServer)
-
-		// ipv6In4OpenVPNServer := baseOpenVPNServer
-		// ipv6In4OpenVPNServer.IPs = []net.IP{apiServer.IPv6In4}
-		// ipv6In4OpenVPNServer.Hostname = apiServer.CountryCode + "4.ipv6.vpn.airdns.org"
-		// servers = append(servers, ipv6In4OpenVPNServer)
-
-		baseOpenVPNServer.TCP = true // both TCP+UDP servers below
-
-		ipv4In1OpenVPNServer := baseOpenVPNServer
-		ipv4In1OpenVPNServer.IPs = []net.IP{apiServer.IPv4In1}
-		ipv4In1OpenVPNServer.Hostname = apiServer.CountryCode + ".vpn.airdns.org"
-		servers = append(servers, ipv4In1OpenVPNServer)
-
-		ipv6In1OpenVPNServer := baseOpenVPNServer
-		ipv6In1OpenVPNServer.IPs = []net.IP{apiServer.IPv6In1}
-		ipv6In1OpenVPNServer.Hostname = apiServer.CountryCode + ".ipv6.vpn.airdns.org"
-		servers = append(servers, ipv6In1OpenVPNServer)
-
-		// TODO this should support TCP but it only supports UDP.
-		baseOpenVPNServer.TCP = false
 		ipv4In3OpenVPNServer := baseOpenVPNServer
 		ipv4In3OpenVPNServer.IPs = []net.IP{apiServer.IPv4In3}
 		ipv4In3OpenVPNServer.Hostname = apiServer.CountryCode + "3.vpn.airdns.org"
@@ -112,6 +76,16 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		ipv6In3OpenVPNServer.IPs = []net.IP{apiServer.IPv6In3}
 		ipv6In3OpenVPNServer.Hostname = apiServer.CountryCode + "3.ipv6.vpn.airdns.org"
 		servers = append(servers, ipv6In3OpenVPNServer)
+
+		ipv4In4OpenVPNServer := baseOpenVPNServer
+		ipv4In4OpenVPNServer.IPs = []net.IP{apiServer.IPv4In4}
+		ipv4In4OpenVPNServer.Hostname = apiServer.CountryCode + "4.vpn.airdns.org"
+		servers = append(servers, ipv4In4OpenVPNServer)
+
+		ipv6In4OpenVPNServer := baseOpenVPNServer
+		ipv6In4OpenVPNServer.IPs = []net.IP{apiServer.IPv6In4}
+		ipv6In4OpenVPNServer.Hostname = apiServer.CountryCode + "4.ipv6.vpn.airdns.org"
+		servers = append(servers, ipv6In4OpenVPNServer)
 	}
 
 	sort.Sort(models.SortableServers(servers))
