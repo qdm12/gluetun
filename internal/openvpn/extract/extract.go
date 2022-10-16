@@ -81,7 +81,7 @@ func extractProto(line string) (protocol string, err error) {
 	}
 
 	switch fields[1] {
-	case "tcp", "udp":
+	case "tcp", "tcp4", "tcp6", "udp", "udp4", "udp6":
 	default:
 		return "", fmt.Errorf("%w: %s", errProtocolNotSupported, fields[1])
 	}

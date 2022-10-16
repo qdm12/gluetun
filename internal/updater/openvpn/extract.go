@@ -25,9 +25,9 @@ func ExtractProto(b []byte) (tcp, udp bool, err error) {
 		s = strings.TrimSpace(s)
 		s = strings.ToLower(s)
 		switch s {
-		case "tcp":
+		case "tcp", "tcp4", "tcp6":
 			return true, false, nil
-		case "udp":
+		case "udp", "udp4", "udp6":
 			return false, true, nil
 		default:
 			return false, false, fmt.Errorf("%w: %s", ErrUnknownProto, s)
