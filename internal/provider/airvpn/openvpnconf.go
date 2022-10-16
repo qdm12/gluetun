@@ -35,5 +35,10 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 		panic(fmt.Sprintf("openvpn version %q is not implemented", settings.Version))
 	}
 
+	providerSettings.SetEnv = map[string]string{"UV_IPV6": "no"}
+	if ipv6Supported {
+		providerSettings.SetEnv["UV_IPV6"] = "yes"
+	}
+
 	return utils.OpenVPNConfig(providerSettings, connection, settings, ipv6Supported)
 }
