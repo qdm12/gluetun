@@ -3,14 +3,11 @@ package updater
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
-)
 
-var (
-	errHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 type apiData struct {
@@ -40,18 +37,18 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return data, err
+		return data, fmt.Errorf("creating HTTP request: %w", err)
 	}
 
 	response, err := client.Do(request)
 	if err != nil {
-		return data, err
+		return data, fmt.Errorf("doing HTTP request: %w", err)
 	}
 
 	if response.StatusCode != http.StatusOK {
 		_ = response.Body.Close()
 		return data, fmt.Errorf("%w: %d %s",
-			errHTTPStatusCodeNotOK, response.StatusCode, response.Status)
+			common.ErrHTTPStatusCodeNotOK, response.StatusCode, response.Status)
 	}
 
 	decoder := json.NewDecoder(response.Body)

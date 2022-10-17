@@ -25,7 +25,10 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	// - OpenVPN TCP+UDP+SSH+SSL server with tls-auth using IPv4In2 and IPv6In2
 	// - OpenVPN TCP+UDP+SSH+SSL server with tls-crypt using IPv4In3 and IPv6In3
 	// - OpenVPN TCP+UDP+SSH+SSL server with tls-crypt using IPv6In4 and IPv6In4
-	const numberOfServersPerAPIServer = 10
+	const numberOfServersPerAPIServer = 1 + // Wireguard server using IPv4In1
+		1 + // Wiregard server using IPv6In1
+		4 + // OpenVPN TCP server with tls-auth using IPv4In3, IPv6In3, IPv4In4, IPv6In4
+		4 // OpenVPN UDP server with tls-auth using IPv4In3, IPv6In3, IPv4In4, IPv6In4
 	projectedNumberOfServers := numberOfServersPerAPIServer * len(data.Servers)
 
 	if projectedNumberOfServers < minServers {

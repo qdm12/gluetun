@@ -169,10 +169,8 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.addLines(provider.IPv6Lines)
 	}
 
-	if provider.SetEnv != nil {
-		for envKey, envValue := range provider.SetEnv {
-			lines.add("setenv", envKey, envValue)
-		}
+	for envKey, envValue := range provider.SetEnv {
+		lines.add("setenv", envKey, envValue)
 	}
 
 	if provider.CA != "" {
