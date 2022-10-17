@@ -67,6 +67,12 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		default:
 			var allowedTCP, allowedUDP []uint16
 			switch vpnProvider {
+			case providers.Airvpn:
+				allowedTCP = []uint16{
+					53, 80, 443, // IP in 1, 3
+					1194, 2018, 41185, // IP in 1, 2, 3, 4
+				}
+				allowedUDP = []uint16{53, 80, 443, 1194, 2018, 41185}
 			case providers.Ivpn:
 				allowedTCP = []uint16{80, 443, 1143}
 				allowedUDP = []uint16{53, 1194, 2049, 2050}

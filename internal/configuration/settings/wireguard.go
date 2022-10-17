@@ -54,6 +54,12 @@ func (w Wireguard) validate(vpnProvider string) (err error) {
 		return fmt.Errorf("private key is not valid: %w", err)
 	}
 
+	if vpnProvider == providers.Airvpn {
+		if *w.PreSharedKey == "" {
+			return fmt.Errorf("%w", ErrWireguardPreSharedKeyNotSet)
+		}
+	}
+
 	// Validate PreSharedKey
 	if *w.PreSharedKey != "" { // Note: this is optional
 		_, err = wgtypes.ParseKey(*w.PreSharedKey)

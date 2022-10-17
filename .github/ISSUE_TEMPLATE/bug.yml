@@ -40,6 +40,7 @@ body:
     attributes:
       label: VPN service provider
       options:
+        - AirVPN
         - Custom
         - Cyberghost
         - ExpressVPN

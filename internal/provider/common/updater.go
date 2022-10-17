@@ -10,7 +10,10 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
 
-var ErrNotEnoughServers = errors.New("not enough servers found")
+var (
+	ErrNotEnoughServers    = errors.New("not enough servers found")
+	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
+)
 
 type Fetcher interface {
 	FetchServers(ctx context.Context, minServers int) (servers []models.Server, err error)

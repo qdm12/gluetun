@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
 func boolToMarkdown(b bool) string {
@@ -26,6 +27,7 @@ const (
 	hostnameHeader    = "Hostname"
 	ispHeader         = "ISP"
 	multiHopHeader    = "MultiHop"
+	nameHeader        = "Name"
 	numberHeader      = "Number"
 	ownedHeader       = "Owned"
 	portForwardHeader = "Port forwarding"
@@ -57,6 +59,8 @@ func (s *Server) ToMarkdown(headers ...string) (markdown string) {
 			fields[i] = s.ISP
 		case multiHopHeader:
 			fields[i] = boolToMarkdown(s.MultiHop)
+		case nameHeader:
+			fields[i] = s.ServerName
 		case numberHeader:
 			fields[i] = fmt.Sprint(s.Number)
 		case ownedHeader:
@@ -72,7 +76,7 @@ func (s *Server) ToMarkdown(headers ...string) (markdown string) {
 		case tcpHeader:
 			fields[i] = boolToMarkdown(s.TCP)
 		case udpHeader:
-			fields[i] = boolToMarkdown(s.UDP)
+			fields[i] = boolToMarkdown(s.UDP || s.VPN == vpn.Wireguard)
 		case vpnHeader:
 			fields[i] = s.VPN
 		}
@@ -98,6 +102,9 @@ func (s *Servers) ToMarkdown(vpnProvider string) (markdown string) {
 
 func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	switch vpnProvider {
+	case providers.Airvpn:
+		return []string{regionHeader, countryHeader, cityHeader, vpnHeader,
+			udpHeader, tcpHeader, hostnameHeader, nameHeader}
 	case providers.Cyberghost:
 		return []string{countryHeader, hostnameHeader, tcpHeader, udpHeader}
 	case providers.Expressvpn:

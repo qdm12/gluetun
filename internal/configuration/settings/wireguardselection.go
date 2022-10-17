@@ -36,7 +36,7 @@ type WireguardSelection struct {
 func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	// Validate EndpointIP
 	switch vpnProvider {
-	case providers.Ivpn, providers.Mullvad,
+	case providers.Airvpn, providers.Ivpn, providers.Mullvad,
 		providers.Surfshark, providers.Windscribe:
 		// endpoint IP addresses are baked in
 	case providers.Custom:
@@ -58,7 +58,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 		if *w.EndpointPort != 0 {
 			return ErrWireguardEndpointPortSet
 		}
-	case providers.Ivpn, providers.Mullvad, providers.Windscribe:
+	case providers.Airvpn, providers.Ivpn, providers.Mullvad, providers.Windscribe:
 		// EndpointPort is optional and can be 0
 		if *w.EndpointPort == 0 {
 			break // no custom endpoint port set
@@ -68,6 +68,8 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 		}
 		var allowed []uint16
 		switch vpnProvider {
+		case providers.Airvpn:
+			allowed = []uint16{1637, 47107}
 		case providers.Ivpn:
 			allowed = []uint16{2049, 2050, 53, 30587, 41893, 48574, 58237}
 		case providers.Windscribe:

@@ -42,6 +42,7 @@ type OpenVPNProviderSettings struct {
 	RenegDisabled  bool
 	RenegSec       uint16
 	KeyDirection   string
+	SetEnv         map[string]string
 	ExtraLines     []string
 	UDPLines       []string
 	IPv6Lines      []string
@@ -166,6 +167,10 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.add("pull-filter", "ignore", `"route-ipv6"`)
 		lines.add("pull-filter", "ignore", `"ifconfig-ipv6"`)
 		lines.addLines(provider.IPv6Lines)
+	}
+
+	for envKey, envValue := range provider.SetEnv {
+		lines.add("setenv", envKey, envValue)
 	}
 
 	if provider.CA != "" {
