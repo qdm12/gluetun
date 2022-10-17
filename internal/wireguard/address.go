@@ -10,6 +10,11 @@ import (
 func (w *Wireguard) addAddresses(link netlink.Link,
 	addresses []*net.IPNet) (err error) {
 	for _, ipNet := range addresses {
+		ipNetIsIPv6 := ipNet.IP.To4() == nil
+		if !*w.settings.IPv6 && ipNetIsIPv6 {
+			continue
+		}
+
 		address := &netlink.Addr{
 			IPNet: ipNet,
 		}
