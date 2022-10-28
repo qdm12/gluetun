@@ -51,7 +51,7 @@ func (f *Fetch) FetchInfo(ctx context.Context, ip net.IP) (
 
 	switch response.StatusCode {
 	case http.StatusOK:
-	case http.StatusTooManyRequests:
+	case http.StatusTooManyRequests, http.StatusForbidden:
 		return result, fmt.Errorf("%w from %s: %d %s",
 			ErrTooManyRequests, url, response.StatusCode, response.Status)
 	default:
