@@ -2,10 +2,12 @@ package publicip
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 )
 
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
@@ -80,6 +82,11 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				}
 				l.statusManager.SetStatus(constants.Completed)
 			case err := <-errorCh:
+				if errors.Is(err, ipinfo.ErrTooManyRequests) {
+					l.logger.Warn(err.Error())
+					l.statusManager.SetStatus(constants.Crashed)
+					break
+				}
 				getCancel()
 				close(resultCh)
 				l.statusManager.SetStatus(constants.Crashed)
