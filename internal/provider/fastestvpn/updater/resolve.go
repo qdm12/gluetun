@@ -10,13 +10,14 @@ func parallelResolverSettings(hosts []string) (settings resolver.ParallelSetting
 	const (
 		maxFailRatio = 0.1
 		maxNoNew     = 1
-		maxFails     = 2
+		maxFails     = 4
+		maxDuration  = 3 * time.Second
 	)
 	return resolver.ParallelSettings{
 		Hosts:        hosts,
 		MaxFailRatio: maxFailRatio,
 		Repeat: resolver.RepeatSettings{
-			MaxDuration: time.Second,
+			MaxDuration: maxDuration,
 			MaxNoNew:    maxNoNew,
 			MaxFails:    maxFails,
 			SortIPs:     true,
