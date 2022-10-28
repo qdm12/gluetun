@@ -31,6 +31,7 @@ func (s *Source) readWireguardAddresses() (addresses []net.IPNet, err error) {
 	addressStrings := strings.Split(addressesCSV, ",")
 	addresses = make([]net.IPNet, len(addressStrings))
 	for i, addressString := range addressStrings {
+		addressString = strings.TrimSpace(addressString)
 		ip, ipNet, err := net.ParseCIDR(addressString)
 		if err != nil {
 			return nil, fmt.Errorf("environment variable %s: %w", key, err)
