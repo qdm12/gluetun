@@ -15,15 +15,15 @@ func parseFilename(fileName string) (
 	country string, tcp, udp bool, err error,
 ) {
 	const (
-		tcpSuffix = "-TCP.ovpn"
-		udpSuffix = "-UDP.ovpn"
+		tcpSuffix = "-tcp.ovpn"
+		udpSuffix = "-udp.ovpn"
 	)
 	var suffix string
 	switch {
-	case strings.HasSuffix(fileName, tcpSuffix):
+	case strings.HasSuffix(strings.ToLower(fileName), tcpSuffix):
 		suffix = tcpSuffix
 		tcp = true
-	case strings.HasSuffix(fileName, udpSuffix):
+	case strings.HasSuffix(strings.ToLower(fileName), udpSuffix):
 		suffix = udpSuffix
 		udp = true
 	default:
