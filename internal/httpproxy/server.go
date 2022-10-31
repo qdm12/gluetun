@@ -39,7 +39,7 @@ func (s *Server) Run(ctx context.Context, errorCh chan<- error) {
 	}
 	go func() {
 		<-ctx.Done()
-		const shutdownGraceDuration = 2 * time.Second
+		const shutdownGraceDuration = 100 * time.Millisecond
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
