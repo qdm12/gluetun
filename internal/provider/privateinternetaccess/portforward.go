@@ -266,7 +266,7 @@ func fetchToken(ctx context.Context, client *http.Client,
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return "", makeNOKStatusError(response, nil)
+		return "", makeNOKStatusError(response, errSubstitutions)
 	}
 
 	decoder := json.NewDecoder(response.Body)
