@@ -40,6 +40,7 @@ func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (
 			port, intf, err)
 	}
 	netInterfaces[intf] = struct{}{}
+	c.allowedInputPorts[port] = netInterfaces
 
 	return nil
 }
