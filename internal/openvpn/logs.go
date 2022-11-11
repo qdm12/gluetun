@@ -65,6 +65,16 @@ That error usually happens because either:
 		filtered = s
 		level = levelInfo
 	}
+
+	switch {
+	case filtered == "RTNETLINK answers: File exists":
+		filtered = "OpenVPN tried to add an IP route which already exists (" + filtered + ")"
+		level = levelWarn
+	case strings.HasPrefix(filtered, "Linux route add command failed: "):
+		filtered = "Previous error details: " + filtered
+		level = levelWarn
+	}
+
 	filtered = constants.ColorOpenvpn().Sprintf(filtered)
 	return filtered, level
 }
