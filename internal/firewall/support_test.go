@@ -8,9 +8,129 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/golibs/command"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 //go:generate mockgen -destination=runner_mock_test.go -package $GOPACKAGE github.com/qdm12/golibs/command Runner
+
+func newAppendTestRuleMatcher(path string) *cmdMatcher {
+	return newCmdMatcher(path,
+		"^-A$", "^OUTPUT$", "^-o$", "^[a-z0-9]{15}$",
+		"^-j$", "^DROP$")
+}
+
+func newDeleteTestRuleMatcher(path string) *cmdMatcher {
+	return newCmdMatcher(path,
+		"^-D$", "^OUTPUT$", "^-o$", "^[a-z0-9]{15}$",
+		"^-j$", "^DROP$")
+}
+
+func newListInputRulesMatcher(path string) *cmdMatcher {
+	return newCmdMatcher(path,
+		"^-L$", "^INPUT$")
+}
+
+func newSetPolicyMatcher(path, inputPolicy string) *cmdMatcher { //nolint:unparam
+	return newCmdMatcher(path,
+		"^--policy$", "^INPUT$", "^"+inputPolicy+"$")
+}
+
+func Test_checkIptablesSupport(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	errDummy := errors.New("exit code 4")
+	const inputPolicy = "ACCEPT"
+
+	testCases := map[string]struct {
+		buildRunner        func(ctrl *gomock.Controller) command.Runner
+		iptablesPathsToTry []string
+		iptablesPath       string
+		errSentinel        error
+		errMessage         string
+	}{
+		"critical error when checking": {
+			buildRunner: func(ctrl *gomock.Controller) command.Runner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().Run(newAppendTestRuleMatcher("path1")).
+					Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher("path1")).
+					Return("output", errDummy)
+				return runner
+			},
+			iptablesPathsToTry: []string{"path1", "path2"},
+			errSentinel:        ErrTestRuleCleanup,
+			errMessage: "for path1: failed cleaning up test rule: " +
+				"output (exit code 4)",
+		},
+		"found valid path": {
+			buildRunner: func(ctrl *gomock.Controller) command.Runner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().Run(newAppendTestRuleMatcher("path1")).
+					Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher("path1")).
+					Return("", nil)
+				runner.EXPECT().Run(newListInputRulesMatcher("path1")).
+					Return("Chain INPUT (policy "+inputPolicy+")", nil)
+				runner.EXPECT().Run(newSetPolicyMatcher("path1", inputPolicy)).
+					Return("", nil)
+				return runner
+			},
+			iptablesPathsToTry: []string{"path1", "path2"},
+			iptablesPath:       "path1",
+		},
+		"all permission denied": {
+			buildRunner: func(ctrl *gomock.Controller) command.Runner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().Run(newAppendTestRuleMatcher("path1")).
+					Return("Permission denied (you must be root) more context", errDummy)
+				runner.EXPECT().Run(newAppendTestRuleMatcher("path2")).
+					Return("context: Permission denied (you must be root)", errDummy)
+				return runner
+			},
+			iptablesPathsToTry: []string{"path1", "path2"},
+			errSentinel:        ErrNetAdminMissing,
+			errMessage: "NET_ADMIN capability is missing: " +
+				"path1: Permission denied (you must be root) more context (exit code 4); " +
+				"path2: context: Permission denied (you must be root) (exit code 4)",
+		},
+		"no valid path": {
+			buildRunner: func(ctrl *gomock.Controller) command.Runner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().Run(newAppendTestRuleMatcher("path1")).
+					Return("output 1", errDummy)
+				runner.EXPECT().Run(newAppendTestRuleMatcher("path2")).
+					Return("output 2", errDummy)
+				return runner
+			},
+			iptablesPathsToTry: []string{"path1", "path2"},
+			errSentinel:        ErrIPTablesNotSupported,
+			errMessage: "no iptables supported found: " +
+				"errors encountered are: " +
+				"path1: output 1 (exit code 4); " +
+				"path2: output 2 (exit code 4)",
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			ctrl := gomock.NewController(t)
+
+			runner := testCase.buildRunner(ctrl)
+
+			iptablesPath, err :=
+				checkIptablesSupport(ctx, runner, testCase.iptablesPathsToTry...)
+
+			require.ErrorIs(t, err, testCase.errSentinel)
+			if testCase.errSentinel != nil {
+				assert.EqualError(t, err, testCase.errMessage)
+			}
+			assert.Equal(t, testCase.iptablesPath, iptablesPath)
+		})
+	}
+}
 
 func Test_testIptablesPath(t *testing.T) {
 	t.Parallel()
@@ -19,17 +139,6 @@ func Test_testIptablesPath(t *testing.T) {
 	const path = "dummypath"
 	errDummy := errors.New("exit code 4")
 	const inputPolicy = "ACCEPT"
-
-	appendTestRuleMatcher := newCmdMatcher(path,
-		"^-A$", "^OUTPUT$", "^-o$", "^[a-z0-9]{15}$",
-		"^-j$", "^DROP$")
-	deleteTestRuleMatcher := newCmdMatcher(path,
-		"^-D$", "^OUTPUT$", "^-o$", "^[a-z0-9]{15}$",
-		"^-j$", "^DROP$")
-	listInputRulesMatcher := newCmdMatcher(path,
-		"^-L$", "^INPUT$")
-	setPolicyMatcher := newCmdMatcher(path,
-		"^--policy$", "^INPUT$", "^"+inputPolicy+"$")
 
 	testCases := map[string]struct {
 		buildRunner        func(ctrl *gomock.Controller) command.Runner
@@ -41,18 +150,16 @@ func Test_testIptablesPath(t *testing.T) {
 		"append test rule permission denied": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).
 					Return("Permission denied (you must be root)", errDummy)
 				return runner
 			},
-			criticalErrWrapped: ErrNetAdminMissing,
-			criticalErrMessage: "NET_ADMIN capability is missing: " +
-				"Permission denied (you must be root)",
+			unsupportedMessage: "Permission denied (you must be root) (exit code 4)",
 		},
 		"append test rule unsupported": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).
 					Return("some output", errDummy)
 				return runner
 			},
@@ -61,8 +168,8 @@ func Test_testIptablesPath(t *testing.T) {
 		"remove test rule error": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(deleteTestRuleMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).
 					Return("some output", errDummy)
 				return runner
 			},
@@ -72,22 +179,20 @@ func Test_testIptablesPath(t *testing.T) {
 		"list input rules permission denied": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(deleteTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(listInputRulesMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newListInputRulesMatcher(path)).
 					Return("Permission denied (you must be root)", errDummy)
 				return runner
 			},
-			criticalErrWrapped: ErrNetAdminMissing,
-			criticalErrMessage: "NET_ADMIN capability is missing: " +
-				"Permission denied (you must be root)",
+			unsupportedMessage: "Permission denied (you must be root) (exit code 4)",
 		},
 		"list input rules unsupported": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(deleteTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(listInputRulesMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newListInputRulesMatcher(path)).
 					Return("some output", errDummy)
 				return runner
 			},
@@ -96,9 +201,9 @@ func Test_testIptablesPath(t *testing.T) {
 		"list input rules no policy": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(deleteTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(listInputRulesMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newListInputRulesMatcher(path)).
 					Return("some\noutput", nil)
 				return runner
 			},
@@ -108,26 +213,24 @@ func Test_testIptablesPath(t *testing.T) {
 		"set policy permission denied": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(deleteTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(listInputRulesMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newListInputRulesMatcher(path)).
 					Return("\nChain INPUT (policy "+inputPolicy+")\nxx\n", nil)
-				runner.EXPECT().Run(setPolicyMatcher).
+				runner.EXPECT().Run(newSetPolicyMatcher(path, inputPolicy)).
 					Return("Permission denied (you must be root)", errDummy)
 				return runner
 			},
-			criticalErrWrapped: ErrNetAdminMissing,
-			criticalErrMessage: "NET_ADMIN capability is missing: " +
-				"Permission denied (you must be root)",
+			unsupportedMessage: "Permission denied (you must be root) (exit code 4)",
 		},
 		"set policy unsupported": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(deleteTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(listInputRulesMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newListInputRulesMatcher(path)).
 					Return("\nChain INPUT (policy "+inputPolicy+")\nxx\n", nil)
-				runner.EXPECT().Run(setPolicyMatcher).
+				runner.EXPECT().Run(newSetPolicyMatcher(path, inputPolicy)).
 					Return("some output", errDummy)
 				return runner
 			},
@@ -136,11 +239,12 @@ func Test_testIptablesPath(t *testing.T) {
 		"success": {
 			buildRunner: func(ctrl *gomock.Controller) command.Runner {
 				runner := NewMockRunner(ctrl)
-				runner.EXPECT().Run(appendTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(deleteTestRuleMatcher).Return("", nil)
-				runner.EXPECT().Run(listInputRulesMatcher).
+				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
+				runner.EXPECT().Run(newListInputRulesMatcher(path)).
 					Return("\nChain INPUT (policy "+inputPolicy+")\nxx\n", nil)
-				runner.EXPECT().Run(setPolicyMatcher).Return("some output", nil)
+				runner.EXPECT().Run(newSetPolicyMatcher(path, inputPolicy)).
+					Return("some output", nil)
 				return runner
 			},
 			ok: true,

@@ -48,7 +48,7 @@ func (cm *cmdMatcher) String() string {
 	return fmt.Sprintf("path %s, argument regular expressions %v", cm.path, cm.argsRegex)
 }
 
-func newCmdMatcher(path string, argsRegex ...string) *cmdMatcher { //nolint:unparam
+func newCmdMatcher(path string, argsRegex ...string) *cmdMatcher {
 	argsRegexp := make([]*regexp.Regexp, len(argsRegex))
 	for i, argRegex := range argsRegex {
 		argsRegexp[i] = regexp.MustCompile(argRegex)

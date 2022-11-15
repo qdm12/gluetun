@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os/exec"
+	"sort"
 	"strings"
 
 	"github.com/qdm12/golibs/command"
@@ -20,7 +21,7 @@ var (
 
 func checkIptablesSupport(ctx context.Context, runner command.Runner,
 	iptablesPathsToTry ...string) (iptablesPath string, err error) {
-	var lastUnsupportedMessage string
+	iptablesPathToUnsupportedMessage := make(map[string]string, len(iptablesPathsToTry))
 	for _, pathToTest := range iptablesPathsToTry {
 		ok, unsupportedMessage, err := testIptablesPath(ctx, pathToTest, runner)
 		if err != nil {
@@ -29,17 +30,35 @@ func checkIptablesSupport(ctx context.Context, runner command.Runner,
 			iptablesPath = pathToTest
 			break
 		}
-
-		lastUnsupportedMessage = unsupportedMessage
+		iptablesPathToUnsupportedMessage[pathToTest] = unsupportedMessage
 	}
 
-	if iptablesPath == "" { // all iptables to try failed
-		return "", fmt.Errorf("%w: from %s: last error is: %s",
-			ErrIPTablesNotSupported, strings.Join(iptablesPathsToTry, ", "),
-			lastUnsupportedMessage)
+	if iptablesPath != "" {
+		// some paths may be unsupported but that does not matter
+		// since we found one working.
+		return iptablesPath, nil
 	}
 
-	return iptablesPath, nil
+	allArePermissionDenied := true
+	allUnsupportedMessages := make(sort.StringSlice, 0, len(iptablesPathToUnsupportedMessage))
+	for iptablesPath, unsupportedMessage := range iptablesPathToUnsupportedMessage {
+		if !isPermissionDenied(unsupportedMessage) {
+			allArePermissionDenied = false
+		}
+		unsupportedMessage = iptablesPath + ": " + unsupportedMessage
+		allUnsupportedMessages = append(allUnsupportedMessages, unsupportedMessage)
+	}
+
+	allUnsupportedMessages.Sort() // predictable order for tests
+
+	if allArePermissionDenied {
+		// If the error is related to a denied permission for all iptables path,
+		// return an error describing what to do from an end-user perspective.
+		return "", fmt.Errorf("%w: %s", ErrNetAdminMissing, strings.Join(allUnsupportedMessages, "; "))
+	}
+
+	return "", fmt.Errorf("%w: errors encountered are: %s",
+		ErrIPTablesNotSupported, strings.Join(allUnsupportedMessages, "; "))
 }
 
 func testIptablesPath(ctx context.Context, path string,
@@ -56,14 +75,6 @@ func testIptablesPath(ctx context.Context, path string,
 		"-A", "OUTPUT", "-o", testInterfaceName, "-j", "DROP")
 	output, err := runner.Run(cmd)
 	if err != nil {
-		if isPermissionDenied(output) {
-			// If the error is related to a denied permission,
-			// return an error describing what to do from an end-user
-			// perspective. This is a critical error and likely
-			// applies to all iptables.
-			criticalErr = fmt.Errorf("%w: %s", ErrNetAdminMissing, output)
-			return false, "", criticalErr
-		}
 		unsupportedMessage = fmt.Sprintf("%s (%s)", output, err)
 		return false, unsupportedMessage, nil
 	}
@@ -84,10 +95,6 @@ func testIptablesPath(ctx context.Context, path string,
 	cmd = exec.CommandContext(ctx, path, "-L", "INPUT")
 	output, err = runner.Run(cmd)
 	if err != nil {
-		if isPermissionDenied(output) {
-			criticalErr = fmt.Errorf("%w: %s", ErrNetAdminMissing, output)
-			return false, "", criticalErr
-		}
 		unsupportedMessage = fmt.Sprintf("%s (%s)", output, err)
 		return false, unsupportedMessage, nil
 	}
@@ -109,10 +116,6 @@ func testIptablesPath(ctx context.Context, path string,
 	cmd = exec.CommandContext(ctx, path, "--policy", "INPUT", inputPolicy)
 	output, err = runner.Run(cmd)
 	if err != nil {
-		if isPermissionDenied(output) {
-			criticalErr = fmt.Errorf("%w: %s", ErrNetAdminMissing, output)
-			return false, "", criticalErr
-		}
 		unsupportedMessage = fmt.Sprintf("%s (%s)", output, err)
 		return false, unsupportedMessage, nil
 	}
