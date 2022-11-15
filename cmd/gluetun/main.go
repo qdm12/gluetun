@@ -354,11 +354,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tickersGroupHandler := goshutdown.NewGroupHandler("tickers", defaultGroupOptions...)
 	otherGroupHandler := goshutdown.NewGroupHandler("other", defaultGroupOptions...)
 
-	pprofReady := make(chan struct{})
-	pprofHandler, pprofCtx, pprofDone := goshutdown.NewGoRoutineHandler("pprof server")
-	go pprofServer.Run(pprofCtx, pprofReady, pprofDone)
-	otherGroupHandler.Add(pprofHandler)
-	<-pprofReady
+	if *allSettings.Pprof.Enabled {
+		// TODO run in run loop so this can be patched at runtime
+		pprofReady := make(chan struct{})
+		pprofHandler, pprofCtx, pprofDone := goshutdown.NewGoRoutineHandler("pprof server")
+		go pprofServer.Run(pprofCtx, pprofReady, pprofDone)
+		otherGroupHandler.Add(pprofHandler)
+		<-pprofReady
+	}
 
 	portForwardLogger := logger.New(log.SetComponent("port forwarding"))
 	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
