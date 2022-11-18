@@ -91,12 +91,13 @@ func main() {
 		errorCh <- _main(ctx, buildInfo, args, logger, muxReader, tun, netLinker, cmder, cli)
 	}()
 
+	var err error
 	select {
 	case signal := <-signalCh:
 		fmt.Println("")
 		logger.Warn("Caught OS signal " + signal.String() + ", shutting down")
 		cancel()
-	case err := <-errorCh:
+	case err = <-errorCh:
 		close(errorCh)
 		if err == nil { // expected exit such as healthcheck
 			os.Exit(0)
@@ -108,22 +109,27 @@ func main() {
 	const shutdownGracePeriod = 5 * time.Second
 	timer := time.NewTimer(shutdownGracePeriod)
 	select {
-	case err := <-errorCh:
+	case shutdownErr := <-errorCh:
 		if !timer.Stop() {
 			<-timer.C
 		}
-		if err == nil {
-			logger.Info("Shutdown successful")
-			os.Exit(0)
+		if shutdownErr != nil {
+			logger.Warnf("Shutdown not completed gracefully: %s", shutdownErr)
+			os.Exit(1)
 		}
-		logger.Warnf("Shutdown not completed gracefully: %s", err)
+
+		logger.Info("Shutdown successful")
+		if err != nil {
+			os.Exit(1)
+		}
+		os.Exit(0)
 	case <-timer.C:
 		logger.Warn("Shutdown timed out")
+		os.Exit(1)
 	case signal := <-signalCh:
 		logger.Warn("Caught OS signal " + signal.String() + ", forcing shut down")
+		os.Exit(1)
 	}
-
-	os.Exit(1)
 }
 
 var (
