@@ -13,7 +13,7 @@ import (
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
-	const url = "https://support.fastestvpn.com/download/openvpn-tcp-udp-config-files"
+	const url = "http://support.fastestvpn.com/download/fastestvpn_ovpn"
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)
 	if err != nil {
 		return nil, err
