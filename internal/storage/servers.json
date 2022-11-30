@@ -23236,22 +23236,32 @@
   },
   "fastestvpn": {
     "version": 2,
-    "timestamp": 1666954885,
+    "timestamp": 1669836047,
     "servers": [
       {
         "vpn": "openvpn",
         "country": "australia",
-        "hostname": "au3.jumptoserver.com",
+        "hostname": "au-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "194.195.126.189"
+          "146.70.141.59"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "australia",
+        "hostname": "au-02.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.141.60"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "austria",
-        "hostname": "at.jumptoserver.com",
+        "hostname": "at-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23261,7 +23271,7 @@
       {
         "vpn": "openvpn",
         "country": "belgium",
-        "hostname": "bel1.jumptoserver.com",
+        "hostname": "bel-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23271,11 +23281,21 @@
       {
         "vpn": "openvpn",
         "country": "belgium",
-        "hostname": "bel2.jumptoserver.com",
+        "hostname": "bel-02.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
           "193.9.114.211"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "brazil",
+        "hostname": "br.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "185.192.124.101"
         ]
       },
       {
@@ -23290,18 +23310,8 @@
       },
       {
         "vpn": "openvpn",
-        "country": "brazil",
-        "hostname": "br3.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "185.192.124.113"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "bulgaria",
-        "hostname": "bg.jumptoserver.com",
+        "hostname": "bg-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23311,7 +23321,7 @@
       {
         "vpn": "openvpn",
         "country": "canada",
-        "hostname": "ca1.jumptoserver.com",
+        "hostname": "ca-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23321,7 +23331,7 @@
       {
         "vpn": "openvpn",
         "country": "canada-stream",
-        "hostname": "ca2.jumptoserver.com",
+        "hostname": "ca-stream.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23330,8 +23340,18 @@
       },
       {
         "vpn": "openvpn",
+        "country": "colombia",
+        "hostname": "clmb.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.136.11"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "czechia",
-        "hostname": "cz.jumptoserver.com",
+        "hostname": "cz-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23341,7 +23361,7 @@
       {
         "vpn": "openvpn",
         "country": "denmark",
-        "hostname": "dk.jumptoserver.com",
+        "hostname": "dk-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23360,22 +23380,42 @@
       },
       {
         "vpn": "openvpn",
+        "country": "finland",
+        "hostname": "fi2.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.143.129.237"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "france",
         "hostname": "fr.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "51.159.211.156"
+          "146.70.40.99"
         ]
       },
       {
         "vpn": "openvpn",
-        "country": "germany-dus",
-        "hostname": "de-dus1.jumptoserver.com",
+        "country": "france-via-uk",
+        "hostname": "uk-dbl.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "89.163.224.181"
+          "195.191.219.69"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "germany",
+        "hostname": "de-01.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.139.154"
         ]
       },
       {
@@ -23386,6 +23426,16 @@
         "udp": true,
         "ips": [
           "89.163.225.245"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "greece",
+        "hostname": "grc.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "45.92.33.82"
         ]
       },
       {
@@ -23401,6 +23451,16 @@
       {
         "vpn": "openvpn",
         "country": "hongkong",
+        "hostname": "hk2.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "84.17.37.194"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "hongkong",
         "hostname": "hk3.jumptoserver.com",
         "tcp": true,
         "udp": true,
@@ -23410,32 +23470,32 @@
       },
       {
         "vpn": "openvpn",
+        "country": "hungary",
+        "hostname": "hng.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "37.120.144.162"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "india",
+        "hostname": "in1.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "194.195.115.169"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "india",
         "hostname": "in2.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "103.73.191.110"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "india",
-        "hostname": "in3.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "45.79.124.213"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "india-stream",
-        "hostname": "in-stream.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "103.73.191.107"
+          "45.84.241.3"
         ]
       },
       {
@@ -23470,8 +23530,18 @@
       },
       {
         "vpn": "openvpn",
+        "country": "ireland",
+        "hostname": "ir.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.130.218"
+        ]
+      },
+      {
+        "vpn": "openvpn",
         "country": "italy",
-        "hostname": "it.jumptoserver.com",
+        "hostname": "it-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23480,22 +23550,42 @@
       },
       {
         "vpn": "openvpn",
-        "country": "japan",
-        "hostname": "jp2.jumptoserver.com",
+        "country": "italy-stream",
+        "hostname": "it-stream.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "103.75.118.135"
+          "95.174.64.123"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "japan",
+        "hostname": "jp-01.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.138.107"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "japan",
+        "hostname": "jp-02.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "146.70.138.108"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "japan-stream",
-        "hostname": "jp4.jumptoserver.com",
+        "hostname": "jp-03.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "103.75.118.141"
+          "146.70.138.110"
         ]
       },
       {
@@ -23506,6 +23596,16 @@
         "udp": true,
         "ips": [
           "92.223.105.18"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "malaysia",
+        "hostname": "my.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "103.75.116.180"
         ]
       },
       {
@@ -23550,18 +23650,8 @@
       },
       {
         "vpn": "openvpn",
-        "country": "netherlands",
-        "hostname": "nl3.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.107.95.124"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "norway",
-        "hostname": "nr.jumptoserver.com",
+        "hostname": "nr-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23571,11 +23661,11 @@
       {
         "vpn": "openvpn",
         "country": "poland",
-        "hostname": "pl2.jumptoserver.com",
+        "hostname": "pl.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "37.120.211.235"
+          "37.120.211.234"
         ]
       },
       {
@@ -23591,7 +23681,7 @@
       {
         "vpn": "openvpn",
         "country": "romania",
-        "hostname": "ro.jumptoserver.com",
+        "hostname": "ro-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23601,27 +23691,27 @@
       {
         "vpn": "openvpn",
         "country": "russia",
-        "hostname": "russia.jumptoserver.com",
+        "hostname": "ru3.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "185.126.239.246"
+          "185.126.239.245"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "russia",
-        "hostname": "russia2.jumptoserver.com",
+        "hostname": "ru4.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "185.126.239.225"
+          "185.126.239.252"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "serbia",
-        "hostname": "rs.jumptoserver.com",
+        "hostname": "rs-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23630,22 +23720,22 @@
       },
       {
         "vpn": "openvpn",
-        "country": "serbia",
-        "hostname": "rs2.jumptoserver.com",
+        "country": "singapore",
+        "hostname": "sg-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "37.46.115.247"
+          "91.207.173.99"
         ]
       },
       {
         "vpn": "openvpn",
-        "country": "singapore",
-        "hostname": "sg.jumptoserver.com",
+        "country": "slovakia",
+        "hostname": "svk.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "209.58.174.219"
+          "146.70.114.74"
         ]
       },
       {
@@ -23661,7 +23751,7 @@
       {
         "vpn": "openvpn",
         "country": "spain",
-        "hostname": "es.jumptoserver.com",
+        "hostname": "es-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23671,7 +23761,7 @@
       {
         "vpn": "openvpn",
         "country": "sweden",
-        "hostname": "se.jumptoserver.com",
+        "hostname": "se-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23680,22 +23770,12 @@
       },
       {
         "vpn": "openvpn",
-        "country": "sweden",
-        "hostname": "se2.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "146.70.16.235"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "switzerland",
-        "hostname": "ch2.jumptoserver.com",
+        "hostname": "ch-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "37.120.213.11"
+          "37.120.213.10"
         ]
       },
       {
@@ -23721,7 +23801,7 @@
       {
         "vpn": "openvpn",
         "country": "uk",
-        "hostname": "uk.jumptoserver.com",
+        "hostname": "uk-01.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23731,7 +23811,7 @@
       {
         "vpn": "openvpn",
         "country": "uk",
-        "hostname": "uk2.jumptoserver.com",
+        "hostname": "uk-02.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
@@ -23740,22 +23820,22 @@
       },
       {
         "vpn": "openvpn",
-        "country": "uk",
-        "hostname": "uk4.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "5.226.139.144"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "uk-stream",
-        "hostname": "uk-stream.jumptoserver.com",
+        "hostname": "uk-streaming.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
           "195.191.219.70"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "usa-ashburn",
+        "hostname": "us-ash.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "172.106.16.62"
         ]
       },
       {
@@ -23766,36 +23846,6 @@
         "udp": true,
         "ips": [
           "167.160.88.250"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "usa-charlotte",
-        "hostname": "us-cf.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "155.254.28.194"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "usa-chicago",
-        "hostname": "us-ch1.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.107.222.242"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "usa-chicago",
-        "hostname": "us-ch2.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "172.107.222.243"
         ]
       },
       {
@@ -23815,7 +23865,7 @@
         "tcp": true,
         "udp": true,
         "ips": [
-          "173.248.157.107"
+          "139.28.179.82"
         ]
       },
       {
@@ -23841,11 +23891,11 @@
       {
         "vpn": "openvpn",
         "country": "usa-miami",
-        "hostname": "usmia.jumptoserver.com",
+        "hostname": "us-mia.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "162.255.138.226"
+          "37.120.157.250"
         ]
       },
       {
@@ -23860,72 +23910,42 @@
       },
       {
         "vpn": "openvpn",
-        "country": "usa-phoenix",
-        "hostname": "us-ph1.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "23.83.184.71"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "usa-phoenix",
-        "hostname": "us-ph2.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "23.83.184.72"
-        ]
-      },
-      {
-        "vpn": "openvpn",
         "country": "usa-seattle",
         "hostname": "us-se1.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
-          "216.244.81.171"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "usa-st.louis",
-        "hostname": "us-st1.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "148.72.173.28"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "usa-st.louis",
-        "hostname": "us-st3.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "148.72.173.30"
-        ]
-      },
-      {
-        "vpn": "openvpn",
-        "country": "usa-st.louis",
-        "hostname": "us-st4.jumptoserver.com",
-        "tcp": true,
-        "udp": true,
-        "ips": [
-          "148.72.173.31"
+          "216.244.81.174"
         ]
       },
       {
         "vpn": "openvpn",
         "country": "usa-stream",
-        "hostname": "netflix1.jumptoserver.com",
+        "hostname": "us-stream.jumptoserver.com",
         "tcp": true,
         "udp": true,
         "ips": [
           "172.106.16.58"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "usa-stream",
+        "hostname": "us-stream2.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "172.106.1.67"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "usa-via-netherlands",
+        "hostname": "nl-dbl.jumptoserver.com",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "172.107.95.125"
         ]
       },
       {
