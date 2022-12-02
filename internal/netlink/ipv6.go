@@ -23,8 +23,9 @@ func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
 		// as IPv6 routes at container start, see:
 		// https://github.com/qdm12/gluetun/issues/1241#issuecomment-1333405949
 		for _, route := range routes {
-			if route.Dst.IP.To4() == nil ||
-				route.Src.To4() == nil { // Destination or source IP is IPv6
+			sourceIsIPv6 := route.Src != nil && route.Src.To4() == nil
+			destinationIsIPv6 := route.Dst != nil && route.Dst.IP.To4() == nil
+			if sourceIsIPv6 || destinationIsIPv6 {
 				return true, nil
 			}
 		}
