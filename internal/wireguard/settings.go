@@ -33,6 +33,9 @@ type Settings struct {
 	// IPv6 can bet set to true if IPv6 should be handled.
 	// It defaults to false if left unset.
 	IPv6 *bool
+	// Implementation is the implementation to use.
+	// It can be auto, kernelspace or userspace, and defaults to auto.
+	Implementation string
 }
 
 func (s *Settings) SetDefaults() {
@@ -55,23 +58,29 @@ func (s *Settings) SetDefaults() {
 		ipv6 := false // this should be injected from host
 		s.IPv6 = &ipv6
 	}
+
+	if s.Implementation == "" {
+		const defaultImplementation = "auto"
+		s.Implementation = defaultImplementation
+	}
 }
 
 var (
-	ErrInterfaceNameInvalid = errors.New("invalid interface name")
-	ErrPrivateKeyMissing    = errors.New("private key is missing")
-	ErrPrivateKeyInvalid    = errors.New("cannot parse private key")
-	ErrPublicKeyMissing     = errors.New("public key is missing")
-	ErrPublicKeyInvalid     = errors.New("cannot parse public key")
-	ErrPreSharedKeyInvalid  = errors.New("cannot parse pre-shared key")
-	ErrEndpointMissing      = errors.New("endpoint is missing")
-	ErrEndpointIPMissing    = errors.New("endpoint IP is missing")
-	ErrEndpointPortMissing  = errors.New("endpoint port is missing")
-	ErrAddressMissing       = errors.New("interface address is missing")
-	ErrAddressNil           = errors.New("interface address is nil")
-	ErrAddressIPMissing     = errors.New("interface address IP is missing")
-	ErrAddressMaskMissing   = errors.New("interface address mask is missing")
-	ErrFirewallMarkMissing  = errors.New("firewall mark is missing")
+	ErrInterfaceNameInvalid  = errors.New("invalid interface name")
+	ErrPrivateKeyMissing     = errors.New("private key is missing")
+	ErrPrivateKeyInvalid     = errors.New("cannot parse private key")
+	ErrPublicKeyMissing      = errors.New("public key is missing")
+	ErrPublicKeyInvalid      = errors.New("cannot parse public key")
+	ErrPreSharedKeyInvalid   = errors.New("cannot parse pre-shared key")
+	ErrEndpointMissing       = errors.New("endpoint is missing")
+	ErrEndpointIPMissing     = errors.New("endpoint IP is missing")
+	ErrEndpointPortMissing   = errors.New("endpoint port is missing")
+	ErrAddressMissing        = errors.New("interface address is missing")
+	ErrAddressNil            = errors.New("interface address is nil")
+	ErrAddressIPMissing      = errors.New("interface address IP is missing")
+	ErrAddressMaskMissing    = errors.New("interface address mask is missing")
+	ErrFirewallMarkMissing   = errors.New("firewall mark is missing")
+	ErrImplementationInvalid = errors.New("invalid implementation")
 )
 
 var interfaceNameRegexp = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -127,6 +136,12 @@ func (s *Settings) Check() (err error) {
 
 	if s.FirewallMark == 0 {
 		return ErrFirewallMarkMissing
+	}
+
+	switch s.Implementation {
+	case "auto", "kernelspace", "userspace":
+	default:
+		return fmt.Errorf("%w: %s", ErrImplementationInvalid, s.Implementation)
 	}
 
 	return nil
@@ -207,6 +222,10 @@ func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
 
 	if s.RulePriority != 0 {
 		lines = append(lines, fieldPrefix+"Rule priority: "+fmt.Sprint(s.RulePriority))
+	}
+
+	if s.Implementation != "auto" {
+		lines = append(lines, fieldPrefix+"Implementation: "+s.Implementation)
 	}
 
 	if len(s.Addresses) == 0 {

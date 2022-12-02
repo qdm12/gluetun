@@ -44,4 +44,5 @@ var (
 	ErrWireguardPrivateKeyNotSet       = errors.New("private key is not set")
 	ErrWireguardPublicKeyNotSet        = errors.New("public key is not set")
 	ErrWireguardPublicKeyNotValid      = errors.New("public key is not valid")
+	ErrWireguardImplementationNotValid = errors.New("implementation is not valid")
 )

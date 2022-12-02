@@ -31,14 +31,35 @@ var (
 	ErrIfaceUp           = errors.New("cannot set the interface to UP")
 	ErrRouteAdd          = errors.New("cannot add route for interface")
 	ErrDeviceWaited      = errors.New("device waited for")
+	ErrKernelSupport     = errors.New("kernel does not support Wireguard")
 )
 
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
 func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<- struct{}) {
-	doKernel, err := w.netlink.IsWireguardSupported()
+	kernelSupported, err := w.netlink.IsWireguardSupported()
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrDetectKernel, err)
 		return
+	}
+
+	setupFunction := setupUserSpace
+	switch w.settings.Implementation {
+	case "auto": //nolint:goconst
+		if !kernelSupported {
+			w.logger.Info("Using userspace implementation since Kernel support does not exist")
+			break
+		}
+		w.logger.Info("Using available kernelspace implementation")
+		setupFunction = setupKernelSpace
+	case "userspace":
+	case "kernelspace":
+		if !kernelSupported {
+			waitError <- fmt.Errorf("%w", ErrKernelSupport)
+			return
+		}
+		setupFunction = setupKernelSpace
+	default:
+		panic(fmt.Sprintf("unknown implementation %q", w.settings.Implementation))
 	}
 
 	client, err := wgctrl.New()
@@ -51,14 +72,6 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	closers.add("closing controller client", stepOne, client.Close)
 
 	defer closers.cleanup(w.logger)
-
-	setupFunction := setupUserSpace
-	if doKernel {
-		w.logger.Info("Using available kernelspace implementation")
-		setupFunction = setupKernelSpace
-	} else {
-		w.logger.Info("Using userspace implementation since Kernel support does not exist")
-	}
 
 	link, waitAndCleanup, err := setupFunction(ctx,
 		w.settings.InterfaceName, w.netlink, &closers, w.logger)

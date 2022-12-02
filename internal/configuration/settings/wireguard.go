@@ -27,6 +27,11 @@ type Wireguard struct {
 	// to create. It cannot be the empty string in the
 	// internal state.
 	Interface string
+	// Implementation is the Wireguard implementation to use.
+	// It can be "auto", "userspace" or "kernelspace".
+	// It defaults to "auto" and cannot be the empty string
+	// in the internal state.
+	Implementation string
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -85,15 +90,22 @@ func (w Wireguard) validate(vpnProvider string) (err error) {
 			ErrWireguardInterfaceNotValid, w.Interface, regexpInterfaceName)
 	}
 
+	validImplementations := []string{"auto", "userspace", "kernelspace"}
+	if !helpers.IsOneOf(w.Implementation, validImplementations...) {
+		return fmt.Errorf("%w: %s must be one of %s", ErrWireguardImplementationNotValid,
+			w.Implementation, helpers.ChoicesOrString(validImplementations))
+	}
+
 	return nil
 }
 
 func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
-		PrivateKey:   helpers.CopyStringPtr(w.PrivateKey),
-		PreSharedKey: helpers.CopyStringPtr(w.PreSharedKey),
-		Addresses:    helpers.CopyIPNetSlice(w.Addresses),
-		Interface:    w.Interface,
+		PrivateKey:     helpers.CopyStringPtr(w.PrivateKey),
+		PreSharedKey:   helpers.CopyStringPtr(w.PreSharedKey),
+		Addresses:      helpers.CopyIPNetSlice(w.Addresses),
+		Interface:      w.Interface,
+		Implementation: w.Implementation,
 	}
 }
 
@@ -102,6 +114,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 	w.PreSharedKey = helpers.MergeWithStringPtr(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.MergeIPNetsSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
+	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
 }
 
 func (w *Wireguard) overrideWith(other Wireguard) {
@@ -109,12 +122,14 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PreSharedKey = helpers.OverrideWithStringPtr(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.OverrideWithIPNetsSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
+	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
 }
 
 func (w *Wireguard) setDefaults() {
 	w.PrivateKey = helpers.DefaultStringPtr(w.PrivateKey, "")
 	w.PreSharedKey = helpers.DefaultStringPtr(w.PreSharedKey, "")
 	w.Interface = helpers.DefaultString(w.Interface, "wg0")
+	w.Implementation = helpers.DefaultString(w.Implementation, "auto")
 }
 
 func (w Wireguard) String() string {
@@ -140,6 +155,10 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	}
 
 	node.Appendf("Network interface: %s", w.Interface)
+
+	if w.Implementation != "auto" {
+		node.Appendf("Implementation: %s", w.Implementation)
+	}
 
 	return node
 }

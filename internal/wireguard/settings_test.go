@@ -20,9 +20,10 @@ func Test_Settings_SetDefaults(t *testing.T) {
 	}{
 		"empty settings": {
 			expected: Settings{
-				InterfaceName: "wg0",
-				FirewallMark:  51820,
-				IPv6:          ptr(false),
+				InterfaceName:  "wg0",
+				FirewallMark:   51820,
+				IPv6:           ptr(false),
+				Implementation: "auto",
 			},
 		},
 		"default endpoint port": {
@@ -38,7 +39,8 @@ func Test_Settings_SetDefaults(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51820,
 				},
-				IPv6: ptr(false),
+				IPv6:           ptr(false),
+				Implementation: "auto",
 			},
 		},
 		"not empty settings": {
@@ -49,7 +51,8 @@ func Test_Settings_SetDefaults(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 9999,
 				},
-				IPv6: ptr(true),
+				IPv6:           ptr(true),
+				Implementation: "userspace",
 			},
 			expected: Settings{
 				InterfaceName: "wg1",
@@ -58,7 +61,8 @@ func Test_Settings_SetDefaults(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 9999,
 				},
-				IPv6: ptr(true),
+				IPv6:           ptr(true),
+				Implementation: "userspace",
 			},
 		},
 	}
@@ -225,6 +229,21 @@ func Test_Settings_Check(t *testing.T) {
 			},
 			err: ErrFirewallMarkMissing,
 		},
+		"invalid implementation": {
+			settings: Settings{
+				InterfaceName: "wg0",
+				PrivateKey:    validKey1,
+				PublicKey:     validKey2,
+				Endpoint: &net.UDPAddr{
+					IP:   net.IPv4(1, 2, 3, 4),
+					Port: 51820,
+				},
+				Addresses:      []*net.IPNet{{IP: net.IPv4(1, 2, 3, 4), Mask: net.CIDRMask(24, 32)}},
+				FirewallMark:   999,
+				Implementation: "x",
+			},
+			err: errors.New("invalid implementation: x"),
+		},
 		"all valid": {
 			settings: Settings{
 				InterfaceName: "wg0",
@@ -234,8 +253,9 @@ func Test_Settings_Check(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51820,
 				},
-				Addresses:    []*net.IPNet{{IP: net.IPv4(1, 2, 3, 4), Mask: net.CIDRMask(24, 32)}},
-				FirewallMark: 999,
+				Addresses:      []*net.IPNet{{IP: net.IPv4(1, 2, 3, 4), Mask: net.CIDRMask(24, 32)}},
+				FirewallMark:   999,
+				Implementation: "userspace",
 			},
 		},
 	}
@@ -287,14 +307,16 @@ func Test_Settings_String(t *testing.T) {
 	t.Parallel()
 
 	settings := Settings{
-		InterfaceName: "wg0",
-		IPv6:          ptr(true),
+		InterfaceName:  "wg0",
+		IPv6:           ptr(true),
+		Implementation: "x",
 	}
 	const expected = `├── Interface name: wg0
 ├── Private key: not set
 ├── Pre shared key: not set
 ├── Endpoint: not set
 ├── IPv6: enabled
+├── Implementation: x
 └── Addresses: not set`
 	s := settings.String()
 	assert.Equal(t, expected, s)
@@ -318,6 +340,7 @@ func Test_Settings_Lines(t *testing.T) {
 				"├── Pre shared key: not set",
 				"├── Endpoint: not set",
 				"├── IPv6: disabled",
+				"├── Implementation: ",
 				"└── Addresses: not set",
 			},
 		},
@@ -337,7 +360,8 @@ func Test_Settings_Lines(t *testing.T) {
 					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
 					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
 				},
-				IPv6: ptr(true),
+				IPv6:           ptr(true),
+				Implementation: "userspace",
 			},
 			lines: []string{
 				"├── Interface name: wg0",
@@ -348,6 +372,7 @@ func Test_Settings_Lines(t *testing.T) {
 				"├── IPv6: enabled",
 				"├── Firewall mark: 999",
 				"├── Rule priority: 888",
+				"├── Implementation: userspace",
 				"└── Addresses:",
 				"    ├── 1.1.1.1/24",
 				"    └── 2.2.2.2/32",
@@ -373,6 +398,7 @@ func Test_Settings_Lines(t *testing.T) {
 				"- Pre shared key: not set",
 				"- Endpoint: not set",
 				"- IPv6: disabled",
+				"- Implementation: ",
 				"* Addresses:",
 				"  - 1.1.1.1/24",
 				"  * 2.2.2.2/32",
