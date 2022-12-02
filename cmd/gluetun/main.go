@@ -77,7 +77,8 @@ func main() {
 
 	args := os.Args
 	tun := tun.New()
-	netLinker := netlink.New()
+	netLinkDebugLogger := logger.New(log.SetComponent("netlink"))
+	netLinker := netlink.New(netLinkDebugLogger)
 	cli := cli.New()
 	cmder := command.NewCmder()
 

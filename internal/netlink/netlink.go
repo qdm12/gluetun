@@ -1,7 +1,11 @@
 package netlink
 
-type NetLink struct{}
+type NetLink struct {
+	debugLogger DebugLogger
+}
 
-func New() *NetLink {
-	return &NetLink{}
+func New(debugLogger DebugLogger) *NetLink {
+	return &NetLink{
+		debugLogger: debugLogger,
+	}
 }
