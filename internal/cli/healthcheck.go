@@ -16,6 +16,8 @@ func (c *CLI) HealthCheck(ctx context.Context, source Source, warner Warner) err
 		return err
 	}
 
+	config.SetDefaults()
+
 	err = config.Validate()
 	if err != nil {
 		return err
