@@ -301,12 +301,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
 
-	if ipv6Supported {
-		logger.Info("IPv6 is supported")
-	} else {
-		logger.Info("IPv6 is not supported")
-	}
-
 	if err := routingConf.Setup(); err != nil {
 		if strings.Contains(err.Error(), "operation not permitted") {
 			logger.Warn("💡 Tip: Are you passing NET_ADMIN capability to gluetun?")

@@ -12,6 +12,7 @@ func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
 		return false, fmt.Errorf("listing links: %w", err)
 	}
 
+	var totalRoutes uint
 	for _, link := range links {
 		routes, err := n.RouteList(link, netlink.FAMILY_V6)
 		if err != nil {
@@ -26,10 +27,14 @@ func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
 			sourceIsIPv6 := route.Src != nil && route.Src.To4() == nil
 			destinationIsIPv6 := route.Dst != nil && route.Dst.IP.To4() == nil
 			if sourceIsIPv6 || destinationIsIPv6 {
+				n.debugLogger.Debugf("IPv6 is supported by link %s", link.Attrs().Name)
 				return true, nil
 			}
+			totalRoutes++
 		}
 	}
 
+	n.debugLogger.Debugf("IPv6 is not supported after searching %d links and %d routes",
+		len(links), totalRoutes)
 	return false, nil
 }
