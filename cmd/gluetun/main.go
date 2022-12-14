@@ -232,7 +232,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	err = allSettings.Validate(storage)
+	ipv6Supported, err := netLinker.IsIPv6Supported()
+	if err != nil {
+		return fmt.Errorf("checking for IPv6 support: %w", err)
+	}
+
+	err = allSettings.Validate(storage, ipv6Supported)
 	if err != nil {
 		return err
 	}
@@ -294,11 +299,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	if err := os.Chown("/etc/unbound", puid, pgid); err != nil {
 		return err
-	}
-
-	ipv6Supported, err := netLinker.IsIPv6Supported()
-	if err != nil {
-		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
 
 	if err := routingConf.Setup(); err != nil {
@@ -451,7 +451,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.New(log.SetComponent("http server")),
-		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper, storage)
+		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper,
+		storage, ipv6Supported)
 	if err != nil {
 		return fmt.Errorf("cannot setup control server: %w", err)
 	}

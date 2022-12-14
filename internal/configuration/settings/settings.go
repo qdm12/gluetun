@@ -31,7 +31,7 @@ type Storage interface {
 // Validate validates all the settings and returns an error
 // if one of them is not valid.
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (s *Settings) Validate(storage Storage) (err error) {
+func (s *Settings) Validate(storage Storage, ipv6Supported bool) (err error) {
 	nameToValidation := map[string]func() error{
 		"control server":  s.ControlServer.validate,
 		"dns":             s.DNS.validate,
@@ -46,7 +46,7 @@ func (s *Settings) Validate(storage Storage) (err error) {
 		"version":         s.Version.validate,
 		// Pprof validation done in pprof constructor
 		"VPN": func() error {
-			return s.VPN.Validate(storage)
+			return s.VPN.Validate(storage, ipv6Supported)
 		},
 	}
 
@@ -95,7 +95,7 @@ func (s *Settings) MergeWith(other Settings) {
 }
 
 func (s *Settings) OverrideWith(other Settings,
-	storage Storage) (err error) {
+	storage Storage, ipv6Supported bool) (err error) {
 	patchedSettings := s.copy()
 	patchedSettings.ControlServer.overrideWith(other.ControlServer)
 	patchedSettings.DNS.overrideWith(other.DNS)
@@ -110,7 +110,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Version.overrideWith(other.Version)
 	patchedSettings.VPN.OverrideWith(other.VPN)
 	patchedSettings.Pprof.OverrideWith(other.Pprof)
-	err = patchedSettings.Validate(storage)
+	err = patchedSettings.Validate(storage, ipv6Supported)
 	if err != nil {
 		return err
 	}

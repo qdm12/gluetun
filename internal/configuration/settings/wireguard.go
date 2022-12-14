@@ -38,7 +38,7 @@ var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 
 // Validate validates Wireguard settings.
 // It should only be ran if the VPN type chosen is Wireguard.
-func (w Wireguard) validate(vpnProvider string) (err error) {
+func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) {
 	if !helpers.IsOneOf(vpnProvider,
 		providers.Custom,
 		providers.Ivpn,
@@ -81,6 +81,12 @@ func (w Wireguard) validate(vpnProvider string) (err error) {
 		if ipNet.IP == nil || ipNet.Mask == nil {
 			return fmt.Errorf("%w: for address at index %d: %s",
 				ErrWireguardInterfaceAddressNotSet, i, ipNet.String())
+		}
+
+		ipv6Net := ipNet.IP.To4() == nil
+		if ipv6Net && !ipv6Supported {
+			return fmt.Errorf("%w: address %s",
+				ErrWireguardInterfaceAddressIPv6, ipNet)
 		}
 	}
 

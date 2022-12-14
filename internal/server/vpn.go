@@ -10,20 +10,22 @@ import (
 )
 
 func newVPNHandler(ctx context.Context, looper VPNLooper,
-	storage Storage, w warner) http.Handler {
+	storage Storage, ipv6Supported bool, w warner) http.Handler {
 	return &vpnHandler{
-		ctx:     ctx,
-		looper:  looper,
-		storage: storage,
-		warner:  w,
+		ctx:           ctx,
+		looper:        looper,
+		storage:       storage,
+		ipv6Supported: ipv6Supported,
+		warner:        w,
 	}
 }
 
 type vpnHandler struct {
-	ctx     context.Context //nolint:containedctx
-	looper  VPNLooper
-	storage Storage
-	warner  warner
+	ctx           context.Context //nolint:containedctx
+	looper        VPNLooper
+	storage       Storage
+	ipv6Supported bool
+	warner        warner
 }
 
 func (h *vpnHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +116,7 @@ func (h *vpnHandler) patchSettings(w http.ResponseWriter, r *http.Request) {
 
 	updatedSettings := h.looper.GetSettings() // already copied
 	updatedSettings.OverrideWith(overrideSettings)
-	err = updatedSettings.Validate(h.storage)
+	err = updatedSettings.Validate(h.storage, h.ipv6Supported)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

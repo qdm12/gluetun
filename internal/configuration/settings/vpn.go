@@ -20,7 +20,7 @@ type VPN struct {
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (v *VPN) Validate(storage Storage) (err error) {
+func (v *VPN) Validate(storage Storage, ipv6Supported bool) (err error) {
 	// Validate Type
 	validVPNTypes := []string{vpn.OpenVPN, vpn.Wireguard}
 	if !helpers.IsOneOf(v.Type, validVPNTypes...) {
@@ -39,7 +39,7 @@ func (v *VPN) Validate(storage Storage) (err error) {
 			return fmt.Errorf("OpenVPN settings: %w", err)
 		}
 	} else {
-		err := v.Wireguard.validate(*v.Provider.Name)
+		err := v.Wireguard.validate(*v.Provider.Name, ipv6Supported)
 		if err != nil {
 			return fmt.Errorf("Wireguard settings: %w", err)
 		}

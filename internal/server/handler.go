@@ -16,10 +16,11 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	updaterLooper UpdaterLooper,
 	publicIPLooper PublicIPLoop,
 	storage Storage,
+	ipv6Supported bool,
 ) http.Handler {
 	handler := &handler{}
 
-	vpn := newVPNHandler(ctx, vpnLooper, storage, logger)
+	vpn := newVPNHandler(ctx, vpnLooper, storage, ipv6Supported, logger)
 	openvpn := newOpenvpnHandler(ctx, vpnLooper, pfGetter, logger)
 	dns := newDNSHandler(ctx, unboundLooper, logger)
 	updater := newUpdaterHandler(ctx, updaterLooper, logger)

@@ -51,13 +51,13 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, source Source,
 		return err
 	}
 
-	if err = allSettings.Validate(storage); err != nil {
-		return err
-	}
-
 	ipv6Supported, err := ipv6Checker.IsIPv6Supported()
 	if err != nil {
 		return fmt.Errorf("checking for IPv6 support: %w", err)
+	}
+
+	if err = allSettings.Validate(storage, ipv6Supported); err != nil {
+		return fmt.Errorf("validating settings: %w", err)
 	}
 
 	// Unused by this CLI command
