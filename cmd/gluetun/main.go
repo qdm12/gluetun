@@ -190,6 +190,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	// - firewall Debug and Enabled are booleans parsed from source
 
 	logger.Patch(log.SetLevel(*allSettings.Log.Level))
+	netLinker.PatchLoggerLevel(*allSettings.Log.Level)
 
 	routingLogger := logger.New(log.SetComponent("routing"))
 	if *allSettings.Firewall.Debug { // To remove in v4
@@ -520,6 +521,7 @@ type netLinker interface {
 	Linker
 	IsWireguardSupported() (ok bool, err error)
 	IsIPv6Supported() (ok bool, err error)
+	PatchLoggerLevel(level log.Level)
 }
 
 type Addresser interface {
