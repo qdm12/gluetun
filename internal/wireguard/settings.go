@@ -23,6 +23,7 @@ type Settings struct {
 	// Wireguard server endpoint to connect to.
 	Endpoint *net.UDPAddr
 	// Addresses assigned to the client.
+	// Note IPv6 addresses are ignored if IPv6 is not supported.
 	Addresses []*net.IPNet
 	// FirewallMark to be used in routing tables and IP rules.
 	// It defaults to 51820 if left to 0.

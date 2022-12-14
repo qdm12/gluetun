@@ -25,7 +25,12 @@ func BuildWireguardSettings(connection models.Connection,
 	copy(settings.Endpoint.IP, connection.IP)
 	settings.Endpoint.Port = int(connection.Port)
 
+	settings.Addresses = make([]*net.IPNet, 0, len(userSettings.Addresses))
 	for _, address := range userSettings.Addresses {
+		ipv6Address := address.IP.To4() == nil
+		if !ipv6Supported && ipv6Address {
+			continue
+		}
 		addressCopy := new(net.IPNet)
 		addressCopy.IP = make(net.IP, len(address.IP))
 		copy(addressCopy.IP, address.IP)

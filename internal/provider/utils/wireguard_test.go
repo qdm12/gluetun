@@ -32,11 +32,11 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				PreSharedKey: stringPtr("pre-shared"),
 				Addresses: []net.IPNet{
 					{IP: net.IPv4(1, 1, 1, 1), Mask: net.IPv4Mask(255, 255, 255, 255)},
-					{IP: net.IPv4(2, 2, 2, 2), Mask: net.IPv4Mask(255, 255, 255, 255)},
+					{IP: net.IPv6zero, Mask: net.IPv4Mask(255, 255, 255, 255)},
 				},
 				Interface: "wg1",
 			},
-			ipv6Supported: true,
+			ipv6Supported: false,
 			settings: wireguard.Settings{
 				InterfaceName: "wg1",
 				PrivateKey:    "private",
@@ -48,10 +48,9 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				},
 				Addresses: []*net.IPNet{
 					{IP: net.IPv4(1, 1, 1, 1), Mask: net.IPv4Mask(255, 255, 255, 255)},
-					{IP: net.IPv4(2, 2, 2, 2), Mask: net.IPv4Mask(255, 255, 255, 255)},
 				},
 				RulePriority: 101,
-				IPv6:         boolPtr(true),
+				IPv6:         boolPtr(false),
 			},
 		},
 	}
