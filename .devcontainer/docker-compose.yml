@@ -12,10 +12,10 @@ services:
       # Docker configuration
       - ~/.docker:/root/.docker
       # SSH directory for Linux, OSX and WSL
-      - ~/.ssh:/root/.ssh
-      # For Windows without WSL, a copy will be made
-      # from /tmp/.ssh to ~/.ssh to fix permissions
-      #- ~/.ssh:/tmp/.ssh:ro
+      # On Linux and OSX, a symlink /mnt/ssh <-> ~/.ssh is
+      # created in the container. On Windows, files are copied
+      # from /mnt/ssh to ~/.ssh to fix permissions.
+      - ~/.ssh:/mnt/ssh
       # Shell history persistence
       - ~/.zsh_history:/root/.zsh_history
       # Git config
