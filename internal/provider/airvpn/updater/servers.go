@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"sort"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -42,10 +43,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			continue
 		}
 
+		city := strings.ReplaceAll(apiServer.Location, ", ", "")
+		city = strings.ReplaceAll(city, ",", "")
 		baseServer := models.Server{
 			ServerName: apiServer.PublicName,
 			Country:    apiServer.CountryName,
-			City:       apiServer.Location,
+			City:       city,
 			Region:     apiServer.Continent,
 		}
 
