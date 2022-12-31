@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/vishvananda/netlink"
+	"golang.zx2c4.com/wireguard/device"
+	"golang.zx2c4.com/wireguard/tun"
 )
 
 //nolint:revive
@@ -14,14 +16,26 @@ const (
 )
 
 func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
+	const wireguardLinkName = "test"
+	device, err := tun.CreateTUN(wireguardLinkName, device.DefaultMTU)
+	if err != nil {
+		return false, fmt.Errorf("creating tun device: %w", err)
+	}
+
+	err = device.Close()
+	if err != nil {
+		return false, fmt.Errorf("closing tun device: %w", err)
+	}
+
 	families, err := netlink.GenlFamilyList()
 	if err != nil {
-		return false, fmt.Errorf("cannot list gen 1 families: %w", err)
+		return false, fmt.Errorf("listing genl families: %w", err)
 	}
 	for _, family := range families {
 		if family.Name == "wireguard" {
 			return true, nil
 		}
 	}
+
 	return false, nil
 }
