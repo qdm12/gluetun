@@ -17,6 +17,17 @@ const (
 )
 
 func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
+	ok, err = isWireguardFamilyPresent()
+	if err != nil {
+		return false, err
+	}
+	if ok {
+		return true, nil
+	}
+
+	// Some host systems need the tun device to be created
+	// after a system boot in order to detect the wireguard family.
+	// See https://github.com/qdm12/gluetun/issues/984
 	wgInterfaceName := randomInterfaceName()
 	device, err := tun.CreateTUN(wgInterfaceName, device.DefaultMTU)
 	if err != nil {
@@ -28,10 +39,15 @@ func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
 		return false, fmt.Errorf("closing tun device: %w", err)
 	}
 
+	return isWireguardFamilyPresent()
+}
+
+func isWireguardFamilyPresent() (found bool, err error) {
 	families, err := netlink.GenlFamilyList()
 	if err != nil {
 		return false, fmt.Errorf("listing genl families: %w", err)
 	}
+
 	for _, family := range families {
 		if family.Name == "wireguard" {
 			return true, nil
