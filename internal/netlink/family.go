@@ -2,6 +2,7 @@ package netlink
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/vishvananda/netlink"
 	"golang.zx2c4.com/wireguard/device"
@@ -16,8 +17,8 @@ const (
 )
 
 func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
-	const wireguardLinkName = "test"
-	device, err := tun.CreateTUN(wireguardLinkName, device.DefaultMTU)
+	wgInterfaceName := randomInterfaceName()
+	device, err := tun.CreateTUN(wgInterfaceName, device.DefaultMTU)
 	if err != nil {
 		return false, fmt.Errorf("creating tun device: %w", err)
 	}
@@ -38,4 +39,15 @@ func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
 	}
 
 	return false, nil
+}
+
+func randomInterfaceName() (interfaceName string) {
+	const size = 15
+	letterRunes := []rune("abcdefghijklmnopqrstuvwxyz0123456789")
+	b := make([]rune, size)
+	for i := range b {
+		letterIndex := rand.Intn(len(letterRunes)) //nolint:gosec
+		b[i] = letterRunes[letterIndex]
+	}
+	return string(b)
 }
