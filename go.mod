@@ -19,7 +19,7 @@ require (
 	github.com/vishvananda/netlink v1.1.1-0.20211129163951-9ada19101fc5
 	golang.org/x/net v0.0.0-20220418201149-a630d4f3e7a2
 	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f
-	golang.org/x/text v0.5.0
+	golang.org/x/text v0.6.0
 	golang.zx2c4.com/wireguard v0.0.0-20220703234212-c31a7b1ab478
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20220504211119-3d4a969bb56b
 	inet.af/netaddr v0.0.0-20210718074554-06ca8145d722
