@@ -95,10 +95,13 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # Wireguard
     WIREGUARD_CONF_SECRETFILE=/run/secrets/wg0.conf \
     WIREGUARD_PRIVATE_KEY= \
+    WIREGUARD_PRIVATE_KEY_SECRETFILE=/run/secrets/wireguard_private_key \
     WIREGUARD_PRESHARED_KEY= \
+    WIREGUARD_PRESHARED_KEY_SECRETFILE=/run/secrets/wireguard_preshared_key \
     WIREGUARD_PUBLIC_KEY= \
     WIREGUARD_ALLOWED_IPS= \
     WIREGUARD_ADDRESSES= \
+    WIREGUARD_ADDRESSES_SECRETFILE=/run/secrets/wireguard_addresses \
     WIREGUARD_MTU=1400 \
     WIREGUARD_IMPLEMENTATION=auto \
     # VPN server filtering

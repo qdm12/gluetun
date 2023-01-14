@@ -2,6 +2,8 @@ package secrets
 
 import (
 	"fmt"
+	"net/netip"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
@@ -34,4 +36,23 @@ func (s *Source) readPEMSecretFile(secretPathEnvKey, defaultSecretPath string) (
 	}
 
 	return &base64Data, nil
+}
+
+func parseAddresses(addressesCSV string) (addresses []netip.Prefix, err error) {
+	if addressesCSV == "" {
+		return nil, nil
+	}
+
+	addressStrings := strings.Split(addressesCSV, ",")
+	addresses = make([]netip.Prefix, len(addressStrings))
+	for i, addressString := range addressStrings {
+		addressString = strings.TrimSpace(addressString)
+		addresses[i], err = netip.ParsePrefix(addressString)
+		if err != nil {
+			return nil, fmt.Errorf("parsing address %d of %d: %w",
+				i+1, len(addressStrings), err)
+		}
+	}
+
+	return addresses, nil
 }
