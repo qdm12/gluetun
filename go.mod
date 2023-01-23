@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/breml/rootcerts v0.2.8
-	github.com/fatih/color v1.13.0
+	github.com/fatih/color v1.14.0
 	github.com/golang/mock v1.6.0
 	github.com/qdm12/dns v1.11.0
 	github.com/qdm12/golibs v0.0.0-20210822203818-5c568b0777b6
@@ -18,7 +18,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/vishvananda/netlink v1.1.1-0.20211129163951-9ada19101fc5
 	golang.org/x/net v0.0.0-20220418201149-a630d4f3e7a2
-	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f
+	golang.org/x/sys v0.3.0
 	golang.org/x/text v0.5.0
 	golang.zx2c4.com/wireguard v0.0.0-20220703234212-c31a7b1ab478
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20220504211119-3d4a969bb56b
@@ -29,8 +29,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/josharian/native v1.0.0 // indirect
-	github.com/mattn/go-colorable v0.1.9 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mdlayher/genetlink v1.2.0 // indirect
 	github.com/mdlayher/netlink v1.6.0 // indirect
 	github.com/mdlayher/socket v0.2.3 // indirect
