@@ -66,7 +66,7 @@ func (u *Updater) copy() (copied Updater) {
 		Period:     helpers.CopyDurationPtr(u.Period),
 		DNSAddress: u.DNSAddress,
 		MinRatio:   u.MinRatio,
-		Providers:  helpers.CopyStringSlice(u.Providers),
+		Providers:  helpers.CopySlice(u.Providers),
 	}
 }
 
@@ -76,7 +76,7 @@ func (u *Updater) mergeWith(other Updater) {
 	u.Period = helpers.MergeWithDurationPtr(u.Period, other.Period)
 	u.DNSAddress = helpers.MergeWithString(u.DNSAddress, other.DNSAddress)
 	u.MinRatio = helpers.MergeWithFloat64(u.MinRatio, other.MinRatio)
-	u.Providers = helpers.MergeStringSlices(u.Providers, other.Providers)
+	u.Providers = helpers.MergeSlices(u.Providers, other.Providers)
 }
 
 // overrideWith overrides fields of the receiver
@@ -86,7 +86,7 @@ func (u *Updater) overrideWith(other Updater) {
 	u.Period = helpers.OverrideWithDurationPtr(u.Period, other.Period)
 	u.DNSAddress = helpers.OverrideWithString(u.DNSAddress, other.DNSAddress)
 	u.MinRatio = helpers.OverrideWithFloat64(u.MinRatio, other.MinRatio)
-	u.Providers = helpers.OverrideWithStringSlice(u.Providers, other.Providers)
+	u.Providers = helpers.OverrideWithSlice(u.Providers, other.Providers)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {

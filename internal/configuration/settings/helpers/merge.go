@@ -142,13 +142,13 @@ func MergeWithHTTPHandler(existing, other http.Handler) (result http.Handler) {
 	return other
 }
 
-func MergeStringSlices(a, b []string) (result []string) {
+func MergeSlices[K string | uint16 | netip.Addr | netip.Prefix](a, b []K) (result []K) {
 	if a == nil && b == nil {
 		return nil
 	}
 
-	seen := make(map[string]struct{}, len(a)+len(b))
-	result = make([]string, 0, len(a)+len(b))
+	seen := make(map[K]struct{}, len(a)+len(b))
+	result = make([]K, 0, len(a)+len(b))
 	for _, s := range a {
 		if _, ok := seen[s]; ok {
 			continue // duplicate
@@ -162,82 +162,6 @@ func MergeStringSlices(a, b []string) (result []string) {
 		}
 		result = append(result, s)
 		seen[s] = struct{}{}
-	}
-	return result
-}
-
-func MergeUint16Slices(a, b []uint16) (result []uint16) {
-	if a == nil && b == nil {
-		return nil
-	}
-
-	seen := make(map[uint16]struct{}, len(a)+len(b))
-	result = make([]uint16, 0, len(a)+len(b))
-	for _, n := range a {
-		if _, ok := seen[n]; ok {
-			continue // duplicate
-		}
-		result = append(result, n)
-		seen[n] = struct{}{}
-	}
-	for _, n := range b {
-		if _, ok := seen[n]; ok {
-			continue // duplicate
-		}
-		result = append(result, n)
-		seen[n] = struct{}{}
-	}
-	return result
-}
-
-func MergeNetipAddressesSlices(a, b []netip.Addr) (result []netip.Addr) {
-	if a == nil && b == nil {
-		return nil
-	}
-
-	seen := make(map[string]struct{}, len(a)+len(b))
-	result = make([]netip.Addr, 0, len(a)+len(b))
-	for _, ip := range a {
-		key := ip.String()
-		if _, ok := seen[key]; ok {
-			continue // duplicate
-		}
-		result = append(result, ip)
-		seen[key] = struct{}{}
-	}
-	for _, ip := range b {
-		key := ip.String()
-		if _, ok := seen[key]; ok {
-			continue // duplicate
-		}
-		result = append(result, ip)
-		seen[key] = struct{}{}
-	}
-	return result
-}
-
-func MergeNetipPrefixesSlices(a, b []netip.Prefix) (result []netip.Prefix) {
-	if a == nil && b == nil {
-		return nil
-	}
-
-	seen := make(map[string]struct{}, len(a)+len(b))
-	result = make([]netip.Prefix, 0, len(a)+len(b))
-	for _, ipPrefix := range a {
-		key := ipPrefix.String()
-		if _, ok := seen[key]; ok {
-			continue // duplicate
-		}
-		result = append(result, ipPrefix)
-		seen[key] = struct{}{}
-	}
-	for _, ipPrefix := range b {
-		key := ipPrefix.String()
-		if _, ok := seen[key]; ok {
-			continue // duplicate
-		}
-		result = append(result, ipPrefix)
-		seen[key] = struct{}{}
 	}
 	return result
 }

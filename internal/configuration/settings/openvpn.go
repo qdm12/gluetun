@@ -247,7 +247,7 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 		User:          helpers.CopyStringPtr(o.User),
 		Password:      helpers.CopyStringPtr(o.Password),
 		ConfFile:      helpers.CopyStringPtr(o.ConfFile),
-		Ciphers:       helpers.CopyStringSlice(o.Ciphers),
+		Ciphers:       helpers.CopySlice(o.Ciphers),
 		Auth:          helpers.CopyStringPtr(o.Auth),
 		Cert:          helpers.CopyStringPtr(o.Cert),
 		Key:           helpers.CopyStringPtr(o.Key),
@@ -258,7 +258,7 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 		Interface:     o.Interface,
 		ProcessUser:   o.ProcessUser,
 		Verbosity:     helpers.CopyIntPtr(o.Verbosity),
-		Flags:         helpers.CopyStringSlice(o.Flags),
+		Flags:         helpers.CopySlice(o.Flags),
 	}
 }
 
@@ -269,7 +269,7 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.User = helpers.MergeWithStringPtr(o.User, other.User)
 	o.Password = helpers.MergeWithStringPtr(o.Password, other.Password)
 	o.ConfFile = helpers.MergeWithStringPtr(o.ConfFile, other.ConfFile)
-	o.Ciphers = helpers.MergeStringSlices(o.Ciphers, other.Ciphers)
+	o.Ciphers = helpers.MergeSlices(o.Ciphers, other.Ciphers)
 	o.Auth = helpers.MergeWithStringPtr(o.Auth, other.Auth)
 	o.Cert = helpers.MergeWithStringPtr(o.Cert, other.Cert)
 	o.Key = helpers.MergeWithStringPtr(o.Key, other.Key)
@@ -280,7 +280,7 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.Interface = helpers.MergeWithString(o.Interface, other.Interface)
 	o.ProcessUser = helpers.MergeWithString(o.ProcessUser, other.ProcessUser)
 	o.Verbosity = helpers.MergeWithIntPtr(o.Verbosity, other.Verbosity)
-	o.Flags = helpers.MergeStringSlices(o.Flags, other.Flags)
+	o.Flags = helpers.MergeSlices(o.Flags, other.Flags)
 }
 
 // overrideWith overrides fields of the receiver
@@ -291,7 +291,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.User = helpers.OverrideWithStringPtr(o.User, other.User)
 	o.Password = helpers.OverrideWithStringPtr(o.Password, other.Password)
 	o.ConfFile = helpers.OverrideWithStringPtr(o.ConfFile, other.ConfFile)
-	o.Ciphers = helpers.OverrideWithStringSlice(o.Ciphers, other.Ciphers)
+	o.Ciphers = helpers.OverrideWithSlice(o.Ciphers, other.Ciphers)
 	o.Auth = helpers.OverrideWithStringPtr(o.Auth, other.Auth)
 	o.Cert = helpers.OverrideWithStringPtr(o.Cert, other.Cert)
 	o.Key = helpers.OverrideWithStringPtr(o.Key, other.Key)
@@ -302,7 +302,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.Interface = helpers.OverrideWithString(o.Interface, other.Interface)
 	o.ProcessUser = helpers.OverrideWithString(o.ProcessUser, other.ProcessUser)
 	o.Verbosity = helpers.OverrideWithIntPtr(o.Verbosity, other.Verbosity)
-	o.Flags = helpers.OverrideWithStringSlice(o.Flags, other.Flags)
+	o.Flags = helpers.OverrideWithSlice(o.Flags, other.Flags)
 }
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {

@@ -129,38 +129,11 @@ func OverrideWithHTTPHandler(existing, other http.Handler) (result http.Handler)
 	return existing
 }
 
-func OverrideWithStringSlice(existing, other []string) (result []string) {
+func OverrideWithSlice[K string | uint16 | netip.Addr | netip.Prefix](existing, other []K) (result []K) {
 	if other == nil {
 		return existing
 	}
-	result = make([]string, len(other))
-	copy(result, other)
-	return result
-}
-
-func OverrideWithUint16Slice(existing, other []uint16) (result []uint16) {
-	if other == nil {
-		return existing
-	}
-	result = make([]uint16, len(other))
-	copy(result, other)
-	return result
-}
-
-func OverrideWithNetipAddressesSlice(existing, other []netip.Addr) (result []netip.Addr) {
-	if other == nil {
-		return existing
-	}
-	result = make([]netip.Addr, len(other))
-	copy(result, other)
-	return result
-}
-
-func OverrideWithNetipPrefixesSlice(existing, other []netip.Prefix) (result []netip.Prefix) {
-	if other == nil {
-		return existing
-	}
-	result = make([]netip.Prefix, len(other))
+	result = make([]K, len(other))
 	copy(result, other)
 	return result
 }

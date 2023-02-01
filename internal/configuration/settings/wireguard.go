@@ -108,7 +108,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
 		PrivateKey:     helpers.CopyStringPtr(w.PrivateKey),
 		PreSharedKey:   helpers.CopyStringPtr(w.PreSharedKey),
-		Addresses:      helpers.CopyNetipPrefixesSlice(w.Addresses),
+		Addresses:      helpers.CopySlice(w.Addresses),
 		Interface:      w.Interface,
 		Implementation: w.Implementation,
 	}
@@ -117,7 +117,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 func (w *Wireguard) mergeWith(other Wireguard) {
 	w.PrivateKey = helpers.MergeWithStringPtr(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = helpers.MergeWithStringPtr(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.MergeNetipPrefixesSlices(w.Addresses, other.Addresses)
+	w.Addresses = helpers.MergeSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
 }
@@ -125,7 +125,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PrivateKey = helpers.OverrideWithStringPtr(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = helpers.OverrideWithStringPtr(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.OverrideWithNetipPrefixesSlice(w.Addresses, other.Addresses)
+	w.Addresses = helpers.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
 }

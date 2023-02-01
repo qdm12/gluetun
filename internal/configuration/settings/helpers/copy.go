@@ -79,42 +79,12 @@ func CopyLogLevelPtr(original *log.Level) (copied *log.Level) {
 	return copied
 }
 
-func CopyStringSlice(original []string) (copied []string) {
+func CopySlice[T string | uint16 | netip.Addr | netip.Prefix](original []T) (copied []T) {
 	if original == nil {
 		return nil
 	}
 
-	copied = make([]string, len(original))
-	copy(copied, original)
-	return copied
-}
-
-func CopyUint16Slice(original []uint16) (copied []uint16) {
-	if original == nil {
-		return nil
-	}
-
-	copied = make([]uint16, len(original))
-	copy(copied, original)
-	return copied
-}
-
-func CopyNetipPrefixesSlice(original []netip.Prefix) (copied []netip.Prefix) {
-	if original == nil {
-		return nil
-	}
-
-	copied = make([]netip.Prefix, len(original))
-	copy(copied, original)
-	return copied
-}
-
-func CopyNetipAddressesSlice(original []netip.Addr) (copied []netip.Addr) {
-	if original == nil {
-		return nil
-	}
-
-	copied = make([]netip.Addr, len(original))
+	copied = make([]T, len(original))
 	copy(copied, original)
 	return copied
 }

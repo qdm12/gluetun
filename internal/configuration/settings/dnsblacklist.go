@@ -56,10 +56,10 @@ func (b DNSBlacklist) copy() (copied DNSBlacklist) {
 		BlockMalicious:       helpers.CopyBoolPtr(b.BlockMalicious),
 		BlockAds:             helpers.CopyBoolPtr(b.BlockAds),
 		BlockSurveillance:    helpers.CopyBoolPtr(b.BlockSurveillance),
-		AllowedHosts:         helpers.CopyStringSlice(b.AllowedHosts),
-		AddBlockedHosts:      helpers.CopyStringSlice(b.AddBlockedHosts),
-		AddBlockedIPs:        helpers.CopyNetipAddressesSlice(b.AddBlockedIPs),
-		AddBlockedIPPrefixes: helpers.CopyNetipPrefixesSlice(b.AddBlockedIPPrefixes),
+		AllowedHosts:         helpers.CopySlice(b.AllowedHosts),
+		AddBlockedHosts:      helpers.CopySlice(b.AddBlockedHosts),
+		AddBlockedIPs:        helpers.CopySlice(b.AddBlockedIPs),
+		AddBlockedIPPrefixes: helpers.CopySlice(b.AddBlockedIPPrefixes),
 	}
 }
 
@@ -67,20 +67,20 @@ func (b *DNSBlacklist) mergeWith(other DNSBlacklist) {
 	b.BlockMalicious = helpers.MergeWithBool(b.BlockMalicious, other.BlockMalicious)
 	b.BlockAds = helpers.MergeWithBool(b.BlockAds, other.BlockAds)
 	b.BlockSurveillance = helpers.MergeWithBool(b.BlockSurveillance, other.BlockSurveillance)
-	b.AllowedHosts = helpers.MergeStringSlices(b.AllowedHosts, other.AllowedHosts)
-	b.AddBlockedHosts = helpers.MergeStringSlices(b.AddBlockedHosts, other.AddBlockedHosts)
-	b.AddBlockedIPs = helpers.MergeNetipAddressesSlices(b.AddBlockedIPs, other.AddBlockedIPs)
-	b.AddBlockedIPPrefixes = helpers.MergeNetipPrefixesSlices(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
+	b.AllowedHosts = helpers.MergeSlices(b.AllowedHosts, other.AllowedHosts)
+	b.AddBlockedHosts = helpers.MergeSlices(b.AddBlockedHosts, other.AddBlockedHosts)
+	b.AddBlockedIPs = helpers.MergeSlices(b.AddBlockedIPs, other.AddBlockedIPs)
+	b.AddBlockedIPPrefixes = helpers.MergeSlices(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
 }
 
 func (b *DNSBlacklist) overrideWith(other DNSBlacklist) {
 	b.BlockMalicious = helpers.OverrideWithBool(b.BlockMalicious, other.BlockMalicious)
 	b.BlockAds = helpers.OverrideWithBool(b.BlockAds, other.BlockAds)
 	b.BlockSurveillance = helpers.OverrideWithBool(b.BlockSurveillance, other.BlockSurveillance)
-	b.AllowedHosts = helpers.OverrideWithStringSlice(b.AllowedHosts, other.AllowedHosts)
-	b.AddBlockedHosts = helpers.OverrideWithStringSlice(b.AddBlockedHosts, other.AddBlockedHosts)
-	b.AddBlockedIPs = helpers.OverrideWithNetipAddressesSlice(b.AddBlockedIPs, other.AddBlockedIPs)
-	b.AddBlockedIPPrefixes = helpers.OverrideWithNetipPrefixesSlice(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
+	b.AllowedHosts = helpers.OverrideWithSlice(b.AllowedHosts, other.AllowedHosts)
+	b.AddBlockedHosts = helpers.OverrideWithSlice(b.AddBlockedHosts, other.AddBlockedHosts)
+	b.AddBlockedIPs = helpers.OverrideWithSlice(b.AddBlockedIPs, other.AddBlockedIPs)
+	b.AddBlockedIPPrefixes = helpers.OverrideWithSlice(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
 }
 
 func (b DNSBlacklist) ToBlacklistFormat() (settings blacklist.BuilderSettings, err error) {

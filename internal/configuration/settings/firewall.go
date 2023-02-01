@@ -40,9 +40,9 @@ func hasZeroPort(ports []uint16) (has bool) {
 
 func (f *Firewall) copy() (copied Firewall) {
 	return Firewall{
-		VPNInputPorts:   helpers.CopyUint16Slice(f.VPNInputPorts),
-		InputPorts:      helpers.CopyUint16Slice(f.InputPorts),
-		OutboundSubnets: helpers.CopyNetipPrefixesSlice(f.OutboundSubnets),
+		VPNInputPorts:   helpers.CopySlice(f.VPNInputPorts),
+		InputPorts:      helpers.CopySlice(f.InputPorts),
+		OutboundSubnets: helpers.CopySlice(f.OutboundSubnets),
 		Enabled:         helpers.CopyBoolPtr(f.Enabled),
 		Debug:           helpers.CopyBoolPtr(f.Debug),
 	}
@@ -53,9 +53,9 @@ func (f *Firewall) copy() (copied Firewall) {
 // It merges values of slices together, even if they
 // are set in the receiver settings.
 func (f *Firewall) mergeWith(other Firewall) {
-	f.VPNInputPorts = helpers.MergeUint16Slices(f.VPNInputPorts, other.VPNInputPorts)
-	f.InputPorts = helpers.MergeUint16Slices(f.InputPorts, other.InputPorts)
-	f.OutboundSubnets = helpers.MergeNetipPrefixesSlices(f.OutboundSubnets, other.OutboundSubnets)
+	f.VPNInputPorts = helpers.MergeSlices(f.VPNInputPorts, other.VPNInputPorts)
+	f.InputPorts = helpers.MergeSlices(f.InputPorts, other.InputPorts)
+	f.OutboundSubnets = helpers.MergeSlices(f.OutboundSubnets, other.OutboundSubnets)
 	f.Enabled = helpers.MergeWithBool(f.Enabled, other.Enabled)
 	f.Debug = helpers.MergeWithBool(f.Debug, other.Debug)
 }
@@ -64,9 +64,9 @@ func (f *Firewall) mergeWith(other Firewall) {
 // settings object with any field set in the other
 // settings.
 func (f *Firewall) overrideWith(other Firewall) {
-	f.VPNInputPorts = helpers.OverrideWithUint16Slice(f.VPNInputPorts, other.VPNInputPorts)
-	f.InputPorts = helpers.OverrideWithUint16Slice(f.InputPorts, other.InputPorts)
-	f.OutboundSubnets = helpers.OverrideWithNetipPrefixesSlice(f.OutboundSubnets, other.OutboundSubnets)
+	f.VPNInputPorts = helpers.OverrideWithSlice(f.VPNInputPorts, other.VPNInputPorts)
+	f.InputPorts = helpers.OverrideWithSlice(f.InputPorts, other.InputPorts)
+	f.OutboundSubnets = helpers.OverrideWithSlice(f.OutboundSubnets, other.OutboundSubnets)
 	f.Enabled = helpers.OverrideWithBool(f.Enabled, other.Enabled)
 	f.Debug = helpers.OverrideWithBool(f.Debug, other.Debug)
 }

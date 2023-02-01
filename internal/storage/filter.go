@@ -89,7 +89,7 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if filterByPossibilitiesUint16(server.Number, selection.Numbers) {
+	if filterByPossibilities(server.Number, selection.Numbers) {
 		return true
 	}
 
@@ -106,25 +106,12 @@ func filterServer(server models.Server,
 	return false
 }
 
-func filterByPossibilities(value string, possibilities []string) (filtered bool) {
+func filterByPossibilities[K string | uint16](value K, possibilities []K) (filtered bool) {
 	if len(possibilities) == 0 {
 		return false
 	}
 	for _, possibility := range possibilities {
-		if strings.EqualFold(value, possibility) {
-			return false
-		}
-	}
-	return true
-}
-
-// TODO merge with filterByPossibilities with generics in Go 1.18.
-func filterByPossibilitiesUint16(value uint16, possibilities []uint16) (filtered bool) {
-	if len(possibilities) == 0 {
-		return false
-	}
-	for _, possibility := range possibilities {
-		if value == possibility {
+		if strings.EqualFold(string(value), string(possibility)) {
 			return false
 		}
 	}
