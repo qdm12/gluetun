@@ -51370,6 +51370,34 @@
         ]
       },
       {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "isp": "Blix",
+        "owned": true,
+        "hostname": "fi-hel-101",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "2a02:ed04:3581:5::1f",
+          "193.138.7.217"
+        ]
+      },
+      {
+        "vpn": "openvpn",
+        "country": "Finland",
+        "city": "Helsinki",
+        "isp": "Blix",
+        "owned": true,
+        "hostname": "fi-hel-102",
+        "tcp": true,
+        "udp": true,
+        "ips": [
+          "2a02:ed04:3581:6::2f",
+          "193.138.7.237"
+        ]
+      },
+      {
         "vpn": "wireguard",
         "country": "Finland",
         "city": "Helsinki",
