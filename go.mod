@@ -3,7 +3,7 @@ module github.com/qdm12/gluetun
 go 1.20
 
 require (
-	github.com/breml/rootcerts v0.2.8
+	github.com/breml/rootcerts v0.2.10
 	github.com/fatih/color v1.13.0
 	github.com/golang/mock v1.6.0
 	github.com/qdm12/dns v1.11.0
