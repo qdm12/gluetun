@@ -19,7 +19,7 @@ func parseServerName(serverName string) (number uint16, err error) {
 	}
 
 	idString := serverName[i+1:]
-	idUint64, err := strconv.ParseUint(idString, 10, 16) //nolint:gomnd
+	idUint64, err := strconv.ParseUint(idString, 10, 16)
 	if err != nil {
 		return 0, fmt.Errorf("%w: %s", ErrInvalidIDInServerName, serverName)
 	}
