@@ -501,7 +501,7 @@ func printVersions(ctx context.Context, logger infoer,
 	for _, element := range elements {
 		version, err := element.getVersion(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("getting %s version: %w", element.name, err)
 		}
 		logger.Info(element.name + " version: " + version)
 	}
