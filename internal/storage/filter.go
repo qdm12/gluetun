@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -111,7 +112,7 @@ func filterByPossibilities[K string | uint16](value K, possibilities []K) (filte
 		return false
 	}
 	for _, possibility := range possibilities {
-		if strings.EqualFold(string(value), string(possibility)) {
+		if strings.EqualFold(fmt.Sprint(value), fmt.Sprint(possibility)) {
 			return false
 		}
 	}
