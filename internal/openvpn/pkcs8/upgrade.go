@@ -16,6 +16,13 @@ var (
 
 // UpgradeEncryptedKey eventually upgrades an encrypted key to a newer encryption
 // if its encryption is too weak for Openvpn/Openssl.
+// If the key is encrypted using DES-CBC, it is decrypted and re-encrypted using AES-256-CBC.
+// Otherwise, the key is returned unmodified.
+// Note this function only supports:
+// - PKCS8 encrypted keys
+// - RSA and ECDSA keys
+// - DES-CBC, 3DES, AES-128-CBC, AES-192-CBC, AES-256-CBC, AES-128-GCM, AES-192-GCM
+// and AES-256-GCM encryption algorithms.
 func UpgradeEncryptedKey(encryptedPKCS8PEMKey, passphrase string) (securelyEncryptedPKCS8PEMKey string, err error) {
 	pemBlock, _ := pem.Decode([]byte(encryptedPKCS8PEMKey))
 	if pemBlock == nil {
