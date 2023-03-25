@@ -17,12 +17,19 @@ var (
 	ErrEncryptionAlgorithmNotPBES2 = errors.New("encryption algorithm is not PBES2")
 )
 
+type encryptedPrivateKey struct {
+	EncryptionAlgorithm pkix.AlgorithmIdentifier
+	EncryptedData       []byte
+}
+
+type encryptedAlgorithmParams struct {
+	KeyDerivationFunc pkix.AlgorithmIdentifier
+	EncryptionScheme  pkix.AlgorithmIdentifier
+}
+
 func getEncryptionAlgorithmOid(der []byte) (
 	encryptionSchemeAlgorithm asn1.ObjectIdentifier, err error) {
-	var encryptedPrivateKeyData struct {
-		EncryptionAlgorithm pkix.AlgorithmIdentifier
-		EncryptedData       []byte
-	}
+	var encryptedPrivateKeyData encryptedPrivateKey
 	_, err = asn1.Unmarshal(der, &encryptedPrivateKeyData)
 	if err != nil {
 		return nil, fmt.Errorf("decoding asn1 encrypted private key data: %w", err)
@@ -35,10 +42,7 @@ func getEncryptionAlgorithmOid(der []byte) (
 			ErrEncryptionAlgorithmNotPBES2, oidAlgorithm, oidPBES2)
 	}
 
-	var encryptionAlgorithmParams struct {
-		KeyDerivationFunc pkix.AlgorithmIdentifier
-		EncryptionScheme  pkix.AlgorithmIdentifier
-	}
+	var encryptionAlgorithmParams encryptedAlgorithmParams
 	paramBytes := encryptedPrivateKeyData.EncryptionAlgorithm.Parameters.FullBytes
 	_, err = asn1.Unmarshal(paramBytes, &encryptionAlgorithmParams)
 	if err != nil {
