@@ -5,6 +5,8 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -55,7 +57,11 @@ func Test_getEncryptionAlgorithmOid(t *testing.T) {
 		},
 		"DES-CBC DER": {
 			makeDER: func() (der []byte, err error) {
-				pemBlock, _ := pem.Decode([]byte(DESEncryptedKey))
+				DESCBCEncryptedPEM, err := os.ReadFile("testdata/rsa_pkcs8_descbc_encrypted.pem")
+				if err != nil {
+					return nil, fmt.Errorf("reading file: %w", err)
+				}
+				pemBlock, _ := pem.Decode(DESCBCEncryptedPEM)
 				if pemBlock == nil {
 					return nil, errors.New("failed to decode PEM")
 				}
@@ -63,9 +69,13 @@ func Test_getEncryptionAlgorithmOid(t *testing.T) {
 			},
 			encryptionSchemeAlgorithm: oidDESCBC,
 		},
-		"AES-CBC DER": {
+		"AES-128-CBC DER": {
 			makeDER: func() (der []byte, err error) {
-				pemBlock, _ := pem.Decode([]byte(AESEncryptedKey))
+				AES128CBCEncryptedPEM, err := os.ReadFile("testdata/rsa_pkcs8_aes128cbc_encrypted.pem")
+				if err != nil {
+					return nil, fmt.Errorf("reading file: %w", err)
+				}
+				pemBlock, _ := pem.Decode(AES128CBCEncryptedPEM)
 				if pemBlock == nil {
 					return nil, errors.New("failed to decode PEM")
 				}
