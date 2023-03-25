@@ -15,6 +15,7 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 
 	for {
 		previousErr := s.handler.getErr()
+		fmt.Println("==== previous err: ", previousErr)
 
 		const healthcheckTimeout = 3 * time.Second
 		healthcheckCtx, healthcheckCancel := context.WithTimeout(
@@ -29,7 +30,7 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 			s.vpn.healthyTimer.Stop()
 			s.vpn.healthyWait = *s.config.VPN.Initial
 		} else if previousErr == nil && err != nil {
-			s.logger.Info("unhealthy: " + err.Error() + "(see https://github.com/qdm12/gluetun/wiki/Healthcheck)")
+			s.logger.Info("unhealthy: " + err.Error())
 			s.vpn.healthyTimer.Stop()
 			s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 		}
