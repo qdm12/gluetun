@@ -195,7 +195,7 @@ func Test_Updater_GetServers(t *testing.T) {
 			ctx := context.Background()
 
 			unzipper := common.NewMockUnzipper(ctrl)
-			const zipURL = "https://www.ipvanish.com/software/configs/configs.zip"
+			const zipURL = "https://configs.ipvanish.com/configs/configs.zip"
 			unzipper.EXPECT().FetchAndExtract(ctx, zipURL).
 				Return(testCase.unzipContents, testCase.unzipErr)
 
