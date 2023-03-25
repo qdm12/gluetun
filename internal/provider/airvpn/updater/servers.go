@@ -43,7 +43,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			continue
 		}
 
-		city := strings.ReplaceAll(apiServer.Location, ", ", "")
+		city := strings.ReplaceAll(apiServer.Location, ", ", " ")
 		city = strings.ReplaceAll(city, ",", "")
 		baseServer := models.Server{
 			ServerName: apiServer.PublicName,
