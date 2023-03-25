@@ -15,7 +15,6 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 
 	for {
 		previousErr := s.handler.getErr()
-		fmt.Println("==== previous err: ", previousErr)
 
 		const healthcheckTimeout = 3 * time.Second
 		healthcheckCtx, healthcheckCancel := context.WithTimeout(
