@@ -29,18 +29,18 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	}
 
 	const failEarly = false // some URLs from the website are not valid
-	udpHostToURL, errors := openvpn.FetchMultiFiles(ctx, u.client, openvpnURLs, failEarly)
+	hostToURL, errors := openvpn.FetchMultiFiles(ctx, u.client, openvpnURLs, failEarly)
 	for _, err := range errors {
 		u.warner.Warn(fmt.Sprintf("fetching OpenVPN files: %s", err))
 	}
 
-	if len(udpHostToURL) < minServers {
+	if len(hostToURL) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(udpHostToURL), minServers)
+			common.ErrNotEnoughServers, len(hostToURL), minServers)
 	}
 
-	hosts := make([]string, 0, len(udpHostToURL))
-	for host := range udpHostToURL {
+	hosts := make([]string, 0, len(hostToURL))
+	for host := range hostToURL {
 		hosts = append(hosts, host)
 	}
 
@@ -60,8 +60,6 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 	servers = make([]models.Server, 0, len(hostToIPs))
 	for host, IPs := range hostToIPs {
-		_, udp := udpHostToURL[host]
-
 		serverData := hostToData[host]
 
 		server := models.Server{
@@ -70,7 +68,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			Country:  serverData.country,
 			City:     serverData.city,
 			Hostname: host,
-			UDP:      udp,
+			UDP:      true,
+			TCP:      true,
 			IPs:      IPs,
 		}
 		servers = append(servers, server)
