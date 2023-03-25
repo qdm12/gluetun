@@ -142265,7 +142265,7 @@
   },
   "wevpn": {
     "version": 2,
-    "timestamp": 1632407719,
+    "timestamp": 1679755674,
     "servers": [
       {
         "vpn": "openvpn",
@@ -142372,7 +142372,7 @@
         "hostname": "chicago.wevpn.com",
         "udp": true,
         "ips": [
-          "69.39.239.57"
+          "69.39.239.72"
         ]
       },
       {
@@ -142399,7 +142399,7 @@
         "hostname": "bursa.wevpn.com",
         "udp": true,
         "ips": [
-          "95.173.161.240"
+          "89.252.132.138"
         ]
       },
       {
@@ -142651,7 +142651,7 @@
         "hostname": "newyork.wevpn.com",
         "udp": true,
         "ips": [
-          "217.138.206.106"
+          "217.138.206.98"
         ]
       },
       {
@@ -142723,7 +142723,7 @@
         "hostname": "sanjose.wevpn.com",
         "udp": true,
         "ips": [
-          "169.62.109.140"
+          "66.115.157.226"
         ]
       },
       {
@@ -142822,7 +142822,7 @@
         "hostname": "telaviv.wevpn.com",
         "udp": true,
         "ips": [
-          "193.43.72.242"
+          "212.199.61.55"
         ]
       },
       {
