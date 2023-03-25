@@ -2,6 +2,7 @@ package vpnunlimited
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -18,5 +19,14 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 			"route-metric 1",
 		},
 	}
+
+	if settings.Version != openvpn.Openvpn24 {
+		// VPN Unlimited's certificate is sha1WithRSAEncryption and sha1 is now
+		// rejected by openssl 3.x.x which is used by OpenVPN >= 2.5.
+		// We lower the security level to 3 to allow this algorithm,
+		// see https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_security_level.html
+		providerSettings.TLSCipher = `"DEFAULT:@SECLEVEL=0"`
+	}
+
 	return utils.OpenVPNConfig(providerSettings, connection, settings, ipv6Supported)
 }
