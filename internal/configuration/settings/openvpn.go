@@ -42,18 +42,18 @@ type OpenVPN struct {
 	// It cannot be nil in the internal state.
 	// It is ignored if it is set to the empty string.
 	Auth *string
-	// Cert is the OpenVPN certificate for the <cert> block.
+	// Cert is the base64 encoded DER of an OpenVPN certificate for the <cert> block.
 	// This is notably used by Cyberghost and VPN secure.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
 	Cert *string
-	// Key is the OpenVPN key.
+	// Key is the base64 encoded DER of an OpenVPN key.
 	// This is used by Cyberghost and VPN Unlimited.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
 	Key *string
-	// EncryptedKey is the content of an encrypted
-	// key for OpenVPN. It is used by VPN secure.
+	// EncryptedKey is the base64 encoded DER of an encrypted key for OpenVPN.
+	// It is used by VPN secure.
 	// It defaults to the empty string meaning it is not
 	// to be used. KeyPassphrase must be set if this one is set.
 	EncryptedKey *string
