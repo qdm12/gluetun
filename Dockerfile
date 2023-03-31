@@ -199,7 +199,7 @@ HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /gluet
 ARG TARGETPLATFORM
 RUN apk add --no-cache --update -l apk-tools && \
     apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.12/main" openvpn==2.4.12-r0 && \
-    apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.16/main" openssl==1.1.1t-r1 && \
+    apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.16/main" openssl==1.1.1t-r2 && \
     mv /usr/sbin/openvpn /usr/sbin/openvpn2.4 && \
     apk del openvpn && \
     apk add --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
