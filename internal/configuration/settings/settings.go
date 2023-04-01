@@ -183,5 +183,10 @@ func (s Settings) Warnings() (warnings []string) {
 		}
 	}
 
+	if s.VPN.OpenVPN.Version == openvpn.Openvpn24 {
+		warnings = append(warnings, "OpenVPN 2.4 will be removed in release v3.34.0 (around June 2023). "+
+			"Please create an issue if you have a compelling reason to keep it.")
+	}
+
 	return warnings
 }
