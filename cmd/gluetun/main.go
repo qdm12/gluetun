@@ -277,6 +277,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	logger.Info(allSettings.String())
 
+	for _, warning := range allSettings.Warnings() {
+		logger.Warn(warning)
+	}
+
 	if err := os.MkdirAll("/tmp/gluetun", 0644); err != nil {
 		return err
 	}

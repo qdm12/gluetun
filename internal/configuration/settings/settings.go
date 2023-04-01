@@ -3,6 +3,10 @@ package settings
 import (
 	"fmt"
 
+	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gluetun/internal/constants/openvpn"
+	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/pprof"
 	"github.com/qdm12/gotree"
@@ -156,4 +160,28 @@ func (s Settings) toLinesNode() (node *gotree.Node) {
 	node.AppendNode(s.Pprof.ToLinesNode())
 
 	return node
+}
+
+func (s Settings) Warnings() (warnings []string) {
+	if helpers.IsOneOf(*s.VPN.Provider.Name, providers.SlickVPN) &&
+		s.VPN.Type == vpn.OpenVPN {
+		if s.VPN.OpenVPN.Version == openvpn.Openvpn24 {
+			warnings = append(warnings, "OpenVPN 2.4 uses OpenSSL 1.1.1 "+
+				"which allows the usage of weak security in today's standards. "+
+				"This can be ok if good security is enforced by the VPN provider. "+
+				"However, "+*s.VPN.Provider.Name+" uses weak security so you should use "+
+				"OpenVPN 2.5 to enforce good security practices.")
+		} else {
+			warnings = append(warnings, "OpenVPN 2.5 uses OpenSSL 3 "+
+				"which prohibits the usage of weak security in today's standards. "+
+				*s.VPN.Provider.Name+" uses weak security which is out "+
+				"of Gluetun's control so the only workaround is to allow such weaknesses "+
+				`using the OpenVPN option tls-cipher "DEFAULT:@SECLEVEL=0". `+
+				"You might want to reach to your provider so they upgrade their certificates. "+
+				"Once this is done, you will have to let the Gluetun maintainers know "+
+				"by creating an issue, attaching the new certificate and we will update Gluetun.")
+		}
+	}
+
+	return warnings
 }
