@@ -85,3 +85,21 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 	return localNetworks, nil
 }
+
+func (r *Routing) AddLocalRules(subnets []LocalNetwork) (err error) {
+	for _, net := range subnets {
+		// The main table is a built-in value for Linux, see "man 8 ip-route"
+		const mainTable = 254
+
+		// Local has higher priority then outbound(99) and inbound(100) as the
+		// local routes might be necessary to reach the outbound/inbound routes.
+		const localPriority = 98
+
+		// Main table was setup correctly by Docker, just need to add rules to use it
+		err = r.addIPRule(nil, net.IPNet, mainTable, localPriority)
+		if err != nil {
+			return fmt.Errorf("adding rule: %v: %w", net.IPNet, err)
+		}
+	}
+	return nil
+}

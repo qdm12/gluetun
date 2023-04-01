@@ -325,6 +325,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
+	err = routingConf.AddLocalRules(localNetworks)
+	if err != nil {
+		return fmt.Errorf("adding local rules: %w", err)
+	}
+
 	const tunDevice = "/dev/net/tun"
 	if err := tun.Check(tunDevice); err != nil {
 		logger.Info(err.Error() + "; creating it...")
