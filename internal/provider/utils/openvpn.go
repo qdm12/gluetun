@@ -197,21 +197,20 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 	}
 
 	if *settings.EncryptedKey != "" {
-		pemLines := WrapOpenvpnEncryptedKey(*settings.EncryptedKey)
+		encryptedBase64DERKey := *settings.EncryptedKey
 		if settings.Version != openvpn.Openvpn24 {
 			// OpenVPN above 2.4 does not support old encryption schemes such as
 			// DES-CBC, so decrypt and reencrypt the key.
 			// This is a workaround for VPN secure.
-			pem := strings.Join(pemLines, "\n")
-			pem, err := pkcs8.UpgradeEncryptedKey(pem, *settings.KeyPassphrase)
+			var err error
+			encryptedBase64DERKey, err = pkcs8.UpgradeEncryptedKey(encryptedBase64DERKey, *settings.KeyPassphrase)
 			if err != nil {
 				// TODO return an error instead.
 				panic(fmt.Sprintf("upgrading encrypted key: %s", err))
 			}
-			pemLines = strings.Split(pem, "\n")
 		}
 		lines.add("askpass", openvpn.AskPassPath)
-		lines.addLines(pemLines)
+		lines.addLines(WrapOpenvpnEncryptedKey(encryptedBase64DERKey))
 	}
 
 	if *settings.Cert != "" {

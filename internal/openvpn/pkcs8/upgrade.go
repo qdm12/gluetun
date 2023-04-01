@@ -1,7 +1,7 @@
 package pkcs8
 
 import (
-	"encoding/pem"
+	"encoding/base64"
 	"errors"
 	"fmt"
 
@@ -9,9 +9,7 @@ import (
 )
 
 var (
-	ErrPEMDecodingFailed      = errors.New("pem decoding failed")
-	ErrNotEncryptedPrivateKey = errors.New("not an encrypted private key")
-	ErrUnsupportedKeyType     = errors.New("unsupported key type")
+	ErrUnsupportedKeyType = errors.New("unsupported key type")
 )
 
 // UpgradeEncryptedKey eventually upgrades an encrypted key to a newer encryption
@@ -23,17 +21,11 @@ var (
 // - RSA and ECDSA keys
 // - DES-CBC, 3DES, AES-128-CBC, AES-192-CBC, AES-256-CBC, AES-128-GCM, AES-192-GCM
 // and AES-256-GCM encryption algorithms.
-func UpgradeEncryptedKey(encryptedPKCS8PEMKey, passphrase string) (securelyEncryptedPKCS8PEMKey string, err error) {
-	pemBlock, _ := pem.Decode([]byte(encryptedPKCS8PEMKey))
-	if pemBlock == nil {
-		return "", fmt.Errorf("%w", ErrPEMDecodingFailed)
+func UpgradeEncryptedKey(encryptedPKCS8DERKey, passphrase string) (securelyEncryptedPKCS8DERKey string, err error) {
+	der, err := base64.StdEncoding.DecodeString(encryptedPKCS8DERKey)
+	if err != nil {
+		return "", fmt.Errorf("decoding base64 encoded DER: %w", err)
 	}
-
-	if pemBlock.Type != "ENCRYPTED PRIVATE KEY" {
-		return "", fmt.Errorf("%w: %s", ErrNotEncryptedPrivateKey, pemBlock.Type)
-	}
-
-	der := pemBlock.Bytes
 
 	oidEncryptionAlgorithm, err := getEncryptionAlgorithmOid(der)
 	if err != nil {
@@ -41,7 +33,7 @@ func UpgradeEncryptedKey(encryptedPKCS8PEMKey, passphrase string) (securelyEncry
 	}
 
 	if !oidEncryptionAlgorithm.Equal(oidDESCBC) {
-		return encryptedPKCS8PEMKey, nil
+		return encryptedPKCS8DERKey, nil
 	}
 
 	// Convert DES-CBC encrypted key to an AES256CBC encrypted key
@@ -55,11 +47,6 @@ func UpgradeEncryptedKey(encryptedPKCS8PEMKey, passphrase string) (securelyEncry
 		return "", fmt.Errorf("encrypting and encoding private key: %w", err)
 	}
 
-	pemBlock = &pem.Block{
-		Type:  "ENCRYPTED PRIVATE KEY",
-		Bytes: der,
-	}
-	encryptedPEMKeyBytes := pem.EncodeToMemory(pemBlock)
-	securelyEncryptedPKCS8PEMKey = string(encryptedPEMKeyBytes)
-	return securelyEncryptedPKCS8PEMKey, nil
+	securelyEncryptedPKCS8DERKey = base64.StdEncoding.EncodeToString(der)
+	return securelyEncryptedPKCS8DERKey, nil
 }
