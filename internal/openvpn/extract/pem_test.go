@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,6 +24,14 @@ func Test_PEM(t *testing.T) {
 			b:          []byte{1, 2, 3},
 			errWrapped: errPEMDecode,
 			errMessage: "cannot decode PEM encoded block",
+		},
+		"valid data with extras": {
+			b: bytes.Join([][]byte{
+				{1, 2, 3},
+				[]byte(validCertPEM),
+				{4, 5, 6},
+			}, []byte("\n")),
+			encodedData: validCertData,
 		},
 		"valid data": {
 			b:           []byte(validCertPEM),
