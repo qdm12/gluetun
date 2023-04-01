@@ -257,7 +257,7 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 		case ipv4:
 			err = c.runIptablesInstruction(ctx, rule)
 		case c.ip6Tables == "":
-			err = fmt.Errorf("cannot run user ip6tables rule: %w", ErrNeedIP6Tables)
+			err = fmt.Errorf("running user ip6tables rule: %w", ErrNeedIP6Tables)
 		default: // ipv6
 			err = c.runIP6tablesInstruction(ctx, rule)
 		}

@@ -26,7 +26,7 @@ func New(ctx context.Context, address string, logEnabled bool, logger Logger,
 
 	server, err = httpserver.New(httpServerSettings)
 	if err != nil {
-		return nil, fmt.Errorf("cannot create server: %w", err)
+		return nil, fmt.Errorf("creating server: %w", err)
 	}
 
 	return server, nil

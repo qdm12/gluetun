@@ -11,12 +11,12 @@ import (
 func configureDevice(client *wgctrl.Client, settings Settings) (err error) {
 	deviceConfig, err := makeDeviceConfig(settings)
 	if err != nil {
-		return fmt.Errorf("cannot make device configuration: %w", err)
+		return fmt.Errorf("making device configuration: %w", err)
 	}
 
 	err = client.ConfigureDevice(settings.InterfaceName, deviceConfig)
 	if err != nil {
-		return fmt.Errorf("cannot configure device: %w", err)
+		return fmt.Errorf("configuring device: %w", err)
 	}
 
 	return nil

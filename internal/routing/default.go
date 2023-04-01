@@ -27,7 +27,7 @@ func (d DefaultRoute) String() string {
 func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("cannot list routes: %w", err)
+		return nil, fmt.Errorf("listing routes: %w", err)
 	}
 
 	for _, route := range routes {
@@ -39,7 +39,7 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 			linkIndex := route.LinkIndex
 			link, err := r.netLinker.LinkByIndex(linkIndex)
 			if err != nil {
-				return nil, fmt.Errorf("cannot obtain link by index: for default route at index %d: %w", linkIndex, err)
+				return nil, fmt.Errorf("obtaining link by index: for default route at index %d: %w", linkIndex, err)
 			}
 			attributes := link.Attrs()
 			defaultRoute.NetInterface = attributes.Name
@@ -49,7 +49,7 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 			}
 			defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface, family)
 			if err != nil {
-				return nil, fmt.Errorf("cannot get assigned IP of %s: %w", defaultRoute.NetInterface, err)
+				return nil, fmt.Errorf("getting assigned IP of %s: %w", defaultRoute.NetInterface, err)
 			}
 
 			r.logger.Info("default route found: " + defaultRoute.String())

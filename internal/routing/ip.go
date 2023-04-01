@@ -29,7 +29,7 @@ func (r *Routing) assignedIP(interfaceName string, family int) (ip net.IP, err e
 	}
 	addresses, err := iface.Addrs()
 	if err != nil {
-		return nil, fmt.Errorf("cannot list interface %s addresses: %w", interfaceName, err)
+		return nil, fmt.Errorf("listing interface %s addresses: %w", interfaceName, err)
 	}
 	for _, address := range addresses {
 		switch value := address.(type) {

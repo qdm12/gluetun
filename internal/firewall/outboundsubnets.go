@@ -28,7 +28,7 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 
 	c.removeOutboundSubnets(ctx, subnetsToRemove)
 	if err := c.addOutboundSubnets(ctx, subnetsToAdd); err != nil {
-		return fmt.Errorf("cannot set allowed outbound subnets: %w", err)
+		return fmt.Errorf("setting allowed outbound subnets: %w", err)
 	}
 
 	return nil

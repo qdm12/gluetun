@@ -15,13 +15,13 @@ func (w *Wireguard) addRule(rulePriority, firewallMark, family int) (
 	rule.Table = firewallMark
 	rule.Family = family
 	if err := w.netlink.RuleAdd(rule); err != nil {
-		return nil, fmt.Errorf("cannot add rule %s: %w", rule, err)
+		return nil, fmt.Errorf("adding rule %s: %w", rule, err)
 	}
 
 	cleanup = func() error {
 		err := w.netlink.RuleDel(rule)
 		if err != nil {
-			return fmt.Errorf("cannot delete rule %s: %w", rule, err)
+			return fmt.Errorf("deleting rule %s: %w", rule, err)
 		}
 		return nil
 	}

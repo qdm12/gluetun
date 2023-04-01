@@ -14,7 +14,7 @@ const (
 
 func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err error) {
 	if err := r.addRuleInboundFromDefault(inboundTable, defaultRoutes); err != nil {
-		return fmt.Errorf("cannot add rule: %w", err)
+		return fmt.Errorf("adding rule: %w", err)
 	}
 
 	defaultDestinationIPv4 := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
@@ -28,7 +28,7 @@ func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err err
 
 		err := r.addRouteVia(defaultDestination, defaultRoute.Gateway, defaultRoute.NetInterface, inboundTable)
 		if err != nil {
-			return fmt.Errorf("cannot add route: %w", err)
+			return fmt.Errorf("adding route: %w", err)
 		}
 	}
 
@@ -47,12 +47,12 @@ func (r *Routing) unrouteInboundFromDefault(defaultRoutes []DefaultRoute) (err e
 
 		err := r.deleteRouteVia(defaultDestination, defaultRoute.Gateway, defaultRoute.NetInterface, inboundTable)
 		if err != nil {
-			return fmt.Errorf("cannot delete route: %w", err)
+			return fmt.Errorf("deleting route: %w", err)
 		}
 	}
 
 	if err := r.delRuleInboundFromDefault(inboundTable, defaultRoutes); err != nil {
-		return fmt.Errorf("cannot delete rule: %w", err)
+		return fmt.Errorf("deleting rule: %w", err)
 	}
 
 	return nil
@@ -64,7 +64,7 @@ func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 		ruleDstNet := (*net.IPNet)(nil)
 		err = r.addIPRule(defaultIPMasked32, ruleDstNet, table, inboundPriority)
 		if err != nil {
-			return fmt.Errorf("cannot add rule for default route %s: %w", defaultRoute, err)
+			return fmt.Errorf("adding rule for default route %s: %w", defaultRoute, err)
 		}
 	}
 
@@ -77,7 +77,7 @@ func (r *Routing) delRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 		ruleDstNet := (*net.IPNet)(nil)
 		err = r.deleteIPRule(defaultIPMasked32, ruleDstNet, table, inboundPriority)
 		if err != nil {
-			return fmt.Errorf("cannot delete rule for default route %s: %w", defaultRoute, err)
+			return fmt.Errorf("deleting rule for default route %s: %w", defaultRoute, err)
 		}
 	}
 

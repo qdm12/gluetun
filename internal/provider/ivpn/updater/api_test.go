@@ -27,7 +27,7 @@ func Test_fetchAPI(t *testing.T) {
 		},
 		"nil body": {
 			responseStatus: http.StatusOK,
-			err:            errors.New("failed unmarshaling response body: EOF"),
+			err:            errors.New("decoding response body: EOF"),
 		},
 		"no server": {
 			responseStatus: http.StatusOK,

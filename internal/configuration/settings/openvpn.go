@@ -171,7 +171,7 @@ func validateOpenVPNConfigFilepath(isCustom bool,
 	extractor := extract.New()
 	_, _, err = extractor.Data(confFile)
 	if err != nil {
-		return fmt.Errorf("failed extracting information from custom configuration file: %w", err)
+		return fmt.Errorf("extracting information from custom configuration file: %w", err)
 	}
 
 	return nil

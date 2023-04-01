@@ -18,7 +18,7 @@ func setupWireguard(ctx context.Context, netlinker NetLinker,
 	wireguarder *wireguard.Wireguard, serverName string, err error) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Supported)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed finding a VPN server: %w", err)
+		return nil, "", fmt.Errorf("finding a VPN server: %w", err)
 	}
 
 	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard, ipv6Supported)
@@ -29,12 +29,12 @@ func setupWireguard(ctx context.Context, netlinker NetLinker,
 
 	wireguarder, err = wireguard.New(wireguardSettings, netlinker, logger)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed creating Wireguard: %w", err)
+		return nil, "", fmt.Errorf("creating Wireguard: %w", err)
 	}
 
 	err = fw.SetVPNConnection(ctx, connection, settings.Wireguard.Interface)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed setting firewall: %w", err)
+		return nil, "", fmt.Errorf("setting firewall: %w", err)
 	}
 
 	return wireguarder, connection.ServerName, nil

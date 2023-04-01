@@ -12,7 +12,7 @@ func readHTTPProxy() (settings settings.HTTPProxy, err error) {
 		"/run/secrets/httpproxy_user",
 	)
 	if err != nil {
-		return settings, fmt.Errorf("cannot read HTTP proxy user secret file: %w", err)
+		return settings, fmt.Errorf("reading HTTP proxy user secret file: %w", err)
 	}
 
 	settings.Password, err = readSecretFileAsStringPtr(
@@ -20,7 +20,7 @@ func readHTTPProxy() (settings settings.HTTPProxy, err error) {
 		"/run/secrets/httpproxy_password",
 	)
 	if err != nil {
-		return settings, fmt.Errorf("cannot read OpenVPN password secret file: %w", err)
+		return settings, fmt.Errorf("reading OpenVPN password secret file: %w", err)
 	}
 
 	return settings, nil

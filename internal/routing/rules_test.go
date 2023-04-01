@@ -61,7 +61,7 @@ func Test_Routing_addIPRule(t *testing.T) {
 			ruleList: ruleListCall{
 				err: errDummy,
 			},
-			err: errors.New("cannot list rules: dummy error"),
+			err: errors.New("listing rules: dummy error"),
 		},
 		"rule already exists": {
 			src:      makeIPNet(t, 1),
@@ -87,7 +87,7 @@ func Test_Routing_addIPRule(t *testing.T) {
 				ruleToAdd: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
 				err:       errDummy,
 			},
-			err: errors.New("cannot add rule ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
+			err: errors.New("adding rule ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
 		},
 		"add rule success": {
 			src:      makeIPNet(t, 1),
@@ -174,7 +174,7 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			ruleList: ruleListCall{
 				err: errDummy,
 			},
-			err: errors.New("cannot list rules: dummy error"),
+			err: errors.New("listing rules: dummy error"),
 		},
 		"rule delete error": {
 			src:      makeIPNet(t, 1),
@@ -192,7 +192,7 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 				ruleToDel: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
 				err:       errDummy,
 			},
-			err: errors.New("cannot delete rule ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
+			err: errors.New("deleting rule ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
 		},
 		"rule deleted": {
 			src:      makeIPNet(t, 1),

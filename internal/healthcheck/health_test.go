@@ -85,7 +85,7 @@ func Test_makeAddressToDial(t *testing.T) {
 		},
 		"bad address": {
 			address: "test.com::",
-			err:     fmt.Errorf("cannot split host and port from address: address test.com::: too many colons in address"), //nolint:lll
+			err:     fmt.Errorf("splitting host and port from address: address test.com::: too many colons in address"), //nolint:lll
 		},
 	}
 

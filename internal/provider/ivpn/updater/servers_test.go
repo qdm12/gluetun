@@ -47,7 +47,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		"http response error": {
 			warnerBuilder:  func(ctrl *gomock.Controller) common.Warner { return nil },
 			responseStatus: http.StatusNoContent,
-			err:            errors.New("failed fetching API: HTTP status code not OK: 204 No Content"),
+			err:            errors.New("fetching API: HTTP status code not OK: 204 No Content"),
 		},
 		"resolve error": {
 			warnerBuilder: func(ctrl *gomock.Controller) common.Warner {

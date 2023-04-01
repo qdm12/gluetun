@@ -21,7 +21,7 @@ func (c *Config) SetEnabled(ctx context.Context, enabled bool) (err error) {
 	if !enabled {
 		c.logger.Info("disabling...")
 		if err = c.disable(ctx); err != nil {
-			return fmt.Errorf("cannot disable firewall: %w", err)
+			return fmt.Errorf("disabling firewall: %w", err)
 		}
 		c.enabled = false
 		c.logger.Info("disabled successfully")
@@ -31,7 +31,7 @@ func (c *Config) SetEnabled(ctx context.Context, enabled bool) (err error) {
 	c.logger.Info("enabling...")
 
 	if err := c.enable(ctx); err != nil {
-		return fmt.Errorf("cannot enable firewall: %w", err)
+		return fmt.Errorf("enabling firewall: %w", err)
 	}
 	c.enabled = true
 	c.logger.Info("enabled successfully")
@@ -41,13 +41,13 @@ func (c *Config) SetEnabled(ctx context.Context, enabled bool) (err error) {
 
 func (c *Config) disable(ctx context.Context) (err error) {
 	if err = c.clearAllRules(ctx); err != nil {
-		return fmt.Errorf("cannot clear all rules: %w", err)
+		return fmt.Errorf("clearing all rules: %w", err)
 	}
 	if err = c.setIPv4AllPolicies(ctx, "ACCEPT"); err != nil {
-		return fmt.Errorf("cannot set ipv4 policies: %w", err)
+		return fmt.Errorf("setting ipv4 policies: %w", err)
 	}
 	if err = c.setIPv6AllPolicies(ctx, "ACCEPT"); err != nil {
-		return fmt.Errorf("cannot set ipv6 policies: %w", err)
+		return fmt.Errorf("setting ipv6 policies: %w", err)
 	}
 	return nil
 }
@@ -123,7 +123,7 @@ func (c *Config) enable(ctx context.Context) (err error) {
 	}
 
 	if err := c.runUserPostRules(ctx, c.customRulesPath, remove); err != nil {
-		return fmt.Errorf("cannot run user defined post firewall rules: %w", err)
+		return fmt.Errorf("running user defined post firewall rules: %w", err)
 	}
 
 	return nil
@@ -138,7 +138,7 @@ func (c *Config) allowVPNIP(ctx context.Context) (err error) {
 	for _, defaultRoute := range c.defaultRoutes {
 		err = c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove)
 		if err != nil {
-			return fmt.Errorf("cannot accept output traffic through VPN: %w", err)
+			return fmt.Errorf("accepting output traffic through VPN: %w", err)
 		}
 	}
 
@@ -165,7 +165,7 @@ func (c *Config) allowInputPorts(ctx context.Context) (err error) {
 			const remove = false
 			err = c.acceptInputToPort(ctx, netInterface, port, remove)
 			if err != nil {
-				return fmt.Errorf("cannot accept input port %d on interface %s: %w",
+				return fmt.Errorf("accepting input port %d on interface %s: %w",
 					port, netInterface, err)
 			}
 		}

@@ -61,7 +61,7 @@ func (f *Fetch) FetchInfo(ctx context.Context, ip net.IP) (
 
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&result); err != nil {
-		return result, fmt.Errorf("cannot decode response: %w", err)
+		return result, fmt.Errorf("decoding response: %w", err)
 	}
 
 	countryCode := strings.ToLower(result.Country)

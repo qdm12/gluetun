@@ -73,7 +73,7 @@ func stringsToIPNets(ss []string) (ipNets []net.IPNet, err error) {
 	for i, s := range ss {
 		ip, ipNet, err := net.ParseCIDR(s)
 		if err != nil {
-			return nil, fmt.Errorf("cannot parse IP network %q: %w", s, err)
+			return nil, fmt.Errorf("parsing IP network %q: %w", s, err)
 		}
 		ipNet.IP = ip
 		ipNets[i] = *ipNet

@@ -73,7 +73,7 @@ func (c *CLI) FormatServers(args []string) error {
 	logger := newNoopLogger()
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
-		return fmt.Errorf("cannot create servers storage: %w", err)
+		return fmt.Errorf("creating servers storage: %w", err)
 	}
 
 	formatted := storage.FormatToMarkdown(providerToFormat)
@@ -81,18 +81,18 @@ func (c *CLI) FormatServers(args []string) error {
 	output = filepath.Clean(output)
 	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		return fmt.Errorf("cannot open output file: %w", err)
+		return fmt.Errorf("opening output file: %w", err)
 	}
 
 	_, err = fmt.Fprint(file, formatted)
 	if err != nil {
 		_ = file.Close()
-		return fmt.Errorf("cannot write to output file: %w", err)
+		return fmt.Errorf("writing to output file: %w", err)
 	}
 
 	err = file.Close()
 	if err != nil {
-		return fmt.Errorf("cannot close output file: %w", err)
+		return fmt.Errorf("closing output file: %w", err)
 	}
 
 	return nil

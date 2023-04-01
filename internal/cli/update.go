@@ -72,7 +72,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
-		return fmt.Errorf("cannot create servers storage: %w", err)
+		return fmt.Errorf("creating servers storage: %w", err)
 	}
 
 	const clientTimeout = 10 * time.Second
@@ -88,13 +88,13 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	updater := updater.New(httpClient, storage, providers, logger)
 	err = updater.UpdateServers(ctx, options.Providers, options.MinRatio)
 	if err != nil {
-		return fmt.Errorf("cannot update server information: %w", err)
+		return fmt.Errorf("updating server information: %w", err)
 	}
 
 	if maintainerMode {
 		err := storage.FlushToFile(c.repoServersPath)
 		if err != nil {
-			return fmt.Errorf("cannot write servers data to embedded JSON file: %w", err)
+			return fmt.Errorf("writing servers data to embedded JSON file: %w", err)
 		}
 	}
 

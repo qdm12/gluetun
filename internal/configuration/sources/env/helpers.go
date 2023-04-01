@@ -137,7 +137,7 @@ func unsetEnvKeys(envKeys []string, err error) (newErr error) {
 	for _, envKey := range envKeys {
 		unsetErr := os.Unsetenv(envKey)
 		if unsetErr != nil && newErr == nil {
-			newErr = fmt.Errorf("cannot unset environment variable %s: %w", envKey, unsetErr)
+			newErr = fmt.Errorf("unsetting environment variable %s: %w", envKey, unsetErr)
 		}
 	}
 	return newErr

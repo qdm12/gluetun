@@ -27,13 +27,13 @@ func (a *AllServers) MarshalJSON() (data []byte, err error) {
 
 	_, err = buffer.WriteString("{")
 	if err != nil {
-		return nil, fmt.Errorf("cannot write opening bracket: %w", err)
+		return nil, fmt.Errorf("writing opening bracket: %w", err)
 	}
 
 	versionString := fmt.Sprintf(`"version":%d`, a.Version)
 	_, err = buffer.WriteString(versionString)
 	if err != nil {
-		return nil, fmt.Errorf("cannot write schema version string: %w", err)
+		return nil, fmt.Errorf("writing schema version string: %w", err)
 	}
 
 	sortedProviders := make(sort.StringSlice, 0, len(a.ProviderToServers))
@@ -46,26 +46,26 @@ func (a *AllServers) MarshalJSON() (data []byte, err error) {
 		providerKey := fmt.Sprintf(`,"%s":`, provider)
 		_, err = buffer.WriteString(providerKey)
 		if err != nil {
-			return nil, fmt.Errorf("cannot write provider key %s: %w",
+			return nil, fmt.Errorf("writing provider key %s: %w",
 				providerKey, err)
 		}
 
 		servers := a.ProviderToServers[provider]
 		serversJSON, err := json.Marshal(servers)
 		if err != nil {
-			return nil, fmt.Errorf("failed encoding servers for provider %s: %w",
+			return nil, fmt.Errorf("encoding servers for provider %s: %w",
 				provider, err)
 		}
 		_, err = buffer.Write(serversJSON)
 		if err != nil {
-			return nil, fmt.Errorf("cannot write JSON servers data for provider %s: %w",
+			return nil, fmt.Errorf("writing JSON servers data for provider %s: %w",
 				provider, err)
 		}
 	}
 
 	_, err = buffer.WriteString("}")
 	if err != nil {
-		return nil, fmt.Errorf("cannot write closing bracket: %w", err)
+		return nil, fmt.Errorf("writing closing bracket: %w", err)
 	}
 
 	return buffer.Bytes(), nil
@@ -127,14 +127,14 @@ func (a *AllServers) UnmarshalJSON(data []byte) (err error) {
 
 		jsonValue, err := json.Marshal(value)
 		if err != nil {
-			return fmt.Errorf("cannot marshal %s servers: %w",
+			return fmt.Errorf("encoding %s servers: %w",
 				key, err)
 		}
 
 		var servers Servers
 		err = json.Unmarshal(jsonValue, &servers)
 		if err != nil {
-			return fmt.Errorf("cannot unmarshal %s servers: %w",
+			return fmt.Errorf("decoding %s servers: %w",
 				key, err)
 		}
 

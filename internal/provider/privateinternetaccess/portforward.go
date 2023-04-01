@@ -48,12 +48,12 @@ func (p *Provider) PortForward(ctx context.Context, client *http.Client,
 
 	privateIPClient, err := newHTTPClient(serverName)
 	if err != nil {
-		return 0, fmt.Errorf("cannot create custom HTTP client: %w", err)
+		return 0, fmt.Errorf("creating custom HTTP client: %w", err)
 	}
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
 	if err != nil {
-		return 0, fmt.Errorf("cannot read saved port forwarded data: %w", err)
+		return 0, fmt.Errorf("reading saved port forwarded data: %w", err)
 	}
 
 	dataFound := data.Port > 0
@@ -72,7 +72,7 @@ func (p *Provider) PortForward(ctx context.Context, client *http.Client,
 		data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, gateway,
 			p.portForwardPath, p.authFilePath)
 		if err != nil {
-			return 0, fmt.Errorf("cannot refresh port forward data: %w", err)
+			return 0, fmt.Errorf("refreshing port forward data: %w", err)
 		}
 		durationToExpiration = data.Expiration.Sub(p.timeNow())
 	}
@@ -80,7 +80,7 @@ func (p *Provider) PortForward(ctx context.Context, client *http.Client,
 
 	// First time binding
 	if err := bindPort(ctx, privateIPClient, gateway, data); err != nil {
-		return 0, fmt.Errorf("cannot bind port: %w", err)
+		return 0, fmt.Errorf("binding port: %w", err)
 	}
 
 	return data.Port, nil
@@ -94,12 +94,12 @@ func (p *Provider) KeepPortForward(ctx context.Context, client *http.Client,
 	port uint16, gateway net.IP, serverName string) (err error) {
 	privateIPClient, err := newHTTPClient(serverName)
 	if err != nil {
-		return fmt.Errorf("cannot create custom HTTP client: %w", err)
+		return fmt.Errorf("creating custom HTTP client: %w", err)
 	}
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
 	if err != nil {
-		return fmt.Errorf("cannot read saved port forwarded data: %w", err)
+		return fmt.Errorf("reading saved port forwarded data: %w", err)
 	}
 
 	durationToExpiration := data.Expiration.Sub(p.timeNow())
@@ -121,7 +121,7 @@ func (p *Provider) KeepPortForward(ctx context.Context, client *http.Client,
 		case <-keepAliveTimer.C:
 			err := bindPort(ctx, privateIPClient, gateway, data)
 			if err != nil {
-				return fmt.Errorf("cannot bind port: %w", err)
+				return fmt.Errorf("binding port: %w", err)
 			}
 			keepAliveTimer.Reset(keepAlivePeriod)
 		case <-expiryTimer.C:
@@ -135,16 +135,16 @@ func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *htt
 	gateway net.IP, portForwardPath, authFilePath string) (data piaPortForwardData, err error) {
 	data.Token, err = fetchToken(ctx, client, authFilePath)
 	if err != nil {
-		return data, fmt.Errorf("cannot fetch token: %w", err)
+		return data, fmt.Errorf("fetching token: %w", err)
 	}
 
 	data.Port, data.Signature, data.Expiration, err = fetchPortForwardData(ctx, privateIPClient, gateway, data.Token)
 	if err != nil {
-		return data, fmt.Errorf("cannot fetch port forwarding data: %w", err)
+		return data, fmt.Errorf("fetching port forwarding data: %w", err)
 	}
 
 	if err := writePIAPortForwardData(portForwardPath, data); err != nil {
-		return data, fmt.Errorf("cannot persist port forwarding data: %w", err)
+		return data, fmt.Errorf("persisting port forwarding data: %w", err)
 	}
 
 	return data, nil
@@ -236,7 +236,7 @@ func fetchToken(ctx context.Context, client *http.Client,
 	authFilePath string) (token string, err error) {
 	username, password, err := getOpenvpnCredentials(authFilePath)
 	if err != nil {
-		return "", fmt.Errorf("cannot get username and password: %w", err)
+		return "", fmt.Errorf("getting username and password: %w", err)
 	}
 
 	errSubstitutions := map[string]string{
@@ -274,7 +274,7 @@ func fetchToken(ctx context.Context, client *http.Client,
 		Token string `json:"token"`
 	}
 	if err := decoder.Decode(&result); err != nil {
-		return "", fmt.Errorf("cannot unmarshal response: %w", err)
+		return "", fmt.Errorf("decoding response: %w", err)
 	}
 
 	if result.Token == "" {
@@ -291,13 +291,13 @@ func getOpenvpnCredentials(authFilePath string) (
 	username, password string, err error) {
 	file, err := os.Open(authFilePath)
 	if err != nil {
-		return "", "", fmt.Errorf("cannot read OpenVPN authentication file: %w", err)
+		return "", "", fmt.Errorf("reading OpenVPN authentication file: %w", err)
 	}
 
 	authData, err := io.ReadAll(file)
 	if err != nil {
 		_ = file.Close()
-		return "", "", fmt.Errorf("authentication file is malformed: %w", err)
+		return "", "", fmt.Errorf("reading authentication file: %w", err)
 	}
 
 	if err := file.Close(); err != nil {
@@ -329,13 +329,13 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, gateway net.
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
 		err = replaceInErr(err, errSubstitutions)
-		return 0, "", expiration, fmt.Errorf("cannot obtain signature payload: %w", err)
+		return 0, "", expiration, fmt.Errorf("obtaining signature payload: %w", err)
 	}
 
 	response, err := client.Do(request)
 	if err != nil {
 		err = replaceInErr(err, errSubstitutions)
-		return 0, "", expiration, fmt.Errorf("cannot obtain signature payload: %w", err)
+		return 0, "", expiration, fmt.Errorf("obtaining signature payload: %w", err)
 	}
 	defer response.Body.Close()
 
@@ -350,7 +350,7 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, gateway net.
 		Signature string `json:"signature"`
 	}
 	if err := decoder.Decode(&data); err != nil {
-		return 0, "", expiration, fmt.Errorf("cannot unmarshal response: %w", err)
+		return 0, "", expiration, fmt.Errorf("decoding response: %w", err)
 	}
 
 	if data.Status != "OK" {
@@ -359,7 +359,7 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, gateway net.
 
 	port, _, expiration, err = unpackPayload(data.Payload)
 	if err != nil {
-		return 0, "", expiration, fmt.Errorf("cannot unpack payload data: %w", err)
+		return 0, "", expiration, fmt.Errorf("unpacking payload data: %w", err)
 	}
 	return port, data.Signature, expiration, err
 }
@@ -371,7 +371,7 @@ var (
 func bindPort(ctx context.Context, client *http.Client, gateway net.IP, data piaPortForwardData) (err error) {
 	payload, err := packPayload(data.Port, data.Token, data.Expiration)
 	if err != nil {
-		return fmt.Errorf("cannot serialize payload: %w", err)
+		return fmt.Errorf("serializing payload: %w", err)
 	}
 
 	queryParams := make(url.Values)
@@ -410,7 +410,7 @@ func bindPort(ctx context.Context, client *http.Client, gateway net.IP, data pia
 		Message string `json:"message"`
 	}
 	if err := decoder.Decode(&responseData); err != nil {
-		return fmt.Errorf("cannot unmarshal response: from %s: %w", bindPortURL.String(), err)
+		return fmt.Errorf("decoding response: from %s: %w", bindPortURL.String(), err)
 	}
 
 	if responseData.Status != "OK" {

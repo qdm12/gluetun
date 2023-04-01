@@ -40,7 +40,7 @@ func Test_Tun(t *testing.T) {
 	// Create TUN device fail as file exists
 	err = tun.Create(path)
 	require.Error(t, err)
-	require.Equal(t, "cannot create TUN device file node: file exists", err.Error())
+	require.EqualError(t, err, "creating TUN device file node: file exists")
 
 	// Remove simple file
 	err = os.Remove(path)

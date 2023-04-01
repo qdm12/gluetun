@@ -36,7 +36,7 @@ func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (
 
 	const remove = false
 	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-		return fmt.Errorf("cannot allow input to port %d through interface %s: %w",
+		return fmt.Errorf("allowing input to port %d through interface %s: %w",
 			port, intf, err)
 	}
 	netInterfaces[intf] = struct{}{}
@@ -70,7 +70,7 @@ func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 	for netInterface := range interfacesSet {
 		err := c.acceptInputToPort(ctx, netInterface, port, remove)
 		if err != nil {
-			return fmt.Errorf("cannot remove allowed port %d on interface %s: %w",
+			return fmt.Errorf("removing allowed port %d on interface %s: %w",
 				port, netInterface, err)
 		}
 		delete(interfacesSet, netInterface)

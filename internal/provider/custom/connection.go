@@ -32,7 +32,7 @@ func getOpenVPNConnection(extractor Extractor,
 	connection models.Connection, err error) {
 	_, connection, err = extractor.Data(*selection.OpenVPN.ConfFile)
 	if err != nil {
-		return connection, fmt.Errorf("cannot extract connection: %w", err)
+		return connection, fmt.Errorf("extracting connection: %w", err)
 	}
 
 	customPort := *selection.OpenVPN.CustomPort

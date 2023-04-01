@@ -245,7 +245,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	allSettings.Pprof.HTTPServer.Logger = logger.New(log.SetComponent("pprof"))
 	pprofServer, err := pprof.New(allSettings.Pprof)
 	if err != nil {
-		return fmt.Errorf("cannot create Pprof server: %w", err)
+		return fmt.Errorf("creating Pprof server: %w", err)
 	}
 
 	puid, pgid := int(*allSettings.System.PUID), int(*allSettings.System.PGID)
@@ -291,7 +291,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	const defaultUsername = "nonrootuser"
 	nonRootUsername, err := alpineConf.CreateUser(defaultUsername, puid)
 	if err != nil {
-		return fmt.Errorf("cannot create user: %w", err)
+		return fmt.Errorf("creating user: %w", err)
 	}
 	if nonRootUsername != defaultUsername {
 		logger.Info("using existing username " + nonRootUsername + " corresponding to user id " + fmt.Sprint(puid))
@@ -309,7 +309,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		if strings.Contains(err.Error(), "operation not permitted") {
 			logger.Warn("💡 Tip: Are you passing NET_ADMIN capability to gluetun?")
 		}
-		return fmt.Errorf("cannot setup routing: %w", err)
+		return fmt.Errorf("setting up routing: %w", err)
 	}
 	defer func() {
 		routingLogger.Info("routing cleanup...")
@@ -458,7 +458,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
-		return fmt.Errorf("cannot setup control server: %w", err)
+		return fmt.Errorf("setting up control server: %w", err)
 	}
 	httpServerReady := make(chan struct{})
 	go httpServer.Run(httpServerCtx, httpServerReady, httpServerDone)

@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	ErrHTTPStatusCodeNotOK   = errors.New("HTTP status code not OK")
-	ErrUnmarshalResponseBody = errors.New("failed unmarshaling response body")
+	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
+	ErrDecodeResponseBody  = errors.New("failed decoding response body")
 )
 
 type serverData struct {
@@ -47,7 +47,7 @@ func fetchAPI(ctx context.Context, client *http.Client) (data []serverData, err 
 
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&data); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrUnmarshalResponseBody, err)
+		return nil, fmt.Errorf("%w: %s", ErrDecodeResponseBody, err)
 	}
 
 	if err := response.Body.Close(); err != nil {

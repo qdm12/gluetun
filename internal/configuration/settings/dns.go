@@ -31,7 +31,7 @@ type DNS struct {
 func (d DNS) validate() (err error) {
 	err = d.DoT.validate()
 	if err != nil {
-		return fmt.Errorf("failed validating DoT settings: %w", err)
+		return fmt.Errorf("validating DoT settings: %w", err)
 	}
 
 	return nil

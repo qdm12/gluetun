@@ -23,7 +23,7 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	minServers := int(minRatio * float64(existingServersCount))
 	servers, err := provider.FetchServers(ctx, minServers)
 	if err != nil {
-		return fmt.Errorf("cannot get servers: %w", err)
+		return fmt.Errorf("getting servers: %w", err)
 	}
 
 	for _, server := range servers {
@@ -47,7 +47,7 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	// to avoid accumulating server data in memory.
 	err = u.storage.SetServers(providerName, servers)
 	if err != nil {
-		return fmt.Errorf("cannot set servers to storage: %w", err)
+		return fmt.Errorf("setting servers to storage: %w", err)
 	}
 	return nil
 }

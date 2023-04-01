@@ -72,7 +72,7 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&servers); err != nil {
-		return nil, fmt.Errorf("failed unmarshaling response body: %w", err)
+		return nil, fmt.Errorf("decoding response body: %w", err)
 	}
 
 	if err := response.Body.Close(); err != nil {

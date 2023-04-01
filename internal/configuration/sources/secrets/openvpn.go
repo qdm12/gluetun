@@ -13,7 +13,7 @@ func readOpenVPN() (
 		"/run/secrets/openvpn_user",
 	)
 	if err != nil {
-		return settings, fmt.Errorf("cannot read user file: %w", err)
+		return settings, fmt.Errorf("reading user file: %w", err)
 	}
 
 	settings.Password, err = readSecretFileAsStringPtr(
@@ -21,7 +21,7 @@ func readOpenVPN() (
 		"/run/secrets/openvpn_password",
 	)
 	if err != nil {
-		return settings, fmt.Errorf("cannot read password file: %w", err)
+		return settings, fmt.Errorf("reading password file: %w", err)
 	}
 
 	settings.Key, err = readPEMSecretFile(
@@ -29,7 +29,7 @@ func readOpenVPN() (
 		"/run/secrets/openvpn_clientkey",
 	)
 	if err != nil {
-		return settings, fmt.Errorf("cannot read client key file: %w", err)
+		return settings, fmt.Errorf("reading client key file: %w", err)
 	}
 
 	settings.EncryptedKey, err = readPEMSecretFile(
@@ -53,7 +53,7 @@ func readOpenVPN() (
 		"/run/secrets/openvpn_clientcrt",
 	)
 	if err != nil {
-		return settings, fmt.Errorf("cannot read client certificate file: %w", err)
+		return settings, fmt.Errorf("reading client certificate file: %w", err)
 	}
 
 	return settings, nil

@@ -36,7 +36,7 @@ func Test_GetConnection(t *testing.T) {
 		"storage filter error": {
 			filterError: errTest,
 			errWrapped:  errTest,
-			errMessage:  "cannot filter servers: test error",
+			errMessage:  "filtering servers: test error",
 		},
 		"server without IPs": {
 			filteredServers: []models.Server{

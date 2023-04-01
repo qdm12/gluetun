@@ -36,12 +36,12 @@ func Test_extractServersFromBytes(t *testing.T) {
 	}{
 		"bad JSON": {
 			b:          []byte("garbage"),
-			errMessage: "cannot decode servers: invalid character 'g' looking for beginning of value",
+			errMessage: "decoding servers: invalid character 'g' looking for beginning of value",
 		},
 		"bad provider JSON": {
 			b:                 []byte(`{"cyberghost": "garbage"}`),
 			hardcodedVersions: populateProviderToVersion(map[string]uint16{}),
-			errMessage: "cannot decode servers version for provider Cyberghost: " +
+			errMessage: "decoding servers version for provider Cyberghost: " +
 				"json: cannot unmarshal string into Go value of type struct { Version uint16 \"json:\\\"version\\\"\" }",
 		},
 		"bad servers array JSON": {
@@ -49,7 +49,7 @@ func Test_extractServersFromBytes(t *testing.T) {
 			hardcodedVersions: populateProviderToVersion(map[string]uint16{
 				providers.Cyberghost: 1,
 			}),
-			errMessage: "cannot decode servers for provider Cyberghost: " +
+			errMessage: "decoding servers for provider Cyberghost: " +
 				"json: cannot unmarshal string into Go struct field Servers.servers of type []models.Server",
 		},
 		"absent provider keys": {

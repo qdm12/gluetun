@@ -74,12 +74,12 @@ func (s *Server) healthCheck(ctx context.Context) (err error) {
 	const dialNetwork = "tcp4"
 	connection, err := s.dialer.DialContext(ctx, dialNetwork, address)
 	if err != nil {
-		return fmt.Errorf("cannot dial: %w", err)
+		return fmt.Errorf("dialing: %w", err)
 	}
 
 	err = connection.Close()
 	if err != nil {
-		return fmt.Errorf("cannot close connection: %w", err)
+		return fmt.Errorf("closing connection: %w", err)
 	}
 
 	return nil
@@ -91,7 +91,7 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 		addrErr := new(net.AddrError)
 		ok := errors.As(err, &addrErr)
 		if !ok || addrErr.Err != "missing port in address" {
-			return "", fmt.Errorf("cannot split host and port from address: %w", err)
+			return "", fmt.Errorf("splitting host and port from address: %w", err)
 		}
 		host = address
 		const defaultPort = "443"

@@ -54,14 +54,14 @@ func extractDataFromLine(line string) (
 	case strings.HasPrefix(line, "proto "):
 		protocol, err = extractProto(line)
 		if err != nil {
-			return nil, 0, "", fmt.Errorf("failed extracting protocol from proto line: %w", err)
+			return nil, 0, "", fmt.Errorf("extracting protocol from proto line: %w", err)
 		}
 		return nil, 0, protocol, nil
 
 	case strings.HasPrefix(line, "remote "):
 		ip, port, protocol, err = extractRemote(line)
 		if err != nil {
-			return nil, 0, "", fmt.Errorf("failed extracting from remote line: %w", err)
+			return nil, 0, "", fmt.Errorf("extracting from remote line: %w", err)
 		}
 		return ip, port, protocol, nil
 	}

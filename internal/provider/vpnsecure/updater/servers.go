@@ -14,7 +14,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	servers, err = fetchServers(ctx, u.client, u.warner)
 	if err != nil {
-		return nil, fmt.Errorf("cannot fetch servers: %w", err)
+		return nil, fmt.Errorf("fetching servers: %w", err)
 	} else if len(servers) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			common.ErrNotEnoughServers, len(servers), minServers)

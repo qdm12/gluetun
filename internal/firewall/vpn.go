@@ -45,13 +45,13 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 
 	for _, defaultRoute := range c.defaultRoutes {
 		if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, connection, remove); err != nil {
-			return fmt.Errorf("cannot allow output traffic through VPN connection: %w", err)
+			return fmt.Errorf("allowing output traffic through VPN connection: %w", err)
 		}
 	}
 	c.vpnConnection = connection
 
 	if err = c.acceptOutputThroughInterface(ctx, vpnIntf, remove); err != nil {
-		return fmt.Errorf("cannot accept output traffic through interface %s: %w", vpnIntf, err)
+		return fmt.Errorf("accepting output traffic through interface %s: %w", vpnIntf, err)
 	}
 	c.vpnIntf = vpnIntf
 

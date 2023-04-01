@@ -15,7 +15,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 	err = addServersFromAPI(ctx, u.client, hts)
 	if err != nil {
-		return nil, fmt.Errorf("cannot fetch server information from API: %w", err)
+		return nil, fmt.Errorf("fetching server information from API: %w", err)
 	}
 
 	warnings, err := addOpenVPNServersFromZip(ctx, u.unzipper, hts)
@@ -23,7 +23,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		u.warner.Warn(warning)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("cannot get OpenVPN ZIP file: %w", err)
+		return nil, fmt.Errorf("getting OpenVPN ZIP file: %w", err)
 	}
 
 	getRemainingServers(hts)

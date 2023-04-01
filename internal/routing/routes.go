@@ -19,7 +19,7 @@ func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP,
 
 	link, err := r.netLinker.LinkByName(iface)
 	if err != nil {
-		return fmt.Errorf("cannot find link for interface %s: %w", iface, err)
+		return fmt.Errorf("finding link for interface %s: %w", iface, err)
 	}
 
 	route := netlink.Route{
@@ -29,7 +29,7 @@ func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP,
 		Table:     table,
 	}
 	if err := r.netLinker.RouteReplace(&route); err != nil {
-		return fmt.Errorf("cannot replace route for subnet %s at interface %s: %w",
+		return fmt.Errorf("replacing route for subnet %s at interface %s: %w",
 			destinationStr, iface, err)
 	}
 
@@ -47,7 +47,7 @@ func (r *Routing) deleteRouteVia(destination net.IPNet, gateway net.IP,
 
 	link, err := r.netLinker.LinkByName(iface)
 	if err != nil {
-		return fmt.Errorf("cannot find link for interface %s: %w", iface, err)
+		return fmt.Errorf("finding link for interface %s: %w", iface, err)
 	}
 
 	route := netlink.Route{
@@ -57,7 +57,7 @@ func (r *Routing) deleteRouteVia(destination net.IPNet, gateway net.IP,
 		Table:     table,
 	}
 	if err := r.netLinker.RouteDel(&route); err != nil {
-		return fmt.Errorf("cannot delete route: for subnet %s at interface %s: %w",
+		return fmt.Errorf("deleting route: for subnet %s at interface %s: %w",
 			destinationStr, iface, err)
 	}
 

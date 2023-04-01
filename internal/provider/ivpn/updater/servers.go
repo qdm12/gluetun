@@ -14,7 +14,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
 	data, err := fetchAPI(ctx, u.client)
 	if err != nil {
-		return nil, fmt.Errorf("failed fetching API: %w", err)
+		return nil, fmt.Errorf("fetching API: %w", err)
 	}
 
 	hosts := make(map[string]struct{}, len(data.Servers))

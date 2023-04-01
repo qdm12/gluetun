@@ -29,7 +29,7 @@ func Test_extractDataFromLines(t *testing.T) {
 		},
 		"extraction error": {
 			lines: []string{"bla bla", "proto bad", "remote 1.2.3.4 1194 tcp"},
-			err:   errors.New("on line 2: failed extracting protocol from proto line: network protocol not supported: bad"),
+			err:   errors.New("on line 2: extracting protocol from proto line: network protocol not supported: bad"),
 		},
 		"only use first values found": {
 			lines: []string{"proto udp", "proto tcp", "remote 1.2.3.4 443 tcp", "remote 5.2.3.4 1194 udp"},

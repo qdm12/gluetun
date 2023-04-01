@@ -53,7 +53,7 @@ func Test_Wireguard_addRoute(t *testing.T) {
 				Table:     firewallMark,
 			},
 			routeAddErr: errDummy,
-			err:         errors.New("cannot add route for link a_bridge, destination 1.2.3.4/32 and table 51820: dummy"), //nolint:lll
+			err:         errors.New("adding route for link a_bridge, destination 1.2.3.4/32 and table 51820: dummy"), //nolint:lll
 		},
 	}
 

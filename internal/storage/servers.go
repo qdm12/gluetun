@@ -28,7 +28,7 @@ func (s *Storage) SetServers(provider string, servers []models.Server) (err erro
 
 	err = s.flushToFile(s.filepath)
 	if err != nil {
-		return fmt.Errorf("cannot save servers to file: %w", err)
+		return fmt.Errorf("saving servers to file: %w", err)
 	}
 	return nil
 }

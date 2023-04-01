@@ -38,7 +38,7 @@ func GetConnection(provider string,
 	connection models.Connection, err error) {
 	servers, err := storage.FilterServers(provider, selection)
 	if err != nil {
-		return connection, fmt.Errorf("cannot filter servers: %w", err)
+		return connection, fmt.Errorf("filtering servers: %w", err)
 	}
 
 	protocol := getProtocol(selection)

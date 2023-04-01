@@ -37,7 +37,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 		"error": {
 			storageErr: errTest,
 			errWrapped: errTest,
-			errMessage: "cannot filter servers: test error",
+			errMessage: "filtering servers: test error",
 		},
 		"default OpenVPN TCP port": {
 			filteredServers: []models.Server{

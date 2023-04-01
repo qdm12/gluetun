@@ -14,7 +14,7 @@ import (
 
 // readFromFile reads the servers from server.json.
 // It only reads servers that have the same version as the hardcoded servers version
-// to avoid JSON unmarshaling errors.
+// to avoid JSON decoding errors.
 func (s *Storage) readFromFile(filepath string, hardcodedVersions map[string]uint16) (
 	servers models.AllServers, err error) {
 	file, err := os.Open(filepath)
@@ -40,7 +40,7 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string
 	servers models.AllServers, err error) {
 	rawMessages := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(b, &rawMessages); err != nil {
-		return servers, fmt.Errorf("cannot decode servers: %w", err)
+		return servers, fmt.Errorf("decoding servers: %w", err)
 	}
 
 	// Note schema version is at map key "version" as number
@@ -90,7 +90,7 @@ func (s *Storage) readServers(provider string, hardcodedVersion uint16,
 
 	err = json.Unmarshal(rawMessage, &versionObject)
 	if err != nil {
-		return servers, false, fmt.Errorf("cannot decode servers version for provider %s: %w",
+		return servers, false, fmt.Errorf("decoding servers version for provider %s: %w",
 			provider, err)
 	}
 
@@ -107,7 +107,7 @@ func (s *Storage) readServers(provider string, hardcodedVersion uint16,
 
 	err = json.Unmarshal(rawMessage, &servers)
 	if err != nil {
-		return servers, false, fmt.Errorf("cannot decode servers for provider %s: %w",
+		return servers, false, fmt.Errorf("decoding servers for provider %s: %w",
 			provider, err)
 	}
 

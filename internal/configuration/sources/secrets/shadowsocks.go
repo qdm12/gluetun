@@ -12,7 +12,7 @@ func readShadowsocks() (settings settings.Shadowsocks, err error) {
 		"/run/secrets/shadowsocks_password",
 	)
 	if err != nil {
-		return settings, fmt.Errorf("cannot read Shadowsocks password secret file: %w", err)
+		return settings, fmt.Errorf("reading Shadowsocks password secret file: %w", err)
 	}
 
 	return settings, nil

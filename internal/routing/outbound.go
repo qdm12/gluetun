@@ -39,7 +39,7 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 
 	err = r.addOutboundSubnets(subnetsToAdd, defaultRoutes)
 	if err != nil {
-		return fmt.Errorf("cannot add outbound subnet to routes: %w", err)
+		return fmt.Errorf("adding outbound subnet to routes: %w", err)
 	}
 
 	return nil
@@ -77,7 +77,7 @@ func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
 		for _, defaultRoute := range defaultRoutes {
 			err = r.addRouteVia(subnet, defaultRoute.Gateway, defaultRoute.NetInterface, outboundTable)
 			if err != nil {
-				return fmt.Errorf("cannot add route for subnet %s: %w", subnet, err)
+				return fmt.Errorf("adding route for subnet %s: %w", subnet, err)
 			}
 		}
 
@@ -85,7 +85,7 @@ func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
 		ruleDstNet := &subnets[i]
 		err = r.addIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {
-			return fmt.Errorf("cannot add rule: for subnet %s: %w", subnet, err)
+			return fmt.Errorf("adding rule: for subnet %s: %w", subnet, err)
 		}
 
 		r.outboundSubnets = append(r.outboundSubnets, subnet)

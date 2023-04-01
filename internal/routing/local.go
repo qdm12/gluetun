@@ -23,7 +23,7 @@ type LocalNetwork struct {
 func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	links, err := r.netLinker.LinkList()
 	if err != nil {
-		return localNetworks, fmt.Errorf("cannot list links: %w", err)
+		return localNetworks, fmt.Errorf("listing links: %w", err)
 	}
 
 	localLinks := make(map[int]struct{})
@@ -43,7 +43,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return localNetworks, fmt.Errorf("cannot list routes: %w", err)
+		return localNetworks, fmt.Errorf("listing routes: %w", err)
 	}
 
 	for _, route := range routes {
@@ -60,7 +60,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		link, err := r.netLinker.LinkByIndex(route.LinkIndex)
 		if err != nil {
-			return localNetworks, fmt.Errorf("cannot find link at index %d: %w", route.LinkIndex, err)
+			return localNetworks, fmt.Errorf("finding link at index %d: %w", route.LinkIndex, err)
 		}
 
 		localNet.InterfaceName = link.Attrs().Name

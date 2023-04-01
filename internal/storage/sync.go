@@ -23,7 +23,7 @@ func (s *Storage) syncServers() (err error) {
 
 	serversOnFile, err := s.readFromFile(s.filepath, hardcodedVersions)
 	if err != nil {
-		return fmt.Errorf("cannot read servers from file: %w", err)
+		return fmt.Errorf("reading servers from file: %w", err)
 	}
 
 	hardcodedCount := countServers(s.hardcodedServers)
@@ -52,7 +52,7 @@ func (s *Storage) syncServers() (err error) {
 
 	err = s.flushToFile(s.filepath)
 	if err != nil {
-		return fmt.Errorf("cannot write servers to file: %w", err)
+		return fmt.Errorf("writing servers to file: %w", err)
 	}
 	return nil
 }

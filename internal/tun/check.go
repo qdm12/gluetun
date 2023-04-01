@@ -22,7 +22,7 @@ func (t *Tun) Check(path string) error {
 
 	info, err := f.Stat()
 	if err != nil {
-		return fmt.Errorf("cannot stat TUN file: %w", err)
+		return fmt.Errorf("getting stat information for TUN file: %w", err)
 	}
 
 	sys, ok := info.Sys().(*syscall.Stat_t)
@@ -37,7 +37,7 @@ func (t *Tun) Check(path string) error {
 	}
 
 	if err := f.Close(); err != nil {
-		return fmt.Errorf("cannot close TUN device: %w", err)
+		return fmt.Errorf("closing TUN device: %w", err)
 	}
 
 	return nil
