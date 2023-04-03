@@ -1,2 +1,2 @@
 FROM qmcgaw/godevcontainer
-RUN apk add wireguard-tools htop
+RUN apk add wireguard-tools htop openssl
