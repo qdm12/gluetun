@@ -1,18 +1,13 @@
-- name: "Bug :bug:"
-  color: "b60205"
+# Temporary status
+- name: "🗯️ Waiting for feedback"
+  color: "aadefa"
   description: ""
-- name: "Feature request :bulb:"
-  color: "0e8a16"
-  description: ""
-- name: "Help wanted :pray:"
-  color: "4caf50"
-  description: ""
-- name: "Documentation :memo:"
-  color: "c5def5"
-  description: ""
-- name: "Needs more info :thinking:"
-  color: "795548"
-  description: ""
+- name: "🔴 Blocked"
+  color: "ff3f14"
+  description: "Blocked by another issue or pull request"
+- name: "🔒 After next release"
+  color: "e8f274"
+  description: "Will be done after the next release"
 
 # Priority
 - name: "🚨 Urgent"
@@ -20,6 +15,14 @@
   description: ""
 - name: "💤 Low priority"
   color: "4285f4"
+  description: ""
+
+# Complexity
+- name: "☣️ Hard to do"
+  color: "7d0008"
+  description: ""
+- name: "🟩 Easy to do"
+  color: "34cf43"
   description: ""
 
 # VPN providers
