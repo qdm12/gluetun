@@ -163,6 +163,11 @@ func (s Settings) toLinesNode() (node *gotree.Node) {
 }
 
 func (s Settings) Warnings() (warnings []string) {
+	if *s.VPN.Provider.Name == providers.HideMyAss {
+		warnings = append(warnings, "HideMyAss dropped support for Linux OpenVPN "+
+			" so this will likely not work anymore. See https://github.com/qdm12/gluetun/issues/1498.")
+	}
+
 	if helpers.IsOneOf(*s.VPN.Provider.Name, providers.SlickVPN) &&
 		s.VPN.Type == vpn.OpenVPN {
 		if s.VPN.OpenVPN.Version == openvpn.Openvpn24 {
