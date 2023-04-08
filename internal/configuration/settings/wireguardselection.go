@@ -16,7 +16,7 @@ type WireguardSelection struct {
 	// It is only used with VPN providers generating Wireguard
 	// configurations specific to each server and user.
 	// To indicate it should not be used, it should be set
-	// to netaddr.IPv4Unspecified(). It can never be the zero value
+	// to netip.IPv4Unspecified(). It can never be the zero value
 	// in the internal state.
 	EndpointIP netip.Addr
 	// EndpointPort is a the server port to use for the VPN server.
