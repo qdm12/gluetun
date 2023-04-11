@@ -1,6 +1,7 @@
 package natpmp
 
 import (
+	"context"
 	"net/netip"
 	"testing"
 	"time"
@@ -13,6 +14,7 @@ func Test_Client_rpc(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
+		ctx              context.Context
 		gateway          netip.Addr
 		request          []byte
 		responseSize     uint
@@ -37,6 +39,7 @@ func Test_Client_rpc(t *testing.T) {
 				`need at least 2 bytes and got 1 byte\(s\)`,
 		},
 		"write_error": {
+			ctx:     context.Background(),
 			gateway: netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request: []byte{0, 0},
 			errMessage: `writing to connection: write udp ` +
@@ -44,6 +47,7 @@ func Test_Client_rpc(t *testing.T) {
 				`i/o timeout`,
 		},
 		"call_error": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0, 1},
 			initialRetry: time.Millisecond,
@@ -52,6 +56,7 @@ func Test_Client_rpc(t *testing.T) {
 			errMessage:   "connection timeout: after 1ms",
 		},
 		"response_too_small": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0, 0},
 			initialRetry: time.Second,
@@ -64,6 +69,7 @@ func Test_Client_rpc(t *testing.T) {
 				`need at least 4 bytes and got 1 byte\(s\)`,
 		},
 		"unexpected_response_size": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize: 5,
@@ -77,6 +83,7 @@ func Test_Client_rpc(t *testing.T) {
 				`expected 5 bytes and got 4 byte\(s\)`,
 		},
 		"unknown_protocol_version": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize: 16,
@@ -89,6 +96,7 @@ func Test_Client_rpc(t *testing.T) {
 			errMessage: "checking response: protocol version is unknown: 1",
 		},
 		"unexpected_operation_code": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize: 16,
@@ -101,6 +109,7 @@ func Test_Client_rpc(t *testing.T) {
 			errMessage: "checking response: operation code is unexpected: expected 0x82 and got 0x88",
 		},
 		"failure_result_code": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize: 16,
@@ -113,6 +122,7 @@ func Test_Client_rpc(t *testing.T) {
 			errMessage: "checking response: result code: result code is unknown: 17",
 		},
 		"success": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize: 16,
@@ -138,8 +148,8 @@ func Test_Client_rpc(t *testing.T) {
 				maxRetries:   1,
 			}
 
-			response, err := client.rpc(testCase.gateway, testCase.request,
-				testCase.responseSize)
+			response, err := client.rpc(testCase.ctx, testCase.gateway,
+				testCase.request, testCase.responseSize)
 
 			if testCase.errMessage != "" {
 				require.Error(t, err)
