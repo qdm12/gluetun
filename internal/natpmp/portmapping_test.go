@@ -1,6 +1,7 @@
 package natpmp
 
 import (
+	"context"
 	"net/netip"
 	"testing"
 	"time"
@@ -12,6 +13,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
+		ctx                       context.Context
 		gateway                   netip.Addr
 		protocol                  string
 		internalPort              uint16
@@ -38,6 +40,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			errMessage: "network protocol is unknown: xyz",
 		},
 		"rpc_error": {
+			ctx:                   context.Background(),
 			gateway:               netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			protocol:              "udp",
 			internalPort:          123,
@@ -49,6 +52,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			errMessage:            "executing remote procedure call: connection timeout: after 1ms",
 		},
 		"add_udp": {
+			ctx:                   context.Background(),
 			gateway:               netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			protocol:              "udp",
 			internalPort:          123,
@@ -65,6 +69,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			assignedLifetime:          0x4b0 * time.Second,
 		},
 		"add_tcp": {
+			ctx:                   context.Background(),
 			gateway:               netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			protocol:              "tcp",
 			internalPort:          123,
@@ -81,6 +86,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			assignedLifetime:          0x4b0 * time.Second,
 		},
 		"remove_udp": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			protocol:     "udp",
 			internalPort: 123,
@@ -93,6 +99,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			assignedInternalPort:      0x7b,
 		},
 		"remove_tcp": {
+			ctx:          context.Background(),
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			protocol:     "tcp",
 			internalPort: 123,
@@ -121,7 +128,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 
 			durationSinceStartOfEpoch, assignedInternalPort,
 				assignedExternalPort, assignedLifetime, err :=
-				client.AddPortMapping(testCase.gateway,
+				client.AddPortMapping(testCase.ctx, testCase.gateway,
 					testCase.protocol, testCase.internalPort,
 					testCase.requestedExternalPort, testCase.lifetime)
 

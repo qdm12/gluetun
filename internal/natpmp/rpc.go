@@ -1,6 +1,7 @@
 package natpmp
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -13,7 +14,8 @@ var (
 	ErrConnectionTimeout    = errors.New("connection timeout")
 )
 
-func (c *Client) rpc(gateway netip.Addr, request []byte, responseSize uint) (
+func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
+	request []byte, responseSize uint) (
 	response []byte, err error) {
 	if gateway.IsUnspecified() || !gateway.IsValid() {
 		return nil, fmt.Errorf("%w", ErrGatewayIPUnspecified)
@@ -28,11 +30,23 @@ func (c *Client) rpc(gateway netip.Addr, request []byte, responseSize uint) (
 		IP:   gateway.AsSlice(),
 		Port: int(c.serverPort),
 	}
+
 	connection, err := net.DialUDP("udp", nil, gatewayAddress)
 	if err != nil {
 		return nil, fmt.Errorf("dialing udp: %w", err)
 	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	endGoroutineDone := make(chan struct{})
 	defer func() {
+		cancel()
+		<-endGoroutineDone
+	}()
+	go func() {
+		defer close(endGoroutineDone)
+		// Context is canceled either by the parent context or
+		// when this function returns.
+		<-ctx.Done()
 		closeErr := connection.Close()
 		if closeErr == nil {
 			return
@@ -68,6 +82,9 @@ func (c *Client) rpc(gateway netip.Addr, request []byte, responseSize uint) (
 
 		bytesRead, receivedRemoteAddress, err := connection.ReadFromUDP(response)
 		if err != nil {
+			if ctx.Err() != nil {
+				return nil, fmt.Errorf("reading from udp connection: %w", ctx.Err())
+			}
 			var netErr net.Error
 			if errors.As(err, &netErr) && netErr.Timeout() {
 				totalRetryDuration += retryDuration

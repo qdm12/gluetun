@@ -1,6 +1,7 @@
 package natpmp
 
 import (
+	"context"
 	"encoding/binary"
 	"fmt"
 	"net/netip"
@@ -10,11 +11,12 @@ import (
 // ExternalAddress fetches the duration since the start of epoch and the external
 // IPv4 address of the gateway.
 // See https://www.ietf.org/rfc/rfc6886.html#section-3.2
-func (c *Client) ExternalAddress(gateway netip.Addr) (durationSinceStartOfEpoch time.Duration,
+func (c *Client) ExternalAddress(ctx context.Context, gateway netip.Addr) (
+	durationSinceStartOfEpoch time.Duration,
 	externalIPv4Address netip.Addr, err error) {
-	message := []byte{0, 0} // version 0, operationCode 0
+	request := []byte{0, 0} // version 0, operationCode 0
 	const responseSize = 12
-	response, err := c.rpc(gateway, message, responseSize)
+	response, err := c.rpc(ctx, gateway, request, responseSize)
 	if err != nil {
 		return 0, externalIPv4Address, fmt.Errorf("executing remote procedure call: %w", err)
 	}
