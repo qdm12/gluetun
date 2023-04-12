@@ -112,7 +112,7 @@ func Test_Server_BadSettings(t *testing.T) {
 	t.Parallel()
 
 	settings := Settings{
-		BlockProfileRate: -1,
+		BlockProfileRate: intPtr(-1),
 	}
 
 	server, err := New(settings)

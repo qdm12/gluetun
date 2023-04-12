@@ -13,8 +13,8 @@ import (
 // with the settings given. It returns an error
 // if one of the settings is not valid.
 func New(settings Settings) (server *httpserver.Server, err error) {
-	runtime.SetBlockProfileRate(settings.BlockProfileRate)
-	runtime.SetMutexProfileFraction(settings.MutexProfileRate)
+	runtime.SetBlockProfileRate(*settings.BlockProfileRate)
+	runtime.SetMutexProfileFraction(*settings.MutexProfileRate)
 
 	handler := http.NewServeMux()
 	handler.HandleFunc("/debug/pprof/", pprof.Index)

@@ -8,6 +8,8 @@ import (
 
 func boolPtr(b bool) *bool { return &b }
 
+func intPtr(n int) *int { return &n }
+
 var _ gomock.Matcher = (*regexMatcher)(nil)
 
 type regexMatcher struct {

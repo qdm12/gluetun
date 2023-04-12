@@ -31,8 +31,8 @@ func Test_Settings_SetDefaults(t *testing.T) {
 		"non empty settings": {
 			initial: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address:           ":6061",
 					ReadHeaderTimeout: time.Second,
@@ -42,8 +42,8 @@ func Test_Settings_SetDefaults(t *testing.T) {
 			},
 			expected: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address:           ":6061",
 					ReadHeaderTimeout: time.Second,
@@ -77,8 +77,8 @@ func Test_Settings_Copy(t *testing.T) {
 		"non empty settings": {
 			initial: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address:         ":6061",
 					ShutdownTimeout: time.Second,
@@ -86,8 +86,8 @@ func Test_Settings_Copy(t *testing.T) {
 			},
 			expected: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address:         ":6061",
 					ShutdownTimeout: time.Second,
@@ -120,16 +120,16 @@ func Test_Settings_MergeWith(t *testing.T) {
 		"merge empty with filled": {
 			other: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
 			},
 			expected: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
@@ -138,16 +138,16 @@ func Test_Settings_MergeWith(t *testing.T) {
 		"merge filled with empty": {
 			settings: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
 			},
 			expected: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
@@ -179,16 +179,16 @@ func Test_Settings_OverrideWith(t *testing.T) {
 		"override empty with filled": {
 			other: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
 			},
 			expected: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
@@ -197,16 +197,16 @@ func Test_Settings_OverrideWith(t *testing.T) {
 		"override filled with empty": {
 			settings: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
 			},
 			expected: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
@@ -215,24 +215,24 @@ func Test_Settings_OverrideWith(t *testing.T) {
 		"override filled with filled": {
 			settings: Settings{
 				Enabled:          boolPtr(false),
-				BlockProfileRate: 1,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(1),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address: ":8001",
 				},
 			},
 			other: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 2,
-				MutexProfileRate: 3,
+				BlockProfileRate: intPtr(2),
+				MutexProfileRate: intPtr(3),
 				HTTPServer: httpserver.Settings{
 					Address: ":8002",
 				},
 			},
 			expected: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 2,
-				MutexProfileRate: 3,
+				BlockProfileRate: intPtr(2),
+				MutexProfileRate: intPtr(3),
 				HTTPServer: httpserver.Settings{
 					Address: ":8002",
 				},
@@ -262,14 +262,14 @@ func Test_Settings_Validate(t *testing.T) {
 	}{
 		"negative block profile rate": {
 			settings: Settings{
-				BlockProfileRate: -1,
+				BlockProfileRate: intPtr(-1),
 			},
 			errWrapped: ErrBlockProfileRateNegative,
 			errMessage: ErrBlockProfileRateNegative.Error(),
 		},
 		"negative mutex profile rate": {
 			settings: Settings{
-				MutexProfileRate: -1,
+				MutexProfileRate: intPtr(-1),
 			},
 			errWrapped: ErrMutexProfileRateNegative,
 			errMessage: ErrMutexProfileRateNegative.Error(),
@@ -325,8 +325,8 @@ func Test_Settings_String(t *testing.T) {
 		"all values": {
 			settings: Settings{
 				Enabled:          boolPtr(true),
-				BlockProfileRate: 2,
-				MutexProfileRate: 1,
+				BlockProfileRate: intPtr(2),
+				MutexProfileRate: intPtr(1),
 				HTTPServer: httpserver.Settings{
 					Address:         ":8000",
 					ShutdownTimeout: time.Second,
