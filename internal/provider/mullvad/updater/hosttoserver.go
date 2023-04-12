@@ -25,7 +25,7 @@ func (hts hostToServer) add(data serverData) (err error) {
 	}
 
 	if data.IPv4 == "" && data.IPv6 == "" {
-		return ErrNoIP
+		return fmt.Errorf("%w", ErrNoIP)
 	}
 
 	server, ok := hts[data.Hostname]

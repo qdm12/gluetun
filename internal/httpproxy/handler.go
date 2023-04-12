@@ -2,6 +2,7 @@ package httpproxy
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -65,5 +66,5 @@ var hopHeaders = [...]string{ //nolint:gochecknoglobals
 
 // Do not follow redirect, but directly return the redirect response.
 func returnRedirect(*http.Request, []*http.Request) error {
-	return http.ErrUseLastResponse
+	return fmt.Errorf("%w", http.ErrUseLastResponse)
 }

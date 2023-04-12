@@ -2,6 +2,7 @@ package pprof
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
@@ -63,11 +64,11 @@ var (
 
 func (s Settings) Validate() (err error) {
 	if *s.BlockProfileRate < 0 {
-		return ErrBlockProfileRateNegative
+		return fmt.Errorf("%w", ErrBlockProfileRateNegative)
 	}
 
 	if *s.MutexProfileRate < 0 {
-		return ErrMutexProfileRateNegative
+		return fmt.Errorf("%w", ErrMutexProfileRateNegative)
 	}
 
 	return s.HTTPServer.Validate()

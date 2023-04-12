@@ -51,14 +51,14 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	}
 
 	if !endUserMode && !maintainerMode {
-		return ErrModeUnspecified
+		return fmt.Errorf("%w", ErrModeUnspecified)
 	}
 
 	if updateAll {
 		options.Providers = providers.All()
 	} else {
 		if csvProviders == "" {
-			return ErrNoProviderSpecified
+			return fmt.Errorf("%w", ErrNoProviderSpecified)
 		}
 		options.Providers = strings.Split(csvProviders, ",")
 	}

@@ -61,7 +61,7 @@ func (c *CLI) FormatServers(args []string) error {
 	}
 	switch len(providers) {
 	case 0:
-		return ErrProviderUnspecified
+		return fmt.Errorf("%w", ErrProviderUnspecified)
 	case 1:
 	default:
 		return fmt.Errorf("%w: %d specified: %s",

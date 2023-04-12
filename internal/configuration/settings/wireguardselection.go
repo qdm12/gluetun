@@ -41,7 +41,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 		// endpoint IP addresses are baked in
 	case providers.Custom:
 		if len(w.EndpointIP) == 0 {
-			return ErrWireguardEndpointIPNotSet
+			return fmt.Errorf("%w", ErrWireguardEndpointIPNotSet)
 		}
 	default: // Providers not supporting Wireguard
 	}
@@ -51,12 +51,12 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	// EndpointPort is required
 	case providers.Custom:
 		if *w.EndpointPort == 0 {
-			return ErrWireguardEndpointPortNotSet
+			return fmt.Errorf("%w", ErrWireguardEndpointPortNotSet)
 		}
 	// EndpointPort cannot be set
 	case providers.Surfshark:
 		if *w.EndpointPort != 0 {
-			return ErrWireguardEndpointPortSet
+			return fmt.Errorf("%w", ErrWireguardEndpointPortSet)
 		}
 	case providers.Airvpn, providers.Ivpn, providers.Mullvad, providers.Windscribe:
 		// EndpointPort is optional and can be 0
@@ -92,7 +92,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 		// public keys are baked in
 	case providers.Custom:
 		if w.PublicKey == "" {
-			return ErrWireguardPublicKeyNotSet
+			return fmt.Errorf("%w", ErrWireguardPublicKeyNotSet)
 		}
 	default: // Providers not supporting Wireguard
 	}

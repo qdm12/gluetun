@@ -118,7 +118,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 	}
 
 	if *ss.FreeOnly && *ss.PremiumOnly {
-		return ErrFreePremiumBothSet
+		return fmt.Errorf("%w", ErrFreePremiumBothSet)
 	}
 
 	if *ss.StreamOnly &&

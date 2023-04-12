@@ -92,34 +92,34 @@ func (s *Settings) Check() (err error) {
 	}
 
 	if s.PrivateKey == "" {
-		return ErrPrivateKeyMissing
+		return fmt.Errorf("%w", ErrPrivateKeyMissing)
 	} else if _, err := wgtypes.ParseKey(s.PrivateKey); err != nil {
-		return ErrPrivateKeyInvalid
+		return fmt.Errorf("%w", ErrPrivateKeyInvalid)
 	}
 
 	if s.PublicKey == "" {
-		return ErrPublicKeyMissing
+		return fmt.Errorf("%w", ErrPublicKeyMissing)
 	} else if _, err := wgtypes.ParseKey(s.PublicKey); err != nil {
 		return fmt.Errorf("%w: %s", ErrPublicKeyInvalid, s.PublicKey)
 	}
 
 	if s.PreSharedKey != "" {
 		if _, err := wgtypes.ParseKey(s.PreSharedKey); err != nil {
-			return ErrPreSharedKeyInvalid
+			return fmt.Errorf("%w", ErrPreSharedKeyInvalid)
 		}
 	}
 
 	switch {
 	case s.Endpoint == nil:
-		return ErrEndpointMissing
+		return fmt.Errorf("%w", ErrEndpointMissing)
 	case len(s.Endpoint.IP) == 0:
-		return ErrEndpointIPMissing
+		return fmt.Errorf("%w", ErrEndpointIPMissing)
 	case s.Endpoint.Port == 0:
-		return ErrEndpointPortMissing
+		return fmt.Errorf("%w", ErrEndpointPortMissing)
 	}
 
 	if len(s.Addresses) == 0 {
-		return ErrAddressMissing
+		return fmt.Errorf("%w", ErrAddressMissing)
 	}
 	for i, addr := range s.Addresses {
 		switch {
@@ -136,7 +136,7 @@ func (s *Settings) Check() (err error) {
 	}
 
 	if s.FirewallMark == 0 {
-		return ErrFirewallMarkMissing
+		return fmt.Errorf("%w", ErrFirewallMarkMissing)
 	}
 
 	switch s.Implementation {
