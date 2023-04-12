@@ -27,7 +27,7 @@ func (t *Tun) Check(path string) error {
 
 	sys, ok := info.Sys().(*syscall.Stat_t)
 	if !ok {
-		return ErrTUNInfo
+		return fmt.Errorf("%w", ErrTUNInfo)
 	}
 
 	const expectedRdev = 2760 // corresponds to major 10 and minor 200

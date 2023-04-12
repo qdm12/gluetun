@@ -47,17 +47,17 @@ var (
 func (s *Server) HasMinimumInformation() (err error) {
 	switch {
 	case s.VPN == "":
-		return ErrVPNFieldEmpty
+		return fmt.Errorf("%w", ErrVPNFieldEmpty)
 	case s.Hostname == "":
-		return ErrHostnameFieldEmpty
+		return fmt.Errorf("%w", ErrHostnameFieldEmpty)
 	case len(s.IPs) == 0:
-		return ErrIPsFieldEmpty
+		return fmt.Errorf("%w", ErrIPsFieldEmpty)
 	case s.VPN == vpn.Wireguard && (s.TCP || s.UDP):
-		return ErrNetworkProtocolSet
+		return fmt.Errorf("%w", ErrNetworkProtocolSet)
 	case s.VPN == vpn.OpenVPN && !s.TCP && !s.UDP:
-		return ErrNoNetworkProtocol
+		return fmt.Errorf("%w", ErrNoNetworkProtocol)
 	case s.VPN == vpn.Wireguard && s.WgPubKey == "":
-		return ErrWireguardPublicKeyEmpty
+		return fmt.Errorf("%w", ErrWireguardPublicKeyEmpty)
 	default:
 		return nil
 	}

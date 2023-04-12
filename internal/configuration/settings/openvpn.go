@@ -100,14 +100,14 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 		vpnProvider != providers.VPNSecure
 
 	if isUserRequired && *o.User == "" {
-		return ErrOpenVPNUserIsEmpty
+		return fmt.Errorf("%w", ErrOpenVPNUserIsEmpty)
 	}
 
 	passwordRequired := isUserRequired &&
 		(vpnProvider != providers.Ivpn || !ivpnAccountID.MatchString(*o.User))
 
 	if passwordRequired && *o.Password == "" {
-		return ErrOpenVPNPasswordIsEmpty
+		return fmt.Errorf("%w", ErrOpenVPNPasswordIsEmpty)
 	}
 
 	err = validateOpenVPNConfigFilepath(isCustom, *o.ConfFile)
@@ -160,7 +160,7 @@ func validateOpenVPNConfigFilepath(isCustom bool,
 	}
 
 	if confFile == "" {
-		return ErrFilepathMissing
+		return fmt.Errorf("%w", ErrFilepathMissing)
 	}
 
 	err = helpers.FileExists(confFile)
@@ -186,7 +186,7 @@ func validateOpenVPNClientCertificate(vpnProvider,
 		providers.VPNSecure,
 		providers.VPNUnlimited:
 		if clientCert == "" {
-			return ErrMissingValue
+			return fmt.Errorf("%w", ErrMissingValue)
 		}
 	}
 
@@ -209,7 +209,7 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 		providers.VPNUnlimited,
 		providers.Wevpn:
 		if clientKey == "" {
-			return ErrMissingValue
+			return fmt.Errorf("%w", ErrMissingValue)
 		}
 	}
 
@@ -227,7 +227,7 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 func validateOpenVPNEncryptedKey(vpnProvider,
 	encryptedPrivateKey string) (err error) {
 	if vpnProvider == providers.VPNSecure && encryptedPrivateKey == "" {
-		return ErrMissingValue
+		return fmt.Errorf("%w", ErrMissingValue)
 	}
 
 	if encryptedPrivateKey == "" {

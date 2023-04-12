@@ -91,11 +91,11 @@ func (s Settings) Validate() (err error) {
 	}
 
 	if s.Handler == nil {
-		return ErrHandlerIsNotSet
+		return fmt.Errorf("%w", ErrHandlerIsNotSet)
 	}
 
 	if s.Logger == nil {
-		return ErrLoggerIsNotSet
+		return fmt.Errorf("%w", ErrLoggerIsNotSet)
 	}
 
 	const minReadTimeout = time.Millisecond

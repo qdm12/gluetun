@@ -52,7 +52,7 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 	// Validate PrivateKey
 	if *w.PrivateKey == "" {
-		return ErrWireguardPrivateKeyNotSet
+		return fmt.Errorf("%w", ErrWireguardPrivateKeyNotSet)
 	}
 	_, err = wgtypes.ParseKey(*w.PrivateKey)
 	if err != nil {
@@ -75,7 +75,7 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 	// Validate Addresses
 	if len(w.Addresses) == 0 {
-		return ErrWireguardInterfaceAddressNotSet
+		return fmt.Errorf("%w", ErrWireguardInterfaceAddressNotSet)
 	}
 	for i, ipNet := range w.Addresses {
 		if ipNet.IP == nil || ipNet.Mask == nil {

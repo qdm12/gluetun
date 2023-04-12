@@ -22,7 +22,7 @@ var (
 
 func AreAllOneOf(values, choices []string) (err error) {
 	if len(values) > 0 && len(choices) == 0 {
-		return ErrNoChoice
+		return fmt.Errorf("%w", ErrNoChoice)
 	}
 
 	set := make(map[string]struct{}, len(choices))
