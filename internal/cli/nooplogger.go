@@ -8,9 +8,9 @@ func newNoopLogger() *noopLogger {
 	return new(noopLogger)
 }
 
-func (l *noopLogger) Debug(s string)                 {}
-func (l *noopLogger) Info(s string)                  {}
-func (l *noopLogger) Warn(s string)                  {}
-func (l *noopLogger) Error(s string)                 {}
-func (l *noopLogger) PatchLevel(level logging.Level) {}
-func (l *noopLogger) PatchPrefix(prefix string)      {}
+func (l *noopLogger) Debug(string)             {}
+func (l *noopLogger) Info(string)              {}
+func (l *noopLogger) Warn(string)              {}
+func (l *noopLogger) Error(string)             {}
+func (l *noopLogger) PatchLevel(logging.Level) {}
+func (l *noopLogger) PatchPrefix(string)       {}

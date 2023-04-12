@@ -13,7 +13,7 @@ func (s *State) GetSettings() (settings settings.PublicIP) {
 	return s.settings
 }
 
-func (s *State) SetSettings(ctx context.Context, settings settings.PublicIP) (
+func (s *State) SetSettings(_ context.Context, settings settings.PublicIP) (
 	outcome string) {
 	s.settingsMu.Lock()
 

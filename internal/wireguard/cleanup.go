@@ -31,9 +31,8 @@ func (c *closers) cleanup(logger Logger) {
 	for i, closer := range closers {
 		if closer.closed {
 			continue
-		} else {
-			closers[i].closed = true
 		}
+		closers[i].closed = true
 		logger.Debug(closer.operation + "...")
 		err := closer.close()
 		if err != nil {

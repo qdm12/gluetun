@@ -95,14 +95,11 @@ func (c *Config) setIPv4AllPolicies(ctx context.Context, policy string) error {
 	default:
 		return fmt.Errorf("%w: %s", ErrPolicyUnknown, policy)
 	}
-	if err := c.runIptablesInstructions(ctx, []string{
+	return c.runIptablesInstructions(ctx, []string{
 		"--policy INPUT " + policy,
 		"--policy OUTPUT " + policy,
 		"--policy FORWARD " + policy,
-	}); err != nil {
-		return err
-	}
-	return nil
+	})
 }
 
 func (c *Config) acceptInputThroughInterface(ctx context.Context, intf string, remove bool) error {

@@ -34,8 +34,8 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			portCh <- port
 
 			// Infinite loop
-			err = startData.PortForwarder.KeepPortForward(ctx, l.client,
-				port, startData.Gateway, startData.ServerName)
+			err = startData.PortForwarder.KeepPortForward(ctx,
+				startData.Gateway, startData.ServerName)
 			errorCh <- err
 		}(pfCtx, startData)
 

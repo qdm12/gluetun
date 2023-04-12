@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (a *Alpine) Version(ctx context.Context) (version string, err error) {
+func (a *Alpine) Version(context.Context) (version string, err error) {
 	file, err := os.OpenFile(a.alpineReleasePath, os.O_RDONLY, 0)
 	if err != nil {
 		return "", err

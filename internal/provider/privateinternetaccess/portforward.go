@@ -90,8 +90,8 @@ var (
 	ErrPortForwardedExpired = errors.New("port forwarded data expired")
 )
 
-func (p *Provider) KeepPortForward(ctx context.Context, client *http.Client,
-	port uint16, gateway net.IP, serverName string) (err error) {
+func (p *Provider) KeepPortForward(ctx context.Context,
+	gateway net.IP, serverName string) (err error) {
 	privateIPClient, err := newHTTPClient(serverName)
 	if err != nil {
 		return fmt.Errorf("creating custom HTTP client: %w", err)

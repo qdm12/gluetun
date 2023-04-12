@@ -64,6 +64,6 @@ var hopHeaders = [...]string{ //nolint:gochecknoglobals
 }
 
 // Do not follow redirect, but directly return the redirect response.
-func returnRedirect(req *http.Request, via []*http.Request) error {
+func returnRedirect(*http.Request, []*http.Request) error {
 	return http.ErrUseLastResponse
 }

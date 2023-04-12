@@ -12,8 +12,8 @@ type NoPortForwarder interface {
 	PortForward(ctx context.Context, client *http.Client,
 		logger Logger, gateway net.IP, serverName string) (
 		port uint16, err error)
-	KeepPortForward(ctx context.Context, client *http.Client,
-		port uint16, gateway net.IP, serverName string) (err error)
+	KeepPortForward(ctx context.Context, gateway net.IP,
+		serverName string) (err error)
 }
 
 type NoPortForwarding struct {
@@ -28,12 +28,11 @@ func NewNoPortForwarding(providerName string) *NoPortForwarding {
 
 var ErrPortForwardingNotSupported = errors.New("custom port forwarding obtention is not supported")
 
-func (n *NoPortForwarding) PortForward(ctx context.Context, client *http.Client,
-	logger Logger, gateway net.IP, serverName string) (port uint16, err error) {
+func (n *NoPortForwarding) PortForward(context.Context, *http.Client,
+	Logger, net.IP, string) (port uint16, err error) {
 	return 0, fmt.Errorf("%w: for %s", ErrPortForwardingNotSupported, n.providerName)
 }
 
-func (n *NoPortForwarding) KeepPortForward(ctx context.Context, client *http.Client,
-	port uint16, gateway net.IP, serverName string) (err error) {
+func (n *NoPortForwarding) KeepPortForward(context.Context, net.IP, string) (err error) {
 	return fmt.Errorf("%w: for %s", ErrPortForwardingNotSupported, n.providerName)
 }

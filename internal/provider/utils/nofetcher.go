@@ -20,7 +20,7 @@ func NewNoFetcher(providerName string) *NoFetcher {
 
 var ErrFetcherNotSupported = errors.New("fetching of servers is not supported")
 
-func (n *NoFetcher) FetchServers(ctx context.Context, minServers int) (
+func (n *NoFetcher) FetchServers(context.Context, int) (
 	servers []models.Server, err error) {
 	return nil, fmt.Errorf("%w: for %s", ErrFetcherNotSupported, n.providerName)
 }

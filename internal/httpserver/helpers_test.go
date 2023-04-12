@@ -10,9 +10,9 @@ var _ Logger = (*testLogger)(nil)
 
 type testLogger struct{}
 
-func (t *testLogger) Info(msg string)  {}
-func (t *testLogger) Warn(msg string)  {}
-func (t *testLogger) Error(msg string) {}
+func (t *testLogger) Info(string)  {}
+func (t *testLogger) Warn(string)  {}
+func (t *testLogger) Error(string) {}
 
 var _ gomock.Matcher = (*regexMatcher)(nil)
 
