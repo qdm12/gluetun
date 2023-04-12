@@ -16,10 +16,10 @@ type Settings struct {
 	Enabled *bool
 	// See runtime.SetBlockProfileRate
 	// Set to 0 to disable profiling.
-	BlockProfileRate int
+	BlockProfileRate *int
 	// See runtime.SetMutexProfileFraction
 	// Set to 0 to disable profiling.
-	MutexProfileRate int
+	MutexProfileRate *int
 	// HTTPServer contains settings to configure
 	// the HTTP server serving pprof data.
 	HTTPServer httpserver.Settings
@@ -44,15 +44,15 @@ func (s Settings) Copy() (copied Settings) {
 
 func (s *Settings) MergeWith(other Settings) {
 	s.Enabled = helpers.MergeWithBool(s.Enabled, other.Enabled)
-	s.BlockProfileRate = helpers.MergeWithInt(s.BlockProfileRate, other.BlockProfileRate)
-	s.MutexProfileRate = helpers.MergeWithInt(s.MutexProfileRate, other.MutexProfileRate)
+	s.BlockProfileRate = helpers.MergeWithIntPtr(s.BlockProfileRate, other.BlockProfileRate)
+	s.MutexProfileRate = helpers.MergeWithIntPtr(s.MutexProfileRate, other.MutexProfileRate)
 	s.HTTPServer.MergeWith(other.HTTPServer)
 }
 
 func (s *Settings) OverrideWith(other Settings) {
 	s.Enabled = helpers.OverrideWithBool(s.Enabled, other.Enabled)
-	s.BlockProfileRate = helpers.OverrideWithInt(s.BlockProfileRate, other.BlockProfileRate)
-	s.MutexProfileRate = helpers.OverrideWithInt(s.MutexProfileRate, other.MutexProfileRate)
+	s.BlockProfileRate = helpers.OverrideWithIntPtr(s.BlockProfileRate, other.BlockProfileRate)
+	s.MutexProfileRate = helpers.OverrideWithIntPtr(s.MutexProfileRate, other.MutexProfileRate)
 	s.HTTPServer.OverrideWith(other.HTTPServer)
 }
 
@@ -62,11 +62,11 @@ var (
 )
 
 func (s Settings) Validate() (err error) {
-	if s.BlockProfileRate < 0 {
+	if *s.BlockProfileRate < 0 {
 		return ErrBlockProfileRateNegative
 	}
 
-	if s.MutexProfileRate < 0 {
+	if *s.MutexProfileRate < 0 {
 		return ErrMutexProfileRateNegative
 	}
 
@@ -80,12 +80,12 @@ func (s Settings) ToLinesNode() (node *gotree.Node) {
 
 	node = gotree.New("Pprof settings:")
 
-	if s.BlockProfileRate > 0 {
-		node.Appendf("Block profile rate: %d", s.BlockProfileRate)
+	if *s.BlockProfileRate > 0 {
+		node.Appendf("Block profile rate: %d", *s.BlockProfileRate)
 	}
 
-	if s.MutexProfileRate > 0 {
-		node.Appendf("Mutex profile rate: %d", s.MutexProfileRate)
+	if *s.MutexProfileRate > 0 {
+		node.Appendf("Mutex profile rate: %d", *s.MutexProfileRate)
 	}
 
 	node.AppendNode(s.HTTPServer.ToLinesNode())

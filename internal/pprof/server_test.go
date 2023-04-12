@@ -26,6 +26,8 @@ func Test_Server(t *testing.T) {
 
 	const httpServerShutdownTimeout = 10 * time.Second // 10s in case test worker is slow
 	settings := Settings{
+		BlockProfileRate: intPtr(0),
+		MutexProfileRate: intPtr(0),
 		HTTPServer: httpserver.Settings{
 			Address:         address,
 			Logger:          logger,
@@ -112,7 +114,8 @@ func Test_Server_BadSettings(t *testing.T) {
 	t.Parallel()
 
 	settings := Settings{
-		BlockProfileRate: -1,
+		BlockProfileRate: intPtr(-1),
+		MutexProfileRate: intPtr(0),
 	}
 
 	server, err := New(settings)
