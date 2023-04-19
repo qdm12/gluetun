@@ -117,7 +117,7 @@ func (w *WireguardSelection) copy() (copied WireguardSelection) {
 
 func (w *WireguardSelection) mergeWith(other WireguardSelection) {
 	w.EndpointIP = helpers.MergeWithIP(w.EndpointIP, other.EndpointIP)
-	w.EndpointPort = helpers.MergeWithUint16(w.EndpointPort, other.EndpointPort)
+	w.EndpointPort = helpers.MergeWithPointer(w.EndpointPort, other.EndpointPort)
 	w.PublicKey = helpers.MergeWithString(w.PublicKey, other.PublicKey)
 }
 

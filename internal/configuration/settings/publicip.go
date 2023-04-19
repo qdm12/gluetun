@@ -48,8 +48,8 @@ func (p *PublicIP) copy() (copied PublicIP) {
 }
 
 func (p *PublicIP) mergeWith(other PublicIP) {
-	p.Period = helpers.MergeWithDurationPtr(p.Period, other.Period)
-	p.IPFilepath = helpers.MergeWithStringPtr(p.IPFilepath, other.IPFilepath)
+	p.Period = helpers.MergeWithPointer(p.Period, other.Period)
+	p.IPFilepath = helpers.MergeWithPointer(p.IPFilepath, other.IPFilepath)
 }
 
 func (p *PublicIP) overrideWith(other PublicIP) {

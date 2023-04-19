@@ -73,9 +73,9 @@ func (u *Updater) copy() (copied Updater) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (u *Updater) mergeWith(other Updater) {
-	u.Period = helpers.MergeWithDurationPtr(u.Period, other.Period)
+	u.Period = helpers.MergeWithPointer(u.Period, other.Period)
 	u.DNSAddress = helpers.MergeWithString(u.DNSAddress, other.DNSAddress)
-	u.MinRatio = helpers.MergeWithFloat64(u.MinRatio, other.MinRatio)
+	u.MinRatio = helpers.MergeWithNumber(u.MinRatio, other.MinRatio)
 	u.Providers = helpers.MergeSlices(u.Providers, other.Providers)
 }
 

@@ -56,8 +56,8 @@ func (f *Firewall) mergeWith(other Firewall) {
 	f.VPNInputPorts = helpers.MergeSlices(f.VPNInputPorts, other.VPNInputPorts)
 	f.InputPorts = helpers.MergeSlices(f.InputPorts, other.InputPorts)
 	f.OutboundSubnets = helpers.MergeSlices(f.OutboundSubnets, other.OutboundSubnets)
-	f.Enabled = helpers.MergeWithBool(f.Enabled, other.Enabled)
-	f.Debug = helpers.MergeWithBool(f.Debug, other.Debug)
+	f.Enabled = helpers.MergeWithPointer(f.Enabled, other.Enabled)
+	f.Debug = helpers.MergeWithPointer(f.Debug, other.Debug)
 }
 
 // overrideWith overrides fields of the receiver

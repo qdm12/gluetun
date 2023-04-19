@@ -138,10 +138,10 @@ func (o *OpenVPNSelection) copy() (copied OpenVPNSelection) {
 }
 
 func (o *OpenVPNSelection) mergeWith(other OpenVPNSelection) {
-	o.ConfFile = helpers.MergeWithStringPtr(o.ConfFile, other.ConfFile)
-	o.TCP = helpers.MergeWithBool(o.TCP, other.TCP)
-	o.CustomPort = helpers.MergeWithUint16(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = helpers.MergeWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
+	o.ConfFile = helpers.MergeWithPointer(o.ConfFile, other.ConfFile)
+	o.TCP = helpers.MergeWithPointer(o.TCP, other.TCP)
+	o.CustomPort = helpers.MergeWithPointer(o.CustomPort, other.CustomPort)
+	o.PIAEncPreset = helpers.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {

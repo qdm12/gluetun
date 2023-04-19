@@ -49,7 +49,7 @@ func (d *DNS) Copy() (copied DNS) {
 // unset field of the receiver settings object.
 func (d *DNS) mergeWith(other DNS) {
 	d.ServerAddress = helpers.MergeWithIP(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = helpers.MergeWithBool(d.KeepNameserver, other.KeepNameserver)
+	d.KeepNameserver = helpers.MergeWithPointer(d.KeepNameserver, other.KeepNameserver)
 	d.DoT.mergeWith(other.DoT)
 }
 

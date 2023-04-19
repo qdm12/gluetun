@@ -65,7 +65,7 @@ func (p *Provider) copy() (copied Provider) {
 }
 
 func (p *Provider) mergeWith(other Provider) {
-	p.Name = helpers.MergeWithStringPtr(p.Name, other.Name)
+	p.Name = helpers.MergeWithPointer(p.Name, other.Name)
 	p.ServerSelection.mergeWith(other.ServerSelection)
 	p.PortForwarding.mergeWith(other.PortForwarding)
 }

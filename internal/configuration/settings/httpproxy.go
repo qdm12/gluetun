@@ -70,14 +70,14 @@ func (h *HTTPProxy) copy() (copied HTTPProxy) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (h *HTTPProxy) mergeWith(other HTTPProxy) {
-	h.User = helpers.MergeWithStringPtr(h.User, other.User)
-	h.Password = helpers.MergeWithStringPtr(h.Password, other.Password)
+	h.User = helpers.MergeWithPointer(h.User, other.User)
+	h.Password = helpers.MergeWithPointer(h.Password, other.Password)
 	h.ListeningAddress = helpers.MergeWithString(h.ListeningAddress, other.ListeningAddress)
-	h.Enabled = helpers.MergeWithBool(h.Enabled, other.Enabled)
-	h.Stealth = helpers.MergeWithBool(h.Stealth, other.Stealth)
-	h.Log = helpers.MergeWithBool(h.Log, other.Log)
-	h.ReadHeaderTimeout = helpers.MergeWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = helpers.MergeWithDuration(h.ReadTimeout, other.ReadTimeout)
+	h.Enabled = helpers.MergeWithPointer(h.Enabled, other.Enabled)
+	h.Stealth = helpers.MergeWithPointer(h.Stealth, other.Stealth)
+	h.Log = helpers.MergeWithPointer(h.Log, other.Log)
+	h.ReadHeaderTimeout = helpers.MergeWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.MergeWithNumber(h.ReadTimeout, other.ReadTimeout)
 }
 
 // overrideWith overrides fields of the receiver

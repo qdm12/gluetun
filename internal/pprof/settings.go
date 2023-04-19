@@ -44,9 +44,9 @@ func (s Settings) Copy() (copied Settings) {
 }
 
 func (s *Settings) MergeWith(other Settings) {
-	s.Enabled = helpers.MergeWithBool(s.Enabled, other.Enabled)
-	s.BlockProfileRate = helpers.MergeWithIntPtr(s.BlockProfileRate, other.BlockProfileRate)
-	s.MutexProfileRate = helpers.MergeWithIntPtr(s.MutexProfileRate, other.MutexProfileRate)
+	s.Enabled = helpers.MergeWithPointer(s.Enabled, other.Enabled)
+	s.BlockProfileRate = helpers.MergeWithPointer(s.BlockProfileRate, other.BlockProfileRate)
+	s.MutexProfileRate = helpers.MergeWithPointer(s.MutexProfileRate, other.MutexProfileRate)
 	s.HTTPServer.MergeWith(other.HTTPServer)
 }
 

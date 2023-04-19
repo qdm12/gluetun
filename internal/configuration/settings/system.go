@@ -26,8 +26,8 @@ func (s *System) copy() (copied System) {
 }
 
 func (s *System) mergeWith(other System) {
-	s.PUID = helpers.MergeWithUint32(s.PUID, other.PUID)
-	s.PGID = helpers.MergeWithUint32(s.PGID, other.PGID)
+	s.PUID = helpers.MergeWithPointer(s.PUID, other.PUID)
+	s.PGID = helpers.MergeWithPointer(s.PGID, other.PGID)
 	s.Timezone = helpers.MergeWithString(s.Timezone, other.Timezone)
 }
 

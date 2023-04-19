@@ -59,9 +59,9 @@ func (s *Settings) MergeWith(other Settings) {
 	if s.Logger == nil {
 		s.Logger = other.Logger
 	}
-	s.ReadHeaderTimeout = helpers.MergeWithDuration(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = helpers.MergeWithDuration(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = helpers.MergeWithDuration(s.ShutdownTimeout, other.ShutdownTimeout)
+	s.ReadHeaderTimeout = helpers.MergeWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	s.ReadTimeout = helpers.MergeWithNumber(s.ReadTimeout, other.ReadTimeout)
+	s.ShutdownTimeout = helpers.MergeWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
 }
 
 func (s *Settings) OverrideWith(other Settings) {

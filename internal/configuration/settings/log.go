@@ -26,7 +26,7 @@ func (l *Log) copy() (copied Log) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (l *Log) mergeWith(other Log) {
-	l.Level = helpers.MergeWithLogLevel(l.Level, other.Level)
+	l.Level = helpers.MergeWithPointer(l.Level, other.Level)
 }
 
 // overrideWith overrides fields of the receiver

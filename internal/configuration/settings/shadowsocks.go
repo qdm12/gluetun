@@ -29,7 +29,7 @@ func (s *Shadowsocks) copy() (copied Shadowsocks) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (s *Shadowsocks) mergeWith(other Shadowsocks) {
-	s.Enabled = helpers.MergeWithBool(s.Enabled, other.Enabled)
+	s.Enabled = helpers.MergeWithPointer(s.Enabled, other.Enabled)
 	s.Settings.MergeWith(other.Settings)
 }
 

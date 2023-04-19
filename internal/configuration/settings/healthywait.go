@@ -35,8 +35,8 @@ func (h *HealthyWait) copy() (copied HealthyWait) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (h *HealthyWait) mergeWith(other HealthyWait) {
-	h.Initial = helpers.MergeWithDurationPtr(h.Initial, other.Initial)
-	h.Addition = helpers.MergeWithDurationPtr(h.Addition, other.Addition)
+	h.Initial = helpers.MergeWithPointer(h.Initial, other.Initial)
+	h.Addition = helpers.MergeWithPointer(h.Addition, other.Addition)
 }
 
 // overrideWith overrides fields of the receiver

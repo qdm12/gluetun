@@ -107,11 +107,11 @@ func (u Unbound) copy() (copied Unbound) {
 
 func (u *Unbound) mergeWith(other Unbound) {
 	u.Providers = helpers.MergeSlices(u.Providers, other.Providers)
-	u.Caching = helpers.MergeWithBool(u.Caching, other.Caching)
-	u.IPv6 = helpers.MergeWithBool(u.IPv6, other.IPv6)
-	u.VerbosityLevel = helpers.MergeWithUint8(u.VerbosityLevel, other.VerbosityLevel)
-	u.VerbosityDetailsLevel = helpers.MergeWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
-	u.ValidationLogLevel = helpers.MergeWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Caching = helpers.MergeWithPointer(u.Caching, other.Caching)
+	u.IPv6 = helpers.MergeWithPointer(u.IPv6, other.IPv6)
+	u.VerbosityLevel = helpers.MergeWithPointer(u.VerbosityLevel, other.VerbosityLevel)
+	u.VerbosityDetailsLevel = helpers.MergeWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
+	u.ValidationLogLevel = helpers.MergeWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
 	u.Username = helpers.MergeWithString(u.Username, other.Username)
 	u.Allowed = helpers.MergeSlices(u.Allowed, other.Allowed)
 }

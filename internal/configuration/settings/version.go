@@ -26,7 +26,7 @@ func (v *Version) copy() (copied Version) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (v *Version) mergeWith(other Version) {
-	v.Enabled = helpers.MergeWithBool(v.Enabled, other.Enabled)
+	v.Enabled = helpers.MergeWithPointer(v.Enabled, other.Enabled)
 }
 
 // overrideWith overrides fields of the receiver

@@ -115,8 +115,8 @@ func (w *Wireguard) copy() (copied Wireguard) {
 }
 
 func (w *Wireguard) mergeWith(other Wireguard) {
-	w.PrivateKey = helpers.MergeWithStringPtr(w.PrivateKey, other.PrivateKey)
-	w.PreSharedKey = helpers.MergeWithStringPtr(w.PreSharedKey, other.PreSharedKey)
+	w.PrivateKey = helpers.MergeWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PreSharedKey = helpers.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.MergeSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)

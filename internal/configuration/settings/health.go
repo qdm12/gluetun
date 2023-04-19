@@ -66,10 +66,10 @@ func (h *Health) copy() (copied Health) {
 // unset field of the receiver settings object.
 func (h *Health) MergeWith(other Health) {
 	h.ServerAddress = helpers.MergeWithString(h.ServerAddress, other.ServerAddress)
-	h.ReadHeaderTimeout = helpers.MergeWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = helpers.MergeWithDuration(h.ReadTimeout, other.ReadTimeout)
+	h.ReadHeaderTimeout = helpers.MergeWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.MergeWithNumber(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = helpers.MergeWithString(h.TargetAddress, other.TargetAddress)
-	h.SuccessWait = helpers.MergeWithDuration(h.SuccessWait, other.SuccessWait)
+	h.SuccessWait = helpers.MergeWithNumber(h.SuccessWait, other.SuccessWait)
 	h.VPN.mergeWith(other.VPN)
 }
 

@@ -64,8 +64,8 @@ func (d *DoT) copy() (copied DoT) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (d *DoT) mergeWith(other DoT) {
-	d.Enabled = helpers.MergeWithBool(d.Enabled, other.Enabled)
-	d.UpdatePeriod = helpers.MergeWithDurationPtr(d.UpdatePeriod, other.UpdatePeriod)
+	d.Enabled = helpers.MergeWithPointer(d.Enabled, other.Enabled)
+	d.UpdatePeriod = helpers.MergeWithPointer(d.UpdatePeriod, other.UpdatePeriod)
 	d.Unbound.mergeWith(other.Unbound)
 	d.Blacklist.mergeWith(other.Blacklist)
 }

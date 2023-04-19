@@ -51,8 +51,8 @@ func (c *ControlServer) copy() (copied ControlServer) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (c *ControlServer) mergeWith(other ControlServer) {
-	c.Address = helpers.MergeWithStringPtr(c.Address, other.Address)
-	c.Log = helpers.MergeWithBool(c.Log, other.Log)
+	c.Address = helpers.MergeWithPointer(c.Address, other.Address)
+	c.Log = helpers.MergeWithPointer(c.Log, other.Log)
 }
 
 // overrideWith overrides fields of the receiver
