@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/qdm12/log"
+	"golang.org/x/exp/slices"
 )
 
 func CopyStringPtr(original *string) (copied *string) {
@@ -80,11 +81,5 @@ func CopyLogLevelPtr(original *log.Level) (copied *log.Level) {
 }
 
 func CopySlice[T string | uint16 | netip.Addr | netip.Prefix](original []T) (copied []T) {
-	if original == nil {
-		return nil
-	}
-
-	copied = make([]T, len(original))
-	copy(copied, original)
-	return copied
+	return slices.Clone(original)
 }

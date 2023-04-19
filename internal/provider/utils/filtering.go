@@ -86,7 +86,7 @@ func filterServer(server models.Server,
 	return false
 }
 
-func filterByPossibilities[K string | uint16](value K, possibilities []K) (filtered bool) {
+func filterByPossibilities[T string | uint16](value T, possibilities []T) (filtered bool) {
 	if len(possibilities) == 0 {
 		return false
 	}

@@ -142,13 +142,13 @@ func MergeWithHTTPHandler(existing, other http.Handler) (result http.Handler) {
 	return other
 }
 
-func MergeSlices[K string | uint16 | netip.Addr | netip.Prefix](a, b []K) (result []K) {
+func MergeSlices[T comparable](a, b []T) (result []T) {
 	if a == nil && b == nil {
 		return nil
 	}
 
-	seen := make(map[K]struct{}, len(a)+len(b))
-	result = make([]K, 0, len(a)+len(b))
+	seen := make(map[T]struct{}, len(a)+len(b))
+	result = make([]T, 0, len(a)+len(b))
 	for _, s := range a {
 		if _, ok := seen[s]; ok {
 			continue // duplicate
