@@ -48,8 +48,6 @@ func (s *Server) HasMinimumInformation() (err error) {
 	switch {
 	case s.VPN == "":
 		return fmt.Errorf("%w", ErrVPNFieldEmpty)
-	case s.Hostname == "":
-		return fmt.Errorf("%w", ErrHostnameFieldEmpty)
 	case len(s.IPs) == 0:
 		return fmt.Errorf("%w", ErrIPsFieldEmpty)
 	case s.VPN == vpn.Wireguard && (s.TCP || s.UDP):
