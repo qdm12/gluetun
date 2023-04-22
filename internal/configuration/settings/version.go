@@ -33,7 +33,7 @@ func (v *Version) mergeWith(other Version) {
 // settings object with any field set in the other
 // settings.
 func (v *Version) overrideWith(other Version) {
-	v.Enabled = helpers.OverrideWithBool(v.Enabled, other.Enabled)
+	v.Enabled = helpers.OverrideWithPointer(v.Enabled, other.Enabled)
 }
 
 func (v *Version) setDefaults() {

@@ -123,8 +123,8 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 }
 
 func (w *Wireguard) overrideWith(other Wireguard) {
-	w.PrivateKey = helpers.OverrideWithStringPtr(w.PrivateKey, other.PrivateKey)
-	w.PreSharedKey = helpers.OverrideWithStringPtr(w.PreSharedKey, other.PreSharedKey)
+	w.PrivateKey = helpers.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PreSharedKey = helpers.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)

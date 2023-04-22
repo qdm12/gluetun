@@ -84,14 +84,14 @@ func (h *HTTPProxy) mergeWith(other HTTPProxy) {
 // settings object with any field set in the other
 // settings.
 func (h *HTTPProxy) overrideWith(other HTTPProxy) {
-	h.User = helpers.OverrideWithStringPtr(h.User, other.User)
-	h.Password = helpers.OverrideWithStringPtr(h.Password, other.Password)
+	h.User = helpers.OverrideWithPointer(h.User, other.User)
+	h.Password = helpers.OverrideWithPointer(h.Password, other.Password)
 	h.ListeningAddress = helpers.OverrideWithString(h.ListeningAddress, other.ListeningAddress)
-	h.Enabled = helpers.OverrideWithBool(h.Enabled, other.Enabled)
-	h.Stealth = helpers.OverrideWithBool(h.Stealth, other.Stealth)
-	h.Log = helpers.OverrideWithBool(h.Log, other.Log)
-	h.ReadHeaderTimeout = helpers.OverrideWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = helpers.OverrideWithDuration(h.ReadTimeout, other.ReadTimeout)
+	h.Enabled = helpers.OverrideWithPointer(h.Enabled, other.Enabled)
+	h.Stealth = helpers.OverrideWithPointer(h.Stealth, other.Stealth)
+	h.Log = helpers.OverrideWithPointer(h.Log, other.Log)
+	h.ReadHeaderTimeout = helpers.OverrideWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.OverrideWithNumber(h.ReadTimeout, other.ReadTimeout)
 }
 
 func (h *HTTPProxy) setDefaults() {

@@ -83,9 +83,9 @@ func (u *Updater) mergeWith(other Updater) {
 // settings object with any field set in the other
 // settings.
 func (u *Updater) overrideWith(other Updater) {
-	u.Period = helpers.OverrideWithDurationPtr(u.Period, other.Period)
+	u.Period = helpers.OverrideWithPointer(u.Period, other.Period)
 	u.DNSAddress = helpers.OverrideWithString(u.DNSAddress, other.DNSAddress)
-	u.MinRatio = helpers.OverrideWithFloat64(u.MinRatio, other.MinRatio)
+	u.MinRatio = helpers.OverrideWithNumber(u.MinRatio, other.MinRatio)
 	u.Providers = helpers.OverrideWithSlice(u.Providers, other.Providers)
 }
 

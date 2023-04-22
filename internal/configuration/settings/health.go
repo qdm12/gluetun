@@ -78,10 +78,10 @@ func (h *Health) MergeWith(other Health) {
 // settings.
 func (h *Health) OverrideWith(other Health) {
 	h.ServerAddress = helpers.OverrideWithString(h.ServerAddress, other.ServerAddress)
-	h.ReadHeaderTimeout = helpers.OverrideWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = helpers.OverrideWithDuration(h.ReadTimeout, other.ReadTimeout)
+	h.ReadHeaderTimeout = helpers.OverrideWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.OverrideWithNumber(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = helpers.OverrideWithString(h.TargetAddress, other.TargetAddress)
-	h.SuccessWait = helpers.OverrideWithDuration(h.SuccessWait, other.SuccessWait)
+	h.SuccessWait = helpers.OverrideWithNumber(h.SuccessWait, other.SuccessWait)
 	h.VPN.overrideWith(other.VPN)
 }
 

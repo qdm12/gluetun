@@ -32,8 +32,8 @@ func (s *System) mergeWith(other System) {
 }
 
 func (s *System) overrideWith(other System) {
-	s.PUID = helpers.OverrideWithUint32(s.PUID, other.PUID)
-	s.PGID = helpers.OverrideWithUint32(s.PGID, other.PGID)
+	s.PUID = helpers.OverrideWithPointer(s.PUID, other.PUID)
+	s.PGID = helpers.OverrideWithPointer(s.PGID, other.PGID)
 	s.Timezone = helpers.OverrideWithString(s.Timezone, other.Timezone)
 }
 

@@ -70,9 +70,9 @@ func (s *Settings) OverrideWith(other Settings) {
 	if other.Logger != nil {
 		s.Logger = other.Logger
 	}
-	s.ReadHeaderTimeout = helpers.OverrideWithDuration(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = helpers.OverrideWithDuration(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = helpers.OverrideWithDuration(s.ShutdownTimeout, other.ShutdownTimeout)
+	s.ReadHeaderTimeout = helpers.OverrideWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	s.ReadTimeout = helpers.OverrideWithNumber(s.ReadTimeout, other.ReadTimeout)
+	s.ShutdownTimeout = helpers.OverrideWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
 }
 
 var (

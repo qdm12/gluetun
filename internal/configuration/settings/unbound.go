@@ -118,11 +118,11 @@ func (u *Unbound) mergeWith(other Unbound) {
 
 func (u *Unbound) overrideWith(other Unbound) {
 	u.Providers = helpers.OverrideWithSlice(u.Providers, other.Providers)
-	u.Caching = helpers.OverrideWithBool(u.Caching, other.Caching)
-	u.IPv6 = helpers.OverrideWithBool(u.IPv6, other.IPv6)
-	u.VerbosityLevel = helpers.OverrideWithUint8(u.VerbosityLevel, other.VerbosityLevel)
-	u.VerbosityDetailsLevel = helpers.OverrideWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
-	u.ValidationLogLevel = helpers.OverrideWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Caching = helpers.OverrideWithPointer(u.Caching, other.Caching)
+	u.IPv6 = helpers.OverrideWithPointer(u.IPv6, other.IPv6)
+	u.VerbosityLevel = helpers.OverrideWithPointer(u.VerbosityLevel, other.VerbosityLevel)
+	u.VerbosityDetailsLevel = helpers.OverrideWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
+	u.ValidationLogLevel = helpers.OverrideWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
 	u.Username = helpers.OverrideWithString(u.Username, other.Username)
 	u.Allowed = helpers.OverrideWithSlice(u.Allowed, other.Allowed)
 }

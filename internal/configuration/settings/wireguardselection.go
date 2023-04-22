@@ -123,7 +123,7 @@ func (w *WireguardSelection) mergeWith(other WireguardSelection) {
 
 func (w *WireguardSelection) overrideWith(other WireguardSelection) {
 	w.EndpointIP = helpers.OverrideWithIP(w.EndpointIP, other.EndpointIP)
-	w.EndpointPort = helpers.OverrideWithUint16(w.EndpointPort, other.EndpointPort)
+	w.EndpointPort = helpers.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
 	w.PublicKey = helpers.OverrideWithString(w.PublicKey, other.PublicKey)
 }
 

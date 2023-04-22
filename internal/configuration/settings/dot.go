@@ -74,8 +74,8 @@ func (d *DoT) mergeWith(other DoT) {
 // settings object with any field set in the other
 // settings.
 func (d *DoT) overrideWith(other DoT) {
-	d.Enabled = helpers.OverrideWithBool(d.Enabled, other.Enabled)
-	d.UpdatePeriod = helpers.OverrideWithDurationPtr(d.UpdatePeriod, other.UpdatePeriod)
+	d.Enabled = helpers.OverrideWithPointer(d.Enabled, other.Enabled)
+	d.UpdatePeriod = helpers.OverrideWithPointer(d.UpdatePeriod, other.UpdatePeriod)
 	d.Unbound.overrideWith(other.Unbound)
 	d.Blacklist.overrideWith(other.Blacklist)
 }

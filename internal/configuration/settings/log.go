@@ -33,7 +33,7 @@ func (l *Log) mergeWith(other Log) {
 // settings object with any field set in the other
 // settings.
 func (l *Log) overrideWith(other Log) {
-	l.Level = helpers.OverrideWithLogLevel(l.Level, other.Level)
+	l.Level = helpers.OverrideWithPointer(l.Level, other.Level)
 }
 
 func (l *Log) setDefaults() {

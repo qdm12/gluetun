@@ -58,8 +58,8 @@ func (p *PortForwarding) mergeWith(other PortForwarding) {
 }
 
 func (p *PortForwarding) overrideWith(other PortForwarding) {
-	p.Enabled = helpers.OverrideWithBool(p.Enabled, other.Enabled)
-	p.Filepath = helpers.OverrideWithStringPtr(p.Filepath, other.Filepath)
+	p.Enabled = helpers.OverrideWithPointer(p.Enabled, other.Enabled)
+	p.Filepath = helpers.OverrideWithPointer(p.Filepath, other.Filepath)
 }
 
 func (p *PortForwarding) setDefaults() {

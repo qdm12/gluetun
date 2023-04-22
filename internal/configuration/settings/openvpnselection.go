@@ -145,10 +145,10 @@ func (o *OpenVPNSelection) mergeWith(other OpenVPNSelection) {
 }
 
 func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {
-	o.ConfFile = helpers.OverrideWithStringPtr(o.ConfFile, other.ConfFile)
-	o.TCP = helpers.OverrideWithBool(o.TCP, other.TCP)
-	o.CustomPort = helpers.OverrideWithUint16(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = helpers.OverrideWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
+	o.ConfFile = helpers.OverrideWithPointer(o.ConfFile, other.ConfFile)
+	o.TCP = helpers.OverrideWithPointer(o.TCP, other.TCP)
+	o.CustomPort = helpers.OverrideWithPointer(o.CustomPort, other.CustomPort)
+	o.PIAEncPreset = helpers.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) setDefaults(vpnProvider string) {

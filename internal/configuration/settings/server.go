@@ -59,8 +59,8 @@ func (c *ControlServer) mergeWith(other ControlServer) {
 // settings object with any field set in the other
 // settings.
 func (c *ControlServer) overrideWith(other ControlServer) {
-	c.Address = helpers.OverrideWithStringPtr(c.Address, other.Address)
-	c.Log = helpers.OverrideWithBool(c.Log, other.Log)
+	c.Address = helpers.OverrideWithPointer(c.Address, other.Address)
+	c.Log = helpers.OverrideWithPointer(c.Log, other.Log)
 }
 
 func (c *ControlServer) setDefaults() {

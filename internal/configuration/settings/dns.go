@@ -58,7 +58,7 @@ func (d *DNS) mergeWith(other DNS) {
 // settings.
 func (d *DNS) overrideWith(other DNS) {
 	d.ServerAddress = helpers.OverrideWithIP(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = helpers.OverrideWithBool(d.KeepNameserver, other.KeepNameserver)
+	d.KeepNameserver = helpers.OverrideWithPointer(d.KeepNameserver, other.KeepNameserver)
 	d.DoT.overrideWith(other.DoT)
 }
 

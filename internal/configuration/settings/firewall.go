@@ -67,8 +67,8 @@ func (f *Firewall) overrideWith(other Firewall) {
 	f.VPNInputPorts = helpers.OverrideWithSlice(f.VPNInputPorts, other.VPNInputPorts)
 	f.InputPorts = helpers.OverrideWithSlice(f.InputPorts, other.InputPorts)
 	f.OutboundSubnets = helpers.OverrideWithSlice(f.OutboundSubnets, other.OutboundSubnets)
-	f.Enabled = helpers.OverrideWithBool(f.Enabled, other.Enabled)
-	f.Debug = helpers.OverrideWithBool(f.Debug, other.Debug)
+	f.Enabled = helpers.OverrideWithPointer(f.Enabled, other.Enabled)
+	f.Debug = helpers.OverrideWithPointer(f.Debug, other.Debug)
 }
 
 func (f *Firewall) setDefaults() {

@@ -71,7 +71,7 @@ func (p *Provider) mergeWith(other Provider) {
 }
 
 func (p *Provider) overrideWith(other Provider) {
-	p.Name = helpers.OverrideWithStringPtr(p.Name, other.Name)
+	p.Name = helpers.OverrideWithPointer(p.Name, other.Name)
 	p.ServerSelection.overrideWith(other.ServerSelection)
 	p.PortForwarding.overrideWith(other.PortForwarding)
 }

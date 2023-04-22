@@ -37,7 +37,7 @@ func (s *Shadowsocks) mergeWith(other Shadowsocks) {
 // settings object with any field set in the other
 // settings.
 func (s *Shadowsocks) overrideWith(other Shadowsocks) {
-	s.Enabled = helpers.OverrideWithBool(s.Enabled, other.Enabled)
+	s.Enabled = helpers.OverrideWithPointer(s.Enabled, other.Enabled)
 	s.Settings.OverrideWith(other.Settings)
 }
 

@@ -43,8 +43,8 @@ func (h *HealthyWait) mergeWith(other HealthyWait) {
 // settings object with any field set in the other
 // settings.
 func (h *HealthyWait) overrideWith(other HealthyWait) {
-	h.Initial = helpers.OverrideWithDurationPtr(h.Initial, other.Initial)
-	h.Addition = helpers.OverrideWithDurationPtr(h.Addition, other.Addition)
+	h.Initial = helpers.OverrideWithPointer(h.Initial, other.Initial)
+	h.Addition = helpers.OverrideWithPointer(h.Addition, other.Addition)
 }
 
 func (h *HealthyWait) setDefaults() {

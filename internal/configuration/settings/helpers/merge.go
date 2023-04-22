@@ -3,7 +3,6 @@ package helpers
 import (
 	"net/http"
 	"net/netip"
-	"time"
 )
 
 func MergeWithPointer[T any](existing, other *T) (result *T) {
@@ -22,13 +21,6 @@ func MergeWithString(existing, other string) (result string) {
 		return existing
 	}
 	return other
-}
-
-type Number interface {
-	uint8 | uint16 | uint32 | uint64 | uint |
-		int8 | int16 | int32 | int64 | int |
-		float32 | float64 |
-		time.Duration
 }
 
 func MergeWithNumber[T Number](existing, other T) (result T) { //nolint:ireturn

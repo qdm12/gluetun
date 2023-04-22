@@ -51,9 +51,9 @@ func (s *Settings) MergeWith(other Settings) {
 }
 
 func (s *Settings) OverrideWith(other Settings) {
-	s.Enabled = helpers.OverrideWithBool(s.Enabled, other.Enabled)
-	s.BlockProfileRate = helpers.OverrideWithIntPtr(s.BlockProfileRate, other.BlockProfileRate)
-	s.MutexProfileRate = helpers.OverrideWithIntPtr(s.MutexProfileRate, other.MutexProfileRate)
+	s.Enabled = helpers.OverrideWithPointer(s.Enabled, other.Enabled)
+	s.BlockProfileRate = helpers.OverrideWithPointer(s.BlockProfileRate, other.BlockProfileRate)
+	s.MutexProfileRate = helpers.OverrideWithPointer(s.MutexProfileRate, other.MutexProfileRate)
 	s.HTTPServer.OverrideWith(other.HTTPServer)
 }
 

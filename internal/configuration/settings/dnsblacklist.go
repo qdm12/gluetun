@@ -74,9 +74,9 @@ func (b *DNSBlacklist) mergeWith(other DNSBlacklist) {
 }
 
 func (b *DNSBlacklist) overrideWith(other DNSBlacklist) {
-	b.BlockMalicious = helpers.OverrideWithBool(b.BlockMalicious, other.BlockMalicious)
-	b.BlockAds = helpers.OverrideWithBool(b.BlockAds, other.BlockAds)
-	b.BlockSurveillance = helpers.OverrideWithBool(b.BlockSurveillance, other.BlockSurveillance)
+	b.BlockMalicious = helpers.OverrideWithPointer(b.BlockMalicious, other.BlockMalicious)
+	b.BlockAds = helpers.OverrideWithPointer(b.BlockAds, other.BlockAds)
+	b.BlockSurveillance = helpers.OverrideWithPointer(b.BlockSurveillance, other.BlockSurveillance)
 	b.AllowedHosts = helpers.OverrideWithSlice(b.AllowedHosts, other.AllowedHosts)
 	b.AddBlockedHosts = helpers.OverrideWithSlice(b.AddBlockedHosts, other.AddBlockedHosts)
 	b.AddBlockedIPs = helpers.OverrideWithSlice(b.AddBlockedIPs, other.AddBlockedIPs)
