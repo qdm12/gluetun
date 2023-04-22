@@ -23,9 +23,9 @@ type DNSBlacklist struct {
 }
 
 func (b *DNSBlacklist) setDefaults() {
-	b.BlockMalicious = helpers.DefaultBool(b.BlockMalicious, true)
-	b.BlockAds = helpers.DefaultBool(b.BlockAds, false)
-	b.BlockSurveillance = helpers.DefaultBool(b.BlockSurveillance, true)
+	b.BlockMalicious = helpers.DefaultPointer(b.BlockMalicious, true)
+	b.BlockAds = helpers.DefaultPointer(b.BlockAds, false)
+	b.BlockSurveillance = helpers.DefaultPointer(b.BlockSurveillance, true)
 }
 
 var hostRegex = regexp.MustCompile(`^([a-zA-Z0-9]|[a-zA-Z0-9_][a-zA-Z0-9\-_]{0,61}[a-zA-Z0-9_])(\.([a-zA-Z0-9]|[a-zA-Z0-9_][a-zA-Z0-9\-_]{0,61}[a-zA-Z0-9]))*$`) //nolint:lll

@@ -64,8 +64,8 @@ func (c *ControlServer) overrideWith(other ControlServer) {
 }
 
 func (c *ControlServer) setDefaults() {
-	c.Address = helpers.DefaultStringPtr(c.Address, ":8000")
-	c.Log = helpers.DefaultBool(c.Log, true)
+	c.Address = helpers.DefaultPointer(c.Address, ":8000")
+	c.Log = helpers.DefaultPointer(c.Log, true)
 }
 
 func (c ControlServer) String() string {

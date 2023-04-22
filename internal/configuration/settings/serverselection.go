@@ -262,11 +262,11 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.VPN = helpers.DefaultString(ss.VPN, vpn.OpenVPN)
 	ss.TargetIP = helpers.DefaultIP(ss.TargetIP, netip.IPv4Unspecified())
-	ss.OwnedOnly = helpers.DefaultBool(ss.OwnedOnly, false)
-	ss.FreeOnly = helpers.DefaultBool(ss.FreeOnly, false)
-	ss.PremiumOnly = helpers.DefaultBool(ss.PremiumOnly, false)
-	ss.StreamOnly = helpers.DefaultBool(ss.StreamOnly, false)
-	ss.MultiHopOnly = helpers.DefaultBool(ss.MultiHopOnly, false)
+	ss.OwnedOnly = helpers.DefaultPointer(ss.OwnedOnly, false)
+	ss.FreeOnly = helpers.DefaultPointer(ss.FreeOnly, false)
+	ss.PremiumOnly = helpers.DefaultPointer(ss.PremiumOnly, false)
+	ss.StreamOnly = helpers.DefaultPointer(ss.StreamOnly, false)
+	ss.MultiHopOnly = helpers.DefaultPointer(ss.MultiHopOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
 	ss.Wireguard.setDefaults()
 }

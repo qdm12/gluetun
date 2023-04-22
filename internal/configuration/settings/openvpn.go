@@ -307,29 +307,29 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.Version = helpers.DefaultString(o.Version, openvpn.Openvpn25)
-	o.User = helpers.DefaultStringPtr(o.User, "")
+	o.User = helpers.DefaultPointer(o.User, "")
 	if vpnProvider == providers.Mullvad {
-		o.Password = helpers.DefaultStringPtr(o.Password, "m")
+		o.Password = helpers.DefaultPointer(o.Password, "m")
 	} else {
-		o.Password = helpers.DefaultStringPtr(o.Password, "")
+		o.Password = helpers.DefaultPointer(o.Password, "")
 	}
 
-	o.ConfFile = helpers.DefaultStringPtr(o.ConfFile, "")
-	o.Auth = helpers.DefaultStringPtr(o.Auth, "")
-	o.Cert = helpers.DefaultStringPtr(o.Cert, "")
-	o.Key = helpers.DefaultStringPtr(o.Key, "")
-	o.EncryptedKey = helpers.DefaultStringPtr(o.EncryptedKey, "")
-	o.KeyPassphrase = helpers.DefaultStringPtr(o.KeyPassphrase, "")
+	o.ConfFile = helpers.DefaultPointer(o.ConfFile, "")
+	o.Auth = helpers.DefaultPointer(o.Auth, "")
+	o.Cert = helpers.DefaultPointer(o.Cert, "")
+	o.Key = helpers.DefaultPointer(o.Key, "")
+	o.EncryptedKey = helpers.DefaultPointer(o.EncryptedKey, "")
+	o.KeyPassphrase = helpers.DefaultPointer(o.KeyPassphrase, "")
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
 		defaultEncPreset = presets.Strong
 	}
-	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
-	o.MSSFix = helpers.DefaultUint16(o.MSSFix, 0)
+	o.PIAEncPreset = helpers.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
+	o.MSSFix = helpers.DefaultPointer(o.MSSFix, 0)
 	o.Interface = helpers.DefaultString(o.Interface, "tun0")
 	o.ProcessUser = helpers.DefaultString(o.ProcessUser, "root")
-	o.Verbosity = helpers.DefaultInt(o.Verbosity, 1)
+	o.Verbosity = helpers.DefaultPointer(o.Verbosity, 1)
 }
 
 func (o OpenVPN) String() string {

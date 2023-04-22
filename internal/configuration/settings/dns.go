@@ -65,7 +65,7 @@ func (d *DNS) overrideWith(other DNS) {
 func (d *DNS) setDefaults() {
 	localhost := netip.AddrFrom4([4]byte{127, 0, 0, 1})
 	d.ServerAddress = helpers.DefaultIP(d.ServerAddress, localhost)
-	d.KeepNameserver = helpers.DefaultBool(d.KeepNameserver, false)
+	d.KeepNameserver = helpers.DefaultPointer(d.KeepNameserver, false)
 	d.DoT.setDefaults()
 }
 

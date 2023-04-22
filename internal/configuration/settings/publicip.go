@@ -59,8 +59,8 @@ func (p *PublicIP) overrideWith(other PublicIP) {
 
 func (p *PublicIP) setDefaults() {
 	const defaultPeriod = 12 * time.Hour
-	p.Period = helpers.DefaultDurationPtr(p.Period, defaultPeriod)
-	p.IPFilepath = helpers.DefaultStringPtr(p.IPFilepath, "/tmp/gluetun/ip")
+	p.Period = helpers.DefaultPointer(p.Period, defaultPeriod)
+	p.IPFilepath = helpers.DefaultPointer(p.IPFilepath, "/tmp/gluetun/ip")
 }
 
 func (p PublicIP) String() string {

@@ -72,8 +72,8 @@ func (f *Firewall) overrideWith(other Firewall) {
 }
 
 func (f *Firewall) setDefaults() {
-	f.Enabled = helpers.DefaultBool(f.Enabled, true)
-	f.Debug = helpers.DefaultBool(f.Debug, false)
+	f.Enabled = helpers.DefaultPointer(f.Enabled, true)
+	f.Debug = helpers.DefaultPointer(f.Debug, false)
 }
 
 func (f Firewall) String() string {

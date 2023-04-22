@@ -129,7 +129,7 @@ func (w *WireguardSelection) overrideWith(other WireguardSelection) {
 
 func (w *WireguardSelection) setDefaults() {
 	w.EndpointIP = helpers.DefaultIP(w.EndpointIP, netip.IPv4Unspecified())
-	w.EndpointPort = helpers.DefaultUint16(w.EndpointPort, 0)
+	w.EndpointPort = helpers.DefaultPointer(w.EndpointPort, 0)
 }
 
 func (w WireguardSelection) String() string {

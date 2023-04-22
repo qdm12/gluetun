@@ -88,12 +88,12 @@ func (h *Health) OverrideWith(other Health) {
 func (h *Health) SetDefaults() {
 	h.ServerAddress = helpers.DefaultString(h.ServerAddress, "127.0.0.1:9999")
 	const defaultReadHeaderTimeout = 100 * time.Millisecond
-	h.ReadHeaderTimeout = helpers.DefaultDuration(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
+	h.ReadHeaderTimeout = helpers.DefaultNumber(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
 	const defaultReadTimeout = 500 * time.Millisecond
-	h.ReadTimeout = helpers.DefaultDuration(h.ReadTimeout, defaultReadTimeout)
+	h.ReadTimeout = helpers.DefaultNumber(h.ReadTimeout, defaultReadTimeout)
 	h.TargetAddress = helpers.DefaultString(h.TargetAddress, "cloudflare.com:443")
 	const defaultSuccessWait = 5 * time.Second
-	h.SuccessWait = helpers.DefaultDuration(h.SuccessWait, defaultSuccessWait)
+	h.SuccessWait = helpers.DefaultNumber(h.SuccessWait, defaultSuccessWait)
 	h.VPN.setDefaults()
 }
 

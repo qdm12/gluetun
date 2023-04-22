@@ -131,8 +131,8 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 }
 
 func (w *Wireguard) setDefaults() {
-	w.PrivateKey = helpers.DefaultStringPtr(w.PrivateKey, "")
-	w.PreSharedKey = helpers.DefaultStringPtr(w.PreSharedKey, "")
+	w.PrivateKey = helpers.DefaultPointer(w.PrivateKey, "")
+	w.PreSharedKey = helpers.DefaultPointer(w.PreSharedKey, "")
 	w.Interface = helpers.DefaultString(w.Interface, "wg0")
 	w.Implementation = helpers.DefaultString(w.Implementation, "auto")
 }

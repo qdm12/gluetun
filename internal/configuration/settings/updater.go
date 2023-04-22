@@ -90,7 +90,7 @@ func (u *Updater) overrideWith(other Updater) {
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
-	u.Period = helpers.DefaultDurationPtr(u.Period, 0)
+	u.Period = helpers.DefaultPointer(u.Period, 0)
 	u.DNSAddress = helpers.DefaultString(u.DNSAddress, "1.1.1.1:53")
 
 	if u.MinRatio == 0 {

@@ -42,7 +42,7 @@ func (s *Shadowsocks) overrideWith(other Shadowsocks) {
 }
 
 func (s *Shadowsocks) setDefaults() {
-	s.Enabled = helpers.DefaultBool(s.Enabled, false)
+	s.Enabled = helpers.DefaultPointer(s.Enabled, false)
 	s.Settings.SetDefaults()
 }
 

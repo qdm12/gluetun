@@ -77,7 +77,7 @@ func (p *Provider) overrideWith(other Provider) {
 }
 
 func (p *Provider) setDefaults() {
-	p.Name = helpers.DefaultStringPtr(p.Name, providers.PrivateInternetAccess)
+	p.Name = helpers.DefaultPointer(p.Name, providers.PrivateInternetAccess)
 	p.ServerSelection.setDefaults(*p.Name)
 	p.PortForwarding.setDefaults()
 }

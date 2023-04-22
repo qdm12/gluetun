@@ -50,8 +50,8 @@ func (h *HealthyWait) overrideWith(other HealthyWait) {
 func (h *HealthyWait) setDefaults() {
 	const initialDurationDefault = 6 * time.Second
 	const additionDurationDefault = 5 * time.Second
-	h.Initial = helpers.DefaultDurationPtr(h.Initial, initialDurationDefault)
-	h.Addition = helpers.DefaultDurationPtr(h.Addition, additionDurationDefault)
+	h.Initial = helpers.DefaultPointer(h.Initial, initialDurationDefault)
+	h.Addition = helpers.DefaultPointer(h.Addition, additionDurationDefault)
 }
 
 func (h HealthyWait) String() string {

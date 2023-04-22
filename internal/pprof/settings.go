@@ -27,10 +27,10 @@ type Settings struct {
 }
 
 func (s *Settings) SetDefaults() {
-	s.Enabled = helpers.DefaultBool(s.Enabled, false)
+	s.Enabled = helpers.DefaultPointer(s.Enabled, false)
 	s.HTTPServer.Address = helpers.DefaultString(s.HTTPServer.Address, "localhost:6060")
 	const defaultReadTimeout = 5 * time.Minute // for CPU profiling
-	s.HTTPServer.ReadTimeout = helpers.DefaultDuration(s.HTTPServer.ReadTimeout, defaultReadTimeout)
+	s.HTTPServer.ReadTimeout = helpers.DefaultNumber(s.HTTPServer.ReadTimeout, defaultReadTimeout)
 	s.HTTPServer.SetDefaults()
 }
 

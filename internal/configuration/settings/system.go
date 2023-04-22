@@ -39,8 +39,8 @@ func (s *System) overrideWith(other System) {
 
 func (s *System) setDefaults() {
 	const defaultID = 1000
-	s.PUID = helpers.DefaultUint32(s.PUID, defaultID)
-	s.PGID = helpers.DefaultUint32(s.PGID, defaultID)
+	s.PUID = helpers.DefaultPointer(s.PUID, defaultID)
+	s.PGID = helpers.DefaultPointer(s.PGID, defaultID)
 }
 
 func (s System) String() string {

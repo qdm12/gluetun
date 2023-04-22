@@ -30,17 +30,17 @@ func (u *Unbound) setDefaults() {
 		}
 	}
 
-	u.Caching = helpers.DefaultBool(u.Caching, true)
-	u.IPv6 = helpers.DefaultBool(u.IPv6, false)
+	u.Caching = helpers.DefaultPointer(u.Caching, true)
+	u.IPv6 = helpers.DefaultPointer(u.IPv6, false)
 
 	const defaultVerbosityLevel = 1
-	u.VerbosityLevel = helpers.DefaultUint8(u.VerbosityLevel, defaultVerbosityLevel)
+	u.VerbosityLevel = helpers.DefaultPointer(u.VerbosityLevel, defaultVerbosityLevel)
 
 	const defaultVerbosityDetailsLevel = 0
-	u.VerbosityDetailsLevel = helpers.DefaultUint8(u.VerbosityDetailsLevel, defaultVerbosityDetailsLevel)
+	u.VerbosityDetailsLevel = helpers.DefaultPointer(u.VerbosityDetailsLevel, defaultVerbosityDetailsLevel)
 
 	const defaultValidationLogLevel = 0
-	u.ValidationLogLevel = helpers.DefaultUint8(u.ValidationLogLevel, defaultValidationLogLevel)
+	u.ValidationLogLevel = helpers.DefaultPointer(u.ValidationLogLevel, defaultValidationLogLevel)
 
 	if u.Allowed == nil {
 		u.Allowed = []netip.Prefix{

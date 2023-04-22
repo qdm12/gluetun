@@ -152,15 +152,15 @@ func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {
 }
 
 func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
-	o.ConfFile = helpers.DefaultStringPtr(o.ConfFile, "")
-	o.TCP = helpers.DefaultBool(o.TCP, false)
-	o.CustomPort = helpers.DefaultUint16(o.CustomPort, 0)
+	o.ConfFile = helpers.DefaultPointer(o.ConfFile, "")
+	o.TCP = helpers.DefaultPointer(o.TCP, false)
+	o.CustomPort = helpers.DefaultPointer(o.CustomPort, 0)
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
 		defaultEncPreset = presets.Strong
 	}
-	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
+	o.PIAEncPreset = helpers.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
 }
 
 func (o OpenVPNSelection) String() string {

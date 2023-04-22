@@ -63,8 +63,8 @@ func (p *PortForwarding) overrideWith(other PortForwarding) {
 }
 
 func (p *PortForwarding) setDefaults() {
-	p.Enabled = helpers.DefaultBool(p.Enabled, false)
-	p.Filepath = helpers.DefaultStringPtr(p.Filepath, "/tmp/gluetun/forwarded_port")
+	p.Enabled = helpers.DefaultPointer(p.Enabled, false)
+	p.Filepath = helpers.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
 }
 
 func (p PortForwarding) String() string {

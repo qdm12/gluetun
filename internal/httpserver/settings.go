@@ -36,10 +36,10 @@ type Settings struct {
 func (s *Settings) SetDefaults() {
 	s.Address = helpers.DefaultString(s.Address, ":8000")
 	const defaultReadTimeout = 3 * time.Second
-	s.ReadHeaderTimeout = helpers.DefaultDuration(s.ReadHeaderTimeout, defaultReadTimeout)
-	s.ReadTimeout = helpers.DefaultDuration(s.ReadTimeout, defaultReadTimeout)
+	s.ReadHeaderTimeout = helpers.DefaultNumber(s.ReadHeaderTimeout, defaultReadTimeout)
+	s.ReadTimeout = helpers.DefaultNumber(s.ReadTimeout, defaultReadTimeout)
 	const defaultShutdownTimeout = 3 * time.Second
-	s.ShutdownTimeout = helpers.DefaultDuration(s.ShutdownTimeout, defaultShutdownTimeout)
+	s.ShutdownTimeout = helpers.DefaultNumber(s.ShutdownTimeout, defaultShutdownTimeout)
 }
 
 func (s Settings) Copy() Settings {

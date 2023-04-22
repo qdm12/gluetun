@@ -81,9 +81,9 @@ func (d *DoT) overrideWith(other DoT) {
 }
 
 func (d *DoT) setDefaults() {
-	d.Enabled = helpers.DefaultBool(d.Enabled, true)
+	d.Enabled = helpers.DefaultPointer(d.Enabled, true)
 	const defaultUpdatePeriod = 24 * time.Hour
-	d.UpdatePeriod = helpers.DefaultDurationPtr(d.UpdatePeriod, defaultUpdatePeriod)
+	d.UpdatePeriod = helpers.DefaultPointer(d.UpdatePeriod, defaultUpdatePeriod)
 	d.Unbound.setDefaults()
 	d.Blacklist.setDefaults()
 }

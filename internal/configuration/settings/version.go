@@ -37,7 +37,7 @@ func (v *Version) overrideWith(other Version) {
 }
 
 func (v *Version) setDefaults() {
-	v.Enabled = helpers.DefaultBool(v.Enabled, true)
+	v.Enabled = helpers.DefaultPointer(v.Enabled, true)
 }
 
 func (v Version) String() string {

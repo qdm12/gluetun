@@ -37,7 +37,7 @@ func (l *Log) overrideWith(other Log) {
 }
 
 func (l *Log) setDefaults() {
-	l.Level = helpers.DefaultLogLevel(l.Level, log.LevelInfo)
+	l.Level = helpers.DefaultPointer(l.Level, log.LevelInfo)
 }
 
 func (l Log) String() string {

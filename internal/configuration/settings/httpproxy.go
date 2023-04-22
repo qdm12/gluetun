@@ -95,16 +95,16 @@ func (h *HTTPProxy) overrideWith(other HTTPProxy) {
 }
 
 func (h *HTTPProxy) setDefaults() {
-	h.User = helpers.DefaultStringPtr(h.User, "")
-	h.Password = helpers.DefaultStringPtr(h.Password, "")
+	h.User = helpers.DefaultPointer(h.User, "")
+	h.Password = helpers.DefaultPointer(h.Password, "")
 	h.ListeningAddress = helpers.DefaultString(h.ListeningAddress, ":8888")
-	h.Enabled = helpers.DefaultBool(h.Enabled, false)
-	h.Stealth = helpers.DefaultBool(h.Stealth, false)
-	h.Log = helpers.DefaultBool(h.Log, false)
+	h.Enabled = helpers.DefaultPointer(h.Enabled, false)
+	h.Stealth = helpers.DefaultPointer(h.Stealth, false)
+	h.Log = helpers.DefaultPointer(h.Log, false)
 	const defaultReadHeaderTimeout = time.Second
-	h.ReadHeaderTimeout = helpers.DefaultDuration(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
+	h.ReadHeaderTimeout = helpers.DefaultNumber(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
 	const defaultReadTimeout = 3 * time.Second
-	h.ReadTimeout = helpers.DefaultDuration(h.ReadTimeout, defaultReadTimeout)
+	h.ReadTimeout = helpers.DefaultNumber(h.ReadTimeout, defaultReadTimeout)
 }
 
 func (h HTTPProxy) String() string {
