@@ -53,9 +53,9 @@ func (b DNSBlacklist) validate() (err error) {
 
 func (b DNSBlacklist) copy() (copied DNSBlacklist) {
 	return DNSBlacklist{
-		BlockMalicious:       helpers.CopyBoolPtr(b.BlockMalicious),
-		BlockAds:             helpers.CopyBoolPtr(b.BlockAds),
-		BlockSurveillance:    helpers.CopyBoolPtr(b.BlockSurveillance),
+		BlockMalicious:       helpers.CopyPointer(b.BlockMalicious),
+		BlockAds:             helpers.CopyPointer(b.BlockAds),
+		BlockSurveillance:    helpers.CopyPointer(b.BlockSurveillance),
 		AllowedHosts:         helpers.CopySlice(b.AllowedHosts),
 		AddBlockedHosts:      helpers.CopySlice(b.AddBlockedHosts),
 		AddBlockedIPs:        helpers.CopySlice(b.AddBlockedIPs),

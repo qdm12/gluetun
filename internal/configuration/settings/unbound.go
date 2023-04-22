@@ -95,11 +95,11 @@ func (u Unbound) validate() (err error) {
 func (u Unbound) copy() (copied Unbound) {
 	return Unbound{
 		Providers:             helpers.CopySlice(u.Providers),
-		Caching:               helpers.CopyBoolPtr(u.Caching),
-		IPv6:                  helpers.CopyBoolPtr(u.IPv6),
-		VerbosityLevel:        helpers.CopyUint8Ptr(u.VerbosityLevel),
-		VerbosityDetailsLevel: helpers.CopyUint8Ptr(u.VerbosityDetailsLevel),
-		ValidationLogLevel:    helpers.CopyUint8Ptr(u.ValidationLogLevel),
+		Caching:               helpers.CopyPointer(u.Caching),
+		IPv6:                  helpers.CopyPointer(u.IPv6),
+		VerbosityLevel:        helpers.CopyPointer(u.VerbosityLevel),
+		VerbosityDetailsLevel: helpers.CopyPointer(u.VerbosityDetailsLevel),
+		ValidationLogLevel:    helpers.CopyPointer(u.ValidationLogLevel),
 		Username:              u.Username,
 		Allowed:               helpers.CopySlice(u.Allowed),
 	}

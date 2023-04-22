@@ -110,7 +110,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 func (w *WireguardSelection) copy() (copied WireguardSelection) {
 	return WireguardSelection{
 		EndpointIP:   w.EndpointIP,
-		EndpointPort: helpers.CopyUint16Ptr(w.EndpointPort),
+		EndpointPort: helpers.CopyPointer(w.EndpointPort),
 		PublicKey:    w.PublicKey,
 	}
 }

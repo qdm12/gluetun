@@ -40,7 +40,7 @@ func (d DNS) validate() (err error) {
 func (d *DNS) Copy() (copied DNS) {
 	return DNS{
 		ServerAddress:  d.ServerAddress,
-		KeepNameserver: helpers.CopyBoolPtr(d.KeepNameserver),
+		KeepNameserver: helpers.CopyPointer(d.KeepNameserver),
 		DoT:            d.DoT.copy(),
 	}
 }

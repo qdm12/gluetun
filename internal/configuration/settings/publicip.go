@@ -42,8 +42,8 @@ func (p PublicIP) validate() (err error) {
 
 func (p *PublicIP) copy() (copied PublicIP) {
 	return PublicIP{
-		Period:     helpers.CopyDurationPtr(p.Period),
-		IPFilepath: helpers.CopyStringPtr(p.IPFilepath),
+		Period:     helpers.CopyPointer(p.Period),
+		IPFilepath: helpers.CopyPointer(p.IPFilepath),
 	}
 }
 

@@ -36,7 +36,7 @@ func (s *Settings) SetDefaults() {
 
 func (s Settings) Copy() (copied Settings) {
 	return Settings{
-		Enabled:          helpers.CopyBoolPtr(s.Enabled),
+		Enabled:          helpers.CopyPointer(s.Enabled),
 		BlockProfileRate: s.BlockProfileRate,
 		MutexProfileRate: s.MutexProfileRate,
 		HTTPServer:       s.HTTPServer.Copy(),

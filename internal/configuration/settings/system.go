@@ -19,8 +19,8 @@ func (s System) validate() (err error) {
 
 func (s *System) copy() (copied System) {
 	return System{
-		PUID:     helpers.CopyUint32Ptr(s.PUID),
-		PGID:     helpers.CopyUint32Ptr(s.PGID),
+		PUID:     helpers.CopyPointer(s.PUID),
+		PGID:     helpers.CopyPointer(s.PGID),
 		Timezone: s.Timezone,
 	}
 }

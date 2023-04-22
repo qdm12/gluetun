@@ -130,10 +130,10 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 
 func (o *OpenVPNSelection) copy() (copied OpenVPNSelection) {
 	return OpenVPNSelection{
-		ConfFile:     helpers.CopyStringPtr(o.ConfFile),
-		TCP:          helpers.CopyBoolPtr(o.TCP),
-		CustomPort:   helpers.CopyUint16Ptr(o.CustomPort),
-		PIAEncPreset: helpers.CopyStringPtr(o.PIAEncPreset),
+		ConfFile:     helpers.CopyPointer(o.ConfFile),
+		TCP:          helpers.CopyPointer(o.TCP),
+		CustomPort:   helpers.CopyPointer(o.CustomPort),
+		PIAEncPreset: helpers.CopyPointer(o.PIAEncPreset),
 	}
 }
 

@@ -63,7 +63,7 @@ func (u Updater) Validate() (err error) {
 
 func (u *Updater) copy() (copied Updater) {
 	return Updater{
-		Period:     helpers.CopyDurationPtr(u.Period),
+		Period:     helpers.CopyPointer(u.Period),
 		DNSAddress: u.DNSAddress,
 		MinRatio:   u.MinRatio,
 		Providers:  helpers.CopySlice(u.Providers),

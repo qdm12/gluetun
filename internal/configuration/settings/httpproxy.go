@@ -56,12 +56,12 @@ func (h HTTPProxy) validate() (err error) {
 
 func (h *HTTPProxy) copy() (copied HTTPProxy) {
 	return HTTPProxy{
-		User:              helpers.CopyStringPtr(h.User),
-		Password:          helpers.CopyStringPtr(h.Password),
+		User:              helpers.CopyPointer(h.User),
+		Password:          helpers.CopyPointer(h.Password),
 		ListeningAddress:  h.ListeningAddress,
-		Enabled:           helpers.CopyBoolPtr(h.Enabled),
-		Stealth:           helpers.CopyBoolPtr(h.Stealth),
-		Log:               helpers.CopyBoolPtr(h.Log),
+		Enabled:           helpers.CopyPointer(h.Enabled),
+		Stealth:           helpers.CopyPointer(h.Stealth),
+		Log:               helpers.CopyPointer(h.Log),
 		ReadHeaderTimeout: h.ReadHeaderTimeout,
 		ReadTimeout:       h.ReadTimeout,
 	}

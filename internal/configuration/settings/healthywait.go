@@ -27,8 +27,8 @@ func (h HealthyWait) validate() (err error) {
 // unset field of the receiver settings object.
 func (h *HealthyWait) copy() (copied HealthyWait) {
 	return HealthyWait{
-		Initial:  helpers.CopyDurationPtr(h.Initial),
-		Addition: helpers.CopyDurationPtr(h.Addition),
+		Initial:  helpers.CopyPointer(h.Initial),
+		Addition: helpers.CopyPointer(h.Addition),
 	}
 }
 

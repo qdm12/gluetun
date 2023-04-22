@@ -19,7 +19,7 @@ func (l Log) validate() (err error) {
 
 func (l *Log) copy() (copied Log) {
 	return Log{
-		Level: helpers.CopyLogLevelPtr(l.Level),
+		Level: helpers.CopyPointer(l.Level),
 	}
 }
 

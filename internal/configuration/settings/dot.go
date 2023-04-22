@@ -54,8 +54,8 @@ func (d DoT) validate() (err error) {
 
 func (d *DoT) copy() (copied DoT) {
 	return DoT{
-		Enabled:      helpers.CopyBoolPtr(d.Enabled),
-		UpdatePeriod: helpers.CopyDurationPtr(d.UpdatePeriod),
+		Enabled:      helpers.CopyPointer(d.Enabled),
+		UpdatePeriod: helpers.CopyPointer(d.UpdatePeriod),
 		Unbound:      d.Unbound.copy(),
 		Blacklist:    d.Blacklist.copy(),
 	}

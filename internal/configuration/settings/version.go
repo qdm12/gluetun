@@ -19,7 +19,7 @@ func (v Version) validate() (err error) {
 
 func (v *Version) copy() (copied Version) {
 	return Version{
-		Enabled: helpers.CopyBoolPtr(v.Enabled),
+		Enabled: helpers.CopyPointer(v.Enabled),
 	}
 }
 

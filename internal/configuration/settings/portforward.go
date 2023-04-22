@@ -47,8 +47,8 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 
 func (p *PortForwarding) copy() (copied PortForwarding) {
 	return PortForwarding{
-		Enabled:  helpers.CopyBoolPtr(p.Enabled),
-		Filepath: helpers.CopyStringPtr(p.Filepath),
+		Enabled:  helpers.CopyPointer(p.Enabled),
+		Filepath: helpers.CopyPointer(p.Filepath),
 	}
 }
 

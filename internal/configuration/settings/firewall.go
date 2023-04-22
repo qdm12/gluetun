@@ -43,8 +43,8 @@ func (f *Firewall) copy() (copied Firewall) {
 		VPNInputPorts:   helpers.CopySlice(f.VPNInputPorts),
 		InputPorts:      helpers.CopySlice(f.InputPorts),
 		OutboundSubnets: helpers.CopySlice(f.OutboundSubnets),
-		Enabled:         helpers.CopyBoolPtr(f.Enabled),
-		Debug:           helpers.CopyBoolPtr(f.Debug),
+		Enabled:         helpers.CopyPointer(f.Enabled),
+		Debug:           helpers.CopyPointer(f.Debug),
 	}
 }
 

@@ -58,7 +58,7 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 
 func (p *Provider) copy() (copied Provider) {
 	return Provider{
-		Name:            helpers.CopyStringPtr(p.Name),
+		Name:            helpers.CopyPointer(p.Name),
 		ServerSelection: p.ServerSelection.copy(),
 		PortForwarding:  p.PortForwarding.copy(),
 	}

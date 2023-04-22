@@ -43,8 +43,8 @@ func (c ControlServer) validate() (err error) {
 
 func (c *ControlServer) copy() (copied ControlServer) {
 	return ControlServer{
-		Address: helpers.CopyStringPtr(c.Address),
-		Log:     helpers.CopyBoolPtr(c.Log),
+		Address: helpers.CopyPointer(c.Address),
+		Log:     helpers.CopyPointer(c.Log),
 	}
 }
 

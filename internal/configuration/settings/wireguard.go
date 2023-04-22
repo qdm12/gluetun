@@ -106,8 +106,8 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
-		PrivateKey:     helpers.CopyStringPtr(w.PrivateKey),
-		PreSharedKey:   helpers.CopyStringPtr(w.PreSharedKey),
+		PrivateKey:     helpers.CopyPointer(w.PrivateKey),
+		PreSharedKey:   helpers.CopyPointer(w.PreSharedKey),
 		Addresses:      helpers.CopySlice(w.Addresses),
 		Interface:      w.Interface,
 		Implementation: w.Implementation,

@@ -21,7 +21,7 @@ func (s Shadowsocks) validate() (err error) {
 
 func (s *Shadowsocks) copy() (copied Shadowsocks) {
 	return Shadowsocks{
-		Enabled:  helpers.CopyBoolPtr(s.Enabled),
+		Enabled:  helpers.CopyPointer(s.Enabled),
 		Settings: s.Settings.Copy(),
 	}
 }
