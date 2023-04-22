@@ -29,6 +29,10 @@ issues:
     - text: "returns interface \\(github\\.com\\/vishvananda\\/netlink\\.Link\\)"
       linters:
         - ireturn
+    - path: "internal\\/openvpn\\/pkcs8\\/descbc\\.go"
+      text: "newCipherDESCBCBlock returns interface \\(github\\.com\\/youmark\\/pkcs8\\.Cipher\\)"
+      linters:
+        - ireturn
 
 linters:
   enable:

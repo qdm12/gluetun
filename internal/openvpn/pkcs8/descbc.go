@@ -14,7 +14,7 @@ func init() { //nolint:gochecknoinits
 	pkcs8lib.RegisterCipher(oidDESCBC, newCipherDESCBCBlock)
 }
 
-func newCipherDESCBCBlock() pkcs8lib.Cipher { //nolint:ireturn
+func newCipherDESCBCBlock() pkcs8lib.Cipher {
 	return cipherDESCBC{}
 }
 
