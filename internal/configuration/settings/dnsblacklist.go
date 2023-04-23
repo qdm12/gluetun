@@ -3,12 +3,12 @@ package settings
 import (
 	"errors"
 	"fmt"
+	"net/netip"
 	"regexp"
 
 	"github.com/qdm12/dns/pkg/blacklist"
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gotree"
-	"inet.af/netaddr"
 )
 
 // DNSBlacklist is settings for the DNS blacklist building.
@@ -18,8 +18,8 @@ type DNSBlacklist struct {
 	BlockSurveillance    *bool
 	AllowedHosts         []string
 	AddBlockedHosts      []string
-	AddBlockedIPs        []netaddr.IP
-	AddBlockedIPPrefixes []netaddr.IPPrefix
+	AddBlockedIPs        []netip.Addr
+	AddBlockedIPPrefixes []netip.Prefix
 }
 
 func (b *DNSBlacklist) setDefaults() {
@@ -58,8 +58,8 @@ func (b DNSBlacklist) copy() (copied DNSBlacklist) {
 		BlockSurveillance:    helpers.CopyBoolPtr(b.BlockSurveillance),
 		AllowedHosts:         helpers.CopyStringSlice(b.AllowedHosts),
 		AddBlockedHosts:      helpers.CopyStringSlice(b.AddBlockedHosts),
-		AddBlockedIPs:        helpers.CopyNetaddrIPsSlice(b.AddBlockedIPs),
-		AddBlockedIPPrefixes: helpers.CopyIPPrefixSlice(b.AddBlockedIPPrefixes),
+		AddBlockedIPs:        helpers.CopyNetipAddressesSlice(b.AddBlockedIPs),
+		AddBlockedIPPrefixes: helpers.CopyNetipPrefixesSlice(b.AddBlockedIPPrefixes),
 	}
 }
 
@@ -69,8 +69,8 @@ func (b *DNSBlacklist) mergeWith(other DNSBlacklist) {
 	b.BlockSurveillance = helpers.MergeWithBool(b.BlockSurveillance, other.BlockSurveillance)
 	b.AllowedHosts = helpers.MergeStringSlices(b.AllowedHosts, other.AllowedHosts)
 	b.AddBlockedHosts = helpers.MergeStringSlices(b.AddBlockedHosts, other.AddBlockedHosts)
-	b.AddBlockedIPs = helpers.MergeNetaddrIPsSlices(b.AddBlockedIPs, other.AddBlockedIPs)
-	b.AddBlockedIPPrefixes = helpers.MergeIPPrefixesSlices(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
+	b.AddBlockedIPs = helpers.MergeNetipAddressesSlices(b.AddBlockedIPs, other.AddBlockedIPs)
+	b.AddBlockedIPPrefixes = helpers.MergeNetipPrefixesSlices(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
 }
 
 func (b *DNSBlacklist) overrideWith(other DNSBlacklist) {
@@ -79,8 +79,8 @@ func (b *DNSBlacklist) overrideWith(other DNSBlacklist) {
 	b.BlockSurveillance = helpers.OverrideWithBool(b.BlockSurveillance, other.BlockSurveillance)
 	b.AllowedHosts = helpers.OverrideWithStringSlice(b.AllowedHosts, other.AllowedHosts)
 	b.AddBlockedHosts = helpers.OverrideWithStringSlice(b.AddBlockedHosts, other.AddBlockedHosts)
-	b.AddBlockedIPs = helpers.OverrideWithNetaddrIPsSlice(b.AddBlockedIPs, other.AddBlockedIPs)
-	b.AddBlockedIPPrefixes = helpers.OverrideWithIPPrefixesSlice(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
+	b.AddBlockedIPs = helpers.OverrideWithNetipAddressesSlice(b.AddBlockedIPs, other.AddBlockedIPs)
+	b.AddBlockedIPPrefixes = helpers.OverrideWithNetipPrefixesSlice(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
 }
 
 func (b DNSBlacklist) ToBlacklistFormat() (settings blacklist.BuilderSettings, err error) {
@@ -90,8 +90,8 @@ func (b DNSBlacklist) ToBlacklistFormat() (settings blacklist.BuilderSettings, e
 		BlockSurveillance:    *b.BlockSurveillance,
 		AllowedHosts:         b.AllowedHosts,
 		AddBlockedHosts:      b.AddBlockedHosts,
-		AddBlockedIPs:        b.AddBlockedIPs,
-		AddBlockedIPPrefixes: b.AddBlockedIPPrefixes,
+		AddBlockedIPs:        netipAddressesToNetaddrIPs(b.AddBlockedIPs),
+		AddBlockedIPPrefixes: netipPrefixesToNetaddrIPPrefixes(b.AddBlockedIPPrefixes),
 	}, nil
 }
 

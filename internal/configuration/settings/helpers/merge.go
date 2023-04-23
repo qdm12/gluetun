@@ -3,10 +3,10 @@ package helpers
 import (
 	"net"
 	"net/http"
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/log"
-	"inet.af/netaddr"
 )
 
 func MergeWithBool(existing, other *bool) (result *bool) {
@@ -213,13 +213,13 @@ func MergeIPNetsSlices(a, b []net.IPNet) (result []net.IPNet) {
 	return result
 }
 
-func MergeNetaddrIPsSlices(a, b []netaddr.IP) (result []netaddr.IP) {
+func MergeNetipAddressesSlices(a, b []netip.Addr) (result []netip.Addr) {
 	if a == nil && b == nil {
 		return nil
 	}
 
 	seen := make(map[string]struct{}, len(a)+len(b))
-	result = make([]netaddr.IP, 0, len(a)+len(b))
+	result = make([]netip.Addr, 0, len(a)+len(b))
 	for _, ip := range a {
 		key := ip.String()
 		if _, ok := seen[key]; ok {
@@ -239,13 +239,13 @@ func MergeNetaddrIPsSlices(a, b []netaddr.IP) (result []netaddr.IP) {
 	return result
 }
 
-func MergeIPPrefixesSlices(a, b []netaddr.IPPrefix) (result []netaddr.IPPrefix) {
+func MergeNetipPrefixesSlices(a, b []netip.Prefix) (result []netip.Prefix) {
 	if a == nil && b == nil {
 		return nil
 	}
 
 	seen := make(map[string]struct{}, len(a)+len(b))
-	result = make([]netaddr.IPPrefix, 0, len(a)+len(b))
+	result = make([]netip.Prefix, 0, len(a)+len(b))
 	for _, ipPrefix := range a {
 		key := ipPrefix.String()
 		if _, ok := seen[key]; ok {

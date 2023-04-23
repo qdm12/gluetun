@@ -1,11 +1,12 @@
 package helpers
 
 import (
+	"fmt"
 	"net"
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/log"
-	"inet.af/netaddr"
 )
 
 func CopyStringPtr(original *string) (copied *string) {
@@ -113,21 +114,17 @@ func CopyIPNetPtr(original *net.IPNet) (copied *net.IPNet) {
 	return copied
 }
 
-func CopyNetaddrIP(original netaddr.IP) (copied netaddr.IP) {
-	b, err := original.MarshalBinary()
-	if err != nil {
-		panic(err)
+func CopyNetipAddress(original netip.Addr) (copied netip.Addr) {
+	// AsSlice creates a new byte slice so no need to copy the bytes.
+	bytes := original.AsSlice()
+	copied, ok := netip.AddrFromSlice(bytes)
+	if !ok {
+		panic(fmt.Sprintf("cannot deep copy address with bytes %#v", bytes))
 	}
-
-	err = copied.UnmarshalBinary(b)
-	if err != nil {
-		panic(err)
-	}
-
 	return copied
 }
 
-func CopyIPPrefix(original netaddr.IPPrefix) (copied netaddr.IPPrefix) {
+func CopyNetipPrefix(original netip.Prefix) (copied netip.Prefix) {
 	b, err := original.MarshalText()
 	if err != nil {
 		panic(err)
@@ -173,26 +170,26 @@ func CopyIPNetSlice(original []net.IPNet) (copied []net.IPNet) {
 	return copied
 }
 
-func CopyIPPrefixSlice(original []netaddr.IPPrefix) (copied []netaddr.IPPrefix) {
+func CopyNetipPrefixesSlice(original []netip.Prefix) (copied []netip.Prefix) {
 	if original == nil {
 		return nil
 	}
 
-	copied = make([]netaddr.IPPrefix, len(original))
+	copied = make([]netip.Prefix, len(original))
 	for i := range original {
-		copied[i] = CopyIPPrefix(original[i])
+		copied[i] = CopyNetipPrefix(original[i])
 	}
 	return copied
 }
 
-func CopyNetaddrIPsSlice(original []netaddr.IP) (copied []netaddr.IP) {
+func CopyNetipAddressesSlice(original []netip.Addr) (copied []netip.Addr) {
 	if original == nil {
 		return nil
 	}
 
-	copied = make([]netaddr.IP, len(original))
+	copied = make([]netip.Addr, len(original))
 	for i := range original {
-		copied[i] = CopyNetaddrIP(original[i])
+		copied[i] = CopyNetipAddress(original[i])
 	}
 
 	return copied

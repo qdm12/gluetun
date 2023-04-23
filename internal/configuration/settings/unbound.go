@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 
 	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gotree"
-	"inet.af/netaddr"
 )
 
 // Unbound is settings for the Unbound program.
@@ -21,7 +21,7 @@ type Unbound struct {
 	VerbosityDetailsLevel *uint8
 	ValidationLogLevel    *uint8
 	Username              string
-	Allowed               []netaddr.IPPrefix
+	Allowed               []netip.Prefix
 }
 
 func (u *Unbound) setDefaults() {
@@ -44,9 +44,9 @@ func (u *Unbound) setDefaults() {
 	u.ValidationLogLevel = helpers.DefaultUint8(u.ValidationLogLevel, defaultValidationLogLevel)
 
 	if u.Allowed == nil {
-		u.Allowed = []netaddr.IPPrefix{
-			netaddr.IPPrefixFrom(netaddr.IPv4(0, 0, 0, 0), 0),
-			netaddr.IPPrefixFrom(netaddr.IPv6Raw([16]byte{}), 0),
+		u.Allowed = []netip.Prefix{
+			netip.PrefixFrom(netip.AddrFrom4([4]byte{}), 0),
+			netip.PrefixFrom(netip.AddrFrom16([16]byte{}), 0),
 		}
 	}
 
@@ -102,7 +102,7 @@ func (u Unbound) copy() (copied Unbound) {
 		VerbosityDetailsLevel: helpers.CopyUint8Ptr(u.VerbosityDetailsLevel),
 		ValidationLogLevel:    helpers.CopyUint8Ptr(u.ValidationLogLevel),
 		Username:              u.Username,
-		Allowed:               helpers.CopyIPPrefixSlice(u.Allowed),
+		Allowed:               helpers.CopyNetipPrefixesSlice(u.Allowed),
 	}
 }
 
@@ -114,7 +114,7 @@ func (u *Unbound) mergeWith(other Unbound) {
 	u.VerbosityDetailsLevel = helpers.MergeWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
 	u.ValidationLogLevel = helpers.MergeWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
 	u.Username = helpers.MergeWithString(u.Username, other.Username)
-	u.Allowed = helpers.MergeIPPrefixesSlices(u.Allowed, other.Allowed)
+	u.Allowed = helpers.MergeNetipPrefixesSlices(u.Allowed, other.Allowed)
 }
 
 func (u *Unbound) overrideWith(other Unbound) {
@@ -125,7 +125,7 @@ func (u *Unbound) overrideWith(other Unbound) {
 	u.VerbosityDetailsLevel = helpers.OverrideWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
 	u.ValidationLogLevel = helpers.OverrideWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
 	u.Username = helpers.OverrideWithString(u.Username, other.Username)
-	u.Allowed = helpers.OverrideWithIPPrefixesSlice(u.Allowed, other.Allowed)
+	u.Allowed = helpers.OverrideWithNetipPrefixesSlice(u.Allowed, other.Allowed)
 }
 
 func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {
@@ -149,7 +149,7 @@ func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {
 		VerbosityDetailsLevel: *u.VerbosityDetailsLevel,
 		ValidationLogLevel:    *u.ValidationLogLevel,
 		AccessControl: unbound.AccessControlSettings{
-			Allowed: u.Allowed,
+			Allowed: netipPrefixesToNetaddrIPPrefixes(u.Allowed),
 		},
 		Username: u.Username,
 	}, nil

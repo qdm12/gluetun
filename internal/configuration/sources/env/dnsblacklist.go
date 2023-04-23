@@ -3,10 +3,10 @@ package env
 import (
 	"errors"
 	"fmt"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/govalid/binary"
-	"inet.af/netaddr"
 )
 
 func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error) {
@@ -55,24 +55,24 @@ var (
 	ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
 )
 
-func readDoTPrivateAddresses() (ips []netaddr.IP,
-	ipPrefixes []netaddr.IPPrefix, err error) {
+func readDoTPrivateAddresses() (ips []netip.Addr,
+	ipPrefixes []netip.Prefix, err error) {
 	privateAddresses := envToCSV("DOT_PRIVATE_ADDRESS")
 	if len(privateAddresses) == 0 {
 		return nil, nil, nil
 	}
 
-	ips = make([]netaddr.IP, 0, len(privateAddresses))
-	ipPrefixes = make([]netaddr.IPPrefix, 0, len(privateAddresses))
+	ips = make([]netip.Addr, 0, len(privateAddresses))
+	ipPrefixes = make([]netip.Prefix, 0, len(privateAddresses))
 
 	for _, privateAddress := range privateAddresses {
-		ip, err := netaddr.ParseIP(privateAddress)
+		ip, err := netip.ParseAddr(privateAddress)
 		if err == nil {
 			ips = append(ips, ip)
 			continue
 		}
 
-		ipPrefix, err := netaddr.ParseIPPrefix(privateAddress)
+		ipPrefix, err := netip.ParsePrefix(privateAddress)
 		if err == nil {
 			ipPrefixes = append(ipPrefixes, ipPrefix)
 			continue

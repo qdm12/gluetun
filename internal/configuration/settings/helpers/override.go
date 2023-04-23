@@ -3,10 +3,10 @@ package helpers
 import (
 	"net"
 	"net/http"
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/log"
-	"inet.af/netaddr"
 )
 
 func OverrideWithBool(existing, other *bool) (result *bool) {
@@ -154,20 +154,20 @@ func OverrideWithIPNetsSlice(existing, other []net.IPNet) (result []net.IPNet) {
 	return result
 }
 
-func OverrideWithNetaddrIPsSlice(existing, other []netaddr.IP) (result []netaddr.IP) {
+func OverrideWithNetipAddressesSlice(existing, other []netip.Addr) (result []netip.Addr) {
 	if other == nil {
 		return existing
 	}
-	result = make([]netaddr.IP, len(other))
+	result = make([]netip.Addr, len(other))
 	copy(result, other)
 	return result
 }
 
-func OverrideWithIPPrefixesSlice(existing, other []netaddr.IPPrefix) (result []netaddr.IPPrefix) {
+func OverrideWithNetipPrefixesSlice(existing, other []netip.Prefix) (result []netip.Prefix) {
 	if other == nil {
 		return existing
 	}
-	result = make([]netaddr.IPPrefix, len(other))
+	result = make([]netip.Prefix, len(other))
 	copy(result, other)
 	return result
 }
