@@ -31,30 +31,31 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 	}
 
 	for _, route := range routes {
-		if route.Dst == nil {
-			defaultRoute := DefaultRoute{
-				Gateway: route.Gw,
-				Family:  route.Family,
-			}
-			linkIndex := route.LinkIndex
-			link, err := r.netLinker.LinkByIndex(linkIndex)
-			if err != nil {
-				return nil, fmt.Errorf("obtaining link by index: for default route at index %d: %w", linkIndex, err)
-			}
-			attributes := link.Attrs()
-			defaultRoute.NetInterface = attributes.Name
-			family := netlink.FAMILY_V6
-			if route.Gw.To4() != nil {
-				family = netlink.FAMILY_V4
-			}
-			defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface, family)
-			if err != nil {
-				return nil, fmt.Errorf("getting assigned IP of %s: %w", defaultRoute.NetInterface, err)
-			}
-
-			r.logger.Info("default route found: " + defaultRoute.String())
-			defaultRoutes = append(defaultRoutes, defaultRoute)
+		if route.Dst != nil {
+			continue
 		}
+		defaultRoute := DefaultRoute{
+			Gateway: route.Gw,
+			Family:  route.Family,
+		}
+		linkIndex := route.LinkIndex
+		link, err := r.netLinker.LinkByIndex(linkIndex)
+		if err != nil {
+			return nil, fmt.Errorf("obtaining link by index: for default route at index %d: %w", linkIndex, err)
+		}
+		attributes := link.Attrs()
+		defaultRoute.NetInterface = attributes.Name
+		family := netlink.FAMILY_V6
+		if route.Gw.To4() != nil {
+			family = netlink.FAMILY_V4
+		}
+		defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface, family)
+		if err != nil {
+			return nil, fmt.Errorf("getting assigned IP of %s: %w", defaultRoute.NetInterface, err)
+		}
+
+		r.logger.Info("default route found: " + defaultRoute.String())
+		defaultRoutes = append(defaultRoutes, defaultRoute)
 	}
 
 	if len(defaultRoutes) == 0 {
