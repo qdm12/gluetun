@@ -22,6 +22,18 @@ func ipMatchesFamily(ip net.IP, family int) bool {
 		(family == netlink.FAMILY_V4 && ip.To4() != nil)
 }
 
+func ensureNoIPv6WrappedIPv4(candidateIP net.IP) (resultIP net.IP) {
+	const ipv4Size = 4
+	if candidateIP.To4() == nil || len(candidateIP) == ipv4Size { // ipv6 or ipv4
+		return candidateIP
+	}
+
+	// ipv6-wrapped ipv4
+	resultIP = make(net.IP, ipv4Size)
+	copy(resultIP, candidateIP[12:16])
+	return resultIP
+}
+
 func (r *Routing) assignedIP(interfaceName string, family int) (ip net.IP, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
@@ -34,14 +46,22 @@ func (r *Routing) assignedIP(interfaceName string, family int) (ip net.IP, err e
 	for _, address := range addresses {
 		switch value := address.(type) {
 		case *net.IPAddr:
-			if ipMatchesFamily(value.IP, family) {
-				return value.IP, nil
-			}
+			ip = value.IP
 		case *net.IPNet:
-			if ipMatchesFamily(value.IP, family) {
-				return value.IP, nil
-			}
+			ip = value.IP
+		default:
+			continue
 		}
+
+		if !ipMatchesFamily(ip, family) {
+			continue
+		}
+
+		// Ensure we don't return an IPv6-wrapped IPv4 address
+		// since netip.Address String method works differently than
+		// net.IP String method for this kind of addresses.
+		ip = ensureNoIPv6WrappedIPv4(ip)
+		return ip, nil
 	}
 	return nil, fmt.Errorf("%w: interface %s in %d addresses",
 		errInterfaceIPNotFound, interfaceName, len(addresses))

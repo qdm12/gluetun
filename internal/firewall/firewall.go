@@ -2,7 +2,7 @@ package firewall
 
 import (
 	"context"
-	"net"
+	"net/netip"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -27,7 +27,7 @@ type Config struct { //nolint:maligned
 	enabled           bool
 	vpnConnection     models.Connection
 	vpnIntf           string
-	outboundSubnets   []net.IPNet
+	outboundSubnets   []netip.Prefix
 	allowedInputPorts map[uint16]map[string]struct{} // port to interfaces set mapping
 	stateMutex        sync.Mutex
 }

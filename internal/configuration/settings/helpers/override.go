@@ -145,15 +145,6 @@ func OverrideWithUint16Slice(existing, other []uint16) (result []uint16) {
 	return result
 }
 
-func OverrideWithIPNetsSlice(existing, other []net.IPNet) (result []net.IPNet) {
-	if other == nil {
-		return existing
-	}
-	result = make([]net.IPNet, len(other))
-	copy(result, other)
-	return result
-}
-
 func OverrideWithNetipAddressesSlice(existing, other []netip.Addr) (result []netip.Addr) {
 	if other == nil {
 		return existing

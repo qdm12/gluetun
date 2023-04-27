@@ -1,7 +1,7 @@
 package routing
 
 import (
-	"net"
+	"net/netip"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/netlink"
@@ -48,7 +48,7 @@ type Linker interface {
 type Routing struct {
 	netLinker       NetLinker
 	logger          Logger
-	outboundSubnets []net.IPNet
+	outboundSubnets []netip.Prefix
 	stateMutex      sync.RWMutex
 }
 

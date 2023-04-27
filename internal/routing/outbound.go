@@ -2,7 +2,7 @@ package routing
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/subnet"
 )
@@ -12,7 +12,7 @@ const (
 	outboundPriority = 99
 )
 
-func (r *Routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
+func (r *Routing) SetOutboundRoutes(outboundSubnets []netip.Prefix) error {
 	defaultRoutes, err := r.DefaultRoutes()
 	if err != nil {
 		return err
@@ -20,7 +20,7 @@ func (r *Routing) SetOutboundRoutes(outboundSubnets []net.IPNet) error {
 	return r.setOutboundRoutes(outboundSubnets, defaultRoutes)
 }
 
-func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
+func (r *Routing) setOutboundRoutes(outboundSubnets []netip.Prefix,
 	defaultRoutes []DefaultRoute) (err error) {
 	r.stateMutex.Lock()
 	defer r.stateMutex.Unlock()
@@ -45,7 +45,7 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []net.IPNet,
 	return nil
 }
 
-func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
+func (r *Routing) removeOutboundSubnets(subnets []netip.Prefix,
 	defaultRoutes []DefaultRoute) (warnings []string) {
 	for i, subNet := range subnets {
 		for _, defaultRoute := range defaultRoutes {
@@ -56,7 +56,7 @@ func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 			}
 		}
 
-		ruleSrcNet := (*net.IPNet)(nil)
+		ruleSrcNet := (*netip.Prefix)(nil)
 		ruleDstNet := &subnets[i]
 		err := r.deleteIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {
@@ -71,7 +71,7 @@ func (r *Routing) removeOutboundSubnets(subnets []net.IPNet,
 	return warnings
 }
 
-func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
+func (r *Routing) addOutboundSubnets(subnets []netip.Prefix,
 	defaultRoutes []DefaultRoute) (err error) {
 	for i, subnet := range subnets {
 		for _, defaultRoute := range defaultRoutes {
@@ -81,7 +81,7 @@ func (r *Routing) addOutboundSubnets(subnets []net.IPNet,
 			}
 		}
 
-		ruleSrcNet := (*net.IPNet)(nil)
+		ruleSrcNet := (*netip.Prefix)(nil)
 		ruleDstNet := &subnets[i]
 		err = r.addIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {

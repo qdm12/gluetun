@@ -3,12 +3,13 @@ package routing
 import (
 	"fmt"
 	"net"
+	"net/netip"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP,
+func (r *Routing) addRouteVia(destination netip.Prefix, gateway net.IP,
 	iface string, table int) error {
 	destinationStr := destination.String()
 	r.logger.Info("adding route for " + destinationStr)
@@ -23,7 +24,7 @@ func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP,
 	}
 
 	route := netlink.Route{
-		Dst:       &destination,
+		Dst:       NetipPrefixToIPNet(&destination),
 		Gw:        gateway,
 		LinkIndex: link.Attrs().Index,
 		Table:     table,
@@ -36,7 +37,7 @@ func (r *Routing) addRouteVia(destination net.IPNet, gateway net.IP,
 	return nil
 }
 
-func (r *Routing) deleteRouteVia(destination net.IPNet, gateway net.IP,
+func (r *Routing) deleteRouteVia(destination netip.Prefix, gateway net.IP,
 	iface string, table int) (err error) {
 	destinationStr := destination.String()
 	r.logger.Info("deleting route for " + destinationStr)
@@ -51,7 +52,7 @@ func (r *Routing) deleteRouteVia(destination net.IPNet, gateway net.IP,
 	}
 
 	route := netlink.Route{
-		Dst:       &destination,
+		Dst:       NetipPrefixToIPNet(&destination),
 		Gw:        gateway,
 		LinkIndex: link.Attrs().Index,
 		Table:     table,

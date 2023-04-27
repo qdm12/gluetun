@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
@@ -15,7 +16,7 @@ var (
 )
 
 type LocalNetwork struct {
-	IPNet         *net.IPNet
+	IPNet         netip.Prefix
 	InterfaceName string
 	IP            net.IP
 }
@@ -55,7 +56,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		var localNet LocalNetwork
 
-		localNet.IPNet = route.Dst
+		localNet.IPNet = netIPNetToNetipPrefix(*route.Dst)
 		r.logger.Info("local ipnet found: " + localNet.IPNet.String())
 
 		link, err := r.netLinker.LinkByIndex(route.LinkIndex)
@@ -66,7 +67,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		localNet.InterfaceName = link.Attrs().Name
 
 		family := netlink.FAMILY_V6
-		if localNet.IPNet.IP.To4() != nil {
+		if localNet.IPNet.Addr().Is4() {
 			family = netlink.FAMILY_V4
 		}
 		ip, err := r.assignedIP(localNet.InterfaceName, family)
@@ -87,7 +88,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 }
 
 func (r *Routing) AddLocalRules(subnets []LocalNetwork) (err error) {
-	for _, net := range subnets {
+	for _, subnet := range subnets {
 		// The main table is a built-in value for Linux, see "man 8 ip-route"
 		const mainTable = 254
 
@@ -96,9 +97,9 @@ func (r *Routing) AddLocalRules(subnets []LocalNetwork) (err error) {
 		const localPriority = 98
 
 		// Main table was setup correctly by Docker, just need to add rules to use it
-		err = r.addIPRule(nil, net.IPNet, mainTable, localPriority)
+		err = r.addIPRule(nil, &subnet.IPNet, mainTable, localPriority)
 		if err != nil {
-			return fmt.Errorf("adding rule: %v: %w", net.IPNet, err)
+			return fmt.Errorf("adding rule: %v: %w", subnet.IPNet, err)
 		}
 	}
 	return nil

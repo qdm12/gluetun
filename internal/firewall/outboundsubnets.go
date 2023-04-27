@@ -3,18 +3,18 @@ package firewall
 import (
 	"context"
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/subnet"
 )
 
-func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (err error) {
+func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []netip.Prefix) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
 	if !c.enabled {
 		c.logger.Info("firewall disabled, only updating allowed subnets internal list")
-		c.outboundSubnets = make([]net.IPNet, len(subnets))
+		c.outboundSubnets = make([]netip.Prefix, len(subnets))
 		copy(c.outboundSubnets, subnets)
 		return nil
 	}
@@ -34,7 +34,7 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []net.IPNet) (e
 	return nil
 }
 
-func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet) {
+func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []netip.Prefix) {
 	const remove = true
 	for _, subNet := range subnets {
 		for _, defaultRoute := range c.defaultRoutes {
@@ -49,7 +49,7 @@ func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []net.IPNet)
 	}
 }
 
-func (c *Config) addOutboundSubnets(ctx context.Context, subnets []net.IPNet) error {
+func (c *Config) addOutboundSubnets(ctx context.Context, subnets []netip.Prefix) error {
 	const remove = false
 	for _, subnet := range subnets {
 		for _, defaultRoute := range c.defaultRoutes {

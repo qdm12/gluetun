@@ -2,6 +2,7 @@ package utils
 
 import (
 	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
@@ -25,17 +26,12 @@ func BuildWireguardSettings(connection models.Connection,
 	copy(settings.Endpoint.IP, connection.IP)
 	settings.Endpoint.Port = int(connection.Port)
 
-	settings.Addresses = make([]*net.IPNet, 0, len(userSettings.Addresses))
+	settings.Addresses = make([]netip.Prefix, 0, len(userSettings.Addresses))
 	for _, address := range userSettings.Addresses {
-		ipv6Address := address.IP.To4() == nil
-		if !ipv6Supported && ipv6Address {
+		if !ipv6Supported && address.Addr().Is6() {
 			continue
 		}
-		addressCopy := new(net.IPNet)
-		addressCopy.IP = make(net.IP, len(address.IP))
-		copy(addressCopy.IP, address.IP)
-		addressCopy.Mask = make(net.IPMask, len(address.Mask))
-		copy(addressCopy.Mask, address.Mask)
+		addressCopy := netip.PrefixFrom(address.Addr(), address.Bits())
 		settings.Addresses = append(settings.Addresses, addressCopy)
 	}
 

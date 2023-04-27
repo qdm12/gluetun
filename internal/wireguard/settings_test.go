@@ -3,6 +3,7 @@ package wireguard
 import (
 	"errors"
 	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -177,7 +178,7 @@ func Test_Settings_Check(t *testing.T) {
 			},
 			err: ErrAddressMissing,
 		},
-		"nil address": {
+		"invalid address": {
 			settings: Settings{
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
@@ -186,35 +187,9 @@ func Test_Settings_Check(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51820,
 				},
-				Addresses: []*net.IPNet{nil},
+				Addresses: []netip.Prefix{{}},
 			},
-			err: errors.New("interface address is nil: for address 1 of 1"),
-		},
-		"nil address IP": {
-			settings: Settings{
-				InterfaceName: "wg0",
-				PrivateKey:    validKey1,
-				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
-				Addresses: []*net.IPNet{{}},
-			},
-			err: errors.New("interface address IP is missing: for address 1 of 1"),
-		},
-		"nil address mask": {
-			settings: Settings{
-				InterfaceName: "wg0",
-				PrivateKey:    validKey1,
-				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
-				Addresses: []*net.IPNet{{IP: net.IPv4(1, 2, 3, 4)}},
-			},
-			err: errors.New("interface address mask is missing: for address 1 of 1"),
+			err: errors.New("interface address is not valid: for address 1 of 1"),
 		},
 		"zero firewall mark": {
 			settings: Settings{
@@ -225,7 +200,9 @@ func Test_Settings_Check(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51820,
 				},
-				Addresses: []*net.IPNet{{IP: net.IPv4(1, 2, 3, 4), Mask: net.CIDRMask(24, 32)}},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
+				},
 			},
 			err: ErrFirewallMarkMissing,
 		},
@@ -238,7 +215,9 @@ func Test_Settings_Check(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51820,
 				},
-				Addresses:      []*net.IPNet{{IP: net.IPv4(1, 2, 3, 4), Mask: net.CIDRMask(24, 32)}},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
+				},
 				FirewallMark:   999,
 				Implementation: "x",
 			},
@@ -253,7 +232,9 @@ func Test_Settings_Check(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51820,
 				},
-				Addresses:      []*net.IPNet{{IP: net.IPv4(1, 2, 3, 4), Mask: net.CIDRMask(24, 32)}},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
+				},
 				FirewallMark:   999,
 				Implementation: "userspace",
 			},
@@ -356,9 +337,9 @@ func Test_Settings_Lines(t *testing.T) {
 				},
 				FirewallMark: 999,
 				RulePriority: 888,
-				Addresses: []*net.IPNet{
-					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
-					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
 				},
 				IPv6:           ptr(true),
 				Implementation: "userspace",
@@ -386,9 +367,9 @@ func Test_Settings_Lines(t *testing.T) {
 			},
 			settings: Settings{
 				InterfaceName: "wg0",
-				Addresses: []*net.IPNet{
-					{IP: net.IPv4(1, 1, 1, 1), Mask: net.CIDRMask(24, 32)},
-					{IP: net.IPv4(2, 2, 2, 2), Mask: net.CIDRMask(32, 32)},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
 				},
 				IPv6: ptr(false),
 			},

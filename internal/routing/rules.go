@@ -4,17 +4,18 @@ import (
 	"bytes"
 	"fmt"
 	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {
+func (r *Routing) addIPRule(src, dst *netip.Prefix, table, priority int) error {
 	const add = true
 	r.logger.Debug(ruleDbgMsg(add, src, dst, table, priority))
 
 	rule := netlink.NewRule()
-	rule.Src = src
-	rule.Dst = dst
+	rule.Src = NetipPrefixToIPNet(src)
+	rule.Dst = NetipPrefixToIPNet(dst)
 	rule.Priority = priority
 	rule.Table = table
 
@@ -35,13 +36,13 @@ func (r *Routing) addIPRule(src, dst *net.IPNet, table, priority int) error {
 	return nil
 }
 
-func (r *Routing) deleteIPRule(src, dst *net.IPNet, table, priority int) error {
+func (r *Routing) deleteIPRule(src, dst *netip.Prefix, table, priority int) error {
 	const add = false
 	r.logger.Debug(ruleDbgMsg(add, src, dst, table, priority))
 
 	rule := netlink.NewRule()
-	rule.Src = src
-	rule.Dst = dst
+	rule.Src = NetipPrefixToIPNet(src)
+	rule.Dst = NetipPrefixToIPNet(dst)
 	rule.Priority = priority
 	rule.Table = table
 
@@ -60,7 +61,7 @@ func (r *Routing) deleteIPRule(src, dst *net.IPNet, table, priority int) error {
 	return nil
 }
 
-func ruleDbgMsg(add bool, src, dst *net.IPNet,
+func ruleDbgMsg(add bool, src, dst *netip.Prefix,
 	table, priority int) (debugMessage string) {
 	debugMessage = "ip rule"
 

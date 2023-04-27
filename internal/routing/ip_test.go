@@ -96,3 +96,35 @@ func Test_IPIsPrivate(t *testing.T) {
 		})
 	}
 }
+
+func Test_ensureNoIPv6WrappedIPv4(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		candidateIP net.IP
+		resultIP    net.IP
+	}{
+		"nil": {},
+		"ipv6": {
+			candidateIP: net.IPv6loopback,
+			resultIP:    net.IPv6loopback,
+		},
+		"ipv4": {
+			candidateIP: net.IP{1, 2, 3, 4},
+			resultIP:    net.IP{1, 2, 3, 4},
+		},
+		"ipv6_wrapped_ipv4": {
+			candidateIP: net.IPv4(1, 2, 3, 4),
+			resultIP:    net.IP{1, 2, 3, 4},
+		},
+	}
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			resultIP := ensureNoIPv6WrappedIPv4(testCase.candidateIP)
+			assert.Equal(t, testCase.resultIP, resultIP)
+		})
+	}
+}

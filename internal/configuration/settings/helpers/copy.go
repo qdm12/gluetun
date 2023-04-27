@@ -90,30 +90,6 @@ func CopyIP(original net.IP) (copied net.IP) {
 	return copied
 }
 
-func CopyIPNet(original net.IPNet) (copied net.IPNet) {
-	if original.IP != nil {
-		copied.IP = make(net.IP, len(original.IP))
-		copy(copied.IP, original.IP)
-	}
-
-	if original.Mask != nil {
-		copied.Mask = make(net.IPMask, len(original.Mask))
-		copy(copied.Mask, original.Mask)
-	}
-
-	return copied
-}
-
-func CopyIPNetPtr(original *net.IPNet) (copied *net.IPNet) {
-	if original == nil {
-		return nil
-	}
-
-	copied = new(net.IPNet)
-	*copied = CopyIPNet(*original)
-	return copied
-}
-
 func CopyNetipAddress(original netip.Addr) (copied netip.Addr) {
 	// AsSlice creates a new byte slice so no need to copy the bytes.
 	bytes := original.AsSlice()
@@ -155,18 +131,6 @@ func CopyUint16Slice(original []uint16) (copied []uint16) {
 
 	copied = make([]uint16, len(original))
 	copy(copied, original)
-	return copied
-}
-
-func CopyIPNetSlice(original []net.IPNet) (copied []net.IPNet) {
-	if original == nil {
-		return nil
-	}
-
-	copied = make([]net.IPNet, len(original))
-	for i := range original {
-		copied[i] = CopyIPNet(original[i])
-	}
 	return copied
 }
 

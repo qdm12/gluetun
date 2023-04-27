@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 	"regexp"
 	"strings"
 
@@ -24,7 +25,7 @@ type Settings struct {
 	Endpoint *net.UDPAddr
 	// Addresses assigned to the client.
 	// Note IPv6 addresses are ignored if IPv6 is not supported.
-	Addresses []*net.IPNet
+	Addresses []netip.Prefix
 	// FirewallMark to be used in routing tables and IP rules.
 	// It defaults to 51820 if left to 0.
 	FirewallMark int
@@ -77,9 +78,7 @@ var (
 	ErrEndpointIPMissing     = errors.New("endpoint IP is missing")
 	ErrEndpointPortMissing   = errors.New("endpoint port is missing")
 	ErrAddressMissing        = errors.New("interface address is missing")
-	ErrAddressNil            = errors.New("interface address is nil")
-	ErrAddressIPMissing      = errors.New("interface address IP is missing")
-	ErrAddressMaskMissing    = errors.New("interface address mask is missing")
+	ErrAddressNotValid       = errors.New("interface address is not valid")
 	ErrFirewallMarkMissing   = errors.New("firewall mark is missing")
 	ErrImplementationInvalid = errors.New("invalid implementation")
 )
@@ -122,16 +121,9 @@ func (s *Settings) Check() (err error) {
 		return fmt.Errorf("%w", ErrAddressMissing)
 	}
 	for i, addr := range s.Addresses {
-		switch {
-		case addr == nil:
+		if !addr.IsValid() {
 			return fmt.Errorf("%w: for address %d of %d",
-				ErrAddressNil, i+1, len(s.Addresses))
-		case addr.IP == nil:
-			return fmt.Errorf("%w: for address %d of %d",
-				ErrAddressIPMissing, i+1, len(s.Addresses))
-		case addr.Mask == nil:
-			return fmt.Errorf("%w: for address %d of %d",
-				ErrAddressMaskMissing, i+1, len(s.Addresses))
+				ErrAddressNotValid, i+1, len(s.Addresses))
 		}
 	}
 

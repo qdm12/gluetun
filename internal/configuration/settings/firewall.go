@@ -2,7 +2,7 @@ package settings
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gotree"
@@ -12,7 +12,7 @@ import (
 type Firewall struct {
 	VPNInputPorts   []uint16
 	InputPorts      []uint16
-	OutboundSubnets []net.IPNet
+	OutboundSubnets []netip.Prefix
 	Enabled         *bool
 	Debug           *bool
 }
@@ -42,7 +42,7 @@ func (f *Firewall) copy() (copied Firewall) {
 	return Firewall{
 		VPNInputPorts:   helpers.CopyUint16Slice(f.VPNInputPorts),
 		InputPorts:      helpers.CopyUint16Slice(f.InputPorts),
-		OutboundSubnets: helpers.CopyIPNetSlice(f.OutboundSubnets),
+		OutboundSubnets: helpers.CopyNetipPrefixesSlice(f.OutboundSubnets),
 		Enabled:         helpers.CopyBoolPtr(f.Enabled),
 		Debug:           helpers.CopyBoolPtr(f.Debug),
 	}
@@ -55,7 +55,7 @@ func (f *Firewall) copy() (copied Firewall) {
 func (f *Firewall) mergeWith(other Firewall) {
 	f.VPNInputPorts = helpers.MergeUint16Slices(f.VPNInputPorts, other.VPNInputPorts)
 	f.InputPorts = helpers.MergeUint16Slices(f.InputPorts, other.InputPorts)
-	f.OutboundSubnets = helpers.MergeIPNetsSlices(f.OutboundSubnets, other.OutboundSubnets)
+	f.OutboundSubnets = helpers.MergeNetipPrefixesSlices(f.OutboundSubnets, other.OutboundSubnets)
 	f.Enabled = helpers.MergeWithBool(f.Enabled, other.Enabled)
 	f.Debug = helpers.MergeWithBool(f.Debug, other.Debug)
 }
@@ -66,7 +66,7 @@ func (f *Firewall) mergeWith(other Firewall) {
 func (f *Firewall) overrideWith(other Firewall) {
 	f.VPNInputPorts = helpers.OverrideWithUint16Slice(f.VPNInputPorts, other.VPNInputPorts)
 	f.InputPorts = helpers.OverrideWithUint16Slice(f.InputPorts, other.InputPorts)
-	f.OutboundSubnets = helpers.OverrideWithIPNetsSlice(f.OutboundSubnets, other.OutboundSubnets)
+	f.OutboundSubnets = helpers.OverrideWithNetipPrefixesSlice(f.OutboundSubnets, other.OutboundSubnets)
 	f.Enabled = helpers.OverrideWithBool(f.Enabled, other.Enabled)
 	f.Debug = helpers.OverrideWithBool(f.Debug, other.Debug)
 }

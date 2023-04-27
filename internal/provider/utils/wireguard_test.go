@@ -2,6 +2,7 @@ package utils
 
 import (
 	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -30,9 +31,9 @@ func Test_BuildWireguardSettings(t *testing.T) {
 			userSettings: settings.Wireguard{
 				PrivateKey:   stringPtr("private"),
 				PreSharedKey: stringPtr("pre-shared"),
-				Addresses: []net.IPNet{
-					{IP: net.IPv4(1, 1, 1, 1), Mask: net.IPv4Mask(255, 255, 255, 255)},
-					{IP: net.IPv6zero, Mask: net.IPv4Mask(255, 255, 255, 255)},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 32),
+					netip.PrefixFrom(netip.AddrFrom16([16]byte{}), 32),
 				},
 				Interface: "wg1",
 			},
@@ -46,8 +47,8 @@ func Test_BuildWireguardSettings(t *testing.T) {
 					IP:   net.IPv4(1, 2, 3, 4),
 					Port: 51821,
 				},
-				Addresses: []*net.IPNet{
-					{IP: net.IPv4(1, 1, 1, 1), Mask: net.IPv4Mask(255, 255, 255, 255)},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 32),
 				},
 				RulePriority: 101,
 				IPv6:         boolPtr(false),

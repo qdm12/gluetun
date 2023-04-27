@@ -2,6 +2,7 @@ package wireguard
 
 import (
 	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,9 +34,8 @@ func Test_New(t *testing.T) {
 				Endpoint: &net.UDPAddr{
 					IP: net.IPv4(1, 2, 3, 4),
 				},
-				Addresses: []*net.IPNet{{
-					IP:   net.IPv4(5, 6, 7, 8),
-					Mask: net.IPv4Mask(255, 255, 255, 255)},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{5, 6, 7, 8}), 32),
 				},
 				FirewallMark: 100,
 			},
@@ -50,9 +50,8 @@ func Test_New(t *testing.T) {
 						IP:   net.IPv4(1, 2, 3, 4),
 						Port: 51820,
 					},
-					Addresses: []*net.IPNet{{
-						IP:   net.IPv4(5, 6, 7, 8),
-						Mask: net.IPv4Mask(255, 255, 255, 255)},
+					Addresses: []netip.Prefix{
+						netip.PrefixFrom(netip.AddrFrom4([4]byte{5, 6, 7, 8}), 32),
 					},
 					FirewallMark:   100,
 					IPv6:           ptr(false),

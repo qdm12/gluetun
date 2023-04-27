@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/netip"
 	"os"
 	"os/exec"
 	"strings"
@@ -108,9 +109,8 @@ func (c *Config) acceptInputThroughInterface(ctx context.Context, intf string, r
 	))
 }
 
-func (c *Config) acceptInputToSubnet(ctx context.Context, intf string, destination net.IPNet, remove bool) error {
-	isIP4Subnet := destination.IP.To4() != nil
-
+func (c *Config) acceptInputToSubnet(ctx context.Context, intf string,
+	destination netip.Prefix, remove bool) error {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
@@ -119,7 +119,7 @@ func (c *Config) acceptInputToSubnet(ctx context.Context, intf string, destinati
 	instruction := fmt.Sprintf("%s INPUT %s -d %s -j ACCEPT",
 		appendOrDelete(remove), interfaceFlag, destination.String())
 
-	if isIP4Subnet {
+	if destination.Addr().Is4() {
 		return c.runIptablesInstruction(ctx, instruction)
 	}
 	if c.ip6Tables == "" {
@@ -157,8 +157,8 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 
 // Thanks to @npawelek.
 func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
-	intf string, sourceIP net.IP, destinationSubnet net.IPNet, remove bool) error {
-	doIPv4 := sourceIP.To4() != nil && destinationSubnet.IP.To4() != nil
+	intf string, sourceIP net.IP, destinationSubnet netip.Prefix, remove bool) error {
+	doIPv4 := sourceIP.To4() != nil && destinationSubnet.Addr().Is4()
 
 	interfaceFlag := "-o " + intf
 	if intf == "*" { // all interfaces

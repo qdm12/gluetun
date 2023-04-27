@@ -3,7 +3,7 @@ package env
 import (
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -24,7 +24,7 @@ func (s *Source) readFirewall() (firewall settings.Firewall, err error) {
 
 	outboundSubnetsKey, _ := s.getEnvWithRetro("FIREWALL_OUTBOUND_SUBNETS", "EXTRA_SUBNETS")
 	outboundSubnetStrings := envToCSV(outboundSubnetsKey)
-	firewall.OutboundSubnets, err = stringsToIPNets(outboundSubnetStrings)
+	firewall.OutboundSubnets, err = stringsToNetipPrefixes(outboundSubnetStrings)
 	if err != nil {
 		return firewall, fmt.Errorf("environment variable %s: %w", outboundSubnetsKey, err)
 	}
@@ -65,18 +65,16 @@ func stringsToPorts(ss []string) (ports []uint16, err error) {
 	return ports, nil
 }
 
-func stringsToIPNets(ss []string) (ipNets []net.IPNet, err error) {
+func stringsToNetipPrefixes(ss []string) (ipPrefixes []netip.Prefix, err error) {
 	if len(ss) == 0 {
 		return nil, nil
 	}
-	ipNets = make([]net.IPNet, len(ss))
+	ipPrefixes = make([]netip.Prefix, len(ss))
 	for i, s := range ss {
-		ip, ipNet, err := net.ParseCIDR(s)
+		ipPrefixes[i], err = netip.ParsePrefix(s)
 		if err != nil {
 			return nil, fmt.Errorf("parsing IP network %q: %w", s, err)
 		}
-		ipNet.IP = ip
-		ipNets[i] = *ipNet
 	}
-	return ipNets, nil
+	return ipPrefixes, nil
 }

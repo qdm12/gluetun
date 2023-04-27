@@ -2,7 +2,7 @@ package routing
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
@@ -17,8 +17,9 @@ func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err err
 		return fmt.Errorf("adding rule: %w", err)
 	}
 
-	defaultDestinationIPv4 := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
-	defaultDestinationIPv6 := net.IPNet{IP: net.IPv6zero, Mask: net.IPMask(net.IPv6zero)}
+	const bits = 0
+	defaultDestinationIPv4 := netip.PrefixFrom(netip.AddrFrom4([4]byte{}), bits)
+	defaultDestinationIPv6 := netip.PrefixFrom(netip.AddrFrom16([16]byte{}), bits)
 
 	for _, defaultRoute := range defaultRoutes {
 		defaultDestination := defaultDestinationIPv4
@@ -36,8 +37,9 @@ func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err err
 }
 
 func (r *Routing) unrouteInboundFromDefault(defaultRoutes []DefaultRoute) (err error) {
-	defaultDestinationIPv4 := net.IPNet{IP: net.IPv4(0, 0, 0, 0), Mask: net.IPv4Mask(0, 0, 0, 0)}
-	defaultDestinationIPv6 := net.IPNet{IP: net.IPv6zero, Mask: net.IPMask(net.IPv6zero)}
+	const bits = 0
+	defaultDestinationIPv4 := netip.PrefixFrom(netip.AddrFrom4([4]byte{}), bits)
+	defaultDestinationIPv6 := netip.PrefixFrom(netip.AddrFrom16([16]byte{}), bits)
 
 	for _, defaultRoute := range defaultRoutes {
 		defaultDestination := defaultDestinationIPv4
@@ -60,9 +62,16 @@ func (r *Routing) unrouteInboundFromDefault(defaultRoutes []DefaultRoute) (err e
 
 func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRoute) (err error) {
 	for _, defaultRoute := range defaultRoutes {
-		defaultIPMasked32 := netlink.NewIPNet(defaultRoute.AssignedIP)
-		ruleDstNet := (*net.IPNet)(nil)
-		err = r.addIPRule(defaultIPMasked32, ruleDstNet, table, inboundPriority)
+		assignedIP := netIPToNetipAddress(defaultRoute.AssignedIP)
+		bits := 32
+		if assignedIP.Is6() {
+			bits = 128
+		}
+		r.logger.Debug(fmt.Sprintf("ASSIGNED IP IS %#v -> %s, bits %d",
+			defaultRoute.AssignedIP, assignedIP, bits))
+		defaultIPMasked := netip.PrefixFrom(assignedIP, bits)
+		ruleDstNet := (*netip.Prefix)(nil)
+		err = r.addIPRule(&defaultIPMasked, ruleDstNet, table, inboundPriority)
 		if err != nil {
 			return fmt.Errorf("adding rule for default route %s: %w", defaultRoute, err)
 		}
@@ -73,9 +82,14 @@ func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 
 func (r *Routing) delRuleInboundFromDefault(table int, defaultRoutes []DefaultRoute) (err error) {
 	for _, defaultRoute := range defaultRoutes {
-		defaultIPMasked32 := netlink.NewIPNet(defaultRoute.AssignedIP)
-		ruleDstNet := (*net.IPNet)(nil)
-		err = r.deleteIPRule(defaultIPMasked32, ruleDstNet, table, inboundPriority)
+		assignedIP := netIPToNetipAddress(defaultRoute.AssignedIP)
+		bits := 32
+		if assignedIP.Is6() {
+			bits = 128
+		}
+		defaultIPMasked := netip.PrefixFrom(assignedIP, bits)
+		ruleDstNet := (*netip.Prefix)(nil)
+		err = r.deleteIPRule(&defaultIPMasked, ruleDstNet, table, inboundPriority)
 		if err != nil {
 			return fmt.Errorf("deleting rule for default route %s: %w", defaultRoute, err)
 		}

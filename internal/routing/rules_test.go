@@ -3,6 +3,7 @@ package routing
 import (
 	"errors"
 	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -11,20 +12,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func makeIPNet(t *testing.T, n byte) *net.IPNet {
-	t.Helper()
-	return &net.IPNet{
-		IP:   net.IPv4(n, n, n, 0),
-		Mask: net.IPv4Mask(255, 255, 255, 0),
-	}
+func makeNetipPrefix(n byte) *netip.Prefix {
+	const bits = 24
+	prefix := netip.PrefixFrom(netip.AddrFrom4([4]byte{n, n, n, 0}), bits)
+	return &prefix
 }
 
-func makeIPRule(t *testing.T, src, dst *net.IPNet,
+func makeIPRule(src, dst *netip.Prefix,
 	table, priority int) *netlink.Rule {
-	t.Helper()
 	rule := netlink.NewRule()
-	rule.Src = src
-	rule.Dst = dst
+	rule.Src = NetipPrefixToIPNet(src)
+	rule.Dst = NetipPrefixToIPNet(dst)
 	rule.Table = table
 	rule.Priority = priority
 	return rule
@@ -47,8 +45,8 @@ func Test_Routing_addIPRule(t *testing.T) {
 	}
 
 	testCases := map[string]struct {
-		src      *net.IPNet
-		dst      *net.IPNet
+		src      *netip.Prefix
+		dst      *netip.Prefix
 		table    int
 		priority int
 		dbgMsg   string
@@ -64,46 +62,46 @@ func Test_Routing_addIPRule(t *testing.T) {
 			err: errors.New("listing rules: dummy error"),
 		},
 		"rule already exists": {
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
 			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
-					*makeIPRule(t, makeIPNet(t, 2), makeIPNet(t, 2), 99, 99),
-					*makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
+					*makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
+					*makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 				},
 			},
 		},
 		"add rule error": {
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
 			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleAdd: ruleAddCall{
 				expected:  true,
-				ruleToAdd: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
+				ruleToAdd: makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 				err:       errDummy,
 			},
 			err: errors.New("adding rule ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
 		},
 		"add rule success": {
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
 			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
-					*makeIPRule(t, makeIPNet(t, 2), makeIPNet(t, 2), 99, 99),
-					*makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 101, 101),
+					*makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
+					*makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 101, 101),
 				},
 			},
 			ruleAdd: ruleAddCall{
 				expected:  true,
-				ruleToAdd: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
+				ruleToAdd: makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 			},
 		},
 	}
@@ -160,8 +158,8 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 	}
 
 	testCases := map[string]struct {
-		src      *net.IPNet
-		dst      *net.IPNet
+		src      *netip.Prefix
+		dst      *netip.Prefix
 		table    int
 		priority int
 		dbgMsg   string
@@ -177,50 +175,50 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			err: errors.New("listing rules: dummy error"),
 		},
 		"rule delete error": {
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
 			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
-					*makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
+					*makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 				},
 			},
 			ruleDel: ruleDelCall{
 				expected:  true,
-				ruleToDel: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
+				ruleToDel: makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 				err:       errDummy,
 			},
 			err: errors.New("deleting rule ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
 		},
 		"rule deleted": {
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
 			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
-					*makeIPRule(t, makeIPNet(t, 2), makeIPNet(t, 2), 99, 99),
-					*makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
+					*makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
+					*makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 				},
 			},
 			ruleDel: ruleDelCall{
 				expected:  true,
-				ruleToDel: makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 99, 99),
+				ruleToDel: makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 			},
 		},
 		"rule does not exist": {
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
 			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
-					*makeIPRule(t, makeIPNet(t, 2), makeIPNet(t, 2), 99, 99),
-					*makeIPRule(t, makeIPNet(t, 1), makeIPNet(t, 2), 101, 101),
+					*makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
+					*makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 101, 101),
 				},
 			},
 		},
@@ -266,8 +264,8 @@ func Test_ruleDbgMsg(t *testing.T) {
 
 	testCases := map[string]struct {
 		add      bool
-		src      *net.IPNet
-		dst      *net.IPNet
+		src      *netip.Prefix
+		dst      *netip.Prefix
 		table    int
 		priority int
 		dbgMsg   string
@@ -277,15 +275,15 @@ func Test_ruleDbgMsg(t *testing.T) {
 		},
 		"add rule": {
 			add:      true,
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    100,
 			priority: 101,
 			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 100 pref 101",
 		},
 		"del rule": {
-			src:      makeIPNet(t, 1),
-			dst:      makeIPNet(t, 2),
+			src:      makeNetipPrefix(1),
+			dst:      makeNetipPrefix(2),
 			table:    100,
 			priority: 101,
 			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 100 pref 101",

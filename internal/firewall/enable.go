@@ -98,7 +98,7 @@ func (c *Config) enable(ctx context.Context) (err error) {
 	}
 
 	for _, network := range c.localNetworks {
-		if err := c.acceptOutputFromIPToSubnet(ctx, network.InterfaceName, network.IP, *network.IPNet, remove); err != nil {
+		if err := c.acceptOutputFromIPToSubnet(ctx, network.InterfaceName, network.IP, network.IPNet, remove); err != nil {
 			return err
 		}
 		if err = c.acceptIpv6MulticastOutput(ctx, network.InterfaceName, remove); err != nil {
@@ -113,7 +113,7 @@ func (c *Config) enable(ctx context.Context) (err error) {
 	// Allows packets from any IP address to go through eth0 / local network
 	// to reach Gluetun.
 	for _, network := range c.localNetworks {
-		if err := c.acceptInputToSubnet(ctx, network.InterfaceName, *network.IPNet, remove); err != nil {
+		if err := c.acceptInputToSubnet(ctx, network.InterfaceName, network.IPNet, remove); err != nil {
 			return err
 		}
 	}

@@ -2,7 +2,7 @@ package settings
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 	"regexp"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
@@ -22,7 +22,7 @@ type Wireguard struct {
 	// It cannot be nil in the internal state.
 	PreSharedKey *string
 	// Addresses are the Wireguard interface addresses.
-	Addresses []net.IPNet
+	Addresses []netip.Prefix
 	// Interface is the name of the Wireguard interface
 	// to create. It cannot be the empty string in the
 	// internal state.
@@ -78,13 +78,12 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		return fmt.Errorf("%w", ErrWireguardInterfaceAddressNotSet)
 	}
 	for i, ipNet := range w.Addresses {
-		if ipNet.IP == nil || ipNet.Mask == nil {
+		if !ipNet.IsValid() {
 			return fmt.Errorf("%w: for address at index %d: %s",
 				ErrWireguardInterfaceAddressNotSet, i, ipNet.String())
 		}
 
-		ipv6Net := ipNet.IP.To4() == nil
-		if ipv6Net && !ipv6Supported {
+		if !ipv6Supported && ipNet.Addr().Is6() {
 			return fmt.Errorf("%w: address %s",
 				ErrWireguardInterfaceAddressIPv6, ipNet)
 		}
@@ -109,7 +108,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
 		PrivateKey:     helpers.CopyStringPtr(w.PrivateKey),
 		PreSharedKey:   helpers.CopyStringPtr(w.PreSharedKey),
-		Addresses:      helpers.CopyIPNetSlice(w.Addresses),
+		Addresses:      helpers.CopyNetipPrefixesSlice(w.Addresses),
 		Interface:      w.Interface,
 		Implementation: w.Implementation,
 	}
@@ -118,7 +117,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 func (w *Wireguard) mergeWith(other Wireguard) {
 	w.PrivateKey = helpers.MergeWithStringPtr(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = helpers.MergeWithStringPtr(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.MergeIPNetsSlices(w.Addresses, other.Addresses)
+	w.Addresses = helpers.MergeNetipPrefixesSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
 }
@@ -126,7 +125,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PrivateKey = helpers.OverrideWithStringPtr(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = helpers.OverrideWithStringPtr(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.OverrideWithIPNetsSlice(w.Addresses, other.Addresses)
+	w.Addresses = helpers.OverrideWithNetipPrefixesSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
 }

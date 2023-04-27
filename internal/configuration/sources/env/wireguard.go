@@ -2,7 +2,7 @@ package env
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 	"os"
 	"strings"
 
@@ -24,22 +24,20 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	return wireguard, nil
 }
 
-func (s *Source) readWireguardAddresses() (addresses []net.IPNet, err error) {
+func (s *Source) readWireguardAddresses() (addresses []netip.Prefix, err error) {
 	key, addressesCSV := s.getEnvWithRetro("WIREGUARD_ADDRESSES", "WIREGUARD_ADDRESS")
 	if addressesCSV == "" {
 		return nil, nil
 	}
 
 	addressStrings := strings.Split(addressesCSV, ",")
-	addresses = make([]net.IPNet, len(addressStrings))
+	addresses = make([]netip.Prefix, len(addressStrings))
 	for i, addressString := range addressStrings {
 		addressString = strings.TrimSpace(addressString)
-		ip, ipNet, err := net.ParseCIDR(addressString)
+		addresses[i], err = netip.ParsePrefix(addressString)
 		if err != nil {
 			return nil, fmt.Errorf("environment variable %s: %w", key, err)
 		}
-		ipNet.IP = ip
-		addresses[i] = *ipNet
 	}
 
 	return addresses, nil
