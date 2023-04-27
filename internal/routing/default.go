@@ -20,8 +20,8 @@ type DefaultRoute struct {
 }
 
 func (d DefaultRoute) String() string {
-	return fmt.Sprintf("interface %s, gateway %s and assigned IP %s",
-		d.NetInterface, d.Gateway, d.AssignedIP)
+	return fmt.Sprintf("interface %s, gateway %s, assigned IP %s and family %s",
+		d.NetInterface, d.Gateway, d.AssignedIP, netlink.FamilyToString(d.Family))
 }
 
 func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {

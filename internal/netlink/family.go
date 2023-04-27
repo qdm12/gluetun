@@ -13,6 +13,19 @@ const (
 	FAMILY_V6  = netlink.FAMILY_V6
 )
 
+func FamilyToString(family int) string {
+	switch family {
+	case FAMILY_ALL:
+		return "all"
+	case FAMILY_V4:
+		return "v4"
+	case FAMILY_V6:
+		return "v6"
+	default:
+		return fmt.Sprint(family)
+	}
+}
+
 func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
 	families, err := netlink.GenlFamilyList()
 	if err != nil {
