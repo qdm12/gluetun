@@ -18,8 +18,6 @@ services:
       - ~/.ssh:/mnt/ssh
       # Shell history persistence
       - ~/.zsh_history:/root/.zsh_history
-      # Git config
-      - ~/.gitconfig:/root/.gitconfig
     environment:
       - TZ=
     cap_add:
