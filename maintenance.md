@@ -27,7 +27,7 @@
   - `UNBLOCK`
   - `PROTOCOL`
   - `PIA_ENCRYPTION`
-  - `PORT_FORWARDING`
+  - `PORT_FORWARDING`, `PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING`
   - `WIREGUARD_PORT`
   - `REGION` for PIA, Cyberghost
   - `WIREGUARD_ADDRESS`
@@ -40,7 +40,7 @@
   - `SERVER_NUMBER`
   - `SERVER_NAME`
   - `PUBLICIP_FILE`
-  - `PORT_FORWARDING_STATUS_FILE`
+  - `PORT_FORWARDING_STATUS_FILE`, `PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE`
 - Updater servers version reset to 1
 - Reset HTTP server version to v1 and remove older ones
 - Change to compulsory
