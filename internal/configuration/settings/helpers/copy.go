@@ -100,20 +100,6 @@ func CopyNetipAddress(original netip.Addr) (copied netip.Addr) {
 	return copied
 }
 
-func CopyNetipPrefix(original netip.Prefix) (copied netip.Prefix) {
-	b, err := original.MarshalText()
-	if err != nil {
-		panic(err)
-	}
-
-	err = copied.UnmarshalText(b)
-	if err != nil {
-		panic(err)
-	}
-
-	return copied
-}
-
 func CopyStringSlice(original []string) (copied []string) {
 	if original == nil {
 		return nil
@@ -140,9 +126,7 @@ func CopyNetipPrefixesSlice(original []netip.Prefix) (copied []netip.Prefix) {
 	}
 
 	copied = make([]netip.Prefix, len(original))
-	for i := range original {
-		copied[i] = CopyNetipPrefix(original[i])
-	}
+	copy(copied, original)
 	return copied
 }
 
