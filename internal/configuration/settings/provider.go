@@ -39,7 +39,7 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 		}
 	}
 	if !helpers.IsOneOf(*p.Name, validNames...) {
-		return fmt.Errorf("%w: %q can only be one of %s",
+		return fmt.Errorf("%w for Wireguard: %q can only be one of %s",
 			ErrVPNProviderNameNotValid, *p.Name, helpers.ChoicesOrString(validNames))
 	}
 
