@@ -23,6 +23,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		providerConf := l.providers.Get(*settings.Provider.Name)
 
 		portForwarding := *settings.Provider.PortForwarding.Enabled
+		customPortForwardingProvider := *settings.Provider.PortForwarding.Provider
+		portForwader := providerConf
+		if portForwarding && customPortForwardingProvider != "" {
+			portForwader = l.providers.Get(customPortForwardingProvider)
+		}
+
 		var vpnRunner interface {
 			Run(ctx context.Context, waitError chan<- error, tunnelReady chan<- struct{})
 		}
@@ -45,7 +51,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		tunnelUpData := tunnelUpData{
 			portForwarding: portForwarding,
 			serverName:     serverName,
-			portForwarder:  providerConf,
+			portForwarder:  portForwader,
 			vpnIntf:        vpnInterface,
 		}
 

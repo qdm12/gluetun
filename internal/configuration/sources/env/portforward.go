@@ -16,6 +16,8 @@ func (s *Source) readPortForward() (
 		return portForwarding, err
 	}
 
+	portForwarding.Provider = s.env.Get("VPN_PORT_FORWARDING_PROVIDER")
+
 	portForwarding.Filepath = s.env.Get("VPN_PORT_FORWARDING_STATUS_FILE",
 		env.ForceLowercase(false),
 		env.RetroKeys(
