@@ -15,6 +15,14 @@ type PortForwarding struct {
 	// Enabled is true if port forwarding should be activated.
 	// It cannot be nil for the internal state.
 	Enabled *bool
+	// Provider is set to specify which custom port forwarding code
+	// should be used. This is especially necessary for the custom
+	// provider using Wireguard for a provider where Wireguard is not
+	// natively supported but custom port forwading code is available.
+	// It defaults to the empty string, meaning the current provider
+	// should be the one used for port forwarding.
+	// It cannot be nil for the internal state.
+	Provider *string
 	// Filepath is the port forwarding status file path
 	// to use. It can be the empty string to indicate not
 	// to write to a file. It cannot be nil for the
@@ -27,9 +35,13 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 		return nil
 	}
 
-	// Validate Enabled
+	// Validate current provider or custom provider specified
+	providerSelected := vpnProvider
+	if *p.Provider != "" {
+		providerSelected = *p.Provider
+	}
 	validProviders := []string{providers.PrivateInternetAccess}
-	if err = validate.IsOneOf(vpnProvider, validProviders...); err != nil {
+	if err = validate.IsOneOf(providerSelected, validProviders...); err != nil {
 		return fmt.Errorf("%w: %w", ErrPortForwardingEnabled, err)
 	}
 
@@ -47,22 +59,26 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 func (p *PortForwarding) copy() (copied PortForwarding) {
 	return PortForwarding{
 		Enabled:  gosettings.CopyPointer(p.Enabled),
+		Provider: gosettings.CopyPointer(p.Provider),
 		Filepath: gosettings.CopyPointer(p.Filepath),
 	}
 }
 
 func (p *PortForwarding) mergeWith(other PortForwarding) {
 	p.Enabled = gosettings.MergeWithPointer(p.Enabled, other.Enabled)
+	p.Provider = gosettings.MergeWithPointer(p.Provider, other.Provider)
 	p.Filepath = gosettings.MergeWithPointer(p.Filepath, other.Filepath)
 }
 
 func (p *PortForwarding) overrideWith(other PortForwarding) {
 	p.Enabled = gosettings.OverrideWithPointer(p.Enabled, other.Enabled)
+	p.Provider = gosettings.OverrideWithPointer(p.Provider, other.Provider)
 	p.Filepath = gosettings.OverrideWithPointer(p.Filepath, other.Filepath)
 }
 
 func (p *PortForwarding) setDefaults() {
 	p.Enabled = gosettings.DefaultPointer(p.Enabled, false)
+	p.Provider = gosettings.DefaultPointer(p.Provider, "")
 	p.Filepath = gosettings.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
 }
 
@@ -76,7 +92,11 @@ func (p PortForwarding) toLinesNode() (node *gotree.Node) {
 	}
 
 	node = gotree.New("Automatic port forwarding settings:")
-	node.Appendf("Enabled: yes")
+	if *p.Provider == "" {
+		node.Appendf("Use port forwarding code for current provider")
+	} else {
+		node.Appendf("Use code for provider: %s", *p.Provider)
+	}
 
 	filepath := *p.Filepath
 	if filepath == "" {
