@@ -21,8 +21,12 @@ func NewServer(config settings.Health,
 	return &Server{
 		logger:  logger,
 		handler: newHandler(),
-		dialer:  &net.Dialer{},
-		config:  config,
+		dialer: &net.Dialer{
+			Resolver: &net.Resolver{
+				PreferGo: true,
+			},
+		},
+		config: config,
 		vpn: vpnHealth{
 			loop:        vpnLoop,
 			healthyWait: *config.VPN.Initial,
