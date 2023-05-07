@@ -20,13 +20,19 @@ type Health struct {
 	// duration of the HTTP server. It defaults to 100 milliseconds.
 	ReadHeaderTimeout time.Duration
 	// ReadTimeout is the HTTP read timeout duration of the
-	//  HTTP server. It defaults to 500 milliseconds.
+	// HTTP server. It defaults to 500 milliseconds.
 	ReadTimeout time.Duration
 	// TargetAddress is the address (host or host:port)
 	// to TCP dial to periodically for the health check.
 	// It cannot be the empty string in the internal state.
 	TargetAddress string
-	VPN           HealthyWait
+	// SuccessWait is the duration to wait to re-run the
+	// healthcheck after a successful healthcheck.
+	// It defaults to 5 seconds and cannot be zero in
+	// the internal state.
+	SuccessWait time.Duration
+	// VPN has health settings specific to the VPN loop.
+	VPN HealthyWait
 }
 
 func (h Health) Validate() (err error) {
@@ -51,6 +57,7 @@ func (h *Health) copy() (copied Health) {
 		ReadHeaderTimeout: h.ReadHeaderTimeout,
 		ReadTimeout:       h.ReadTimeout,
 		TargetAddress:     h.TargetAddress,
+		SuccessWait:       h.SuccessWait,
 		VPN:               h.VPN.copy(),
 	}
 }
@@ -62,6 +69,7 @@ func (h *Health) MergeWith(other Health) {
 	h.ReadHeaderTimeout = helpers.MergeWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
 	h.ReadTimeout = helpers.MergeWithDuration(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = helpers.MergeWithString(h.TargetAddress, other.TargetAddress)
+	h.SuccessWait = helpers.MergeWithDuration(h.SuccessWait, other.SuccessWait)
 	h.VPN.mergeWith(other.VPN)
 }
 
@@ -73,6 +81,7 @@ func (h *Health) OverrideWith(other Health) {
 	h.ReadHeaderTimeout = helpers.OverrideWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
 	h.ReadTimeout = helpers.OverrideWithDuration(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = helpers.OverrideWithString(h.TargetAddress, other.TargetAddress)
+	h.SuccessWait = helpers.OverrideWithDuration(h.SuccessWait, other.SuccessWait)
 	h.VPN.overrideWith(other.VPN)
 }
 
@@ -83,6 +92,8 @@ func (h *Health) SetDefaults() {
 	const defaultReadTimeout = 500 * time.Millisecond
 	h.ReadTimeout = helpers.DefaultDuration(h.ReadTimeout, defaultReadTimeout)
 	h.TargetAddress = helpers.DefaultString(h.TargetAddress, "cloudflare.com:443")
+	const defaultSuccessWait = 5 * time.Second
+	h.SuccessWait = helpers.DefaultDuration(h.SuccessWait, defaultSuccessWait)
 	h.VPN.setDefaults()
 }
 
@@ -94,6 +105,7 @@ func (h Health) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Health settings:")
 	node.Appendf("Server listening address: %s", h.ServerAddress)
 	node.Appendf("Target address: %s", h.TargetAddress)
+	node.Appendf("Duration to wait after success: %s", h.SuccessWait)
 	node.Appendf("Read header timeout: %s", h.ReadHeaderTimeout)
 	node.Appendf("Read timeout: %s", h.ReadTimeout)
 	node.AppendNode(h.VPN.toLinesNode("VPN"))

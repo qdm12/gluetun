@@ -11,6 +11,13 @@ func (s *Source) ReadHealth() (health settings.Health, err error) {
 	health.ServerAddress = getCleanedEnv("HEALTH_SERVER_ADDRESS")
 	_, health.TargetAddress = s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", "HEALTH_ADDRESS_TO_PING")
 
+	successWaitPtr, err := envToDurationPtr("HEALTH_SUCCESS_WAIT_DURATION")
+	if err != nil {
+		return health, fmt.Errorf("environment variable HEALTH_SUCCESS_WAIT_DURATION: %w", err)
+	} else if successWaitPtr != nil {
+		health.SuccessWait = *successWaitPtr
+	}
+
 	health.VPN.Initial, err = s.readDurationWithRetro(
 		"HEALTH_VPN_DURATION_INITIAL",
 		"HEALTH_OPENVPN_DURATION_INITIAL")
