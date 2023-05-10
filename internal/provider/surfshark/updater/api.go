@@ -51,7 +51,7 @@ type serverData struct {
 
 func fetchAPI(ctx context.Context, client *http.Client) (
 	servers []serverData, err error) {
-	const url = "https://my.surfshark.com/vpn/api/v4/server/clusters"
+	const url = "https://api.surfshark.com/v4/server/clusters"
 
 	for _, path := range [...]string{"generic", "double", "static", "obfuscated"} {
 		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url+"/"+path, nil)
