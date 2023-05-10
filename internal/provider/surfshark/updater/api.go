@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"
 )
 
-// Note: no multi-hop and some OpenVPN servers are missing from their API.
 func addServersFromAPI(ctx context.Context, client *http.Client,
 	hts hostToServers) (err error) {
 	data, err := fetchAPI(ctx, client)
@@ -54,29 +53,34 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	servers []serverData, err error) {
 	const url = "https://my.surfshark.com/vpn/api/v4/server/clusters"
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
+	for _, path := range [...]string{"generic", "double", "static", "obfuscated"} {
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url+"/"+path, nil)
+		if err != nil {
+			return nil, err
+		}
 
-	response, err := client.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
+		response, err := client.Do(request)
+		if err != nil {
+			return nil, err
+		}
+		defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %d %s", ErrHTTPStatusCodeNotOK,
-			response.StatusCode, response.Status)
-	}
+		if response.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("%w: %d %s", ErrHTTPStatusCodeNotOK,
+				response.StatusCode, response.Status)
+		}
 
-	decoder := json.NewDecoder(response.Body)
-	if err := decoder.Decode(&servers); err != nil {
-		return nil, fmt.Errorf("decoding response body: %w", err)
-	}
+		decoder := json.NewDecoder(response.Body)
+		pathServers := []serverData{}
+		if err := decoder.Decode(&pathServers); err != nil {
+			return nil, fmt.Errorf("decoding response body: %w", err)
+		}
 
-	if err := response.Body.Close(); err != nil {
-		return nil, err
+		if err := response.Body.Close(); err != nil {
+			return nil, err
+		}
+
+		servers = append(servers, pathServers...)
 	}
 
 	return servers, nil
