@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
+	"golang.zx2c4.com/wireguard/device"
 )
 
 type Settings struct {
@@ -28,6 +29,9 @@ type Settings struct {
 	// FirewallMark to be used in routing tables and IP rules.
 	// It defaults to 51820 if left to 0.
 	FirewallMark int
+	// Maximum Transmission Unit (MTU) setting of the interface
+	// It defaults to device.DefaultMTU from wireguard-go which is 1420
+	MTU int
 	// RulePriority is the priority for the rule created with the
 	// FirewallMark.
 	RulePriority int
@@ -55,6 +59,10 @@ func (s *Settings) SetDefaults() {
 		s.FirewallMark = defaultFirewallMark
 	}
 
+	if s.MTU == 0 {
+		s.MTU = device.DefaultMTU
+	}
+
 	if s.IPv6 == nil {
 		ipv6 := false // this should be injected from host
 		s.IPv6 = &ipv6
@@ -78,6 +86,7 @@ var (
 	ErrAddressMissing        = errors.New("interface address is missing")
 	ErrAddressNotValid       = errors.New("interface address is not valid")
 	ErrFirewallMarkMissing   = errors.New("firewall mark is missing")
+	ErrMTUMissing            = errors.New("MTU is missing")
 	ErrImplementationInvalid = errors.New("invalid implementation")
 )
 
@@ -125,6 +134,10 @@ func (s *Settings) Check() (err error) {
 
 	if s.FirewallMark == 0 {
 		return fmt.Errorf("%w", ErrFirewallMarkMissing)
+	}
+
+	if s.MTU == 0 {
+		return fmt.Errorf("%w", ErrMTUMissing)
 	}
 
 	switch s.Implementation {
@@ -207,6 +220,10 @@ func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
 
 	if s.FirewallMark != 0 {
 		lines = append(lines, fieldPrefix+"Firewall mark: "+fmt.Sprint(s.FirewallMark))
+	}
+
+	if s.MTU != 0 {
+		lines = append(lines, fieldPrefix+"MTU: "+fmt.Sprint(s.MTU))
 	}
 
 	if s.RulePriority != 0 {

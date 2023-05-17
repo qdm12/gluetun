@@ -15,6 +15,7 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.PreSharedKey = *userSettings.PreSharedKey
 	settings.InterfaceName = userSettings.Interface
 	settings.Implementation = userSettings.Implementation
+	settings.MTU = userSettings.MTU
 	settings.IPv6 = &ipv6Supported
 
 	const rulePriority = 101 // 100 is to receive external connections

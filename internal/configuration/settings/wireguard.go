@@ -27,6 +27,8 @@ type Wireguard struct {
 	// to create. It cannot be the empty string in the
 	// internal state.
 	Interface string
+	// Maximum Transmission Unit (MTU) of the wireguard interface
+	MTU int
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
 	// It defaults to "auto" and cannot be the empty string
@@ -110,6 +112,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 		PreSharedKey:   helpers.CopyPointer(w.PreSharedKey),
 		Addresses:      helpers.CopySlice(w.Addresses),
 		Interface:      w.Interface,
+		MTU:            w.MTU,
 		Implementation: w.Implementation,
 	}
 }
@@ -119,6 +122,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 	w.PreSharedKey = helpers.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.MergeSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
+	w.MTU = helpers.MergeWithInt(w.MTU, other.MTU)
 	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
 }
 
@@ -127,6 +131,7 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PreSharedKey = helpers.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
+	w.MTU = helpers.OverrideWithInt(w.MTU, other.MTU)
 	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
 }
 
@@ -160,6 +165,7 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	}
 
 	node.Appendf("Network interface: %s", w.Interface)
+	node.Appendf("MTU: %d", w.MTU)
 
 	if w.Implementation != "auto" {
 		node.Appendf("Implementation: %s", w.Implementation)
