@@ -4,19 +4,25 @@
 package wireguard
 
 import (
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/netlink"
+	"github.com/qdm12/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sys/unix"
 )
 
+type noopDebugLogger struct{}
+
+func (n noopDebugLogger) Debugf(format string, args ...any) {}
+func (n noopDebugLogger) Patch(options ...log.Option)       {}
+
 func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	t.Parallel()
 
-	netlinker := netlink.New()
+	netlinker := netlink.New(&noopDebugLogger{})
 
 	linkAttrs := netlink.NewLinkAttrs()
 	linkAttrs.Name = "test_8081"
@@ -39,13 +45,16 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	addresses := []*net.IPNet{
-		{IP: net.IP{1, 2, 3, 4}, Mask: net.IPv4Mask(255, 255, 255, 255)},
-		{IP: net.IP{5, 6, 7, 8}, Mask: net.IPv4Mask(255, 255, 255, 255)},
+	addresses := []netip.Prefix{
+		netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 32),
+		netip.PrefixFrom(netip.AddrFrom4([4]byte{5, 6, 7, 8}), 32),
 	}
 
 	wg := &Wireguard{
 		netlink: netlinker,
+		settings: Settings{
+			IPv6: new(bool),
+		},
 	}
 
 	// Success
@@ -56,7 +65,9 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, len(addresses), len(netlinkAddresses))
 	for i, netlinkAddress := range netlinkAddresses {
-		ipNet := netlinkAddress.IPNet
+		require.NotNil(t, netlinkAddress.IPNet)
+		ipNet, err := netip.ParsePrefix(netlinkAddress.IPNet.String())
+		require.NoError(t, err)
 		assert.Equal(t, addresses[i], ipNet)
 	}
 
@@ -69,7 +80,7 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 func Test_netlink_Wireguard_addRule(t *testing.T) {
 	t.Parallel()
 
-	netlinker := netlink.New()
+	netlinker := netlink.New(&noopDebugLogger{})
 	wg := &Wireguard{
 		netlink: netlinker,
 	}
