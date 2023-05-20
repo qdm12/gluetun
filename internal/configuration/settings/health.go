@@ -66,10 +66,10 @@ func (h *Health) copy() (copied Health) {
 // unset field of the receiver settings object.
 func (h *Health) MergeWith(other Health) {
 	h.ServerAddress = helpers.MergeWithString(h.ServerAddress, other.ServerAddress)
-	h.ReadHeaderTimeout = helpers.MergeWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = helpers.MergeWithDuration(h.ReadTimeout, other.ReadTimeout)
+	h.ReadHeaderTimeout = helpers.MergeWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.MergeWithNumber(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = helpers.MergeWithString(h.TargetAddress, other.TargetAddress)
-	h.SuccessWait = helpers.MergeWithDuration(h.SuccessWait, other.SuccessWait)
+	h.SuccessWait = helpers.MergeWithNumber(h.SuccessWait, other.SuccessWait)
 	h.VPN.mergeWith(other.VPN)
 }
 
@@ -78,22 +78,22 @@ func (h *Health) MergeWith(other Health) {
 // settings.
 func (h *Health) OverrideWith(other Health) {
 	h.ServerAddress = helpers.OverrideWithString(h.ServerAddress, other.ServerAddress)
-	h.ReadHeaderTimeout = helpers.OverrideWithDuration(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = helpers.OverrideWithDuration(h.ReadTimeout, other.ReadTimeout)
+	h.ReadHeaderTimeout = helpers.OverrideWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = helpers.OverrideWithNumber(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = helpers.OverrideWithString(h.TargetAddress, other.TargetAddress)
-	h.SuccessWait = helpers.OverrideWithDuration(h.SuccessWait, other.SuccessWait)
+	h.SuccessWait = helpers.OverrideWithNumber(h.SuccessWait, other.SuccessWait)
 	h.VPN.overrideWith(other.VPN)
 }
 
 func (h *Health) SetDefaults() {
 	h.ServerAddress = helpers.DefaultString(h.ServerAddress, "127.0.0.1:9999")
 	const defaultReadHeaderTimeout = 100 * time.Millisecond
-	h.ReadHeaderTimeout = helpers.DefaultDuration(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
+	h.ReadHeaderTimeout = helpers.DefaultNumber(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
 	const defaultReadTimeout = 500 * time.Millisecond
-	h.ReadTimeout = helpers.DefaultDuration(h.ReadTimeout, defaultReadTimeout)
+	h.ReadTimeout = helpers.DefaultNumber(h.ReadTimeout, defaultReadTimeout)
 	h.TargetAddress = helpers.DefaultString(h.TargetAddress, "cloudflare.com:443")
 	const defaultSuccessWait = 5 * time.Second
-	h.SuccessWait = helpers.DefaultDuration(h.SuccessWait, defaultSuccessWait)
+	h.SuccessWait = helpers.DefaultNumber(h.SuccessWait, defaultSuccessWait)
 	h.VPN.setDefaults()
 }
 

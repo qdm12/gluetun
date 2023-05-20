@@ -19,25 +19,25 @@ func (l Log) validate() (err error) {
 
 func (l *Log) copy() (copied Log) {
 	return Log{
-		Level: helpers.CopyLogLevelPtr(l.Level),
+		Level: helpers.CopyPointer(l.Level),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (l *Log) mergeWith(other Log) {
-	l.Level = helpers.MergeWithLogLevel(l.Level, other.Level)
+	l.Level = helpers.MergeWithPointer(l.Level, other.Level)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (l *Log) overrideWith(other Log) {
-	l.Level = helpers.OverrideWithLogLevel(l.Level, other.Level)
+	l.Level = helpers.OverrideWithPointer(l.Level, other.Level)
 }
 
 func (l *Log) setDefaults() {
-	l.Level = helpers.DefaultLogLevel(l.Level, log.LevelInfo)
+	l.Level = helpers.DefaultPointer(l.Level, log.LevelInfo)
 }
 
 func (l Log) String() string {

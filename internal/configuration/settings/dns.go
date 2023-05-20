@@ -40,7 +40,7 @@ func (d DNS) validate() (err error) {
 func (d *DNS) Copy() (copied DNS) {
 	return DNS{
 		ServerAddress:  d.ServerAddress,
-		KeepNameserver: helpers.CopyBoolPtr(d.KeepNameserver),
+		KeepNameserver: helpers.CopyPointer(d.KeepNameserver),
 		DoT:            d.DoT.copy(),
 	}
 }
@@ -49,7 +49,7 @@ func (d *DNS) Copy() (copied DNS) {
 // unset field of the receiver settings object.
 func (d *DNS) mergeWith(other DNS) {
 	d.ServerAddress = helpers.MergeWithIP(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = helpers.MergeWithBool(d.KeepNameserver, other.KeepNameserver)
+	d.KeepNameserver = helpers.MergeWithPointer(d.KeepNameserver, other.KeepNameserver)
 	d.DoT.mergeWith(other.DoT)
 }
 
@@ -58,14 +58,14 @@ func (d *DNS) mergeWith(other DNS) {
 // settings.
 func (d *DNS) overrideWith(other DNS) {
 	d.ServerAddress = helpers.OverrideWithIP(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = helpers.OverrideWithBool(d.KeepNameserver, other.KeepNameserver)
+	d.KeepNameserver = helpers.OverrideWithPointer(d.KeepNameserver, other.KeepNameserver)
 	d.DoT.overrideWith(other.DoT)
 }
 
 func (d *DNS) setDefaults() {
 	localhost := netip.AddrFrom4([4]byte{127, 0, 0, 1})
 	d.ServerAddress = helpers.DefaultIP(d.ServerAddress, localhost)
-	d.KeepNameserver = helpers.DefaultBool(d.KeepNameserver, false)
+	d.KeepNameserver = helpers.DefaultPointer(d.KeepNameserver, false)
 	d.DoT.setDefaults()
 }
 

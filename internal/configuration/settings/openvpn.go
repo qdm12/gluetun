@@ -244,21 +244,21 @@ func validateOpenVPNEncryptedKey(vpnProvider,
 func (o *OpenVPN) copy() (copied OpenVPN) {
 	return OpenVPN{
 		Version:       o.Version,
-		User:          helpers.CopyStringPtr(o.User),
-		Password:      helpers.CopyStringPtr(o.Password),
-		ConfFile:      helpers.CopyStringPtr(o.ConfFile),
-		Ciphers:       helpers.CopyStringSlice(o.Ciphers),
-		Auth:          helpers.CopyStringPtr(o.Auth),
-		Cert:          helpers.CopyStringPtr(o.Cert),
-		Key:           helpers.CopyStringPtr(o.Key),
-		EncryptedKey:  helpers.CopyStringPtr(o.EncryptedKey),
-		KeyPassphrase: helpers.CopyStringPtr(o.KeyPassphrase),
-		PIAEncPreset:  helpers.CopyStringPtr(o.PIAEncPreset),
-		MSSFix:        helpers.CopyUint16Ptr(o.MSSFix),
+		User:          helpers.CopyPointer(o.User),
+		Password:      helpers.CopyPointer(o.Password),
+		ConfFile:      helpers.CopyPointer(o.ConfFile),
+		Ciphers:       helpers.CopySlice(o.Ciphers),
+		Auth:          helpers.CopyPointer(o.Auth),
+		Cert:          helpers.CopyPointer(o.Cert),
+		Key:           helpers.CopyPointer(o.Key),
+		EncryptedKey:  helpers.CopyPointer(o.EncryptedKey),
+		KeyPassphrase: helpers.CopyPointer(o.KeyPassphrase),
+		PIAEncPreset:  helpers.CopyPointer(o.PIAEncPreset),
+		MSSFix:        helpers.CopyPointer(o.MSSFix),
 		Interface:     o.Interface,
 		ProcessUser:   o.ProcessUser,
-		Verbosity:     helpers.CopyIntPtr(o.Verbosity),
-		Flags:         helpers.CopyStringSlice(o.Flags),
+		Verbosity:     helpers.CopyPointer(o.Verbosity),
+		Flags:         helpers.CopySlice(o.Flags),
 	}
 }
 
@@ -266,21 +266,21 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 // unset field of the receiver settings object.
 func (o *OpenVPN) mergeWith(other OpenVPN) {
 	o.Version = helpers.MergeWithString(o.Version, other.Version)
-	o.User = helpers.MergeWithStringPtr(o.User, other.User)
-	o.Password = helpers.MergeWithStringPtr(o.Password, other.Password)
-	o.ConfFile = helpers.MergeWithStringPtr(o.ConfFile, other.ConfFile)
-	o.Ciphers = helpers.MergeStringSlices(o.Ciphers, other.Ciphers)
-	o.Auth = helpers.MergeWithStringPtr(o.Auth, other.Auth)
-	o.Cert = helpers.MergeWithStringPtr(o.Cert, other.Cert)
-	o.Key = helpers.MergeWithStringPtr(o.Key, other.Key)
-	o.EncryptedKey = helpers.MergeWithStringPtr(o.EncryptedKey, other.EncryptedKey)
-	o.KeyPassphrase = helpers.MergeWithStringPtr(o.KeyPassphrase, other.KeyPassphrase)
-	o.PIAEncPreset = helpers.MergeWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
-	o.MSSFix = helpers.MergeWithUint16(o.MSSFix, other.MSSFix)
+	o.User = helpers.MergeWithPointer(o.User, other.User)
+	o.Password = helpers.MergeWithPointer(o.Password, other.Password)
+	o.ConfFile = helpers.MergeWithPointer(o.ConfFile, other.ConfFile)
+	o.Ciphers = helpers.MergeSlices(o.Ciphers, other.Ciphers)
+	o.Auth = helpers.MergeWithPointer(o.Auth, other.Auth)
+	o.Cert = helpers.MergeWithPointer(o.Cert, other.Cert)
+	o.Key = helpers.MergeWithPointer(o.Key, other.Key)
+	o.EncryptedKey = helpers.MergeWithPointer(o.EncryptedKey, other.EncryptedKey)
+	o.KeyPassphrase = helpers.MergeWithPointer(o.KeyPassphrase, other.KeyPassphrase)
+	o.PIAEncPreset = helpers.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
+	o.MSSFix = helpers.MergeWithPointer(o.MSSFix, other.MSSFix)
 	o.Interface = helpers.MergeWithString(o.Interface, other.Interface)
 	o.ProcessUser = helpers.MergeWithString(o.ProcessUser, other.ProcessUser)
-	o.Verbosity = helpers.MergeWithIntPtr(o.Verbosity, other.Verbosity)
-	o.Flags = helpers.MergeStringSlices(o.Flags, other.Flags)
+	o.Verbosity = helpers.MergeWithPointer(o.Verbosity, other.Verbosity)
+	o.Flags = helpers.MergeSlices(o.Flags, other.Flags)
 }
 
 // overrideWith overrides fields of the receiver
@@ -288,48 +288,48 @@ func (o *OpenVPN) mergeWith(other OpenVPN) {
 // settings.
 func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.Version = helpers.OverrideWithString(o.Version, other.Version)
-	o.User = helpers.OverrideWithStringPtr(o.User, other.User)
-	o.Password = helpers.OverrideWithStringPtr(o.Password, other.Password)
-	o.ConfFile = helpers.OverrideWithStringPtr(o.ConfFile, other.ConfFile)
-	o.Ciphers = helpers.OverrideWithStringSlice(o.Ciphers, other.Ciphers)
-	o.Auth = helpers.OverrideWithStringPtr(o.Auth, other.Auth)
-	o.Cert = helpers.OverrideWithStringPtr(o.Cert, other.Cert)
-	o.Key = helpers.OverrideWithStringPtr(o.Key, other.Key)
-	o.EncryptedKey = helpers.OverrideWithStringPtr(o.EncryptedKey, other.EncryptedKey)
-	o.KeyPassphrase = helpers.OverrideWithStringPtr(o.KeyPassphrase, other.KeyPassphrase)
-	o.PIAEncPreset = helpers.OverrideWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
-	o.MSSFix = helpers.OverrideWithUint16(o.MSSFix, other.MSSFix)
+	o.User = helpers.OverrideWithPointer(o.User, other.User)
+	o.Password = helpers.OverrideWithPointer(o.Password, other.Password)
+	o.ConfFile = helpers.OverrideWithPointer(o.ConfFile, other.ConfFile)
+	o.Ciphers = helpers.OverrideWithSlice(o.Ciphers, other.Ciphers)
+	o.Auth = helpers.OverrideWithPointer(o.Auth, other.Auth)
+	o.Cert = helpers.OverrideWithPointer(o.Cert, other.Cert)
+	o.Key = helpers.OverrideWithPointer(o.Key, other.Key)
+	o.EncryptedKey = helpers.OverrideWithPointer(o.EncryptedKey, other.EncryptedKey)
+	o.KeyPassphrase = helpers.OverrideWithPointer(o.KeyPassphrase, other.KeyPassphrase)
+	o.PIAEncPreset = helpers.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
+	o.MSSFix = helpers.OverrideWithPointer(o.MSSFix, other.MSSFix)
 	o.Interface = helpers.OverrideWithString(o.Interface, other.Interface)
 	o.ProcessUser = helpers.OverrideWithString(o.ProcessUser, other.ProcessUser)
-	o.Verbosity = helpers.OverrideWithIntPtr(o.Verbosity, other.Verbosity)
-	o.Flags = helpers.OverrideWithStringSlice(o.Flags, other.Flags)
+	o.Verbosity = helpers.OverrideWithPointer(o.Verbosity, other.Verbosity)
+	o.Flags = helpers.OverrideWithSlice(o.Flags, other.Flags)
 }
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.Version = helpers.DefaultString(o.Version, openvpn.Openvpn25)
-	o.User = helpers.DefaultStringPtr(o.User, "")
+	o.User = helpers.DefaultPointer(o.User, "")
 	if vpnProvider == providers.Mullvad {
-		o.Password = helpers.DefaultStringPtr(o.Password, "m")
+		o.Password = helpers.DefaultPointer(o.Password, "m")
 	} else {
-		o.Password = helpers.DefaultStringPtr(o.Password, "")
+		o.Password = helpers.DefaultPointer(o.Password, "")
 	}
 
-	o.ConfFile = helpers.DefaultStringPtr(o.ConfFile, "")
-	o.Auth = helpers.DefaultStringPtr(o.Auth, "")
-	o.Cert = helpers.DefaultStringPtr(o.Cert, "")
-	o.Key = helpers.DefaultStringPtr(o.Key, "")
-	o.EncryptedKey = helpers.DefaultStringPtr(o.EncryptedKey, "")
-	o.KeyPassphrase = helpers.DefaultStringPtr(o.KeyPassphrase, "")
+	o.ConfFile = helpers.DefaultPointer(o.ConfFile, "")
+	o.Auth = helpers.DefaultPointer(o.Auth, "")
+	o.Cert = helpers.DefaultPointer(o.Cert, "")
+	o.Key = helpers.DefaultPointer(o.Key, "")
+	o.EncryptedKey = helpers.DefaultPointer(o.EncryptedKey, "")
+	o.KeyPassphrase = helpers.DefaultPointer(o.KeyPassphrase, "")
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
 		defaultEncPreset = presets.Strong
 	}
-	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
-	o.MSSFix = helpers.DefaultUint16(o.MSSFix, 0)
+	o.PIAEncPreset = helpers.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
+	o.MSSFix = helpers.DefaultPointer(o.MSSFix, 0)
 	o.Interface = helpers.DefaultString(o.Interface, "tun0")
 	o.ProcessUser = helpers.DefaultString(o.ProcessUser, "root")
-	o.Verbosity = helpers.DefaultInt(o.Verbosity, 1)
+	o.Verbosity = helpers.DefaultPointer(o.Verbosity, 1)
 }
 
 func (o OpenVPN) String() string {

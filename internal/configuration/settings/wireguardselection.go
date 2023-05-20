@@ -110,26 +110,26 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 func (w *WireguardSelection) copy() (copied WireguardSelection) {
 	return WireguardSelection{
 		EndpointIP:   w.EndpointIP,
-		EndpointPort: helpers.CopyUint16Ptr(w.EndpointPort),
+		EndpointPort: helpers.CopyPointer(w.EndpointPort),
 		PublicKey:    w.PublicKey,
 	}
 }
 
 func (w *WireguardSelection) mergeWith(other WireguardSelection) {
 	w.EndpointIP = helpers.MergeWithIP(w.EndpointIP, other.EndpointIP)
-	w.EndpointPort = helpers.MergeWithUint16(w.EndpointPort, other.EndpointPort)
+	w.EndpointPort = helpers.MergeWithPointer(w.EndpointPort, other.EndpointPort)
 	w.PublicKey = helpers.MergeWithString(w.PublicKey, other.PublicKey)
 }
 
 func (w *WireguardSelection) overrideWith(other WireguardSelection) {
 	w.EndpointIP = helpers.OverrideWithIP(w.EndpointIP, other.EndpointIP)
-	w.EndpointPort = helpers.OverrideWithUint16(w.EndpointPort, other.EndpointPort)
+	w.EndpointPort = helpers.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
 	w.PublicKey = helpers.OverrideWithString(w.PublicKey, other.PublicKey)
 }
 
 func (w *WireguardSelection) setDefaults() {
 	w.EndpointIP = helpers.DefaultIP(w.EndpointIP, netip.IPv4Unspecified())
-	w.EndpointPort = helpers.DefaultUint16(w.EndpointPort, 0)
+	w.EndpointPort = helpers.DefaultPointer(w.EndpointPort, 0)
 }
 
 func (w WireguardSelection) String() string {

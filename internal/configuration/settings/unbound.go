@@ -30,17 +30,17 @@ func (u *Unbound) setDefaults() {
 		}
 	}
 
-	u.Caching = helpers.DefaultBool(u.Caching, true)
-	u.IPv6 = helpers.DefaultBool(u.IPv6, false)
+	u.Caching = helpers.DefaultPointer(u.Caching, true)
+	u.IPv6 = helpers.DefaultPointer(u.IPv6, false)
 
 	const defaultVerbosityLevel = 1
-	u.VerbosityLevel = helpers.DefaultUint8(u.VerbosityLevel, defaultVerbosityLevel)
+	u.VerbosityLevel = helpers.DefaultPointer(u.VerbosityLevel, defaultVerbosityLevel)
 
 	const defaultVerbosityDetailsLevel = 0
-	u.VerbosityDetailsLevel = helpers.DefaultUint8(u.VerbosityDetailsLevel, defaultVerbosityDetailsLevel)
+	u.VerbosityDetailsLevel = helpers.DefaultPointer(u.VerbosityDetailsLevel, defaultVerbosityDetailsLevel)
 
 	const defaultValidationLogLevel = 0
-	u.ValidationLogLevel = helpers.DefaultUint8(u.ValidationLogLevel, defaultValidationLogLevel)
+	u.ValidationLogLevel = helpers.DefaultPointer(u.ValidationLogLevel, defaultValidationLogLevel)
 
 	if u.Allowed == nil {
 		u.Allowed = []netip.Prefix{
@@ -94,37 +94,37 @@ func (u Unbound) validate() (err error) {
 
 func (u Unbound) copy() (copied Unbound) {
 	return Unbound{
-		Providers:             helpers.CopyStringSlice(u.Providers),
-		Caching:               helpers.CopyBoolPtr(u.Caching),
-		IPv6:                  helpers.CopyBoolPtr(u.IPv6),
-		VerbosityLevel:        helpers.CopyUint8Ptr(u.VerbosityLevel),
-		VerbosityDetailsLevel: helpers.CopyUint8Ptr(u.VerbosityDetailsLevel),
-		ValidationLogLevel:    helpers.CopyUint8Ptr(u.ValidationLogLevel),
+		Providers:             helpers.CopySlice(u.Providers),
+		Caching:               helpers.CopyPointer(u.Caching),
+		IPv6:                  helpers.CopyPointer(u.IPv6),
+		VerbosityLevel:        helpers.CopyPointer(u.VerbosityLevel),
+		VerbosityDetailsLevel: helpers.CopyPointer(u.VerbosityDetailsLevel),
+		ValidationLogLevel:    helpers.CopyPointer(u.ValidationLogLevel),
 		Username:              u.Username,
-		Allowed:               helpers.CopyNetipPrefixesSlice(u.Allowed),
+		Allowed:               helpers.CopySlice(u.Allowed),
 	}
 }
 
 func (u *Unbound) mergeWith(other Unbound) {
-	u.Providers = helpers.MergeStringSlices(u.Providers, other.Providers)
-	u.Caching = helpers.MergeWithBool(u.Caching, other.Caching)
-	u.IPv6 = helpers.MergeWithBool(u.IPv6, other.IPv6)
-	u.VerbosityLevel = helpers.MergeWithUint8(u.VerbosityLevel, other.VerbosityLevel)
-	u.VerbosityDetailsLevel = helpers.MergeWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
-	u.ValidationLogLevel = helpers.MergeWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Providers = helpers.MergeSlices(u.Providers, other.Providers)
+	u.Caching = helpers.MergeWithPointer(u.Caching, other.Caching)
+	u.IPv6 = helpers.MergeWithPointer(u.IPv6, other.IPv6)
+	u.VerbosityLevel = helpers.MergeWithPointer(u.VerbosityLevel, other.VerbosityLevel)
+	u.VerbosityDetailsLevel = helpers.MergeWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
+	u.ValidationLogLevel = helpers.MergeWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
 	u.Username = helpers.MergeWithString(u.Username, other.Username)
-	u.Allowed = helpers.MergeNetipPrefixesSlices(u.Allowed, other.Allowed)
+	u.Allowed = helpers.MergeSlices(u.Allowed, other.Allowed)
 }
 
 func (u *Unbound) overrideWith(other Unbound) {
-	u.Providers = helpers.OverrideWithStringSlice(u.Providers, other.Providers)
-	u.Caching = helpers.OverrideWithBool(u.Caching, other.Caching)
-	u.IPv6 = helpers.OverrideWithBool(u.IPv6, other.IPv6)
-	u.VerbosityLevel = helpers.OverrideWithUint8(u.VerbosityLevel, other.VerbosityLevel)
-	u.VerbosityDetailsLevel = helpers.OverrideWithUint8(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
-	u.ValidationLogLevel = helpers.OverrideWithUint8(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Providers = helpers.OverrideWithSlice(u.Providers, other.Providers)
+	u.Caching = helpers.OverrideWithPointer(u.Caching, other.Caching)
+	u.IPv6 = helpers.OverrideWithPointer(u.IPv6, other.IPv6)
+	u.VerbosityLevel = helpers.OverrideWithPointer(u.VerbosityLevel, other.VerbosityLevel)
+	u.VerbosityDetailsLevel = helpers.OverrideWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
+	u.ValidationLogLevel = helpers.OverrideWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
 	u.Username = helpers.OverrideWithString(u.Username, other.Username)
-	u.Allowed = helpers.OverrideWithNetipPrefixesSlice(u.Allowed, other.Allowed)
+	u.Allowed = helpers.OverrideWithSlice(u.Allowed, other.Allowed)
 }
 
 func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {

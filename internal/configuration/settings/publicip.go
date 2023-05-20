@@ -42,25 +42,25 @@ func (p PublicIP) validate() (err error) {
 
 func (p *PublicIP) copy() (copied PublicIP) {
 	return PublicIP{
-		Period:     helpers.CopyDurationPtr(p.Period),
-		IPFilepath: helpers.CopyStringPtr(p.IPFilepath),
+		Period:     helpers.CopyPointer(p.Period),
+		IPFilepath: helpers.CopyPointer(p.IPFilepath),
 	}
 }
 
 func (p *PublicIP) mergeWith(other PublicIP) {
-	p.Period = helpers.MergeWithDurationPtr(p.Period, other.Period)
-	p.IPFilepath = helpers.MergeWithStringPtr(p.IPFilepath, other.IPFilepath)
+	p.Period = helpers.MergeWithPointer(p.Period, other.Period)
+	p.IPFilepath = helpers.MergeWithPointer(p.IPFilepath, other.IPFilepath)
 }
 
 func (p *PublicIP) overrideWith(other PublicIP) {
-	p.Period = helpers.OverrideWithDurationPtr(p.Period, other.Period)
-	p.IPFilepath = helpers.OverrideWithStringPtr(p.IPFilepath, other.IPFilepath)
+	p.Period = helpers.OverrideWithPointer(p.Period, other.Period)
+	p.IPFilepath = helpers.OverrideWithPointer(p.IPFilepath, other.IPFilepath)
 }
 
 func (p *PublicIP) setDefaults() {
 	const defaultPeriod = 12 * time.Hour
-	p.Period = helpers.DefaultDurationPtr(p.Period, defaultPeriod)
-	p.IPFilepath = helpers.DefaultStringPtr(p.IPFilepath, "/tmp/gluetun/ip")
+	p.Period = helpers.DefaultPointer(p.Period, defaultPeriod)
+	p.IPFilepath = helpers.DefaultPointer(p.IPFilepath, "/tmp/gluetun/ip")
 }
 
 func (p PublicIP) String() string {

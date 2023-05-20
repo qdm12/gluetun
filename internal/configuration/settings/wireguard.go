@@ -106,33 +106,33 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
-		PrivateKey:     helpers.CopyStringPtr(w.PrivateKey),
-		PreSharedKey:   helpers.CopyStringPtr(w.PreSharedKey),
-		Addresses:      helpers.CopyNetipPrefixesSlice(w.Addresses),
+		PrivateKey:     helpers.CopyPointer(w.PrivateKey),
+		PreSharedKey:   helpers.CopyPointer(w.PreSharedKey),
+		Addresses:      helpers.CopySlice(w.Addresses),
 		Interface:      w.Interface,
 		Implementation: w.Implementation,
 	}
 }
 
 func (w *Wireguard) mergeWith(other Wireguard) {
-	w.PrivateKey = helpers.MergeWithStringPtr(w.PrivateKey, other.PrivateKey)
-	w.PreSharedKey = helpers.MergeWithStringPtr(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.MergeNetipPrefixesSlices(w.Addresses, other.Addresses)
+	w.PrivateKey = helpers.MergeWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PreSharedKey = helpers.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
+	w.Addresses = helpers.MergeSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
 }
 
 func (w *Wireguard) overrideWith(other Wireguard) {
-	w.PrivateKey = helpers.OverrideWithStringPtr(w.PrivateKey, other.PrivateKey)
-	w.PreSharedKey = helpers.OverrideWithStringPtr(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.OverrideWithNetipPrefixesSlice(w.Addresses, other.Addresses)
+	w.PrivateKey = helpers.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PreSharedKey = helpers.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
+	w.Addresses = helpers.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
 	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
 }
 
 func (w *Wireguard) setDefaults() {
-	w.PrivateKey = helpers.DefaultStringPtr(w.PrivateKey, "")
-	w.PreSharedKey = helpers.DefaultStringPtr(w.PreSharedKey, "")
+	w.PrivateKey = helpers.DefaultPointer(w.PrivateKey, "")
+	w.PreSharedKey = helpers.DefaultPointer(w.PreSharedKey, "")
 	w.Interface = helpers.DefaultString(w.Interface, "wg0")
 	w.Implementation = helpers.DefaultString(w.Implementation, "auto")
 }

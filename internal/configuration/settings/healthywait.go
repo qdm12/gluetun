@@ -27,31 +27,31 @@ func (h HealthyWait) validate() (err error) {
 // unset field of the receiver settings object.
 func (h *HealthyWait) copy() (copied HealthyWait) {
 	return HealthyWait{
-		Initial:  helpers.CopyDurationPtr(h.Initial),
-		Addition: helpers.CopyDurationPtr(h.Addition),
+		Initial:  helpers.CopyPointer(h.Initial),
+		Addition: helpers.CopyPointer(h.Addition),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (h *HealthyWait) mergeWith(other HealthyWait) {
-	h.Initial = helpers.MergeWithDurationPtr(h.Initial, other.Initial)
-	h.Addition = helpers.MergeWithDurationPtr(h.Addition, other.Addition)
+	h.Initial = helpers.MergeWithPointer(h.Initial, other.Initial)
+	h.Addition = helpers.MergeWithPointer(h.Addition, other.Addition)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (h *HealthyWait) overrideWith(other HealthyWait) {
-	h.Initial = helpers.OverrideWithDurationPtr(h.Initial, other.Initial)
-	h.Addition = helpers.OverrideWithDurationPtr(h.Addition, other.Addition)
+	h.Initial = helpers.OverrideWithPointer(h.Initial, other.Initial)
+	h.Addition = helpers.OverrideWithPointer(h.Addition, other.Addition)
 }
 
 func (h *HealthyWait) setDefaults() {
 	const initialDurationDefault = 6 * time.Second
 	const additionDurationDefault = 5 * time.Second
-	h.Initial = helpers.DefaultDurationPtr(h.Initial, initialDurationDefault)
-	h.Addition = helpers.DefaultDurationPtr(h.Addition, additionDurationDefault)
+	h.Initial = helpers.DefaultPointer(h.Initial, initialDurationDefault)
+	h.Addition = helpers.DefaultPointer(h.Addition, additionDurationDefault)
 }
 
 func (h HealthyWait) String() string {

@@ -203,18 +203,18 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 	return ServerSelection{
 		VPN:          ss.VPN,
 		TargetIP:     ss.TargetIP,
-		Countries:    helpers.CopyStringSlice(ss.Countries),
-		Regions:      helpers.CopyStringSlice(ss.Regions),
-		Cities:       helpers.CopyStringSlice(ss.Cities),
-		ISPs:         helpers.CopyStringSlice(ss.ISPs),
-		Hostnames:    helpers.CopyStringSlice(ss.Hostnames),
-		Names:        helpers.CopyStringSlice(ss.Names),
-		Numbers:      helpers.CopyUint16Slice(ss.Numbers),
-		OwnedOnly:    helpers.CopyBoolPtr(ss.OwnedOnly),
-		FreeOnly:     helpers.CopyBoolPtr(ss.FreeOnly),
-		PremiumOnly:  helpers.CopyBoolPtr(ss.PremiumOnly),
-		StreamOnly:   helpers.CopyBoolPtr(ss.StreamOnly),
-		MultiHopOnly: helpers.CopyBoolPtr(ss.MultiHopOnly),
+		Countries:    helpers.CopySlice(ss.Countries),
+		Regions:      helpers.CopySlice(ss.Regions),
+		Cities:       helpers.CopySlice(ss.Cities),
+		ISPs:         helpers.CopySlice(ss.ISPs),
+		Hostnames:    helpers.CopySlice(ss.Hostnames),
+		Names:        helpers.CopySlice(ss.Names),
+		Numbers:      helpers.CopySlice(ss.Numbers),
+		OwnedOnly:    helpers.CopyPointer(ss.OwnedOnly),
+		FreeOnly:     helpers.CopyPointer(ss.FreeOnly),
+		PremiumOnly:  helpers.CopyPointer(ss.PremiumOnly),
+		StreamOnly:   helpers.CopyPointer(ss.StreamOnly),
+		MultiHopOnly: helpers.CopyPointer(ss.MultiHopOnly),
 		OpenVPN:      ss.OpenVPN.copy(),
 		Wireguard:    ss.Wireguard.copy(),
 	}
@@ -223,18 +223,18 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 func (ss *ServerSelection) mergeWith(other ServerSelection) {
 	ss.VPN = helpers.MergeWithString(ss.VPN, other.VPN)
 	ss.TargetIP = helpers.MergeWithIP(ss.TargetIP, other.TargetIP)
-	ss.Countries = helpers.MergeStringSlices(ss.Countries, other.Countries)
-	ss.Regions = helpers.MergeStringSlices(ss.Regions, other.Regions)
-	ss.Cities = helpers.MergeStringSlices(ss.Cities, other.Cities)
-	ss.ISPs = helpers.MergeStringSlices(ss.ISPs, other.ISPs)
-	ss.Hostnames = helpers.MergeStringSlices(ss.Hostnames, other.Hostnames)
-	ss.Names = helpers.MergeStringSlices(ss.Names, other.Names)
-	ss.Numbers = helpers.MergeUint16Slices(ss.Numbers, other.Numbers)
-	ss.OwnedOnly = helpers.MergeWithBool(ss.OwnedOnly, other.OwnedOnly)
-	ss.FreeOnly = helpers.MergeWithBool(ss.FreeOnly, other.FreeOnly)
-	ss.PremiumOnly = helpers.MergeWithBool(ss.PremiumOnly, other.PremiumOnly)
-	ss.StreamOnly = helpers.MergeWithBool(ss.StreamOnly, other.StreamOnly)
-	ss.MultiHopOnly = helpers.MergeWithBool(ss.MultiHopOnly, other.MultiHopOnly)
+	ss.Countries = helpers.MergeSlices(ss.Countries, other.Countries)
+	ss.Regions = helpers.MergeSlices(ss.Regions, other.Regions)
+	ss.Cities = helpers.MergeSlices(ss.Cities, other.Cities)
+	ss.ISPs = helpers.MergeSlices(ss.ISPs, other.ISPs)
+	ss.Hostnames = helpers.MergeSlices(ss.Hostnames, other.Hostnames)
+	ss.Names = helpers.MergeSlices(ss.Names, other.Names)
+	ss.Numbers = helpers.MergeSlices(ss.Numbers, other.Numbers)
+	ss.OwnedOnly = helpers.MergeWithPointer(ss.OwnedOnly, other.OwnedOnly)
+	ss.FreeOnly = helpers.MergeWithPointer(ss.FreeOnly, other.FreeOnly)
+	ss.PremiumOnly = helpers.MergeWithPointer(ss.PremiumOnly, other.PremiumOnly)
+	ss.StreamOnly = helpers.MergeWithPointer(ss.StreamOnly, other.StreamOnly)
+	ss.MultiHopOnly = helpers.MergeWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
 
 	ss.OpenVPN.mergeWith(other.OpenVPN)
 	ss.Wireguard.mergeWith(other.Wireguard)
@@ -243,18 +243,18 @@ func (ss *ServerSelection) mergeWith(other ServerSelection) {
 func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.VPN = helpers.OverrideWithString(ss.VPN, other.VPN)
 	ss.TargetIP = helpers.OverrideWithIP(ss.TargetIP, other.TargetIP)
-	ss.Countries = helpers.OverrideWithStringSlice(ss.Countries, other.Countries)
-	ss.Regions = helpers.OverrideWithStringSlice(ss.Regions, other.Regions)
-	ss.Cities = helpers.OverrideWithStringSlice(ss.Cities, other.Cities)
-	ss.ISPs = helpers.OverrideWithStringSlice(ss.ISPs, other.ISPs)
-	ss.Hostnames = helpers.OverrideWithStringSlice(ss.Hostnames, other.Hostnames)
-	ss.Names = helpers.OverrideWithStringSlice(ss.Names, other.Names)
-	ss.Numbers = helpers.OverrideWithUint16Slice(ss.Numbers, other.Numbers)
-	ss.OwnedOnly = helpers.OverrideWithBool(ss.OwnedOnly, other.OwnedOnly)
-	ss.FreeOnly = helpers.OverrideWithBool(ss.FreeOnly, other.FreeOnly)
-	ss.PremiumOnly = helpers.OverrideWithBool(ss.PremiumOnly, other.PremiumOnly)
-	ss.StreamOnly = helpers.OverrideWithBool(ss.StreamOnly, other.StreamOnly)
-	ss.MultiHopOnly = helpers.OverrideWithBool(ss.MultiHopOnly, other.MultiHopOnly)
+	ss.Countries = helpers.OverrideWithSlice(ss.Countries, other.Countries)
+	ss.Regions = helpers.OverrideWithSlice(ss.Regions, other.Regions)
+	ss.Cities = helpers.OverrideWithSlice(ss.Cities, other.Cities)
+	ss.ISPs = helpers.OverrideWithSlice(ss.ISPs, other.ISPs)
+	ss.Hostnames = helpers.OverrideWithSlice(ss.Hostnames, other.Hostnames)
+	ss.Names = helpers.OverrideWithSlice(ss.Names, other.Names)
+	ss.Numbers = helpers.OverrideWithSlice(ss.Numbers, other.Numbers)
+	ss.OwnedOnly = helpers.OverrideWithPointer(ss.OwnedOnly, other.OwnedOnly)
+	ss.FreeOnly = helpers.OverrideWithPointer(ss.FreeOnly, other.FreeOnly)
+	ss.PremiumOnly = helpers.OverrideWithPointer(ss.PremiumOnly, other.PremiumOnly)
+	ss.StreamOnly = helpers.OverrideWithPointer(ss.StreamOnly, other.StreamOnly)
+	ss.MultiHopOnly = helpers.OverrideWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
 	ss.OpenVPN.overrideWith(other.OpenVPN)
 	ss.Wireguard.overrideWith(other.Wireguard)
 }
@@ -262,11 +262,11 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.VPN = helpers.DefaultString(ss.VPN, vpn.OpenVPN)
 	ss.TargetIP = helpers.DefaultIP(ss.TargetIP, netip.IPv4Unspecified())
-	ss.OwnedOnly = helpers.DefaultBool(ss.OwnedOnly, false)
-	ss.FreeOnly = helpers.DefaultBool(ss.FreeOnly, false)
-	ss.PremiumOnly = helpers.DefaultBool(ss.PremiumOnly, false)
-	ss.StreamOnly = helpers.DefaultBool(ss.StreamOnly, false)
-	ss.MultiHopOnly = helpers.DefaultBool(ss.MultiHopOnly, false)
+	ss.OwnedOnly = helpers.DefaultPointer(ss.OwnedOnly, false)
+	ss.FreeOnly = helpers.DefaultPointer(ss.FreeOnly, false)
+	ss.PremiumOnly = helpers.DefaultPointer(ss.PremiumOnly, false)
+	ss.StreamOnly = helpers.DefaultPointer(ss.StreamOnly, false)
+	ss.MultiHopOnly = helpers.DefaultPointer(ss.MultiHopOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
 	ss.Wireguard.setDefaults()
 }

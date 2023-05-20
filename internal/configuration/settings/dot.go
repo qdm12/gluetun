@@ -54,8 +54,8 @@ func (d DoT) validate() (err error) {
 
 func (d *DoT) copy() (copied DoT) {
 	return DoT{
-		Enabled:      helpers.CopyBoolPtr(d.Enabled),
-		UpdatePeriod: helpers.CopyDurationPtr(d.UpdatePeriod),
+		Enabled:      helpers.CopyPointer(d.Enabled),
+		UpdatePeriod: helpers.CopyPointer(d.UpdatePeriod),
 		Unbound:      d.Unbound.copy(),
 		Blacklist:    d.Blacklist.copy(),
 	}
@@ -64,8 +64,8 @@ func (d *DoT) copy() (copied DoT) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (d *DoT) mergeWith(other DoT) {
-	d.Enabled = helpers.MergeWithBool(d.Enabled, other.Enabled)
-	d.UpdatePeriod = helpers.MergeWithDurationPtr(d.UpdatePeriod, other.UpdatePeriod)
+	d.Enabled = helpers.MergeWithPointer(d.Enabled, other.Enabled)
+	d.UpdatePeriod = helpers.MergeWithPointer(d.UpdatePeriod, other.UpdatePeriod)
 	d.Unbound.mergeWith(other.Unbound)
 	d.Blacklist.mergeWith(other.Blacklist)
 }
@@ -74,16 +74,16 @@ func (d *DoT) mergeWith(other DoT) {
 // settings object with any field set in the other
 // settings.
 func (d *DoT) overrideWith(other DoT) {
-	d.Enabled = helpers.OverrideWithBool(d.Enabled, other.Enabled)
-	d.UpdatePeriod = helpers.OverrideWithDurationPtr(d.UpdatePeriod, other.UpdatePeriod)
+	d.Enabled = helpers.OverrideWithPointer(d.Enabled, other.Enabled)
+	d.UpdatePeriod = helpers.OverrideWithPointer(d.UpdatePeriod, other.UpdatePeriod)
 	d.Unbound.overrideWith(other.Unbound)
 	d.Blacklist.overrideWith(other.Blacklist)
 }
 
 func (d *DoT) setDefaults() {
-	d.Enabled = helpers.DefaultBool(d.Enabled, true)
+	d.Enabled = helpers.DefaultPointer(d.Enabled, true)
 	const defaultUpdatePeriod = 24 * time.Hour
-	d.UpdatePeriod = helpers.DefaultDurationPtr(d.UpdatePeriod, defaultUpdatePeriod)
+	d.UpdatePeriod = helpers.DefaultPointer(d.UpdatePeriod, defaultUpdatePeriod)
 	d.Unbound.setDefaults()
 	d.Blacklist.setDefaults()
 }

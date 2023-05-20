@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -89,7 +90,7 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if filterByPossibilitiesUint16(server.Number, selection.Numbers) {
+	if filterByPossibilities(server.Number, selection.Numbers) {
 		return true
 	}
 
@@ -106,25 +107,12 @@ func filterServer(server models.Server,
 	return false
 }
 
-func filterByPossibilities(value string, possibilities []string) (filtered bool) {
+func filterByPossibilities[T string | uint16](value T, possibilities []T) (filtered bool) {
 	if len(possibilities) == 0 {
 		return false
 	}
 	for _, possibility := range possibilities {
-		if strings.EqualFold(value, possibility) {
-			return false
-		}
-	}
-	return true
-}
-
-// TODO merge with filterByPossibilities with generics in Go 1.18.
-func filterByPossibilitiesUint16(value uint16, possibilities []uint16) (filtered bool) {
-	if len(possibilities) == 0 {
-		return false
-	}
-	for _, possibility := range possibilities {
-		if value == possibility {
+		if strings.EqualFold(fmt.Sprint(value), fmt.Sprint(possibility)) {
 			return false
 		}
 	}

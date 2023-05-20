@@ -58,26 +58,26 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 
 func (p *Provider) copy() (copied Provider) {
 	return Provider{
-		Name:            helpers.CopyStringPtr(p.Name),
+		Name:            helpers.CopyPointer(p.Name),
 		ServerSelection: p.ServerSelection.copy(),
 		PortForwarding:  p.PortForwarding.copy(),
 	}
 }
 
 func (p *Provider) mergeWith(other Provider) {
-	p.Name = helpers.MergeWithStringPtr(p.Name, other.Name)
+	p.Name = helpers.MergeWithPointer(p.Name, other.Name)
 	p.ServerSelection.mergeWith(other.ServerSelection)
 	p.PortForwarding.mergeWith(other.PortForwarding)
 }
 
 func (p *Provider) overrideWith(other Provider) {
-	p.Name = helpers.OverrideWithStringPtr(p.Name, other.Name)
+	p.Name = helpers.OverrideWithPointer(p.Name, other.Name)
 	p.ServerSelection.overrideWith(other.ServerSelection)
 	p.PortForwarding.overrideWith(other.PortForwarding)
 }
 
 func (p *Provider) setDefaults() {
-	p.Name = helpers.DefaultStringPtr(p.Name, providers.PrivateInternetAccess)
+	p.Name = helpers.DefaultPointer(p.Name, providers.PrivateInternetAccess)
 	p.ServerSelection.setDefaults(*p.Name)
 	p.PortForwarding.setDefaults()
 }

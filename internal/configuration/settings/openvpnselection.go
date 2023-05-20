@@ -130,37 +130,37 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 
 func (o *OpenVPNSelection) copy() (copied OpenVPNSelection) {
 	return OpenVPNSelection{
-		ConfFile:     helpers.CopyStringPtr(o.ConfFile),
-		TCP:          helpers.CopyBoolPtr(o.TCP),
-		CustomPort:   helpers.CopyUint16Ptr(o.CustomPort),
-		PIAEncPreset: helpers.CopyStringPtr(o.PIAEncPreset),
+		ConfFile:     helpers.CopyPointer(o.ConfFile),
+		TCP:          helpers.CopyPointer(o.TCP),
+		CustomPort:   helpers.CopyPointer(o.CustomPort),
+		PIAEncPreset: helpers.CopyPointer(o.PIAEncPreset),
 	}
 }
 
 func (o *OpenVPNSelection) mergeWith(other OpenVPNSelection) {
-	o.ConfFile = helpers.MergeWithStringPtr(o.ConfFile, other.ConfFile)
-	o.TCP = helpers.MergeWithBool(o.TCP, other.TCP)
-	o.CustomPort = helpers.MergeWithUint16(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = helpers.MergeWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
+	o.ConfFile = helpers.MergeWithPointer(o.ConfFile, other.ConfFile)
+	o.TCP = helpers.MergeWithPointer(o.TCP, other.TCP)
+	o.CustomPort = helpers.MergeWithPointer(o.CustomPort, other.CustomPort)
+	o.PIAEncPreset = helpers.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {
-	o.ConfFile = helpers.OverrideWithStringPtr(o.ConfFile, other.ConfFile)
-	o.TCP = helpers.OverrideWithBool(o.TCP, other.TCP)
-	o.CustomPort = helpers.OverrideWithUint16(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = helpers.OverrideWithStringPtr(o.PIAEncPreset, other.PIAEncPreset)
+	o.ConfFile = helpers.OverrideWithPointer(o.ConfFile, other.ConfFile)
+	o.TCP = helpers.OverrideWithPointer(o.TCP, other.TCP)
+	o.CustomPort = helpers.OverrideWithPointer(o.CustomPort, other.CustomPort)
+	o.PIAEncPreset = helpers.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
-	o.ConfFile = helpers.DefaultStringPtr(o.ConfFile, "")
-	o.TCP = helpers.DefaultBool(o.TCP, false)
-	o.CustomPort = helpers.DefaultUint16(o.CustomPort, 0)
+	o.ConfFile = helpers.DefaultPointer(o.ConfFile, "")
+	o.TCP = helpers.DefaultPointer(o.TCP, false)
+	o.CustomPort = helpers.DefaultPointer(o.CustomPort, 0)
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
 		defaultEncPreset = presets.Strong
 	}
-	o.PIAEncPreset = helpers.DefaultStringPtr(o.PIAEncPreset, defaultEncPreset)
+	o.PIAEncPreset = helpers.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
 }
 
 func (o OpenVPNSelection) String() string {

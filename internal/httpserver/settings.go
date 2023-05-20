@@ -36,10 +36,10 @@ type Settings struct {
 func (s *Settings) SetDefaults() {
 	s.Address = helpers.DefaultString(s.Address, ":8000")
 	const defaultReadTimeout = 3 * time.Second
-	s.ReadHeaderTimeout = helpers.DefaultDuration(s.ReadHeaderTimeout, defaultReadTimeout)
-	s.ReadTimeout = helpers.DefaultDuration(s.ReadTimeout, defaultReadTimeout)
+	s.ReadHeaderTimeout = helpers.DefaultNumber(s.ReadHeaderTimeout, defaultReadTimeout)
+	s.ReadTimeout = helpers.DefaultNumber(s.ReadTimeout, defaultReadTimeout)
 	const defaultShutdownTimeout = 3 * time.Second
-	s.ShutdownTimeout = helpers.DefaultDuration(s.ShutdownTimeout, defaultShutdownTimeout)
+	s.ShutdownTimeout = helpers.DefaultNumber(s.ShutdownTimeout, defaultShutdownTimeout)
 }
 
 func (s Settings) Copy() Settings {
@@ -59,9 +59,9 @@ func (s *Settings) MergeWith(other Settings) {
 	if s.Logger == nil {
 		s.Logger = other.Logger
 	}
-	s.ReadHeaderTimeout = helpers.MergeWithDuration(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = helpers.MergeWithDuration(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = helpers.MergeWithDuration(s.ShutdownTimeout, other.ShutdownTimeout)
+	s.ReadHeaderTimeout = helpers.MergeWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	s.ReadTimeout = helpers.MergeWithNumber(s.ReadTimeout, other.ReadTimeout)
+	s.ShutdownTimeout = helpers.MergeWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
 }
 
 func (s *Settings) OverrideWith(other Settings) {
@@ -70,9 +70,9 @@ func (s *Settings) OverrideWith(other Settings) {
 	if other.Logger != nil {
 		s.Logger = other.Logger
 	}
-	s.ReadHeaderTimeout = helpers.OverrideWithDuration(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = helpers.OverrideWithDuration(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = helpers.OverrideWithDuration(s.ShutdownTimeout, other.ShutdownTimeout)
+	s.ReadHeaderTimeout = helpers.OverrideWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	s.ReadTimeout = helpers.OverrideWithNumber(s.ReadTimeout, other.ReadTimeout)
+	s.ShutdownTimeout = helpers.OverrideWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
 }
 
 var (

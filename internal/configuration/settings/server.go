@@ -43,29 +43,29 @@ func (c ControlServer) validate() (err error) {
 
 func (c *ControlServer) copy() (copied ControlServer) {
 	return ControlServer{
-		Address: helpers.CopyStringPtr(c.Address),
-		Log:     helpers.CopyBoolPtr(c.Log),
+		Address: helpers.CopyPointer(c.Address),
+		Log:     helpers.CopyPointer(c.Log),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (c *ControlServer) mergeWith(other ControlServer) {
-	c.Address = helpers.MergeWithStringPtr(c.Address, other.Address)
-	c.Log = helpers.MergeWithBool(c.Log, other.Log)
+	c.Address = helpers.MergeWithPointer(c.Address, other.Address)
+	c.Log = helpers.MergeWithPointer(c.Log, other.Log)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (c *ControlServer) overrideWith(other ControlServer) {
-	c.Address = helpers.OverrideWithStringPtr(c.Address, other.Address)
-	c.Log = helpers.OverrideWithBool(c.Log, other.Log)
+	c.Address = helpers.OverrideWithPointer(c.Address, other.Address)
+	c.Log = helpers.OverrideWithPointer(c.Log, other.Log)
 }
 
 func (c *ControlServer) setDefaults() {
-	c.Address = helpers.DefaultStringPtr(c.Address, ":8000")
-	c.Log = helpers.DefaultBool(c.Log, true)
+	c.Address = helpers.DefaultPointer(c.Address, ":8000")
+	c.Log = helpers.DefaultPointer(c.Log, true)
 }
 
 func (c ControlServer) String() string {

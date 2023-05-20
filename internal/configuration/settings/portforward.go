@@ -47,24 +47,24 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 
 func (p *PortForwarding) copy() (copied PortForwarding) {
 	return PortForwarding{
-		Enabled:  helpers.CopyBoolPtr(p.Enabled),
-		Filepath: helpers.CopyStringPtr(p.Filepath),
+		Enabled:  helpers.CopyPointer(p.Enabled),
+		Filepath: helpers.CopyPointer(p.Filepath),
 	}
 }
 
 func (p *PortForwarding) mergeWith(other PortForwarding) {
-	p.Enabled = helpers.MergeWithBool(p.Enabled, other.Enabled)
-	p.Filepath = helpers.MergeWithStringPtr(p.Filepath, other.Filepath)
+	p.Enabled = helpers.MergeWithPointer(p.Enabled, other.Enabled)
+	p.Filepath = helpers.MergeWithPointer(p.Filepath, other.Filepath)
 }
 
 func (p *PortForwarding) overrideWith(other PortForwarding) {
-	p.Enabled = helpers.OverrideWithBool(p.Enabled, other.Enabled)
-	p.Filepath = helpers.OverrideWithStringPtr(p.Filepath, other.Filepath)
+	p.Enabled = helpers.OverrideWithPointer(p.Enabled, other.Enabled)
+	p.Filepath = helpers.OverrideWithPointer(p.Filepath, other.Filepath)
 }
 
 func (p *PortForwarding) setDefaults() {
-	p.Enabled = helpers.DefaultBool(p.Enabled, false)
-	p.Filepath = helpers.DefaultStringPtr(p.Filepath, "/tmp/gluetun/forwarded_port")
+	p.Enabled = helpers.DefaultPointer(p.Enabled, false)
+	p.Filepath = helpers.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
 }
 
 func (p PortForwarding) String() string {
