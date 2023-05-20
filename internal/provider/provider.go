@@ -24,6 +24,6 @@ type PortForwarder interface {
 	PortForward(ctx context.Context, client *http.Client,
 		logger utils.Logger, gateway netip.Addr, serverName string) (
 		port uint16, err error)
-	KeepPortForward(ctx context.Context, gateway netip.Addr,
-		serverName string) (err error)
+	KeepPortForward(ctx context.Context, port uint16, gateway netip.Addr,
+		serverName string, _ utils.Logger) (err error)
 }
