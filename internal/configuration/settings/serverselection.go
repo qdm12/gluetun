@@ -3,7 +3,7 @@ package settings
 import (
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
@@ -21,10 +21,10 @@ type ServerSelection struct { //nolint:maligned
 	VPN string
 	// TargetIP is the server endpoint IP address to use.
 	// It will override any IP address from the picked
-	// built-in server. It cannot be nil in the internal
-	// state, and can be set to an empty net.IP{} to indicate
+	// built-in server. It cannot be the empty value in the internal
+	// state, and can be set to the unspecified address to indicate
 	// there is not target IP address to use.
-	TargetIP net.IP
+	TargetIP netip.Addr
 	// Counties is the list of countries to filter VPN servers with.
 	Countries []string
 	// Regions is the list of regions to filter VPN servers with.
@@ -202,7 +202,7 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 func (ss *ServerSelection) copy() (copied ServerSelection) {
 	return ServerSelection{
 		VPN:          ss.VPN,
-		TargetIP:     helpers.CopyIP(ss.TargetIP),
+		TargetIP:     ss.TargetIP,
 		Countries:    helpers.CopyStringSlice(ss.Countries),
 		Regions:      helpers.CopyStringSlice(ss.Regions),
 		Cities:       helpers.CopyStringSlice(ss.Cities),
@@ -261,7 +261,7 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 
 func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.VPN = helpers.DefaultString(ss.VPN, vpn.OpenVPN)
-	ss.TargetIP = helpers.DefaultIP(ss.TargetIP, net.IP{})
+	ss.TargetIP = helpers.DefaultIP(ss.TargetIP, netip.IPv4Unspecified())
 	ss.OwnedOnly = helpers.DefaultBool(ss.OwnedOnly, false)
 	ss.FreeOnly = helpers.DefaultBool(ss.FreeOnly, false)
 	ss.PremiumOnly = helpers.DefaultBool(ss.PremiumOnly, false)
@@ -278,7 +278,7 @@ func (ss ServerSelection) String() string {
 func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Server selection settings:")
 	node.Appendf("VPN type: %s", ss.VPN)
-	if len(ss.TargetIP) > 0 {
+	if !ss.TargetIP.IsUnspecified() {
 		node.Appendf("Target IP address: %s", ss.TargetIP)
 	}
 

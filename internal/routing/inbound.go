@@ -62,7 +62,7 @@ func (r *Routing) unrouteInboundFromDefault(defaultRoutes []DefaultRoute) (err e
 
 func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRoute) (err error) {
 	for _, defaultRoute := range defaultRoutes {
-		assignedIP := netIPToNetipAddress(defaultRoute.AssignedIP)
+		assignedIP := defaultRoute.AssignedIP
 		bits := 32
 		if assignedIP.Is6() {
 			bits = 128
@@ -82,7 +82,7 @@ func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 
 func (r *Routing) delRuleInboundFromDefault(table int, defaultRoutes []DefaultRoute) (err error) {
 	for _, defaultRoute := range defaultRoutes {
-		assignedIP := netIPToNetipAddress(defaultRoute.AssignedIP)
+		assignedIP := defaultRoute.AssignedIP
 		bits := 32
 		if assignedIP.Is6() {
 			bits = 128

@@ -1,7 +1,7 @@
 package updater
 
 import (
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -9,7 +9,7 @@ import (
 
 type cityToServer map[string]models.Server
 
-func (cts cityToServer) add(city string, ips []net.IP) {
+func (cts cityToServer) add(city string, ips []netip.Addr) {
 	server, ok := cts[city]
 	if !ok {
 		server.VPN = vpn.OpenVPN

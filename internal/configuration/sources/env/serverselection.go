@@ -3,7 +3,7 @@ package env
 import (
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"strconv"
 	"strings"
 
@@ -113,16 +113,15 @@ var (
 	ErrInvalidIP = errors.New("invalid IP address")
 )
 
-func (s *Source) readOpenVPNTargetIP() (ip net.IP, err error) {
+func (s *Source) readOpenVPNTargetIP() (ip netip.Addr, err error) {
 	envKey, value := s.getEnvWithRetro("VPN_ENDPOINT_IP", "OPENVPN_TARGET_IP")
 	if value == "" {
-		return nil, nil
+		return ip, nil
 	}
 
-	ip = net.ParseIP(value)
-	if ip == nil {
-		return nil, fmt.Errorf("environment variable %s: %w: %s",
-			envKey, ErrInvalidIP, value)
+	ip, err = netip.ParseAddr(value)
+	if err != nil {
+		return ip, fmt.Errorf("environment variable %s: %w", envKey, err)
 	}
 
 	return ip, nil

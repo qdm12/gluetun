@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
@@ -14,10 +15,10 @@ var (
 	ErrVPNLocalGatewayIPNotFound = errors.New("VPN local gateway IP address not found")
 )
 
-func (r *Routing) VPNDestinationIP() (ip net.IP, err error) {
+func (r *Routing) VPNDestinationIP() (ip netip.Addr, err error) {
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("listing routes: %w", err)
+		return ip, fmt.Errorf("listing routes: %w", err)
 	}
 
 	defaultLinkIndex := -1
@@ -28,36 +29,36 @@ func (r *Routing) VPNDestinationIP() (ip net.IP, err error) {
 		}
 	}
 	if defaultLinkIndex == -1 {
-		return nil, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
+		return ip, fmt.Errorf("%w: in %d route(s)", ErrLinkDefaultNotFound, len(routes))
 	}
 
 	for _, route := range routes {
 		if route.LinkIndex == defaultLinkIndex &&
 			route.Dst != nil &&
-			!IPIsPrivate(route.Dst.IP) &&
+			!IPIsPrivate(netIPToNetipAddress(route.Dst.IP)) &&
 			bytes.Equal(route.Dst.Mask, net.IPMask{255, 255, 255, 255}) {
-			return route.Dst.IP, nil
+			return netIPToNetipAddress(route.Dst.IP), nil
 		}
 	}
-	return nil, fmt.Errorf("%w: in %d routes", ErrVPNDestinationIPNotFound, len(routes))
+	return ip, fmt.Errorf("%w: in %d routes", ErrVPNDestinationIPNotFound, len(routes))
 }
 
-func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip net.IP, err error) {
+func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
 	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
 	if err != nil {
-		return nil, fmt.Errorf("listing routes: %w", err)
+		return ip, fmt.Errorf("listing routes: %w", err)
 	}
 	for _, route := range routes {
 		link, err := r.netLinker.LinkByIndex(route.LinkIndex)
 		if err != nil {
-			return nil, fmt.Errorf("finding link at index %d: %w", route.LinkIndex, err)
+			return ip, fmt.Errorf("finding link at index %d: %w", route.LinkIndex, err)
 		}
 		interfaceName := link.Attrs().Name
 		if interfaceName == vpnIntf &&
 			route.Dst != nil &&
 			route.Dst.IP.Equal(net.IP{0, 0, 0, 0}) {
-			return route.Gw, nil
+			return netIPToNetipAddress(route.Gw), nil
 		}
 	}
-	return nil, fmt.Errorf("%w: in %d routes", ErrVPNLocalGatewayIPNotFound, len(routes))
+	return ip, fmt.Errorf("%w: in %d routes", ErrVPNLocalGatewayIPNotFound, len(routes))
 }

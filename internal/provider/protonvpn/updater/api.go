@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
+	"net/netip"
 )
 
 var (
@@ -26,8 +26,8 @@ type logicalServer struct {
 }
 
 type physicalServer struct {
-	EntryIP net.IP
-	ExitIP  net.IP
+	EntryIP netip.Addr
+	ExitIP  netip.Addr
 	Domain  string
 	Status  uint8
 }

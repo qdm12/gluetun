@@ -43,8 +43,8 @@ func (l *Loop) setupUnbound(ctx context.Context) (
 	}
 
 	// use Unbound
-	nameserver.UseDNSInternally(settings.ServerAddress)
-	err = nameserver.UseDNSSystemWide(l.resolvConf, settings.ServerAddress,
+	nameserver.UseDNSInternally(settings.ServerAddress.AsSlice())
+	err = nameserver.UseDNSSystemWide(l.resolvConf, settings.ServerAddress.AsSlice(),
 		*settings.KeepNameserver)
 	if err != nil {
 		l.logger.Error(err.Error())

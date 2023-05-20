@@ -4,11 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func IPIsPrivate(ip net.IP) bool {
+func IPIsPrivate(ip netip.Addr) bool {
 	return ip.IsPrivate() || ip.IsLoopback() ||
 		ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast()
 }
@@ -17,38 +18,26 @@ var (
 	errInterfaceIPNotFound = errors.New("IP address not found for interface")
 )
 
-func ipMatchesFamily(ip net.IP, family int) bool {
-	return (family == netlink.FAMILY_V6 && ip.To4() == nil) ||
-		(family == netlink.FAMILY_V4 && ip.To4() != nil)
+func ipMatchesFamily(ip netip.Addr, family int) bool {
+	return (family == netlink.FAMILY_V6 && ip.Is6()) ||
+		(family == netlink.FAMILY_V4 && (ip.Is4() || ip.Is4In6()))
 }
 
-func ensureNoIPv6WrappedIPv4(candidateIP net.IP) (resultIP net.IP) {
-	const ipv4Size = 4
-	if candidateIP.To4() == nil || len(candidateIP) == ipv4Size { // ipv6 or ipv4
-		return candidateIP
-	}
-
-	// ipv6-wrapped ipv4
-	resultIP = make(net.IP, ipv4Size)
-	copy(resultIP, candidateIP[12:16])
-	return resultIP
-}
-
-func (r *Routing) assignedIP(interfaceName string, family int) (ip net.IP, err error) {
+func (r *Routing) assignedIP(interfaceName string, family int) (ip netip.Addr, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
-		return nil, fmt.Errorf("network interface %s not found: %w", interfaceName, err)
+		return ip, fmt.Errorf("network interface %s not found: %w", interfaceName, err)
 	}
 	addresses, err := iface.Addrs()
 	if err != nil {
-		return nil, fmt.Errorf("listing interface %s addresses: %w", interfaceName, err)
+		return ip, fmt.Errorf("listing interface %s addresses: %w", interfaceName, err)
 	}
 	for _, address := range addresses {
 		switch value := address.(type) {
 		case *net.IPAddr:
-			ip = value.IP
+			ip = netIPToNetipAddress(value.IP)
 		case *net.IPNet:
-			ip = value.IP
+			ip = netIPToNetipAddress(value.IP)
 		default:
 			continue
 		}
@@ -60,9 +49,8 @@ func (r *Routing) assignedIP(interfaceName string, family int) (ip net.IP, err e
 		// Ensure we don't return an IPv6-wrapped IPv4 address
 		// since netip.Address String method works differently than
 		// net.IP String method for this kind of addresses.
-		ip = ensureNoIPv6WrappedIPv4(ip)
-		return ip, nil
+		return ip.Unmap(), nil
 	}
-	return nil, fmt.Errorf("%w: interface %s in %d addresses",
+	return ip, fmt.Errorf("%w: interface %s in %d addresses",
 		errInterfaceIPNotFound, interfaceName, len(addresses))
 }

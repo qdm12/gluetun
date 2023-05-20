@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"net"
+	"fmt"
 	"net/http"
 	"net/netip"
 	"time"
@@ -84,12 +84,14 @@ func OverrideWithUint32(existing, other *uint32) (result *uint32) {
 	return result
 }
 
-func OverrideWithIP(existing, other net.IP) (result net.IP) {
-	if other == nil {
+func OverrideWithIP(existing, other netip.Addr) (result netip.Addr) {
+	if !other.IsValid() {
 		return existing
 	}
-	result = make(net.IP, len(other))
-	copy(result, other)
+	result, ok := netip.AddrFromSlice(other.AsSlice())
+	if !ok {
+		panic(fmt.Sprintf("failed copying other address: %s", other))
+	}
 	return result
 }
 

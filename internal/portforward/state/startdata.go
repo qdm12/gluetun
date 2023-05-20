@@ -1,16 +1,16 @@
 package state
 
 import (
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/provider"
 )
 
 type StartData struct {
 	PortForwarder provider.PortForwarder
-	Gateway       net.IP // needed for PIA
-	ServerName    string // needed for PIA
-	Interface     string // tun0 for example
+	Gateway       netip.Addr // needed for PIA
+	ServerName    string     // needed for PIA
+	Interface     string     // tun0 for example
 }
 
 func (s *State) GetStartData() (startData StartData) {

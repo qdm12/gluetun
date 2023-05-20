@@ -1,9 +1,8 @@
 package env
 
 import (
-	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/govalid/port"
@@ -26,18 +25,15 @@ func (s *Source) readWireguardSelection() (
 	return selection, nil
 }
 
-var ErrIPAddressParse = errors.New("cannot parse IP address")
-
-func (s *Source) readWireguardEndpointIP() (endpointIP net.IP, err error) {
+func (s *Source) readWireguardEndpointIP() (endpointIP netip.Addr, err error) {
 	key, value := s.getEnvWithRetro("VPN_ENDPOINT_IP", "WIREGUARD_ENDPOINT_IP")
 	if value == "" {
-		return nil, nil
+		return endpointIP, nil
 	}
 
-	endpointIP = net.ParseIP(value)
-	if endpointIP == nil {
-		return nil, fmt.Errorf("environment variable %s: %w: %s",
-			key, ErrIPAddressParse, value)
+	endpointIP, err = netip.ParseAddr(value)
+	if err != nil {
+		return endpointIP, fmt.Errorf("environment variable %s: %w", key, err)
 	}
 
 	return endpointIP, nil

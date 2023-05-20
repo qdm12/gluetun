@@ -2,7 +2,7 @@ package settings
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
@@ -15,9 +15,9 @@ type WireguardSelection struct {
 	// It is only used with VPN providers generating Wireguard
 	// configurations specific to each server and user.
 	// To indicate it should not be used, it should be set
-	// to the empty net.IP{} slice. It can never be nil
+	// to netaddr.IPv4Unspecified(). It can never be the zero value
 	// in the internal state.
-	EndpointIP net.IP
+	EndpointIP netip.Addr
 	// EndpointPort is a the server port to use for the VPN server.
 	// It is optional for VPN providers IVPN, Mullvad, Surfshark
 	// and Windscribe, and compulsory for the others.
@@ -40,7 +40,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 		providers.Surfshark, providers.Windscribe:
 		// endpoint IP addresses are baked in
 	case providers.Custom:
-		if len(w.EndpointIP) == 0 {
+		if !w.EndpointIP.IsValid() || w.EndpointIP.IsUnspecified() {
 			return fmt.Errorf("%w", ErrWireguardEndpointIPNotSet)
 		}
 	default: // Providers not supporting Wireguard
@@ -109,7 +109,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 
 func (w *WireguardSelection) copy() (copied WireguardSelection) {
 	return WireguardSelection{
-		EndpointIP:   helpers.CopyIP(w.EndpointIP),
+		EndpointIP:   w.EndpointIP,
 		EndpointPort: helpers.CopyUint16Ptr(w.EndpointPort),
 		PublicKey:    w.PublicKey,
 	}
@@ -128,7 +128,7 @@ func (w *WireguardSelection) overrideWith(other WireguardSelection) {
 }
 
 func (w *WireguardSelection) setDefaults() {
-	w.EndpointIP = helpers.DefaultIP(w.EndpointIP, net.IP{})
+	w.EndpointIP = helpers.DefaultIP(w.EndpointIP, netip.IPv4Unspecified())
 	w.EndpointPort = helpers.DefaultUint16(w.EndpointPort, 0)
 }
 
@@ -139,7 +139,7 @@ func (w WireguardSelection) String() string {
 func (w WireguardSelection) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Wireguard selection settings:")
 
-	if len(w.EndpointIP) > 0 {
+	if !w.EndpointIP.IsUnspecified() {
 		node.Appendf("Endpoint IP address: %s", w.EndpointIP)
 	}
 

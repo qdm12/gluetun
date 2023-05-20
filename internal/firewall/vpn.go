@@ -25,7 +25,7 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 	}
 
 	remove := true
-	if c.vpnConnection.IP != nil {
+	if c.vpnConnection.IP.IsValid() {
 		for _, defaultRoute := range c.defaultRoutes {
 			if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove); err != nil {
 				c.logger.Error("cannot remove outdated VPN connection rule: " + err.Error())

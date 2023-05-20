@@ -1,7 +1,7 @@
 package updater
 
 import (
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,24 +10,24 @@ import (
 func Test_uniqueSortedIPs(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
-		inputIPs  []net.IP
-		outputIPs []net.IP
+		inputIPs  []netip.Addr
+		outputIPs []netip.Addr
 	}{
 		"nil": {
 			inputIPs:  nil,
-			outputIPs: []net.IP{},
+			outputIPs: []netip.Addr{},
 		},
 		"empty": {
-			inputIPs:  []net.IP{},
-			outputIPs: []net.IP{},
+			inputIPs:  []netip.Addr{},
+			outputIPs: []netip.Addr{},
 		},
 		"single IPv4": {
-			inputIPs:  []net.IP{{1, 1, 1, 1}},
-			outputIPs: []net.IP{{1, 1, 1, 1}},
+			inputIPs:  []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
+			outputIPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
 		},
 		"two IPv4s": {
-			inputIPs:  []net.IP{{1, 1, 2, 1}, {1, 1, 1, 1}},
-			outputIPs: []net.IP{{1, 1, 1, 1}, {1, 1, 2, 1}},
+			inputIPs:  []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 2, 1}), netip.AddrFrom4([4]byte{1, 1, 1, 1})},
+			outputIPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{1, 1, 2, 1})},
 		},
 	}
 	for name, testCase := range testCases {

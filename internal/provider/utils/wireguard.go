@@ -22,8 +22,7 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.RulePriority = rulePriority
 
 	settings.Endpoint = new(net.UDPAddr)
-	settings.Endpoint.IP = make(net.IP, len(connection.IP))
-	copy(settings.Endpoint.IP, connection.IP)
+	settings.Endpoint.IP = connection.IP.AsSlice()
 	settings.Endpoint.Port = int(connection.Port)
 
 	settings.Addresses = make([]netip.Prefix, 0, len(userSettings.Addresses))

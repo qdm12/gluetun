@@ -2,7 +2,7 @@ package ipinfo
 
 import (
 	"context"
-	"net"
+	"net/netip"
 )
 
 // FetchMultiInfo obtains the public IP address information for every IP
@@ -11,7 +11,7 @@ import (
 // If an error is encountered, all the operations are canceled and
 // an error is returned, so the results returned should be considered
 // incomplete in this case.
-func (f *Fetch) FetchMultiInfo(ctx context.Context, ips []net.IP) (
+func (f *Fetch) FetchMultiInfo(ctx context.Context, ips []netip.Addr) (
 	results []Response, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -23,7 +23,7 @@ func (f *Fetch) FetchMultiInfo(ctx context.Context, ips []net.IP) (
 	resultsCh := make(chan asyncResult)
 
 	for i, ip := range ips {
-		go func(index int, ip net.IP) {
+		go func(index int, ip netip.Addr) {
 			aResult := asyncResult{
 				index: index,
 			}

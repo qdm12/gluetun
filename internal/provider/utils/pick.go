@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -25,13 +25,15 @@ func pickConnection(connections []models.Connection,
 		return connection, ErrNoConnectionToPickFrom
 	}
 
-	if len(selection.TargetIP) > 0 && selection.VPN == vpn.Wireguard {
+	targetIPSet := selection.TargetIP.IsValid() && !selection.TargetIP.IsUnspecified()
+
+	if targetIPSet && selection.VPN == vpn.Wireguard {
 		// we need the right public key
 		return getTargetIPConnection(connections, selection.TargetIP)
 	}
 
 	connection = pickRandomConnection(connections, randSource)
-	if len(selection.TargetIP) > 0 {
+	if targetIPSet {
 		connection.IP = selection.TargetIP
 	}
 
@@ -46,9 +48,9 @@ func pickRandomConnection(connections []models.Connection,
 var errTargetIPNotFound = errors.New("target IP address not found")
 
 func getTargetIPConnection(connections []models.Connection,
-	targetIP net.IP) (connection models.Connection, err error) {
+	targetIP netip.Addr) (connection models.Connection, err error) {
 	for _, connection := range connections {
-		if targetIP.Equal(connection.IP) {
+		if targetIP == connection.IP {
 			return connection, nil
 		}
 	}

@@ -6,7 +6,7 @@ package common
 
 import (
 	context "context"
-	net "net"
+	netip "net/netip"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -39,10 +39,10 @@ func (m *MockParallelResolver) EXPECT() *MockParallelResolverMockRecorder {
 }
 
 // Resolve mocks base method.
-func (m *MockParallelResolver) Resolve(arg0 context.Context, arg1 resolver.ParallelSettings) (map[string][]net.IP, []string, error) {
+func (m *MockParallelResolver) Resolve(arg0 context.Context, arg1 resolver.ParallelSettings) (map[string][]netip.Addr, []string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Resolve", arg0, arg1)
-	ret0, _ := ret[0].(map[string][]net.IP)
+	ret0, _ := ret[0].(map[string][]netip.Addr)
 	ret1, _ := ret[1].([]string)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

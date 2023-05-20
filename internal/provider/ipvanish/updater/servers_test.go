@@ -3,7 +3,7 @@ package updater
 import (
 	"context"
 	"errors"
-	"net"
+	"net/netip"
 	"testing"
 	"time"
 
@@ -32,7 +32,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		// Resolution
 		expectResolve    bool
 		resolverSettings resolver.ParallelSettings
-		hostToIPs        map[string][]net.IP
+		hostToIPs        map[string][]netip.Addr
 		resolveWarnings  []string
 		resolveErr       error
 
@@ -161,9 +161,9 @@ func Test_Updater_GetServers(t *testing.T) {
 					SortIPs:         true,
 				},
 			},
-			hostToIPs: map[string][]net.IP{
-				"hosta": {{1, 1, 1, 1}, {2, 2, 2, 2}},
-				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
+			hostToIPs: map[string][]netip.Addr{
+				"hosta": {netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})},
+				"hostb": {netip.AddrFrom4([4]byte{3, 3, 3, 3}), netip.AddrFrom4([4]byte{4, 4, 4, 4})},
 			},
 			resolveWarnings: []string{"resolve warning"},
 			servers: []models.Server{
@@ -173,7 +173,7 @@ func Test_Updater_GetServers(t *testing.T) {
 					City:     "City A",
 					Hostname: "hosta",
 					UDP:      true,
-					IPs:      []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})},
 				},
 				{
 					VPN:      vpn.OpenVPN,
@@ -181,7 +181,7 @@ func Test_Updater_GetServers(t *testing.T) {
 					City:     "City B",
 					Hostname: "hostb",
 					UDP:      true,
-					IPs:      []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{3, 3, 3, 3}), netip.AddrFrom4([4]byte{4, 4, 4, 4})},
 				},
 			},
 		},

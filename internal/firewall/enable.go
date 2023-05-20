@@ -130,7 +130,7 @@ func (c *Config) enable(ctx context.Context) (err error) {
 }
 
 func (c *Config) allowVPNIP(ctx context.Context) (err error) {
-	if c.vpnConnection.IP == nil {
+	if !c.vpnConnection.IP.IsValid() {
 		return nil
 	}
 

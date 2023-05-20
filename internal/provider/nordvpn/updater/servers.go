@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	ErrParseIP = errors.New("cannot parse IP address")
 	ErrNotIPv4 = errors.New("IP address is not IPv4")
 )
 
@@ -47,7 +46,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			Region:   jsonServer.Country,
 			Hostname: jsonServer.Domain,
 			Number:   number,
-			IPs:      []net.IP{ip},
+			IPs:      []netip.Addr{ip},
 			TCP:      jsonServer.Features.TCP,
 			UDP:      jsonServer.Features.UDP,
 		}

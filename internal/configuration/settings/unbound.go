@@ -3,7 +3,6 @@ package settings
 import (
 	"errors"
 	"fmt"
-	"net"
 	"net/netip"
 
 	"github.com/qdm12/dns/pkg/provider"
@@ -155,14 +154,24 @@ func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {
 	}, nil
 }
 
-func (u Unbound) GetFirstPlaintextIPv4() (ipv4 net.IP, err error) {
+var (
+	ErrConvertingNetip = errors.New("converting net.IP to netip.Addr failed")
+)
+
+func (u Unbound) GetFirstPlaintextIPv4() (ipv4 netip.Addr, err error) {
 	s := u.Providers[0]
 	provider, err := provider.Parse(s)
 	if err != nil {
-		return nil, err
+		return ipv4, err
 	}
 
-	return provider.DNS().IPv4[0], nil
+	ip := provider.DNS().IPv4[0]
+	ipv4, ok := netip.AddrFromSlice(ip)
+	if !ok {
+		return ipv4, fmt.Errorf("%w: for ip %s (%#v)",
+			ErrConvertingNetip, ip, ip)
+	}
+	return ipv4.Unmap(), nil
 }
 
 func (u Unbound) String() string {

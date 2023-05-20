@@ -1,12 +1,11 @@
 package storage
 
 import (
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_copyServer(t *testing.T) {
@@ -14,14 +13,14 @@ func Test_copyServer(t *testing.T) {
 
 	server := models.Server{
 		Country: "a",
-		IPs:     []net.IP{{1, 2, 3, 4}},
+		IPs:     []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 	}
 
 	serverCopy := copyServer(server)
 
 	assert.Equal(t, server, serverCopy)
 	// Check for mutation
-	serverCopy.IPs[0][0] = 9
+	serverCopy.IPs[0] = netip.AddrFrom4([4]byte{9, 9, 9, 9})
 	assert.NotEqual(t, server, serverCopy)
 }
 
@@ -29,21 +28,21 @@ func Test_copyIPs(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		toCopy []net.IP
-		copied []net.IP
+		toCopy []netip.Addr
+		copied []netip.Addr
 	}{
 		"nil": {},
 		"empty": {
-			toCopy: []net.IP{},
-			copied: []net.IP{},
+			toCopy: []netip.Addr{},
+			copied: []netip.Addr{},
 		},
 		"single IP": {
-			toCopy: []net.IP{{1, 1, 1, 1}},
-			copied: []net.IP{{1, 1, 1, 1}},
+			toCopy: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
+			copied: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
 		},
 		"two IPs": {
-			toCopy: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}},
-			copied: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}},
+			toCopy: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})},
+			copied: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})},
 		},
 	}
 
@@ -52,23 +51,13 @@ func Test_copyIPs(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			// Reserver leading 9 for copy modifications below
-			for _, ipToCopy := range testCase.toCopy {
-				require.NotEqual(t, 9, ipToCopy[0])
-			}
-
 			copied := copyIPs(testCase.toCopy)
 
 			assert.Equal(t, testCase.copied, copied)
 
 			if len(copied) > 0 {
-				original := testCase.toCopy[0][0]
-				testCase.toCopy[0][0] = 9
-				assert.NotEqual(t, 9, copied[0][0])
-				testCase.toCopy[0][0] = original
-
-				copied[0][0] = 9
-				assert.NotEqual(t, 9, testCase.toCopy[0][0])
+				testCase.toCopy[0] = netip.AddrFrom4([4]byte{9, 9, 9, 9})
+				assert.NotEqual(t, testCase.toCopy[0], testCase.copied[0])
 			}
 		})
 	}

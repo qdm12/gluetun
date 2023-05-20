@@ -2,7 +2,7 @@ package settings
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gotree"
@@ -13,9 +13,9 @@ type DNS struct {
 	// ServerAddress is the DNS server to use inside
 	// the Go program and for the system.
 	// It defaults to '127.0.0.1' to be used with the
-	// DoT server. It cannot be nil in the internal
+	// DoT server. It cannot be the zero value in the internal
 	// state.
-	ServerAddress net.IP
+	ServerAddress netip.Addr
 	// KeepNameserver is true if the Docker DNS server
 	// found in /etc/resolv.conf should be kept.
 	// Note settings this to true will go around the
@@ -39,7 +39,7 @@ func (d DNS) validate() (err error) {
 
 func (d *DNS) Copy() (copied DNS) {
 	return DNS{
-		ServerAddress:  helpers.CopyIP(d.ServerAddress),
+		ServerAddress:  d.ServerAddress,
 		KeepNameserver: helpers.CopyBoolPtr(d.KeepNameserver),
 		DoT:            d.DoT.copy(),
 	}
@@ -63,7 +63,7 @@ func (d *DNS) overrideWith(other DNS) {
 }
 
 func (d *DNS) setDefaults() {
-	localhost := net.IPv4(127, 0, 0, 1) //nolint:gomnd
+	localhost := netip.AddrFrom4([4]byte{127, 0, 0, 1})
 	d.ServerAddress = helpers.DefaultIP(d.ServerAddress, localhost)
 	d.KeepNameserver = helpers.DefaultBool(d.KeepNameserver, false)
 	d.DoT.setDefaults()

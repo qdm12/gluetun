@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
+	"net/netip"
 )
 
 var (
@@ -31,8 +31,8 @@ type regionData struct {
 }
 
 type serverData struct {
-	IP net.IP `json:"ip"`
-	CN string `json:"cn"`
+	IP netip.Addr `json:"ip"`
+	CN string     `json:"cn"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (

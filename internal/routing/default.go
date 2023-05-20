@@ -3,7 +3,7 @@ package routing
 import (
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 )
@@ -14,8 +14,8 @@ var (
 
 type DefaultRoute struct {
 	NetInterface string
-	Gateway      net.IP
-	AssignedIP   net.IP
+	Gateway      netip.Addr
+	AssignedIP   netip.Addr
 	Family       int
 }
 
@@ -35,7 +35,7 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 			continue
 		}
 		defaultRoute := DefaultRoute{
-			Gateway: route.Gw,
+			Gateway: netIPToNetipAddress(route.Gw),
 			Family:  route.Family,
 		}
 		linkIndex := route.LinkIndex

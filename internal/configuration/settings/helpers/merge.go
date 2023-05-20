@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"net"
+	"fmt"
 	"net/http"
 	"net/netip"
 	"time"
@@ -96,14 +96,17 @@ func MergeWithUint32(existing, other *uint32) (result *uint32) {
 	return result
 }
 
-func MergeWithIP(existing, other net.IP) (result net.IP) {
-	if existing != nil {
+func MergeWithIP(existing, other netip.Addr) (result netip.Addr) {
+	if existing.IsValid() {
 		return existing
-	} else if other == nil {
-		return nil
+	} else if !other.IsValid() {
+		return existing
 	}
-	result = make(net.IP, len(other))
-	copy(result, other)
+
+	result, ok := netip.AddrFromSlice(other.AsSlice())
+	if !ok {
+		panic(fmt.Sprintf("failed copying other address: %s", other))
+	}
 	return result
 }
 

@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"net"
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/log"
@@ -101,9 +101,9 @@ func DefaultLogLevel(existing *log.Level,
 	return result
 }
 
-func DefaultIP(existing net.IP, defaultValue net.IP) (
-	result net.IP) {
-	if existing != nil {
+func DefaultIP(existing netip.Addr, defaultValue netip.Addr) (
+	result netip.Addr) {
+	if existing.IsValid() {
 		return existing
 	}
 	return defaultValue

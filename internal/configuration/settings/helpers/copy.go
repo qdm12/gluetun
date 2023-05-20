@@ -1,8 +1,6 @@
 package helpers
 
 import (
-	"fmt"
-	"net"
 	"net/netip"
 	"time"
 
@@ -81,25 +79,6 @@ func CopyLogLevelPtr(original *log.Level) (copied *log.Level) {
 	return copied
 }
 
-func CopyIP(original net.IP) (copied net.IP) {
-	if original == nil {
-		return nil
-	}
-	copied = make(net.IP, len(original))
-	copy(copied, original)
-	return copied
-}
-
-func CopyNetipAddress(original netip.Addr) (copied netip.Addr) {
-	// AsSlice creates a new byte slice so no need to copy the bytes.
-	bytes := original.AsSlice()
-	copied, ok := netip.AddrFromSlice(bytes)
-	if !ok {
-		panic(fmt.Sprintf("cannot deep copy address with bytes %#v", bytes))
-	}
-	return copied
-}
-
 func CopyStringSlice(original []string) (copied []string) {
 	if original == nil {
 		return nil
@@ -136,9 +115,6 @@ func CopyNetipAddressesSlice(original []netip.Addr) (copied []netip.Addr) {
 	}
 
 	copied = make([]netip.Addr, len(original))
-	for i := range original {
-		copied[i] = CopyNetipAddress(original[i])
-	}
-
+	copy(copied, original)
 	return copied
 }

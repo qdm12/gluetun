@@ -1,7 +1,7 @@
 package updater
 
 import (
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -10,7 +10,7 @@ import (
 type ipToServer map[string]models.Server
 
 func (its ipToServer) add(country, region, city, name, hostname string,
-	free bool, entryIP net.IP) {
+	free bool, entryIP netip.Addr) {
 	key := entryIP.String()
 
 	server, ok := its[key]
@@ -27,7 +27,7 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 	server.Free = free
 	server.UDP = true
 	server.TCP = true
-	server.IPs = []net.IP{entryIP}
+	server.IPs = []netip.Addr{entryIP}
 	its[key] = server
 }
 

@@ -3,7 +3,7 @@ package extract
 import (
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"strconv"
 	"strings"
 
@@ -25,12 +25,12 @@ func extractDataFromLines(lines []string) (
 
 		connection.UpdateEmptyWith(ip, port, protocol)
 
-		if connection.Protocol != "" && connection.IP != nil {
+		if connection.Protocol != "" && connection.IP.IsValid() {
 			break
 		}
 	}
 
-	if connection.IP == nil {
+	if !connection.IP.IsValid() {
 		return connection, errRemoteLineNotFound
 	}
 
@@ -49,24 +49,24 @@ func extractDataFromLines(lines []string) (
 }
 
 func extractDataFromLine(line string) (
-	ip net.IP, port uint16, protocol string, err error) {
+	ip netip.Addr, port uint16, protocol string, err error) {
 	switch {
 	case strings.HasPrefix(line, "proto "):
 		protocol, err = extractProto(line)
 		if err != nil {
-			return nil, 0, "", fmt.Errorf("extracting protocol from proto line: %w", err)
+			return ip, 0, "", fmt.Errorf("extracting protocol from proto line: %w", err)
 		}
-		return nil, 0, protocol, nil
+		return ip, 0, protocol, nil
 
 	case strings.HasPrefix(line, "remote "):
 		ip, port, protocol, err = extractRemote(line)
 		if err != nil {
-			return nil, 0, "", fmt.Errorf("extracting from remote line: %w", err)
+			return ip, 0, "", fmt.Errorf("extracting from remote line: %w", err)
 		}
 		return ip, port, protocol, nil
 	}
 
-	return nil, 0, "", nil
+	return ip, 0, "", nil
 }
 
 var (
@@ -95,19 +95,19 @@ var (
 	errPortNotValid          = errors.New("port is not valid")
 )
 
-func extractRemote(line string) (ip net.IP, port uint16,
+func extractRemote(line string) (ip netip.Addr, port uint16,
 	protocol string, err error) {
 	fields := strings.Fields(line)
 	n := len(fields)
 
 	if n < 2 || n > 4 {
-		return nil, 0, "", fmt.Errorf("%w: %s", errRemoteLineFieldsCount, line)
+		return netip.Addr{}, 0, "", fmt.Errorf("%w: %s", errRemoteLineFieldsCount, line)
 	}
 
 	host := fields[1]
-	ip = net.ParseIP(host)
-	if ip == nil {
-		return nil, 0, "", fmt.Errorf("%w: %s", errHostNotIP, host)
+	ip, err = netip.ParseAddr(host)
+	if err != nil {
+		return netip.Addr{}, 0, "", fmt.Errorf("%w: %s", errHostNotIP, host)
 		// TODO resolve hostname once there is an option to allow it through
 		// the firewall before the VPN is up.
 	}
@@ -115,9 +115,9 @@ func extractRemote(line string) (ip net.IP, port uint16,
 	if n > 2 { //nolint:gomnd
 		portInt, err := strconv.Atoi(fields[2])
 		if err != nil {
-			return nil, 0, "", fmt.Errorf("%w: %s", errPortNotValid, line)
+			return netip.Addr{}, 0, "", fmt.Errorf("%w: %s", errPortNotValid, line)
 		} else if portInt < 1 || portInt > 65535 {
-			return nil, 0, "", fmt.Errorf("%w: %d must be between 1 and 65535", errPortNotValid, portInt)
+			return netip.Addr{}, 0, "", fmt.Errorf("%w: %d must be between 1 and 65535", errPortNotValid, portInt)
 		}
 		port = uint16(portInt)
 	}
@@ -127,7 +127,7 @@ func extractRemote(line string) (ip net.IP, port uint16,
 		case "tcp", "udp":
 			protocol = fields[3]
 		default:
-			return nil, 0, "", fmt.Errorf("%w: %s", errProtocolNotSupported, fields[3])
+			return netip.Addr{}, 0, "", fmt.Errorf("%w: %s", errProtocolNotSupported, fields[3])
 		}
 	}
 

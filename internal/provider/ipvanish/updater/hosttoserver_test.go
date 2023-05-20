@@ -1,7 +1,7 @@
 package updater
 
 import (
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -134,17 +134,17 @@ func Test_hostToServer_adaptWithIPs(t *testing.T) {
 	t.Parallel()
 	testCases := map[string]struct {
 		initialHTS  hostToServer
-		hostToIPs   map[string][]net.IP
+		hostToIPs   map[string][]netip.Addr
 		expectedHTS hostToServer
 	}{
 		"create server": {
 			initialHTS: hostToServer{},
-			hostToIPs: map[string][]net.IP{
-				"A": {{1, 2, 3, 4}},
+			hostToIPs: map[string][]netip.Addr{
+				"A": {netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 			},
 			expectedHTS: hostToServer{
 				"A": models.Server{
-					IPs: []net.IP{{1, 2, 3, 4}},
+					IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 				},
 			},
 		},
@@ -154,13 +154,13 @@ func Test_hostToServer_adaptWithIPs(t *testing.T) {
 					Country: "country",
 				},
 			},
-			hostToIPs: map[string][]net.IP{
-				"A": {{1, 2, 3, 4}},
+			hostToIPs: map[string][]netip.Addr{
+				"A": {netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 			},
 			expectedHTS: hostToServer{
 				"A": models.Server{
 					Country: "country",
-					IPs:     []net.IP{{1, 2, 3, 4}},
+					IPs:     []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 				},
 			},
 		},
@@ -170,7 +170,7 @@ func Test_hostToServer_adaptWithIPs(t *testing.T) {
 					Country: "country",
 				},
 			},
-			hostToIPs:   map[string][]net.IP{},
+			hostToIPs:   map[string][]netip.Addr{},
 			expectedHTS: hostToServer{},
 		},
 	}

@@ -3,7 +3,6 @@ package routing
 import (
 	"errors"
 	"fmt"
-	"net"
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
@@ -18,7 +17,7 @@ var (
 type LocalNetwork struct {
 	IPNet         netip.Prefix
 	InterfaceName string
-	IP            net.IP
+	IP            netip.Addr
 }
 
 func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {

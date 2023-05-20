@@ -1,7 +1,7 @@
 package custom
 
 import (
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -46,7 +46,7 @@ func Test_modifyConfig(t *testing.T) {
 				Verbosity:   intPtr(0),
 			}.WithDefaults(providers.Custom),
 			connection: models.Connection{
-				IP:       net.IPv4(1, 2, 3, 4),
+				IP:       netip.AddrFrom4([4]byte{1, 2, 3, 4}),
 				Port:     1194,
 				Protocol: constants.UDP,
 			},

@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"io"
-	"net"
 	"net/http"
+	"net/netip"
 	"strings"
 	"testing"
 	"time"
@@ -36,7 +36,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		// Resolution
 		expectResolve   bool
 		resolveSettings resolver.ParallelSettings
-		hostToIPs       map[string][]net.IP
+		hostToIPs       map[string][]netip.Addr
 		resolveWarnings []string
 		resolveErr      error
 
@@ -109,24 +109,24 @@ func Test_Updater_GetServers(t *testing.T) {
 					SortIPs:         true,
 				},
 			},
-			hostToIPs: map[string][]net.IP{
-				"hosta": {{1, 1, 1, 1}, {2, 2, 2, 2}},
-				"hostb": {{3, 3, 3, 3}, {4, 4, 4, 4}},
-				"hostc": {{5, 5, 5, 5}, {6, 6, 6, 6}},
+			hostToIPs: map[string][]netip.Addr{
+				"hosta": {netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})},
+				"hostb": {netip.AddrFrom4([4]byte{3, 3, 3, 3}), netip.AddrFrom4([4]byte{4, 4, 4, 4})},
+				"hostc": {netip.AddrFrom4([4]byte{5, 5, 5, 5}), netip.AddrFrom4([4]byte{6, 6, 6, 6})},
 			},
 			resolveWarnings: []string{"resolve warning"},
 			servers: []models.Server{
 				{VPN: vpn.OpenVPN, Country: "Country1",
 					City: "City A", Hostname: "hosta", TCP: true, UDP: true,
-					IPs: []net.IP{{1, 1, 1, 1}, {2, 2, 2, 2}}},
+					IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})}},
 				{VPN: vpn.OpenVPN, Country: "Country2",
 					City: "City B", Hostname: "hostb", TCP: true, UDP: true,
-					IPs: []net.IP{{3, 3, 3, 3}, {4, 4, 4, 4}}},
+					IPs: []netip.Addr{netip.AddrFrom4([4]byte{3, 3, 3, 3}), netip.AddrFrom4([4]byte{4, 4, 4, 4})}},
 				{VPN: vpn.Wireguard,
 					Country: "Country3", City: "City C",
 					Hostname: "hostc",
 					WgPubKey: "xyz",
-					IPs:      []net.IP{{5, 5, 5, 5}, {6, 6, 6, 6}}},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{5, 5, 5, 5}), netip.AddrFrom4([4]byte{6, 6, 6, 6})}},
 			},
 		},
 	}

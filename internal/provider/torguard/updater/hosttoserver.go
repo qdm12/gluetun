@@ -1,7 +1,7 @@
 package updater
 
 import (
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -10,7 +10,7 @@ import (
 type hostToServer map[string]models.Server
 
 func (hts hostToServer) add(host, country, city string,
-	tcp, udp bool, ips []net.IP) {
+	tcp, udp bool, ips []netip.Addr) {
 	server, ok := hts[host]
 	if !ok {
 		server.VPN = vpn.OpenVPN
@@ -39,7 +39,7 @@ func (hts hostToServer) toHostsSlice() (hosts []string) {
 	return hosts
 }
 
-func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]net.IP) {
+func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]netip.Addr) {
 	for host, IPs := range hostToIPs {
 		server := hts[host]
 		server.IPs = IPs

@@ -3,7 +3,7 @@ package updater
 import (
 	"context"
 	"fmt"
-	"net"
+	"net/netip"
 	"sort"
 	"strings"
 
@@ -76,7 +76,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers = hts.toServersSlice()
 
 	// Get public IP address information
-	ipsToGetInfo := make([]net.IP, len(servers))
+	ipsToGetInfo := make([]netip.Addr, len(servers))
 	for i := range servers {
 		ipsToGetInfo[i] = servers[i].IPs[0]
 	}

@@ -3,6 +3,7 @@ package publicip
 import (
 	"context"
 	"errors"
+	"net/netip"
 	"os"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -26,7 +27,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		resultCh := make(chan models.PublicIP)
 		errorCh := make(chan error)
 		go func() {
-			result, err := l.fetcher.FetchInfo(getCtx, nil)
+			result, err := l.fetcher.FetchInfo(getCtx, netip.Addr{})
 			if err != nil {
 				if getCtx.Err() == nil {
 					errorCh <- err

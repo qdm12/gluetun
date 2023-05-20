@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 )
 
 type Parallel struct {
@@ -31,7 +31,7 @@ type ParallelSettings struct {
 
 type parallelResult struct {
 	host string
-	IPs  []net.IP
+	IPs  []netip.Addr
 }
 
 var (
@@ -40,7 +40,7 @@ var (
 )
 
 func (pr *Parallel) Resolve(ctx context.Context, settings ParallelSettings) (
-	hostToIPs map[string][]net.IP, warnings []string, err error) {
+	hostToIPs map[string][]netip.Addr, warnings []string, err error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -53,7 +53,7 @@ func (pr *Parallel) Resolve(ctx context.Context, settings ParallelSettings) (
 		go pr.resolveAsync(ctx, host, settings.Repeat, results, errors)
 	}
 
-	hostToIPs = make(map[string][]net.IP, len(settings.Hosts))
+	hostToIPs = make(map[string][]netip.Addr, len(settings.Hosts))
 	maxFails := int(settings.MaxFailRatio * float64(len(settings.Hosts)))
 
 	for range settings.Hosts {

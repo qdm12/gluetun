@@ -1,11 +1,11 @@
 package resolver
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 	"sort"
 	"time"
 )
@@ -31,7 +31,7 @@ type RepeatSettings struct {
 }
 
 func (r *Repeat) Resolve(ctx context.Context, host string, settings RepeatSettings) (
-	ips []net.IP, err error) {
+	ips []netip.Addr, err error) {
 	timedCtx, cancel := context.WithTimeout(ctx, settings.MaxDuration)
 	defer cancel()
 
@@ -54,7 +54,7 @@ func (r *Repeat) Resolve(ctx context.Context, host string, settings RepeatSettin
 
 	if settings.SortIPs {
 		sort.Slice(ips, func(i, j int) bool {
-			return bytes.Compare(ips[i], ips[j]) < 1
+			return ips[i].Compare(ips[j]) < 1
 		})
 	}
 
@@ -121,15 +121,15 @@ func (r *Repeat) resolveOnce(ctx, timedCtx context.Context, host string,
 	}
 }
 
-func (r *Repeat) lookupIPs(ctx context.Context, host string) (ips []net.IP, err error) {
+func (r *Repeat) lookupIPs(ctx context.Context, host string) (ips []netip.Addr, err error) {
 	addresses, err := r.resolver.LookupIPAddr(ctx, host)
 	if err != nil {
 		return nil, err
 	}
-	ips = make([]net.IP, 0, len(addresses))
+	ips = make([]netip.Addr, 0, len(addresses))
 	for i := range addresses {
-		ip := addresses[i].IP
-		if ip == nil {
+		ip, ok := netip.AddrFromSlice(addresses[i].IP)
+		if !ok {
 			continue
 		}
 		ips = append(ips, ip)

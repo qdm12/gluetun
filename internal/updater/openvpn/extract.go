@@ -3,7 +3,7 @@ package openvpn
 import (
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"sort"
 	"strings"
 )
@@ -54,7 +54,7 @@ func ExtractHost(b []byte) (host, warning string, err error) {
 	return hosts[0], warning, nil
 }
 
-func ExtractIPs(b []byte) (ips []net.IP, err error) {
+func ExtractIPs(b []byte) (ips []netip.Addr, err error) {
 	const rejectIP, rejectDomain = false, true
 	ipStrings := extractRemoteHosts(b, rejectIP, rejectDomain)
 	if len(ipStrings) == 0 {
@@ -65,9 +65,12 @@ func ExtractIPs(b []byte) (ips []net.IP, err error) {
 		return ipStrings[i] < ipStrings[j]
 	})
 
-	ips = make([]net.IP, len(ipStrings))
+	ips = make([]netip.Addr, len(ipStrings))
 	for i := range ipStrings {
-		ips[i] = net.ParseIP(ipStrings[i])
+		ips[i], err = netip.ParseAddr(ipStrings[i])
+		if err != nil {
+			return nil, fmt.Errorf("parsing IP address: %w", err)
+		}
 	}
 
 	return ips, nil
@@ -85,9 +88,9 @@ func extractRemoteHosts(content []byte, rejectIP, rejectDomain bool) (hosts []st
 			continue
 		}
 		host := fields[1]
-		parsedIP := net.ParseIP(host)
-		if (rejectIP && parsedIP != nil) ||
-			(rejectDomain && parsedIP == nil) {
+		_, err := netip.ParseAddr(host)
+		if (rejectIP && err == nil) ||
+			(rejectDomain && err != nil) {
 			continue
 		}
 		hosts = append(hosts, host)

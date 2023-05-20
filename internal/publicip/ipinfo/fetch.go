@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
+	"net/netip"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -28,13 +28,13 @@ var (
 )
 
 // FetchInfo obtains information on the ip address provided
-// using the ipinfo.io API. If the ip is nil, the public IP address
+// using the ipinfo.io API. If the ip is the zero value, the public IP address
 // of the machine is used as the IP.
-func (f *Fetch) FetchInfo(ctx context.Context, ip net.IP) (
+func (f *Fetch) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result Response, err error) {
 	const baseURL = "https://ipinfo.io/"
 	url := baseURL
-	if ip != nil {
+	if ip.IsValid() {
 		url += ip.String()
 	}
 

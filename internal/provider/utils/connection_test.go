@@ -3,7 +3,7 @@ package utils
 import (
 	"errors"
 	"math/rand"
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -58,7 +58,7 @@ func Test_GetConnection(t *testing.T) {
 				{
 					VPN:      vpn.OpenVPN,
 					UDP:      true,
-					IPs:      []net.IP{net.IPv4(1, 1, 1, 1)},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
 					Hostname: "name",
 				},
 			},
@@ -68,7 +68,7 @@ func Test_GetConnection(t *testing.T) {
 			randSource: rand.NewSource(0),
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
-				IP:       net.IPv4(1, 1, 1, 1),
+				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
 				Hostname: "name",
@@ -79,7 +79,7 @@ func Test_GetConnection(t *testing.T) {
 				{
 					VPN:      vpn.OpenVPN,
 					UDP:      true,
-					IPs:      []net.IP{net.IPv4(1, 1, 1, 1)},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
 					Hostname: "hostname",
 					OvpnX509: "x509",
 				},
@@ -90,7 +90,7 @@ func Test_GetConnection(t *testing.T) {
 			randSource: rand.NewSource(0),
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
-				IP:       net.IPv4(1, 1, 1, 1),
+				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
 				Hostname: "x509",
@@ -101,14 +101,14 @@ func Test_GetConnection(t *testing.T) {
 				{
 					VPN: vpn.OpenVPN,
 					UDP: true,
-					IPs: []net.IP{
-						net.IPv4(1, 1, 1, 1),
+					IPs: []netip.Addr{
+						netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 						// All IPv6 is ignored
-						net.IPv6zero,
-						net.IPv6zero,
-						net.IPv6zero,
-						net.IPv6zero,
-						net.IPv6zero,
+						netip.IPv6Unspecified(),
+						netip.IPv6Unspecified(),
+						netip.IPv6Unspecified(),
+						netip.IPv6Unspecified(),
+						netip.IPv6Unspecified(),
 					},
 				},
 			},
@@ -118,7 +118,7 @@ func Test_GetConnection(t *testing.T) {
 			randSource: rand.NewSource(0),
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
-				IP:       net.IPv4(1, 1, 1, 1),
+				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
 			},
@@ -128,9 +128,9 @@ func Test_GetConnection(t *testing.T) {
 				{
 					VPN: vpn.OpenVPN,
 					UDP: true,
-					IPs: []net.IP{
-						net.IPv6zero,
-						net.IPv4(1, 1, 1, 1),
+					IPs: []netip.Addr{
+						netip.IPv6Unspecified(),
+						netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 					},
 				},
 			},
@@ -141,7 +141,7 @@ func Test_GetConnection(t *testing.T) {
 			randSource:    rand.NewSource(0),
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
-				IP:       net.IPv6zero,
+				IP:       netip.IPv6Unspecified(),
 				Protocol: constants.UDP,
 				Port:     1194,
 			},
@@ -151,21 +151,21 @@ func Test_GetConnection(t *testing.T) {
 				{
 					VPN:      vpn.OpenVPN,
 					UDP:      true,
-					IPs:      []net.IP{net.IPv4(1, 1, 1, 1)},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
 					OvpnX509: "ovpnx509",
 				},
 				{
 					VPN:      vpn.Wireguard,
 					UDP:      true,
-					IPs:      []net.IP{net.IPv4(2, 2, 2, 2)},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{2, 2, 2, 2})},
 					OvpnX509: "ovpnx509",
 				},
 				{
 					VPN: vpn.OpenVPN,
 					UDP: true,
-					IPs: []net.IP{
-						net.IPv4(3, 3, 3, 3),
-						{1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, // ipv6 ignored
+					IPs: []netip.Addr{
+						netip.AddrFrom4([4]byte{3, 3, 3, 3}),
+						netip.AddrFrom16([16]byte{1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}), // ipv6 ignored
 					},
 					Hostname: "hostname",
 				},
@@ -176,7 +176,7 @@ func Test_GetConnection(t *testing.T) {
 			randSource: rand.NewSource(0),
 			connection: models.Connection{
 				Type:     vpn.OpenVPN,
-				IP:       net.IPv4(1, 1, 1, 1),
+				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
 				Hostname: "ovpnx509",

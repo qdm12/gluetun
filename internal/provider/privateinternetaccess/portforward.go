@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"os"
 	"strconv"
@@ -21,14 +22,14 @@ import (
 )
 
 var (
-	ErrServerNameNotFound = errors.New("server name not found in servers")
-	ErrGatewayIPIsNil     = errors.New("gateway IP address is nil")
-	ErrServerNameEmpty    = errors.New("server name is empty")
+	ErrServerNameNotFound  = errors.New("server name not found in servers")
+	ErrGatewayIPIsNotValid = errors.New("gateway IP address is not valid")
+	ErrServerNameEmpty     = errors.New("server name is empty")
 )
 
 // PortForward obtains a VPN server side port forwarded from PIA.
 func (p *Provider) PortForward(ctx context.Context, client *http.Client,
-	logger utils.Logger, gateway net.IP, serverName string) (
+	logger utils.Logger, gateway netip.Addr, serverName string) (
 	port uint16, err error) {
 	server, ok := p.storage.GetServerByName(providers.PrivateInternetAccess, serverName)
 	if !ok {
@@ -40,8 +41,8 @@ func (p *Provider) PortForward(ctx context.Context, client *http.Client,
 			" (region " + server.Region + ") does not support port forwarding")
 		return 0, nil
 	}
-	if gateway == nil {
-		return 0, ErrGatewayIPIsNil
+	if !gateway.IsValid() {
+		return 0, fmt.Errorf("%w: %s", ErrGatewayIPIsNotValid, gateway)
 	} else if serverName == "" {
 		return 0, ErrServerNameEmpty
 	}
@@ -91,7 +92,7 @@ var (
 )
 
 func (p *Provider) KeepPortForward(ctx context.Context,
-	gateway net.IP, serverName string) (err error) {
+	gateway netip.Addr, serverName string) (err error) {
 	privateIPClient, err := newHTTPClient(serverName)
 	if err != nil {
 		return fmt.Errorf("creating custom HTTP client: %w", err)
@@ -132,7 +133,7 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 }
 
 func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *http.Client,
-	gateway net.IP, portForwardPath, authFilePath string) (data piaPortForwardData, err error) {
+	gateway netip.Addr, portForwardPath, authFilePath string) (data piaPortForwardData, err error) {
 	data.Token, err = fetchToken(ctx, client, authFilePath)
 	if err != nil {
 		return data, fmt.Errorf("fetching token: %w", err)
@@ -314,7 +315,7 @@ func getOpenvpnCredentials(authFilePath string) (
 	return username, password, nil
 }
 
-func fetchPortForwardData(ctx context.Context, client *http.Client, gateway net.IP, token string) (
+func fetchPortForwardData(ctx context.Context, client *http.Client, gateway netip.Addr, token string) (
 	port uint16, signature string, expiration time.Time, err error) {
 	errSubstitutions := map[string]string{url.QueryEscape(token): "<token>"}
 
@@ -368,7 +369,7 @@ var (
 	ErrBadResponse = errors.New("bad response received")
 )
 
-func bindPort(ctx context.Context, client *http.Client, gateway net.IP, data piaPortForwardData) (err error) {
+func bindPort(ctx context.Context, client *http.Client, gateway netip.Addr, data piaPortForwardData) (err error) {
 	payload, err := packPayload(data.Port, data.Token, data.Expiration)
 	if err != nil {
 		return fmt.Errorf("serializing payload: %w", err)

@@ -1,7 +1,7 @@
 package updater
 
 import (
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -10,7 +10,7 @@ import (
 type nameToServer map[string]models.Server
 
 func (nts nameToServer) add(name, hostname, region string,
-	tcp, udp, portForward bool, ip net.IP) (change bool) {
+	tcp, udp, portForward bool, ip netip.Addr) (change bool) {
 	server, ok := nts[name]
 	if !ok {
 		change = true
@@ -32,7 +32,7 @@ func (nts nameToServer) add(name, hostname, region string,
 
 	ipFound := false
 	for _, existingIP := range server.IPs {
-		if ip.Equal(existingIP) {
+		if ip == existingIP {
 			ipFound = true
 			break
 		}

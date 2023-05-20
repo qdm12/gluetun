@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"net/netip"
 	"os"
 	"os/exec"
@@ -146,8 +145,7 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 	instruction := fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 		appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol,
 		connection.Protocol, connection.Port)
-	isIPv4 := connection.IP.To4() != nil
-	if isIPv4 {
+	if connection.IP.Is4() {
 		return c.runIptablesInstruction(ctx, instruction)
 	} else if c.ip6Tables == "" {
 		return fmt.Errorf("accept output to VPN server: %w", ErrNeedIP6Tables)
@@ -157,8 +155,8 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 
 // Thanks to @npawelek.
 func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
-	intf string, sourceIP net.IP, destinationSubnet netip.Prefix, remove bool) error {
-	doIPv4 := sourceIP.To4() != nil && destinationSubnet.Addr().Is4()
+	intf string, sourceIP netip.Addr, destinationSubnet netip.Prefix, remove bool) error {
+	doIPv4 := sourceIP.Is4() && destinationSubnet.Addr().Is4()
 
 	interfaceFlag := "-o " + intf
 	if intf == "*" { // all interfaces

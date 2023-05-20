@@ -24,7 +24,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 	}{
 		"some settings": {
 			connection: models.Connection{
-				IP:     net.IPv4(1, 2, 3, 4),
+				IP:     netip.AddrFrom4([4]byte{1, 2, 3, 4}),
 				Port:   51821,
 				PubKey: "public",
 			},
@@ -44,7 +44,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				PublicKey:     "public",
 				PreSharedKey:  "pre-shared",
 				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
+					IP:   net.IP{1, 2, 3, 4},
 					Port: 51821,
 				},
 				Addresses: []netip.Prefix{

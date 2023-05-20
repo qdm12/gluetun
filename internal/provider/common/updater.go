@@ -3,7 +3,7 @@ package common
 import (
 	"context"
 	"errors"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
@@ -21,7 +21,7 @@ type Fetcher interface {
 
 type ParallelResolver interface {
 	Resolve(ctx context.Context, settings resolver.ParallelSettings) (
-		hostToIPs map[string][]net.IP, warnings []string, err error)
+		hostToIPs map[string][]netip.Addr, warnings []string, err error)
 }
 
 type Unzipper interface {
@@ -34,5 +34,5 @@ type Warner interface {
 }
 
 type IPFetcher interface {
-	FetchMultiInfo(ctx context.Context, ips []net.IP) (data []ipinfo.Response, err error)
+	FetchMultiInfo(ctx context.Context, ips []netip.Addr) (data []ipinfo.Response, err error)
 }

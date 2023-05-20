@@ -1,7 +1,7 @@
 package models
 
 import (
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,28 +17,28 @@ func Test_Server_Equal(t *testing.T) {
 	}{
 		"same IPs": {
 			a: &Server{
-				IPs: []net.IP{net.IPv4(1, 2, 3, 4)},
+				IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 			},
 			b: Server{
-				IPs: []net.IP{net.IPv4(1, 2, 3, 4)},
+				IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 			},
 			equal: true,
 		},
 		"same IP strings": {
 			a: &Server{
-				IPs: []net.IP{net.IPv4(1, 2, 3, 4)},
+				IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 			},
 			b: Server{
-				IPs: []net.IP{{1, 2, 3, 4}},
+				IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 			},
 			equal: true,
 		},
 		"different IPs": {
 			a: &Server{
-				IPs: []net.IP{{1, 2, 3, 4}, {2, 3, 4, 5}},
+				IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4}), netip.AddrFrom4([4]byte{2, 3, 4, 5})},
 			},
 			b: Server{
-				IPs: []net.IP{{1, 2, 3, 4}, {1, 2, 3, 4}},
+				IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4}), netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 			},
 		},
 		"all fields equal": {
@@ -61,7 +61,7 @@ func Test_Server_Equal(t *testing.T) {
 				Free:        true,
 				Stream:      true,
 				PortForward: true,
-				IPs:         []net.IP{net.IPv4(1, 2, 3, 4)},
+				IPs:         []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 				Keep:        true,
 			},
 			b: Server{
@@ -83,7 +83,7 @@ func Test_Server_Equal(t *testing.T) {
 				Free:        true,
 				Stream:      true,
 				PortForward: true,
-				IPs:         []net.IP{net.IPv4(1, 2, 3, 4)},
+				IPs:         []netip.Addr{netip.AddrFrom4([4]byte{1, 2, 3, 4})},
 				Keep:        true,
 			},
 			equal: true,

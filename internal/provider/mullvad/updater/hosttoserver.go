@@ -3,7 +3,7 @@ package updater
 import (
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -14,8 +14,8 @@ type hostToServer map[string]models.Server
 
 var (
 	ErrNoIP                = errors.New("no IP address for VPN server")
-	ErrParseIPv4           = errors.New("cannot parse IPv4 address")
-	ErrParseIPv6           = errors.New("cannot parse IPv6 address")
+	ErrIPIsNotV4           = errors.New("IP address is not IPv4")
+	ErrIPIsNotV6           = errors.New("IP address is not IPv6")
 	ErrVPNTypeNotSupported = errors.New("VPN type not supported")
 )
 
@@ -48,17 +48,21 @@ func (hts hostToServer) add(data serverData) (err error) {
 	}
 
 	if data.IPv4 != "" {
-		ipv4 := net.ParseIP(data.IPv4)
-		if ipv4 == nil || ipv4.To4() == nil {
-			return fmt.Errorf("%w: %s", ErrParseIPv4, data.IPv4)
+		ipv4, err := netip.ParseAddr(data.IPv4)
+		if err != nil {
+			return fmt.Errorf("parsing IPv4 address: %w", err)
+		} else if !ipv4.Is4() {
+			return fmt.Errorf("%w: %s", ErrIPIsNotV4, data.IPv4)
 		}
 		server.IPs = append(server.IPs, ipv4)
 	}
 
 	if data.IPv6 != "" {
-		ipv6 := net.ParseIP(data.IPv6)
-		if ipv6 == nil || ipv6.To4() != nil {
-			return fmt.Errorf("%w: %s", ErrParseIPv6, data.IPv6)
+		ipv6, err := netip.ParseAddr(data.IPv6)
+		if err != nil {
+			return fmt.Errorf("parsing IPv6 address: %w", err)
+		} else if !ipv6.Is6() {
+			return fmt.Errorf("%w: %s", ErrIPIsNotV6, data.IPv6)
 		}
 		server.IPs = append(server.IPs, ipv6)
 	}

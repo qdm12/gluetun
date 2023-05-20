@@ -3,7 +3,7 @@ package updater
 import (
 	"context"
 	"fmt"
-	"net"
+	"net/netip"
 	"sort"
 	"strings"
 
@@ -57,12 +57,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		baseWireguardServer.WgPubKey = "PyLCXAQT8KkM4T+dUsOQfn+Ub3pGxfGlxkIApuig+hk="
 
 		ipv4WireguadServer := baseWireguardServer
-		ipv4WireguadServer.IPs = []net.IP{apiServer.IPv4In1}
+		ipv4WireguadServer.IPs = []netip.Addr{apiServer.IPv4In1}
 		ipv4WireguadServer.Hostname = apiServer.CountryCode + ".vpn.airdns.org"
 		servers = append(servers, ipv4WireguadServer)
 
 		ipv6WireguadServer := baseWireguardServer
-		ipv6WireguadServer.IPs = []net.IP{apiServer.IPv6In1}
+		ipv6WireguadServer.IPs = []netip.Addr{apiServer.IPv6In1}
 		ipv6WireguadServer.Hostname = apiServer.CountryCode + ".ipv6.vpn.airdns.org"
 		servers = append(servers, ipv6WireguadServer)
 
@@ -74,22 +74,22 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		// Ignore IPs 1 and 2 since tls-crypt is superior to tls-auth really.
 
 		ipv4In3OpenVPNServer := baseOpenVPNServer
-		ipv4In3OpenVPNServer.IPs = []net.IP{apiServer.IPv4In3}
+		ipv4In3OpenVPNServer.IPs = []netip.Addr{apiServer.IPv4In3}
 		ipv4In3OpenVPNServer.Hostname = apiServer.CountryCode + "3.vpn.airdns.org"
 		servers = append(servers, ipv4In3OpenVPNServer)
 
 		ipv6In3OpenVPNServer := baseOpenVPNServer
-		ipv6In3OpenVPNServer.IPs = []net.IP{apiServer.IPv6In3}
+		ipv6In3OpenVPNServer.IPs = []netip.Addr{apiServer.IPv6In3}
 		ipv6In3OpenVPNServer.Hostname = apiServer.CountryCode + "3.ipv6.vpn.airdns.org"
 		servers = append(servers, ipv6In3OpenVPNServer)
 
 		ipv4In4OpenVPNServer := baseOpenVPNServer
-		ipv4In4OpenVPNServer.IPs = []net.IP{apiServer.IPv4In4}
+		ipv4In4OpenVPNServer.IPs = []netip.Addr{apiServer.IPv4In4}
 		ipv4In4OpenVPNServer.Hostname = apiServer.CountryCode + "4.vpn.airdns.org"
 		servers = append(servers, ipv4In4OpenVPNServer)
 
 		ipv6In4OpenVPNServer := baseOpenVPNServer
-		ipv6In4OpenVPNServer.IPs = []net.IP{apiServer.IPv6In4}
+		ipv6In4OpenVPNServer.IPs = []netip.Addr{apiServer.IPv6In4}
 		ipv6In4OpenVPNServer.Hostname = apiServer.CountryCode + "4.ipv6.vpn.airdns.org"
 		servers = append(servers, ipv6In4OpenVPNServer)
 	}

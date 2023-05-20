@@ -2,7 +2,7 @@ package vpn
 
 import (
 	"context"
-	"net"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
@@ -18,7 +18,7 @@ type Firewall interface {
 }
 
 type Routing interface {
-	VPNLocalGatewayIP(vpnInterface string) (gateway net.IP, err error)
+	VPNLocalGatewayIP(vpnInterface string) (gateway netip.Addr, err error)
 }
 
 type PortForward interface {

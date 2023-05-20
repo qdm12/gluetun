@@ -1,14 +1,14 @@
 package models
 
 import (
-	"net"
+	"net/netip"
 )
 
 type Connection struct {
 	// Type is the connection type and can be "openvpn" or "wireguard"
 	Type string `json:"type"`
 	// IP is the VPN server IP address.
-	IP net.IP `json:"ip"`
+	IP netip.Addr `json:"ip"`
 	// Port is the VPN server port.
 	Port uint16 `json:"port"`
 	// Protocol can be "tcp" or "udp".
@@ -24,15 +24,15 @@ type Connection struct {
 }
 
 func (c *Connection) Equal(other Connection) bool {
-	return c.IP.Equal(other.IP) && c.Port == other.Port &&
+	return c.IP.Compare(other.IP) == 0 && c.Port == other.Port &&
 		c.Protocol == other.Protocol && c.Hostname == other.Hostname &&
 		c.ServerName == other.ServerName && c.PubKey == other.PubKey
 }
 
 // UpdateEmptyWith updates each field of the connection where the
 // value is not set using the value given as arguments.
-func (c *Connection) UpdateEmptyWith(ip net.IP, port uint16, protocol string) {
-	if c.IP == nil {
+func (c *Connection) UpdateEmptyWith(ip netip.Addr, port uint16, protocol string) {
+	if !c.IP.IsValid() {
 		c.IP = ip
 	}
 	if c.Port == 0 {

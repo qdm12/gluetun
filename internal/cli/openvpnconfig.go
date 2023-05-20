@@ -3,8 +3,8 @@ package cli
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/http"
+	"net/netip"
 	"strings"
 	"time"
 
@@ -28,11 +28,11 @@ type Unzipper interface {
 
 type ParallelResolver interface {
 	Resolve(ctx context.Context, settings resolver.ParallelSettings) (
-		hostToIPs map[string][]net.IP, warnings []string, err error)
+		hostToIPs map[string][]netip.Addr, warnings []string, err error)
 }
 
 type IPFetcher interface {
-	FetchMultiInfo(ctx context.Context, ips []net.IP) (data []ipinfo.Response, err error)
+	FetchMultiInfo(ctx context.Context, ips []netip.Addr) (data []ipinfo.Response, err error)
 }
 
 type IPv6Checker interface {

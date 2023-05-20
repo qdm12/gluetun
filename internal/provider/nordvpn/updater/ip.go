@@ -2,15 +2,16 @@ package updater
 
 import (
 	"fmt"
-	"net"
+	"net/netip"
 )
 
-func parseIPv4(s string) (ipv4 net.IP, err error) {
-	ip := net.ParseIP(s)
-	if ip == nil {
-		return nil, fmt.Errorf("%w: %q", ErrParseIP, s)
-	} else if ip.To4() == nil {
-		return nil, fmt.Errorf("%w: %s", ErrNotIPv4, ip)
+func parseIPv4(s string) (ipv4 netip.Addr, err error) {
+	ipv4, err = netip.ParseAddr(s)
+	if err != nil {
+		return ipv4, err
 	}
-	return ip, nil
+	if !ipv4.Is4() {
+		return ipv4, fmt.Errorf("%w: %s", ErrNotIPv4, ipv4)
+	}
+	return ipv4, nil
 }

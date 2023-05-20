@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
+	"net/netip"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -30,11 +30,11 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			x5090Name := group.OvpnX509
 			wgPubKey := group.WgPubKey
 			for _, node := range group.Nodes {
-				ips := make([]net.IP, 0, 2) //nolint:gomnd
-				if node.IP != nil {
+				ips := make([]netip.Addr, 0, 2) //nolint:gomnd
+				if node.IP.IsValid() {
 					ips = append(ips, node.IP)
 				}
-				if node.IP2 != nil {
+				if node.IP2.IsValid() {
 					ips = append(ips, node.IP2)
 				}
 				server := models.Server{
@@ -49,7 +49,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 				}
 				servers = append(servers, server)
 
-				if node.IP3 == nil { // Wireguard + Stealth
+				if !node.IP3.IsValid() { // Wireguard + Stealth
 					continue
 				} else if wgPubKey == "" {
 					return nil, fmt.Errorf("%w: for node %s", ErrNoWireguardKey, node.Hostname)
@@ -60,7 +60,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 				server.TCP = false
 				server.OvpnX509 = ""
 				server.WgPubKey = wgPubKey
-				server.IPs = []net.IP{node.IP3}
+				server.IPs = []netip.Addr{node.IP3}
 				servers = append(servers, server)
 			}
 		}
