@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"net"
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -21,9 +20,7 @@ func BuildWireguardSettings(connection models.Connection,
 	const rulePriority = 101 // 100 is to receive external connections
 	settings.RulePriority = rulePriority
 
-	settings.Endpoint = new(net.UDPAddr)
-	settings.Endpoint.IP = connection.IP.AsSlice()
-	settings.Endpoint.Port = int(connection.Port)
+	settings.Endpoint = netip.AddrPortFrom(connection.IP, connection.Port)
 
 	settings.Addresses = make([]netip.Prefix, 0, len(userSettings.Addresses))
 	for _, address := range userSettings.Addresses {

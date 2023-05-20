@@ -1,7 +1,6 @@
 package wireguard
 
 import (
-	"net"
 	"net/netip"
 	"testing"
 
@@ -31,9 +30,7 @@ func Test_New(t *testing.T) {
 			settings: Settings{
 				PrivateKey: validKeyString,
 				PublicKey:  validKeyString,
-				Endpoint: &net.UDPAddr{
-					IP: net.IPv4(1, 2, 3, 4),
-				},
+				Endpoint:   netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 0),
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{5, 6, 7, 8}), 32),
 				},
@@ -46,10 +43,7 @@ func Test_New(t *testing.T) {
 					InterfaceName: "wg0",
 					PrivateKey:    validKeyString,
 					PublicKey:     validKeyString,
-					Endpoint: &net.UDPAddr{
-						IP:   net.IPv4(1, 2, 3, 4),
-						Port: 51820,
-					},
+					Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
 					Addresses: []netip.Prefix{
 						netip.PrefixFrom(netip.AddrFrom4([4]byte{5, 6, 7, 8}), 32),
 					},

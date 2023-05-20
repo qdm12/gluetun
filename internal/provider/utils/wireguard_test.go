@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"net"
 	"net/netip"
 	"testing"
 
@@ -43,10 +42,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				PrivateKey:    "private",
 				PublicKey:     "public",
 				PreSharedKey:  "pre-shared",
-				Endpoint: &net.UDPAddr{
-					IP:   net.IP{1, 2, 3, 4},
-					Port: 51821,
-				},
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51821),
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 32),
 				},

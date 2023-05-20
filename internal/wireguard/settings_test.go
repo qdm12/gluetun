@@ -2,7 +2,6 @@ package wireguard
 
 import (
 	"errors"
-	"net"
 	"net/netip"
 	"testing"
 
@@ -29,39 +28,28 @@ func Test_Settings_SetDefaults(t *testing.T) {
 		},
 		"default endpoint port": {
 			original: Settings{
-				Endpoint: &net.UDPAddr{
-					IP: net.IPv4(1, 2, 3, 4),
-				},
+				Endpoint: netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 0),
 			},
 			expected: Settings{
-				InterfaceName: "wg0",
-				FirewallMark:  51820,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
+				InterfaceName:  "wg0",
+				FirewallMark:   51820,
+				Endpoint:       netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
 				IPv6:           ptr(false),
 				Implementation: "auto",
 			},
 		},
 		"not empty settings": {
 			original: Settings{
-				InterfaceName: "wg1",
-				FirewallMark:  999,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 9999,
-				},
+				InterfaceName:  "wg1",
+				FirewallMark:   999,
+				Endpoint:       netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 9999),
 				IPv6:           ptr(true),
 				Implementation: "userspace",
 			},
 			expected: Settings{
-				InterfaceName: "wg1",
-				FirewallMark:  999,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 9999,
-				},
+				InterfaceName:  "wg1",
+				FirewallMark:   999,
+				Endpoint:       netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 9999),
 				IPv6:           ptr(true),
 				Implementation: "userspace",
 			},
@@ -138,31 +126,20 @@ func Test_Settings_Check(t *testing.T) {
 			},
 			err: errors.New("cannot parse pre-shared key"),
 		},
-		"empty endpoint": {
+		"invalid endpoint address": {
 			settings: Settings{
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
 				PublicKey:     validKey2,
 			},
-			err: ErrEndpointMissing,
+			err: ErrEndpointAddrMissing,
 		},
-		"nil endpoint IP": {
+		"zero endpoint port": {
 			settings: Settings{
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
 				PublicKey:     validKey2,
-				Endpoint:      &net.UDPAddr{},
-			},
-			err: ErrEndpointIPMissing,
-		},
-		"nil endpoint port": {
-			settings: Settings{
-				InterfaceName: "wg0",
-				PrivateKey:    validKey1,
-				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP: net.IPv4(1, 2, 3, 4),
-				},
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 0),
 			},
 			err: ErrEndpointPortMissing,
 		},
@@ -171,10 +148,7 @@ func Test_Settings_Check(t *testing.T) {
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
 				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
 			},
 			err: ErrAddressMissing,
 		},
@@ -183,11 +157,8 @@ func Test_Settings_Check(t *testing.T) {
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
 				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
-				Addresses: []netip.Prefix{{}},
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
+				Addresses:     []netip.Prefix{{}},
 			},
 			err: errors.New("interface address is not valid: for address 1 of 1"),
 		},
@@ -196,10 +167,7 @@ func Test_Settings_Check(t *testing.T) {
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
 				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
 				},
@@ -211,10 +179,7 @@ func Test_Settings_Check(t *testing.T) {
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
 				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
 				},
@@ -228,10 +193,7 @@ func Test_Settings_Check(t *testing.T) {
 				InterfaceName: "wg0",
 				PrivateKey:    validKey1,
 				PublicKey:     validKey2,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
 				},
@@ -331,12 +293,9 @@ func Test_Settings_Lines(t *testing.T) {
 				PrivateKey:    "private key",
 				PublicKey:     "public key",
 				PreSharedKey:  "pre-shared key",
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(1, 2, 3, 4),
-					Port: 51820,
-				},
-				FirewallMark: 999,
-				RulePriority: 888,
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
+				FirewallMark:  999,
+				RulePriority:  888,
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),

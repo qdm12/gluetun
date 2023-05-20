@@ -57,7 +57,10 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 					*allIPv6(),
 				},
 				ReplaceAllowedIPs: true,
-				Endpoint:          settings.Endpoint,
+				Endpoint: &net.UDPAddr{
+					IP:   settings.Endpoint.Addr().AsSlice(),
+					Port: int(settings.Endpoint.Port()),
+				},
 			},
 		},
 	}

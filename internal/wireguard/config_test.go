@@ -3,6 +3,7 @@ package wireguard
 import (
 	"errors"
 	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -60,10 +61,7 @@ func Test_makeDeviceConfig(t *testing.T) {
 				PublicKey:    validKey2,
 				PreSharedKey: validKey3,
 				FirewallMark: 9876,
-				Endpoint: &net.UDPAddr{
-					IP:   net.IPv4(99, 99, 99, 99),
-					Port: 51820,
-				},
+				Endpoint:     netip.AddrPortFrom(netip.AddrFrom4([4]byte{99, 99, 99, 99}), 51820),
 			},
 			config: wgtypes.Config{
 				PrivateKey:   parseKey(t, validKey1),
@@ -85,7 +83,7 @@ func Test_makeDeviceConfig(t *testing.T) {
 						},
 						ReplaceAllowedIPs: true,
 						Endpoint: &net.UDPAddr{
-							IP:   net.IPv4(99, 99, 99, 99),
+							IP:   net.IP{99, 99, 99, 99},
 							Port: 51820,
 						},
 					},
