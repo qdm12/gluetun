@@ -168,8 +168,8 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 		addressesNode.Appendf(address.String())
 	}
 
-	node.Appendf("Network interface: %s", w.Interface)
-	node.Appendf("MTU: %d", w.MTU)
+	interfaceNode := node.Appendf("Network interface: %s", w.Interface)
+	interfaceNode.Appendf("MTU: %d", w.MTU)
 
 	if w.Implementation != "auto" {
 		node.Appendf("Implementation: %s", w.Implementation)
