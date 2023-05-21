@@ -60,6 +60,7 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 
 func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 	gateway netip.Addr, _ string, logger utils.Logger) (err error) {
+	logger.Info(fmt.Sprintf("keeping port forward with port %d", port))
 	client := natpmp.New()
 	const refreshTimeout = 45 * time.Second
 	timer := time.NewTimer(refreshTimeout)
@@ -69,6 +70,7 @@ func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 			return ctx.Err()
 		case <-timer.C:
 		}
+		logger.Info("keeping port forward triggered by 45s timer")
 
 		const networkProtocol = "udp"
 		const internalPort = 0
@@ -91,6 +93,9 @@ func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 				" from external port assigned %d",
 				assignedInternalPort, assignedExternalPort))
 		}
+		logger.Info(fmt.Sprintf(
+			"port %d, assigned internal port %d, assigned external port %d, assignled lifetime %s",
+			port, assignedInternalPort, assignedExternalPort, assignedLiftetime))
 
 		timer.Reset(refreshTimeout)
 	}
