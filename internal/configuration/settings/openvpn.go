@@ -17,7 +17,7 @@ import (
 // OpenVPN contains settings to configure the OpenVPN client.
 type OpenVPN struct {
 	// Version is the OpenVPN version to run.
-	// It can only be "2.4" or "2.5".
+	// It can only be "2.5".
 	Version string
 	// User is the OpenVPN authentication username.
 	// It cannot be nil in the internal state if OpenVPN is used.
@@ -88,7 +88,7 @@ var ivpnAccountID = regexp.MustCompile(`^(i|ivpn)\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4
 
 func (o OpenVPN) validate(vpnProvider string) (err error) {
 	// Validate version
-	validVersions := []string{openvpn.Openvpn24, openvpn.Openvpn25}
+	validVersions := []string{openvpn.Openvpn25}
 	if !helpers.IsOneOf(o.Version, validVersions...) {
 		return fmt.Errorf("%w: %q can only be one of %s",
 			ErrOpenVPNVersionIsNotValid, o.Version, strings.Join(validVersions, ", "))

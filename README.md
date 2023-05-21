@@ -35,8 +35,8 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 
 ## Quick links
 
-- [Setup](#Setup)
-- [Features](#Features)
+- [Setup](#setup)
+- [Features](#features)
 - Problem?
   - [Check the Wiki](https://github.com/qdm12/gluetun/wiki)
   - [Start a discussion](https://github.com/qdm12/gluetun/discussions)
@@ -57,7 +57,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 
 ## Features
 
-- Based on Alpine 3.17 for a small Docker image of 42MB
+- Based on Alpine 3.17 for a small Docker image of 39.1MB
 - Supports: **AirVPN**, **Cyberghost**, **ExpressVPN**, **FastestVPN**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Perfect Privacy**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **SlickVPN**, **Surfshark**, **TorGuard**, **VPNSecure.me**, **VPNUnlimited**, **Vyprvpn**, **WeVPN**, **Windscribe** servers
 - Supports OpenVPN for all providers listed
 - Supports Wireguard both kernelspace and userspace

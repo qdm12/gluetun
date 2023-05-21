@@ -24,8 +24,6 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 	}
 
 	switch settings.Version {
-	case openvpn.Openvpn24:
-		providerSettings.Ciphers = []string{openvpn.AES256cbc}
 	case openvpn.Openvpn25:
 		providerSettings.Ciphers = []string{
 			openvpn.AES256gcm, openvpn.AES256cbc, openvpn.AES192gcm,

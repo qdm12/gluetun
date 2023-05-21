@@ -79,7 +79,7 @@ func modifyConfig(lines []string, connection models.Connection,
 	}
 	modified = append(modified, "verb "+strconv.Itoa(*settings.Verbosity))
 	if len(settings.Ciphers) > 0 {
-		modified = append(modified, utils.CipherLines(settings.Ciphers, settings.Version)...)
+		modified = append(modified, utils.CipherLines(settings.Ciphers)...)
 	}
 	if *settings.Auth != "" {
 		modified = append(modified, "auth "+*settings.Auth)
