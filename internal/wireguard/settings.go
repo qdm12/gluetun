@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 	"golang.zx2c4.com/wireguard/device"
+	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
 type Settings struct {
@@ -29,9 +29,9 @@ type Settings struct {
 	// FirewallMark to be used in routing tables and IP rules.
 	// It defaults to 51820 if left to 0.
 	FirewallMark int
-	// Maximum Transmission Unit (MTU) setting of the interface
+	// Maximum Transmission Unit (MTU) setting for the network interface.
 	// It defaults to device.DefaultMTU from wireguard-go which is 1420
-	MTU int
+	MTU uint16
 	// RulePriority is the priority for the rule created with the
 	// FirewallMark.
 	RulePriority int

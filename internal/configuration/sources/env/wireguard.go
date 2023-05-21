@@ -21,7 +21,7 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	if err != nil {
 		return wireguard, err // already wrapped
 	}
-	mtuPtr, err := envToIntPtr("WIREGUARD_MTU")
+	mtuPtr, err := envToUint16Ptr("WIREGUARD_MTU")
 	if err != nil {
 		return wireguard, fmt.Errorf("environment variable WIREGUARD_MTU: %w", err)
 	} else if mtuPtr != nil {

@@ -158,12 +158,12 @@ func (w *Wireguard) setupIPv6(link netlink.Link, closers *closers) (err error) {
 type waitAndCleanupFunc func() error
 
 func setupKernelSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker, mtu int,
+	interfaceName string, netLinker NetLinker, mtu uint16,
 	closers *closers, logger Logger) (
 	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
 	linkAttrs := netlink.LinkAttrs{
 		Name: interfaceName,
-		MTU:  mtu,
+		MTU:  int(mtu),
 	}
 	link = &netlink.Wireguard{
 		LinkAttrs: linkAttrs,
@@ -186,10 +186,10 @@ func setupKernelSpace(ctx context.Context,
 }
 
 func setupUserSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker, mtu int,
+	interfaceName string, netLinker NetLinker, mtu uint16,
 	closers *closers, logger Logger) (
 	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
-	tun, err := tun.CreateTUN(interfaceName, mtu)
+	tun, err := tun.CreateTUN(interfaceName, int(mtu))
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
 	}

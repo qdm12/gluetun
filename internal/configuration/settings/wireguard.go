@@ -31,7 +31,7 @@ type Wireguard struct {
 	// Maximum Transmission Unit (MTU) of the Wireguard interface.
 	// It cannot be zero in the internal state, and defaults to
 	// the wireguard-go MTU default of 1420.
-	MTU int
+	MTU uint16
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
 	// It defaults to "auto" and cannot be the empty string
