@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gotree"
+	wireguarddevice "golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
@@ -27,7 +28,9 @@ type Wireguard struct {
 	// to create. It cannot be the empty string in the
 	// internal state.
 	Interface string
-	// Maximum Transmission Unit (MTU) of the wireguard interface
+	// Maximum Transmission Unit (MTU) of the Wireguard interface.
+	// It cannot be zero in the internal state, and defaults to
+	// the wireguard-go MTU default of 1420.
 	MTU int
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
@@ -139,6 +142,7 @@ func (w *Wireguard) setDefaults() {
 	w.PrivateKey = helpers.DefaultPointer(w.PrivateKey, "")
 	w.PreSharedKey = helpers.DefaultPointer(w.PreSharedKey, "")
 	w.Interface = helpers.DefaultString(w.Interface, "wg0")
+	w.MTU = helpers.DefaultNumber(w.MTU, wireguarddevice.DefaultMTU)
 	w.Implementation = helpers.DefaultString(w.Implementation, "auto")
 }
 
