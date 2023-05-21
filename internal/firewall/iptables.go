@@ -157,6 +157,13 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
 	intf string, sourceIP netip.Addr, destinationSubnet netip.Prefix, remove bool) error {
 	doIPv4 := sourceIP.Is4() && destinationSubnet.Addr().Is4()
+	doIPv6 := sourceIP.Is6() && destinationSubnet.Addr().Is6()
+	if !doIPv4 && !doIPv6 {
+		c.logger.Debug(fmt.Sprintf(
+			"source IP address %s and destination subnet %s are not of the same IP family, skipping...",
+			sourceIP, destinationSubnet))
+		return nil
+	}
 
 	interfaceFlag := "-o " + intf
 	if intf == "*" { // all interfaces
