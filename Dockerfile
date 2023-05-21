@@ -1,5 +1,5 @@
-ARG ALPINE_VERSION=3.17
-ARG GO_ALPINE_VERSION=3.17
+ARG ALPINE_VERSION=3.18
+ARG GO_ALPINE_VERSION=3.18
 ARG GO_VERSION=1.20
 ARG XCPUTRANSLATE_VERSION=v0.6.0
 ARG GOLANGCI_LINT_VERSION=v1.52.2
@@ -200,11 +200,11 @@ EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=1 CMD /gluetun-entrypoint healthcheck
 ARG TARGETPLATFORM
 RUN apk add --no-cache --update -l wget && \
-    apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.18/main" openvpn\~2.6 && \
-    mv /usr/sbin/openvpn /usr/sbin/openvpn2.6 && \
+    apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.17/main" openvpn\~2.5 && \
+    mv /usr/sbin/openvpn /usr/sbin/openvpn2.5 && \
     apk del openvpn && \
     apk add --no-cache --update openvpn ca-certificates iptables ip6tables unbound tzdata && \
-    mv /usr/sbin/openvpn /usr/sbin/openvpn2.5 && \
+    mv /usr/sbin/openvpn /usr/sbin/openvpn2.6 && \
     # Fix vulnerability issue
     apk add --no-cache --update busybox && \
     rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/openvpn/*.sh /usr/lib/openvpn/plugins/openvpn-plugin-down-root.so && \
