@@ -12,6 +12,10 @@ func (c *Configurator) Version25(ctx context.Context) (version string, err error
 	return c.version(ctx, binOpenvpn25)
 }
 
+func (c *Configurator) Version26(ctx context.Context) (version string, err error) {
+	return c.version(ctx, binOpenvpn26)
+}
+
 var ErrVersionTooShort = errors.New("version output is too short")
 
 func (c *Configurator) version(ctx context.Context, binName string) (version string, err error) {
