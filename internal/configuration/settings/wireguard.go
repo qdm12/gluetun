@@ -122,7 +122,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 	w.PreSharedKey = helpers.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.MergeSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
-	w.MTU = helpers.MergeWithInt(w.MTU, other.MTU)
+	w.MTU = helpers.MergeWithNumber(w.MTU, other.MTU)
 	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
 }
 
@@ -131,7 +131,7 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PreSharedKey = helpers.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
-	w.MTU = helpers.OverrideWithInt(w.MTU, other.MTU)
+	w.MTU = helpers.OverrideWithNumber(w.MTU, other.MTU)
 	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
 }
 
