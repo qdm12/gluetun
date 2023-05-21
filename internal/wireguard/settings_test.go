@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.zx2c4.com/wireguard/device"
 )
 
 func ptr[T any](v T) *T { return &v }
@@ -22,6 +23,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 			expected: Settings{
 				InterfaceName:  "wg0",
 				FirewallMark:   51820,
+				MTU:            device.DefaultMTU,
 				IPv6:           ptr(false),
 				Implementation: "auto",
 			},
@@ -34,6 +36,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				InterfaceName:  "wg0",
 				FirewallMark:   51820,
 				Endpoint:       netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
+				MTU:            device.DefaultMTU,
 				IPv6:           ptr(false),
 				Implementation: "auto",
 			},
@@ -43,6 +46,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				InterfaceName:  "wg1",
 				FirewallMark:   999,
 				Endpoint:       netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 9999),
+				MTU:            device.DefaultMTU,
 				IPv6:           ptr(true),
 				Implementation: "userspace",
 			},
@@ -50,6 +54,7 @@ func Test_Settings_SetDefaults(t *testing.T) {
 				InterfaceName:  "wg1",
 				FirewallMark:   999,
 				Endpoint:       netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 9999),
+				MTU:            device.DefaultMTU,
 				IPv6:           ptr(true),
 				Implementation: "userspace",
 			},
@@ -174,6 +179,19 @@ func Test_Settings_Check(t *testing.T) {
 			},
 			err: ErrFirewallMarkMissing,
 		},
+		"missing_MTU": {
+			settings: Settings{
+				InterfaceName: "wg0",
+				PrivateKey:    validKey1,
+				PublicKey:     validKey2,
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
+				},
+				FirewallMark: 999,
+			},
+			err: ErrMTUMissing,
+		},
 		"invalid implementation": {
 			settings: Settings{
 				InterfaceName: "wg0",
@@ -184,6 +202,7 @@ func Test_Settings_Check(t *testing.T) {
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
 				},
 				FirewallMark:   999,
+				MTU:            1420,
 				Implementation: "x",
 			},
 			err: errors.New("invalid implementation: x"),
@@ -198,6 +217,7 @@ func Test_Settings_Check(t *testing.T) {
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
 				},
 				FirewallMark:   999,
+				MTU:            1420,
 				Implementation: "userspace",
 			},
 		},

@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gotree"
+	wireguarddevice "golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
@@ -27,6 +28,10 @@ type Wireguard struct {
 	// to create. It cannot be the empty string in the
 	// internal state.
 	Interface string
+	// Maximum Transmission Unit (MTU) of the Wireguard interface.
+	// It cannot be zero in the internal state, and defaults to
+	// the wireguard-go MTU default of 1420.
+	MTU uint16
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
 	// It defaults to "auto" and cannot be the empty string
@@ -110,6 +115,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 		PreSharedKey:   helpers.CopyPointer(w.PreSharedKey),
 		Addresses:      helpers.CopySlice(w.Addresses),
 		Interface:      w.Interface,
+		MTU:            w.MTU,
 		Implementation: w.Implementation,
 	}
 }
@@ -119,6 +125,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 	w.PreSharedKey = helpers.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.MergeSlices(w.Addresses, other.Addresses)
 	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
+	w.MTU = helpers.MergeWithNumber(w.MTU, other.MTU)
 	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
 }
 
@@ -127,6 +134,7 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PreSharedKey = helpers.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = helpers.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
+	w.MTU = helpers.OverrideWithNumber(w.MTU, other.MTU)
 	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
 }
 
@@ -134,6 +142,7 @@ func (w *Wireguard) setDefaults() {
 	w.PrivateKey = helpers.DefaultPointer(w.PrivateKey, "")
 	w.PreSharedKey = helpers.DefaultPointer(w.PreSharedKey, "")
 	w.Interface = helpers.DefaultString(w.Interface, "wg0")
+	w.MTU = helpers.DefaultNumber(w.MTU, wireguarddevice.DefaultMTU)
 	w.Implementation = helpers.DefaultString(w.Implementation, "auto")
 }
 
@@ -159,7 +168,8 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 		addressesNode.Appendf(address.String())
 	}
 
-	node.Appendf("Network interface: %s", w.Interface)
+	interfaceNode := node.Appendf("Network interface: %s", w.Interface)
+	interfaceNode.Appendf("MTU: %d", w.MTU)
 
 	if w.Implementation != "auto" {
 		node.Appendf("Implementation: %s", w.Implementation)

@@ -74,7 +74,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	defer closers.cleanup(w.logger)
 
 	link, waitAndCleanup, err := setupFunction(ctx,
-		w.settings.InterfaceName, w.netlink, &closers, w.logger)
+		w.settings.InterfaceName, w.netlink, w.settings.MTU, &closers, w.logger)
 	if err != nil {
 		waitError <- err
 		return
@@ -158,12 +158,12 @@ func (w *Wireguard) setupIPv6(link netlink.Link, closers *closers) (err error) {
 type waitAndCleanupFunc func() error
 
 func setupKernelSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker,
+	interfaceName string, netLinker NetLinker, mtu uint16,
 	closers *closers, logger Logger) (
 	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
 	linkAttrs := netlink.LinkAttrs{
 		Name: interfaceName,
-		MTU:  device.DefaultMTU, // TODO
+		MTU:  int(mtu),
 	}
 	link = &netlink.Wireguard{
 		LinkAttrs: linkAttrs,
@@ -186,10 +186,10 @@ func setupKernelSpace(ctx context.Context,
 }
 
 func setupUserSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker,
+	interfaceName string, netLinker NetLinker, mtu uint16,
 	closers *closers, logger Logger) (
 	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
-	tun, err := tun.CreateTUN(interfaceName, device.DefaultMTU)
+	tun, err := tun.CreateTUN(interfaceName, int(mtu))
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
 	}
