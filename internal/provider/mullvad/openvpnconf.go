@@ -15,6 +15,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 		Ciphers: []string{
 			openvpn.AES256cbc,
 			openvpn.AES128gcm,
+			openvpn.AES256gcm,
 		},
 		Ping:          10,
 		RemoteCertTLS: true,
