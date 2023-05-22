@@ -19,8 +19,8 @@ var (
 )
 
 func ipMatchesFamily(ip netip.Addr, family int) bool {
-	return (family == netlink.FAMILY_V6 && ip.Is6()) ||
-		(family == netlink.FAMILY_V4 && (ip.Is4() || ip.Is4In6()))
+	return (family == netlink.FAMILY_V4 && ip.Is4()) ||
+		(family == netlink.FAMILY_V6 && ip.Is6())
 }
 
 func (r *Routing) assignedIP(interfaceName string, family int) (ip netip.Addr, err error) {
