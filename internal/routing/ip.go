@@ -46,10 +46,7 @@ func (r *Routing) assignedIP(interfaceName string, family int) (ip netip.Addr, e
 			continue
 		}
 
-		// Ensure we don't return an IPv6-wrapped IPv4 address
-		// since netip.Address String method works differently than
-		// net.IP String method for this kind of addresses.
-		return ip.Unmap(), nil
+		return ip, nil
 	}
 	return ip, fmt.Errorf("%w: interface %s in %d addresses",
 		errInterfaceIPNotFound, interfaceName, len(addresses))

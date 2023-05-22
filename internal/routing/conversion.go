@@ -39,5 +39,5 @@ func netIPToNetipAddress(ip net.IP) (address netip.Addr) {
 	if !ok {
 		panic(fmt.Sprintf("converting %#v to netip.Addr failed", ip))
 	}
-	return address
+	return address.Unmap()
 }
