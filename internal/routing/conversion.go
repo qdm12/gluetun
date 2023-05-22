@@ -21,7 +21,17 @@ func NetipPrefixToIPNet(prefix *netip.Prefix) (ipNet *net.IPNet) {
 }
 
 func netIPNetToNetipPrefix(ipNet net.IPNet) (prefix netip.Prefix) {
-	return netip.MustParsePrefix(ipNet.String())
+	if len(ipNet.IP) != net.IPv4len && len(ipNet.IP) != net.IPv6len {
+		return prefix
+	}
+	var ip netip.Addr
+	if ipv4 := ipNet.IP.To4(); ipv4 != nil {
+		ip = netip.AddrFrom4([4]byte(ipv4))
+	} else {
+		ip = netip.AddrFrom16([16]byte(ipNet.IP))
+	}
+	bits, _ := ipNet.Mask.Size()
+	return netip.PrefixFrom(ip, bits)
 }
 
 func netIPToNetipAddress(ip net.IP) (address netip.Addr) {
