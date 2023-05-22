@@ -67,8 +67,6 @@ func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 		if assignedIP.Is6() {
 			bits = 128
 		}
-		r.logger.Debug(fmt.Sprintf("ASSIGNED IP IS %#v -> %s, bits %d",
-			defaultRoute.AssignedIP, assignedIP, bits))
 		defaultIPMasked := netip.PrefixFrom(assignedIP, bits)
 		ruleDstNet := (*netip.Prefix)(nil)
 		err = r.addIPRule(&defaultIPMasked, ruleDstNet, table, inboundPriority)
