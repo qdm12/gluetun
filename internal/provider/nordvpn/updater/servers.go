@@ -51,7 +51,9 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			server.Number = number
 		}
 
-		var openvpnFound bool
+		var wireguardFound, openvpnFound bool
+		wireguardServer := server
+		wireguardServer.VPN = vpn.Wireguard
 		openVPNServer := server // accumulate UDP+TCP technologies
 		openVPNServer.VPN = vpn.OpenVPN
 
@@ -63,6 +65,15 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			case "openvpn_tcp":
 				openvpnFound = true
 				openVPNServer.TCP = true
+			case "wireguard_udp":
+				wireguardFound = true
+				wireguardServer.WgPubKey, err = jsonServer.wireguardPublicKey()
+				if err != nil {
+					u.warner.Warn(fmt.Sprintf("ignoring Wireguard server %s: %s",
+						jsonServer.Name, err))
+					wireguardFound = false
+					continue
+				}
 			default: // Ignore other technologies
 				continue
 			}
@@ -70,6 +81,9 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 		if openvpnFound {
 			servers = append(servers, openVPNServer)
+		}
+		if wireguardFound {
+			servers = append(servers, wireguardServer)
 		}
 	}
 

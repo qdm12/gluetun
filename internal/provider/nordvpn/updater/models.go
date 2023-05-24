@@ -1,6 +1,9 @@
 package updater
 
 import (
+	"encoding/base64"
+	"errors"
+	"fmt"
 	"net/netip"
 )
 
@@ -33,7 +36,15 @@ type serverData struct {
 		// Identifier is the technology id name, it can notably be:
 		// - openvpn_udp
 		// - openvpn_tcp
+		// - wireguard_udp
 		Identifier string `json:"identifier"`
+		// Metadata is notably useful for the Wireguard public key.
+		Metadata []struct {
+			// Name can notably be 'public_key'.
+			Name string `json:"name"`
+			// Value can notably the Wireguard public key value.
+			Value string `json:"value"`
+		} `json:"metadata"`
 	} `json:"technologies"`
 	Groups []struct {
 		// Title can notably be the region name, for example 'Europe',
@@ -90,4 +101,31 @@ func (s *serverData) ips() (ips []netip.Addr) {
 		ips = append(ips, ipObject.IP.IP)
 	}
 	return ips
+}
+
+var (
+	ErrWireguardPublicKeyMalformed = errors.New("wireguard public key is malformed")
+	ErrWireguardPublicKeyNotFound  = errors.New("wireguard public key not found")
+)
+
+// wireguardPublicKey returns the Wireguard public key for the server.
+func (s *serverData) wireguardPublicKey() (wgPubKey string, err error) {
+	for _, technology := range s.Technologies {
+		if technology.Identifier != "wireguard_udp" {
+			continue
+		}
+		for _, metadata := range technology.Metadata {
+			if metadata.Name != "public_key" {
+				continue
+			}
+			wgPubKey = metadata.Value
+			_, err = base64.StdEncoding.DecodeString(wgPubKey)
+			if err != nil {
+				return "", fmt.Errorf("%w: %s cannot be decoded: %s",
+					ErrWireguardPublicKeyMalformed, wgPubKey, err)
+			}
+			return metadata.Value, nil
+		}
+	}
+	return "", fmt.Errorf("%w", ErrWireguardPublicKeyNotFound)
 }
