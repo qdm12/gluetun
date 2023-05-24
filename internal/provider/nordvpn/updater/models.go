@@ -54,13 +54,30 @@ type serverData struct {
 	} `json:"ips"`
 }
 
-// region returns the country name of the server.
-// TODO the region should be the continental region, for example 'Europe'.
-func (s *serverData) region() (region string) {
+// country returns the country name of the server.
+func (s *serverData) country() (country string) {
 	if len(s.Locations) == 0 {
 		return ""
 	}
 	return s.Locations[0].Country.Name
+}
+
+// region returns the region name of the server.
+func (s *serverData) region() (region string) {
+	for _, group := range s.Groups {
+		if group.Type.Identifier == "regions" {
+			return group.Title
+		}
+	}
+	return ""
+}
+
+// city returns the city name of the server.
+func (s *serverData) city() (city string) {
+	if len(s.Locations) == 0 {
+		return ""
+	}
+	return s.Locations[0].Country.City.Name
 }
 
 // ips returns the list of IP addresses for the server.

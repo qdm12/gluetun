@@ -33,12 +33,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		}
 
 		server := models.Server{
+			Country:  jsonServer.country(),
 			Region:   jsonServer.region(),
+			City:     jsonServer.city(),
 			Hostname: jsonServer.Hostname,
 			IPs:      jsonServer.ips(),
 		}
-		// TODO add city, group
-		// TODO add region and change region to be country
 
 		number, err := parseServerName(jsonServer.Name)
 		switch {
