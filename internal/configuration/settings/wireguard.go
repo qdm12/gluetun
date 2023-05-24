@@ -45,6 +45,7 @@ var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 // It should only be ran if the VPN type chosen is Wireguard.
 func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) {
 	if !helpers.IsOneOf(vpnProvider,
+		providers.Airvpn,
 		providers.Custom,
 		providers.Ivpn,
 		providers.Mullvad,
