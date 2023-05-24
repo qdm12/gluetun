@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/netip"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -18,7 +17,9 @@ var (
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
-	data, err := fetchAPI(ctx, u.client)
+	const recommended = true
+	const limit = 0
+	data, err := fetchAPI(ctx, u.client, recommended, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -26,31 +27,50 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers = make([]models.Server, 0, len(data))
 
 	for _, jsonServer := range data {
-		if !jsonServer.Features.TCP && !jsonServer.Features.UDP {
-			u.warner.Warn("server does not support TCP and UDP for openvpn: " + jsonServer.Name)
+		if jsonServer.Status != "online" {
+			u.warner.Warn(fmt.Sprintf("ignoring offline server %s", jsonServer.Name))
 			continue
 		}
 
-		ip, err := parseIPv4(jsonServer.IPAddress)
-		if err != nil {
-			return nil, fmt.Errorf("%w for server %s", err, jsonServer.Name)
+		server := models.Server{
+			Region:   jsonServer.region(),
+			Hostname: jsonServer.Hostname,
+			IPs:      jsonServer.ips(),
 		}
+		// TODO add city, group
+		// TODO add region and change region to be country
 
 		number, err := parseServerName(jsonServer.Name)
-		if err != nil {
-			return nil, err
+		switch {
+		case errors.Is(err, ErrNoIDInServerName):
+			u.warner.Warn(fmt.Sprintf("%s - leaving server number as 0", err))
+		case err != nil:
+			u.warner.Warn(fmt.Sprintf("failed parsing server name: %s", err))
+			continue
+		default: // no error
+			server.Number = number
 		}
 
-		server := models.Server{
-			VPN:      vpn.OpenVPN,
-			Region:   jsonServer.Country,
-			Hostname: jsonServer.Domain,
-			Number:   number,
-			IPs:      []netip.Addr{ip},
-			TCP:      jsonServer.Features.TCP,
-			UDP:      jsonServer.Features.UDP,
+		var openvpnFound bool
+		openVPNServer := server // accumulate UDP+TCP technologies
+		openVPNServer.VPN = vpn.OpenVPN
+
+		for _, technology := range jsonServer.Technologies {
+			switch technology.Identifier {
+			case "openvpn_udp":
+				openvpnFound = true
+				openVPNServer.UDP = true
+			case "openvpn_tcp":
+				openvpnFound = true
+				openVPNServer.TCP = true
+			default: // Ignore other technologies
+				continue
+			}
 		}
-		servers = append(servers, server)
+
+		if openvpnFound {
+			servers = append(servers, openVPNServer)
+		}
 	}
 
 	if len(servers) < minServers {

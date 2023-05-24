@@ -12,19 +12,13 @@ var (
 	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 )
 
-type serverData struct {
-	Domain    string `json:"domain"`
-	IPAddress string `json:"ip_address"`
-	Name      string `json:"name"`
-	Country   string `json:"country"`
-	Features  struct {
-		UDP bool `json:"openvpn_udp"`
-		TCP bool `json:"openvpn_tcp"`
-	} `json:"features"`
-}
-
-func fetchAPI(ctx context.Context, client *http.Client) (data []serverData, err error) {
-	const url = "https://nordvpn.com/api/server"
+func fetchAPI(ctx context.Context, client *http.Client,
+	recommended bool, limit uint) (data []serverData, err error) {
+	url := "https://api.nordvpn.com/v1/servers/"
+	if recommended {
+		url += "recommendations"
+	}
+	url += fmt.Sprintf("?limit=%d", limit) // 0 means no limit
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
