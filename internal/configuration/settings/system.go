@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -19,28 +19,28 @@ func (s System) validate() (err error) {
 
 func (s *System) copy() (copied System) {
 	return System{
-		PUID:     helpers.CopyPointer(s.PUID),
-		PGID:     helpers.CopyPointer(s.PGID),
+		PUID:     gosettings.CopyPointer(s.PUID),
+		PGID:     gosettings.CopyPointer(s.PGID),
 		Timezone: s.Timezone,
 	}
 }
 
 func (s *System) mergeWith(other System) {
-	s.PUID = helpers.MergeWithPointer(s.PUID, other.PUID)
-	s.PGID = helpers.MergeWithPointer(s.PGID, other.PGID)
-	s.Timezone = helpers.MergeWithString(s.Timezone, other.Timezone)
+	s.PUID = gosettings.MergeWithPointer(s.PUID, other.PUID)
+	s.PGID = gosettings.MergeWithPointer(s.PGID, other.PGID)
+	s.Timezone = gosettings.MergeWithString(s.Timezone, other.Timezone)
 }
 
 func (s *System) overrideWith(other System) {
-	s.PUID = helpers.OverrideWithPointer(s.PUID, other.PUID)
-	s.PGID = helpers.OverrideWithPointer(s.PGID, other.PGID)
-	s.Timezone = helpers.OverrideWithString(s.Timezone, other.Timezone)
+	s.PUID = gosettings.OverrideWithPointer(s.PUID, other.PUID)
+	s.PGID = gosettings.OverrideWithPointer(s.PGID, other.PGID)
+	s.Timezone = gosettings.OverrideWithString(s.Timezone, other.Timezone)
 }
 
 func (s *System) setDefaults() {
 	const defaultID = 1000
-	s.PUID = helpers.DefaultPointer(s.PUID, defaultID)
-	s.PGID = helpers.DefaultPointer(s.PGID, defaultID)
+	s.PUID = gosettings.DefaultPointer(s.PUID, defaultID)
+	s.PGID = gosettings.DefaultPointer(s.PGID, defaultID)
 }
 
 func (s System) String() string {

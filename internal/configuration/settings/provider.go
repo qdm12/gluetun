@@ -3,9 +3,10 @@ package settings
 import (
 	"fmt"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
+	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
 
@@ -38,9 +39,8 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 			providers.Windscribe,
 		}
 	}
-	if !helpers.IsOneOf(*p.Name, validNames...) {
-		return fmt.Errorf("%w for Wireguard: %q can only be one of %s",
-			ErrVPNProviderNameNotValid, *p.Name, helpers.ChoicesOrString(validNames))
+	if err = validate.IsOneOf(*p.Name, validNames...); err != nil {
+		return fmt.Errorf("%w for Wireguard: %w", ErrVPNProviderNameNotValid, err)
 	}
 
 	err = p.ServerSelection.validate(*p.Name, storage)
@@ -58,26 +58,26 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 
 func (p *Provider) copy() (copied Provider) {
 	return Provider{
-		Name:            helpers.CopyPointer(p.Name),
+		Name:            gosettings.CopyPointer(p.Name),
 		ServerSelection: p.ServerSelection.copy(),
 		PortForwarding:  p.PortForwarding.copy(),
 	}
 }
 
 func (p *Provider) mergeWith(other Provider) {
-	p.Name = helpers.MergeWithPointer(p.Name, other.Name)
+	p.Name = gosettings.MergeWithPointer(p.Name, other.Name)
 	p.ServerSelection.mergeWith(other.ServerSelection)
 	p.PortForwarding.mergeWith(other.PortForwarding)
 }
 
 func (p *Provider) overrideWith(other Provider) {
-	p.Name = helpers.OverrideWithPointer(p.Name, other.Name)
+	p.Name = gosettings.OverrideWithPointer(p.Name, other.Name)
 	p.ServerSelection.overrideWith(other.ServerSelection)
 	p.PortForwarding.overrideWith(other.PortForwarding)
 }
 
 func (p *Provider) setDefaults() {
-	p.Name = helpers.DefaultPointer(p.Name, providers.PrivateInternetAccess)
+	p.Name = gosettings.DefaultPointer(p.Name, providers.PrivateInternetAccess)
 	p.ServerSelection.setDefaults(*p.Name)
 	p.PortForwarding.setDefaults()
 }

@@ -30,7 +30,7 @@ func MergeWithNumber[T Number](existing, other T) (result T) { //nolint:ireturn
 	return other
 }
 
-func MergeWithIP(existing, other netip.Addr) (result netip.Addr) {
+func MergeWithValidator(existing, other netip.Addr) (result netip.Addr) {
 	if existing.IsValid() {
 		return existing
 	}
@@ -44,7 +44,7 @@ func MergeWithHTTPHandler(existing, other http.Handler) (result http.Handler) {
 	return other
 }
 
-func MergeSlices[T comparable](a, b []T) (result []T) {
+func MergeWithSlice[T comparable](a, b []T) (result []T) {
 	if a == nil && b == nil {
 		return nil
 	}

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -42,25 +42,25 @@ func (p PublicIP) validate() (err error) {
 
 func (p *PublicIP) copy() (copied PublicIP) {
 	return PublicIP{
-		Period:     helpers.CopyPointer(p.Period),
-		IPFilepath: helpers.CopyPointer(p.IPFilepath),
+		Period:     gosettings.CopyPointer(p.Period),
+		IPFilepath: gosettings.CopyPointer(p.IPFilepath),
 	}
 }
 
 func (p *PublicIP) mergeWith(other PublicIP) {
-	p.Period = helpers.MergeWithPointer(p.Period, other.Period)
-	p.IPFilepath = helpers.MergeWithPointer(p.IPFilepath, other.IPFilepath)
+	p.Period = gosettings.MergeWithPointer(p.Period, other.Period)
+	p.IPFilepath = gosettings.MergeWithPointer(p.IPFilepath, other.IPFilepath)
 }
 
 func (p *PublicIP) overrideWith(other PublicIP) {
-	p.Period = helpers.OverrideWithPointer(p.Period, other.Period)
-	p.IPFilepath = helpers.OverrideWithPointer(p.IPFilepath, other.IPFilepath)
+	p.Period = gosettings.OverrideWithPointer(p.Period, other.Period)
+	p.IPFilepath = gosettings.OverrideWithPointer(p.IPFilepath, other.IPFilepath)
 }
 
 func (p *PublicIP) setDefaults() {
 	const defaultPeriod = 12 * time.Hour
-	p.Period = helpers.DefaultPointer(p.Period, defaultPeriod)
-	p.IPFilepath = helpers.DefaultPointer(p.IPFilepath, "/tmp/gluetun/ip")
+	p.Period = gosettings.DefaultPointer(p.Period, defaultPeriod)
+	p.IPFilepath = gosettings.DefaultPointer(p.IPFilepath, "/tmp/gluetun/ip")
 }
 
 func (p PublicIP) String() string {

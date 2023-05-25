@@ -30,7 +30,7 @@ func DefaultNumber[T Number](existing T, defaultValue T) ( //nolint:ireturn
 	return defaultValue
 }
 
-func DefaultIP(existing netip.Addr, defaultValue netip.Addr) (
+func DefaultValidator(existing netip.Addr, defaultValue netip.Addr) (
 	result netip.Addr) {
 	if existing.IsValid() {
 		return existing

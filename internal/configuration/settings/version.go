@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -19,25 +20,25 @@ func (v Version) validate() (err error) {
 
 func (v *Version) copy() (copied Version) {
 	return Version{
-		Enabled: helpers.CopyPointer(v.Enabled),
+		Enabled: gosettings.CopyPointer(v.Enabled),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (v *Version) mergeWith(other Version) {
-	v.Enabled = helpers.MergeWithPointer(v.Enabled, other.Enabled)
+	v.Enabled = gosettings.MergeWithPointer(v.Enabled, other.Enabled)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (v *Version) overrideWith(other Version) {
-	v.Enabled = helpers.OverrideWithPointer(v.Enabled, other.Enabled)
+	v.Enabled = gosettings.OverrideWithPointer(v.Enabled, other.Enabled)
 }
 
 func (v *Version) setDefaults() {
-	v.Enabled = helpers.DefaultPointer(v.Enabled, true)
+	v.Enabled = gosettings.DefaultPointer(v.Enabled, true)
 }
 
 func (v Version) String() string {

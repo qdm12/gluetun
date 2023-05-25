@@ -1,7 +1,7 @@
 package settings
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 	"github.com/qdm12/log"
 )
@@ -19,25 +19,25 @@ func (l Log) validate() (err error) {
 
 func (l *Log) copy() (copied Log) {
 	return Log{
-		Level: helpers.CopyPointer(l.Level),
+		Level: gosettings.CopyPointer(l.Level),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (l *Log) mergeWith(other Log) {
-	l.Level = helpers.MergeWithPointer(l.Level, other.Level)
+	l.Level = gosettings.MergeWithPointer(l.Level, other.Level)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (l *Log) overrideWith(other Log) {
-	l.Level = helpers.OverrideWithPointer(l.Level, other.Level)
+	l.Level = gosettings.OverrideWithPointer(l.Level, other.Level)
 }
 
 func (l *Log) setDefaults() {
-	l.Level = helpers.DefaultPointer(l.Level, log.LevelInfo)
+	l.Level = gosettings.DefaultPointer(l.Level, log.LevelInfo)
 }
 
 func (l Log) String() string {

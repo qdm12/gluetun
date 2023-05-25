@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -43,29 +44,29 @@ func (c ControlServer) validate() (err error) {
 
 func (c *ControlServer) copy() (copied ControlServer) {
 	return ControlServer{
-		Address: helpers.CopyPointer(c.Address),
-		Log:     helpers.CopyPointer(c.Log),
+		Address: gosettings.CopyPointer(c.Address),
+		Log:     gosettings.CopyPointer(c.Log),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (c *ControlServer) mergeWith(other ControlServer) {
-	c.Address = helpers.MergeWithPointer(c.Address, other.Address)
-	c.Log = helpers.MergeWithPointer(c.Log, other.Log)
+	c.Address = gosettings.MergeWithPointer(c.Address, other.Address)
+	c.Log = gosettings.MergeWithPointer(c.Log, other.Log)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (c *ControlServer) overrideWith(other ControlServer) {
-	c.Address = helpers.OverrideWithPointer(c.Address, other.Address)
-	c.Log = helpers.OverrideWithPointer(c.Log, other.Log)
+	c.Address = gosettings.OverrideWithPointer(c.Address, other.Address)
+	c.Log = gosettings.OverrideWithPointer(c.Log, other.Log)
 }
 
 func (c *ControlServer) setDefaults() {
-	c.Address = helpers.DefaultPointer(c.Address, ":8000")
-	c.Log = helpers.DefaultPointer(c.Log, true)
+	c.Address = gosettings.DefaultPointer(c.Address, ":8000")
+	c.Log = gosettings.DefaultPointer(c.Log, true)
 }
 
 func (c ControlServer) String() string {

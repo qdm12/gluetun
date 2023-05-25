@@ -11,6 +11,8 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
 
@@ -88,10 +90,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 
 	err = validateServerFilters(*ss, filterChoices)
 	if err != nil {
-		if errors.Is(err, helpers.ErrNoChoice) {
-			return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
-		}
-		return err // already wrapped error
+		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
 
 	if *ss.OwnedOnly &&
@@ -160,8 +159,8 @@ func getLocationFilterChoices(vpnServiceProvider string,
 		// // Retro compatibility
 		// TODO v4 remove
 		filterChoices.Regions = append(filterChoices.Regions, validation.SurfsharkRetroLocChoices()...)
-		if err := helpers.AreAllOneOf(ss.Regions, filterChoices.Regions); err != nil {
-			return models.FilterChoices{}, fmt.Errorf("%w: %s", ErrRegionNotValid, err)
+		if err := validate.AreAllOneOf(ss.Regions, filterChoices.Regions); err != nil {
+			return models.FilterChoices{}, fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 		}
 		*ss = surfsharkRetroRegion(*ss)
 	}
@@ -172,28 +171,28 @@ func getLocationFilterChoices(vpnServiceProvider string,
 // validateServerFilters validates filters against the choices given as arguments.
 // Set an argument to nil to pass the check for a particular filter.
 func validateServerFilters(settings ServerSelection, filterChoices models.FilterChoices) (err error) {
-	if err := helpers.AreAllOneOf(settings.Countries, filterChoices.Countries); err != nil {
-		return fmt.Errorf("%w: %s", ErrCountryNotValid, err)
+	if err := validate.AreAllOneOf(settings.Countries, filterChoices.Countries); err != nil {
+		return fmt.Errorf("%w: %w", ErrCountryNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Regions, filterChoices.Regions); err != nil {
-		return fmt.Errorf("%w: %s", ErrRegionNotValid, err)
+	if err := validate.AreAllOneOf(settings.Regions, filterChoices.Regions); err != nil {
+		return fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Cities, filterChoices.Cities); err != nil {
-		return fmt.Errorf("%w: %s", ErrCityNotValid, err)
+	if err := validate.AreAllOneOf(settings.Cities, filterChoices.Cities); err != nil {
+		return fmt.Errorf("%w: %w", ErrCityNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.ISPs, filterChoices.ISPs); err != nil {
-		return fmt.Errorf("%w: %s", ErrISPNotValid, err)
+	if err := validate.AreAllOneOf(settings.ISPs, filterChoices.ISPs); err != nil {
+		return fmt.Errorf("%w: %w", ErrISPNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Hostnames, filterChoices.Hostnames); err != nil {
-		return fmt.Errorf("%w: %s", ErrHostnameNotValid, err)
+	if err := validate.AreAllOneOf(settings.Hostnames, filterChoices.Hostnames); err != nil {
+		return fmt.Errorf("%w: %w", ErrHostnameNotValid, err)
 	}
 
-	if err := helpers.AreAllOneOf(settings.Names, filterChoices.Names); err != nil {
-		return fmt.Errorf("%w: %s", ErrNameNotValid, err)
+	if err := validate.AreAllOneOf(settings.Names, filterChoices.Names); err != nil {
+		return fmt.Errorf("%w: %w", ErrNameNotValid, err)
 	}
 
 	return nil
@@ -203,70 +202,70 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 	return ServerSelection{
 		VPN:          ss.VPN,
 		TargetIP:     ss.TargetIP,
-		Countries:    helpers.CopySlice(ss.Countries),
-		Regions:      helpers.CopySlice(ss.Regions),
-		Cities:       helpers.CopySlice(ss.Cities),
-		ISPs:         helpers.CopySlice(ss.ISPs),
-		Hostnames:    helpers.CopySlice(ss.Hostnames),
-		Names:        helpers.CopySlice(ss.Names),
-		Numbers:      helpers.CopySlice(ss.Numbers),
-		OwnedOnly:    helpers.CopyPointer(ss.OwnedOnly),
-		FreeOnly:     helpers.CopyPointer(ss.FreeOnly),
-		PremiumOnly:  helpers.CopyPointer(ss.PremiumOnly),
-		StreamOnly:   helpers.CopyPointer(ss.StreamOnly),
-		MultiHopOnly: helpers.CopyPointer(ss.MultiHopOnly),
+		Countries:    gosettings.CopySlice(ss.Countries),
+		Regions:      gosettings.CopySlice(ss.Regions),
+		Cities:       gosettings.CopySlice(ss.Cities),
+		ISPs:         gosettings.CopySlice(ss.ISPs),
+		Hostnames:    gosettings.CopySlice(ss.Hostnames),
+		Names:        gosettings.CopySlice(ss.Names),
+		Numbers:      gosettings.CopySlice(ss.Numbers),
+		OwnedOnly:    gosettings.CopyPointer(ss.OwnedOnly),
+		FreeOnly:     gosettings.CopyPointer(ss.FreeOnly),
+		PremiumOnly:  gosettings.CopyPointer(ss.PremiumOnly),
+		StreamOnly:   gosettings.CopyPointer(ss.StreamOnly),
+		MultiHopOnly: gosettings.CopyPointer(ss.MultiHopOnly),
 		OpenVPN:      ss.OpenVPN.copy(),
 		Wireguard:    ss.Wireguard.copy(),
 	}
 }
 
 func (ss *ServerSelection) mergeWith(other ServerSelection) {
-	ss.VPN = helpers.MergeWithString(ss.VPN, other.VPN)
-	ss.TargetIP = helpers.MergeWithIP(ss.TargetIP, other.TargetIP)
-	ss.Countries = helpers.MergeSlices(ss.Countries, other.Countries)
-	ss.Regions = helpers.MergeSlices(ss.Regions, other.Regions)
-	ss.Cities = helpers.MergeSlices(ss.Cities, other.Cities)
-	ss.ISPs = helpers.MergeSlices(ss.ISPs, other.ISPs)
-	ss.Hostnames = helpers.MergeSlices(ss.Hostnames, other.Hostnames)
-	ss.Names = helpers.MergeSlices(ss.Names, other.Names)
-	ss.Numbers = helpers.MergeSlices(ss.Numbers, other.Numbers)
-	ss.OwnedOnly = helpers.MergeWithPointer(ss.OwnedOnly, other.OwnedOnly)
-	ss.FreeOnly = helpers.MergeWithPointer(ss.FreeOnly, other.FreeOnly)
-	ss.PremiumOnly = helpers.MergeWithPointer(ss.PremiumOnly, other.PremiumOnly)
-	ss.StreamOnly = helpers.MergeWithPointer(ss.StreamOnly, other.StreamOnly)
-	ss.MultiHopOnly = helpers.MergeWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
+	ss.VPN = gosettings.MergeWithString(ss.VPN, other.VPN)
+	ss.TargetIP = gosettings.MergeWithValidator(ss.TargetIP, other.TargetIP)
+	ss.Countries = gosettings.MergeWithSlice(ss.Countries, other.Countries)
+	ss.Regions = gosettings.MergeWithSlice(ss.Regions, other.Regions)
+	ss.Cities = gosettings.MergeWithSlice(ss.Cities, other.Cities)
+	ss.ISPs = gosettings.MergeWithSlice(ss.ISPs, other.ISPs)
+	ss.Hostnames = gosettings.MergeWithSlice(ss.Hostnames, other.Hostnames)
+	ss.Names = gosettings.MergeWithSlice(ss.Names, other.Names)
+	ss.Numbers = gosettings.MergeWithSlice(ss.Numbers, other.Numbers)
+	ss.OwnedOnly = gosettings.MergeWithPointer(ss.OwnedOnly, other.OwnedOnly)
+	ss.FreeOnly = gosettings.MergeWithPointer(ss.FreeOnly, other.FreeOnly)
+	ss.PremiumOnly = gosettings.MergeWithPointer(ss.PremiumOnly, other.PremiumOnly)
+	ss.StreamOnly = gosettings.MergeWithPointer(ss.StreamOnly, other.StreamOnly)
+	ss.MultiHopOnly = gosettings.MergeWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
 
 	ss.OpenVPN.mergeWith(other.OpenVPN)
 	ss.Wireguard.mergeWith(other.Wireguard)
 }
 
 func (ss *ServerSelection) overrideWith(other ServerSelection) {
-	ss.VPN = helpers.OverrideWithString(ss.VPN, other.VPN)
-	ss.TargetIP = helpers.OverrideWithIP(ss.TargetIP, other.TargetIP)
-	ss.Countries = helpers.OverrideWithSlice(ss.Countries, other.Countries)
-	ss.Regions = helpers.OverrideWithSlice(ss.Regions, other.Regions)
-	ss.Cities = helpers.OverrideWithSlice(ss.Cities, other.Cities)
-	ss.ISPs = helpers.OverrideWithSlice(ss.ISPs, other.ISPs)
-	ss.Hostnames = helpers.OverrideWithSlice(ss.Hostnames, other.Hostnames)
-	ss.Names = helpers.OverrideWithSlice(ss.Names, other.Names)
-	ss.Numbers = helpers.OverrideWithSlice(ss.Numbers, other.Numbers)
-	ss.OwnedOnly = helpers.OverrideWithPointer(ss.OwnedOnly, other.OwnedOnly)
-	ss.FreeOnly = helpers.OverrideWithPointer(ss.FreeOnly, other.FreeOnly)
-	ss.PremiumOnly = helpers.OverrideWithPointer(ss.PremiumOnly, other.PremiumOnly)
-	ss.StreamOnly = helpers.OverrideWithPointer(ss.StreamOnly, other.StreamOnly)
-	ss.MultiHopOnly = helpers.OverrideWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
+	ss.VPN = gosettings.OverrideWithString(ss.VPN, other.VPN)
+	ss.TargetIP = gosettings.OverrideWithValidator(ss.TargetIP, other.TargetIP)
+	ss.Countries = gosettings.OverrideWithSlice(ss.Countries, other.Countries)
+	ss.Regions = gosettings.OverrideWithSlice(ss.Regions, other.Regions)
+	ss.Cities = gosettings.OverrideWithSlice(ss.Cities, other.Cities)
+	ss.ISPs = gosettings.OverrideWithSlice(ss.ISPs, other.ISPs)
+	ss.Hostnames = gosettings.OverrideWithSlice(ss.Hostnames, other.Hostnames)
+	ss.Names = gosettings.OverrideWithSlice(ss.Names, other.Names)
+	ss.Numbers = gosettings.OverrideWithSlice(ss.Numbers, other.Numbers)
+	ss.OwnedOnly = gosettings.OverrideWithPointer(ss.OwnedOnly, other.OwnedOnly)
+	ss.FreeOnly = gosettings.OverrideWithPointer(ss.FreeOnly, other.FreeOnly)
+	ss.PremiumOnly = gosettings.OverrideWithPointer(ss.PremiumOnly, other.PremiumOnly)
+	ss.StreamOnly = gosettings.OverrideWithPointer(ss.StreamOnly, other.StreamOnly)
+	ss.MultiHopOnly = gosettings.OverrideWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
 	ss.OpenVPN.overrideWith(other.OpenVPN)
 	ss.Wireguard.overrideWith(other.Wireguard)
 }
 
 func (ss *ServerSelection) setDefaults(vpnProvider string) {
-	ss.VPN = helpers.DefaultString(ss.VPN, vpn.OpenVPN)
-	ss.TargetIP = helpers.DefaultIP(ss.TargetIP, netip.IPv4Unspecified())
-	ss.OwnedOnly = helpers.DefaultPointer(ss.OwnedOnly, false)
-	ss.FreeOnly = helpers.DefaultPointer(ss.FreeOnly, false)
-	ss.PremiumOnly = helpers.DefaultPointer(ss.PremiumOnly, false)
-	ss.StreamOnly = helpers.DefaultPointer(ss.StreamOnly, false)
-	ss.MultiHopOnly = helpers.DefaultPointer(ss.MultiHopOnly, false)
+	ss.VPN = gosettings.DefaultString(ss.VPN, vpn.OpenVPN)
+	ss.TargetIP = gosettings.DefaultValidator(ss.TargetIP, netip.IPv4Unspecified())
+	ss.OwnedOnly = gosettings.DefaultPointer(ss.OwnedOnly, false)
+	ss.FreeOnly = gosettings.DefaultPointer(ss.FreeOnly, false)
+	ss.PremiumOnly = gosettings.DefaultPointer(ss.PremiumOnly, false)
+	ss.StreamOnly = gosettings.DefaultPointer(ss.StreamOnly, false)
+	ss.MultiHopOnly = gosettings.DefaultPointer(ss.MultiHopOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
 	ss.Wireguard.setDefaults()
 }

@@ -3,7 +3,7 @@ package settings
 import (
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -27,31 +27,31 @@ func (h HealthyWait) validate() (err error) {
 // unset field of the receiver settings object.
 func (h *HealthyWait) copy() (copied HealthyWait) {
 	return HealthyWait{
-		Initial:  helpers.CopyPointer(h.Initial),
-		Addition: helpers.CopyPointer(h.Addition),
+		Initial:  gosettings.CopyPointer(h.Initial),
+		Addition: gosettings.CopyPointer(h.Addition),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (h *HealthyWait) mergeWith(other HealthyWait) {
-	h.Initial = helpers.MergeWithPointer(h.Initial, other.Initial)
-	h.Addition = helpers.MergeWithPointer(h.Addition, other.Addition)
+	h.Initial = gosettings.MergeWithPointer(h.Initial, other.Initial)
+	h.Addition = gosettings.MergeWithPointer(h.Addition, other.Addition)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (h *HealthyWait) overrideWith(other HealthyWait) {
-	h.Initial = helpers.OverrideWithPointer(h.Initial, other.Initial)
-	h.Addition = helpers.OverrideWithPointer(h.Addition, other.Addition)
+	h.Initial = gosettings.OverrideWithPointer(h.Initial, other.Initial)
+	h.Addition = gosettings.OverrideWithPointer(h.Addition, other.Addition)
 }
 
 func (h *HealthyWait) setDefaults() {
 	const initialDurationDefault = 6 * time.Second
 	const additionDurationDefault = 5 * time.Second
-	h.Initial = helpers.DefaultPointer(h.Initial, initialDurationDefault)
-	h.Addition = helpers.DefaultPointer(h.Addition, additionDurationDefault)
+	h.Initial = gosettings.DefaultPointer(h.Initial, initialDurationDefault)
+	h.Addition = gosettings.DefaultPointer(h.Addition, additionDurationDefault)
 }
 
 func (h HealthyWait) String() string {

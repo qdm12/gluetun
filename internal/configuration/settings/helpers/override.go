@@ -28,7 +28,7 @@ func OverrideWithNumber[T Number](existing, other T) (result T) { //nolint:iretu
 	return other
 }
 
-func OverrideWithIP(existing, other netip.Addr) (result netip.Addr) {
+func OverrideWithValidator(existing, other netip.Addr) (result netip.Addr) {
 	if !other.IsValid() {
 		return existing
 	}

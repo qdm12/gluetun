@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
@@ -76,7 +77,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 			allowed = []uint16{53, 80, 123, 443, 1194, 65142}
 		}
 
-		if helpers.Uint16IsOneOf(*w.EndpointPort, allowed) {
+		if helpers.IsOneOf(*w.EndpointPort, allowed...) {
 			break
 		}
 		return fmt.Errorf("%w: %d for VPN service provider %s; %s",
@@ -110,26 +111,26 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 func (w *WireguardSelection) copy() (copied WireguardSelection) {
 	return WireguardSelection{
 		EndpointIP:   w.EndpointIP,
-		EndpointPort: helpers.CopyPointer(w.EndpointPort),
+		EndpointPort: gosettings.CopyPointer(w.EndpointPort),
 		PublicKey:    w.PublicKey,
 	}
 }
 
 func (w *WireguardSelection) mergeWith(other WireguardSelection) {
-	w.EndpointIP = helpers.MergeWithIP(w.EndpointIP, other.EndpointIP)
-	w.EndpointPort = helpers.MergeWithPointer(w.EndpointPort, other.EndpointPort)
-	w.PublicKey = helpers.MergeWithString(w.PublicKey, other.PublicKey)
+	w.EndpointIP = gosettings.MergeWithValidator(w.EndpointIP, other.EndpointIP)
+	w.EndpointPort = gosettings.MergeWithPointer(w.EndpointPort, other.EndpointPort)
+	w.PublicKey = gosettings.MergeWithString(w.PublicKey, other.PublicKey)
 }
 
 func (w *WireguardSelection) overrideWith(other WireguardSelection) {
-	w.EndpointIP = helpers.OverrideWithIP(w.EndpointIP, other.EndpointIP)
-	w.EndpointPort = helpers.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
-	w.PublicKey = helpers.OverrideWithString(w.PublicKey, other.PublicKey)
+	w.EndpointIP = gosettings.OverrideWithValidator(w.EndpointIP, other.EndpointIP)
+	w.EndpointPort = gosettings.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
+	w.PublicKey = gosettings.OverrideWithString(w.PublicKey, other.PublicKey)
 }
 
 func (w *WireguardSelection) setDefaults() {
-	w.EndpointIP = helpers.DefaultIP(w.EndpointIP, netip.IPv4Unspecified())
-	w.EndpointPort = helpers.DefaultPointer(w.EndpointPort, 0)
+	w.EndpointIP = gosettings.DefaultValidator(w.EndpointIP, netip.IPv4Unspecified())
+	w.EndpointPort = gosettings.DefaultPointer(w.EndpointPort, 0)
 }
 
 func (w WireguardSelection) String() string {

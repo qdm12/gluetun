@@ -5,8 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
 
@@ -45,16 +46,9 @@ func (u Updater) Validate() (err error) {
 
 	validProviders := providers.All()
 	for _, provider := range u.Providers {
-		valid := false
-		for _, validProvider := range validProviders {
-			if provider == validProvider {
-				valid = true
-				break
-			}
-		}
-		if !valid {
-			return fmt.Errorf("%w: %q can only be one of %s",
-				ErrVPNProviderNameNotValid, provider, helpers.ChoicesOrString(validProviders))
+		err = validate.IsOneOf(provider, validProviders...)
+		if err != nil {
+			return fmt.Errorf("%w: %w", ErrVPNProviderNameNotValid, err)
 		}
 	}
 
@@ -63,35 +57,35 @@ func (u Updater) Validate() (err error) {
 
 func (u *Updater) copy() (copied Updater) {
 	return Updater{
-		Period:     helpers.CopyPointer(u.Period),
+		Period:     gosettings.CopyPointer(u.Period),
 		DNSAddress: u.DNSAddress,
 		MinRatio:   u.MinRatio,
-		Providers:  helpers.CopySlice(u.Providers),
+		Providers:  gosettings.CopySlice(u.Providers),
 	}
 }
 
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (u *Updater) mergeWith(other Updater) {
-	u.Period = helpers.MergeWithPointer(u.Period, other.Period)
-	u.DNSAddress = helpers.MergeWithString(u.DNSAddress, other.DNSAddress)
-	u.MinRatio = helpers.MergeWithNumber(u.MinRatio, other.MinRatio)
-	u.Providers = helpers.MergeSlices(u.Providers, other.Providers)
+	u.Period = gosettings.MergeWithPointer(u.Period, other.Period)
+	u.DNSAddress = gosettings.MergeWithString(u.DNSAddress, other.DNSAddress)
+	u.MinRatio = gosettings.MergeWithNumber(u.MinRatio, other.MinRatio)
+	u.Providers = gosettings.MergeWithSlice(u.Providers, other.Providers)
 }
 
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (u *Updater) overrideWith(other Updater) {
-	u.Period = helpers.OverrideWithPointer(u.Period, other.Period)
-	u.DNSAddress = helpers.OverrideWithString(u.DNSAddress, other.DNSAddress)
-	u.MinRatio = helpers.OverrideWithNumber(u.MinRatio, other.MinRatio)
-	u.Providers = helpers.OverrideWithSlice(u.Providers, other.Providers)
+	u.Period = gosettings.OverrideWithPointer(u.Period, other.Period)
+	u.DNSAddress = gosettings.OverrideWithString(u.DNSAddress, other.DNSAddress)
+	u.MinRatio = gosettings.OverrideWithNumber(u.MinRatio, other.MinRatio)
+	u.Providers = gosettings.OverrideWithSlice(u.Providers, other.Providers)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
-	u.Period = helpers.DefaultPointer(u.Period, 0)
-	u.DNSAddress = helpers.DefaultString(u.DNSAddress, "1.1.1.1:53")
+	u.Period = gosettings.DefaultPointer(u.Period, 0)
+	u.DNSAddress = gosettings.DefaultString(u.DNSAddress, "1.1.1.1:53")
 
 	if u.MinRatio == 0 {
 		const defaultMinRatio = 0.8

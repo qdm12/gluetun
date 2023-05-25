@@ -5,6 +5,7 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -40,7 +41,7 @@ func (d DNS) validate() (err error) {
 func (d *DNS) Copy() (copied DNS) {
 	return DNS{
 		ServerAddress:  d.ServerAddress,
-		KeepNameserver: helpers.CopyPointer(d.KeepNameserver),
+		KeepNameserver: gosettings.CopyPointer(d.KeepNameserver),
 		DoT:            d.DoT.copy(),
 	}
 }
@@ -48,8 +49,8 @@ func (d *DNS) Copy() (copied DNS) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (d *DNS) mergeWith(other DNS) {
-	d.ServerAddress = helpers.MergeWithIP(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = helpers.MergeWithPointer(d.KeepNameserver, other.KeepNameserver)
+	d.ServerAddress = gosettings.MergeWithValidator(d.ServerAddress, other.ServerAddress)
+	d.KeepNameserver = gosettings.MergeWithPointer(d.KeepNameserver, other.KeepNameserver)
 	d.DoT.mergeWith(other.DoT)
 }
 
@@ -57,15 +58,15 @@ func (d *DNS) mergeWith(other DNS) {
 // settings object with any field set in the other
 // settings.
 func (d *DNS) overrideWith(other DNS) {
-	d.ServerAddress = helpers.OverrideWithIP(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = helpers.OverrideWithPointer(d.KeepNameserver, other.KeepNameserver)
+	d.ServerAddress = gosettings.OverrideWithValidator(d.ServerAddress, other.ServerAddress)
+	d.KeepNameserver = gosettings.OverrideWithPointer(d.KeepNameserver, other.KeepNameserver)
 	d.DoT.overrideWith(other.DoT)
 }
 
 func (d *DNS) setDefaults() {
 	localhost := netip.AddrFrom4([4]byte{127, 0, 0, 1})
-	d.ServerAddress = helpers.DefaultIP(d.ServerAddress, localhost)
-	d.KeepNameserver = helpers.DefaultPointer(d.KeepNameserver, false)
+	d.ServerAddress = gosettings.DefaultValidator(d.ServerAddress, localhost)
+	d.KeepNameserver = gosettings.DefaultPointer(d.KeepNameserver, false)
 	d.DoT.setDefaults()
 }
 

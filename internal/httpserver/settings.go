@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 	"github.com/qdm12/govalid/address"
 )
@@ -34,12 +34,12 @@ type Settings struct {
 }
 
 func (s *Settings) SetDefaults() {
-	s.Address = helpers.DefaultString(s.Address, ":8000")
+	s.Address = gosettings.DefaultString(s.Address, ":8000")
 	const defaultReadTimeout = 3 * time.Second
-	s.ReadHeaderTimeout = helpers.DefaultNumber(s.ReadHeaderTimeout, defaultReadTimeout)
-	s.ReadTimeout = helpers.DefaultNumber(s.ReadTimeout, defaultReadTimeout)
+	s.ReadHeaderTimeout = gosettings.DefaultNumber(s.ReadHeaderTimeout, defaultReadTimeout)
+	s.ReadTimeout = gosettings.DefaultNumber(s.ReadTimeout, defaultReadTimeout)
 	const defaultShutdownTimeout = 3 * time.Second
-	s.ShutdownTimeout = helpers.DefaultNumber(s.ShutdownTimeout, defaultShutdownTimeout)
+	s.ShutdownTimeout = gosettings.DefaultNumber(s.ShutdownTimeout, defaultShutdownTimeout)
 }
 
 func (s Settings) Copy() Settings {
@@ -54,25 +54,25 @@ func (s Settings) Copy() Settings {
 }
 
 func (s *Settings) MergeWith(other Settings) {
-	s.Address = helpers.MergeWithString(s.Address, other.Address)
-	s.Handler = helpers.MergeWithHTTPHandler(s.Handler, other.Handler)
+	s.Address = gosettings.MergeWithString(s.Address, other.Address)
+	s.Handler = gosettings.MergeWithInterface(s.Handler, other.Handler)
 	if s.Logger == nil {
 		s.Logger = other.Logger
 	}
-	s.ReadHeaderTimeout = helpers.MergeWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = helpers.MergeWithNumber(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = helpers.MergeWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
+	s.ReadHeaderTimeout = gosettings.MergeWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	s.ReadTimeout = gosettings.MergeWithNumber(s.ReadTimeout, other.ReadTimeout)
+	s.ShutdownTimeout = gosettings.MergeWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
 }
 
 func (s *Settings) OverrideWith(other Settings) {
-	s.Address = helpers.OverrideWithString(s.Address, other.Address)
-	s.Handler = helpers.OverrideWithHTTPHandler(s.Handler, other.Handler)
+	s.Address = gosettings.OverrideWithString(s.Address, other.Address)
+	s.Handler = gosettings.OverrideWithInterface(s.Handler, other.Handler)
 	if other.Logger != nil {
 		s.Logger = other.Logger
 	}
-	s.ReadHeaderTimeout = helpers.OverrideWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = helpers.OverrideWithNumber(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = helpers.OverrideWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
+	s.ReadHeaderTimeout = gosettings.OverrideWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	s.ReadTimeout = gosettings.OverrideWithNumber(s.ReadTimeout, other.ReadTimeout)
+	s.ShutdownTimeout = gosettings.OverrideWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
 }
 
 var (

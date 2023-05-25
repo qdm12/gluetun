@@ -2,6 +2,7 @@ package settings
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 	"github.com/qdm12/ss-server/pkg/tcpudp"
 )
@@ -21,7 +22,7 @@ func (s Shadowsocks) validate() (err error) {
 
 func (s *Shadowsocks) copy() (copied Shadowsocks) {
 	return Shadowsocks{
-		Enabled:  helpers.CopyPointer(s.Enabled),
+		Enabled:  gosettings.CopyPointer(s.Enabled),
 		Settings: s.Settings.Copy(),
 	}
 }
@@ -29,7 +30,7 @@ func (s *Shadowsocks) copy() (copied Shadowsocks) {
 // mergeWith merges the other settings into any
 // unset field of the receiver settings object.
 func (s *Shadowsocks) mergeWith(other Shadowsocks) {
-	s.Enabled = helpers.MergeWithPointer(s.Enabled, other.Enabled)
+	s.Enabled = gosettings.MergeWithPointer(s.Enabled, other.Enabled)
 	s.Settings.MergeWith(other.Settings)
 }
 
@@ -37,12 +38,12 @@ func (s *Shadowsocks) mergeWith(other Shadowsocks) {
 // settings object with any field set in the other
 // settings.
 func (s *Shadowsocks) overrideWith(other Shadowsocks) {
-	s.Enabled = helpers.OverrideWithPointer(s.Enabled, other.Enabled)
+	s.Enabled = gosettings.OverrideWithPointer(s.Enabled, other.Enabled)
 	s.Settings.OverrideWith(other.Settings)
 }
 
 func (s *Shadowsocks) setDefaults() {
-	s.Enabled = helpers.DefaultPointer(s.Enabled, false)
+	s.Enabled = gosettings.DefaultPointer(s.Enabled, false)
 	s.Settings.SetDefaults()
 }
 

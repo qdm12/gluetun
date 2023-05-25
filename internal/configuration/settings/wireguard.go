@@ -7,6 +7,8 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 	wireguarddevice "golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
@@ -102,9 +104,8 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 	}
 
 	validImplementations := []string{"auto", "userspace", "kernelspace"}
-	if !helpers.IsOneOf(w.Implementation, validImplementations...) {
-		return fmt.Errorf("%w: %s must be one of %s", ErrWireguardImplementationNotValid,
-			w.Implementation, helpers.ChoicesOrString(validImplementations))
+	if err := validate.IsOneOf(w.Implementation, validImplementations...); err != nil {
+		return fmt.Errorf("%w: %w", ErrWireguardImplementationNotValid, err)
 	}
 
 	return nil
@@ -112,9 +113,9 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
-		PrivateKey:     helpers.CopyPointer(w.PrivateKey),
-		PreSharedKey:   helpers.CopyPointer(w.PreSharedKey),
-		Addresses:      helpers.CopySlice(w.Addresses),
+		PrivateKey:     gosettings.CopyPointer(w.PrivateKey),
+		PreSharedKey:   gosettings.CopyPointer(w.PreSharedKey),
+		Addresses:      gosettings.CopySlice(w.Addresses),
 		Interface:      w.Interface,
 		MTU:            w.MTU,
 		Implementation: w.Implementation,
@@ -122,29 +123,29 @@ func (w *Wireguard) copy() (copied Wireguard) {
 }
 
 func (w *Wireguard) mergeWith(other Wireguard) {
-	w.PrivateKey = helpers.MergeWithPointer(w.PrivateKey, other.PrivateKey)
-	w.PreSharedKey = helpers.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.MergeSlices(w.Addresses, other.Addresses)
-	w.Interface = helpers.MergeWithString(w.Interface, other.Interface)
-	w.MTU = helpers.MergeWithNumber(w.MTU, other.MTU)
-	w.Implementation = helpers.MergeWithString(w.Implementation, other.Implementation)
+	w.PrivateKey = gosettings.MergeWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PreSharedKey = gosettings.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
+	w.Addresses = gosettings.MergeWithSlice(w.Addresses, other.Addresses)
+	w.Interface = gosettings.MergeWithString(w.Interface, other.Interface)
+	w.MTU = gosettings.MergeWithNumber(w.MTU, other.MTU)
+	w.Implementation = gosettings.MergeWithString(w.Implementation, other.Implementation)
 }
 
 func (w *Wireguard) overrideWith(other Wireguard) {
-	w.PrivateKey = helpers.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
-	w.PreSharedKey = helpers.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = helpers.OverrideWithSlice(w.Addresses, other.Addresses)
-	w.Interface = helpers.OverrideWithString(w.Interface, other.Interface)
-	w.MTU = helpers.OverrideWithNumber(w.MTU, other.MTU)
-	w.Implementation = helpers.OverrideWithString(w.Implementation, other.Implementation)
+	w.PrivateKey = gosettings.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PreSharedKey = gosettings.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
+	w.Addresses = gosettings.OverrideWithSlice(w.Addresses, other.Addresses)
+	w.Interface = gosettings.OverrideWithString(w.Interface, other.Interface)
+	w.MTU = gosettings.OverrideWithNumber(w.MTU, other.MTU)
+	w.Implementation = gosettings.OverrideWithString(w.Implementation, other.Implementation)
 }
 
 func (w *Wireguard) setDefaults() {
-	w.PrivateKey = helpers.DefaultPointer(w.PrivateKey, "")
-	w.PreSharedKey = helpers.DefaultPointer(w.PreSharedKey, "")
-	w.Interface = helpers.DefaultString(w.Interface, "wg0")
-	w.MTU = helpers.DefaultNumber(w.MTU, wireguarddevice.DefaultMTU)
-	w.Implementation = helpers.DefaultString(w.Implementation, "auto")
+	w.PrivateKey = gosettings.DefaultPointer(w.PrivateKey, "")
+	w.PreSharedKey = gosettings.DefaultPointer(w.PreSharedKey, "")
+	w.Interface = gosettings.DefaultString(w.Interface, "wg0")
+	w.MTU = gosettings.DefaultNumber(w.MTU, wireguarddevice.DefaultMTU)
+	w.Implementation = gosettings.DefaultString(w.Implementation, "auto")
 }
 
 func (w Wireguard) String() string {

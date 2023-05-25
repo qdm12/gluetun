@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -30,17 +31,17 @@ func (u *Unbound) setDefaults() {
 		}
 	}
 
-	u.Caching = helpers.DefaultPointer(u.Caching, true)
-	u.IPv6 = helpers.DefaultPointer(u.IPv6, false)
+	u.Caching = gosettings.DefaultPointer(u.Caching, true)
+	u.IPv6 = gosettings.DefaultPointer(u.IPv6, false)
 
 	const defaultVerbosityLevel = 1
-	u.VerbosityLevel = helpers.DefaultPointer(u.VerbosityLevel, defaultVerbosityLevel)
+	u.VerbosityLevel = gosettings.DefaultPointer(u.VerbosityLevel, defaultVerbosityLevel)
 
 	const defaultVerbosityDetailsLevel = 0
-	u.VerbosityDetailsLevel = helpers.DefaultPointer(u.VerbosityDetailsLevel, defaultVerbosityDetailsLevel)
+	u.VerbosityDetailsLevel = gosettings.DefaultPointer(u.VerbosityDetailsLevel, defaultVerbosityDetailsLevel)
 
 	const defaultValidationLogLevel = 0
-	u.ValidationLogLevel = helpers.DefaultPointer(u.ValidationLogLevel, defaultValidationLogLevel)
+	u.ValidationLogLevel = gosettings.DefaultPointer(u.ValidationLogLevel, defaultValidationLogLevel)
 
 	if u.Allowed == nil {
 		u.Allowed = []netip.Prefix{
@@ -49,7 +50,7 @@ func (u *Unbound) setDefaults() {
 		}
 	}
 
-	u.Username = helpers.DefaultString(u.Username, "root")
+	u.Username = gosettings.DefaultString(u.Username, "root")
 }
 
 var (
@@ -94,37 +95,37 @@ func (u Unbound) validate() (err error) {
 
 func (u Unbound) copy() (copied Unbound) {
 	return Unbound{
-		Providers:             helpers.CopySlice(u.Providers),
-		Caching:               helpers.CopyPointer(u.Caching),
-		IPv6:                  helpers.CopyPointer(u.IPv6),
-		VerbosityLevel:        helpers.CopyPointer(u.VerbosityLevel),
-		VerbosityDetailsLevel: helpers.CopyPointer(u.VerbosityDetailsLevel),
-		ValidationLogLevel:    helpers.CopyPointer(u.ValidationLogLevel),
+		Providers:             gosettings.CopySlice(u.Providers),
+		Caching:               gosettings.CopyPointer(u.Caching),
+		IPv6:                  gosettings.CopyPointer(u.IPv6),
+		VerbosityLevel:        gosettings.CopyPointer(u.VerbosityLevel),
+		VerbosityDetailsLevel: gosettings.CopyPointer(u.VerbosityDetailsLevel),
+		ValidationLogLevel:    gosettings.CopyPointer(u.ValidationLogLevel),
 		Username:              u.Username,
-		Allowed:               helpers.CopySlice(u.Allowed),
+		Allowed:               gosettings.CopySlice(u.Allowed),
 	}
 }
 
 func (u *Unbound) mergeWith(other Unbound) {
-	u.Providers = helpers.MergeSlices(u.Providers, other.Providers)
-	u.Caching = helpers.MergeWithPointer(u.Caching, other.Caching)
-	u.IPv6 = helpers.MergeWithPointer(u.IPv6, other.IPv6)
-	u.VerbosityLevel = helpers.MergeWithPointer(u.VerbosityLevel, other.VerbosityLevel)
-	u.VerbosityDetailsLevel = helpers.MergeWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
-	u.ValidationLogLevel = helpers.MergeWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
-	u.Username = helpers.MergeWithString(u.Username, other.Username)
-	u.Allowed = helpers.MergeSlices(u.Allowed, other.Allowed)
+	u.Providers = gosettings.MergeWithSlice(u.Providers, other.Providers)
+	u.Caching = gosettings.MergeWithPointer(u.Caching, other.Caching)
+	u.IPv6 = gosettings.MergeWithPointer(u.IPv6, other.IPv6)
+	u.VerbosityLevel = gosettings.MergeWithPointer(u.VerbosityLevel, other.VerbosityLevel)
+	u.VerbosityDetailsLevel = gosettings.MergeWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
+	u.ValidationLogLevel = gosettings.MergeWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Username = gosettings.MergeWithString(u.Username, other.Username)
+	u.Allowed = gosettings.MergeWithSlice(u.Allowed, other.Allowed)
 }
 
 func (u *Unbound) overrideWith(other Unbound) {
-	u.Providers = helpers.OverrideWithSlice(u.Providers, other.Providers)
-	u.Caching = helpers.OverrideWithPointer(u.Caching, other.Caching)
-	u.IPv6 = helpers.OverrideWithPointer(u.IPv6, other.IPv6)
-	u.VerbosityLevel = helpers.OverrideWithPointer(u.VerbosityLevel, other.VerbosityLevel)
-	u.VerbosityDetailsLevel = helpers.OverrideWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
-	u.ValidationLogLevel = helpers.OverrideWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
-	u.Username = helpers.OverrideWithString(u.Username, other.Username)
-	u.Allowed = helpers.OverrideWithSlice(u.Allowed, other.Allowed)
+	u.Providers = gosettings.OverrideWithSlice(u.Providers, other.Providers)
+	u.Caching = gosettings.OverrideWithPointer(u.Caching, other.Caching)
+	u.IPv6 = gosettings.OverrideWithPointer(u.IPv6, other.IPv6)
+	u.VerbosityLevel = gosettings.OverrideWithPointer(u.VerbosityLevel, other.VerbosityLevel)
+	u.VerbosityDetailsLevel = gosettings.OverrideWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
+	u.ValidationLogLevel = gosettings.OverrideWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
+	u.Username = gosettings.OverrideWithString(u.Username, other.Username)
+	u.Allowed = gosettings.OverrideWithSlice(u.Allowed, other.Allowed)
 }
 
 func (u Unbound) ToUnboundFormat() (settings unbound.Settings, err error) {

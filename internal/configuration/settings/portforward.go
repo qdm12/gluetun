@@ -3,10 +3,10 @@ package settings
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
 
@@ -29,9 +29,8 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 
 	// Validate Enabled
 	validProviders := []string{providers.PrivateInternetAccess}
-	if !helpers.IsOneOf(vpnProvider, validProviders...) {
-		return fmt.Errorf("%w: for provider %s, it is only available for %s",
-			ErrPortForwardingEnabled, vpnProvider, strings.Join(validProviders, ", "))
+	if err = validate.IsOneOf(vpnProvider, validProviders...); err != nil {
+		return fmt.Errorf("%w: %w", ErrPortForwardingEnabled, err)
 	}
 
 	// Validate Filepath
@@ -47,24 +46,24 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 
 func (p *PortForwarding) copy() (copied PortForwarding) {
 	return PortForwarding{
-		Enabled:  helpers.CopyPointer(p.Enabled),
-		Filepath: helpers.CopyPointer(p.Filepath),
+		Enabled:  gosettings.CopyPointer(p.Enabled),
+		Filepath: gosettings.CopyPointer(p.Filepath),
 	}
 }
 
 func (p *PortForwarding) mergeWith(other PortForwarding) {
-	p.Enabled = helpers.MergeWithPointer(p.Enabled, other.Enabled)
-	p.Filepath = helpers.MergeWithPointer(p.Filepath, other.Filepath)
+	p.Enabled = gosettings.MergeWithPointer(p.Enabled, other.Enabled)
+	p.Filepath = gosettings.MergeWithPointer(p.Filepath, other.Filepath)
 }
 
 func (p *PortForwarding) overrideWith(other PortForwarding) {
-	p.Enabled = helpers.OverrideWithPointer(p.Enabled, other.Enabled)
-	p.Filepath = helpers.OverrideWithPointer(p.Filepath, other.Filepath)
+	p.Enabled = gosettings.OverrideWithPointer(p.Enabled, other.Enabled)
+	p.Filepath = gosettings.OverrideWithPointer(p.Filepath, other.Filepath)
 }
 
 func (p *PortForwarding) setDefaults() {
-	p.Enabled = helpers.DefaultPointer(p.Enabled, false)
-	p.Filepath = helpers.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
+	p.Enabled = gosettings.DefaultPointer(p.Enabled, false)
+	p.Filepath = gosettings.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
 }
 
 func (p PortForwarding) String() string {

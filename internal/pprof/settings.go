@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/httpserver"
+	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
 
@@ -27,16 +27,16 @@ type Settings struct {
 }
 
 func (s *Settings) SetDefaults() {
-	s.Enabled = helpers.DefaultPointer(s.Enabled, false)
-	s.HTTPServer.Address = helpers.DefaultString(s.HTTPServer.Address, "localhost:6060")
+	s.Enabled = gosettings.DefaultPointer(s.Enabled, false)
+	s.HTTPServer.Address = gosettings.DefaultString(s.HTTPServer.Address, "localhost:6060")
 	const defaultReadTimeout = 5 * time.Minute // for CPU profiling
-	s.HTTPServer.ReadTimeout = helpers.DefaultNumber(s.HTTPServer.ReadTimeout, defaultReadTimeout)
+	s.HTTPServer.ReadTimeout = gosettings.DefaultNumber(s.HTTPServer.ReadTimeout, defaultReadTimeout)
 	s.HTTPServer.SetDefaults()
 }
 
 func (s Settings) Copy() (copied Settings) {
 	return Settings{
-		Enabled:          helpers.CopyPointer(s.Enabled),
+		Enabled:          gosettings.CopyPointer(s.Enabled),
 		BlockProfileRate: s.BlockProfileRate,
 		MutexProfileRate: s.MutexProfileRate,
 		HTTPServer:       s.HTTPServer.Copy(),
@@ -44,16 +44,16 @@ func (s Settings) Copy() (copied Settings) {
 }
 
 func (s *Settings) MergeWith(other Settings) {
-	s.Enabled = helpers.MergeWithPointer(s.Enabled, other.Enabled)
-	s.BlockProfileRate = helpers.MergeWithPointer(s.BlockProfileRate, other.BlockProfileRate)
-	s.MutexProfileRate = helpers.MergeWithPointer(s.MutexProfileRate, other.MutexProfileRate)
+	s.Enabled = gosettings.MergeWithPointer(s.Enabled, other.Enabled)
+	s.BlockProfileRate = gosettings.MergeWithPointer(s.BlockProfileRate, other.BlockProfileRate)
+	s.MutexProfileRate = gosettings.MergeWithPointer(s.MutexProfileRate, other.MutexProfileRate)
 	s.HTTPServer.MergeWith(other.HTTPServer)
 }
 
 func (s *Settings) OverrideWith(other Settings) {
-	s.Enabled = helpers.OverrideWithPointer(s.Enabled, other.Enabled)
-	s.BlockProfileRate = helpers.OverrideWithPointer(s.BlockProfileRate, other.BlockProfileRate)
-	s.MutexProfileRate = helpers.OverrideWithPointer(s.MutexProfileRate, other.MutexProfileRate)
+	s.Enabled = gosettings.OverrideWithPointer(s.Enabled, other.Enabled)
+	s.BlockProfileRate = gosettings.OverrideWithPointer(s.BlockProfileRate, other.BlockProfileRate)
+	s.MutexProfileRate = gosettings.OverrideWithPointer(s.MutexProfileRate, other.MutexProfileRate)
 	s.HTTPServer.OverrideWith(other.HTTPServer)
 }
 

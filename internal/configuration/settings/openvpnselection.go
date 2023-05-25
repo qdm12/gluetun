@@ -6,6 +6,8 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess/presets"
+	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
 
@@ -99,14 +101,14 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 				allowedUDP = []uint16{53, 80, 123, 443, 1194, 54783}
 			}
 
-			if *o.TCP && !helpers.Uint16IsOneOf(*o.CustomPort, allowedTCP) {
-				return fmt.Errorf("%w: %d for VPN service provider %s; %s",
-					ErrOpenVPNCustomPortNotAllowed, o.CustomPort, vpnProvider,
-					helpers.PortChoicesOrString(allowedTCP))
-			} else if !*o.TCP && !helpers.Uint16IsOneOf(*o.CustomPort, allowedUDP) {
-				return fmt.Errorf("%w: %d for VPN service provider %s; %s",
-					ErrOpenVPNCustomPortNotAllowed, o.CustomPort, vpnProvider,
-					helpers.PortChoicesOrString(allowedUDP))
+			allowedPorts := allowedUDP
+			if *o.TCP {
+				allowedPorts = allowedTCP
+			}
+			err = validate.IsOneOf(*o.CustomPort, allowedPorts...)
+			if err != nil {
+				return fmt.Errorf("%w: for VPN service provider %s: %w",
+					ErrOpenVPNCustomPortNotAllowed, vpnProvider, err)
 			}
 		}
 	}
@@ -118,10 +120,8 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			presets.Normal,
 			presets.Strong,
 		}
-		if !helpers.IsOneOf(*o.PIAEncPreset, validEncryptionPresets...) {
-			return fmt.Errorf("%w: %s; valid presets are %s",
-				ErrOpenVPNEncryptionPresetNotValid, *o.PIAEncPreset,
-				helpers.ChoicesOrString(validEncryptionPresets))
+		if err = validate.IsOneOf(*o.PIAEncPreset, validEncryptionPresets...); err != nil {
+			return fmt.Errorf("%w: %w", ErrOpenVPNEncryptionPresetNotValid, err)
 		}
 	}
 
@@ -130,37 +130,37 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 
 func (o *OpenVPNSelection) copy() (copied OpenVPNSelection) {
 	return OpenVPNSelection{
-		ConfFile:     helpers.CopyPointer(o.ConfFile),
-		TCP:          helpers.CopyPointer(o.TCP),
-		CustomPort:   helpers.CopyPointer(o.CustomPort),
-		PIAEncPreset: helpers.CopyPointer(o.PIAEncPreset),
+		ConfFile:     gosettings.CopyPointer(o.ConfFile),
+		TCP:          gosettings.CopyPointer(o.TCP),
+		CustomPort:   gosettings.CopyPointer(o.CustomPort),
+		PIAEncPreset: gosettings.CopyPointer(o.PIAEncPreset),
 	}
 }
 
 func (o *OpenVPNSelection) mergeWith(other OpenVPNSelection) {
-	o.ConfFile = helpers.MergeWithPointer(o.ConfFile, other.ConfFile)
-	o.TCP = helpers.MergeWithPointer(o.TCP, other.TCP)
-	o.CustomPort = helpers.MergeWithPointer(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = helpers.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
+	o.ConfFile = gosettings.MergeWithPointer(o.ConfFile, other.ConfFile)
+	o.TCP = gosettings.MergeWithPointer(o.TCP, other.TCP)
+	o.CustomPort = gosettings.MergeWithPointer(o.CustomPort, other.CustomPort)
+	o.PIAEncPreset = gosettings.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {
-	o.ConfFile = helpers.OverrideWithPointer(o.ConfFile, other.ConfFile)
-	o.TCP = helpers.OverrideWithPointer(o.TCP, other.TCP)
-	o.CustomPort = helpers.OverrideWithPointer(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = helpers.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
+	o.ConfFile = gosettings.OverrideWithPointer(o.ConfFile, other.ConfFile)
+	o.TCP = gosettings.OverrideWithPointer(o.TCP, other.TCP)
+	o.CustomPort = gosettings.OverrideWithPointer(o.CustomPort, other.CustomPort)
+	o.PIAEncPreset = gosettings.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
-	o.ConfFile = helpers.DefaultPointer(o.ConfFile, "")
-	o.TCP = helpers.DefaultPointer(o.TCP, false)
-	o.CustomPort = helpers.DefaultPointer(o.CustomPort, 0)
+	o.ConfFile = gosettings.DefaultPointer(o.ConfFile, "")
+	o.TCP = gosettings.DefaultPointer(o.TCP, false)
+	o.CustomPort = gosettings.DefaultPointer(o.CustomPort, 0)
 
 	var defaultEncPreset string
 	if vpnProvider == providers.PrivateInternetAccess {
 		defaultEncPreset = presets.Strong
 	}
-	o.PIAEncPreset = helpers.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
+	o.PIAEncPreset = gosettings.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
 }
 
 func (o OpenVPNSelection) String() string {
