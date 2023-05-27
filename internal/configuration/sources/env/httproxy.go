@@ -56,12 +56,7 @@ func (s *Source) readHTTProxyListeningAddress() (listeningAddress string) {
 
 func (s *Source) readHTTProxyEnabled() (enabled *bool, err error) {
 	key, value := s.getEnvWithRetro("HTTPPROXY", "PROXY", "TINYPROXY")
-	if value == "" {
-		return nil, nil //nolint:nilnil
-	}
-
-	enabled = new(bool)
-	*enabled, err = binary.Validate(value)
+	enabled, err = binary.Validate(value)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}
@@ -71,9 +66,6 @@ func (s *Source) readHTTProxyEnabled() (enabled *bool, err error) {
 
 func (s *Source) readHTTProxyLog() (enabled *bool, err error) {
 	key, value := s.getEnvWithRetro("HTTPPROXY_LOG", "PROXY_LOG_LEVEL", "TINYPROXY_LOG")
-	if value == "" {
-		return nil, nil //nolint:nilnil
-	}
 
 	var binaryOptions []binary.Option
 	if key != "HTTPROXY_LOG" {
@@ -81,8 +73,7 @@ func (s *Source) readHTTProxyLog() (enabled *bool, err error) {
 		binaryOptions = append(binaryOptions, retroOption)
 	}
 
-	enabled = new(bool)
-	*enabled, err = binary.Validate(value, binaryOptions...)
+	enabled, err = binary.Validate(value, binaryOptions...)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}

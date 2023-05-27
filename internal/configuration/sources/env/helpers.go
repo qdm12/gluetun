@@ -48,14 +48,11 @@ func envToStringPtr(envKey string) (stringPtr *string) {
 
 func envToBoolPtr(envKey string) (boolPtr *bool, err error) {
 	s := getCleanedEnv(envKey)
-	if s == "" {
-		return nil, nil //nolint:nilnil
-	}
 	value, err := binary.Validate(s)
 	if err != nil {
 		return nil, err
 	}
-	return &value, nil
+	return value, nil
 }
 
 func envToIntPtr(envKey string) (intPtr *int, err error) {

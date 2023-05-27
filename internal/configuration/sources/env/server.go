@@ -20,16 +20,11 @@ func (s *Source) readControlServer() (controlServer settings.ControlServer, err 
 
 func readControlServerLog() (enabled *bool, err error) {
 	s := getCleanedEnv("HTTP_CONTROL_SERVER_LOG")
-	if s == "" {
-		return nil, nil //nolint:nilnil
-	}
-
 	log, err := binary.Validate(s)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable HTTP_CONTROL_SERVER_LOG: %w", err)
 	}
-
-	return &log, nil
+	return log, nil
 }
 
 func (s *Source) readControlServerAddress() (address *string) {

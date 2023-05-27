@@ -47,7 +47,7 @@ func (h HTTPProxy) validate() (err error) {
 	// Do not validate user and password
 
 	uid := os.Getuid()
-	_, err = address.Validate(h.ListeningAddress, address.OptionListening(uid))
+	err = address.Validate(h.ListeningAddress, address.OptionListening(uid))
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrServerAddressNotValid, h.ListeningAddress)
 	}

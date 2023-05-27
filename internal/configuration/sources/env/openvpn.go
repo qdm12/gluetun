@@ -119,7 +119,7 @@ func (s *Source) readOpenVPNProcessUser() (processUser string, err error) {
 	if err != nil {
 		return "", fmt.Errorf("environment variable %s: %w", key, err)
 	}
-	if root {
+	if *root {
 		return "root", nil
 	}
 	const defaultNonRootUser = "nonrootuser"

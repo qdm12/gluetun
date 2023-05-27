@@ -22,8 +22,7 @@ func readVersionEnabled() (enabled *bool, err error) {
 		return nil, nil //nolint:nilnil
 	}
 
-	enabled = new(bool)
-	*enabled, err = binary.Validate(s)
+	enabled, err = binary.Validate(s)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable VERSION_INFORMATION: %w", err)
 	}

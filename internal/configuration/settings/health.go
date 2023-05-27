@@ -37,7 +37,7 @@ type Health struct {
 
 func (h Health) Validate() (err error) {
 	uid := os.Getuid()
-	_, err = address.Validate(h.ServerAddress,
+	err = address.Validate(h.ServerAddress,
 		address.OptionListening(uid))
 	if err != nil {
 		return fmt.Errorf("server listening address is not valid: %w", err)

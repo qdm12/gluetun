@@ -38,12 +38,7 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 
 func (s *Source) readBlockSurveillance() (blocked *bool, err error) {
 	key, value := s.getEnvWithRetro("BLOCK_SURVEILLANCE", "BLOCK_NSA")
-	if value == "" {
-		return nil, nil //nolint:nilnil
-	}
-
-	blocked = new(bool)
-	*blocked, err = binary.Validate(value)
+	blocked, err = binary.Validate(value)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}

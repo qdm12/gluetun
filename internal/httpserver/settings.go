@@ -85,7 +85,7 @@ var (
 
 func (s Settings) Validate() (err error) {
 	uid := os.Getuid()
-	_, err = address.Validate(s.Address, address.OptionListening(uid))
+	err = address.Validate(s.Address, address.OptionListening(uid))
 	if err != nil {
 		return err
 	}
