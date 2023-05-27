@@ -159,7 +159,8 @@ func getLocationFilterChoices(vpnServiceProvider string,
 		// // Retro compatibility
 		// TODO v4 remove
 		filterChoices.Regions = append(filterChoices.Regions, validation.SurfsharkRetroLocChoices()...)
-		if err := validate.AreAllOneOf(ss.Regions, filterChoices.Regions); err != nil {
+		err := validate.AreAllOneOfCaseInsensitive(ss.Regions, filterChoices.Regions)
+		if err != nil {
 			return models.FilterChoices{}, fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 		}
 		*ss = surfsharkRetroRegion(*ss)
@@ -171,27 +172,33 @@ func getLocationFilterChoices(vpnServiceProvider string,
 // validateServerFilters validates filters against the choices given as arguments.
 // Set an argument to nil to pass the check for a particular filter.
 func validateServerFilters(settings ServerSelection, filterChoices models.FilterChoices) (err error) {
-	if err := validate.AreAllOneOf(settings.Countries, filterChoices.Countries); err != nil {
+	err = validate.AreAllOneOfCaseInsensitive(settings.Countries, filterChoices.Countries)
+	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCountryNotValid, err)
 	}
 
-	if err := validate.AreAllOneOf(settings.Regions, filterChoices.Regions); err != nil {
+	err = validate.AreAllOneOfCaseInsensitive(settings.Regions, filterChoices.Regions)
+	if err != nil {
 		return fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 	}
 
-	if err := validate.AreAllOneOf(settings.Cities, filterChoices.Cities); err != nil {
+	err = validate.AreAllOneOfCaseInsensitive(settings.Cities, filterChoices.Cities)
+	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCityNotValid, err)
 	}
 
-	if err := validate.AreAllOneOf(settings.ISPs, filterChoices.ISPs); err != nil {
+	err = validate.AreAllOneOfCaseInsensitive(settings.ISPs, filterChoices.ISPs)
+	if err != nil {
 		return fmt.Errorf("%w: %w", ErrISPNotValid, err)
 	}
 
-	if err := validate.AreAllOneOf(settings.Hostnames, filterChoices.Hostnames); err != nil {
+	err = validate.AreAllOneOfCaseInsensitive(settings.Hostnames, filterChoices.Hostnames)
+	if err != nil {
 		return fmt.Errorf("%w: %w", ErrHostnameNotValid, err)
 	}
 
-	if err := validate.AreAllOneOf(settings.Names, filterChoices.Names); err != nil {
+	err = validate.AreAllOneOfCaseInsensitive(settings.Names, filterChoices.Names)
+	if err != nil {
 		return fmt.Errorf("%w: %w", ErrNameNotValid, err)
 	}
 
