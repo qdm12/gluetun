@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/netip"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
@@ -77,12 +77,12 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 			allowed = []uint16{53, 80, 123, 443, 1194, 65142}
 		}
 
-		if helpers.IsOneOf(*w.EndpointPort, allowed...) {
+		err = validate.IsOneOf(*w.EndpointPort, allowed...)
+		if err == nil {
 			break
 		}
-		return fmt.Errorf("%w: %d for VPN service provider %s; %s",
-			ErrWireguardEndpointPortNotAllowed, w.EndpointPort, vpnProvider,
-			helpers.PortChoicesOrString(allowed))
+		return fmt.Errorf("%w: for VPN service provider %s: %w",
+			ErrWireguardEndpointPortNotAllowed, vpnProvider, err)
 	default: // Providers not supporting Wireguard
 	}
 
