@@ -68,7 +68,7 @@ func (b *DNSBlacklist) mergeWith(other DNSBlacklist) {
 	b.BlockMalicious = gosettings.MergeWithPointer(b.BlockMalicious, other.BlockMalicious)
 	b.BlockAds = gosettings.MergeWithPointer(b.BlockAds, other.BlockAds)
 	b.BlockSurveillance = gosettings.MergeWithPointer(b.BlockSurveillance, other.BlockSurveillance)
-	b.AllowedHosts = helpers.MergeWithSlice(b.AllowedHosts, other.AllowedHosts)
+	b.AllowedHosts = gosettings.MergeWithSlice(b.AllowedHosts, other.AllowedHosts)
 	b.AddBlockedHosts = gosettings.MergeWithSlice(b.AddBlockedHosts, other.AddBlockedHosts)
 	b.AddBlockedIPs = gosettings.MergeWithSlice(b.AddBlockedIPs, other.AddBlockedIPs)
 	b.AddBlockedIPPrefixes = gosettings.MergeWithSlice(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
