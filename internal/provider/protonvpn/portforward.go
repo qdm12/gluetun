@@ -32,54 +32,16 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 	}
 
 	logger.Info("gateway external IPv4 address is " + externalIPv4Address.String())
-	const networkProtocol = "udp"
+	networkProtocols := []string{"udp", "tcp"}
 	const internalPort, externalPort = 0, 0
 	const lifetime = 60 * time.Second
-	_, assignedInternalPort, assignedExternalPort, assignedLiftetime, err :=
-		client.AddPortMapping(ctx, gateway, networkProtocol,
-			internalPort, externalPort, lifetime)
-	if err != nil {
-		return 0, fmt.Errorf("adding port mapping: %w", err)
-	}
-
-	if assignedLiftetime != lifetime {
-		logger.Warn(fmt.Sprintf("assigned lifetime %s differs"+
-			" from requested lifetime %s",
-			assignedLiftetime, lifetime))
-	}
-
-	if assignedInternalPort != assignedExternalPort {
-		logger.Warn(fmt.Sprintf("internal port assigned %d differs"+
-			" from external port assigned %d",
-			assignedInternalPort, assignedExternalPort))
-	}
-
-	port = assignedExternalPort
-	return port, nil
-}
-
-func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
-	gateway netip.Addr, _ string, logger utils.Logger) (err error) {
-	logger.Info(fmt.Sprintf("keeping port forward with port %d", port))
-	client := natpmp.New()
-	const refreshTimeout = 45 * time.Second
-	timer := time.NewTimer(refreshTimeout)
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-timer.C:
-		}
-		logger.Info("keeping port forward triggered by 45s timer")
-
-		const networkProtocol = "udp"
-		const internalPort = 0
-		const lifetime = 60 * time.Second
+	var assignedExternalPort uint16
+	for _, networkProtocol := range networkProtocols {
 		_, assignedInternalPort, assignedExternalPort, assignedLiftetime, err :=
 			client.AddPortMapping(ctx, gateway, networkProtocol,
-				internalPort, port, lifetime)
+				internalPort, externalPort, lifetime)
 		if err != nil {
-			return fmt.Errorf("adding port mapping: %w", err)
+			return 0, fmt.Errorf("adding port mapping: %w", err)
 		}
 
 		if assignedLiftetime != lifetime {
@@ -93,9 +55,48 @@ func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 				" from external port assigned %d",
 				assignedInternalPort, assignedExternalPort))
 		}
-		logger.Info(fmt.Sprintf(
-			"port %d, assigned internal port %d, assigned external port %d, assignled lifetime %s",
-			port, assignedInternalPort, assignedExternalPort, assignedLiftetime))
+	}
+
+	port = assignedExternalPort
+	return port, nil
+}
+
+func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
+	gateway netip.Addr, _ string, logger utils.Logger) (err error) {
+	client := natpmp.New()
+	const refreshTimeout = 45 * time.Second
+	timer := time.NewTimer(refreshTimeout)
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-timer.C:
+		}
+
+		networkProtocols := []string{"udp", "tcp"}
+		const internalPort = 0
+		const lifetime = 60 * time.Second
+
+		for _, networkProtocol := range networkProtocols {
+			_, assignedInternalPort, assignedExternalPort, assignedLiftetime, err :=
+				client.AddPortMapping(ctx, gateway, networkProtocol,
+					internalPort, port, lifetime)
+			if err != nil {
+				return fmt.Errorf("adding port mapping: %w", err)
+			}
+
+			if assignedLiftetime != lifetime {
+				logger.Warn(fmt.Sprintf("assigned lifetime %s differs"+
+					" from requested lifetime %s",
+					assignedLiftetime, lifetime))
+			}
+
+			if assignedInternalPort != assignedExternalPort {
+				logger.Warn(fmt.Sprintf("internal port assigned %d differs"+
+					" from external port assigned %d",
+					assignedInternalPort, assignedExternalPort))
+			}
+		}
 
 		timer.Reset(refreshTimeout)
 	}
