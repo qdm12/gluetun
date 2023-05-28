@@ -18,7 +18,7 @@ type NetLinker interface {
 type Addresser interface {
 	AddrList(link netlink.Link, family int) (
 		addresses []netlink.Addr, err error)
-	AddrAdd(link netlink.Link, addr *netlink.Addr) error
+	AddrReplace(link netlink.Link, addr *netlink.Addr) error
 }
 
 type Router interface {

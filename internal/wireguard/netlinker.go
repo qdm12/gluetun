@@ -5,7 +5,7 @@ import "github.com/qdm12/gluetun/internal/netlink"
 //go:generate mockgen -destination=netlinker_mock_test.go -package wireguard . NetLinker
 
 type NetLinker interface {
-	AddrAdd(link netlink.Link, addr *netlink.Addr) error
+	AddrReplace(link netlink.Link, addr *netlink.Addr) error
 	Router
 	Ruler
 	Linker

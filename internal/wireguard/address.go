@@ -20,7 +20,7 @@ func (w *Wireguard) addAddresses(link netlink.Link,
 			IPNet: routing.NetipPrefixToIPNet(&ipNet),
 		}
 
-		err = w.netlink.AddrAdd(link, address)
+		err = w.netlink.AddrReplace(link, address)
 		if err != nil {
 			return fmt.Errorf("%w: when adding address %s to link %s",
 				err, address, link.Attrs().Name)

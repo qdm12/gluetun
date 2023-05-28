@@ -34,20 +34,6 @@ func (m *MockNetLinker) EXPECT() *MockNetLinkerMockRecorder {
 	return m.recorder
 }
 
-// AddrAdd mocks base method.
-func (m *MockNetLinker) AddrAdd(arg0 netlink.Link, arg1 *netlink.Addr) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddrAdd", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// AddrAdd indicates an expected call of AddrAdd.
-func (mr *MockNetLinkerMockRecorder) AddrAdd(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddrAdd", reflect.TypeOf((*MockNetLinker)(nil).AddrAdd), arg0, arg1)
-}
-
 // AddrList mocks base method.
 func (m *MockNetLinker) AddrList(arg0 netlink.Link, arg1 int) ([]netlink.Addr, error) {
 	m.ctrl.T.Helper()
@@ -61,6 +47,20 @@ func (m *MockNetLinker) AddrList(arg0 netlink.Link, arg1 int) ([]netlink.Addr, e
 func (mr *MockNetLinkerMockRecorder) AddrList(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddrList", reflect.TypeOf((*MockNetLinker)(nil).AddrList), arg0, arg1)
+}
+
+// AddrReplace mocks base method.
+func (m *MockNetLinker) AddrReplace(arg0 netlink.Link, arg1 *netlink.Addr) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddrReplace", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddrReplace indicates an expected call of AddrReplace.
+func (mr *MockNetLinkerMockRecorder) AddrReplace(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddrReplace", reflect.TypeOf((*MockNetLinker)(nil).AddrReplace), arg0, arg1)
 }
 
 // IsWireguardSupported mocks base method.

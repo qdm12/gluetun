@@ -40,10 +40,10 @@ func Test_Wireguard_addAddresses(t *testing.T) {
 			wgBuilder: func(ctrl *gomock.Controller, link netlink.Link) *Wireguard {
 				netLinker := NewMockNetLinker(ctrl)
 				firstCall := netLinker.EXPECT().
-					AddrAdd(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetOne)}).
+					AddrReplace(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetOne)}).
 					Return(nil)
 				netLinker.EXPECT().
-					AddrAdd(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetTwo)}).
+					AddrReplace(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetTwo)}).
 					Return(nil).After(firstCall)
 				return &Wireguard{
 					netlink: netLinker,
@@ -59,7 +59,7 @@ func Test_Wireguard_addAddresses(t *testing.T) {
 			wgBuilder: func(ctrl *gomock.Controller, link netlink.Link) *Wireguard {
 				netLinker := NewMockNetLinker(ctrl)
 				netLinker.EXPECT().
-					AddrAdd(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetOne)}).
+					AddrReplace(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetOne)}).
 					Return(errDummy)
 				return &Wireguard{
 					netlink: netLinker,
@@ -76,10 +76,10 @@ func Test_Wireguard_addAddresses(t *testing.T) {
 			wgBuilder: func(ctrl *gomock.Controller, link netlink.Link) *Wireguard {
 				netLinker := NewMockNetLinker(ctrl)
 				firstCall := netLinker.EXPECT().
-					AddrAdd(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetOne)}).
+					AddrReplace(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetOne)}).
 					Return(nil)
 				netLinker.EXPECT().
-					AddrAdd(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetTwo)}).
+					AddrReplace(link, &netlink.Addr{IPNet: routing.NetipPrefixToIPNet(&ipNetTwo)}).
 					Return(errDummy).After(firstCall)
 				return &Wireguard{
 					netlink: netLinker,

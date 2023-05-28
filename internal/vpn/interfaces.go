@@ -42,7 +42,7 @@ type Storage interface {
 }
 
 type NetLinker interface {
-	AddrAdd(link netlink.Link, addr *netlink.Addr) error
+	AddrReplace(link netlink.Link, addr *netlink.Addr) error
 	Router
 	Ruler
 	Linker

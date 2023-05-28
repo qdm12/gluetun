@@ -9,6 +9,6 @@ func (n *NetLink) AddrList(link Link, family int) (
 	return netlink.AddrList(link, family)
 }
 
-func (n *NetLink) AddrAdd(link Link, addr *Addr) error {
-	return netlink.AddrAdd(link, addr)
+func (n *NetLink) AddrReplace(link Link, addr *Addr) error {
+	return netlink.AddrReplace(link, addr)
 }
