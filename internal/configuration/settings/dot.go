@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -96,7 +95,7 @@ func (d DoT) String() string {
 func (d DoT) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("DNS over TLS settings:")
 
-	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(d.Enabled))
+	node.Appendf("Enabled: %s", gosettings.BoolToYesNo(d.Enabled))
 	if !*d.Enabled {
 		return node
 	}

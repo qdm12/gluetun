@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/netip"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -84,7 +83,7 @@ func (f Firewall) String() string {
 func (f Firewall) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Firewall settings:")
 
-	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(f.Enabled))
+	node.Appendf("Enabled: %s", gosettings.BoolToYesNo(f.Enabled))
 	if !*f.Enabled {
 		return node
 	}

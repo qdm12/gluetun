@@ -34,7 +34,7 @@ type OpenVPNSelection struct {
 func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	// Validate ConfFile
 	if confFile := *o.ConfFile; confFile != "" {
-		err := helpers.FileExists(confFile)
+		err := validate.FileExists(confFile)
 		if err != nil {
 			return fmt.Errorf("configuration file: %w", err)
 		}

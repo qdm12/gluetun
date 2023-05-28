@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
@@ -163,7 +162,7 @@ func validateOpenVPNConfigFilepath(isCustom bool,
 		return fmt.Errorf("%w", ErrFilepathMissing)
 	}
 
-	err = helpers.FileExists(confFile)
+	err = validate.FileExists(confFile)
 	if err != nil {
 		return err
 	}
@@ -339,8 +338,8 @@ func (o OpenVPN) String() string {
 func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("OpenVPN settings:")
 	node.Appendf("OpenVPN version: %s", o.Version)
-	node.Appendf("User: %s", helpers.ObfuscatePassword(*o.User))
-	node.Appendf("Password: %s", helpers.ObfuscatePassword(*o.Password))
+	node.Appendf("User: %s", gosettings.ObfuscateKey(*o.User))
+	node.Appendf("Password: %s", gosettings.ObfuscateKey(*o.Password))
 
 	if *o.ConfFile != "" {
 		node.Appendf("Custom configuration file: %s", *o.ConfFile)
@@ -355,16 +354,16 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 	}
 
 	if *o.Cert != "" {
-		node.Appendf("Client crt: %s", helpers.ObfuscateData(*o.Cert))
+		node.Appendf("Client crt: %s", gosettings.ObfuscateKey(*o.Cert))
 	}
 
 	if *o.Key != "" {
-		node.Appendf("Client key: %s", helpers.ObfuscateData(*o.Key))
+		node.Appendf("Client key: %s", gosettings.ObfuscateKey(*o.Key))
 	}
 
 	if *o.EncryptedKey != "" {
 		node.Appendf("Encrypted key: %s (key passhrapse %s)",
-			helpers.ObfuscateData(*o.EncryptedKey), helpers.ObfuscatePassword(*o.KeyPassphrase))
+			gosettings.ObfuscateKey(*o.EncryptedKey), gosettings.ObfuscateKey(*o.KeyPassphrase))
 	}
 
 	if *o.PIAEncPreset != "" {

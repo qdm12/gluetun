@@ -7,7 +7,6 @@ import (
 
 	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/dns/pkg/unbound"
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -187,8 +186,8 @@ func (u Unbound) toLinesNode() (node *gotree.Node) {
 		authServers.Appendf(provider)
 	}
 
-	node.Appendf("Caching: %s", helpers.BoolPtrToYesNo(u.Caching))
-	node.Appendf("IPv6: %s", helpers.BoolPtrToYesNo(u.IPv6))
+	node.Appendf("Caching: %s", gosettings.BoolToYesNo(u.Caching))
+	node.Appendf("IPv6: %s", gosettings.BoolToYesNo(u.IPv6))
 	node.Appendf("Verbosity level: %d", *u.VerbosityLevel)
 	node.Appendf("Verbosity details level: %d", *u.VerbosityDetailsLevel)
 	node.Appendf("Validation log level: %d", *u.ValidationLogLevel)

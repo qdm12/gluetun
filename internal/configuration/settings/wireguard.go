@@ -156,12 +156,12 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Wireguard settings:")
 
 	if *w.PrivateKey != "" {
-		s := helpers.ObfuscateWireguardKey(*w.PrivateKey)
+		s := gosettings.ObfuscateKey(*w.PrivateKey)
 		node.Appendf("Private key: %s", s)
 	}
 
 	if *w.PreSharedKey != "" {
-		s := helpers.ObfuscateWireguardKey(*w.PreSharedKey)
+		s := gosettings.ObfuscateKey(*w.PreSharedKey)
 		node.Appendf("Pre-shared key: %s", s)
 	}
 

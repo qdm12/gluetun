@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 	"github.com/qdm12/govalid/address"
@@ -114,16 +113,16 @@ func (h HTTPProxy) String() string {
 
 func (h HTTPProxy) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("HTTP proxy settings:")
-	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(h.Enabled))
+	node.Appendf("Enabled: %s", gosettings.BoolToYesNo(h.Enabled))
 	if !*h.Enabled {
 		return node
 	}
 
 	node.Appendf("Listening address: %s", h.ListeningAddress)
 	node.Appendf("User: %s", *h.User)
-	node.Appendf("Password: %s", helpers.ObfuscatePassword(*h.Password))
-	node.Appendf("Stealth mode: %s", helpers.BoolPtrToYesNo(h.Stealth))
-	node.Appendf("Log: %s", helpers.BoolPtrToYesNo(h.Log))
+	node.Appendf("Password: %s", gosettings.ObfuscateKey(*h.Password))
+	node.Appendf("Stealth mode: %s", gosettings.BoolToYesNo(h.Stealth))
+	node.Appendf("Log: %s", gosettings.BoolToYesNo(h.Log))
 	node.Appendf("Read header timeout: %s", h.ReadHeaderTimeout)
 	node.Appendf("Read timeout: %s", h.ReadTimeout)
 

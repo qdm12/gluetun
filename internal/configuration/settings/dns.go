@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/netip"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -77,7 +76,7 @@ func (d DNS) String() string {
 func (d DNS) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("DNS settings:")
 	node.Appendf("DNS server address to use: %s", d.ServerAddress)
-	node.Appendf("Keep existing nameserver(s): %s", helpers.BoolPtrToYesNo(d.KeepNameserver))
+	node.Appendf("Keep existing nameserver(s): %s", gosettings.BoolToYesNo(d.KeepNameserver))
 	node.AppendNode(d.DoT.toLinesNode())
 	return node
 }

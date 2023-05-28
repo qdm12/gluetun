@@ -1,7 +1,6 @@
 package settings
 
 import (
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -48,7 +47,7 @@ func (v Version) String() string {
 func (v Version) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Version settings:")
 
-	node.Appendf("Enabled: %s", helpers.BoolPtrToYesNo(v.Enabled))
+	node.Appendf("Enabled: %s", gosettings.BoolToYesNo(v.Enabled))
 
 	return node
 }

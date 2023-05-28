@@ -7,7 +7,6 @@ import (
 	"regexp"
 
 	"github.com/qdm12/dns/pkg/blacklist"
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -103,9 +102,9 @@ func (b DNSBlacklist) String() string {
 func (b DNSBlacklist) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("DNS filtering settings:")
 
-	node.Appendf("Block malicious: %s", helpers.BoolPtrToYesNo(b.BlockMalicious))
-	node.Appendf("Block ads: %s", helpers.BoolPtrToYesNo(b.BlockAds))
-	node.Appendf("Block surveillance: %s", helpers.BoolPtrToYesNo(b.BlockSurveillance))
+	node.Appendf("Block malicious: %s", gosettings.BoolToYesNo(b.BlockMalicious))
+	node.Appendf("Block ads: %s", gosettings.BoolToYesNo(b.BlockAds))
+	node.Appendf("Block surveillance: %s", gosettings.BoolToYesNo(b.BlockSurveillance))
 
 	if len(b.AllowedHosts) > 0 {
 		allowedHostsNode := node.Appendf("Allowed hosts:")

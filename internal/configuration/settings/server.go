@@ -6,7 +6,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -76,6 +75,6 @@ func (c ControlServer) String() string {
 func (c ControlServer) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Control server settings:")
 	node.Appendf("Listening address: %s", *c.Address)
-	node.Appendf("Logging: %s", helpers.BoolPtrToYesNo(c.Log))
+	node.Appendf("Logging: %s", gosettings.BoolToYesNo(c.Log))
 	return node
 }
