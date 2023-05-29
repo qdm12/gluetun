@@ -57,24 +57,22 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 		},
 	}
 
-	// Success
-	err = wg.addAddresses(link, addresses)
-	require.NoError(t, err)
+	const addIterations = 2 // initial + replace
 
-	netlinkAddresses, err := netlinker.AddrList(link, netlink.FAMILY_ALL)
-	require.NoError(t, err)
-	require.Equal(t, len(addresses), len(netlinkAddresses))
-	for i, netlinkAddress := range netlinkAddresses {
-		require.NotNil(t, netlinkAddress.IPNet)
-		ipNet, err := netip.ParsePrefix(netlinkAddress.IPNet.String())
+	for i := 0; i < addIterations; i++ {
+		err = wg.addAddresses(link, addresses)
 		require.NoError(t, err)
-		assert.Equal(t, addresses[i], ipNet)
-	}
 
-	// Existing address cannot be added
-	err = wg.addAddresses(link, addresses)
-	require.Error(t, err)
-	assert.EqualError(t, err, "file exists: when adding address 1.2.3.4/32 to link test_8081")
+		netlinkAddresses, err := netlinker.AddrList(link, netlink.FAMILY_ALL)
+		require.NoError(t, err)
+		require.Equal(t, len(addresses), len(netlinkAddresses))
+		for i, netlinkAddress := range netlinkAddresses {
+			require.NotNil(t, netlinkAddress.IPNet)
+			ipNet, err := netip.ParsePrefix(netlinkAddress.IPNet.String())
+			require.NoError(t, err)
+			assert.Equal(t, addresses[i], ipNet)
+		}
+	}
 }
 
 func Test_netlink_Wireguard_addRule(t *testing.T) {
