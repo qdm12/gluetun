@@ -23,7 +23,7 @@ func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err err
 
 	for _, defaultRoute := range defaultRoutes {
 		defaultDestination := defaultDestinationIPv4
-		if defaultRoute.Family == netlink.FAMILY_V6 {
+		if defaultRoute.Family == netlink.FamilyV6 {
 			defaultDestination = defaultDestinationIPv6
 		}
 
@@ -43,7 +43,7 @@ func (r *Routing) unrouteInboundFromDefault(defaultRoutes []DefaultRoute) (err e
 
 	for _, defaultRoute := range defaultRoutes {
 		defaultDestination := defaultDestinationIPv4
-		if defaultRoute.Family == netlink.FAMILY_V6 {
+		if defaultRoute.Family == netlink.FamilyV6 {
 			defaultDestination = defaultDestinationIPv6
 		}
 
@@ -68,8 +68,8 @@ func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 			bits = 128
 		}
 		defaultIPMasked := netip.PrefixFrom(assignedIP, bits)
-		ruleDstNet := (*netip.Prefix)(nil)
-		err = r.addIPRule(&defaultIPMasked, ruleDstNet, table, inboundPriority)
+		ruleDstNet := netip.Prefix{}
+		err = r.addIPRule(defaultIPMasked, ruleDstNet, table, inboundPriority)
 		if err != nil {
 			return fmt.Errorf("adding rule for default route %s: %w", defaultRoute, err)
 		}
@@ -86,8 +86,8 @@ func (r *Routing) delRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 			bits = 128
 		}
 		defaultIPMasked := netip.PrefixFrom(assignedIP, bits)
-		ruleDstNet := (*netip.Prefix)(nil)
-		err = r.deleteIPRule(&defaultIPMasked, ruleDstNet, table, inboundPriority)
+		ruleDstNet := netip.Prefix{}
+		err = r.deleteIPRule(defaultIPMasked, ruleDstNet, table, inboundPriority)
 		if err != nil {
 			return fmt.Errorf("deleting rule for default route %s: %w", defaultRoute, err)
 		}

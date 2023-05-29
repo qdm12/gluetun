@@ -93,10 +93,12 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	if err := w.netlink.LinkSetUp(link); err != nil {
+	linkIndex, err := w.netlink.LinkSetUp(link)
+	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrIfaceUp, err)
 		return
 	}
+	link.Index = linkIndex
 	closers.add("shutting down link", stepFour, func() error {
 		return w.netlink.LinkSetDown(link)
 	})
@@ -161,17 +163,16 @@ func setupKernelSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint16,
 	closers *closers, logger Logger) (
 	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
-	linkAttrs := netlink.LinkAttrs{
+	link = netlink.Link{
+		Type: "wireguard",
 		Name: interfaceName,
-		MTU:  int(mtu),
+		MTU:  mtu,
 	}
-	link = &netlink.Wireguard{
-		LinkAttrs: linkAttrs,
-	}
-	err = netLinker.LinkAdd(link)
+	linkIndex, err := netLinker.LinkAdd(link)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s", ErrAddLink, err)
+		return link, nil, fmt.Errorf("%w: %s", ErrAddLink, err)
 	}
+	link.Index = linkIndex
 	closers.add("deleting link", stepFive, func() error {
 		return netLinker.LinkDel(link)
 	})
@@ -191,22 +192,22 @@ func setupUserSpace(ctx context.Context,
 	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
 	tun, err := tun.CreateTUN(interfaceName, int(mtu))
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
+		return link, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
 	}
 
 	closers.add("closing TUN device", stepSeven, tun.Close)
 
 	tunName, err := tun.Name()
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: cannot get TUN name: %s", ErrCreateTun, err)
+		return link, nil, fmt.Errorf("%w: cannot get TUN name: %s", ErrCreateTun, err)
 	} else if tunName != interfaceName {
-		return nil, nil, fmt.Errorf("%w: names don't match: expected %q and got %q",
+		return link, nil, fmt.Errorf("%w: names don't match: expected %q and got %q",
 			ErrCreateTun, interfaceName, tunName)
 	}
 
 	link, err = netLinker.LinkByName(interfaceName)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s: %s", ErrFindLink, interfaceName, err)
+		return link, nil, fmt.Errorf("%w: %s: %s", ErrFindLink, interfaceName, err)
 	}
 	closers.add("deleting link", stepFive, func() error {
 		return netLinker.LinkDel(link)
@@ -226,14 +227,14 @@ func setupUserSpace(ctx context.Context,
 
 	uapiFile, err := ipc.UAPIOpen(interfaceName)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
+		return link, nil, fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
 	}
 
 	closers.add("closing UAPI file", stepThree, uapiFile.Close)
 
 	uapiListener, err := ipc.UAPIListen(interfaceName, uapiFile)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %s", ErrUAPIListen, err)
+		return link, nil, fmt.Errorf("%w: %s", ErrUAPIListen, err)
 	}
 
 	closers.add("closing UAPI listener", stepTwo, uapiListener.Close)

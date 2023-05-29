@@ -56,8 +56,8 @@ func (r *Routing) removeOutboundSubnets(subnets []netip.Prefix,
 			}
 		}
 
-		ruleSrcNet := (*netip.Prefix)(nil)
-		ruleDstNet := &subnets[i]
+		ruleSrcNet := netip.Prefix{}
+		ruleDstNet := subnets[i]
 		err := r.deleteIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {
 			warnings = append(warnings,
@@ -81,8 +81,8 @@ func (r *Routing) addOutboundSubnets(subnets []netip.Prefix,
 			}
 		}
 
-		ruleSrcNet := (*netip.Prefix)(nil)
-		ruleDstNet := &subnets[i]
+		ruleSrcNet := netip.Prefix{}
+		ruleDstNet := subnets[i]
 		err = r.addIPRule(ruleSrcNet, ruleDstNet, outboundTable, outboundPriority)
 		if err != nil {
 			return fmt.Errorf("adding rule: for subnet %s: %w", subnet, err)

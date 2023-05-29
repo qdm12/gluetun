@@ -2,7 +2,7 @@ package wireguard
 
 import (
 	"errors"
-	"net"
+	"net/netip"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -15,41 +15,40 @@ func Test_Wireguard_addRoute(t *testing.T) {
 	t.Parallel()
 
 	const linkIndex = 88
-	newLink := func() netlink.Link {
-		linkAttrs := netlink.NewLinkAttrs()
-		linkAttrs.Name = "a_bridge"
-		linkAttrs.Index = linkIndex
-		return &netlink.Bridge{
-			LinkAttrs: linkAttrs,
-		}
-	}
-	ipNet := &net.IPNet{IP: net.IPv4(1, 2, 3, 4), Mask: net.IPv4Mask(255, 255, 255, 255)}
+
+	ipPrefix := netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 32)
+
 	const firewallMark = 51820
 
 	errDummy := errors.New("dummy")
 
 	testCases := map[string]struct {
 		link          netlink.Link
-		dst           *net.IPNet
-		expectedRoute *netlink.Route
+		dst           netip.Prefix
+		expectedRoute netlink.Route
 		routeAddErr   error
 		err           error
 	}{
 		"success": {
-			link: newLink(),
-			dst:  ipNet,
-			expectedRoute: &netlink.Route{
+			link: netlink.Link{
+				Index: linkIndex,
+			},
+			dst: ipPrefix,
+			expectedRoute: netlink.Route{
 				LinkIndex: linkIndex,
-				Dst:       ipNet,
+				Dst:       ipPrefix,
 				Table:     firewallMark,
 			},
 		},
 		"route add error": {
-			link: newLink(),
-			dst:  ipNet,
-			expectedRoute: &netlink.Route{
+			link: netlink.Link{
+				Name:  "a_bridge",
+				Index: linkIndex,
+			},
+			dst: ipPrefix,
+			expectedRoute: netlink.Route{
 				LinkIndex: linkIndex,
-				Dst:       ipNet,
+				Dst:       ipPrefix,
 				Table:     firewallMark,
 			},
 			routeAddErr: errDummy,

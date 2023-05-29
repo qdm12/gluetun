@@ -24,10 +24,9 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 
 	netlinker := netlink.New(&noopDebugLogger{})
 
-	linkAttrs := netlink.NewLinkAttrs()
-	linkAttrs.Name = "test_8081"
-	link := &netlink.Bridge{
-		LinkAttrs: linkAttrs,
+	link := netlink.Link{
+		Type: "bridge",
+		Name: "test_8081",
 	}
 
 	// Remove any previously created test interface from a crashed/panic
@@ -37,8 +36,9 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	err = netlinker.LinkAdd(link)
+	linkIndex, err := netlinker.LinkAdd(link)
 	require.NoError(t, err)
+	link.Index = linkIndex
 
 	defer func() {
 		err = netlinker.LinkDel(link)
@@ -63,14 +63,12 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 		err = wg.addAddresses(link, addresses)
 		require.NoError(t, err)
 
-		netlinkAddresses, err := netlinker.AddrList(link, netlink.FAMILY_ALL)
+		netlinkAddresses, err := netlinker.AddrList(link, netlink.FamilyAll)
 		require.NoError(t, err)
 		require.Equal(t, len(addresses), len(netlinkAddresses))
 		for i, netlinkAddress := range netlinkAddresses {
-			require.NotNil(t, netlinkAddress.IPNet)
-			ipNet, err := netip.ParsePrefix(netlinkAddress.IPNet.String())
-			require.NoError(t, err)
-			assert.Equal(t, addresses[i], ipNet)
+			require.NotNil(t, netlinkAddress.Network)
+			assert.Equal(t, addresses[i], netlinkAddress.Network)
 		}
 	}
 }
@@ -95,7 +93,7 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 		assert.NoError(t, err)
 	}()
 
-	rules, err := netlinker.RuleList(netlink.FAMILY_V4)
+	rules, err := netlinker.RuleList(netlink.FamilyV4)
 	require.NoError(t, err)
 	var rule netlink.Rule
 	var ruleFound bool
@@ -107,15 +105,10 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 	}
 	require.True(t, ruleFound)
 	expectedRule := netlink.Rule{
-		Invert:            true,
-		Priority:          rulePriority,
-		Mark:              firewallMark,
-		Table:             firewallMark,
-		Mask:              4294967295,
-		Goto:              -1,
-		Flow:              -1,
-		SuppressIfgroup:   -1,
-		SuppressPrefixlen: -1,
+		Invert:   true,
+		Priority: rulePriority,
+		Mark:     firewallMark,
+		Table:    firewallMark,
 	}
 	assert.Equal(t, expectedRule, rule)
 

@@ -29,25 +29,25 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	localLinks := make(map[int]struct{})
 
 	for _, link := range links {
-		if link.Attrs().EncapType != "ether" {
+		if link.EncapType != "ether" {
 			continue
 		}
 
-		localLinks[link.Attrs().Index] = struct{}{}
-		r.logger.Info("local ethernet link found: " + link.Attrs().Name)
+		localLinks[link.Index] = struct{}{}
+		r.logger.Info("local ethernet link found: " + link.Name)
 	}
 
 	if len(localLinks) == 0 {
 		return localNetworks, fmt.Errorf("%w: in %d links", ErrLinkLocalNotFound, len(links))
 	}
 
-	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
 	if err != nil {
 		return localNetworks, fmt.Errorf("listing routes: %w", err)
 	}
 
 	for _, route := range routes {
-		if route.Gw != nil || route.Dst == nil {
+		if route.Gw.IsValid() || !route.Dst.IsValid() {
 			continue
 		} else if _, ok := localLinks[route.LinkIndex]; !ok {
 			continue
@@ -55,7 +55,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 
 		var localNet LocalNetwork
 
-		localNet.IPNet = netIPNetToNetipPrefix(*route.Dst)
+		localNet.IPNet = route.Dst
 		r.logger.Info("local ipnet found: " + localNet.IPNet.String())
 
 		link, err := r.netLinker.LinkByIndex(route.LinkIndex)
@@ -63,11 +63,11 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 			return localNetworks, fmt.Errorf("finding link at index %d: %w", route.LinkIndex, err)
 		}
 
-		localNet.InterfaceName = link.Attrs().Name
+		localNet.InterfaceName = link.Name
 
-		family := netlink.FAMILY_V6
+		family := netlink.FamilyV6
 		if localNet.IPNet.Addr().Is4() {
-			family = netlink.FAMILY_V4
+			family = netlink.FamilyV4
 		}
 		ip, err := r.assignedIP(localNet.InterfaceName, family)
 		if err != nil {
@@ -96,7 +96,8 @@ func (r *Routing) AddLocalRules(subnets []LocalNetwork) (err error) {
 		const localPriority = 98
 
 		// Main table was setup correctly by Docker, just need to add rules to use it
-		err = r.addIPRule(nil, &subnet.IPNet, mainTable, localPriority)
+		src := netip.Prefix{}
+		err = r.addIPRule(src, subnet.IPNet, mainTable, localPriority)
 		if err != nil {
 			return fmt.Errorf("adding rule: %v: %w", subnet.IPNet, err)
 		}

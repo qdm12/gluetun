@@ -5,7 +5,6 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"github.com/qdm12/gluetun/internal/routing"
 )
 
 func (w *Wireguard) addAddresses(link netlink.Link,
@@ -15,15 +14,14 @@ func (w *Wireguard) addAddresses(link netlink.Link,
 			continue
 		}
 
-		ipNet := ipNet
-		address := &netlink.Addr{
-			IPNet: routing.NetipPrefixToIPNet(&ipNet),
+		address := netlink.Addr{
+			Network: ipNet,
 		}
 
 		err = w.netlink.AddrReplace(link, address)
 		if err != nil {
 			return fmt.Errorf("%w: when adding address %s to link %s",
-				err, address, link.Attrs().Name)
+				err, address, link.Name)
 		}
 	}
 

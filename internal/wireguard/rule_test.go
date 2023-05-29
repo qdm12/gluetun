@@ -21,54 +21,39 @@ func Test_Wireguard_addRule(t *testing.T) {
 	errDummy := errors.New("dummy")
 
 	testCases := map[string]struct {
-		expectedRule *netlink.Rule
+		expectedRule netlink.Rule
 		ruleAddErr   error
 		err          error
 		ruleDelErr   error
 		cleanupErr   error
 	}{
 		"success": {
-			expectedRule: &netlink.Rule{
-				Invert:            true,
-				Priority:          rulePriority,
-				Mark:              firewallMark,
-				Table:             firewallMark,
-				Mask:              -1,
-				Goto:              -1,
-				Flow:              -1,
-				SuppressIfgroup:   -1,
-				SuppressPrefixlen: -1,
-				Family:            family,
+			expectedRule: netlink.Rule{
+				Invert:   true,
+				Priority: rulePriority,
+				Mark:     firewallMark,
+				Table:    firewallMark,
+				Family:   family,
 			},
 		},
 		"rule add error": {
-			expectedRule: &netlink.Rule{
-				Invert:            true,
-				Priority:          rulePriority,
-				Mark:              firewallMark,
-				Table:             firewallMark,
-				Mask:              -1,
-				Goto:              -1,
-				Flow:              -1,
-				SuppressIfgroup:   -1,
-				SuppressPrefixlen: -1,
-				Family:            family,
+			expectedRule: netlink.Rule{
+				Invert:   true,
+				Priority: rulePriority,
+				Mark:     firewallMark,
+				Table:    firewallMark,
+				Family:   family,
 			},
 			ruleAddErr: errDummy,
 			err:        errors.New("adding rule ip rule 987: from all to all table 456: dummy"),
 		},
 		"rule delete error": {
-			expectedRule: &netlink.Rule{
-				Invert:            true,
-				Priority:          rulePriority,
-				Mark:              firewallMark,
-				Table:             firewallMark,
-				Mask:              -1,
-				Goto:              -1,
-				Flow:              -1,
-				SuppressIfgroup:   -1,
-				SuppressPrefixlen: -1,
-				Family:            family,
+			expectedRule: netlink.Rule{
+				Invert:   true,
+				Priority: rulePriority,
+				Mark:     firewallMark,
+				Table:    firewallMark,
+				Family:   family,
 			},
 			ruleDelErr: errDummy,
 			cleanupErr: errors.New("deleting rule ip rule 987: from all to all table 456: dummy"),

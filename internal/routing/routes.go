@@ -23,12 +23,12 @@ func (r *Routing) addRouteVia(destination netip.Prefix, gateway netip.Addr,
 	}
 
 	route := netlink.Route{
-		Dst:       NetipPrefixToIPNet(&destination),
-		Gw:        gateway.AsSlice(),
-		LinkIndex: link.Attrs().Index,
+		Dst:       destination,
+		Gw:        gateway,
+		LinkIndex: link.Index,
 		Table:     table,
 	}
-	if err := r.netLinker.RouteReplace(&route); err != nil {
+	if err := r.netLinker.RouteReplace(route); err != nil {
 		return fmt.Errorf("replacing route for subnet %s at interface %s: %w",
 			destinationStr, iface, err)
 	}
@@ -51,12 +51,12 @@ func (r *Routing) deleteRouteVia(destination netip.Prefix, gateway netip.Addr,
 	}
 
 	route := netlink.Route{
-		Dst:       NetipPrefixToIPNet(&destination),
-		Gw:        gateway.AsSlice(),
-		LinkIndex: link.Attrs().Index,
+		Dst:       destination,
+		Gw:        gateway,
+		LinkIndex: link.Index,
 		Table:     table,
 	}
-	if err := r.netLinker.RouteDel(&route); err != nil {
+	if err := r.netLinker.RouteDel(route); err != nil {
 		return fmt.Errorf("deleting route: for subnet %s at interface %s: %w",
 			destinationStr, iface, err)
 	}

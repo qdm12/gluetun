@@ -531,30 +531,30 @@ type netLinker interface {
 type Addresser interface {
 	AddrList(link netlink.Link, family int) (
 		addresses []netlink.Addr, err error)
-	AddrReplace(link netlink.Link, addr *netlink.Addr) error
+	AddrReplace(link netlink.Link, addr netlink.Addr) error
 }
 
 type Router interface {
-	RouteList(link netlink.Link, family int) (
+	RouteList(link *netlink.Link, family int) (
 		routes []netlink.Route, err error)
-	RouteAdd(route *netlink.Route) error
-	RouteDel(route *netlink.Route) error
-	RouteReplace(route *netlink.Route) error
+	RouteAdd(route netlink.Route) error
+	RouteDel(route netlink.Route) error
+	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {
 	RuleList(family int) (rules []netlink.Rule, err error)
-	RuleAdd(rule *netlink.Rule) error
-	RuleDel(rule *netlink.Rule) error
+	RuleAdd(rule netlink.Rule) error
+	RuleDel(rule netlink.Rule) error
 }
 
 type Linker interface {
 	LinkList() (links []netlink.Link, err error)
 	LinkByName(name string) (link netlink.Link, err error)
 	LinkByIndex(index int) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (err error)
+	LinkAdd(link netlink.Link) (linkIndex int, err error)
 	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (err error)
+	LinkSetUp(link netlink.Link) (linkIndex int, err error)
 	LinkSetDown(link netlink.Link) (err error)
 }
 

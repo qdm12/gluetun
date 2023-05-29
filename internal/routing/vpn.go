@@ -1,10 +1,8 @@
 package routing
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"net"
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
@@ -16,14 +14,14 @@ var (
 )
 
 func (r *Routing) VPNDestinationIP() (ip netip.Addr, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
 	if err != nil {
 		return ip, fmt.Errorf("listing routes: %w", err)
 	}
 
 	defaultLinkIndex := -1
 	for _, route := range routes {
-		if route.Dst == nil {
+		if !route.Dst.IsValid() {
 			defaultLinkIndex = route.LinkIndex
 			break
 		}
@@ -34,17 +32,17 @@ func (r *Routing) VPNDestinationIP() (ip netip.Addr, err error) {
 
 	for _, route := range routes {
 		if route.LinkIndex == defaultLinkIndex &&
-			route.Dst != nil &&
-			!IPIsPrivate(netIPToNetipAddress(route.Dst.IP)) &&
-			bytes.Equal(route.Dst.Mask, net.IPMask{255, 255, 255, 255}) {
-			return netIPToNetipAddress(route.Dst.IP), nil
+			route.Dst.IsValid() &&
+			!IPIsPrivate(route.Dst.Addr()) &&
+			route.Dst.IsSingleIP() {
+			return route.Dst.Addr(), nil
 		}
 	}
 	return ip, fmt.Errorf("%w: in %d routes", ErrVPNDestinationIPNotFound, len(routes))
 }
 
 func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
 	if err != nil {
 		return ip, fmt.Errorf("listing routes: %w", err)
 	}
@@ -53,11 +51,11 @@ func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
 		if err != nil {
 			return ip, fmt.Errorf("finding link at index %d: %w", route.LinkIndex, err)
 		}
-		interfaceName := link.Attrs().Name
+		interfaceName := link.Name
 		if interfaceName == vpnIntf &&
-			route.Dst != nil &&
-			route.Dst.IP.Equal(net.IP{0, 0, 0, 0}) {
-			return netIPToNetipAddress(route.Gw), nil
+			route.Dst.IsValid() &&
+			route.Dst.Addr().IsUnspecified() {
+			return route.Gw, nil
 		}
 	}
 	return ip, fmt.Errorf("%w: in %d routes", ErrVPNLocalGatewayIPNotFound, len(routes))

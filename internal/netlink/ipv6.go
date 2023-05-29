@@ -14,20 +14,21 @@ func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
 
 	var totalRoutes uint
 	for _, link := range links {
-		routes, err := n.RouteList(link, netlink.FAMILY_V6)
+		link := link
+		routes, err := n.RouteList(&link, netlink.FAMILY_V6)
 		if err != nil {
 			return false, fmt.Errorf("listing IPv6 routes for link %s: %w",
-				link.Attrs().Name, err)
+				link.Name, err)
 		}
 
 		// Check each route for IPv6 due to Podman bug listing IPv4 routes
 		// as IPv6 routes at container start, see:
 		// https://github.com/qdm12/gluetun/issues/1241#issuecomment-1333405949
 		for _, route := range routes {
-			sourceIsIPv6 := route.Src != nil && route.Src.To4() == nil
-			destinationIsIPv6 := route.Dst != nil && route.Dst.IP.To4() == nil
+			sourceIsIPv6 := route.Src.IsValid() && route.Src.Is6()
+			destinationIsIPv6 := route.Dst.IsValid() && route.Dst.Addr().Is6()
 			if sourceIsIPv6 || destinationIsIPv6 {
-				n.debugLogger.Debugf("IPv6 is supported by link %s", link.Attrs().Name)
+				n.debugLogger.Debugf("IPv6 is supported by link %s", link.Name)
 				return true, nil
 			}
 			totalRoutes++

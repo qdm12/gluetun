@@ -3,6 +3,7 @@ package wireguard
 import (
 	"fmt"
 	"net"
+	"net/netip"
 
 	"golang.zx2c4.com/wireguard/wgctrl"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
@@ -53,8 +54,14 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 				PublicKey:    publicKey,
 				PresharedKey: preSharedKey,
 				AllowedIPs: []net.IPNet{
-					*allIPv4(),
-					*allIPv6(),
+					{
+						IP:   net.IPv4(0, 0, 0, 0),
+						Mask: []byte{0, 0, 0, 0},
+					},
+					{
+						IP:   net.IPv6zero,
+						Mask: []byte(net.IPv6zero),
+					},
 				},
 				ReplaceAllowedIPs: true,
 				Endpoint: &net.UDPAddr{
@@ -68,16 +75,12 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 	return config, nil
 }
 
-func allIPv4() (ipNet *net.IPNet) {
-	return &net.IPNet{
-		IP:   net.IPv4(0, 0, 0, 0),
-		Mask: []byte{0, 0, 0, 0},
-	}
+func allIPv4() (prefix netip.Prefix) {
+	const bits = 0
+	return netip.PrefixFrom(netip.IPv4Unspecified(), bits)
 }
 
-func allIPv6() (ipNet *net.IPNet) {
-	return &net.IPNet{
-		IP:   net.IPv6zero,
-		Mask: []byte(net.IPv6zero),
-	}
+func allIPv6() (prefix netip.Prefix) {
+	const bits = 0
+	return netip.PrefixFrom(netip.IPv6Unspecified(), bits)
 }

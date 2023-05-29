@@ -25,17 +25,17 @@ func (d DefaultRoute) String() string {
 }
 
 func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FAMILY_ALL)
+	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
 	if err != nil {
 		return nil, fmt.Errorf("listing routes: %w", err)
 	}
 
 	for _, route := range routes {
-		if route.Dst != nil {
+		if route.Dst.IsValid() {
 			continue
 		}
 		defaultRoute := DefaultRoute{
-			Gateway: netIPToNetipAddress(route.Gw),
+			Gateway: route.Gw,
 			Family:  route.Family,
 		}
 		linkIndex := route.LinkIndex
@@ -43,11 +43,10 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 		if err != nil {
 			return nil, fmt.Errorf("obtaining link by index: for default route at index %d: %w", linkIndex, err)
 		}
-		attributes := link.Attrs()
-		defaultRoute.NetInterface = attributes.Name
-		family := netlink.FAMILY_V6
-		if route.Gw.To4() != nil {
-			family = netlink.FAMILY_V4
+		defaultRoute.NetInterface = link.Name
+		family := netlink.FamilyV6
+		if route.Gw.Is4() {
+			family = netlink.FamilyV4
 		}
 		defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface, family)
 		if err != nil {

@@ -6,20 +6,19 @@ import (
 	"github.com/vishvananda/netlink"
 )
 
-//nolint:revive
 const (
-	FAMILY_ALL = netlink.FAMILY_ALL
-	FAMILY_V4  = netlink.FAMILY_V4
-	FAMILY_V6  = netlink.FAMILY_V6
+	FamilyAll = 0
+	FamilyV4  = 2
+	FamilyV6  = 10
 )
 
 func FamilyToString(family int) string {
 	switch family {
-	case FAMILY_ALL:
-		return "all"
-	case FAMILY_V4:
+	case FamilyAll:
+		return "all" //nolint:goconst
+	case FamilyV4:
 		return "v4"
-	case FAMILY_V6:
+	case FamilyV6:
 		return "v6"
 	default:
 		return fmt.Sprint(family)

@@ -42,7 +42,7 @@ type Storage interface {
 }
 
 type NetLinker interface {
-	AddrReplace(link netlink.Link, addr *netlink.Addr) error
+	AddrReplace(link netlink.Link, addr netlink.Addr) error
 	Router
 	Ruler
 	Linker
@@ -50,22 +50,22 @@ type NetLinker interface {
 }
 
 type Router interface {
-	RouteList(link netlink.Link, family int) (
+	RouteList(link *netlink.Link, family int) (
 		routes []netlink.Route, err error)
-	RouteAdd(route *netlink.Route) error
+	RouteAdd(route netlink.Route) error
 }
 
 type Ruler interface {
-	RuleAdd(rule *netlink.Rule) error
-	RuleDel(rule *netlink.Rule) error
+	RuleAdd(rule netlink.Rule) error
+	RuleDel(rule netlink.Rule) error
 }
 
 type Linker interface {
 	LinkList() (links []netlink.Link, err error)
 	LinkByName(name string) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (err error)
+	LinkAdd(link netlink.Link) (linkIndex int, err error)
 	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (err error)
+	LinkSetUp(link netlink.Link) (linkIndex int, err error)
 	LinkSetDown(link netlink.Link) (err error)
 }
 

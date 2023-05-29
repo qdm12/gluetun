@@ -8,54 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_netIPNetToNetipPrefix(t *testing.T) {
-	t.Parallel()
-
-	testCases := map[string]struct {
-		ipNet  net.IPNet
-		prefix netip.Prefix
-	}{
-		"empty ipnet": {},
-		"custom sized IP in ipnet": {
-			ipNet: net.IPNet{
-				IP: net.IP{1},
-			},
-		},
-		"IPv4 ipnet": {
-			ipNet: net.IPNet{
-				IP:   net.IP{1, 2, 3, 4},
-				Mask: net.IPMask{255, 255, 255, 0},
-			},
-			prefix: netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
-		},
-		"IPv4-in-IPv6 ipnet": {
-			ipNet: net.IPNet{
-				IP:   net.IPv4(1, 2, 3, 4),
-				Mask: net.IPMask{255, 255, 255, 0},
-			},
-			prefix: netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
-		},
-		"IPv6 ipnet": {
-			ipNet: net.IPNet{
-				IP:   net.IPv6loopback,
-				Mask: net.IPMask{0xff},
-			},
-			prefix: netip.PrefixFrom(netip.IPv6Loopback(), 8),
-		},
-	}
-
-	for name, testCase := range testCases {
-		testCase := testCase
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			prefix := netIPNetToNetipPrefix(testCase.ipNet)
-
-			assert.Equal(t, testCase.prefix, prefix)
-		})
-	}
-}
-
 func Test_netIPToNetipAddress(t *testing.T) {
 	t.Parallel()
 
