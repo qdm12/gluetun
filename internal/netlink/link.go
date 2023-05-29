@@ -8,9 +8,6 @@ type Link struct {
 	Index     int
 	EncapType string
 	MTU       uint16
-
-	NetNsID int
-	TxQLen  int
 }
 
 func (n *NetLink) LinkList() (links []Link, err error) {
@@ -92,8 +89,6 @@ func netlinkLinkToLink(netlinkLink netlink.Link) Link {
 		Index:     attributes.Index,
 		EncapType: attributes.EncapType,
 		MTU:       uint16(attributes.MTU),
-		NetNsID:   attributes.NetNsID,
-		TxQLen:    attributes.TxQLen,
 	}
 }
 
@@ -106,13 +101,11 @@ func linkToNetlinkLink(link *Link) netlink.Link {
 	}
 	return &netlinkLinkImpl{
 		linkType: link.Type,
-		attrs: &netlink.LinkAttrs{ // TODO get all original attributes
+		attrs: &netlink.LinkAttrs{
 			Name:      link.Name,
 			Index:     link.Index,
 			EncapType: link.EncapType,
 			MTU:       int(link.MTU),
-			NetNsID:   link.NetNsID,
-			TxQLen:    link.TxQLen,
 		},
 	}
 }
