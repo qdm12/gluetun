@@ -1,18 +1,8 @@
 package netlink
 
 import (
-	"net/netip"
-
 	"github.com/vishvananda/netlink"
 )
-
-type Addr struct {
-	Network netip.Prefix
-}
-
-func (a Addr) String() string {
-	return a.Network.String()
-}
 
 func (n *NetLink) AddrList(link Link, family int) (
 	addresses []Addr, err error) {

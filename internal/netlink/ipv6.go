@@ -2,8 +2,6 @@ package netlink
 
 import (
 	"fmt"
-
-	"github.com/vishvananda/netlink"
 )
 
 func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
@@ -15,7 +13,7 @@ func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
 	var totalRoutes uint
 	for _, link := range links {
 		link := link
-		routes, err := n.RouteList(&link, netlink.FAMILY_V6)
+		routes, err := n.RouteList(&link, FamilyV6)
 		if err != nil {
 			return false, fmt.Errorf("listing IPv6 routes for link %s: %w",
 				link.Name, err)

@@ -2,14 +2,6 @@ package netlink
 
 import "github.com/vishvananda/netlink"
 
-type Link struct {
-	Type      string
-	Name      string
-	Index     int
-	EncapType string
-	MTU       uint16
-}
-
 func (n *NetLink) LinkList() (links []Link, err error) {
 	netlinkLinks, err := netlink.LinkList()
 	if err != nil {

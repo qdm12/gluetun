@@ -1,36 +1,8 @@
 package netlink
 
 import (
-	"fmt"
-	"net/netip"
-
 	"github.com/vishvananda/netlink"
 )
-
-type Rule struct {
-	Priority int
-	Family   int
-	Table    int
-	Mark     int
-	Src      netip.Prefix
-	Dst      netip.Prefix
-	Invert   bool
-}
-
-func (r Rule) String() string {
-	from := "all"
-	if r.Src.IsValid() {
-		from = r.Src.String()
-	}
-
-	to := "all"
-	if r.Dst.IsValid() {
-		to = r.Dst.String()
-	}
-
-	return fmt.Sprintf("ip rule %d: from %s to %s table %d",
-		r.Priority, from, to, r.Table)
-}
 
 func NewRule() Rule {
 	// defaults found from netlink.NewRule() for fields we use,

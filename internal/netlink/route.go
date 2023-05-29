@@ -1,21 +1,8 @@
 package netlink
 
 import (
-	"net/netip"
-
 	"github.com/vishvananda/netlink"
 )
-
-type Route struct {
-	LinkIndex int
-	Dst       netip.Prefix
-	Src       netip.Addr
-	Gw        netip.Addr
-	Priority  int
-	Family    int
-	Table     int
-	Type      int
-}
 
 func (n *NetLink) RouteList(link *Link, family int) (
 	routes []Route, err error) {
