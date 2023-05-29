@@ -1,3 +1,5 @@
+//go:build linux || darwin
+
 package tun
 
 import (
@@ -20,7 +22,7 @@ func (t *Tun) Create(path string) error {
 		minor = 200
 	)
 	dev := unix.Mkdev(major, minor)
-	err := t.mknod(path, unix.S_IFCHR, int(dev))
+	err := unix.Mknod(path, unix.S_IFCHR, int(dev))
 	if err != nil {
 		return fmt.Errorf("creating TUN device file node: %w", err)
 	}
