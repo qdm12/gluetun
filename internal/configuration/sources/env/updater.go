@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 func readUpdater() (updater settings.Updater, err error) {
@@ -29,7 +30,7 @@ func readUpdater() (updater settings.Updater, err error) {
 }
 
 func readUpdaterPeriod() (period *time.Duration, err error) {
-	s := getCleanedEnv("UPDATER_PERIOD")
+	s := env.Get("UPDATER_PERIOD")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

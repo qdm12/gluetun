@@ -9,6 +9,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 var (
@@ -48,7 +49,7 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	serverNamesKey, _ := s.getEnvWithRetro("SERVER_NAMES", "SERVER_NAME")
 	ss.Names = envToCSV(serverNamesKey)
 
-	if csv := getCleanedEnv("SERVER_NUMBER"); csv != "" {
+	if csv := env.Get("SERVER_NUMBER"); csv != "" {
 		numbersStrings := strings.Split(csv, ",")
 		numbers := make([]uint16, len(numbersStrings))
 		for i, numberString := range numbersStrings {

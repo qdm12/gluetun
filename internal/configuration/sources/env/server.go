@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 	"github.com/qdm12/govalid/binary"
 )
 
@@ -19,7 +20,7 @@ func (s *Source) readControlServer() (controlServer settings.ControlServer, err 
 }
 
 func readControlServerLog() (enabled *bool, err error) {
-	s := getCleanedEnv("HTTP_CONTROL_SERVER_LOG")
+	s := env.Get("HTTP_CONTROL_SERVER_LOG")
 	log, err := binary.Validate(s)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable HTTP_CONTROL_SERVER_LOG: %w", err)

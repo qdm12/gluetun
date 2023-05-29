@@ -5,10 +5,11 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readVPN() (vpn settings.VPN, err error) {
-	vpn.Type = strings.ToLower(getCleanedEnv("VPN_TYPE"))
+	vpn.Type = strings.ToLower(env.Get("VPN_TYPE"))
 
 	vpn.Provider, err = s.readProvider(vpn.Type)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 	"github.com/qdm12/govalid/binary"
 )
 
@@ -17,7 +18,7 @@ func readVersion() (version settings.Version, err error) {
 }
 
 func readVersionEnabled() (enabled *bool, err error) {
-	s := getCleanedEnv("VERSION_INFORMATION")
+	s := env.Get("VERSION_INFORMATION")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

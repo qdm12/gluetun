@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) ReadHealth() (health settings.Health, err error) {
-	health.ServerAddress = getCleanedEnv("HEALTH_SERVER_ADDRESS")
+	health.ServerAddress = env.Get("HEALTH_SERVER_ADDRESS")
 	_, health.TargetAddress = s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", "HEALTH_ADDRESS_TO_PING")
 
 	successWaitPtr, err := envToDurationPtr("HEALTH_SUCCESS_WAIT_DURATION")

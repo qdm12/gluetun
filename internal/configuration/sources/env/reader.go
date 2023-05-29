@@ -2,6 +2,7 @@ package env
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 type Source struct {
@@ -106,12 +107,12 @@ func (s *Source) getEnvWithRetro(currentKey string,
 	// We check retro-compatibility keys first since
 	// the current key might be set in the Dockerfile.
 	for _, key = range retroKeys {
-		value = getCleanedEnv(key)
+		value = env.Get(key)
 		if value != "" {
 			s.onRetroActive(key, currentKey)
 			return key, value
 		}
 	}
 
-	return currentKey, getCleanedEnv(currentKey)
+	return currentKey, env.Get(currentKey)
 }

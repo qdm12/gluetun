@@ -5,6 +5,7 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 	"github.com/qdm12/govalid/port"
 )
 
@@ -20,7 +21,7 @@ func (s *Source) readWireguardSelection() (
 		return selection, err
 	}
 
-	selection.PublicKey = getCleanedEnv("WIREGUARD_PUBLIC_KEY")
+	selection.PublicKey = env.Get("WIREGUARD_PUBLIC_KEY")
 
 	return selection, nil
 }

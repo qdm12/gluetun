@@ -7,12 +7,13 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gosettings/sources/env"
 	"github.com/qdm12/govalid/port"
 )
 
 func (s *Source) readOpenVPNSelection() (
 	selection settings.OpenVPNSelection, err error) {
-	confFile := getCleanedEnv("OPENVPN_CUSTOM_CONFIG")
+	confFile := env.Get("OPENVPN_CUSTOM_CONFIG")
 	if confFile != "" {
 		selection.ConfFile = &confFile
 	}

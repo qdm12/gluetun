@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readPublicIP() (publicIP settings.PublicIP, err error) {
@@ -19,7 +20,7 @@ func (s *Source) readPublicIP() (publicIP settings.PublicIP, err error) {
 }
 
 func readPublicIPPeriod() (period *time.Duration, err error) {
-	s := getCleanedEnv("PUBLICIP_PERIOD")
+	s := env.Get("PUBLICIP_PERIOD")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}
