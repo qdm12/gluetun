@@ -1,0 +1,8 @@
+{
+  // This list should be kept to the strict minimum
+  // to develop this project.
+  "recommendations": [
+    "golang.go",
+    "davidanson.vscode-markdownlint",
+  ],
+}

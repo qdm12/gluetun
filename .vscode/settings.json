@@ -1,0 +1,29 @@
+{
+  // The settings should be kept to the strict minimum
+  // to develop this project.
+  "files.eol": "\n",
+  "editor.formatOnSave": true,
+  "go.buildTags": "linux",
+  "go.toolsEnvVars": {
+    "CGO_ENABLED": "0"
+  },
+  "go.testEnvVars": {
+    "CGO_ENABLED": "1"
+  },
+  "go.testFlags": [
+    "-v",
+    "-race"
+  ],
+  "go.testTimeout": "10s",
+  "go.coverOnSingleTest": true,
+  "go.coverOnSingleTestFile": true,
+  "go.coverOnTestPackage": true,
+  "go.useLanguageServer": true,
+  "[go]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+  "go.lintTool": "golangci-lint",
+  "go.lintOnSave": "package"
+}
