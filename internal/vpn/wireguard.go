@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 	"github.com/qdm12/gluetun/internal/wireguard"
+	"github.com/qdm12/gosettings"
 )
 
 // setupWireguard sets Wireguard up using the configurators and settings given.
@@ -24,8 +25,8 @@ func setupWireguard(ctx context.Context, netlinker NetLinker,
 	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard, ipv6Supported)
 
 	logger.Debug("Wireguard server public key: " + wireguardSettings.PublicKey)
-	logger.Debug("Wireguard client private key: " + wireguardSettings.PrivateKey)
-	logger.Debug("Wireguard pre-shared key: " + wireguardSettings.PreSharedKey)
+	logger.Debug("Wireguard client private key: " + gosettings.ObfuscateKey(wireguardSettings.PrivateKey))
+	logger.Debug("Wireguard pre-shared key: " + gosettings.ObfuscateKey(wireguardSettings.PreSharedKey))
 
 	wireguarder, err = wireguard.New(wireguardSettings, netlinker, logger)
 	if err != nil {
