@@ -1,5 +1,4 @@
-//go:build netlink
-// +build netlink
+//go:build netlink && linux
 
 package wireguard
 
