@@ -2,7 +2,6 @@ package httpproxy
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -66,5 +65,8 @@ var hopHeaders = [...]string{ //nolint:gochecknoglobals
 
 // Do not follow redirect, but directly return the redirect response.
 func returnRedirect(*http.Request, []*http.Request) error {
-	return fmt.Errorf("%w", http.ErrUseLastResponse)
+	// WARNING: do not wrap this error!
+	// The standard library code checking against it does not use
+	// Go 1.13 `errors.Is` but `==`, so we cannot wrap it.
+	return http.ErrUseLastResponse
 }
