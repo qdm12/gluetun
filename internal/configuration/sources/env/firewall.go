@@ -32,12 +32,12 @@ func (s *Source) readFirewall() (firewall settings.Firewall, err error) {
 
 	firewall.Enabled, err = env.BoolPtr("FIREWALL")
 	if err != nil {
-		return firewall, fmt.Errorf("environment variable FIREWALL: %w", err)
+		return firewall, err
 	}
 
 	firewall.Debug, err = env.BoolPtr("FIREWALL_DEBUG")
 	if err != nil {
-		return firewall, fmt.Errorf("environment variable FIREWALL_DEBUG: %w", err)
+		return firewall, err
 	}
 
 	return firewall, nil

@@ -10,7 +10,7 @@ import (
 
 func readSecretFileAsStringPtr(secretPathEnvKey, defaultSecretPath string) (
 	stringPtr *string, err error) {
-	path := env.Get(secretPathEnvKey)
+	path := env.String(secretPathEnvKey)
 	if path == "" {
 		path = defaultSecretPath
 	}

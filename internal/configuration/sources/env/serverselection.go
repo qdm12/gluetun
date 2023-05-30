@@ -49,8 +49,8 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	serverNamesKey, _ := s.getEnvWithRetro("SERVER_NAMES", []string{"SERVER_NAME"})
 	ss.Names = env.CSV(serverNamesKey)
 
-	if csv := env.Get("SERVER_NUMBER"); csv != "" {
-		numbersStrings := strings.Split(csv, ",")
+	if csv := env.Get("SERVER_NUMBER"); csv != nil {
+		numbersStrings := strings.Split(*csv, ",")
 		numbers := make([]uint16, len(numbersStrings))
 		for i, numberString := range numbersStrings {
 			const base, bitSize = 10, 16
@@ -76,25 +76,25 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	// VPNUnlimited and ProtonVPN only
 	ss.FreeOnly, err = env.BoolPtr("FREE_ONLY")
 	if err != nil {
-		return ss, fmt.Errorf("environment variable FREE_ONLY: %w", err)
+		return ss, err
 	}
 
 	// VPNSecure only
 	ss.PremiumOnly, err = env.BoolPtr("PREMIUM_ONLY")
 	if err != nil {
-		return ss, fmt.Errorf("environment variable PREMIUM_ONLY: %w", err)
+		return ss, err
 	}
 
 	// VPNUnlimited only
 	ss.MultiHopOnly, err = env.BoolPtr("MULTIHOP_ONLY")
 	if err != nil {
-		return ss, fmt.Errorf("environment variable MULTIHOP_ONLY: %w", err)
+		return ss, err
 	}
 
 	// VPNUnlimited only
 	ss.MultiHopOnly, err = env.BoolPtr("STREAM_ONLY")
 	if err != nil {
-		return ss, fmt.Errorf("environment variable STREAM_ONLY: %w", err)
+		return ss, err
 	}
 
 	ss.OpenVPN, err = s.readOpenVPNSelection()
@@ -116,11 +116,11 @@ var (
 
 func (s *Source) readOpenVPNTargetIP() (ip netip.Addr, err error) {
 	envKey, value := s.getEnvWithRetro("VPN_ENDPOINT_IP", []string{"OPENVPN_TARGET_IP"})
-	if value == "" {
+	if value == nil {
 		return ip, nil
 	}
 
-	ip, err = netip.ParseAddr(value)
+	ip, err = netip.ParseAddr(*value)
 	if err != nil {
 		return ip, fmt.Errorf("environment variable %s: %w", envKey, err)
 	}
@@ -130,9 +130,5 @@ func (s *Source) readOpenVPNTargetIP() (ip netip.Addr, err error) {
 
 func (s *Source) readOwnedOnly() (ownedOnly *bool, err error) {
 	envKey, _ := s.getEnvWithRetro("OWNED_ONLY", []string{"OWNED"})
-	ownedOnly, err = env.BoolPtr(envKey)
-	if err != nil {
-		return nil, fmt.Errorf("environment variable %s: %w", envKey, err)
-	}
-	return ownedOnly, nil
+	return env.BoolPtr(envKey)
 }

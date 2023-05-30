@@ -1,7 +1,6 @@
 package env
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -9,12 +8,13 @@ import (
 )
 
 func (s *Source) ReadHealth() (health settings.Health, err error) {
-	health.ServerAddress = env.Get("HEALTH_SERVER_ADDRESS")
-	_, health.TargetAddress = s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", []string{"HEALTH_ADDRESS_TO_PING"})
+	health.ServerAddress = env.String("HEALTH_SERVER_ADDRESS")
+	targetAddressEnvKey, _ := s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", []string{"HEALTH_ADDRESS_TO_PING"})
+	health.TargetAddress = env.String(targetAddressEnvKey)
 
 	successWaitPtr, err := env.DurationPtr("HEALTH_SUCCESS_WAIT_DURATION")
 	if err != nil {
-		return health, fmt.Errorf("environment variable HEALTH_SUCCESS_WAIT_DURATION: %w", err)
+		return health, err
 	} else if successWaitPtr != nil {
 		health.SuccessWait = *successWaitPtr
 	}
@@ -37,16 +37,6 @@ func (s *Source) ReadHealth() (health settings.Health, err error) {
 }
 
 func (s *Source) readDurationWithRetro(envKey, retroEnvKey string) (d *time.Duration, err error) {
-	envKey, value := s.getEnvWithRetro(envKey, []string{retroEnvKey})
-	if value == "" {
-		return nil, nil //nolint:nilnil
-	}
-
-	d = new(time.Duration)
-	*d, err = time.ParseDuration(value)
-	if err != nil {
-		return nil, fmt.Errorf("environment variable %s: %w", envKey, err)
-	}
-
-	return d, nil
+	envKey, _ = s.getEnvWithRetro(envKey, []string{retroEnvKey})
+	return env.DurationPtr(envKey)
 }

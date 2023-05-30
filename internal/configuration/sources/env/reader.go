@@ -96,19 +96,19 @@ func (s *Source) onRetroActive(oldKey, newKey string) {
 			", please consider changing it to " + newKey)
 }
 
-// getEnvWithRetro returns the first environment variable
-// key and corresponding non empty value from the environment
+// getEnvWithRetro returns the first set environment variable
+// key and corresponding value from the environment
 // variable keys given. It first goes through the retroKeys
 // and end on returning the value corresponding to the currentKey.
 // Note retroKeys should be in order from oldest to most
 // recent retro-compatibility key.
 func (s *Source) getEnvWithRetro(currentKey string,
-	retroKeys []string, options ...env.Option) (key, value string) {
+	retroKeys []string, options ...env.Option) (key string, value *string) {
 	// We check retro-compatibility keys first since
 	// the current key might be set in the Dockerfile.
 	for _, key = range retroKeys {
 		value = env.Get(key, options...)
-		if value != "" {
+		if value != nil {
 			s.onRetroActive(key, currentKey)
 			return key, value
 		}

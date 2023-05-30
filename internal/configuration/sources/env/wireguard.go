@@ -13,18 +13,19 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	defer func() {
 		err = unsetEnvKeys([]string{"WIREGUARD_PRIVATE_KEY", "WIREGUARD_PRESHARED_KEY"}, err)
 	}()
-	wireguard.PrivateKey = env.StringPtr("WIREGUARD_PRIVATE_KEY", env.ForceLowercase(false))
-	wireguard.PreSharedKey = env.StringPtr("WIREGUARD_PRESHARED_KEY", env.ForceLowercase(false))
-	_, wireguard.Interface = s.getEnvWithRetro("VPN_INTERFACE",
+	wireguard.PrivateKey = env.Get("WIREGUARD_PRIVATE_KEY", env.ForceLowercase(false))
+	wireguard.PreSharedKey = env.Get("WIREGUARD_PRESHARED_KEY", env.ForceLowercase(false))
+	envKey, _ := s.getEnvWithRetro("VPN_INTERFACE",
 		[]string{"WIREGUARD_INTERFACE"}, env.ForceLowercase(false))
-	wireguard.Implementation = env.Get("WIREGUARD_IMPLEMENTATION")
+	wireguard.Interface = env.String(envKey)
+	wireguard.Implementation = env.String("WIREGUARD_IMPLEMENTATION")
 	wireguard.Addresses, err = s.readWireguardAddresses()
 	if err != nil {
 		return wireguard, err // already wrapped
 	}
 	mtuPtr, err := env.Uint16Ptr("WIREGUARD_MTU")
 	if err != nil {
-		return wireguard, fmt.Errorf("environment variable WIREGUARD_MTU: %w", err)
+		return wireguard, err
 	} else if mtuPtr != nil {
 		wireguard.MTU = *mtuPtr
 	}
@@ -32,13 +33,13 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 }
 
 func (s *Source) readWireguardAddresses() (addresses []netip.Prefix, err error) {
-	key, addressesCSV := s.getEnvWithRetro("WIREGUARD_ADDRESSES",
+	key, value := s.getEnvWithRetro("WIREGUARD_ADDRESSES",
 		[]string{"WIREGUARD_ADDRESS"})
-	if addressesCSV == "" {
+	if value == nil {
 		return nil, nil
 	}
 
-	addressStrings := strings.Split(addressesCSV, ",")
+	addressStrings := strings.Split(*value, ",")
 	addresses = make([]netip.Prefix, len(addressStrings))
 	for i, addressString := range addressStrings {
 		addressString = strings.TrimSpace(addressString)

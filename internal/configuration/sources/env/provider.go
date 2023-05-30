@@ -31,15 +31,16 @@ func (s *Source) readProvider(vpnType string) (provider settings.Provider, err e
 }
 
 func (s *Source) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
-	_, value := s.getEnvWithRetro("VPN_SERVICE_PROVIDER", []string{"VPNSP"})
-	if value == "" {
-		if vpnType != vpn.Wireguard && env.Get("OPENVPN_CUSTOM_CONFIG") != "" {
+	_, valuePtr := s.getEnvWithRetro("VPN_SERVICE_PROVIDER", []string{"VPNSP"})
+	if valuePtr == nil {
+		if vpnType != vpn.Wireguard && env.Get("OPENVPN_CUSTOM_CONFIG") != nil {
 			// retro compatibility
 			return ptrTo(providers.Custom)
 		}
 		return nil
 	}
 
+	value := *valuePtr
 	value = strings.ToLower(value)
 	if value == "pia" { // retro compatibility
 		return ptrTo(providers.PrivateInternetAccess)

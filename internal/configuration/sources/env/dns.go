@@ -16,7 +16,7 @@ func (s *Source) readDNS() (dns settings.DNS, err error) {
 
 	dns.KeepNameserver, err = env.BoolPtr("DNS_KEEP_NAMESERVER")
 	if err != nil {
-		return dns, fmt.Errorf("environment variable DNS_KEEP_NAMESERVER: %w", err)
+		return dns, err
 	}
 
 	dns.DoT, err = s.readDoT()
@@ -29,18 +29,18 @@ func (s *Source) readDNS() (dns settings.DNS, err error) {
 
 func (s *Source) readDNSServerAddress() (address netip.Addr, err error) {
 	key, value := s.getEnvWithRetro("DNS_ADDRESS", []string{"DNS_PLAINTEXT_ADDRESS"})
-	if value == "" {
+	if value == nil {
 		return address, nil
 	}
 
-	address, err = netip.ParseAddr(value)
+	address, err = netip.ParseAddr(*value)
 	if err != nil {
 		return address, fmt.Errorf("environment variable %s: %w", key, err)
 	}
 
 	// TODO remove in v4
 	if address.Unmap().Compare(netip.AddrFrom4([4]byte{127, 0, 0, 1})) != 0 {
-		s.warner.Warn(key + " is set to " + value +
+		s.warner.Warn(key + " is set to " + *value +
 			" so the DNS over TLS (DoT) server will not be used." +
 			" The default value changed to 127.0.0.1 so it uses the internal DoT serves." +
 			" If the DoT server fails to start, the IPv4 address of the first plaintext DNS server" +

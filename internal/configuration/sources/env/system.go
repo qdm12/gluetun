@@ -26,7 +26,7 @@ func (s *Source) readSystem() (system settings.System, err error) {
 		return system, err
 	}
 
-	system.Timezone = env.Get("TZ")
+	system.Timezone = env.String("TZ")
 
 	return system, nil
 }
@@ -35,10 +35,11 @@ var ErrSystemIDNotValid = errors.New("system ID is not valid")
 
 func (s *Source) readID(key, retroKey string) (
 	id *uint32, err error) {
-	idEnvKey, idString := s.getEnvWithRetro(key, []string{retroKey})
-	if idString == "" {
+	idEnvKey, idStringPtr := s.getEnvWithRetro(key, []string{retroKey})
+	if idStringPtr == nil {
 		return nil, nil //nolint:nilnil
 	}
+	idString := *idStringPtr
 
 	const base = 10
 	const bitSize = 64

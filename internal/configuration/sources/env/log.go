@@ -20,7 +20,7 @@ func readLog() (log settings.Log, err error) {
 }
 
 func readLogLevel() (level *log.Level, err error) {
-	s := env.Get("LOG_LEVEL")
+	s := env.String("LOG_LEVEL")
 	if s == "" {
 		return nil, nil //nolint:nilnil
 	}

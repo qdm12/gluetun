@@ -7,13 +7,12 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gosettings/sources/env"
-	"github.com/qdm12/govalid/binary"
 )
 
 func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error) {
 	blacklist.BlockMalicious, err = env.BoolPtr("BLOCK_MALICIOUS")
 	if err != nil {
-		return blacklist, fmt.Errorf("environment variable BLOCK_MALICIOUS: %w", err)
+		return blacklist, err
 	}
 
 	blacklist.BlockSurveillance, err = s.readBlockSurveillance()
@@ -23,7 +22,7 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 
 	blacklist.BlockAds, err = env.BoolPtr("BLOCK_ADS")
 	if err != nil {
-		return blacklist, fmt.Errorf("environment variable BLOCK_ADS: %w", err)
+		return blacklist, err
 	}
 
 	blacklist.AddBlockedIPs, blacklist.AddBlockedIPPrefixes,
@@ -38,13 +37,8 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 }
 
 func (s *Source) readBlockSurveillance() (blocked *bool, err error) {
-	key, value := s.getEnvWithRetro("BLOCK_SURVEILLANCE", []string{"BLOCK_NSA"})
-	blocked, err = binary.Validate(value)
-	if err != nil {
-		return nil, fmt.Errorf("environment variable %s: %w", key, err)
-	}
-
-	return blocked, nil
+	key, _ := s.getEnvWithRetro("BLOCK_SURVEILLANCE", []string{"BLOCK_NSA"})
+	return env.BoolPtr(key)
 }
 
 var (

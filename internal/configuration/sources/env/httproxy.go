@@ -9,8 +9,12 @@ import (
 )
 
 func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
-	httpProxy.User = s.readHTTProxyUser()
-	httpProxy.Password = s.readHTTProxyPassword()
+	_, httpProxy.User = s.getEnvWithRetro("HTTPPROXY_USER",
+		[]string{"PROXY_USER", "TINYPROXY_USER"}, env.ForceLowercase(false))
+
+	_, httpProxy.Password = s.getEnvWithRetro("HTTPPROXY_PASSWORD",
+		[]string{"PROXY_PASSWORD", "TINYPROXY_PASSWORD"}, env.ForceLowercase(false))
+
 	httpProxy.ListeningAddress = s.readHTTProxyListeningAddress()
 
 	httpProxy.Enabled, err = s.readHTTProxyEnabled()
@@ -20,7 +24,7 @@ func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
 
 	httpProxy.Stealth, err = env.BoolPtr("HTTPPROXY_STEALTH")
 	if err != nil {
-		return httpProxy, fmt.Errorf("environment variable HTTPPROXY_STEALTH: %w", err)
+		return httpProxy, err
 	}
 
 	httpProxy.Log, err = s.readHTTProxyLog()
@@ -31,47 +35,29 @@ func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
 	return httpProxy, nil
 }
 
-func (s *Source) readHTTProxyUser() (user *string) {
-	_, value := s.getEnvWithRetro("HTTPPROXY_USER",
-		[]string{"PROXY_USER", "TINYPROXY_USER"}, env.ForceLowercase(false))
-	if value != "" {
-		return &value
-	}
-	return nil
-}
-
-func (s *Source) readHTTProxyPassword() (user *string) {
-	_, value := s.getEnvWithRetro("HTTPPROXY_PASSWORD",
-		[]string{"PROXY_PASSWORD", "TINYPROXY_PASSWORD"}, env.ForceLowercase(false))
-	if value != "" {
-		return &value
-	}
-	return nil
-}
-
 func (s *Source) readHTTProxyListeningAddress() (listeningAddress string) {
 	key, value := s.getEnvWithRetro("HTTPPROXY_LISTENING_ADDRESS",
 		[]string{"PROXY_PORT", "TINYPROXY_PORT", "HTTPPROXY_PORT"})
-	if key == "HTTPPROXY_LISTENING_ADDRESS" {
-		return value
+	if value == nil {
+		return ""
+	} else if key == "HTTPPROXY_LISTENING_ADDRESS" {
+		return *value
 	}
-	return ":" + value
+	return ":" + *value
 }
 
 func (s *Source) readHTTProxyEnabled() (enabled *bool, err error) {
-	key, value := s.getEnvWithRetro("HTTPPROXY",
+	key, _ := s.getEnvWithRetro("HTTPPROXY",
 		[]string{"PROXY", "TINYPROXY"})
-	enabled, err = binary.Validate(value)
-	if err != nil {
-		return nil, fmt.Errorf("environment variable %s: %w", key, err)
-	}
-
-	return enabled, nil
+	return env.BoolPtr(key)
 }
 
 func (s *Source) readHTTProxyLog() (enabled *bool, err error) {
 	key, value := s.getEnvWithRetro("HTTPPROXY_LOG",
 		[]string{"PROXY_LOG_LEVEL", "TINYPROXY_LOG"})
+	if value == nil {
+		return nil, nil //nolint:nilnil
+	}
 
 	var binaryOptions []binary.Option
 	if key != "HTTPROXY_LOG" {
@@ -79,7 +65,7 @@ func (s *Source) readHTTProxyLog() (enabled *bool, err error) {
 		binaryOptions = append(binaryOptions, retroOption)
 	}
 
-	enabled, err = binary.Validate(value, binaryOptions...)
+	enabled, err = binary.Validate(*value, binaryOptions...)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}

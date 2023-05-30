@@ -8,15 +8,11 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gosettings/sources/env"
-	"github.com/qdm12/govalid/port"
 )
 
 func (s *Source) readOpenVPNSelection() (
 	selection settings.OpenVPNSelection, err error) {
-	confFile := env.Get("OPENVPN_CUSTOM_CONFIG", env.ForceLowercase(false))
-	if confFile != "" {
-		selection.ConfFile = &confFile
-	}
+	selection.ConfFile = env.Get("OPENVPN_CUSTOM_CONFIG", env.ForceLowercase(false))
 
 	selection.TCP, err = s.readOpenVPNProtocol()
 	if err != nil {
@@ -36,7 +32,11 @@ func (s *Source) readOpenVPNSelection() (
 var ErrOpenVPNProtocolNotValid = errors.New("OpenVPN protocol is not valid")
 
 func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
-	envKey, protocol := s.getEnvWithRetro("OPENVPN_PROTOCOL", []string{"PROTOCOL"})
+	envKey, protocolPtr := s.getEnvWithRetro("OPENVPN_PROTOCOL", []string{"PROTOCOL"})
+	if protocolPtr == nil {
+		return nil, nil //nolint:nilnil
+	}
+	protocol := *protocolPtr
 
 	switch strings.ToLower(protocol) {
 	case "":
@@ -52,16 +52,6 @@ func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
 }
 
 func (s *Source) readOpenVPNCustomPort() (customPort *uint16, err error) {
-	key, value := s.getEnvWithRetro("VPN_ENDPOINT_PORT", []string{"PORT", "OPENVPN_PORT"})
-	if value == "" {
-		return nil, nil //nolint:nilnil
-	}
-
-	customPort = new(uint16)
-	*customPort, err = port.Validate(value)
-	if err != nil {
-		return nil, fmt.Errorf("environment variable %s: %w", key, err)
-	}
-
-	return customPort, nil
+	key, _ := s.getEnvWithRetro("VPN_ENDPOINT_PORT", []string{"PORT", "OPENVPN_PORT"})
+	return env.Uint16Ptr(key)
 }
