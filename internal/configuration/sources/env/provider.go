@@ -35,15 +35,15 @@ func (s *Source) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string)
 	if value == "" {
 		if vpnType != vpn.Wireguard && env.Get("OPENVPN_CUSTOM_CONFIG") != "" {
 			// retro compatibility
-			return stringPtr(providers.Custom)
+			return ptrTo(providers.Custom)
 		}
 		return nil
 	}
 
 	value = strings.ToLower(value)
 	if value == "pia" { // retro compatibility
-		return stringPtr(providers.PrivateInternetAccess)
+		return ptrTo(providers.PrivateInternetAccess)
 	}
 
-	return stringPtr(value)
+	return ptrTo(value)
 }

@@ -44,13 +44,13 @@ func Test_Reader_readID(t *testing.T) {
 			keyPrefix:      "ID",
 			keyValue:       "1000",
 			retroKeyPrefix: "RETRO_ID",
-			id:             uint32Ptr(1000),
+			id:             ptrTo(uint32(1000)),
 		},
 		"max id": {
 			keyPrefix:      "ID",
 			keyValue:       "4294967295",
 			retroKeyPrefix: "RETRO_ID",
-			id:             uint32Ptr(4294967295),
+			id:             ptrTo(uint32(4294967295)),
 		},
 		"above max id": {
 			keyPrefix:      "ID",

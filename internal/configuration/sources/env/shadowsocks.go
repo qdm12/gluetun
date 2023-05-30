@@ -9,18 +9,18 @@ import (
 )
 
 func (s *Source) readShadowsocks() (shadowsocks settings.Shadowsocks, err error) {
-	shadowsocks.Enabled, err = envToBoolPtr("SHADOWSOCKS")
+	shadowsocks.Enabled, err = env.BoolPtr("SHADOWSOCKS")
 	if err != nil {
 		return shadowsocks, fmt.Errorf("environment variable SHADOWSOCKS: %w", err)
 	}
 
 	shadowsocks.Address = s.readShadowsocksAddress()
-	shadowsocks.LogAddresses, err = envToBoolPtr("SHADOWSOCKS_LOG")
+	shadowsocks.LogAddresses, err = env.BoolPtr("SHADOWSOCKS_LOG")
 	if err != nil {
 		return shadowsocks, fmt.Errorf("environment variable SHADOWSOCKS_LOG: %w", err)
 	}
 	shadowsocks.CipherName = s.readShadowsocksCipher()
-	shadowsocks.Password = envToStringPtr("SHADOWSOCKS_PASSWORD", env.ForceLowercase(false))
+	shadowsocks.Password = env.StringPtr("SHADOWSOCKS_PASSWORD", env.ForceLowercase(false))
 
 	return shadowsocks, nil
 }

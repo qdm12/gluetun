@@ -14,7 +14,7 @@ func (s *Source) readPortForward() (
 			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING",
 			"PORT_FORWARDING",
 		})
-	portForwarding.Enabled, err = envToBoolPtr(key)
+	portForwarding.Enabled, err = env.BoolPtr(key)
 	if err != nil {
 		return portForwarding, fmt.Errorf("environment variable %s: %w", key, err)
 	}
@@ -25,7 +25,7 @@ func (s *Source) readPortForward() (
 			"PORT_FORWARDING_STATUS_FILE",
 		}, env.ForceLowercase(false))
 	if value != "" {
-		portForwarding.Filepath = stringPtr(value)
+		portForwarding.Filepath = ptrTo(value)
 	}
 
 	return portForwarding, nil

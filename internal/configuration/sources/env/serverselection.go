@@ -26,28 +26,28 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	}
 
 	countriesKey, _ := s.getEnvWithRetro("SERVER_COUNTRIES", []string{"COUNTRY"})
-	ss.Countries = envToCSV(countriesKey)
+	ss.Countries = env.CSV(countriesKey)
 	if vpnProvider == providers.Cyberghost && len(ss.Countries) == 0 {
 		// Retro-compatibility for Cyberghost using the REGION variable
-		ss.Countries = envToCSV("REGION")
+		ss.Countries = env.CSV("REGION")
 		if len(ss.Countries) > 0 {
 			s.onRetroActive("REGION", "SERVER_COUNTRIES")
 		}
 	}
 
 	regionsKey, _ := s.getEnvWithRetro("SERVER_REGIONS", []string{"REGION"})
-	ss.Regions = envToCSV(regionsKey)
+	ss.Regions = env.CSV(regionsKey)
 
 	citiesKey, _ := s.getEnvWithRetro("SERVER_CITIES", []string{"CITY"})
-	ss.Cities = envToCSV(citiesKey)
+	ss.Cities = env.CSV(citiesKey)
 
-	ss.ISPs = envToCSV("ISP")
+	ss.ISPs = env.CSV("ISP")
 
 	hostnamesKey, _ := s.getEnvWithRetro("SERVER_HOSTNAMES", []string{"SERVER_HOSTNAME"})
-	ss.Hostnames = envToCSV(hostnamesKey)
+	ss.Hostnames = env.CSV(hostnamesKey)
 
 	serverNamesKey, _ := s.getEnvWithRetro("SERVER_NAMES", []string{"SERVER_NAME"})
-	ss.Names = envToCSV(serverNamesKey)
+	ss.Names = env.CSV(serverNamesKey)
 
 	if csv := env.Get("SERVER_NUMBER"); csv != "" {
 		numbersStrings := strings.Split(csv, ",")
@@ -74,25 +74,25 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	}
 
 	// VPNUnlimited and ProtonVPN only
-	ss.FreeOnly, err = envToBoolPtr("FREE_ONLY")
+	ss.FreeOnly, err = env.BoolPtr("FREE_ONLY")
 	if err != nil {
 		return ss, fmt.Errorf("environment variable FREE_ONLY: %w", err)
 	}
 
 	// VPNSecure only
-	ss.PremiumOnly, err = envToBoolPtr("PREMIUM_ONLY")
+	ss.PremiumOnly, err = env.BoolPtr("PREMIUM_ONLY")
 	if err != nil {
 		return ss, fmt.Errorf("environment variable PREMIUM_ONLY: %w", err)
 	}
 
 	// VPNUnlimited only
-	ss.MultiHopOnly, err = envToBoolPtr("MULTIHOP_ONLY")
+	ss.MultiHopOnly, err = env.BoolPtr("MULTIHOP_ONLY")
 	if err != nil {
 		return ss, fmt.Errorf("environment variable MULTIHOP_ONLY: %w", err)
 	}
 
 	// VPNUnlimited only
-	ss.MultiHopOnly, err = envToBoolPtr("STREAM_ONLY")
+	ss.MultiHopOnly, err = env.BoolPtr("STREAM_ONLY")
 	if err != nil {
 		return ss, fmt.Errorf("environment variable STREAM_ONLY: %w", err)
 	}
@@ -130,7 +130,7 @@ func (s *Source) readOpenVPNTargetIP() (ip netip.Addr, err error) {
 
 func (s *Source) readOwnedOnly() (ownedOnly *bool, err error) {
 	envKey, _ := s.getEnvWithRetro("OWNED_ONLY", []string{"OWNED"})
-	ownedOnly, err = envToBoolPtr(envKey)
+	ownedOnly, err = env.BoolPtr(envKey)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", envKey, err)
 	}

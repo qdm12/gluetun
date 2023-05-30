@@ -25,22 +25,22 @@ func (s *Source) readOpenVPN() (
 	}
 
 	ciphersKey, _ := s.getEnvWithRetro("OPENVPN_CIPHERS", []string{"OPENVPN_CIPHER"})
-	openVPN.Ciphers = envToCSV(ciphersKey)
+	openVPN.Ciphers = env.CSV(ciphersKey)
 
 	auth := env.Get("OPENVPN_AUTH")
 	if auth != "" {
 		openVPN.Auth = &auth
 	}
 
-	openVPN.Cert = envToStringPtr("OPENVPN_CERT", env.ForceLowercase(false))
-	openVPN.Key = envToStringPtr("OPENVPN_KEY", env.ForceLowercase(false))
-	openVPN.EncryptedKey = envToStringPtr("OPENVPN_ENCRYPTED_KEY", env.ForceLowercase(false))
+	openVPN.Cert = env.StringPtr("OPENVPN_CERT", env.ForceLowercase(false))
+	openVPN.Key = env.StringPtr("OPENVPN_KEY", env.ForceLowercase(false))
+	openVPN.EncryptedKey = env.StringPtr("OPENVPN_ENCRYPTED_KEY", env.ForceLowercase(false))
 
 	openVPN.KeyPassphrase = s.readOpenVPNKeyPassphrase()
 
 	openVPN.PIAEncPreset = s.readPIAEncryptionPreset()
 
-	openVPN.MSSFix, err = envToUint16Ptr("OPENVPN_MSSFIX")
+	openVPN.MSSFix, err = env.Uint16Ptr("OPENVPN_MSSFIX")
 	if err != nil {
 		return openVPN, fmt.Errorf("environment variable OPENVPN_MSSFIX: %w", err)
 	}
@@ -53,7 +53,7 @@ func (s *Source) readOpenVPN() (
 		return openVPN, err
 	}
 
-	openVPN.Verbosity, err = envToIntPtr("OPENVPN_VERBOSITY")
+	openVPN.Verbosity, err = env.IntPtr("OPENVPN_VERBOSITY")
 	if err != nil {
 		return openVPN, fmt.Errorf("environment variable OPENVPN_VERBOSITY: %w", err)
 	}

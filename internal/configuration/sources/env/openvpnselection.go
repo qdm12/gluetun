@@ -42,9 +42,9 @@ func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
 	case "":
 		return nil, nil //nolint:nilnil
 	case constants.UDP:
-		return boolPtr(false), nil
+		return ptrTo(false), nil
 	case constants.TCP:
-		return boolPtr(true), nil
+		return ptrTo(true), nil
 	default:
 		return nil, fmt.Errorf("environment variable %s: %w: %s",
 			envKey, ErrOpenVPNProtocolNotValid, protocol)

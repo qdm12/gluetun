@@ -12,7 +12,7 @@ func (s *Source) ReadHealth() (health settings.Health, err error) {
 	health.ServerAddress = env.Get("HEALTH_SERVER_ADDRESS")
 	_, health.TargetAddress = s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", []string{"HEALTH_ADDRESS_TO_PING"})
 
-	successWaitPtr, err := envToDurationPtr("HEALTH_SUCCESS_WAIT_DURATION")
+	successWaitPtr, err := env.DurationPtr("HEALTH_SUCCESS_WAIT_DURATION")
 	if err != nil {
 		return health, fmt.Errorf("environment variable HEALTH_SUCCESS_WAIT_DURATION: %w", err)
 	} else if successWaitPtr != nil {

@@ -13,8 +13,8 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	defer func() {
 		err = unsetEnvKeys([]string{"WIREGUARD_PRIVATE_KEY", "WIREGUARD_PRESHARED_KEY"}, err)
 	}()
-	wireguard.PrivateKey = envToStringPtr("WIREGUARD_PRIVATE_KEY", env.ForceLowercase(false))
-	wireguard.PreSharedKey = envToStringPtr("WIREGUARD_PRESHARED_KEY", env.ForceLowercase(false))
+	wireguard.PrivateKey = env.StringPtr("WIREGUARD_PRIVATE_KEY", env.ForceLowercase(false))
+	wireguard.PreSharedKey = env.StringPtr("WIREGUARD_PRESHARED_KEY", env.ForceLowercase(false))
 	_, wireguard.Interface = s.getEnvWithRetro("VPN_INTERFACE",
 		[]string{"WIREGUARD_INTERFACE"}, env.ForceLowercase(false))
 	wireguard.Implementation = env.Get("WIREGUARD_IMPLEMENTATION")
@@ -22,7 +22,7 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	if err != nil {
 		return wireguard, err // already wrapped
 	}
-	mtuPtr, err := envToUint16Ptr("WIREGUARD_MTU")
+	mtuPtr, err := env.Uint16Ptr("WIREGUARD_MTU")
 	if err != nil {
 		return wireguard, fmt.Errorf("environment variable WIREGUARD_MTU: %w", err)
 	} else if mtuPtr != nil {

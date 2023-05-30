@@ -6,11 +6,12 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 	"github.com/qdm12/govalid/binary"
 )
 
 func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error) {
-	blacklist.BlockMalicious, err = envToBoolPtr("BLOCK_MALICIOUS")
+	blacklist.BlockMalicious, err = env.BoolPtr("BLOCK_MALICIOUS")
 	if err != nil {
 		return blacklist, fmt.Errorf("environment variable BLOCK_MALICIOUS: %w", err)
 	}
@@ -20,7 +21,7 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 		return blacklist, err
 	}
 
-	blacklist.BlockAds, err = envToBoolPtr("BLOCK_ADS")
+	blacklist.BlockAds, err = env.BoolPtr("BLOCK_ADS")
 	if err != nil {
 		return blacklist, fmt.Errorf("environment variable BLOCK_ADS: %w", err)
 	}
@@ -31,7 +32,7 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 		return blacklist, err
 	}
 
-	blacklist.AllowedHosts = envToCSV("UNBLOCK") // TODO v4 change name
+	blacklist.AllowedHosts = env.CSV("UNBLOCK") // TODO v4 change name
 
 	return blacklist, nil
 }
@@ -52,7 +53,7 @@ var (
 
 func readDoTPrivateAddresses() (ips []netip.Addr,
 	ipPrefixes []netip.Prefix, err error) {
-	privateAddresses := envToCSV("DOT_PRIVATE_ADDRESS")
+	privateAddresses := env.CSV("DOT_PRIVATE_ADDRESS")
 	if len(privateAddresses) == 0 {
 		return nil, nil, nil
 	}

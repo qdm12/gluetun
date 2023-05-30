@@ -8,17 +8,17 @@ import (
 )
 
 func readPprof() (settings pprof.Settings, err error) {
-	settings.Enabled, err = envToBoolPtr("PPROF_ENABLED")
+	settings.Enabled, err = env.BoolPtr("PPROF_ENABLED")
 	if err != nil {
 		return settings, fmt.Errorf("environment variable PPROF_ENABLED: %w", err)
 	}
 
-	settings.BlockProfileRate, err = envToIntPtr("PPROF_BLOCK_PROFILE_RATE")
+	settings.BlockProfileRate, err = env.IntPtr("PPROF_BLOCK_PROFILE_RATE")
 	if err != nil {
 		return settings, fmt.Errorf("environment variable PPROF_BLOCK_PROFILE_RATE: %w", err)
 	}
 
-	settings.MutexProfileRate, err = envToIntPtr("PPROF_MUTEX_PROFILE_RATE")
+	settings.MutexProfileRate, err = env.IntPtr("PPROF_MUTEX_PROFILE_RATE")
 	if err != nil {
 		return settings, fmt.Errorf("environment variable PPROF_MUTEX_PROFILE_RATE: %w", err)
 	}

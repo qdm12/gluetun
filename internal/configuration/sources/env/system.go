@@ -52,5 +52,5 @@ func (s *Source) readID(key, retroKey string) (
 			idEnvKey, ErrSystemIDNotValid, idUint64, max)
 	}
 
-	return uint32Ptr(uint32(idUint64)), nil
+	return ptrTo(uint32(idUint64)), nil
 }

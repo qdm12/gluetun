@@ -18,7 +18,7 @@ func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
 		return httpProxy, err
 	}
 
-	httpProxy.Stealth, err = envToBoolPtr("HTTPPROXY_STEALTH")
+	httpProxy.Stealth, err = env.BoolPtr("HTTPPROXY_STEALTH")
 	if err != nil {
 		return httpProxy, fmt.Errorf("environment variable HTTPPROXY_STEALTH: %w", err)
 	}
