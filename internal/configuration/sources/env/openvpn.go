@@ -24,7 +24,7 @@ func (s *Source) readOpenVPN() (
 		openVPN.ConfFile = &confFile
 	}
 
-	ciphersKey, _ := s.getEnvWithRetro("OPENVPN_CIPHERS", "OPENVPN_CIPHER")
+	ciphersKey, _ := s.getEnvWithRetro("OPENVPN_CIPHERS", []string{"OPENVPN_CIPHER"})
 	openVPN.Ciphers = envToCSV(ciphersKey)
 
 	auth := env.Get("OPENVPN_AUTH")
@@ -32,9 +32,9 @@ func (s *Source) readOpenVPN() (
 		openVPN.Auth = &auth
 	}
 
-	openVPN.Cert = envToStringPtr("OPENVPN_CERT")
-	openVPN.Key = envToStringPtr("OPENVPN_KEY")
-	openVPN.EncryptedKey = envToStringPtr("OPENVPN_ENCRYPTED_KEY")
+	openVPN.Cert = envToStringPtr("OPENVPN_CERT", env.ForceLowercase(false))
+	openVPN.Key = envToStringPtr("OPENVPN_KEY", env.ForceLowercase(false))
+	openVPN.EncryptedKey = envToStringPtr("OPENVPN_ENCRYPTED_KEY", env.ForceLowercase(false))
 
 	openVPN.KeyPassphrase = s.readOpenVPNKeyPassphrase()
 
@@ -45,7 +45,8 @@ func (s *Source) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_MSSFIX: %w", err)
 	}
 
-	_, openVPN.Interface = s.getEnvWithRetro("VPN_INTERFACE", "OPENVPN_INTERFACE")
+	_, openVPN.Interface = s.getEnvWithRetro("VPN_INTERFACE",
+		[]string{"OPENVPN_INTERFACE"}, env.ForceLowercase(false))
 
 	openVPN.ProcessUser, err = s.readOpenVPNProcessUser()
 	if err != nil {
@@ -57,7 +58,7 @@ func (s *Source) readOpenVPN() (
 		return openVPN, fmt.Errorf("environment variable OPENVPN_VERBOSITY: %w", err)
 	}
 
-	flagsStr := env.Get("OPENVPN_FLAGS")
+	flagsStr := env.Get("OPENVPN_FLAGS", env.ForceLowercase(false))
 	if flagsStr != "" {
 		openVPN.Flags = strings.Fields(flagsStr)
 	}
@@ -67,7 +68,8 @@ func (s *Source) readOpenVPN() (
 
 func (s *Source) readOpenVPNUser() (user *string) {
 	user = new(string)
-	_, *user = s.getEnvWithRetro("OPENVPN_USER", "USER")
+	_, *user = s.getEnvWithRetro("OPENVPN_USER",
+		[]string{"USER"}, env.ForceLowercase(false))
 	if *user == "" {
 		return nil
 	}
@@ -79,7 +81,8 @@ func (s *Source) readOpenVPNUser() (user *string) {
 
 func (s *Source) readOpenVPNPassword() (password *string) {
 	password = new(string)
-	_, *password = s.getEnvWithRetro("OPENVPN_PASSWORD", "PASSWORD")
+	_, *password = s.getEnvWithRetro("OPENVPN_PASSWORD",
+		[]string{"PASSWORD"}, env.ForceLowercase(false))
 	if *password == "" {
 		return nil
 	}
@@ -89,7 +92,7 @@ func (s *Source) readOpenVPNPassword() (password *string) {
 
 func (s *Source) readOpenVPNKeyPassphrase() (passphrase *string) {
 	passphrase = new(string)
-	*passphrase = env.Get("OPENVPN_KEY_PASSPHRASE")
+	*passphrase = env.Get("OPENVPN_KEY_PASSPHRASE", env.ForceLowercase(false))
 	if *passphrase == "" {
 		return nil
 	}
@@ -99,7 +102,7 @@ func (s *Source) readOpenVPNKeyPassphrase() (passphrase *string) {
 func (s *Source) readPIAEncryptionPreset() (presetPtr *string) {
 	_, preset := s.getEnvWithRetro(
 		"PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET",
-		"PIA_ENCRYPTION", "ENCRYPTION")
+		[]string{"PIA_ENCRYPTION", "ENCRYPTION"})
 	if preset != "" {
 		return &preset
 	}
@@ -107,7 +110,8 @@ func (s *Source) readPIAEncryptionPreset() (presetPtr *string) {
 }
 
 func (s *Source) readOpenVPNProcessUser() (processUser string, err error) {
-	key, value := s.getEnvWithRetro("OPENVPN_PROCESS_USER", "OPENVPN_ROOT")
+	key, value := s.getEnvWithRetro("OPENVPN_PROCESS_USER",
+		[]string{"OPENVPN_ROOT"})
 	if key == "OPENVPN_PROCESS_USER" {
 		return value, nil
 	}

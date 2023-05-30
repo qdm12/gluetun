@@ -29,8 +29,8 @@ func envToFloat64(envKey string) (f float64, err error) {
 	return strconv.ParseFloat(s, bits)
 }
 
-func envToStringPtr(envKey string) (stringPtr *string) {
-	s := env.Get(envKey)
+func envToStringPtr(envKey string, options ...env.Option) (stringPtr *string) {
+	s := env.Get(envKey, options...)
 	if s == "" {
 		return nil
 	}

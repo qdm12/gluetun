@@ -27,7 +27,7 @@ func (s *Source) readDNS() (dns settings.DNS, err error) {
 }
 
 func (s *Source) readDNSServerAddress() (address netip.Addr, err error) {
-	key, value := s.getEnvWithRetro("DNS_ADDRESS", "DNS_PLAINTEXT_ADDRESS")
+	key, value := s.getEnvWithRetro("DNS_ADDRESS", []string{"DNS_PLAINTEXT_ADDRESS"})
 	if value == "" {
 		return address, nil
 	}

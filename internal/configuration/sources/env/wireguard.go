@@ -13,9 +13,10 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	defer func() {
 		err = unsetEnvKeys([]string{"WIREGUARD_PRIVATE_KEY", "WIREGUARD_PRESHARED_KEY"}, err)
 	}()
-	wireguard.PrivateKey = envToStringPtr("WIREGUARD_PRIVATE_KEY")
-	wireguard.PreSharedKey = envToStringPtr("WIREGUARD_PRESHARED_KEY")
-	_, wireguard.Interface = s.getEnvWithRetro("VPN_INTERFACE", "WIREGUARD_INTERFACE")
+	wireguard.PrivateKey = envToStringPtr("WIREGUARD_PRIVATE_KEY", env.ForceLowercase(false))
+	wireguard.PreSharedKey = envToStringPtr("WIREGUARD_PRESHARED_KEY", env.ForceLowercase(false))
+	_, wireguard.Interface = s.getEnvWithRetro("VPN_INTERFACE",
+		[]string{"WIREGUARD_INTERFACE"}, env.ForceLowercase(false))
 	wireguard.Implementation = env.Get("WIREGUARD_IMPLEMENTATION")
 	wireguard.Addresses, err = s.readWireguardAddresses()
 	if err != nil {
@@ -31,7 +32,8 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 }
 
 func (s *Source) readWireguardAddresses() (addresses []netip.Prefix, err error) {
-	key, addressesCSV := s.getEnvWithRetro("WIREGUARD_ADDRESSES", "WIREGUARD_ADDRESS")
+	key, addressesCSV := s.getEnvWithRetro("WIREGUARD_ADDRESSES",
+		[]string{"WIREGUARD_ADDRESS"})
 	if addressesCSV == "" {
 		return nil, nil
 	}

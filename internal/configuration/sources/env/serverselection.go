@@ -25,7 +25,7 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 		return ss, err
 	}
 
-	countriesKey, _ := s.getEnvWithRetro("SERVER_COUNTRIES", "COUNTRY")
+	countriesKey, _ := s.getEnvWithRetro("SERVER_COUNTRIES", []string{"COUNTRY"})
 	ss.Countries = envToCSV(countriesKey)
 	if vpnProvider == providers.Cyberghost && len(ss.Countries) == 0 {
 		// Retro-compatibility for Cyberghost using the REGION variable
@@ -35,18 +35,18 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 		}
 	}
 
-	regionsKey, _ := s.getEnvWithRetro("SERVER_REGIONS", "REGION")
+	regionsKey, _ := s.getEnvWithRetro("SERVER_REGIONS", []string{"REGION"})
 	ss.Regions = envToCSV(regionsKey)
 
-	citiesKey, _ := s.getEnvWithRetro("SERVER_CITIES", "CITY")
+	citiesKey, _ := s.getEnvWithRetro("SERVER_CITIES", []string{"CITY"})
 	ss.Cities = envToCSV(citiesKey)
 
 	ss.ISPs = envToCSV("ISP")
 
-	hostnamesKey, _ := s.getEnvWithRetro("SERVER_HOSTNAMES", "SERVER_HOSTNAME")
+	hostnamesKey, _ := s.getEnvWithRetro("SERVER_HOSTNAMES", []string{"SERVER_HOSTNAME"})
 	ss.Hostnames = envToCSV(hostnamesKey)
 
-	serverNamesKey, _ := s.getEnvWithRetro("SERVER_NAMES", "SERVER_NAME")
+	serverNamesKey, _ := s.getEnvWithRetro("SERVER_NAMES", []string{"SERVER_NAME"})
 	ss.Names = envToCSV(serverNamesKey)
 
 	if csv := env.Get("SERVER_NUMBER"); csv != "" {
@@ -115,7 +115,7 @@ var (
 )
 
 func (s *Source) readOpenVPNTargetIP() (ip netip.Addr, err error) {
-	envKey, value := s.getEnvWithRetro("VPN_ENDPOINT_IP", "OPENVPN_TARGET_IP")
+	envKey, value := s.getEnvWithRetro("VPN_ENDPOINT_IP", []string{"OPENVPN_TARGET_IP"})
 	if value == "" {
 		return ip, nil
 	}
@@ -129,7 +129,7 @@ func (s *Source) readOpenVPNTargetIP() (ip netip.Addr, err error) {
 }
 
 func (s *Source) readOwnedOnly() (ownedOnly *bool, err error) {
-	envKey, _ := s.getEnvWithRetro("OWNED_ONLY", "OWNED")
+	envKey, _ := s.getEnvWithRetro("OWNED_ONLY", []string{"OWNED"})
 	ownedOnly, err = envToBoolPtr(envKey)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", envKey, err)

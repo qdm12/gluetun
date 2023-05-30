@@ -13,7 +13,7 @@ import (
 
 func (s *Source) readOpenVPNSelection() (
 	selection settings.OpenVPNSelection, err error) {
-	confFile := env.Get("OPENVPN_CUSTOM_CONFIG")
+	confFile := env.Get("OPENVPN_CUSTOM_CONFIG", env.ForceLowercase(false))
 	if confFile != "" {
 		selection.ConfFile = &confFile
 	}
@@ -36,7 +36,7 @@ func (s *Source) readOpenVPNSelection() (
 var ErrOpenVPNProtocolNotValid = errors.New("OpenVPN protocol is not valid")
 
 func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
-	envKey, protocol := s.getEnvWithRetro("OPENVPN_PROTOCOL", "PROTOCOL")
+	envKey, protocol := s.getEnvWithRetro("OPENVPN_PROTOCOL", []string{"PROTOCOL"})
 
 	switch strings.ToLower(protocol) {
 	case "":
@@ -52,7 +52,7 @@ func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
 }
 
 func (s *Source) readOpenVPNCustomPort() (customPort *uint16, err error) {
-	key, value := s.getEnvWithRetro("VPN_ENDPOINT_PORT", "PORT", "OPENVPN_PORT")
+	key, value := s.getEnvWithRetro("VPN_ENDPOINT_PORT", []string{"PORT", "OPENVPN_PORT"})
 	if value == "" {
 		return nil, nil //nolint:nilnil
 	}

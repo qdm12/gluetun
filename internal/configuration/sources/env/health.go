@@ -10,7 +10,7 @@ import (
 
 func (s *Source) ReadHealth() (health settings.Health, err error) {
 	health.ServerAddress = env.Get("HEALTH_SERVER_ADDRESS")
-	_, health.TargetAddress = s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", "HEALTH_ADDRESS_TO_PING")
+	_, health.TargetAddress = s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", []string{"HEALTH_ADDRESS_TO_PING"})
 
 	successWaitPtr, err := envToDurationPtr("HEALTH_SUCCESS_WAIT_DURATION")
 	if err != nil {
@@ -37,7 +37,7 @@ func (s *Source) ReadHealth() (health settings.Health, err error) {
 }
 
 func (s *Source) readDurationWithRetro(envKey, retroEnvKey string) (d *time.Duration, err error) {
-	envKey, value := s.getEnvWithRetro(envKey, retroEnvKey)
+	envKey, value := s.getEnvWithRetro(envKey, []string{retroEnvKey})
 	if value == "" {
 		return nil, nil //nolint:nilnil
 	}

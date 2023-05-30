@@ -35,7 +35,8 @@ func readPublicIPPeriod() (period *time.Duration, err error) {
 }
 
 func (s *Source) readPublicIPFilepath() (filepath *string) {
-	_, value := s.getEnvWithRetro("PUBLICIP_FILE", "IP_STATUS_FILE")
+	_, value := s.getEnvWithRetro("PUBLICIP_FILE",
+		[]string{"IP_STATUS_FILE"}, env.ForceLowercase(false))
 	if value != "" {
 		return &value
 	}

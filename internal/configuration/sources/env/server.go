@@ -29,7 +29,8 @@ func readControlServerLog() (enabled *bool, err error) {
 }
 
 func (s *Source) readControlServerAddress() (address *string) {
-	key, value := s.getEnvWithRetro("HTTP_CONTROL_SERVER_ADDRESS", "HTTP_CONTROL_SERVER_PORT")
+	key, value := s.getEnvWithRetro("HTTP_CONTROL_SERVER_ADDRESS",
+		[]string{"CONTROL_SERVER_ADDRESS"})
 	if value == "" {
 		return nil
 	}

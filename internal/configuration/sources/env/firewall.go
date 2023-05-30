@@ -22,7 +22,7 @@ func (s *Source) readFirewall() (firewall settings.Firewall, err error) {
 		return firewall, fmt.Errorf("environment variable FIREWALL_INPUT_PORTS: %w", err)
 	}
 
-	outboundSubnetsKey, _ := s.getEnvWithRetro("FIREWALL_OUTBOUND_SUBNETS", "EXTRA_SUBNETS")
+	outboundSubnetsKey, _ := s.getEnvWithRetro("FIREWALL_OUTBOUND_SUBNETS", []string{"EXTRA_SUBNETS"})
 	outboundSubnetStrings := envToCSV(outboundSubnetsKey)
 	firewall.OutboundSubnets, err = stringsToNetipPrefixes(outboundSubnetStrings)
 	if err != nil {

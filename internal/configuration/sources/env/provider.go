@@ -31,7 +31,7 @@ func (s *Source) readProvider(vpnType string) (provider settings.Provider, err e
 }
 
 func (s *Source) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
-	_, value := s.getEnvWithRetro("VPN_SERVICE_PROVIDER", "VPNSP")
+	_, value := s.getEnvWithRetro("VPN_SERVICE_PROVIDER", []string{"VPNSP"})
 	if value == "" {
 		if vpnType != vpn.Wireguard && env.Get("OPENVPN_CUSTOM_CONFIG") != "" {
 			// retro compatibility
