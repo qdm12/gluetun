@@ -30,7 +30,7 @@ func (s *Shadowsocks) copy() (copied Shadowsocks) {
 // unset field of the receiver settings object.
 func (s *Shadowsocks) mergeWith(other Shadowsocks) {
 	s.Enabled = gosettings.MergeWithPointer(s.Enabled, other.Enabled)
-	s.Settings.MergeWith(other.Settings)
+	s.Settings = s.Settings.MergeWith(other.Settings)
 }
 
 // overrideWith overrides fields of the receiver
@@ -59,7 +59,7 @@ func (s Shadowsocks) toLinesNode() (node *gotree.Node) {
 	}
 
 	// TODO have ToLinesNode in qdm12/ss-server
-	node.Appendf("Listening address: %s", s.Address)
+	node.Appendf("Listening address: %s", *s.Address)
 	node.Appendf("Cipher: %s", s.CipherName)
 	node.Appendf("Password: %s", gosettings.ObfuscateKey(*s.Password))
 	node.Appendf("Log addresses: %s", gosettings.BoolToYesNo(s.LogAddresses))

@@ -22,19 +22,20 @@ func (s *Source) readShadowsocks() (shadowsocks settings.Shadowsocks, err error)
 	return shadowsocks, nil
 }
 
-func (s *Source) readShadowsocksAddress() (address string) {
+func (s *Source) readShadowsocksAddress() (address *string) {
 	key, value := s.getEnvWithRetro("SHADOWSOCKS_LISTENING_ADDRESS",
 		[]string{"SHADOWSOCKS_PORT"})
 	if value == nil {
-		return ""
+		return nil
 	}
 
 	if key == "SHADOWSOCKS_LISTENING_ADDRESS" {
-		return *value
+		return value
 	}
 
 	// Retro-compatibility
-	return ":" + *value
+	*value = ":" + *value
+	return value
 }
 
 func (s *Source) readShadowsocksCipher() (cipher string) {

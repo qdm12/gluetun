@@ -103,8 +103,8 @@ github.com/qdm12/govalid v0.2.0-rc1 h1:4iYQvU4ibrASgzelsEgZX4JyKX3UTB/DcHObzQ7BX
 github.com/qdm12/govalid v0.2.0-rc1/go.mod h1:/uWzVWMuS71wmbsVnlUxpQiy6EAXqm8eQ2RbyA72roQ=
 github.com/qdm12/log v0.1.0 h1:jYBd/xscHYpblzZAd2kjZp2YmuYHjAAfbTViJWxoPTw=
 github.com/qdm12/log v0.1.0/go.mod h1:Vchi5M8uBvHfPNIblN4mjXn/oSbiWguQIbsgF1zdQPI=
-github.com/qdm12/ss-server v0.4.0 h1:lMMYfDGc9P86Lyvd3+p8lK4hhgHUKDzjZC91FqJYkDU=
-github.com/qdm12/ss-server v0.4.0/go.mod h1:AY0p4huvPUPW+/CiWsJcDgT6sneDryk26VXSccPNCxY=
+github.com/qdm12/ss-server v0.5.0-rc1 h1:2rJEhDnUUc9AKtvyVu+CrnJwvdEjMaB1zFRQvTUlDPw=
+github.com/qdm12/ss-server v0.5.0-rc1/go.mod h1:IoFYGpVpxfIB/dMTr0PnSegdhV1gEfZLS9Tr1Qn8uRg=
 github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e h1:4q+uFLawkaQRq3yARYLsjJPZd2wYwxn4g6G/5v0xW1g=
 github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e/go.mod h1:UvJRGkZ9XL3/D7e7JiTTVLm1F3Cymd3/gFpD6frEpBo=
 github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 h1:f/FNXud6gA3MNr8meMVVGxhp+QBTqY91tM8HjEuMjGg=
@@ -146,8 +146,8 @@ golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073/go.mod h1:LzIPMQfyMNhhGPh
 golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
 golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
-golang.org/x/crypto v0.6.0 h1:qfktjS5LUO+fFKeJXZ+ikTRijMmljikvG68fpMMruSc=
-golang.org/x/crypto v0.6.0/go.mod h1:OFC/31mSvZgRz0V1QTNCzfAI1aIRzbiufJtkMIlEp58=
+golang.org/x/crypto v0.9.0 h1:LF6fAI+IutBocDJ2OT0Q1g8plpYljMZ4+lty+dsqw3g=
+golang.org/x/crypto v0.9.0/go.mod h1:yrmDGqONDYtNj3tH8X9dzUun2m2lzPa9ngI6/RUPGR0=
 golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 h1:k/i9J1pBpvlfR+9QsetwPyERsqu1GIbi967PQMq3Ivc=
 golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1/go.mod h1:V1LtkGg67GoY2N1AnLN78QLrzxkLyJw7RJb1gzOOz9w=
 golang.org/x/mod v0.1.1-0.20191105210325-c90efee705ee/go.mod h1:QqPTAvyqsEbceGzBzNggFXnrqF1CaUcvgkdR5Ot7KZg=
