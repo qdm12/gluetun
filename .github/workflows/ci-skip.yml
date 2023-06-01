@@ -14,8 +14,6 @@ on:
       - go.mod
       - go.sum
   pull_request:
-    branches:
-      - master
     paths-ignore:
       - .github/workflows/ci.yml
       - cmd/**
