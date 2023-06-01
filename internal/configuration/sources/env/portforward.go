@@ -12,7 +12,7 @@ func (s *Source) readPortForward() (
 			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING",
 			"PORT_FORWARDING",
 		})
-	portForwarding.Enabled, err = env.BoolPtr(key)
+	portForwarding.Enabled, err = s.env.BoolPtr(key)
 	if err != nil {
 		return portForwarding, err
 	}

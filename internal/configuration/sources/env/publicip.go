@@ -6,7 +6,7 @@ import (
 )
 
 func (s *Source) readPublicIP() (publicIP settings.PublicIP, err error) {
-	publicIP.Period, err = env.DurationPtr("PUBLICIP_PERIOD")
+	publicIP.Period, err = s.env.DurationPtr("PUBLICIP_PERIOD")
 	if err != nil {
 		return publicIP, err
 	}

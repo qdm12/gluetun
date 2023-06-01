@@ -5,7 +5,6 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readDNS() (dns settings.DNS, err error) {
@@ -14,7 +13,7 @@ func (s *Source) readDNS() (dns settings.DNS, err error) {
 		return dns, err
 	}
 
-	dns.KeepNameserver, err = env.BoolPtr("DNS_KEEP_NAMESERVER")
+	dns.KeepNameserver, err = s.env.BoolPtr("DNS_KEEP_NAMESERVER")
 	if err != nil {
 		return dns, err
 	}

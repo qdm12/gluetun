@@ -2,11 +2,10 @@ package env
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readControlServer() (controlServer settings.ControlServer, err error) {
-	controlServer.Log, err = env.BoolPtr("HTTP_CONTROL_SERVER_LOG")
+	controlServer.Log, err = s.env.BoolPtr("HTTP_CONTROL_SERVER_LOG")
 	if err != nil {
 		return controlServer, err
 	}

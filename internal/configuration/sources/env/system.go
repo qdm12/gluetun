@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 var (
@@ -26,7 +25,7 @@ func (s *Source) readSystem() (system settings.System, err error) {
 		return system, err
 	}
 
-	system.Timezone = env.String("TZ")
+	system.Timezone = s.env.String("TZ")
 
 	return system, nil
 }

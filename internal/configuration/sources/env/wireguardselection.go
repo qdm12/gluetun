@@ -20,7 +20,7 @@ func (s *Source) readWireguardSelection() (
 		return selection, err
 	}
 
-	selection.PublicKey = env.String("WIREGUARD_PUBLIC_KEY", env.ForceLowercase(false))
+	selection.PublicKey = s.env.String("WIREGUARD_PUBLIC_KEY", env.ForceLowercase(false))
 
 	return selection, nil
 }
@@ -41,5 +41,5 @@ func (s *Source) readWireguardEndpointIP() (endpointIP netip.Addr, err error) {
 
 func (s *Source) readWireguardCustomPort() (customPort *uint16, err error) {
 	envKey, _ := s.getEnvWithRetro("VPN_ENDPOINT_PORT", []string{"WIREGUARD_ENDPOINT_PORT"})
-	return env.Uint16Ptr(envKey)
+	return s.env.Uint16Ptr(envKey)
 }

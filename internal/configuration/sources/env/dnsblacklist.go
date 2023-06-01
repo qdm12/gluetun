@@ -6,11 +6,10 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error) {
-	blacklist.BlockMalicious, err = env.BoolPtr("BLOCK_MALICIOUS")
+	blacklist.BlockMalicious, err = s.env.BoolPtr("BLOCK_MALICIOUS")
 	if err != nil {
 		return blacklist, err
 	}
@@ -20,34 +19,34 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 		return blacklist, err
 	}
 
-	blacklist.BlockAds, err = env.BoolPtr("BLOCK_ADS")
+	blacklist.BlockAds, err = s.env.BoolPtr("BLOCK_ADS")
 	if err != nil {
 		return blacklist, err
 	}
 
 	blacklist.AddBlockedIPs, blacklist.AddBlockedIPPrefixes,
-		err = readDoTPrivateAddresses() // TODO v4 split in 2
+		err = s.readDoTPrivateAddresses() // TODO v4 split in 2
 	if err != nil {
 		return blacklist, err
 	}
 
-	blacklist.AllowedHosts = env.CSV("UNBLOCK") // TODO v4 change name
+	blacklist.AllowedHosts = s.env.CSV("UNBLOCK") // TODO v4 change name
 
 	return blacklist, nil
 }
 
 func (s *Source) readBlockSurveillance() (blocked *bool, err error) {
 	key, _ := s.getEnvWithRetro("BLOCK_SURVEILLANCE", []string{"BLOCK_NSA"})
-	return env.BoolPtr(key)
+	return s.env.BoolPtr(key)
 }
 
 var (
 	ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
 )
 
-func readDoTPrivateAddresses() (ips []netip.Addr,
+func (s *Source) readDoTPrivateAddresses() (ips []netip.Addr,
 	ipPrefixes []netip.Prefix, err error) {
-	privateAddresses := env.CSV("DOT_PRIVATE_ADDRESS")
+	privateAddresses := s.env.CSV("DOT_PRIVATE_ADDRESS")
 	if len(privateAddresses) == 0 {
 		return nil, nil, nil
 	}

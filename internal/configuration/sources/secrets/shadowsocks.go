@@ -6,8 +6,8 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func readShadowsocks() (settings settings.Shadowsocks, err error) {
-	settings.Password, err = readSecretFileAsStringPtr(
+func (s *Source) readShadowsocks() (settings settings.Shadowsocks, err error) {
+	settings.Password, err = s.readSecretFileAsStringPtr(
 		"SHADOWSOCKS_PASSWORD_SECRETFILE",
 		"/run/secrets/shadowsocks_password",
 	)

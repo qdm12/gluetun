@@ -2,11 +2,10 @@ package env
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
-func readUpdater() (updater settings.Updater, err error) {
-	updater.Period, err = env.DurationPtr("UPDATER_PERIOD")
+func (s *Source) readUpdater() (updater settings.Updater, err error) {
+	updater.Period, err = s.env.DurationPtr("UPDATER_PERIOD")
 	if err != nil {
 		return updater, err
 	}
@@ -16,12 +15,12 @@ func readUpdater() (updater settings.Updater, err error) {
 		return updater, err
 	}
 
-	updater.MinRatio, err = env.Float64("UPDATER_MIN_RATIO")
+	updater.MinRatio, err = s.env.Float64("UPDATER_MIN_RATIO")
 	if err != nil {
 		return updater, err
 	}
 
-	updater.Providers = env.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
+	updater.Providers = s.env.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
 
 	return updater, nil
 }

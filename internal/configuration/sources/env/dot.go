@@ -2,21 +2,20 @@ package env
 
 import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readDoT() (dot settings.DoT, err error) {
-	dot.Enabled, err = env.BoolPtr("DOT")
+	dot.Enabled, err = s.env.BoolPtr("DOT")
 	if err != nil {
 		return dot, err
 	}
 
-	dot.UpdatePeriod, err = env.DurationPtr("DNS_UPDATE_PERIOD")
+	dot.UpdatePeriod, err = s.env.DurationPtr("DNS_UPDATE_PERIOD")
 	if err != nil {
 		return dot, err
 	}
 
-	dot.Unbound, err = readUnbound()
+	dot.Unbound, err = s.readUnbound()
 	if err != nil {
 		return dot, err
 	}

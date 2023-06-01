@@ -16,25 +16,25 @@ func (s *Source) readOpenVPN() (
 			"OPENVPN_KEY_PASSPHRASE", "OPENVPN_ENCRYPTED_KEY"}, err)
 	}()
 
-	openVPN.Version = env.String("OPENVPN_VERSION")
+	openVPN.Version = s.env.String("OPENVPN_VERSION")
 	_, openVPN.User = s.getEnvWithRetro("OPENVPN_USER",
 		[]string{"USER"}, env.ForceLowercase(false))
 	_, openVPN.Password = s.getEnvWithRetro("OPENVPN_PASSWORD",
 		[]string{"PASSWORD"}, env.ForceLowercase(false))
-	openVPN.ConfFile = env.Get("OPENVPN_CUSTOM_CONFIG")
+	openVPN.ConfFile = s.env.Get("OPENVPN_CUSTOM_CONFIG")
 
 	ciphersKey, _ := s.getEnvWithRetro("OPENVPN_CIPHERS", []string{"OPENVPN_CIPHER"})
-	openVPN.Ciphers = env.CSV(ciphersKey)
+	openVPN.Ciphers = s.env.CSV(ciphersKey)
 
-	openVPN.Auth = env.Get("OPENVPN_AUTH")
-	openVPN.Cert = env.Get("OPENVPN_CERT", env.ForceLowercase(false))
-	openVPN.Key = env.Get("OPENVPN_KEY", env.ForceLowercase(false))
-	openVPN.EncryptedKey = env.Get("OPENVPN_ENCRYPTED_KEY", env.ForceLowercase(false))
-	openVPN.KeyPassphrase = env.Get("OPENVPN_KEY_PASSPHRASE", env.ForceLowercase(false))
+	openVPN.Auth = s.env.Get("OPENVPN_AUTH")
+	openVPN.Cert = s.env.Get("OPENVPN_CERT", env.ForceLowercase(false))
+	openVPN.Key = s.env.Get("OPENVPN_KEY", env.ForceLowercase(false))
+	openVPN.EncryptedKey = s.env.Get("OPENVPN_ENCRYPTED_KEY", env.ForceLowercase(false))
+	openVPN.KeyPassphrase = s.env.Get("OPENVPN_KEY_PASSPHRASE", env.ForceLowercase(false))
 
 	openVPN.PIAEncPreset = s.readPIAEncryptionPreset()
 
-	openVPN.MSSFix, err = env.Uint16Ptr("OPENVPN_MSSFIX")
+	openVPN.MSSFix, err = s.env.Uint16Ptr("OPENVPN_MSSFIX")
 	if err != nil {
 		return openVPN, err
 	}
@@ -50,12 +50,12 @@ func (s *Source) readOpenVPN() (
 		return openVPN, err
 	}
 
-	openVPN.Verbosity, err = env.IntPtr("OPENVPN_VERBOSITY")
+	openVPN.Verbosity, err = s.env.IntPtr("OPENVPN_VERBOSITY")
 	if err != nil {
 		return openVPN, err
 	}
 
-	flagsPtr := env.Get("OPENVPN_FLAGS", env.ForceLowercase(false))
+	flagsPtr := s.env.Get("OPENVPN_FLAGS", env.ForceLowercase(false))
 	if flagsPtr != nil {
 		openVPN.Flags = strings.Fields(*flagsPtr)
 	}

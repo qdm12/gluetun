@@ -6,18 +6,18 @@ import (
 )
 
 func (s *Source) readShadowsocks() (shadowsocks settings.Shadowsocks, err error) {
-	shadowsocks.Enabled, err = env.BoolPtr("SHADOWSOCKS")
+	shadowsocks.Enabled, err = s.env.BoolPtr("SHADOWSOCKS")
 	if err != nil {
 		return shadowsocks, err
 	}
 
 	shadowsocks.Address = s.readShadowsocksAddress()
-	shadowsocks.LogAddresses, err = env.BoolPtr("SHADOWSOCKS_LOG")
+	shadowsocks.LogAddresses, err = s.env.BoolPtr("SHADOWSOCKS_LOG")
 	if err != nil {
 		return shadowsocks, err
 	}
 	shadowsocks.CipherName = s.readShadowsocksCipher()
-	shadowsocks.Password = env.Get("SHADOWSOCKS_PASSWORD", env.ForceLowercase(false))
+	shadowsocks.Password = s.env.Get("SHADOWSOCKS_PASSWORD", env.ForceLowercase(false))
 
 	return shadowsocks, nil
 }
@@ -41,5 +41,5 @@ func (s *Source) readShadowsocksAddress() (address *string) {
 func (s *Source) readShadowsocksCipher() (cipher string) {
 	envKey, _ := s.getEnvWithRetro("SHADOWSOCKS_CIPHER",
 		[]string{"SHADOWSOCKS_METHOD"})
-	return env.String(envKey)
+	return s.env.String(envKey)
 }

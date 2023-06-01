@@ -8,18 +8,18 @@ import (
 	"github.com/qdm12/gosettings/sources/env"
 )
 
-func readSecretFileAsStringPtr(secretPathEnvKey, defaultSecretPath string) (
+func (s *Source) readSecretFileAsStringPtr(secretPathEnvKey, defaultSecretPath string) (
 	stringPtr *string, err error) {
-	path := env.String(secretPathEnvKey, env.ForceLowercase(false))
+	path := s.env.String(secretPathEnvKey, env.ForceLowercase(false))
 	if path == "" {
 		path = defaultSecretPath
 	}
 	return files.ReadFromFile(path)
 }
 
-func readPEMSecretFile(secretPathEnvKey, defaultSecretPath string) (
+func (s *Source) readPEMSecretFile(secretPathEnvKey, defaultSecretPath string) (
 	base64Ptr *string, err error) {
-	pemData, err := readSecretFileAsStringPtr(secretPathEnvKey, defaultSecretPath)
+	pemData, err := s.readSecretFileAsStringPtr(secretPathEnvKey, defaultSecretPath)
 	if err != nil {
 		return nil, fmt.Errorf("reading secret file: %w", err)
 	}

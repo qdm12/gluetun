@@ -6,9 +6,9 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func readOpenVPN() (
+func (s *Source) readOpenVPN() (
 	settings settings.OpenVPN, err error) {
-	settings.User, err = readSecretFileAsStringPtr(
+	settings.User, err = s.readSecretFileAsStringPtr(
 		"OPENVPN_USER_SECRETFILE",
 		"/run/secrets/openvpn_user",
 	)
@@ -16,7 +16,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("reading user file: %w", err)
 	}
 
-	settings.Password, err = readSecretFileAsStringPtr(
+	settings.Password, err = s.readSecretFileAsStringPtr(
 		"OPENVPN_PASSWORD_SECRETFILE",
 		"/run/secrets/openvpn_password",
 	)
@@ -24,7 +24,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("reading password file: %w", err)
 	}
 
-	settings.Key, err = readPEMSecretFile(
+	settings.Key, err = s.readPEMSecretFile(
 		"OPENVPN_CLIENTKEY_SECRETFILE",
 		"/run/secrets/openvpn_clientkey",
 	)
@@ -32,7 +32,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("reading client key file: %w", err)
 	}
 
-	settings.EncryptedKey, err = readPEMSecretFile(
+	settings.EncryptedKey, err = s.readPEMSecretFile(
 		"OPENVPN_ENCRYPTED_KEY_SECRETFILE",
 		"/run/secrets/openvpn_encrypted_key",
 	)
@@ -40,7 +40,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("reading encrypted key file: %w", err)
 	}
 
-	settings.KeyPassphrase, err = readSecretFileAsStringPtr(
+	settings.KeyPassphrase, err = s.readSecretFileAsStringPtr(
 		"OPENVPN_KEY_PASSPHRASE_SECRETFILE",
 		"/run/secrets/openvpn_key_passphrase",
 	)
@@ -48,7 +48,7 @@ func readOpenVPN() (
 		return settings, fmt.Errorf("reading key passphrase file: %w", err)
 	}
 
-	settings.Cert, err = readPEMSecretFile(
+	settings.Cert, err = s.readPEMSecretFile(
 		"OPENVPN_CLIENTCRT_SECRETFILE",
 		"/run/secrets/openvpn_clientcrt",
 	)

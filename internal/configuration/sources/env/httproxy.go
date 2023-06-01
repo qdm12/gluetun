@@ -22,7 +22,7 @@ func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
 		return httpProxy, err
 	}
 
-	httpProxy.Stealth, err = env.BoolPtr("HTTPPROXY_STEALTH")
+	httpProxy.Stealth, err = s.env.BoolPtr("HTTPPROXY_STEALTH")
 	if err != nil {
 		return httpProxy, err
 	}
@@ -49,7 +49,7 @@ func (s *Source) readHTTProxyListeningAddress() (listeningAddress string) {
 func (s *Source) readHTTProxyEnabled() (enabled *bool, err error) {
 	key, _ := s.getEnvWithRetro("HTTPPROXY",
 		[]string{"PROXY", "TINYPROXY"})
-	return env.BoolPtr(key)
+	return s.env.BoolPtr(key)
 }
 
 func (s *Source) readHTTProxyLog() (enabled *bool, err error) {

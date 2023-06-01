@@ -4,15 +4,14 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) ReadHealth() (health settings.Health, err error) {
-	health.ServerAddress = env.String("HEALTH_SERVER_ADDRESS")
+	health.ServerAddress = s.env.String("HEALTH_SERVER_ADDRESS")
 	targetAddressEnvKey, _ := s.getEnvWithRetro("HEALTH_TARGET_ADDRESS", []string{"HEALTH_ADDRESS_TO_PING"})
-	health.TargetAddress = env.String(targetAddressEnvKey)
+	health.TargetAddress = s.env.String(targetAddressEnvKey)
 
-	successWaitPtr, err := env.DurationPtr("HEALTH_SUCCESS_WAIT_DURATION")
+	successWaitPtr, err := s.env.DurationPtr("HEALTH_SUCCESS_WAIT_DURATION")
 	if err != nil {
 		return health, err
 	} else if successWaitPtr != nil {
@@ -38,5 +37,5 @@ func (s *Source) ReadHealth() (health settings.Health, err error) {
 
 func (s *Source) readDurationWithRetro(envKey, retroEnvKey string) (d *time.Duration, err error) {
 	envKey, _ = s.getEnvWithRetro(envKey, []string{retroEnvKey})
-	return env.DurationPtr(envKey)
+	return s.env.DurationPtr(envKey)
 }

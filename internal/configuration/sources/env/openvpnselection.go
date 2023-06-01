@@ -12,7 +12,7 @@ import (
 
 func (s *Source) readOpenVPNSelection() (
 	selection settings.OpenVPNSelection, err error) {
-	selection.ConfFile = env.Get("OPENVPN_CUSTOM_CONFIG", env.ForceLowercase(false))
+	selection.ConfFile = s.env.Get("OPENVPN_CUSTOM_CONFIG", env.ForceLowercase(false))
 
 	selection.TCP, err = s.readOpenVPNProtocol()
 	if err != nil {
@@ -53,5 +53,5 @@ func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
 
 func (s *Source) readOpenVPNCustomPort() (customPort *uint16, err error) {
 	key, _ := s.getEnvWithRetro("VPN_ENDPOINT_PORT", []string{"PORT", "OPENVPN_PORT"})
-	return env.Uint16Ptr(key)
+	return s.env.Uint16Ptr(key)
 }

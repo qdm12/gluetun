@@ -9,7 +9,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 var (
@@ -26,30 +25,30 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	}
 
 	countriesKey, _ := s.getEnvWithRetro("SERVER_COUNTRIES", []string{"COUNTRY"})
-	ss.Countries = env.CSV(countriesKey)
+	ss.Countries = s.env.CSV(countriesKey)
 	if vpnProvider == providers.Cyberghost && len(ss.Countries) == 0 {
 		// Retro-compatibility for Cyberghost using the REGION variable
-		ss.Countries = env.CSV("REGION")
+		ss.Countries = s.env.CSV("REGION")
 		if len(ss.Countries) > 0 {
 			s.onRetroActive("REGION", "SERVER_COUNTRIES")
 		}
 	}
 
 	regionsKey, _ := s.getEnvWithRetro("SERVER_REGIONS", []string{"REGION"})
-	ss.Regions = env.CSV(regionsKey)
+	ss.Regions = s.env.CSV(regionsKey)
 
 	citiesKey, _ := s.getEnvWithRetro("SERVER_CITIES", []string{"CITY"})
-	ss.Cities = env.CSV(citiesKey)
+	ss.Cities = s.env.CSV(citiesKey)
 
-	ss.ISPs = env.CSV("ISP")
+	ss.ISPs = s.env.CSV("ISP")
 
 	hostnamesKey, _ := s.getEnvWithRetro("SERVER_HOSTNAMES", []string{"SERVER_HOSTNAME"})
-	ss.Hostnames = env.CSV(hostnamesKey)
+	ss.Hostnames = s.env.CSV(hostnamesKey)
 
 	serverNamesKey, _ := s.getEnvWithRetro("SERVER_NAMES", []string{"SERVER_NAME"})
-	ss.Names = env.CSV(serverNamesKey)
+	ss.Names = s.env.CSV(serverNamesKey)
 
-	if csv := env.Get("SERVER_NUMBER"); csv != nil {
+	if csv := s.env.Get("SERVER_NUMBER"); csv != nil {
 		numbersStrings := strings.Split(*csv, ",")
 		numbers := make([]uint16, len(numbersStrings))
 		for i, numberString := range numbersStrings {
@@ -74,25 +73,25 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	}
 
 	// VPNUnlimited and ProtonVPN only
-	ss.FreeOnly, err = env.BoolPtr("FREE_ONLY")
+	ss.FreeOnly, err = s.env.BoolPtr("FREE_ONLY")
 	if err != nil {
 		return ss, err
 	}
 
 	// VPNSecure only
-	ss.PremiumOnly, err = env.BoolPtr("PREMIUM_ONLY")
+	ss.PremiumOnly, err = s.env.BoolPtr("PREMIUM_ONLY")
 	if err != nil {
 		return ss, err
 	}
 
 	// VPNUnlimited only
-	ss.MultiHopOnly, err = env.BoolPtr("MULTIHOP_ONLY")
+	ss.MultiHopOnly, err = s.env.BoolPtr("MULTIHOP_ONLY")
 	if err != nil {
 		return ss, err
 	}
 
 	// VPNUnlimited only
-	ss.MultiHopOnly, err = env.BoolPtr("STREAM_ONLY")
+	ss.MultiHopOnly, err = s.env.BoolPtr("STREAM_ONLY")
 	if err != nil {
 		return ss, err
 	}
@@ -130,5 +129,5 @@ func (s *Source) readOpenVPNTargetIP() (ip netip.Addr, err error) {
 
 func (s *Source) readOwnedOnly() (ownedOnly *bool, err error) {
 	envKey, _ := s.getEnvWithRetro("OWNED_ONLY", []string{"OWNED"})
-	return env.BoolPtr(envKey)
+	return s.env.BoolPtr(envKey)
 }

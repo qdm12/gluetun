@@ -7,35 +7,34 @@ import (
 	"strconv"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readFirewall() (firewall settings.Firewall, err error) {
-	vpnInputPortStrings := env.CSV("FIREWALL_VPN_INPUT_PORTS")
+	vpnInputPortStrings := s.env.CSV("FIREWALL_VPN_INPUT_PORTS")
 	firewall.VPNInputPorts, err = stringsToPorts(vpnInputPortStrings)
 	if err != nil {
 		return firewall, fmt.Errorf("environment variable FIREWALL_VPN_INPUT_PORTS: %w", err)
 	}
 
-	inputPortStrings := env.CSV("FIREWALL_INPUT_PORTS")
+	inputPortStrings := s.env.CSV("FIREWALL_INPUT_PORTS")
 	firewall.InputPorts, err = stringsToPorts(inputPortStrings)
 	if err != nil {
 		return firewall, fmt.Errorf("environment variable FIREWALL_INPUT_PORTS: %w", err)
 	}
 
 	outboundSubnetsKey, _ := s.getEnvWithRetro("FIREWALL_OUTBOUND_SUBNETS", []string{"EXTRA_SUBNETS"})
-	outboundSubnetStrings := env.CSV(outboundSubnetsKey)
+	outboundSubnetStrings := s.env.CSV(outboundSubnetsKey)
 	firewall.OutboundSubnets, err = stringsToNetipPrefixes(outboundSubnetStrings)
 	if err != nil {
 		return firewall, fmt.Errorf("environment variable %s: %w", outboundSubnetsKey, err)
 	}
 
-	firewall.Enabled, err = env.BoolPtr("FIREWALL")
+	firewall.Enabled, err = s.env.BoolPtr("FIREWALL")
 	if err != nil {
 		return firewall, err
 	}
 
-	firewall.Debug, err = env.BoolPtr("FIREWALL_DEBUG")
+	firewall.Debug, err = s.env.BoolPtr("FIREWALL_DEBUG")
 	if err != nil {
 		return firewall, err
 	}
