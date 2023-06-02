@@ -35,7 +35,6 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 	networkProtocols := []string{"udp", "tcp"}
 	const internalPort, externalPort = 0, 0
 	const lifetime = 60 * time.Second
-	var assignedExternalPort uint16
 	for _, networkProtocol := range networkProtocols {
 		_, assignedInternalPort, assignedExternalPort, assignedLiftetime, err :=
 			client.AddPortMapping(ctx, gateway, networkProtocol,
@@ -55,9 +54,10 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 				" from external port assigned %d",
 				assignedInternalPort, assignedExternalPort))
 		}
+
+		port = assignedExternalPort
 	}
 
-	port = assignedExternalPort
 	return port, nil
 }
 
