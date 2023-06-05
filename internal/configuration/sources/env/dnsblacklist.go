@@ -6,6 +6,7 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error) {
@@ -14,7 +15,8 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 		return blacklist, err
 	}
 
-	blacklist.BlockSurveillance, err = s.readBlockSurveillance()
+	blacklist.BlockSurveillance, err = s.env.BoolPtr("BLOCK_SURVEILLANCE",
+		env.RetroKeys("BLOCK_NSA"))
 	if err != nil {
 		return blacklist, err
 	}
@@ -33,11 +35,6 @@ func (s *Source) readDNSBlacklist() (blacklist settings.DNSBlacklist, err error)
 	blacklist.AllowedHosts = s.env.CSV("UNBLOCK") // TODO v4 change name
 
 	return blacklist, nil
-}
-
-func (s *Source) readBlockSurveillance() (blocked *bool, err error) {
-	key, _ := s.getEnvWithRetro("BLOCK_SURVEILLANCE", []string{"BLOCK_NSA"})
-	return s.env.BoolPtr(key)
 }
 
 var (

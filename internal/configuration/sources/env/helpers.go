@@ -3,6 +3,8 @@ package env
 import (
 	"fmt"
 	"os"
+
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 func unsetEnvKeys(envKeys []string, err error) (newErr error) {
@@ -18,4 +20,14 @@ func unsetEnvKeys(envKeys []string, err error) (newErr error) {
 
 func ptrTo[T any](value T) *T {
 	return &value
+}
+
+func firstKeySet(e env.Env, keys ...string) (firstKeySet string) {
+	for _, key := range keys {
+		value := e.Get(key)
+		if value != nil {
+			return key
+		}
+	}
+	return ""
 }

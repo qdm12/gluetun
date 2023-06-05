@@ -8,8 +8,9 @@ import (
 )
 
 type Source struct {
-	env    env.Env
-	warner Warner
+	env                 env.Env
+	warner              Warner
+	handleDeprecatedKey func(deprecatedKey, newKey string)
 }
 
 type Warner interface {
@@ -17,9 +18,16 @@ type Warner interface {
 }
 
 func New(warner Warner) *Source {
+	handleDeprecatedKey := func(deprecatedKey, newKey string) {
+		warner.Warn(
+			"You are using the old environment variable " + deprecatedKey +
+				", please consider changing it to " + newKey)
+	}
+
 	return &Source{
-		env:    *env.New(os.Environ()),
-		warner: warner,
+		env:                 *env.New(os.Environ(), handleDeprecatedKey),
+		warner:              warner,
+		handleDeprecatedKey: handleDeprecatedKey,
 	}
 }
 
@@ -92,31 +100,4 @@ func (s *Source) Read() (settings settings.Settings, err error) {
 	}
 
 	return settings, nil
-}
-
-func (s *Source) onRetroActive(oldKey, newKey string) {
-	s.warner.Warn(
-		"You are using the old environment variable " + oldKey +
-			", please consider changing it to " + newKey)
-}
-
-// getEnvWithRetro returns the first set environment variable
-// key and corresponding value from the environment
-// variable keys given. It first goes through the retroKeys
-// and end on returning the value corresponding to the currentKey.
-// Note retroKeys should be in order from oldest to most
-// recent retro-compatibility key.
-func (s *Source) getEnvWithRetro(currentKey string,
-	retroKeys []string, options ...env.Option) (key string, value *string) {
-	// We check retro-compatibility keys first since
-	// the current key might be set in the Dockerfile.
-	for _, key = range retroKeys {
-		value = s.env.Get(key, options...)
-		if value != nil {
-			s.onRetroActive(key, currentKey)
-			return key, value
-		}
-	}
-
-	return currentKey, s.env.Get(currentKey, options...)
 }

@@ -11,8 +11,8 @@ func (s *Source) readPublicIP() (publicIP settings.PublicIP, err error) {
 		return publicIP, err
 	}
 
-	_, publicIP.IPFilepath = s.getEnvWithRetro("PUBLICIP_FILE",
-		[]string{"IP_STATUS_FILE"}, env.ForceLowercase(false))
+	publicIP.IPFilepath = s.env.Get("PUBLICIP_FILE",
+		env.ForceLowercase(false), env.RetroKeys("IP_STATUS_FILE"))
 
 	return publicIP, nil
 }

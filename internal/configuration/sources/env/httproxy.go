@@ -9,15 +9,20 @@ import (
 )
 
 func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
-	_, httpProxy.User = s.getEnvWithRetro("HTTPPROXY_USER",
-		[]string{"PROXY_USER", "TINYPROXY_USER"}, env.ForceLowercase(false))
+	httpProxy.User = s.env.Get("HTTPPROXY_USER",
+		env.RetroKeys("PROXY_USER", "TINYPROXY_USER"),
+		env.ForceLowercase(false))
 
-	_, httpProxy.Password = s.getEnvWithRetro("HTTPPROXY_PASSWORD",
-		[]string{"PROXY_PASSWORD", "TINYPROXY_PASSWORD"}, env.ForceLowercase(false))
+	httpProxy.Password = s.env.Get("HTTPPROXY_PASSWORD",
+		env.RetroKeys("PROXY_PASSWORD", "TINYPROXY_PASSWORD"),
+		env.ForceLowercase(false))
 
-	httpProxy.ListeningAddress = s.readHTTProxyListeningAddress()
+	httpProxy.ListeningAddress, err = s.readHTTProxyListeningAddress()
+	if err != nil {
+		return httpProxy, err
+	}
 
-	httpProxy.Enabled, err = s.readHTTProxyEnabled()
+	httpProxy.Enabled, err = s.env.BoolPtr("HTTPPROXY", env.RetroKeys("PROXY", "TINYPROXY"))
 	if err != nil {
 		return httpProxy, err
 	}
@@ -35,37 +40,42 @@ func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
 	return httpProxy, nil
 }
 
-func (s *Source) readHTTProxyListeningAddress() (listeningAddress string) {
-	key, value := s.getEnvWithRetro("HTTPPROXY_LISTENING_ADDRESS",
-		[]string{"PROXY_PORT", "TINYPROXY_PORT", "HTTPPROXY_PORT"})
-	if value == nil {
-		return ""
-	} else if key == "HTTPPROXY_LISTENING_ADDRESS" {
-		return *value
+func (s *Source) readHTTProxyListeningAddress() (listeningAddress string, err error) {
+	const currentKey = "HTTPPROXY_LISTENING_ADDRESS"
+	key := firstKeySet(s.env, "HTTPPROXY_PORT", "TINYPROXY_PORT", "PROXY_PORT",
+		currentKey)
+	switch key {
+	case "":
+		return "", nil
+	case currentKey:
+		return s.env.String(key), nil
 	}
-	return ":" + *value
-}
 
-func (s *Source) readHTTProxyEnabled() (enabled *bool, err error) {
-	key, _ := s.getEnvWithRetro("HTTPPROXY",
-		[]string{"PROXY", "TINYPROXY"})
-	return s.env.BoolPtr(key)
+	// Retro-compatible keys using a port only
+	s.handleDeprecatedKey(key, currentKey)
+	port, err := s.env.Uint16Ptr(key)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf(":%d", *port), nil
 }
 
 func (s *Source) readHTTProxyLog() (enabled *bool, err error) {
-	key, value := s.getEnvWithRetro("HTTPPROXY_LOG",
-		[]string{"PROXY_LOG_LEVEL", "TINYPROXY_LOG"})
-	if value == nil {
+	const currentKey = "HTTPPROXY_LOG"
+	key := firstKeySet(s.env, "PROXY_LOG", "TINYPROXY_LOG", "HTTPPROXY_LOG")
+	switch key {
+	case "":
 		return nil, nil //nolint:nilnil
+	case currentKey:
+		return s.env.BoolPtr(key)
 	}
 
-	var binaryOptions []binary.Option
-	if key != "HTTPROXY_LOG" {
-		retroOption := binary.OptionEnabled("on", "info", "connect", "notice")
-		binaryOptions = append(binaryOptions, retroOption)
-	}
+	// Retro-compatible keys using different boolean verbs
+	s.handleDeprecatedKey(key, currentKey)
+	value := s.env.String(key)
+	retroOption := binary.OptionEnabled("on", "info", "connect", "notice")
 
-	enabled, err = binary.Validate(*value, binaryOptions...)
+	enabled, err = binary.Validate(value, retroOption)
 	if err != nil {
 		return nil, fmt.Errorf("environment variable %s: %w", key, err)
 	}

@@ -1,12 +1,10 @@
 package env
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gosettings/sources/env"
-	"github.com/qdm12/govalid/binary"
 )
 
 func (s *Source) readOpenVPN() (
@@ -17,15 +15,12 @@ func (s *Source) readOpenVPN() (
 	}()
 
 	openVPN.Version = s.env.String("OPENVPN_VERSION")
-	_, openVPN.User = s.getEnvWithRetro("OPENVPN_USER",
-		[]string{"USER"}, env.ForceLowercase(false))
-	_, openVPN.Password = s.getEnvWithRetro("OPENVPN_PASSWORD",
-		[]string{"PASSWORD"}, env.ForceLowercase(false))
+	openVPN.User = s.env.Get("OPENVPN_USER",
+		env.RetroKeys("USER"), env.ForceLowercase(false))
+	openVPN.Password = s.env.Get("OPENVPN_PASSWORD",
+		env.RetroKeys("PASSWORD"), env.ForceLowercase(false))
 	openVPN.ConfFile = s.env.Get("OPENVPN_CUSTOM_CONFIG")
-
-	ciphersKey, _ := s.getEnvWithRetro("OPENVPN_CIPHERS", []string{"OPENVPN_CIPHER"})
-	openVPN.Ciphers = s.env.CSV(ciphersKey)
-
+	openVPN.Ciphers = s.env.CSV("OPENVPN_CIPHERS", env.RetroKeys("OPENVPN_CIPHER"))
 	openVPN.Auth = s.env.Get("OPENVPN_AUTH")
 	openVPN.Cert = s.env.Get("OPENVPN_CERT", env.ForceLowercase(false))
 	openVPN.Key = s.env.Get("OPENVPN_KEY", env.ForceLowercase(false))
@@ -39,11 +34,8 @@ func (s *Source) readOpenVPN() (
 		return openVPN, err
 	}
 
-	_, openvpnInterface := s.getEnvWithRetro("VPN_INTERFACE",
-		[]string{"OPENVPN_INTERFACE"}, env.ForceLowercase(false))
-	if openvpnInterface != nil {
-		openVPN.Interface = *openvpnInterface
-	}
+	openVPN.Interface = s.env.String("VPN_INTERFACE",
+		env.RetroKeys("OPENVPN_INTERFACE"), env.ForceLowercase(false))
 
 	openVPN.ProcessUser, err = s.readOpenVPNProcessUser()
 	if err != nil {
@@ -64,32 +56,22 @@ func (s *Source) readOpenVPN() (
 }
 
 func (s *Source) readPIAEncryptionPreset() (presetPtr *string) {
-	_, presetPtr = s.getEnvWithRetro(
+	return s.env.Get(
 		"PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET",
-		[]string{"PIA_ENCRYPTION", "ENCRYPTION"})
-	return presetPtr
+		env.RetroKeys("ENCRYPTION", "PIA_ENCRYPTION"))
 }
 
 func (s *Source) readOpenVPNProcessUser() (processUser string, err error) {
-	key, value := s.getEnvWithRetro("OPENVPN_PROCESS_USER",
-		[]string{"OPENVPN_ROOT"})
-	if value == nil {
-		return "", nil
-	} else if key == "OPENVPN_PROCESS_USER" {
-		return *value, nil
+	value, err := s.env.BoolPtr("OPENVPN_ROOT") // Retro-compatibility
+	if err != nil {
+		return "", err
+	} else if value != nil {
+		if *value {
+			return "root", nil
+		}
+		const defaultNonRootUser = "nonrootuser"
+		return defaultNonRootUser, nil
 	}
 
-	// Retro-compatibility
-	if *value == "" {
-		return "", nil
-	}
-	root, err := binary.Validate(*value)
-	if err != nil {
-		return "", fmt.Errorf("environment variable %s: %w", key, err)
-	}
-	if *root {
-		return "root", nil
-	}
-	const defaultNonRootUser = "nonrootuser"
-	return defaultNonRootUser, nil
+	return s.env.String("OPENVPN_PROCESS_USER"), nil
 }

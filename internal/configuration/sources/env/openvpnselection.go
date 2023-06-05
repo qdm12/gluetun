@@ -19,7 +19,8 @@ func (s *Source) readOpenVPNSelection() (
 		return selection, err
 	}
 
-	selection.CustomPort, err = s.readOpenVPNCustomPort()
+	selection.CustomPort, err = s.env.Uint16Ptr("VPN_ENDPOINT_PORT",
+		env.RetroKeys("PORT", "OPENVPN_PORT"))
 	if err != nil {
 		return selection, err
 	}
@@ -32,15 +33,18 @@ func (s *Source) readOpenVPNSelection() (
 var ErrOpenVPNProtocolNotValid = errors.New("OpenVPN protocol is not valid")
 
 func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
-	envKey, protocolPtr := s.getEnvWithRetro("OPENVPN_PROTOCOL", []string{"PROTOCOL"})
-	if protocolPtr == nil {
-		return nil, nil //nolint:nilnil
-	}
-	protocol := *protocolPtr
-
-	switch strings.ToLower(protocol) {
+	const currentKey = "OPENVPN_PROTOCOL"
+	envKey := firstKeySet(s.env, "PROTOCOL", currentKey)
+	switch envKey {
 	case "":
 		return nil, nil //nolint:nilnil
+	case currentKey:
+	default: // Retro compatibility
+		s.handleDeprecatedKey(envKey, currentKey)
+	}
+
+	protocol := s.env.String(envKey)
+	switch strings.ToLower(protocol) {
 	case constants.UDP:
 		return ptrTo(false), nil
 	case constants.TCP:
@@ -49,9 +53,4 @@ func (s *Source) readOpenVPNProtocol() (tcp *bool, err error) {
 		return nil, fmt.Errorf("environment variable %s: %w: %s",
 			envKey, ErrOpenVPNProtocolNotValid, protocol)
 	}
-}
-
-func (s *Source) readOpenVPNCustomPort() (customPort *uint16, err error) {
-	key, _ := s.getEnvWithRetro("VPN_ENDPOINT_PORT", []string{"PORT", "OPENVPN_PORT"})
-	return s.env.Uint16Ptr(key)
 }

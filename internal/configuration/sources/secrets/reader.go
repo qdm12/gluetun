@@ -12,8 +12,9 @@ type Source struct {
 }
 
 func New() *Source {
+	handleDeprecatedKey := (func(deprecatedKey, newKey string))(nil)
 	return &Source{
-		env: *env.New(os.Environ()),
+		env: *env.New(os.Environ(), handleDeprecatedKey),
 	}
 }
 

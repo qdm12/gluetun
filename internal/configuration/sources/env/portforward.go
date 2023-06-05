@@ -7,21 +7,21 @@ import (
 
 func (s *Source) readPortForward() (
 	portForwarding settings.PortForwarding, err error) {
-	key, _ := s.getEnvWithRetro("VPN_PORT_FORWARDING",
-		[]string{
-			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING",
+	portForwarding.Enabled, err = s.env.BoolPtr("VPN_PORT_FORWARDING",
+		env.RetroKeys(
 			"PORT_FORWARDING",
-		})
-	portForwarding.Enabled, err = s.env.BoolPtr(key)
+			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING",
+		))
 	if err != nil {
 		return portForwarding, err
 	}
 
-	_, portForwarding.Filepath = s.getEnvWithRetro("VPN_PORT_FORWARDING_STATUS_FILE",
-		[]string{
-			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE",
+	portForwarding.Filepath = s.env.Get("VPN_PORT_FORWARDING_STATUS_FILE",
+		env.ForceLowercase(false),
+		env.RetroKeys(
 			"PORT_FORWARDING_STATUS_FILE",
-		}, env.ForceLowercase(false))
+			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE",
+		))
 
 	return portForwarding, nil
 }

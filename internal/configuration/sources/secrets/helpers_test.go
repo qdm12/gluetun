@@ -50,7 +50,7 @@ func Test_readSecretFileAsStringPtr(t *testing.T) {
 			source: func(tempDir string) Source {
 				secretFilepath := filepath.Join(tempDir, "secret_file")
 				environ := []string{"SECRET_FILE=" + secretFilepath}
-				return Source{env: *env.New(environ)}
+				return Source{env: *env.New(environ, nil)}
 			},
 			defaultSecretFileName: "default_secret_file",
 			secretPathEnvKey:      "SECRET_FILE",

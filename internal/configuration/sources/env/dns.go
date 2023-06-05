@@ -27,19 +27,24 @@ func (s *Source) readDNS() (dns settings.DNS, err error) {
 }
 
 func (s *Source) readDNSServerAddress() (address netip.Addr, err error) {
-	key, value := s.getEnvWithRetro("DNS_ADDRESS", []string{"DNS_PLAINTEXT_ADDRESS"})
-	if value == nil {
+	const currentKey = "DNS_ADDRESS"
+	key := firstKeySet(s.env, "DNS_PLAINTEXT_ADDRESS", currentKey)
+	switch key {
+	case "":
 		return address, nil
+	case currentKey:
+	default: // Retro-compatibility
+		s.handleDeprecatedKey(key, currentKey)
 	}
 
-	address, err = netip.ParseAddr(*value)
+	address, err = s.env.NetipAddr(key)
 	if err != nil {
-		return address, fmt.Errorf("environment variable %s: %w", key, err)
+		return address, err
 	}
 
 	// TODO remove in v4
 	if address.Unmap().Compare(netip.AddrFrom4([4]byte{127, 0, 0, 1})) != 0 {
-		s.warner.Warn(key + " is set to " + *value +
+		s.warner.Warn(key + " is set to " + address.String() +
 			" so the DNS over TLS (DoT) server will not be used." +
 			" The default value changed to 127.0.0.1 so it uses the internal DoT serves." +
 			" If the DoT server fails to start, the IPv4 address of the first plaintext DNS server" +

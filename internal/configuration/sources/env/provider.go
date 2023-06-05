@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
+	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readProvider(vpnType string) (provider settings.Provider, err error) {
@@ -30,7 +31,7 @@ func (s *Source) readProvider(vpnType string) (provider settings.Provider, err e
 }
 
 func (s *Source) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
-	_, valuePtr := s.getEnvWithRetro("VPN_SERVICE_PROVIDER", []string{"VPNSP"})
+	valuePtr := s.env.Get("VPN_SERVICE_PROVIDER", env.RetroKeys("VPNSP"))
 	if valuePtr == nil {
 		if vpnType != vpn.Wireguard && s.env.Get("OPENVPN_CUSTOM_CONFIG") != nil {
 			// retro compatibility
