@@ -10,7 +10,6 @@ import (
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
-	wireguarddevice "golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
@@ -32,7 +31,9 @@ type Wireguard struct {
 	Interface string `json:"interface"`
 	// Maximum Transmission Unit (MTU) of the Wireguard interface.
 	// It cannot be zero in the internal state, and defaults to
-	// the wireguard-go MTU default of 1420.
+	// 1400. Note it is not the wireguard-go MTU default of 1420
+	// because this impacts bandwidth a lot on some VPN providers,
+	// see https://github.com/qdm12/gluetun/issues/1650.
 	MTU uint16 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
@@ -150,7 +151,8 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 		w.Addresses = gosettings.DefaultSlice(w.Addresses, []netip.Prefix{defaultNordVPNPrefix})
 	}
 	w.Interface = gosettings.DefaultString(w.Interface, "wg0")
-	w.MTU = gosettings.DefaultNumber(w.MTU, wireguarddevice.DefaultMTU)
+	const defaultMTU = 1400
+	w.MTU = gosettings.DefaultNumber(w.MTU, defaultMTU)
 	w.Implementation = gosettings.DefaultString(w.Implementation, "auto")
 }
 
