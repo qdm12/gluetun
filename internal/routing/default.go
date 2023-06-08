@@ -32,7 +32,6 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 	}
 
 	for _, route := range routes {
-		fmt.Println("route.table", route.Table)
 		if route.Table != unix.RT_TABLE_MAIN {
 			// ignore non-main table
 			continue
