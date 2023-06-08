@@ -25,7 +25,7 @@ func (d DefaultRoute) String() string {
 }
 
 func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
+	routes, err := r.netLinker.RouteList(netlink.FamilyAll)
 	if err != nil {
 		return nil, fmt.Errorf("listing routes: %w", err)
 	}

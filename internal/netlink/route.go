@@ -6,10 +6,16 @@ import (
 	"github.com/vishvananda/netlink"
 )
 
-func (n *NetLink) RouteList(link *Link, family int) (
-	routes []Route, err error) {
-	netlinkLink := linkToNetlinkLink(link)
-	netlinkRoutes, err := netlink.RouteList(netlinkLink, family)
+func (n *NetLink) RouteList(family int) (routes []Route, err error) {
+	// We set the filter to netlink.RT_FILTER_TABLE so that
+	// routes from all tables are listed, as long as the filter
+	// table is set to 0.
+	const filterMask = netlink.RT_FILTER_TABLE
+	// The filter is not left to `nil` otherwise non-main tables
+	// are ignored.
+	filter := &netlink.Route{}
+
+	netlinkRoutes, err := netlink.RouteListFiltered(family, filter, filterMask)
 	if err != nil {
 		return nil, err
 	}

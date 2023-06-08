@@ -14,7 +14,7 @@ var (
 )
 
 func (r *Routing) VPNDestinationIP() (ip netip.Addr, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
+	routes, err := r.netLinker.RouteList(netlink.FamilyAll)
 	if err != nil {
 		return ip, fmt.Errorf("listing routes: %w", err)
 	}
@@ -42,7 +42,7 @@ func (r *Routing) VPNDestinationIP() (ip netip.Addr, err error) {
 }
 
 func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
-	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
+	routes, err := r.netLinker.RouteList(netlink.FamilyAll)
 	if err != nil {
 		return ip, fmt.Errorf("listing routes: %w", err)
 	}

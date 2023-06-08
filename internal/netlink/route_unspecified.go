@@ -2,7 +2,7 @@
 
 package netlink
 
-func (n *NetLink) RouteList(link *Link, family int) (
+func (n *NetLink) RouteList(family int) (
 	routes []Route, err error) {
 	panic("not implemented")
 }

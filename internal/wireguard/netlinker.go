@@ -13,8 +13,7 @@ type NetLinker interface {
 }
 
 type Router interface {
-	RouteList(link *netlink.Link, family int) (
-		routes []netlink.Route, err error)
+	RouteList(family int) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
 }
 

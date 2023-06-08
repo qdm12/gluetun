@@ -166,18 +166,18 @@ func (mr *MockNetLinkerMockRecorder) RouteAdd(arg0 interface{}) *gomock.Call {
 }
 
 // RouteList mocks base method.
-func (m *MockNetLinker) RouteList(arg0 *netlink.Link, arg1 int) ([]netlink.Route, error) {
+func (m *MockNetLinker) RouteList(arg0 int) ([]netlink.Route, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RouteList", arg0, arg1)
+	ret := m.ctrl.Call(m, "RouteList", arg0)
 	ret0, _ := ret[0].([]netlink.Route)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // RouteList indicates an expected call of RouteList.
-func (mr *MockNetLinkerMockRecorder) RouteList(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockNetLinkerMockRecorder) RouteList(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RouteList", reflect.TypeOf((*MockNetLinker)(nil).RouteList), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RouteList", reflect.TypeOf((*MockNetLinker)(nil).RouteList), arg0)
 }
 
 // RuleAdd mocks base method.

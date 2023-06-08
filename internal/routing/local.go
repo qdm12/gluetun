@@ -41,7 +41,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		return localNetworks, fmt.Errorf("%w: in %d links", ErrLinkLocalNotFound, len(links))
 	}
 
-	routes, err := r.netLinker.RouteList(nil, netlink.FamilyAll)
+	routes, err := r.netLinker.RouteList(netlink.FamilyAll)
 	if err != nil {
 		return localNetworks, fmt.Errorf("listing routes: %w", err)
 	}
