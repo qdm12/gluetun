@@ -51,6 +51,7 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		providers.Custom,
 		providers.Ivpn,
 		providers.Mullvad,
+		providers.Nordvpn,
 		providers.Surfshark,
 		providers.Windscribe,
 	) {
@@ -140,9 +141,14 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.Implementation = gosettings.OverrideWithString(w.Implementation, other.Implementation)
 }
 
-func (w *Wireguard) setDefaults() {
+func (w *Wireguard) setDefaults(vpnProvider string) {
 	w.PrivateKey = gosettings.DefaultPointer(w.PrivateKey, "")
 	w.PreSharedKey = gosettings.DefaultPointer(w.PreSharedKey, "")
+	if vpnProvider == providers.Nordvpn {
+		defaultNordVPNAddress := netip.AddrFrom4([4]byte{10, 5, 0, 2})
+		defaultNordVPNPrefix := netip.PrefixFrom(defaultNordVPNAddress, defaultNordVPNAddress.BitLen())
+		w.Addresses = gosettings.DefaultSlice(w.Addresses, []netip.Prefix{defaultNordVPNPrefix})
+	}
 	w.Interface = gosettings.DefaultString(w.Interface, "wg0")
 	w.MTU = gosettings.DefaultNumber(w.MTU, wireguarddevice.DefaultMTU)
 	w.Implementation = gosettings.DefaultString(w.Implementation, "auto")

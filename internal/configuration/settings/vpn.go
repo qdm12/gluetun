@@ -74,7 +74,7 @@ func (v *VPN) setDefaults() {
 	v.Type = gosettings.DefaultString(v.Type, vpn.OpenVPN)
 	v.Provider.setDefaults()
 	v.OpenVPN.setDefaults(*v.Provider.Name)
-	v.Wireguard.setDefaults()
+	v.Wireguard.setDefaults(*v.Provider.Name)
 }
 
 func (v VPN) String() string {

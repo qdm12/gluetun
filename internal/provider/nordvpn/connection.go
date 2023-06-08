@@ -8,7 +8,7 @@ import (
 
 func (p *Provider) GetConnection(selection settings.ServerSelection, ipv6Supported bool) (
 	connection models.Connection, err error) {
-	defaults := utils.NewConnectionDefaults(443, 1194, 0) //nolint:gomnd
+	defaults := utils.NewConnectionDefaults(443, 1194, 51820) //nolint:gomnd
 	return utils.GetConnection(p.Name(),
 		p.storage, selection, defaults, ipv6Supported, p.randSource)
 }
