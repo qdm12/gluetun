@@ -6,6 +6,7 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
+	"golang.org/x/sys/unix"
 )
 
 var (
@@ -31,7 +32,8 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 	}
 
 	for _, route := range routes {
-		if route.Table != 0 {
+		fmt.Println("route.table", route.Table)
+		if route.Table != unix.RT_TABLE_MAIN {
 			// ignore non-main table
 			continue
 		}
