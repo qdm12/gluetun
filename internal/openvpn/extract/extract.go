@@ -91,7 +91,7 @@ func extractProto(line string) (protocol string, err error) {
 
 var (
 	errRemoteLineFieldsCount = errors.New("remote line has not 2 fields as expected")
-	errHostNotIP             = errors.New("host is not an an IP address")
+	errHostNotIP             = errors.New("host is not an IP address")
 	errPortNotValid          = errors.New("port is not valid")
 )
 

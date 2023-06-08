@@ -20,7 +20,7 @@ func Test_extractDataFromLines(t *testing.T) {
 		err        error
 	}{
 		"success": {
-			lines: []string{"bla bla", "proto tcp", "remote 1.2.3.4 1194 tcp", "dev tun6"},
+			lines: []string{"bla", "proto tcp", "remote 1.2.3.4 1194 tcp", "dev tun6"},
 			connection: models.Connection{
 				IP:       netip.AddrFrom4([4]byte{1, 2, 3, 4}),
 				Port:     1194,
@@ -28,7 +28,7 @@ func Test_extractDataFromLines(t *testing.T) {
 			},
 		},
 		"extraction error": {
-			lines: []string{"bla bla", "proto bad", "remote 1.2.3.4 1194 tcp"},
+			lines: []string{"bla", "proto bad", "remote 1.2.3.4 1194 tcp"},
 			err:   errors.New("on line 2: extracting protocol from proto line: network protocol not supported: bad"),
 		},
 		"only use first values found": {
@@ -94,7 +94,7 @@ func Test_extractDataFromLine(t *testing.T) {
 		isErr    error
 	}{
 		"irrelevant line": {
-			line: "bla bla",
+			line: "bla",
 		},
 		"extract proto error": {
 			line:  "proto bad",
@@ -201,7 +201,7 @@ func Test_extractRemote(t *testing.T) {
 		},
 		"host is not an IP": {
 			line: "remote somehost.com",
-			err:  errors.New("host is not an an IP address: somehost.com"),
+			err:  errors.New("host is not an IP address: somehost.com"),
 		},
 		"only IP host": {
 			line: "remote 1.2.3.4",

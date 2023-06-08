@@ -39,7 +39,7 @@ func Test_modifyConfig(t *testing.T) {
 			settings: settings.OpenVPN{
 				User:        stringPtr("user"),
 				Ciphers:     []string{"cipher"},
-				Auth:        stringPtr("auth"),
+				Auth:        stringPtr("sha512"),
 				MSSFix:      uint16Ptr(1000),
 				ProcessUser: "procuser",
 				Interface:   "tun3",
@@ -66,7 +66,7 @@ func Test_modifyConfig(t *testing.T) {
 				"verb 0",
 				"data-ciphers-fallback cipher",
 				"data-ciphers cipher",
-				"auth auth",
+				"auth sha512",
 				"mssfix 1000",
 				"pull-filter ignore \"route-ipv6\"",
 				"pull-filter ignore \"ifconfig-ipv6\"",
