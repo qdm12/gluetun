@@ -31,6 +31,10 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 	}
 
 	for _, route := range routes {
+		if route.Table != 0 {
+			// ignore non-main table
+			continue
+		}
 		if route.Dst.IsValid() {
 			continue
 		}

@@ -47,7 +47,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	}
 
 	for _, route := range routes {
-		if route.Gw.IsValid() || !route.Dst.IsValid() {
+		if route.Table != 0 || route.Gw.IsValid() || !route.Dst.IsValid() {
 			continue
 		} else if _, ok := localLinks[route.LinkIndex]; !ok {
 			continue
