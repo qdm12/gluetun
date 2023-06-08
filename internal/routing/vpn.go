@@ -33,7 +33,7 @@ func (r *Routing) VPNDestinationIP() (ip netip.Addr, err error) {
 	for _, route := range routes {
 		if route.LinkIndex == defaultLinkIndex &&
 			route.Dst.IsValid() &&
-			!IPIsPrivate(route.Dst.Addr()) &&
+			!ipIsPrivate(route.Dst.Addr()) &&
 			route.Dst.IsSingleIP() {
 			return route.Dst.Addr(), nil
 		}

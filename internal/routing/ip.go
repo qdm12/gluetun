@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func IPIsPrivate(ip netip.Addr) bool {
+func ipIsPrivate(ip netip.Addr) bool {
 	return ip.IsPrivate() || ip.IsLoopback() ||
 		ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast()
 }
