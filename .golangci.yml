@@ -70,6 +70,7 @@ linters:
     - gomoddirectives
     - goprintffuncname
     - gosec
+    - gosmopolitan
     - grouper
     - importas
     - interfacebloat
@@ -77,6 +78,7 @@ linters:
     - lll
     - maintidx
     - makezero
+    - mirror
     - misspell
     - musttag
     - nakedret
@@ -94,6 +96,7 @@ linters:
     - revive
     - rowserrcheck
     - sqlclosecheck
+    - tagalign
     - tenv
     - thelper
     - tparallel
@@ -102,6 +105,7 @@ linters:
     - usestdlibvars
     - wastedassign
     - whitespace
+    - zerologlint
 
 run:
   skip-dirs:

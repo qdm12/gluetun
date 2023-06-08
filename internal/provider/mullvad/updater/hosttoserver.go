@@ -21,7 +21,7 @@ var (
 
 func (hts hostToServer) add(data serverData) (err error) {
 	if !data.Active {
-		return
+		return nil
 	}
 
 	if data.IPv4 == "" && data.IPv6 == "" {
