@@ -20,50 +20,50 @@ type ServerSelection struct { //nolint:maligned
 	// VPN is the VPN type which can be 'openvpn'
 	// or 'wireguard'. It cannot be the empty string
 	// in the internal state.
-	VPN string
+	VPN string `json:"vpn"`
 	// TargetIP is the server endpoint IP address to use.
 	// It will override any IP address from the picked
 	// built-in server. It cannot be the empty value in the internal
 	// state, and can be set to the unspecified address to indicate
 	// there is not target IP address to use.
-	TargetIP netip.Addr
+	TargetIP netip.Addr `json:"target_ip"`
 	// Counties is the list of countries to filter VPN servers with.
-	Countries []string
+	Countries []string `json:"countries"`
 	// Regions is the list of regions to filter VPN servers with.
-	Regions []string
+	Regions []string `json:"regions"`
 	// Cities is the list of cities to filter VPN servers with.
-	Cities []string
+	Cities []string `json:"cities"`
 	// ISPs is the list of ISP names to filter VPN servers with.
-	ISPs []string
+	ISPs []string `json:"isps"`
 	// Names is the list of server names to filter VPN servers with.
-	Names []string
+	Names []string `json:"names"`
 	// Numbers is the list of server numbers to filter VPN servers with.
-	Numbers []uint16
+	Numbers []uint16 `json:"numbers"`
 	// Hostnames is the list of hostnames to filter VPN servers with.
-	Hostnames []string
+	Hostnames []string `json:"hostnames"`
 	// OwnedOnly is true if VPN provider servers that are not owned
 	// should be filtered. This is used with Mullvad.
-	OwnedOnly *bool
+	OwnedOnly *bool `json:"owned_only"`
 	// FreeOnly is true if VPN servers that are not free should
 	// be filtered. This is used with ProtonVPN and VPN Unlimited.
-	FreeOnly *bool
+	FreeOnly *bool `json:"free_only"`
 	// PremiumOnly is true if VPN servers that are not premium should
 	// be filtered. This is used with VPN Secure.
 	// TODO extend to providers using FreeOnly.
-	PremiumOnly *bool
+	PremiumOnly *bool `json:"premium_only"`
 	// StreamOnly is true if VPN servers not for streaming should
 	// be filtered. This is used with VPNUnlimited.
-	StreamOnly *bool
+	StreamOnly *bool `json:"stream_only"`
 	// MultiHopOnly is true if VPN servers that are not multihop
 	// should be filtered. This is used with Surfshark.
-	MultiHopOnly *bool
+	MultiHopOnly *bool `json:"multi_hop_only"`
 
 	// OpenVPN contains settings to select OpenVPN servers
 	// and the final connection.
-	OpenVPN OpenVPNSelection
+	OpenVPN OpenVPNSelection `json:"openvpn"`
 	// Wireguard contains settings to select Wireguard servers
 	// and the final connection.
-	Wireguard WireguardSelection
+	Wireguard WireguardSelection `json:"wireguard"`
 }
 
 var (

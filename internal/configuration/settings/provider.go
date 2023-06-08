@@ -14,12 +14,12 @@ import (
 type Provider struct {
 	// Name is the VPN service provider name.
 	// It cannot be nil in the internal state.
-	Name *string
+	Name *string `json:"name"`
 	// ServerSelection is the settings to
 	// select the VPN server.
-	ServerSelection ServerSelection
+	ServerSelection ServerSelection `json:"server_selection"`
 	// PortForwarding is the settings about port forwarding.
-	PortForwarding PortForwarding
+	PortForwarding PortForwarding `json:"port_forwarding"`
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).

@@ -18,70 +18,70 @@ import (
 type OpenVPN struct {
 	// Version is the OpenVPN version to run.
 	// It can only be "2.5" or "2.6".
-	Version string
+	Version string `json:"version"`
 	// User is the OpenVPN authentication username.
 	// It cannot be nil in the internal state if OpenVPN is used.
 	// It is usually required but in some cases can be the empty string
 	// to indicate no user+password authentication is needed.
-	User *string
+	User *string `json:"user"`
 	// Password is the OpenVPN authentication password.
 	// It cannot be nil in the internal state if OpenVPN is used.
 	// It is usually required but in some cases can be the empty string
 	// to indicate no user+password authentication is needed.
-	Password *string
+	Password *string `json:"password"`
 	// ConfFile is a custom OpenVPN configuration file path.
 	// It can be set to the empty string for it to be ignored.
 	// It cannot be nil in the internal state.
-	ConfFile *string
+	ConfFile *string `json:"config_file_path"`
 	// Ciphers is a list of ciphers to use for OpenVPN,
 	// different from the ones specified by the VPN
 	// service provider configuration files.
-	Ciphers []string
+	Ciphers []string `json:"ciphers"`
 	// Auth is an auth algorithm to use in OpenVPN instead
 	// of the one specified by the VPN service provider.
 	// It cannot be nil in the internal state.
 	// It is ignored if it is set to the empty string.
-	Auth *string
+	Auth *string `json:"auth"`
 	// Cert is the base64 encoded DER of an OpenVPN certificate for the <cert> block.
 	// This is notably used by Cyberghost and VPN secure.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
-	Cert *string
+	Cert *string `json:"cert"`
 	// Key is the base64 encoded DER of an OpenVPN key.
 	// This is used by Cyberghost and VPN Unlimited.
 	// It can be set to the empty string to be ignored.
 	// It cannot be nil in the internal state.
-	Key *string
+	Key *string `json:"key"`
 	// EncryptedKey is the base64 encoded DER of an encrypted key for OpenVPN.
 	// It is used by VPN secure.
 	// It defaults to the empty string meaning it is not
 	// to be used. KeyPassphrase must be set if this one is set.
-	EncryptedKey *string
+	EncryptedKey *string `json:"encrypted_key"`
 	// KeyPassphrase is the key passphrase to be used by OpenVPN
 	// to decrypt the EncryptedPrivateKey. It defaults to the
 	// empty string and must be set if EncryptedPrivateKey is set.
-	KeyPassphrase *string
+	KeyPassphrase *string `json:"key_passphrase"`
 	// PIAEncPreset is the encryption preset for
 	// Private Internet Access. It can be set to an
 	// empty string for other providers.
-	PIAEncPreset *string
+	PIAEncPreset *string `json:"pia_encryption_preset"`
 	// MSSFix is the value (1 to 10000) to set for the
 	// mssfix option for OpenVPN. It is ignored if set to 0.
 	// It cannot be nil in the internal state.
-	MSSFix *uint16
+	MSSFix *uint16 `json:"mssfix"`
 	// Interface is the OpenVPN device interface name.
 	// It cannot be an empty string in the internal state.
-	Interface string
+	Interface string `json:"interface"`
 	// ProcessUser is the OpenVPN process OS username
 	// to use. It cannot be empty in the internal state.
 	// It defaults to 'root'.
-	ProcessUser string
+	ProcessUser string `json:"process_user"`
 	// Verbosity is the OpenVPN verbosity level from 0 to 6.
 	// It cannot be nil in the internal state.
-	Verbosity *int
+	Verbosity *int `json:"verbosity"`
 	// Flags is a slice of additional flags to be passed
 	// to the OpenVPN program.
-	Flags []string
+	Flags []string `json:"flags"`
 }
 
 var ivpnAccountID = regexp.MustCompile(`^(i|ivpn)\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}\-[a-zA-Z0-9]{4}$`)

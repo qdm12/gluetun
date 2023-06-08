@@ -29,9 +29,9 @@ func Test_Unbound_JSON(t *testing.T) {
 	b, err := json.Marshal(settings)
 	require.NoError(t, err)
 
-	const expected = `{"Providers":["cloudflare"],"Caching":true,"IPv6":false,` +
-		`"VerbosityLevel":1,"VerbosityDetailsLevel":null,"ValidationLogLevel":0,` +
-		`"Username":"user","Allowed":["0.0.0.0/0","::/0"]}`
+	const expected = `{"providers":["cloudflare"],"caching":true,"ipv6":false,` +
+		`"verbosity_level":1,"verbosity_details_level":null,"validation_log_level":0,` +
+		`"username":"user","allowed":["0.0.0.0/0","::/0"]}`
 
 	assert.Equal(t, expected, string(b))
 

@@ -18,27 +18,27 @@ import (
 type Wireguard struct {
 	// PrivateKey is the Wireguard client peer private key.
 	// It cannot be nil in the internal state.
-	PrivateKey *string
+	PrivateKey *string `json:"private_key"`
 	// PreSharedKey is the Wireguard pre-shared key.
 	// It can be the empty string to indicate there
 	// is no pre-shared key.
 	// It cannot be nil in the internal state.
-	PreSharedKey *string
+	PreSharedKey *string `json:"pre_shared_key"`
 	// Addresses are the Wireguard interface addresses.
-	Addresses []netip.Prefix
+	Addresses []netip.Prefix `json:"addresses"`
 	// Interface is the name of the Wireguard interface
 	// to create. It cannot be the empty string in the
 	// internal state.
-	Interface string
+	Interface string `json:"interface"`
 	// Maximum Transmission Unit (MTU) of the Wireguard interface.
 	// It cannot be zero in the internal state, and defaults to
 	// the wireguard-go MTU default of 1420.
-	MTU uint16
+	MTU uint16 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
 	// It defaults to "auto" and cannot be the empty string
 	// in the internal state.
-	Implementation string
+	Implementation string `json:"implementation"`
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)

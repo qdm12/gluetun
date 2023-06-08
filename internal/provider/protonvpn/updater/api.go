@@ -14,22 +14,22 @@ var (
 )
 
 type apiData struct {
-	LogicalServers []logicalServer
+	LogicalServers []logicalServer `json:"LogicalServers"`
 }
 
 type logicalServer struct {
-	Name        string
-	ExitCountry string
-	Region      *string
-	City        *string
-	Servers     []physicalServer
+	Name        string           `json:"Name"`
+	ExitCountry string           `json:"ExitCountry"`
+	Region      *string          `json:"Region"`
+	City        *string          `json:"City"`
+	Servers     []physicalServer `json:"Servers"`
 }
 
 type physicalServer struct {
-	EntryIP netip.Addr
-	ExitIP  netip.Addr
-	Domain  string
-	Status  uint8
+	EntryIP netip.Addr `json:"EntryIP"`
+	ExitIP  netip.Addr `json:"ExitIP"`
+	Domain  string     `json:"Domain"`
+	Status  uint8      `json:"Status"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (

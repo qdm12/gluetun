@@ -18,18 +18,18 @@ type WireguardSelection struct {
 	// To indicate it should not be used, it should be set
 	// to netaddr.IPv4Unspecified(). It can never be the zero value
 	// in the internal state.
-	EndpointIP netip.Addr
+	EndpointIP netip.Addr `json:"endpoint_ip"`
 	// EndpointPort is a the server port to use for the VPN server.
 	// It is optional for VPN providers IVPN, Mullvad, Surfshark
 	// and Windscribe, and compulsory for the others.
 	// When optional, it can be set to 0 to indicate not use
 	// a custom endpoint port. It cannot be nil in the internal
 	// state.
-	EndpointPort *uint16
+	EndpointPort *uint16 `json:"endpoint_port"`
 	// PublicKey is the server public key.
 	// It is only used with VPN providers generating Wireguard
 	// configurations specific to each server and user.
-	PublicKey string
+	PublicKey string `json:"public_key"`
 }
 
 // Validate validates WireguardSelection settings.

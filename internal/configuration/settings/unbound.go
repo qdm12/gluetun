@@ -13,14 +13,14 @@ import (
 
 // Unbound is settings for the Unbound program.
 type Unbound struct {
-	Providers             []string
-	Caching               *bool
-	IPv6                  *bool
-	VerbosityLevel        *uint8
-	VerbosityDetailsLevel *uint8
-	ValidationLogLevel    *uint8
-	Username              string
-	Allowed               []netip.Prefix
+	Providers             []string       `json:"providers"`
+	Caching               *bool          `json:"caching"`
+	IPv6                  *bool          `json:"ipv6"`
+	VerbosityLevel        *uint8         `json:"verbosity_level"`
+	VerbosityDetailsLevel *uint8         `json:"verbosity_details_level"`
+	ValidationLogLevel    *uint8         `json:"validation_log_level"`
+	Username              string         `json:"username"`
+	Allowed               []netip.Prefix `json:"allowed"`
 }
 
 func (u *Unbound) setDefaults() {

@@ -16,19 +16,19 @@ type OpenVPNSelection struct {
 	// It can be set to an empty string to indicate to
 	// NOT use a custom configuration file.
 	// It cannot be nil in the internal state.
-	ConfFile *string
+	ConfFile *string `json:"config_file_path"`
 	// TCP is true if the OpenVPN protocol is TCP,
 	// and false for UDP.
 	// It cannot be nil in the internal state.
-	TCP *bool
+	TCP *bool `json:"tcp"`
 	// CustomPort is the OpenVPN server endpoint port.
 	// It can be set to 0 to indicate no custom port should
 	// be used. It cannot be nil in the internal state.
-	CustomPort *uint16 // HideMyAss, Mullvad, PIA, ProtonVPN, WeVPN, Windscribe
+	CustomPort *uint16 `json:"custom_port"`
 	// PIAEncPreset is the encryption preset for
 	// Private Internet Access. It can be set to an
 	// empty string for other providers.
-	PIAEncPreset *string
+	PIAEncPreset *string `json:"pia_encryption_preset"`
 }
 
 func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
