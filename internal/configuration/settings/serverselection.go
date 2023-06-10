@@ -88,6 +88,14 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		return err // already wrapped error
 	}
 
+	// Retro-compatibility
+	switch vpnServiceProvider {
+	case providers.Nordvpn:
+		*ss = nordvpnRetroRegion(*ss, filterChoices.Regions, filterChoices.Countries)
+	case providers.Surfshark:
+		*ss = surfsharkRetroRegion(*ss)
+	}
+
 	err = validateServerFilters(*ss, filterChoices)
 	if err != nil {
 		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
@@ -163,7 +171,6 @@ func getLocationFilterChoices(vpnServiceProvider string,
 		if err != nil {
 			return models.FilterChoices{}, fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 		}
-		*ss = surfsharkRetroRegion(*ss)
 	}
 
 	return filterChoices, nil
