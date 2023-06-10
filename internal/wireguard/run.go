@@ -168,6 +168,23 @@ func setupKernelSpace(ctx context.Context,
 		Name: interfaceName,
 		MTU:  mtu,
 	}
+	links, err := netLinker.LinkList()
+	if err != nil {
+		return link, nil, fmt.Errorf("listing links: %w", err)
+	}
+
+	// Cleanup any previous Wireguard interface with the same name
+	// See https://github.com/qdm12/gluetun/issues/1669
+	for _, link := range links {
+		if link.Type == "wireguard" && link.Name == interfaceName {
+			err = netLinker.LinkDel(link)
+			if err != nil {
+				return link, nil, fmt.Errorf("deleting previous Wireguard link %s: %w",
+					interfaceName, err)
+			}
+		}
+	}
+
 	linkIndex, err := netLinker.LinkAdd(link)
 	if err != nil {
 		return link, nil, fmt.Errorf("%w: %s", ErrAddLink, err)
