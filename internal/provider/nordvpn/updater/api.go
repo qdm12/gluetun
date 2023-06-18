@@ -14,9 +14,9 @@ var (
 
 func fetchAPI(ctx context.Context, client *http.Client,
 	recommended bool, limit uint) (data []serverData, err error) {
-	url := "https://api.nordvpn.com/v1/servers/"
+	url := "https://api.nordvpn.com/v1/servers"
 	if recommended {
-		url += "recommendations"
+		url += "/recommendations"
 	}
 	url += fmt.Sprintf("?limit=%d", limit) // 0 means no limit
 
