@@ -67,6 +67,7 @@ type NetLinker interface {
 type Router interface {
 	RouteList(family int) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
+	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {

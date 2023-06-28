@@ -38,7 +38,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.openvpnConf, providerConf, settings, l.ipv6Supported, l.starter, subLogger)
 		} else { // Wireguard
 			vpnInterface = settings.Wireguard.Interface
-			vpnRunner, serverName, canPortForward, err = setupWireguard(ctx, l.netLinker, l.fw,
+			vpnRunner, serverName, canPortForward, err = setupWireguard(ctx, l.netLinker, l.routing, l.fw,
 				providerConf, settings, l.ipv6Supported, subLogger)
 		}
 		if err != nil {

@@ -1,6 +1,8 @@
 package wireguard
 
-import "github.com/qdm12/gluetun/internal/netlink"
+import (
+	"github.com/qdm12/gluetun/internal/netlink"
+)
 
 //go:generate mockgen -destination=netlinker_mock_test.go -package wireguard . NetLinker
 
@@ -15,6 +17,7 @@ type NetLinker interface {
 type Router interface {
 	RouteList(family int) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
+	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {

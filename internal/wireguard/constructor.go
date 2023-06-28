@@ -4,10 +4,11 @@ type Wireguard struct {
 	logger   Logger
 	settings Settings
 	netlink  NetLinker
+	routing  Routing
 }
 
 func New(settings Settings, netlink NetLinker,
-	logger Logger,
+	routing Routing, logger Logger,
 ) (w *Wireguard, err error) {
 	settings.SetDefaults()
 	if err := settings.Check(); err != nil {
@@ -18,5 +19,6 @@ func New(settings Settings, netlink NetLinker,
 		logger:   logger,
 		settings: settings,
 		netlink:  netlink,
+		routing:  routing,
 	}, nil
 }

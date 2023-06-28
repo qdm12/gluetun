@@ -32,6 +32,11 @@ type Route struct {
 	Type      int
 }
 
+func (r Route) String() string {
+	return fmt.Sprintf("{link %d, dst %s, src %s, gw %s, priority %d, family %d, table %d, type %d}",
+		r.LinkIndex, r.Dst, r.Src, r.Gw, r.Priority, r.Family, r.Table, r.Type)
+}
+
 type Rule struct {
 	Priority int
 	Family   int

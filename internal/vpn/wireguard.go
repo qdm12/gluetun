@@ -13,7 +13,7 @@ import (
 
 // setupWireguard sets Wireguard up using the configurators and settings given.
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
-func setupWireguard(ctx context.Context, netlinker NetLinker,
+func setupWireguard(ctx context.Context, netlinker NetLinker, routing Routing,
 	fw Firewall, providerConf provider.Provider,
 	settings settings.VPN, ipv6Supported bool, logger wireguard.Logger) (
 	wireguarder *wireguard.Wireguard, serverName string, canPortForward bool, err error,
@@ -29,7 +29,7 @@ func setupWireguard(ctx context.Context, netlinker NetLinker,
 	logger.Debug("Wireguard client private key: " + gosettings.ObfuscateKey(wireguardSettings.PrivateKey))
 	logger.Debug("Wireguard pre-shared key: " + gosettings.ObfuscateKey(wireguardSettings.PreSharedKey))
 
-	wireguarder, err = wireguard.New(wireguardSettings, netlinker, logger)
+	wireguarder, err = wireguard.New(wireguardSettings, netlinker, routing, logger)
 	if err != nil {
 		return nil, "", false, fmt.Errorf("creating Wireguard: %w", err)
 	}
