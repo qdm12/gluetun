@@ -150,7 +150,7 @@ func (w *Wireguard) setupIPv6(link netlink.Link, closers *closers) (err error) {
 		w.settings.RulePriority, w.settings.FirewallMark,
 		unix.AF_INET6)
 	if ruleErr != nil {
-		return fmt.Errorf("adding IPv6 rule: %w", err)
+		return fmt.Errorf("adding IPv6 rule: %w", ruleErr)
 	}
 
 	closers.add("removing IPv6 rule", stepOne, ruleCleanup6)
