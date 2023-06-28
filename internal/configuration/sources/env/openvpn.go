@@ -19,7 +19,7 @@ func (s *Source) readOpenVPN() (
 		env.RetroKeys("USER"), env.ForceLowercase(false))
 	openVPN.Password = s.env.Get("OPENVPN_PASSWORD",
 		env.RetroKeys("PASSWORD"), env.ForceLowercase(false))
-	openVPN.ConfFile = s.env.Get("OPENVPN_CUSTOM_CONFIG")
+	openVPN.ConfFile = s.env.Get("OPENVPN_CUSTOM_CONFIG", env.ForceLowercase(false))
 	openVPN.Ciphers = s.env.CSV("OPENVPN_CIPHERS", env.RetroKeys("OPENVPN_CIPHER"))
 	openVPN.Auth = s.env.Get("OPENVPN_AUTH")
 	openVPN.Cert = s.env.Get("OPENVPN_CERT", env.ForceLowercase(false))
