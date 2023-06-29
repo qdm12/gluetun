@@ -43,7 +43,6 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
   - [Fix the Unraid template](https://github.com/qdm12/gluetun/discussions/550)
 - Suggestion?
   - [Create an issue](https://github.com/qdm12/gluetun/issues)
-  - [Join the Slack channel](https://join.slack.com/t/qdm12/shared_invite/enQtOTE0NjcxNTM1ODc5LTYyZmVlOTM3MGI4ZWU0YmJkMjUxNmQ4ODQ2OTAwYzMxMTlhY2Q1MWQyOWUyNjc2ODliNjFjMDUxNWNmNzk5MDk)
 - Happy?
   - Sponsor me on [github.com/sponsors/qdm12](https://github.com/sponsors/qdm12)
   - Donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw)
@@ -61,7 +60,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - Supports: **AirVPN**, **Cyberghost**, **ExpressVPN**, **FastestVPN**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Perfect Privacy**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **SlickVPN**, **Surfshark**, **TorGuard**, **VPNSecure.me**, **VPNUnlimited**, **Vyprvpn**, **WeVPN**, **Windscribe** servers
 - Supports OpenVPN for all providers listed
 - Supports Wireguard both kernelspace and userspace
-  - For **Mullvad**, **Ivpn**, **Surfshark** and **Windscribe**
+  - For **AirVPN**, **Ivpn**, **Mullvad**, **NordVPN**, **Surfshark** and **Windscribe**
   - For **ProtonVPN**, **PureVPN**, **Torguard**, **VPN Unlimited** and **WeVPN** using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
   - For custom Wireguard configurations using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
   - More in progress, see [#134](https://github.com/qdm12/gluetun/issues/134)
@@ -120,7 +119,6 @@ services:
       - TZ=
       # Server list updater. See https://github.com/qdm12/gluetun/wiki/Updating-Servers#periodic-update
       - UPDATER_PERIOD=
-      - UPDATER_VPN_SERVICE_PROVIDERS=
 ```
 
 🆕 Image also available as `ghcr.io/qdm12/gluetun`
