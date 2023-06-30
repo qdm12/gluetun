@@ -12,8 +12,8 @@ type NoPortForwarder interface {
 	PortForward(ctx context.Context, client *http.Client,
 		logger Logger, gateway netip.Addr, serverName string) (
 		port uint16, err error)
-	KeepPortForward(ctx context.Context, gateway netip.Addr,
-		serverName string) (err error)
+	KeepPortForward(ctx context.Context, port uint16, gateway netip.Addr,
+		serverName string, logger Logger) (err error)
 }
 
 type NoPortForwarding struct {
@@ -33,6 +33,7 @@ func (n *NoPortForwarding) PortForward(context.Context, *http.Client,
 	return 0, fmt.Errorf("%w: for %s", ErrPortForwardingNotSupported, n.providerName)
 }
 
-func (n *NoPortForwarding) KeepPortForward(context.Context, netip.Addr, string) (err error) {
+func (n *NoPortForwarding) KeepPortForward(context.Context, uint16, netip.Addr,
+	string, Logger) (err error) {
 	return fmt.Errorf("%w: for %s", ErrPortForwardingNotSupported, n.providerName)
 }
