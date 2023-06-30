@@ -13,7 +13,7 @@ body:
       label: Is this urgent?
       description: |
         Is this a critical bug, or do you need this fixed urgently?
-        If this is urgent, note you can use one of the [image tags available](https://github.com/qdm12/gluetun/wiki/Docker-image-tags) if that can help.
+        If this is urgent, note you can use one of the [image tags available](https://github.com/qdm12/gluetun-wiki/blob/main/setup/docker-image-tags.md) if that can help.
       options:
         - "No"
         - "Yes"

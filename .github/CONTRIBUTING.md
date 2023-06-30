@@ -13,6 +13,6 @@ Contributions are [released](https://help.github.com/articles/github-terms-of-se
 
 ## Resources
 
-- [Gluetun guide on development](https://github.com/qdm12/gluetun/wiki/Development)
+- [Gluetun guide on development](https://github.com/qdm12/gluetun-wiki/blob/main/contributing/development.md)
 - [Using Pull Requests](https://help.github.com/articles/about-pull-requests/)
 - [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/)

@@ -159,7 +159,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	announcementExp, err := time.Parse(time.RFC3339, "2021-02-15T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2023-07-01T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		BuildDate:    buildInfo.Created,
-		Announcement: "Large settings parsing refactoring merged on 2022-01-06, please report any issue!",
+		Announcement: "Wiki moved to https://github.com/qdm12/gluetun-wiki",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",

@@ -1,4 +1,7 @@
 contact_links:
+  - name: Report a Wiki issue
+    url: https://github.com/qdm12/gluetun-wiki/issues/new
+    about: Please create an issue on the gluetun-wiki repository.
   - name: Configuration help?
     url: https://github.com/qdm12/gluetun/discussions/new
     about: Please create a Github discussion.

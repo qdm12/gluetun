@@ -38,7 +38,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - [Setup](#setup)
 - [Features](#features)
 - Problem?
-  - [Check the Wiki](https://github.com/qdm12/gluetun/wiki)
+  - Check the Wiki [common errors](https://github.com/qdm12/gluetun-wiki/tree/main/errors) and [faq](https://github.com/qdm12/gluetun-wiki/tree/main/faq)
   - [Start a discussion](https://github.com/qdm12/gluetun/discussions)
   - [Fix the Unraid template](https://github.com/qdm12/gluetun/discussions/550)
 - Suggestion?
@@ -47,7 +47,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
   - Sponsor me on [github.com/sponsors/qdm12](https://github.com/sponsors/qdm12)
   - Donate to [paypal.me/qmcgaw](https://www.paypal.me/qmcgaw)
   - Drop me [an email](mailto:quentin.mcgaw@gmail.com)
-- **Want to add a VPN provider?** check [Development](https://github.com/qdm12/gluetun/wiki/Development) and [Add a provider](https://github.com/qdm12/gluetun/wiki/Add-a-provider)
+- **Want to add a VPN provider?** check [the development page](https://github.com/qdm12/gluetun-wiki/blob/main/contributing/development.md) and [add a provider page](https://github.com/qdm12/gluetun-wiki/blob/main/contributing/add-a-provider.md)
 - Video:
 
   [![Video Gif](https://i.imgur.com/CetWunc.gif)](https://youtu.be/0F6I03LQcI4)
@@ -61,8 +61,8 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - Supports OpenVPN for all providers listed
 - Supports Wireguard both kernelspace and userspace
   - For **AirVPN**, **Ivpn**, **Mullvad**, **NordVPN**, **Surfshark** and **Windscribe**
-  - For **ProtonVPN**, **PureVPN**, **Torguard**, **VPN Unlimited** and **WeVPN** using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
-  - For custom Wireguard configurations using [the custom provider](https://github.com/qdm12/gluetun/wiki/Custom-provider)
+  - For **ProtonVPN**, **PureVPN**, **Torguard**, **VPN Unlimited** and **WeVPN** using [the custom provider](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/custom.md)
+  - For custom Wireguard configurations using [the custom provider](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/custom.md)
   - More in progress, see [#134](https://github.com/qdm12/gluetun/issues/134)
 - DNS over TLS baked in with service provider(s) of your choice
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
@@ -70,10 +70,10 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
 - Built in Shadowsocks proxy (protocol based on SOCKS5 with an encryption layer, tunnels TCP+UDP)
 - Built in HTTP proxy (tunnels HTTP and HTTPS through TCP)
-- [Connect other containers to it](https://github.com/qdm12/gluetun/wiki/Connect-a-container-to-gluetun)
-- [Connect LAN devices to it](https://github.com/qdm12/gluetun/wiki/Connect-a-LAN-device-to-gluetun)
+- [Connect other containers to it](https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md)
+- [Connect LAN devices to it](https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-lan-device-to-gluetun.md)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, and even ppc64le 🎆
-- [Custom VPN server side port forwarding for Private Internet Access](https://github.com/qdm12/gluetun/wiki/Private-internet-access#vpn-server-port-forwarding)
+- [Custom VPN server side port forwarding for Private Internet Access](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/private-internet-access.md#vpn-server-port-forwarding)
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
 - Unbound subprogram drops root privileges once launched
 - Can work as a Kubernetes sidecar container, thanks @rorph
@@ -82,9 +82,9 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 
 🎉 There are now instructions specific to each VPN provider with examples to help you get started as quickly as possible!
 
-Go to the [Wiki](https://github.com/qdm12/gluetun/wiki)!
+Go to the [Wiki](https://github.com/qdm12/gluetun-wiki)!
 
-[🐛 Found a bug in the Wiki?!](https://github.com/qdm12/gluetun/issues/new?assignees=&labels=%F0%9F%93%84+Wiki+issue&template=wiki+issue.yml&title=Wiki+issue%3A+)
+[🐛 Found a bug in the Wiki?!](https://github.com/qdm12/gluetun-wiki/issues/new)
 
 Here's a docker-compose.yml for the laziest:
 
@@ -94,7 +94,8 @@ services:
   gluetun:
     image: qmcgaw/gluetun
     # container_name: gluetun
-    # line above must be uncommented to allow external containers to connect. See https://github.com/qdm12/gluetun/wiki/Connect-a-container-to-gluetun#external-container-to-gluetun
+    # line above must be uncommented to allow external containers to connect.
+    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
     cap_add:
       - NET_ADMIN
     devices:
@@ -106,7 +107,7 @@ services:
     volumes:
       - /yourpath:/gluetun
     environment:
-      # See https://github.com/qdm12/gluetun/wiki
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
       - VPN_SERVICE_PROVIDER=ivpn
       - VPN_TYPE=openvpn
       # OpenVPN:
@@ -117,7 +118,8 @@ services:
       # - WIREGUARD_ADDRESSES=10.64.222.21/32
       # Timezone for accurate log times
       - TZ=
-      # Server list updater. See https://github.com/qdm12/gluetun/wiki/Updating-Servers#periodic-update
+      # Server list updater
+      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       - UPDATER_PERIOD=
 ```
 

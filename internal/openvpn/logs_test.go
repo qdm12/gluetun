@@ -52,7 +52,7 @@ func Test_processLogLine(t *testing.T) {
 That error usually happens because either:
 
 1. The VPN server IP address you are trying to connect to is no longer valid 🔌
-   Update your server information using https://github.com/qdm12/gluetun/wiki/Updating-Servers
+   Check out https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
 
 2. The VPN server crashed 💥, try changing your VPN servers filtering options such as SERVER_REGIONS
 

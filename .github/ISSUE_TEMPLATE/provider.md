@@ -14,4 +14,4 @@ One of the following is required:
 
 If the list of servers requires to login **or** is hidden behind an interactive configurator,
 you can only use a custom Openvpn configuration file.
-[The Wiki](https://github.com/qdm12/gluetun/wiki/Openvpn-file) describes how to do so.
+[The Wiki's OpenVPN configuration file page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/openvpn-configuration-file.md) describes how to do so.
