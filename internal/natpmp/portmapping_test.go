@@ -136,9 +136,13 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			assert.Equal(t, testCase.assignedInternalPort, assignedInternalPort)
 			assert.Equal(t, testCase.assignedExternalPort, assignedExternalPort)
 			assert.Equal(t, testCase.assignedLifetime, assignedLifetime)
-			assert.ErrorIs(t, err, testCase.err)
-			if testCase.err != nil {
-				assert.EqualError(t, err, testCase.errMessage)
+			if testCase.errMessage != "" {
+				if testCase.err != nil {
+					assert.ErrorIs(t, err, testCase.err)
+				}
+				assert.Regexp(t, "^"+testCase.errMessage+"$", err.Error())
+			} else {
+				assert.NoError(t, err)
 			}
 		})
 	}

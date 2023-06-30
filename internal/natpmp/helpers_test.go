@@ -75,7 +75,10 @@ func launchUDPServer(t *testing.T, exchanges []udpExchange) (
 
 			if exchange.close {
 				err = conn.Close()
-				assert.NoError(t, err)
+				if !errors.Is(err, net.ErrClosed) {
+					// connection might be already closed by client production code
+					assert.NoError(t, err)
+				}
 				return
 			}
 

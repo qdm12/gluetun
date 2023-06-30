@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Client_rpc(t *testing.T) {
@@ -51,9 +50,11 @@ func Test_Client_rpc(t *testing.T) {
 			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:      []byte{0, 1},
 			initialRetry: time.Millisecond,
-			exchanges:    []udpExchange{{close: true}},
-			err:          ErrConnectionTimeout,
-			errMessage:   "connection timeout: after 1ms",
+			exchanges: []udpExchange{
+				{request: []byte{0, 1}, close: true},
+			},
+			err:        ErrConnectionTimeout,
+			errMessage: "connection timeout: after 1ms",
 		},
 		"response_too_small": {
 			ctx:          context.Background(),
@@ -152,10 +153,12 @@ func Test_Client_rpc(t *testing.T) {
 				testCase.request, testCase.responseSize)
 
 			if testCase.errMessage != "" {
-				require.Error(t, err)
-				assert.Regexp(t, testCase.errMessage, err.Error())
+				if testCase.err != nil {
+					assert.ErrorIs(t, err, testCase.err)
+				}
+				assert.Regexp(t, "^"+testCase.errMessage+"$", err.Error())
 			} else {
-				assert.ErrorIs(t, err, testCase.err)
+				assert.NoError(t, err)
 			}
 			assert.Equal(t, testCase.expectedResponse, response)
 		})
