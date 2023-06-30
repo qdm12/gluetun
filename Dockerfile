@@ -110,6 +110,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # # Private Internet Access only:
     PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET= \
     VPN_PORT_FORWARDING=off \
+    VPN_PORT_FORWARDING_PROVIDER= \
     VPN_PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     # # Cyberghost only:
     OPENVPN_CERT= \
