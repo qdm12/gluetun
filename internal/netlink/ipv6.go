@@ -2,6 +2,7 @@ package netlink
 
 import (
 	"fmt"
+	"github.com/qdm12/gluetun/internal/pinger"
 )
 
 func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
@@ -22,7 +23,14 @@ func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
 				return false, fmt.Errorf("finding IPv6 supported link: %w", err)
 			}
 			n.debugLogger.Debugf("IPv6 is supported by link %s", link.Name)
-			return true, nil
+			pingSuccess, err := pinger.Ping()
+			if err != nil {
+				n.debugLogger.Debugf("IPv6 support exists, but IPv6 connectivity doesn't appear to work.")
+				return false, fmt.Errorf("pinging IPv6 endpoint: %w", err)
+			}
+			if pingSuccess == true {
+				return true, nil
+			}
 		}
 	}
 
