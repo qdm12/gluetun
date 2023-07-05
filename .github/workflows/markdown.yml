@@ -6,6 +6,11 @@ on:
     paths:
       - "**.md"
       - .github/workflows/markdown.yml
+  pull_request:
+    paths:
+      - "**.md"
+      - .github/workflows/markdown.yml
+
 jobs:
   markdown:
     runs-on: ubuntu-latest
@@ -32,7 +37,7 @@ jobs:
           use-quiet-mode: yes
 
       - uses: peter-evans/dockerhub-description@v3
-        if: github.repository == 'qdm12/gluetun'
+        if: github.repository == 'qdm12/gluetun' && github.event_name == 'push'
         with:
           username: qmcgaw
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
