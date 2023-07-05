@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - README.md
+      - "**.md"
       - .github/workflows/markdown.yml
 jobs:
   markdown:
