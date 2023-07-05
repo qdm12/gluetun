@@ -1,13 +1,13 @@
-name: Docker Hub description
+name: Markdown
 on:
   push:
     branches:
       - master
     paths:
       - README.md
-      - .github/workflows/dockerhub-description.yml
+      - .github/workflows/markdown.yml
 jobs:
-  docker-hub-description:
+  markdown:
     if: github.repository == 'qdm12/gluetun'
     runs-on: ubuntu-latest
     permissions:
