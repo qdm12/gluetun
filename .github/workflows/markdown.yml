@@ -8,7 +8,6 @@ on:
       - .github/workflows/markdown.yml
 jobs:
   markdown:
-    if: github.repository == 'qdm12/gluetun'
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -16,7 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: reviewdog/action-misspell@v1
+        with:
+          locale: "US"
+          level: error
+          pattern: |
+            *.md
+
       - uses: peter-evans/dockerhub-description@v3
+        if: github.repository == 'qdm12/gluetun'
         with:
           username: qmcgaw
           password: ${{ secrets.DOCKERHUB_PASSWORD }}

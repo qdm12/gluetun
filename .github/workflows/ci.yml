@@ -45,6 +45,7 @@ jobs:
           level: error
           exclude: |
             ./internal/storage/servers.json
+            *.md
 
       - name: Linting
         run: docker build --target lint .
