@@ -34,6 +34,8 @@ var (
 	ErrUpdaterPeriodTooSmall           = errors.New("VPN server data updater period is too small")
 	ErrVPNProviderNameNotValid         = errors.New("VPN provider name is not valid")
 	ErrVPNTypeNotValid                 = errors.New("VPN type is not valid")
+	ErrWireguardAllowedIPNotSet        = errors.New("allowed IP is not set")
+	ErrWireguardAllowedIPsNotSet       = errors.New("allowed IPs is not set")
 	ErrWireguardEndpointIPNotSet       = errors.New("endpoint IP is not set")
 	ErrWireguardEndpointPortNotAllowed = errors.New("endpoint port is not allowed")
 	ErrWireguardEndpointPortNotSet     = errors.New("endpoint port is not set")

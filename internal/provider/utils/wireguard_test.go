@@ -34,6 +34,10 @@ func Test_BuildWireguardSettings(t *testing.T) {
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 32),
 					netip.PrefixFrom(netip.AddrFrom16([16]byte{}), 32),
 				},
+				AllowedIPs: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
+					netip.PrefixFrom(netip.AddrFrom16([16]byte{}), 32),
+				},
 				Interface: "wg1",
 			},
 			ipv6Supported: false,
@@ -45,6 +49,9 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51821),
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 32),
+				},
+				AllowedIPs: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
 				},
 				RulePriority: 101,
 				IPv6:         boolPtr(false),

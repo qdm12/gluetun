@@ -19,6 +19,10 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	if err != nil {
 		return wireguard, err // already wrapped
 	}
+	wireguard.AllowedIPs, err = s.env.CSVNetipPrefixes("WIREGUARD_ALLOWED_IPS")
+	if err != nil {
+		return wireguard, err // already wrapped
+	}
 	mtuPtr, err := s.env.Uint16Ptr("WIREGUARD_MTU")
 	if err != nil {
 		return wireguard, err

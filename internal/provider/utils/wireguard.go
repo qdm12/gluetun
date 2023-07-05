@@ -32,5 +32,13 @@ func BuildWireguardSettings(connection models.Connection,
 		settings.Addresses = append(settings.Addresses, addressCopy)
 	}
 
+	settings.AllowedIPs = make([]netip.Prefix, 0, len(userSettings.AllowedIPs))
+	for _, allowedIP := range userSettings.AllowedIPs {
+		if !ipv6Supported && allowedIP.Addr().Is6() {
+			continue
+		}
+		settings.AllowedIPs = append(settings.AllowedIPs, allowedIP)
+	}
+
 	return settings
 }
