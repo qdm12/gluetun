@@ -27,6 +27,10 @@ jobs:
           pattern: |
             *.md
 
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: yes
+
       - uses: peter-evans/dockerhub-description@v3
         if: github.repository == 'qdm12/gluetun'
         with:

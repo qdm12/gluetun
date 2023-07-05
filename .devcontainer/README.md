@@ -47,7 +47,7 @@ You can customize **settings** and **extensions** in the [devcontainer.json](dev
 
 ### Entrypoint script
 
-You can bind mount a shell script to `/root/.welcome.sh` to replace the [current welcome script](shell/.welcome.sh).
+You can bind mount a shell script to `/root/.welcome.sh` to replace the [current welcome script](https://github.com/qdm12/godevcontainer/blob/master/shell/.welcome.sh).
 
 ### Publish a port
 
