@@ -32,7 +32,7 @@ func Test_Client_rpc(t *testing.T) {
 		"request_too_small": {
 			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:                   []byte{0},
-			initialConnectionDuration: time.Second,
+			initialConnectionDuration: time.Nanosecond, // doesn't matter
 			err:                       ErrRequestSizeTooSmall,
 			errMessage: `checking request: message size is too small: ` +
 				`need at least 2 bytes and got 1 byte\(s\)`,
@@ -60,7 +60,7 @@ func Test_Client_rpc(t *testing.T) {
 			ctx:                       context.Background(),
 			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:                   []byte{0, 0},
-			initialConnectionDuration: time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0, 0},
 				response: []byte{1},
@@ -74,7 +74,7 @@ func Test_Client_rpc(t *testing.T) {
 			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:                   []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize:              5,
-			initialConnectionDuration: time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 				response: []byte{0, 1, 2, 3}, // size 4
@@ -88,7 +88,7 @@ func Test_Client_rpc(t *testing.T) {
 			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:                   []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize:              16,
-			initialConnectionDuration: time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 				response: []byte{0x1, 0x82, 0x0, 0x0, 0x0, 0x14, 0x4, 0x96, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
@@ -101,7 +101,7 @@ func Test_Client_rpc(t *testing.T) {
 			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:                   []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize:              16,
-			initialConnectionDuration: time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 				response: []byte{0x0, 0x88, 0x0, 0x0, 0x0, 0x14, 0x4, 0x96, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
@@ -114,7 +114,7 @@ func Test_Client_rpc(t *testing.T) {
 			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:                   []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize:              16,
-			initialConnectionDuration: time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 				response: []byte{0x0, 0x82, 0x0, 0x11, 0x0, 0x14, 0x4, 0x96, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
@@ -127,7 +127,7 @@ func Test_Client_rpc(t *testing.T) {
 			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			request:                   []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 			responseSize:              16,
-			initialConnectionDuration: time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 				response: []byte{0x0, 0x82, 0x0, 0x0, 0x0, 0x0, 0x4, 0x96, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},

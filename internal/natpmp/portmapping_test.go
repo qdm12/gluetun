@@ -19,7 +19,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 		internalPort              uint16
 		requestedExternalPort     uint16
 		lifetime                  time.Duration
-		initialConnDuration       time.Duration
+		initialConnectionDuration time.Duration
 		exchanges                 []udpExchange
 		durationSinceStartOfEpoch time.Duration
 		assignedInternalPort      uint16
@@ -40,25 +40,25 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			errMessage: "network protocol is unknown: xyz",
 		},
 		"rpc_error": {
-			ctx:                   context.Background(),
-			gateway:               netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			protocol:              "udp",
-			internalPort:          123,
-			requestedExternalPort: 456,
-			lifetime:              1200 * time.Second,
-			initialConnDuration:   time.Millisecond,
-			exchanges:             []udpExchange{{close: true}},
-			err:                   ErrConnectionTimeout,
-			errMessage:            "executing remote procedure call: connection timeout: after 1ms",
+			ctx:                       context.Background(),
+			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
+			protocol:                  "udp",
+			internalPort:              123,
+			requestedExternalPort:     456,
+			lifetime:                  1200 * time.Second,
+			initialConnectionDuration: time.Millisecond,
+			exchanges:                 []udpExchange{{close: true}},
+			err:                       ErrConnectionTimeout,
+			errMessage:                "executing remote procedure call: connection timeout: after 1ms",
 		},
 		"add_udp": {
-			ctx:                   context.Background(),
-			gateway:               netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			protocol:              "udp",
-			internalPort:          123,
-			requestedExternalPort: 456,
-			lifetime:              1200 * time.Second,
-			initialConnDuration:   time.Second,
+			ctx:                       context.Background(),
+			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
+			protocol:                  "udp",
+			internalPort:              123,
+			requestedExternalPort:     456,
+			lifetime:                  1200 * time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x1, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 				response: []byte{0x0, 0x81, 0x0, 0x0, 0x0, 0x13, 0xfe, 0xff, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
@@ -69,13 +69,13 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			assignedLifetime:          0x4b0 * time.Second,
 		},
 		"add_tcp": {
-			ctx:                   context.Background(),
-			gateway:               netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			protocol:              "tcp",
-			internalPort:          123,
-			requestedExternalPort: 456,
-			lifetime:              1200 * time.Second,
-			initialConnDuration:   time.Second,
+			ctx:                       context.Background(),
+			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
+			protocol:                  "tcp",
+			internalPort:              123,
+			requestedExternalPort:     456,
+			lifetime:                  1200 * time.Second,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
 				response: []byte{0x0, 0x82, 0x0, 0x0, 0x0, 0x14, 0x3, 0x21, 0x0, 0x7b, 0x1, 0xc8, 0x0, 0x0, 0x4, 0xb0},
@@ -86,11 +86,11 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			assignedLifetime:          0x4b0 * time.Second,
 		},
 		"remove_udp": {
-			ctx:                 context.Background(),
-			gateway:             netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			protocol:            "udp",
-			internalPort:        123,
-			initialConnDuration: time.Second,
+			ctx:                       context.Background(),
+			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
+			protocol:                  "udp",
+			internalPort:              123,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x1, 0x0, 0x0, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 				response: []byte{0x0, 0x81, 0x0, 0x0, 0x0, 0x14, 0x3, 0xd5, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
@@ -99,11 +99,11 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			assignedInternalPort:      0x7b,
 		},
 		"remove_tcp": {
-			ctx:                 context.Background(),
-			gateway:             netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			protocol:            "tcp",
-			internalPort:        123,
-			initialConnDuration: time.Second,
+			ctx:                       context.Background(),
+			gateway:                   netip.AddrFrom4([4]byte{127, 0, 0, 1}),
+			protocol:                  "tcp",
+			internalPort:              123,
+			initialConnectionDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0x0, 0x2, 0x0, 0x0, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 				response: []byte{0x0, 0x82, 0x0, 0x0, 0x0, 0x14, 0x4, 0x96, 0x0, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
@@ -122,7 +122,7 @@ func Test_Client_AddPortMapping(t *testing.T) {
 
 			client := Client{
 				serverPort:                uint16(remoteAddress.Port),
-				initialConnectionDuration: testCase.initialConnDuration,
+				initialConnectionDuration: testCase.initialConnectionDuration,
 				maxRetries:                1,
 			}
 

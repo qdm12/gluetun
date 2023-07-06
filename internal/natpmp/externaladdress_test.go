@@ -28,14 +28,14 @@ func Test_Client_ExternalAddress(t *testing.T) {
 		"failure": {
 			ctx:                 canceledCtx,
 			gateway:             netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			initialConnDuration: time.Millisecond,
+			initialConnDuration: initialConnectionDuration,
 			err:                 context.Canceled,
 			errMessage:          "executing remote procedure call: reading from udp connection: context canceled",
 		},
 		"success": {
 			ctx:                 context.Background(),
 			gateway:             netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			initialConnDuration: time.Millisecond,
+			initialConnDuration: initialConnectionDuration,
 			exchanges: []udpExchange{{
 				request:  []byte{0, 0},
 				response: []byte{0x0, 0x80, 0x0, 0x0, 0x0, 0x13, 0xf2, 0x4f, 0x49, 0x8c, 0x36, 0x9a},

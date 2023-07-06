@@ -4,10 +4,14 @@ import (
 	"errors"
 	"net"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+// enough for slow machines for local UDP server.
+const initialConnectionDuration = 3 * time.Second
 
 type udpExchange struct {
 	request  []byte
