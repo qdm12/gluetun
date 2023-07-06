@@ -18,7 +18,7 @@ func Test_Client_ExternalAddress(t *testing.T) {
 	testCases := map[string]struct {
 		ctx                       context.Context
 		gateway                   netip.Addr
-		initialRetry              time.Duration
+		initialConnDuration       time.Duration
 		exchanges                 []udpExchange
 		durationSinceStartOfEpoch time.Duration
 		externalIPv4Address       netip.Addr
@@ -26,16 +26,16 @@ func Test_Client_ExternalAddress(t *testing.T) {
 		errMessage                string
 	}{
 		"failure": {
-			ctx:          canceledCtx,
-			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			initialRetry: time.Millisecond,
-			err:          context.Canceled,
-			errMessage:   "executing remote procedure call: reading from udp connection: context canceled",
+			ctx:                 canceledCtx,
+			gateway:             netip.AddrFrom4([4]byte{127, 0, 0, 1}),
+			initialConnDuration: time.Millisecond,
+			err:                 context.Canceled,
+			errMessage:          "executing remote procedure call: reading from udp connection: context canceled",
 		},
 		"success": {
-			ctx:          context.Background(),
-			gateway:      netip.AddrFrom4([4]byte{127, 0, 0, 1}),
-			initialRetry: time.Millisecond,
+			ctx:                 context.Background(),
+			gateway:             netip.AddrFrom4([4]byte{127, 0, 0, 1}),
+			initialConnDuration: time.Millisecond,
 			exchanges: []udpExchange{{
 				request:  []byte{0, 0},
 				response: []byte{0x0, 0x80, 0x0, 0x0, 0x0, 0x13, 0xf2, 0x4f, 0x49, 0x8c, 0x36, 0x9a},
@@ -53,9 +53,9 @@ func Test_Client_ExternalAddress(t *testing.T) {
 			remoteAddress := launchUDPServer(t, testCase.exchanges)
 
 			client := Client{
-				serverPort:   uint16(remoteAddress.Port),
-				initialRetry: testCase.initialRetry,
-				maxRetries:   1,
+				serverPort:                uint16(remoteAddress.Port),
+				initialConnectionDuration: testCase.initialConnDuration,
+				maxRetries:                1,
 			}
 
 			durationSinceStartOfEpoch, externalIPv4Address, err :=

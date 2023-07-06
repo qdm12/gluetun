@@ -61,15 +61,15 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 	const maxResponseSize = 16
 	response = make([]byte, maxResponseSize)
 
-	// Retry duration doubles on every network error
+	// Connection duration doubles on every network error
 	// Note it does not double if the source IP mismatches the gateway IP.
-	retryDuration := c.initialRetry
+	connectionDuration := c.initialConnectionDuration
 
 	var totalRetryDuration time.Duration
 
 	var retryCount uint
 	for retryCount = 0; retryCount < c.maxRetries; retryCount++ {
-		deadline := time.Now().Add(retryDuration)
+		deadline := time.Now().Add(connectionDuration)
 		err = connection.SetDeadline(deadline)
 		if err != nil {
 			return nil, fmt.Errorf("setting connection deadline: %w", err)
@@ -87,8 +87,8 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 			}
 			var netErr net.Error
 			if errors.As(err, &netErr) && netErr.Timeout() {
-				totalRetryDuration += retryDuration
-				retryDuration *= 2
+				totalRetryDuration += connectionDuration
+				connectionDuration *= 2
 				continue
 			}
 			return nil, fmt.Errorf("reading from udp connection: %w", err)

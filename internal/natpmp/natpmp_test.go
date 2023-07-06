@@ -11,9 +11,9 @@ func Test_New(t *testing.T) {
 	t.Parallel()
 
 	expectedClient := &Client{
-		serverPort:   5351,
-		initialRetry: 250 * time.Millisecond,
-		maxRetries:   9,
+		serverPort:                5351,
+		initialConnectionDuration: 250 * time.Millisecond,
+		maxRetries:                9,
 	}
 	client := New()
 	assert.Equal(t, expectedClient, client)
