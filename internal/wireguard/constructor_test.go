@@ -48,6 +48,9 @@ func Test_New(t *testing.T) {
 					Addresses: []netip.Prefix{
 						netip.PrefixFrom(netip.AddrFrom4([4]byte{5, 6, 7, 8}), 32),
 					},
+					AllowedIPs: []netip.Prefix{
+						allIPv4(),
+					},
 					FirewallMark:   100,
 					MTU:            device.DefaultMTU,
 					IPv6:           ptr(false),

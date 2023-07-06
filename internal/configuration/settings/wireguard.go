@@ -25,6 +25,10 @@ type Wireguard struct {
 	PreSharedKey *string `json:"pre_shared_key"`
 	// Addresses are the Wireguard interface addresses.
 	Addresses []netip.Prefix `json:"addresses"`
+	// AllowedIPs are the Wireguard allowed IPs.
+	// If left unset, they default to "0.0.0.0/0"
+	// and, if IPv6 is supported, "::0".
+	AllowedIPs []netip.Prefix `json:"allowed_ips"`
 	// Interface is the name of the Wireguard interface
 	// to create. It cannot be the empty string in the
 	// internal state.
@@ -89,13 +93,26 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 	}
 	for i, ipNet := range w.Addresses {
 		if !ipNet.IsValid() {
-			return fmt.Errorf("%w: for address at index %d: %s",
-				ErrWireguardInterfaceAddressNotSet, i, ipNet.String())
+			return fmt.Errorf("%w: for address at index %d",
+				ErrWireguardInterfaceAddressNotSet, i)
 		}
 
 		if !ipv6Supported && ipNet.Addr().Is6() {
 			return fmt.Errorf("%w: address %s",
-				ErrWireguardInterfaceAddressIPv6, ipNet)
+				ErrWireguardInterfaceAddressIPv6, ipNet.String())
+		}
+	}
+
+	// Validate AllowedIPs
+	// WARNING: do not check for IPv6 networks in the allowed IPs,
+	// the wireguard code will take care to ignore it.
+	if len(w.AllowedIPs) == 0 {
+		return fmt.Errorf("%w", ErrWireguardAllowedIPsNotSet)
+	}
+	for i, allowedIP := range w.AllowedIPs {
+		if !allowedIP.IsValid() {
+			return fmt.Errorf("%w: for allowed ip %d of %d",
+				ErrWireguardAllowedIPNotSet, i+1, len(w.AllowedIPs))
 		}
 	}
 
@@ -118,6 +135,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 		PrivateKey:     gosettings.CopyPointer(w.PrivateKey),
 		PreSharedKey:   gosettings.CopyPointer(w.PreSharedKey),
 		Addresses:      gosettings.CopySlice(w.Addresses),
+		AllowedIPs:     gosettings.CopySlice(w.AllowedIPs),
 		Interface:      w.Interface,
 		MTU:            w.MTU,
 		Implementation: w.Implementation,
@@ -128,6 +146,7 @@ func (w *Wireguard) mergeWith(other Wireguard) {
 	w.PrivateKey = gosettings.MergeWithPointer(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = gosettings.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = gosettings.MergeWithSlice(w.Addresses, other.Addresses)
+	w.AllowedIPs = gosettings.MergeWithSlice(w.AllowedIPs, other.AllowedIPs)
 	w.Interface = gosettings.MergeWithString(w.Interface, other.Interface)
 	w.MTU = gosettings.MergeWithNumber(w.MTU, other.MTU)
 	w.Implementation = gosettings.MergeWithString(w.Implementation, other.Implementation)
@@ -137,6 +156,7 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PrivateKey = gosettings.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = gosettings.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = gosettings.OverrideWithSlice(w.Addresses, other.Addresses)
+	w.AllowedIPs = gosettings.OverrideWithSlice(w.AllowedIPs, other.AllowedIPs)
 	w.Interface = gosettings.OverrideWithString(w.Interface, other.Interface)
 	w.MTU = gosettings.OverrideWithNumber(w.MTU, other.MTU)
 	w.Implementation = gosettings.OverrideWithString(w.Implementation, other.Implementation)
@@ -150,6 +170,11 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 		defaultNordVPNPrefix := netip.PrefixFrom(defaultNordVPNAddress, defaultNordVPNAddress.BitLen())
 		w.Addresses = gosettings.DefaultSlice(w.Addresses, []netip.Prefix{defaultNordVPNPrefix})
 	}
+	defaultAllowedIPs := []netip.Prefix{
+		netip.PrefixFrom(netip.IPv4Unspecified(), 0),
+		netip.PrefixFrom(netip.IPv6Unspecified(), 0),
+	}
+	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs, defaultAllowedIPs)
 	w.Interface = gosettings.DefaultString(w.Interface, "wg0")
 	const defaultMTU = 1400
 	w.MTU = gosettings.DefaultNumber(w.MTU, defaultMTU)
@@ -176,6 +201,11 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	addressesNode := node.Appendf("Interface addresses:")
 	for _, address := range w.Addresses {
 		addressesNode.Appendf(address.String())
+	}
+
+	allowedIPsNode := node.Appendf("Allowed IPs:")
+	for _, allowedIP := range w.AllowedIPs {
+		allowedIPsNode.Appendf(allowedIP.String())
 	}
 
 	interfaceNode := node.Appendf("Network interface: %s", w.Interface)
