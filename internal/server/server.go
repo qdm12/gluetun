@@ -10,12 +10,12 @@ import (
 
 func New(ctx context.Context, address string, logEnabled bool, logger Logger,
 	buildInfo models.BuildInformation, openvpnLooper VPNLooper,
-	pfGetter PortForwardedGetter, unboundLooper DNSLoop,
+	pfGetter PortForwardedGetter, dnsLooper DNSLoop,
 	updaterLooper UpdaterLooper, publicIPLooper PublicIPLoop, storage Storage,
 	ipv6Supported bool) (
 	server *httpserver.Server, err error) {
 	handler := newHandler(ctx, logger, logEnabled, buildInfo,
-		openvpnLooper, pfGetter, unboundLooper, updaterLooper, publicIPLooper,
+		openvpnLooper, pfGetter, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 
 	httpServerSettings := httpserver.Settings{

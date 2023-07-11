@@ -17,7 +17,7 @@ func (l *Loop) useUnencryptedDNS(fallback bool) {
 	if settings.ServerAddress.Compare(netip.AddrFrom4([4]byte{127, 0, 0, 1})) != 0 {
 		targetIP = settings.ServerAddress
 	} else {
-		targetIP = settings.DoT.Unbound.GetFirstPlaintextIPv4()
+		targetIP = settings.DoT.GetFirstPlaintextIPv4()
 	}
 
 	if fallback {

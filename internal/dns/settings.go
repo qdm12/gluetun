@@ -25,7 +25,7 @@ func buildDoTSettings(settings settings.DNS,
 	dotSettings dot.ServerSettings, err error) {
 	var middlewares []dot.Middleware
 
-	if *settings.DoT.Unbound.Caching {
+	if *settings.DoT.Caching {
 		lruCache, err := lru.New(lru.Settings{})
 		if err != nil {
 			return dot.ServerSettings{}, fmt.Errorf("creating LRU cache: %w", err)
@@ -48,17 +48,17 @@ func buildDoTSettings(settings settings.DNS,
 	middlewares = append(middlewares, filterMiddleware)
 
 	providersData := provider.NewProviders()
-	providers := make([]provider.Provider, len(settings.DoT.Unbound.Providers))
-	for i := range settings.DoT.Unbound.Providers {
+	providers := make([]provider.Provider, len(settings.DoT.Providers))
+	for i := range settings.DoT.Providers {
 		var err error
-		providers[i], err = providersData.Get(settings.DoT.Unbound.Providers[i])
+		providers[i], err = providersData.Get(settings.DoT.Providers[i])
 		if err != nil {
 			panic(err) // this should already had been checked
 		}
 	}
 
 	ipVersion := "ipv4"
-	if *settings.DoT.Unbound.IPv6 {
+	if *settings.DoT.IPv6 {
 		ipVersion = "ipv6"
 	}
 	return dot.ServerSettings{
