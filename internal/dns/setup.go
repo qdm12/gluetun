@@ -12,7 +12,7 @@ import (
 
 var errUpdateBlockLists = errors.New("cannot update filter block lists")
 
-func (l *Loop) setupUnbound(ctx context.Context) (runError <-chan error, err error) {
+func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err error) {
 	err = l.updateFiles(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", errUpdateBlockLists, err)
@@ -36,7 +36,7 @@ func (l *Loop) setupUnbound(ctx context.Context) (runError <-chan error, err err
 	}
 	l.server = server
 
-	// use Unbound
+	// use internal DNS server
 	nameserver.UseDNSInternally(nameserver.SettingsInternalDNS{
 		IP: settings.ServerAddress,
 	})

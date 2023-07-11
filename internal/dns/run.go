@@ -26,14 +26,14 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	}
 
 	for ctx.Err() == nil {
-		// Upper scope variables for Unbound only
+		// Upper scope variables for the DNS over TLS server only
 		// Their values are to be used if DOT=off
 		var runError <-chan error
 
 		settings := l.GetSettings()
 		for !*settings.KeepNameserver && *settings.DoT.Enabled {
 			var err error
-			runError, err = l.setupUnbound(ctx)
+			runError, err = l.setupServer(ctx)
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
 				l.logger.Info("ready")
