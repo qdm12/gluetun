@@ -382,22 +382,22 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("starting port forwarding loop: %w", err)
 	}
 
-	unboundLogger := logger.New(log.SetComponent("dns"))
-	unboundLooper, err := dns.NewLoop(allSettings.DNS, httpClient,
-		unboundLogger)
+	dnsLogger := logger.New(log.SetComponent("dns"))
+	dnsLooper, err := dns.NewLoop(allSettings.DNS, httpClient,
+		dnsLogger)
 	if err != nil {
 		return fmt.Errorf("creating DNS loop: %w", err)
 	}
 
 	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
 		"dns", goroutine.OptionTimeout(defaultShutdownTimeout))
-	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
-	go unboundLooper.Run(dnsCtx, dnsDone)
+	// wait for dnsLooper.Restart or its ticker launched with RunRestartTicker
+	go dnsLooper.Run(dnsCtx, dnsDone)
 	otherGroupHandler.Add(dnsHandler)
 
 	dnsTickerHandler, dnsTickerCtx, dnsTickerDone := goshutdown.NewGoRoutineHandler(
 		"dns ticker", goroutine.OptionTimeout(defaultShutdownTimeout))
-	go unboundLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
+	go dnsLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
 	controlGroupHandler.Add(dnsTickerHandler)
 
 	publicipAPI, _ := pubipapi.ParseProvider(allSettings.PublicIP.API)
@@ -424,7 +424,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
 		providers, storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
-		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
+		cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
 		"vpn", goroutine.OptionTimeout(time.Second))
@@ -464,7 +464,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.New(log.SetComponent("http server")),
-		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper,
+		buildInfo, vpnLooper, portForwardLooper, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
 		return fmt.Errorf("setting up control server: %w", err)
