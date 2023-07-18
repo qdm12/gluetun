@@ -127,7 +127,9 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	}
 
 	closers.add("removing IPv4 rule", stepOne, ruleCleanup)
-	w.logger.Info("Wireguard is up")
+	w.logger.Info("Wireguard setup is complete. " +
+		"Note Wireguard is a silent protocol and it may or may not work, without giving any error message. " +
+		"Typically i/o timeout errors indicate the Wireguard connection is not working.")
 	ready <- struct{}{}
 
 	waitError <- waitAndCleanup()
