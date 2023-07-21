@@ -53,8 +53,8 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	servers []serverData, err error) {
 	const url = "https://api.surfshark.com/v4/server/clusters"
 
-	for _, path := range [...]string{"generic", "double", "static", "obfuscated"} {
-		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url+"/"+path, nil)
+	for _, clustersType := range [...]string{"generic", "double", "static", "obfuscated"} {
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url+"/"+clustersType, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -71,16 +71,18 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 		}
 
 		decoder := json.NewDecoder(response.Body)
-		pathServers := []serverData{}
-		if err := decoder.Decode(&pathServers); err != nil {
+		var newServers []serverData
+		err = decoder.Decode(&newServers)
+		if err != nil {
 			return nil, fmt.Errorf("decoding response body: %w", err)
 		}
 
-		if err := response.Body.Close(); err != nil {
+		err = response.Body.Close()
+		if err != nil {
 			return nil, err
 		}
 
-		servers = append(servers, pathServers...)
+		servers = append(servers, newServers...)
 	}
 
 	return servers, nil
