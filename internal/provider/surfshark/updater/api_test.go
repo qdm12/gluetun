@@ -14,30 +14,53 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type httpExchange struct {
+	requestURL     string
+	responseStatus int
+	responseBody   io.ReadCloser
+}
+
 func Test_addServersFromAPI(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		hts            hostToServers
-		responseStatus int
-		responseBody   io.ReadCloser
-		expected       hostToServers
-		err            error
+		hts       hostToServers
+		exchanges []httpExchange
+		expected  hostToServers
+		err       error
 	}{
 		"fetch API error": {
-			responseStatus: http.StatusNoContent,
-			err:            errors.New("HTTP status code not OK: 204 No Content"),
+			exchanges: []httpExchange{{
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/generic",
+				responseStatus: http.StatusNoContent,
+			}},
+			err: errors.New("HTTP status code not OK: 204 No Content"),
 		},
 		"success": {
 			hts: hostToServers{
 				"existinghost": []models.Server{{Hostname: "existinghost"}},
 			},
-			responseStatus: http.StatusOK,
-			responseBody: io.NopCloser(strings.NewReader(`[
+			exchanges: []httpExchange{{
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/generic",
+				responseStatus: http.StatusOK,
+				responseBody: io.NopCloser(strings.NewReader(`[
 				{"connectionName":"host1","region":"region1","country":"country1","location":"location1"},
 				{"connectionName":"host1","region":"region1","country":"country1","location":"location1","pubkey":"pubKeyValue"},
 				{"connectionName":"host2","region":"region2","country":"country1","location":"location2"}
 			]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/double",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/static",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/obfuscated",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}},
 			expected: map[string][]models.Server{
 				"existinghost": {{Hostname: "existinghost"}},
 				"host1": {{
@@ -75,14 +98,18 @@ func Test_addServersFromAPI(t *testing.T) {
 
 			ctx := context.Background()
 
+			currentExchangeIndex := 0
+
 			client := &http.Client{
 				Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
 					assert.Equal(t, http.MethodGet, r.Method)
-					assert.Equal(t, r.URL.String(), "https://my.surfshark.com/vpn/api/v4/server/clusters")
+					exchange := testCase.exchanges[currentExchangeIndex]
+					currentExchangeIndex++
+					assert.Equal(t, exchange.requestURL, r.URL.String())
 					return &http.Response{
-						StatusCode: testCase.responseStatus,
-						Status:     http.StatusText(testCase.responseStatus),
-						Body:       testCase.responseBody,
+						StatusCode: exchange.responseStatus,
+						Status:     http.StatusText(exchange.responseStatus),
+						Body:       exchange.responseBody,
 					}, nil
 				}),
 			}
@@ -104,30 +131,64 @@ func Test_fetchAPI(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		responseStatus int
-		responseBody   io.ReadCloser
-		data           []serverData
-		err            error
+		exchanges []httpExchange
+		data      []serverData
+		err       error
 	}{
 		"http response status not ok": {
-			responseStatus: http.StatusNoContent,
-			err:            errors.New("HTTP status code not OK: 204 No Content"),
+			exchanges: []httpExchange{{
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/generic",
+				responseStatus: http.StatusNoContent,
+			}},
+			err: errors.New("HTTP status code not OK: 204 No Content"),
 		},
 		"nil body": {
-			responseStatus: http.StatusOK,
-			err:            errors.New("decoding response body: EOF"),
+			exchanges: []httpExchange{{
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/generic",
+				responseStatus: http.StatusOK,
+			}},
+			err: errors.New("decoding response body: EOF"),
 		},
 		"no server": {
-			responseStatus: http.StatusOK,
-			responseBody:   io.NopCloser(strings.NewReader(`[]`)),
-			data:           []serverData{},
+			exchanges: []httpExchange{{
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/generic",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/double",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/static",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/obfuscated",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}},
 		},
 		"success": {
-			responseStatus: http.StatusOK,
-			responseBody: io.NopCloser(strings.NewReader(`[
-				{"connectionName":"host1","region":"region1","country":"country1","location":"location1"},
-				{"connectionName":"host2","region":"region2","country":"country1","location":"location2"}
-			]`)),
+			exchanges: []httpExchange{{
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/generic",
+				responseStatus: http.StatusOK,
+				responseBody: io.NopCloser(strings.NewReader(`[
+					{"connectionName":"host1","region":"region1","country":"country1","location":"location1"},
+					{"connectionName":"host2","region":"region2","country":"country1","location":"location2"}
+				]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/double",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/static",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}, {
+				requestURL:     "https://api.surfshark.com/v4/server/clusters/obfuscated",
+				responseStatus: http.StatusOK,
+				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
+			}},
 			data: []serverData{
 				{
 					Region:   "region1",
@@ -151,14 +212,18 @@ func Test_fetchAPI(t *testing.T) {
 
 			ctx := context.Background()
 
+			currentExchangeIndex := 0
+
 			client := &http.Client{
 				Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
 					assert.Equal(t, http.MethodGet, r.Method)
-					assert.Equal(t, r.URL.String(), "https://my.surfshark.com/vpn/api/v4/server/clusters")
+					exchange := testCase.exchanges[currentExchangeIndex]
+					currentExchangeIndex++
+					assert.Equal(t, exchange.requestURL, r.URL.String())
 					return &http.Response{
-						StatusCode: testCase.responseStatus,
-						Status:     http.StatusText(testCase.responseStatus),
-						Body:       testCase.responseBody,
+						StatusCode: exchange.responseStatus,
+						Status:     http.StatusText(exchange.responseStatus),
+						Body:       exchange.responseBody,
 					}, nil
 				}),
 			}
