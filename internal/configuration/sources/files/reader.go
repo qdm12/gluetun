@@ -4,10 +4,15 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-type Source struct{}
+type Source struct {
+	wireguardConfigPath string
+}
 
 func New() *Source {
-	return &Source{}
+	const wireguardConfigPath = "/gluetun/wireguard/wg0.conf"
+	return &Source{
+		wireguardConfigPath: wireguardConfigPath,
+	}
 }
 
 func (s *Source) String() string { return "files" }
