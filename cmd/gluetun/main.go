@@ -82,10 +82,10 @@ func main() {
 	cli := cli.New()
 	cmder := command.NewCmder()
 
-	envReader := env.New(logger)
-	filesReader := files.New()
 	secretsReader := secrets.New()
-	muxReader := mux.New(envReader, filesReader, secretsReader)
+	filesReader := files.New()
+	envReader := env.New(logger)
+	muxReader := mux.New(secretsReader, filesReader, envReader)
 
 	errorCh := make(chan error)
 	go func() {
