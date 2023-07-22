@@ -23,11 +23,13 @@ func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
 
 	// Try loading the wireguard module, since some systems do not load
 	// it after a boot. If this fails, wireguard is assumed to not be supported.
+	n.debugLogger.Debugf("wireguard family not found, trying to load wireguard kernel module")
 	err = mod.Probe("wireguard")
 	if err != nil {
-		n.debugLogger.Debugf("failed trying to load Wireguard kernel module: %s", err)
+		n.debugLogger.Debugf("failed loading wireguard kernel module: %s", err)
 		return false, nil
 	}
+	n.debugLogger.Debugf("wireguard kernel module loaded successfully")
 
 	// Re-check if the Wireguard family is now available, after loading
 	// the wireguard kernel module.
