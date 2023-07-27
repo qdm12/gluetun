@@ -56,7 +56,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	if *o.CustomPort != 0 {
 		switch vpnProvider {
 		// no restriction on port
-		case providers.Cyberghost, providers.HideMyAss,
+		case providers.Custom, providers.Cyberghost, providers.HideMyAss,
 			providers.Privatevpn, providers.Torguard:
 		// no custom port allowed
 		case providers.Expressvpn, providers.Fastestvpn,
@@ -99,6 +99,8 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			case providers.Windscribe:
 				allowedTCP = []uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783}
 				allowedUDP = []uint16{53, 80, 123, 443, 1194, 54783}
+			default:
+				panic(fmt.Sprintf("VPN provider %s has no registered allowed ports", vpnProvider))
 			}
 
 			allowedPorts := allowedUDP
