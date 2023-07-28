@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/netip"
 
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/subnet"
 )
 
@@ -74,11 +75,24 @@ func (r *Routing) removeOutboundSubnets(subnets []netip.Prefix,
 func (r *Routing) addOutboundSubnets(subnets []netip.Prefix,
 	defaultRoutes []DefaultRoute) (err error) {
 	for i, subnet := range subnets {
+		subnetIsIPv6 := subnet.Addr().Is6()
+		subnetRouteAdded := false
 		for _, defaultRoute := range defaultRoutes {
+			defaultRouteIsIPv6 := defaultRoute.Family == netlink.FamilyV6
+			ipFamilyMatch := subnetIsIPv6 == defaultRouteIsIPv6
+			if !ipFamilyMatch {
+				continue
+			}
+
 			err = r.addRouteVia(subnet, defaultRoute.Gateway, defaultRoute.NetInterface, outboundTable)
 			if err != nil {
 				return fmt.Errorf("adding route for subnet %s: %w", subnet, err)
 			}
+			subnetRouteAdded = true
+		}
+
+		if !subnetRouteAdded {
+			continue
 		}
 
 		ruleSrcNet := netip.Prefix{}
