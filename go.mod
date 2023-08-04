@@ -6,6 +6,8 @@ require (
 	github.com/breml/rootcerts v0.2.11
 	github.com/fatih/color v1.15.0
 	github.com/golang/mock v1.6.0
+	github.com/klauspost/compress v1.16.7
+	github.com/klauspost/pgzip v1.2.6
 	github.com/qdm12/dns v1.11.0
 	github.com/qdm12/golibs v0.0.0-20210822203818-5c568b0777b6
 	github.com/qdm12/gosettings v0.4.0-rc1
@@ -17,6 +19,7 @@ require (
 	github.com/qdm12/ss-server v0.5.0-rc1
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
 	github.com/stretchr/testify v1.8.4
+	github.com/ulikunitz/xz v0.5.11
 	github.com/vishvananda/netlink v1.2.1-beta.2
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a
 	golang.org/x/net v0.12.0
