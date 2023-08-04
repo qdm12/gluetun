@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/klauspost/compress/zstd"
 	"github.com/klauspost/pgzip"
@@ -78,6 +79,9 @@ func initModule(path string) (err error) {
 		case err == nil, err == unix.EEXIST: //nolint:goerr113
 			return nil
 		case err != unix.ENOSYS: //nolint:goerr113
+			if strings.HasSuffix(err.Error(), "operation not permitted") {
+				err = fmt.Errorf("%w; did you set the SYS_MODULE capability to your container?", err)
+			}
 			return fmt.Errorf("finit module %s: %w", path, err)
 		case flags != 0:
 			return err // unix.ENOSYS error

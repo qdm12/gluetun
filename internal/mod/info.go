@@ -55,7 +55,8 @@ func getModulesInfo() (modulesInfo map[string]moduleInfo, err error) {
 	}
 
 	if !found {
-		return nil, fmt.Errorf("%w: %s are not valid existing directories",
+		return nil, fmt.Errorf("%w: %s are not valid existing directories"+
+			"; have you bind mounted the /lib/modules directory?",
 			ErrModulesDirectoryNotFound, strings.Join(modulePaths, ", "))
 	}
 
