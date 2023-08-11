@@ -381,7 +381,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"port forwarding", goroutine.OptionTimeout(time.Second))
 	go portForwardLooper.Run(portForwardCtx, portForwardDone)
 
-	unboundLogger := logger.New(log.SetComponent("dns over tls"))
+	unboundLogger := logger.New(log.SetComponent("dns"))
 	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
 		unboundLogger)
 	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(

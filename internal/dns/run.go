@@ -10,9 +10,14 @@ import (
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	const fallback = false
-	l.useUnencryptedDNS(fallback) // TODO remove? Use default DNS by default for Docker resolution?
-	// TODO this one is kept if DNS_KEEP_NAMESERVER=on and should be replaced
+	if *l.GetSettings().KeepNameserver {
+		l.logger.Warn("⚠️⚠️⚠️  keeping the default container nameservers, " +
+			"this will likely leak DNS traffic outside the VPN " +
+			"and go through your container network DNS outside the VPN tunnel!")
+	} else {
+		const fallback = false
+		l.useUnencryptedDNS(fallback)
+	}
 
 	select {
 	case <-l.start:
@@ -27,7 +32,8 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		unboundCancel := func() { waitError <- nil }
 		closeStreams := func() {}
 
-		for *l.GetSettings().DoT.Enabled {
+		settings := l.GetSettings()
+		for !*settings.KeepNameserver && *settings.DoT.Enabled {
 			var err error
 			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx)
 			if err == nil {
@@ -50,7 +56,8 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			l.logAndWait(ctx, err)
 		}
 
-		if !*l.GetSettings().DoT.Enabled {
+		settings = l.GetSettings()
+		if !*settings.KeepNameserver && !*settings.DoT.Enabled {
 			const fallback = false
 			l.useUnencryptedDNS(fallback)
 		}

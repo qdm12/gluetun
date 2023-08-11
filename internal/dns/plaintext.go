@@ -19,7 +19,8 @@ func (l *Loop) useUnencryptedDNS(fallback bool) {
 			l.logger.Info("using plaintext DNS at address " + targetIP.String())
 		}
 		nameserver.UseDNSInternally(targetIP.AsSlice())
-		err := nameserver.UseDNSSystemWide(l.resolvConf, targetIP.AsSlice(), *settings.KeepNameserver)
+		const keepNameserver = false
+		err := nameserver.UseDNSSystemWide(l.resolvConf, targetIP.AsSlice(), keepNameserver)
 		if err != nil {
 			l.logger.Error(err.Error())
 		}
@@ -39,7 +40,8 @@ func (l *Loop) useUnencryptedDNS(fallback bool) {
 		l.logger.Info("using plaintext DNS at address " + targetIP.String())
 	}
 	nameserver.UseDNSInternally(targetIP.AsSlice())
-	err = nameserver.UseDNSSystemWide(l.resolvConf, targetIP.AsSlice(), *settings.KeepNameserver)
+	const keepNameserver = false
+	err = nameserver.UseDNSSystemWide(l.resolvConf, targetIP.AsSlice(), keepNameserver)
 	if err != nil {
 		l.logger.Error(err.Error())
 	}

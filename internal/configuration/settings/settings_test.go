@@ -38,8 +38,8 @@ func Test_Settings_String(t *testing.T) {
 |       ├── Run OpenVPN as: root
 |       └── Verbosity level: 1
 ├── DNS settings:
-|   ├── DNS server address to use: 127.0.0.1
 |   ├── Keep existing nameserver(s): no
+|   ├── DNS server address to use: 127.0.0.1
 |   └── DNS over TLS settings:
 |       ├── Enabled: yes
 |       ├── Update period: every 24h0m0s

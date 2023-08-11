@@ -16,10 +16,14 @@ type DNS struct {
 	// DoT server. It cannot be the zero value in the internal
 	// state.
 	ServerAddress netip.Addr
-	// KeepNameserver is true if the Docker DNS server
-	// found in /etc/resolv.conf should be kept.
-	// Note settings this to true will go around the
-	// DoT server blocking.
+	// KeepNameserver is true if the existing DNS server
+	// found in /etc/resolv.conf should be used
+	// Note setting this to true will likely DNS traffic
+	// outside the VPN tunnel since it would go through
+	// the local DNS server of your Docker/Kubernetes
+	// configuration, which is likely not going through the tunnel.
+	// This will also disable the DNS over TLS server and the
+	// `ServerAddress` field will be ignored.
 	// It defaults to false and cannot be nil in the
 	// internal state.
 	KeepNameserver *bool
@@ -75,8 +79,11 @@ func (d DNS) String() string {
 
 func (d DNS) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("DNS settings:")
-	node.Appendf("DNS server address to use: %s", d.ServerAddress)
 	node.Appendf("Keep existing nameserver(s): %s", gosettings.BoolToYesNo(d.KeepNameserver))
+	if *d.KeepNameserver {
+		return node
+	}
+	node.Appendf("DNS server address to use: %s", d.ServerAddress)
 	node.AppendNode(d.DoT.toLinesNode())
 	return node
 }
