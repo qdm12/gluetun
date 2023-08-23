@@ -2,57 +2,81 @@ package httpproxy
 
 import (
 	"context"
-	"net/http"
+	"fmt"
 	"sync"
 	"time"
+
+	"github.com/qdm12/goservices"
+	"github.com/qdm12/goservices/httpserver"
 )
 
 type Server struct {
-	address           string
-	handler           http.Handler
-	logger            infoErrorer
-	internalWG        *sync.WaitGroup
-	readHeaderTimeout time.Duration
-	readTimeout       time.Duration
+	httpServer    *httpserver.Server
+	handlerCtx    context.Context //nolint:containedctx
+	handlerCancel context.CancelFunc
+	handlerWg     *sync.WaitGroup
+
+	// Server settings
+	httpServerSettings httpserver.Settings
+
+	// Handler settings
+	logger   Logger
+	stealth  bool
+	verbose  bool
+	username string
+	password string
 }
 
-func New(ctx context.Context, address string, logger Logger,
+func ptrTo[T any](x T) *T { return &x }
+
+func New(address string, logger Logger,
 	stealth, verbose bool, username, password string,
 	readHeaderTimeout, readTimeout time.Duration,
-) *Server {
-	wg := &sync.WaitGroup{}
+) (server *Server, err error) {
 	return &Server{
-		address:           address,
-		handler:           newHandler(ctx, wg, logger, stealth, verbose, username, password),
-		logger:            logger,
-		internalWG:        wg,
-		readHeaderTimeout: readHeaderTimeout,
-		readTimeout:       readTimeout,
-	}
+		handlerWg: &sync.WaitGroup{},
+		httpServerSettings: httpserver.Settings{
+			// Handler is set when calling Start and reset when Stop is called
+			Handler:           nil,
+			Name:              ptrTo("proxy"),
+			Address:           ptrTo(address),
+			ReadTimeout:       readTimeout,
+			ReadHeaderTimeout: readHeaderTimeout,
+			Logger:            logger,
+		},
+		logger:   logger,
+		stealth:  stealth,
+		verbose:  verbose,
+		username: username,
+		password: password,
+	}, nil
 }
 
-func (s *Server) Run(ctx context.Context, errorCh chan<- error) {
-	server := http.Server{
-		Addr:              s.address,
-		Handler:           s.handler,
-		ReadHeaderTimeout: s.readHeaderTimeout,
-		ReadTimeout:       s.readTimeout,
+func (s *Server) Start(ctx context.Context) (
+	runError <-chan error, err error,
+) {
+	if s.httpServer != nil {
+		return nil, fmt.Errorf("%w", goservices.ErrAlreadyStarted)
 	}
-	go func() {
-		<-ctx.Done()
-		const shutdownGraceDuration = 100 * time.Millisecond
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownGraceDuration)
-		defer cancel()
-		if err := server.Shutdown(shutdownCtx); err != nil {
-			s.logger.Error("failed shutting down: " + err.Error())
-		}
-	}()
-	s.logger.Info("listening on " + s.address)
-	err := server.ListenAndServe()
-	s.internalWG.Wait()
-	if err != nil && ctx.Err() == nil {
-		errorCh <- err
-	} else {
-		errorCh <- nil
+
+	s.handlerCtx, s.handlerCancel = context.WithCancel(context.Background())
+	s.httpServerSettings.Handler = newHandler(s.handlerCtx, s.handlerWg,
+		s.logger, s.stealth, s.verbose, s.username, s.password)
+	s.httpServer, err = httpserver.New(s.httpServerSettings)
+	if err != nil {
+		return nil, fmt.Errorf("creating http server: %w", err)
 	}
+
+	return s.httpServer.Start(ctx)
+}
+
+func (s *Server) Stop() (err error) {
+	if s.httpServer == nil {
+		return fmt.Errorf("%w", goservices.ErrAlreadyStopped)
+	}
+	s.handlerCancel()
+	err = s.httpServer.Stop()
+	s.handlerWg.Wait()
+	s.httpServer = nil // signal the server is down
+	return err
 }

@@ -62,6 +62,8 @@ github.com/prometheus/procfs v0.10.1 h1:kYK1Va/YMlutzCGazswoHKo//tZVlFpKYh+Pymzi
 github.com/prometheus/procfs v0.10.1/go.mod h1:nwNm2aOCAYw8uTR/9bWRREkZFxAUcWzPHWJq+XBB/FM=
 github.com/qdm12/dns/v2 v2.0.0-rc6 h1:h5KpuqZ3IMoSbz2a0OkHzIVc9/jk2vuIm9RoKJuaI78=
 github.com/qdm12/dns/v2 v2.0.0-rc6/go.mod h1:Oh34IJIG55BgHoACOf+cgZCgDiFuiJZ6r6gQW58FN+k=
+github.com/qdm12/goservices v0.1.0 h1:9sODefm/yuIGS7ynCkEnNlMTAYn9GzPhtcK4F69JWvc=
+github.com/qdm12/goservices v0.1.0/go.mod h1:/JOFsAnHFiSjyoXxa5FlfX903h20K5u/3rLzCjYVMck=
 github.com/qdm12/gosettings v0.4.2 h1:Gb39NScPr7OQV+oy0o1OD7A121udITDJuUGa7ljDF58=
 github.com/qdm12/gosettings v0.4.2/go.mod h1:CPrt2YC4UsURTrslmhxocVhMCW03lIrqdH2hzIf5prg=
 github.com/qdm12/goshutdown v0.3.0 h1:pqBpJkdwlZlfTEx4QHtS8u8CXx6pG0fVo6S1N0MpSEM=

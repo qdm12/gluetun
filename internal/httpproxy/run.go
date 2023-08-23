@@ -18,15 +18,22 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	}
 
 	for ctx.Err() == nil {
-		runCtx, runCancel := context.WithCancel(ctx)
-
 		settings := l.state.GetSettings()
-		server := New(runCtx, settings.ListeningAddress, l.logger,
+		server, err := New(settings.ListeningAddress, l.logger,
 			*settings.Stealth, *settings.Log, *settings.User,
 			*settings.Password, settings.ReadHeaderTimeout, settings.ReadTimeout)
+		if err != nil {
+			l.statusManager.SetStatus(constants.Crashed)
+			l.logAndWait(ctx, err)
+			continue
+		}
 
-		errorCh := make(chan error)
-		go server.Run(runCtx, errorCh)
+		errorCh, err := server.Start(ctx)
+		if err != nil {
+			l.statusManager.SetStatus(constants.Crashed)
+			l.logAndWait(ctx, err)
+			continue
+		}
 
 		// TODO stable timer, check Shadowsocks
 		if l.userTrigger {
@@ -41,31 +48,23 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				runCancel()
-				<-errorCh
-				close(errorCh)
+				_ = server.Stop()
 				return
 			case <-l.start:
 				l.userTrigger = true
 				l.logger.Info("starting")
-				runCancel()
-				<-errorCh
-				close(errorCh)
+				_ = server.Stop()
 				stayHere = false
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
-				runCancel()
-				<-errorCh
-				// Do not close errorCh or this for loop won't work
+				_ = server.Stop()
 				l.stopped <- struct{}{}
 			case err := <-errorCh:
-				close(errorCh)
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				stayHere = false
 			}
 		}
-		runCancel() // repetition for linter only
 	}
 }
