@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"github.com/qdm12/gluetun/internal/wireguard"
 	"net/http"
 	"net/netip"
 
@@ -18,6 +19,7 @@ type Provider interface {
 	PortForwarder
 	FetchServers(ctx context.Context, minServers int) (
 		servers []models.Server, err error)
+	WireguardConfigurator
 }
 
 type PortForwarder interface {
@@ -26,4 +28,8 @@ type PortForwarder interface {
 		port uint16, err error)
 	KeepPortForward(ctx context.Context, port uint16, gateway netip.Addr,
 		serverName string, _ utils.Logger) (err error)
+}
+
+type WireguardConfigurator interface {
+	GetWireguardConnection(ctx context.Context, connection models.Connection, wireguardSettings settings.Wireguard, ipv6Supported bool) (settings wireguard.Settings, err error)
 }

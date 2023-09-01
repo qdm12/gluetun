@@ -134,7 +134,7 @@ func (p *Provider) KeepPortForward(ctx context.Context, _ uint16,
 
 func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *http.Client,
 	gateway netip.Addr, portForwardPath, authFilePath string) (data piaPortForwardData, err error) {
-	data.Token, err = fetchToken(ctx, client, authFilePath)
+	data.Token, err = fetchToken(ctx, client, "client", authFilePath)
 	if err != nil {
 		return data, fmt.Errorf("fetching token: %w", err)
 	}
@@ -233,57 +233,6 @@ var (
 	errEmptyToken = errors.New("token received is empty")
 )
 
-func fetchToken(ctx context.Context, client *http.Client,
-	authFilePath string) (token string, err error) {
-	username, password, err := getOpenvpnCredentials(authFilePath)
-	if err != nil {
-		return "", fmt.Errorf("getting username and password: %w", err)
-	}
-
-	errSubstitutions := map[string]string{
-		url.QueryEscape(username): "<username>",
-		url.QueryEscape(password): "<password>",
-	}
-
-	form := url.Values{}
-	form.Add("username", username)
-	form.Add("password", password)
-	url := url.URL{
-		Scheme: "https",
-		Host:   "www.privateinternetaccess.com",
-		Path:   "/api/client/v2/token",
-	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, url.String(), strings.NewReader(form.Encode()))
-	if err != nil {
-		return "", replaceInErr(err, errSubstitutions)
-	}
-
-	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-	response, err := client.Do(request)
-	if err != nil {
-		return "", replaceInErr(err, errSubstitutions)
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		return "", makeNOKStatusError(response, errSubstitutions)
-	}
-
-	decoder := json.NewDecoder(response.Body)
-	var result struct {
-		Token string `json:"token"`
-	}
-	if err := decoder.Decode(&result); err != nil {
-		return "", fmt.Errorf("decoding response: %w", err)
-	}
-
-	if result.Token == "" {
-		return "", errEmptyToken
-	}
-	return result.Token, nil
-}
-
 var (
 	errAuthFileMalformed = errors.New("authentication file is malformed")
 )
@@ -329,13 +278,13 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, gateway neti
 	}
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 	if err != nil {
-		err = replaceInErr(err, errSubstitutions)
+		err = ReplaceInErr(err, errSubstitutions)
 		return 0, "", expiration, fmt.Errorf("obtaining signature payload: %w", err)
 	}
 
 	response, err := client.Do(request)
 	if err != nil {
-		err = replaceInErr(err, errSubstitutions)
+		err = ReplaceInErr(err, errSubstitutions)
 		return 0, "", expiration, fmt.Errorf("obtaining signature payload: %w", err)
 	}
 	defer response.Body.Close()
@@ -392,12 +341,12 @@ func bindPort(ctx context.Context, client *http.Client, gateway netip.Addr, data
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, bindPortURL.String(), nil)
 	if err != nil {
-		return replaceInErr(err, errSubstitutions)
+		return ReplaceInErr(err, errSubstitutions)
 	}
 
 	response, err := client.Do(request)
 	if err != nil {
-		return replaceInErr(err, errSubstitutions)
+		return ReplaceInErr(err, errSubstitutions)
 	}
 	defer response.Body.Close()
 
@@ -421,33 +370,4 @@ func bindPort(ctx context.Context, client *http.Client, gateway netip.Addr, data
 	return nil
 }
 
-// replaceInErr is used to remove sensitive information from errors.
-func replaceInErr(err error, substitutions map[string]string) error {
-	s := replaceInString(err.Error(), substitutions)
-	return errors.New(s) //nolint:goerr113
-}
-
-// replaceInString is used to remove sensitive information.
-func replaceInString(s string, substitutions map[string]string) string {
-	for old, new := range substitutions {
-		s = strings.ReplaceAll(s, old, new)
-	}
-	return s
-}
-
 var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code is not OK")
-
-func makeNOKStatusError(response *http.Response, substitutions map[string]string) (err error) {
-	url := response.Request.URL.String()
-	url = replaceInString(url, substitutions)
-
-	b, _ := io.ReadAll(response.Body)
-	shortenMessage := string(b)
-	shortenMessage = strings.ReplaceAll(shortenMessage, "\n", "")
-	shortenMessage = strings.ReplaceAll(shortenMessage, "  ", " ")
-	shortenMessage = replaceInString(shortenMessage, substitutions)
-
-	return fmt.Errorf("%w: %s: %d %s: response received: %s",
-		ErrHTTPStatusCodeNotOK, url, response.StatusCode,
-		response.Status, shortenMessage)
-}
