@@ -22,12 +22,16 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	existingServersCount := u.storage.GetServersCount(providerName)
 	minServers := int(minRatio * float64(existingServersCount))
 	servers, err := provider.FetchServers(ctx, minServers)
+	providerWireguardKeyUnknown := false
+	if providerName == "private internet access" {
+		providerWireguardKeyUnknown = true
+	}
 	if err != nil {
 		return fmt.Errorf("getting servers: %w", err)
 	}
 
 	for _, server := range servers {
-		err := server.HasMinimumInformation()
+		err := server.HasMinimumInformation(providerWireguardKeyUnknown)
 		if err != nil {
 			serverJSON, jsonErr := json.Marshal(server)
 			if jsonErr != nil {

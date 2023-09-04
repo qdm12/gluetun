@@ -44,7 +44,7 @@ var (
 	ErrWireguardPublicKeyEmpty = errors.New("wireguard public key field is empty")
 )
 
-func (s *Server) HasMinimumInformation() (err error) {
+func (s *Server) HasMinimumInformation(providerWireguardKeyUnknown bool) (err error) {
 	switch {
 	case s.VPN == "":
 		return fmt.Errorf("%w", ErrVPNFieldEmpty)
@@ -54,7 +54,7 @@ func (s *Server) HasMinimumInformation() (err error) {
 		return fmt.Errorf("%w", ErrNetworkProtocolSet)
 	case s.VPN == vpn.OpenVPN && !s.TCP && !s.UDP:
 		return fmt.Errorf("%w", ErrNoNetworkProtocol)
-	case s.VPN == vpn.Wireguard && s.WgPubKey == "":
+	case s.VPN == vpn.Wireguard && (s.WgPubKey == "" && !providerWireguardKeyUnknown):
 		return fmt.Errorf("%w", ErrWireguardPublicKeyEmpty)
 	default:
 		return nil
