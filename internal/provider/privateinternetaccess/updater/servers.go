@@ -3,6 +3,7 @@ package updater
 import (
 	"context"
 	"fmt"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"sort"
 	"time"
 
@@ -78,14 +79,20 @@ func addData(regions []regionData, nts nameToServer) (change bool) {
 	for _, region := range regions {
 		for _, server := range region.Servers.UDP {
 			const tcp, udp = false, true
-			if nts.add(server.CN, region.DNS, region.Name, tcp, udp, region.PortForward, server.IP) {
+			if nts.add(server.CN, region.DNS, region.Name, vpn.OpenVPN, tcp, udp, region.PortForward, server.IP) {
 				change = true
 			}
 		}
 
 		for _, server := range region.Servers.TCP {
 			const tcp, udp = true, false
-			if nts.add(server.CN, region.DNS, region.Name, tcp, udp, region.PortForward, server.IP) {
+			if nts.add(server.CN, region.DNS, region.Name, vpn.OpenVPN, tcp, udp, region.PortForward, server.IP) {
+				change = true
+			}
+		}
+
+		for _, server := range region.Servers.WG {
+			if nts.add(server.CN, region.DNS, region.Name, vpn.Wireguard, false, false, region.PortForward, server.IP) {
 				change = true
 			}
 		}

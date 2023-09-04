@@ -7,51 +7,98 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type nameToServer map[string]models.Server
+type nameToServer map[string][]models.Server
 
 func (nts nameToServer) add(name, hostname, region string,
-	tcp, udp, portForward bool, ip netip.Addr) (change bool) {
-	server, ok := nts[name]
-	if !ok {
-		change = true
-		server.VPN = vpn.OpenVPN
-		server.ServerName = name
-		server.Hostname = hostname
-		server.Region = region
-		server.PortForward = portForward
+	serverType string, tcp, udp, portForward bool, ip netip.Addr) (change bool) {
+
+	var server models.Server
+
+	// Check for existing server for this name.
+	servers := nts[name]
+	for i, existingServer := range servers {
+		if existingServer.ServerName != name || existingServer.VPN != serverType {
+			continue
+		}
+
+		server = existingServer
+
+		switch existingServer.VPN {
+		case vpn.OpenVPN:
+			// Update OpenVPN supported protocols and return
+			if !existingServer.TCP {
+				servers[i].TCP = tcp
+				change = true
+			}
+			if !existingServer.UDP {
+				servers[i].UDP = udp
+				change = true
+			}
+			ipFound := false
+			for _, existingIP := range server.IPs {
+				if ip == existingIP {
+					ipFound = true
+					break
+				}
+			}
+			if !ipFound {
+				server.IPs = append(server.IPs, ip)
+				change = true
+			}
+			break
+		case vpn.Wireguard:
+			// Update IPs and return
+			ipFound := false
+			for _, existingIP := range server.IPs {
+				if ip == existingIP {
+					ipFound = true
+					break
+				}
+			}
+			if !ipFound {
+				server.IPs = append(server.IPs, ip)
+				change = true
+			}
+			break
+		}
+
+		break
 	}
 
-	if !server.TCP && tcp {
+	if server.ServerName == "" {
 		change = true
-		server.TCP = tcp
-	}
-	if !server.UDP && udp {
-		change = true
-		server.UDP = udp
-	}
-
-	ipFound := false
-	for _, existingIP := range server.IPs {
-		if ip == existingIP {
-			ipFound = true
+		switch serverType {
+		case vpn.OpenVPN:
+			nts[name] = append(servers, models.Server{
+				VPN:         vpn.OpenVPN,
+				Region:      region,
+				Hostname:    hostname,
+				PortForward: portForward,
+				ServerName:  name,
+				TCP:         tcp,
+				UDP:         udp,
+			})
+			break
+		case vpn.Wireguard:
+			nts[name] = append(servers, models.Server{
+				VPN:         vpn.Wireguard,
+				Region:      region,
+				Hostname:    hostname,
+				PortForward: portForward,
+				ServerName:  name,
+				IPs:         []netip.Addr{ip},
+			})
 			break
 		}
 	}
-
-	if !ipFound {
-		change = true
-		server.IPs = append(server.IPs, ip)
-	}
-
-	nts[name] = server
 
 	return change
 }
 
 func (nts nameToServer) toServersSlice() (servers []models.Server) {
 	servers = make([]models.Server, 0, len(nts))
-	for _, server := range nts {
-		servers = append(servers, server)
+	for _, hostServers := range nts {
+		servers = append(servers, hostServers...)
 	}
 	return servers
 }
