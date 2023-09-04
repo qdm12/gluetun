@@ -28,6 +28,9 @@ func (p *Provider) GetWireguardConnection(ctx context.Context, connection models
 
 	// fetch token from PIA's API
 	token, err := fetchToken(ctx, client, "gtoken", p.authFilePath)
+	if err != nil {
+		return settings, err
+	}
 
 	gateway := connection.IP.String()
 
