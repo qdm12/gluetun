@@ -32,10 +32,20 @@ var (
 // of the machine is used as the IP.
 func (f *Fetch) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result Response, err error) {
-	const baseURL = "https://ipinfo.io/"
-	url := baseURL
-	if ip.IsValid() {
-		url += ip.String()
+	var url string
+	switch {
+	case ip.Is6():
+		{
+			url = "https://v6.ipinfo.io/" + ip.String()
+		}
+	case ip.Is4():
+		{
+			url = "https://ipinfo.io/" + ip.String()
+		}
+	default:
+		{
+			return result, fmt.Errorf("failed determining if IP is v4 or v6")
+		}
 	}
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
