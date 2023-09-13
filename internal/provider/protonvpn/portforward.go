@@ -49,10 +49,10 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 				assignedLiftetime, lifetime))
 		}
 
-		if assignedInternalPort != assignedExternalPort {
+		if assignedInternalPort != internalPort {
 			logger.Warn(fmt.Sprintf("internal port assigned %d differs"+
-				" from external port assigned %d",
-				assignedInternalPort, assignedExternalPort))
+				" from internal port requested %d",
+				assignedInternalPort, internalPort))
 		}
 
 		port = assignedExternalPort
