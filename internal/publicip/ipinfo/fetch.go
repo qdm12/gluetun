@@ -35,13 +35,9 @@ func (f *Fetch) FetchInfo(ctx context.Context, ip netip.Addr) (
 	url := "https://ipinfo.io/"
 	switch {
 	case ip.Is6():
-		{
-			url = "https://v6.ipinfo.io/" + ip.String()
-		}
+		url = "https://v6.ipinfo.io/" + ip.String()
 	case ip.Is4():
-		{
-			url = "https://ipinfo.io/" + ip.String()
-		}
+		url = "https://ipinfo.io/" + ip.String()
 	}
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
