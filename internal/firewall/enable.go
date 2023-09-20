@@ -3,6 +3,8 @@ package firewall
 import (
 	"context"
 	"fmt"
+
+	"github.com/qdm12/gluetun/internal/netlink"
 )
 
 func (c *Config) SetEnabled(ctx context.Context, enabled bool) (err error) {
@@ -147,13 +149,27 @@ func (c *Config) allowVPNIP(ctx context.Context) (err error) {
 
 func (c *Config) allowOutboundSubnets(ctx context.Context) (err error) {
 	for _, subnet := range c.outboundSubnets {
+		subnetIsIPv6 := subnet.Addr().Is6()
+		firewallUpdated := false
 		for _, defaultRoute := range c.defaultRoutes {
+			defaultRouteIsIPv6 := defaultRoute.Family == netlink.FamilyV6
+			ipFamilyMatch := subnetIsIPv6 == defaultRouteIsIPv6
+			if !ipFamilyMatch {
+				continue
+			}
+			firewallUpdated = true
+
 			const remove = false
 			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
 				defaultRoute.AssignedIP, subnet, remove)
 			if err != nil {
 				return err
 			}
+		}
+
+		if !firewallUpdated {
+			c.logger.Info(fmt.Sprintf("ignoring subnet %s which has "+
+				"no default route matching its family", subnet))
 		}
 	}
 	return nil

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/netip"
 
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/subnet"
 )
 
@@ -37,13 +38,28 @@ func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []netip.Prefix)
 func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []netip.Prefix) {
 	const remove = true
 	for _, subNet := range subnets {
+		subnetIsIPv6 := subNet.Addr().Is6()
+		firewallUpdated := false
 		for _, defaultRoute := range c.defaultRoutes {
+			defaultRouteIsIPv6 := defaultRoute.Family == netlink.FamilyV6
+			ipFamilyMatch := subnetIsIPv6 == defaultRouteIsIPv6
+			if !ipFamilyMatch {
+				continue
+			}
+
+			firewallUpdated = true
 			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
 				defaultRoute.AssignedIP, subNet, remove)
 			if err != nil {
 				c.logger.Error("cannot remove outdated outbound subnet: " + err.Error())
 				continue
 			}
+		}
+
+		if !firewallUpdated {
+			c.logger.Info(fmt.Sprintf("ignoring subnet %s which has "+
+				"no default route matching its family", subNet))
+			continue
 		}
 		c.outboundSubnets = subnet.RemoveSubnetFromSubnets(c.outboundSubnets, subNet)
 	}
@@ -52,12 +68,27 @@ func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []netip.Pref
 func (c *Config) addOutboundSubnets(ctx context.Context, subnets []netip.Prefix) error {
 	const remove = false
 	for _, subnet := range subnets {
+		subnetIsIPv6 := subnet.Addr().Is6()
+		firewallUpdated := false
 		for _, defaultRoute := range c.defaultRoutes {
+			defaultRouteIsIPv6 := defaultRoute.Family == netlink.FamilyV6
+			ipFamilyMatch := subnetIsIPv6 == defaultRouteIsIPv6
+			if !ipFamilyMatch {
+				continue
+			}
+
+			firewallUpdated = true
 			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
 				defaultRoute.AssignedIP, subnet, remove)
 			if err != nil {
 				return err
 			}
+		}
+
+		if !firewallUpdated {
+			c.logger.Info(fmt.Sprintf("ignoring subnet %s which has "+
+				"no default route matching its family", subnet))
+			continue
 		}
 		c.outboundSubnets = append(c.outboundSubnets, subnet)
 	}
