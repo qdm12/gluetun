@@ -7,7 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
-	"github.com/qdm12/gluetun/internal/portforward"
+	portforward "github.com/qdm12/gluetun/internal/portforward/service"
 	"github.com/qdm12/gluetun/internal/provider"
 )
 
@@ -22,8 +22,8 @@ type Routing interface {
 }
 
 type PortForward interface {
-	Start(ctx context.Context, data portforward.StartData) (outcome string, err error)
-	Stop(ctx context.Context) (outcome string, err error)
+	Update(settings portforward.Settings)
+	GetSettings() (settings portforward.Settings)
 }
 
 type OpenVPN interface {

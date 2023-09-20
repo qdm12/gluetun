@@ -375,11 +375,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	portForwardLogger := logger.New(log.SetComponent("port forwarding"))
-	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
-		httpClient, firewallConf, portForwardLogger, puid, pgid)
-	portForwardHandler, portForwardCtx, portForwardDone := goshutdown.NewGoRoutineHandler(
-		"port forwarding", goroutine.OptionTimeout(time.Second))
-	go portForwardLooper.Run(portForwardCtx, portForwardDone)
+	portForwardLooper := portforward.NewLoop(httpClient, firewallConf,
+		portForwardLogger, puid, pgid)
+	portForwardRunError, _ := portForwardLooper.Start(context.Background())
 
 	unboundLogger := logger.New(log.SetComponent("dns"))
 	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
@@ -481,13 +479,17 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		order.OptionOnSuccess(defaultShutdownOnSuccess),
 		order.OptionOnFailure(defaultShutdownOnFailure))
 	orderHandler.Append(controlGroupHandler, tickersGroupHandler, healthServerHandler,
-		vpnHandler, portForwardHandler, otherGroupHandler)
+		vpnHandler, otherGroupHandler)
 
 	// Start VPN for the first time in a blocking call
 	// until the VPN is launched
 	_, _ = vpnLooper.ApplyStatus(ctx, constants.Running) // TODO option to disable with variable
 
-	<-ctx.Done()
+	select {
+	case <-ctx.Done():
+	case err := <-portForwardRunError:
+		logger.Errorf("port forwarding loop crashed: %s", err)
+	}
 
 	return orderHandler.Shutdown(context.Background())
 }

@@ -1,14 +1,10 @@
 package vpn
 
 import (
-	"context"
 	"fmt"
-	"time"
-
-	"github.com/qdm12/gluetun/internal/portforward"
 )
 
-func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err error) {
+func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 	if !data.portForwarding {
 		return nil
 	}
@@ -20,28 +16,18 @@ func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err 
 	}
 	l.logger.Info("VPN gateway IP address: " + gateway.String())
 
-	pfData := portforward.StartData{
-		PortForwarder: data.portForwarder,
-		Gateway:       gateway,
-		ServerName:    data.serverName,
-		Interface:     data.vpnIntf,
-	}
-	_, err = l.portForward.Start(ctx, pfData)
-	if err != nil {
-		return fmt.Errorf("starting port forwarding: %w", err)
-	}
+	settings := l.portForward.GetSettings()
+	settings.PortForwarder = data.portForwarder
+	settings.Gateway = gateway
+	settings.ServerName = data.serverName
+	settings.Interface = data.vpnIntf
+	l.portForward.Update(settings)
 
 	return nil
 }
 
-func (l *Loop) stopPortForwarding(ctx context.Context,
-	timeout time.Duration) (err error) {
-	if timeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, timeout)
-		defer cancel()
-	}
-
-	_, err = l.portForward.Stop(ctx)
-	return err
+func (l *Loop) stopPortForwarding() {
+	settings := l.portForward.GetSettings()
+	settings.Settings.Enabled = ptrTo(false)
+	l.portForward.Update(settings)
 }

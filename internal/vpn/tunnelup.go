@@ -42,7 +42,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		}
 	}
 
-	err := l.startPortForwarding(ctx, data)
+	err := l.startPortForwarding(data)
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
