@@ -33,15 +33,20 @@ func addProviderFlag(flagSet *flag.FlagSet, providerToFormat map[string]*bool,
 func (c *CLI) FormatServers(args []string) error {
 	var format, output string
 	allProviders := providers.All()
+	allProviderFlags := make([]string, len(allProviders))
+	for i, provider := range allProviders {
+		allProviderFlags[i] = strings.ReplaceAll(provider, " ", "-")
+	}
+
 	providersToFormat := make(map[string]*bool, len(allProviders))
-	for _, provider := range allProviders {
+	for _, provider := range allProviderFlags {
 		providersToFormat[provider] = new(bool)
 	}
-	flagSet := flag.NewFlagSet("markdown", flag.ExitOnError)
+	flagSet := flag.NewFlagSet("format-servers", flag.ExitOnError)
 	flagSet.StringVar(&format, "format", "markdown", "Format to use which can be: 'markdown'")
 	flagSet.StringVar(&output, "output", "/dev/stdout", "Output file to write the formatted data to")
 	titleCaser := cases.Title(language.English)
-	for _, provider := range allProviders {
+	for _, provider := range allProviderFlags {
 		addProviderFlag(flagSet, providersToFormat, provider, titleCaser)
 	}
 	if err := flagSet.Parse(args); err != nil {
