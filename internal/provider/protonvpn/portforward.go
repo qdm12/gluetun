@@ -36,7 +36,7 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 	const internalPort, externalPort = 0, 0
 	const lifetime = 60 * time.Second
 	for _, networkProtocol := range networkProtocols {
-		_, assignedInternalPort, assignedExternalPort, assignedLiftetime, err :=
+		_, _, assignedExternalPort, assignedLiftetime, err :=
 			client.AddPortMapping(ctx, gateway, networkProtocol,
 				internalPort, externalPort, lifetime)
 		if err != nil {
@@ -47,12 +47,6 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 			logger.Warn(fmt.Sprintf("assigned lifetime %s differs"+
 				" from requested lifetime %s",
 				assignedLiftetime, lifetime))
-		}
-
-		if assignedInternalPort != internalPort {
-			logger.Warn(fmt.Sprintf("internal port assigned %d differs"+
-				" from internal port requested %d",
-				assignedInternalPort, internalPort))
 		}
 
 		port = assignedExternalPort
@@ -78,7 +72,7 @@ func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 		const lifetime = 60 * time.Second
 
 		for _, networkProtocol := range networkProtocols {
-			_, assignedInternalPort, assignedExternalPort, assignedLiftetime, err :=
+			_, _, assignedExternalPort, assignedLiftetime, err :=
 				client.AddPortMapping(ctx, gateway, networkProtocol,
 					internalPort, port, lifetime)
 			if err != nil {
@@ -91,10 +85,10 @@ func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 					assignedLiftetime, lifetime))
 			}
 
-			if assignedInternalPort != assignedExternalPort {
-				logger.Warn(fmt.Sprintf("internal port assigned %d differs"+
-					" from external port assigned %d",
-					assignedInternalPort, assignedExternalPort))
+			if port != assignedExternalPort {
+				logger.Warn(fmt.Sprintf("external port assigned %d changed to %d",
+					port, assignedExternalPort))
+				port = assignedExternalPort
 			}
 		}
 
