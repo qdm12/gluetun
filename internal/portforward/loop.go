@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/portforward/service"
 )
 
@@ -19,14 +20,21 @@ type Loop struct {
 	// Fixed parameters
 	uid, gid int
 	// Internal channels and locks
+	// runCtx is used to detect when the loop has exited
+	// when performing an update
+	runCtx    context.Context //nolint:containedctx
 	runCancel context.CancelFunc
 	updateCh  chan<- service.Settings
 	runDone   <-chan struct{}
 }
 
-func NewLoop(client *http.Client, portAllower PortAllower,
+func NewLoop(settings settings.PortForwarding,
+	client *http.Client, portAllower PortAllower,
 	logger Logger, uid, gid int) *Loop {
 	return &Loop{
+		settings: service.Settings{
+			Settings: settings,
+		},
 		client:      client,
 		portAllower: portAllower,
 		logger:      logger,
@@ -36,8 +44,7 @@ func NewLoop(client *http.Client, portAllower PortAllower,
 }
 
 func (l *Loop) Start(_ context.Context) (runError <-chan error, _ error) {
-	runCtx, runCancel := context.WithCancel(context.Background())
-	l.runCancel = runCancel
+	l.runCtx, l.runCancel = context.WithCancel(context.Background())
 	runDone := make(chan struct{})
 	l.runDone = runDone
 
@@ -45,7 +52,7 @@ func (l *Loop) Start(_ context.Context) (runError <-chan error, _ error) {
 	l.updateCh = updateCh
 	runErrorCh := make(chan error)
 
-	go l.run(runCtx, runDone, runErrorCh, updateCh)
+	go l.run(l.runCtx, runDone, runErrorCh, updateCh)
 
 	return runErrorCh, nil
 }
@@ -56,12 +63,12 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 
 	var serviceRunError <-chan error
 	for {
-		var update service.Settings
+		var partialUpdate service.Settings
 		select {
 		case <-runCtx.Done():
 			// Stop call takes care of stopping the service
 			return
-		case update = <-updateCh: // first and subsequent start trigger
+		case partialUpdate = <-updateCh: // first and subsequent start trigger
 		case err := <-serviceRunError:
 			runErrorCh <- err
 			return
@@ -76,12 +83,15 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			}
 		}
 
-		l.settings = update
+		err := l.settings.UpdateWith(partialUpdate)
+		if err != nil {
+			runErrorCh <- fmt.Errorf("updating settings: %w", err)
+			return
+		}
 
-		l.service = service.New(update, l.client,
+		l.service = service.New(l.settings, l.client,
 			l.portAllower, l.logger, l.uid, l.gid)
 
-		var err error
 		serviceRunError, err = l.service.Start(runCtx)
 		if err != nil {
 			if runCtx.Err() == nil { // crashed but NOT stopped
@@ -92,8 +102,12 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 	}
 }
 
-func (l *Loop) Update(settings service.Settings) {
-	l.updateCh <- settings
+func (l *Loop) Update(partialUpdate service.Settings) {
+	select {
+	case l.updateCh <- partialUpdate:
+	case <-l.runCtx.Done():
+		// loop has been stopped, no update can be done
+	}
 }
 
 func (l *Loop) Stop() (err error) {

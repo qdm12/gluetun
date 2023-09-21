@@ -21,6 +21,7 @@ type Provider interface {
 }
 
 type PortForwarder interface {
+	Name() string
 	PortForward(ctx context.Context, client *http.Client,
 		logger utils.Logger, gateway netip.Addr, serverName string) (
 		port uint16, err error)

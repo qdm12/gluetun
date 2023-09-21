@@ -375,8 +375,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	portForwardLogger := logger.New(log.SetComponent("port forwarding"))
-	portForwardLooper := portforward.NewLoop(httpClient, firewallConf,
-		portForwardLogger, puid, pgid)
+	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
+		httpClient, firewallConf, portForwardLogger, puid, pgid)
 	portForwardRunError, _ := portForwardLooper.Start(context.Background())
 
 	unboundLogger := logger.New(log.SetComponent("dns"))
@@ -487,6 +487,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	select {
 	case <-ctx.Done():
+		err = portForwardLooper.Stop()
+		if err != nil {
+			logger.Error("stopping port forward loop: " + err.Error())
+		}
 	case err := <-portForwardRunError:
 		logger.Errorf("port forwarding loop crashed: %s", err)
 	}

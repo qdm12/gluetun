@@ -6,7 +6,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (l *Loop) cleanup() {
+func (l *Loop) cleanup(vpnProvider string) {
 	for _, vpnPort := range l.vpnInputPorts {
 		err := l.fw.RemoveAllowedPort(context.Background(), vpnPort)
 		if err != nil {
@@ -16,5 +16,5 @@ func (l *Loop) cleanup() {
 
 	l.publicip.SetData(models.PublicIP{}) // clear public IP address data
 
-	l.stopPortForwarding()
+	l.stopPortForwarding(vpnProvider)
 }
