@@ -23,7 +23,6 @@ type Routing interface {
 
 type PortForward interface {
 	UpdateWith(settings portforward.Settings) (err error)
-	GetSettings() (settings portforward.Settings)
 }
 
 type OpenVPN interface {

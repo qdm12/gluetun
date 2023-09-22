@@ -131,12 +131,6 @@ func (l *Loop) Stop() (err error) {
 	return nil
 }
 
-func (l *Loop) GetSettings() (settings service.Settings) {
-	l.settingsMutex.RLock()
-	defer l.settingsMutex.RUnlock()
-	return l.settings
-}
-
 func (l *Loop) GetPortForwarded() (port uint16) {
 	if l.service == nil {
 		return 0
