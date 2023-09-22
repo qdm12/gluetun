@@ -21,17 +21,15 @@ func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 		ServerName:    data.serverName,
 		VPNProvider:   data.portForwarder.Name(),
 	}
-	l.portForward.Update(partialUpdate)
-
-	return nil
+	return l.portForward.Update(partialUpdate)
 }
 
-func (l *Loop) stopPortForwarding(vpnProvider string) {
+func (l *Loop) stopPortForwarding(vpnProvider string) (err error) {
 	partialUpdate := service.Settings{
 		VPNProvider: vpnProvider,
 		Settings: settings.PortForwarding{
 			Enabled: ptrTo(false),
 		},
 	}
-	l.portForward.Update(partialUpdate)
+	return l.portForward.Update(partialUpdate)
 }

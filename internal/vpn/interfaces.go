@@ -22,7 +22,7 @@ type Routing interface {
 }
 
 type PortForward interface {
-	Update(settings portforward.Settings)
+	Update(settings portforward.Settings) (err error)
 	GetSettings() (settings portforward.Settings)
 }
 
