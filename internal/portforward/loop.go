@@ -100,7 +100,7 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 	}
 }
 
-func (l *Loop) Update(partialUpdate service.Settings) (err error) {
+func (l *Loop) UpdateWith(partialUpdate service.Settings) (err error) {
 	l.settingsMutex.Lock()
 	err = l.settings.UpdateWith(partialUpdate)
 	l.settingsMutex.Unlock()

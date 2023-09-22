@@ -21,7 +21,7 @@ func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 		ServerName:    data.serverName,
 		VPNProvider:   data.portForwarder.Name(),
 	}
-	return l.portForward.Update(partialUpdate)
+	return l.portForward.UpdateWith(partialUpdate)
 }
 
 func (l *Loop) stopPortForwarding(vpnProvider string) (err error) {
@@ -31,5 +31,5 @@ func (l *Loop) stopPortForwarding(vpnProvider string) (err error) {
 			Enabled: ptrTo(false),
 		},
 	}
-	return l.portForward.Update(partialUpdate)
+	return l.portForward.UpdateWith(partialUpdate)
 }
