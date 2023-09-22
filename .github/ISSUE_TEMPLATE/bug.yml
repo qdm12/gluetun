@@ -7,6 +7,11 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
+
+        ⚠️ Your issue will be instantly closed as not planned WITHOUT explanation if:
+        - you do not fill out **the title of the issue** ☝️
+        - you do not provide the **Gluetun version** as requested below
+        - you provide **less than 10 lines of logs** as requested below
   - type: dropdown
     id: urgent
     attributes:
@@ -85,7 +90,7 @@ body:
       label: What is the version of Gluetun
       description: |
         Copy paste the version line at the top of your logs.
-        It should be in the form `Running version latest built on 2020-03-13T01:30:06Z (commit d0f678c)`.
+        It MUST be in the form `Running version latest built on 2020-03-13T01:30:06Z (commit d0f678c)`.
     validations:
       required: true
   - type: textarea
@@ -98,7 +103,7 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Share your logs
+      label: Share your logs (at least 10 lines)
       description: No sensitive information is logged out except when running with `LOG_LEVEL=debug`.
       render: plain text
     validations:
