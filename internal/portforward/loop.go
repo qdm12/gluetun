@@ -73,8 +73,7 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			return
 		case <-updatedSignal: // first and subsequent start trigger
 		case err := <-serviceRunError:
-			runErrorCh <- err
-			return
+			l.logger.Error(err.Error())
 		}
 
 		firstRun := l.service == nil
