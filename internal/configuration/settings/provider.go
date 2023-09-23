@@ -36,6 +36,7 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 			providers.Ivpn,
 			providers.Mullvad,
 			providers.Nordvpn,
+			providers.PrivateInternetAccess,
 			providers.Surfshark,
 			providers.Windscribe,
 		}

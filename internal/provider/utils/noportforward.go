@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/wireguard"
 	"net/http"
 	"net/netip"
 )
@@ -36,4 +39,8 @@ func (n *NoPortForwarding) PortForward(context.Context, *http.Client,
 func (n *NoPortForwarding) KeepPortForward(context.Context, uint16, netip.Addr,
 	string, Logger) (err error) {
 	return fmt.Errorf("%w: for %s", ErrPortForwardingNotSupported, n.providerName)
+}
+
+type NoWireguardConfigurator interface {
+	GetWireguardConnection(ctx context.Context, connection models.Connection, wireguardSettings settings.Wireguard, ipv6Supported bool) (settings wireguard.Settings, err error)
 }

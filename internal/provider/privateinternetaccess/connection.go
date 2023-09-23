@@ -19,6 +19,7 @@ func (p *Provider) GetConnection(selection settings.ServerSelection, ipv6Support
 		defaults.OpenVPNTCPPort = 501
 		defaults.OpenVPNUDPPort = 1197
 	}
+	defaults.WireguardPort = 1337
 
 	return utils.GetConnection(p.Name(),
 		p.storage, selection, defaults, ipv6Supported, p.randSource)

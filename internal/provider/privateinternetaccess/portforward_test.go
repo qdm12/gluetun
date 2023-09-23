@@ -100,7 +100,7 @@ func Test_replaceInString(t *testing.T) {
 		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			result := replaceInString(testCase.s, testCase.substitutions)
+			result := ReplaceInString(testCase.s, testCase.substitutions)
 			assert.Equal(t, testCase.result, result)
 		})
 	}

@@ -3,7 +3,6 @@ package vpn
 import (
 	"context"
 	"fmt"
-
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -22,7 +21,19 @@ func setupWireguard(ctx context.Context, netlinker NetLinker,
 		return nil, "", fmt.Errorf("finding a VPN server: %w", err)
 	}
 
-	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard, ipv6Supported)
+	var wireguardSettings wireguard.Settings
+
+	// if provider has WireguardConfigurator interface, use it
+	wireguardConfigurator, ok := providerConf.(provider.WireguardConfigurator)
+	if ok {
+		// Use already defined variables
+		wireguardSettings, err = wireguardConfigurator.GetWireguardConnection(ctx, connection, settings.Wireguard, ipv6Supported)
+		if err != nil {
+			return nil, "", fmt.Errorf("getting Wireguard connection: %w", err)
+		}
+	} else {
+		wireguardSettings = utils.BuildWireguardSettings(connection, settings.Wireguard, ipv6Supported)
+	}
 
 	logger.Debug("Wireguard server public key: " + wireguardSettings.PublicKey)
 	logger.Debug("Wireguard client private key: " + gosettings.ObfuscateKey(wireguardSettings.PrivateKey))

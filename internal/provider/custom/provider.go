@@ -9,6 +9,7 @@ import (
 type Provider struct {
 	extractor Extractor
 	utils.NoPortForwarder
+	utils.NoWireguardConfigurator
 	common.Fetcher
 }
 

@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -40,6 +41,17 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			vpnRunner, serverName, err = setupOpenVPN(ctx, l.fw,
 				l.openvpnConf, providerConf, settings, l.ipv6Supported, l.starter, subLogger)
 		} else { // Wireguard
+			// save auth in case of PIA for port forwarding and getting the wg config
+			if *settings.Provider.Name == "private internet access" {
+				if *settings.OpenVPN.User != "" {
+					err := l.openvpnConf.WriteAuthFile(*settings.OpenVPN.User, *settings.OpenVPN.Password)
+					if err != nil {
+						l.crashed(ctx, fmt.Errorf("writing auth to file: %w", err))
+						continue
+					}
+				}
+			}
+
 			vpnInterface = settings.Wireguard.Interface
 			vpnRunner, serverName, err = setupWireguard(ctx, l.netLinker, l.fw,
 				providerConf, settings, l.ipv6Supported, subLogger)

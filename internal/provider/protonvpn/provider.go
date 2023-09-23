@@ -1,6 +1,7 @@
 package protonvpn
 
 import (
+	"github.com/qdm12/gluetun/internal/provider/utils"
 	"math/rand"
 	"net/http"
 
@@ -12,6 +13,7 @@ import (
 type Provider struct {
 	storage    common.Storage
 	randSource rand.Source
+	utils.NoWireguardConfigurator
 	common.Fetcher
 }
 

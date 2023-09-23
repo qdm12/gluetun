@@ -13,6 +13,7 @@ type Provider struct {
 	storage    common.Storage
 	randSource rand.Source
 	utils.NoPortForwarder
+	utils.NoWireguardConfigurator
 	common.Fetcher
 }
 
