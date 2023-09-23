@@ -7,13 +7,11 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/provider/example/updater"
-	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 type Provider struct {
 	storage    common.Storage
 	randSource rand.Source
-	utils.NoPortForwarder
 	common.Fetcher
 }
 
@@ -22,10 +20,9 @@ func New(storage common.Storage, randSource rand.Source,
 	updaterWarner common.Warner, client *http.Client,
 	unzipper common.Unzipper, parallelResolver common.ParallelResolver) *Provider {
 	return &Provider{
-		storage:         storage,
-		randSource:      randSource,
-		NoPortForwarder: utils.NewNoPortForwarding(providers.Example),
-		Fetcher:         updater.New(updaterWarner, unzipper, client, parallelResolver),
+		storage:    storage,
+		randSource: randSource,
+		Fetcher:    updater.New(updaterWarner, unzipper, client, parallelResolver),
 	}
 }
 

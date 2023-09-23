@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	portforward "github.com/qdm12/gluetun/internal/portforward/service"
 	"github.com/qdm12/gluetun/internal/provider"
+	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
 type Firewall interface {
@@ -33,6 +34,21 @@ type OpenVPN interface {
 
 type Providers interface {
 	Get(providerName string) provider.Provider
+}
+
+type Provider interface {
+	GetConnection(selection settings.ServerSelection, ipv6Supported bool) (connection models.Connection, err error)
+	OpenVPNConfig(connection models.Connection, settings settings.OpenVPN, ipv6Supported bool) (lines []string)
+	Name() string
+	FetchServers(ctx context.Context, minServers int) (
+		servers []models.Server, err error)
+}
+
+type PortForwarder interface {
+	Name() string
+	PortForward(ctx context.Context, objects utils.PortForwardObjects) (
+		port uint16, err error)
+	KeepPortForward(ctx context.Context, objects utils.PortForwardObjects) (err error)
 }
 
 type Storage interface {

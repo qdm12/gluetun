@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/qdm12/gluetun/internal/constants"
-	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/version"
 )
 
@@ -12,7 +11,7 @@ type tunnelUpData struct {
 	// Port forwarding
 	vpnIntf       string
 	serverName    string
-	portForwarder provider.PortForwarder
+	portForwarder PortForwarder
 }
 
 func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {

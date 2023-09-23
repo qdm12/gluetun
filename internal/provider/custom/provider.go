@@ -8,15 +8,13 @@ import (
 
 type Provider struct {
 	extractor Extractor
-	utils.NoPortForwarder
 	common.Fetcher
 }
 
 func New(extractor Extractor) *Provider {
 	return &Provider{
-		extractor:       extractor,
-		NoPortForwarder: utils.NewNoPortForwarding(providers.Custom),
-		Fetcher:         utils.NewNoFetcher(providers.Custom),
+		extractor: extractor,
+		Fetcher:   utils.NewNoFetcher(providers.Custom),
 	}
 }
 
