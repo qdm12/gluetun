@@ -20,15 +20,18 @@ type Settings struct {
 	VPNProvider   string     // used to validate new settings
 }
 
-func (s *Settings) UpdateWith(partialUpdate Settings) (err error) {
-	newSettings := s.copy()
-	newSettings.overrideWith(partialUpdate)
-	err = newSettings.validate()
+// UpdateWith deep copies the receiving settings, overrides the copy with
+// fields set in the partialUpdate argument, validates the new settings
+// and returns them if they are valid, or returns an error otherwise.
+// In all cases, the receiving settings are unmodified.
+func (s Settings) UpdateWith(partialUpdate Settings) (updatedSettings Settings, err error) {
+	updatedSettings = s.copy()
+	updatedSettings.overrideWith(partialUpdate)
+	err = updatedSettings.validate()
 	if err != nil {
-		return fmt.Errorf("validating new settings: %w", err)
+		return updatedSettings, fmt.Errorf("validating new settings: %w", err)
 	}
-	*s = newSettings
-	return nil
+	return updatedSettings, nil
 }
 
 func (s Settings) copy() (copied Settings) {
