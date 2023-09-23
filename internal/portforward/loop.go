@@ -16,6 +16,7 @@ type Loop struct {
 	settingsMutex sync.RWMutex
 	service       Service
 	// Fixed injected objets
+	routing     Routing
 	client      *http.Client
 	portAllower PortAllower
 	logger      Logger
@@ -30,13 +31,14 @@ type Loop struct {
 	runDone       <-chan struct{}
 }
 
-func NewLoop(settings settings.PortForwarding,
+func NewLoop(settings settings.PortForwarding, routing Routing,
 	client *http.Client, portAllower PortAllower,
 	logger Logger, uid, gid int) *Loop {
 	return &Loop{
 		settings: service.Settings{
 			UserSettings: settings,
 		},
+		routing:     routing,
 		client:      client,
 		portAllower: portAllower,
 		logger:      logger,
@@ -85,7 +87,7 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 		}
 
 		l.settingsMutex.RLock()
-		l.service = service.New(l.settings, l.client,
+		l.service = service.New(l.settings, l.routing, l.client,
 			l.portAllower, l.logger, l.uid, l.gid)
 		l.settingsMutex.RUnlock()
 

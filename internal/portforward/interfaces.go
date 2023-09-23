@@ -1,11 +1,18 @@
 package portforward
 
-import "context"
+import (
+	"context"
+	"net/netip"
+)
 
 type Service interface {
 	Start(ctx context.Context) (runError <-chan error, err error)
 	Stop() (err error)
 	GetPortForwarded() (port uint16)
+}
+
+type Routing interface {
+	VPNLocalGatewayIP(vpnInterface string) (gateway netip.Addr, err error)
 }
 
 type PortAllower interface {

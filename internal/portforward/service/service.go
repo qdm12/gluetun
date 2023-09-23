@@ -15,6 +15,7 @@ type Service struct {
 	puid     int
 	pgid     int
 	// Fixed injected objets
+	routing     Routing
 	client      *http.Client
 	portAllower PortAllower
 	logger      Logger
@@ -24,7 +25,7 @@ type Service struct {
 	keepPortDoneCh <-chan struct{}
 }
 
-func New(settings Settings, client *http.Client,
+func New(settings Settings, routing Routing, client *http.Client,
 	portAllower PortAllower, logger Logger, puid, pgid int) *Service {
 	return &Service{
 		// Fixed parameters
@@ -32,6 +33,7 @@ func New(settings Settings, client *http.Client,
 		puid:     puid,
 		pgid:     pgid,
 		// Fixed injected objets
+		routing:     routing,
 		client:      client,
 		portAllower: portAllower,
 		logger:      logger,

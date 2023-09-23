@@ -376,7 +376,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	portForwardLogger := logger.New(log.SetComponent("port forwarding"))
 	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
-		httpClient, firewallConf, portForwardLogger, puid, pgid)
+		routingConf, httpClient, firewallConf, portForwardLogger, puid, pgid)
 	portForwardRunError, _ := portForwardLooper.Start(context.Background())
 
 	unboundLogger := logger.New(log.SetComponent("dns"))

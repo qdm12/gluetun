@@ -2,8 +2,6 @@ package provider
 
 import (
 	"context"
-	"net/http"
-	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
@@ -22,9 +20,7 @@ type Provider interface {
 
 type PortForwarder interface {
 	Name() string
-	PortForward(ctx context.Context, client *http.Client,
-		logger utils.Logger, gateway netip.Addr, serverName string) (
+	PortForward(ctx context.Context, objects utils.PortForwardObjects) (
 		port uint16, err error)
-	KeepPortForward(ctx context.Context, port uint16, gateway netip.Addr,
-		serverName string, _ utils.Logger) (err error)
+	KeepPortForward(ctx context.Context, objects utils.PortForwardObjects) (err error)
 }

@@ -2,10 +2,7 @@ package protonvpn
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"net/http"
-	"net/netip"
 	"strings"
 	"time"
 
@@ -13,31 +10,24 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-var (
-	ErrGatewayIPNotValid = errors.New("gateway IP address is not valid")
-)
-
 // PortForward obtains a VPN server side port forwarded from ProtonVPN gateway.
-func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
-	logger utils.Logger, gateway netip.Addr, _ string) (
+func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
 	port uint16, err error) {
-	if !gateway.IsValid() {
-		return 0, fmt.Errorf("%w", ErrGatewayIPNotValid)
-	}
-
 	client := natpmp.New()
 	_, externalIPv4Address, err := client.ExternalAddress(ctx,
-		gateway)
+		objects.Gateway)
 	if err != nil {
 		return 0, fmt.Errorf("getting external IPv4 address: %w", err)
 	}
+
+	logger := objects.Logger
 
 	logger.Info("gateway external IPv4 address is " + externalIPv4Address.String())
 	const internalPort, externalPort = 0, 0
 	const lifetime = 60 * time.Second
 
 	_, _, assignedUDPExternalPort, assignedLifetime, err :=
-		client.AddPortMapping(ctx, gateway, "udp",
+		client.AddPortMapping(ctx, objects.Gateway, "udp",
 			internalPort, externalPort, lifetime)
 	if err != nil {
 		return 0, fmt.Errorf("adding UDP port mapping: %w", err)
@@ -45,7 +35,7 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 	checkLifetime(logger, "UDP", lifetime, assignedLifetime)
 
 	_, _, assignedTCPExternalPort, assignedLifetime, err :=
-		client.AddPortMapping(ctx, gateway, "tcp",
+		client.AddPortMapping(ctx, objects.Gateway, "tcp",
 			internalPort, externalPort, lifetime)
 	if err != nil {
 		return 0, fmt.Errorf("adding TCP port mapping: %w", err)
@@ -54,6 +44,8 @@ func (p *Provider) PortForward(ctx context.Context, _ *http.Client,
 
 	checkExternalPorts(logger, assignedUDPExternalPort, assignedTCPExternalPort)
 	port = assignedTCPExternalPort
+
+	p.portForwarded = port
 
 	return port, nil
 }
@@ -74,11 +66,12 @@ func checkExternalPorts(logger utils.Logger, udpPort, tcpPort uint16) {
 	}
 }
 
-func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
-	gateway netip.Addr, _ string, logger utils.Logger) (err error) {
+func (p *Provider) KeepPortForward(ctx context.Context,
+	objects utils.PortForwardObjects) (err error) {
 	client := natpmp.New()
 	const refreshTimeout = 45 * time.Second
 	timer := time.NewTimer(refreshTimeout)
+	logger := objects.Logger
 	for {
 		select {
 		case <-ctx.Done():
@@ -92,8 +85,8 @@ func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 
 		for _, networkProtocol := range networkProtocols {
 			_, _, assignedExternalPort, assignedLiftetime, err :=
-				client.AddPortMapping(ctx, gateway, networkProtocol,
-					internalPort, port, lifetime)
+				client.AddPortMapping(ctx, objects.Gateway, networkProtocol,
+					internalPort, p.portForwarded, lifetime)
 			if err != nil {
 				return fmt.Errorf("adding port mapping: %w", err)
 			}
@@ -104,10 +97,10 @@ func (p *Provider) KeepPortForward(ctx context.Context, port uint16,
 					assignedLiftetime, lifetime))
 			}
 
-			if port != assignedExternalPort {
-				logger.Warn(fmt.Sprintf("external port assigned %d changed to %d",
-					port, assignedExternalPort))
-				port = assignedExternalPort
+			if p.portForwarded != assignedExternalPort {
+				objects.Logger.Warn(fmt.Sprintf("external port assigned %d changed to %d",
+					p.portForwarded, assignedExternalPort))
+				p.portForwarded = assignedExternalPort
 			}
 		}
 
