@@ -23,9 +23,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		providerConf := l.providers.Get(*settings.Provider.Name)
 
 		customPortForwardingProvider := *settings.Provider.PortForwarding.Provider
-		portForwader := providerConf
+		portForwarder := providerConf
 		if customPortForwardingProvider != "" {
-			portForwader = l.providers.Get(customPortForwardingProvider)
+			portForwarder = l.providers.Get(customPortForwardingProvider)
 		}
 
 		var vpnRunner interface {
@@ -49,7 +49,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		}
 		tunnelUpData := tunnelUpData{
 			serverName:    serverName,
-			portForwarder: portForwader,
+			portForwarder: portForwarder,
 			vpnIntf:       vpnInterface,
 		}
 
@@ -74,7 +74,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-tunnelReady:
 				go l.onTunnelUp(openvpnCtx, tunnelUpData)
 			case <-ctx.Done():
-				l.cleanup(portForwader.Name())
+				l.cleanup(portForwarder.Name())
 				openvpnCancel()
 				<-waitError
 				close(waitError)
@@ -82,7 +82,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
-				l.cleanup(portForwader.Name())
+				l.cleanup(portForwarder.Name())
 				openvpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
@@ -95,7 +95,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case err := <-waitError: // unexpected error
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
-				l.cleanup(portForwader.Name())
+				l.cleanup(portForwarder.Name())
 				openvpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
