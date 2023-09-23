@@ -8,7 +8,8 @@ import (
 
 type Service struct {
 	// State
-	port uint16
+	portMutex sync.RWMutex
+	port      uint16
 	// Fixed parameters
 	settings Settings
 	puid     int
@@ -38,7 +39,7 @@ func New(settings Settings, client *http.Client,
 }
 
 func (s *Service) GetPortForwarded() (port uint16) {
-	s.startStopMutex.Lock()
-	defer s.startStopMutex.Unlock()
+	s.portMutex.RLock()
+	defer s.portMutex.RUnlock()
 	return s.port
 }

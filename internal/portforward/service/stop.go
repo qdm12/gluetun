@@ -10,8 +10,11 @@ func (s *Service) Stop() (err error) {
 	s.startStopMutex.Lock()
 	defer s.startStopMutex.Unlock()
 
-	if s.port == 0 {
-		return nil // already not running
+	s.portMutex.RLock()
+	serviceNotRunning := s.port == 0
+	s.portMutex.RUnlock()
+	if serviceNotRunning {
+		return nil
 	}
 
 	s.logger.Info("stopping")
@@ -23,6 +26,9 @@ func (s *Service) Stop() (err error) {
 }
 
 func (s *Service) cleanup() (err error) {
+	s.portMutex.Lock()
+	defer s.portMutex.Unlock()
+
 	err = s.portAllower.RemoveAllowedPort(context.Background(), s.port)
 	if err != nil {
 		return fmt.Errorf("blocking previous port in firewall: %w", err)
