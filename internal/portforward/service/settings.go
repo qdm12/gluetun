@@ -6,6 +6,7 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gosettings"
 )
@@ -49,11 +50,27 @@ func (s *Settings) overrideWith(update Settings) {
 	s.VPNProvider = gosettings.OverrideWithString(s.VPNProvider, update.VPNProvider)
 }
 
-var ErrVPNProviderNotSet = errors.New("VPN provider not set")
+var (
+	ErrVPNProviderNotSet   = errors.New("VPN provider not set")
+	ErrServerNameNotSet    = errors.New("server name not set")
+	ErrPortForwarderNotSet = errors.New("port forwarder not set")
+	ErrGatewayNotSet       = errors.New("gateway not set")
+	ErrInterfaceNotSet     = errors.New("interface not set")
+)
 
 func (s *Settings) validate() (err error) {
-	if s.VPNProvider == "" {
+	switch {
+	case s.VPNProvider == "":
 		return fmt.Errorf("%w", ErrVPNProviderNotSet)
+	case s.VPNProvider == providers.PrivateInternetAccess && s.ServerName == "":
+		return fmt.Errorf("%w", ErrServerNameNotSet)
+	case s.PortForwarder == nil:
+		return fmt.Errorf("%w", ErrPortForwarderNotSet)
+	case !s.Gateway.IsValid():
+		return fmt.Errorf("%w", ErrGatewayNotSet)
+	case s.Interface == "":
+		return fmt.Errorf("%w", ErrInterfaceNotSet)
 	}
+
 	return s.UserSettings.Validate(s.VPNProvider)
 }
