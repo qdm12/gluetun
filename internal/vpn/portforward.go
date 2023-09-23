@@ -1,47 +1,35 @@
 package vpn
 
 import (
-	"context"
 	"fmt"
-	"time"
 
-	"github.com/qdm12/gluetun/internal/portforward"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/portforward/service"
 )
 
-func (l *Loop) startPortForwarding(ctx context.Context, data tunnelUpData) (err error) {
-	if !data.portForwarding {
-		return nil
-	}
-
-	// only used for PIA for now
+func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 	gateway, err := l.routing.VPNLocalGatewayIP(data.vpnIntf)
 	if err != nil {
 		return fmt.Errorf("obtaining VPN local gateway IP for interface %s: %w", data.vpnIntf, err)
 	}
 	l.logger.Info("VPN gateway IP address: " + gateway.String())
 
-	pfData := portforward.StartData{
+	partialUpdate := service.Settings{
 		PortForwarder: data.portForwarder,
 		Gateway:       gateway,
-		ServerName:    data.serverName,
 		Interface:     data.vpnIntf,
+		ServerName:    data.serverName,
+		VPNProvider:   data.portForwarder.Name(),
 	}
-	_, err = l.portForward.Start(ctx, pfData)
-	if err != nil {
-		return fmt.Errorf("starting port forwarding: %w", err)
-	}
-
-	return nil
+	return l.portForward.UpdateWith(partialUpdate)
 }
 
-func (l *Loop) stopPortForwarding(ctx context.Context,
-	timeout time.Duration) (err error) {
-	if timeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, timeout)
-		defer cancel()
+func (l *Loop) stopPortForwarding(vpnProvider string) (err error) {
+	partialUpdate := service.Settings{
+		VPNProvider: vpnProvider,
+		UserSettings: settings.PortForwarding{
+			Enabled: ptrTo(false),
+		},
 	}
-
-	_, err = l.portForward.Stop(ctx)
-	return err
+	return l.portForward.UpdateWith(partialUpdate)
 }

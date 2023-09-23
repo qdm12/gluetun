@@ -8,6 +8,8 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
+func ptrTo[T any](value T) *T { return &value }
+
 // waitForError waits 100ms for an error in the waitError channel.
 func (l *Loop) waitForError(ctx context.Context,
 	waitError chan error) (err error) {

@@ -49,7 +49,7 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 		return fmt.Errorf("server selection: %w", err)
 	}
 
-	err = p.PortForwarding.validate(*p.Name)
+	err = p.PortForwarding.Validate(*p.Name)
 	if err != nil {
 		return fmt.Errorf("port forwarding: %w", err)
 	}
@@ -61,7 +61,7 @@ func (p *Provider) copy() (copied Provider) {
 	return Provider{
 		Name:            gosettings.CopyPointer(p.Name),
 		ServerSelection: p.ServerSelection.copy(),
-		PortForwarding:  p.PortForwarding.copy(),
+		PortForwarding:  p.PortForwarding.Copy(),
 	}
 }
 
@@ -74,7 +74,7 @@ func (p *Provider) mergeWith(other Provider) {
 func (p *Provider) overrideWith(other Provider) {
 	p.Name = gosettings.OverrideWithPointer(p.Name, other.Name)
 	p.ServerSelection.overrideWith(other.ServerSelection)
-	p.PortForwarding.overrideWith(other.PortForwarding)
+	p.PortForwarding.OverrideWith(other.PortForwarding)
 }
 
 func (p *Provider) setDefaults() {

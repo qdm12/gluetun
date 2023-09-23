@@ -30,7 +30,7 @@ type PortForwarding struct {
 	Filepath *string `json:"status_file_path"`
 }
 
-func (p PortForwarding) validate(vpnProvider string) (err error) {
+func (p PortForwarding) Validate(vpnProvider string) (err error) {
 	if !*p.Enabled {
 		return nil
 	}
@@ -59,7 +59,7 @@ func (p PortForwarding) validate(vpnProvider string) (err error) {
 	return nil
 }
 
-func (p *PortForwarding) copy() (copied PortForwarding) {
+func (p *PortForwarding) Copy() (copied PortForwarding) {
 	return PortForwarding{
 		Enabled:  gosettings.CopyPointer(p.Enabled),
 		Provider: gosettings.CopyPointer(p.Provider),
@@ -73,7 +73,7 @@ func (p *PortForwarding) mergeWith(other PortForwarding) {
 	p.Filepath = gosettings.MergeWithPointer(p.Filepath, other.Filepath)
 }
 
-func (p *PortForwarding) overrideWith(other PortForwarding) {
+func (p *PortForwarding) OverrideWith(other PortForwarding) {
 	p.Enabled = gosettings.OverrideWithPointer(p.Enabled, other.Enabled)
 	p.Provider = gosettings.OverrideWithPointer(p.Provider, other.Provider)
 	p.Filepath = gosettings.OverrideWithPointer(p.Filepath, other.Filepath)
