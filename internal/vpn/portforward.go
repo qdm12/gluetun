@@ -27,7 +27,7 @@ func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 func (l *Loop) stopPortForwarding(vpnProvider string) (err error) {
 	partialUpdate := service.Settings{
 		VPNProvider: vpnProvider,
-		Settings: settings.PortForwarding{
+		UserSettings: settings.PortForwarding{
 			Enabled: ptrTo(false),
 		},
 	}

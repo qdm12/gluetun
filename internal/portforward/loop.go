@@ -35,7 +35,7 @@ func NewLoop(settings settings.PortForwarding,
 	logger Logger, uid, gid int) *Loop {
 	return &Loop{
 		settings: service.Settings{
-			Settings: settings,
+			UserSettings: settings,
 		},
 		client:      client,
 		portAllower: portAllower,

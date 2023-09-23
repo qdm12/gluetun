@@ -9,7 +9,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 	s.startStopMutex.Lock()
 	defer s.startStopMutex.Unlock()
 
-	if !*s.settings.Settings.Enabled {
+	if !*s.settings.UserSettings.Enabled {
 		return nil, nil //nolint:nilnil
 	}
 

@@ -11,7 +11,7 @@ import (
 )
 
 type Settings struct {
-	Settings      settings.PortForwarding
+	UserSettings  settings.PortForwarding
 	PortForwarder provider.PortForwarder
 	Gateway       netip.Addr // needed for PIA and ProtonVPN
 	ServerName    string     // needed for PIA
@@ -31,7 +31,7 @@ func (s *Settings) UpdateWith(partialUpdate Settings) (err error) {
 }
 
 func (s Settings) copy() (copied Settings) {
-	copied.Settings = s.Settings.Copy()
+	copied.UserSettings = s.UserSettings.Copy()
 	copied.PortForwarder = s.PortForwarder
 	copied.Gateway = s.Gateway
 	copied.ServerName = s.ServerName
@@ -41,7 +41,7 @@ func (s Settings) copy() (copied Settings) {
 }
 
 func (s *Settings) overrideWith(update Settings) {
-	s.Settings.OverrideWith(update.Settings)
+	s.UserSettings.OverrideWith(update.UserSettings)
 	s.PortForwarder = gosettings.OverrideWithInterface(s.PortForwarder, update.PortForwarder)
 	s.Gateway = gosettings.OverrideWithValidator(s.Gateway, update.Gateway)
 	s.ServerName = gosettings.OverrideWithString(s.ServerName, update.ServerName)
@@ -55,5 +55,5 @@ func (s *Settings) validate() (err error) {
 	if s.VPNProvider == "" {
 		return fmt.Errorf("%w", ErrVPNProviderNotSet)
 	}
-	return s.Settings.Validate(s.VPNProvider)
+	return s.UserSettings.Validate(s.VPNProvider)
 }

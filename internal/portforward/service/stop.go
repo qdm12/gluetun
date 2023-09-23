@@ -36,7 +36,7 @@ func (s *Service) cleanup() (err error) {
 
 	s.port = 0
 
-	filepath := *s.settings.Settings.Filepath
+	filepath := *s.settings.UserSettings.Filepath
 	s.logger.Info("removing port file " + filepath)
 	err = os.Remove(filepath)
 	if err != nil {
