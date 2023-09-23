@@ -2,6 +2,7 @@ package protonvpn
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -66,6 +67,8 @@ func checkExternalPorts(logger utils.Logger, udpPort, tcpPort uint16) {
 	}
 }
 
+var ErrExternalPortChanged = errors.New("external port changed")
+
 func (p *Provider) KeepPortForward(ctx context.Context,
 	objects utils.PortForwardObjects) (err error) {
 	client := natpmp.New()
@@ -98,9 +101,8 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 			}
 
 			if p.portForwarded != assignedExternalPort {
-				objects.Logger.Warn(fmt.Sprintf("external port assigned %d changed to %d",
-					p.portForwarded, assignedExternalPort))
-				p.portForwarded = assignedExternalPort
+				return fmt.Errorf("%w: %d changed to %d",
+					ErrExternalPortChanged, p.portForwarded, assignedExternalPort)
 			}
 		}
 
