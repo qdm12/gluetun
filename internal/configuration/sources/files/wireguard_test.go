@@ -131,7 +131,7 @@ PreSharedKey = x
 			iniData: `[Interface]
 Address = x
 `,
-			errMessage: "parsing address: netip.ParsePrefix(\"x\"): no '/'",
+			errMessage: "parsing address: netip.ParsePrefix(\"x/32\"): ParseAddr(\"x\"): unable to parse IP",
 		},
 		"success": {
 			iniData: `
@@ -238,7 +238,7 @@ func Test_parseINIWireguardAddress(t *testing.T) {
 		"bad address": {
 			fileContent: `[Interface]
 Address = x`,
-			errMessage: "parsing address: netip.ParsePrefix(\"x\"): no '/'",
+			errMessage: "parsing address: netip.ParsePrefix(\"x/32\"): ParseAddr(\"x\"): unable to parse IP",
 		},
 		"success": {
 			fileContent: `[Interface]

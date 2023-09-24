@@ -101,6 +101,9 @@ func parseINIWireguardAddress(section *ini.Section) (
 	addresses = make([]netip.Prefix, len(addressStrings))
 	for i, addressString := range addressStrings {
 		addressString = strings.TrimSpace(addressString)
+		if !strings.ContainsRune(addressString, '/') {
+			addressString += "/32"
+		}
 		addresses[i], err = netip.ParsePrefix(addressString)
 		if err != nil {
 			return nil, fmt.Errorf("parsing address: %w", err)
