@@ -11,3 +11,9 @@ type Fetcher interface {
 	FetchInfo(ctx context.Context, ip netip.Addr) (
 		result ipinfo.Response, err error)
 }
+
+type Logger interface {
+	Info(s string)
+	Warn(s string)
+	Error(s string)
+}

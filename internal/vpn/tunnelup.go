@@ -28,8 +28,8 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	}
 
-	// Runs the Public IP getter job once
-	_, _ = l.publicip.ApplyStatus(ctx, constants.Running)
+	l.publicip.StartSingleRun()
+
 	if l.versionInfo {
 		l.versionInfo = false // only get the version information once
 		message, err := version.GetMessage(ctx, l.buildInfo, l.client)

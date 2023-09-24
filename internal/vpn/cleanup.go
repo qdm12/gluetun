@@ -3,8 +3,6 @@ package vpn
 import (
 	"context"
 	"errors"
-
-	"github.com/qdm12/gluetun/internal/models"
 )
 
 func (l *Loop) cleanup(vpnProvider string) {
@@ -15,9 +13,12 @@ func (l *Loop) cleanup(vpnProvider string) {
 		}
 	}
 
-	l.publicip.SetData(models.PublicIP{}) // clear public IP address data
+	err := l.publicip.ClearData()
+	if err != nil {
+		l.logger.Error("clearing public IP data: " + err.Error())
+	}
 
-	err := l.stopPortForwarding(vpnProvider)
+	err = l.stopPortForwarding(vpnProvider)
 	if err != nil {
 		portForwardingAlreadyStopped := errors.Is(err, context.Canceled)
 		if !portForwardingAlreadyStopped {

@@ -377,7 +377,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	portForwardLogger := logger.New(log.SetComponent("port forwarding"))
 	portForwardLooper := portforward.NewLoop(allSettings.VPN.Provider.PortForwarding,
 		routingConf, httpClient, firewallConf, portForwardLogger, puid, pgid)
-	portForwardRunError, _ := portForwardLooper.Start(context.Background())
+	portForwardRunError, err := portForwardLooper.Start(ctx)
+	if err != nil {
+		return fmt.Errorf("starting port forwarding loop: %w", err)
+	}
 
 	unboundLogger := logger.New(log.SetComponent("dns"))
 	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
@@ -397,15 +400,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	publicIPLooper := publicip.NewLoop(ipFetcher,
 		logger.New(log.SetComponent("ip getter")),
 		allSettings.PublicIP, puid, pgid)
-	pubIPHandler, pubIPCtx, pubIPDone := goshutdown.NewGoRoutineHandler(
-		"public IP", goroutine.OptionTimeout(defaultShutdownTimeout))
-	go publicIPLooper.Run(pubIPCtx, pubIPDone)
-	otherGroupHandler.Add(pubIPHandler)
-
-	pubIPTickerHandler, pubIPTickerCtx, pubIPTickerDone := goshutdown.NewGoRoutineHandler(
-		"public IP", goroutine.OptionTimeout(defaultShutdownTimeout))
-	go publicIPLooper.RunRestartTicker(pubIPTickerCtx, pubIPTickerDone)
-	tickersGroupHandler.Add(pubIPTickerHandler)
+	publicIPRunError, err := publicIPLooper.Start(ctx)
+	if err != nil {
+		return fmt.Errorf("starting public ip loop: %w", err)
+	}
 
 	updaterLogger := logger.New(log.SetComponent("updater"))
 
@@ -487,12 +485,22 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	select {
 	case <-ctx.Done():
-		err = portForwardLooper.Stop()
-		if err != nil {
-			logger.Error("stopping port forward loop: " + err.Error())
+		stoppers := []interface {
+			String() string
+			Stop() error
+		}{
+			portForwardLooper, publicIPLooper,
+		}
+		for _, stopper := range stoppers {
+			err := stopper.Stop()
+			if err != nil {
+				logger.Error(fmt.Sprintf("stopping %s: %s", stopper, err))
+			}
 		}
 	case err := <-portForwardRunError:
 		logger.Errorf("port forwarding loop crashed: %s", err)
+	case err := <-publicIPRunError:
+		logger.Errorf("public IP loop crashed: %s", err)
 	}
 
 	return orderHandler.Shutdown(context.Background())

@@ -90,7 +90,6 @@ type DNSLoop interface {
 }
 
 type PublicIPLoop interface {
-	ApplyStatus(ctx context.Context, status models.LoopStatus) (
-		outcome string, err error)
-	SetData(data models.PublicIP)
+	StartSingleRun()
+	ClearData() (err error)
 }

@@ -23,6 +23,20 @@ type PublicIP struct {
 	IPFilepath *string
 }
 
+// UpdateWith deep copies the receiving settings, overrides the copy with
+// fields set in the partialUpdate argument, validates the new settings
+// and returns them if they are valid, or returns an error otherwise.
+// In all cases, the receiving settings are unmodified.
+func (p PublicIP) UpdateWith(partialUpdate PublicIP) (updatedSettings PublicIP, err error) {
+	updatedSettings = p.copy()
+	updatedSettings.overrideWith(partialUpdate)
+	err = updatedSettings.validate()
+	if err != nil {
+		return updatedSettings, fmt.Errorf("validating updated settings: %w", err)
+	}
+	return updatedSettings, nil
+}
+
 func (p PublicIP) validate() (err error) {
 	const minPeriod = 5 * time.Second
 	if *p.Period < minPeriod {

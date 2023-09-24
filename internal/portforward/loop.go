@@ -48,6 +48,10 @@ func NewLoop(settings settings.PortForwarding, routing Routing,
 	}
 }
 
+func (l *Loop) String() string {
+	return "port forwarding loop"
+}
+
 func (l *Loop) Start(_ context.Context) (runError <-chan error, _ error) {
 	l.runCtx, l.runCancel = context.WithCancel(context.Background())
 	runDone := make(chan struct{})
