@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 type Provider interface {
@@ -23,6 +24,10 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	minServers := int(minRatio * float64(existingServersCount))
 	servers, err := provider.FetchServers(ctx, minServers)
 	if err != nil {
+		if errors.Is(err, common.ErrNotEnoughServers) {
+			u.logger.Warn("note: if running the update manually, you can use the flag " +
+				"-minratio to allow the update to succeed with less servers found")
+		}
 		return fmt.Errorf("getting servers: %w", err)
 	}
 
