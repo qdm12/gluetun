@@ -85,6 +85,7 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 		case <-timer.C:
 		}
 
+		objects.Logger.Debug("refreshing port forward since 45 seconds have elapsed")
 		networkProtocols := []string{"udp", "tcp"}
 		const internalPort = 0
 		const lifetime = 60 * time.Second
@@ -108,6 +109,8 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 					ErrExternalPortChanged, p.portForwarded, assignedExternalPort)
 			}
 		}
+
+		objects.Logger.Debug(fmt.Sprintf("port forwarded %d maintained", p.portForwarded))
 
 		timer.Reset(refreshTimeout)
 	}
