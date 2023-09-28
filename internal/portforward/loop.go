@@ -12,7 +12,7 @@ import (
 
 type Loop struct {
 	// State
-	settings      service.Settings
+	settings      Settings
 	settingsMutex sync.RWMutex
 	service       Service
 	// Fixed injected objets
@@ -28,7 +28,7 @@ type Loop struct {
 	runCtx        context.Context //nolint:containedctx
 	runCancel     context.CancelFunc
 	runDone       <-chan struct{}
-	updateTrigger chan<- service.Settings
+	updateTrigger chan<- Settings
 	updatedResult <-chan error
 }
 
@@ -36,8 +36,12 @@ func NewLoop(settings settings.PortForwarding, routing Routing,
 	client *http.Client, portAllower PortAllower,
 	logger Logger, uid, gid int) *Loop {
 	return &Loop{
-		settings: service.Settings{
-			UserSettings: settings,
+		settings: Settings{
+			VPNIsUp: ptrTo(false),
+			Service: service.Settings{
+				Enabled:  settings.Enabled,
+				Filepath: *settings.Filepath,
+			},
 		},
 		routing:     routing,
 		client:      client,
@@ -57,24 +61,22 @@ func (l *Loop) Start(_ context.Context) (runError <-chan error, _ error) {
 	runDone := make(chan struct{})
 	l.runDone = runDone
 
-	updateTrigger := make(chan service.Settings)
+	updateTrigger := make(chan Settings)
 	l.updateTrigger = updateTrigger
 	updateResult := make(chan error)
 	l.updatedResult = updateResult
 	runErrorCh := make(chan error)
 
-	go l.run(l.runCtx, runDone, runErrorCh,
-		l.settings, updateTrigger, updateResult)
+	go l.run(l.runCtx, runDone, runErrorCh, updateTrigger, updateResult)
 
 	return runErrorCh, nil
 }
 
 func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
-	runErrorCh chan<- error, initialSettings service.Settings,
-	updateTrigger <-chan service.Settings, updateResult chan<- error) {
+	runErrorCh chan<- error, updateTrigger <-chan Settings,
+	updateResult chan<- error) {
 	defer close(runDone)
 
-	settings := initialSettings
 	var serviceRunError <-chan error
 	for {
 		updateReceived := false
@@ -83,18 +85,20 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			// Stop call takes care of stopping the service
 			return
 		case partialUpdate := <-updateTrigger:
-			updatedSettings, err := settings.UpdateWith(partialUpdate)
+			updatedSettings, err := l.settings.updateWith(partialUpdate)
 			if err != nil {
 				updateResult <- err
 				continue
 			}
-			settings = updatedSettings
 			updateReceived = true
+			l.settingsMutex.Lock()
+			l.settings = updatedSettings
+			l.settingsMutex.Unlock()
 		case err := <-serviceRunError:
 			l.logger.Error(err.Error())
 		}
 
-		firstRun := l.service == nil
+		firstRun := serviceRunError == nil
 		if !firstRun {
 			err := l.service.Stop()
 			if err != nil {
@@ -103,7 +107,11 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			}
 		}
 
-		l.service = service.New(settings, l.routing, l.client,
+		serviceSettings := l.settings.Service.Copy()
+		// Only enable port forward if the VPN tunnel is up
+		*serviceSettings.Enabled = *serviceSettings.Enabled && *l.settings.VPNIsUp
+
+		l.service = service.New(serviceSettings, l.routing, l.client,
 			l.portAllower, l.logger, l.uid, l.gid)
 
 		var err error
@@ -119,16 +127,10 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			}
 			return
 		}
-
-		// Service is created and started successfully, so update
-		// the settings for external calls such as GetSettings.
-		l.settingsMutex.Lock()
-		l.settings = settings
-		l.settingsMutex.Unlock()
 	}
 }
 
-func (l *Loop) UpdateWith(partialUpdate service.Settings) (err error) {
+func (l *Loop) UpdateWith(partialUpdate Settings) (err error) {
 	select {
 	case l.updateTrigger <- partialUpdate:
 		select {
@@ -158,4 +160,8 @@ func (l *Loop) GetPortForwarded() (port uint16) {
 		return 0
 	}
 	return l.service.GetPortForwarded()
+}
+
+func ptrTo[T any](value T) *T {
+	return &value
 }

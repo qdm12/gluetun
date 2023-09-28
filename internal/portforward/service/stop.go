@@ -14,6 +14,7 @@ func (s *Service) Stop() (err error) {
 	serviceNotRunning := s.port == 0
 	s.portMutex.RUnlock()
 	if serviceNotRunning {
+		// TODO replace with goservices.ErrAlreadyStopped
 		return nil
 	}
 
@@ -36,7 +37,7 @@ func (s *Service) cleanup() (err error) {
 
 	s.port = 0
 
-	filepath := *s.settings.UserSettings.Filepath
+	filepath := s.settings.Filepath
 	s.logger.Info("removing port file " + filepath)
 	err = os.Remove(filepath)
 	if err != nil {

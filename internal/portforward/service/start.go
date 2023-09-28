@@ -11,7 +11,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 	s.startStopMutex.Lock()
 	defer s.startStopMutex.Unlock()
 
-	if !*s.settings.UserSettings.Enabled {
+	if !*s.settings.Enabled {
 		return nil, nil //nolint:nilnil
 	}
 
@@ -64,6 +64,8 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		if !crashed { // stopped by Stop call
 			return
 		}
+		s.startStopMutex.Lock()
+		defer s.startStopMutex.Unlock()
 		_ = s.cleanup()
 		runError <- err
 	}(keepPortCtx, s.settings.PortForwarder, obj, runErrorCh, keepPortDoneCh)

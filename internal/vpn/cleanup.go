@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func (l *Loop) cleanup(vpnProvider string) {
+func (l *Loop) cleanup() {
 	for _, vpnPort := range l.vpnInputPorts {
 		err := l.fw.RemoveAllowedPort(context.Background(), vpnPort)
 		if err != nil {
@@ -18,7 +18,7 @@ func (l *Loop) cleanup(vpnProvider string) {
 		l.logger.Error("clearing public IP data: " + err.Error())
 	}
 
-	err = l.stopPortForwarding(vpnProvider)
+	err = l.stopPortForwarding()
 	if err != nil {
 		portForwardingAlreadyStopped := errors.Is(err, context.Canceled)
 		if !portForwardingAlreadyStopped {

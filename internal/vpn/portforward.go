@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/portforward/service"
 	pfutils "github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -23,21 +23,20 @@ func getPortForwarder(provider Provider, providers Providers, //nolint:ireturn
 }
 
 func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
-	partialUpdate := service.Settings{
-		PortForwarder: data.portForwarder,
-		Interface:     data.vpnIntf,
-		ServerName:    data.serverName,
-		VPNProvider:   data.portForwarder.Name(),
+	partialUpdate := portforward.Settings{
+		VPNIsUp: ptrTo(true),
+		Service: service.Settings{
+			PortForwarder: data.portForwarder,
+			Interface:     data.vpnIntf,
+			ServerName:    data.serverName,
+		},
 	}
 	return l.portForward.UpdateWith(partialUpdate)
 }
 
-func (l *Loop) stopPortForwarding(vpnProvider string) (err error) {
-	partialUpdate := service.Settings{
-		VPNProvider: vpnProvider,
-		UserSettings: settings.PortForwarding{
-			Enabled: ptrTo(false),
-		},
+func (l *Loop) stopPortForwarding() (err error) {
+	partialUpdate := portforward.Settings{
+		VPNIsUp: ptrTo(false),
 	}
 	return l.portForward.UpdateWith(partialUpdate)
 }

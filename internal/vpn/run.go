@@ -71,7 +71,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-tunnelReady:
 				go l.onTunnelUp(openvpnCtx, tunnelUpData)
 			case <-ctx.Done():
-				l.cleanup(portForwarder.Name())
+				l.cleanup()
 				openvpnCancel()
 				<-waitError
 				close(waitError)
@@ -79,7 +79,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
-				l.cleanup(portForwarder.Name())
+				l.cleanup()
 				openvpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
@@ -92,7 +92,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			case err := <-waitError: // unexpected error
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
-				l.cleanup(portForwarder.Name())
+				l.cleanup()
 				openvpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
