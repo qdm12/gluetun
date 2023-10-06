@@ -27,7 +27,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	logger := objects.Logger
 
 	logger.Info("gateway external IPv4 address is " + externalIPv4Address.String())
-	const internalPort, externalPort = 0, 0
+	const internalPort, externalPort = 0, 1
 	const lifetime = 60 * time.Second
 
 	_, _, assignedUDPExternalPort, assignedLifetime, err :=
