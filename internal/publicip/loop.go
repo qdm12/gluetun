@@ -2,6 +2,7 @@ package publicip
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/netip"
 	"sync"
@@ -94,9 +95,16 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			continue
 		}
 
-		result, exit := l.fetchIPData(runCtx)
-		if exit {
+		result, err := l.fetchIPData(runCtx)
+		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 			return
+		}
+
+		lastFetch = l.timeNow()
+		timerIsReadyToReset = l.updateTimer(*l.settings.Period, lastFetch, timer, timerIsReadyToReset)
+
+		if errors.Is(err, ipinfo.ErrTooManyRequests) {
+			continue
 		}
 
 		message := "Public IP address is " + result.IP.String()
@@ -108,37 +116,34 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 		l.ipDataMutex.Unlock()
 
 		filepath := *l.settings.IPFilepath
-		err := persistPublicIP(filepath, result.IP.String(), l.puid, l.pgid)
+		err = persistPublicIP(filepath, result.IP.String(), l.puid, l.pgid)
 		if err != nil { // non critical error, which can be fixed with settings updates.
 			l.logger.Error(err.Error())
 		}
-
-		lastFetch = l.timeNow()
-		timerIsReadyToReset = l.updateTimer(*l.settings.Period, lastFetch, timer, timerIsReadyToReset)
 	}
 }
 
-func (l *Loop) fetchIPData(ctx context.Context) (result ipinfo.Response, exit bool) {
+func (l *Loop) fetchIPData(ctx context.Context) (result ipinfo.Response, err error) {
 	// keep retrying since settings updates won't change the
 	// behavior of the following code.
 	const defaultBackoffTime = 5 * time.Second
 	backoffTime := defaultBackoffTime
 	for {
-		var err error
 		result, err = l.fetcher.FetchInfo(ctx, netip.Addr{})
-		if err == nil {
-			return result, false
-		}
-
-		exit = ctx.Err() != nil
-		if exit {
-			return result, true
+		switch {
+		case err == nil:
+			return result, nil
+		case ctx.Err() != nil:
+			return result, err
+		case errors.Is(err, ipinfo.ErrTooManyRequests):
+			l.logger.Warn(err.Error() + "; not retrying.")
+			return result, err
 		}
 
 		l.logger.Error(fmt.Sprintf("%s - retrying in %s", err, backoffTime))
 		select {
 		case <-ctx.Done():
-			return result, true
+			return result, ctx.Err()
 		case <-time.After(backoffTime):
 		}
 		const backoffTimeMultipler = 2
