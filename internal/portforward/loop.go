@@ -121,12 +121,6 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			// and if it failed to start.
 			updateResult <- err
 		}
-		if err != nil {
-			if runCtx.Err() == nil { // crashed but NOT stopped
-				runErrorCh <- fmt.Errorf("starting new service: %w", err)
-			}
-			return
-		}
 	}
 }
 
