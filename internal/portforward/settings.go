@@ -17,10 +17,11 @@ type Settings struct {
 // fields set in the partialUpdate argument, validates the new settings
 // and returns them if they are valid, or returns an error otherwise.
 // In all cases, the receiving settings are unmodified.
-func (s Settings) updateWith(partialUpdate Settings) (updated Settings, err error) {
+func (s Settings) updateWith(partialUpdate Settings,
+	forStartup bool) (updated Settings, err error) {
 	updated = s.copy()
 	updated.overrideWith(partialUpdate)
-	err = updated.validate()
+	err = updated.validate(forStartup)
 	if err != nil {
 		return updated, err
 	}
@@ -38,6 +39,6 @@ func (s *Settings) overrideWith(update Settings) {
 	s.Service.OverrideWith(update.Service)
 }
 
-func (s Settings) validate() (err error) {
-	return s.Service.Validate()
+func (s Settings) validate(forStartup bool) (err error) {
+	return s.Service.Validate(forStartup)
 }

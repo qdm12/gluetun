@@ -34,17 +34,28 @@ func (s *Settings) OverrideWith(update Settings) {
 }
 
 var (
-	ErrServerNameNotSet = errors.New("server name not set")
-	ErrFilepathNotSet   = errors.New("file path not set")
-	ErrInterfaceNotSet  = errors.New("interface not set")
+	ErrPortForwarderNotSet = errors.New("port forwarder not set")
+	ErrServerNameNotSet    = errors.New("server name not set")
+	ErrFilepathNotSet      = errors.New("file path not set")
+	ErrInterfaceNotSet     = errors.New("interface not set")
 )
 
-func (s *Settings) Validate() (err error) {
-	switch {
-	// Port forwarder can be nil when the loop updates
-	// to stop the service.
-	case s.Filepath == "":
+func (s *Settings) Validate(forStartup bool) (err error) {
+	// Minimal validation
+	if s.Filepath == "" {
 		return fmt.Errorf("%w", ErrFilepathNotSet)
+	}
+
+	if !forStartup {
+		// No additional validation needed if the service
+		// is not to be started with the given settings.
+		return nil
+	}
+
+	// Startup validation requires additional fields set.
+	switch {
+	case s.PortForwarder == nil:
+		return fmt.Errorf("%w", ErrPortForwarderNotSet)
 	case s.Interface == "":
 		return fmt.Errorf("%w", ErrInterfaceNotSet)
 	case s.PortForwarder.Name() == providers.PrivateInternetAccess && s.ServerName == "":
