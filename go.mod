@@ -6,7 +6,7 @@ require (
 	github.com/breml/rootcerts v0.2.11
 	github.com/fatih/color v1.15.0
 	github.com/golang/mock v1.6.0
-	github.com/klauspost/compress v1.16.7
+	github.com/klauspost/compress v1.17.2
 	github.com/klauspost/pgzip v1.2.6
 	github.com/qdm12/dns v1.11.0
 	github.com/qdm12/golibs v0.0.0-20210822203818-5c568b0777b6
