@@ -24,7 +24,7 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a
 	golang.org/x/net v0.12.0
 	golang.org/x/sys v0.13.0
-	golang.org/x/text v0.11.0
+	golang.org/x/text v0.13.0
 	golang.zx2c4.com/wireguard v0.0.0-20230325221338-052af4a8072b
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230215201556-9c5414ab4bde
 	gopkg.in/ini.v1 v1.67.0
