@@ -75,7 +75,6 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, and even ppc64le 🎆
 - [Custom VPN server side port forwarding for Private Internet Access](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/private-internet-access.md#vpn-server-port-forwarding)
 - Possibility of split horizon DNS by selecting multiple DNS over TLS providers
-- Unbound subprogram drops root privileges once launched
 - Can work as a Kubernetes sidecar container, thanks @rorph
 
 ## Setup

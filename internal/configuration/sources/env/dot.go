@@ -15,7 +15,14 @@ func (s *Source) readDoT() (dot settings.DoT, err error) {
 		return dot, err
 	}
 
-	dot.Unbound, err = s.readUnbound()
+	dot.Providers = s.env.CSV("DOT_PROVIDERS")
+
+	dot.Caching, err = s.env.BoolPtr("DOT_CACHING")
+	if err != nil {
+		return dot, err
+	}
+
+	dot.IPv6, err = s.env.BoolPtr("DOT_IPV6")
 	if err != nil {
 		return dot, err
 	}

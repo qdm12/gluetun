@@ -1,35 +1,39 @@
 package dns
 
-import "context"
+import (
+	"context"
+	"fmt"
+
+	"github.com/qdm12/dns/v2/pkg/blockbuilder"
+	"github.com/qdm12/dns/v2/pkg/filter/update"
+)
 
 func (l *Loop) updateFiles(ctx context.Context) (err error) {
-	l.logger.Info("downloading DNS over TLS cryptographic files")
-	if err := l.conf.SetupFiles(ctx); err != nil {
-		return err
-	}
 	settings := l.GetSettings()
 
-	unboundSettings, err := settings.DoT.Unbound.ToUnboundFormat()
-	if err != nil {
-		return err
-	}
-
 	l.logger.Info("downloading hostnames and IP block lists")
-	blacklistSettings, err := settings.DoT.Blacklist.ToBlacklistFormat()
+	blacklistSettings := settings.DoT.Blacklist.ToBlockBuilderSettings()
+
+	blockBuilder := blockbuilder.New(blacklistSettings)
+	result := blockBuilder.BuildAll(ctx)
+	for _, resultErr := range result.Errors {
+		if err != nil {
+			err = fmt.Errorf("%w, %w", err, resultErr)
+			continue
+		}
+		err = resultErr
+	}
+
 	if err != nil {
 		return err
 	}
 
-	blockedHostnames, blockedIPs, blockedIPPrefixes, errs :=
-		l.blockBuilder.All(ctx, blacklistSettings)
-	for _, err := range errs {
-		l.logger.Warn(err.Error())
+	updateSettings := update.Settings{
+		IPs:        result.BlockedIPs,
+		IPPrefixes: result.BlockedIPPrefixes,
 	}
+	updateSettings.BlockHostnames(result.BlockedHostnames)
+	l.filter.Update(updateSettings)
 
-	// TODO change to BlockHostnames() when migrating to qdm12/dns v2
-	unboundSettings.Blacklist.FqdnHostnames = blockedHostnames
-	unboundSettings.Blacklist.IPs = blockedIPs
-	unboundSettings.Blacklist.IPPrefixes = blockedIPPrefixes
-
-	return l.conf.MakeUnboundConf(unboundSettings)
+	return nil
 }

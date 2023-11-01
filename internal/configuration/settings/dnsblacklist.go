@@ -6,7 +6,7 @@ import (
 	"net/netip"
 	"regexp"
 
-	"github.com/qdm12/dns/pkg/blacklist"
+	"github.com/qdm12/dns/v2/pkg/blockbuilder"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gotree"
 )
@@ -83,16 +83,17 @@ func (b *DNSBlacklist) overrideWith(other DNSBlacklist) {
 	b.AddBlockedIPPrefixes = gosettings.OverrideWithSlice(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
 }
 
-func (b DNSBlacklist) ToBlacklistFormat() (settings blacklist.BuilderSettings, err error) {
-	return blacklist.BuilderSettings{
-		BlockMalicious:       *b.BlockMalicious,
-		BlockAds:             *b.BlockAds,
-		BlockSurveillance:    *b.BlockSurveillance,
+func (b DNSBlacklist) ToBlockBuilderSettings() (
+	settings blockbuilder.Settings) {
+	return blockbuilder.Settings{
+		BlockMalicious:       b.BlockMalicious,
+		BlockAds:             b.BlockAds,
+		BlockSurveillance:    b.BlockSurveillance,
 		AllowedHosts:         b.AllowedHosts,
 		AddBlockedHosts:      b.AddBlockedHosts,
-		AddBlockedIPs:        netipAddressesToNetaddrIPs(b.AddBlockedIPs),
-		AddBlockedIPPrefixes: netipPrefixesToNetaddrIPPrefixes(b.AddBlockedIPPrefixes),
-	}, nil
+		AddBlockedIPs:        b.AddBlockedIPs,
+		AddBlockedIPPrefixes: b.AddBlockedIPPrefixes,
+	}
 }
 
 func (b DNSBlacklist) String() string {

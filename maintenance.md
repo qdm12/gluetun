@@ -2,7 +2,6 @@
 
 - Rename `UNBLOCK` to `DOT_UNBOUND_UNBLOCK`
 - Change `Run` methods to `Start`+`Stop`, returning channels rather than injecting them
-- Use DNS v2 beta
 - Go 1.18
   - gofumpt
   - Use netip

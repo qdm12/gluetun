@@ -104,7 +104,7 @@
 - name: "Wireguard"
   color: "ffc7ea"
   description: ""
-- name: "Unbound (DNS over TLS)"
+- name: "DNS"
   color: "ffc7ea"
   description: ""
 - name: "Firewall"
