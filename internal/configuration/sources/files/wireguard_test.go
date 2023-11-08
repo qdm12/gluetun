@@ -63,7 +63,7 @@ PrivateKey = x
 			fileContent: `
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
-PreSharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
+PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 Address = 10.38.22.35/32
 DNS = 193.138.218.74
 
@@ -121,9 +121,9 @@ PrivateKey = x`,
 		},
 		"pre shared key error": {
 			iniData: `[Interface]
-PreSharedKey = x
+PresharedKey = x
 `,
-			errMessage: "parsing PreSharedKey: x: " +
+			errMessage: "parsing PresharedKey: x: " +
 				"wgtypes: failed to parse base64-encoded key: " +
 				"illegal base64 data at input byte 0",
 		},
@@ -137,7 +137,7 @@ Address = x
 			iniData: `
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
-PreSharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
+PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 Address = 10.38.22.35/32
 `,
 			wireguard: settings.Wireguard{

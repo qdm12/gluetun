@@ -53,7 +53,7 @@ func parseWireguardInterfaceSection(interfaceSection *ini.Section,
 		return err // error is already wrapped correctly
 	}
 
-	wireguard.PreSharedKey, err = parseINIWireguardKey(interfaceSection, "PreSharedKey")
+	wireguard.PreSharedKey, err = parseINIWireguardKey(interfaceSection, "PresharedKey")
 	if err != nil {
 		return err // error is already wrapped correctly
 	}
