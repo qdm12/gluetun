@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/breml/rootcerts v0.2.13
-	github.com/fatih/color v1.15.0
+	github.com/fatih/color v1.16.0
 	github.com/golang/mock v1.6.0
 	github.com/klauspost/compress v1.17.2
 	github.com/klauspost/pgzip v1.2.6
@@ -23,7 +23,7 @@ require (
 	github.com/vishvananda/netlink v1.2.1-beta.2
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a
 	golang.org/x/net v0.17.0
-	golang.org/x/sys v0.13.0
+	golang.org/x/sys v0.14.0
 	golang.org/x/text v0.13.0
 	golang.zx2c4.com/wireguard v0.0.0-20230325221338-052af4a8072b
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230215201556-9c5414ab4bde
@@ -36,7 +36,7 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/josharian/native v1.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mdlayher/genetlink v1.2.0 // indirect
 	github.com/mdlayher/netlink v1.6.2 // indirect
 	github.com/mdlayher/socket v0.2.3 // indirect
