@@ -70,7 +70,12 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 	}
 	_, err = wgtypes.ParseKey(*w.PrivateKey)
 	if err != nil {
-		return fmt.Errorf("private key is not valid: %w", err)
+		err = fmt.Errorf("private key is not valid: %w", err)
+		if vpnProvider == providers.Nordvpn &&
+			err.Error() == "wgtypes: incorrect key size: 48" {
+			err = fmt.Errorf("%w - you might be using your access token instead of the Wireguard private key", err)
+		}
+		return err
 	}
 
 	if vpnProvider == providers.Airvpn {
