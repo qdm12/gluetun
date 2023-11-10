@@ -18,6 +18,8 @@ type Routing interface {
 type PortAllower interface {
 	SetAllowedPort(ctx context.Context, port uint16, intf string) (err error)
 	RemoveAllowedPort(ctx context.Context, port uint16) (err error)
+	RedirectPort(ctx context.Context, intf string, sourcePort,
+		destinationPort uint16) (err error)
 }
 
 type Logger interface {

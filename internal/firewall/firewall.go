@@ -29,6 +29,7 @@ type Config struct { //nolint:maligned
 	vpnIntf           string
 	outboundSubnets   []netip.Prefix
 	allowedInputPorts map[uint16]map[string]struct{} // port to interfaces set mapping
+	portRedirections  portRedirections
 	stateMutex        sync.Mutex
 }
 

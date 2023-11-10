@@ -25,5 +25,10 @@ func (s *Source) readPortForward() (
 			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE",
 		))
 
+	portForwarding.ListeningPort, err = s.env.Uint16Ptr("VPN_PORT_FORWARDING_LISTENING_PORT")
+	if err != nil {
+		return portForwarding, err
+	}
+
 	return portForwarding, nil
 }

@@ -39,8 +39,9 @@ func NewLoop(settings settings.PortForwarding, routing Routing,
 		settings: Settings{
 			VPNIsUp: ptrTo(false),
 			Service: service.Settings{
-				Enabled:  settings.Enabled,
-				Filepath: *settings.Filepath,
+				Enabled:       settings.Enabled,
+				Filepath:      *settings.Filepath,
+				ListeningPort: *settings.ListeningPort,
 			},
 		},
 		routing:     routing,

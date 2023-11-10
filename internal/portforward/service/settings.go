@@ -14,6 +14,7 @@ type Settings struct {
 	Filepath      string
 	Interface     string // needed for PIA and ProtonVPN, tun0 for example
 	ServerName    string // needed for PIA
+	ListeningPort uint16
 }
 
 func (s Settings) Copy() (copied Settings) {
@@ -22,6 +23,7 @@ func (s Settings) Copy() (copied Settings) {
 	copied.Filepath = s.Filepath
 	copied.Interface = s.Interface
 	copied.ServerName = s.ServerName
+	copied.ListeningPort = s.ListeningPort
 	return copied
 }
 
@@ -31,6 +33,7 @@ func (s *Settings) OverrideWith(update Settings) {
 	s.Filepath = gosettings.OverrideWithString(s.Filepath, update.Filepath)
 	s.Interface = gosettings.OverrideWithString(s.Interface, update.Interface)
 	s.ServerName = gosettings.OverrideWithString(s.ServerName, update.ServerName)
+	s.ListeningPort = gosettings.OverrideWithNumber(s.ListeningPort, update.ListeningPort)
 }
 
 var (
