@@ -198,6 +198,38 @@ func (c *Config) acceptInputToPort(ctx context.Context, intf string, port uint16
 	})
 }
 
+// Used for VPN server side port forwarding, with intf set to the VPN tunnel interface.
+func (c *Config) redirectPort(ctx context.Context, intf string,
+	sourcePort, destinationPort uint16, remove bool) (err error) {
+	interfaceFlag := "-i " + intf
+	if intf == "*" { // all interfaces
+		interfaceFlag = ""
+	}
+
+	err = c.runIptablesInstructions(ctx, []string{
+		fmt.Sprintf("-t nat %s PREROUTING %s -d 127.0.0.1 -p tcp --dport %d -j REDIRECT --to-ports %d",
+			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
+		fmt.Sprintf("-t nat %s PREROUTING %s -d 127.0.0.1 -p udp --dport %d -j REDIRECT --to-ports %d",
+			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
+	})
+	if err != nil {
+		return fmt.Errorf("redirecting IPv4 source port %d to destination port %d on interface %s: %w",
+			sourcePort, destinationPort, intf, err)
+	}
+
+	err = c.runIP6tablesInstructions(ctx, []string{
+		fmt.Sprintf("-t nat %s PREROUTING %s -d ::1 -p tcp --dport %d -j REDIRECT --to-ports %d",
+			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
+		fmt.Sprintf("-t nat %s PREROUTING %s -d ::1 -p udp --dport %d -j REDIRECT --to-ports %d",
+			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
+	})
+	if err != nil {
+		return fmt.Errorf("redirecting IPv6 source port %d to destination port %d on interface %s: %w",
+			sourcePort, destinationPort, intf, err)
+	}
+	return nil
+}
+
 func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove bool) error {
 	file, err := os.OpenFile(filepath, os.O_RDONLY, 0)
 	if os.IsNotExist(err) {

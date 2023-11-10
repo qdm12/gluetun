@@ -28,6 +28,10 @@ type PortForwarding struct {
 	// to write to a file. It cannot be nil for the
 	// internal state
 	Filepath *string `json:"status_file_path"`
+	// ListeningPort is the port traffic would be redirected to from the
+	// forwarded port. The redirection is disabled if it is set to 0, which
+	// is its default as well.
+	ListeningPort *uint16 `json:"listening_port"`
 }
 
 func (p PortForwarding) Validate(vpnProvider string) (err error) {
@@ -61,9 +65,10 @@ func (p PortForwarding) Validate(vpnProvider string) (err error) {
 
 func (p *PortForwarding) Copy() (copied PortForwarding) {
 	return PortForwarding{
-		Enabled:  gosettings.CopyPointer(p.Enabled),
-		Provider: gosettings.CopyPointer(p.Provider),
-		Filepath: gosettings.CopyPointer(p.Filepath),
+		Enabled:       gosettings.CopyPointer(p.Enabled),
+		Provider:      gosettings.CopyPointer(p.Provider),
+		Filepath:      gosettings.CopyPointer(p.Filepath),
+		ListeningPort: gosettings.CopyPointer(p.ListeningPort),
 	}
 }
 
@@ -71,18 +76,21 @@ func (p *PortForwarding) mergeWith(other PortForwarding) {
 	p.Enabled = gosettings.MergeWithPointer(p.Enabled, other.Enabled)
 	p.Provider = gosettings.MergeWithPointer(p.Provider, other.Provider)
 	p.Filepath = gosettings.MergeWithPointer(p.Filepath, other.Filepath)
+	p.ListeningPort = gosettings.MergeWithPointer(p.ListeningPort, other.ListeningPort)
 }
 
 func (p *PortForwarding) OverrideWith(other PortForwarding) {
 	p.Enabled = gosettings.OverrideWithPointer(p.Enabled, other.Enabled)
 	p.Provider = gosettings.OverrideWithPointer(p.Provider, other.Provider)
 	p.Filepath = gosettings.OverrideWithPointer(p.Filepath, other.Filepath)
+	p.ListeningPort = gosettings.OverrideWithPointer(p.ListeningPort, other.ListeningPort)
 }
 
 func (p *PortForwarding) setDefaults() {
 	p.Enabled = gosettings.DefaultPointer(p.Enabled, false)
 	p.Provider = gosettings.DefaultPointer(p.Provider, "")
 	p.Filepath = gosettings.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
+	p.ListeningPort = gosettings.DefaultPointer(p.ListeningPort, 0)
 }
 
 func (p PortForwarding) String() string {
@@ -95,6 +103,13 @@ func (p PortForwarding) toLinesNode() (node *gotree.Node) {
 	}
 
 	node = gotree.New("Automatic port forwarding settings:")
+
+	listeningPort := "disabled"
+	if *p.ListeningPort != 0 {
+		listeningPort = fmt.Sprintf("%d", *p.ListeningPort)
+	}
+	node.Appendf("Redirection listening port: %s", listeningPort)
+
 	if *p.Provider == "" {
 		node.Appendf("Use port forwarding code for current provider")
 	} else {

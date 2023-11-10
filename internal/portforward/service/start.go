@@ -40,6 +40,13 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		return nil, fmt.Errorf("allowing port in firewall: %w", err)
 	}
 
+	if s.settings.ListeningPort != 0 {
+		err = s.portAllower.RedirectPort(ctx, s.settings.Interface, port, s.settings.ListeningPort)
+		if err != nil {
+			return nil, fmt.Errorf("redirecting port in firewall: %w", err)
+		}
+	}
+
 	err = s.writePortForwardedFile(port)
 	if err != nil {
 		_ = s.cleanup()

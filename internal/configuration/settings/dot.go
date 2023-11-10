@@ -100,7 +100,7 @@ func (d DoT) toLinesNode() (node *gotree.Node) {
 		return node
 	}
 
-	update := "disabled"
+	update := "disabled" //nolint:goconst
 	if *d.UpdatePeriod > 0 {
 		update = "every " + d.UpdatePeriod.String()
 	}

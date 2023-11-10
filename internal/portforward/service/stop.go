@@ -35,6 +35,15 @@ func (s *Service) cleanup() (err error) {
 		return fmt.Errorf("blocking previous port in firewall: %w", err)
 	}
 
+	if s.settings.ListeningPort != 0 {
+		ctx := context.Background()
+		const listeningPort = 0 // 0 to clear the redirection
+		err = s.portAllower.RedirectPort(ctx, s.settings.Interface, s.port, listeningPort)
+		if err != nil {
+			return fmt.Errorf("removing previous port redirection in firewall: %w", err)
+		}
+	}
+
 	s.port = 0
 
 	filepath := s.settings.Filepath

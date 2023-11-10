@@ -51,6 +51,13 @@ func (c *Config) disable(ctx context.Context) (err error) {
 	if err = c.setIPv6AllPolicies(ctx, "ACCEPT"); err != nil {
 		return fmt.Errorf("setting ipv6 policies: %w", err)
 	}
+
+	const remove = true
+	err = c.redirectPorts(ctx, remove)
+	if err != nil {
+		return fmt.Errorf("removing port redirections: %w", err)
+	}
+
 	return nil
 }
 
@@ -124,6 +131,11 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		return err
 	}
 
+	err = c.redirectPorts(ctx, remove)
+	if err != nil {
+		return fmt.Errorf("redirecting ports: %w", err)
+	}
+
 	if err := c.runUserPostRules(ctx, c.customRulesPath, remove); err != nil {
 		return fmt.Errorf("running user defined post firewall rules: %w", err)
 	}
@@ -184,6 +196,17 @@ func (c *Config) allowInputPorts(ctx context.Context) (err error) {
 				return fmt.Errorf("accepting input port %d on interface %s: %w",
 					port, netInterface, err)
 			}
+		}
+	}
+	return nil
+}
+
+func (c *Config) redirectPorts(ctx context.Context, remove bool) (err error) {
+	for _, portRedirection := range c.portRedirections {
+		err = c.redirectPort(ctx, portRedirection.interfaceName, portRedirection.sourcePort,
+			portRedirection.destinationPort, remove)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
