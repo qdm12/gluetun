@@ -73,7 +73,13 @@ func (c *CLI) FormatServers(args []string) error {
 			ErrMultipleProvidersToFormat, len(providers),
 			strings.Join(providers, ", "))
 	}
-	providerToFormat := providers[0]
+
+	var providerToFormat string
+	for _, providerToFormat = range allProviders {
+		if strings.ReplaceAll(providerToFormat, " ", "-") == providers[0] {
+			break
+		}
+	}
 
 	logger := newNoopLogger()
 	storage, err := storage.New(logger, constants.ServersData)
