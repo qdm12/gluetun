@@ -104,6 +104,10 @@ func Test_extractDataFromLine(t *testing.T) {
 			line:     "proto tcp",
 			protocol: constants.TCP,
 		},
+		"tcp-client": {
+			line:     "proto tcp-client",
+			protocol: "tcp-client",
+		},
 		"extract remote error": {
 			line:  "remote bad",
 			isErr: errHostNotIP,
