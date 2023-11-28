@@ -40,7 +40,7 @@ func extractDataFromLines(lines []string) (
 
 	if connection.Port == 0 {
 		connection.Port = 1194
-		if connection.Protocol == constants.TCP {
+		if strings.HasPrefix(connection.Protocol, "tcp") {
 			connection.Port = 443
 		}
 	}
