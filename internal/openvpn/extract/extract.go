@@ -81,7 +81,11 @@ func extractProto(line string) (protocol string, err error) {
 	}
 
 	switch fields[1] {
-	case "tcp", "tcp4", "tcp6", "tcp-client", "udp", "udp4", "udp6":
+	case "tcp-client":
+		// Special treatment for this config option, as we need it to become
+		// "tcp" later, for use in iptables commands.
+		return "tcp", nil
+	case "tcp", "tcp4", "tcp6", "udp", "udp4", "udp6":
 	default:
 		return "", fmt.Errorf("%w: %s", errProtocolNotSupported, fields[1])
 	}
