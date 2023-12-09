@@ -43,17 +43,23 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 		return wireguard, fmt.Errorf("getting interface section: %w", err)
 	}
 
+	peerSection, err := iniFile.GetSection("Peer")
+	if err == nil {
+		wireguard.PreSharedKey, err = parseINIWireguardKey(peerSection, "PresharedKey")
+		if err != nil {
+			return wireguard, fmt.Errorf("parsing peer section: %w", err)
+		}
+	} else if !regexINISectionNotExist.MatchString(err.Error()) {
+		// can never happen
+		return wireguard, fmt.Errorf("getting peer section: %w", err)
+	}
+
 	return wireguard, nil
 }
 
 func parseWireguardInterfaceSection(interfaceSection *ini.Section,
 	wireguard *settings.Wireguard) (err error) {
 	wireguard.PrivateKey, err = parseINIWireguardKey(interfaceSection, "PrivateKey")
-	if err != nil {
-		return err // error is already wrapped correctly
-	}
-
-	wireguard.PreSharedKey, err = parseINIWireguardKey(interfaceSection, "PresharedKey")
 	if err != nil {
 		return err // error is already wrapped correctly
 	}
