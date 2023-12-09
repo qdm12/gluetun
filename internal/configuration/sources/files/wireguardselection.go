@@ -64,7 +64,11 @@ func parseWireguardPeerSection(peerSection *ini.Section,
 
 		ip, err := netip.ParseAddr(host)
 		if err != nil {
-			return fmt.Errorf("%w: %w", ErrEndpointHostNotIP, err)
+			ips, err := net.LookupIP(host)
+			if err != nil {
+				return fmt.Errorf("resolving domain: %w", err)
+			}
+			ip, _ = netip.ParseAddr(ips[0].String())
 		}
 
 		endpointPort, err := port.Validate(portString)
