@@ -142,9 +142,13 @@ func (c *Config) acceptEstablishedRelatedTraffic(ctx context.Context, remove boo
 
 func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 	defaultInterface string, connection models.Connection, remove bool) error {
+	protocol := connection.Protocol
+	if protocol == "tcp-client" {
+		protocol = "tcp"
+	}
 	instruction := fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
-		appendOrDelete(remove), connection.IP, defaultInterface, connection.Protocol,
-		connection.Protocol, connection.Port)
+		appendOrDelete(remove), connection.IP, defaultInterface, protocol,
+		protocol, connection.Port)
 	if connection.IP.Is4() {
 		return c.runIptablesInstruction(ctx, instruction)
 	} else if c.ip6Tables == "" {
