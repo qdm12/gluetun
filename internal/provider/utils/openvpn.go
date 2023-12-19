@@ -16,7 +16,7 @@ type OpenVPNProviderSettings struct {
 	RemoteCertTLS bool
 	Ciphers       []string
 	Auth          string
-	CA            string
+	CAs           []string
 	CRLVerify     string
 	Cert          string
 	Key           string
@@ -174,8 +174,8 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.add("setenv", envKey, envValue)
 	}
 
-	if provider.CA != "" {
-		lines.addLines(WrapOpenvpnCA(provider.CA))
+	for _, ca := range provider.CAs {
+		lines.addLines(WrapOpenvpnCA(ca))
 	}
 	if provider.CRLVerify != "" {
 		lines.addLines(WrapOpenvpnCRLVerify(provider.CRLVerify))
