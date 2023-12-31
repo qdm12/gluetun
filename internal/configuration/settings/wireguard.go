@@ -44,6 +44,9 @@ type Wireguard struct {
 	// It defaults to "auto" and cannot be the empty string
 	// in the internal state.
 	Implementation string `json:"implementation"`
+	// PersistenKeepAlive enable sending keep alive signal to server.
+	// So NAT view it as active connection
+	PersistenKeepAlive int `json:"persistent_keepalive"`
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
