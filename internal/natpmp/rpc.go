@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net"
 	"net/netip"
+	"sort"
+	"strings"
 	"time"
 )
 
@@ -65,9 +67,8 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 	// Note it does not double if the source IP mismatches the gateway IP.
 	connectionDuration := c.initialConnectionDuration
 
-	var totalRetryDuration time.Duration
-
 	var retryCount uint
+	var failedAttempts []string
 	for retryCount = 0; retryCount < c.maxRetries; retryCount++ {
 		deadline := time.Now().Add(connectionDuration)
 		err = connection.SetDeadline(deadline)
@@ -87,8 +88,8 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 			}
 			var netErr net.Error
 			if errors.As(err, &netErr) && netErr.Timeout() {
-				totalRetryDuration += connectionDuration
 				connectionDuration *= 2
+				failedAttempts = append(failedAttempts, netErr.Error())
 				continue
 			}
 			return nil, fmt.Errorf("reading from udp connection: %w", err)
@@ -98,6 +99,9 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 			// Upon receiving a response packet, the client MUST check the source IP
 			// address, and silently discard the packet if the address is not the
 			// address of the gateway to which the request was sent.
+			failedAttempts = append(failedAttempts,
+				fmt.Sprintf("received response from %s instead of gateway IP %s",
+					receivedRemoteAddress.IP, gatewayAddress.IP))
 			continue
 		}
 
@@ -106,8 +110,8 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 	}
 
 	if retryCount == c.maxRetries {
-		return nil, fmt.Errorf("%w: after %s",
-			ErrConnectionTimeout, totalRetryDuration)
+		return nil, fmt.Errorf("%w: failed attempts: %s",
+			ErrConnectionTimeout, dedupFailedAttempts(failedAttempts))
 	}
 
 	// Opcodes between 0 and 127 are client requests.  Opcodes from 128 to
@@ -120,4 +124,51 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 	}
 
 	return response, nil
+}
+
+func dedupFailedAttempts(failedAttempts []string) (errorMessage string) {
+	type data struct {
+		message string
+		indices []int
+	}
+	messageToData := make(map[string]data, len(failedAttempts))
+	for i, message := range failedAttempts {
+		metadata, ok := messageToData[message]
+		if !ok {
+			metadata.message = message
+		}
+		metadata.indices = append(metadata.indices, i)
+		sort.Slice(metadata.indices, func(i, j int) bool {
+			return metadata.indices[i] < metadata.indices[j]
+		})
+		messageToData[message] = metadata
+	}
+
+	// Sort by first index
+	dataSlice := make([]data, 0, len(messageToData))
+	for _, metadata := range messageToData {
+		dataSlice = append(dataSlice, metadata)
+	}
+	sort.Slice(dataSlice, func(i, j int) bool {
+		return dataSlice[i].indices[0] < dataSlice[j].indices[0]
+	})
+
+	dedupedFailedAttempts := make([]string, 0, len(dataSlice))
+	for _, data := range dataSlice {
+		newMessage := fmt.Sprintf("%s (%s)", data.message,
+			indicesToTryString(data.indices))
+		dedupedFailedAttempts = append(dedupedFailedAttempts, newMessage)
+	}
+	return strings.Join(dedupedFailedAttempts, "; ")
+}
+
+func indicesToTryString(indices []int) string {
+	if len(indices) == 1 {
+		return fmt.Sprintf("try %d", indices[0]+1)
+	}
+	tries := make([]string, len(indices))
+	for i, index := range indices {
+		tries[i] = fmt.Sprintf("%d", index+1)
+	}
+	return fmt.Sprintf("tries %s", strings.Join(tries, ", "))
 }

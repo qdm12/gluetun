@@ -53,8 +53,9 @@ func Test_Client_rpc(t *testing.T) {
 			exchanges: []udpExchange{
 				{request: []byte{0, 1}, close: true},
 			},
-			err:        ErrConnectionTimeout,
-			errMessage: "connection timeout: after 1ms",
+			err: ErrConnectionTimeout,
+			errMessage: "connection timeout: failed attempts: " +
+				"read udp 127.0.0.1:[1-9][0-9]{0,4}->127.0.0.1:[1-9][0-9]{0,4}: i/o timeout \\(try 1\\)",
 		},
 		"response_too_small": {
 			ctx:                       context.Background(),
@@ -161,6 +162,43 @@ func Test_Client_rpc(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, testCase.expectedResponse, response)
+		})
+	}
+}
+
+func Test_dedupFailedAttempts(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		failedAttempts []string
+		expected       string
+	}{
+		"empty": {},
+		"single_attempt": {
+			failedAttempts: []string{"test"},
+			expected:       "test (try 1)",
+		},
+		"multiple_same_attempts": {
+			failedAttempts: []string{"test", "test", "test"},
+			expected:       "test (tries 1, 2, 3)",
+		},
+		"multiple_different_attempts": {
+			failedAttempts: []string{"test1", "test2", "test3"},
+			expected:       "test1 (try 1); test2 (try 2); test3 (try 3)",
+		},
+		"soup_mix": {
+			failedAttempts: []string{"test1", "test2", "test1", "test3", "test2"},
+			expected:       "test1 (tries 1, 3); test2 (tries 2, 5); test3 (try 4)",
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			actual := dedupFailedAttempts(testCase.failedAttempts)
+			assert.Equal(t, testCase.expected, actual)
 		})
 	}
 }
