@@ -26,6 +26,12 @@ func (f Firewall) validate() (err error) {
 		return fmt.Errorf("input ports: %w", ErrFirewallZeroPort)
 	}
 
+	for _, subnet := range f.OutboundSubnets {
+		if !subnet.Addr().IsPrivate() {
+			return fmt.Errorf("%w: %s", ErrFirewallPublicOutboundSubnet, subnet)
+		}
+	}
+
 	return nil
 }
 
