@@ -27,7 +27,7 @@ func (f Firewall) validate() (err error) {
 	}
 
 	for _, subnet := range f.OutboundSubnets {
-		if !subnet.Addr().IsPrivate() {
+		if subnet.Addr().IsUnspecified() {
 			return fmt.Errorf("%w: %s", ErrFirewallPublicOutboundSubnet, subnet)
 		}
 	}

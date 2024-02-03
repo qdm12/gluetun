@@ -37,7 +37,7 @@ func Test_Firewall_validate(t *testing.T) {
 				},
 			},
 			errWrapped: ErrFirewallPublicOutboundSubnet,
-			errMessage: "outbound subnet is public: 0.0.0.0/0",
+			errMessage: "outbound subnet has an unspecified address: 0.0.0.0/0",
 		},
 		"public_outbound_subnet": {
 			firewall: Firewall{
@@ -45,8 +45,6 @@ func Test_Firewall_validate(t *testing.T) {
 					netip.MustParsePrefix("1.2.3.4/32"),
 				},
 			},
-			errWrapped: ErrFirewallPublicOutboundSubnet,
-			errMessage: "outbound subnet is public: 1.2.3.4/32",
 		},
 		"valid_settings": {
 			firewall: Firewall{

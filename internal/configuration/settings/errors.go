@@ -8,7 +8,7 @@ var (
 	ErrCountryNotValid                 = errors.New("the country specified is not valid")
 	ErrFilepathMissing                 = errors.New("filepath is missing")
 	ErrFirewallZeroPort                = errors.New("cannot have a zero port")
-	ErrFirewallPublicOutboundSubnet    = errors.New("outbound subnet is public")
+	ErrFirewallPublicOutboundSubnet    = errors.New("outbound subnet has an unspecified address")
 	ErrHostnameNotValid                = errors.New("the hostname specified is not valid")
 	ErrISPNotValid                     = errors.New("the ISP specified is not valid")
 	ErrMinRatioNotValid                = errors.New("minimum ratio is not valid")
