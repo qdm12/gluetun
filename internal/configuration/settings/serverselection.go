@@ -166,9 +166,12 @@ func getLocationFilterChoices(vpnServiceProvider string,
 	if vpnServiceProvider == providers.Surfshark {
 		// // Retro compatibility
 		// TODO v4 remove
-		filterChoices.Regions = append(filterChoices.Regions, validation.SurfsharkRetroLocChoices()...)
-		err := validate.AreAllOneOfCaseInsensitive(ss.Regions, filterChoices.Regions)
+		newAndRetroRegions := append(filterChoices.Regions, validation.SurfsharkRetroLocChoices()...) //nolint:gocritic
+		err := validate.AreAllOneOfCaseInsensitive(ss.Regions, newAndRetroRegions)
 		if err != nil {
+			// Only return error comparing with newer regions, we don't want to confuse the user
+			// with the retro regions in the error message.
+			err = validate.AreAllOneOfCaseInsensitive(ss.Regions, filterChoices.Regions)
 			return models.FilterChoices{}, fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 		}
 	}
