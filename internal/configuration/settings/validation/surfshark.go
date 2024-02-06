@@ -10,6 +10,9 @@ func SurfsharkRetroLocChoices() (choices []string) {
 	choices = make([]string, 0, len(locationData))
 	seen := make(map[string]struct{}, len(locationData))
 	for _, data := range locationData {
+		if data.RetroLoc == "" {
+			continue
+		}
 		if _, ok := seen[data.RetroLoc]; ok {
 			continue
 		}
