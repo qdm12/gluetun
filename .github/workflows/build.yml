@@ -1,4 +1,4 @@
-name: build-2
+name: build
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,39 +23,10 @@ env:
   GHCR_SLUG: ghcr.io/ac1dburnz/gluetun
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.platforms.outputs.matrix }}
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Create matrix
-        id: platforms
-        run: |
-          echo "matrix=$(docker buildx bake image-all --print | jq -cr '.target."image-all".platforms')" >>${GITHUB_OUTPUT}
-      -
-        name: Show matrix
-        run: |
-          echo ${{ steps.platforms.outputs.matrix }}
-
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 480
-    needs:
-      - prepare
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
-      -
-        name: Prepare
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       -
         name: Checkout
         uses: actions/checkout@v4
@@ -68,7 +39,7 @@ jobs:
             ${{ env.DOCKERHUB_SLUG }}
             ${{ env.GHCR_SLUG }}
           tags: |
-            type=match,pattern=(.*)-r,group=1
+            type=match,pattern=(.*)
             type=ref,event=pr
             type=edge
           labels: |
@@ -76,25 +47,11 @@ jobs:
             org.opencontainers.image.description=rTorrent and ruTorrent
             org.opencontainers.image.vendor=ac1dburnz
       -
-        name: Rename meta bake definition file
-        run: |
-          mv "${{ steps.meta.outputs.bake-file }}" "/tmp/bake-meta.json"
-      -
-        name: Upload meta bake definition
-        uses: actions/upload-artifact@v3
-        with:
-          name: bake-meta
-          path: /tmp/bake-meta.json
-          if-no-files-found: error
-          retention-days: 1
-      -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-flags: --debug
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
@@ -112,79 +69,27 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Build
-        id: bake
         uses: docker/bake-action@v4
         with:
           files: |
             ./docker-bake.hcl
-            /tmp/bake-meta.json
-          targets: image
+            ${{ steps.meta.outputs.bake-file }}
+          targets: image-all
+          push: ${{ github.event_name != 'pull_request' }}
           set: |
-            *.tags=
-            *.platform=${{ matrix.platform }}
-            *.cache-from=type=gha,scope=build-${{ env.PLATFORM_PAIR }}
-            *.cache-to=type=gha,scope=build-${{ env.PLATFORM_PAIR }},mode=max
-            *.output=type=image,"name=${{ env.DOCKERHUB_SLUG }},${{ env.GHCR_SLUG }}",push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
       -
-        name: Export digest
+        name: Check manifest
+        if: github.event_name != 'pull_request'
         run: |
-          mkdir -p /tmp/digests
-          digest="${{ fromJSON(steps.bake.outputs.metadata).image['containerimage.digest'] }}"
-          touch "/tmp/digests/${digest#sha256:}"
-      -
-        name: Upload digest
-        uses: actions/upload-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests/*
-          if-no-files-found: error
-          retention-days: 1
-
-  merge:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
-    needs:
-      - build
-    steps:
-      -
-        name: Download meta bake definition
-        uses: actions/download-artifact@v3
-        with:
-          name: bake-meta
-          path: /tmp
-      -
-        name: Download digests
-        uses: actions/download-artifact@v3
-        with:
-          name: digests
-          path: /tmp/digests
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      -
-        name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Create manifest list and push
-        working-directory: /tmp/digests
-        run: |
-          docker buildx imagetools create $(jq -cr '.target."docker-metadata-action".tags | map(select(startswith("${{ env.DOCKERHUB_SLUG }}")) | "-t " + .) | join(" ")' /tmp/bake-meta.json) \
-            $(printf '${{ env.DOCKERHUB_SLUG }}@sha256:%s ' *)
-          docker buildx imagetools create $(jq -cr '.target."docker-metadata-action".tags | map(select(startswith("${{ env.GHCR_SLUG }}")) | "-t " + .) | join(" ")' /tmp/bake-meta.json) \
-            $(printf '${{ env.GHCR_SLUG }}@sha256:%s ' *)
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_SLUG }}:${{ steps.meta.outputs.version }}
+          docker buildx imagetools inspect ${{ env.GHCR_SLUG }}:${{ steps.meta.outputs.version }}
       -
         name: Inspect image
+        if: github.event_name != 'pull_request'
         run: |
-          tag=$(jq -r '.target."docker-metadata-action".args.DOCKER_META_VERSION' /tmp/bake-meta.json)
-          docker buildx imagetools inspect ${{ env.DOCKERHUB_SLUG }}:${tag}
-          docker buildx imagetools inspect ${{ env.GHCR_SLUG }}:${tag}
+          docker pull ${{ env.DOCKERHUB_SLUG }}:${{ steps.meta.outputs.version }}
+          docker image inspect ${{ env.DOCKERHUB_SLUG }}:${{ steps.meta.outputs.version }}
+          docker pull ${{ env.GHCR_SLUG }}:${{ steps.meta.outputs.version }}
+          docker image inspect ${{ env.GHCR_SLUG }}:${{ steps.meta.outputs.version }}
