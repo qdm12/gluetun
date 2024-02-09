@@ -1,4 +1,4 @@
-name: build
+name: build-2
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -9,7 +9,7 @@ on:
     - cron: '0 8 */6 * *' # every 6 days to keep cache
   push:
     branches:
-      - 'DEV'
+      - 'master'
     tags:
       - '*'
     paths-ignore:
@@ -21,7 +21,7 @@ on:
 env:
   DOCKERHUB_SLUG: ac1dburn/gluetun
   GHCR_SLUG: ghcr.io/ac1dburnz/gluetun
-  
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
