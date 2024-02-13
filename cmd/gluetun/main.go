@@ -34,7 +34,7 @@ import (
 	"github.com/qdm12/gluetun/internal/pprof"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/publicip"
-	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
+	pubipapi "github.com/qdm12/gluetun/internal/publicip/api"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
@@ -396,7 +396,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go unboundLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
 	controlGroupHandler.Add(dnsTickerHandler)
 
-	ipFetcher := ipinfo.New(httpClient, *allSettings.PublicIP.APIToken)
+	ipFetcher, err := pubipapi.New(pubipapi.IPInfo, httpClient, *allSettings.PublicIP.APIToken)
+	if err != nil {
+		return fmt.Errorf("creating public IP API client: %w", err)
+	}
 	publicIPLooper := publicip.NewLoop(ipFetcher,
 		logger.New(log.SetComponent("ip getter")),
 		allSettings.PublicIP, puid, pgid)

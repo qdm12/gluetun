@@ -1,40 +1,34 @@
-package ipinfo
+package api
 
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/netip"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
-type Fetch struct {
+type ipInfo struct {
 	client *http.Client
 	token  string
 }
 
-func New(client *http.Client, token string) *Fetch {
-	return &Fetch{
+func newIPInfo(client *http.Client, token string) *ipInfo {
+	return &ipInfo{
 		client: client,
 		token:  token,
 	}
 }
 
-var (
-	ErrTokenNotValid   = errors.New("token is not valid")
-	ErrTooManyRequests = errors.New("too many requests sent for this month")
-	ErrBadHTTPStatus   = errors.New("bad HTTP status received")
-)
-
 // FetchInfo obtains information on the ip address provided
 // using the ipinfo.io API. If the ip is the zero value, the public IP address
 // of the machine is used as the IP.
-func (f *Fetch) FetchInfo(ctx context.Context, ip netip.Addr) (
-	result Response, err error) {
+func (i *ipInfo) FetchInfo(ctx context.Context, ip netip.Addr) (
+	result models.PublicIP, err error) {
 	url := "https://ipinfo.io/"
 	switch {
 	case ip.Is6():
@@ -47,15 +41,15 @@ func (f *Fetch) FetchInfo(ctx context.Context, ip netip.Addr) (
 	if err != nil {
 		return result, err
 	}
-	request.Header.Set("Authorization", "Bearer "+f.token)
+	request.Header.Set("Authorization", "Bearer "+i.token)
 
-	response, err := f.client.Do(request)
+	response, err := i.client.Do(request)
 	if err != nil {
 		return result, err
 	}
 	defer response.Body.Close()
 
-	if f.token != "" && response.StatusCode == http.StatusUnauthorized {
+	if i.token != "" && response.StatusCode == http.StatusUnauthorized {
 		return result, fmt.Errorf("%w: %s", ErrTokenNotValid, response.Status)
 	}
 
@@ -70,15 +64,37 @@ func (f *Fetch) FetchInfo(ctx context.Context, ip netip.Addr) (
 	}
 
 	decoder := json.NewDecoder(response.Body)
-	if err := decoder.Decode(&result); err != nil {
+	var data struct {
+		IP       netip.Addr `json:"ip,omitempty"`
+		Region   string     `json:"region,omitempty"`
+		Country  string     `json:"country,omitempty"`
+		City     string     `json:"city,omitempty"`
+		Hostname string     `json:"hostname,omitempty"`
+		Loc      string     `json:"loc,omitempty"`
+		Org      string     `json:"org,omitempty"`
+		Postal   string     `json:"postal,omitempty"`
+		Timezone string     `json:"timezone,omitempty"`
+	}
+	if err := decoder.Decode(&data); err != nil {
 		return result, fmt.Errorf("decoding response: %w", err)
 	}
 
-	countryCode := strings.ToLower(result.Country)
+	countryCode := strings.ToLower(data.Country)
 	country, ok := constants.CountryCodes()[countryCode]
 	if ok {
-		result.Country = country
+		data.Country = country
 	}
 
+	result = models.PublicIP{
+		IP:           data.IP,
+		Region:       data.Region,
+		Country:      data.Country,
+		City:         data.City,
+		Hostname:     data.Hostname,
+		Location:     data.Loc,
+		Organization: data.Org,
+		PostalCode:   data.Postal,
+		Timezone:     data.Timezone,
+	}
 	return result, nil
 }

@@ -1,4 +1,4 @@
-package publicip
+package api
 
 import (
 	"context"
@@ -10,10 +10,4 @@ import (
 type Fetcher interface {
 	FetchInfo(ctx context.Context, ip netip.Addr) (
 		result models.PublicIP, err error)
-}
-
-type Logger interface {
-	Info(s string)
-	Warn(s string)
-	Error(s string)
 }
