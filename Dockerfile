@@ -190,6 +190,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \
     PUBLICIP_PERIOD=12h \
+    PUBLICIP_API_TOKEN= \
     # Pprof
     PPROF_ENABLED=no \
     PPROF_BLOCK_PROFILE_RATE=0 \

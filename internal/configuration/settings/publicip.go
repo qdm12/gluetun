@@ -21,6 +21,11 @@ type PublicIP struct {
 	// to write to a file. It cannot be nil for the
 	// internal state
 	IPFilepath *string
+	// APIToken is the token to use for the IP data service
+	// such as ipinfo.io. It can be the empty string to
+	// indicate not to use a token. It cannot be nil for the
+	// internal state.
+	APIToken *string
 }
 
 // UpdateWith deep copies the receiving settings, overrides the copy with
@@ -58,23 +63,27 @@ func (p *PublicIP) copy() (copied PublicIP) {
 	return PublicIP{
 		Period:     gosettings.CopyPointer(p.Period),
 		IPFilepath: gosettings.CopyPointer(p.IPFilepath),
+		APIToken:   gosettings.CopyPointer(p.APIToken),
 	}
 }
 
 func (p *PublicIP) mergeWith(other PublicIP) {
 	p.Period = gosettings.MergeWithPointer(p.Period, other.Period)
 	p.IPFilepath = gosettings.MergeWithPointer(p.IPFilepath, other.IPFilepath)
+	p.APIToken = gosettings.MergeWithPointer(p.APIToken, other.APIToken)
 }
 
 func (p *PublicIP) overrideWith(other PublicIP) {
 	p.Period = gosettings.OverrideWithPointer(p.Period, other.Period)
 	p.IPFilepath = gosettings.OverrideWithPointer(p.IPFilepath, other.IPFilepath)
+	p.APIToken = gosettings.OverrideWithPointer(p.APIToken, other.APIToken)
 }
 
 func (p *PublicIP) setDefaults() {
 	const defaultPeriod = 12 * time.Hour
 	p.Period = gosettings.DefaultPointer(p.Period, defaultPeriod)
 	p.IPFilepath = gosettings.DefaultPointer(p.IPFilepath, "/tmp/gluetun/ip")
+	p.APIToken = gosettings.DefaultPointer(p.APIToken, "")
 }
 
 func (p PublicIP) String() string {
@@ -97,6 +106,10 @@ func (p PublicIP) toLinesNode() (node *gotree.Node) {
 
 	if *p.IPFilepath != "" {
 		node.Appendf("IP file path: %s", *p.IPFilepath)
+	}
+
+	if *p.APIToken != "" {
+		node.Appendf("API token: %s", gosettings.ObfuscateKey(*p.APIToken))
 	}
 
 	return node

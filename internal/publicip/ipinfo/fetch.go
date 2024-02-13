@@ -14,15 +14,18 @@ import (
 
 type Fetch struct {
 	client *http.Client
+	token  string
 }
 
-func New(client *http.Client) *Fetch {
+func New(client *http.Client, token string) *Fetch {
 	return &Fetch{
 		client: client,
+		token:  token,
 	}
 }
 
 var (
+	ErrTokenNotValid   = errors.New("token is not valid")
 	ErrTooManyRequests = errors.New("too many requests sent for this month")
 	ErrBadHTTPStatus   = errors.New("bad HTTP status received")
 )
@@ -44,12 +47,17 @@ func (f *Fetch) FetchInfo(ctx context.Context, ip netip.Addr) (
 	if err != nil {
 		return result, err
 	}
+	request.Header.Set("Authorization", "Bearer "+f.token)
 
 	response, err := f.client.Do(request)
 	if err != nil {
 		return result, err
 	}
 	defer response.Body.Close()
+
+	if f.token != "" && response.StatusCode == http.StatusUnauthorized {
+		return result, fmt.Errorf("%w: %s", ErrTokenNotValid, response.Status)
+	}
 
 	switch response.StatusCode {
 	case http.StatusOK:

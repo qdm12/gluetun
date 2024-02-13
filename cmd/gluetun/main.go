@@ -396,7 +396,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go unboundLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
 	controlGroupHandler.Add(dnsTickerHandler)
 
-	ipFetcher := ipinfo.New(httpClient)
+	ipFetcher := ipinfo.New(httpClient, *allSettings.PublicIP.APIToken)
 	publicIPLooper := publicip.NewLoop(ipFetcher,
 		logger.New(log.SetComponent("ip getter")),
 		allSettings.PublicIP, puid, pgid)
