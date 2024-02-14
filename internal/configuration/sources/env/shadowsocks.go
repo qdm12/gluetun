@@ -23,7 +23,15 @@ func (s *Source) readShadowsocks() (shadowsocks settings.Shadowsocks, err error)
 	}
 	shadowsocks.CipherName = s.env.String("SHADOWSOCKS_CIPHER",
 		env.RetroKeys("SHADOWSOCKS_METHOD"))
-	shadowsocks.Password = s.env.Get("SHADOWSOCKS_PASSWORD", env.ForceLowercase(false))
+
+	shadowsocks.Password, err = s.readSecretFileAsStringPtr(
+		"SHADOWSOCKS_PASSWORD",
+		"/run/secrets/shadowsocks_password",
+		[]string{"SHADOWSOCKS_PASSWORD_SECRETFILE"},
+	)
+	if err != nil {
+		return shadowsocks, fmt.Errorf("reading Shadowsocks password secret file: %w", err)
+	}
 
 	return shadowsocks, nil
 }

@@ -20,7 +20,6 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/sources/env"
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 	mux "github.com/qdm12/gluetun/internal/configuration/sources/merge"
-	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
@@ -82,10 +81,9 @@ func main() {
 	cli := cli.New()
 	cmder := command.NewCmder()
 
-	secretsReader := secrets.New()
 	filesReader := files.New()
 	envReader := env.New(logger)
-	muxReader := mux.New(secretsReader, filesReader, envReader)
+	muxReader := mux.New(filesReader, envReader)
 
 	errorCh := make(chan error)
 	go func() {

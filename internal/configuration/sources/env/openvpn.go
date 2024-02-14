@@ -1,6 +1,7 @@
 package env
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -9,23 +10,68 @@ import (
 
 func (s *Source) readOpenVPN() (
 	openVPN settings.OpenVPN, err error) {
-	defer func() {
-		err = unsetEnvKeys([]string{"OPENVPN_KEY", "OPENVPN_CERT",
-			"OPENVPN_KEY_PASSPHRASE", "OPENVPN_ENCRYPTED_KEY"}, err)
-	}()
 
 	openVPN.Version = s.env.String("OPENVPN_VERSION")
-	openVPN.User = s.env.Get("OPENVPN_USER",
-		env.RetroKeys("USER"), env.ForceLowercase(false))
-	openVPN.Password = s.env.Get("OPENVPN_PASSWORD",
-		env.RetroKeys("PASSWORD"), env.ForceLowercase(false))
+
+	openVPN.User, err = s.readSecretFileAsStringPtr(
+		"OPENVPN_USER",
+		"/run/secrets/openvpn_user",
+		[]string{"OPENVPN_USER_SECRETFILE", "USER"},
+	)
+	if err != nil {
+		return openVPN, fmt.Errorf("reading user file: %w", err)
+	}
+
+	openVPN.Key, err = s.readPEMSecretFile(
+		"OPENVPN_CLIENTKEY",
+		"/run/secrets/openvpn_clientkey",
+		[]string{"OPENVPN_CLIENTKEY_SECRETFILE"},
+	)
+	if err != nil {
+		return openVPN, fmt.Errorf("reading client key file: %w", err)
+	}
+
+	openVPN.Password, err = s.readSecretFileAsStringPtr(
+		"OPENVPN_PASSWORD",
+		"/run/secrets/openvpn_password",
+		[]string{"OPENVPN_PASSWORD_SECRETFILE", "PASSWORD"},
+	)
+	if err != nil {
+		return openVPN, fmt.Errorf("reading password file: %w", err)
+	}
+
 	openVPN.ConfFile = s.env.Get("OPENVPN_CUSTOM_CONFIG", env.ForceLowercase(false))
 	openVPN.Ciphers = s.env.CSV("OPENVPN_CIPHERS", env.RetroKeys("OPENVPN_CIPHER"))
 	openVPN.Auth = s.env.Get("OPENVPN_AUTH")
 	openVPN.Cert = s.env.Get("OPENVPN_CERT", env.ForceLowercase(false))
 	openVPN.Key = s.env.Get("OPENVPN_KEY", env.ForceLowercase(false))
-	openVPN.EncryptedKey = s.env.Get("OPENVPN_ENCRYPTED_KEY", env.ForceLowercase(false))
-	openVPN.KeyPassphrase = s.env.Get("OPENVPN_KEY_PASSPHRASE", env.ForceLowercase(false))
+
+	openVPN.EncryptedKey, err = s.readPEMSecretFile(
+		"OPENVPN_ENCRYPTED_KEY",
+		"/run/secrets/openvpn_encrypted_key",
+		[]string{"OPENVPN_ENCRYPTED_KEY_SECRETFILE"},
+	)
+	if err != nil {
+		return openVPN, fmt.Errorf("reading encrypted key file: %w", err)
+	}
+
+	openVPN.KeyPassphrase, err = s.readSecretFileAsStringPtr(
+		"OPENVPN_KEY_PASSPHRASE",
+		"/run/secrets/openvpn_key_passphrase",
+		[]string{"OPENVPN_KEY_PASSPHRASE_SECRETFILE"},
+	)
+	if err != nil {
+		return openVPN, fmt.Errorf("reading key passphrase file: %w", err)
+	}
+
+	openVPN.Cert, err = s.readPEMSecretFile(
+		"OPENVPN_CLIENTCRT",
+		"/run/secrets/openvpn_clientcrt",
+		[]string{"OPENVPN_CLIENTCRT_SECRETFILE"},
+	)
+	if err != nil {
+		return openVPN, fmt.Errorf("reading client certificate file: %w", err)
+	}
 
 	openVPN.PIAEncPreset = s.readPIAEncryptionPreset()
 

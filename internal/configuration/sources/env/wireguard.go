@@ -1,16 +1,32 @@
 package env
 
 import (
+	"fmt"
+
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gosettings/sources/env"
 )
 
 func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
-	defer func() {
-		err = unsetEnvKeys([]string{"WIREGUARD_PRIVATE_KEY", "WIREGUARD_PRESHARED_KEY"}, err)
-	}()
-	wireguard.PrivateKey = s.env.Get("WIREGUARD_PRIVATE_KEY", env.ForceLowercase(false))
-	wireguard.PreSharedKey = s.env.Get("WIREGUARD_PRESHARED_KEY", env.ForceLowercase(false))
+
+	wireguard.PrivateKey, err = s.readSecretFileAsStringPtr(
+		"WIREGUARD_PRIVATE_KEY",
+		"/run/secrets/wireguard_private_key",
+		[]string{},
+	)
+	if err != nil {
+		return wireguard, fmt.Errorf("reading user file: %w", err)
+	}
+
+	wireguard.PrivateKey, err = s.readSecretFileAsStringPtr(
+		"WIREGUARD_PRESHARED_KEY",
+		"/run/secrets/wireguard_preshared_key",
+		[]string{},
+	)
+	if err != nil {
+		return wireguard, fmt.Errorf("reading user file: %w", err)
+	}
+
 	wireguard.Interface = s.env.String("VPN_INTERFACE",
 		env.RetroKeys("WIREGUARD_INTERFACE"), env.ForceLowercase(false))
 	wireguard.Implementation = s.env.String("WIREGUARD_IMPLEMENTATION")

@@ -82,9 +82,13 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # OpenVPN
     OPENVPN_PROTOCOL=udp \
     OPENVPN_USER= \
+    # Deprecated
+    OPENVPN_USER_SECRETFILE= \
+    OPENVPN_USER_FILE=/run/secrets/openvpn_user \
     OPENVPN_PASSWORD= \
-    OPENVPN_USER_SECRETFILE=/run/secrets/openvpn_user \
-    OPENVPN_PASSWORD_SECRETFILE=/run/secrets/openvpn_password \
+    # Deprecated
+    OPENVPN_PASSWORD_SECRETFILE= \
+    OPENVPN_PASSWORD_FILE=/run/secrets/openvpn_password \
     OPENVPN_VERSION=2.5 \
     OPENVPN_VERBOSITY=1 \
     OPENVPN_FLAGS= \
@@ -94,8 +98,11 @@ ENV VPN_SERVICE_PROVIDER=pia \
     OPENVPN_CUSTOM_CONFIG= \
     # Wireguard
     WIREGUARD_PRIVATE_KEY= \
+    WIREGUARD_PRIVATE_KEY_FILE=/run/secrets/wireguard_private_key \
     WIREGUARD_PRESHARED_KEY= \
+    WIREGUARD_PRESHARED_KEY_FILE=/run/secrets/wireguard_preshared_key \
     WIREGUARD_PUBLIC_KEY= \
+    WIREGUARD_PUBLIC_KEY_FILE=/run/secrets/wireguard_public_key \
     WIREGUARD_ALLOWED_IPS= \
     WIREGUARD_ADDRESSES= \
     WIREGUARD_MTU=1400 \
@@ -117,13 +124,21 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # # Cyberghost only:
     OPENVPN_CERT= \
     OPENVPN_KEY= \
-    OPENVPN_CLIENTCRT_SECRETFILE=/run/secrets/openvpn_clientcrt \
-    OPENVPN_CLIENTKEY_SECRETFILE=/run/secrets/openvpn_clientkey \
+    # Deprecated
+    OPENVPN_CLIENTCRT_SECRETFILE= \
+    OPENVPN_CLIENTCRT_FILE=/run/secrets/openvpn_clientcrt \
+    # Deprecated
+    OPENVPN_CLIENTKEY_SECRETFILE= \
+    OPENVPN_CLIENTKEY_FILE=/run/secrets/openvpn_clientkey \
     # # VPNSecure only:
     OPENVPN_ENCRYPTED_KEY= \
-    OPENVPN_ENCRYPTED_KEY_SECRETFILE=/run/secrets/openvpn_encrypted_key \
+    # Deprecated
+    OPENVPN_ENCRYPTED_KEY_SECRETFILE= \
+    OPENVPN_ENCRYPTED_KEY_FILE=/run/secrets/openvpn_encrypted_key \
     OPENVPN_KEY_PASSPHRASE= \
-    OPENVPN_KEY_PASSPHRASE_SECRETFILE=/run/secrets/openvpn_key_passphrase \
+    # Deprecated
+    OPENVPN_KEY_PASSPHRASE_SECRETFILE= \
+    OPENVPN_KEY_PASSPHRASE_FILE=/run/secrets/openvpn_key_passphrase \
     # # Nordvpn only:
     SERVER_NUMBER= \
     # # PIA only:
@@ -171,14 +186,20 @@ ENV VPN_SERVICE_PROVIDER=pia \
     HTTPPROXY_STEALTH=off \
     HTTPPROXY_USER= \
     HTTPPROXY_PASSWORD= \
-    HTTPPROXY_USER_SECRETFILE=/run/secrets/httpproxy_user \
-    HTTPPROXY_PASSWORD_SECRETFILE=/run/secrets/httpproxy_password \
+    # Deprecated
+    HTTPPROXY_USER_SECRETFILE= \
+    HTTPPROXY_USER_FILE=/run/secrets/httpproxy_user \
+    # Deprecated
+    HTTPPROXY_PASSWORD_SECRETFILE= \
+    HTTPPROXY_PASSWORD_FILE=/run/secrets/httpproxy_password \
     # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
     SHADOWSOCKS_LISTENING_ADDRESS=":8388" \
     SHADOWSOCKS_PASSWORD= \
-    SHADOWSOCKS_PASSWORD_SECRETFILE=/run/secrets/shadowsocks_password \
+    # Deprecated
+    SHADOWSOCKS_PASSWORD_SECRETFILE= \
+    SHADOWSOCKS_PASSWORD_FILE=/run/secrets/shadowsocks_password \
     SHADOWSOCKS_CIPHER=chacha20-ietf-poly1305 \
     # Control server
     HTTP_CONTROL_SERVER_LOG=on \

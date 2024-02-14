@@ -9,13 +9,23 @@ import (
 )
 
 func (s *Source) readHTTPProxy() (httpProxy settings.HTTPProxy, err error) {
-	httpProxy.User = s.env.Get("HTTPPROXY_USER",
-		env.RetroKeys("PROXY_USER", "TINYPROXY_USER"),
-		env.ForceLowercase(false))
+	httpProxy.User, err = s.readSecretFileAsStringPtr(
+		"HTTPPROXY_USER",
+		"/run/secrets/httpproxy_user",
+		[]string{"HTTPPROXY_USER_SECRETFILE", "PROXY_USER", "TINYPROXY_USER"},
+	)
+	if err != nil {
+		return httpProxy, fmt.Errorf("reading HTTP proxy user secret file: %w", err)
+	}
 
-	httpProxy.Password = s.env.Get("HTTPPROXY_PASSWORD",
-		env.RetroKeys("PROXY_PASSWORD", "TINYPROXY_PASSWORD"),
-		env.ForceLowercase(false))
+	httpProxy.Password, err = s.readSecretFileAsStringPtr(
+		"HTTPPROXY_PASSWORD",
+		"/run/secrets/httpproxy_password",
+		[]string{"HTTPPROXY_PASSWORD_SECRETFILE", "PROXY_PASSWORD", "TINYPROXY_PASSWORD"},
+	)
+	if err != nil {
+		return httpProxy, fmt.Errorf("reading HTTP proxy password secret file: %w", err)
+	}
 
 	httpProxy.ListeningAddress, err = s.readHTTProxyListeningAddress()
 	if err != nil {
