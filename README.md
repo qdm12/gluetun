@@ -101,6 +101,7 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
+      - 8000:8000
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
