@@ -396,7 +396,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go unboundLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
 	controlGroupHandler.Add(dnsTickerHandler)
 
-	ipFetcher, err := pubipapi.New(pubipapi.IPInfo, httpClient, *allSettings.PublicIP.APIToken)
+	publicipAPI, _ := pubipapi.ParseProvider(allSettings.PublicIP.API)
+	ipFetcher, err := pubipapi.New(publicipAPI, httpClient, *allSettings.PublicIP.APIToken)
 	if err != nil {
 		return fmt.Errorf("creating public IP API client: %w", err)
 	}

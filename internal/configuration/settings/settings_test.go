@@ -84,7 +84,8 @@ func Test_Settings_String(t *testing.T) {
 |   └── Process GID: 1000
 ├── Public IP settings:
 |   ├── Fetching: every 12h0m0s
-|   └── IP file path: /tmp/gluetun/ip
+|   ├── IP file path: /tmp/gluetun/ip
+|   └── Public IP data API: ipinfo
 └── Version settings:
     └── Enabled: yes`,
 		},
