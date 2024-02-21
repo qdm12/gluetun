@@ -11,7 +11,6 @@ import (
 func getHostToServer() (hts hostToServer, warnings []string) {
 	shortHTS := map[string]models.Server{
 		"ae": {},
-		"ar": {},
 		"at": {},
 		"au-syd": {
 			City: "Sydney",
@@ -20,7 +19,6 @@ func getHostToServer() (hts hostToServer, warnings []string) {
 		"be": {},
 		"bg": {},
 		"br": {},
-		"by": {},
 		"ca-tr": {
 			City: "Toronto",
 		},
@@ -35,7 +33,6 @@ func getHostToServer() (hts hostToServer, warnings []string) {
 		"de-dus": {
 			City: "Düsseldorf",
 		},
-		"de": {},
 		"dk": {},
 		"ee": {},
 		"es": {},
@@ -52,9 +49,6 @@ func getHostToServer() (hts hostToServer, warnings []string) {
 		},
 		"il": {},
 		"im": {},
-		"in-ka": {
-			City: "Karnataka",
-		},
 		"in": {},
 		"is": {},
 		"it-mil": {
@@ -63,9 +57,6 @@ func getHostToServer() (hts hostToServer, warnings []string) {
 		"jp":  {},
 		"kr":  {},
 		"lt":  {},
-		"lu":  {},
-		"lv":  {},
-		"ly":  {},
 		"md":  {},
 		"mx":  {},
 		"mys": {},
@@ -76,7 +67,6 @@ func getHostToServer() (hts hostToServer, warnings []string) {
 		"pl":  {},
 		"pt":  {},
 		"ro":  {},
-		"rs":  {},
 		"se":  {},
 		"sg-free": {
 			Free: true,
@@ -126,9 +116,6 @@ func getHostToServer() (hts hostToServer, warnings []string) {
 		},
 		"us-sf": {
 			City: "San Francisco",
-		},
-		"us-sl": {
-			City: "Saint Louis",
 		},
 		"us-slc": {
 			City: "Salt Lake City",
