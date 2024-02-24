@@ -57,7 +57,9 @@ type ServerSelection struct { //nolint:maligned
 	// MultiHopOnly is true if VPN servers that are not multihop
 	// should be filtered. This is used with Surfshark.
 	MultiHopOnly *bool `json:"multi_hop_only"`
-
+	// PortForwardOnly is true if VPN servers that don't support
+	// port forwarding should be filtered. This is used with PIA.
+	PortForwardOnly *bool `json:"port_forward_only"`
 	// OpenVPN contains settings to select OpenVPN servers
 	// and the final connection.
 	OpenVPN OpenVPNSelection `json:"openvpn"`
@@ -67,12 +69,13 @@ type ServerSelection struct { //nolint:maligned
 }
 
 var (
-	ErrOwnedOnlyNotSupported    = errors.New("owned only filter is not supported")
-	ErrFreeOnlyNotSupported     = errors.New("free only filter is not supported")
-	ErrPremiumOnlyNotSupported  = errors.New("premium only filter is not supported")
-	ErrStreamOnlyNotSupported   = errors.New("stream only filter is not supported")
-	ErrMultiHopOnlyNotSupported = errors.New("multi hop only filter is not supported")
-	ErrFreePremiumBothSet       = errors.New("free only and premium only filters are both set")
+	ErrOwnedOnlyNotSupported       = errors.New("owned only filter is not supported")
+	ErrFreeOnlyNotSupported        = errors.New("free only filter is not supported")
+	ErrPremiumOnlyNotSupported     = errors.New("premium only filter is not supported")
+	ErrStreamOnlyNotSupported      = errors.New("stream only filter is not supported")
+	ErrMultiHopOnlyNotSupported    = errors.New("multi hop only filter is not supported")
+	ErrPortForwardOnlyNotSupported = errors.New("port forwarding only filter is not supported")
+	ErrFreePremiumBothSet          = errors.New("free only and premium only filters are both set")
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
@@ -141,6 +144,15 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		vpnServiceProvider != providers.Surfshark {
 		return fmt.Errorf("%w: for VPN service provider %s",
 			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *ss.PortForwardOnly &&
+		vpnServiceProvider != providers.PrivateInternetAccess {
+		// ProtonVPN also supports port forwarding, but on all their servers, so these
+		// don't have the port forwarding boolean field. As a consequence, we only allow
+		// the use of PortForwardOnly for Private Internet Access.
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrPortForwardOnlyNotSupported, vpnServiceProvider)
 	}
 
 	if ss.VPN == vpn.OpenVPN {
@@ -251,6 +263,7 @@ func (ss *ServerSelection) mergeWith(other ServerSelection) {
 	ss.PremiumOnly = gosettings.MergeWithPointer(ss.PremiumOnly, other.PremiumOnly)
 	ss.StreamOnly = gosettings.MergeWithPointer(ss.StreamOnly, other.StreamOnly)
 	ss.MultiHopOnly = gosettings.MergeWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
+	ss.PortForwardOnly = gosettings.MergeWithPointer(ss.PortForwardOnly, other.PortForwardOnly)
 
 	ss.OpenVPN.mergeWith(other.OpenVPN)
 	ss.Wireguard.mergeWith(other.Wireguard)
@@ -271,6 +284,7 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.PremiumOnly = gosettings.OverrideWithPointer(ss.PremiumOnly, other.PremiumOnly)
 	ss.StreamOnly = gosettings.OverrideWithPointer(ss.StreamOnly, other.StreamOnly)
 	ss.MultiHopOnly = gosettings.OverrideWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
+	ss.PortForwardOnly = gosettings.OverrideWithPointer(ss.PortForwardOnly, other.PortForwardOnly)
 	ss.OpenVPN.overrideWith(other.OpenVPN)
 	ss.Wireguard.overrideWith(other.Wireguard)
 }
@@ -283,6 +297,7 @@ func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.PremiumOnly = gosettings.DefaultPointer(ss.PremiumOnly, false)
 	ss.StreamOnly = gosettings.DefaultPointer(ss.StreamOnly, false)
 	ss.MultiHopOnly = gosettings.DefaultPointer(ss.MultiHopOnly, false)
+	ss.PortForwardOnly = gosettings.DefaultPointer(ss.PortForwardOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
 	ss.Wireguard.setDefaults()
 }

@@ -67,6 +67,12 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 		return ss, err
 	}
 
+	// PIA only
+	ss.PortForwardOnly, err = s.env.BoolPtr("PORT_FORWARD_ONLY")
+	if err != nil {
+		return ss, err
+	}
+
 	ss.OpenVPN, err = s.readOpenVPNSelection()
 	if err != nil {
 		return ss, err
