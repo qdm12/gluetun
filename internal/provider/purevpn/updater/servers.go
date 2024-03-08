@@ -9,6 +9,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
+	"github.com/qdm12/gluetun/internal/publicip/api"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
 
@@ -80,7 +81,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	for i := range servers {
 		ipsToGetInfo[i] = servers[i].IPs[0]
 	}
-	ipsInfo, err := u.ipFetcher.FetchMultiInfo(ctx, ipsToGetInfo)
+	ipsInfo, err := api.FetchMultiInfo(ctx, u.ipFetcher, ipsToGetInfo)
 	if err != nil {
 		return nil, err
 	}

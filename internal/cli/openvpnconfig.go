@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 )
@@ -32,7 +32,7 @@ type ParallelResolver interface {
 }
 
 type IPFetcher interface {
-	FetchMultiInfo(ctx context.Context, ips []netip.Addr) (data []ipinfo.Response, err error)
+	FetchInfo(ctx context.Context, ip netip.Addr) (data models.PublicIP, err error)
 }
 
 type IPv6Checker interface {

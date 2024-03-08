@@ -29,7 +29,7 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 			s.vpn.healthyTimer.Stop()
 			s.vpn.healthyWait = *s.config.VPN.Initial
 		} else if previousErr == nil && err != nil {
-			s.logger.Info("unhealthy: " + err.Error())
+			s.logger.Debug("unhealthy: " + err.Error())
 			s.vpn.healthyTimer.Stop()
 			s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 		}

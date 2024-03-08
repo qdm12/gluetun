@@ -13,7 +13,7 @@ import (
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
-	const url = "https://privado.io/apps/ovpn_configs.zip"
+	const url = "https://privadovpn.com/apps/ovpn_configs.zip"
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)
 	if err != nil {
 		return nil, err
