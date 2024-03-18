@@ -53,6 +53,10 @@ func filterServer(server models.Server,
 		return true
 	}
 
+	if *selection.PortForwardOnly && !server.PortForward {
+		return true
+	}
+
 	if filterByPossibilities(server.Country, selection.Countries) {
 		return true
 	}

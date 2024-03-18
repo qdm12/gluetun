@@ -134,6 +134,8 @@ ENV VPN_SERVICE_PROVIDER=pia \
     MULTIHOP_ONLY= \
     # # VPN Secure only:
     PREMIUM_ONLY= \
+    # # PIA only:
+    PORT_FORWARD_ONLY= \
     # Firewall
     FIREWALL=on \
     FIREWALL_VPN_INPUT_PORTS= \

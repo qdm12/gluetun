@@ -127,6 +127,19 @@ func Test_FilterServers(t *testing.T) {
 				{Owned: true, VPN: vpn.OpenVPN, UDP: true},
 			},
 		},
+		"filter by port forwarding only": {
+			selection: settings.ServerSelection{
+				PortForwardOnly: boolPtr(true),
+			}.WithDefaults(providers.PrivateInternetAccess),
+			servers: []models.Server{
+				{PortForward: false, VPN: vpn.OpenVPN, UDP: true},
+				{PortForward: true, VPN: vpn.OpenVPN, UDP: true},
+				{PortForward: false, VPN: vpn.OpenVPN, UDP: true},
+			},
+			filtered: []models.Server{
+				{PortForward: true, VPN: vpn.OpenVPN, UDP: true},
+			},
+		},
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
