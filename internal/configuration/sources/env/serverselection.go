@@ -55,14 +55,14 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 		return ss, err
 	}
 
-	// VPNUnlimited only
+	// Surfshark only
 	ss.MultiHopOnly, err = s.env.BoolPtr("MULTIHOP_ONLY")
 	if err != nil {
 		return ss, err
 	}
 
 	// VPNUnlimited only
-	ss.MultiHopOnly, err = s.env.BoolPtr("STREAM_ONLY")
+	ss.StreamOnly, err = s.env.BoolPtr("STREAM_ONLY")
 	if err != nil {
 		return ss, err
 	}
