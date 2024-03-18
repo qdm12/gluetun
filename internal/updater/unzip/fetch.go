@@ -18,6 +18,7 @@ func (u *Unzipper) FetchAndExtract(ctx context.Context, url string) (
 	if err != nil {
 		return nil, err
 	}
+	request.Header.Set("User-Agent", "gluetun")
 
 	response, err := u.client.Do(request)
 	if err != nil {
