@@ -4,12 +4,12 @@ import (
 	"context"
 	"net/netip"
 
-	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
+	"github.com/qdm12/gluetun/internal/models"
 )
 
 type Fetcher interface {
 	FetchInfo(ctx context.Context, ip netip.Addr) (
-		result ipinfo.Response, err error)
+		result models.PublicIP, err error)
 }
 
 type Logger interface {

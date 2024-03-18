@@ -14,7 +14,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/publicip/ipinfo"
+	"github.com/qdm12/gluetun/internal/publicip/api"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
@@ -35,7 +35,7 @@ type UpdaterLogger interface {
 func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
 	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
-	var csvProviders string
+	var csvProviders, ipToken string
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
@@ -46,6 +46,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		"Minimum ratio of servers to find for the update to succeed")
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
+	flagSet.StringVar(&ipToken, "ip-token", "", "IP data service token (e.g. ipinfo.io) to use")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
@@ -79,7 +80,10 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	httpClient := &http.Client{Timeout: clientTimeout}
 	unzipper := unzip.New(httpClient)
 	parallelResolver := resolver.NewParallelResolver(options.DNSAddress)
-	ipFetcher := ipinfo.New(httpClient)
+	ipFetcher, err := api.New(api.IPInfo, httpClient, ipToken)
+	if err != nil {
+		return fmt.Errorf("creating public IP API client: %w", err)
+	}
 	openvpnFileExtractor := extract.New()
 
 	providers := provider.NewProviders(storage, time.Now, logger, httpClient,

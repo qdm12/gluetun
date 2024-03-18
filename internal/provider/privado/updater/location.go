@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
+	"github.com/qdm12/gluetun/internal/publicip/api"
 )
 
 func setLocationInfo(ctx context.Context, fetcher common.IPFetcher, servers []models.Server) (err error) {
@@ -14,7 +15,7 @@ func setLocationInfo(ctx context.Context, fetcher common.IPFetcher, servers []mo
 	for _, server := range servers {
 		ipsToGetInfo = append(ipsToGetInfo, server.IPs...)
 	}
-	ipsInfo, err := fetcher.FetchMultiInfo(ctx, ipsToGetInfo)
+	ipsInfo, err := api.FetchMultiInfo(ctx, fetcher, ipsToGetInfo)
 	if err != nil {
 		return err
 	}
