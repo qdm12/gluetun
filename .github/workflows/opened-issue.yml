@@ -1,0 +1,22 @@
+name: Opened issue
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  comment:
+    permissions:
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ github.token }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            @qdm12 is more or less the only maintainer of this project and works on it in his free time.
+            Please:
+            - **do not** ask for updates, be patient
+            - :+1: the issue to show your support instead of commenting
+            @qdm12 usually checks issues at least once a week, if this is a new urgent bug,
+            [revert to an older tagged container image](https://github.com/qdm12/gluetun-wiki/blob/main/setup/docker-image-tags.md)
