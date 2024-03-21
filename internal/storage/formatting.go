@@ -37,6 +37,16 @@ func noServerFoundError(selection settings.ServerSelection) (err error) {
 		messageParts = append(messageParts, part)
 	}
 
+	switch len(selection.Categories) {
+	case 0:
+	case 1:
+		part := "category " + selection.Categories[0]
+		messageParts = append(messageParts, part)
+	default:
+		part := "categories " + commaJoin(selection.Categories)
+		messageParts = append(messageParts, part)
+	}
+
 	switch len(selection.Regions) {
 	case 0:
 	case 1:

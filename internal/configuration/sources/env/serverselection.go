@@ -33,6 +33,7 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 	ss.Hostnames = s.env.CSV("SERVER_HOSTNAMES", env.RetroKeys("SERVER_HOSTNAME"))
 	ss.Names = s.env.CSV("SERVER_NAMES", env.RetroKeys("SERVER_NAME"))
 	ss.Numbers, err = s.env.CSVUint16("SERVER_NUMBER")
+	ss.Categories = s.env.CSV("SERVER_CATEGORIES")
 	if err != nil {
 		return ss, err
 	}

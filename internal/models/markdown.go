@@ -23,6 +23,7 @@ func markdownTableHeading(legendFields ...string) (markdown string) {
 const (
 	cityHeader        = "City"
 	countryHeader     = "Country"
+	categoriesHeader  = "Categories"
 	freeHeader        = "Free"
 	hostnameHeader    = "Hostname"
 	ispHeader         = "ISP"
@@ -51,6 +52,8 @@ func (s *Server) ToMarkdown(headers ...string) (markdown string) {
 			fields[i] = s.City
 		case countryHeader:
 			fields[i] = s.Country
+		case categoriesHeader:
+			fields[i] = strings.Join(s.Categories, ", ")
 		case freeHeader:
 			fields[i] = boolToMarkdown(s.Free)
 		case hostnameHeader:
@@ -120,7 +123,7 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	case providers.Mullvad:
 		return []string{countryHeader, cityHeader, ispHeader, ownedHeader, hostnameHeader, vpnHeader}
 	case providers.Nordvpn:
-		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader}
+		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, categoriesHeader}
 	case providers.Perfectprivacy:
 		return []string{cityHeader, tcpHeader, udpHeader}
 	case providers.Privado:

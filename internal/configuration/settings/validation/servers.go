@@ -33,6 +33,28 @@ func ExtractCountries(servers []models.Server) (values []string) {
 	return values
 }
 
+func ExtractCategories(servers []models.Server) (values []string) {
+	seen := make(map[string]struct{}, len(servers))
+	values = make([]string, 0, len(servers))
+	for _, server := range servers {
+		categories := server.Categories
+		if len(categories) == 0 {
+			continue
+		}
+
+		for _, value := range categories {
+			_, alreadySeen := seen[value]
+			if alreadySeen {
+				continue
+			}
+			seen[value] = struct{}{}
+
+			values = sortedInsert(values, value)
+		}
+	}
+	return values
+}
+
 func ExtractRegions(servers []models.Server) (values []string) {
 	seen := make(map[string]struct{}, len(servers))
 	values = make([]string, 0, len(servers))
