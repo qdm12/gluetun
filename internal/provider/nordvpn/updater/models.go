@@ -7,7 +7,15 @@ import (
 	"net/netip"
 )
 
-// Check out the JSON data from https://api.nordvpn.com/v1/servers?limit=10
+// Check out the JSON data from https://api.nordvpn.com/v2/servers?limit=10
+type serversData struct {
+	Servers      []serverData     `json:"servers"`
+	Groups       []groupData      `json:"groups"`
+	Services     []serviceData    `json:"services"`
+	Locations    []locationData   `json:"locations"`
+	Technologies []technologyData `json:"technologies"`
+}
+
 type serverData struct {
 	// Name is the server name, for example 'Poland #128'
 	Name string `json:"name"`
@@ -20,25 +28,12 @@ type serverData struct {
 	Hostname string
 	// Status is the server status, for example 'online'
 	Status string `json:"status"`
-	// Locations is the list of locations for the server.
+	// Locations is the list of location IDs for the server.
 	// Only the first location is taken into account for now.
-	Locations []struct {
-		Country struct {
-			// Name is the country name, for example 'Poland'.
-			Name string `json:"name"`
-			City struct {
-				// Name is the city name, for example 'Warsaw'.
-				Name string `json:"name"`
-			} `json:"city"`
-		} `json:"country"`
-	} `json:"locations"`
+	LocationIDs  []uint32 `json:"location_ids"`
 	Technologies []struct {
-		// Identifier is the technology id name, it can notably be:
-		// - openvpn_udp
-		// - openvpn_tcp
-		// - wireguard_udp
-		Identifier string `json:"identifier"`
-		// Metadata is notably useful for the Wireguard public key.
+		ID       uint32 `json:"id"`
+		Status   string `json:"status"`
 		Metadata []struct {
 			// Name can notably be 'public_key'.
 			Name string `json:"name"`
@@ -46,15 +41,8 @@ type serverData struct {
 			Value string `json:"value"`
 		} `json:"metadata"`
 	} `json:"technologies"`
-	Groups []struct {
-		// Title can notably be the region name, for example 'Europe',
-		// if the group's type/identifier is 'regions'.
-		Title string `json:"title"`
-		Type  struct {
-			// Identifier can be 'regions'.
-			Identifier string `json:"identifier"`
-		} `json:"type"`
-	} `json:"groups"`
+	GroupIDs   []uint32 `json:"group_ids"`
+	ServiceIDs []uint32 `json:"service_ids"`
 	// IPs is the list of IP addresses for the server.
 	IPs []struct {
 		// Type can notably be 'entry'.
@@ -65,17 +53,72 @@ type serverData struct {
 	} `json:"ips"`
 }
 
-// country returns the country name of the server.
-func (s *serverData) country() (country string) {
-	if len(s.Locations) == 0 {
-		return ""
-	}
-	return s.Locations[0].Country.Name
+type groupData struct {
+	ID    uint32 `json:"id"`
+	Title string `json:"title"` // "Europe", "Standard VPN servers", etc.
+	Type  struct {
+		Identifier string `json:"identifier"` // 'regions', 'legacy_group_category', etc.
+	} `json:"type"`
 }
 
-// region returns the region name of the server.
-func (s *serverData) region() (region string) {
+type serviceData struct {
+	ID         uint32 `json:"id"`
+	Identifier string `json:"identifier"` // 'vpn', 'proxy', etc.
+}
+
+type locationData struct {
+	ID      uint32 `json:"id"`
+	Country struct {
+		Name string `json:"name"` // for example "Poland"
+		City struct {
+			Name string `json:"name"` // for example "Warsaw"
+		} `json:"city"`
+	} `json:"country"`
+}
+
+type technologyData struct {
+	ID uint32 `json:"id"`
+	// Identifier is the technology identifier name and relevant values are:
+	// 'openvpn_udp', 'openvpn_tcp', 'openvpn_dedicated_udp',
+	// 'openvpn_dedicated_tcp' and 'wireguard_udp'
+	Identifier string `json:"identifier"`
+}
+
+func (s serversData) idToData() (
+	groups map[uint32]groupData,
+	services map[uint32]serviceData,
+	locations map[uint32]locationData,
+	technologies map[uint32]technologyData,
+) {
+	groups = make(map[uint32]groupData, len(s.Groups))
 	for _, group := range s.Groups {
+		groups[group.ID] = group
+	}
+
+	services = make(map[uint32]serviceData, len(s.Services))
+	for _, service := range s.Services {
+		services[service.ID] = service
+	}
+
+	locations = make(map[uint32]locationData, len(s.Locations))
+	for _, location := range s.Locations {
+		locations[location.ID] = location
+	}
+
+	technologies = make(map[uint32]technologyData, len(s.Technologies))
+	for _, technology := range s.Technologies {
+		technologies[technology.ID] = technology
+	}
+
+	return groups, services, locations, technologies
+}
+
+func (s *serverData) region(groups map[uint32]groupData) (region string) {
+	for _, groupID := range s.GroupIDs {
+		group, ok := groups[groupID]
+		if !ok {
+			continue
+		}
 		if group.Type.Identifier == "regions" {
 			return group.Title
 		}
@@ -83,12 +126,17 @@ func (s *serverData) region() (region string) {
 	return ""
 }
 
-// city returns the city name of the server.
-func (s *serverData) city() (city string) {
-	if len(s.Locations) == 0 {
-		return ""
+func (s *serverData) hasVPNService(services map[uint32]serviceData) (ok bool) {
+	for _, serviceID := range s.ServiceIDs {
+		service, ok := services[serviceID]
+		if !ok {
+			continue
+		}
+		if service.Identifier == "vpn" {
+			return true
+		}
 	}
-	return s.Locations[0].Country.City.Name
+	return false
 }
 
 // ips returns the list of IP addresses for the server.
@@ -109,9 +157,11 @@ var (
 )
 
 // wireguardPublicKey returns the Wireguard public key for the server.
-func (s *serverData) wireguardPublicKey() (wgPubKey string, err error) {
+func (s *serverData) wireguardPublicKey(technologies map[uint32]technologyData) (
+	wgPubKey string, err error) {
 	for _, technology := range s.Technologies {
-		if technology.Identifier != "wireguard_udp" {
+		data, ok := technologies[technology.ID]
+		if !ok || data.Identifier != "wireguard_udp" {
 			continue
 		}
 		for _, metadata := range technology.Metadata {
