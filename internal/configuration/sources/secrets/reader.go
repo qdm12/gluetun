@@ -1,6 +1,7 @@
 package secrets
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -34,6 +35,11 @@ func (s *Source) Read() (settings settings.Settings, err error) {
 	settings.Shadowsocks, err = s.readShadowsocks()
 	if err != nil {
 		return settings, err
+	}
+
+	settings.VPN.Wireguard, err = s.readWireguard()
+	if err != nil {
+		return settings, fmt.Errorf("reading Wireguard: %w", err)
 	}
 
 	return settings, nil

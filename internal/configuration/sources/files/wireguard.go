@@ -11,11 +11,6 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-var (
-	regexINISectionNotExist = regexp.MustCompile(`^section ".+" does not exist$`)
-	regexINIKeyNotExist     = regexp.MustCompile(`key ".*" not exists$`)
-)
-
 func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	fileStringPtr, err := ReadFromFile(s.wireguardConfigPath)
 	if err != nil {
@@ -27,6 +22,15 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	}
 
 	rawData := []byte(*fileStringPtr)
+	return ParseWireguardConf(rawData)
+}
+
+var (
+	regexINISectionNotExist = regexp.MustCompile(`^section ".+" does not exist$`)
+	regexINIKeyNotExist     = regexp.MustCompile(`key ".*" not exists$`)
+)
+
+func ParseWireguardConf(rawData []byte) (wireguard settings.Wireguard, err error) {
 	iniFile, err := ini.Load(rawData)
 	if err != nil {
 		return wireguard, fmt.Errorf("loading ini from reader: %w", err)
