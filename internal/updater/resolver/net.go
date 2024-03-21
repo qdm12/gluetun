@@ -10,7 +10,7 @@ func newResolver(resolverAddress string) *net.Resolver {
 	resolverAddress = net.JoinHostPort(resolverAddress, "53")
 	return &net.Resolver{
 		PreferGo: true,
-		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+		Dial: func(ctx context.Context, _, _ string) (net.Conn, error) {
 			return d.DialContext(ctx, "udp", resolverAddress)
 		},
 	}

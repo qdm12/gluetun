@@ -9,6 +9,7 @@ issues:
         - dupl
         - goerr113
         - containedctx
+        - goconst
     - path: "internal\\/server\\/.+\\.go"
       linters:
         - dupl
@@ -33,6 +34,18 @@ issues:
       text: "newCipherDESCBCBlock returns interface \\(github\\.com\\/youmark\\/pkcs8\\.Cipher\\)"
       linters:
         - ireturn
+    - path: "internal\\/firewall\\/.*\\.go"
+      text: "string `-i ` has [1-9][0-9]* occurrences, make it a constant"
+      linters:
+        - goconst
+    - path: "internal\\/provider\\/ipvanish\\/updater\\/servers.go"
+      text: "string ` in ` has 3 occurrences, make it a constant"
+      linters:
+        - goconst
+    - path: "internal\\/vpn\\/portforward.go"
+      text: 'directive `//nolint:ireturn` is unused for linter "ireturn"'
+      linters:
+        - nolintlint
 
 linters:
   enable:

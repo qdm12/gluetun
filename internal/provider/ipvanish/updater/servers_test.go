@@ -41,19 +41,19 @@ func Test_Updater_GetServers(t *testing.T) {
 		err     error
 	}{
 		"unzipper error": {
-			warnerBuilder: func(ctrl *gomock.Controller) common.Warner { return nil },
+			warnerBuilder: func(_ *gomock.Controller) common.Warner { return nil },
 			unzipErr:      errors.New("dummy"),
 			err:           errors.New("dummy"),
 		},
 		"not enough unzip contents": {
 			minServers:    1,
-			warnerBuilder: func(ctrl *gomock.Controller) common.Warner { return nil },
+			warnerBuilder: func(_ *gomock.Controller) common.Warner { return nil },
 			unzipContents: map[string][]byte{},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},
 		"no openvpn file": {
 			minServers:    1,
-			warnerBuilder: func(ctrl *gomock.Controller) common.Warner { return nil },
+			warnerBuilder: func(_ *gomock.Controller) common.Warner { return nil },
 			unzipContents: map[string][]byte{"somefile.txt": {}},
 			err:           errors.New("not enough servers found: 0 and expected at least 1"),
 		},

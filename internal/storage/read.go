@@ -51,8 +51,7 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string
 	for _, provider := range allProviders {
 		hardcodedVersion, ok := hardcodedVersions[provider]
 		if !ok {
-			panic(fmt.Sprintf("provider %s not found in hardcoded servers map; "+
-				"did you add the provider key in the embedded servers.json?", provider))
+			panicOnProviderMissingHardcoded(provider)
 		}
 
 		rawMessage, ok := rawMessages[provider]

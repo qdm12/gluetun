@@ -216,7 +216,7 @@ func Test_testIptablesPath(t *testing.T) {
 				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
 				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
 				runner.EXPECT().Run(newListInputRulesMatcher(path)).
-					Return("\nChain INPUT (policy "+inputPolicy+")\nxx\n", nil)
+					Return("\nChain INPUT (policy "+inputPolicy+")\nAA\n", nil)
 				runner.EXPECT().Run(newSetPolicyMatcher(path, inputPolicy)).
 					Return("Permission denied (you must be root)", errDummy)
 				return runner
@@ -229,7 +229,7 @@ func Test_testIptablesPath(t *testing.T) {
 				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
 				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
 				runner.EXPECT().Run(newListInputRulesMatcher(path)).
-					Return("\nChain INPUT (policy "+inputPolicy+")\nxx\n", nil)
+					Return("\nChain INPUT (policy "+inputPolicy+")\nBB\n", nil)
 				runner.EXPECT().Run(newSetPolicyMatcher(path, inputPolicy)).
 					Return("some output", errDummy)
 				return runner
@@ -242,7 +242,7 @@ func Test_testIptablesPath(t *testing.T) {
 				runner.EXPECT().Run(newAppendTestRuleMatcher(path)).Return("", nil)
 				runner.EXPECT().Run(newDeleteTestRuleMatcher(path)).Return("", nil)
 				runner.EXPECT().Run(newListInputRulesMatcher(path)).
-					Return("\nChain INPUT (policy "+inputPolicy+")\nxx\n", nil)
+					Return("\nChain INPUT (policy "+inputPolicy+")\nCC\n", nil)
 				runner.EXPECT().Run(newSetPolicyMatcher(path, inputPolicy)).
 					Return("some output", nil)
 				return runner

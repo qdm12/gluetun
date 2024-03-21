@@ -45,7 +45,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		err     error
 	}{
 		"http response error": {
-			warnerBuilder:  func(ctrl *gomock.Controller) common.Warner { return nil },
+			warnerBuilder:  func(_ *gomock.Controller) common.Warner { return nil },
 			responseStatus: http.StatusNoContent,
 			err:            errors.New("fetching API: HTTP status code not OK: 204 No Content"),
 		},
@@ -77,7 +77,7 @@ func Test_Updater_GetServers(t *testing.T) {
 		},
 		"not enough servers": {
 			minServers:    2,
-			warnerBuilder: func(ctrl *gomock.Controller) common.Warner { return nil },
+			warnerBuilder: func(_ *gomock.Controller) common.Warner { return nil },
 			responseBody: `{"servers":[
 				{"hostnames":{"openvpn":"hosta"}}
 			]}`,

@@ -11,7 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 )
 
-type AllServers struct { //nolint:musttag
+type AllServers struct {
 	Version           uint16 // used for migration of the top level scheme
 	ProviderToServers map[string]Servers
 }

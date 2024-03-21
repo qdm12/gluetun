@@ -83,7 +83,7 @@ func Test_Wireguard_addAddresses(t *testing.T) {
 		},
 		"ignore IPv6": {
 			addrs: []netip.Prefix{ipNetTwo},
-			wgBuilder: func(ctrl *gomock.Controller, link netlink.Link) *Wireguard {
+			wgBuilder: func(_ *gomock.Controller, _ netlink.Link) *Wireguard {
 				return &Wireguard{
 					settings: Settings{
 						IPv6: ptrTo(false),

@@ -57,8 +57,7 @@ func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []netip.Pref
 		}
 
 		if !firewallUpdated {
-			c.logger.Info(fmt.Sprintf("ignoring subnet %s which has "+
-				"no default route matching its family", subNet))
+			c.logIgnoredSubnetFamily(subNet)
 			continue
 		}
 		c.outboundSubnets = subnet.RemoveSubnetFromSubnets(c.outboundSubnets, subNet)
@@ -86,8 +85,7 @@ func (c *Config) addOutboundSubnets(ctx context.Context, subnets []netip.Prefix)
 		}
 
 		if !firewallUpdated {
-			c.logger.Info(fmt.Sprintf("ignoring subnet %s which has "+
-				"no default route matching its family", subnet))
+			c.logIgnoredSubnetFamily(subnet)
 			continue
 		}
 		c.outboundSubnets = append(c.outboundSubnets, subnet)

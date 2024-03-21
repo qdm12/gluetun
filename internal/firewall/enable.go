@@ -180,8 +180,7 @@ func (c *Config) allowOutboundSubnets(ctx context.Context) (err error) {
 		}
 
 		if !firewallUpdated {
-			c.logger.Info(fmt.Sprintf("ignoring subnet %s which has "+
-				"no default route matching its family", subnet))
+			c.logIgnoredSubnetFamily(subnet)
 		}
 	}
 	return nil

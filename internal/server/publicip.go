@@ -26,10 +26,10 @@ func (h *publicIPHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		case http.MethodGet:
 			h.getPublicIP(w)
 		default:
-			http.Error(w, "method "+r.Method+" not supported", http.StatusBadRequest)
+			errMethodNotSupported(w, r.Method)
 		}
 	default:
-		http.Error(w, "route "+r.RequestURI+" not supported", http.StatusBadRequest)
+		errRouteNotSupported(w, r.RequestURI)
 	}
 }
 
