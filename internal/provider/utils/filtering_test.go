@@ -179,6 +179,19 @@ func Test_FilterServers(t *testing.T) {
 				{City: "b", VPN: vpn.OpenVPN, UDP: true},
 			},
 		},
+		"filter by category": {
+			selection: settings.ServerSelection{
+				Categories: []string{"legacy_p2p"},
+			}.WithDefaults(providers.Nordvpn),
+			servers: []models.Server{
+				{Categories: []string{"legacy_p2p"}, VPN: vpn.OpenVPN, UDP: true},
+				{Categories: []string{"legacy_standard"}, VPN: vpn.OpenVPN, UDP: true},
+				{VPN: vpn.OpenVPN, UDP: true},
+			},
+			filtered: []models.Server{
+				{Categories: []string{"legacy_p2p"}, VPN: vpn.OpenVPN, UDP: true},
+			},
+		},
 		"filter by ISP": {
 			selection: settings.ServerSelection{
 				ISPs: []string{"b"},

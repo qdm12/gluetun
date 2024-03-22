@@ -17,6 +17,7 @@ type Server struct {
 	Region      string       `json:"region,omitempty"`
 	City        string       `json:"city,omitempty"`
 	ISP         string       `json:"isp,omitempty"`
+	Categories  []string     `json:"categories,omitempty"`
 	Owned       bool         `json:"owned,omitempty"`
 	Number      uint16       `json:"number,omitempty"`
 	ServerName  string       `json:"server_name,omitempty"`

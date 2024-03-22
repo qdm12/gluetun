@@ -139,6 +139,19 @@ func (s *serverData) hasVPNService(services map[uint32]serviceData) (ok bool) {
 	return false
 }
 
+// categories returns the list of categories for the server.
+func (s *serverData) categories(groups map[uint32]groupData) (categories []string) {
+	categories = make([]string, 0, len(s.GroupIDs))
+	for _, groupID := range s.GroupIDs {
+		data, ok := groups[groupID]
+		if !ok || data.Type.Identifier == "regions" {
+			continue
+		}
+		categories = append(categories, data.Title)
+	}
+	return categories
+}
+
 // ips returns the list of IP addresses for the server.
 func (s *serverData) ips() (ips []netip.Addr) {
 	ips = make([]netip.Addr, 0, len(s.IPs))

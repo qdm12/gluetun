@@ -10,6 +10,7 @@ issues:
         - goerr113
         - containedctx
         - goconst
+        - maintidx
     - path: "internal\\/server\\/.+\\.go"
       linters:
         - dupl

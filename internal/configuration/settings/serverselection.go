@@ -27,8 +27,10 @@ type ServerSelection struct { //nolint:maligned
 	// state, and can be set to the unspecified address to indicate
 	// there is not target IP address to use.
 	TargetIP netip.Addr `json:"target_ip"`
-	// Counties is the list of countries to filter VPN servers with.
+	// Countries is the list of countries to filter VPN servers with.
 	Countries []string `json:"countries"`
+	// Categories is the list of categories to filter VPN servers with.
+	Categories []string `json:"categories"`
 	// Regions is the list of regions to filter VPN servers with.
 	Regions []string `json:"regions"`
 	// Cities is the list of cities to filter VPN servers with.
@@ -224,6 +226,11 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 		return fmt.Errorf("%w: %w", ErrNameNotValid, err)
 	}
 
+	err = validate.AreAllOneOfCaseInsensitive(settings.Categories, filterChoices.Categories)
+	if err != nil {
+		return fmt.Errorf("%w: %w", ErrCategoryNotValid, err)
+	}
+
 	return nil
 }
 
@@ -232,6 +239,7 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 		VPN:             ss.VPN,
 		TargetIP:        ss.TargetIP,
 		Countries:       gosettings.CopySlice(ss.Countries),
+		Categories:      gosettings.CopySlice(ss.Categories),
 		Regions:         gosettings.CopySlice(ss.Regions),
 		Cities:          gosettings.CopySlice(ss.Cities),
 		ISPs:            gosettings.CopySlice(ss.ISPs),
@@ -253,6 +261,7 @@ func (ss *ServerSelection) mergeWith(other ServerSelection) {
 	ss.VPN = gosettings.MergeWithString(ss.VPN, other.VPN)
 	ss.TargetIP = gosettings.MergeWithValidator(ss.TargetIP, other.TargetIP)
 	ss.Countries = gosettings.MergeWithSlice(ss.Countries, other.Countries)
+	ss.Categories = gosettings.MergeWithSlice(ss.Categories, other.Categories)
 	ss.Regions = gosettings.MergeWithSlice(ss.Regions, other.Regions)
 	ss.Cities = gosettings.MergeWithSlice(ss.Cities, other.Cities)
 	ss.ISPs = gosettings.MergeWithSlice(ss.ISPs, other.ISPs)
@@ -274,6 +283,7 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.VPN = gosettings.OverrideWithString(ss.VPN, other.VPN)
 	ss.TargetIP = gosettings.OverrideWithValidator(ss.TargetIP, other.TargetIP)
 	ss.Countries = gosettings.OverrideWithSlice(ss.Countries, other.Countries)
+	ss.Categories = gosettings.OverrideWithSlice(ss.Categories, other.Categories)
 	ss.Regions = gosettings.OverrideWithSlice(ss.Regions, other.Regions)
 	ss.Cities = gosettings.OverrideWithSlice(ss.Cities, other.Cities)
 	ss.ISPs = gosettings.OverrideWithSlice(ss.ISPs, other.ISPs)
@@ -316,6 +326,10 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 
 	if len(ss.Countries) > 0 {
 		node.Appendf("Countries: %s", strings.Join(ss.Countries, ", "))
+	}
+
+	if len(ss.Categories) > 0 {
+		node.Appendf("Categories: %s", strings.Join(ss.Categories, ", "))
 	}
 
 	if len(ss.Regions) > 0 {

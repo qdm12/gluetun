@@ -109,6 +109,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     SERVER_COUNTRIES= \
     SERVER_CITIES= \
     SERVER_HOSTNAMES= \
+    SERVER_CATEGORIES= \
     # # Mullvad only:
     ISP= \
     OWNED_ONLY=no \

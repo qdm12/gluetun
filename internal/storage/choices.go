@@ -17,11 +17,12 @@ func (s *Storage) GetFilterChoices(provider string) models.FilterChoices {
 	serversObject := s.getMergedServersObject(provider)
 	servers := serversObject.Servers
 	return models.FilterChoices{
-		Countries: validation.ExtractCountries(servers),
-		Regions:   validation.ExtractRegions(servers),
-		Cities:    validation.ExtractCities(servers),
-		ISPs:      validation.ExtractISPs(servers),
-		Names:     validation.ExtractServerNames(servers),
-		Hostnames: validation.ExtractHostnames(servers),
+		Countries:  validation.ExtractCountries(servers),
+		Categories: validation.ExtractCategories(servers),
+		Regions:    validation.ExtractRegions(servers),
+		Cities:     validation.ExtractCities(servers),
+		ISPs:       validation.ExtractISPs(servers),
+		Names:      validation.ExtractServerNames(servers),
+		Hostnames:  validation.ExtractHostnames(servers),
 	}
 }
