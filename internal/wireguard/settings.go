@@ -45,6 +45,9 @@ type Settings struct {
 	// Implementation is the implementation to use.
 	// It can be auto, kernelspace or userspace, and defaults to auto.
 	Implementation string
+	// PersistenKeepAlive enable sending keep alive signal to server.
+	// So NAT view it as active connection
+	PersistenKeepAlive int
 }
 
 func (s *Settings) SetDefaults() {

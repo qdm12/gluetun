@@ -17,6 +17,7 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.Implementation = userSettings.Implementation
 	settings.MTU = userSettings.MTU
 	settings.IPv6 = &ipv6Supported
+	settings.PersistenKeepAlive = userSettings.PersistenKeepAlive
 
 	const rulePriority = 101 // 100 is to receive external connections
 	settings.RulePriority = rulePriority

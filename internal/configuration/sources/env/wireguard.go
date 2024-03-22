@@ -14,6 +14,10 @@ func (s *Source) readWireguard() (wireguard settings.Wireguard, err error) {
 	wireguard.Interface = s.env.String("VPN_INTERFACE",
 		env.RetroKeys("WIREGUARD_INTERFACE"), env.ForceLowercase(false))
 	wireguard.Implementation = s.env.String("WIREGUARD_IMPLEMENTATION")
+	wireguard.PersistenKeepAlive, err = s.env.Int("WIREGUARD_IMPLEMENTATION", env.ForceLowercase(false))
+	if err != nil {
+		return wireguard, err // already wrapped
+	}
 	wireguard.Addresses, err = s.env.CSVNetipPrefixes("WIREGUARD_ADDRESSES",
 		env.RetroKeys("WIREGUARD_ADDRESS"))
 	if err != nil {
