@@ -10,22 +10,7 @@ func (s *Source) readControlServer() (controlServer settings.ControlServer, err 
 		return controlServer, err
 	}
 
-	controlServer.Address = s.readControlServerAddress()
+	controlServer.Address = s.env.Get("HTTP_CONTROL_SERVER_ADDRESS")
 
 	return controlServer, nil
-}
-
-func (s *Source) readControlServerAddress() (address *string) {
-	const currentKey = "HTTP_CONTROL_SERVER_ADDRESS"
-	key := firstKeySet(s.env, "CONTROL_SERVER_ADDRESS", currentKey)
-	if key == currentKey {
-		return s.env.Get(key)
-	}
-
-	s.handleDeprecatedKey(key, currentKey)
-	value := s.env.Get("CONTROL_SERVER_ADDRESS")
-	if value == nil {
-		return nil
-	}
-	return ptrTo(":" + *value)
 }
