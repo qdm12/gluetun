@@ -33,12 +33,12 @@ func (v *VPN) Validate(storage Storage, ipv6Supported bool) (err error) {
 	}
 
 	if v.Type == vpn.OpenVPN {
-		err := v.OpenVPN.validate(*v.Provider.Name)
+		err := v.OpenVPN.validate(v.Provider.Name)
 		if err != nil {
 			return fmt.Errorf("OpenVPN settings: %w", err)
 		}
 	} else {
-		err := v.Wireguard.validate(*v.Provider.Name, ipv6Supported)
+		err := v.Wireguard.validate(v.Provider.Name, ipv6Supported)
 		if err != nil {
 			return fmt.Errorf("Wireguard settings: %w", err)
 		}
@@ -73,8 +73,8 @@ func (v *VPN) OverrideWith(other VPN) {
 func (v *VPN) setDefaults() {
 	v.Type = gosettings.DefaultString(v.Type, vpn.OpenVPN)
 	v.Provider.setDefaults()
-	v.OpenVPN.setDefaults(*v.Provider.Name)
-	v.Wireguard.setDefaults(*v.Provider.Name)
+	v.OpenVPN.setDefaults(v.Provider.Name)
+	v.Wireguard.setDefaults(v.Provider.Name)
 }
 
 func (v VPN) String() string {

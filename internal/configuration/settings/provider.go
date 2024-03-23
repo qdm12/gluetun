@@ -13,8 +13,8 @@ import (
 // Provider contains settings specific to a VPN provider.
 type Provider struct {
 	// Name is the VPN service provider name.
-	// It cannot be nil in the internal state.
-	Name *string `json:"name"`
+	// It cannot be the empty string in the internal state.
+	Name string `json:"name"`
 	// ServerSelection is the settings to
 	// select the VPN server.
 	ServerSelection ServerSelection `json:"server_selection"`
@@ -40,16 +40,16 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 			providers.Windscribe,
 		}
 	}
-	if err = validate.IsOneOf(*p.Name, validNames...); err != nil {
+	if err = validate.IsOneOf(p.Name, validNames...); err != nil {
 		return fmt.Errorf("%w for Wireguard: %w", ErrVPNProviderNameNotValid, err)
 	}
 
-	err = p.ServerSelection.validate(*p.Name, storage)
+	err = p.ServerSelection.validate(p.Name, storage)
 	if err != nil {
 		return fmt.Errorf("server selection: %w", err)
 	}
 
-	err = p.PortForwarding.Validate(*p.Name)
+	err = p.PortForwarding.Validate(p.Name)
 	if err != nil {
 		return fmt.Errorf("port forwarding: %w", err)
 	}
@@ -59,27 +59,27 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 
 func (p *Provider) copy() (copied Provider) {
 	return Provider{
-		Name:            gosettings.CopyPointer(p.Name),
+		Name:            p.Name,
 		ServerSelection: p.ServerSelection.copy(),
 		PortForwarding:  p.PortForwarding.Copy(),
 	}
 }
 
 func (p *Provider) mergeWith(other Provider) {
-	p.Name = gosettings.MergeWithPointer(p.Name, other.Name)
+	p.Name = gosettings.MergeWithString(p.Name, other.Name)
 	p.ServerSelection.mergeWith(other.ServerSelection)
 	p.PortForwarding.mergeWith(other.PortForwarding)
 }
 
 func (p *Provider) overrideWith(other Provider) {
-	p.Name = gosettings.OverrideWithPointer(p.Name, other.Name)
+	p.Name = gosettings.OverrideWithString(p.Name, other.Name)
 	p.ServerSelection.overrideWith(other.ServerSelection)
 	p.PortForwarding.OverrideWith(other.PortForwarding)
 }
 
 func (p *Provider) setDefaults() {
-	p.Name = gosettings.DefaultPointer(p.Name, providers.PrivateInternetAccess)
-	p.ServerSelection.setDefaults(*p.Name)
+	p.Name = gosettings.DefaultString(p.Name, providers.PrivateInternetAccess)
+	p.ServerSelection.setDefaults(p.Name)
 	p.PortForwarding.setDefaults()
 }
 
@@ -89,7 +89,7 @@ func (p Provider) String() string {
 
 func (p Provider) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("VPN provider settings:")
-	node.Appendf("Name: %s", *p.Name)
+	node.Appendf("Name: %s", p.Name)
 	node.AppendNode(p.ServerSelection.toLinesNode())
 	node.AppendNode(p.PortForwarding.toLinesNode())
 	return node

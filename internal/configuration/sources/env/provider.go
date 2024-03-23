@@ -12,12 +12,8 @@ import (
 
 func (s *Source) readProvider(vpnType string) (provider settings.Provider, err error) {
 	provider.Name = s.readVPNServiceProvider(vpnType)
-	var providerName string
-	if provider.Name != nil {
-		providerName = *provider.Name
-	}
 
-	provider.ServerSelection, err = s.readServerSelection(providerName, vpnType)
+	provider.ServerSelection, err = s.readServerSelection(provider.Name, vpnType)
 	if err != nil {
 		return provider, fmt.Errorf("server selection: %w", err)
 	}
@@ -30,21 +26,20 @@ func (s *Source) readProvider(vpnType string) (provider settings.Provider, err e
 	return provider, nil
 }
 
-func (s *Source) readVPNServiceProvider(vpnType string) (vpnProviderPtr *string) {
-	valuePtr := s.env.Get("VPN_SERVICE_PROVIDER", env.RetroKeys("VPNSP"))
-	if valuePtr == nil {
+func (s *Source) readVPNServiceProvider(vpnType string) (vpnProvider string) {
+	vpnProvider = s.env.String("VPN_SERVICE_PROVIDER", env.RetroKeys("VPNSP"))
+	if vpnProvider == "" {
 		if vpnType != vpn.Wireguard && s.env.Get("OPENVPN_CUSTOM_CONFIG") != nil {
 			// retro compatibility
-			return ptrTo(providers.Custom)
+			return providers.Custom
 		}
-		return nil
+		return ""
 	}
 
-	value := *valuePtr
-	value = strings.ToLower(value)
-	if value == "pia" { // retro compatibility
-		return ptrTo(providers.PrivateInternetAccess)
+	vpnProvider = strings.ToLower(vpnProvider)
+	if vpnProvider == "pia" { // retro compatibility
+		return providers.PrivateInternetAccess
 	}
 
-	return ptrTo(value)
+	return vpnProvider
 }

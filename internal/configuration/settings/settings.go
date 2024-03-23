@@ -133,7 +133,7 @@ func (s *Settings) SetDefaults() {
 	s.System.setDefaults()
 	s.Version.setDefaults()
 	s.VPN.setDefaults()
-	s.Updater.SetDefaults(*s.VPN.Provider.Name)
+	s.Updater.SetDefaults(s.VPN.Provider.Name)
 	s.Pprof.SetDefaults()
 }
 
@@ -162,16 +162,16 @@ func (s Settings) toLinesNode() (node *gotree.Node) {
 }
 
 func (s Settings) Warnings() (warnings []string) {
-	if *s.VPN.Provider.Name == providers.HideMyAss {
+	if s.VPN.Provider.Name == providers.HideMyAss {
 		warnings = append(warnings, "HideMyAss dropped support for Linux OpenVPN "+
 			" so this will likely not work anymore. See https://github.com/qdm12/gluetun/issues/1498.")
 	}
 
-	if helpers.IsOneOf(*s.VPN.Provider.Name, providers.SlickVPN) &&
+	if helpers.IsOneOf(s.VPN.Provider.Name, providers.SlickVPN) &&
 		s.VPN.Type == vpn.OpenVPN {
 		warnings = append(warnings, "OpenVPN 2.5 uses OpenSSL 3 "+
 			"which prohibits the usage of weak security in today's standards. "+
-			*s.VPN.Provider.Name+" uses weak security which is out "+
+			s.VPN.Provider.Name+" uses weak security which is out "+
 			"of Gluetun's control so the only workaround is to allow such weaknesses "+
 			`using the OpenVPN option tls-cipher "DEFAULT:@SECLEVEL=0". `+
 			"You might want to reach to your provider so they upgrade their certificates. "+
