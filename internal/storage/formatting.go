@@ -22,7 +22,7 @@ func noServerFoundError(selection settings.ServerSelection) (err error) {
 	messageParts = append(messageParts, "VPN "+selection.VPN)
 
 	protocol := constants.UDP
-	if *selection.OpenVPN.TCP {
+	if selection.OpenVPN.Protocol == constants.TCP {
 		protocol = constants.TCP
 	}
 	messageParts = append(messageParts, "protocol "+protocol)

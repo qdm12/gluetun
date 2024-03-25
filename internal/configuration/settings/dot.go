@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 )
 
@@ -61,15 +62,6 @@ func (d *DoT) copy() (copied DoT) {
 	}
 }
 
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (d *DoT) mergeWith(other DoT) {
-	d.Enabled = gosettings.MergeWithPointer(d.Enabled, other.Enabled)
-	d.UpdatePeriod = gosettings.MergeWithPointer(d.UpdatePeriod, other.UpdatePeriod)
-	d.Unbound.mergeWith(other.Unbound)
-	d.Blacklist.mergeWith(other.Blacklist)
-}
-
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
@@ -110,4 +102,28 @@ func (d DoT) toLinesNode() (node *gotree.Node) {
 	node.AppendNode(d.Blacklist.toLinesNode())
 
 	return node
+}
+
+func (d *DoT) read(reader *reader.Reader) (err error) {
+	d.Enabled, err = reader.BoolPtr("DOT")
+	if err != nil {
+		return err
+	}
+
+	d.UpdatePeriod, err = reader.DurationPtr("DNS_UPDATE_PERIOD")
+	if err != nil {
+		return err
+	}
+
+	err = d.Unbound.read(reader)
+	if err != nil {
+		return err
+	}
+
+	err = d.Blacklist.read(reader)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

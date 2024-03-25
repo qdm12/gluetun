@@ -1,7 +1,10 @@
 package settings
 
 import (
+	"fmt"
+
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 	"github.com/qdm12/ss-server/pkg/tcpudp"
 )
@@ -24,13 +27,6 @@ func (s *Shadowsocks) copy() (copied Shadowsocks) {
 		Enabled:  gosettings.CopyPointer(s.Enabled),
 		Settings: s.Settings.Copy(),
 	}
-}
-
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (s *Shadowsocks) mergeWith(other Shadowsocks) {
-	s.Enabled = gosettings.MergeWithPointer(s.Enabled, other.Enabled)
-	s.Settings = s.Settings.MergeWith(other.Settings)
 }
 
 // overrideWith overrides fields of the receiver
@@ -59,10 +55,44 @@ func (s Shadowsocks) toLinesNode() (node *gotree.Node) {
 	}
 
 	// TODO have ToLinesNode in qdm12/ss-server
-	node.Appendf("Listening address: %s", *s.Address)
-	node.Appendf("Cipher: %s", s.CipherName)
-	node.Appendf("Password: %s", gosettings.ObfuscateKey(*s.Password))
-	node.Appendf("Log addresses: %s", gosettings.BoolToYesNo(s.LogAddresses))
+	node.Appendf("Listening address: %s", *s.Settings.Address)
+	node.Appendf("Cipher: %s", s.Settings.CipherName)
+	node.Appendf("Password: %s", gosettings.ObfuscateKey(*s.Settings.Password))
+	node.Appendf("Log addresses: %s", gosettings.BoolToYesNo(s.Settings.LogAddresses))
 
 	return node
+}
+
+func (s *Shadowsocks) read(r *reader.Reader) (err error) {
+	s.Enabled, err = r.BoolPtr("SHADOWSOCKS")
+	if err != nil {
+		return err
+	}
+
+	s.Settings.Address, err = readShadowsocksAddress(r)
+	if err != nil {
+		return err
+	}
+	s.Settings.LogAddresses, err = r.BoolPtr("SHADOWSOCKS_LOG")
+	if err != nil {
+		return err
+	}
+	s.Settings.CipherName = r.String("SHADOWSOCKS_CIPHER",
+		reader.RetroKeys("SHADOWSOCKS_METHOD"))
+	s.Settings.Password = r.Get("SHADOWSOCKS_PASSWORD",
+		reader.ForceLowercase(false))
+
+	return nil
+}
+
+func readShadowsocksAddress(r *reader.Reader) (address *string, err error) {
+	const currentKey = "SHADOWSOCKS_LISTENING_ADDRESS"
+	port, err := r.Uint16Ptr("SHADOWSOCKS_PORT", reader.IsRetro(currentKey)) // retro-compatibility
+	if err != nil {
+		return nil, err
+	} else if port != nil {
+		return ptrTo(fmt.Sprintf(":%d", *port)), nil
+	}
+
+	return r.Get(currentKey), nil
 }

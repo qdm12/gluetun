@@ -20,7 +20,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	for ctx.Err() == nil {
 		settings := l.state.GetSettings()
 
-		providerConf := l.providers.Get(*settings.Provider.Name)
+		providerConf := l.providers.Get(settings.Provider.Name)
 
 		portForwarder := getPortForwarder(providerConf, l.providers,
 			*settings.Provider.PortForwarding.Provider)

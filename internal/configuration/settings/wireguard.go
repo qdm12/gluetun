@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
@@ -147,24 +148,14 @@ func (w *Wireguard) copy() (copied Wireguard) {
 	}
 }
 
-func (w *Wireguard) mergeWith(other Wireguard) {
-	w.PrivateKey = gosettings.MergeWithPointer(w.PrivateKey, other.PrivateKey)
-	w.PreSharedKey = gosettings.MergeWithPointer(w.PreSharedKey, other.PreSharedKey)
-	w.Addresses = gosettings.MergeWithSlice(w.Addresses, other.Addresses)
-	w.AllowedIPs = gosettings.MergeWithSlice(w.AllowedIPs, other.AllowedIPs)
-	w.Interface = gosettings.MergeWithString(w.Interface, other.Interface)
-	w.MTU = gosettings.MergeWithNumber(w.MTU, other.MTU)
-	w.Implementation = gosettings.MergeWithString(w.Implementation, other.Implementation)
-}
-
 func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PrivateKey = gosettings.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
 	w.PreSharedKey = gosettings.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = gosettings.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.AllowedIPs = gosettings.OverrideWithSlice(w.AllowedIPs, other.AllowedIPs)
-	w.Interface = gosettings.OverrideWithString(w.Interface, other.Interface)
-	w.MTU = gosettings.OverrideWithNumber(w.MTU, other.MTU)
-	w.Implementation = gosettings.OverrideWithString(w.Implementation, other.Implementation)
+	w.Interface = gosettings.OverrideWithComparable(w.Interface, other.Interface)
+	w.MTU = gosettings.OverrideWithComparable(w.MTU, other.MTU)
+	w.Implementation = gosettings.OverrideWithComparable(w.Implementation, other.Implementation)
 }
 
 func (w *Wireguard) setDefaults(vpnProvider string) {
@@ -180,10 +171,10 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 		netip.PrefixFrom(netip.IPv6Unspecified(), 0),
 	}
 	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs, defaultAllowedIPs)
-	w.Interface = gosettings.DefaultString(w.Interface, "wg0")
+	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
 	const defaultMTU = 1400
-	w.MTU = gosettings.DefaultNumber(w.MTU, defaultMTU)
-	w.Implementation = gosettings.DefaultString(w.Implementation, "auto")
+	w.MTU = gosettings.DefaultComparable(w.MTU, defaultMTU)
+	w.Implementation = gosettings.DefaultComparable(w.Implementation, "auto")
 }
 
 func (w Wireguard) String() string {
@@ -221,4 +212,28 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	}
 
 	return node
+}
+
+func (w *Wireguard) read(r *reader.Reader) (err error) {
+	w.PrivateKey = r.Get("WIREGUARD_PRIVATE_KEY", reader.ForceLowercase(false))
+	w.PreSharedKey = r.Get("WIREGUARD_PRESHARED_KEY", reader.ForceLowercase(false))
+	w.Interface = r.String("VPN_INTERFACE",
+		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
+	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
+	w.Addresses, err = r.CSVNetipPrefixes("WIREGUARD_ADDRESSES",
+		reader.RetroKeys("WIREGUARD_ADDRESS"))
+	if err != nil {
+		return err // already wrapped
+	}
+	w.AllowedIPs, err = r.CSVNetipPrefixes("WIREGUARD_ALLOWED_IPS")
+	if err != nil {
+		return err // already wrapped
+	}
+	mtuPtr, err := r.Uint16Ptr("WIREGUARD_MTU")
+	if err != nil {
+		return err
+	} else if mtuPtr != nil {
+		w.MTU = *mtuPtr
+	}
+	return nil
 }

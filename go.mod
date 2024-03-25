@@ -1,29 +1,28 @@
 module github.com/qdm12/gluetun
 
-go 1.21
+go 1.22
 
 require (
 	github.com/breml/rootcerts v0.2.16
 	github.com/fatih/color v1.16.0
 	github.com/golang/mock v1.6.0
-	github.com/klauspost/compress v1.17.4
+	github.com/klauspost/compress v1.17.7
 	github.com/klauspost/pgzip v1.2.6
 	github.com/qdm12/dns v1.11.0
 	github.com/qdm12/golibs v0.0.0-20210822203818-5c568b0777b6
-	github.com/qdm12/gosettings v0.4.0-rc1
+	github.com/qdm12/gosettings v0.4.0-rc9.0.20240323143821-6cc9afe3e4a0
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.1.0
 	github.com/qdm12/gotree v0.2.0
-	github.com/qdm12/govalid v0.2.0-rc1
 	github.com/qdm12/log v0.1.0
-	github.com/qdm12/ss-server v0.5.0
+	github.com/qdm12/ss-server v0.6.0
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/ulikunitz/xz v0.5.11
 	github.com/vishvananda/netlink v1.2.1-beta.2
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a
-	golang.org/x/net v0.19.0
-	golang.org/x/sys v0.15.0
+	golang.org/x/net v0.22.0
+	golang.org/x/sys v0.18.0
 	golang.org/x/text v0.14.0
 	golang.zx2c4.com/wireguard v0.0.0-20230325221338-052af4a8072b
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230215201556-9c5414ab4bde
@@ -47,9 +46,11 @@ require (
 	github.com/vishvananda/netns v0.0.0-20200728191858-db3c7e526aae // indirect
 	go4.org/intern v0.0.0-20211027215823-ae77deb06f29 // indirect
 	go4.org/unsafe/assume-no-moving-gc v0.0.0-20230525183740-e7c30c78aeb2 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
+	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	kernel.org/pub/linux/libs/security/libcap/cap v1.2.69 // indirect
+	kernel.org/pub/linux/libs/security/libcap/psx v1.2.69 // indirect
 )

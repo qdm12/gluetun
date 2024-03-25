@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
@@ -50,7 +51,7 @@ func Test_FilterServers(t *testing.T) {
 		"filter by network protocol": {
 			selection: settings.ServerSelection{
 				OpenVPN: settings.OpenVPNSelection{
-					TCP: boolPtr(true),
+					Protocol: constants.TCP,
 				},
 			}.WithDefaults(providers.Ivpn),
 			servers: []models.Server{

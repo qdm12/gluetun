@@ -2,11 +2,14 @@ package settings
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess/presets"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -17,10 +20,10 @@ type OpenVPNSelection struct {
 	// NOT use a custom configuration file.
 	// It cannot be nil in the internal state.
 	ConfFile *string `json:"config_file_path"`
-	// TCP is true if the OpenVPN protocol is TCP,
-	// and false for UDP.
-	// It cannot be nil in the internal state.
-	TCP *bool `json:"tcp"`
+	// Protocol is the OpenVPN network protocol to use,
+	// and can be udp or tcp. It cannot be the empty string
+	// in the internal state.
+	Protocol string `json:"protocol"`
 	// CustomPort is the OpenVPN server endpoint port.
 	// It can be set to 0 to indicate no custom port should
 	// be used. It cannot be nil in the internal state.
@@ -40,8 +43,13 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		}
 	}
 
+	err = validate.IsOneOf(o.Protocol, constants.UDP, constants.TCP)
+	if err != nil {
+		return fmt.Errorf("network protocol: %w", err)
+	}
+
 	// Validate TCP
-	if *o.TCP && helpers.IsOneOf(vpnProvider,
+	if o.Protocol == constants.TCP && helpers.IsOneOf(vpnProvider,
 		providers.Ipvanish,
 		providers.Perfectprivacy,
 		providers.Privado,
@@ -104,7 +112,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			}
 
 			allowedPorts := allowedUDP
-			if *o.TCP {
+			if o.Protocol == constants.TCP {
 				allowedPorts = allowedTCP
 			}
 			err = validate.IsOneOf(*o.CustomPort, allowedPorts...)
@@ -133,29 +141,22 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 func (o *OpenVPNSelection) copy() (copied OpenVPNSelection) {
 	return OpenVPNSelection{
 		ConfFile:     gosettings.CopyPointer(o.ConfFile),
-		TCP:          gosettings.CopyPointer(o.TCP),
+		Protocol:     o.Protocol,
 		CustomPort:   gosettings.CopyPointer(o.CustomPort),
 		PIAEncPreset: gosettings.CopyPointer(o.PIAEncPreset),
 	}
 }
 
-func (o *OpenVPNSelection) mergeWith(other OpenVPNSelection) {
-	o.ConfFile = gosettings.MergeWithPointer(o.ConfFile, other.ConfFile)
-	o.TCP = gosettings.MergeWithPointer(o.TCP, other.TCP)
-	o.CustomPort = gosettings.MergeWithPointer(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = gosettings.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
-}
-
 func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {
 	o.ConfFile = gosettings.OverrideWithPointer(o.ConfFile, other.ConfFile)
-	o.TCP = gosettings.OverrideWithPointer(o.TCP, other.TCP)
+	o.Protocol = gosettings.OverrideWithComparable(o.Protocol, other.Protocol)
 	o.CustomPort = gosettings.OverrideWithPointer(o.CustomPort, other.CustomPort)
 	o.PIAEncPreset = gosettings.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
 	o.ConfFile = gosettings.DefaultPointer(o.ConfFile, "")
-	o.TCP = gosettings.DefaultPointer(o.TCP, false)
+	o.Protocol = gosettings.DefaultComparable(o.Protocol, constants.UDP)
 	o.CustomPort = gosettings.DefaultPointer(o.CustomPort, 0)
 
 	var defaultEncPreset string
@@ -171,7 +172,7 @@ func (o OpenVPNSelection) String() string {
 
 func (o OpenVPNSelection) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("OpenVPN server selection settings:")
-	node.Appendf("Protocol: %s", helpers.TCPPtrToString(o.TCP))
+	node.Appendf("Protocol: %s", strings.ToUpper(o.Protocol))
 
 	if *o.CustomPort != 0 {
 		node.Appendf("Custom port: %d", *o.CustomPort)
@@ -186,4 +187,24 @@ func (o OpenVPNSelection) toLinesNode() (node *gotree.Node) {
 	}
 
 	return node
+}
+
+func (o *OpenVPNSelection) read(r *reader.Reader) (err error) {
+	o.ConfFile = r.Get("OPENVPN_CUSTOM_CONFIG", reader.ForceLowercase(false))
+
+	o.Protocol = r.String("OPENVPN_PROTOCOL", reader.RetroKeys("PROTOCOL"))
+	if err != nil {
+		return err
+	}
+
+	o.CustomPort, err = r.Uint16Ptr("VPN_ENDPOINT_PORT",
+		reader.RetroKeys("PORT", "OPENVPN_PORT"))
+	if err != nil {
+		return err
+	}
+
+	o.PIAEncPreset = r.Get("PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET",
+		reader.RetroKeys("ENCRYPTION", "PIA_ENCRYPTION"))
+
+	return nil
 }

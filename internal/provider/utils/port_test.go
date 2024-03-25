@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/stretchr/testify/assert"
 )
@@ -40,7 +41,7 @@ func Test_GetPort(t *testing.T) {
 				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					CustomPort: uint16Ptr(0),
-					TCP:        boolPtr(false),
+					Protocol:   constants.UDP,
 				},
 			},
 			defaultOpenVPNTCP: defaultOpenVPNTCP,
@@ -53,7 +54,7 @@ func Test_GetPort(t *testing.T) {
 				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					CustomPort: uint16Ptr(0),
-					TCP:        boolPtr(false),
+					Protocol:   constants.UDP,
 				},
 			},
 			panics: "no default OpenVPN UDP port is defined!",
@@ -63,7 +64,7 @@ func Test_GetPort(t *testing.T) {
 				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					CustomPort: uint16Ptr(0),
-					TCP:        boolPtr(true),
+					Protocol:   constants.TCP,
 				},
 			},
 			defaultOpenVPNTCP: defaultOpenVPNTCP,
@@ -74,7 +75,7 @@ func Test_GetPort(t *testing.T) {
 				VPN: vpn.OpenVPN,
 				OpenVPN: settings.OpenVPNSelection{
 					CustomPort: uint16Ptr(0),
-					TCP:        boolPtr(true),
+					Protocol:   constants.TCP,
 				},
 			},
 			panics: "no default OpenVPN TCP port is defined!",

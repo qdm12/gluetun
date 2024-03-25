@@ -6,13 +6,12 @@ import (
 	"io"
 	"os"
 	"strings"
-
-	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 )
 
 func (c *CLI) ClientKey(args []string) error {
 	flagSet := flag.NewFlagSet("clientkey", flag.ExitOnError)
-	filepath := flagSet.String("path", files.OpenVPNClientKeyPath, "file path to the client.key file")
+	const openVPNClientKeyPath = "/gluetun/client.key" // TODO deduplicate?
+	filepath := flagSet.String("path", openVPNClientKeyPath, "file path to the client.key file")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
@@ -116,16 +117,10 @@ func (w *WireguardSelection) copy() (copied WireguardSelection) {
 	}
 }
 
-func (w *WireguardSelection) mergeWith(other WireguardSelection) {
-	w.EndpointIP = gosettings.MergeWithValidator(w.EndpointIP, other.EndpointIP)
-	w.EndpointPort = gosettings.MergeWithPointer(w.EndpointPort, other.EndpointPort)
-	w.PublicKey = gosettings.MergeWithString(w.PublicKey, other.PublicKey)
-}
-
 func (w *WireguardSelection) overrideWith(other WireguardSelection) {
 	w.EndpointIP = gosettings.OverrideWithValidator(w.EndpointIP, other.EndpointIP)
 	w.EndpointPort = gosettings.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
-	w.PublicKey = gosettings.OverrideWithString(w.PublicKey, other.PublicKey)
+	w.PublicKey = gosettings.OverrideWithComparable(w.PublicKey, other.PublicKey)
 }
 
 func (w *WireguardSelection) setDefaults() {
@@ -153,4 +148,19 @@ func (w WireguardSelection) toLinesNode() (node *gotree.Node) {
 	}
 
 	return node
+}
+
+func (w *WireguardSelection) read(r *reader.Reader) (err error) {
+	w.EndpointIP, err = r.NetipAddr("VPN_ENDPOINT_IP", reader.RetroKeys("WIREGUARD_ENDPOINT_IP"))
+	if err != nil {
+		return err
+	}
+
+	w.EndpointPort, err = r.Uint16Ptr("VPN_ENDPOINT_PORT", reader.RetroKeys("WIREGUARD_ENDPOINT_PORT"))
+	if err != nil {
+		return err
+	}
+
+	w.PublicKey = r.String("WIREGUARD_PUBLIC_KEY", reader.ForceLowercase(false))
+	return nil
 }

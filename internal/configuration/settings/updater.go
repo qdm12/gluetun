@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -64,28 +65,19 @@ func (u *Updater) copy() (copied Updater) {
 	}
 }
 
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (u *Updater) mergeWith(other Updater) {
-	u.Period = gosettings.MergeWithPointer(u.Period, other.Period)
-	u.DNSAddress = gosettings.MergeWithString(u.DNSAddress, other.DNSAddress)
-	u.MinRatio = gosettings.MergeWithNumber(u.MinRatio, other.MinRatio)
-	u.Providers = gosettings.MergeWithSlice(u.Providers, other.Providers)
-}
-
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (u *Updater) overrideWith(other Updater) {
 	u.Period = gosettings.OverrideWithPointer(u.Period, other.Period)
-	u.DNSAddress = gosettings.OverrideWithString(u.DNSAddress, other.DNSAddress)
-	u.MinRatio = gosettings.OverrideWithNumber(u.MinRatio, other.MinRatio)
+	u.DNSAddress = gosettings.OverrideWithComparable(u.DNSAddress, other.DNSAddress)
+	u.MinRatio = gosettings.OverrideWithComparable(u.MinRatio, other.MinRatio)
 	u.Providers = gosettings.OverrideWithSlice(u.Providers, other.Providers)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = gosettings.DefaultPointer(u.Period, 0)
-	u.DNSAddress = gosettings.DefaultString(u.DNSAddress, "1.1.1.1:53")
+	u.DNSAddress = gosettings.DefaultComparable(u.DNSAddress, "1.1.1.1:53")
 
 	if u.MinRatio == 0 {
 		const defaultMinRatio = 0.8
@@ -113,4 +105,34 @@ func (u Updater) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Providers to update: %s", strings.Join(u.Providers, ", "))
 
 	return node
+}
+
+func (u *Updater) read(r *reader.Reader) (err error) {
+	u.Period, err = r.DurationPtr("UPDATER_PERIOD")
+	if err != nil {
+		return err
+	}
+
+	u.DNSAddress, err = readUpdaterDNSAddress()
+	if err != nil {
+		return err
+	}
+
+	u.MinRatio, err = r.Float64("UPDATER_MIN_RATIO")
+	if err != nil {
+		return err
+	}
+
+	u.Providers = r.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
+
+	return nil
+}
+
+func readUpdaterDNSAddress() (address string, err error) {
+	// TODO this is currently using Cloudflare in
+	// plaintext to not be blocked by DNS over TLS by default.
+	// If a plaintext address is set in the DNS settings, this one will be used.
+	// use custom future encrypted DNS written in Go without blocking
+	// as it's too much trouble to start another parallel unbound instance for now.
+	return "", nil
 }

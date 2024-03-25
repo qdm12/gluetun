@@ -5,6 +5,7 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 )
 
@@ -49,14 +50,6 @@ func (d *DNS) Copy() (copied DNS) {
 	}
 }
 
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (d *DNS) mergeWith(other DNS) {
-	d.ServerAddress = gosettings.MergeWithValidator(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = gosettings.MergeWithPointer(d.KeepNameserver, other.KeepNameserver)
-	d.DoT.mergeWith(other.DoT)
-}
-
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
@@ -86,4 +79,23 @@ func (d DNS) toLinesNode() (node *gotree.Node) {
 	node.Appendf("DNS server address to use: %s", d.ServerAddress)
 	node.AppendNode(d.DoT.toLinesNode())
 	return node
+}
+
+func (d *DNS) read(r *reader.Reader) (err error) {
+	d.ServerAddress, err = r.NetipAddr("DNS_ADDRESS", reader.RetroKeys("DNS_PLAINTEXT_ADDRESS"))
+	if err != nil {
+		return err
+	}
+
+	d.KeepNameserver, err = r.BoolPtr("DNS_KEEP_NAMESERVER")
+	if err != nil {
+		return err
+	}
+
+	err = d.DoT.read(r)
+	if err != nil {
+		return fmt.Errorf("DNS over TLS settings: %w", err)
+	}
+
+	return nil
 }

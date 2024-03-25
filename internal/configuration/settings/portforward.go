@@ -6,6 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -72,13 +73,6 @@ func (p *PortForwarding) Copy() (copied PortForwarding) {
 	}
 }
 
-func (p *PortForwarding) mergeWith(other PortForwarding) {
-	p.Enabled = gosettings.MergeWithPointer(p.Enabled, other.Enabled)
-	p.Provider = gosettings.MergeWithPointer(p.Provider, other.Provider)
-	p.Filepath = gosettings.MergeWithPointer(p.Filepath, other.Filepath)
-	p.ListeningPort = gosettings.MergeWithPointer(p.ListeningPort, other.ListeningPort)
-}
-
 func (p *PortForwarding) OverrideWith(other PortForwarding) {
 	p.Enabled = gosettings.OverrideWithPointer(p.Enabled, other.Enabled)
 	p.Provider = gosettings.OverrideWithPointer(p.Provider, other.Provider)
@@ -123,4 +117,31 @@ func (p PortForwarding) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Forwarded port file path: %s", filepath)
 
 	return node
+}
+
+func (p *PortForwarding) read(r *reader.Reader) (err error) {
+	p.Enabled, err = r.BoolPtr("VPN_PORT_FORWARDING",
+		reader.RetroKeys(
+			"PORT_FORWARDING",
+			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING",
+		))
+	if err != nil {
+		return err
+	}
+
+	p.Provider = r.Get("VPN_PORT_FORWARDING_PROVIDER")
+
+	p.Filepath = r.Get("VPN_PORT_FORWARDING_STATUS_FILE",
+		reader.ForceLowercase(false),
+		reader.RetroKeys(
+			"PORT_FORWARDING_STATUS_FILE",
+			"PRIVATE_INTERNET_ACCESS_VPN_PORT_FORWARDING_STATUS_FILE",
+		))
+
+	p.ListeningPort, err = r.Uint16Ptr("VPN_PORT_FORWARDING_LISTENING_PORT")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

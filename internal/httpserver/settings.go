@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
-	"github.com/qdm12/govalid/address"
 )
 
 type Settings struct {
@@ -34,12 +34,12 @@ type Settings struct {
 }
 
 func (s *Settings) SetDefaults() {
-	s.Address = gosettings.DefaultString(s.Address, ":8000")
+	s.Address = gosettings.DefaultComparable(s.Address, ":8000")
 	const defaultReadTimeout = 3 * time.Second
-	s.ReadHeaderTimeout = gosettings.DefaultNumber(s.ReadHeaderTimeout, defaultReadTimeout)
-	s.ReadTimeout = gosettings.DefaultNumber(s.ReadTimeout, defaultReadTimeout)
+	s.ReadHeaderTimeout = gosettings.DefaultComparable(s.ReadHeaderTimeout, defaultReadTimeout)
+	s.ReadTimeout = gosettings.DefaultComparable(s.ReadTimeout, defaultReadTimeout)
 	const defaultShutdownTimeout = 3 * time.Second
-	s.ShutdownTimeout = gosettings.DefaultNumber(s.ShutdownTimeout, defaultShutdownTimeout)
+	s.ShutdownTimeout = gosettings.DefaultComparable(s.ShutdownTimeout, defaultShutdownTimeout)
 }
 
 func (s Settings) Copy() Settings {
@@ -53,26 +53,15 @@ func (s Settings) Copy() Settings {
 	}
 }
 
-func (s *Settings) MergeWith(other Settings) {
-	s.Address = gosettings.MergeWithString(s.Address, other.Address)
-	s.Handler = gosettings.MergeWithInterface(s.Handler, other.Handler)
-	if s.Logger == nil {
-		s.Logger = other.Logger
-	}
-	s.ReadHeaderTimeout = gosettings.MergeWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = gosettings.MergeWithNumber(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = gosettings.MergeWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
-}
-
 func (s *Settings) OverrideWith(other Settings) {
-	s.Address = gosettings.OverrideWithString(s.Address, other.Address)
-	s.Handler = gosettings.OverrideWithInterface(s.Handler, other.Handler)
+	s.Address = gosettings.OverrideWithComparable(s.Address, other.Address)
+	s.Handler = gosettings.OverrideWithComparable(s.Handler, other.Handler)
 	if other.Logger != nil {
 		s.Logger = other.Logger
 	}
-	s.ReadHeaderTimeout = gosettings.OverrideWithNumber(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	s.ReadTimeout = gosettings.OverrideWithNumber(s.ReadTimeout, other.ReadTimeout)
-	s.ShutdownTimeout = gosettings.OverrideWithNumber(s.ShutdownTimeout, other.ShutdownTimeout)
+	s.ReadHeaderTimeout = gosettings.OverrideWithComparable(s.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	s.ReadTimeout = gosettings.OverrideWithComparable(s.ReadTimeout, other.ReadTimeout)
+	s.ShutdownTimeout = gosettings.OverrideWithComparable(s.ShutdownTimeout, other.ShutdownTimeout)
 }
 
 var (
@@ -84,8 +73,7 @@ var (
 )
 
 func (s Settings) Validate() (err error) {
-	uid := os.Getuid()
-	err = address.Validate(s.Address, address.OptionListening(uid))
+	err = validate.ListeningAddress(s.Address, os.Getuid())
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func getProtocol(selection settings.ServerSelection) (protocol string) {
-	if selection.VPN == vpn.OpenVPN && *selection.OpenVPN.TCP {
+	if selection.VPN == vpn.OpenVPN && selection.OpenVPN.Protocol == constants.TCP {
 		return constants.TCP
 	}
 	return constants.UDP
@@ -19,7 +19,7 @@ func filterByProtocol(selection settings.ServerSelection,
 	case vpn.Wireguard:
 		return !serverUDP
 	default: // OpenVPN
-		wantTCP := *selection.OpenVPN.TCP
+		wantTCP := selection.OpenVPN.Protocol == constants.TCP
 		wantUDP := !wantTCP
 		return (wantTCP && !serverTCP) || (wantUDP && !serverUDP)
 	}
