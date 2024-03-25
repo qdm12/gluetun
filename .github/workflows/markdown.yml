@@ -36,7 +36,7 @@ jobs:
         with:
           use-quiet-mode: yes
 
-      - uses: peter-evans/dockerhub-description@v3
+      - uses: peter-evans/dockerhub-description@v4
         if: github.repository == 'qdm12/gluetun' && github.event_name == 'push'
         with:
           username: qmcgaw
