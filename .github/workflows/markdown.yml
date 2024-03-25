@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: DavidAnson/markdownlint-cli2-action@v14
+      - uses: DavidAnson/markdownlint-cli2-action@v15
         with:
           globs: "**.md"
           config: .markdownlint.json
