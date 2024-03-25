@@ -62,7 +62,7 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 		return ss, err
 	}
 
-	// VPNUnlimited only
+	// VPNUnlimited and ProtonVPN only
 	ss.StreamOnly, err = s.env.BoolPtr("STREAM_ONLY")
 	if err != nil {
 		return ss, err
@@ -70,6 +70,30 @@ func (s *Source) readServerSelection(vpnProvider, vpnType string) (
 
 	// PIA only
 	ss.PortForwardOnly, err = s.env.BoolPtr("PORT_FORWARD_ONLY")
+	if err != nil {
+		return ss, err
+	}
+
+	// ProtonVPN only
+	ss.SecureCoreOnly, err = s.env.BoolPtr("SECURE_CORE_ONLY")
+	if err != nil {
+		return ss, err
+	}
+
+	// ProtonVPN only
+	ss.TorOnly, err = s.env.BoolPtr("TOR_ONLY")
+	if err != nil {
+		return ss, err
+	}
+
+	// ProtonVPN only
+	ss.P2POnly, err = s.env.BoolPtr("P2P_ONLY")
+	if err != nil {
+		return ss, err
+	}
+
+	// ProtonVPN only
+	ss.IPv6Only, err = s.env.BoolPtr("IPV6_ONLY")
 	if err != nil {
 		return ss, err
 	}

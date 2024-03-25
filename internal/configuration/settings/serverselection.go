@@ -53,8 +53,14 @@ type ServerSelection struct { //nolint:maligned
 	// be filtered. This is used with VPN Secure.
 	// TODO extend to providers using FreeOnly.
 	PremiumOnly *bool `json:"premium_only"`
+	// OpenVPN contains settings to select OpenVPN servers
+	// and the final connection.
+	OpenVPN OpenVPNSelection `json:"openvpn"`
+	// Wireguard contains settings to select Wireguard servers
+	// and the final connection.
+	Wireguard WireguardSelection `json:"wireguard"`
 	// StreamOnly is true if VPN servers not for streaming should
-	// be filtered. This is used with VPNUnlimited.
+	// be filtered. This is used with ProtonVPN and VPNUnlimited.
 	StreamOnly *bool `json:"stream_only"`
 	// MultiHopOnly is true if VPN servers that are not multihop
 	// should be filtered. This is used with Surfshark.
@@ -62,12 +68,18 @@ type ServerSelection struct { //nolint:maligned
 	// PortForwardOnly is true if VPN servers that don't support
 	// port forwarding should be filtered. This is used with PIA.
 	PortForwardOnly *bool `json:"port_forward_only"`
-	// OpenVPN contains settings to select OpenVPN servers
-	// and the final connection.
-	OpenVPN OpenVPNSelection `json:"openvpn"`
-	// Wireguard contains settings to select Wireguard servers
-	// and the final connection.
-	Wireguard WireguardSelection `json:"wireguard"`
+	// SecureCoreOnly is true if VPN servers without secure core should
+	// be filtered. This is used with ProtonVPN.
+	SecureCoreOnly *bool `json:"secure_core_only"`
+	// TorOnly is true if VPN servers without tor should
+	// be filtered. This is used with ProtonVPN.
+	TorOnly *bool `json:"tor_only"`
+	// P2POnly is true if VPN servers not for p2p should
+	// be filtered. This is used with ProtonVPN.
+	P2POnly *bool `json:"p2p_only"`
+	// IPv6Only is true if VPN servers without IPv6 support should
+	// be filtered. This is used with ProtonVPN.
+	IPv6Only *bool `json:"ipv6_only"`
 }
 
 var (
@@ -78,6 +90,10 @@ var (
 	ErrMultiHopOnlyNotSupported    = errors.New("multi hop only filter is not supported")
 	ErrPortForwardOnlyNotSupported = errors.New("port forwarding only filter is not supported")
 	ErrFreePremiumBothSet          = errors.New("free only and premium only filters are both set")
+	ErrSecureCoreOnlyNotSupported  = errors.New("secure core only filter is not supported")
+	ErrTorOnlyNotSupported         = errors.New("tor only filter is not supported")
+	ErrP2POnlyNotSupported         = errors.New("p2p only filter is not supported")
+	ErrIPv6OnlyNotSupported        = errors.New("IPv6 only filter is not supported")
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
@@ -102,6 +118,11 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 	}
 
 	err = validateServerFilters(*ss, filterChoices)
+	if err != nil {
+		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
+	}
+
+	err = validateFeatureFilters(*ss, vpnServiceProvider)
 	if err != nil {
 		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
@@ -131,30 +152,6 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 
 	if *ss.FreeOnly && *ss.PremiumOnly {
 		return fmt.Errorf("%w", ErrFreePremiumBothSet)
-	}
-
-	if *ss.StreamOnly &&
-		!helpers.IsOneOf(vpnServiceProvider,
-			providers.Protonvpn,
-			providers.VPNUnlimited,
-		) {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrStreamOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.MultiHopOnly &&
-		vpnServiceProvider != providers.Surfshark {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.PortForwardOnly &&
-		vpnServiceProvider != providers.PrivateInternetAccess {
-		// ProtonVPN also supports port forwarding, but on all their servers, so these
-		// don't have the port forwarding boolean field. As a consequence, we only allow
-		// the use of PortForwardOnly for Private Internet Access.
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrPortForwardOnlyNotSupported, vpnServiceProvider)
 	}
 
 	if ss.VPN == vpn.OpenVPN {
@@ -229,6 +226,55 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 	err = validate.AreAllOneOfCaseInsensitive(settings.Categories, filterChoices.Categories)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCategoryNotValid, err)
+	}
+
+	return nil
+}
+
+// validateFeatureFilters validates filters for features.
+func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string) (err error) {
+	if *settings.StreamOnly &&
+		!helpers.IsOneOf(vpnServiceProvider,
+			providers.Protonvpn,
+			providers.VPNUnlimited,
+		) {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrStreamOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.MultiHopOnly &&
+		vpnServiceProvider != providers.Surfshark {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.PortForwardOnly &&
+		vpnServiceProvider != providers.PrivateInternetAccess {
+		// ProtonVPN also supports port forwarding, but on all their servers, so these
+		// don't have the port forwarding boolean field. As a consequence, we only allow
+		// the use of PortForwardOnly for Private Internet Access.
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrPortForwardOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.SecureCoreOnly && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrSecureCoreOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.TorOnly && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrTorOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.P2POnly && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrP2POnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.IPv6Only && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrIPv6OnlyNotSupported, vpnServiceProvider)
 	}
 
 	return nil
