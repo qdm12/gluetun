@@ -4,6 +4,7 @@ package tun
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -50,6 +51,10 @@ func Test_Tun(t *testing.T) {
 
 	// Create TUN device success
 	err = tun.Create(path)
+	if err != nil && strings.HasSuffix(err.Error(), "operation not permitted") {
+		t.Skip("You do not have root privileges to create a TUN device, skipping test")
+		return
+	}
 	require.NoError(t, err)
 
 	// Check TUN device success
