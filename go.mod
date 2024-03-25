@@ -14,7 +14,7 @@ require (
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.1.0
 	github.com/qdm12/gotree v0.2.0
-	github.com/qdm12/govalid v0.2.0-rc1
+	github.com/qdm12/govalid v0.2.0-rc3
 	github.com/qdm12/log v0.1.0
 	github.com/qdm12/ss-server v0.5.0
 	github.com/qdm12/updated v0.0.0-20210603204757-205acfe6937e
