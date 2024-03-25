@@ -3,11 +3,13 @@ package settings
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
+	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
-	"github.com/qdm12/govalid/address"
 )
 
 // HTTPProxy contains settings to configure the HTTP proxy.
@@ -44,9 +46,7 @@ type HTTPProxy struct {
 
 func (h HTTPProxy) validate() (err error) {
 	// Do not validate user and password
-
-	uid := os.Getuid()
-	err = address.Validate(h.ListeningAddress, address.OptionListening(uid))
+	err = validate.ListeningAddress(h.ListeningAddress, os.Getuid())
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrServerAddressNotValid, h.ListeningAddress)
 	}
@@ -67,44 +67,31 @@ func (h *HTTPProxy) copy() (copied HTTPProxy) {
 	}
 }
 
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (h *HTTPProxy) mergeWith(other HTTPProxy) {
-	h.User = gosettings.MergeWithPointer(h.User, other.User)
-	h.Password = gosettings.MergeWithPointer(h.Password, other.Password)
-	h.ListeningAddress = gosettings.MergeWithString(h.ListeningAddress, other.ListeningAddress)
-	h.Enabled = gosettings.MergeWithPointer(h.Enabled, other.Enabled)
-	h.Stealth = gosettings.MergeWithPointer(h.Stealth, other.Stealth)
-	h.Log = gosettings.MergeWithPointer(h.Log, other.Log)
-	h.ReadHeaderTimeout = gosettings.MergeWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = gosettings.MergeWithNumber(h.ReadTimeout, other.ReadTimeout)
-}
-
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (h *HTTPProxy) overrideWith(other HTTPProxy) {
 	h.User = gosettings.OverrideWithPointer(h.User, other.User)
 	h.Password = gosettings.OverrideWithPointer(h.Password, other.Password)
-	h.ListeningAddress = gosettings.OverrideWithString(h.ListeningAddress, other.ListeningAddress)
+	h.ListeningAddress = gosettings.OverrideWithComparable(h.ListeningAddress, other.ListeningAddress)
 	h.Enabled = gosettings.OverrideWithPointer(h.Enabled, other.Enabled)
 	h.Stealth = gosettings.OverrideWithPointer(h.Stealth, other.Stealth)
 	h.Log = gosettings.OverrideWithPointer(h.Log, other.Log)
-	h.ReadHeaderTimeout = gosettings.OverrideWithNumber(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = gosettings.OverrideWithNumber(h.ReadTimeout, other.ReadTimeout)
+	h.ReadHeaderTimeout = gosettings.OverrideWithComparable(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
+	h.ReadTimeout = gosettings.OverrideWithComparable(h.ReadTimeout, other.ReadTimeout)
 }
 
 func (h *HTTPProxy) setDefaults() {
 	h.User = gosettings.DefaultPointer(h.User, "")
 	h.Password = gosettings.DefaultPointer(h.Password, "")
-	h.ListeningAddress = gosettings.DefaultString(h.ListeningAddress, ":8888")
+	h.ListeningAddress = gosettings.DefaultComparable(h.ListeningAddress, ":8888")
 	h.Enabled = gosettings.DefaultPointer(h.Enabled, false)
 	h.Stealth = gosettings.DefaultPointer(h.Stealth, false)
 	h.Log = gosettings.DefaultPointer(h.Log, false)
 	const defaultReadHeaderTimeout = time.Second
-	h.ReadHeaderTimeout = gosettings.DefaultNumber(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
+	h.ReadHeaderTimeout = gosettings.DefaultComparable(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
 	const defaultReadTimeout = 3 * time.Second
-	h.ReadTimeout = gosettings.DefaultNumber(h.ReadTimeout, defaultReadTimeout)
+	h.ReadTimeout = gosettings.DefaultComparable(h.ReadTimeout, defaultReadTimeout)
 }
 
 func (h HTTPProxy) String() string {
@@ -127,4 +114,67 @@ func (h HTTPProxy) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Read timeout: %s", h.ReadTimeout)
 
 	return node
+}
+
+func (h *HTTPProxy) read(r *reader.Reader) (err error) {
+	h.User = r.Get("HTTPPROXY_USER",
+		reader.RetroKeys("PROXY_USER", "TINYPROXY_USER"),
+		reader.ForceLowercase(false))
+
+	h.Password = r.Get("HTTPPROXY_PASSWORD",
+		reader.RetroKeys("PROXY_PASSWORD", "TINYPROXY_PASSWORD"),
+		reader.ForceLowercase(false))
+
+	h.ListeningAddress, err = readHTTProxyListeningAddress(r)
+	if err != nil {
+		return err
+	}
+
+	h.Enabled, err = r.BoolPtr("HTTPPROXY", reader.RetroKeys("PROXY", "TINYPROXY"))
+	if err != nil {
+		return err
+	}
+
+	h.Stealth, err = r.BoolPtr("HTTPPROXY_STEALTH")
+	if err != nil {
+		return err
+	}
+
+	h.Log, err = readHTTProxyLog(r)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func readHTTProxyListeningAddress(r *reader.Reader) (listeningAddress string, err error) {
+	// Retro-compatible keys using a port only
+	port, err := r.Uint16Ptr("",
+		reader.RetroKeys("HTTPPROXY_PORT", "TINYPROXY_PORT", "PROXY_PORT"))
+	if err != nil {
+		return "", err
+	} else if port != nil {
+		return fmt.Sprintf(":%d", *port), nil
+	}
+	const currentKey = "HTTPPROXY_LISTENING_ADDRESS"
+	return r.String(currentKey), nil
+}
+
+func readHTTProxyLog(r *reader.Reader) (enabled *bool, err error) {
+	// Retro-compatible keys using different boolean verbs
+	value := r.String("",
+		reader.RetroKeys("PROXY_LOG", "TINYPROXY_LOG", "HTTPPROXY_LOG"))
+	switch strings.ToLower(value) {
+	case "":
+		const currentKey = "HTTPPROXY_LOG"
+		return r.BoolPtr(currentKey)
+	case "on", "info", "connect", "notice":
+		return ptrTo(true), nil
+	case "disabled", "no", "off":
+		return ptrTo(false), nil
+	default:
+		return nil, fmt.Errorf("HTTP retro-compatible proxy log setting: %w: %s",
+			ErrValueUnknown, value)
+	}
 }

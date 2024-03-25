@@ -29,11 +29,11 @@ func (s Settings) Copy() (copied Settings) {
 
 func (s *Settings) OverrideWith(update Settings) {
 	s.Enabled = gosettings.OverrideWithPointer(s.Enabled, update.Enabled)
-	s.PortForwarder = gosettings.OverrideWithInterface(s.PortForwarder, update.PortForwarder)
-	s.Filepath = gosettings.OverrideWithString(s.Filepath, update.Filepath)
-	s.Interface = gosettings.OverrideWithString(s.Interface, update.Interface)
-	s.ServerName = gosettings.OverrideWithString(s.ServerName, update.ServerName)
-	s.ListeningPort = gosettings.OverrideWithNumber(s.ListeningPort, update.ListeningPort)
+	s.PortForwarder = gosettings.OverrideWithComparable(s.PortForwarder, update.PortForwarder)
+	s.Filepath = gosettings.OverrideWithComparable(s.Filepath, update.Filepath)
+	s.Interface = gosettings.OverrideWithComparable(s.Interface, update.Interface)
+	s.ServerName = gosettings.OverrideWithComparable(s.ServerName, update.ServerName)
+	s.ListeningPort = gosettings.OverrideWithComparable(s.ListeningPort, update.ListeningPort)
 }
 
 var (

@@ -7,6 +7,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/httpserver"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 )
 
@@ -28,9 +29,9 @@ type Settings struct {
 
 func (s *Settings) SetDefaults() {
 	s.Enabled = gosettings.DefaultPointer(s.Enabled, false)
-	s.HTTPServer.Address = gosettings.DefaultString(s.HTTPServer.Address, "localhost:6060")
+	s.HTTPServer.Address = gosettings.DefaultComparable(s.HTTPServer.Address, "localhost:6060")
 	const defaultReadTimeout = 5 * time.Minute // for CPU profiling
-	s.HTTPServer.ReadTimeout = gosettings.DefaultNumber(s.HTTPServer.ReadTimeout, defaultReadTimeout)
+	s.HTTPServer.ReadTimeout = gosettings.DefaultComparable(s.HTTPServer.ReadTimeout, defaultReadTimeout)
 	s.HTTPServer.SetDefaults()
 }
 
@@ -41,13 +42,6 @@ func (s Settings) Copy() (copied Settings) {
 		MutexProfileRate: s.MutexProfileRate,
 		HTTPServer:       s.HTTPServer.Copy(),
 	}
-}
-
-func (s *Settings) MergeWith(other Settings) {
-	s.Enabled = gosettings.MergeWithPointer(s.Enabled, other.Enabled)
-	s.BlockProfileRate = gosettings.MergeWithPointer(s.BlockProfileRate, other.BlockProfileRate)
-	s.MutexProfileRate = gosettings.MergeWithPointer(s.MutexProfileRate, other.MutexProfileRate)
-	s.HTTPServer.MergeWith(other.HTTPServer)
 }
 
 func (s *Settings) OverrideWith(other Settings) {
@@ -96,4 +90,25 @@ func (s Settings) ToLinesNode() (node *gotree.Node) {
 
 func (s Settings) String() string {
 	return s.ToLinesNode().String()
+}
+
+func (s *Settings) Read(r *reader.Reader) (err error) {
+	s.Enabled, err = r.BoolPtr("PPROF_ENABLED")
+	if err != nil {
+		return err
+	}
+
+	s.BlockProfileRate, err = r.IntPtr("PPROF_BLOCK_PROFILE_RATE")
+	if err != nil {
+		return err
+	}
+
+	s.MutexProfileRate, err = r.IntPtr("PPROF_MUTEX_PROFILE_RATE")
+	if err != nil {
+		return err
+	}
+
+	s.HTTPServer.Address = r.String("PPROF_HTTP_SERVER_ADDRESS")
+
+	return nil
 }

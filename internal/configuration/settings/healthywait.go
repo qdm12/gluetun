@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 )
 
@@ -23,20 +24,11 @@ func (h HealthyWait) validate() (err error) {
 	return nil
 }
 
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
 func (h *HealthyWait) copy() (copied HealthyWait) {
 	return HealthyWait{
 		Initial:  gosettings.CopyPointer(h.Initial),
 		Addition: gosettings.CopyPointer(h.Addition),
 	}
-}
-
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (h *HealthyWait) mergeWith(other HealthyWait) {
-	h.Initial = gosettings.MergeWithPointer(h.Initial, other.Initial)
-	h.Addition = gosettings.MergeWithPointer(h.Addition, other.Addition)
 }
 
 // overrideWith overrides fields of the receiver
@@ -63,4 +55,22 @@ func (h HealthyWait) toLinesNode(kind string) (node *gotree.Node) {
 	node.Appendf("Initial duration: %s", *h.Initial)
 	node.Appendf("Additional duration: %s", *h.Addition)
 	return node
+}
+
+func (h *HealthyWait) read(r *reader.Reader) (err error) {
+	h.Initial, err = r.DurationPtr(
+		"HEALTH_VPN_DURATION_INITIAL",
+		reader.RetroKeys("HEALTH_OPENVPN_DURATION_INITIAL"))
+	if err != nil {
+		return err
+	}
+
+	h.Addition, err = r.DurationPtr(
+		"HEALTH_VPN_DURATION_ADDITION",
+		reader.RetroKeys("HEALTH_OPENVPN_DURATION_ADDITION"))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

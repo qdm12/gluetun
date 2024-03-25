@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -56,22 +57,15 @@ func (v *VPN) Copy() (copied VPN) {
 	}
 }
 
-func (v *VPN) mergeWith(other VPN) {
-	v.Type = gosettings.MergeWithString(v.Type, other.Type)
-	v.Provider.mergeWith(other.Provider)
-	v.OpenVPN.mergeWith(other.OpenVPN)
-	v.Wireguard.mergeWith(other.Wireguard)
-}
-
 func (v *VPN) OverrideWith(other VPN) {
-	v.Type = gosettings.OverrideWithString(v.Type, other.Type)
+	v.Type = gosettings.OverrideWithComparable(v.Type, other.Type)
 	v.Provider.overrideWith(other.Provider)
 	v.OpenVPN.overrideWith(other.OpenVPN)
 	v.Wireguard.overrideWith(other.Wireguard)
 }
 
 func (v *VPN) setDefaults() {
-	v.Type = gosettings.DefaultString(v.Type, vpn.OpenVPN)
+	v.Type = gosettings.DefaultComparable(v.Type, vpn.OpenVPN)
 	v.Provider.setDefaults()
 	v.OpenVPN.setDefaults(v.Provider.Name)
 	v.Wireguard.setDefaults(v.Provider.Name)
@@ -93,4 +87,25 @@ func (v VPN) toLinesNode() (node *gotree.Node) {
 	}
 
 	return node
+}
+
+func (v *VPN) read(r *reader.Reader) (err error) {
+	v.Type = r.String("VPN_TYPE")
+
+	err = v.Provider.read(r, v.Type)
+	if err != nil {
+		return fmt.Errorf("VPN provider: %w", err)
+	}
+
+	err = v.OpenVPN.read(r)
+	if err != nil {
+		return fmt.Errorf("OpenVPN: %w", err)
+	}
+
+	err = v.Wireguard.read(r)
+	if err != nil {
+		return fmt.Errorf("wireguard: %w", err)
+	}
+
+	return nil
 }

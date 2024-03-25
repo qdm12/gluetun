@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 )
 
@@ -48,13 +49,6 @@ func (c *ControlServer) copy() (copied ControlServer) {
 	}
 }
 
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (c *ControlServer) mergeWith(other ControlServer) {
-	c.Address = gosettings.MergeWithPointer(c.Address, other.Address)
-	c.Log = gosettings.MergeWithPointer(c.Log, other.Log)
-}
-
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
@@ -77,4 +71,13 @@ func (c ControlServer) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Listening address: %s", *c.Address)
 	node.Appendf("Logging: %s", gosettings.BoolToYesNo(c.Log))
 	return node
+}
+
+func (c *ControlServer) read(r *reader.Reader) (err error) {
+	c.Log, err = r.BoolPtr("HTTP_CONTROL_SERVER_LOG")
+	if err != nil {
+		return err
+	}
+	c.Address = r.Get("HTTP_CONTROL_SERVER_ADDRESS")
+	return nil
 }

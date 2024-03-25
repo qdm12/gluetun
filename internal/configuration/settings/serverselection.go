@@ -12,6 +12,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -257,30 +258,8 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 	}
 }
 
-func (ss *ServerSelection) mergeWith(other ServerSelection) {
-	ss.VPN = gosettings.MergeWithString(ss.VPN, other.VPN)
-	ss.TargetIP = gosettings.MergeWithValidator(ss.TargetIP, other.TargetIP)
-	ss.Countries = gosettings.MergeWithSlice(ss.Countries, other.Countries)
-	ss.Categories = gosettings.MergeWithSlice(ss.Categories, other.Categories)
-	ss.Regions = gosettings.MergeWithSlice(ss.Regions, other.Regions)
-	ss.Cities = gosettings.MergeWithSlice(ss.Cities, other.Cities)
-	ss.ISPs = gosettings.MergeWithSlice(ss.ISPs, other.ISPs)
-	ss.Hostnames = gosettings.MergeWithSlice(ss.Hostnames, other.Hostnames)
-	ss.Names = gosettings.MergeWithSlice(ss.Names, other.Names)
-	ss.Numbers = gosettings.MergeWithSlice(ss.Numbers, other.Numbers)
-	ss.OwnedOnly = gosettings.MergeWithPointer(ss.OwnedOnly, other.OwnedOnly)
-	ss.FreeOnly = gosettings.MergeWithPointer(ss.FreeOnly, other.FreeOnly)
-	ss.PremiumOnly = gosettings.MergeWithPointer(ss.PremiumOnly, other.PremiumOnly)
-	ss.StreamOnly = gosettings.MergeWithPointer(ss.StreamOnly, other.StreamOnly)
-	ss.MultiHopOnly = gosettings.MergeWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
-	ss.PortForwardOnly = gosettings.MergeWithPointer(ss.PortForwardOnly, other.PortForwardOnly)
-
-	ss.OpenVPN.mergeWith(other.OpenVPN)
-	ss.Wireguard.mergeWith(other.Wireguard)
-}
-
 func (ss *ServerSelection) overrideWith(other ServerSelection) {
-	ss.VPN = gosettings.OverrideWithString(ss.VPN, other.VPN)
+	ss.VPN = gosettings.OverrideWithComparable(ss.VPN, other.VPN)
 	ss.TargetIP = gosettings.OverrideWithValidator(ss.TargetIP, other.TargetIP)
 	ss.Countries = gosettings.OverrideWithSlice(ss.Countries, other.Countries)
 	ss.Categories = gosettings.OverrideWithSlice(ss.Categories, other.Categories)
@@ -301,7 +280,7 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 }
 
 func (ss *ServerSelection) setDefaults(vpnProvider string) {
-	ss.VPN = gosettings.DefaultString(ss.VPN, vpn.OpenVPN)
+	ss.VPN = gosettings.DefaultComparable(ss.VPN, vpn.OpenVPN)
 	ss.TargetIP = gosettings.DefaultValidator(ss.TargetIP, netip.IPv4Unspecified())
 	ss.OwnedOnly = gosettings.DefaultPointer(ss.OwnedOnly, false)
 	ss.FreeOnly = gosettings.DefaultPointer(ss.FreeOnly, false)
@@ -393,4 +372,80 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 func (ss ServerSelection) WithDefaults(provider string) ServerSelection {
 	ss.setDefaults(provider)
 	return ss
+}
+
+func (ss *ServerSelection) read(r *reader.Reader,
+	vpnProvider, vpnType string) (err error) {
+	ss.VPN = vpnType
+
+	ss.TargetIP, err = r.NetipAddr("VPN_ENDPOINT_IP",
+		reader.RetroKeys("OPENVPN_TARGET_IP"))
+	if err != nil {
+		return err
+	}
+
+	countriesRetroKeys := []string{"COUNTRY"}
+	if vpnProvider == providers.Cyberghost {
+		countriesRetroKeys = append(countriesRetroKeys, "REGION")
+	}
+	ss.Countries = r.CSV("SERVER_COUNTRIES", reader.RetroKeys(countriesRetroKeys...))
+
+	ss.Regions = r.CSV("SERVER_REGIONS", reader.RetroKeys("REGION"))
+	ss.Cities = r.CSV("SERVER_CITIES", reader.RetroKeys("CITY"))
+	ss.ISPs = r.CSV("ISP")
+	ss.Hostnames = r.CSV("SERVER_HOSTNAMES", reader.RetroKeys("SERVER_HOSTNAME"))
+	ss.Names = r.CSV("SERVER_NAMES", reader.RetroKeys("SERVER_NAME"))
+	ss.Numbers, err = r.CSVUint16("SERVER_NUMBER")
+	ss.Categories = r.CSV("SERVER_CATEGORIES")
+	if err != nil {
+		return err
+	}
+
+	// Mullvad only
+	ss.OwnedOnly, err = r.BoolPtr("OWNED_ONLY", reader.RetroKeys("OWNED"))
+	if err != nil {
+		return err
+	}
+
+	// VPNUnlimited and ProtonVPN only
+	ss.FreeOnly, err = r.BoolPtr("FREE_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// VPNSecure only
+	ss.PremiumOnly, err = r.BoolPtr("PREMIUM_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// Surfshark only
+	ss.MultiHopOnly, err = r.BoolPtr("MULTIHOP_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// VPNUnlimited only
+	ss.StreamOnly, err = r.BoolPtr("STREAM_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// PIA only
+	ss.PortForwardOnly, err = r.BoolPtr("PORT_FORWARD_ONLY")
+	if err != nil {
+		return err
+	}
+
+	err = ss.OpenVPN.read(r)
+	if err != nil {
+		return err
+	}
+
+	err = ss.Wireguard.read(r)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

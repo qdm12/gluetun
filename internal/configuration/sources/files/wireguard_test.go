@@ -1,48 +1,42 @@
 package files
 
 import (
-	"net/netip"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/ini.v1"
 )
 
-func Test_Source_readWireguard(t *testing.T) {
+func ptrTo[T any](value T) *T { return &value }
+
+func Test_Source_ParseWireguardConf(t *testing.T) {
 	t.Parallel()
 
 	t.Run("fail reading from file", func(t *testing.T) {
 		t.Parallel()
 
 		dirPath := t.TempDir()
-		source := &Source{
-			wireguardConfigPath: dirPath,
-		}
-		wireguard, err := source.readWireguard()
-		assert.Equal(t, settings.Wireguard{}, wireguard)
+		wireguard, err := ParseWireguardConf(dirPath)
+		assert.Equal(t, WireguardConfig{}, wireguard)
 		assert.Error(t, err)
-		assert.Regexp(t, `reading file: read .+: is a directory`, err.Error())
+		assert.Regexp(t, `loading ini from reader: BOM: read .+: is a directory`, err.Error())
 	})
 
 	t.Run("no file", func(t *testing.T) {
 		t.Parallel()
 
 		noFile := filepath.Join(t.TempDir(), "doesnotexist")
-		source := &Source{
-			wireguardConfigPath: noFile,
-		}
-		wireguard, err := source.readWireguard()
-		assert.Equal(t, settings.Wireguard{}, wireguard)
+		wireguard, err := ParseWireguardConf(noFile)
+		assert.Equal(t, WireguardConfig{}, wireguard)
 		assert.NoError(t, err)
 	})
 
 	testCases := map[string]struct {
 		fileContent string
-		wireguard   settings.Wireguard
+		wireguard   WireguardConfig
 		errMessage  string
 	}{
 		"ini load error": {
@@ -50,14 +44,14 @@ func Test_Source_readWireguard(t *testing.T) {
 			errMessage:  "loading ini from reader: key-value delimiter not found: invalid",
 		},
 		"empty file": {},
-		"interface section parsing error": {
+		"interface_section_missing": {
 			fileContent: `
-[Interface]
-PrivateKey = x
+[Peer]
+PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 `,
-			errMessage: "parsing interface section: parsing PrivateKey: " +
-				"x: wgtypes: failed to parse base64-encoded key: " +
-				"illegal base64 data at input byte 0",
+			wireguard: WireguardConfig{
+				PreSharedKey: ptrTo("YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g="),
+			},
 		},
 		"success": {
 			fileContent: `
@@ -69,12 +63,10 @@ DNS = 193.138.218.74
 [Peer]
 PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 `,
-			wireguard: settings.Wireguard{
+			wireguard: WireguardConfig{
 				PrivateKey:   ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
 				PreSharedKey: ptrTo("YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g="),
-				Addresses: []netip.Prefix{
-					netip.PrefixFrom(netip.AddrFrom4([4]byte{10, 38, 22, 35}), 32),
-				},
+				Addresses:    ptrTo("10.38.22.35/32"),
 			},
 		},
 	}
@@ -88,11 +80,7 @@ PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 			err := os.WriteFile(configFile, []byte(testCase.fileContent), 0600)
 			require.NoError(t, err)
 
-			source := &Source{
-				wireguardConfigPath: configFile,
-			}
-
-			wireguard, err := source.readWireguard()
+			wireguard, err := ParseWireguardConf(configFile)
 
 			assert.Equal(t, testCase.wireguard, wireguard)
 			if testCase.errMessage != "" {
@@ -109,34 +97,26 @@ func Test_parseWireguardInterfaceSection(t *testing.T) {
 
 	testCases := map[string]struct {
 		iniData    string
-		wireguard  settings.Wireguard
-		errMessage string
+		privateKey *string
+		addresses  *string
 	}{
-		"private key error": {
-			iniData: `[Interface]
-PrivateKey = x`,
-			errMessage: "parsing PrivateKey: x: " +
-				"wgtypes: failed to parse base64-encoded key: " +
-				"illegal base64 data at input byte 0",
+		"no_fields": {
+			iniData: `[Interface]`,
 		},
-		"address error": {
+		"only_private_key": {
 			iniData: `[Interface]
-Address = x
+PrivateKey = x
 `,
-			errMessage: "parsing address: netip.ParsePrefix(\"x/32\"): ParseAddr(\"x\"): unable to parse IP",
+			privateKey: ptrTo("x"),
 		},
-		"success": {
+		"all_fields": {
 			iniData: `
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
 Address = 10.38.22.35/32
 `,
-			wireguard: settings.Wireguard{
-				PrivateKey: ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
-				Addresses: []netip.Prefix{
-					netip.PrefixFrom(netip.AddrFrom4([4]byte{10, 38, 22, 35}), 32),
-				},
-			},
+			privateKey: ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
+			addresses:  ptrTo("10.38.22.35/32"),
 		},
 	}
 
@@ -150,109 +130,74 @@ Address = 10.38.22.35/32
 			iniSection, err := iniFile.GetSection("Interface")
 			require.NoError(t, err)
 
-			var wireguard settings.Wireguard
-			err = parseWireguardInterfaceSection(iniSection, &wireguard)
+			privateKey, addresses := parseWireguardInterfaceSection(iniSection)
 
-			assert.Equal(t, testCase.wireguard, wireguard)
-			if testCase.errMessage != "" {
-				assert.EqualError(t, err, testCase.errMessage)
-			} else {
-				assert.NoError(t, err)
-			}
-		})
-	}
-}
-
-func Test_parseINIWireguardKey(t *testing.T) {
-	t.Parallel()
-
-	testCases := map[string]struct {
-		fileContent string
-		keyName     string
-		key         *string
-		errMessage  string
-	}{
-		"key does not exist": {
-			fileContent: `[Interface]`,
-			keyName:     "PrivateKey",
-		},
-		"bad Wireguard key": {
-			fileContent: `[Interface]
-PrivateKey = x`,
-			keyName: "PrivateKey",
-			errMessage: "parsing PrivateKey: x: " +
-				"wgtypes: failed to parse base64-encoded key: " +
-				"illegal base64 data at input byte 0",
-		},
-		"success": {
-			fileContent: `[Interface]
-PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=`,
-			keyName: "PrivateKey",
-			key:     ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
-		},
-	}
-
-	for testName, testCase := range testCases {
-		testCase := testCase
-		t.Run(testName, func(t *testing.T) {
-			t.Parallel()
-
-			iniFile, err := ini.Load([]byte(testCase.fileContent))
-			require.NoError(t, err)
-			iniSection, err := iniFile.GetSection("Interface")
-			require.NoError(t, err)
-
-			key, err := parseINIWireguardKey(iniSection, testCase.keyName)
-
-			assert.Equal(t, testCase.key, key)
-			if testCase.errMessage != "" {
-				assert.EqualError(t, err, testCase.errMessage)
-			} else {
-				assert.NoError(t, err)
-			}
-		})
-	}
-}
-
-func Test_parseINIWireguardAddress(t *testing.T) {
-	t.Parallel()
-
-	testCases := map[string]struct {
-		fileContent string
-		addresses   []netip.Prefix
-		errMessage  string
-	}{
-		"key does not exist": {
-			fileContent: `[Interface]`,
-		},
-		"bad address": {
-			fileContent: `[Interface]
-Address = x`,
-			errMessage: "parsing address: netip.ParsePrefix(\"x/32\"): ParseAddr(\"x\"): unable to parse IP",
-		},
-		"success": {
-			fileContent: `[Interface]
-Address = 1.2.3.4/32, 5.6.7.8/32`,
-			addresses: []netip.Prefix{
-				netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 32),
-				netip.PrefixFrom(netip.AddrFrom4([4]byte{5, 6, 7, 8}), 32),
-			},
-		},
-	}
-
-	for testName, testCase := range testCases {
-		testCase := testCase
-		t.Run(testName, func(t *testing.T) {
-			t.Parallel()
-
-			iniFile, err := ini.Load([]byte(testCase.fileContent))
-			require.NoError(t, err)
-			iniSection, err := iniFile.GetSection("Interface")
-			require.NoError(t, err)
-
-			addresses, err := parseINIWireguardAddress(iniSection)
-
+			assert.Equal(t, testCase.privateKey, privateKey)
 			assert.Equal(t, testCase.addresses, addresses)
+		})
+	}
+}
+
+func Test_parseWireguardPeerSection(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		iniData      string
+		preSharedKey *string
+		publicKey    *string
+		endpointIP   *string
+		endpointPort *string
+		errMessage   string
+	}{
+		"public key set": {
+			iniData: `[Peer]
+PublicKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=`,
+			publicKey: ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
+		},
+		"endpoint_only_host": {
+			iniData: `[Peer]
+Endpoint = x`,
+			endpointIP: ptrTo("x"),
+		},
+		"endpoint_no_port": {
+			iniData: `[Peer]
+Endpoint = x:`,
+			endpointIP:   ptrTo("x"),
+			endpointPort: ptrTo(""),
+		},
+		"valid_endpoint": {
+			iniData: `[Peer]
+Endpoint = 1.2.3.4:51820`,
+			endpointIP:   ptrTo("1.2.3.4"),
+			endpointPort: ptrTo("51820"),
+		},
+		"all_set": {
+			iniData: `[Peer]
+PublicKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
+Endpoint = 1.2.3.4:51820`,
+			publicKey:    ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
+			endpointIP:   ptrTo("1.2.3.4"),
+			endpointPort: ptrTo("51820"),
+		},
+	}
+
+	for testName, testCase := range testCases {
+		testCase := testCase
+		t.Run(testName, func(t *testing.T) {
+			t.Parallel()
+
+			iniFile, err := ini.Load([]byte(testCase.iniData))
+			require.NoError(t, err)
+			iniSection, err := iniFile.GetSection("Peer")
+			require.NoError(t, err)
+
+			preSharedKey, publicKey, endpointIP,
+				endpointPort := parseWireguardPeerSection(iniSection)
+
+			assert.Equal(t, testCase.preSharedKey, preSharedKey)
+			assert.Equal(t, testCase.publicKey, publicKey)
+			assert.Equal(t, testCase.endpointIP, endpointIP)
+			assert.Equal(t, testCase.endpointPort, endpointPort)
 			if testCase.errMessage != "" {
 				assert.EqualError(t, err, testCase.errMessage)
 			} else {

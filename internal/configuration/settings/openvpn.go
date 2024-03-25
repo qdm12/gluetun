@@ -4,12 +4,14 @@ import (
 	"encoding/base64"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess/presets"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -261,32 +263,11 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 	}
 }
 
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-func (o *OpenVPN) mergeWith(other OpenVPN) {
-	o.Version = gosettings.MergeWithString(o.Version, other.Version)
-	o.User = gosettings.MergeWithPointer(o.User, other.User)
-	o.Password = gosettings.MergeWithPointer(o.Password, other.Password)
-	o.ConfFile = gosettings.MergeWithPointer(o.ConfFile, other.ConfFile)
-	o.Ciphers = gosettings.MergeWithSlice(o.Ciphers, other.Ciphers)
-	o.Auth = gosettings.MergeWithPointer(o.Auth, other.Auth)
-	o.Cert = gosettings.MergeWithPointer(o.Cert, other.Cert)
-	o.Key = gosettings.MergeWithPointer(o.Key, other.Key)
-	o.EncryptedKey = gosettings.MergeWithPointer(o.EncryptedKey, other.EncryptedKey)
-	o.KeyPassphrase = gosettings.MergeWithPointer(o.KeyPassphrase, other.KeyPassphrase)
-	o.PIAEncPreset = gosettings.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
-	o.MSSFix = gosettings.MergeWithPointer(o.MSSFix, other.MSSFix)
-	o.Interface = gosettings.MergeWithString(o.Interface, other.Interface)
-	o.ProcessUser = gosettings.MergeWithString(o.ProcessUser, other.ProcessUser)
-	o.Verbosity = gosettings.MergeWithPointer(o.Verbosity, other.Verbosity)
-	o.Flags = gosettings.MergeWithSlice(o.Flags, other.Flags)
-}
-
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
 func (o *OpenVPN) overrideWith(other OpenVPN) {
-	o.Version = gosettings.OverrideWithString(o.Version, other.Version)
+	o.Version = gosettings.OverrideWithComparable(o.Version, other.Version)
 	o.User = gosettings.OverrideWithPointer(o.User, other.User)
 	o.Password = gosettings.OverrideWithPointer(o.Password, other.Password)
 	o.ConfFile = gosettings.OverrideWithPointer(o.ConfFile, other.ConfFile)
@@ -298,14 +279,14 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.KeyPassphrase = gosettings.OverrideWithPointer(o.KeyPassphrase, other.KeyPassphrase)
 	o.PIAEncPreset = gosettings.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 	o.MSSFix = gosettings.OverrideWithPointer(o.MSSFix, other.MSSFix)
-	o.Interface = gosettings.OverrideWithString(o.Interface, other.Interface)
-	o.ProcessUser = gosettings.OverrideWithString(o.ProcessUser, other.ProcessUser)
+	o.Interface = gosettings.OverrideWithComparable(o.Interface, other.Interface)
+	o.ProcessUser = gosettings.OverrideWithComparable(o.ProcessUser, other.ProcessUser)
 	o.Verbosity = gosettings.OverrideWithPointer(o.Verbosity, other.Verbosity)
 	o.Flags = gosettings.OverrideWithSlice(o.Flags, other.Flags)
 }
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {
-	o.Version = gosettings.DefaultString(o.Version, openvpn.Openvpn25)
+	o.Version = gosettings.DefaultComparable(o.Version, openvpn.Openvpn25)
 	o.User = gosettings.DefaultPointer(o.User, "")
 	if vpnProvider == providers.Mullvad {
 		o.Password = gosettings.DefaultPointer(o.Password, "m")
@@ -326,8 +307,8 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	}
 	o.PIAEncPreset = gosettings.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
 	o.MSSFix = gosettings.DefaultPointer(o.MSSFix, 0)
-	o.Interface = gosettings.DefaultString(o.Interface, "tun0")
-	o.ProcessUser = gosettings.DefaultString(o.ProcessUser, "root")
+	o.Interface = gosettings.DefaultComparable(o.Interface, "tun0")
+	o.ProcessUser = gosettings.DefaultComparable(o.ProcessUser, "root")
 	o.Verbosity = gosettings.DefaultPointer(o.Verbosity, 1)
 }
 
@@ -394,4 +375,59 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 func (o OpenVPN) WithDefaults(provider string) OpenVPN {
 	o.setDefaults(provider)
 	return o
+}
+
+func (o *OpenVPN) read(r *reader.Reader) (err error) {
+	o.Version = r.String("OPENVPN_VERSION")
+	o.User = r.Get("OPENVPN_USER", reader.RetroKeys("USER"), reader.ForceLowercase(false))
+	o.Password = r.Get("OPENVPN_PASSWORD", reader.RetroKeys("PASSWORD"), reader.ForceLowercase(false))
+	o.ConfFile = r.Get("OPENVPN_CUSTOM_CONFIG", reader.ForceLowercase(false))
+	o.Ciphers = r.CSV("OPENVPN_CIPHERS", reader.RetroKeys("OPENVPN_CIPHER"))
+	o.Auth = r.Get("OPENVPN_AUTH")
+	o.Cert = r.Get("OPENVPN_CERT", reader.ForceLowercase(false))
+	o.Key = r.Get("OPENVPN_KEY", reader.ForceLowercase(false))
+	o.EncryptedKey = r.Get("OPENVPN_ENCRYPTED_KEY", reader.ForceLowercase(false))
+	o.KeyPassphrase = r.Get("OPENVPN_KEY_PASSPHRASE", reader.ForceLowercase(false))
+	o.PIAEncPreset = r.Get("PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET",
+		reader.RetroKeys("ENCRYPTION", "PIA_ENCRYPTION"))
+
+	o.MSSFix, err = r.Uint16Ptr("OPENVPN_MSSFIX")
+	if err != nil {
+		return err
+	}
+
+	o.Interface = r.String("VPN_INTERFACE",
+		reader.RetroKeys("OPENVPN_INTERFACE"), reader.ForceLowercase(false))
+
+	o.ProcessUser, err = readOpenVPNProcessUser(r)
+	if err != nil {
+		return err
+	}
+
+	o.Verbosity, err = r.IntPtr("OPENVPN_VERBOSITY")
+	if err != nil {
+		return err
+	}
+
+	flagsPtr := r.Get("OPENVPN_FLAGS", reader.ForceLowercase(false))
+	if flagsPtr != nil {
+		o.Flags = strings.Fields(*flagsPtr)
+	}
+
+	return nil
+}
+
+func readOpenVPNProcessUser(r *reader.Reader) (processUser string, err error) {
+	value, err := r.BoolPtr("OPENVPN_ROOT") // Retro-compatibility
+	if err != nil {
+		return "", err
+	} else if value != nil {
+		if *value {
+			return "root", nil
+		}
+		const defaultNonRootUser = "nonrootuser"
+		return defaultNonRootUser, nil
+	}
+
+	return r.String("OPENVPN_PROCESS_USER"), nil
 }

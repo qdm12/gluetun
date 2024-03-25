@@ -5,6 +5,7 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 )
 
@@ -52,18 +53,6 @@ func (f *Firewall) copy() (copied Firewall) {
 		Enabled:         gosettings.CopyPointer(f.Enabled),
 		Debug:           gosettings.CopyPointer(f.Debug),
 	}
-}
-
-// mergeWith merges the other settings into any
-// unset field of the receiver settings object.
-// It merges values of slices together, even if they
-// are set in the receiver settings.
-func (f *Firewall) mergeWith(other Firewall) {
-	f.VPNInputPorts = gosettings.MergeWithSlice(f.VPNInputPorts, other.VPNInputPorts)
-	f.InputPorts = gosettings.MergeWithSlice(f.InputPorts, other.InputPorts)
-	f.OutboundSubnets = gosettings.MergeWithSlice(f.OutboundSubnets, other.OutboundSubnets)
-	f.Enabled = gosettings.MergeWithPointer(f.Enabled, other.Enabled)
-	f.Debug = gosettings.MergeWithPointer(f.Debug, other.Debug)
 }
 
 // overrideWith overrides fields of the receiver
@@ -121,4 +110,34 @@ func (f Firewall) toLinesNode() (node *gotree.Node) {
 	}
 
 	return node
+}
+
+func (f *Firewall) read(r *reader.Reader) (err error) {
+	f.VPNInputPorts, err = r.CSVUint16("FIREWALL_VPN_INPUT_PORTS")
+	if err != nil {
+		return err
+	}
+
+	f.InputPorts, err = r.CSVUint16("FIREWALL_INPUT_PORTS")
+	if err != nil {
+		return err
+	}
+
+	f.OutboundSubnets, err = r.CSVNetipPrefixes(
+		"FIREWALL_OUTBOUND_SUBNETS", reader.RetroKeys("EXTRA_SUBNETS"))
+	if err != nil {
+		return err
+	}
+
+	f.Enabled, err = r.BoolPtr("FIREWALL")
+	if err != nil {
+		return err
+	}
+
+	f.Debug, err = r.BoolPtr("FIREWALL_DEBUG")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

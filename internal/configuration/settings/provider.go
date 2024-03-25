@@ -2,10 +2,12 @@ package settings
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -65,20 +67,14 @@ func (p *Provider) copy() (copied Provider) {
 	}
 }
 
-func (p *Provider) mergeWith(other Provider) {
-	p.Name = gosettings.MergeWithString(p.Name, other.Name)
-	p.ServerSelection.mergeWith(other.ServerSelection)
-	p.PortForwarding.mergeWith(other.PortForwarding)
-}
-
 func (p *Provider) overrideWith(other Provider) {
-	p.Name = gosettings.OverrideWithString(p.Name, other.Name)
+	p.Name = gosettings.OverrideWithComparable(p.Name, other.Name)
 	p.ServerSelection.overrideWith(other.ServerSelection)
 	p.PortForwarding.OverrideWith(other.PortForwarding)
 }
 
 func (p *Provider) setDefaults() {
-	p.Name = gosettings.DefaultString(p.Name, providers.PrivateInternetAccess)
+	p.Name = gosettings.DefaultComparable(p.Name, providers.PrivateInternetAccess)
 	p.ServerSelection.setDefaults(p.Name)
 	p.PortForwarding.setDefaults()
 }
@@ -93,4 +89,38 @@ func (p Provider) toLinesNode() (node *gotree.Node) {
 	node.AppendNode(p.ServerSelection.toLinesNode())
 	node.AppendNode(p.PortForwarding.toLinesNode())
 	return node
+}
+
+func (p *Provider) read(r *reader.Reader, vpnType string) (err error) {
+	p.Name = readVPNServiceProvider(r, vpnType)
+
+	err = p.ServerSelection.read(r, p.Name, vpnType)
+	if err != nil {
+		return fmt.Errorf("server selection: %w", err)
+	}
+
+	err = p.PortForwarding.read(r)
+	if err != nil {
+		return fmt.Errorf("port forwarding: %w", err)
+	}
+
+	return nil
+}
+
+func readVPNServiceProvider(r *reader.Reader, vpnType string) (vpnProvider string) {
+	vpnProvider = r.String("VPN_SERVICE_PROVIDER", reader.RetroKeys("VPNSP"))
+	if vpnProvider == "" {
+		if vpnType != vpn.Wireguard && r.Get("OPENVPN_CUSTOM_CONFIG") != nil {
+			// retro compatibility
+			return providers.Custom
+		}
+		return ""
+	}
+
+	vpnProvider = strings.ToLower(vpnProvider)
+	if vpnProvider == "pia" { // retro compatibility
+		return providers.PrivateInternetAccess
+	}
+
+	return vpnProvider
 }

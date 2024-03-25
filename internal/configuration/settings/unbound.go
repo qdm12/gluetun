@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/dns/pkg/provider"
 	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
 )
 
@@ -49,7 +50,7 @@ func (u *Unbound) setDefaults() {
 		}
 	}
 
-	u.Username = gosettings.DefaultString(u.Username, "root")
+	u.Username = gosettings.DefaultComparable(u.Username, "root")
 }
 
 var (
@@ -105,17 +106,6 @@ func (u Unbound) copy() (copied Unbound) {
 	}
 }
 
-func (u *Unbound) mergeWith(other Unbound) {
-	u.Providers = gosettings.MergeWithSlice(u.Providers, other.Providers)
-	u.Caching = gosettings.MergeWithPointer(u.Caching, other.Caching)
-	u.IPv6 = gosettings.MergeWithPointer(u.IPv6, other.IPv6)
-	u.VerbosityLevel = gosettings.MergeWithPointer(u.VerbosityLevel, other.VerbosityLevel)
-	u.VerbosityDetailsLevel = gosettings.MergeWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
-	u.ValidationLogLevel = gosettings.MergeWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
-	u.Username = gosettings.MergeWithString(u.Username, other.Username)
-	u.Allowed = gosettings.MergeWithSlice(u.Allowed, other.Allowed)
-}
-
 func (u *Unbound) overrideWith(other Unbound) {
 	u.Providers = gosettings.OverrideWithSlice(u.Providers, other.Providers)
 	u.Caching = gosettings.OverrideWithPointer(u.Caching, other.Caching)
@@ -123,7 +113,7 @@ func (u *Unbound) overrideWith(other Unbound) {
 	u.VerbosityLevel = gosettings.OverrideWithPointer(u.VerbosityLevel, other.VerbosityLevel)
 	u.VerbosityDetailsLevel = gosettings.OverrideWithPointer(u.VerbosityDetailsLevel, other.VerbosityDetailsLevel)
 	u.ValidationLogLevel = gosettings.OverrideWithPointer(u.ValidationLogLevel, other.ValidationLogLevel)
-	u.Username = gosettings.OverrideWithString(u.Username, other.Username)
+	u.Username = gosettings.OverrideWithComparable(u.Username, other.Username)
 	u.Allowed = gosettings.OverrideWithSlice(u.Allowed, other.Allowed)
 }
 
@@ -199,4 +189,35 @@ func (u Unbound) toLinesNode() (node *gotree.Node) {
 	}
 
 	return node
+}
+
+func (u *Unbound) read(reader *reader.Reader) (err error) {
+	u.Providers = reader.CSV("DOT_PROVIDERS")
+
+	u.Caching, err = reader.BoolPtr("DOT_CACHING")
+	if err != nil {
+		return err
+	}
+
+	u.IPv6, err = reader.BoolPtr("DOT_IPV6")
+	if err != nil {
+		return err
+	}
+
+	u.VerbosityLevel, err = reader.Uint8Ptr("DOT_VERBOSITY")
+	if err != nil {
+		return err
+	}
+
+	u.VerbosityDetailsLevel, err = reader.Uint8Ptr("DOT_VERBOSITY_DETAILS")
+	if err != nil {
+		return err
+	}
+
+	u.ValidationLogLevel, err = reader.Uint8Ptr("DOT_VALIDATION_LOGLEVEL")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/privateinternetaccess/presets"
 	"github.com/qdm12/gosettings"
+	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 )
@@ -146,23 +147,16 @@ func (o *OpenVPNSelection) copy() (copied OpenVPNSelection) {
 	}
 }
 
-func (o *OpenVPNSelection) mergeWith(other OpenVPNSelection) {
-	o.ConfFile = gosettings.MergeWithPointer(o.ConfFile, other.ConfFile)
-	o.Protocol = gosettings.MergeWithString(o.Protocol, other.Protocol)
-	o.CustomPort = gosettings.MergeWithPointer(o.CustomPort, other.CustomPort)
-	o.PIAEncPreset = gosettings.MergeWithPointer(o.PIAEncPreset, other.PIAEncPreset)
-}
-
 func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {
 	o.ConfFile = gosettings.OverrideWithPointer(o.ConfFile, other.ConfFile)
-	o.Protocol = gosettings.OverrideWithString(o.Protocol, other.Protocol)
+	o.Protocol = gosettings.OverrideWithComparable(o.Protocol, other.Protocol)
 	o.CustomPort = gosettings.OverrideWithPointer(o.CustomPort, other.CustomPort)
 	o.PIAEncPreset = gosettings.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
 	o.ConfFile = gosettings.DefaultPointer(o.ConfFile, "")
-	o.Protocol = gosettings.DefaultString(o.Protocol, constants.UDP)
+	o.Protocol = gosettings.DefaultComparable(o.Protocol, constants.UDP)
 	o.CustomPort = gosettings.DefaultPointer(o.CustomPort, 0)
 
 	var defaultEncPreset string
@@ -193,4 +187,24 @@ func (o OpenVPNSelection) toLinesNode() (node *gotree.Node) {
 	}
 
 	return node
+}
+
+func (o *OpenVPNSelection) read(r *reader.Reader) (err error) {
+	o.ConfFile = r.Get("OPENVPN_CUSTOM_CONFIG", reader.ForceLowercase(false))
+
+	o.Protocol = r.String("OPENVPN_PROTOCOL", reader.RetroKeys("PROTOCOL"))
+	if err != nil {
+		return err
+	}
+
+	o.CustomPort, err = r.Uint16Ptr("VPN_ENDPOINT_PORT",
+		reader.RetroKeys("PORT", "OPENVPN_PORT"))
+	if err != nil {
+		return err
+	}
+
+	o.PIAEncPreset = r.Get("PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET",
+		reader.RetroKeys("ENCRYPTION", "PIA_ENCRYPTION"))
+
+	return nil
 }
