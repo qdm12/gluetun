@@ -18,7 +18,7 @@ func (s *Source) lazyLoadWireguardConf() WireguardConfig {
 
 	s.cached.wireguardLoaded = true
 	var err error
-	s.cached.wireguardConf, err = ParseWireguardConf(filepath.Join(s.rootDirectory, "wg0.conf"))
+	s.cached.wireguardConf, err = ParseWireguardConf(filepath.Join(s.rootDirectory, "wireguard", "wg0.conf"))
 	if err != nil {
 		s.warner.Warnf("skipping Wireguard config: %s", err)
 	}
