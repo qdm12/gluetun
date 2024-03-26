@@ -125,7 +125,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 
 	err = validateFeatureFilters(*ss, vpnServiceProvider)
 	if err != nil {
-		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
+		return err
 	}
 
 	if *ss.OwnedOnly &&
