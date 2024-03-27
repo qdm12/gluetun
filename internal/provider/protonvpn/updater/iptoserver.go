@@ -9,8 +9,16 @@ import (
 
 type ipToServer map[string]models.Server
 
+type features struct {
+	SecureCore bool
+	Tor        bool
+	P2P        bool
+	Stream     bool
+	IPv6       bool
+}
+
 func (its ipToServer) add(country, region, city, name, hostname string,
-	free bool, entryIP netip.Addr) {
+	free bool, entryIP netip.Addr, features *features) {
 	key := entryIP.String()
 
 	server, ok := its[key]
@@ -25,6 +33,11 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 	server.ServerName = name
 	server.Hostname = hostname
 	server.Free = free
+	server.SecureCore = features.SecureCore
+	server.Tor = features.Tor
+	server.P2P = features.P2P
+	server.Stream = features.Stream
+	server.IPv6 = features.IPv6
 	server.UDP = true
 	server.TCP = true
 	server.IPs = []netip.Addr{entryIP}

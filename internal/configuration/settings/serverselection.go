@@ -55,7 +55,7 @@ type ServerSelection struct { //nolint:maligned
 	// TODO extend to providers using FreeOnly.
 	PremiumOnly *bool `json:"premium_only"`
 	// StreamOnly is true if VPN servers not for streaming should
-	// be filtered. This is used with VPNUnlimited.
+	// be filtered. This is used with ProtonVPN and VPNUnlimited.
 	StreamOnly *bool `json:"stream_only"`
 	// MultiHopOnly is true if VPN servers that are not multihop
 	// should be filtered. This is used with Surfshark.
@@ -63,6 +63,18 @@ type ServerSelection struct { //nolint:maligned
 	// PortForwardOnly is true if VPN servers that don't support
 	// port forwarding should be filtered. This is used with PIA.
 	PortForwardOnly *bool `json:"port_forward_only"`
+	// SecureCoreOnly is true if VPN servers without secure core should
+	// be filtered. This is used with ProtonVPN.
+	SecureCoreOnly *bool `json:"secure_core_only"`
+	// TorOnly is true if VPN servers without tor should
+	// be filtered. This is used with ProtonVPN.
+	TorOnly *bool `json:"tor_only"`
+	// P2POnly is true if VPN servers not for p2p should
+	// be filtered. This is used with ProtonVPN.
+	P2POnly *bool `json:"p2p_only"`
+	// IPv6Only is true if VPN servers without IPv6 support should
+	// be filtered. This is used with ProtonVPN.
+	IPv6Only *bool `json:"ipv6_only"`
 	// OpenVPN contains settings to select OpenVPN servers
 	// and the final connection.
 	OpenVPN OpenVPNSelection `json:"openvpn"`
@@ -79,6 +91,10 @@ var (
 	ErrMultiHopOnlyNotSupported    = errors.New("multi hop only filter is not supported")
 	ErrPortForwardOnlyNotSupported = errors.New("port forwarding only filter is not supported")
 	ErrFreePremiumBothSet          = errors.New("free only and premium only filters are both set")
+	ErrSecureCoreOnlyNotSupported  = errors.New("secure core only filter is not supported")
+	ErrTorOnlyNotSupported         = errors.New("tor only filter is not supported")
+	ErrP2POnlyNotSupported         = errors.New("p2p only filter is not supported")
+	ErrIPv6OnlyNotSupported        = errors.New("IPv6 only filter is not supported")
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
@@ -107,6 +123,11 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
 
+	err = validateFeatureFilters(ss, vpnServiceProvider)
+	if err != nil {
+		return err
+	}
+
 	if *ss.OwnedOnly &&
 		vpnServiceProvider != providers.Mullvad {
 		return fmt.Errorf("%w: for VPN service provider %s",
@@ -132,30 +153,6 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 
 	if *ss.FreeOnly && *ss.PremiumOnly {
 		return fmt.Errorf("%w", ErrFreePremiumBothSet)
-	}
-
-	if *ss.StreamOnly &&
-		!helpers.IsOneOf(vpnServiceProvider,
-			providers.Protonvpn,
-			providers.VPNUnlimited,
-		) {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrStreamOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.MultiHopOnly &&
-		vpnServiceProvider != providers.Surfshark {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.PortForwardOnly &&
-		vpnServiceProvider != providers.PrivateInternetAccess {
-		// ProtonVPN also supports port forwarding, but on all their servers, so these
-		// don't have the port forwarding boolean field. As a consequence, we only allow
-		// the use of PortForwardOnly for Private Internet Access.
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrPortForwardOnlyNotSupported, vpnServiceProvider)
 	}
 
 	if ss.VPN == vpn.OpenVPN {
@@ -235,6 +232,55 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 	return nil
 }
 
+// validateFeatureFilters validates filters for features.
+func validateFeatureFilters(settings *ServerSelection, vpnServiceProvider string) (err error) {
+	if *settings.StreamOnly &&
+		!helpers.IsOneOf(vpnServiceProvider,
+			providers.Protonvpn,
+			providers.VPNUnlimited,
+		) {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrStreamOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.MultiHopOnly &&
+		vpnServiceProvider != providers.Surfshark {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.PortForwardOnly &&
+		vpnServiceProvider != providers.PrivateInternetAccess {
+		// ProtonVPN also supports port forwarding, but on all their servers, so these
+		// don't have the port forwarding boolean field. As a consequence, we only allow
+		// the use of PortForwardOnly for Private Internet Access.
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrPortForwardOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.SecureCoreOnly && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrSecureCoreOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.TorOnly && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrTorOnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.P2POnly && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrP2POnlyNotSupported, vpnServiceProvider)
+	}
+
+	if *settings.IPv6Only && vpnServiceProvider != providers.Protonvpn {
+		return fmt.Errorf("%w: for VPN service provider %s",
+			ErrIPv6OnlyNotSupported, vpnServiceProvider)
+	}
+
+	return nil
+}
+
 func (ss *ServerSelection) copy() (copied ServerSelection) {
 	return ServerSelection{
 		VPN:             ss.VPN,
@@ -251,6 +297,10 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 		FreeOnly:        gosettings.CopyPointer(ss.FreeOnly),
 		PremiumOnly:     gosettings.CopyPointer(ss.PremiumOnly),
 		StreamOnly:      gosettings.CopyPointer(ss.StreamOnly),
+		SecureCoreOnly:  gosettings.CopyPointer(ss.SecureCoreOnly),
+		TorOnly:         gosettings.CopyPointer(ss.TorOnly),
+		P2POnly:         gosettings.CopyPointer(ss.P2POnly),
+		IPv6Only:        gosettings.CopyPointer(ss.IPv6Only),
 		PortForwardOnly: gosettings.CopyPointer(ss.PortForwardOnly),
 		MultiHopOnly:    gosettings.CopyPointer(ss.MultiHopOnly),
 		OpenVPN:         ss.OpenVPN.copy(),
@@ -273,6 +323,10 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.FreeOnly = gosettings.OverrideWithPointer(ss.FreeOnly, other.FreeOnly)
 	ss.PremiumOnly = gosettings.OverrideWithPointer(ss.PremiumOnly, other.PremiumOnly)
 	ss.StreamOnly = gosettings.OverrideWithPointer(ss.StreamOnly, other.StreamOnly)
+	ss.SecureCoreOnly = gosettings.OverrideWithPointer(ss.SecureCoreOnly, other.SecureCoreOnly)
+	ss.TorOnly = gosettings.OverrideWithPointer(ss.TorOnly, other.TorOnly)
+	ss.P2POnly = gosettings.OverrideWithPointer(ss.P2POnly, other.P2POnly)
+	ss.IPv6Only = gosettings.OverrideWithPointer(ss.IPv6Only, other.IPv6Only)
 	ss.MultiHopOnly = gosettings.OverrideWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
 	ss.PortForwardOnly = gosettings.OverrideWithPointer(ss.PortForwardOnly, other.PortForwardOnly)
 	ss.OpenVPN.overrideWith(other.OpenVPN)
@@ -286,6 +340,10 @@ func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.FreeOnly = gosettings.DefaultPointer(ss.FreeOnly, false)
 	ss.PremiumOnly = gosettings.DefaultPointer(ss.PremiumOnly, false)
 	ss.StreamOnly = gosettings.DefaultPointer(ss.StreamOnly, false)
+	ss.SecureCoreOnly = gosettings.DefaultPointer(ss.SecureCoreOnly, false)
+	ss.TorOnly = gosettings.DefaultPointer(ss.TorOnly, false)
+	ss.P2POnly = gosettings.DefaultPointer(ss.P2POnly, false)
+	ss.IPv6Only = gosettings.DefaultPointer(ss.IPv6Only, false)
 	ss.MultiHopOnly = gosettings.DefaultPointer(ss.MultiHopOnly, false)
 	ss.PortForwardOnly = gosettings.DefaultPointer(ss.PortForwardOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
@@ -352,6 +410,22 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 
 	if *ss.StreamOnly {
 		node.Appendf("Stream only servers: yes")
+	}
+
+	if *ss.SecureCoreOnly {
+		node.Appendf("Secure Core only servers: yes")
+	}
+
+	if *ss.TorOnly {
+		node.Appendf("Tor only servers: yes")
+	}
+
+	if *ss.P2POnly {
+		node.Appendf("P2P only servers: yes")
+	}
+
+	if *ss.IPv6Only {
+		node.Appendf("IPv6 only servers: yes")
 	}
 
 	if *ss.MultiHopOnly {
@@ -425,8 +499,32 @@ func (ss *ServerSelection) read(r *reader.Reader,
 		return err
 	}
 
-	// VPNUnlimited only
+	// VPNUnlimited and ProtonVPN only
 	ss.StreamOnly, err = r.BoolPtr("STREAM_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// ProtonVPN only
+	ss.SecureCoreOnly, err = r.BoolPtr("SECURE_CORE_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// ProtonVPN only
+	ss.TorOnly, err = r.BoolPtr("TOR_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// ProtonVPN only
+	ss.P2POnly, err = r.BoolPtr("P2P_ONLY")
+	if err != nil {
+		return err
+	}
+
+	// ProtonVPN only
+	ss.IPv6Only, err = r.BoolPtr("IPV6_ONLY")
 	if err != nil {
 		return err
 	}
