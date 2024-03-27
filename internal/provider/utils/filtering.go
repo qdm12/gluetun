@@ -45,7 +45,7 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if *selection.StreamOnly && (!server.Stream || !server.Features.Streaming) {
+	if *selection.StreamOnly && !server.Stream {
 		return true
 	}
 
@@ -57,19 +57,19 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if *selection.SecureCoreOnly && !server.Features.SecureCore {
+	if *selection.SecureCoreOnly && !server.SecureCore {
 		return true
 	}
 
-	if *selection.TorOnly && !server.Features.Tor {
+	if *selection.TorOnly && !server.Tor {
 		return true
 	}
 
-	if *selection.P2POnly && !server.Features.P2P {
+	if *selection.P2POnly && !server.P2P {
 		return true
 	}
 
-	if *selection.IPv6Only && !server.Features.IPv6 {
+	if *selection.IPv6Only && !server.IPv6 {
 		return true
 	}
 

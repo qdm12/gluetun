@@ -54,12 +54,6 @@ type ServerSelection struct { //nolint:maligned
 	// be filtered. This is used with VPN Secure.
 	// TODO extend to providers using FreeOnly.
 	PremiumOnly *bool `json:"premium_only"`
-	// OpenVPN contains settings to select OpenVPN servers
-	// and the final connection.
-	OpenVPN OpenVPNSelection `json:"openvpn"`
-	// Wireguard contains settings to select Wireguard servers
-	// and the final connection.
-	Wireguard WireguardSelection `json:"wireguard"`
 	// StreamOnly is true if VPN servers not for streaming should
 	// be filtered. This is used with ProtonVPN and VPNUnlimited.
 	StreamOnly *bool `json:"stream_only"`
@@ -81,6 +75,12 @@ type ServerSelection struct { //nolint:maligned
 	// IPv6Only is true if VPN servers without IPv6 support should
 	// be filtered. This is used with ProtonVPN.
 	IPv6Only *bool `json:"ipv6_only"`
+	// OpenVPN contains settings to select OpenVPN servers
+	// and the final connection.
+	OpenVPN OpenVPNSelection `json:"openvpn"`
+	// Wireguard contains settings to select Wireguard servers
+	// and the final connection.
+	Wireguard WireguardSelection `json:"wireguard"`
 }
 
 var (

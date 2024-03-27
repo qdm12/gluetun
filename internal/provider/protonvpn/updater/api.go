@@ -23,7 +23,7 @@ type logicalServer struct {
 	Region      *string          `json:"Region"`
 	City        *string          `json:"City"`
 	Servers     []physicalServer `json:"Servers"`
-	Features    int              `json:"Features"`
+	Features    uint16           `json:"Features"`
 }
 
 type physicalServer struct {

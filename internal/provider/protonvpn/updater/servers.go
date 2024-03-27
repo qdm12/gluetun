@@ -41,7 +41,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		featuresBits := logicalServer.Features
 
 		// FROM https://github.com/ProtonVPN/protonvpn-nm-lib/blob/31d5f99fbc89274e4e977a11e7432c0eab5a3ef8/protonvpn_nm_lib/enums.py#L44-L49
-		features := &models.Features{}
+		features := &features{}
 		switch {
 		case featuresBits&1 != 0:
 			features.SecureCore = true
@@ -50,7 +50,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		case featuresBits&4 != 0:
 			features.P2P = true
 		case featuresBits&8 != 0:
-			features.Streaming = true
+			features.Stream = true
 		case featuresBits&16 != 0:
 			features.IPv6 = true
 		}
