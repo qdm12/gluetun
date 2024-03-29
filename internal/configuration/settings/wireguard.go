@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/netip"
 	"regexp"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
@@ -220,11 +221,19 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 	w.Interface = r.String("VPN_INTERFACE",
 		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
 	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
-	w.Addresses, err = r.CSVNetipPrefixes("WIREGUARD_ADDRESSES",
-		reader.RetroKeys("WIREGUARD_ADDRESS"))
-	if err != nil {
-		return err // already wrapped
+
+	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
+	w.Addresses = make([]netip.Prefix, len(addressStrings))
+	for i, addressString := range addressStrings {
+		if !strings.ContainsRune(addressString, '/') {
+			addressString += "/32"
+		}
+		w.Addresses[i], err = netip.ParsePrefix(addressString)
+		if err != nil {
+			return fmt.Errorf("parsing address: %w", err)
+		}
 	}
+
 	w.AllowedIPs, err = r.CSVNetipPrefixes("WIREGUARD_ALLOWED_IPS")
 	if err != nil {
 		return err // already wrapped
