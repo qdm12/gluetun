@@ -71,8 +71,8 @@ func (i *ip2Location) FetchInfo(ctx context.Context, ip netip.Addr) (
 		CountryName string     `json:"country_name,omitempty"`
 		RegionName  string     `json:"region_name,omitempty"`
 		CityName    string     `json:"city_name,omitempty"`
-		Latitude    string     `json:"latitude,omitempty"`
-		Longitude   string     `json:"longitude,omitempty"`
+		Latitude    float32    `json:"latitude,omitempty"`
+		Longitude   float32    `json:"longitude,omitempty"`
 		ZipCode     string     `json:"zip_code,omitempty"`
 		// Timezone in the form -07:00
 		Timezone string `json:"time_zone,omitempty"`
@@ -88,7 +88,7 @@ func (i *ip2Location) FetchInfo(ctx context.Context, ip netip.Addr) (
 		Country:      data.CountryName,
 		City:         data.CityName,
 		Hostname:     "", // no hostname
-		Location:     fmt.Sprintf("%s,%s", data.Latitude, data.Longitude),
+		Location:     fmt.Sprintf("%f,%f", data.Latitude, data.Longitude),
 		Organization: data.As,
 		PostalCode:   data.ZipCode,
 		Timezone:     data.Timezone,
