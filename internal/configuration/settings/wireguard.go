@@ -228,6 +228,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		if !strings.ContainsRune(addressString, '/') {
 			addressString += "/32"
 		}
+		addressString = strings.TrimSpace(addressString)
 		w.Addresses[i], err = netip.ParsePrefix(addressString)
 		if err != nil {
 			return fmt.Errorf("parsing address: %w", err)
