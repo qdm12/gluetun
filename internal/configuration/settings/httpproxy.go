@@ -151,7 +151,8 @@ func (h *HTTPProxy) read(r *reader.Reader) (err error) {
 func readHTTProxyListeningAddress(r *reader.Reader) (listeningAddress string, err error) {
 	// Retro-compatible keys using a port only
 	port, err := r.Uint16Ptr("",
-		reader.RetroKeys("HTTPPROXY_PORT", "TINYPROXY_PORT", "PROXY_PORT"))
+		reader.RetroKeys("HTTPPROXY_PORT", "TINYPROXY_PORT", "PROXY_PORT"),
+		reader.IsRetro("HTTPPROXY_LISTENING_ADDRESS"))
 	if err != nil {
 		return "", err
 	} else if port != nil {
@@ -162,12 +163,13 @@ func readHTTProxyListeningAddress(r *reader.Reader) (listeningAddress string, er
 }
 
 func readHTTProxyLog(r *reader.Reader) (enabled *bool, err error) {
+	const currentKey = "HTTPPROXY_LOG"
 	// Retro-compatible keys using different boolean verbs
 	value := r.String("",
-		reader.RetroKeys("PROXY_LOG", "TINYPROXY_LOG", "HTTPPROXY_LOG"))
+		reader.RetroKeys("PROXY_LOG", "TINYPROXY_LOG", "HTTPPROXY_LOG"),
+		reader.IsRetro(currentKey))
 	switch strings.ToLower(value) {
 	case "":
-		const currentKey = "HTTPPROXY_LOG"
 		return r.BoolPtr(currentKey)
 	case "on", "info", "connect", "notice":
 		return ptrTo(true), nil
