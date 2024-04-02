@@ -223,16 +223,18 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
 
 	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
-	w.Addresses = make([]netip.Prefix, len(addressStrings))
-	for i, addressString := range addressStrings {
+	// WARNING: do not initialize w.Addresses to an empty slice
+	// or the defaults for nordvpn will not work.
+	for _, addressString := range addressStrings {
 		if !strings.ContainsRune(addressString, '/') {
 			addressString += "/32"
 		}
 		addressString = strings.TrimSpace(addressString)
-		w.Addresses[i], err = netip.ParsePrefix(addressString)
+		address, err := netip.ParsePrefix(addressString)
 		if err != nil {
 			return fmt.Errorf("parsing address: %w", err)
 		}
+		w.Addresses = append(w.Addresses, address)
 	}
 
 	w.AllowedIPs, err = r.CSVNetipPrefixes("WIREGUARD_ALLOWED_IPS")
