@@ -54,7 +54,7 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 	// Special file parsing
 	switch key {
 	// TODO timezone from /etc/localtime
-	case "openvpn_clientcrt", "openvpn_clientkey":
+	case "openvpn_clientcrt", "openvpn_clientkey", "openvpn_encrypted_key":
 		value, isSet, err := files.ReadPEMFile(path)
 		if err != nil {
 			s.warner.Warnf("skipping %s: parsing PEM: %s", path, err)
@@ -97,6 +97,8 @@ func (s *Source) KeyTransform(key string) string {
 		return "openvpn_clientkey"
 	case "OPENVPN_CERT":
 		return "openvpn_clientcrt"
+	case "OPENVPN_ENCRYPTED_KEY":
+		return "openvpn_encrypted_key"
 	default:
 		key = strings.ToLower(key) // HTTPROXY_USER -> httpproxy_user
 		return key
