@@ -166,7 +166,7 @@ func readHTTProxyLog(r *reader.Reader) (enabled *bool, err error) {
 	const currentKey = "HTTPPROXY_LOG"
 	// Retro-compatible keys using different boolean verbs
 	value := r.String("",
-		reader.RetroKeys("PROXY_LOG", "TINYPROXY_LOG", "HTTPPROXY_LOG"),
+		reader.RetroKeys("PROXY_LOG", "TINYPROXY_LOG"),
 		reader.IsRetro(currentKey))
 	switch strings.ToLower(value) {
 	case "":
