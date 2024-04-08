@@ -15,7 +15,7 @@ type Loop struct {
 	settings      Settings
 	settingsMutex sync.RWMutex
 	service       Service
-	// Fixed injected objets
+	// Fixed injected objects
 	routing     Routing
 	client      *http.Client
 	portAllower PortAllower
