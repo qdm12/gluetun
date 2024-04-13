@@ -74,6 +74,8 @@ type OpenVPN struct {
 	// Interface is the OpenVPN device interface name.
 	// It cannot be an empty string in the internal state.
 	Interface string `json:"interface"`
+	// Maximum Transmission Unit (MTU) of the OpenVPN interface.
+	TunMTU uint16 `json:"tunmtu"`
 	// ProcessUser is the OpenVPN process OS username
 	// to use. It cannot be empty in the internal state.
 	// It defaults to 'root'.
@@ -257,6 +259,7 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 		PIAEncPreset:  gosettings.CopyPointer(o.PIAEncPreset),
 		MSSFix:        gosettings.CopyPointer(o.MSSFix),
 		Interface:     o.Interface,
+		TunMTU:        o.TunMTU,
 		ProcessUser:   o.ProcessUser,
 		Verbosity:     gosettings.CopyPointer(o.Verbosity),
 		Flags:         gosettings.CopySlice(o.Flags),
@@ -280,6 +283,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.PIAEncPreset = gosettings.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 	o.MSSFix = gosettings.OverrideWithPointer(o.MSSFix, other.MSSFix)
 	o.Interface = gosettings.OverrideWithComparable(o.Interface, other.Interface)
+	o.TunMTU = gosettings.OverrideWithComparable(o.TunMTU, other.TunMTU)
 	o.ProcessUser = gosettings.OverrideWithComparable(o.ProcessUser, other.ProcessUser)
 	o.Verbosity = gosettings.OverrideWithPointer(o.Verbosity, other.Verbosity)
 	o.Flags = gosettings.OverrideWithSlice(o.Flags, other.Flags)
@@ -308,6 +312,7 @@ func (o *OpenVPN) setDefaults(vpnProvider string) {
 	o.PIAEncPreset = gosettings.DefaultPointer(o.PIAEncPreset, defaultEncPreset)
 	o.MSSFix = gosettings.DefaultPointer(o.MSSFix, 0)
 	o.Interface = gosettings.DefaultComparable(o.Interface, "tun0")
+	o.TunMTU = gosettings.DefaultComparable(o.TunMTU, 0)
 	o.ProcessUser = gosettings.DefaultComparable(o.ProcessUser, "root")
 	o.Verbosity = gosettings.DefaultPointer(o.Verbosity, 1)
 }
@@ -358,6 +363,8 @@ func (o OpenVPN) toLinesNode() (node *gotree.Node) {
 	if o.Interface != "" {
 		node.Appendf("Network interface: %s", o.Interface)
 	}
+
+	node.Appendf("MTU: %d", o.TunMTU)
 
 	node.Appendf("Run OpenVPN as: %s", o.ProcessUser)
 
@@ -412,6 +419,13 @@ func (o *OpenVPN) read(r *reader.Reader) (err error) {
 	flagsPtr := r.Get("OPENVPN_FLAGS", reader.ForceLowercase(false))
 	if flagsPtr != nil {
 		o.Flags = strings.Fields(*flagsPtr)
+	}
+
+	mtuPtr, err := r.Uint16Ptr("OPENVPN_MTU")
+	if err != nil {
+		return err
+	} else if mtuPtr != nil {
+		o.TunMTU = *mtuPtr
 	}
 
 	return nil
