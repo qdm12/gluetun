@@ -3,6 +3,7 @@ package utils
 import (
 	"net/netip"
 	"testing"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
@@ -10,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func stringPtr(s string) *string { return &s }
+func ptrTo[T any](x T) *T { return &x }
 
 func Test_BuildWireguardSettings(t *testing.T) {
 	t.Parallel()
@@ -28,8 +29,8 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				PubKey: "public",
 			},
 			userSettings: settings.Wireguard{
-				PrivateKey:   stringPtr("private"),
-				PreSharedKey: stringPtr("pre-shared"),
+				PrivateKey:   ptrTo("private"),
+				PreSharedKey: ptrTo("pre-shared"),
 				Addresses: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 32),
 					netip.PrefixFrom(netip.AddrFrom16([16]byte{}), 32),
@@ -38,7 +39,8 @@ func Test_BuildWireguardSettings(t *testing.T) {
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
 					netip.PrefixFrom(netip.AddrFrom16([16]byte{}), 32),
 				},
-				Interface: "wg1",
+				PersistentKeepaliveInterval: ptrTo(time.Hour),
+				Interface:                   "wg1",
 			},
 			ipv6Supported: false,
 			settings: wireguard.Settings{
@@ -53,8 +55,9 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				AllowedIPs: []netip.Prefix{
 					netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
 				},
-				RulePriority: 101,
-				IPv6:         boolPtr(false),
+				PersistentKeepaliveInterval: time.Hour,
+				RulePriority:                101,
+				IPv6:                        boolPtr(false),
 			},
 		},
 	}

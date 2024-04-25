@@ -5,6 +5,7 @@ import (
 	"net/netip"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
@@ -34,7 +35,8 @@ type Wireguard struct {
 	// Interface is the name of the Wireguard interface
 	// to create. It cannot be the empty string in the
 	// internal state.
-	Interface string `json:"interface"`
+	Interface                   string         `json:"interface"`
+	PersistentKeepaliveInterval *time.Duration `json:"persistent_keep_alive_interval"`
 	// Maximum Transmission Unit (MTU) of the Wireguard interface.
 	// It cannot be zero in the internal state, and defaults to
 	// 1400. Note it is not the wireguard-go MTU default of 1420
@@ -123,6 +125,11 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		}
 	}
 
+	if *w.PersistentKeepaliveInterval < 0 {
+		return fmt.Errorf("%w: %s", ErrWireguardKeepAliveNegative,
+			*w.PersistentKeepaliveInterval)
+	}
+
 	// Validate interface
 	if !regexpInterfaceName.MatchString(w.Interface) {
 		return fmt.Errorf("%w: '%s' does not match regex '%s'",
@@ -139,13 +146,14 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
-		PrivateKey:     gosettings.CopyPointer(w.PrivateKey),
-		PreSharedKey:   gosettings.CopyPointer(w.PreSharedKey),
-		Addresses:      gosettings.CopySlice(w.Addresses),
-		AllowedIPs:     gosettings.CopySlice(w.AllowedIPs),
-		Interface:      w.Interface,
-		MTU:            w.MTU,
-		Implementation: w.Implementation,
+		PrivateKey:                  gosettings.CopyPointer(w.PrivateKey),
+		PreSharedKey:                gosettings.CopyPointer(w.PreSharedKey),
+		Addresses:                   gosettings.CopySlice(w.Addresses),
+		AllowedIPs:                  gosettings.CopySlice(w.AllowedIPs),
+		PersistentKeepaliveInterval: gosettings.CopyPointer(w.PersistentKeepaliveInterval),
+		Interface:                   w.Interface,
+		MTU:                         w.MTU,
+		Implementation:              w.Implementation,
 	}
 }
 
@@ -154,6 +162,8 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.PreSharedKey = gosettings.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
 	w.Addresses = gosettings.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.AllowedIPs = gosettings.OverrideWithSlice(w.AllowedIPs, other.AllowedIPs)
+	w.PersistentKeepaliveInterval = gosettings.OverrideWithPointer(w.PersistentKeepaliveInterval,
+		other.PersistentKeepaliveInterval)
 	w.Interface = gosettings.OverrideWithComparable(w.Interface, other.Interface)
 	w.MTU = gosettings.OverrideWithComparable(w.MTU, other.MTU)
 	w.Implementation = gosettings.OverrideWithComparable(w.Implementation, other.Implementation)
@@ -172,6 +182,7 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 		netip.PrefixFrom(netip.IPv6Unspecified(), 0),
 	}
 	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs, defaultAllowedIPs)
+	w.PersistentKeepaliveInterval = gosettings.DefaultPointer(w.PersistentKeepaliveInterval, 0)
 	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
 	const defaultMTU = 1400
 	w.MTU = gosettings.DefaultComparable(w.MTU, defaultMTU)
@@ -203,6 +214,10 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	allowedIPsNode := node.Appendf("Allowed IPs:")
 	for _, allowedIP := range w.AllowedIPs {
 		allowedIPsNode.Appendf(allowedIP.String())
+	}
+
+	if *w.PersistentKeepaliveInterval > 0 {
+		node.Appendf("Persistent keepalive interval: %s", w.PersistentKeepaliveInterval)
 	}
 
 	interfaceNode := node.Appendf("Network interface: %s", w.Interface)
@@ -241,6 +256,12 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 	if err != nil {
 		return err // already wrapped
 	}
+
+	w.PersistentKeepaliveInterval, err = r.DurationPtr("WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL")
+	if err != nil {
+		return err
+	}
+
 	mtuPtr, err := r.Uint16Ptr("WIREGUARD_MTU")
 	if err != nil {
 		return err

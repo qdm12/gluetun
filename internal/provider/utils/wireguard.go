@@ -40,5 +40,7 @@ func BuildWireguardSettings(connection models.Connection,
 		settings.AllowedIPs = append(settings.AllowedIPs, allowedIP)
 	}
 
+	settings.PersistentKeepaliveInterval = *userSettings.PersistentKeepaliveInterval
+
 	return settings
 }

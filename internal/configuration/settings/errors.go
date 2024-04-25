@@ -50,5 +50,6 @@ var (
 	ErrWireguardPrivateKeyNotSet       = errors.New("private key is not set")
 	ErrWireguardPublicKeyNotSet        = errors.New("public key is not set")
 	ErrWireguardPublicKeyNotValid      = errors.New("public key is not valid")
+	ErrWireguardKeepAliveNegative      = errors.New("persistent keep alive interval is negative")
 	ErrWireguardImplementationNotValid = errors.New("implementation is not valid")
 )

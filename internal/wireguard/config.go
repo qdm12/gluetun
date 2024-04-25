@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/netip"
+	"time"
 
 	"golang.zx2c4.com/wireguard/wgctrl"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
@@ -43,6 +44,12 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 		preSharedKey = &preSharedKeyValue
 	}
 
+	var persistentKeepaliveInterval *time.Duration
+	if settings.PersistentKeepaliveInterval > 0 {
+		persistentKeepaliveInterval = new(time.Duration)
+		*persistentKeepaliveInterval = settings.PersistentKeepaliveInterval
+	}
+
 	firewallMark := settings.FirewallMark
 
 	config = wgtypes.Config{
@@ -63,7 +70,8 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 						Mask: []byte(net.IPv6zero),
 					},
 				},
-				ReplaceAllowedIPs: true,
+				PersistentKeepaliveInterval: persistentKeepaliveInterval,
+				ReplaceAllowedIPs:           true,
 				Endpoint: &net.UDPAddr{
 					IP:   settings.Endpoint.Addr().AsSlice(),
 					Port: int(settings.Endpoint.Port()),

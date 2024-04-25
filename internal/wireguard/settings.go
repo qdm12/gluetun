@@ -6,6 +6,7 @@ import (
 	"net/netip"
 	"regexp"
 	"strings"
+	"time"
 
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
@@ -30,6 +31,8 @@ type Settings struct {
 	// the Wireguard interface.
 	// Note IPv6 addresses are ignored if IPv6 is not supported.
 	AllowedIPs []netip.Prefix
+	// PersistentKeepaliveInterval defines the keep alive interval, if not zero.
+	PersistentKeepaliveInterval time.Duration
 	// FirewallMark to be used in routing tables and IP rules.
 	// It defaults to 51820 if left to 0.
 	FirewallMark int
@@ -99,6 +102,7 @@ var (
 	ErrAllowedIPsMissing       = errors.New("allowed IPs are missing")
 	ErrAllowedIPNotValid       = errors.New("allowed IP is not valid")
 	ErrAllowedIPv6NotSupported = errors.New("allowed IPv6 address not supported")
+	ErrKeepaliveIsNegative     = errors.New("keep alive interval is negative")
 	ErrFirewallMarkMissing     = errors.New("firewall mark is missing")
 	ErrMTUMissing              = errors.New("MTU is missing")
 	ErrImplementationInvalid   = errors.New("invalid implementation")
@@ -158,6 +162,11 @@ func (s *Settings) Check() (err error) {
 			return fmt.Errorf("%w: for allowed IP %s",
 				ErrAllowedIPv6NotSupported, allowedIP)
 		}
+	}
+
+	if s.PersistentKeepaliveInterval < 0 {
+		return fmt.Errorf("%w: %s", ErrKeepaliveIsNegative,
+			s.PersistentKeepaliveInterval)
 	}
 
 	if s.FirewallMark == 0 {
@@ -284,6 +293,11 @@ func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
 			}
 			lines = append(lines, indent+prefix+allowedIP.String())
 		}
+	}
+
+	if s.PersistentKeepaliveInterval > 0 {
+		lines = append(lines, fieldPrefix+"Persistent keep alive interval: "+
+			s.PersistentKeepaliveInterval.String())
 	}
 
 	return lines
