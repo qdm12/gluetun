@@ -1,0 +1,13 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://console.substack.com/p/console-72$"
+    }
+  ],
+  "timeout": "20s",
+  "retryOn429": false,
+  "fallbackRetryDelay": "30s",
+  "aliveStatusCodes": [
+    200
+  ]
+}
