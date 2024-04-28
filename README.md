@@ -68,7 +68,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 - DNS fine blocking of malicious/ads/surveillance hostnames and IP addresses, with live update every 24 hours
 - Choose the vpn network protocol, `udp` or `tcp`
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
-- Built in Shadowsocks proxy (protocol based on SOCKS5 with an encryption layer, tunnels TCP+UDP)
+- Built in Shadowsocks proxy server (protocol based on SOCKS5 with an encryption layer, tunnels TCP+UDP)
 - Built in HTTP proxy (tunnels HTTP and HTTPS through TCP)
 - [Connect other containers to it](https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md)
 - [Connect LAN devices to it](https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-lan-device-to-gluetun.md)
