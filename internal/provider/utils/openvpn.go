@@ -127,7 +127,9 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 		lines.add("auth", auth)
 	}
 
-	if provider.TunMTU > 0 {
+	if settings.TunMTU > 0 {
+		lines.add("tun-mtu", fmt.Sprint(settings.TunMTU))
+	} else if provider.TunMTU > 0 {
 		lines.add("tun-mtu", fmt.Sprint(provider.TunMTU))
 	}
 
