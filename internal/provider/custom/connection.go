@@ -40,16 +40,29 @@ func getOpenVPNConnection(extractor Extractor,
 		connection.Port = customPort
 	}
 
+	if len(selection.Names) > 0 {
+		// Set the server name for PIA port forwarding code used
+		// together with the custom provider.
+		connection.ServerName = selection.Names[0]
+	}
+
 	return connection, nil
 }
 
 func getWireguardConnection(selection settings.ServerSelection) (
 	connection models.Connection) {
-	return models.Connection{
-		Type:     vpn.Wireguard,
-		IP:       selection.Wireguard.EndpointIP,
-		Port:     *selection.Wireguard.EndpointPort,
-		Protocol: constants.UDP,
-		PubKey:   selection.Wireguard.PublicKey,
+	connection = models.Connection{
+		Type:       vpn.Wireguard,
+		IP:         selection.Wireguard.EndpointIP,
+		Port:       *selection.Wireguard.EndpointPort,
+		Protocol:   constants.UDP,
+		PubKey:     selection.Wireguard.PublicKey,
+		ServerName: selection.Names[0],
 	}
+	if len(selection.Names) > 0 {
+		// Set the server name for PIA port forwarding code used
+		// together with the custom provider.
+		connection.ServerName = selection.Names[0]
+	}
+	return connection
 }
