@@ -343,11 +343,15 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	const tunDevice = "/dev/net/tun"
-	if err := tun.Check(tunDevice); err != nil {
+	err = tun.Check(tunDevice)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("checking TUN device: %w (see the Wiki errors/tun page)", err)
+		}
 		logger.Info(err.Error() + "; creating it...")
 		err = tun.Create(tunDevice)
 		if err != nil {
-			return err
+			return fmt.Errorf("creating tun device: %w", err)
 		}
 	}
 
