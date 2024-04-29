@@ -127,7 +127,6 @@ func LocationData() (data []ServerLocation) {
 		{Region: "The Americas", Country: "Chile", City: "Santiago", RetroLoc: "Chile", Hostname: "cl-san.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "Colombia", City: "Bogota", RetroLoc: "Colombia", Hostname: "co-bog.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "Costa Rica", City: "San Jose", RetroLoc: "Costa Rica", Hostname: "cr-sjn.prod.surfshark.com", MultiHop: false},
-		{Region: "The Americas", Country: "Mexico", City: "Mexico City", RetroLoc: "Mexico City Mexico", Hostname: "mx-mex.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "Atlanta", RetroLoc: "US Atlanta", Hostname: "us-atl.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "Bend", RetroLoc: "US Bend", Hostname: "us-bdn.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "Boston", RetroLoc: "US Boston", Hostname: "us-bos.prod.surfshark.com", MultiHop: false},
@@ -150,13 +149,10 @@ func LocationData() (data []ServerLocation) {
 		{Region: "The Americas", Country: "United States", City: "New York", RetroLoc: "US New York City st004", Hostname: "us-nyc-st004.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "New York", RetroLoc: "US New York City st005", Hostname: "us-nyc-st005.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "New York", RetroLoc: "US New York City", Hostname: "us-nyc.prod.surfshark.com", MultiHop: false},
-		{Region: "The Americas", Country: "United States", City: "Orlando", RetroLoc: "US Orlando", Hostname: "us-orl.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "Phoenix", RetroLoc: "US Phoenix", Hostname: "us-phx.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "Salt Lake City", RetroLoc: "US Salt Lake City", Hostname: "us-slc.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "San Francisco", RetroLoc: "US San Francisco mp001", Hostname: "us-sfo-mp001.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "San Francisco", RetroLoc: "US San Francisco", Hostname: "us-sfo.prod.surfshark.com", MultiHop: false},
 		{Region: "The Americas", Country: "United States", City: "Seattle", RetroLoc: "US Seatle", Hostname: "us-sea.prod.surfshark.com", MultiHop: false},
-		{Region: "The Americas", Country: "United States", City: "St. Louis", RetroLoc: "US Saint Louis", Hostname: "us-stl.prod.surfshark.com", MultiHop: false},
-		{Region: "The Americas", Country: "United States", City: "Tampa", RetroLoc: "US Tampa", Hostname: "us-tpa.prod.surfshark.com", MultiHop: false},
 	}
 }
