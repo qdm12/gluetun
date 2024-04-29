@@ -93,6 +93,7 @@ func parseHTMLGridItem(gridItem *html.Node) (
 	}
 
 	host := findHost(gridItemDT)
+	host = naToEmpty(host)
 	if host == "" {
 		return server, htmlutils.WrapWarning("host not found", gridItemDT)
 	}
@@ -110,18 +111,21 @@ func parseHTMLGridItem(gridItem *html.Node) (
 	}
 
 	region := findSpanStrong(gridItemDD, "Region:")
+	region = naToEmpty(region)
 	if region == "" {
 		warning := fmt.Sprintf("region for host %s not found", host)
 		return server, htmlutils.WrapWarning(warning, gridItemDD)
 	}
 
 	city := findSpanStrong(gridItemDD, "City:")
+	city = naToEmpty(city)
 	if city == "" {
 		warning := fmt.Sprintf("region for host %s not found", host)
 		return server, htmlutils.WrapWarning(warning, gridItemDD)
 	}
 
 	premiumString := findSpanStrong(gridItemDD, "Premium:")
+	premiumString = naToEmpty(premiumString)
 	if premiumString == "" {
 		warning := fmt.Sprintf("premium for host %s not found", host)
 		return server, htmlutils.WrapWarning(warning, gridItemDD)
@@ -133,6 +137,13 @@ func parseHTMLGridItem(gridItem *html.Node) (
 		Hostname: host + ".isponeder.com",
 		Premium:  strings.EqualFold(premiumString, "yes"),
 	}, ""
+}
+
+func naToEmpty(current string) (output string) {
+	if current == "N / A" {
+		return ""
+	}
+	return current
 }
 
 func findCountry(countryNode *html.Node) (country string) {
