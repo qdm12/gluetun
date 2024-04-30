@@ -118,6 +118,14 @@ func Test_extractDataFromLine(t *testing.T) {
 			port:     1194,
 			protocol: constants.UDP,
 		},
+		"extract_port_fail": {
+			line:  "port a",
+			isErr: errPortNotValid,
+		},
+		"extract_port_success": {
+			line: "port 1194",
+			port: 1194,
+		},
 	}
 
 	for name, testCase := range testCases {
