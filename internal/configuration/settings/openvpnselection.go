@@ -53,7 +53,6 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		providers.Ipvanish,
 		providers.Perfectprivacy,
 		providers.Privado,
-		providers.VPNUnlimited,
 		providers.Vyprvpn,
 	) {
 		return fmt.Errorf("%w: for VPN service provider %s",
