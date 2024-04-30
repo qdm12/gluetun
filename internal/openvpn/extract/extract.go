@@ -64,6 +64,13 @@ func extractDataFromLine(line string) (
 			return ip, 0, "", fmt.Errorf("extracting from remote line: %w", err)
 		}
 		return ip, port, protocol, nil
+
+	case strings.HasPrefix(line, "port "):
+		port, err = extractPort(line)
+		if err != nil {
+			return ip, 0, "", fmt.Errorf("extracting from port line: %w", err)
+		}
+		return ip, port, "", nil
 	}
 
 	return ip, 0, "", nil
@@ -132,4 +139,26 @@ func extractRemote(line string) (ip netip.Addr, port uint16,
 	}
 
 	return ip, port, protocol, nil
+}
+
+var (
+	errPostLineFieldsCount = errors.New("post line has not 2 fields as expected")
+)
+
+func extractPort(line string) (port uint16, err error) {
+	fields := strings.Fields(line)
+	const expectedFieldsCount = 2
+	if len(fields) != expectedFieldsCount {
+		return 0, fmt.Errorf("%w: %s", errPostLineFieldsCount, line)
+	}
+
+	portInt, err := strconv.Atoi(fields[1])
+	if err != nil {
+		return 0, fmt.Errorf("%w: %s", errPortNotValid, line)
+	} else if portInt < 1 || portInt > 65535 {
+		return 0, fmt.Errorf("%w: %d must be between 1 and 65535", errPortNotValid, portInt)
+	}
+	port = uint16(portInt)
+
+	return port, nil
 }
