@@ -52,12 +52,11 @@ func getOpenVPNConnection(extractor Extractor,
 func getWireguardConnection(selection settings.ServerSelection) (
 	connection models.Connection) {
 	connection = models.Connection{
-		Type:       vpn.Wireguard,
-		IP:         selection.Wireguard.EndpointIP,
-		Port:       *selection.Wireguard.EndpointPort,
-		Protocol:   constants.UDP,
-		PubKey:     selection.Wireguard.PublicKey,
-		ServerName: selection.Names[0],
+		Type:     vpn.Wireguard,
+		IP:       selection.Wireguard.EndpointIP,
+		Port:     *selection.Wireguard.EndpointPort,
+		Protocol: constants.UDP,
+		PubKey:   selection.Wireguard.PublicKey,
 	}
 	if len(selection.Names) > 0 {
 		// Set the server name for PIA port forwarding code used
