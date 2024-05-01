@@ -57,7 +57,6 @@ func getWireguardConnection(selection settings.ServerSelection) (
 		Port:       *selection.Wireguard.EndpointPort,
 		Protocol:   constants.UDP,
 		PubKey:     selection.Wireguard.PublicKey,
-		ServerName: selection.Names[0],
 	}
 	if len(selection.Names) > 0 {
 		// Set the server name for PIA port forwarding code used
