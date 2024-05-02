@@ -14,7 +14,7 @@ type Service struct {
 	settings Settings
 	puid     int
 	pgid     int
-	// Fixed injected objets
+	// Fixed injected objects
 	routing     Routing
 	client      *http.Client
 	portAllower PortAllower
@@ -32,7 +32,7 @@ func New(settings Settings, routing Routing, client *http.Client,
 		settings: settings,
 		puid:     puid,
 		pgid:     pgid,
-		// Fixed injected objets
+		// Fixed injected objects
 		routing:     routing,
 		client:      client,
 		portAllower: portAllower,

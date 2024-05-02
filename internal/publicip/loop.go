@@ -19,7 +19,7 @@ type Loop struct {
 	settingsMutex sync.RWMutex
 	ipData        models.PublicIP
 	ipDataMutex   sync.RWMutex
-	// Fixed injected objets
+	// Fixed injected objects
 	fetcher Fetcher
 	logger  Logger
 	// Fixed parameters

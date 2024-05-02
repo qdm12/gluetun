@@ -19,7 +19,7 @@ type PortForwarding struct {
 	// Provider is set to specify which custom port forwarding code
 	// should be used. This is especially necessary for the custom
 	// provider using Wireguard for a provider where Wireguard is not
-	// natively supported but custom port forwading code is available.
+	// natively supported but custom port forwarding code is available.
 	// It defaults to the empty string, meaning the current provider
 	// should be the one used for port forwarding.
 	// It cannot be nil for the internal state.
