@@ -16,16 +16,16 @@ func Test_CipherLines(t *testing.T) {
 		"empty version": {
 			ciphers: []string{"AES"},
 			lines: []string{
-				"data-ciphers-fallback AES",
-				"data-ciphers AES",
+				"cipher AES",
+				"ncp-ciphers AES",
 			},
 		},
-		"2.5": {
+		"2.4": {
 			ciphers: []string{"AES", "CBC"},
-			version: "2.5",
+			version: "2.4",
 			lines: []string{
-				"data-ciphers-fallback AES",
-				"data-ciphers AES:CBC",
+				"cipher AES",
+				"ncp-ciphers AES:CBC",
 			},
 		},
 	}

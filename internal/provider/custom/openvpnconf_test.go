@@ -64,8 +64,8 @@ func Test_modifyConfig(t *testing.T) {
 				"suppress-timestamps",
 				"auth-user-pass /etc/openvpn/auth.conf",
 				"verb 0",
-				"data-ciphers-fallback cipher",
-				"data-ciphers cipher",
+				"cipher cipher", //nolint:dupword
+				"ncp-ciphers cipher",
 				"auth sha512",
 				"mssfix 1000",
 				"pull-filter ignore \"route-ipv6\"",
