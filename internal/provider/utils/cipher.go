@@ -10,7 +10,7 @@ func CipherLines(ciphers []string) (lines []string) {
 	}
 
 	return []string{
-		"data-ciphers-fallback " + ciphers[0],
-		"data-ciphers " + strings.Join(ciphers, ":"),
+		"cipher " + ciphers[0],
+		"ncp-ciphers " + strings.Join(ciphers, ":"),
 	}
 }
