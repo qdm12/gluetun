@@ -15,7 +15,7 @@ import (
 // empty string path is returned.
 func findIP6tablesSupported(ctx context.Context, runner command.Runner) (
 	ip6tablesPath string, err error) {
-	ip6tablesPath, err = checkIptablesSupport(ctx, runner, "ip6tables", "ip6tables-nft")
+	ip6tablesPath, err = checkIptablesSupport(ctx, runner, "ip6tables", "ip6tables-nft", "ip6tables-legacy")
 	if errors.Is(err, ErrIPTablesNotSupported) {
 		return "", nil
 	} else if err != nil {
