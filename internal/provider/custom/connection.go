@@ -44,6 +44,7 @@ func getOpenVPNConnection(extractor Extractor,
 		// Set the server name for PIA port forwarding code used
 		// together with the custom provider.
 		connection.ServerName = selection.Names[0]
+		connection.PortForward = true
 	}
 
 	return connection, nil
@@ -62,6 +63,7 @@ func getWireguardConnection(selection settings.ServerSelection) (
 		// Set the server name for PIA port forwarding code used
 		// together with the custom provider.
 		connection.ServerName = selection.Names[0]
+		connection.PortForward = true
 	}
 	return connection
 }

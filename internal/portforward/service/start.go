@@ -23,10 +23,11 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 	}
 
 	obj := utils.PortForwardObjects{
-		Logger:     s.logger,
-		Gateway:    gateway,
-		Client:     s.client,
-		ServerName: s.settings.ServerName,
+		Logger:         s.logger,
+		Gateway:        gateway,
+		Client:         s.client,
+		ServerName:     s.settings.ServerName,
+		CanPortForward: s.settings.CanPortForward,
 	}
 	port, err := s.settings.PortForwarder.PortForward(ctx, obj)
 	if err != nil {

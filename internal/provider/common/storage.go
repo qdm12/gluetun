@@ -8,5 +8,4 @@ import (
 type Storage interface {
 	FilterServers(provider string, selection settings.ServerSelection) (
 		servers []models.Server, err error)
-	GetServerByName(provider, name string) (server models.Server, ok bool)
 }

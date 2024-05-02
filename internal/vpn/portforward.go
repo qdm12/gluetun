@@ -26,9 +26,10 @@ func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 	partialUpdate := portforward.Settings{
 		VPNIsUp: ptrTo(true),
 		Service: service.Settings{
-			PortForwarder: data.portForwarder,
-			Interface:     data.vpnIntf,
-			ServerName:    data.serverName,
+			PortForwarder:  data.portForwarder,
+			Interface:      data.vpnIntf,
+			ServerName:     data.serverName,
+			CanPortForward: data.canPortForward,
 		},
 	}
 	return l.portForward.UpdateWith(partialUpdate)

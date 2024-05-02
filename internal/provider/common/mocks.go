@@ -92,21 +92,6 @@ func (mr *MockStorageMockRecorder) FilterServers(arg0, arg1 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FilterServers", reflect.TypeOf((*MockStorage)(nil).FilterServers), arg0, arg1)
 }
 
-// GetServerByName mocks base method.
-func (m *MockStorage) GetServerByName(arg0, arg1 string) (models.Server, bool) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetServerByName", arg0, arg1)
-	ret0, _ := ret[0].(models.Server)
-	ret1, _ := ret[1].(bool)
-	return ret0, ret1
-}
-
-// GetServerByName indicates an expected call of GetServerByName.
-func (mr *MockStorageMockRecorder) GetServerByName(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetServerByName", reflect.TypeOf((*MockStorage)(nil).GetServerByName), arg0, arg1)
-}
-
 // MockUnzipper is a mock of Unzipper interface.
 type MockUnzipper struct {
 	ctrl     *gomock.Controller

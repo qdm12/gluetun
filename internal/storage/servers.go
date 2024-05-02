@@ -33,29 +33,6 @@ func (s *Storage) SetServers(provider string, servers []models.Server) (err erro
 	return nil
 }
 
-// GetServerByName returns the server for the given provider
-// and server name. It returns `ok` as false if the server is
-// not found. The returned server is also deep copied so it is
-// safe for mutation and/or thread safe use.
-func (s *Storage) GetServerByName(provider, name string) (
-	server models.Server, ok bool) {
-	if provider == providers.Custom {
-		return server, false
-	}
-
-	s.mergedMutex.RLock()
-	defer s.mergedMutex.RUnlock()
-
-	serversObject := s.getMergedServersObject(provider)
-	for _, server := range serversObject.Servers {
-		if server.ServerName == name {
-			return copyServer(server), true
-		}
-	}
-
-	return server, false
-}
-
 // GetServersCount returns the number of servers for the provider given.
 func (s *Storage) GetServersCount(provider string) (count int) {
 	if provider == providers.Custom {

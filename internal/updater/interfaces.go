@@ -18,7 +18,6 @@ type Storage interface {
 	ServersAreEqual(provider string, servers []models.Server) (equal bool)
 	// Extra methods to match the provider.New storage interface
 	FilterServers(provider string, selection settings.ServerSelection) (filtered []models.Server, err error)
-	GetServerByName(provider string, name string) (server models.Server, ok bool)
 }
 
 type Unzipper interface {

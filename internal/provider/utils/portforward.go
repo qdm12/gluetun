@@ -15,11 +15,10 @@ type PortForwardObjects struct {
 	Gateway netip.Addr
 	// Client is used to query the VPN gateway for Private Internet Access.
 	Client *http.Client
-	// ServerName is used by Private Internet Access for port forwarding,
-	// and to look up the server data from storage.
-	// TODO use server data directly to remove storage dependency for port
-	// forwarding implementation.
+	// ServerName is used by Private Internet Access for port forwarding.
 	ServerName string
+	// CanPortForward is used by Private Internet Access for port forwarding.
+	CanPortForward bool
 }
 
 type Routing interface {

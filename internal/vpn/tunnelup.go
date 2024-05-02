@@ -9,9 +9,10 @@ import (
 
 type tunnelUpData struct {
 	// Port forwarding
-	vpnIntf       string
-	serverName    string
-	portForwarder PortForwarder
+	vpnIntf        string
+	serverName     string // used for PIA
+	canPortForward bool   // used for PIA
+	portForwarder  PortForwarder
 }
 
 func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
