@@ -286,7 +286,7 @@ func (o *OpenVPN) overrideWith(other OpenVPN) {
 }
 
 func (o *OpenVPN) setDefaults(vpnProvider string) {
-	o.Version = gosettings.DefaultComparable(o.Version, openvpn.Openvpn25)
+	o.Version = gosettings.DefaultComparable(o.Version, openvpn.Openvpn26)
 	o.User = gosettings.DefaultPointer(o.User, "")
 	if vpnProvider == providers.Mullvad {
 		o.Password = gosettings.DefaultPointer(o.Password, "m")

@@ -155,7 +155,7 @@ func (s Settings) Warnings() (warnings []string) {
 
 	if helpers.IsOneOf(s.VPN.Provider.Name, providers.SlickVPN) &&
 		s.VPN.Type == vpn.OpenVPN {
-		warnings = append(warnings, "OpenVPN 2.5 uses OpenSSL 3 "+
+		warnings = append(warnings, "OpenVPN 2.5 and 2.6 use OpenSSL 3 "+
 			"which prohibits the usage of weak security in today's standards. "+
 			s.VPN.Provider.Name+" uses weak security which is out "+
 			"of Gluetun's control so the only workaround is to allow such weaknesses "+
