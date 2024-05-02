@@ -15,6 +15,8 @@
   description: "Issue duplicates an existing issue"
 - name: "Closed: 🗑️ Bad issue"
   color: "959a9c"
+- name: "Closed: ☠️ cannot be done"
+  color: "959a9c"
 
 - name: "Priority: 🚨 Urgent"
   color: "03adfc"
@@ -25,6 +27,11 @@
   color: "ff9efc"
 - name: "Complexity: 🟩 Easy to do"
   color: "ff9efc"
+
+- name: "Popularity: ❤️‍🔥 extreme"
+  color: "ffc7ea"
+- name: "Popularity: ❤️ high"
+  color: "ffc7ea"
 
 # VPN providers
 - name: "☁️ AirVPN"
@@ -118,4 +125,8 @@
 - name: "Category: Shadowsocks 🔁"
   color: "ffc7ea"
 - name: "Category: control server ⚙️"
+  color: "ffc7ea"
+- name: "Category: kernel 🧠"
+  color: "ffc7ea"
+- name: "Category: public IP service 💬"
   color: "ffc7ea"
