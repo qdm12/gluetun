@@ -279,9 +279,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
 		{name: "OpenVPN 2.6", getVersion: ovpnConf.Version26},
 		{name: "Unbound", getVersion: dnsConf.Version},
-		{name: "IPtables", getVersion: func(ctx context.Context) (version string, err error) {
-			return firewall.Version(ctx, cmder)
-		}},
+		{name: "IPtables", getVersion: firewallConf.Version},
 	})
 	if err != nil {
 		return err

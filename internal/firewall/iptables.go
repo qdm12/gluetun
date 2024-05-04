@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/command"
 )
 
 var (
@@ -44,9 +43,9 @@ func flipRule(rule string) string {
 }
 
 // Version obtains the version of the installed iptables.
-func Version(ctx context.Context, runner command.Runner) (string, error) {
-	cmd := exec.CommandContext(ctx, "iptables", "--version")
-	output, err := runner.Run(cmd)
+func (c *Config) Version(ctx context.Context) (string, error) {
+	cmd := exec.CommandContext(ctx, c.ipTables, "--version") //nolint:gosec
+	output, err := c.runner.Run(cmd)
 	if err != nil {
 		return "", err
 	}
