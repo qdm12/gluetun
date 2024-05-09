@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
 	"time"
 )
 
@@ -27,11 +28,15 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 		if previousErr != nil && err == nil {
 			s.logger.Info("healthy!")
 			s.vpn.healthyTimer.Stop()
+			s.handler.resetFailures()
 			s.vpn.healthyWait = *s.config.VPN.Initial
-		} else if previousErr == nil && err != nil {
-			s.logger.Debug("unhealthy: " + err.Error())
+		} else if err != nil {
+			s.logger.Debug("unhealthy (" + strconv.FormatInt(int64(s.handler.getFailures()), 10) + "): " + err.Error())
+			s.handler.incrementFailures()
 			s.vpn.healthyTimer.Stop()
-			s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
+			if s.handler.getFailures() == s.config.VPN.Attempts {
+				s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
+			}
 		}
 
 		if err != nil { // try again after 1 second

@@ -18,6 +18,8 @@ type HealthyWait struct {
 	// to be healthy.
 	// It cannot be nil in the internal state.
 	Addition *time.Duration
+	// Attempts in a row before marking unhealthy
+	Attempts int
 }
 
 func (h HealthyWait) validate() (err error) {
@@ -68,6 +70,13 @@ func (h *HealthyWait) read(r *reader.Reader) (err error) {
 	h.Addition, err = r.DurationPtr(
 		"HEALTH_VPN_DURATION_ADDITION",
 		reader.RetroKeys("HEALTH_OPENVPN_DURATION_ADDITION"))
+	if err != nil {
+		return err
+	}
+
+	h.Attempts, err = r.Int(
+		"HEALTH_VPN_ATTEMPTS",
+	)
 	if err != nil {
 		return err
 	}
