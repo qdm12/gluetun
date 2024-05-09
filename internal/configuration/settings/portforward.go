@@ -21,7 +21,8 @@ type PortForwarding struct {
 	// provider using Wireguard for a provider where Wireguard is not
 	// natively supported but custom port forwarding code is available.
 	// It defaults to the empty string, meaning the current provider
-	// should be the one used for port forwarding.
+	// should be the one used for port forwarding. It can also be set
+	// to "mock" to run a mock port forwarding for testing.
 	// It cannot be nil for the internal state.
 	Provider *string `json:"provider"`
 	// Filepath is the port forwarding status file path
@@ -46,6 +47,7 @@ func (p PortForwarding) Validate(vpnProvider string) (err error) {
 		providerSelected = *p.Provider
 	}
 	validProviders := []string{
+		providers.Mock,
 		providers.PrivateInternetAccess,
 		providers.Protonvpn,
 	}

@@ -141,10 +141,14 @@ func (l *Loop) UpdateWith(partialUpdate Settings) (err error) {
 }
 
 func (l *Loop) Stop() (err error) {
+	l.logger.Debug("loop stopping")
 	l.runCancel()
 	<-l.runDone
+	l.logger.Debug("run is done")
 
 	if l.service != nil {
+		l.logger.Debug("Stopping service")
+		defer l.logger.Debug("service stopped!")
 		return l.service.Stop()
 	}
 	return nil
