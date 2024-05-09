@@ -7,15 +7,17 @@ import (
 )
 
 type handler struct {
-	healthErr   error
-	healthErrMu sync.RWMutex
+	healthErr      error
+	healthErrMu    sync.RWMutex
+	healthFailures int
 }
 
 var errHealthcheckNotRunYet = errors.New("healthcheck did not run yet")
 
 func newHandler() *handler {
 	return &handler{
-		healthErr: errHealthcheckNotRunYet,
+		healthErr:      errHealthcheckNotRunYet,
+		healthFailures: 0,
 	}
 }
 
@@ -41,4 +43,16 @@ func (h *handler) getErr() (err error) {
 	h.healthErrMu.RLock()
 	defer h.healthErrMu.RUnlock()
 	return h.healthErr
+}
+
+func (h *handler) resetFailures() {
+	h.healthFailures = 0
+}
+
+func (h *handler) incrementFailures() {
+	h.healthFailures = h.healthFailures + 1
+}
+
+func (h *handler) getFailures() (errors int) {
+	return h.healthFailures
 }
