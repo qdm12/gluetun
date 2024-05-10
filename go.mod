@@ -24,8 +24,8 @@ require (
 	golang.org/x/net v0.24.0
 	golang.org/x/sys v0.19.0
 	golang.org/x/text v0.14.0
-	golang.zx2c4.com/wireguard v0.0.0-20230325221338-052af4a8072b
-	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230215201556-9c5414ab4bde
+	golang.zx2c4.com/wireguard v0.0.0-20231211153847-12269c276173
+	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230429144221-925a1e7659e6
 	gopkg.in/ini.v1 v1.67.0
 	inet.af/netaddr v0.0.0-20220811202034-502d2d690317
 )
@@ -33,12 +33,12 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/josharian/native v1.0.0 // indirect
+	github.com/josharian/native v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mdlayher/genetlink v1.2.0 // indirect
-	github.com/mdlayher/netlink v1.6.2 // indirect
-	github.com/mdlayher/socket v0.2.3 // indirect
+	github.com/mdlayher/genetlink v1.3.2 // indirect
+	github.com/mdlayher/netlink v1.7.2 // indirect
+	github.com/mdlayher/socket v0.4.1 // indirect
 	github.com/miekg/dns v1.1.40 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
