@@ -2,6 +2,7 @@ package shadowsocks
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -21,22 +22,9 @@ type Loop struct {
 	stop, stopped chan struct{}
 	start         chan struct{}
 	backoffTime   time.Duration
-}
 
-func (l *Loop) logAndWait(ctx context.Context, err error) {
-	if err != nil {
-		l.logger.Error(err.Error())
-	}
-	l.logger.Info("retrying in " + l.backoffTime.String())
-	timer := time.NewTimer(l.backoffTime)
-	l.backoffTime *= 2
-	select {
-	case <-timer.C:
-	case <-ctx.Done():
-		if !timer.Stop() {
-			<-timer.C
-		}
-	}
+	runCancel context.CancelFunc
+	runDone   <-chan struct{}
 }
 
 const defaultBackoffTime = 10 * time.Second
@@ -56,22 +44,38 @@ func NewLoop(settings settings.Shadowsocks, logger Logger) *Loop {
 	}
 }
 
-func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
-	defer close(done)
+func (l *Loop) Start(ctx context.Context) (runError <-chan error, err error) {
+	runCtx, runCancel := context.WithCancel(context.Background())
+	l.runCancel = runCancel
+	ready := make(chan struct{})
+	done := make(chan struct{})
+	l.runDone = done
 
-	crashed := false
+	go l.run(runCtx, ready, done)
+
+	<-ready
 
 	if *l.GetSettings().Enabled {
-		go func() {
-			_, _ = l.SetStatus(ctx, constants.Running)
-		}()
+		_, err = l.SetStatus(ctx, constants.Running)
+		if err != nil {
+			return nil, fmt.Errorf("setting running status: %w", err)
+		}
 	}
+
+	return nil, nil //nolint:nilnil
+}
+
+func (l *Loop) run(ctx context.Context, ready, done chan<- struct{}) {
+	defer close(done)
+	close(ready)
 
 	select {
 	case <-l.start:
 	case <-ctx.Done():
 		return
 	}
+
+	crashed := false
 
 	for ctx.Err() == nil {
 		settings := l.GetSettings()
@@ -138,8 +142,28 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			}
 		}
 		shadowsocksCancel() // repetition for linter only
-		if !isStableTimer.Stop() {
-			<-isStableTimer.C
+		isStableTimer.Stop()
+	}
+}
+
+func (l *Loop) Stop() (err error) {
+	l.runCancel()
+	<-l.runDone
+	return nil
+}
+
+func (l *Loop) logAndWait(ctx context.Context, err error) {
+	if err != nil {
+		l.logger.Error(err.Error())
+	}
+	l.logger.Info("retrying in " + l.backoffTime.String())
+	timer := time.NewTimer(l.backoffTime)
+	l.backoffTime *= 2
+	select {
+	case <-timer.C:
+	case <-ctx.Done():
+		if !timer.Stop() {
+			<-timer.C
 		}
 	}
 }
