@@ -3,6 +3,7 @@ package vpn
 import (
 	"context"
 	"fmt"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/provider"
@@ -16,10 +17,10 @@ import (
 func setupWireguard(ctx context.Context, netlinker NetLinker,
 	fw Firewall, providerConf provider.Provider,
 	settings settings.VPN, ipv6Supported bool, logger wireguard.Logger) (
-	wireguarder *wireguard.Wireguard, serverName string, canPortForward bool, err error) {
+	wireguarder *wireguard.Wireguard, serverName string, serverIP netip.Addr, canPortForward bool, err error) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Supported)
 	if err != nil {
-		return nil, "", false, fmt.Errorf("finding a VPN server: %w", err)
+		return nil, "", netip.Addr{}, false, fmt.Errorf("finding a VPN server: %w", err)
 	}
 
 	wireguardSettings := utils.BuildWireguardSettings(connection, settings.Wireguard, ipv6Supported)
@@ -30,13 +31,13 @@ func setupWireguard(ctx context.Context, netlinker NetLinker,
 
 	wireguarder, err = wireguard.New(wireguardSettings, netlinker, logger)
 	if err != nil {
-		return nil, "", false, fmt.Errorf("creating Wireguard: %w", err)
+		return nil, "", netip.Addr{}, false, fmt.Errorf("creating Wireguard: %w", err)
 	}
 
 	err = fw.SetVPNConnection(ctx, connection, settings.Wireguard.Interface)
 	if err != nil {
-		return nil, "", false, fmt.Errorf("setting firewall: %w", err)
+		return nil, "", netip.Addr{}, false, fmt.Errorf("setting firewall: %w", err)
 	}
 
-	return wireguarder, connection.ServerName, connection.PortForward, nil
+	return wireguarder, connection.ServerName, connection.IP, connection.PortForward, nil
 }

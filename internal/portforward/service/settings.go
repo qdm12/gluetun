@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
@@ -12,9 +13,10 @@ type Settings struct {
 	Enabled        *bool
 	PortForwarder  PortForwarder
 	Filepath       string
-	Interface      string // needed for PIA and ProtonVPN, tun0 for example
-	ServerName     string // needed for PIA
-	CanPortForward bool   // needed for PIA
+	Interface      string     // needed for PIA and ProtonVPN, tun0 for example
+	ServerName     string     // needed for PIA
+	ServerIP       netip.Addr // needed for PrivateVPN
+	CanPortForward bool       // needed for PIA
 	ListeningPort  uint16
 	Username       string // needed for PIA
 	Password       string // needed for PIA
@@ -26,6 +28,7 @@ func (s Settings) Copy() (copied Settings) {
 	copied.Filepath = s.Filepath
 	copied.Interface = s.Interface
 	copied.ServerName = s.ServerName
+	copied.ServerIP = s.ServerIP
 	copied.CanPortForward = s.CanPortForward
 	copied.ListeningPort = s.ListeningPort
 	copied.Username = s.Username
@@ -39,6 +42,7 @@ func (s *Settings) OverrideWith(update Settings) {
 	s.Filepath = gosettings.OverrideWithComparable(s.Filepath, update.Filepath)
 	s.Interface = gosettings.OverrideWithComparable(s.Interface, update.Interface)
 	s.ServerName = gosettings.OverrideWithComparable(s.ServerName, update.ServerName)
+	s.ServerIP = gosettings.OverrideWithComparable(s.ServerIP, update.ServerIP)
 	s.CanPortForward = gosettings.OverrideWithComparable(s.CanPortForward, update.CanPortForward)
 	s.ListeningPort = gosettings.OverrideWithComparable(s.ListeningPort, update.ListeningPort)
 	s.Username = gosettings.OverrideWithComparable(s.Username, update.Username)
@@ -50,6 +54,7 @@ var (
 	ErrServerNameNotSet    = errors.New("server name not set")
 	ErrUsernameNotSet      = errors.New("username not set")
 	ErrPasswordNotSet      = errors.New("password not set")
+	ErrServerIPNotSet      = errors.New("server ip not set")
 	ErrFilepathNotSet      = errors.New("file path not set")
 	ErrInterfaceNotSet     = errors.New("interface not set")
 )
@@ -81,6 +86,8 @@ func (s *Settings) Validate(forStartup bool) (err error) {
 		case s.Password == "":
 			return fmt.Errorf("%w", ErrPasswordNotSet)
 		}
+	case s.PortForwarder.Name() == providers.Privatevpn && !s.ServerIP.IsValid():
+		return fmt.Errorf("%w", ErrServerIPNotSet)
 	}
 	return nil
 }

@@ -38,6 +38,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		InternalIP:     internalIP,
 		Client:         s.client,
 		ServerName:     s.settings.ServerName,
+		ServerIP:       s.settings.ServerIP,
 		CanPortForward: s.settings.CanPortForward,
 		Username:       s.settings.Username,
 		Password:       s.settings.Password,
