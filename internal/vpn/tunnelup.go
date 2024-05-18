@@ -29,7 +29,10 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	}
 
-	l.publicip.StartSingleRun()
+	err := l.publicip.RunOnce(ctx)
+	if err != nil {
+		l.logger.Error("getting public IP address information: " + err.Error())
+	}
 
 	if l.versionInfo {
 		l.versionInfo = false // only get the version information once
@@ -41,7 +44,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		}
 	}
 
-	err := l.startPortForwarding(data)
+	err = l.startPortForwarding(data)
 	if err != nil {
 		l.logger.Error(err.Error())
 	}

@@ -2,7 +2,6 @@ package publicip
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/netip"
 	"sync"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/gluetun/internal/publicip/api"
 )
 
 type Loop struct {
@@ -30,7 +28,8 @@ type Loop struct {
 	// when performing an update
 	runCtx        context.Context //nolint:containedctx
 	runCancel     context.CancelFunc
-	runTrigger    chan<- struct{}
+	runTrigger    chan<- context.Context
+	runResult     <-chan error
 	updateTrigger chan<- settings.PublicIP
 	updatedResult <-chan error
 	runDone       <-chan struct{}
@@ -58,21 +57,23 @@ func (l *Loop) Start(_ context.Context) (_ <-chan error, err error) {
 	l.runCtx, l.runCancel = context.WithCancel(context.Background())
 	runDone := make(chan struct{})
 	l.runDone = runDone
-	runTrigger := make(chan struct{})
+	runTrigger := make(chan context.Context)
 	l.runTrigger = runTrigger
+	runResult := make(chan error)
+	l.runResult = runResult
 	updateTrigger := make(chan settings.PublicIP)
 	l.updateTrigger = updateTrigger
 	updatedResult := make(chan error)
 	l.updatedResult = updatedResult
 
-	go l.run(l.runCtx, runDone, runTrigger, updateTrigger, updatedResult)
+	go l.run(l.runCtx, runDone, runTrigger, runResult, updateTrigger, updatedResult)
 
 	return nil, nil //nolint:nilnil
 }
 
 func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
-	runTrigger <-chan struct{}, updateTrigger <-chan settings.PublicIP,
-	updatedResult chan<- error) {
+	runTrigger <-chan context.Context, runResult chan<- error,
+	updateTrigger <-chan settings.PublicIP, updatedResult chan<- error) {
 	defer close(runDone)
 
 	timer := time.NewTimer(time.Hour)
@@ -82,10 +83,14 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 	lastFetch := time.Unix(0, 0)
 
 	for {
+		singleRunCtx := runCtx
+		var singleRunResult chan<- error
 		select {
 		case <-runCtx.Done():
 			return
-		case <-runTrigger:
+		case singleRunCtx = <-runTrigger:
+			// Note singleRunCtx is canceled if runCtx is canceled.
+			singleRunResult = runResult
 		case <-timer.C:
 			timerIsReadyToReset = true
 		case partialUpdate := <-updateTrigger:
@@ -95,15 +100,17 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			continue
 		}
 
-		result, err := l.fetchIPData(runCtx)
-		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return
-		}
-
 		lastFetch = l.timeNow()
 		timerIsReadyToReset = l.updateTimer(*l.settings.Period, lastFetch, timer, timerIsReadyToReset)
 
-		if errors.Is(err, api.ErrTooManyRequests) {
+		result, err := l.fetcher.FetchInfo(singleRunCtx, netip.Addr{})
+		if err != nil {
+			err = fmt.Errorf("fetching information: %w", err)
+			if singleRunResult != nil {
+				singleRunResult <- err
+			} else {
+				l.logger.Error(err.Error())
+			}
 			continue
 		}
 
@@ -117,42 +124,36 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 
 		filepath := *l.settings.IPFilepath
 		err = persistPublicIP(filepath, result.IP.String(), l.puid, l.pgid)
-		if err != nil { // non critical error, which can be fixed with settings updates.
+		if err != nil {
+			err = fmt.Errorf("persisting public ip address: %w", err)
+		}
+
+		if singleRunResult != nil {
+			singleRunResult <- err
+		} else if err != nil {
 			l.logger.Error(err.Error())
 		}
 	}
 }
 
-func (l *Loop) fetchIPData(ctx context.Context) (result models.PublicIP, err error) {
-	// keep retrying since settings updates won't change the
-	// behavior of the following code.
-	const defaultBackoffTime = 5 * time.Second
-	backoffTime := defaultBackoffTime
-	for {
-		result, err = l.fetcher.FetchInfo(ctx, netip.Addr{})
-		switch {
-		case err == nil:
-			return result, nil
-		case ctx.Err() != nil:
-			return result, err
-		case errors.Is(err, api.ErrTooManyRequests):
-			l.logger.Warn(err.Error() + "; not retrying.")
-			return result, err
-		}
-
-		l.logger.Error(fmt.Sprintf("%s - retrying in %s", err, backoffTime))
-		select {
-		case <-ctx.Done():
-			return result, ctx.Err()
-		case <-time.After(backoffTime):
-		}
-		const backoffTimeMultipler = 2
-		backoffTime *= backoffTimeMultipler
+func (l *Loop) RunOnce(ctx context.Context) (err error) {
+	singleRunCtx, singleRunCancel := context.WithCancel(ctx)
+	select {
+	case l.runTrigger <- singleRunCtx:
+	case <-ctx.Done(): // in case writing to run trigger is blocking
+		singleRunCancel()
+		return ctx.Err()
 	}
-}
 
-func (l *Loop) StartSingleRun() {
-	l.runTrigger <- struct{}{}
+	select {
+	case err = <-l.runResult:
+		singleRunCancel()
+		return err
+	case <-l.runCtx.Done():
+		singleRunCancel()
+		<-l.runResult
+		return l.runCtx.Err()
+	}
 }
 
 func (l *Loop) UpdateWith(partialUpdate settings.PublicIP) (err error) {
