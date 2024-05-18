@@ -43,7 +43,7 @@ func Test_Settings_String(t *testing.T) {
 |   └── DNS over TLS settings:
 |       ├── Enabled: yes
 |       ├── Update period: every 24h0m0s
-|       ├── Authoritative servers:
+|       ├── Upstream resolvers:
 |       |   └── Cloudflare
 |       ├── Caching: yes
 |       ├── IPv6: no
