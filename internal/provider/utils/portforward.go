@@ -10,13 +10,12 @@ import (
 type PortForwardObjects struct {
 	// Logger is a logger, used by both Private Internet Access and ProtonVPN.
 	Logger Logger
-	// Gateway is the VPN gateway IP address, used by Private Internet Access
-	// and ProtonVPN.
+	// Gateway is the VPN gateway IP address, used by ProtonVPN.
 	Gateway netip.Addr
 	// Client is used to query the VPN gateway for Private Internet Access.
 	Client *http.Client
-	// ServerName is used by Private Internet Access for port forwarding.
-	ServerName string
+	// ServerHostname is used by Private Internet Access for port forwarding.
+	ServerHostname string
 	// CanPortForward is used by Private Internet Access for port forwarding.
 	CanPortForward bool
 }

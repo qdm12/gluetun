@@ -65,7 +65,6 @@ func GetConnection(provider string,
 				Port:        port,
 				Protocol:    protocol,
 				Hostname:    hostname,
-				ServerName:  server.ServerName,
 				PortForward: server.PortForward,
 				PubKey:      server.WgPubKey, // Wireguard
 			}

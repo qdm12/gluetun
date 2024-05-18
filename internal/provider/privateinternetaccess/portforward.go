@@ -9,7 +9,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"net/netip"
 	"net/url"
 	"os"
 	"strconv"
@@ -27,25 +26,17 @@ var (
 // PortForward obtains a VPN server side port forwarded from PIA.
 func (p *Provider) PortForward(ctx context.Context,
 	objects utils.PortForwardObjects) (port uint16, err error) {
-	switch {
-	case objects.ServerName == "":
-		panic("server name cannot be empty")
-	case !objects.Gateway.IsValid():
-		panic("gateway is not set")
+	if objects.ServerHostname == "" {
+		panic("server hostname cannot be empty")
 	}
 
-	serverName := objects.ServerName
+	serverName := objects.ServerHostname
 
 	logger := objects.Logger
 
 	if !objects.CanPortForward {
 		logger.Error("The server " + serverName + " does not support port forwarding")
 		return 0, nil
-	}
-
-	privateIPClient, err := newHTTPClient(serverName)
-	if err != nil {
-		return 0, fmt.Errorf("creating custom HTTP client: %w", err)
 	}
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
@@ -66,8 +57,7 @@ func (p *Provider) PortForward(ctx context.Context,
 	}
 
 	if !dataFound || expired {
-		client := objects.Client
-		data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, objects.Gateway,
+		data, err = refreshPIAPortForwardData(ctx, objects.Client, objects.ServerHostname,
 			p.portForwardPath, p.authFilePath)
 		if err != nil {
 			return 0, fmt.Errorf("refreshing port forward data: %w", err)
@@ -77,7 +67,7 @@ func (p *Provider) PortForward(ctx context.Context,
 	logger.Info("Port forwarded data expires in " + format.FriendlyDuration(durationToExpiration))
 
 	// First time binding
-	if err := bindPort(ctx, privateIPClient, objects.Gateway, data); err != nil {
+	if err := bindPort(ctx, objects.Client, objects.ServerHostname, data); err != nil {
 		return 0, fmt.Errorf("binding port: %w", err)
 	}
 
@@ -90,16 +80,8 @@ var (
 
 func (p *Provider) KeepPortForward(ctx context.Context,
 	objects utils.PortForwardObjects) (err error) {
-	switch {
-	case objects.ServerName == "":
-		panic("server name cannot be empty")
-	case !objects.Gateway.IsValid():
-		panic("gateway is not set")
-	}
-
-	privateIPClient, err := newHTTPClient(objects.ServerName)
-	if err != nil {
-		return fmt.Errorf("creating custom HTTP client: %w", err)
+	if objects.ServerHostname == "" {
+		panic("server hostname cannot be empty")
 	}
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
@@ -124,7 +106,7 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 			}
 			return ctx.Err()
 		case <-keepAliveTimer.C:
-			err = bindPort(ctx, privateIPClient, objects.Gateway, data)
+			err = bindPort(ctx, objects.Client, objects.ServerHostname, data)
 			if err != nil {
 				return fmt.Errorf("binding port: %w", err)
 			}
@@ -136,14 +118,14 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 	}
 }
 
-func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *http.Client,
-	gateway netip.Addr, portForwardPath, authFilePath string) (data piaPortForwardData, err error) {
+func refreshPIAPortForwardData(ctx context.Context, client *http.Client,
+	serverHostname, portForwardPath, authFilePath string) (data piaPortForwardData, err error) {
 	data.Token, err = fetchToken(ctx, client, authFilePath)
 	if err != nil {
 		return data, fmt.Errorf("fetching token: %w", err)
 	}
 
-	data.Port, data.Signature, data.Expiration, err = fetchPortForwardData(ctx, privateIPClient, gateway, data.Token)
+	data.Port, data.Signature, data.Expiration, err = fetchPortForwardData(ctx, client, serverHostname, data.Token)
 	if err != nil {
 		return data, fmt.Errorf("fetching port forwarding data: %w", err)
 	}
@@ -319,7 +301,7 @@ func getOpenvpnCredentials(authFilePath string) (
 	return username, password, nil
 }
 
-func fetchPortForwardData(ctx context.Context, client *http.Client, gateway netip.Addr, token string) (
+func fetchPortForwardData(ctx context.Context, client *http.Client, serverHostname, token string) (
 	port uint16, signature string, expiration time.Time, err error) {
 	errSubstitutions := map[string]string{url.QueryEscape(token): "<token>"}
 
@@ -327,7 +309,7 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, gateway neti
 	queryParams.Add("token", token)
 	url := url.URL{
 		Scheme:   "https",
-		Host:     net.JoinHostPort(gateway.String(), "19999"),
+		Host:     net.JoinHostPort(serverHostname, "19999"),
 		Path:     "/getSignature",
 		RawQuery: queryParams.Encode(),
 	}
@@ -373,7 +355,7 @@ var (
 	ErrBadResponse = errors.New("bad response received")
 )
 
-func bindPort(ctx context.Context, client *http.Client, gateway netip.Addr, data piaPortForwardData) (err error) {
+func bindPort(ctx context.Context, client *http.Client, serverHostname string, data piaPortForwardData) (err error) {
 	payload, err := packPayload(data.Port, data.Token, data.Expiration)
 	if err != nil {
 		return fmt.Errorf("serializing payload: %w", err)
@@ -384,7 +366,7 @@ func bindPort(ctx context.Context, client *http.Client, gateway netip.Addr, data
 	queryParams.Add("signature", data.Signature)
 	bindPortURL := url.URL{
 		Scheme:   "https",
-		Host:     net.JoinHostPort(gateway.String(), "19999"),
+		Host:     net.JoinHostPort(serverHostname, "19999"),
 		Path:     "/bindPort",
 		RawQuery: queryParams.Encode(),
 	}

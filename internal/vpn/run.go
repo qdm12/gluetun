@@ -22,35 +22,26 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		providerConf := l.providers.Get(settings.Provider.Name)
 
-		portForwarder := getPortForwarder(providerConf, l.providers,
-			*settings.Provider.PortForwarding.Provider)
-
 		var vpnRunner interface {
 			Run(ctx context.Context, waitError chan<- error, tunnelReady chan<- struct{})
 		}
-		var serverName, vpnInterface string
-		var canPortForward bool
+
+		var tunnelUpData tunnelUpData
 		var err error
 		subLogger := l.logger.New(log.SetComponent(settings.Type))
 		if settings.Type == vpn.OpenVPN {
-			vpnInterface = settings.OpenVPN.Interface
-			vpnRunner, serverName, canPortForward, err = setupOpenVPN(ctx, l.fw,
+			vpnRunner, tunnelUpData, err = setupOpenVPN(ctx, l.fw,
 				l.openvpnConf, providerConf, settings, l.ipv6Supported, l.starter, subLogger)
 		} else { // Wireguard
-			vpnInterface = settings.Wireguard.Interface
-			vpnRunner, serverName, canPortForward, err = setupWireguard(ctx, l.netLinker, l.fw,
+			vpnRunner, tunnelUpData, err = setupWireguard(ctx, l.netLinker, l.fw,
 				providerConf, settings, l.ipv6Supported, subLogger)
 		}
 		if err != nil {
 			l.crashed(ctx, err)
 			continue
 		}
-		tunnelUpData := tunnelUpData{
-			serverName:     serverName,
-			canPortForward: canPortForward,
-			portForwarder:  portForwarder,
-			vpnIntf:        vpnInterface,
-		}
+		tunnelUpData.portForwarder = getPortForwarder(providerConf, l.providers,
+			*settings.Provider.PortForwarding.Provider)
 
 		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
 		waitError := make(chan error)
