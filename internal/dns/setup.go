@@ -50,10 +50,7 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 
 	err = check.WaitForDNS(ctx, check.Settings{})
 	if err != nil {
-		stopErr := l.server.Stop()
-		if stopErr != nil {
-			l.logger.Error("stopping DoT server: " + stopErr.Error())
-		}
+		l.stopServer()
 		return nil, err
 	}
 
