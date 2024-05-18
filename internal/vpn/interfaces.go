@@ -90,6 +90,6 @@ type DNSLoop interface {
 }
 
 type PublicIPLoop interface {
-	StartSingleRun()
+	RunOnce(ctx context.Context) (err error)
 	ClearData() (err error)
 }
