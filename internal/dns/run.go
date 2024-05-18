@@ -28,14 +28,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	for ctx.Err() == nil {
 		// Upper scope variables for Unbound only
 		// Their values are to be used if DOT=off
-		waitError := make(chan error)
-		unboundCancel := func() { waitError <- nil }
-		closeStreams := func() {}
+		var runError <-chan error
 
 		settings := l.GetSettings()
 		for !*settings.KeepNameserver && *settings.DoT.Enabled {
 			var err error
-			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx)
+			runError, err = l.setupUnbound(ctx)
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
 				l.logger.Info("ready")
@@ -49,7 +47,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				return
 			}
 
-			if !errors.Is(err, errUpdateFiles) {
+			if !errors.Is(err, errUpdateBlockLists) {
 				const fallback = true
 				l.useUnencryptedDNS(fallback)
 			}
@@ -68,30 +66,27 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		for stayHere {
 			select {
 			case <-ctx.Done():
-				unboundCancel()
-				<-waitError
-				close(waitError)
-				closeStreams()
+				stopErr := l.server.Stop()
+				if stopErr != nil {
+					l.logger.Error("stopping DoT server: " + stopErr.Error())
+				}
+				// TODO revert OS and Go nameserver when exiting
 				return
 			case <-l.stop:
 				l.userTrigger = true
 				l.logger.Info("stopping")
 				const fallback = false
 				l.useUnencryptedDNS(fallback)
-				unboundCancel()
-				<-waitError
-				// do not close waitError or the waitError
-				// select case will trigger
-				closeStreams()
+				err := l.server.Stop()
+				if err != nil {
+					l.logger.Error("stopping DoT server: " + err.Error())
+				}
 				l.stopped <- struct{}{}
 			case <-l.start:
 				l.userTrigger = true
 				l.logger.Info("starting")
 				stayHere = false
-			case err := <-waitError: // unexpected error
-				closeStreams()
-
-				unboundCancel()
+			case err := <-runError: // unexpected error
 				l.statusManager.SetStatus(constants.Crashed)
 				const fallback = true
 				l.useUnencryptedDNS(fallback)
