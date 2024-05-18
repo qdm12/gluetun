@@ -166,9 +166,6 @@ ENV VPN_SERVICE_PROVIDER=pia \
     DOT=on \
     DOT_PROVIDERS=cloudflare \
     DOT_PRIVATE_ADDRESS=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:7f00:1/104,::ffff:a00:0/104,::ffff:a9fe:0/112,::ffff:ac10:0/108,::ffff:c0a8:0/112 \
-    DOT_VERBOSITY=1 \
-    DOT_VERBOSITY_DETAILS=0 \
-    DOT_VALIDATION_LOGLEVEL=0 \
     DOT_CACHING=on \
     DOT_IPV6=off \
     BLOCK_MALICIOUS=on \
@@ -226,10 +223,9 @@ RUN apk add --no-cache --update -l wget && \
     apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.17/main" openvpn\~2.5 && \
     mv /usr/sbin/openvpn /usr/sbin/openvpn2.5 && \
     apk del openvpn && \
-    apk add --no-cache --update openvpn ca-certificates iptables iptables-legacy unbound tzdata && \
+    apk add --no-cache --update openvpn ca-certificates iptables iptables-legacy tzdata && \
     mv /usr/sbin/openvpn /usr/sbin/openvpn2.6 && \
-    rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/openvpn/*.sh /usr/lib/openvpn/plugins/openvpn-plugin-down-root.so && \
+    rm -rf /var/cache/apk/* /etc/openvpn/*.sh /usr/lib/openvpn/plugins/openvpn-plugin-down-root.so && \
     deluser openvpn && \
-    deluser unbound && \
     mkdir /gluetun
 COPY --from=build /tmp/gobuild/entrypoint /gluetun-entrypoint

@@ -2,10 +2,12 @@ package dns
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/qdm12/dns/pkg/blacklist"
+	"github.com/qdm12/dns/v2/pkg/dot"
+	"github.com/qdm12/dns/v2/pkg/middlewares/filter/mapfilter"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns/state"
@@ -16,9 +18,9 @@ import (
 type Loop struct {
 	statusManager *loopstate.State
 	state         *state.State
-	conf          Configurator
+	server        *dot.Server
+	filter        *mapfilter.Filter
 	resolvConf    string
-	blockBuilder  blacklist.Builder
 	client        *http.Client
 	logger        Logger
 	userTrigger   bool
@@ -34,23 +36,27 @@ type Loop struct {
 
 const defaultBackoffTime = 10 * time.Second
 
-func NewLoop(conf Configurator, settings settings.DNS,
-	client *http.Client, logger Logger) *Loop {
+func NewLoop(settings settings.DNS,
+	client *http.Client, logger Logger) (loop *Loop, err error) {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})
 	stopped := make(chan struct{})
 	updateTicker := make(chan struct{})
-
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
 	state := state.New(statusManager, settings, updateTicker)
+
+	filter, err := mapfilter.New(mapfilter.Settings{})
+	if err != nil {
+		return nil, fmt.Errorf("creating map filter: %w", err)
+	}
 
 	return &Loop{
 		statusManager: statusManager,
 		state:         state,
-		conf:          conf,
+		server:        nil,
+		filter:        filter,
 		resolvConf:    "/etc/resolv.conf",
-		blockBuilder:  blacklist.NewBuilder(client),
 		client:        client,
 		logger:        logger,
 		userTrigger:   true,
@@ -62,7 +68,7 @@ func NewLoop(conf Configurator, settings settings.DNS,
 		backoffTime:   defaultBackoffTime,
 		timeNow:       time.Now,
 		timeSince:     time.Since,
-	}
+	}, nil
 }
 
 func (l *Loop) logAndWait(ctx context.Context, err error) {
