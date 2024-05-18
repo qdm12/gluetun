@@ -43,6 +43,7 @@ func NewLoop(settings settings.DNS,
 	stop := make(chan struct{})
 	stopped := make(chan struct{})
 	updateTicker := make(chan struct{})
+
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
 	state := state.New(statusManager, settings, updateTicker)
 
