@@ -19,6 +19,8 @@ type PortForwardObjects struct {
 	Client *http.Client
 	// ServerName is used by Private Internet Access for port forwarding.
 	ServerName string
+	// ServerIP is used by PrivateVPN for port forwarding.
+	ServerIP netip.Addr
 	// CanPortForward is used by Private Internet Access for port forwarding.
 	CanPortForward bool
 	// Username is used by Private Internet Access for port forwarding.

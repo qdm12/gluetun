@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"context"
+	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/version"
@@ -10,10 +11,11 @@ import (
 type tunnelUpData struct {
 	// Port forwarding
 	vpnIntf        string
-	serverName     string // used for PIA
-	canPortForward bool   // used for PIA and ProtonVPN
-	username       string // used for PIA
-	password       string // used for PIA
+	serverName     string     // used for PIA
+	serverIP       netip.Addr // used for PrivateVPN
+	canPortForward bool       // used for PIA
+	username       string     // used for PIA
+	password       string     // used for PIA
 	portForwarder  PortForwarder
 }
 
