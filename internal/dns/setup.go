@@ -4,59 +4,58 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 
-	"github.com/qdm12/dns/pkg/check"
-	"github.com/qdm12/dns/pkg/nameserver"
+	"github.com/qdm12/dns/v2/pkg/check"
+	"github.com/qdm12/dns/v2/pkg/dot"
+	"github.com/qdm12/dns/v2/pkg/nameserver"
 )
 
-var errUpdateFiles = errors.New("cannot update files")
+var errUpdateBlockLists = errors.New("cannot update filter block lists")
 
-// Returning cancel == nil signals we want to re-run setupUnbound
-// Returning err == errUpdateFiles signals we should not fall back
-// on the plaintext DNS as DOT is still up and running.
-func (l *Loop) setupUnbound(ctx context.Context) (
-	cancel context.CancelFunc, waitError chan error, closeStreams func(), err error) {
+func (l *Loop) setupUnbound(ctx context.Context) (runError <-chan error, err error) {
 	err = l.updateFiles(ctx)
 	if err != nil {
-		return nil, nil, nil,
-			fmt.Errorf("%w: %s", errUpdateFiles, err)
+		return nil, fmt.Errorf("%w: %w", errUpdateBlockLists, err)
 	}
 
 	settings := l.GetSettings()
 
-	unboundCtx, cancel := context.WithCancel(context.Background())
-	stdoutLines, stderrLines, waitError, err := l.conf.Start(unboundCtx,
-		*settings.DoT.Unbound.VerbosityDetailsLevel)
+	dotSettings, err := buildDoTSettings(settings, l.filter, l.logger)
 	if err != nil {
-		cancel()
-		return nil, nil, nil, err
+		return nil, fmt.Errorf("building DoT settings: %w", err)
 	}
 
-	linesCollectionCtx, linesCollectionCancel := context.WithCancel(context.Background())
-	lineCollectionDone := make(chan struct{})
-	go l.collectLines(linesCollectionCtx, lineCollectionDone,
-		stdoutLines, stderrLines)
-	closeStreams = func() {
-		linesCollectionCancel()
-		<-lineCollectionDone
+	server, err := dot.NewServer(dotSettings)
+	if err != nil {
+		return nil, fmt.Errorf("creating DoT server: %w", err)
 	}
+
+	runError, err = server.Start()
+	if err != nil {
+		return nil, fmt.Errorf("starting server: %w", err)
+	}
+	l.server = server
 
 	// use Unbound
-	nameserver.UseDNSInternally(settings.ServerAddress.AsSlice())
-	err = nameserver.UseDNSSystemWide(l.resolvConf, settings.ServerAddress.AsSlice(),
-		*settings.KeepNameserver)
+	nameserver.UseDNSInternally(nameserver.SettingsInternalDNS{
+		IP: settings.ServerAddress,
+	})
+	err = nameserver.UseDNSSystemWide(nameserver.SettingsSystemDNS{
+		IP:         settings.ServerAddress,
+		ResolvPath: l.resolvConf,
+	})
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
 
-	if err := check.WaitForDNS(ctx, net.DefaultResolver); err != nil {
-		cancel()
-		<-waitError
-		close(waitError)
-		closeStreams()
-		return nil, nil, nil, err
+	err = check.WaitForDNS(ctx, check.Settings{})
+	if err != nil {
+		stopErr := l.server.Stop()
+		if stopErr != nil {
+			l.logger.Error("stopping DoT server: " + stopErr.Error())
+		}
+		return nil, err
 	}
 
-	return cancel, waitError, closeStreams, nil
+	return runError, nil
 }
