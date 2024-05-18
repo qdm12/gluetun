@@ -39,8 +39,7 @@ func (p *Provider) PortForward(ctx context.Context,
 	logger := objects.Logger
 
 	if !objects.CanPortForward {
-		logger.Error("The server " + serverName + " does not support port forwarding")
-		return 0, nil
+		return 0, fmt.Errorf("%w: for server %s", ErrServerNameNotFound, serverName)
 	}
 
 	privateIPClient, err := newHTTPClient(serverName)
