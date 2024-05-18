@@ -52,6 +52,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.useUnencryptedDNS(fallback)
 			}
 			l.logAndWait(ctx, err)
+			settings = l.GetSettings()
 		}
 
 		settings = l.GetSettings()
@@ -62,37 +63,44 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		l.userTrigger = false
 
-		stayHere := true
-		for stayHere {
-			select {
-			case <-ctx.Done():
-				stopErr := l.server.Stop()
-				if stopErr != nil {
-					l.logger.Error("stopping DoT server: " + stopErr.Error())
-				}
-				// TODO revert OS and Go nameserver when exiting
-				return
-			case <-l.stop:
-				l.userTrigger = true
-				l.logger.Info("stopping")
-				const fallback = false
-				l.useUnencryptedDNS(fallback)
-				err := l.server.Stop()
-				if err != nil {
-					l.logger.Error("stopping DoT server: " + err.Error())
-				}
-				l.stopped <- struct{}{}
-			case <-l.start:
-				l.userTrigger = true
-				l.logger.Info("starting")
-				stayHere = false
-			case err := <-runError: // unexpected error
-				l.statusManager.SetStatus(constants.Crashed)
-				const fallback = true
-				l.useUnencryptedDNS(fallback)
-				l.logAndWait(ctx, err)
-				stayHere = false
-			}
+		exitLoop := l.runWait(ctx, runError)
+		if exitLoop {
+			return
 		}
+	}
+}
+
+func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop bool) {
+	for {
+		select {
+		case <-ctx.Done():
+			l.stopServer()
+			// TODO revert OS and Go nameserver when exiting
+			return true
+		case <-l.stop:
+			l.userTrigger = true
+			l.logger.Info("stopping")
+			const fallback = false
+			l.useUnencryptedDNS(fallback)
+			l.stopServer()
+			l.stopped <- struct{}{}
+		case <-l.start:
+			l.userTrigger = true
+			l.logger.Info("starting")
+			return false
+		case err := <-runError: // unexpected error
+			l.statusManager.SetStatus(constants.Crashed)
+			const fallback = true
+			l.useUnencryptedDNS(fallback)
+			l.logAndWait(ctx, err)
+			return false
+		}
+	}
+}
+
+func (l *Loop) stopServer() {
+	stopErr := l.server.Stop()
+	if stopErr != nil {
+		l.logger.Error("stopping DoT server: " + stopErr.Error())
 	}
 }
