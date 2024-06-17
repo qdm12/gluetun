@@ -102,7 +102,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		*ss = surfsharkRetroRegion(*ss)
 	}
 
-	err = validateServerFilters(*ss, filterChoices)
+	err = validateServerFilters(*ss, filterChoices, vpnServiceProvider)
 	if err != nil {
 		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
@@ -196,7 +196,8 @@ func getLocationFilterChoices(vpnServiceProvider string,
 
 // validateServerFilters validates filters against the choices given as arguments.
 // Set an argument to nil to pass the check for a particular filter.
-func validateServerFilters(settings ServerSelection, filterChoices models.FilterChoices) (err error) {
+func validateServerFilters(settings ServerSelection, filterChoices models.FilterChoices,
+	vpnServiceProvider string) (err error) {
 	err = validate.AreAllOneOfCaseInsensitive(settings.Countries, filterChoices.Countries)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCountryNotValid, err)
@@ -222,6 +223,12 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 		return fmt.Errorf("%w: %w", ErrHostnameNotValid, err)
 	}
 
+	if vpnServiceProvider == providers.Custom && len(settings.Names) == 1 {
+		// Allow a single name to be specified for the custom provider in case
+		// the user wants to use VPN server side port forwarding with PIA
+		// which requires a server name for TLS verification.
+		filterChoices.Names = settings.Names
+	}
 	err = validate.AreAllOneOfCaseInsensitive(settings.Names, filterChoices.Names)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrNameNotValid, err)
