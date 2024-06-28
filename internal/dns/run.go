@@ -26,16 +26,14 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	}
 
 	for ctx.Err() == nil {
-		// Upper scope variables for Unbound only
+		// Upper scope variables for the DNS over TLS server only
 		// Their values are to be used if DOT=off
-		waitError := make(chan error)
-		unboundCancel := func() { waitError <- nil }
-		closeStreams := func() {}
+		var runError <-chan error
 
 		settings := l.GetSettings()
 		for !*settings.KeepNameserver && *settings.DoT.Enabled {
 			var err error
-			unboundCancel, waitError, closeStreams, err = l.setupUnbound(ctx)
+			runError, err = l.setupServer(ctx)
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
 				l.logger.Info("ready")
@@ -49,11 +47,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				return
 			}
 
-			if !errors.Is(err, errUpdateFiles) {
+			if !errors.Is(err, errUpdateBlockLists) {
 				const fallback = true
 				l.useUnencryptedDNS(fallback)
 			}
 			l.logAndWait(ctx, err)
+			settings = l.GetSettings()
 		}
 
 		settings = l.GetSettings()
@@ -64,40 +63,44 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 		l.userTrigger = false
 
-		stayHere := true
-		for stayHere {
-			select {
-			case <-ctx.Done():
-				unboundCancel()
-				<-waitError
-				close(waitError)
-				closeStreams()
-				return
-			case <-l.stop:
-				l.userTrigger = true
-				l.logger.Info("stopping")
-				const fallback = false
-				l.useUnencryptedDNS(fallback)
-				unboundCancel()
-				<-waitError
-				// do not close waitError or the waitError
-				// select case will trigger
-				closeStreams()
-				l.stopped <- struct{}{}
-			case <-l.start:
-				l.userTrigger = true
-				l.logger.Info("starting")
-				stayHere = false
-			case err := <-waitError: // unexpected error
-				closeStreams()
-
-				unboundCancel()
-				l.statusManager.SetStatus(constants.Crashed)
-				const fallback = true
-				l.useUnencryptedDNS(fallback)
-				l.logAndWait(ctx, err)
-				stayHere = false
-			}
+		exitLoop := l.runWait(ctx, runError)
+		if exitLoop {
+			return
 		}
+	}
+}
+
+func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop bool) {
+	for {
+		select {
+		case <-ctx.Done():
+			l.stopServer()
+			// TODO revert OS and Go nameserver when exiting
+			return true
+		case <-l.stop:
+			l.userTrigger = true
+			l.logger.Info("stopping")
+			const fallback = false
+			l.useUnencryptedDNS(fallback)
+			l.stopServer()
+			l.stopped <- struct{}{}
+		case <-l.start:
+			l.userTrigger = true
+			l.logger.Info("starting")
+			return false
+		case err := <-runError: // unexpected error
+			l.statusManager.SetStatus(constants.Crashed)
+			const fallback = true
+			l.useUnencryptedDNS(fallback)
+			l.logAndWait(ctx, err)
+			return false
+		}
+	}
+}
+
+func (l *Loop) stopServer() {
+	stopErr := l.server.Stop()
+	if stopErr != nil {
+		l.logger.Error("stopping DoT server: " + stopErr.Error())
 	}
 }

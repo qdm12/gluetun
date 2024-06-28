@@ -43,18 +43,10 @@ func Test_Settings_String(t *testing.T) {
 |   └── DNS over TLS settings:
 |       ├── Enabled: yes
 |       ├── Update period: every 24h0m0s
-|       ├── Unbound settings:
-|       |   ├── Authoritative servers:
-|       |   |   └── Cloudflare
-|       |   ├── Caching: yes
-|       |   ├── IPv6: no
-|       |   ├── Verbosity level: 1
-|       |   ├── Verbosity details level: 0
-|       |   ├── Validation log level: 0
-|       |   ├── System user: root
-|       |   └── Allowed networks:
-|       |       ├── 0.0.0.0/0
-|       |       └── ::/0
+|       ├── Upstream resolvers:
+|       |   └── Cloudflare
+|       ├── Caching: yes
+|       ├── IPv6: no
 |       └── DNS filtering settings:
 |           ├── Block malicious: yes
 |           ├── Block ads: no
