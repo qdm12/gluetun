@@ -39,7 +39,7 @@ var (
 )
 
 func ParseWireguardConf(path string) (config WireguardConfig, err error) {
-	iniFile, err := ini.Load(path)
+	iniFile, err := ini.InsensitiveLoad(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return WireguardConfig{}, nil
