@@ -29,7 +29,11 @@ type Server struct {
 	MultiHop    bool         `json:"multihop,omitempty"`
 	WgPubKey    string       `json:"wgpubkey,omitempty"`
 	Free        bool         `json:"free,omitempty"`
-	Stream      bool         `json:"stream,omitempty"`
+	Stream      bool         `json:"stream,omitempty"`      // TODO consider moving to a Features struct in v4
+	SecureCore  bool         `json:"secure_core,omitempty"` // TODO consider moving to a Features struct in v4
+	Tor         bool         `json:"tor,omitempty"`         // TODO consider moving to a Features struct in v4
+	P2P         bool         `json:"p2p,omitempty"`         // TODO consider moving to a Features struct in v4
+	IPv6        bool         `json:"ipv6,omitempty"`        // TODO consider moving to a Features struct in v4
 	Premium     bool         `json:"premium,omitempty"`
 	PortForward bool         `json:"port_forward,omitempty"`
 	Keep        bool         `json:"keep,omitempty"`
