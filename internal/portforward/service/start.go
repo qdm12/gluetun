@@ -27,6 +27,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		Gateway:        gateway,
 		Client:         s.client,
 		ServerName:     s.settings.ServerName,
+		ServerIP:       s.settings.ServerIP,
 		CanPortForward: s.settings.CanPortForward,
 	}
 	port, err := s.settings.PortForwarder.PortForward(ctx, obj)

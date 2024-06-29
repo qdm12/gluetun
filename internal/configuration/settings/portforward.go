@@ -47,6 +47,7 @@ func (p PortForwarding) Validate(vpnProvider string) (err error) {
 	}
 	validProviders := []string{
 		providers.PrivateInternetAccess,
+		providers.Privatevpn,
 		providers.Protonvpn,
 	}
 	if err = validate.IsOneOf(providerSelected, validProviders...); err != nil {
