@@ -10,7 +10,7 @@ import (
 type tunnelUpData struct {
 	// Port forwarding
 	vpnIntf        string
-	serverName     string // used for PIA
+	serverHostname string // used for PIA
 	canPortForward bool   // used for PIA
 	portForwarder  PortForwarder
 }
