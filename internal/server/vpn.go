@@ -116,7 +116,7 @@ func (h *vpnHandler) patchSettings(w http.ResponseWriter, r *http.Request) {
 
 	updatedSettings := h.looper.GetSettings() // already copied
 	updatedSettings.OverrideWith(overrideSettings)
-	err = updatedSettings.Validate(h.storage, h.ipv6Supported)
+	err = updatedSettings.Validate(h.storage, h.ipv6Supported, h.warner)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -25,7 +25,7 @@ type Provider struct {
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (p *Provider) validate(vpnType string, storage Storage) (err error) {
+func (p *Provider) validate(vpnType string, storage Storage, warner Warner) (err error) {
 	// Validate Name
 	var validNames []string
 	if vpnType == vpn.OpenVPN {
@@ -48,7 +48,7 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 		return fmt.Errorf("%w for Wireguard: %w", ErrVPNProviderNameNotValid, err)
 	}
 
-	err = p.ServerSelection.validate(p.Name, storage)
+	err = p.ServerSelection.validate(p.Name, storage, warner)
 	if err != nil {
 		return fmt.Errorf("server selection: %w", err)
 	}

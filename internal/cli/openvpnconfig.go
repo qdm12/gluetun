@@ -59,7 +59,7 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
 
-	if err = allSettings.Validate(storage, ipv6Supported); err != nil {
+	if err = allSettings.Validate(storage, ipv6Supported, logger); err != nil {
 		return fmt.Errorf("validating settings: %w", err)
 	}
 

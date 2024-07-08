@@ -249,7 +249,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
 
-	err = allSettings.Validate(storage, ipv6Supported)
+	err = allSettings.Validate(storage, ipv6Supported, logger)
 	if err != nil {
 		return err
 	}

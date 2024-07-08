@@ -91,14 +91,14 @@ var (
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
-	storage Storage) (err error) {
+	storage Storage, warner Warner) (err error) {
 	switch ss.VPN {
 	case vpn.OpenVPN, vpn.Wireguard:
 	default:
 		return fmt.Errorf("%w: %s", ErrVPNTypeNotValid, ss.VPN)
 	}
 
-	filterChoices, err := getLocationFilterChoices(vpnServiceProvider, ss, storage)
+	filterChoices, err := getLocationFilterChoices(vpnServiceProvider, ss, storage, warner)
 	if err != nil {
 		return err // already wrapped error
 	}
@@ -111,7 +111,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		*ss = surfsharkRetroRegion(*ss)
 	}
 
-	err = validateServerFilters(*ss, filterChoices, vpnServiceProvider)
+	err = validateServerFilters(*ss, filterChoices, vpnServiceProvider, warner)
 	if err != nil {
 		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
@@ -142,19 +142,19 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 }
 
 func getLocationFilterChoices(vpnServiceProvider string,
-	ss *ServerSelection, storage Storage) (filterChoices models.FilterChoices,
-	err error) {
+	ss *ServerSelection, storage Storage, warner Warner) (
+	filterChoices models.FilterChoices, err error) {
 	filterChoices = storage.GetFilterChoices(vpnServiceProvider)
 
 	if vpnServiceProvider == providers.Surfshark {
 		// // Retro compatibility
 		// TODO v4 remove
 		newAndRetroRegions := append(filterChoices.Regions, validation.SurfsharkRetroLocChoices()...) //nolint:gocritic
-		err := validate.AreAllOneOfCaseInsensitive(ss.Regions, newAndRetroRegions)
+		err := atLeastOneIsOneOfCaseInsensitive(ss.Regions, newAndRetroRegions, warner)
 		if err != nil {
 			// Only return error comparing with newer regions, we don't want to confuse the user
 			// with the retro regions in the error message.
-			err = validate.AreAllOneOfCaseInsensitive(ss.Regions, filterChoices.Regions)
+			err = atLeastOneIsOneOfCaseInsensitive(ss.Regions, filterChoices.Regions, warner)
 			return models.FilterChoices{}, fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 		}
 	}
@@ -165,28 +165,28 @@ func getLocationFilterChoices(vpnServiceProvider string,
 // validateServerFilters validates filters against the choices given as arguments.
 // Set an argument to nil to pass the check for a particular filter.
 func validateServerFilters(settings ServerSelection, filterChoices models.FilterChoices,
-	vpnServiceProvider string) (err error) {
-	err = validate.AreAllOneOfCaseInsensitive(settings.Countries, filterChoices.Countries)
+	vpnServiceProvider string, warner Warner) (err error) {
+	err = atLeastOneIsOneOfCaseInsensitive(settings.Countries, filterChoices.Countries, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCountryNotValid, err)
 	}
 
-	err = validate.AreAllOneOfCaseInsensitive(settings.Regions, filterChoices.Regions)
+	err = atLeastOneIsOneOfCaseInsensitive(settings.Regions, filterChoices.Regions, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrRegionNotValid, err)
 	}
 
-	err = validate.AreAllOneOfCaseInsensitive(settings.Cities, filterChoices.Cities)
+	err = atLeastOneIsOneOfCaseInsensitive(settings.Cities, filterChoices.Cities, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCityNotValid, err)
 	}
 
-	err = validate.AreAllOneOfCaseInsensitive(settings.ISPs, filterChoices.ISPs)
+	err = atLeastOneIsOneOfCaseInsensitive(settings.ISPs, filterChoices.ISPs, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrISPNotValid, err)
 	}
 
-	err = validate.AreAllOneOfCaseInsensitive(settings.Hostnames, filterChoices.Hostnames)
+	err = atLeastOneIsOneOfCaseInsensitive(settings.Hostnames, filterChoices.Hostnames, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrHostnameNotValid, err)
 	}
@@ -197,14 +197,50 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 		// which requires a server name for TLS verification.
 		filterChoices.Names = settings.Names
 	}
-	err = validate.AreAllOneOfCaseInsensitive(settings.Names, filterChoices.Names)
+	err = atLeastOneIsOneOfCaseInsensitive(settings.Names, filterChoices.Names, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrNameNotValid, err)
 	}
 
-	err = validate.AreAllOneOfCaseInsensitive(settings.Categories, filterChoices.Categories)
+	err = atLeastOneIsOneOfCaseInsensitive(settings.Categories, filterChoices.Categories, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCategoryNotValid, err)
+	}
+
+	return nil
+}
+
+func atLeastOneIsOneOfCaseInsensitive(values, choices []string,
+	warner Warner) (err error) {
+	if len(values) > 0 && len(choices) == 0 {
+		return fmt.Errorf("%w", validate.ErrNoChoice)
+	}
+
+	set := make(map[string]struct{}, len(choices))
+	for _, choice := range choices {
+		lowercaseChoice := strings.ToLower(choice)
+		set[lowercaseChoice] = struct{}{}
+	}
+
+	invalidValues := make([]string, 0, len(values))
+	for _, value := range values {
+		lowercaseValue := strings.ToLower(value)
+		_, ok := set[lowercaseValue]
+		if ok {
+			continue
+		}
+		invalidValues = append(invalidValues, value)
+	}
+
+	switch len(invalidValues) {
+	case 0:
+		return nil
+	case len(values):
+		return fmt.Errorf("%w: none of %s is one of the choices available %s",
+			validate.ErrValueNotOneOf, strings.Join(values, ", "), strings.Join(choices, ", "))
+	default:
+		warner.Warn(fmt.Sprintf("values %s are not in choices %s",
+			strings.Join(invalidValues, ", "), strings.Join(choices, ", ")))
 	}
 
 	return nil
