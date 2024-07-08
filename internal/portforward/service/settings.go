@@ -13,7 +13,7 @@ type Settings struct {
 	PortForwarder  PortForwarder
 	Filepath       string
 	Interface      string // needed for PIA and ProtonVPN, tun0 for example
-	ServerName     string // needed for PIA
+	ServerHostname string // needed for PIA
 	CanPortForward bool   // needed for PIA
 	ListeningPort  uint16
 }
@@ -23,7 +23,7 @@ func (s Settings) Copy() (copied Settings) {
 	copied.PortForwarder = s.PortForwarder
 	copied.Filepath = s.Filepath
 	copied.Interface = s.Interface
-	copied.ServerName = s.ServerName
+	copied.ServerHostname = s.ServerHostname
 	copied.CanPortForward = s.CanPortForward
 	copied.ListeningPort = s.ListeningPort
 	return copied
@@ -34,16 +34,16 @@ func (s *Settings) OverrideWith(update Settings) {
 	s.PortForwarder = gosettings.OverrideWithComparable(s.PortForwarder, update.PortForwarder)
 	s.Filepath = gosettings.OverrideWithComparable(s.Filepath, update.Filepath)
 	s.Interface = gosettings.OverrideWithComparable(s.Interface, update.Interface)
-	s.ServerName = gosettings.OverrideWithComparable(s.ServerName, update.ServerName)
+	s.ServerHostname = gosettings.OverrideWithComparable(s.ServerHostname, update.ServerHostname)
 	s.CanPortForward = gosettings.OverrideWithComparable(s.CanPortForward, update.CanPortForward)
 	s.ListeningPort = gosettings.OverrideWithComparable(s.ListeningPort, update.ListeningPort)
 }
 
 var (
-	ErrPortForwarderNotSet = errors.New("port forwarder not set")
-	ErrServerNameNotSet    = errors.New("server name not set")
-	ErrFilepathNotSet      = errors.New("file path not set")
-	ErrInterfaceNotSet     = errors.New("interface not set")
+	ErrPortForwarderNotSet  = errors.New("port forwarder not set")
+	ErrServerHostnameNotSet = errors.New("server hostname not set")
+	ErrFilepathNotSet       = errors.New("file path not set")
+	ErrInterfaceNotSet      = errors.New("interface not set")
 )
 
 func (s *Settings) Validate(forStartup bool) (err error) {
@@ -64,8 +64,8 @@ func (s *Settings) Validate(forStartup bool) (err error) {
 		return fmt.Errorf("%w", ErrPortForwarderNotSet)
 	case s.Interface == "":
 		return fmt.Errorf("%w", ErrInterfaceNotSet)
-	case s.PortForwarder.Name() == providers.PrivateInternetAccess && s.ServerName == "":
-		return fmt.Errorf("%w", ErrServerNameNotSet)
+	case s.PortForwarder.Name() == providers.PrivateInternetAccess && s.ServerHostname == "":
+		return fmt.Errorf("%w", ErrServerHostnameNotSet)
 	}
 	return nil
 }
