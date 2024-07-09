@@ -32,6 +32,10 @@ func (p *Provider) PortForward(ctx context.Context,
 		panic("server name cannot be empty")
 	case !objects.Gateway.IsValid():
 		panic("gateway is not set")
+	case objects.Username == "":
+		panic("username is not set")
+	case objects.Password == "":
+		panic("password is not set")
 	}
 
 	serverName := objects.ServerName
@@ -67,7 +71,7 @@ func (p *Provider) PortForward(ctx context.Context,
 	if !dataFound || expired {
 		client := objects.Client
 		data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, objects.Gateway,
-			p.portForwardPath, p.authFilePath)
+			p.portForwardPath, objects.Username, objects.Password)
 		if err != nil {
 			return 0, fmt.Errorf("refreshing port forward data: %w", err)
 		}
@@ -136,8 +140,8 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 }
 
 func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *http.Client,
-	gateway netip.Addr, portForwardPath, authFilePath string) (data piaPortForwardData, err error) {
-	data.Token, err = fetchToken(ctx, client, authFilePath)
+	gateway netip.Addr, portForwardPath, username, password string) (data piaPortForwardData, err error) {
+	data.Token, err = fetchToken(ctx, client, username, password)
 	if err != nil {
 		return data, fmt.Errorf("fetching token: %w", err)
 	}
@@ -237,12 +241,7 @@ var (
 )
 
 func fetchToken(ctx context.Context, client *http.Client,
-	authFilePath string) (token string, err error) {
-	username, password, err := getOpenvpnCredentials(authFilePath)
-	if err != nil {
-		return "", fmt.Errorf("getting username and password: %w", err)
-	}
-
+	username, password string) (token string, err error) {
 	errSubstitutions := map[string]string{
 		url.QueryEscape(username): "<username>",
 		url.QueryEscape(password): "<password>",
@@ -285,37 +284,6 @@ func fetchToken(ctx context.Context, client *http.Client,
 		return "", errEmptyToken
 	}
 	return result.Token, nil
-}
-
-var (
-	errAuthFileMalformed = errors.New("authentication file is malformed")
-)
-
-func getOpenvpnCredentials(authFilePath string) (
-	username, password string, err error) {
-	file, err := os.Open(authFilePath)
-	if err != nil {
-		return "", "", fmt.Errorf("reading OpenVPN authentication file: %w", err)
-	}
-
-	authData, err := io.ReadAll(file)
-	if err != nil {
-		_ = file.Close()
-		return "", "", fmt.Errorf("reading authentication file: %w", err)
-	}
-
-	if err := file.Close(); err != nil {
-		return "", "", err
-	}
-
-	lines := strings.Split(string(authData), "\n")
-	const minLines = 2
-	if len(lines) < minLines {
-		return "", "", fmt.Errorf("%w: only %d lines exist", errAuthFileMalformed, len(lines))
-	}
-
-	username, password = lines[0], lines[1]
-	return username, password, nil
 }
 
 func fetchPortForwardData(ctx context.Context, client *http.Client, gateway netip.Addr, token string) (

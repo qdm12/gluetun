@@ -12,6 +12,8 @@ type tunnelUpData struct {
 	vpnIntf        string
 	serverName     string // used for PIA
 	canPortForward bool   // used for PIA
+	username       string // used for PIA
+	password       string // used for PIA
 	portForwarder  PortForwarder
 }
 

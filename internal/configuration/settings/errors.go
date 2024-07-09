@@ -28,6 +28,8 @@ var (
 	ErrOpenVPNVerbosityIsOutOfBounds   = errors.New("verbosity value is out of bounds")
 	ErrOpenVPNVersionIsNotValid        = errors.New("version is not valid")
 	ErrPortForwardingEnabled           = errors.New("port forwarding cannot be enabled")
+	ErrPortForwardingUserEmpty         = errors.New("port forwarding username is empty")
+	ErrPortForwardingPasswordEmpty     = errors.New("port forwarding password is empty")
 	ErrPublicIPPeriodTooShort          = errors.New("public IP address check period is too short")
 	ErrRegionNotValid                  = errors.New("the region specified is not valid")
 	ErrServerAddressNotValid           = errors.New("server listening address is not valid")

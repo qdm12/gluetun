@@ -16,6 +16,8 @@ type Settings struct {
 	ServerName     string // needed for PIA
 	CanPortForward bool   // needed for PIA
 	ListeningPort  uint16
+	Username       string // needed for PIA
+	Password       string // needed for PIA
 }
 
 func (s Settings) Copy() (copied Settings) {
@@ -26,6 +28,8 @@ func (s Settings) Copy() (copied Settings) {
 	copied.ServerName = s.ServerName
 	copied.CanPortForward = s.CanPortForward
 	copied.ListeningPort = s.ListeningPort
+	copied.Username = s.Username
+	copied.Password = s.Password
 	return copied
 }
 
@@ -37,11 +41,15 @@ func (s *Settings) OverrideWith(update Settings) {
 	s.ServerName = gosettings.OverrideWithComparable(s.ServerName, update.ServerName)
 	s.CanPortForward = gosettings.OverrideWithComparable(s.CanPortForward, update.CanPortForward)
 	s.ListeningPort = gosettings.OverrideWithComparable(s.ListeningPort, update.ListeningPort)
+	s.Username = gosettings.OverrideWithComparable(s.Username, update.Username)
+	s.Password = gosettings.OverrideWithComparable(s.Password, update.Password)
 }
 
 var (
 	ErrPortForwarderNotSet = errors.New("port forwarder not set")
 	ErrServerNameNotSet    = errors.New("server name not set")
+	ErrUsernameNotSet      = errors.New("username not set")
+	ErrPasswordNotSet      = errors.New("password not set")
 	ErrFilepathNotSet      = errors.New("file path not set")
 	ErrInterfaceNotSet     = errors.New("interface not set")
 )
@@ -64,8 +72,15 @@ func (s *Settings) Validate(forStartup bool) (err error) {
 		return fmt.Errorf("%w", ErrPortForwarderNotSet)
 	case s.Interface == "":
 		return fmt.Errorf("%w", ErrInterfaceNotSet)
-	case s.PortForwarder.Name() == providers.PrivateInternetAccess && s.ServerName == "":
-		return fmt.Errorf("%w", ErrServerNameNotSet)
+	case s.PortForwarder.Name() == providers.PrivateInternetAccess:
+		switch {
+		case s.ServerName == "":
+			return fmt.Errorf("%w", ErrServerNameNotSet)
+		case s.Username == "":
+			return fmt.Errorf("%w", ErrUsernameNotSet)
+		case s.Password == "":
+			return fmt.Errorf("%w", ErrPasswordNotSet)
+		}
 	}
 	return nil
 }

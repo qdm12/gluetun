@@ -30,6 +30,8 @@ func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 			Interface:      data.vpnIntf,
 			ServerName:     data.serverName,
 			CanPortForward: data.canPortForward,
+			Username:       data.username,
+			Password:       data.password,
 		},
 	}
 	return l.portForward.UpdateWith(partialUpdate)

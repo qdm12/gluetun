@@ -28,6 +28,8 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		Client:         s.client,
 		ServerName:     s.settings.ServerName,
 		CanPortForward: s.settings.CanPortForward,
+		Username:       s.settings.Username,
+		Password:       s.settings.Password,
 	}
 	port, err := s.settings.PortForwarder.PortForward(ctx, obj)
 	if err != nil {

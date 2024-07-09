@@ -33,6 +33,10 @@ type PortForwarding struct {
 	// forwarded port. The redirection is disabled if it is set to 0, which
 	// is its default as well.
 	ListeningPort *uint16 `json:"listening_port"`
+	// Username is only used for Private Internet Access port forwarding.
+	Username string `json:"username"`
+	// Password is only used for Private Internet Access port forwarding.
+	Password string `json:"password"`
 }
 
 func (p PortForwarding) Validate(vpnProvider string) (err error) {
@@ -61,6 +65,15 @@ func (p PortForwarding) Validate(vpnProvider string) (err error) {
 		}
 	}
 
+	if providerSelected == providers.PrivateInternetAccess {
+		switch {
+		case p.Username == "":
+			return fmt.Errorf("%w", ErrPortForwardingUserEmpty)
+		case p.Password == "":
+			return fmt.Errorf("%w", ErrPortForwardingPasswordEmpty)
+		}
+	}
+
 	return nil
 }
 
@@ -70,6 +83,8 @@ func (p *PortForwarding) Copy() (copied PortForwarding) {
 		Provider:      gosettings.CopyPointer(p.Provider),
 		Filepath:      gosettings.CopyPointer(p.Filepath),
 		ListeningPort: gosettings.CopyPointer(p.ListeningPort),
+		Username:      p.Username,
+		Password:      p.Password,
 	}
 }
 
@@ -78,6 +93,8 @@ func (p *PortForwarding) OverrideWith(other PortForwarding) {
 	p.Provider = gosettings.OverrideWithPointer(p.Provider, other.Provider)
 	p.Filepath = gosettings.OverrideWithPointer(p.Filepath, other.Filepath)
 	p.ListeningPort = gosettings.OverrideWithPointer(p.ListeningPort, other.ListeningPort)
+	p.Username = gosettings.OverrideWithComparable(p.Username, other.Username)
+	p.Password = gosettings.OverrideWithComparable(p.Password, other.Password)
 }
 
 func (p *PortForwarding) setDefaults() {
@@ -116,6 +133,12 @@ func (p PortForwarding) toLinesNode() (node *gotree.Node) {
 	}
 	node.Appendf("Forwarded port file path: %s", filepath)
 
+	if p.Username != "" {
+		credentialsNode := node.Appendf("Credentials:")
+		credentialsNode.Appendf("Username: %s", p.Username)
+		credentialsNode.Appendf("Password: %s", gosettings.ObfuscateKey(p.Password))
+	}
+
 	return node
 }
 
@@ -142,6 +165,11 @@ func (p *PortForwarding) read(r *reader.Reader) (err error) {
 	if err != nil {
 		return err
 	}
+
+	p.Username = r.String("VPN_PORT_FORWARDING_USERNAME",
+		reader.RetroKeys("USER", "OPENVPN_USER"), reader.ForceLowercase(false))
+	p.Password = r.String("VPN_PORT_FORWARDING_PASSWORD",
+		reader.RetroKeys("PASSWORD", "OPENVPN_PASSWORD"), reader.ForceLowercase(false))
 
 	return nil
 }

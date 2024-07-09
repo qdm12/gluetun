@@ -19,6 +19,10 @@ type PortForwardObjects struct {
 	ServerName string
 	// CanPortForward is used by Private Internet Access for port forwarding.
 	CanPortForward bool
+	// Username is used by Private Internet Access for port forwarding.
+	Username string
+	// Password is used by Private Internet Access for port forwarding.
+	Password string
 }
 
 type Routing interface {
