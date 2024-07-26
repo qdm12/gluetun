@@ -129,7 +129,7 @@ func (f *Firewall) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	f.Enabled, err = r.BoolPtr("FIREWALL")
+	f.Enabled, err = r.BoolPtr("FIREWALL_ENABLED_DISABLING_IT_SHOOTS_YOU_IN_YOUR_FOOT")
 	if err != nil {
 		return err
 	}
