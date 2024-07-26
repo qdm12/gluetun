@@ -196,8 +196,8 @@ func (c *Config) acceptInputToPort(ctx context.Context, intf string, port uint16
 		interfaceFlag = ""
 	}
 	return c.runMixedIptablesInstructions(ctx, []string{
-		fmt.Sprintf("%s INPUT %s -p tcp --dport %d -j ACCEPT", appendOrDelete(remove), interfaceFlag, port),
-		fmt.Sprintf("%s INPUT %s -p udp --dport %d -j ACCEPT", appendOrDelete(remove), interfaceFlag, port),
+		fmt.Sprintf("%s INPUT %s -p tcp -m tcp --dport %d -j ACCEPT", appendOrDelete(remove), interfaceFlag, port),
+		fmt.Sprintf("%s INPUT %s -p udp -m udp --dport %d -j ACCEPT", appendOrDelete(remove), interfaceFlag, port),
 	})
 }
 
