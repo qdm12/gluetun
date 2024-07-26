@@ -27,11 +27,8 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 	}
 
 	switch settings.Version {
-	case openvpn.Openvpn25, openvpn.Openvpn26:
-		providerSettings.Ciphers = []string{
-			openvpn.AES256gcm, openvpn.AES256cbc, openvpn.AES192gcm,
-			openvpn.AES192cbc, openvpn.AES128gcm, openvpn.AES128cbc,
-			openvpn.Chacha20Poly1305}
+	case openvpn.Openvpn24:
+		providerSettings.Ciphers = []string{openvpn.AES256cbc}
 	default:
 		panic(fmt.Sprintf("openvpn version %q is not implemented", settings.Version))
 	}

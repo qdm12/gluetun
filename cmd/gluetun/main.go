@@ -276,8 +276,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
-		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
-		{name: "OpenVPN 2.6", getVersion: ovpnConf.Version26},
+		{name: "OpenVPN 2.4", getVersion: ovpnConf.Version24},
 		{name: "Unbound", getVersion: dnsConf.Version},
 		{name: "IPtables", getVersion: firewallConf.Version},
 	})

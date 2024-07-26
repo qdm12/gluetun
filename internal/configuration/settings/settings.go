@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"net/netip"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/pprof"
 	"github.com/qdm12/gosettings/reader"
@@ -151,18 +149,6 @@ func (s Settings) Warnings() (warnings []string) {
 	if s.VPN.Provider.Name == providers.HideMyAss {
 		warnings = append(warnings, "HideMyAss dropped support for Linux OpenVPN "+
 			" so this will likely not work anymore. See https://github.com/qdm12/gluetun/issues/1498.")
-	}
-
-	if helpers.IsOneOf(s.VPN.Provider.Name, providers.SlickVPN) &&
-		s.VPN.Type == vpn.OpenVPN {
-		warnings = append(warnings, "OpenVPN 2.5 and 2.6 use OpenSSL 3 "+
-			"which prohibits the usage of weak security in today's standards. "+
-			s.VPN.Provider.Name+" uses weak security which is out "+
-			"of Gluetun's control so the only workaround is to allow such weaknesses "+
-			`using the OpenVPN option tls-cipher "DEFAULT:@SECLEVEL=0". `+
-			"You might want to reach to your provider so they upgrade their certificates. "+
-			"Once this is done, you will have to let the Gluetun maintainers know "+
-			"by creating an issue, attaching the new certificate and we will update Gluetun.")
 	}
 
 	// TODO remove in v4

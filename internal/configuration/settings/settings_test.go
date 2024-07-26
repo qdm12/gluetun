@@ -30,7 +30,7 @@ func Test_Settings_String(t *testing.T) {
 |   |           ├── Protocol: UDP
 |   |           └── Private Internet Access encryption preset: strong
 |   └── OpenVPN settings:
-|       ├── OpenVPN version: 2.6
+|       ├── OpenVPN version: 2.4
 |       ├── User: [not set]
 |       ├── Password: [not set]
 |       ├── Private Internet Access encryption preset: strong
