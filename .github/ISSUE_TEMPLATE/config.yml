@@ -1,3 +1,4 @@
+blank_issues_enabled: false
 contact_links:
   - name: Report a Wiki issue
     url: https://github.com/qdm12/gluetun-wiki/issues/new
