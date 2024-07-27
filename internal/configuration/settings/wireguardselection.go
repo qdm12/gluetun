@@ -151,12 +151,12 @@ func (w WireguardSelection) toLinesNode() (node *gotree.Node) {
 }
 
 func (w *WireguardSelection) read(r *reader.Reader) (err error) {
-	w.EndpointIP, err = r.NetipAddr("VPN_ENDPOINT_IP", reader.RetroKeys("WIREGUARD_ENDPOINT_IP"))
+	w.EndpointIP, err = r.NetipAddr("WIREGUARD_ENDPOINT_IP", reader.RetroKeys("VPN_ENDPOINT_IP"))
 	if err != nil {
 		return err
 	}
 
-	w.EndpointPort, err = r.Uint16Ptr("VPN_ENDPOINT_PORT", reader.RetroKeys("WIREGUARD_ENDPOINT_PORT"))
+	w.EndpointPort, err = r.Uint16Ptr("WIREGUARD_ENDPOINT_PORT", reader.RetroKeys("VPN_ENDPOINT_PORT"))
 	if err != nil {
 		return err
 	}

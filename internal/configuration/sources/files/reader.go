@@ -65,9 +65,9 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().Addresses)
 	case "wireguard_public_key":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().PublicKey)
-	case "vpn_endpoint_ip":
+	case "wireguard_endpoint_ip":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointIP)
-	case "vpn_endpoint_port":
+	case "wireguard_endpoint_port":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointPort)
 	}
 

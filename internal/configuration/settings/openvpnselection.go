@@ -196,8 +196,8 @@ func (o *OpenVPNSelection) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	o.CustomPort, err = r.Uint16Ptr("VPN_ENDPOINT_PORT",
-		reader.RetroKeys("PORT", "OPENVPN_PORT"))
+	o.CustomPort, err = r.Uint16Ptr("OPENVPN_ENDPOINT_PORT",
+		reader.RetroKeys("PORT", "OPENVPN_PORT", "VPN_ENDPOINT_PORT"))
 	if err != nil {
 		return err
 	}

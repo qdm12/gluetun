@@ -385,8 +385,8 @@ func (ss *ServerSelection) read(r *reader.Reader,
 	vpnProvider, vpnType string) (err error) {
 	ss.VPN = vpnType
 
-	ss.TargetIP, err = r.NetipAddr("VPN_ENDPOINT_IP",
-		reader.RetroKeys("OPENVPN_TARGET_IP"))
+	ss.TargetIP, err = r.NetipAddr("OPENVPN_ENDPOINT_IP",
+		reader.RetroKeys("OPENVPN_TARGET_IP", "VPN_ENDPOINT_IP"))
 	if err != nil {
 		return err
 	}
