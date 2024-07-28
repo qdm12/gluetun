@@ -224,8 +224,6 @@ RUN apk add --no-cache --update -l wget && \
     apk del openvpn && \
     apk add --no-cache --update openvpn ca-certificates iptables iptables-legacy unbound tzdata && \
     mv /usr/sbin/openvpn /usr/sbin/openvpn2.6 && \
-    # Fix vulnerability issue
-    apk add --no-cache --update busybox && \
     rm -rf /var/cache/apk/* /etc/unbound/* /usr/sbin/unbound-* /etc/openvpn/*.sh /usr/lib/openvpn/plugins/openvpn-plugin-down-root.so && \
     deluser openvpn && \
     deluser unbound && \
