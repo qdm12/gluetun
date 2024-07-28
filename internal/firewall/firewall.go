@@ -38,7 +38,7 @@ type Config struct { //nolint:maligned
 func NewConfig(ctx context.Context, logger Logger,
 	runner command.Runner, defaultRoutes []routing.DefaultRoute,
 	localNetworks []routing.LocalNetwork) (config *Config, err error) {
-	iptables, err := checkIptablesSupport(ctx, runner, "iptables-legacy", "iptables", "iptables-nft")
+	iptables, err := checkIptablesSupport(ctx, runner, "iptables", "iptables-nft")
 	if err != nil {
 		return nil, err
 	}
