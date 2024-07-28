@@ -26,7 +26,7 @@ var (
 
 // PortForward obtains a VPN server side port forwarded from PIA.
 func (p *Provider) PortForward(ctx context.Context,
-	objects utils.PortForwardObjects) (port uint16, err error) {
+	objects utils.PortForwardObjects) (ports []uint16, err error) {
 	switch {
 	case objects.ServerName == "":
 		panic("server name cannot be empty")
@@ -43,17 +43,17 @@ func (p *Provider) PortForward(ctx context.Context,
 	logger := objects.Logger
 
 	if !objects.CanPortForward {
-		return 0, fmt.Errorf("%w: for server %s", ErrServerNameNotFound, serverName)
+		return nil, fmt.Errorf("%w: for server %s", ErrServerNameNotFound, serverName)
 	}
 
 	privateIPClient, err := newHTTPClient(serverName)
 	if err != nil {
-		return 0, fmt.Errorf("creating custom HTTP client: %w", err)
+		return nil, fmt.Errorf("creating custom HTTP client: %w", err)
 	}
 
 	data, err := readPIAPortForwardData(p.portForwardPath)
 	if err != nil {
-		return 0, fmt.Errorf("reading saved port forwarded data: %w", err)
+		return nil, fmt.Errorf("reading saved port forwarded data: %w", err)
 	}
 
 	dataFound := data.Port > 0
@@ -73,7 +73,7 @@ func (p *Provider) PortForward(ctx context.Context,
 		data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, objects.Gateway,
 			p.portForwardPath, objects.Username, objects.Password)
 		if err != nil {
-			return 0, fmt.Errorf("refreshing port forward data: %w", err)
+			return nil, fmt.Errorf("refreshing port forward data: %w", err)
 		}
 		durationToExpiration = data.Expiration.Sub(p.timeNow())
 	}
@@ -81,10 +81,10 @@ func (p *Provider) PortForward(ctx context.Context,
 
 	// First time binding
 	if err := bindPort(ctx, privateIPClient, objects.Gateway, data); err != nil {
-		return 0, fmt.Errorf("binding port: %w", err)
+		return nil, fmt.Errorf("binding port: %w", err)
 	}
 
-	return data.Port, nil
+	return []uint16{data.Port}, nil
 }
 
 var (

@@ -25,8 +25,12 @@ func (sw *statusWrapper) getStatus() (status models.LoopStatus, err error) {
 	}
 }
 
-type portWrapper struct {
+type portWrapper struct { // TODO v4 remove
 	Port uint16 `json:"port"`
+}
+
+type portsWrapper struct {
+	Ports []uint16 `json:"ports"`
 }
 
 type outcomeWrapper struct {

@@ -8,7 +8,7 @@ import (
 type Service interface {
 	Start(ctx context.Context) (runError <-chan error, err error)
 	Stop() (err error)
-	GetPortForwarded() (port uint16)
+	GetPortsForwarded() (ports []uint16)
 }
 
 type Routing interface {

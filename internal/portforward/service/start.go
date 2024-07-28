@@ -31,33 +31,35 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		Username:       s.settings.Username,
 		Password:       s.settings.Password,
 	}
-	port, err := s.settings.PortForwarder.PortForward(ctx, obj)
+	ports, err := s.settings.PortForwarder.PortForward(ctx, obj)
 	if err != nil {
 		return nil, fmt.Errorf("port forwarding for the first time: %w", err)
 	}
 
-	s.logger.Info("port forwarded is " + fmt.Sprint(int(port)))
+	s.logger.Info(portsToString(ports))
 
-	err = s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
-	if err != nil {
-		return nil, fmt.Errorf("allowing port in firewall: %w", err)
-	}
-
-	if s.settings.ListeningPort != 0 {
-		err = s.portAllower.RedirectPort(ctx, s.settings.Interface, port, s.settings.ListeningPort)
+	for _, port := range ports {
+		err = s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
 		if err != nil {
-			return nil, fmt.Errorf("redirecting port in firewall: %w", err)
+			return nil, fmt.Errorf("allowing port in firewall: %w", err)
+		}
+
+		if s.settings.ListeningPort != 0 {
+			err = s.portAllower.RedirectPort(ctx, s.settings.Interface, port, s.settings.ListeningPort)
+			if err != nil {
+				return nil, fmt.Errorf("redirecting port in firewall: %w", err)
+			}
 		}
 	}
 
-	err = s.writePortForwardedFile(port)
+	err = s.writePortForwardedFile(ports)
 	if err != nil {
 		_ = s.cleanup()
 		return nil, fmt.Errorf("writing port file: %w", err)
 	}
 
 	s.portMutex.Lock()
-	s.port = port
+	s.ports = ports
 	s.portMutex.Unlock()
 
 	keepPortCtx, keepPortCancel := context.WithCancel(context.Background())

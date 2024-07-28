@@ -9,7 +9,7 @@ import (
 type Service struct {
 	// State
 	portMutex sync.RWMutex
-	port      uint16
+	ports     []uint16
 	// Fixed parameters
 	settings Settings
 	puid     int
@@ -40,8 +40,10 @@ func New(settings Settings, routing Routing, client *http.Client,
 	}
 }
 
-func (s *Service) GetPortForwarded() (port uint16) {
+func (s *Service) GetPortsForwarded() (ports []uint16) {
 	s.portMutex.RLock()
 	defer s.portMutex.RUnlock()
-	return s.port
+	ports = make([]uint16, len(s.ports))
+	copy(ports, s.ports)
+	return ports
 }

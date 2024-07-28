@@ -13,7 +13,7 @@ import (
 
 // PortForward obtains a VPN server side port forwarded from ProtonVPN gateway.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
-	port uint16, err error) {
+	ports []uint16, err error) {
 	client := natpmp.New()
 	_, externalIPv4Address, err := client.ExternalAddress(ctx,
 		objects.Gateway)
@@ -21,7 +21,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		if strings.HasSuffix(err.Error(), "connection refused") {
 			err = fmt.Errorf("%w - make sure you have +pmp at the end of your OpenVPN username", err)
 		}
-		return 0, fmt.Errorf("getting external IPv4 address: %w", err)
+		return nil, fmt.Errorf("getting external IPv4 address: %w", err)
 	}
 
 	logger := objects.Logger
@@ -34,7 +34,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		client.AddPortMapping(ctx, objects.Gateway, "udp",
 			internalPort, externalPort, lifetime)
 	if err != nil {
-		return 0, fmt.Errorf("adding UDP port mapping: %w", err)
+		return nil, fmt.Errorf("adding UDP port mapping: %w", err)
 	}
 	checkLifetime(logger, "UDP", lifetime, assignedLifetime)
 
@@ -42,16 +42,15 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		client.AddPortMapping(ctx, objects.Gateway, "tcp",
 			internalPort, externalPort, lifetime)
 	if err != nil {
-		return 0, fmt.Errorf("adding TCP port mapping: %w", err)
+		return nil, fmt.Errorf("adding TCP port mapping: %w", err)
 	}
 	checkLifetime(logger, "TCP", lifetime, assignedLifetime)
 
 	checkExternalPorts(logger, assignedUDPExternalPort, assignedTCPExternalPort)
-	port = assignedTCPExternalPort
 
-	p.portForwarded = port
+	p.portForwarded = assignedTCPExternalPort
 
-	return port, nil
+	return []uint16{assignedTCPExternalPort}, nil
 }
 
 func checkLifetime(logger utils.Logger, protocol string,

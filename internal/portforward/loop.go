@@ -150,11 +150,11 @@ func (l *Loop) Stop() (err error) {
 	return nil
 }
 
-func (l *Loop) GetPortForwarded() (port uint16) {
+func (l *Loop) GetPortsForwarded() (ports []uint16) {
 	if l.service == nil {
-		return 0
+		return nil
 	}
-	return l.service.GetPortForwarded()
+	return l.service.GetPortsForwarded()
 }
 
 func ptrTo[T any](value T) *T {

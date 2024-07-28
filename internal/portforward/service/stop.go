@@ -11,7 +11,7 @@ func (s *Service) Stop() (err error) {
 	defer s.startStopMutex.Unlock()
 
 	s.portMutex.RLock()
-	serviceNotRunning := s.port == 0
+	serviceNotRunning := len(s.ports) == 0
 	s.portMutex.RUnlock()
 	if serviceNotRunning {
 		// TODO replace with goservices.ErrAlreadyStopped
@@ -30,21 +30,23 @@ func (s *Service) cleanup() (err error) {
 	s.portMutex.Lock()
 	defer s.portMutex.Unlock()
 
-	err = s.portAllower.RemoveAllowedPort(context.Background(), s.port)
-	if err != nil {
-		return fmt.Errorf("blocking previous port in firewall: %w", err)
-	}
-
-	if s.settings.ListeningPort != 0 {
-		ctx := context.Background()
-		const listeningPort = 0 // 0 to clear the redirection
-		err = s.portAllower.RedirectPort(ctx, s.settings.Interface, s.port, listeningPort)
+	for _, port := range s.ports {
+		err = s.portAllower.RemoveAllowedPort(context.Background(), port)
 		if err != nil {
-			return fmt.Errorf("removing previous port redirection in firewall: %w", err)
+			return fmt.Errorf("blocking previous port in firewall: %w", err)
+		}
+
+		if s.settings.ListeningPort != 0 {
+			ctx := context.Background()
+			const listeningPort = 0 // 0 to clear the redirection
+			err = s.portAllower.RedirectPort(ctx, s.settings.Interface, port, listeningPort)
+			if err != nil {
+				return fmt.Errorf("removing previous port redirection in firewall: %w", err)
+			}
 		}
 	}
 
-	s.port = 0
+	s.ports = nil
 
 	filepath := s.settings.Filepath
 	s.logger.Info("removing port file " + filepath)

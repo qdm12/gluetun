@@ -123,12 +123,21 @@ func (h *openvpnHandler) getSettings(w http.ResponseWriter) {
 }
 
 func (h *openvpnHandler) getPortForwarded(w http.ResponseWriter) {
-	port := h.pf.GetPortForwarded()
+	ports := h.pf.GetPortsForwarded()
 	encoder := json.NewEncoder(w)
-	data := portWrapper{Port: port}
-	if err := encoder.Encode(data); err != nil {
+	var data any
+	switch len(ports) {
+	case 0:
+		data = portWrapper{Port: 0} // TODO v4 change to portsWrapper
+	case 1:
+		data = portWrapper{Port: ports[0]} // TODO v4 change to portsWrapper
+	default:
+		data = portsWrapper{Ports: ports}
+	}
+
+	err := encoder.Encode(data)
+	if err != nil {
 		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		return
 	}
 }

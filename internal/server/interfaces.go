@@ -22,7 +22,7 @@ type DNSLoop interface {
 }
 
 type PortForwardedGetter interface {
-	GetPortForwarded() (portForwarded uint16)
+	GetPortsForwarded() (ports []uint16)
 }
 
 type PublicIPLoop interface {
