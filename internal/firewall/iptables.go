@@ -269,12 +269,18 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 		case strings.HasPrefix(line, "iptables-nft "):
 			ipv4 = true
 			rule = strings.TrimPrefix(line, "iptables-nft ")
+		case strings.HasPrefix(line, "iptables-legacy "):
+			ipv4 = true
+			rule = strings.TrimPrefix(line, "iptables-legacy ")
 		case strings.HasPrefix(line, "ip6tables "):
 			ipv4 = false
 			rule = strings.TrimPrefix(line, "ip6tables ")
 		case strings.HasPrefix(line, "ip6tables-nft "):
 			ipv4 = false
 			rule = strings.TrimPrefix(line, "ip6tables-nft ")
+		case strings.HasPrefix(line, "ip6tables-legacy "):
+			ipv4 = false
+			rule = strings.TrimPrefix(line, "ip6tables-legacy ")
 		default:
 			continue
 		}
