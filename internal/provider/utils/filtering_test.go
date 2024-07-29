@@ -115,6 +115,45 @@ func Test_FilterServers(t *testing.T) {
 				{Stream: true, VPN: vpn.OpenVPN, UDP: true},
 			},
 		},
+		"filter by secure core only": {
+			selection: settings.ServerSelection{
+				SecureCoreOnly: boolPtr(true),
+			}.WithDefaults(providers.Protonvpn),
+			servers: []models.Server{
+				{SecureCore: false, VPN: vpn.OpenVPN, UDP: true},
+				{SecureCore: true, VPN: vpn.OpenVPN, UDP: true},
+				{SecureCore: false, VPN: vpn.OpenVPN, UDP: true},
+			},
+			filtered: []models.Server{
+				{SecureCore: true, VPN: vpn.OpenVPN, UDP: true},
+			},
+		},
+		"filter by tor only": {
+			selection: settings.ServerSelection{
+				TorOnly: boolPtr(true),
+			}.WithDefaults(providers.Protonvpn),
+			servers: []models.Server{
+				{Tor: false, VPN: vpn.OpenVPN, UDP: true},
+				{Tor: true, VPN: vpn.OpenVPN, UDP: true},
+				{Tor: false, VPN: vpn.OpenVPN, UDP: true},
+			},
+			filtered: []models.Server{
+				{Tor: true, VPN: vpn.OpenVPN, UDP: true},
+			},
+		},
+		"filter by P2P only": {
+			selection: settings.ServerSelection{
+				P2POnly: boolPtr(true),
+			}.WithDefaults(providers.Protonvpn),
+			servers: []models.Server{
+				{P2P: false, VPN: vpn.OpenVPN, UDP: true},
+				{P2P: true, VPN: vpn.OpenVPN, UDP: true},
+				{P2P: false, VPN: vpn.OpenVPN, UDP: true},
+			},
+			filtered: []models.Server{
+				{P2P: true, VPN: vpn.OpenVPN, UDP: true},
+			},
+		},
 		"filter by owned": {
 			selection: settings.ServerSelection{
 				OwnedOnly: boolPtr(true),
