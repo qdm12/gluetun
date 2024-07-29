@@ -31,6 +31,7 @@ type physicalServer struct {
 	ExitIP  netip.Addr `json:"ExitIP"`
 	Domain  string     `json:"Domain"`
 	Status  uint8      `json:"Status"`
+	Tier    *uint8     `json:"Tier,omitempty"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (

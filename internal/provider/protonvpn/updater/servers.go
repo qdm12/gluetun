@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
@@ -58,9 +57,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			hostname := physicalServer.Domain
 			entryIP := physicalServer.EntryIP
 
-			lowerCaseName := strings.ToLower(name)
-			var free bool
-			if strings.Contains(hostname, "free") || strings.Contains(lowerCaseName, "free") {
+			//nolint:lll
+			// See https://github.com/ProtonVPN/protonvpn-nm-lib/blob/31d5f99fbc89274e4e977a11e7432c0eab5a3ef8/protonvpn_nm_lib/enums.py#L56-L62
+			free := false
+			if physicalServer.Tier == nil {
+				u.warner.Warn("tier field not set for server " + hostname)
+			} else if *physicalServer.Tier == 0 {
 				free = true
 			}
 
