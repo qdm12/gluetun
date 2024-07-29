@@ -107,55 +107,14 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
 
-	if *ss.OwnedOnly &&
-		vpnServiceProvider != providers.Mullvad {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrOwnedOnlyNotSupported, vpnServiceProvider)
+	err = validateSubscriptionTierFilters(*ss, vpnServiceProvider)
+	if err != nil {
+		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
 
-	if *ss.FreeOnly &&
-		!helpers.IsOneOf(vpnServiceProvider,
-			providers.Protonvpn,
-			providers.VPNUnlimited,
-		) {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrFreeOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.PremiumOnly &&
-		!helpers.IsOneOf(vpnServiceProvider,
-			providers.VPNSecure,
-		) {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrPremiumOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.FreeOnly && *ss.PremiumOnly {
-		return fmt.Errorf("%w", ErrFreePremiumBothSet)
-	}
-
-	if *ss.StreamOnly &&
-		!helpers.IsOneOf(vpnServiceProvider,
-			providers.Protonvpn,
-			providers.VPNUnlimited,
-		) {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrStreamOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.MultiHopOnly &&
-		vpnServiceProvider != providers.Surfshark {
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrMultiHopOnlyNotSupported, vpnServiceProvider)
-	}
-
-	if *ss.PortForwardOnly &&
-		vpnServiceProvider != providers.PrivateInternetAccess {
-		// ProtonVPN also supports port forwarding, but on all their servers, so these
-		// don't have the port forwarding boolean field. As a consequence, we only allow
-		// the use of PortForwardOnly for Private Internet Access.
-		return fmt.Errorf("%w: for VPN service provider %s",
-			ErrPortForwardOnlyNotSupported, vpnServiceProvider)
+	err = validateFeatureFilters(*ss, vpnServiceProvider)
+	if err != nil {
+		return fmt.Errorf("for VPN service provider %s: %w", vpnServiceProvider, err)
 	}
 
 	if ss.VPN == vpn.OpenVPN {
@@ -240,6 +199,40 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 	}
 
 	return nil
+}
+
+func validateSubscriptionTierFilters(settings ServerSelection, vpnServiceProvider string) error {
+	switch {
+	case *settings.FreeOnly &&
+		!helpers.IsOneOf(vpnServiceProvider, providers.Protonvpn, providers.VPNUnlimited):
+		return fmt.Errorf("%w", ErrFreeOnlyNotSupported)
+	case *settings.PremiumOnly &&
+		!helpers.IsOneOf(vpnServiceProvider, providers.VPNSecure):
+		return fmt.Errorf("%w", ErrPremiumOnlyNotSupported)
+	case *settings.FreeOnly && *settings.PremiumOnly:
+		return fmt.Errorf("%w", ErrFreePremiumBothSet)
+	default:
+		return nil
+	}
+}
+
+func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string) error {
+	switch {
+	case *settings.OwnedOnly && vpnServiceProvider != providers.Mullvad:
+		return fmt.Errorf("%w", ErrOwnedOnlyNotSupported)
+	case *settings.StreamOnly &&
+		!helpers.IsOneOf(vpnServiceProvider, providers.Protonvpn, providers.VPNUnlimited):
+		return fmt.Errorf("%w", ErrStreamOnlyNotSupported)
+	case *settings.MultiHopOnly && vpnServiceProvider != providers.Surfshark:
+		return fmt.Errorf("%w", ErrMultiHopOnlyNotSupported)
+	case *settings.PortForwardOnly && vpnServiceProvider != providers.PrivateInternetAccess:
+		// ProtonVPN also supports port forwarding, but on all their servers, so these
+		// don't have the port forwarding boolean field. As a consequence, we only allow
+		// the use of PortForwardOnly for Private Internet Access.
+		return fmt.Errorf("%w", ErrPortForwardOnlyNotSupported)
+	default:
+		return nil
+	}
 }
 
 func (ss *ServerSelection) copy() (copied ServerSelection) {
