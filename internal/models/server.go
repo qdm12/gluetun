@@ -28,9 +28,12 @@ type Server struct {
 	RetroLoc    string       `json:"retroloc,omitempty"` // TODO remove in v4
 	MultiHop    bool         `json:"multihop,omitempty"`
 	WgPubKey    string       `json:"wgpubkey,omitempty"`
-	Free        bool         `json:"free,omitempty"`
-	Stream      bool         `json:"stream,omitempty"`
+	Free        bool         `json:"free,omitempty"` // TODO v4 create a SubscriptionTier struct
 	Premium     bool         `json:"premium,omitempty"`
+	Stream      bool         `json:"stream,omitempty"` // TODO v4 create a Features struct
+	SecureCore  bool         `json:"secure_core,omitempty"`
+	Tor         bool         `json:"tor,omitempty"`
+	P2P         bool         `json:"p2p,omitempty"`
 	PortForward bool         `json:"port_forward,omitempty"`
 	Keep        bool         `json:"keep,omitempty"`
 	IPs         []netip.Addr `json:"ips,omitempty"`
