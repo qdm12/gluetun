@@ -25,7 +25,7 @@ var (
 // It returns 0 if all ports are to forwarded on a dedicated server IP.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
 	port uint16, err error) {
-	url := "https://connect.pvdatanet.com/v3/Api/port?ip[]=" + objects.ServerIP.String()
+	url := "https://connect.pvdatanet.com/v3/Api/port?ip[]=" + objects.InternalIP.String()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return 0, fmt.Errorf("creating HTTP request: %w", err)
@@ -51,8 +51,8 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	if err != nil {
 		return 0, fmt.Errorf("decoding JSON response: %w", err)
 	} else if !data.Supported {
-		return 0, fmt.Errorf("%w: for server IP %s",
-			common.ErrPortForwardNotSupported, objects.ServerIP)
+		return 0, fmt.Errorf("%w: for VPN internal IP %s",
+			common.ErrPortForwardNotSupported, objects.InternalIP)
 	}
 
 	portString := regexPort.FindString(data.Status)

@@ -29,7 +29,6 @@ func (l *Loop) startPortForwarding(data tunnelUpData) (err error) {
 			PortForwarder:  data.portForwarder,
 			Interface:      data.vpnIntf,
 			ServerName:     data.serverName,
-			ServerIP:       data.serverIP,
 			CanPortForward: data.canPortForward,
 			Username:       data.username,
 			Password:       data.password,
