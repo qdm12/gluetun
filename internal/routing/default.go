@@ -53,7 +53,7 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 		if route.Gw.Is4() {
 			family = netlink.FamilyV4
 		}
-		defaultRoute.AssignedIP, err = r.assignedIP(defaultRoute.NetInterface, family)
+		defaultRoute.AssignedIP, err = r.AssignedIP(defaultRoute.NetInterface, family)
 		if err != nil {
 			return nil, fmt.Errorf("getting assigned IP of %s: %w", defaultRoute.NetInterface, err)
 		}
