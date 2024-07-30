@@ -23,7 +23,7 @@ func ipMatchesFamily(ip netip.Addr, family int) bool {
 		(family == netlink.FamilyV6 && ip.Is6())
 }
 
-func (r *Routing) assignedIP(interfaceName string, family int) (ip netip.Addr, err error) {
+func (r *Routing) AssignedIP(interfaceName string, family int) (ip netip.Addr, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
 		return ip, fmt.Errorf("network interface %s not found: %w", interfaceName, err)

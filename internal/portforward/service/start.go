@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
@@ -22,9 +23,19 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		return nil, fmt.Errorf("getting VPN local gateway IP: %w", err)
 	}
 
+	family := netlink.FamilyV4
+	if gateway.Is6() {
+		family = netlink.FamilyV6
+	}
+	internalIP, err := s.routing.AssignedIP(s.settings.Interface, family)
+	if err != nil {
+		return nil, fmt.Errorf("getting VPN assigned IP address: %w", err)
+	}
+
 	obj := utils.PortForwardObjects{
 		Logger:         s.logger,
 		Gateway:        gateway,
+		InternalIP:     internalIP,
 		Client:         s.client,
 		ServerName:     s.settings.ServerName,
 		CanPortForward: s.settings.CanPortForward,

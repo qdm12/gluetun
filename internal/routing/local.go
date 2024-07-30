@@ -70,7 +70,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		if localNet.IPNet.Addr().Is4() {
 			family = netlink.FamilyV4
 		}
-		ip, err := r.assignedIP(localNet.InterfaceName, family)
+		ip, err := r.AssignedIP(localNet.InterfaceName, family)
 		if err != nil {
 			return localNetworks, err
 		}
