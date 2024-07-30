@@ -9,12 +9,19 @@ import (
 
 type hostToServer map[string]models.Server
 
-func (hts hostToServer) add(host, country string, tcp, udp bool) {
+func (hts hostToServer) add(host, country, city string, tcp, udp bool) {
 	server, ok := hts[host]
 	if !ok {
 		server.VPN = vpn.OpenVPN
 		server.Hostname = host
 		server.Country = country
+		server.City = city
+	}
+	if city != "" {
+		// some servers are listed without the city although
+		// they are also listed with the city described, so update
+		// the city field.
+		server.City = city
 	}
 	if tcp {
 		server.TCP = true
