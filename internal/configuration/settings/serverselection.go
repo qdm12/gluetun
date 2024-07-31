@@ -379,6 +379,10 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 		node.Appendf("Multi-hop only servers: yes")
 	}
 
+	if *ss.PortForwardOnly {
+		node.Appendf("Port forwarding only servers: yes")
+	}
+
 	if ss.VPN == vpn.OpenVPN {
 		node.AppendNode(ss.OpenVPN.toLinesNode())
 	} else {
