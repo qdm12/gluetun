@@ -94,25 +94,27 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	maxServers := 2 * len(data.Servers) //nolint:gomnd
 	servers = make([]models.Server, 0, maxServers)
 	for _, serverData := range data.Servers {
-		server := models.Server{
+		baseServer := models.Server{
 			Country:  serverData.Country,
 			Region:   serverData.Region,
 			City:     serverData.City,
 			WgPubKey: serverData.WgPubKey,
 		}
 		if serverData.OpenVPNHostname != "" {
-			server.VPN = vpn.OpenVPN
-			server.UDP = true
-			server.TCP = true
-			server.Hostname = serverData.OpenVPNHostname
-			server.IPs = hostToIPs[serverData.OpenVPNHostname]
-			servers = append(servers, server)
+			openvpnServer := baseServer
+			openvpnServer.VPN = vpn.OpenVPN
+			openvpnServer.UDP = true
+			openvpnServer.TCP = true
+			openvpnServer.Hostname = serverData.OpenVPNHostname
+			openvpnServer.IPs = hostToIPs[serverData.OpenVPNHostname]
+			servers = append(servers, openvpnServer)
 		}
 		if serverData.WireguardHostname != "" {
-			server.VPN = vpn.Wireguard
-			server.Hostname = serverData.WireguardHostname
-			server.IPs = hostToIPs[serverData.WireguardHostname]
-			servers = append(servers, server)
+			wireguardServer := baseServer
+			wireguardServer.VPN = vpn.Wireguard
+			wireguardServer.Hostname = serverData.WireguardHostname
+			wireguardServer.IPs = hostToIPs[serverData.WireguardHostname]
+			servers = append(servers, wireguardServer)
 		}
 	}
 
