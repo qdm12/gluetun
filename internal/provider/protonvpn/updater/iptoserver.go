@@ -34,7 +34,7 @@ func (its ipToServer) add(country, region, city, name, hostname string,
 	server.Free = free
 	server.SecureCore = features.secureCore
 	server.Tor = features.tor
-	server.P2P = features.p2p
+	server.PortForward = features.p2p
 	server.Stream = features.stream
 	server.UDP = true
 	server.TCP = true

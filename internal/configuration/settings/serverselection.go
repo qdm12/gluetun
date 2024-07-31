@@ -69,9 +69,6 @@ type ServerSelection struct { //nolint:maligned
 	// TorOnly is true if VPN servers without tor should
 	// be filtered. This is used with ProtonVPN.
 	TorOnly *bool `json:"tor_only"`
-	// P2POnly is true if VPN servers not for p2p should
-	// be filtered. This is used with ProtonVPN.
-	P2POnly *bool `json:"p2p_only"`
 	// OpenVPN contains settings to select OpenVPN servers
 	// and the final connection.
 	OpenVPN OpenVPNSelection `json:"openvpn"`
@@ -90,7 +87,6 @@ var (
 	ErrFreePremiumBothSet          = errors.New("free only and premium only filters are both set")
 	ErrSecureCoreOnlyNotSupported  = errors.New("secure core only filter is not supported")
 	ErrTorOnlyNotSupported         = errors.New("tor only filter is not supported")
-	ErrP2POnlyNotSupported         = errors.New("p2p only filter is not supported")
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
@@ -246,8 +242,6 @@ func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string)
 		return fmt.Errorf("%w", ErrSecureCoreOnlyNotSupported)
 	case *settings.TorOnly && vpnServiceProvider != providers.Protonvpn:
 		return fmt.Errorf("%w", ErrTorOnlyNotSupported)
-	case *settings.P2POnly && vpnServiceProvider != providers.Protonvpn:
-		return fmt.Errorf("%w", ErrP2POnlyNotSupported)
 	default:
 		return nil
 	}
@@ -271,7 +265,6 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 		StreamOnly:      gosettings.CopyPointer(ss.StreamOnly),
 		SecureCoreOnly:  gosettings.CopyPointer(ss.SecureCoreOnly),
 		TorOnly:         gosettings.CopyPointer(ss.TorOnly),
-		P2POnly:         gosettings.CopyPointer(ss.P2POnly),
 		PortForwardOnly: gosettings.CopyPointer(ss.PortForwardOnly),
 		MultiHopOnly:    gosettings.CopyPointer(ss.MultiHopOnly),
 		OpenVPN:         ss.OpenVPN.copy(),
@@ -296,7 +289,6 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.StreamOnly = gosettings.OverrideWithPointer(ss.StreamOnly, other.StreamOnly)
 	ss.SecureCoreOnly = gosettings.OverrideWithPointer(ss.SecureCoreOnly, other.SecureCoreOnly)
 	ss.TorOnly = gosettings.OverrideWithPointer(ss.TorOnly, other.TorOnly)
-	ss.P2POnly = gosettings.OverrideWithPointer(ss.P2POnly, other.P2POnly)
 	ss.MultiHopOnly = gosettings.OverrideWithPointer(ss.MultiHopOnly, other.MultiHopOnly)
 	ss.PortForwardOnly = gosettings.OverrideWithPointer(ss.PortForwardOnly, other.PortForwardOnly)
 	ss.OpenVPN.overrideWith(other.OpenVPN)
@@ -312,7 +304,6 @@ func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.StreamOnly = gosettings.DefaultPointer(ss.StreamOnly, false)
 	ss.SecureCoreOnly = gosettings.DefaultPointer(ss.SecureCoreOnly, false)
 	ss.TorOnly = gosettings.DefaultPointer(ss.TorOnly, false)
-	ss.P2POnly = gosettings.DefaultPointer(ss.P2POnly, false)
 	ss.MultiHopOnly = gosettings.DefaultPointer(ss.MultiHopOnly, false)
 	ss.PortForwardOnly = gosettings.DefaultPointer(ss.PortForwardOnly, false)
 	ss.OpenVPN.setDefaults(vpnProvider)
@@ -387,10 +378,6 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 
 	if *ss.TorOnly {
 		node.Appendf("Tor only servers: yes")
-	}
-
-	if *ss.P2POnly {
-		node.Appendf("P2P only servers: yes")
 	}
 
 	if *ss.MultiHopOnly {
@@ -478,12 +465,6 @@ func (ss *ServerSelection) read(r *reader.Reader,
 
 	// ProtonVPN only
 	ss.TorOnly, err = r.BoolPtr("TOR_ONLY")
-	if err != nil {
-		return err
-	}
-
-	// ProtonVPN only
-	ss.P2POnly, err = r.BoolPtr("P2P_ONLY")
 	if err != nil {
 		return err
 	}

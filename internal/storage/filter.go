@@ -87,10 +87,6 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if *selection.P2POnly && !server.P2P {
-		return true
-	}
-
 	if filterByPossibilities(server.Country, selection.Countries) {
 		return true
 	}

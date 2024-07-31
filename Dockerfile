@@ -142,7 +142,6 @@ ENV VPN_SERVICE_PROVIDER=pia \
     FREE_ONLY= \
     SECURE_CORE_ONLY= \
     TOR_ONLY= \
-    P2P_ONLY= \
     # # Surfshark only:
     MULTIHOP_ONLY= \
     # # VPN Secure only:
