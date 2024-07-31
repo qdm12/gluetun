@@ -21,9 +21,9 @@ func markdownTableHeading(legendFields ...string) (markdown string) {
 }
 
 const (
+	categoriesHeader  = "Categories"
 	cityHeader        = "City"
 	countryHeader     = "Country"
-	categoriesHeader  = "Categories"
 	freeHeader        = "Free"
 	hostnameHeader    = "Hostname"
 	ispHeader         = "ISP"
@@ -34,8 +34,10 @@ const (
 	portForwardHeader = "Port forwarding"
 	premiumHeader     = "Premium"
 	regionHeader      = "Region"
+	secureHeader      = "Secure"
 	streamHeader      = "Stream"
 	tcpHeader         = "TCP"
+	torHeader         = "Tor"
 	udpHeader         = "UDP"
 	vpnHeader         = "VPN"
 )
@@ -133,7 +135,8 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	case providers.Privatevpn:
 		return []string{countryHeader, cityHeader, hostnameHeader}
 	case providers.Protonvpn:
-		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, freeHeader}
+		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader,
+			freeHeader, portForwardHeader, secureHeader, torHeader}
 	case providers.Purevpn:
 		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}
 	case providers.SlickVPN:
