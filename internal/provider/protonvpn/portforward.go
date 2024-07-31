@@ -11,9 +11,17 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
+var (
+	ErrServerPortForwardNotSupported = errors.New("server does not support port forwarding")
+)
+
 // PortForward obtains a VPN server side port forwarded from ProtonVPN gateway.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
 	ports []uint16, err error) {
+	if !objects.CanPortForward {
+		return nil, fmt.Errorf("%w", ErrServerPortForwardNotSupported)
+	}
+
 	client := natpmp.New()
 	_, externalIPv4Address, err := client.ExternalAddress(ctx,
 		objects.Gateway)

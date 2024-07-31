@@ -61,7 +61,8 @@ type ServerSelection struct { //nolint:maligned
 	// should be filtered. This is used with Surfshark.
 	MultiHopOnly *bool `json:"multi_hop_only"`
 	// PortForwardOnly is true if VPN servers that don't support
-	// port forwarding should be filtered. This is used with PIA.
+	// port forwarding should be filtered. This is used with PIA
+	// and ProtonVPN.
 	PortForwardOnly *bool `json:"port_forward_only"`
 	// SecureCoreOnly is true if VPN servers without secure core should
 	// be filtered. This is used with ProtonVPN.
@@ -233,10 +234,8 @@ func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string)
 		return fmt.Errorf("%w", ErrStreamOnlyNotSupported)
 	case *settings.MultiHopOnly && vpnServiceProvider != providers.Surfshark:
 		return fmt.Errorf("%w", ErrMultiHopOnlyNotSupported)
-	case *settings.PortForwardOnly && vpnServiceProvider != providers.PrivateInternetAccess:
-		// ProtonVPN also supports port forwarding, but on all their servers, so these
-		// don't have the port forwarding boolean field. As a consequence, we only allow
-		// the use of PortForwardOnly for Private Internet Access.
+	case *settings.PortForwardOnly &&
+		!helpers.IsOneOf(vpnServiceProvider, providers.PrivateInternetAccess, providers.Protonvpn):
 		return fmt.Errorf("%w", ErrPortForwardOnlyNotSupported)
 	case *settings.SecureCoreOnly && vpnServiceProvider != providers.Protonvpn:
 		return fmt.Errorf("%w", ErrSecureCoreOnlyNotSupported)
@@ -469,7 +468,7 @@ func (ss *ServerSelection) read(r *reader.Reader,
 		return err
 	}
 
-	// PIA only
+	// PIA and ProtonVPN only
 	ss.PortForwardOnly, err = r.BoolPtr("PORT_FORWARD_ONLY")
 	if err != nil {
 		return err
