@@ -24,6 +24,7 @@ type logicalServer struct {
 	City        *string          `json:"City"`
 	Servers     []physicalServer `json:"Servers"`
 	Features    uint16           `json:"Features"`
+	Tier        *uint8           `json:"Tier,omitempty"`
 }
 
 type physicalServer struct {
@@ -31,7 +32,6 @@ type physicalServer struct {
 	ExitIP  netip.Addr `json:"ExitIP"`
 	Domain  string     `json:"Domain"`
 	Status  uint8      `json:"Status"`
-	Tier    *uint8     `json:"Tier,omitempty"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
