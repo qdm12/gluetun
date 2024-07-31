@@ -58,6 +58,7 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 	if !helpers.IsOneOf(vpnProvider,
 		providers.Airvpn,
 		providers.Custom,
+		providers.Fastestvpn,
 		providers.Ivpn,
 		providers.Mullvad,
 		providers.Nordvpn,

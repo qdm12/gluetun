@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,14 +33,14 @@ func Test_Servers_ToMarkdown(t *testing.T) {
 			provider: providers.Fastestvpn,
 			servers: Servers{
 				Servers: []Server{
-					{Country: "a", Hostname: "xa", TCP: true},
-					{Country: "b", Hostname: "xb", UDP: true},
+					{Country: "a", Hostname: "xa", VPN: vpn.OpenVPN, TCP: true},
+					{Country: "b", Hostname: "xb", VPN: vpn.OpenVPN, UDP: true},
 				},
 			},
-			expectedMarkdown: "| Country | Hostname | TCP | UDP |\n" +
-				"| --- | --- | --- | --- |\n" +
-				"| a | `xa` | ✅ | ❌ |\n" +
-				"| b | `xb` | ❌ | ✅ |\n",
+			expectedMarkdown: "| Country | Hostname | VPN | TCP | UDP |\n" +
+				"| --- | --- | --- | --- | --- |\n" +
+				"| a | `xa` | openvpn | ✅ | ❌ |\n" +
+				"| b | `xb` | openvpn | ❌ | ✅ |\n",
 		},
 	}
 
