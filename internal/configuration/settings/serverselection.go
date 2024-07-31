@@ -294,7 +294,7 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.Wireguard.overrideWith(other.Wireguard)
 }
 
-func (ss *ServerSelection) setDefaults(vpnProvider string) {
+func (ss *ServerSelection) setDefaults(vpnProvider string, portForwardingEnabled bool) {
 	ss.VPN = gosettings.DefaultComparable(ss.VPN, vpn.OpenVPN)
 	ss.TargetIP = gosettings.DefaultValidator(ss.TargetIP, netip.IPv4Unspecified())
 	ss.OwnedOnly = gosettings.DefaultPointer(ss.OwnedOnly, false)
@@ -304,7 +304,12 @@ func (ss *ServerSelection) setDefaults(vpnProvider string) {
 	ss.SecureCoreOnly = gosettings.DefaultPointer(ss.SecureCoreOnly, false)
 	ss.TorOnly = gosettings.DefaultPointer(ss.TorOnly, false)
 	ss.MultiHopOnly = gosettings.DefaultPointer(ss.MultiHopOnly, false)
-	ss.PortForwardOnly = gosettings.DefaultPointer(ss.PortForwardOnly, false)
+	defaultPortForwardOnly := false
+	if portForwardingEnabled && helpers.IsOneOf(vpnProvider,
+		providers.PrivateInternetAccess, providers.Protonvpn) {
+		defaultPortForwardOnly = true
+	}
+	ss.PortForwardOnly = gosettings.DefaultPointer(ss.PortForwardOnly, defaultPortForwardOnly)
 	ss.OpenVPN.setDefaults(vpnProvider)
 	ss.Wireguard.setDefaults()
 }
@@ -399,7 +404,8 @@ func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 // WithDefaults is a shorthand using setDefaults.
 // It's used in unit tests in other packages.
 func (ss ServerSelection) WithDefaults(provider string) ServerSelection {
-	ss.setDefaults(provider)
+	const portForwardingEnabled = false
+	ss.setDefaults(provider, portForwardingEnabled)
 	return ss
 }
 
