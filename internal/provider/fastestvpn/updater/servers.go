@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error) {
-	protocols := []string{"tcp", "udp"}
-	hts := make(hostToServer)
+	protocols := []string{"ikev2", "tcp", "udp"}
+	hts := make(hostToServerData)
 
 	for _, protocol := range protocols {
 		apiServers, err := fetchAPIServers(ctx, u.client, protocol)
@@ -20,15 +21,18 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			return nil, fmt.Errorf("fetching %s servers from API: %w", protocol, err)
 		}
 		for _, apiServer := range apiServers {
+			// all hostnames from the protocols TCP, UDP and IKEV2 support Wireguard
+			// per https://github.com/qdm12/gluetun-wiki/issues/76#issuecomment-2125420536
+			const wgTCP, wgUDP = false, false // ignored
+			hts.add(apiServer.hostname, vpn.Wireguard, apiServer.country, apiServer.city, wgTCP, wgUDP)
+
 			tcp := protocol == "tcp"
 			udp := protocol == "udp"
-			hts.add(apiServer.hostname, apiServer.country, apiServer.city, tcp, udp)
+			if !tcp && !udp { // not an OpenVPN protocol, for example ikev2
+				continue
+			}
+			hts.add(apiServer.hostname, vpn.OpenVPN, apiServer.country, apiServer.city, tcp, udp)
 		}
-	}
-
-	if len(hts) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(hts), minServers)
 	}
 
 	hosts := hts.toHostsSlice()
@@ -41,14 +45,14 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, err
 	}
 
-	if len(hostToIPs) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(servers), minServers)
-	}
-
 	hts.adaptWithIPs(hostToIPs)
 
 	servers = hts.toServersSlice()
+
+	if len(servers) < minServers {
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
+			common.ErrNotEnoughServers, len(servers), minServers)
+	}
 
 	sort.Sort(models.SortableServers(servers))
 

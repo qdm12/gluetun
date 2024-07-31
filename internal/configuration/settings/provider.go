@@ -35,6 +35,7 @@ func (p *Provider) validate(vpnType string, storage Storage) (err error) {
 		validNames = []string{
 			providers.Airvpn,
 			providers.Custom,
+			providers.Fastestvpn,
 			providers.Ivpn,
 			providers.Mullvad,
 			providers.Nordvpn,

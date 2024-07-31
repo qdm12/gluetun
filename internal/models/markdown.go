@@ -113,7 +113,7 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	case providers.Expressvpn:
 		return []string{countryHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}
 	case providers.Fastestvpn:
-		return []string{countryHeader, hostnameHeader, tcpHeader, udpHeader}
+		return []string{countryHeader, hostnameHeader, vpnHeader, tcpHeader, udpHeader}
 	case providers.HideMyAss:
 		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}
 	case providers.Ipvanish:
