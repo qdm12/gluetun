@@ -35,11 +35,11 @@ func (hts hostToServer) add(data serverData) (err error) {
 
 	switch data.Type {
 	case "openvpn":
-		server.VPN = vpn.OpenVPN
+		server.SetVPN(vpn.OpenVPN)
 		server.UDP = true
 		server.TCP = true
 	case "wireguard":
-		server.VPN = vpn.Wireguard
+		server.SetVPN(vpn.Wireguard)
 	case "bridge":
 		// ignore bridge servers
 		return nil

@@ -24,9 +24,9 @@ func Test_addServersFromAPI(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		hts       hostToServers
+		hts       hostToServer
 		exchanges []httpExchange
-		expected  hostToServers
+		expected  hostToServer
 		err       error
 	}{
 		"fetch API error": {
@@ -37,8 +37,8 @@ func Test_addServersFromAPI(t *testing.T) {
 			err: errors.New("HTTP status code not OK: 204 No Content"),
 		},
 		"success": {
-			hts: hostToServers{
-				"existinghost": []models.Server{{Hostname: "existinghost"}},
+			hts: hostToServer{
+				"existinghost": models.Server{Hostname: "existinghost"},
 			},
 			exchanges: []httpExchange{{
 				requestURL:     "https://api.surfshark.com/v4/server/clusters/generic",
@@ -61,25 +61,19 @@ func Test_addServersFromAPI(t *testing.T) {
 				responseStatus: http.StatusOK,
 				responseBody:   io.NopCloser(strings.NewReader(`[]`)),
 			}},
-			expected: map[string][]models.Server{
-				"existinghost": {{Hostname: "existinghost"}},
-				"host1": {{
-					VPN:      vpn.OpenVPN,
+			expected: map[string]models.Server{
+				"existinghost": {Hostname: "existinghost"},
+				"host1": {
+					VPN:      vpn.Both,
 					Region:   "region1",
 					Country:  "country1",
 					City:     "location1",
 					Hostname: "host1",
 					TCP:      true,
 					UDP:      true,
-				}, {
-					VPN:      vpn.Wireguard,
-					Region:   "region1",
-					Country:  "country1",
-					City:     "location1",
-					Hostname: "host1",
 					WgPubKey: "pubKeyValue",
-				}},
-				"host2": {{
+				},
+				"host2": {
 					VPN:      vpn.OpenVPN,
 					Region:   "region2",
 					Country:  "country1",
@@ -87,7 +81,7 @@ func Test_addServersFromAPI(t *testing.T) {
 					Hostname: "host2",
 					TCP:      true,
 					UDP:      true,
-				}},
+				},
 			},
 		},
 	}

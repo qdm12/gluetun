@@ -50,11 +50,11 @@ func filterServer(server models.Server,
 	selection settings.ServerSelection) (filtered bool) {
 	// Note each condition is split to make sure
 	// we have full testing coverage.
-	if server.VPN != selection.VPN {
+	if server.VPN != vpn.Both && server.VPN != selection.VPN {
 		return true
 	}
 
-	if server.VPN != vpn.Wireguard &&
+	if selection.VPN == vpn.OpenVPN &&
 		filterByProtocol(selection, server.TCP, server.UDP) {
 		return true
 	}
@@ -118,8 +118,6 @@ func filterServer(server models.Server,
 	if filterByPossibilities(server.Hostname, selection.Hostnames) {
 		return true
 	}
-
-	// TODO filter port forward server for PIA
 
 	return false
 }

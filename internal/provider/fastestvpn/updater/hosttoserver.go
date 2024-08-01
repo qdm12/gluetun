@@ -68,26 +68,17 @@ func (hts hostToServerData) adaptWithIPs(hostToIPs map[string][]netip.Addr) {
 func (hts hostToServerData) toServersSlice() (servers []models.Server) {
 	servers = make([]models.Server, 0, 2*len(hts)) //nolint:gomnd
 	for hostname, serverData := range hts {
-		baseServer := models.Server{
+		server := models.Server{
+			VPN:      vpn.Both,
 			Hostname: hostname,
 			Country:  serverData.country,
 			City:     serverData.city,
 			IPs:      serverData.ips,
+			TCP:      serverData.openvpnTCP,
+			UDP:      serverData.openvpnUDP,
+			WgPubKey: "658QxufMbjOTmB61Z7f+c7Rjg7oqWLnepTalqBERjF0=",
 		}
-		if serverData.openvpn {
-			openvpnServer := baseServer
-			openvpnServer.VPN = vpn.OpenVPN
-			openvpnServer.TCP = serverData.openvpnTCP
-			openvpnServer.UDP = serverData.openvpnUDP
-			servers = append(servers, openvpnServer)
-		}
-		if serverData.wireguard {
-			wireguardServer := baseServer
-			wireguardServer.VPN = vpn.Wireguard
-			const wireguardPublicKey = "658QxufMbjOTmB61Z7f+c7Rjg7oqWLnepTalqBERjF0="
-			wireguardServer.WgPubKey = wireguardPublicKey
-			servers = append(servers, wireguardServer)
-		}
+		servers = append(servers, server)
 	}
 	return servers
 }

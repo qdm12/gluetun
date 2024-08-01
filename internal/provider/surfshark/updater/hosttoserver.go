@@ -7,94 +7,62 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type hostToServers map[string][]models.Server
+type hostToServer map[string]models.Server
 
-func (hts hostToServers) addOpenVPN(host, region, country, city,
-	retroLoc string, tcp, udp bool) {
-	// Check for existing server for this host and OpenVPN.
-	servers := hts[host]
-	for i, existingServer := range servers {
-		if existingServer.Hostname != host ||
-			existingServer.VPN != vpn.OpenVPN {
-			continue
+func (hts hostToServer) add(host, vpnType, region, country, city,
+	retroLoc, wgPubKey string, openvpnTCP, openvpnUDP bool) {
+	server, ok := hts[host]
+	if !ok {
+		server := models.Server{
+			VPN:      vpnType,
+			Region:   region,
+			Country:  country,
+			City:     city,
+			RetroLoc: retroLoc,
+			Hostname: host,
+			WgPubKey: wgPubKey,
+			TCP:      openvpnTCP,
+			UDP:      openvpnUDP,
 		}
-
-		// Update OpenVPN supported protocols and return
-		if !existingServer.TCP {
-			servers[i].TCP = tcp
-		}
-		if !existingServer.UDP {
-			servers[i].UDP = udp
-		}
+		hts[host] = server
 		return
 	}
 
-	server := models.Server{
-		VPN:      vpn.OpenVPN,
-		Region:   region,
-		Country:  country,
-		City:     city,
-		RetroLoc: retroLoc,
-		Hostname: host,
-		TCP:      tcp,
-		UDP:      udp,
+	server.SetVPN(vpnType)
+	if vpnType == vpn.OpenVPN {
+		server.TCP = server.TCP || openvpnTCP
+		server.UDP = server.UDP || openvpnUDP
+	} else if wgPubKey != "" {
+		server.WgPubKey = wgPubKey
 	}
-	hts[host] = append(servers, server)
+
+	hts[host] = server
 }
 
-func (hts hostToServers) addWireguard(host, region, country, city, retroLoc,
-	wgPubKey string) {
-	// Check for existing server for this host and Wireguard.
-	servers := hts[host]
-	for _, existingServer := range servers {
-		if existingServer.Hostname == host &&
-			existingServer.VPN == vpn.Wireguard {
-			// No update necessary for Wireguard
-			return
-		}
-	}
-
-	server := models.Server{
-		VPN:      vpn.Wireguard,
-		Region:   region,
-		Country:  country,
-		City:     city,
-		RetroLoc: retroLoc,
-		Hostname: host,
-		WgPubKey: wgPubKey,
-	}
-	hts[host] = append(servers, server)
-}
-
-func (hts hostToServers) toHostsSlice() (hosts []string) {
-	const vpnServerTypes = 2 // OpenVPN + Wireguard
-	hosts = make([]string, 0, vpnServerTypes*len(hts))
+func (hts hostToServer) toHostsSlice() (hosts []string) {
+	hosts = make([]string, 0, len(hts))
 	for host := range hts {
 		hosts = append(hosts, host)
 	}
 	return hosts
 }
 
-func (hts hostToServers) adaptWithIPs(hostToIPs map[string][]netip.Addr) {
-	for host, IPs := range hostToIPs {
-		servers := hts[host]
-		for i := range servers {
-			servers[i].IPs = IPs
-		}
-		hts[host] = servers
-	}
-	for host, servers := range hts {
-		if len(servers[0].IPs) == 0 {
+func (hts hostToServer) adaptWithIPs(hostToIPs map[string][]netip.Addr) {
+	for host, server := range hts {
+		ips := hostToIPs[host]
+		if len(ips) == 0 {
 			delete(hts, host)
+			continue
 		}
+		server.IPs = ips
+		hts[host] = server
 	}
 }
 
-func (hts hostToServers) toServersSlice() (servers []models.Server) {
-	const vpnServerTypes = 2 // OpenVPN + Wireguard
-	servers = make([]models.Server, 0, vpnServerTypes*len(hts))
-	for _, serversForHost := range hts {
-		servers = append(servers, serversForHost...)
+func (hts hostToServer) toServersSlice() (servers []models.Server) {
+	servers = make([]models.Server, 0, len(hts))
+	for _, server := range hts {
+		servers = append(servers, server)
 	}
 	return servers
 }

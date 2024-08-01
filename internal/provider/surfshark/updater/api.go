@@ -7,11 +7,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/provider/surfshark/servers"
 )
 
 func addServersFromAPI(ctx context.Context, client *http.Client,
-	hts hostToServers) (err error) {
+	hts hostToServer) (err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return err
@@ -25,12 +26,14 @@ func addServersFromAPI(ctx context.Context, client *http.Client,
 		retroLoc := locationData.RetroLoc               // empty string if the host has no retro-compatible region
 
 		tcp, udp := true, true // OpenVPN servers from API supports both TCP and UDP
-		hts.addOpenVPN(serverData.Host, serverData.Region, serverData.Country,
-			serverData.Location, retroLoc, tcp, udp)
+		const wgPubKey = ""
+		hts.add(serverData.Host, vpn.OpenVPN, serverData.Region, serverData.Country,
+			serverData.Location, retroLoc, wgPubKey, tcp, udp)
 
 		if serverData.PubKey != "" {
-			hts.addWireguard(serverData.Host, serverData.Region, serverData.Country,
-				serverData.Location, retroLoc, serverData.PubKey)
+			const wgTCP, wgUDP = false, false // unused
+			hts.add(serverData.Host, vpn.Wireguard, serverData.Region, serverData.Country,
+				serverData.Location, retroLoc, serverData.PubKey, wgTCP, wgUDP)
 		}
 	}
 

@@ -22,8 +22,8 @@ type Server struct {
 	Number      uint16       `json:"number,omitempty"`
 	ServerName  string       `json:"server_name,omitempty"`
 	Hostname    string       `json:"hostname,omitempty"`
-	TCP         bool         `json:"tcp,omitempty"`
-	UDP         bool         `json:"udp,omitempty"`
+	TCP         bool         `json:"tcp,omitempty"` // TODO v4 rename to openvpn_tcp
+	UDP         bool         `json:"udp,omitempty"` // TODO v4 rename to openvpn_udp
 	OvpnX509    string       `json:"x509,omitempty"`
 	RetroLoc    string       `json:"retroloc,omitempty"` // TODO remove in v4
 	MultiHop    bool         `json:"multihop,omitempty"`
@@ -38,6 +38,25 @@ type Server struct {
 	IPs         []netip.Addr `json:"ips,omitempty"`
 }
 
+func (s *Server) SetVPN(vpnType string) {
+	switch s.VPN {
+	case "":
+		s.VPN = vpnType
+	case vpn.Both:
+		return
+	case vpn.OpenVPN:
+		if vpnType == vpn.Wireguard {
+			s.VPN = vpn.Both
+		}
+	case vpn.Wireguard:
+		if vpnType == vpn.OpenVPN {
+			s.VPN = vpn.Both
+		}
+	default:
+		panic(fmt.Sprintf("VPN type %q not supported", s.VPN))
+	}
+}
+
 var (
 	ErrVPNFieldEmpty           = errors.New("vpn field is empty")
 	ErrHostnameFieldEmpty      = errors.New("hostname field is empty")
@@ -48,16 +67,18 @@ var (
 )
 
 func (s *Server) HasMinimumInformation() (err error) {
+	isOpenVPN := s.VPN == vpn.OpenVPN || s.VPN == vpn.Both
+	isWireguard := s.VPN == vpn.Wireguard || s.VPN == vpn.Both
 	switch {
 	case s.VPN == "":
 		return fmt.Errorf("%w", ErrVPNFieldEmpty)
 	case len(s.IPs) == 0:
 		return fmt.Errorf("%w", ErrIPsFieldEmpty)
-	case s.VPN == vpn.Wireguard && (s.TCP || s.UDP):
+	case isWireguard && !isOpenVPN && (s.TCP || s.UDP):
 		return fmt.Errorf("%w", ErrNetworkProtocolSet)
-	case s.VPN == vpn.OpenVPN && !s.TCP && !s.UDP:
+	case isOpenVPN && !s.TCP && !s.UDP:
 		return fmt.Errorf("%w", ErrNoNetworkProtocol)
-	case s.VPN == vpn.Wireguard && s.WgPubKey == "":
+	case isWireguard && s.WgPubKey == "":
 		return fmt.Errorf("%w", ErrWireguardPublicKeyEmpty)
 	default:
 		return nil

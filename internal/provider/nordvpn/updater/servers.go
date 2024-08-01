@@ -98,12 +98,6 @@ func extractServers(jsonServer serverData, groups map[uint32]groupData,
 		server.Number = number
 	}
 
-	var wireguardFound, openvpnFound bool
-	wireguardServer := server
-	wireguardServer.VPN = vpn.Wireguard
-	openVPNServer := server // accumulate UDP+TCP technologies
-	openVPNServer.VPN = vpn.OpenVPN
-
 	for _, technology := range jsonServer.Technologies {
 		if technology.Status != "online" {
 			continue
@@ -118,33 +112,25 @@ func extractServers(jsonServer serverData, groups map[uint32]groupData,
 
 		switch technologyData.Identifier {
 		case "openvpn_udp", "openvpn_dedicated_udp":
-			openvpnFound = true
-			openVPNServer.UDP = true
+			server.SetVPN(vpn.OpenVPN)
+			server.UDP = true
 		case "openvpn_tcp", "openvpn_dedicated_tcp":
-			openvpnFound = true
-			openVPNServer.TCP = true
+			server.SetVPN(vpn.OpenVPN)
+			server.TCP = true
 		case "wireguard_udp":
-			wireguardFound = true
-			wireguardServer.WgPubKey, err = jsonServer.wireguardPublicKey(technologies)
+			server.WgPubKey, err = jsonServer.wireguardPublicKey(technologies)
 			if err != nil {
 				warning := fmt.Sprintf("ignoring Wireguard server %s: %s", jsonServer.Name, err)
 				warnings = append(warnings, warning)
-				wireguardFound = false
 				continue
 			}
+			server.SetVPN(vpn.Wireguard)
 		default: // Ignore other technologies
 			continue
 		}
 	}
 
-	const maxServers = 2
-	servers = make([]models.Server, 0, maxServers)
-	if openvpnFound {
-		servers = append(servers, openVPNServer)
-	}
-	if wireguardFound {
-		servers = append(servers, wireguardServer)
-	}
+	servers = append(servers, server)
 
 	return servers, warnings
 }
