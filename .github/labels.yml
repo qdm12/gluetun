@@ -36,6 +36,8 @@
 # VPN providers
 - name: "☁️ AirVPN"
   color: "cfe8d4"
+- name: "☁️ Custom"
+  color: "cfe8d4"
 - name: "☁️ Cyberghost"
   color: "cfe8d4"
 - name: "☁️ HideMyAss"
@@ -90,6 +92,9 @@
   color: "ffc7ea"
 - name: "Category: Maintenance ⛓️"
   description: "Anything related to code or other maintenance"
+  color: "ffc7ea"
+- name: "Category: Logs 📚"
+  description: "Something to change in logs"
   color: "ffc7ea"
 - name: "Category: Good idea 🎯"
   description: "This is a good idea, judged by the maintainers"
