@@ -28,10 +28,11 @@ type logicalServer struct {
 }
 
 type physicalServer struct {
-	EntryIP netip.Addr `json:"EntryIP"`
-	ExitIP  netip.Addr `json:"ExitIP"`
-	Domain  string     `json:"Domain"`
-	Status  uint8      `json:"Status"`
+	EntryIP         netip.Addr `json:"EntryIP"`
+	ExitIP          netip.Addr `json:"ExitIP"`
+	Domain          string     `json:"Domain"`
+	Status          uint8      `json:"Status"`
+	X25519PublicKey string     `json:"X25519PublicKey"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (

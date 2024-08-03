@@ -21,7 +21,7 @@ type Connection struct {
 	PubKey string `json:"pubkey"`
 	// ServerName is used for PIA for port forwarding
 	ServerName string `json:"server_name,omitempty"`
-	// PortForward is used for PIA for port forwarding
+	// PortForward is used for PIA and ProtonVPN for port forwarding
 	PortForward bool `json:"port_forward"`
 }
 

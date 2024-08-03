@@ -29,7 +29,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, count, minServers)
 	}
 
-	ipToServer := make(ipToServer, count)
+	ipToServer := make(ipToServers, count)
 	for _, logicalServer := range data.LogicalServers {
 		region := getStringValue(logicalServer.Region)
 		city := getStringValue(logicalServer.City)
@@ -65,6 +65,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 			hostname := physicalServer.Domain
 			entryIP := physicalServer.EntryIP
+			wgPubKey := physicalServer.X25519PublicKey
 
 			// Note: for multi-hop use the server name or hostname
 			// instead of the country
@@ -74,11 +75,11 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 				u.warner.Warn(warning)
 			}
 
-			ipToServer.add(country, region, city, name, hostname, free, entryIP, features)
+			ipToServer.add(country, region, city, name, hostname, wgPubKey, free, entryIP, features)
 		}
 	}
 
-	if len(ipToServer) < minServers {
+	if ipToServer.numberOfServers() < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			common.ErrNotEnoughServers, len(ipToServer), minServers)
 	}

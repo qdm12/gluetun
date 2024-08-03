@@ -135,7 +135,7 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	case providers.Privatevpn:
 		return []string{countryHeader, cityHeader, hostnameHeader}
 	case providers.Protonvpn:
-		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader,
+		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, vpnHeader,
 			freeHeader, portForwardHeader, secureHeader, torHeader}
 	case providers.Purevpn:
 		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}
