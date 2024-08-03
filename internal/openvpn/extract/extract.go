@@ -18,6 +18,11 @@ var (
 func extractDataFromLines(lines []string) (
 	connection models.Connection, err error) {
 	for i, line := range lines {
+		hashSymbolIndex := strings.Index(line, "#")
+		if hashSymbolIndex >= 0 {
+			line = line[:hashSymbolIndex]
+		}
+
 		ip, port, protocol, err := extractDataFromLine(line)
 		if err != nil {
 			return connection, fmt.Errorf("on line %d: %w", i+1, err)
