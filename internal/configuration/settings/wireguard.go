@@ -174,10 +174,15 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 func (w *Wireguard) setDefaults(vpnProvider string) {
 	w.PrivateKey = gosettings.DefaultPointer(w.PrivateKey, "")
 	w.PreSharedKey = gosettings.DefaultPointer(w.PreSharedKey, "")
-	if vpnProvider == providers.Nordvpn {
+	switch vpnProvider {
+	case providers.Nordvpn:
 		defaultNordVPNAddress := netip.AddrFrom4([4]byte{10, 5, 0, 2})
 		defaultNordVPNPrefix := netip.PrefixFrom(defaultNordVPNAddress, defaultNordVPNAddress.BitLen())
 		w.Addresses = gosettings.DefaultSlice(w.Addresses, []netip.Prefix{defaultNordVPNPrefix})
+	case providers.Protonvpn:
+		defaultAddress := netip.AddrFrom4([4]byte{10, 2, 0, 2})
+		defaultPrefix := netip.PrefixFrom(defaultAddress, defaultAddress.BitLen())
+		w.Addresses = gosettings.DefaultSlice(w.Addresses, []netip.Prefix{defaultPrefix})
 	}
 	defaultAllowedIPs := []netip.Prefix{
 		netip.PrefixFrom(netip.IPv4Unspecified(), 0),
