@@ -120,7 +120,7 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	case providers.Mullvad:
 		return []string{countryHeader, cityHeader, ispHeader, ownedHeader, hostnameHeader, vpnHeader}
 	case providers.Nordvpn:
-		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader}
+		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, vpnHeader}
 	case providers.Perfectprivacy:
 		return []string{cityHeader, tcpHeader, udpHeader}
 	case providers.Privado:
@@ -136,7 +136,8 @@ func getMarkdownHeaders(vpnProvider string) (headers []string) {
 	case providers.SlickVPN:
 		return []string{regionHeader, countryHeader, cityHeader, hostnameHeader}
 	case providers.Surfshark:
-		return []string{regionHeader, countryHeader, cityHeader, hostnameHeader, multiHopHeader, tcpHeader, udpHeader}
+		return []string{regionHeader, countryHeader, cityHeader, hostnameHeader,
+			vpnHeader, multiHopHeader, tcpHeader, udpHeader}
 	case providers.Torguard:
 		return []string{countryHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}
 	case providers.VPNSecure:
