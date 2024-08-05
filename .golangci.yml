@@ -120,9 +120,3 @@ linters:
     - wastedassign
     - whitespace
     - zerologlint
-
-run:
-  skip-dirs:
-    - .devcontainer
-    - .github
-    - doc
