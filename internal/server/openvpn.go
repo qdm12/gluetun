@@ -156,7 +156,7 @@ func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request
 	}
 
 	if len(data.Ports) == 0 {
-		http.Error(w, "invalid request", http.StatusBadRequest)
+		http.Error(w, "no port specified", http.StatusBadRequest)
 		return
 	}
 
