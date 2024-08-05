@@ -52,17 +52,28 @@ func (s *Service) GetPortsForwarded() (ports []uint16) {
 }
 
 func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err error) {
-	for _, port := range s.ports {
+	for i, port := range s.ports {
 		err := s.portAllower.RemoveAllowedPort(ctx, port)
 		if err != nil {
+			for j := 0; j <= i; j++ {
+				_ = s.portAllower.SetAllowedPort(ctx, s.ports[j], s.settings.Interface)
+			}
 			s.logger.Error(err.Error())
+			return err
 		}
 	}
 
-	for _, port := range ports {
+	for i, port := range ports {
 		err := s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
 		if err != nil {
+			for j := 0; j <= i; j++ {
+				_ = s.portAllower.RemoveAllowedPort(ctx, s.ports[j])
+			}
+			for _, port := range s.ports {
+				_ = s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
+			}
 			s.logger.Error(err.Error())
+			return err
 		}
 	}
 
