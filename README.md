@@ -84,7 +84,7 @@ Lightweight swiss-knife-like VPN client to multiple VPN service providers
 
 Go to the [Wiki](https://github.com/qdm12/gluetun-wiki)!
 
-[🐛 Found a bug in the Wiki?!](https://github.com/qdm12/gluetun-wiki/issues/new)
+[🐛 Found a bug in the Wiki?!](https://github.com/qdm12/gluetun-wiki/issues/new/choose)
 
 Here's a docker-compose.yml for the laziest:
 

@@ -1,10 +1,10 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a Wiki issue
-    url: https://github.com/qdm12/gluetun-wiki/issues/new
+    url: https://github.com/qdm12/gluetun-wiki/issues/new/choose
     about: Please create an issue on the gluetun-wiki repository.
   - name: Configuration help?
-    url: https://github.com/qdm12/gluetun/discussions/new
+    url: https://github.com/qdm12/gluetun/discussions/new/choose
     about: Please create a Github discussion.
   - name: Unraid template issue
     url: https://github.com/qdm12/gluetun/discussions/550
