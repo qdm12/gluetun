@@ -77,7 +77,7 @@ func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err er
 	s.ports = make([]uint16, len(ports))
 	copy(s.ports, ports)
 
-	s.logger.Info("Updated: " + portsToString(s.ports))
+	s.logger.Info("updated: " + portsToString(s.ports))
 
 	return nil
 }
