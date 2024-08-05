@@ -93,8 +93,6 @@ github.com/qdm12/golibs v0.0.0-20210603202746-e5494e9c2ebb/go.mod h1:15RBzkun0i8
 github.com/qdm12/golibs v0.0.0-20210723175634-a75ca7fd74c2/go.mod h1:6aRbg4Z/bTbm9JfxsGXfWKHi7zsOvPfUTK1S5HuAFKg=
 github.com/qdm12/golibs v0.0.0-20210822203818-5c568b0777b6 h1:bge5AL7cjHJMPz+5IOz5yF01q/l8No6+lIEBieA8gMg=
 github.com/qdm12/golibs v0.0.0-20210822203818-5c568b0777b6/go.mod h1:6aRbg4Z/bTbm9JfxsGXfWKHi7zsOvPfUTK1S5HuAFKg=
-github.com/qdm12/gosettings v0.4.1 h1:c7+14jO1Y2kFXBCUfS2+QE2NgwTKfzcdJzGEFRItCI8=
-github.com/qdm12/gosettings v0.4.1/go.mod h1:uItKwGXibJp2pQ0am6MBKilpjfvYTGiH+zXHd10jFj8=
 github.com/qdm12/gosettings v0.4.2 h1:Gb39NScPr7OQV+oy0o1OD7A121udITDJuUGa7ljDF58=
 github.com/qdm12/gosettings v0.4.2/go.mod h1:CPrt2YC4UsURTrslmhxocVhMCW03lIrqdH2hzIf5prg=
 github.com/qdm12/goshutdown v0.3.0 h1:pqBpJkdwlZlfTEx4QHtS8u8CXx6pG0fVo6S1N0MpSEM=
