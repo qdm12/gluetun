@@ -211,9 +211,9 @@ func (c *Config) redirectPort(ctx context.Context, intf string,
 	}
 
 	err = c.runIptablesInstructions(ctx, []string{
-		fmt.Sprintf("-t nat %s PREROUTING %s -d 127.0.0.1 -p tcp --dport %d -j REDIRECT --to-ports %d",
+		fmt.Sprintf("-t nat %s PREROUTING %s -p tcp --dport %d -j REDIRECT --to-ports %d",
 			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
-		fmt.Sprintf("-t nat %s PREROUTING %s -d 127.0.0.1 -p udp --dport %d -j REDIRECT --to-ports %d",
+		fmt.Sprintf("-t nat %s PREROUTING %s -p udp --dport %d -j REDIRECT --to-ports %d",
 			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
 	})
 	if err != nil {
@@ -222,9 +222,9 @@ func (c *Config) redirectPort(ctx context.Context, intf string,
 	}
 
 	err = c.runIP6tablesInstructions(ctx, []string{
-		fmt.Sprintf("-t nat %s PREROUTING %s -d ::1 -p tcp --dport %d -j REDIRECT --to-ports %d",
+		fmt.Sprintf("-t nat %s PREROUTING %s -p tcp --dport %d -j REDIRECT --to-ports %d",
 			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
-		fmt.Sprintf("-t nat %s PREROUTING %s -d ::1 -p udp --dport %d -j REDIRECT --to-ports %d",
+		fmt.Sprintf("-t nat %s PREROUTING %s -p udp --dport %d -j REDIRECT --to-ports %d",
 			appendOrDelete(remove), interfaceFlag, sourcePort, destinationPort),
 	})
 	if err != nil {
