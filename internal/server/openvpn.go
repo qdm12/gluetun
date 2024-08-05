@@ -160,7 +160,10 @@ func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	h.pf.SetPortsForwarded(data.Ports)
+	if err := h.pf.SetPortsForwarded(data.Ports); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	err := encoder.Encode(h.pf.GetPortsForwarded())
 	if err != nil {

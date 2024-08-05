@@ -166,15 +166,18 @@ func (l *Loop) GetPortsForwarded() (ports []uint16) {
 	return l.service.GetPortsForwarded()
 }
 
-func (l *Loop) SetPortsForwarded(ports []uint16) {
+func (l *Loop) SetPortsForwarded(ports []uint16) (err error) {
 	if l.service == nil {
 		return
 	}
 
-	err := l.service.SetPortsForwarded(l.runCtx, ports)
+	err = l.service.SetPortsForwarded(l.runCtx, ports)
 	if err != nil {
 		l.logger.Error(err.Error())
+		return err
 	}
+
+	return nil
 }
 
 func ptrTo[T any](value T) *T {
