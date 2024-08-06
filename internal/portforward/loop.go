@@ -34,13 +34,15 @@ type Loop struct {
 
 func NewLoop(settings settings.PortForwarding, routing Routing,
 	client *http.Client, portAllower PortAllower,
-	logger Logger, uid, gid int) *Loop {
+	logger Logger, uid, gid int,
+) *Loop {
 	return &Loop{
 		settings: Settings{
 			VPNIsUp: ptrTo(false),
 			Service: service.Settings{
 				Enabled:       settings.Enabled,
 				Filepath:      *settings.Filepath,
+				Scriptpath:    *settings.Scriptpath,
 				ListeningPort: *settings.ListeningPort,
 			},
 		},
@@ -75,7 +77,8 @@ func (l *Loop) Start(_ context.Context) (runError <-chan error, _ error) {
 
 func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 	runErrorCh chan<- error, updateTrigger <-chan Settings,
-	updateResult chan<- error) {
+	updateResult chan<- error,
+) {
 	defer close(runDone)
 
 	var serviceRunError <-chan error
