@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
@@ -64,6 +65,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			continue
 		}
 		server := models.Server{
+			VPN:     vpn.OpenVPN,
 			Country: country,
 			City:    city,
 			IPs:     ips,
