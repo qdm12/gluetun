@@ -176,7 +176,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Emails:       []string{"quentin.mcgaw@gmail.com"},
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
-		BuildDate:    buildInfo.Created,
+		Created:      buildInfo.Created,
 		Announcement: "Wiki moved to https://github.com/qdm12/gluetun-wiki",
 		AnnounceExp:  announcementExp,
 		// Sponsor information

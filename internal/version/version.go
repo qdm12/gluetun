@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -49,13 +50,17 @@ func getLatestRelease(ctx context.Context, client *http.Client) (tagName, name s
 	if err != nil {
 		return "", "", time, err
 	}
+	// Sort releases by tag names (semver)
+	sort.Slice(releases, func(i, j int) bool {
+		return releases[i].TagName > releases[j].TagName
+	})
 	for _, release := range releases {
 		if release.Prerelease {
 			continue
 		}
 		return release.TagName, release.Name, release.PublishedAt, nil
 	}
-	return "", "", time, errReleaseNotFound
+	return "", "", time, fmt.Errorf("%w", errReleaseNotFound)
 }
 
 var errCommitNotFound = errors.New("commit not found")
