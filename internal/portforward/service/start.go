@@ -69,11 +69,11 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		return nil, fmt.Errorf("writing port file: %w", err)
 	}
 
-	if s.settings.Scriptpath == "" {
-		err = s.runPortForwardedScript(ports)
+	if s.settings.Command != "" {
+		err = s.runUpCommand(ports)
 		if err != nil {
 			_ = s.cleanup()
-			return nil, fmt.Errorf("running port forward script: %w", err)
+			return nil, fmt.Errorf("running port forward command: %w", err)
 		}
 	}
 
@@ -88,8 +88,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 	s.keepPortDoneCh = keepPortDoneCh
 
 	go func(ctx context.Context, portForwarder PortForwarder,
-		obj utils.PortForwardObjects, runError chan<- error, doneCh chan<- struct{},
-	) {
+		obj utils.PortForwardObjects, runError chan<- error, doneCh chan<- struct{}) {
 		defer close(doneCh)
 		err = portForwarder.KeepPortForward(ctx, obj)
 		crashed := ctx.Err() == nil
