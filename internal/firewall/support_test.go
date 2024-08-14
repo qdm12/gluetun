@@ -11,8 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//go:generate mockgen -destination=runner_mock_test.go -package $GOPACKAGE github.com/qdm12/golibs/command Runner
-
 func newAppendTestRuleMatcher(path string) *cmdMatcher {
 	return newCmdMatcher(path,
 		"^-A$", "^OUTPUT$", "^-o$", "^[a-z0-9]{15}$",

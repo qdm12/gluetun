@@ -1,0 +1,148 @@
+package firewall
+
+import (
+	"context"
+	"errors"
+	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+)
+
+func newCmdMatcherListRules(iptablesBinary, table, chain string) *cmdMatcher { //nolint:unparam
+	return newCmdMatcher(iptablesBinary, "^-t$", "^"+table+"$", "^-L$", "^"+chain+"$",
+		"^--line-numbers$", "^-n$", "^-v$")
+}
+
+func Test_deleteIPTablesRule(t *testing.T) {
+	t.Parallel()
+
+	const iptablesBinary = "/sbin/iptables"
+	errTest := errors.New("test error")
+
+	testCases := map[string]struct {
+		instruction string
+		makeRunner  func(ctrl *gomock.Controller) *MockRunner
+		makeLogger  func(ctrl *gomock.Controller) *MockLogger
+		errWrapped  error
+		errMessage  string
+	}{
+		"invalid_instruction": {
+			instruction: "invalid",
+			errWrapped:  ErrIptablesCommandMalformed,
+			errMessage: "parsing iptables command: iptables command is malformed: " +
+				"fields count 1 is not even: \"invalid\"",
+		},
+		"list_error": {
+			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
+			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().
+					Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
+					Return("", errTest)
+				return runner
+			},
+			makeLogger: func(ctrl *gomock.Controller) *MockLogger {
+				logger := NewMockLogger(ctrl)
+				logger.EXPECT().Debug("/sbin/iptables -t nat -L PREROUTING --line-numbers -n -v")
+				return logger
+			},
+			errWrapped: errTest,
+			errMessage: `finding iptables chain rule line number: command failed: ` +
+				`"/sbin/iptables -t nat -L PREROUTING --line-numbers -n -v": test error`,
+		},
+		"rule_not_found": {
+			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
+			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
+					Return(`Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)
+		num   pkts bytes target     prot opt in     out     source               destination
+		1        0     0 REDIRECT   6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:5000 redir ports 9999`, //nolint:lll
+						nil)
+				return runner
+			},
+			makeLogger: func(ctrl *gomock.Controller) *MockLogger {
+				logger := NewMockLogger(ctrl)
+				logger.EXPECT().Debug("/sbin/iptables -t nat -L PREROUTING --line-numbers -n -v")
+				logger.EXPECT().Debug("rule matching \"-t nat --delete PREROUTING " +
+					"-i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678\" not found")
+				return logger
+			},
+		},
+		"rule_found_delete_error": {
+			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
+			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
+					Return("Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)\n"+
+						"num   pkts bytes target     prot opt in     out     source               destination         \n"+
+						"1        0     0 REDIRECT   6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:5000 redir ports 9999\n"+ //nolint:lll
+						"2        0     0 REDIRECT   6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:43716 redir ports 5678\n", //nolint:lll
+						nil)
+				runner.EXPECT().Run(newCmdMatcher(iptablesBinary, "^-t$", "^nat$",
+					"^-D$", "^PREROUTING$", "^2$")).Return("details", errTest)
+				return runner
+			},
+			makeLogger: func(ctrl *gomock.Controller) *MockLogger {
+				logger := NewMockLogger(ctrl)
+				logger.EXPECT().Debug("/sbin/iptables -t nat -L PREROUTING --line-numbers -n -v")
+				logger.EXPECT().Debug("found iptables chain rule matching \"-t nat --delete PREROUTING " +
+					"-i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678\" at line number 2")
+				logger.EXPECT().Debug("/sbin/iptables -t nat -D PREROUTING 2")
+				return logger
+			},
+			errWrapped: errTest,
+			errMessage: "command failed: \"/sbin/iptables -t nat -D PREROUTING 2\": test error: details",
+		},
+		"rule_found_delete_success": {
+			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
+			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
+				runner := NewMockRunner(ctrl)
+				runner.EXPECT().Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
+					Return("Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)\n"+
+						"num   pkts bytes target     prot opt in     out     source               destination         \n"+
+						"1        0     0 REDIRECT   6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:5000 redir ports 9999\n"+ //nolint:lll
+						"2        0     0 REDIRECT   6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:43716 redir ports 5678\n", //nolint:lll
+						nil)
+				runner.EXPECT().Run(newCmdMatcher(iptablesBinary, "^-t$", "^nat$",
+					"^-D$", "^PREROUTING$", "^2$")).Return("", nil)
+				return runner
+			},
+			makeLogger: func(ctrl *gomock.Controller) *MockLogger {
+				logger := NewMockLogger(ctrl)
+				logger.EXPECT().Debug("/sbin/iptables -t nat -L PREROUTING --line-numbers -n -v")
+				logger.EXPECT().Debug("found iptables chain rule matching \"-t nat --delete PREROUTING " +
+					"-i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678\" at line number 2")
+				logger.EXPECT().Debug("/sbin/iptables -t nat -D PREROUTING 2")
+				return logger
+			},
+		},
+	}
+
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			ctrl := gomock.NewController(t)
+
+			ctx := context.Background()
+			instruction := testCase.instruction
+			var runner *MockRunner
+			if testCase.makeRunner != nil {
+				runner = testCase.makeRunner(ctrl)
+			}
+			var logger *MockLogger
+			if testCase.makeLogger != nil {
+				logger = testCase.makeLogger(ctrl)
+			}
+
+			err := deleteIPTablesRule(ctx, iptablesBinary, instruction, runner, logger)
+
+			assert.ErrorIs(t, err, testCase.errWrapped)
+			if testCase.errWrapped != nil {
+				assert.EqualError(t, err, testCase.errMessage)
+			}
+		})
+	}
+}
