@@ -44,7 +44,16 @@ func parseChain(iptablesOutput string) (c chain, err error) {
 	// 	  0     0 ACCEPT     6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:55405
 	// 	  0     0 DROP       0    --  tun0   *       0.0.0.0/0            0.0.0.0/0
 	iptablesOutput = strings.TrimSpace(iptablesOutput)
-	lines := strings.Split(iptablesOutput, "\n")
+	linesWithComments := strings.Split(iptablesOutput, "\n")
+
+	// Filter out lines starting with a '#' character
+	lines := make([]string, 0, len(linesWithComments))
+	for _, line := range linesWithComments {
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+		lines = append(lines, line)
+	}
 
 	const minLines = 2 // chain general information line + legend line
 	if len(lines) < minLines {
