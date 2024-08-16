@@ -11,7 +11,7 @@ type tunnelUpData struct {
 	// Port forwarding
 	vpnIntf        string
 	serverName     string // used for PIA
-	canPortForward bool   // used for PIA and ProtonVPN
+	canPortForward bool   // used for PIA
 	username       string // used for PIA
 	password       string // used for PIA
 	portForwarder  PortForwarder

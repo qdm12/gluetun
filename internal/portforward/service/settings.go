@@ -12,7 +12,7 @@ type Settings struct {
 	Enabled        *bool
 	PortForwarder  PortForwarder
 	Filepath       string
-	Interface      string // needed for PIA and ProtonVPN, tun0 for example
+	Interface      string // needed for PIA, PrivateVPN and ProtonVPN, tun0 for example
 	ServerName     string // needed for PIA
 	CanPortForward bool   // needed for PIA
 	ListeningPort  uint16
