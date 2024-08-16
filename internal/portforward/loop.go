@@ -41,6 +41,7 @@ func NewLoop(settings settings.PortForwarding, routing Routing,
 			Service: service.Settings{
 				Enabled:       settings.Enabled,
 				Filepath:      *settings.Filepath,
+				Command:       *settings.Command,
 				ListeningPort: *settings.ListeningPort,
 			},
 		},
