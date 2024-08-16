@@ -22,7 +22,7 @@ type Settings struct {
 	Log           Log
 	PublicIP      PublicIP
 	Shadowsocks   Shadowsocks
-	Storage       StorageSettings
+	Storage       Storage
 	System        System
 	Updater       Updater
 	Version       Version
