@@ -22,6 +22,7 @@ func (s Storage) validate() (err error) {
 			return fmt.Errorf("filepath is not valid: %w", err)
 		}
 	}
+	return nil
 }
 
 func (s *Storage) copy() (copied Storage) {
