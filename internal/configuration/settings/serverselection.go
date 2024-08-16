@@ -91,14 +91,14 @@ var (
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
-	storage Storage, warner Warner) (err error) {
+	filterChoicesGetter FilterChoicesGetter, warner Warner) (err error) {
 	switch ss.VPN {
 	case vpn.OpenVPN, vpn.Wireguard:
 	default:
 		return fmt.Errorf("%w: %s", ErrVPNTypeNotValid, ss.VPN)
 	}
 
-	filterChoices, err := getLocationFilterChoices(vpnServiceProvider, ss, storage, warner)
+	filterChoices, err := getLocationFilterChoices(vpnServiceProvider, ss, filterChoicesGetter, warner)
 	if err != nil {
 		return err // already wrapped error
 	}
@@ -142,9 +142,9 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 }
 
 func getLocationFilterChoices(vpnServiceProvider string,
-	ss *ServerSelection, storage Storage, warner Warner) (
+	ss *ServerSelection, filterChoicesGetter FilterChoicesGetter, warner Warner) (
 	filterChoices models.FilterChoices, err error) {
-	filterChoices = storage.GetFilterChoices(vpnServiceProvider)
+	filterChoices = filterChoicesGetter.GetFilterChoices(vpnServiceProvider)
 
 	if vpnServiceProvider == providers.Surfshark {
 		// // Retro compatibility

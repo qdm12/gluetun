@@ -30,14 +30,14 @@ type Settings struct {
 	Pprof         pprof.Settings
 }
 
-type Storage interface {
+type FilterChoicesGetter interface {
 	GetFilterChoices(provider string) models.FilterChoices
 }
 
 // Validate validates all the settings and returns an error
 // if one of them is not valid.
 // TODO v4 remove pointer for receiver (because of Surfshark).
-func (s *Settings) Validate(storage Storage, ipv6Supported bool,
+func (s *Settings) Validate(filterChoicesGetter FilterChoicesGetter, ipv6Supported bool,
 	warner Warner) (err error) {
 	nameToValidation := map[string]func() error{
 		"control server":  s.ControlServer.validate,
@@ -54,7 +54,7 @@ func (s *Settings) Validate(storage Storage, ipv6Supported bool,
 		"version":         s.Version.validate,
 		// Pprof validation done in pprof constructor
 		"VPN": func() error {
-			return s.VPN.Validate(storage, ipv6Supported, warner)
+			return s.VPN.Validate(filterChoicesGetter, ipv6Supported, warner)
 		},
 	}
 
@@ -88,7 +88,7 @@ func (s *Settings) copy() (copied Settings) {
 }
 
 func (s *Settings) OverrideWith(other Settings,
-	storage Storage, ipv6Supported bool, warner Warner) (err error) {
+	filterChoicesGetter FilterChoicesGetter, ipv6Supported bool, warner Warner) (err error) {
 	patchedSettings := s.copy()
 	patchedSettings.ControlServer.overrideWith(other.ControlServer)
 	patchedSettings.DNS.overrideWith(other.DNS)
@@ -104,7 +104,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Version.overrideWith(other.Version)
 	patchedSettings.VPN.OverrideWith(other.VPN)
 	patchedSettings.Pprof.OverrideWith(other.Pprof)
-	err = patchedSettings.Validate(storage, ipv6Supported, warner)
+	err = patchedSettings.Validate(filterChoicesGetter, ipv6Supported, warner)
 	if err != nil {
 		return err
 	}
