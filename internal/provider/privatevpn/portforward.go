@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -42,17 +43,22 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	}
 
 	defer response.Body.Close()
-	decoder := json.NewDecoder(response.Body)
+
+	bytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response body: %w", err)
+	}
+
 	var data struct {
 		Status    string `json:"status"`
 		Supported bool   `json:"supported"`
 	}
-	err = decoder.Decode(&data)
+	err = json.Unmarshal(bytes, &data)
 	if err != nil {
-		return nil, fmt.Errorf("decoding JSON response: %w", err)
+		return nil, fmt.Errorf("decoding JSON response: %w; data is: %s",
+			err, string(bytes))
 	} else if !data.Supported {
-		return nil, fmt.Errorf("%w: for VPN internal IP %s",
-			common.ErrPortForwardNotSupported, objects.InternalIP)
+		return nil, fmt.Errorf("%w for this VPN server", common.ErrPortForwardNotSupported)
 	}
 
 	portString := regexPort.FindString(data.Status)
@@ -63,7 +69,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	const base, bitSize = 10, 16
 	portUint64, err := strconv.ParseUint(portString, base, bitSize)
 	if err != nil {
-		return nil, fmt.Errorf("parsing port %q: %w", portString, err)
+		return nil, fmt.Errorf("parsing port: %w", err)
 	}
 	return []uint16{uint16(portUint64)}, nil
 }
