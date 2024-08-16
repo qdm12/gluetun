@@ -24,20 +24,20 @@ var (
 // PortForward obtains a VPN server side port forwarded from the PrivateVPN API.
 // It returns 0 if all ports are to forwarded on a dedicated server IP.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
-	port uint16, err error) {
+	ports []uint16, err error) {
 	url := "https://connect.pvdatanet.com/v3/Api/port?ip[]=" + objects.InternalIP.String()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return 0, fmt.Errorf("creating HTTP request: %w", err)
+		return nil, fmt.Errorf("creating HTTP request: %w", err)
 	}
 
 	response, err := objects.Client.Do(request)
 	if err != nil {
-		return 0, fmt.Errorf("sending HTTP request: %w", err)
+		return nil, fmt.Errorf("sending HTTP request: %w", err)
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("%w: %d %s", common.ErrHTTPStatusCodeNotOK,
+		return nil, fmt.Errorf("%w: %d %s", common.ErrHTTPStatusCodeNotOK,
 			response.StatusCode, response.Status)
 	}
 
@@ -49,24 +49,23 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	}
 	err = decoder.Decode(&data)
 	if err != nil {
-		return 0, fmt.Errorf("decoding JSON response: %w", err)
+		return nil, fmt.Errorf("decoding JSON response: %w", err)
 	} else if !data.Supported {
-		return 0, fmt.Errorf("%w: for VPN internal IP %s",
+		return nil, fmt.Errorf("%w: for VPN internal IP %s",
 			common.ErrPortForwardNotSupported, objects.InternalIP)
 	}
 
 	portString := regexPort.FindString(data.Status)
 	if portString == "" {
-		return 0, fmt.Errorf("%w: in status %q", ErrPortForwardedNotFound, data.Status)
+		return nil, fmt.Errorf("%w: in status %q", ErrPortForwardedNotFound, data.Status)
 	}
 
 	const base, bitSize = 10, 16
 	portUint64, err := strconv.ParseUint(portString, base, bitSize)
 	if err != nil {
-		return 0, fmt.Errorf("parsing port %q: %w", portString, err)
+		return nil, fmt.Errorf("parsing port %q: %w", portString, err)
 	}
-	port = uint16(portUint64)
-	return port, nil
+	return []uint16{uint16(portUint64)}, nil
 }
 
 func (p *Provider) KeepPortForward(ctx context.Context,
