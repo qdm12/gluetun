@@ -46,19 +46,18 @@ func (s *Storage) GetServersCount(provider string) (count int) {
 	return len(serversObject.Servers)
 }
 
-// FormatToMarkdown Markdown formats the servers for the provider given
+// Format formats the servers for the provider using the format given
 // and returns the resulting string.
-func (s *Storage) FormatToMarkdown(provider string) (formatted string) {
+func (s *Storage) Format(provider, format string) (formatted string, err error) {
 	if provider == providers.Custom {
-		return ""
+		return "", nil
 	}
 
 	s.mergedMutex.RLock()
 	defer s.mergedMutex.RUnlock()
 
 	serversObject := s.getMergedServersObject(provider)
-	formatted = serversObject.ToMarkdown(provider)
-	return formatted
+	return serversObject.Format(provider, format)
 }
 
 // GetServersCount returns the number of servers for the provider given.

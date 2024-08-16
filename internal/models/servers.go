@@ -3,6 +3,7 @@ package models
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"reflect"
@@ -155,4 +156,30 @@ type Servers struct {
 	Version   uint16   `json:"version"`
 	Timestamp int64    `json:"timestamp"`
 	Servers   []Server `json:"servers,omitempty"`
+}
+
+var (
+	ErrServersFormatNotSupported = errors.New("servers format not supported")
+)
+
+func (s *Servers) Format(vpnProvider, format string) (formatted string, err error) {
+	switch format {
+	case "markdown":
+		return s.toMarkdown(vpnProvider)
+	case "json":
+		return s.toJSON()
+	default:
+		return "", fmt.Errorf("%w: %s", ErrServersFormatNotSupported, format)
+	}
+}
+
+func (s *Servers) toJSON() (formatted string, err error) {
+	buffer := bytes.NewBuffer(nil)
+	encoder := json.NewEncoder(buffer)
+	encoder.SetIndent("", "  ")
+	err = encoder.Encode(s.Servers)
+	if err != nil {
+		return "", fmt.Errorf("encoding servers: %w", err)
+	}
+	return buffer.String(), nil
 }

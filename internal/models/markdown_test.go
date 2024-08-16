@@ -12,10 +12,17 @@ func Test_Servers_ToMarkdown(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		provider         string
-		servers          Servers
-		expectedMarkdown string
+		provider   string
+		servers    Servers
+		formatted  string
+		errWrapped error
+		errMessage string
 	}{
+		"unsupported_provider": {
+			provider:   "unsupported",
+			errWrapped: ErrMarkdownHeadersNotDefined,
+			errMessage: "getting markdown headers: markdown headers not defined: for unsupported",
+		},
 		providers.Cyberghost: {
 			provider: providers.Cyberghost,
 			servers: Servers{
@@ -24,7 +31,7 @@ func Test_Servers_ToMarkdown(t *testing.T) {
 					{Country: "b", TCP: true, Hostname: "xb"},
 				},
 			},
-			expectedMarkdown: "| Country | Hostname | TCP | UDP |\n" +
+			formatted: "| Country | Hostname | TCP | UDP |\n" +
 				"| --- | --- | --- | --- |\n" +
 				"| a | `xa` | ❌ | ✅ |\n" +
 				"| b | `xb` | ✅ | ❌ |\n",
@@ -37,7 +44,7 @@ func Test_Servers_ToMarkdown(t *testing.T) {
 					{Country: "b", Hostname: "xb", VPN: vpn.OpenVPN, UDP: true},
 				},
 			},
-			expectedMarkdown: "| Country | Hostname | VPN | TCP | UDP |\n" +
+			formatted: "| Country | Hostname | VPN | TCP | UDP |\n" +
 				"| --- | --- | --- | --- | --- |\n" +
 				"| a | `xa` | openvpn | ✅ | ❌ |\n" +
 				"| b | `xb` | openvpn | ❌ | ✅ |\n",
@@ -49,9 +56,13 @@ func Test_Servers_ToMarkdown(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			markdown := testCase.servers.ToMarkdown(testCase.provider)
+			markdown, err := testCase.servers.toMarkdown(testCase.provider)
 
-			assert.Equal(t, testCase.expectedMarkdown, markdown)
+			assert.Equal(t, testCase.formatted, markdown)
+			assert.ErrorIs(t, err, testCase.errWrapped)
+			if testCase.errWrapped != nil {
+				assert.EqualError(t, err, testCase.errMessage)
+			}
 		})
 	}
 }
