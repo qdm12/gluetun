@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	regexPort = regexp.MustCompile(`^[1-9][0-9]{0,4}$`)
+	regexPort = regexp.MustCompile(`[1-9][0-9]{0,4}`)
 )
 
 var (
