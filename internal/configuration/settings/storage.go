@@ -1,7 +1,9 @@
 package settings
 
 import (
-	"github.com/qdm12/gluetun/internal/constants"
+	"fmt"
+	"path/filepath"
+
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
@@ -45,7 +47,7 @@ func (s StorageSettings) toLinesNode() (node *gotree.Node) {
 	if *s.Filepath == "" {
 		return gotree.New("Storage settings: disabled")
 	}
-	node = gotree.New("Storage settings:")		
+	node = gotree.New("Storage settings:")
 	node.Appendf("Filepath: %s", *s.Filepath)
 	return node
 }
