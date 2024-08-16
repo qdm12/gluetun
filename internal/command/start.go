@@ -72,6 +72,10 @@ func streamToChannel(ready chan<- struct{},
 	defer close(done)
 	close(ready)
 	scanner := bufio.NewScanner(stream)
+	lineBuffer := make([]byte, bufio.MaxScanTokenSize) // 64KB
+	const maxCapacity = 20 * 1024 * 1024               // 20MB
+	scanner.Buffer(lineBuffer, maxCapacity)
+
 	for scanner.Scan() {
 		// scanner is closed if the context is canceled
 		// or if the command failed starting because the
