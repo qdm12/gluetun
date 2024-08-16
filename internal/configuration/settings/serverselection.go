@@ -191,11 +191,19 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 		return fmt.Errorf("%w: %w", ErrHostnameNotValid, err)
 	}
 
-	if vpnServiceProvider == providers.Custom && len(settings.Names) == 1 {
-		// Allow a single name to be specified for the custom provider in case
-		// the user wants to use VPN server side port forwarding with PIA
-		// which requires a server name for TLS verification.
-		filterChoices.Names = settings.Names
+	if vpnServiceProvider == providers.Custom {
+		switch len(settings.Names) {
+		case 0:
+		case 1:
+			// Allow a single name to be specified for the custom provider in case
+			// the user wants to use VPN server side port forwarding with PIA
+			// which requires a server name for TLS verification.
+			filterChoices.Names = settings.Names
+		default:
+			return fmt.Errorf("%w: %d names specified instead of "+
+				"0 or 1 for the custom provider",
+				ErrNameNotValid, len(settings.Names))
+		}
 	}
 	err = atLeastOneIsOneOfCaseInsensitive(settings.Names, filterChoices.Names, warner)
 	if err != nil {
