@@ -120,7 +120,10 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 		if updateReceived {
 			// Signal to the Update call that the service has started
 			// and if it failed to start.
-			updateResult <- fmt.Errorf("starting port forwarding service: %w", err)
+			if err != nil {
+				err = fmt.Errorf("starting port forwarding service: %w", err)
+			}
+			updateResult <- err
 		}
 	}
 }
