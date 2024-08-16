@@ -14,24 +14,27 @@ type StorageSettings struct {
 }
 
 func (s StorageSettings) validate() (err error) {
-	return nil
+	if *s.Filepath != "" { // optional
+		_, err := filepath.Abs(*s.Filepath)
+		if err != nil {
+			return fmt.Errorf("filepath is not valid: %w", err)
+		}
+	}
 }
 
 func (s *StorageSettings) copy() (copied StorageSettings) {
 	return StorageSettings{
-		Filepath: s.Filepath,
+		Filepath: gosettings.CopyPointer(s.Filepath),
 	}
 }
 
-// overrideWith overrides fields of the receiver
-// settings object with any field set in the other
-// settings.
 func (s *StorageSettings) overrideWith(other StorageSettings) {
 	s.Filepath = gosettings.OverrideWithPointer(s.Filepath, other.Filepath)
 }
 
 func (s *StorageSettings) setDefaults() {
-	s.Filepath = gosettings.DefaultPointer(s.Filepath, constants.ServersData)
+	const defaultFilepath = "/gluetun/servers.json"
+	s.Filepath = gosettings.DefaultPointer(s.Filepath, defaultFilepath)
 }
 
 func (s StorageSettings) String() string {
@@ -39,7 +42,10 @@ func (s StorageSettings) String() string {
 }
 
 func (s StorageSettings) toLinesNode() (node *gotree.Node) {
-	node = gotree.New("Storage settings:")
+	if *s.Filepath == "" {
+		return gotree.New("Storage settings: disabled")
+	}
+	node = gotree.New("Storage settings:")		
 	node.Appendf("Filepath: %s", *s.Filepath)
 	return node
 }
