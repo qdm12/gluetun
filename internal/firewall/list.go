@@ -231,12 +231,12 @@ func parseChainRuleField(fieldIndex int, field string, rule *chainRule) (err err
 	case outputInterfaceIndex:
 		rule.outputInterface = field
 	case sourceIndex:
-		rule.source, err = netip.ParsePrefix(field)
+		rule.source, err = parseIPPrefix(field)
 		if err != nil {
 			return fmt.Errorf("parsing source IP CIDR: %w", err)
 		}
 	case destinationIndex:
-		rule.destination, err = netip.ParsePrefix(field)
+		rule.destination, err = parseIPPrefix(field)
 		if err != nil {
 			return fmt.Errorf("parsing destination IP CIDR: %w", err)
 		}

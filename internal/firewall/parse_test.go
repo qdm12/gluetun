@@ -39,7 +39,7 @@ func Test_parseIptablesInstruction(t *testing.T) {
 			},
 		},
 		"instruction_A": {
-			s: "-A INPUT -i tun0 -p tcp -m tcp -s 1.2.3.4/32 --dport 10000 -j ACCEPT",
+			s: "-A INPUT -i tun0 -p tcp -m tcp -s 1.2.3.4/32 -d 5.6.7.8 --dport 10000 -j ACCEPT",
 			instruction: iptablesInstruction{
 				table:           "filter",
 				chain:           "INPUT",
@@ -47,6 +47,7 @@ func Test_parseIptablesInstruction(t *testing.T) {
 				inputInterface:  "tun0",
 				protocol:        "tcp",
 				source:          netip.MustParsePrefix("1.2.3.4/32"),
+				destination:     netip.MustParsePrefix("5.6.7.8/32"),
 				destinationPort: 10000,
 				target:          "ACCEPT",
 			},

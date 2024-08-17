@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -117,12 +118,12 @@ func parseInstructionFlag(key, value string, instruction *iptablesInstruction) (
 	case "-o", "--out-interface":
 		instruction.outputInterface = value
 	case "-s", "--source":
-		instruction.source, err = netip.ParsePrefix(value)
+		instruction.source, err = parseIPPrefix(value)
 		if err != nil {
 			return fmt.Errorf("parsing source IP CIDR: %w", err)
 		}
 	case "-d", "--destination":
-		instruction.destination, err = netip.ParsePrefix(value)
+		instruction.destination, err = parseIPPrefix(value)
 		if err != nil {
 			return fmt.Errorf("parsing destination IP CIDR: %w", err)
 		}
@@ -150,4 +151,13 @@ func parseInstructionFlag(key, value string, instruction *iptablesInstruction) (
 		return fmt.Errorf("%w: unknown key %q", ErrIptablesCommandMalformed, key)
 	}
 	return nil
+}
+
+var regexCidrSuffix = regexp.MustCompile(`/[0-9][0-9]{0,1}$`)
+
+func parseIPPrefix(value string) (prefix netip.Prefix, err error) {
+	if !regexCidrSuffix.MatchString(value) {
+		value += "/32"
+	}
+	return netip.ParsePrefix(value)
 }
