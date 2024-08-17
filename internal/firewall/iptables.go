@@ -70,7 +70,7 @@ func (c *Config) runIptablesInstruction(ctx context.Context, instruction string)
 	c.iptablesMutex.Lock() // only one iptables command at once
 	defer c.iptablesMutex.Unlock()
 
-	if isDeleteInstruction(instruction) {
+	if isDeleteMatchInstruction(instruction) {
 		return deleteIPTablesRule(ctx, c.ipTables, instruction,
 			c.runner, c.logger)
 	}

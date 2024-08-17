@@ -40,7 +40,7 @@ func (c *Config) runIP6tablesInstruction(ctx context.Context, instruction string
 	c.ip6tablesMutex.Lock() // only one ip6tables command at once
 	defer c.ip6tablesMutex.Unlock()
 
-	if isDeleteInstruction(instruction) {
+	if isDeleteMatchInstruction(instruction) {
 		return deleteIPTablesRule(ctx, c.ip6Tables, instruction,
 			c.runner, c.logger)
 	}

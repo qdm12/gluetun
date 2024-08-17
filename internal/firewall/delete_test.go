@@ -9,6 +9,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_isDeleteMatchInstruction(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		instruction   string
+		isDeleteMatch bool
+	}{
+		"not_delete": {
+			instruction: "-t nat -A PREROUTING -i tun0 -j ACCEPT",
+		},
+		"malformed_missing_chain_name": {
+			instruction: "-t nat -D",
+		},
+		"delete_chain_name_last_field": {
+			instruction:   "-t nat --delete PREROUTING",
+			isDeleteMatch: true,
+		},
+		"delete_match": {
+			instruction:   "-t nat --delete PREROUTING -i tun0 -j ACCEPT",
+			isDeleteMatch: true,
+		},
+		"delete_line_number_last_field": {
+			instruction: "-t nat -D PREROUTING 2",
+		},
+		"delete_line_number": {
+			instruction: "-t nat -D PREROUTING 2 -i tun0 -j ACCEPT",
+		},
+	}
+	for name, testCase := range testCases {
+		testCase := testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			isDeleteMatch := isDeleteMatchInstruction(testCase.instruction)
+
+			assert.Equal(t, testCase.isDeleteMatch, isDeleteMatch)
+		})
+	}
+}
+
 func newCmdMatcherListRules(iptablesBinary, table, chain string) *cmdMatcher { //nolint:unparam
 	return newCmdMatcher(iptablesBinary, "^-t$", "^"+table+"$", "^-L$", "^"+chain+"$",
 		"^--line-numbers$", "^-n$", "^-v$")

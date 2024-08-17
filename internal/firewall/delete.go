@@ -4,15 +4,29 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
-func isDeleteInstruction(instruction string) bool {
+// isDeleteMatchInstruction returns true if the iptables instruction
+// is a delete instruction by rule matching. It returns false if the
+// instruction is a delete instruction by line number, or not a delete
+// instruction.
+func isDeleteMatchInstruction(instruction string) bool {
 	fields := strings.Fields(instruction)
-	for i := 0; i < len(fields); i += 2 {
-		switch fields[i] {
-		case "-D", "--delete": //nolint:goconst
+	for i, field := range fields {
+		switch {
+		case field != "-D" && field != "--delete": //nolint:goconst
+			continue
+		case i == len(fields)-1: // malformed: missing chain name
+			return false
+		case i == len(fields)-2: // chain name is last field
 			return true
+		default:
+			// chain name is fields[i+1]
+			const base, bitLength = 10, 16
+			_, err := strconv.ParseUint(fields[i+2], base, bitLength)
+			return err != nil // not a line number
 		}
 	}
 	return false
