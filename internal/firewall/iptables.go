@@ -70,10 +70,14 @@ func (c *Config) runIptablesInstruction(ctx context.Context, instruction string)
 	c.iptablesMutex.Lock() // only one iptables command at once
 	defer c.iptablesMutex.Unlock()
 
-	c.logger.Debug(c.ipTables + " " + instruction)
+	if isDeleteMatchInstruction(instruction) {
+		return deleteIPTablesRule(ctx, c.ipTables, instruction,
+			c.runner, c.logger)
+	}
 
 	flags := strings.Fields(instruction)
 	cmd := exec.CommandContext(ctx, c.ipTables, flags...) // #nosec G204
+	c.logger.Debug(cmd.String())
 	if output, err := c.runner.Run(cmd); err != nil {
 		return fmt.Errorf("command failed: \"%s %s\": %s: %w",
 			c.ipTables, instruction, output, err)
@@ -143,7 +147,7 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 	defaultInterface string, connection models.Connection, remove bool) error {
 	protocol := connection.Protocol
 	if protocol == "tcp-client" {
-		protocol = "tcp"
+		protocol = "tcp" //nolint:goconst
 	}
 	instruction := fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 		appendOrDelete(remove), connection.IP, defaultInterface, protocol,
