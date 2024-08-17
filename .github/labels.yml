@@ -9,6 +9,9 @@
 - name: "Status: 🔒 After next release"
   color: "f7d692"
   description: "Will be done after the next release"
+- name: "Status: 🟡 Nearly resolved"
+  color: "f7d692"
+  description: "This might be resolved or is about to be resolved"
 
 - name: "Closed: ⚰️ Inactive"
   color: "959a9c"
@@ -137,4 +140,6 @@
 - name: "Category: kernel 🧠"
   color: "ffc7ea"
 - name: "Category: public IP service 💬"
+  color: "ffc7ea"
+- name: "Category: servers storage 📦"
   color: "ffc7ea"
