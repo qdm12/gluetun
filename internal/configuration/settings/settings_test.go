@@ -79,6 +79,8 @@ func Test_Settings_String(t *testing.T) {
 ├── Control server settings:
 |   ├── Listening address: :8000
 |   └── Logging: yes
+├── Storage settings:
+|   └── Filepath: /gluetun/servers.json
 ├── OS Alpine settings:
 |   ├── Process UID: 1000
 |   └── Process GID: 1000
