@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
-	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -153,11 +152,15 @@ func parseInstructionFlag(key, value string, instruction *iptablesInstruction) (
 	return nil
 }
 
-var regexCidrSuffix = regexp.MustCompile(`/[0-9][0-9]{0,2}$`)
-
 func parseIPPrefix(value string) (prefix netip.Prefix, err error) {
-	if !regexCidrSuffix.MatchString(value) {
-		value += "/32"
+	slashIndex := strings.Index(value, "/")
+	if slashIndex >= 0 {
+		return netip.ParsePrefix(value)
 	}
-	return netip.ParsePrefix(value)
+
+	ip, err := netip.ParseAddr(value)
+	if err != nil {
+		return netip.Prefix{}, fmt.Errorf("parsing IP address: %w", err)
+	}
+	return netip.PrefixFrom(ip, ip.BitLen()), nil
 }
