@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
+	"strings"
 )
 
 // Check out the JSON data from https://api.nordvpn.com/v2/servers?limit=10
@@ -92,6 +93,9 @@ func (s serversData) idToData() (
 ) {
 	groups = make(map[uint32]groupData, len(s.Groups))
 	for _, group := range s.Groups {
+		if group.Type.Identifier == "regions" { //nolint:goconst
+			group.Title = strings.ReplaceAll(group.Title, ",", "")
+		}
 		groups[group.ID] = group
 	}
 
