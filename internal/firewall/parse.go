@@ -153,7 +153,7 @@ func parseInstructionFlag(key, value string, instruction *iptablesInstruction) (
 	return nil
 }
 
-var regexCidrSuffix = regexp.MustCompile(`/[0-9][0-9]{0,1}$`)
+var regexCidrSuffix = regexp.MustCompile(`/[0-9][0-9]{0,2}$`)
 
 func parseIPPrefix(value string) (prefix netip.Prefix, err error) {
 	if !regexCidrSuffix.MatchString(value) {
