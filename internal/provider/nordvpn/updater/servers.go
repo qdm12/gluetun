@@ -79,7 +79,7 @@ func extractServers(jsonServer serverData, groups map[uint32]groupData,
 
 	server := models.Server{
 		Country:    location.Country.Name,
-		Region:     jsonServer.region(groups),
+		Region:     region,
 		City:       location.Country.City.Name,
 		Categories: jsonServer.categories(groups),
 		Hostname:   jsonServer.Hostname,
