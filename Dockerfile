@@ -206,6 +206,8 @@ ENV VPN_SERVICE_PROVIDER=pia \
     PUBLICIP_PERIOD=12h \
     PUBLICIP_API=ipinfo \
     PUBLICIP_API_TOKEN= \
+    # Storage
+    STORAGE_FILEPATH=/gluetun/servers.json \
     # Pprof
     PPROF_ENABLED=no \
     PPROF_BLOCK_PROFILE_RATE=0 \

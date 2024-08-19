@@ -239,7 +239,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storageLogger := logger.New(log.SetComponent("storage"))
-	storage, err := storage.New(storageLogger, constants.ServersData)
+	storage, err := storage.New(storageLogger, *allSettings.Storage.Filepath)
 	if err != nil {
 		return err
 	}
