@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/format"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/format"
 )
 
 func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.AllServers {

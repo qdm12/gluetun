@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/format"
 	"github.com/qdm12/gluetun/internal/provider/utils"
-	"github.com/qdm12/golibs/format"
 )
 
 var (

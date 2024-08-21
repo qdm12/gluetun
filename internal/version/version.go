@@ -8,8 +8,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/format"
 	"github.com/qdm12/gluetun/internal/models"
-	"github.com/qdm12/golibs/format"
 )
 
 // GetMessage returns a message for the user describing if there is a newer version
