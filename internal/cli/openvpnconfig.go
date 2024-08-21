@@ -49,7 +49,7 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
 	}
 
 	var allSettings settings.Settings
-	err = allSettings.Read(reader)
+	err = allSettings.Read(reader, logger)
 	if err != nil {
 		return err
 	}

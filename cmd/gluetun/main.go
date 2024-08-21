@@ -13,7 +13,6 @@ import (
 	_ "time/tzdata"
 
 	_ "github.com/breml/rootcerts"
-	"github.com/qdm12/dns/pkg/unbound"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -51,7 +50,6 @@ import (
 	"github.com/qdm12/goshutdown/order"
 	"github.com/qdm12/gosplash"
 	"github.com/qdm12/log"
-	"github.com/qdm12/updated/pkg/dnscrypto"
 )
 
 //nolint:gochecknoglobals
@@ -188,7 +186,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	var allSettings settings.Settings
-	err = allSettings.Read(reader)
+	err = allSettings.Read(reader, logger)
 	if err != nil {
 		return err
 	}
@@ -269,16 +267,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	ovpnConf := openvpn.New(
 		logger.New(log.SetComponent("openvpn configurator")),
 		cmder, puid, pgid)
-	dnsCrypto := dnscrypto.New(httpClient, "", "")
-	const cacertsPath = "/etc/ssl/certs/ca-certificates.crt"
-	dnsConf := unbound.NewConfigurator(nil, cmder, dnsCrypto,
-		"/etc/unbound", "/usr/sbin/unbound", cacertsPath)
 
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
 		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
 		{name: "OpenVPN 2.6", getVersion: ovpnConf.Version26},
-		{name: "Unbound", getVersion: dnsConf.Version},
 		{name: "IPtables", getVersion: firewallConf.Version},
 	})
 	if err != nil {
@@ -306,14 +299,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	if nonRootUsername != defaultUsername {
 		logger.Info("using existing username " + nonRootUsername + " corresponding to user id " + fmt.Sprint(puid))
 	}
-	// set it for Unbound
-	// TODO remove this when migrating to qdm12/dns v2
-	allSettings.DNS.DoT.Unbound.Username = nonRootUsername
 	allSettings.VPN.OpenVPN.ProcessUser = nonRootUsername
-
-	if err := os.Chown("/etc/unbound", puid, pgid); err != nil {
-		return err
-	}
 
 	if err := routingConf.Setup(); err != nil {
 		if strings.Contains(err.Error(), "operation not permitted") {
@@ -396,18 +382,22 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("starting port forwarding loop: %w", err)
 	}
 
-	unboundLogger := logger.New(log.SetComponent("dns"))
-	unboundLooper := dns.NewLoop(dnsConf, allSettings.DNS, httpClient,
-		unboundLogger)
+	dnsLogger := logger.New(log.SetComponent("dns"))
+	dnsLooper, err := dns.NewLoop(allSettings.DNS, httpClient,
+		dnsLogger)
+	if err != nil {
+		return fmt.Errorf("creating DNS loop: %w", err)
+	}
+
 	dnsHandler, dnsCtx, dnsDone := goshutdown.NewGoRoutineHandler(
-		"unbound", goroutine.OptionTimeout(defaultShutdownTimeout))
-	// wait for unboundLooper.Restart or its ticker launched with RunRestartTicker
-	go unboundLooper.Run(dnsCtx, dnsDone)
+		"dns", goroutine.OptionTimeout(defaultShutdownTimeout))
+	// wait for dnsLooper.Restart or its ticker launched with RunRestartTicker
+	go dnsLooper.Run(dnsCtx, dnsDone)
 	otherGroupHandler.Add(dnsHandler)
 
 	dnsTickerHandler, dnsTickerCtx, dnsTickerDone := goshutdown.NewGoRoutineHandler(
 		"dns ticker", goroutine.OptionTimeout(defaultShutdownTimeout))
-	go unboundLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
+	go dnsLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
 	controlGroupHandler.Add(dnsTickerHandler)
 
 	publicipAPI, _ := pubipapi.ParseProvider(allSettings.PublicIP.API)
@@ -434,7 +424,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
 		providers, storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
-		cmder, publicIPLooper, unboundLooper, vpnLogger, httpClient,
+		cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
 		"vpn", goroutine.OptionTimeout(time.Second))
@@ -474,7 +464,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.New(log.SetComponent("http server")),
-		buildInfo, vpnLooper, portForwardLooper, unboundLooper, updaterLooper, publicIPLooper,
+		buildInfo, vpnLooper, portForwardLooper, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
 		return fmt.Errorf("setting up control server: %w", err)

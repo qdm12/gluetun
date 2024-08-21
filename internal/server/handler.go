@@ -12,7 +12,7 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	buildInfo models.BuildInformation,
 	vpnLooper VPNLooper,
 	pfGetter PortForwardedGetter,
-	unboundLooper DNSLoop,
+	dnsLooper DNSLoop,
 	updaterLooper UpdaterLooper,
 	publicIPLooper PublicIPLoop,
 	storage Storage,
@@ -22,11 +22,11 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 
 	vpn := newVPNHandler(ctx, vpnLooper, storage, ipv6Supported, logger)
 	openvpn := newOpenvpnHandler(ctx, vpnLooper, pfGetter, logger)
-	dns := newDNSHandler(ctx, unboundLooper, logger)
+	dns := newDNSHandler(ctx, dnsLooper, logger)
 	updater := newUpdaterHandler(ctx, updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)
 
-	handler.v0 = newHandlerV0(ctx, logger, vpnLooper, unboundLooper, updaterLooper)
+	handler.v0 = newHandlerV0(ctx, logger, vpnLooper, dnsLooper, updaterLooper)
 	handler.v1 = newHandlerV1(logger, buildInfo, vpn, openvpn, dns, updater, publicip)
 
 	handlerWithLog := withLogMiddleware(handler, logger, logging)

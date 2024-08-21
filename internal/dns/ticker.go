@@ -34,7 +34,7 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 				if err := l.updateFiles(ctx); err != nil {
 					l.statusManager.SetStatus(constants.Crashed)
 					l.logger.Error(err.Error())
-					l.logger.Warn("skipping Unbound restart due to failed files update")
+					l.logger.Warn("skipping DNS server restart due to failed files update")
 					continue
 				}
 			}
