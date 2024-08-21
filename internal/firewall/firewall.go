@@ -7,11 +7,10 @@ import (
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/routing"
-	"github.com/qdm12/golibs/command"
 )
 
 type Config struct { //nolint:maligned
-	runner         command.Runner
+	runner         CmdRunner
 	logger         Logger
 	iptablesMutex  sync.Mutex
 	ip6tablesMutex sync.Mutex
@@ -36,7 +35,7 @@ type Config struct { //nolint:maligned
 // NewConfig creates a new Config instance and returns an error
 // if no iptables implementation is available.
 func NewConfig(ctx context.Context, logger Logger,
-	runner command.Runner, defaultRoutes []routing.DefaultRoute,
+	runner CmdRunner, defaultRoutes []routing.DefaultRoute,
 	localNetworks []routing.LocalNetwork) (config *Config, err error) {
 	iptables, err := checkIptablesSupport(ctx, runner, "iptables", "iptables-nft", "iptables-legacy")
 	if err != nil {

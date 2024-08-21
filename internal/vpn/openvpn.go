@@ -7,14 +7,13 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/golibs/command"
 )
 
 // setupOpenVPN sets OpenVPN up using the configurators and settings given.
 // It returns a serverName for port forwarding (PIA) and an error if it fails.
 func setupOpenVPN(ctx context.Context, fw Firewall,
 	openvpnConf OpenVPN, providerConf provider.Provider,
-	settings settings.VPN, ipv6Supported bool, starter command.Starter,
+	settings settings.VPN, ipv6Supported bool, starter CmdStarter,
 	logger openvpn.Logger) (runner *openvpn.Runner, serverName string,
 	canPortForward bool, err error) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Supported)

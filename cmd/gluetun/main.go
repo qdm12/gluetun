@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -15,6 +16,7 @@ import (
 	_ "github.com/breml/rootcerts"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/cli"
+	"github.com/qdm12/gluetun/internal/command"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
@@ -41,7 +43,6 @@ import (
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"github.com/qdm12/gluetun/internal/vpn"
-	"github.com/qdm12/golibs/command"
 	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gosettings/reader/sources/env"
 	"github.com/qdm12/goshutdown"
@@ -78,7 +79,7 @@ func main() {
 	netLinkDebugLogger := logger.New(log.SetComponent("netlink"))
 	netLinker := netlink.New(netLinkDebugLogger)
 	cli := cli.New()
-	cmder := command.NewCmder()
+	cmder := command.New()
 
 	reader := reader.New(reader.Settings{
 		Sources: []reader.Source{
@@ -145,7 +146,7 @@ var (
 //nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger log.LoggerInterface, reader *reader.Reader,
-	tun Tun, netLinker netLinker, cmder command.RunStarter,
+	tun Tun, netLinker netLinker, cmder RunStarter,
 	cli clier) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
@@ -590,4 +591,10 @@ type clier interface {
 type Tun interface {
 	Check(tunDevice string) error
 	Create(tunDevice string) error
+}
+
+type RunStarter interface {
+	Run(cmd *exec.Cmd) (output string, err error)
+	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
+		waitError <-chan error, err error)
 }

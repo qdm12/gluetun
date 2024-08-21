@@ -1,9 +1,9 @@
 package firewall
 
-import "github.com/qdm12/golibs/command"
+import "os/exec"
 
-type Runner interface {
-	Run(cmd command.ExecCmd) (output string, err error)
+type CmdRunner interface {
+	Run(cmd *exec.Cmd) (output string, err error)
 }
 
 type Logger interface {

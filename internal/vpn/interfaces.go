@@ -3,6 +3,7 @@ package vpn
 import (
 	"context"
 	"net/netip"
+	"os/exec"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
@@ -91,4 +92,10 @@ type DNSLoop interface {
 type PublicIPLoop interface {
 	RunOnce(ctx context.Context) (err error)
 	ClearData() (err error)
+}
+
+type CmdStarter interface {
+	Start(cmd *exec.Cmd) (
+		stdoutLines, stderrLines <-chan string,
+		waitError <-chan error, startErr error)
 }

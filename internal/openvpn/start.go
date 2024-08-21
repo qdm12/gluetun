@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
-	"github.com/qdm12/golibs/command"
 )
 
 var ErrVersionUnknown = errors.New("OpenVPN version is unknown")
@@ -18,8 +17,8 @@ const (
 	binOpenvpn26 = "openvpn2.6"
 )
 
-func start(ctx context.Context, starter command.Starter, version string, flags []string) (
-	stdoutLines, stderrLines chan string, waitError chan error, err error) {
+func start(ctx context.Context, starter CmdStarter, version string, flags []string) (
+	stdoutLines, stderrLines <-chan string, waitError <-chan error, err error) {
 	var bin string
 	switch version {
 	case openvpn.Openvpn25:

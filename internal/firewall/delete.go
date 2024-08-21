@@ -33,7 +33,7 @@ func isDeleteMatchInstruction(instruction string) bool {
 }
 
 func deleteIPTablesRule(ctx context.Context, iptablesBinary, instruction string,
-	runner Runner, logger Logger) (err error) {
+	runner CmdRunner, logger Logger) (err error) {
 	targetRule, err := parseIptablesInstruction(instruction)
 	if err != nil {
 		return fmt.Errorf("parsing iptables command: %w", err)
@@ -68,7 +68,7 @@ func deleteIPTablesRule(ctx context.Context, iptablesBinary, instruction string,
 // findLineNumber finds the line number of an iptables rule.
 // It returns 0 if the rule is not found.
 func findLineNumber(ctx context.Context, iptablesBinary string,
-	instruction iptablesInstruction, runner Runner, logger Logger) (
+	instruction iptablesInstruction, runner CmdRunner, logger Logger) (
 	lineNumber uint16, err error) {
 	listFlags := []string{"-t", instruction.table, "-L", instruction.chain,
 		"--line-numbers", "-n", "-v"}

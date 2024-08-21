@@ -62,7 +62,7 @@ func Test_deleteIPTablesRule(t *testing.T) {
 
 	testCases := map[string]struct {
 		instruction string
-		makeRunner  func(ctrl *gomock.Controller) *MockRunner
+		makeRunner  func(ctrl *gomock.Controller) *MockCmdRunner
 		makeLogger  func(ctrl *gomock.Controller) *MockLogger
 		errWrapped  error
 		errMessage  string
@@ -75,8 +75,8 @@ func Test_deleteIPTablesRule(t *testing.T) {
 		},
 		"list_error": {
 			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
-			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
-				runner := NewMockRunner(ctrl)
+			makeRunner: func(ctrl *gomock.Controller) *MockCmdRunner {
+				runner := NewMockCmdRunner(ctrl)
 				runner.EXPECT().
 					Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
 					Return("", errTest)
@@ -93,8 +93,8 @@ func Test_deleteIPTablesRule(t *testing.T) {
 		},
 		"rule_not_found": {
 			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
-			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
-				runner := NewMockRunner(ctrl)
+			makeRunner: func(ctrl *gomock.Controller) *MockCmdRunner {
+				runner := NewMockCmdRunner(ctrl)
 				runner.EXPECT().Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
 					Return(`Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)
 		num   pkts bytes target     prot opt in     out     source               destination
@@ -112,8 +112,8 @@ func Test_deleteIPTablesRule(t *testing.T) {
 		},
 		"rule_found_delete_error": {
 			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
-			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
-				runner := NewMockRunner(ctrl)
+			makeRunner: func(ctrl *gomock.Controller) *MockCmdRunner {
+				runner := NewMockCmdRunner(ctrl)
 				runner.EXPECT().Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
 					Return("Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)\n"+
 						"num   pkts bytes target     prot opt in     out     source               destination         \n"+
@@ -137,8 +137,8 @@ func Test_deleteIPTablesRule(t *testing.T) {
 		},
 		"rule_found_delete_success": {
 			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",
-			makeRunner: func(ctrl *gomock.Controller) *MockRunner {
-				runner := NewMockRunner(ctrl)
+			makeRunner: func(ctrl *gomock.Controller) *MockCmdRunner {
+				runner := NewMockCmdRunner(ctrl)
 				runner.EXPECT().Run(newCmdMatcherListRules(iptablesBinary, "nat", "PREROUTING")).
 					Return("Chain PREROUTING (policy ACCEPT 0 packets, 0 bytes)\n"+
 						"num   pkts bytes target     prot opt in     out     source               destination         \n"+
@@ -168,7 +168,7 @@ func Test_deleteIPTablesRule(t *testing.T) {
 
 			ctx := context.Background()
 			instruction := testCase.instruction
-			var runner *MockRunner
+			var runner *MockCmdRunner
 			if testCase.makeRunner != nil {
 				runner = testCase.makeRunner(ctrl)
 			}
