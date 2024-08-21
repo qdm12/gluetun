@@ -47,3 +47,45 @@ func (s *Service) GetPortsForwarded() (ports []uint16) {
 	copy(ports, s.ports)
 	return ports
 }
+
+func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err error) {
+	for i, port := range s.ports {
+		err := s.portAllower.RemoveAllowedPort(ctx, port)
+		if err != nil {
+			for j := 0; j < i; j++ {
+				_ = s.portAllower.SetAllowedPort(ctx, s.ports[j], s.settings.Interface)
+			}
+			s.logger.Error(err.Error())
+			return err
+		}
+	}
+
+	for i, port := range ports {
+		err := s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
+		if err != nil {
+			for j := 0; j < i; j++ {
+				_ = s.portAllower.RemoveAllowedPort(ctx, s.ports[j])
+			}
+			for _, port := range s.ports {
+				_ = s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
+			}
+			s.logger.Error(err.Error())
+			return err
+		}
+	}
+
+	err = s.writePortForwardedFile(ports)
+	if err != nil {
+		_ = s.cleanup()
+		return err
+	}
+
+	s.portMutex.RLock()
+	defer s.portMutex.RUnlock()
+	s.ports = make([]uint16, len(ports))
+	copy(s.ports, ports)
+
+	s.logger.Info("updated: " + portsToString(s.ports))
+
+	return nil
+}

@@ -11,11 +11,11 @@ import (
 )
 
 func newOpenvpnHandler(ctx context.Context, looper VPNLooper,
-	pfGetter PortForwardedGetter, w warner) http.Handler {
+	portForwarding PortForwarding, w warner) http.Handler {
 	return &openvpnHandler{
 		ctx:    ctx,
 		looper: looper,
-		pf:     pfGetter,
+		pf:     portForwarding,
 		warner: w,
 	}
 }
@@ -23,7 +23,7 @@ func newOpenvpnHandler(ctx context.Context, looper VPNLooper,
 type openvpnHandler struct {
 	ctx    context.Context //nolint:containedctx
 	looper VPNLooper
-	pf     PortForwardedGetter
+	pf     PortForwarding
 	warner warner
 }
 
@@ -50,6 +50,8 @@ func (h *openvpnHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			h.getPortForwarded(w)
+		case http.MethodPut:
+			h.setPortForwarded(w, r)
 		default:
 			errMethodNotSupported(w, r.Method)
 		}
@@ -136,6 +138,33 @@ func (h *openvpnHandler) getPortForwarded(w http.ResponseWriter) {
 	}
 
 	err := encoder.Encode(data)
+	if err != nil {
+		h.warner.Warn(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request) {
+	var data portsWrapper
+
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&data); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if len(data.Ports) == 0 {
+		http.Error(w, "no port specified", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.pf.SetPortsForwarded(data.Ports); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	err := encoder.Encode(h.pf.GetPortsForwarded())
 	if err != nil {
 		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

@@ -11,7 +11,7 @@ import (
 func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	buildInfo models.BuildInformation,
 	vpnLooper VPNLooper,
-	pfGetter PortForwardedGetter,
+	pf PortForwarding,
 	unboundLooper DNSLoop,
 	updaterLooper UpdaterLooper,
 	publicIPLooper PublicIPLoop,
@@ -21,7 +21,7 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	handler := &handler{}
 
 	vpn := newVPNHandler(ctx, vpnLooper, storage, ipv6Supported, logger)
-	openvpn := newOpenvpnHandler(ctx, vpnLooper, pfGetter, logger)
+	openvpn := newOpenvpnHandler(ctx, vpnLooper, pf, logger)
 	dns := newDNSHandler(ctx, unboundLooper, logger)
 	updater := newUpdaterHandler(ctx, updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)
