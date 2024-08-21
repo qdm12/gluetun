@@ -186,7 +186,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	var allSettings settings.Settings
-	err = allSettings.Read(reader)
+	err = allSettings.Read(reader, logger)
 	if err != nil {
 		return err
 	}

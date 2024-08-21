@@ -184,7 +184,12 @@ func (s Settings) Warnings() (warnings []string) {
 	return warnings
 }
 
-func (s *Settings) Read(r *reader.Reader) (err error) {
+func (s *Settings) Read(r *reader.Reader, warner Warner) (err error) {
+	warnings := readObsolete(r)
+	for _, warning := range warnings {
+		warner.Warn(warning)
+	}
+
 	readFunctions := map[string]func(r *reader.Reader) error{
 		"control server": s.ControlServer.read,
 		"DNS":            s.DNS.read,
