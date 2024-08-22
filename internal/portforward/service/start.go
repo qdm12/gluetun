@@ -69,17 +69,17 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		return nil, fmt.Errorf("writing port file: %w", err)
 	}
 
-	if s.settings.Command != "" {
-		err = s.runUpCommand(ctx, ports)
-		if err != nil {
-			_ = s.cleanup()
-			return nil, fmt.Errorf("running port forward command: %w", err)
-		}
-	}
-
 	s.portMutex.Lock()
 	s.ports = ports
 	s.portMutex.Unlock()
+
+	if s.settings.UpCommand != "" {
+		err = runUpCommand(ctx, s.cmder, s.logger, s.settings.UpCommand, ports)
+		if err != nil {
+			err = fmt.Errorf("running up command: %w", err)
+			s.logger.Error(err.Error())
+		}
+	}
 
 	keepPortCtx, keepPortCancel := context.WithCancel(context.Background())
 	s.keepPortCancel = keepPortCancel

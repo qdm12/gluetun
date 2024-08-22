@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"net/netip"
+	"os/exec"
 
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
@@ -31,4 +32,9 @@ type PortForwarder interface {
 	PortForward(ctx context.Context, objects utils.PortForwardObjects) (
 		ports []uint16, err error)
 	KeepPortForward(ctx context.Context, objects utils.PortForwardObjects) (err error)
+}
+
+type Cmder interface {
+	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
+		waitError <-chan error, startErr error)
 }

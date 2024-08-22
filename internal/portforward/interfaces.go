@@ -3,6 +3,7 @@ package portforward
 import (
 	"context"
 	"net/netip"
+	"os/exec"
 )
 
 type Service interface {
@@ -28,4 +29,9 @@ type Logger interface {
 	Info(s string)
 	Warn(s string)
 	Error(s string)
+}
+
+type Cmder interface {
+	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
+		waitError <-chan error, startErr error)
 }

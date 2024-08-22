@@ -3,30 +3,57 @@ package service
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/qdm12/gluetun/internal/command"
 )
 
-func (s *Service) runUpCommand(ctx context.Context, ports []uint16) (err error) {
-	// run command replacing {{PORTS}} with the ports (space separated)
+func runUpCommand(ctx context.Context, cmder Cmder, logger Logger,
+	commandTemplate string, ports []uint16,
+) (err error) {
 	portStrings := make([]string, len(ports))
 	for i, port := range ports {
 		portStrings[i] = fmt.Sprint(int(port))
 	}
 	portsString := strings.Join(portStrings, ",")
-
-	rawCommand := strings.ReplaceAll(s.settings.Command, "{{PORTS}}", portsString)
-	s.logger.Info("running port forward command " + rawCommand)
-	command := strings.Split(rawCommand, " ")
-	// it is a user input and we trust it so we can ignore the gosec warning
-	cmd := exec.CommandContext(ctx, command[0], command[1:]...) // #nosec G204
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
+	commandString := strings.ReplaceAll(commandTemplate, "{{PORTS}}", portsString)
+	args, err := command.Split(commandString)
 	if err != nil {
-		return fmt.Errorf("running command: %w", err)
+		return fmt.Errorf("parsing command: %w", err)
 	}
 
-	return nil
+	cmd := exec.CommandContext(ctx, args[0], args[1:]...) // #nosec G204
+	stdout, stderr, waitError, err := cmder.Start(cmd)
+	if err != nil {
+		return err
+	}
+
+	streamCtx, streamCancel := context.WithCancel(context.Background())
+	streamDone := make(chan struct{})
+	go streamLines(streamCtx, streamDone, logger, stdout, stderr)
+
+	err = <-waitError
+	streamCancel()
+	<-streamDone
+	return err
+}
+
+func streamLines(ctx context.Context, done chan<- struct{},
+	logger Logger, stdout, stderr <-chan string,
+) {
+	defer close(done)
+
+	var line string
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case line = <-stdout:
+			logger.Info(line)
+		case line = <-stderr:
+			logger.Error(line)
+		}
+	}
 }
