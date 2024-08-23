@@ -1,8 +1,10 @@
 package server
 
 type Logger interface {
+	Debugf(format string, args ...any)
 	infoer
 	warner
+	Warnf(format string, args ...any)
 	errorer
 }
 

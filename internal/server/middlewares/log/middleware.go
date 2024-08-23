@@ -1,4 +1,4 @@
-package server
+package log
 
 import (
 	"net/http"
@@ -7,18 +7,21 @@ import (
 	"time"
 )
 
-func withLogMiddleware(childHandler http.Handler, logger infoer, enabled bool) *logMiddleware {
-	return &logMiddleware{
-		childHandler: childHandler,
-		logger:       logger,
-		timeNow:      time.Now,
-		enabled:      enabled,
+func New(logger Logger, enabled bool) (
+	middleware func(http.Handler) http.Handler) {
+	return func(handler http.Handler) http.Handler {
+		return &logMiddleware{
+			childHandler: handler,
+			logger:       logger,
+			timeNow:      time.Now,
+			enabled:      enabled,
+		}
 	}
 }
 
 type logMiddleware struct {
 	childHandler http.Handler
-	logger       infoer
+	logger       Logger
 	timeNow      func() time.Time
 	enabled      bool
 	enabledMu    sync.RWMutex
@@ -39,7 +42,7 @@ func (m *logMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		r.RemoteAddr + " in " + duration.String())
 }
 
-func (m *logMiddleware) setEnabled(enabled bool) {
+func (m *logMiddleware) SetEnabled(enabled bool) {
 	m.enabledMu.Lock()
 	defer m.enabledMu.Unlock()
 	m.enabled = enabled

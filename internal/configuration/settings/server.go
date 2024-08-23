@@ -19,6 +19,11 @@ type ControlServer struct {
 	// Log can be true or false to enable logging on requests.
 	// It cannot be nil in the internal state.
 	Log *bool
+	// AuthFilePath is the path to the file containing the authentication
+	// configuration for the middleware.
+	// It cannot be empty in the internal state and defaults to
+	// /gluetun/auth/config.toml.
+	AuthFilePath string
 }
 
 func (c ControlServer) validate() (err error) {
@@ -44,8 +49,9 @@ func (c ControlServer) validate() (err error) {
 
 func (c *ControlServer) copy() (copied ControlServer) {
 	return ControlServer{
-		Address: gosettings.CopyPointer(c.Address),
-		Log:     gosettings.CopyPointer(c.Log),
+		Address:      gosettings.CopyPointer(c.Address),
+		Log:          gosettings.CopyPointer(c.Log),
+		AuthFilePath: c.AuthFilePath,
 	}
 }
 
@@ -55,11 +61,13 @@ func (c *ControlServer) copy() (copied ControlServer) {
 func (c *ControlServer) overrideWith(other ControlServer) {
 	c.Address = gosettings.OverrideWithPointer(c.Address, other.Address)
 	c.Log = gosettings.OverrideWithPointer(c.Log, other.Log)
+	c.AuthFilePath = gosettings.OverrideWithComparable(c.AuthFilePath, other.AuthFilePath)
 }
 
 func (c *ControlServer) setDefaults() {
 	c.Address = gosettings.DefaultPointer(c.Address, ":8000")
 	c.Log = gosettings.DefaultPointer(c.Log, true)
+	c.AuthFilePath = gosettings.DefaultComparable(c.AuthFilePath, "/gluetun/auth/config.toml")
 }
 
 func (c ControlServer) String() string {
@@ -70,6 +78,7 @@ func (c ControlServer) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Control server settings:")
 	node.Appendf("Listening address: %s", *c.Address)
 	node.Appendf("Logging: %s", gosettings.BoolToYesNo(c.Log))
+	node.Appendf("Authentication file path: %s", c.AuthFilePath)
 	return node
 }
 
@@ -78,6 +87,10 @@ func (c *ControlServer) read(r *reader.Reader) (err error) {
 	if err != nil {
 		return err
 	}
+
 	c.Address = r.Get("HTTP_CONTROL_SERVER_ADDRESS")
+
+	c.AuthFilePath = r.String("HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH")
+
 	return nil
 }
