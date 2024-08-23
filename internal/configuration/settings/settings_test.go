@@ -70,7 +70,11 @@ func Test_Settings_String(t *testing.T) {
 |   └── Enabled: no
 ├── Control server settings:
 |   ├── Listening address: :8000
-|   └── Logging: yes
+|   ├── Logging: yes
+|   ├── Authentication file path: /gluetun/auth/config.toml
+|   └── Authentication middleware settings:
+|       ├── Authentications defined: public
+|       └── Roles defined: public
 ├── Storage settings:
 |   └── Filepath: /gluetun/servers.json
 ├── OS Alpine settings:
