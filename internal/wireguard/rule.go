@@ -6,13 +6,13 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func (w *Wireguard) addRule(rulePriority, firewallMark, family int) (
-	cleanup func() error, err error) {
+func (w *Wireguard) addRule(rulePriority int, firewallMark uint32,
+	family int) (cleanup func() error, err error) {
 	rule := netlink.NewRule()
 	rule.Invert = true
 	rule.Priority = rulePriority
 	rule.Mark = firewallMark
-	rule.Table = firewallMark
+	rule.Table = int(firewallMark)
 	rule.Family = family
 	if err := w.netlink.RuleAdd(rule); err != nil {
 		return nil, fmt.Errorf("adding rule %s: %w", rule, err)

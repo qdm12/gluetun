@@ -35,7 +35,7 @@ type Settings struct {
 	PersistentKeepaliveInterval time.Duration
 	// FirewallMark to be used in routing tables and IP rules.
 	// It defaults to 51820 if left to 0.
-	FirewallMark int
+	FirewallMark uint32
 	// Maximum Transmission Unit (MTU) setting for the network interface.
 	// It defaults to device.DefaultMTU from wireguard-go which is 1420
 	MTU uint16

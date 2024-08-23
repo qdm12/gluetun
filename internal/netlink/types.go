@@ -36,7 +36,7 @@ type Rule struct {
 	Priority int
 	Family   int
 	Table    int
-	Mark     int
+	Mark     uint32
 	Src      netip.Prefix
 	Dst      netip.Prefix
 	Invert   bool
@@ -44,12 +44,12 @@ type Rule struct {
 
 func (r Rule) String() string {
 	from := "all"
-	if r.Src.IsValid() {
+	if r.Src.IsValid() && !r.Src.Addr().IsUnspecified() {
 		from = r.Src.String()
 	}
 
 	to := "all"
-	if r.Dst.IsValid() {
+	if r.Dst.IsValid() && !r.Dst.Addr().IsUnspecified() {
 		to = r.Dst.String()
 	}
 

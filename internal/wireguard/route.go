@@ -9,7 +9,7 @@ import (
 )
 
 func (w *Wireguard) addRoutes(link netlink.Link, destinations []netip.Prefix,
-	firewallMark int) (err error) {
+	firewallMark uint32) (err error) {
 	for _, dst := range destinations {
 		err = w.addRoute(link, dst, firewallMark)
 		if err == nil {
@@ -29,11 +29,11 @@ func (w *Wireguard) addRoutes(link netlink.Link, destinations []netip.Prefix,
 }
 
 func (w *Wireguard) addRoute(link netlink.Link, dst netip.Prefix,
-	firewallMark int) (err error) {
+	firewallMark uint32) (err error) {
 	route := netlink.Route{
 		LinkIndex: link.Index,
 		Dst:       dst,
-		Table:     firewallMark,
+		Table:     int(firewallMark),
 	}
 
 	err = w.netlink.RouteAdd(route)

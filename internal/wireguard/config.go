@@ -50,7 +50,7 @@ func makeDeviceConfig(settings Settings) (config wgtypes.Config, err error) {
 		*persistentKeepaliveInterval = settings.PersistentKeepaliveInterval
 	}
 
-	firewallMark := settings.FirewallMark
+	firewallMark := int(settings.FirewallMark)
 
 	config = wgtypes.Config{
 		PrivateKey:   &privateKey,

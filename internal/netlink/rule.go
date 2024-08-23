@@ -12,7 +12,7 @@ func NewRule() Rule {
 	// to a `netlink.Rule`
 	return Rule{
 		Priority: -1,
-		Mark:     -1,
+		Mark:     0,
 	}
 }
 
