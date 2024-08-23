@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/server/middlewares/log"
 )
 
 func newHandler(ctx context.Context, logger infoWarner, logging bool,
@@ -17,7 +18,7 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	publicIPLooper PublicIPLoop,
 	storage Storage,
 	ipv6Supported bool,
-) http.Handler {
+) (httpHandler http.Handler) {
 	handler := &handler{}
 
 	vpn := newVPNHandler(ctx, vpnLooper, storage, ipv6Supported, logger)
@@ -29,16 +30,19 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	handler.v0 = newHandlerV0(ctx, logger, vpnLooper, dnsLooper, updaterLooper)
 	handler.v1 = newHandlerV1(logger, buildInfo, vpn, openvpn, dns, updater, publicip)
 
-	handlerWithLog := withLogMiddleware(handler, logger, logging)
-	handler.setLogEnabled = handlerWithLog.setEnabled
-
-	return handlerWithLog
+	middlewares := []func(http.Handler) http.Handler{
+		log.New(logger, logging),
+	}
+	httpHandler = handler
+	for _, middleware := range middlewares {
+		httpHandler = middleware(httpHandler)
+	}
+	return httpHandler
 }
 
 type handler struct {
-	v0            http.Handler
-	v1            http.Handler
-	setLogEnabled func(enabled bool)
+	v0 http.Handler
+	v1 http.Handler
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
