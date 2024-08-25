@@ -89,7 +89,8 @@
 - name: "☁️ Windscribe"
   color: "cfe8d4"
 
-- name: "Category: Config problem 📝"
+- name: "Category: User error 🤦"
+  from_name: "Category: Config problem 📝"
   color: "ffc7ea"
 - name: "Category: Healthcheck 🩺"
   color: "ffc7ea"
@@ -142,4 +143,8 @@
 - name: "Category: public IP service 💬"
   color: "ffc7ea"
 - name: "Category: servers storage 📦"
+  color: "ffc7ea"
+- name: "Category: Performance 🚀"
+  color: "ffc7ea"
+- name: "Category: Investigation 🔍"
   color: "ffc7ea"
