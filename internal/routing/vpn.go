@@ -31,7 +31,7 @@ func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
 		}
 
 		switch {
-		case route.Dst.IsValid() && route.Dst.Addr().IsUnspecified(): // OpenVPN
+		case route.Dst.IsValid() && route.Dst.Addr().IsUnspecified() && route.Gw.IsValid(): // OpenVPN
 			return route.Gw, nil
 		case route.Dst.IsSingleIP() &&
 			route.Dst.Addr().Compare(route.Src) == 0 &&
