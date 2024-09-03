@@ -78,6 +78,7 @@ func (s Settings) ToLinesNode() (node *gotree.Node) {
 const (
 	AuthNone   = "none"
 	AuthAPIKey = "apikey"
+	AuthBasic  = "basic"
 )
 
 // Role contains the role name, authentication method name and
@@ -90,6 +91,10 @@ type Role struct {
 	Auth string
 	// APIKey is the API key to use when using the 'apikey' authentication.
 	APIKey string
+	// Username for HTTP Basic authentication method.
+	Username string
+	// Password for HTTP Basic authentication method.
+	Password string
 	// Routes is a list of routes that the role can access in the format
 	// "HTTP_METHOD PATH", for example "GET /v1/vpn/status"
 	Routes []string
@@ -98,17 +103,24 @@ type Role struct {
 var (
 	ErrMethodNotSupported = errors.New("authentication method not supported")
 	ErrAPIKeyEmpty        = errors.New("api key is empty")
+	ErrBasicUsernameEmpty = errors.New("username is empty")
+	ErrBasicPasswordEmpty = errors.New("password is empty")
 	ErrRouteNotSupported  = errors.New("route not supported by the control server")
 )
 
 func (r Role) validate() (err error) {
-	err = validate.IsOneOf(r.Auth, AuthNone, AuthAPIKey)
+	err = validate.IsOneOf(r.Auth, AuthNone, AuthAPIKey, AuthBasic)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrMethodNotSupported, r.Auth)
 	}
 
-	if r.Auth == AuthAPIKey && r.APIKey == "" {
+	switch {
+	case r.Auth == AuthAPIKey && r.APIKey == "":
 		return fmt.Errorf("for role %s: %w", r.Name, ErrAPIKeyEmpty)
+	case r.Auth == AuthBasic && r.Username == "":
+		return fmt.Errorf("for role %s: %w", r.Name, ErrBasicUsernameEmpty)
+	case r.Auth == AuthBasic && r.Password == "":
+		return fmt.Errorf("for role %s: %w", r.Name, ErrBasicPasswordEmpty)
 	}
 
 	for i, route := range r.Routes {
