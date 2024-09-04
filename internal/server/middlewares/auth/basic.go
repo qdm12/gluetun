@@ -4,21 +4,15 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"net/http"
-	"strings"
 )
 
 type basicAuthMethod struct {
-	userpasshash [32]byte
+	authDigest [32]byte
 }
 
-func newBasicAuthMethod(user string, pass string) *basicAuthMethod {
-	var sb strings.Builder
-
-	sb.WriteString(user)
-	sb.WriteString(pass)
-	var matchbytes = sha256.Sum256([]byte(sb.String()))
+func newBasicAuthMethod(username, password string) *basicAuthMethod {
 	return &basicAuthMethod{
-		userpasshash: matchbytes,
+		authDigest: sha256.Sum256([]byte(username + password)),
 	}
 }
 
@@ -29,23 +23,14 @@ func (a *basicAuthMethod) equal(other authorizationChecker) bool {
 	if !ok {
 		return false
 	}
-	return a.userpasshash == otherBasicMethod.userpasshash
+	return a.authDigest == otherBasicMethod.authDigest
 }
 
-func (a *basicAuthMethod) isAuthorized(r *http.Request) bool {
-	authsuccess := false
-	var inpSb strings.Builder
-	// Get Inputs from http request
-	username, password, ok := r.BasicAuth()
-	if ok {
-		inpSb.WriteString(username)
-		inpSb.WriteString(password)
-		inputhash := sha256.Sum256([]byte(inpSb.String()))
-		authsuccess = (subtle.ConstantTimeCompare(a.userpasshash[:], inputhash[:]) == 1)
+func (a *basicAuthMethod) isAuthorized(request *http.Request) bool {
+	username, password, ok := request.BasicAuth()
+	if !ok {
+		return false
 	}
-	if authsuccess {
-		return true
-	}
-
-	return false
+	requestAuthDigest := sha256.Sum256([]byte(username + password))
+	return subtle.ConstantTimeCompare(a.authDigest[:], requestAuthDigest[:]) == 1
 }
