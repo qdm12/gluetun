@@ -15,6 +15,6 @@ func (n *noneMethod) equal(other authorizationChecker) bool {
 	return ok
 }
 
-func (n *noneMethod) isAuthorized(_ *http.Request) bool {
+func (n *noneMethod) isAuthorized(_ http.Header, _ *http.Request) bool {
 	return true
 }

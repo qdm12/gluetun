@@ -26,9 +26,10 @@ func (a *basicAuthMethod) equal(other authorizationChecker) bool {
 	return a.authDigest == otherBasicMethod.authDigest
 }
 
-func (a *basicAuthMethod) isAuthorized(request *http.Request) bool {
+func (a *basicAuthMethod) isAuthorized(headers http.Header, request *http.Request) bool {
 	username, password, ok := request.BasicAuth()
 	if !ok {
+		headers.Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 		return false
 	}
 	requestAuthDigest := sha256.Sum256([]byte(username + password))

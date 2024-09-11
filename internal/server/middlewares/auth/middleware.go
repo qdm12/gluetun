@@ -58,8 +58,9 @@ func (h *authHandler) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 
+	responseHeader := make(http.Header, 0)
 	for _, role := range roles {
-		if !role.checker.isAuthorized(request) {
+		if !role.checker.isAuthorized(responseHeader, request) {
 			continue
 		}
 
@@ -68,6 +69,13 @@ func (h *authHandler) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 		h.logger.Debugf("access to route %s authorized for role %s", route, role.name)
 		h.childHandler.ServeHTTP(writer, request)
 		return
+	}
+
+	// Flush out response headers if all roles failed to authenticate
+	for headerKey, headerValues := range responseHeader {
+		for _, headerValue := range headerValues {
+			writer.Header().Add(headerKey, headerValue)
+		}
 	}
 
 	allRoleNames := make([]string, len(roles))

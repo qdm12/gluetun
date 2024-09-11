@@ -25,7 +25,7 @@ func (a *apiKeyMethod) equal(other authorizationChecker) bool {
 	return a.apiKey == otherTokenMethod.apiKey
 }
 
-func (a *apiKeyMethod) isAuthorized(request *http.Request) bool {
+func (a *apiKeyMethod) isAuthorized(_ http.Header, request *http.Request) bool {
 	xAPIKey := request.Header.Get("X-API-Key")
 	if xAPIKey == "" {
 		xAPIKey = request.URL.Query().Get("api_key")
