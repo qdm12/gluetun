@@ -10,11 +10,21 @@ import (
 )
 
 func New(ctx context.Context, address string, logEnabled bool, logger Logger,
-	authSettings auth.Settings, buildInfo models.BuildInformation, openvpnLooper VPNLooper,
+	authConfigPath string, buildInfo models.BuildInformation, openvpnLooper VPNLooper,
 	pfGetter PortForwardedGetter, dnsLooper DNSLoop,
 	updaterLooper UpdaterLooper, publicIPLooper PublicIPLoop, storage Storage,
 	ipv6Supported bool) (
 	server *httpserver.Server, err error) {
+	authSettings, err := auth.Read(authConfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("reading auth settings: %w", err)
+	}
+	authSettings.SetDefaults()
+	err = authSettings.Validate()
+	if err != nil {
+		return nil, fmt.Errorf("validating auth settings: %w", err)
+	}
+
 	handler, err := newHandler(ctx, logger, logEnabled, authSettings, buildInfo,
 		openvpnLooper, pfGetter, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)

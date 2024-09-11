@@ -194,6 +194,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # Control server
     HTTP_CONTROL_SERVER_LOG=on \
     HTTP_CONTROL_SERVER_ADDRESS=":8000" \
+    HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH=/gluetun/auth/config.toml \
     # Server data updater
     UPDATER_PERIOD=0 \
     UPDATER_MIN_RATIO=0.8 \

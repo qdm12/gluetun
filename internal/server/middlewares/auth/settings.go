@@ -7,7 +7,6 @@ import (
 
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/validate"
-	"github.com/qdm12/gotree"
 )
 
 type Settings struct {
@@ -49,30 +48,6 @@ func (s Settings) Validate() (err error) {
 	}
 
 	return nil
-}
-
-func (s Settings) Copy() (copied Settings) {
-	copied.Roles = make([]Role, len(s.Roles))
-	for i := range s.Roles {
-		copied.Roles[i] = s.Roles[i].copy()
-	}
-	return copied
-}
-
-func (s *Settings) OverrideWith(other Settings) {
-	s.Roles = gosettings.OverrideWithSlice(s.Roles, other.Roles)
-}
-
-func (s Settings) ToLinesNode() (node *gotree.Node) {
-	node = gotree.New("Authentication middleware settings:")
-
-	roleNames := make([]string, len(s.Roles))
-	for i, role := range s.Roles {
-		roleNames[i] = role.Name
-	}
-	node.Appendf("Roles defined: %s", andStrings(roleNames))
-
-	return node
 }
 
 const (
@@ -153,12 +128,4 @@ var validRoutes = map[string]struct{}{ //nolint:gochecknoglobals
 	http.MethodGet + " /v1/updater/status":        {},
 	http.MethodPut + " /v1/updater/status":        {},
 	http.MethodGet + " /v1/publicip/ip":           {},
-}
-
-func (r Role) copy() (copied Role) {
-	copied.Name = r.Name
-	copied.Auth = r.Auth
-	copied.Routes = make([]string, len(r.Routes))
-	copy(copied.Routes, r.Routes)
-	return copied
 }
