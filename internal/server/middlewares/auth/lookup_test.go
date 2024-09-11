@@ -21,28 +21,16 @@ func Test_settingsToLookupMap(t *testing.T) {
 		},
 		"auth_method_not_supported": {
 			settings: Settings{
-				Auths: []Auth{{Name: "bad", Method: "not_supported"}},
+				Roles: []Role{{Name: "a", Auth: "bad"}},
 			},
 			errWrapped: ErrMethodNotSupported,
 			errMessage: "authentication method not supported: bad",
 		},
-		"auth_name_not_defined": {
-			settings: Settings{
-				Auths: []Auth{{Name: "x", Method: MethodNone}, {Name: "y", Method: MethodNone}},
-				Roles: []Role{{Name: "a", Auths: []string{"xyz"}}},
-			},
-			errWrapped: ErrAuthNameNotDefined,
-			errMessage: "authentication name not defined: xyz is not one of x or y",
-		},
 		"success": {
 			settings: Settings{
-				Auths: []Auth{
-					{Name: "x", Method: MethodNone},
-					{Name: "y", Method: MethodNone},
-				},
 				Roles: []Role{
-					{Name: "a", Auths: []string{"x"}, Routes: []string{"GET /path"}},
-					{Name: "b", Auths: []string{"x", "y"}, Routes: []string{"GET /path", "PUT /path"}},
+					{Name: "a", Auth: AuthNone, Routes: []string{"GET /path"}},
+					{Name: "b", Auth: AuthNone, Routes: []string{"GET /path", "PUT /path"}},
 				},
 			},
 			routeToRoles: map[string][]internalRole{
