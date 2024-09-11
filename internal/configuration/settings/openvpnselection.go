@@ -50,6 +50,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 
 	// Validate TCP
 	if o.Protocol == constants.TCP && helpers.IsOneOf(vpnProvider,
+		providers.Giganews,
 		providers.Ipvanish,
 		providers.Perfectprivacy,
 		providers.Privado,
@@ -67,7 +68,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			providers.Privatevpn, providers.Torguard:
 		// no custom port allowed
 		case providers.Expressvpn, providers.Fastestvpn,
-			providers.Ipvanish, providers.Nordvpn,
+			providers.Giganews, providers.Ipvanish, providers.Nordvpn,
 			providers.Privado, providers.Purevpn,
 			providers.Surfshark, providers.VPNSecure,
 			providers.VPNUnlimited, providers.Vyprvpn:

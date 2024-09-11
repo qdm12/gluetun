@@ -15,6 +15,7 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
 	"github.com/qdm12/gluetun/internal/provider/expressvpn"
 	"github.com/qdm12/gluetun/internal/provider/fastestvpn"
+	"github.com/qdm12/gluetun/internal/provider/giganews"
 	"github.com/qdm12/gluetun/internal/provider/hidemyass"
 	"github.com/qdm12/gluetun/internal/provider/ipvanish"
 	"github.com/qdm12/gluetun/internal/provider/ivpn"
@@ -63,6 +64,7 @@ func NewProviders(storage Storage, timeNow func() time.Time,
 		providers.Cyberghost:            cyberghost.New(storage, randSource, parallelResolver),
 		providers.Expressvpn:            expressvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.Fastestvpn:            fastestvpn.New(storage, randSource, client, updaterWarner, parallelResolver),
+		providers.Giganews:              giganews.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.HideMyAss:             hidemyass.New(storage, randSource, client, updaterWarner, parallelResolver),
 		providers.Ipvanish:              ipvanish.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.Ivpn:                  ivpn.New(storage, randSource, client, updaterWarner, parallelResolver),
