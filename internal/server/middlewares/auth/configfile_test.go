@@ -33,12 +33,24 @@ func Test_Read(t *testing.T) {
 			fileContent: `[[roles]]
 name = "public"
 auth = "none"
-routes = ["GET /v1/vpn/status", "PUT /v1/vpn/status"]`,
+routes = ["GET /v1/vpn/status", "PUT /v1/vpn/status"]
+
+[[roles]]
+name = "client"
+auth = "apikey"
+apikey = "xyz"
+routes = ["GET /v1/vpn/status"]
+`,
 			settings: Settings{
 				Roles: []Role{{
 					Name:   "public",
 					Auth:   AuthNone,
 					Routes: []string{"GET /v1/vpn/status", "PUT /v1/vpn/status"},
+				}, {
+					Name:   "client",
+					Auth:   AuthAPIKey,
+					APIKey: "xyz",
+					Routes: []string{"GET /v1/vpn/status"},
 				}},
 			},
 		},

@@ -76,7 +76,8 @@ func (s Settings) ToLinesNode() (node *gotree.Node) {
 }
 
 const (
-	AuthNone = "none"
+	AuthNone   = "none"
+	AuthAPIKey = "apikey"
 )
 
 // Role contains the role name, authentication method name and
@@ -85,8 +86,10 @@ type Role struct {
 	// Name is the role name and is only used for documentation
 	// and in the authentication middleware debug logs.
 	Name string
-	// Auth is the authentication method to use, which can be 'none'.
+	// Auth is the authentication method to use, which can be 'none' or 'apikey'.
 	Auth string
+	// APIKey is the API key to use when using the 'apikey' authentication.
+	APIKey string
 	// Routes is a list of routes that the role can access in the format
 	// "HTTP_METHOD PATH", for example "GET /v1/vpn/status"
 	Routes []string
@@ -94,13 +97,18 @@ type Role struct {
 
 var (
 	ErrMethodNotSupported = errors.New("authentication method not supported")
+	ErrAPIKeyEmpty        = errors.New("api key is empty")
 	ErrRouteNotSupported  = errors.New("route not supported by the control server")
 )
 
 func (r Role) validate() (err error) {
-	err = validate.IsOneOf(r.Auth, AuthNone)
+	err = validate.IsOneOf(r.Auth, AuthNone, AuthAPIKey)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrMethodNotSupported, r.Auth)
+	}
+
+	if r.Auth == AuthAPIKey && r.APIKey == "" {
+		return fmt.Errorf("for role %s: %w", r.Name, ErrAPIKeyEmpty)
 	}
 
 	for i, route := range r.Routes {
