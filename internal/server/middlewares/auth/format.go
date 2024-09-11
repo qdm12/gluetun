@@ -4,10 +4,6 @@ func andStrings(strings []string) (result string) {
 	return joinStrings(strings, "and")
 }
 
-func orStrings(strings []string) (result string) {
-	return joinStrings(strings, "or")
-}
-
 func joinStrings(strings []string, lastJoin string) (result string) {
 	if len(strings) == 0 {
 		return ""

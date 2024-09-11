@@ -73,7 +73,6 @@ func Test_Settings_String(t *testing.T) {
 |   ├── Logging: yes
 |   ├── Authentication file path: /gluetun/auth/config.toml
 |   └── Authentication middleware settings:
-|       ├── Authentications defined: public
 |       └── Roles defined: public
 ├── Storage settings:
 |   └── Filepath: /gluetun/servers.json

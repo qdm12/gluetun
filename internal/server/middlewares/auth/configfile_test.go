@@ -30,30 +30,14 @@ func Test_Read(t *testing.T) {
  | ~~~~~~~ missing field`,
 		},
 		"filled_settings": {
-			fileContent: `[[auths]]
-name = "abc"
-method = "none"
-
-[[auths]]
-name = "xyz"
-# comments are ignored
-method = "oauth2"
-
-[[roles]]
+			fileContent: `[[roles]]
 name = "public"
-auths = ["abc"]
+auth = "none"
 routes = ["GET /v1/vpn/status", "PUT /v1/vpn/status"]`,
 			settings: Settings{
-				Auths: []Auth{{
-					Name:   "abc",
-					Method: MethodNone,
-				}, {
-					Name:   "xyz",
-					Method: "oauth2",
-				}},
 				Roles: []Role{{
 					Name:   "public",
-					Auths:  []string{"abc"},
+					Auth:   AuthNone,
 					Routes: []string{"GET /v1/vpn/status", "PUT /v1/vpn/status"},
 				}},
 			},

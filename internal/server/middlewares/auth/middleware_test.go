@@ -26,12 +26,8 @@ func Test_authHandler_ServeHTTP(t *testing.T) {
 	}{
 		"route_has_no_role": {
 			settings: Settings{
-				Auths: []Auth{
-					{Name: "auth1", Method: MethodNone},
-					{Name: "auth2", Method: MethodNone},
-				},
 				Roles: []Role{
-					{Name: "role1", Auths: []string{"auth1"}, Routes: []string{"GET /a"}},
+					{Name: "role1", Auth: AuthNone, Routes: []string{"GET /a"}},
 				},
 			},
 			makeLogger: func(ctrl *gomock.Controller) *MockDebugLogger {
@@ -46,12 +42,8 @@ func Test_authHandler_ServeHTTP(t *testing.T) {
 		},
 		"authorized_unprotected_by_default": {
 			settings: Settings{
-				Auths: []Auth{
-					{Name: "auth1", Method: MethodNone},
-					{Name: "auth2", Method: MethodNone},
-				},
 				Roles: []Role{
-					{Name: "public", Auths: []string{"auth1"}, Routes: []string{"GET /v1/vpn/status"}},
+					{Name: "public", Auth: AuthNone, Routes: []string{"GET /v1/vpn/status"}},
 				},
 			},
 			makeLogger: func(ctrl *gomock.Controller) *MockDebugLogger {
@@ -71,12 +63,8 @@ func Test_authHandler_ServeHTTP(t *testing.T) {
 		},
 		"authorized_none": {
 			settings: Settings{
-				Auths: []Auth{
-					{Name: "auth1", Method: MethodNone},
-					{Name: "auth2", Method: MethodNone},
-				},
 				Roles: []Role{
-					{Name: "role1", Auths: []string{"auth1"}, Routes: []string{"GET /a"}},
+					{Name: "role1", Auth: AuthNone, Routes: []string{"GET /a"}},
 				},
 			},
 			makeLogger: func(ctrl *gomock.Controller) *MockDebugLogger {
