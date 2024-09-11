@@ -165,7 +165,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	announcementExp, err := time.Parse(time.RFC3339, "2023-07-01T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -176,7 +176,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "Wiki moved to https://github.com/qdm12/gluetun-wiki",
+		Announcement: "All control server routes will become private by default after the v3.41.0 release",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
