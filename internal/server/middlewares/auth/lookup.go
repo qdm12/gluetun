@@ -18,6 +18,8 @@ func settingsToLookupMap(settings Settings) (routeToRoles map[string][]internalR
 			checker = newNoneMethod()
 		case AuthAPIKey:
 			checker = newAPIKeyMethod(role.APIKey)
+		case AuthBasic:
+			checker = newBasicAuthMethod(role.Username, role.Password)
 		default:
 			return nil, fmt.Errorf("%w: %s", ErrMethodNotSupported, role.Auth)
 		}
