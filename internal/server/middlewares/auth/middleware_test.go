@@ -50,7 +50,7 @@ func Test_authHandler_ServeHTTP(t *testing.T) {
 				logger := NewMockDebugLogger(ctrl)
 				logger.EXPECT().Warnf("route %s is unprotected by default, "+
 					"please set up authentication following the documentation at "+
-					"https://github.com/gluetun-wiki/setup/advanced/control-server.md#authentication "+
+					"https://github.com/qdm12/gluetun-wiki/setup/advanced/control-server.md#authentication "+
 					"since this will become no longer publicly accessible after release v3.40.",
 					"GET /v1/vpn/status")
 				logger.EXPECT().Debugf("access to route %s authorized for role %s",

@@ -105,7 +105,7 @@ func (h *authHandler) warnIfUnprotectedByDefault(role internalRole, route string
 	}
 	h.logger.Warnf("route %s is unprotected by default, "+
 		"please set up authentication following the documentation at "+
-		"https://github.com/gluetun-wiki/setup/advanced/control-server.md#authentication "+
+		"https://github.com/qdm12/gluetun-wiki/setup/advanced/control-server.md#authentication "+
 		"since this will become no longer publicly accessible after release v3.40.",
 		route)
 }
