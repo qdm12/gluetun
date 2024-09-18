@@ -160,6 +160,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			return cli.Update(ctx, args[2:], logger)
 		case "format-servers":
 			return cli.FormatServers(args[2:])
+		case "genkey":
+			return cli.GenKey(args[2:])
 		default:
 			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
@@ -587,6 +589,7 @@ type clier interface {
 	OpenvpnConfig(logger cli.OpenvpnConfigLogger, reader *reader.Reader, ipv6Checker cli.IPv6Checker) error
 	HealthCheck(ctx context.Context, reader *reader.Reader, warner cli.Warner) error
 	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
+	GenKey(args []string) error
 }
 
 type Tun interface {
