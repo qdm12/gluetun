@@ -18,7 +18,7 @@ require (
 	github.com/qdm12/ss-server v0.6.0
 	github.com/stretchr/testify v1.9.0
 	github.com/ulikunitz/xz v0.5.11
-	github.com/vishvananda/netlink v1.2.1
+	github.com/vishvananda/netlink v1.3.0
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 	golang.org/x/net v0.28.0
