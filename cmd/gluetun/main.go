@@ -160,12 +160,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			return cli.Update(ctx, args[2:], logger)
 		case "format-servers":
 			return cli.FormatServers(args[2:])
+		case "genkey":
+			return cli.GenKey(args[2:])
 		default:
 			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
 	}
 
-	announcementExp, err := time.Parse(time.RFC3339, "2023-07-01T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -176,7 +178,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "Wiki moved to https://github.com/qdm12/gluetun-wiki",
+		Announcement: "All control server routes will become private by default after the v3.41.0 release",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
@@ -465,6 +467,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
 		logger.New(log.SetComponent("http server")),
+		allSettings.ControlServer.AuthFilePath,
 		buildInfo, vpnLooper, portForwardLooper, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
@@ -586,6 +589,7 @@ type clier interface {
 	OpenvpnConfig(logger cli.OpenvpnConfigLogger, reader *reader.Reader, ipv6Checker cli.IPv6Checker) error
 	HealthCheck(ctx context.Context, reader *reader.Reader, warner cli.Warner) error
 	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
+	GenKey(args []string) error
 }
 
 type Tun interface {

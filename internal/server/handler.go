@@ -2,14 +2,17 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/server/middlewares/auth"
 	"github.com/qdm12/gluetun/internal/server/middlewares/log"
 )
 
-func newHandler(ctx context.Context, logger infoWarner, logging bool,
+func newHandler(ctx context.Context, logger Logger, logging bool,
+	authSettings auth.Settings,
 	buildInfo models.BuildInformation,
 	vpnLooper VPNLooper,
 	pfGetter PortForwardedGetter,
@@ -18,7 +21,7 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	publicIPLooper PublicIPLoop,
 	storage Storage,
 	ipv6Supported bool,
-) (httpHandler http.Handler) {
+) (httpHandler http.Handler, err error) {
 	handler := &handler{}
 
 	vpn := newVPNHandler(ctx, vpnLooper, storage, ipv6Supported, logger)
@@ -30,14 +33,20 @@ func newHandler(ctx context.Context, logger infoWarner, logging bool,
 	handler.v0 = newHandlerV0(ctx, logger, vpnLooper, dnsLooper, updaterLooper)
 	handler.v1 = newHandlerV1(logger, buildInfo, vpn, openvpn, dns, updater, publicip)
 
+	authMiddleware, err := auth.New(authSettings, logger)
+	if err != nil {
+		return nil, fmt.Errorf("creating auth middleware: %w", err)
+	}
+
 	middlewares := []func(http.Handler) http.Handler{
+		authMiddleware,
 		log.New(logger, logging),
 	}
 	httpHandler = handler
 	for _, middleware := range middlewares {
 		httpHandler = middleware(httpHandler)
 	}
-	return httpHandler
+	return httpHandler, nil
 }
 
 type handler struct {
