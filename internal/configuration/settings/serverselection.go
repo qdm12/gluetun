@@ -273,6 +273,8 @@ func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string)
 	switch {
 	case *settings.OwnedOnly && vpnServiceProvider != providers.Mullvad:
 		return fmt.Errorf("%w", ErrOwnedOnlyNotSupported)
+	case vpnServiceProvider == providers.Protonvpn && *settings.FreeOnly && *settings.PortForwardOnly:
+		return fmt.Errorf("%w: together with free only filter", ErrPortForwardOnlyNotSupported)
 	case *settings.StreamOnly &&
 		!helpers.IsOneOf(vpnServiceProvider, providers.Protonvpn, providers.VPNUnlimited):
 		return fmt.Errorf("%w", ErrStreamOnlyNotSupported)
