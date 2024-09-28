@@ -138,15 +138,17 @@ ENV VPN_SERVICE_PROVIDER=pia \
     SERVER_NUMBER= \
     # # PIA only:
     SERVER_NAMES= \
-    # # ProtonVPN only:
+    # # VPNUnlimited and ProtonVPN only:
+    STREAM_ONLY= \
     FREE_ONLY= \
+    # # ProtonVPN only:
     SECURE_CORE_ONLY= \
     TOR_ONLY= \
     # # Surfshark only:
     MULTIHOP_ONLY= \
     # # VPN Secure only:
     PREMIUM_ONLY= \
-    # # PIA only:
+    # # PIA and ProtonVPN only:
     PORT_FORWARD_ONLY= \
     # Firewall
     FIREWALL_ENABLED_DISABLING_IT_SHOOTS_YOU_IN_YOUR_FOOT=on \
