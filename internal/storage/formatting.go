@@ -128,6 +128,31 @@ func noServerFoundError(selection settings.ServerSelection) (err error) {
 		messageParts = append(messageParts, "premium tier only")
 	}
 
+	if *selection.StreamOnly {
+		messageParts = append(messageParts, "stream only")
+	}
+
+	if *selection.MultiHopOnly {
+		messageParts = append(messageParts, "multihop only")
+	}
+
+	if *selection.PortForwardOnly {
+		messageParts = append(messageParts, "port forwarding only")
+	}
+
+	if *selection.SecureCoreOnly {
+		messageParts = append(messageParts, "secure core only")
+	}
+
+	if *selection.TorOnly {
+		messageParts = append(messageParts, "tor only")
+	}
+
+	if selection.TargetIP.IsValid() {
+		messageParts = append(messageParts,
+			"target ip address "+selection.TargetIP.String())
+	}
+
 	message := "for " + strings.Join(messageParts, "; ")
 
 	return fmt.Errorf("%w: %s", ErrNoServerFound, message)
