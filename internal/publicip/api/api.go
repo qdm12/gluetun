@@ -19,6 +19,7 @@ type API interface {
 type Provider string
 
 const (
+	Cloudflare  Provider = "cloudflare"
 	IPInfo      Provider = "ipinfo"
 	IP2Location Provider = "ip2location"
 )
@@ -26,6 +27,8 @@ const (
 func New(provider Provider, client *http.Client, token string) ( //nolint:ireturn
 	a API, err error) {
 	switch provider {
+	case Cloudflare:
+		return newCloudflare(client), nil
 	case IPInfo:
 		return newIPInfo(client, token), nil
 	case IP2Location:
@@ -41,12 +44,14 @@ var (
 
 func ParseProvider(s string) (provider Provider, err error) {
 	switch strings.ToLower(s) {
+	case "cloudflare":
+		return Cloudflare, nil
 	case "ipinfo":
 		return IPInfo, nil
 	case "ip2location":
 		return IP2Location, nil
 	default:
-		return "", fmt.Errorf(`%w: %q can only be "ipinfo" or "ip2location"`,
+		return "", fmt.Errorf(`%w: %q can only be "cloudflare", "ipinfo", or "ip2location"`,
 			ErrProviderNotValid, s)
 	}
 }
