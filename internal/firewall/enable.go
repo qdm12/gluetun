@@ -106,12 +106,20 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		return err
 	}
 
+	localInterfaces := make(map[string]struct{}, len(c.localNetworks))
 	for _, network := range c.localNetworks {
 		if err := c.acceptOutputFromIPToSubnet(ctx, network.InterfaceName, network.IP, network.IPNet, remove); err != nil {
 			return err
 		}
-		if err = c.acceptIpv6MulticastOutput(ctx, network.InterfaceName, remove); err != nil {
-			return err
+
+		_, localInterfaceSeen := localInterfaces[network.InterfaceName]
+		if localInterfaceSeen {
+			continue
+		}
+		localInterfaces[network.InterfaceName] = struct{}{}
+		err = c.acceptIpv6MulticastOutput(ctx, network.InterfaceName, remove)
+		if err != nil {
+			return fmt.Errorf("accepting IPv6 multicast output: %w", err)
 		}
 	}
 
