@@ -157,7 +157,13 @@ func (c *Config) allowVPNIP(ctx context.Context) (err error) {
 	}
 
 	const remove = false
+	interfacesSeen := make(map[string]struct{}, len(c.defaultRoutes))
 	for _, defaultRoute := range c.defaultRoutes {
+		_, seen := interfacesSeen[defaultRoute.NetInterface]
+		if seen {
+			continue
+		}
+		interfacesSeen[defaultRoute.NetInterface] = struct{}{}
 		err = c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove)
 		if err != nil {
 			return fmt.Errorf("accepting output traffic through VPN: %w", err)
