@@ -188,7 +188,7 @@ func (c *Config) acceptIpv6MulticastOutput(ctx context.Context,
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
 	}
-	instruction := fmt.Sprintf("%s OUTPUT %s -d ff02::1:ff/104 -j ACCEPT",
+	instruction := fmt.Sprintf("%s OUTPUT %s -d ff02::1:ff00:0/104 -j ACCEPT",
 		appendOrDelete(remove), interfaceFlag)
 	return c.runIP6tablesInstruction(ctx, instruction)
 }
