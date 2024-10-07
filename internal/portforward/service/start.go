@@ -79,9 +79,12 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 	keepPortDoneCh := make(chan struct{})
 	s.keepPortDoneCh = keepPortDoneCh
 
+	readyCh := make(chan struct{})
 	go func(ctx context.Context, portForwarder PortForwarder,
-		obj utils.PortForwardObjects, runError chan<- error, doneCh chan<- struct{}) {
+		obj utils.PortForwardObjects, readyCh chan<- struct{},
+		runError chan<- error, doneCh chan<- struct{}) {
 		defer close(doneCh)
+		close(readyCh)
 		err = portForwarder.KeepPortForward(ctx, obj)
 		crashed := ctx.Err() == nil
 		if !crashed { // stopped by Stop call
@@ -91,7 +94,8 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		defer s.startStopMutex.Unlock()
 		_ = s.cleanup()
 		runError <- err
-	}(keepPortCtx, s.settings.PortForwarder, obj, runErrorCh, keepPortDoneCh)
+	}(keepPortCtx, s.settings.PortForwarder, obj, readyCh, runErrorCh, keepPortDoneCh)
+	<-readyCh
 
 	return runErrorCh, nil
 }

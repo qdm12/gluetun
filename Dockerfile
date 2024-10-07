@@ -204,7 +204,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     UPDATER_VPN_SERVICE_PROVIDERS= \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \
-    PUBLICIP_PERIOD=12h \
+    PUBLICIP_ENABLED=on \
     PUBLICIP_API=ipinfo \
     PUBLICIP_API_TOKEN= \
     # Storage

@@ -197,14 +197,16 @@ func (s *Settings) Read(r *reader.Reader, warner Warner) (err error) {
 		"health":         s.Health.Read,
 		"http proxy":     s.HTTPProxy.read,
 		"log":            s.Log.read,
-		"public ip":      s.PublicIP.read,
-		"shadowsocks":    s.Shadowsocks.read,
-		"storage":        s.Storage.read,
-		"system":         s.System.read,
-		"updater":        s.Updater.read,
-		"version":        s.Version.read,
-		"VPN":            s.VPN.read,
-		"profiling":      s.Pprof.Read,
+		"public ip": func(r *reader.Reader) error {
+			return s.PublicIP.read(r, warner)
+		},
+		"shadowsocks": s.Shadowsocks.read,
+		"storage":     s.Storage.read,
+		"system":      s.System.read,
+		"updater":     s.Updater.read,
+		"version":     s.Version.read,
+		"VPN":         s.VPN.read,
+		"profiling":   s.Pprof.Read,
 	}
 
 	for name, read := range readFunctions {

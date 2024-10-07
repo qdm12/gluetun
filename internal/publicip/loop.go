@@ -76,14 +76,8 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 	updateTrigger <-chan settings.PublicIP, updatedResult chan<- error) {
 	defer close(runDone)
 
-	timer := time.NewTimer(time.Hour)
-	defer timer.Stop()
-	_ = timer.Stop()
-	timerIsReadyToReset := true
-	lastFetch := time.Unix(0, 0)
-
 	for {
-		singleRunCtx := runCtx
+		var singleRunCtx context.Context
 		var singleRunResult chan<- error
 		select {
 		case <-runCtx.Done():
@@ -91,26 +85,17 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 		case singleRunCtx = <-runTrigger:
 			// Note singleRunCtx is canceled if runCtx is canceled.
 			singleRunResult = runResult
-		case <-timer.C:
-			timerIsReadyToReset = true
 		case partialUpdate := <-updateTrigger:
 			var err error
-			timerIsReadyToReset, err = l.update(partialUpdate, lastFetch, timer, timerIsReadyToReset)
+			err = l.update(partialUpdate)
 			updatedResult <- err
 			continue
 		}
 
-		lastFetch = l.timeNow()
-		timerIsReadyToReset = l.updateTimer(*l.settings.Period, lastFetch, timer, timerIsReadyToReset)
-
 		result, err := l.fetcher.FetchInfo(singleRunCtx, netip.Addr{})
 		if err != nil {
 			err = fmt.Errorf("fetching information: %w", err)
-			if singleRunResult != nil {
-				singleRunResult <- err
-			} else {
-				l.logger.Error(err.Error())
-			}
+			singleRunResult <- err
 			continue
 		}
 
@@ -128,11 +113,7 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			err = fmt.Errorf("persisting public ip address: %w", err)
 		}
 
-		if singleRunResult != nil {
-			singleRunResult <- err
-		} else if err != nil {
-			l.logger.Error(err.Error())
-		}
+		singleRunResult <- err
 	}
 }
 
