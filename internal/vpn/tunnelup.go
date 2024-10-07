@@ -2,6 +2,8 @@ package vpn
 
 import (
 	"context"
+	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/version"
@@ -31,10 +33,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	}
 
-	err := l.publicip.RunOnce(ctx)
-	if err != nil {
-		l.logger.Error("getting public IP address information: " + err.Error())
-	}
+	l.fetchPublicIPWithRetry(ctx)
 
 	if l.versionInfo {
 		l.versionInfo = false // only get the version information once
@@ -46,8 +45,31 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		}
 	}
 
-	err = l.startPortForwarding(data)
+	err := l.startPortForwarding(data)
 	if err != nil {
 		l.logger.Error(err.Error())
+	}
+}
+
+func (l *Loop) fetchPublicIPWithRetry(ctx context.Context) {
+	for {
+		err := l.publicip.RunOnce(ctx)
+		if err == nil {
+			return
+		}
+
+		l.logger.Error("getting public IP address information: " + err.Error())
+		if !strings.HasSuffix(err.Error(), "read: connection refused") {
+			return
+		}
+
+		// Retry mechanism asked in https://github.com/qdm12/gluetun/issues/2325
+		const retryPeriod = 2 * time.Second
+		l.logger.Infof("retrying public IP address information fetch in %s", retryPeriod)
+		timer := time.NewTimer(retryPeriod)
+		select {
+		case <-ctx.Done():
+		case <-timer.C:
+		}
 	}
 }
