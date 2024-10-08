@@ -21,7 +21,8 @@ type PublicIP struct {
 	// internal state
 	IPFilepath *string
 	// API is the API name to use to fetch public IP information.
-	// It can be ipinfo or ip2location. It defaults to ipinfo.
+	// It can be cloudflare, ifconfigco, ip2location or ipinfo.
+	// It defaults to ipinfo.
 	API string
 	// APIToken is the token to use for the IP data service
 	// such as ipinfo.io. It can be the empty string to

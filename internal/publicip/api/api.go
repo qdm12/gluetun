@@ -20,6 +20,7 @@ type Provider string
 
 const (
 	Cloudflare  Provider = "cloudflare"
+	IfConfigCo  Provider = "ifconfigco"
 	IPInfo      Provider = "ipinfo"
 	IP2Location Provider = "ip2location"
 )
@@ -29,6 +30,8 @@ func New(provider Provider, client *http.Client, token string) ( //nolint:iretur
 	switch provider {
 	case Cloudflare:
 		return newCloudflare(client), nil
+	case IfConfigCo:
+		return newIfConfigCo(client), nil
 	case IPInfo:
 		return newIPInfo(client, token), nil
 	case IP2Location:
@@ -46,12 +49,14 @@ func ParseProvider(s string) (provider Provider, err error) {
 	switch strings.ToLower(s) {
 	case "cloudflare":
 		return Cloudflare, nil
+	case string(IfConfigCo):
+		return IfConfigCo, nil
 	case "ipinfo":
 		return IPInfo, nil
 	case "ip2location":
 		return IP2Location, nil
 	default:
-		return "", fmt.Errorf(`%w: %q can only be "cloudflare", "ipinfo", or "ip2location"`,
+		return "", fmt.Errorf(`%w: %q can only be "cloudflare", "ifconfigco", "ip2location" or "ipinfo"`,
 			ErrProviderNotValid, s)
 	}
 }
