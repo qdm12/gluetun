@@ -9,7 +9,6 @@ It works on Linux, Windows (WSL2) and OSX.
 - [VS code](https://code.visualstudio.com/download) installed
 - [VS code dev containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) installed
 - [Docker](https://www.docker.com/products/docker-desktop) installed and running
-- [Docker Compose](https://docs.docker.com/compose/install/) installed
 
 ## Setup
 
@@ -34,14 +33,14 @@ Customizations available are notably:
 
 - Changes to the Docker image in [Dockerfile](Dockerfile)
 - Changes to VSCode **settings** and **extensions** in [devcontainer.json](devcontainer.json).
-- Change the entrypoint script by adding in [docker-compose.yml](docker-compose.yml) a bind mount to a shell script to `/root/.welcome.sh` to replace the [current welcome script](https://github.com/qdm12/godevcontainer/blob/master/shell/.welcome.sh). For example:
+- Change the entrypoint script by adding in [devcontainer.json](devcontainer.json) a bind mount to a shell script to `/root/.welcome.sh` to replace the [current welcome script](https://github.com/qdm12/godevcontainer/blob/master/shell/.welcome.sh). For example:
 
-    ```yml
-    volumes:
-      # ...
-      - ./.welcome.sh:/root/.welcome.sh:ro
-      # ...
+    ```json
+    {
+        "source": "/yourpath/.welcome.sh",
+        "target": "/root/.welcome.sh",
+        "type": "bind"
+    },
     ```
 
-- Change the docker container configuration in [docker-compose.yml](docker-compose.yml).
 - More customizations available are documented in the [devcontainer.json reference](https://containers.dev/implementors/json_reference/).
