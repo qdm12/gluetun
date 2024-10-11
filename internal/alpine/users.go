@@ -3,6 +3,7 @@ package alpine
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/user"
 	"strconv"
@@ -39,7 +40,8 @@ func (a *Alpine) CreateUser(username string, uid int) (createdUsername string, e
 			ErrUserAlreadyExists, username, u.Uid, uid)
 	}
 
-	file, err := os.OpenFile(a.passwdPath, os.O_APPEND|os.O_WRONLY, 0644)
+	const permission = fs.FileMode(0644)
+	file, err := os.OpenFile(a.passwdPath, os.O_APPEND|os.O_WRONLY, permission)
 	if err != nil {
 		return "", err
 	}

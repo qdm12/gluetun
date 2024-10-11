@@ -1,11 +1,13 @@
 package publicip
 
 import (
+	"io/fs"
 	"os"
 )
 
 func persistPublicIP(path string, content string, puid, pgid int) error {
-	file, err := os.OpenFile(path, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
+	const permission = fs.FileMode(0644)
+	file, err := os.OpenFile(path, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, permission)
 	if err != nil {
 		return err
 	}

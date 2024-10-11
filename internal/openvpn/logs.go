@@ -75,6 +75,6 @@ That error usually happens because either:
 		level = levelWarn
 	}
 
-	filtered = constants.ColorOpenvpn().Sprintf(filtered)
+	filtered = constants.ColorOpenvpn().Sprint(filtered)
 	return filtered, level
 }

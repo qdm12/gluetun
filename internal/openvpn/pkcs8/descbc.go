@@ -25,7 +25,7 @@ func (c cipherDESCBC) IVSize() int {
 }
 
 func (c cipherDESCBC) KeySize() int {
-	return 8 //nolint:gomnd
+	return 8 //nolint:mnd
 }
 
 func (c cipherDESCBC) OID() asn1.ObjectIdentifier {

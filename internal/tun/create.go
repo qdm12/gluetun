@@ -4,6 +4,7 @@ package tun
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 
@@ -11,9 +12,10 @@ import (
 )
 
 // Create creates a TUN device at the path specified.
-func (t *Tun) Create(path string) error {
+func (t *Tun) Create(path string) (err error) {
 	parentDir := filepath.Dir(path)
-	if err := os.MkdirAll(parentDir, 0751); err != nil {
+	err = os.MkdirAll(parentDir, 0751) //nolint:mnd
+	if err != nil {
 		return err
 	}
 
@@ -22,7 +24,10 @@ func (t *Tun) Create(path string) error {
 		minor = 200
 	)
 	dev := unix.Mkdev(major, minor)
-	err := unix.Mknod(path, unix.S_IFCHR, int(dev))
+	if dev > math.MaxInt {
+		panic("dev is too high")
+	}
+	err = unix.Mknod(path, unix.S_IFCHR, int(dev))
 	if err != nil {
 		return fmt.Errorf("creating TUN device file node: %w", err)
 	}

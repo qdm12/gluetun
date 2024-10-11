@@ -30,7 +30,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			x5090Name := group.OvpnX509
 			wgPubKey := group.WgPubKey
 			for _, node := range group.Nodes {
-				ips := make([]netip.Addr, 0, 2) //nolint:gomnd
+				ips := make([]netip.Addr, 0, 2) //nolint:mnd
 				if node.IP.IsValid() {
 					ips = append(ips, node.IP)
 				}

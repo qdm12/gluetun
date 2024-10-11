@@ -53,7 +53,7 @@ func Test_Client_ExternalAddress(t *testing.T) {
 			remoteAddress := launchUDPServer(t, testCase.exchanges)
 
 			client := Client{
-				serverPort:                uint16(remoteAddress.Port),
+				serverPort:                uint16(remoteAddress.Port), //nolint:gosec
 				initialConnectionDuration: testCase.initialConnDuration,
 				maxRetries:                1,
 			}

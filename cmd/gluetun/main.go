@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"os/exec"
@@ -287,10 +288,13 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		logger.Warn(warning)
 	}
 
-	if err := os.MkdirAll("/tmp/gluetun", 0644); err != nil {
+	const permission = fs.FileMode(0644)
+	err = os.MkdirAll("/tmp/gluetun", permission)
+	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll("/gluetun", 0644); err != nil {
+	err = os.MkdirAll("/gluetun", permission)
+	if err != nil {
 		return err
 	}
 

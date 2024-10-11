@@ -88,7 +88,7 @@ var (
 
 func extractProto(line string) (protocol string, err error) {
 	fields := strings.Fields(line)
-	if len(fields) != 2 { //nolint:gomnd
+	if len(fields) != 2 { //nolint:mnd
 		return "", fmt.Errorf("%w: %s", errProtoLineFieldsCount, line)
 	}
 
@@ -124,7 +124,7 @@ func extractRemote(line string) (ip netip.Addr, port uint16,
 		// the firewall before the VPN is up.
 	}
 
-	if n > 2 { //nolint:gomnd
+	if n > 2 { //nolint:mnd
 		portInt, err := strconv.Atoi(fields[2])
 		if err != nil {
 			return netip.Addr{}, 0, "", fmt.Errorf("%w: %s", errPortNotValid, line)
@@ -134,7 +134,7 @@ func extractRemote(line string) (ip netip.Addr, port uint16,
 		port = uint16(portInt)
 	}
 
-	if n > 3 { //nolint:gomnd
+	if n > 3 { //nolint:mnd
 		switch fields[3] {
 		case "tcp", "udp":
 			protocol = fields[3]

@@ -26,7 +26,7 @@ type serverData struct {
 	// IPv6Station is mostly empty, so we ignore it for now.
 	IPv6Station netip.Addr `json:"station_ipv6"`
 	// Hostname is the server hostname, for example 'pl128.nordvpn.com'
-	Hostname string
+	Hostname string `json:"hostname"`
 	// Status is the server status, for example 'online'
 	Status string `json:"status"`
 	// Locations is the list of location IDs for the server.

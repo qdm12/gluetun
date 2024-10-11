@@ -34,7 +34,7 @@ func internalIPToPorts(internalIP netip.Addr) (ports []uint16) {
 		last16Bits[0] & 0b00001111, // only keep 4 bits
 		last16Bits[1],
 	}
-	basePort := uint16(last12Bits[0])<<8 + uint16(last12Bits[1]) //nolint:gomnd
+	basePort := uint16(last12Bits[0])<<8 + uint16(last12Bits[1]) //nolint:mnd
 	return []uint16{
 		10000 + basePort,
 		20000 + basePort,

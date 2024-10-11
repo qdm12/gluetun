@@ -18,7 +18,7 @@ func parseOpenvpnURL(url, protocol string) (country, region, city string) {
 	case 1:
 		country = parts[0]
 		return country, "", ""
-	case 2: //nolint:gomnd
+	case 2: //nolint:mnd
 		country = parts[0]
 		city = parts[1]
 	default:

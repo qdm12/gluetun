@@ -22,7 +22,7 @@ type githubCommit struct {
 		Committer struct {
 			Date time.Time `json:"date"`
 		} `json:"committer"`
-	}
+	} `json:"commit"`
 }
 
 var errHTTPStatusCode = errors.New("bad response HTTP status code")

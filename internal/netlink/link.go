@@ -82,7 +82,7 @@ func netlinkLinkToLink(netlinkLink netlink.Link) Link {
 		Name:      attributes.Name,
 		Index:     attributes.Index,
 		EncapType: attributes.EncapType,
-		MTU:       uint16(attributes.MTU),
+		MTU:       uint16(attributes.MTU), //nolint:gosec
 	}
 }
 

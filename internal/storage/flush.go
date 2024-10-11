@@ -21,12 +21,13 @@ func (s *Storage) FlushToFile(path string) error {
 // flushToFile flushes the merged servers data to the file
 // specified by path, as indented JSON. It is not thread-safe.
 func (s *Storage) flushToFile(path string) error {
+	const permission = 0644
 	dirPath := filepath.Dir(path)
-	if err := os.MkdirAll(dirPath, 0644); err != nil {
+	if err := os.MkdirAll(dirPath, permission); err != nil {
 		return err
 	}
 
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, permission)
 	if err != nil {
 		return err
 	}

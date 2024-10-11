@@ -18,7 +18,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 			openvpn.AES128gcm,
 		},
 		Auth:           openvpn.SHA512,
-		Ping:           10, //nolint:gomnd
+		Ping:           10, //nolint:mnd
 		VerifyX509Type: "name",
 		KeyDirection:   "1",
 		RenegDisabled:  true,

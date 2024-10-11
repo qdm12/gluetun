@@ -13,7 +13,6 @@ func New(settings Settings, debugLogger DebugLogger) (
 		return nil, fmt.Errorf("converting settings to lookup maps: %w", err)
 	}
 
-	//nolint:goconst
 	return func(handler http.Handler) http.Handler {
 		return &authHandler{
 			childHandler: handler,

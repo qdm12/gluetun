@@ -34,7 +34,7 @@ func base58Encode(data []byte) string {
 	}
 
 	// integer simplification of ceil(log(256)/log(58))
-	ceilLog256Div58 := (len(data)-zcount)*555/406 + 1 //nolint:gomnd
+	ceilLog256Div58 := (len(data)-zcount)*555/406 + 1 //nolint:mnd
 	size := zcount + ceilLog256Div58
 
 	output := make([]byte, size)
@@ -43,7 +43,7 @@ func base58Encode(data []byte) string {
 	for _, b := range data {
 		i := size - 1
 		for carry := uint32(b); i > high || carry != 0; i-- {
-			carry += 256 * uint32(output[i]) //nolint:gomnd
+			carry += 256 * uint32(output[i]) //nolint:mnd
 			output[i] = byte(carry % radix)
 			carry /= radix
 		}

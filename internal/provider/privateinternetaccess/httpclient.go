@@ -25,7 +25,7 @@ func newHTTPClient(serverName string) (client *http.Client, err error) {
 		panic("cannot load custom PIA certificate")
 	}
 
-	//nolint:gomnd
+	//nolint:mnd
 	return &http.Client{
 		Transport: &http.Transport{
 			// Settings taken from http.DefaultTransport

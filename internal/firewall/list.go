@@ -355,7 +355,7 @@ func parseMetricSize(size string) (n uint64, err error) {
 		return n, fmt.Errorf("%w: empty string", ErrMetricSizeMalformed)
 	}
 
-	//nolint:gomnd
+	//nolint:mnd
 	multiplerLetterToValue := map[byte]uint64{
 		'K': 1000,
 		'M': 1000000,

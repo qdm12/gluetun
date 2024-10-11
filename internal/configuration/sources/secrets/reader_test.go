@@ -1,6 +1,7 @@
 package secrets
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -38,7 +39,8 @@ func Test_Source_Get(t *testing.T) {
 		"empty_secret_file": {
 			makeSource: func(tempDir string) (source *Source, err error) {
 				secretFilepath := filepath.Join(tempDir, "test_file")
-				err = os.WriteFile(secretFilepath, nil, os.ModePerm)
+				const permission = fs.FileMode(0600)
+				err = os.WriteFile(secretFilepath, nil, permission)
 				if err != nil {
 					return nil, err
 				}
@@ -53,7 +55,8 @@ func Test_Source_Get(t *testing.T) {
 		"default_secret_file": {
 			makeSource: func(tempDir string) (source *Source, err error) {
 				secretFilepath := filepath.Join(tempDir, "test_file")
-				err = os.WriteFile(secretFilepath, []byte{'A'}, os.ModePerm)
+				const permission = fs.FileMode(0600)
+				err = os.WriteFile(secretFilepath, []byte{'A'}, permission)
 				if err != nil {
 					return nil, err
 				}
@@ -69,7 +72,8 @@ func Test_Source_Get(t *testing.T) {
 		"env_specified_secret_file": {
 			makeSource: func(tempDir string) (source *Source, err error) {
 				secretFilepath := filepath.Join(tempDir, "test_file_custom")
-				err = os.WriteFile(secretFilepath, []byte{'A'}, os.ModePerm)
+				const permission = fs.FileMode(0600)
+				err = os.WriteFile(secretFilepath, []byte{'A'}, permission)
 				if err != nil {
 					return nil, err
 				}

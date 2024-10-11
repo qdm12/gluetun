@@ -8,7 +8,7 @@ import (
 )
 
 func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http.Request) (authorized bool) {
-	if h.username == "" || (request.Method != "CONNECT" && !request.URL.IsAbs()) {
+	if h.username == "" || (request.Method != http.MethodConnect && !request.URL.IsAbs()) {
 		return true
 	}
 	basicAuth := request.Header.Get("Proxy-Authorization")

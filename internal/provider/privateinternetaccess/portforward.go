@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"net"
 	"net/http"
 	"net/netip"
@@ -202,7 +203,8 @@ func readPIAPortForwardData(portForwardPath string) (data piaPortForwardData, er
 }
 
 func writePIAPortForwardData(portForwardPath string, data piaPortForwardData) (err error) {
-	file, err := os.OpenFile(portForwardPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	const permission = fs.FileMode(0644)
+	file, err := os.OpenFile(portForwardPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, permission)
 	if err != nil {
 		return err
 	}

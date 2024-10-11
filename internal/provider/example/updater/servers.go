@@ -91,7 +91,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(servers), minServers)
 	}
 
-	maxServers := 2 * len(data.Servers) //nolint:gomnd
+	maxServers := 2 * len(data.Servers) //nolint:mnd
 	servers = make([]models.Server, 0, maxServers)
 	for _, serverData := range data.Servers {
 		baseServer := models.Server{

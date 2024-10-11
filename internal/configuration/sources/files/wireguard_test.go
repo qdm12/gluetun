@@ -1,6 +1,7 @@
 package files
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -77,7 +78,8 @@ PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 			t.Parallel()
 
 			configFile := filepath.Join(t.TempDir(), "wg.conf")
-			err := os.WriteFile(configFile, []byte(testCase.fileContent), 0600)
+			const permission = fs.FileMode(0600)
+			err := os.WriteFile(configFile, []byte(testCase.fileContent), permission)
 			require.NoError(t, err)
 
 			wireguard, err := ParseWireguardConf(configFile)

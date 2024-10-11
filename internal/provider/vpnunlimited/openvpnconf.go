@@ -12,7 +12,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,
 		AuthUserPass:  false,
-		Ping:          5, //nolint:gomnd
+		Ping:          5, //nolint:mnd
 		RenegDisabled: true,
 		Ciphers:       []string{openvpn.AES256cbc},
 		Auth:          openvpn.SHA512,

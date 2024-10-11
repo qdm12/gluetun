@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -90,7 +91,8 @@ func (c *CLI) FormatServers(args []string) error {
 	}
 
 	output = filepath.Clean(output)
-	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
+	const permission = fs.FileMode(0644)
+	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, permission)
 	if err != nil {
 		return fmt.Errorf("opening output file: %w", err)
 	}

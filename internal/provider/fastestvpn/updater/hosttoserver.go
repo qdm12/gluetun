@@ -66,7 +66,7 @@ func (hts hostToServerData) adaptWithIPs(hostToIPs map[string][]netip.Addr) {
 }
 
 func (hts hostToServerData) toServersSlice() (servers []models.Server) {
-	servers = make([]models.Server, 0, 2*len(hts)) //nolint:gomnd
+	servers = make([]models.Server, 0, 2*len(hts)) //nolint:mnd
 	for hostname, serverData := range hts {
 		baseServer := models.Server{
 			Hostname: hostname,

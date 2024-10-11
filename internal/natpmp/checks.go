@@ -35,7 +35,7 @@ func checkResponse(response []byte, expectedOperationCode byte,
 			ErrResponseSizeTooSmall, minResponseSize, len(response))
 	}
 
-	if len(response) != int(expectedResponseSize) {
+	if uint(len(response)) != expectedResponseSize {
 		return fmt.Errorf("%w: expected %d bytes and got %d byte(s)",
 			ErrResponseSizeUnexpected, expectedResponseSize, len(response))
 	}
@@ -73,7 +73,7 @@ var (
 // if the result code is not a success (0).
 // See https://www.ietf.org/rfc/rfc6886.html#section-3.5
 //
-//nolint:gomnd
+//nolint:mnd
 func checkResultCode(resultCode uint16) (err error) {
 	switch resultCode {
 	case 0:

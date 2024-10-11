@@ -7,27 +7,12 @@ issues:
     - path: _test\.go
       linters:
         - dupl
-        - goerr113
+        - err113
         - containedctx
-        - goconst
         - maintidx
     - path: "internal\\/server\\/.+\\.go"
       linters:
         - dupl
-    - path: "internal\\/configuration\\/settings\\/.+\\.go"
-      linters:
-        - dupl
-    - text: "^mnd: Magic number: 0[0-9]{3}, in <argument> detected$"
-      source: "^.+= os\\.OpenFile\\(.+, .+, 0[0-9]{3}\\)"
-      linters:
-        - gomnd
-    - text: "^mnd: Magic number: 0[0-9]{3}, in <argument> detected$"
-      source: "^.+= os\\.MkdirAll\\(.+, 0[0-9]{3}\\)"
-      linters:
-        - gomnd
-    - linters:
-        - lll
-      source: "^//go:generate .+$"
     - text: "returns interface \\(github\\.com\\/vishvananda\\/netlink\\.Link\\)"
       linters:
         - ireturn
@@ -35,18 +20,14 @@ issues:
       text: "newCipherDESCBCBlock returns interface \\(github\\.com\\/youmark\\/pkcs8\\.Cipher\\)"
       linters:
         - ireturn
-    - path: "internal\\/firewall\\/.*\\.go"
-      text: "string `-i ` has [1-9][0-9]* occurrences, make it a constant"
+    - path: "internal\\/configuration"
+      text: "printf: non-constant format string in call to \\(\\*github.com\\/qdm12\\/gotree\\.Node\\)\\.Appendf"
       linters:
-        - goconst
-    - path: "internal\\/provider\\/ipvanish\\/updater\\/servers.go"
-      text: "string ` in ` has 3 occurrences, make it a constant"
+        - govet
+    - path: "internal\\/configuration"
+      text: "non-constant format string in call to github\\.com\\/qdm12\\/gotree\\.New"
       linters:
-        - goconst
-    - path: "internal\\/vpn\\/portforward.go"
-      text: 'directive `//nolint:ireturn` is unused for linter "ireturn"'
-      linters:
-        - nolintlint
+        - govet
 
 linters:
   enable:
@@ -62,11 +43,10 @@ linters:
     - dupl
     - dupword
     - durationcheck
+    - err113
     - errchkjson
     - errname
-    - execinquery
     - exhaustive
-    - exportloopref
     - forcetypeassert
     - gci
     - gocheckcompilerdirectives
@@ -77,10 +57,8 @@ linters:
     - gocritic
     - gocyclo
     - godot
-    - goerr113
     - goheader
     - goimports
-    - gomnd
     - gomoddirectives
     - goprintffuncname
     - gosec
@@ -94,6 +72,7 @@ linters:
     - makezero
     - mirror
     - misspell
+    - mnd
     - musttag
     - nakedret
     - nestif
