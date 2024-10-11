@@ -15,7 +15,8 @@ type Updater struct {
 }
 
 func New(warner common.Warner, unzipper common.Unzipper,
-	client *http.Client, parallelResolver common.ParallelResolver) *Updater {
+	client *http.Client, parallelResolver common.ParallelResolver,
+) *Updater {
 	// TODO: remove arguments not used by the updater
 	return &Updater{
 		client:           client,

@@ -32,7 +32,8 @@ type apiServer struct {
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
-	data apiData, err error) {
+	data apiData, err error,
+) {
 	const url = "https://airvpn.org/api/status/"
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)

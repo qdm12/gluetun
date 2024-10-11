@@ -7,7 +7,8 @@ import (
 )
 
 func (n *NetLink) AddrList(link Link, family int) (
-	addresses []Addr, err error) {
+	addresses []Addr, err error,
+) {
 	netlinkLink := linkToNetlinkLink(&link)
 	netlinkAddresses, err := netlink.AddrList(netlinkLink, family)
 	if err != nil {

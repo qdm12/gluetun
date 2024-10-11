@@ -13,7 +13,8 @@ type Runner struct {
 }
 
 func NewRunner(settings settings.OpenVPN, starter CmdStarter,
-	logger Logger) *Runner {
+	logger Logger,
+) *Runner {
 	return &Runner{
 		starter:  starter,
 		logger:   logger,

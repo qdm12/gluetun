@@ -14,7 +14,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	const url = "https://d11a57lttb2ffq.cloudfront.net/heartbleed/router/Recommended-CA2.zip"
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)
 	if err != nil {

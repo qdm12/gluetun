@@ -9,7 +9,8 @@ import (
 )
 
 func getPort(selection settings.ServerSelection,
-	defaultOpenVPNTCP, defaultOpenVPNUDP, defaultWireguard uint16) (port uint16) {
+	defaultOpenVPNTCP, defaultOpenVPNUDP, defaultWireguard uint16,
+) (port uint16) {
 	switch selection.VPN {
 	case vpn.Wireguard:
 		customPort := *selection.Wireguard.EndpointPort

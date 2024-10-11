@@ -18,7 +18,8 @@ var (
 
 func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 	request []byte, responseSize uint) (
-	response []byte, err error) {
+	response []byte, err error,
+) {
 	if gateway.IsUnspecified() || !gateway.IsValid() {
 		return nil, fmt.Errorf("%w", ErrGatewayIPUnspecified)
 	}

@@ -38,7 +38,8 @@ type FilterChoicesGetter interface {
 // if one of them is not valid.
 // TODO v4 remove pointer for receiver (because of Surfshark).
 func (s *Settings) Validate(filterChoicesGetter FilterChoicesGetter, ipv6Supported bool,
-	warner Warner) (err error) {
+	warner Warner,
+) (err error) {
 	nameToValidation := map[string]func() error{
 		"control server":  s.ControlServer.validate,
 		"dns":             s.DNS.validate,
@@ -88,7 +89,8 @@ func (s *Settings) copy() (copied Settings) {
 }
 
 func (s *Settings) OverrideWith(other Settings,
-	filterChoicesGetter FilterChoicesGetter, ipv6Supported bool, warner Warner) (err error) {
+	filterChoicesGetter FilterChoicesGetter, ipv6Supported bool, warner Warner,
+) (err error) {
 	patchedSettings := s.copy()
 	patchedSettings.ControlServer.overrideWith(other.ControlServer)
 	patchedSettings.DNS.overrideWith(other.DNS)

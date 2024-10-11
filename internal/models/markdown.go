@@ -109,15 +109,15 @@ func (s *Servers) toMarkdown(vpnProvider string) (formatted string, err error) {
 	return formatted, nil
 }
 
-var (
-	ErrMarkdownHeadersNotDefined = errors.New("markdown headers not defined")
-)
+var ErrMarkdownHeadersNotDefined = errors.New("markdown headers not defined")
 
 func getMarkdownHeaders(vpnProvider string) (headers []string, err error) {
 	switch vpnProvider {
 	case providers.Airvpn:
-		return []string{regionHeader, countryHeader, cityHeader, vpnHeader,
-			udpHeader, tcpHeader, hostnameHeader, nameHeader}, nil
+		return []string{
+			regionHeader, countryHeader, cityHeader, vpnHeader,
+			udpHeader, tcpHeader, hostnameHeader, nameHeader,
+		}, nil
 	case providers.Cyberghost:
 		return []string{countryHeader, hostnameHeader, tcpHeader, udpHeader}, nil
 	case providers.Expressvpn:
@@ -145,15 +145,19 @@ func getMarkdownHeaders(vpnProvider string) (headers []string, err error) {
 	case providers.Privatevpn:
 		return []string{countryHeader, cityHeader, hostnameHeader}, nil
 	case providers.Protonvpn:
-		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, vpnHeader,
-			freeHeader, portForwardHeader, secureHeader, torHeader}, nil
+		return []string{
+			countryHeader, regionHeader, cityHeader, hostnameHeader, vpnHeader,
+			freeHeader, portForwardHeader, secureHeader, torHeader,
+		}, nil
 	case providers.Purevpn:
 		return []string{countryHeader, regionHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}, nil
 	case providers.SlickVPN:
 		return []string{regionHeader, countryHeader, cityHeader, hostnameHeader}, nil
 	case providers.Surfshark:
-		return []string{regionHeader, countryHeader, cityHeader, hostnameHeader,
-			vpnHeader, multiHopHeader, tcpHeader, udpHeader}, nil
+		return []string{
+			regionHeader, countryHeader, cityHeader, hostnameHeader,
+			vpnHeader, multiHopHeader, tcpHeader, udpHeader,
+		}, nil
 	case providers.Torguard:
 		return []string{countryHeader, cityHeader, hostnameHeader, tcpHeader, udpHeader}, nil
 	case providers.VPNSecure:

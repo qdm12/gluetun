@@ -32,9 +32,7 @@ type chainRule struct {
 	ctstate         []string     // for example ["RELATED","ESTABLISHED"]. Can be empty.
 }
 
-var (
-	ErrChainListMalformed = errors.New("iptables chain list output is malformed")
-)
+var ErrChainListMalformed = errors.New("iptables chain list output is malformed")
 
 func parseChain(iptablesOutput string) (c chain, err error) {
 	// Text example:
@@ -146,9 +144,7 @@ func parseChainGeneralDataLine(line string) (base chain, err error) {
 	return base, nil
 }
 
-var (
-	ErrChainRuleMalformed = errors.New("chain rule is malformed")
-)
+var ErrChainRuleMalformed = errors.New("chain rule is malformed")
 
 func parseChainRuleLine(line string) (rule chainRule, err error) {
 	line = strings.TrimSpace(line)
@@ -300,9 +296,7 @@ func parsePortsCSV(s string) (ports []uint16, err error) {
 	return ports, nil
 }
 
-var (
-	ErrLineNumberIsZero = errors.New("line number is zero")
-)
+var ErrLineNumberIsZero = errors.New("line number is zero")
 
 func parseLineNumber(s string) (n uint16, err error) {
 	const base, bitLength = 10, 16
@@ -315,9 +309,7 @@ func parseLineNumber(s string) (n uint16, err error) {
 	return uint16(lineNumber), nil
 }
 
-var (
-	ErrTargetUnknown = errors.New("unknown target")
-)
+var ErrTargetUnknown = errors.New("unknown target")
 
 func checkTarget(target string) (err error) {
 	switch target {
@@ -327,9 +319,7 @@ func checkTarget(target string) (err error) {
 	return fmt.Errorf("%w: %s", ErrTargetUnknown, target)
 }
 
-var (
-	ErrProtocolUnknown = errors.New("unknown protocol")
-)
+var ErrProtocolUnknown = errors.New("unknown protocol")
 
 func parseProtocol(s string) (protocol string, err error) {
 	switch s {
@@ -344,9 +334,7 @@ func parseProtocol(s string) (protocol string, err error) {
 	return protocol, nil
 }
 
-var (
-	ErrMetricSizeMalformed = errors.New("metric size is malformed")
-)
+var ErrMetricSizeMalformed = errors.New("metric size is malformed")
 
 // parseMetricSize parses a metric size string like 140K or 226M and
 // returns the raw integer matching it.

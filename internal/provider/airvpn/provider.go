@@ -16,7 +16,8 @@ type Provider struct {
 }
 
 func New(storage common.Storage, randSource rand.Source,
-	client *http.Client) *Provider {
+	client *http.Client,
+) *Provider {
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,

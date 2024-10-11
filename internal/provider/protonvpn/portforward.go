@@ -11,13 +11,12 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-var (
-	ErrServerPortForwardNotSupported = errors.New("server does not support port forwarding")
-)
+var ErrServerPortForwardNotSupported = errors.New("server does not support port forwarding")
 
 // PortForward obtains a VPN server side port forwarded from ProtonVPN gateway.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
-	ports []uint16, err error) {
+	ports []uint16, err error,
+) {
 	if !objects.CanPortForward {
 		return nil, fmt.Errorf("%w", ErrServerPortForwardNotSupported)
 	}
@@ -38,17 +37,15 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	const internalPort, externalPort = 0, 1
 	const lifetime = 60 * time.Second
 
-	_, _, assignedUDPExternalPort, assignedLifetime, err :=
-		client.AddPortMapping(ctx, objects.Gateway, "udp",
-			internalPort, externalPort, lifetime)
+	_, _, assignedUDPExternalPort, assignedLifetime, err := client.AddPortMapping(ctx, objects.Gateway, "udp",
+		internalPort, externalPort, lifetime)
 	if err != nil {
 		return nil, fmt.Errorf("adding UDP port mapping: %w", err)
 	}
 	checkLifetime(logger, "UDP", lifetime, assignedLifetime)
 
-	_, _, assignedTCPExternalPort, assignedLifetime, err :=
-		client.AddPortMapping(ctx, objects.Gateway, "tcp",
-			internalPort, externalPort, lifetime)
+	_, _, assignedTCPExternalPort, assignedLifetime, err := client.AddPortMapping(ctx, objects.Gateway, "tcp",
+		internalPort, externalPort, lifetime)
 	if err != nil {
 		return nil, fmt.Errorf("adding TCP port mapping: %w", err)
 	}
@@ -62,7 +59,8 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 }
 
 func checkLifetime(logger utils.Logger, protocol string,
-	requested, actual time.Duration) {
+	requested, actual time.Duration,
+) {
 	if requested != actual {
 		logger.Warn(fmt.Sprintf("assigned %s port lifetime %s differs"+
 			" from requested lifetime %s", strings.ToUpper(protocol),
@@ -80,7 +78,8 @@ func checkExternalPorts(logger utils.Logger, udpPort, tcpPort uint16) {
 var ErrExternalPortChanged = errors.New("external port changed")
 
 func (p *Provider) KeepPortForward(ctx context.Context,
-	objects utils.PortForwardObjects) (err error) {
+	objects utils.PortForwardObjects,
+) (err error) {
 	client := natpmp.New()
 	const refreshTimeout = 45 * time.Second
 	timer := time.NewTimer(refreshTimeout)
@@ -98,9 +97,8 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 		const lifetime = 60 * time.Second
 
 		for _, networkProtocol := range networkProtocols {
-			_, _, assignedExternalPort, assignedLiftetime, err :=
-				client.AddPortMapping(ctx, objects.Gateway, networkProtocol,
-					internalPort, p.portForwarded, lifetime)
+			_, _, assignedExternalPort, assignedLiftetime, err := client.AddPortMapping(ctx, objects.Gateway, networkProtocol,
+				internalPort, p.portForwarded, lifetime)
 			if err != nil {
 				return fmt.Errorf("adding port mapping: %w", err)
 			}

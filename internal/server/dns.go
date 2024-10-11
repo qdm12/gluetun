@@ -8,7 +8,8 @@ import (
 )
 
 func newDNSHandler(ctx context.Context, loop DNSLoop,
-	warner warner) http.Handler {
+	warner warner,
+) http.Handler {
 	return &dnsHandler{
 		ctx:    ctx,
 		loop:   loop,

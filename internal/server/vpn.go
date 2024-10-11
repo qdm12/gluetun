@@ -10,7 +10,8 @@ import (
 )
 
 func newVPNHandler(ctx context.Context, looper VPNLooper,
-	storage Storage, ipv6Supported bool, w warner) http.Handler {
+	storage Storage, ipv6Supported bool, w warner,
+) http.Handler {
 	return &vpnHandler{
 		ctx:           ctx,
 		looper:        looper,

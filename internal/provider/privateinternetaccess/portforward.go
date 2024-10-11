@@ -21,13 +21,12 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-var (
-	ErrServerNameNotFound = errors.New("server name not found in servers")
-)
+var ErrServerNameNotFound = errors.New("server name not found in servers")
 
 // PortForward obtains a VPN server side port forwarded from PIA.
 func (p *Provider) PortForward(ctx context.Context,
-	objects utils.PortForwardObjects) (ports []uint16, err error) {
+	objects utils.PortForwardObjects,
+) (ports []uint16, err error) {
 	switch {
 	case objects.ServerName == "":
 		panic("server name cannot be empty")
@@ -88,12 +87,11 @@ func (p *Provider) PortForward(ctx context.Context,
 	return []uint16{data.Port}, nil
 }
 
-var (
-	ErrPortForwardedExpired = errors.New("port forwarded data expired")
-)
+var ErrPortForwardedExpired = errors.New("port forwarded data expired")
 
 func (p *Provider) KeepPortForward(ctx context.Context,
-	objects utils.PortForwardObjects) (err error) {
+	objects utils.PortForwardObjects,
+) (err error) {
 	switch {
 	case objects.ServerName == "":
 		panic("server name cannot be empty")
@@ -154,7 +152,8 @@ func buildAPIIPAddress(gateway netip.Addr) (api netip.Addr) {
 }
 
 func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *http.Client,
-	apiIP netip.Addr, portForwardPath, username, password string) (data piaPortForwardData, err error) {
+	apiIP netip.Addr, portForwardPath, username, password string,
+) (data piaPortForwardData, err error) {
 	data.Token, err = fetchToken(ctx, client, username, password)
 	if err != nil {
 		return data, fmt.Errorf("fetching token: %w", err)
@@ -203,7 +202,7 @@ func readPIAPortForwardData(portForwardPath string) (data piaPortForwardData, er
 }
 
 func writePIAPortForwardData(portForwardPath string, data piaPortForwardData) (err error) {
-	const permission = fs.FileMode(0644)
+	const permission = fs.FileMode(0o644)
 	file, err := os.OpenFile(portForwardPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, permission)
 	if err != nil {
 		return err
@@ -251,12 +250,11 @@ func packPayload(port uint16, token string, expiration time.Time) (payload strin
 	return payload, nil
 }
 
-var (
-	errEmptyToken = errors.New("token received is empty")
-)
+var errEmptyToken = errors.New("token received is empty")
 
 func fetchToken(ctx context.Context, client *http.Client,
-	username, password string) (token string, err error) {
+	username, password string,
+) (token string, err error) {
 	errSubstitutions := map[string]string{
 		url.QueryEscape(username): "<username>",
 		url.QueryEscape(password): "<password>",
@@ -302,7 +300,8 @@ func fetchToken(ctx context.Context, client *http.Client,
 }
 
 func fetchPortForwardData(ctx context.Context, client *http.Client, apiIP netip.Addr, token string) (
-	port uint16, signature string, expiration time.Time, err error) {
+	port uint16, signature string, expiration time.Time, err error,
+) {
 	errSubstitutions := map[string]string{url.QueryEscape(token): "<token>"}
 
 	queryParams := make(url.Values)
@@ -351,9 +350,7 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, apiIP netip.
 	return port, data.Signature, expiration, err
 }
 
-var (
-	ErrBadResponse = errors.New("bad response received")
-)
+var ErrBadResponse = errors.New("bad response received")
 
 func bindPort(ctx context.Context, client *http.Client, apiIPAddress netip.Addr, data piaPortForwardData) (err error) {
 	payload, err := packPayload(data.Port, data.Token, data.Expiration)

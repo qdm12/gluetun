@@ -16,7 +16,8 @@ import (
 // It only reads servers that have the same version as the hardcoded servers version
 // to avoid JSON decoding errors.
 func (s *Storage) readFromFile(filepath string, hardcodedVersions map[string]uint16) (
-	servers models.AllServers, err error) {
+	servers models.AllServers, err error,
+) {
 	file, err := os.Open(filepath)
 	if os.IsNotExist(err) {
 		return servers, nil
@@ -37,7 +38,8 @@ func (s *Storage) readFromFile(filepath string, hardcodedVersions map[string]uin
 }
 
 func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string]uint16) (
-	servers models.AllServers, err error) {
+	servers models.AllServers, err error,
+) {
 	rawMessages := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(b, &rawMessages); err != nil {
 		return servers, fmt.Errorf("decoding servers: %w", err)
@@ -80,7 +82,8 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string
 
 func (s *Storage) readServers(provider string, hardcodedVersion uint16,
 	rawMessage json.RawMessage, titleCaser cases.Caser) (servers models.Servers,
-	versionsMatch bool, err error) {
+	versionsMatch bool, err error,
+) {
 	provider = titleCaser.String(provider)
 
 	var versionObject struct {

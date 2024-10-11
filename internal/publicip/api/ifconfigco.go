@@ -24,7 +24,8 @@ func newIfConfigCo(client *http.Client) *ifConfigCo {
 // using the ifconfig.co/json API. If the ip is the zero value,
 // the public IP address of the machine is used as the IP.
 func (i *ifConfigCo) FetchInfo(ctx context.Context, ip netip.Addr) (
-	result models.PublicIP, err error) {
+	result models.PublicIP, err error,
+) {
 	url := "https://ifconfig.co/json"
 	if ip.IsValid() {
 		url += "?ip=" + ip.String()

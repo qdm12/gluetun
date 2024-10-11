@@ -26,7 +26,8 @@ const (
 )
 
 func New(provider Provider, client *http.Client, token string) ( //nolint:ireturn
-	a API, err error) {
+	a API, err error,
+) {
 	switch provider {
 	case Cloudflare:
 		return newCloudflare(client), nil
@@ -41,9 +42,7 @@ func New(provider Provider, client *http.Client, token string) ( //nolint:iretur
 	}
 }
 
-var (
-	ErrProviderNotValid = errors.New("API name is not valid")
-)
+var ErrProviderNotValid = errors.New("API name is not valid")
 
 func ParseProvider(s string) (provider Provider, err error) {
 	switch strings.ToLower(s) {

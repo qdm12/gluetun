@@ -26,7 +26,8 @@ type Service struct {
 }
 
 func New(settings Settings, routing Routing, client *http.Client,
-	portAllower PortAllower, logger Logger, puid, pgid int) *Service {
+	portAllower PortAllower, logger Logger, puid, pgid int,
+) *Service {
 	return &Service{
 		// Fixed parameters
 		settings: settings,

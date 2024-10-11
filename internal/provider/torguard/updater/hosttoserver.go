@@ -10,7 +10,8 @@ import (
 type hostToServer map[string]models.Server
 
 func (hts hostToServer) add(host, country, city string,
-	tcp, udp bool, ips []netip.Addr) {
+	tcp, udp bool, ips []netip.Addr,
+) {
 	server, ok := hts[host]
 	if !ok {
 		server.VPN = vpn.OpenVPN

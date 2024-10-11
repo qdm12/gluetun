@@ -24,7 +24,8 @@ type Updater struct {
 }
 
 func New(httpClient *http.Client, storage Storage,
-	providers Providers, logger Logger) *Updater {
+	providers Providers, logger Logger,
+) *Updater {
 	unzipper := unzip.New(httpClient)
 	return &Updater{
 		providers: providers,
@@ -37,7 +38,8 @@ func New(httpClient *http.Client, storage Storage,
 }
 
 func (u *Updater) UpdateServers(ctx context.Context, providers []string,
-	minRatio float64) (err error) {
+	minRatio float64,
+) (err error) {
 	caser := cases.Title(language.English)
 	for _, providerName := range providers {
 		u.logger.Info("updating " + caser.String(providerName) + " servers...")

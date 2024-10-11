@@ -7,7 +7,8 @@ import (
 )
 
 func (w *Wireguard) addRule(rulePriority int, firewallMark uint32,
-	family int) (cleanup func() error, err error) {
+	family int,
+) (cleanup func() error, err error) {
 	rule := netlink.NewRule()
 	rule.Invert = true
 	rule.Priority = rulePriority

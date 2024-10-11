@@ -17,7 +17,8 @@ type features struct {
 }
 
 func (its ipToServers) add(country, region, city, name, hostname, wgPubKey string,
-	free bool, entryIP netip.Addr, features features) {
+	free bool, entryIP netip.Addr, features features,
+) {
 	key := entryIP.String()
 
 	servers, ok := its[key]

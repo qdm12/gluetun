@@ -15,7 +15,8 @@ import (
 var ErrExtractData = errors.New("failed extracting information from custom configuration file")
 
 func (p *Provider) OpenVPNConfig(connection models.Connection,
-	settings settings.OpenVPN, ipv6Supported bool) (lines []string) {
+	settings settings.OpenVPN, ipv6Supported bool,
+) (lines []string) {
 	lines, _, err := p.extractor.Data(*settings.ConfFile)
 	if err != nil {
 		// Configuration file is already validated in settings validation in
@@ -30,7 +31,8 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 }
 
 func modifyConfig(lines []string, connection models.Connection,
-	settings settings.OpenVPN, ipv6Supported bool) (modified []string) {
+	settings settings.OpenVPN, ipv6Supported bool,
+) (modified []string) {
 	// Remove some lines
 	for _, line := range lines {
 		switch {

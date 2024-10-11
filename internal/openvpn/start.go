@@ -18,7 +18,8 @@ const (
 )
 
 func start(ctx context.Context, starter CmdStarter, version string, flags []string) (
-	stdoutLines, stderrLines <-chan string, waitError <-chan error, err error) {
+	stdoutLines, stderrLines <-chan string, waitError <-chan error, err error,
+) {
 	var bin string
 	switch version {
 	case openvpn.Openvpn25:

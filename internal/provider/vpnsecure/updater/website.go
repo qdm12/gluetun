@@ -14,7 +14,8 @@ import (
 )
 
 func fetchServers(ctx context.Context, client *http.Client,
-	warner common.Warner) (servers []models.Server, err error) {
+	warner common.Warner,
+) (servers []models.Server, err error) {
 	const url = "https://www.vpnsecure.me/vpn-locations/"
 	rootNode, err := htmlutils.Fetch(ctx, client, url)
 	if err != nil {
@@ -32,14 +33,13 @@ func fetchServers(ctx context.Context, client *http.Client,
 	return servers, nil
 }
 
-var (
-	ErrHTMLServersDivNotFound = errors.New("HTML servers container div not found")
-)
+var ErrHTMLServersDivNotFound = errors.New("HTML servers container div not found")
 
 const divString = "div"
 
 func parseHTML(rootNode *html.Node) (servers []models.Server,
-	warnings []string, err error) {
+	warnings []string, err error,
+) {
 	// Find div container for all servers, searching with BFS.
 	serversDiv := findServersDiv(rootNode)
 	if serversDiv == nil {
@@ -86,7 +86,8 @@ func parseHTML(rootNode *html.Node) (servers []models.Server,
 }
 
 func parseHTMLGridItem(gridItem *html.Node) (
-	server models.Server, warning string) {
+	server models.Server, warning string,
+) {
 	gridItemDT := htmlutils.DirectChild(gridItem, matchDT)
 	if gridItemDT == nil {
 		return server, htmlutils.WrapWarning("grid item <dt> not found", gridItem)
@@ -221,7 +222,8 @@ func matchStatusSpan(node *html.Node) (match bool) {
 }
 
 func findSpanStrong(gridItemDD *html.Node, spanData string) (
-	strongValue string) {
+	strongValue string,
+) {
 	spanFound := false
 	for child := gridItemDD.FirstChild; child != nil; child = child.NextSibling {
 		if !htmlutils.MatchData("div")(child) {

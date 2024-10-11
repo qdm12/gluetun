@@ -9,7 +9,8 @@ import (
 )
 
 func New(statusApplier StatusApplier,
-	settings settings.HTTPProxy) *State {
+	settings settings.HTTPProxy,
+) *State {
 	return &State{
 		statusApplier: statusApplier,
 		settings:      settings,

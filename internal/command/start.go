@@ -13,12 +13,14 @@ import (
 // if the command fails later.
 func (c *Cmder) Start(cmd *exec.Cmd) (
 	stdoutLines, stderrLines <-chan string,
-	waitError <-chan error, startErr error) {
+	waitError <-chan error, startErr error,
+) {
 	return start(cmd)
 }
 
 func start(cmd execCmd) (stdoutLines, stderrLines <-chan string,
-	waitError <-chan error, startErr error) {
+	waitError <-chan error, startErr error,
+) {
 	stop := make(chan struct{})
 	stdoutReady := make(chan struct{})
 	stdoutLinesCh := make(chan string)
@@ -68,7 +70,8 @@ func start(cmd execCmd) (stdoutLines, stderrLines <-chan string,
 
 func streamToChannel(ready chan<- struct{},
 	stop <-chan struct{}, done chan<- struct{},
-	stream io.Reader, lines chan<- string) {
+	stream io.Reader, lines chan<- string,
+) {
 	defer close(done)
 	close(ready)
 	scanner := bufio.NewScanner(stream)

@@ -54,7 +54,8 @@ type Extractor interface {
 func NewProviders(storage Storage, timeNow func() time.Time,
 	updaterWarner common.Warner, client *http.Client, unzipper common.Unzipper,
 	parallelResolver common.ParallelResolver, ipFetcher common.IPFetcher,
-	extractor custom.Extractor) *Providers {
+	extractor custom.Extractor,
+) *Providers {
 	randSource := rand.NewSource(timeNow().UnixNano())
 
 	//nolint:lll

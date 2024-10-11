@@ -16,13 +16,15 @@ import (
 func (l *Loop) GetSettings() (settings settings.DNS) { return l.state.GetSettings() }
 
 func (l *Loop) SetSettings(ctx context.Context, settings settings.DNS) (
-	outcome string) {
+	outcome string,
+) {
 	return l.state.SetSettings(ctx, settings)
 }
 
 func buildDoTSettings(settings settings.DNS,
 	filter *mapfilter.Filter, logger Logger) (
-	dotSettings dot.ServerSettings, err error) {
+	dotSettings dot.ServerSettings, err error,
+) {
 	var middlewares []dot.Middleware
 
 	if *settings.DoT.Caching {

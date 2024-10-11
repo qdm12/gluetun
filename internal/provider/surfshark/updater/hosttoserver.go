@@ -10,7 +10,8 @@ import (
 type hostToServers map[string][]models.Server
 
 func (hts hostToServers) addOpenVPN(host, region, country, city,
-	retroLoc string, tcp, udp bool) {
+	retroLoc string, tcp, udp bool,
+) {
 	// Check for existing server for this host and OpenVPN.
 	servers := hts[host]
 	for i, existingServer := range servers {
@@ -43,7 +44,8 @@ func (hts hostToServers) addOpenVPN(host, region, country, city,
 }
 
 func (hts hostToServers) addWireguard(host, region, country, city, retroLoc,
-	wgPubKey string) {
+	wgPubKey string,
+) {
 	// Check for existing server for this host and Wireguard.
 	servers := hts[host]
 	for _, existingServer := range servers {

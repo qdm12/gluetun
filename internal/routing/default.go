@@ -9,9 +9,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-var (
-	ErrRouteDefaultNotFound = errors.New("default route not found")
-)
+var ErrRouteDefaultNotFound = errors.New("default route not found")
 
 type DefaultRoute struct {
 	NetInterface string

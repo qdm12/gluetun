@@ -18,31 +18,38 @@ func Test_processLogLine(t *testing.T) {
 		"openvpn unknown": {
 			"message",
 			"message",
-			levelInfo},
+			levelInfo,
+		},
 		"openvpn note": {
 			"NOTE: message",
 			"message",
-			levelInfo},
+			levelInfo,
+		},
 		"openvpn warning": {
 			"WARNING: message",
 			"message",
-			levelWarn},
+			levelWarn,
+		},
 		"openvpn options error": {
 			"Options error: message",
 			"message",
-			levelError},
+			levelError,
+		},
 		"openvpn ignored message": {
 			"NOTE: UID/GID downgrade will be delayed because of --client, --pull, or --up-delay",
 			"",
-			levelInfo},
+			levelInfo,
+		},
 		"openvpn success": {
 			"Initialization Sequence Completed",
 			"Initialization Sequence Completed",
-			levelInfo},
+			levelInfo,
+		},
 		"openvpn auth failed": {
 			"AUTH: Received control message: AUTH_FAILED",
 			"AUTH: Received control message: AUTH_FAILED\n\nYour credentials might be wrong 🤨\n\n",
-			levelError},
+			levelError,
+		},
 		"TLS key negotiation error": {
 			s: "TLS Error: TLS key negotiation failed to occur within " +
 				"60 seconds (check your network connectivity)",

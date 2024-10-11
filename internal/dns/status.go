@@ -11,6 +11,7 @@ func (l *Loop) GetStatus() (status models.LoopStatus) {
 }
 
 func (l *Loop) ApplyStatus(ctx context.Context, status models.LoopStatus) (
-	outcome string, err error) {
+	outcome string, err error,
+) {
 	return l.statusManager.ApplyStatus(ctx, status)
 }

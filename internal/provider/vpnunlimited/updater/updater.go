@@ -11,7 +11,8 @@ type Updater struct {
 }
 
 func New(unzipper common.Unzipper, warner common.Warner,
-	parallelResolver common.ParallelResolver) *Updater {
+	parallelResolver common.ParallelResolver,
+) *Updater {
 	return &Updater{
 		unzipper:         unzipper,
 		parallelResolver: parallelResolver,

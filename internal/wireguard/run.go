@@ -140,7 +140,8 @@ type waitAndCleanupFunc func() error
 func setupKernelSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint16,
 	closers *closers, logger Logger) (
-	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
+	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error,
+) {
 	link = netlink.Link{
 		Type: "wireguard",
 		Name: interfaceName,
@@ -184,7 +185,8 @@ func setupKernelSpace(ctx context.Context,
 func setupUserSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint16,
 	closers *closers, logger Logger) (
-	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error) {
+	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error,
+) {
 	tun, err := tun.CreateTUN(interfaceName, int(mtu))
 	if err != nil {
 		return link, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
@@ -258,7 +260,8 @@ func setupUserSpace(ctx context.Context,
 }
 
 func acceptAndHandle(uapi net.Listener, device *device.Device,
-	uapiAcceptErrorCh chan<- error) {
+	uapiAcceptErrorCh chan<- error,
+) {
 	for { // stopped by uapiFile.Close()
 		conn, err := uapi.Accept()
 		if err != nil {

@@ -3,7 +3,8 @@
 package netlink
 
 func (n *NetLink) RouteList(family int) (
-	routes []Route, err error) {
+	routes []Route, err error,
+) {
 	panic("not implemented")
 }
 

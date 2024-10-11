@@ -8,7 +8,8 @@ import (
 )
 
 func (w *Wireguard) addAddresses(link netlink.Link,
-	addresses []netip.Prefix) (err error) {
+	addresses []netip.Prefix,
+) (err error) {
 	for _, ipNet := range addresses {
 		if !*w.settings.IPv6 && ipNet.Addr().Is6() {
 			continue

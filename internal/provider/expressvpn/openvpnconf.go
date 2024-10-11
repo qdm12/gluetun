@@ -8,7 +8,8 @@ import (
 )
 
 func (p *Provider) OpenVPNConfig(connection models.Connection,
-	settings settings.OpenVPN, ipv6Supported bool) (lines []string) {
+	settings settings.OpenVPN, ipv6Supported bool,
+) (lines []string) {
 	//nolint:mnd
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,

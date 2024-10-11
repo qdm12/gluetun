@@ -7,9 +7,7 @@ import (
 	"strings"
 )
 
-var (
-	trailingNumber = regexp.MustCompile(` [0-9]+$`)
-)
+var trailingNumber = regexp.MustCompile(` [0-9]+$`)
 
 var (
 	errBadPrefix      = errors.New("bad prefix in file name")

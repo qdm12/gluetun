@@ -13,7 +13,8 @@ import (
 // See https://www.ietf.org/rfc/rfc6886.html#section-3.2
 func (c *Client) ExternalAddress(ctx context.Context, gateway netip.Addr) (
 	durationSinceStartOfEpoch time.Duration,
-	externalIPv4Address netip.Addr, err error) {
+	externalIPv4Address netip.Addr, err error,
+) {
 	request := []byte{0, 0} // version 0, operationCode 0
 	const responseSize = 12
 	response, err := c.rpc(ctx, gateway, request, responseSize)

@@ -4,7 +4,8 @@ package settings
 // and SERVER_REGIONS is now the continent field for servers.
 // TODO v4 remove.
 func nordvpnRetroRegion(selection ServerSelection, validRegions, validCountries []string) (
-	updatedSelection ServerSelection) {
+	updatedSelection ServerSelection,
+) {
 	validRegionsMap := stringSliceToMap(validRegions)
 	validCountriesMap := stringSliceToMap(validCountries)
 

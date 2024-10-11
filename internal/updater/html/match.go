@@ -23,7 +23,8 @@ func MatchData(data string) MatchFunc {
 }
 
 func DirectChild(parent *html.Node,
-	matchFunc MatchFunc) (child *html.Node) {
+	matchFunc MatchFunc,
+) (child *html.Node) {
 	for child := parent.FirstChild; child != nil; child = child.NextSibling {
 		if matchFunc(child) {
 			return child
@@ -33,7 +34,8 @@ func DirectChild(parent *html.Node,
 }
 
 func DirectChildren(parent *html.Node,
-	matchFunc MatchFunc) (children []*html.Node) {
+	matchFunc MatchFunc,
+) (children []*html.Node) {
 	for child := parent.FirstChild; child != nil; child = child.NextSibling {
 		if matchFunc(child) {
 			children = append(children, child)

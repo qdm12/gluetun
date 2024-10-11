@@ -17,7 +17,8 @@ type Provider struct {
 
 func New(storage common.Storage, randSource rand.Source,
 	client *http.Client, unzipper common.Unzipper, updaterWarner common.Warner,
-	parallelResolver common.ParallelResolver) *Provider {
+	parallelResolver common.ParallelResolver,
+) *Provider {
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,

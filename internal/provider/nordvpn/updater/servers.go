@@ -11,12 +11,11 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/common"
 )
 
-var (
-	ErrNotIPv4 = errors.New("IP address is not IPv4")
-)
+var ErrNotIPv4 = errors.New("IP address is not IPv4")
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	const limit = 0
 	data, err := fetchAPI(ctx, u.client, limit)
 	if err != nil {
@@ -47,7 +46,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 func extractServers(jsonServer serverData, groups map[uint32]groupData,
 	services map[uint32]serviceData, locations map[uint32]locationData,
 	technologies map[uint32]technologyData) (servers []models.Server,
-	warnings []string) {
+	warnings []string,
+) {
 	ignoreReason := ""
 	switch {
 	case jsonServer.Status != "online":

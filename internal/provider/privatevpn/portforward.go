@@ -14,18 +14,15 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-var (
-	regexPort = regexp.MustCompile(`[1-9][0-9]{0,4}`)
-)
+var regexPort = regexp.MustCompile(`[1-9][0-9]{0,4}`)
 
-var (
-	ErrPortForwardedNotFound = errors.New("port forwarded not found")
-)
+var ErrPortForwardedNotFound = errors.New("port forwarded not found")
 
 // PortForward obtains a VPN server side port forwarded from the PrivateVPN API.
 // It returns 0 if all ports are to forwarded on a dedicated server IP.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
-	ports []uint16, err error) {
+	ports []uint16, err error,
+) {
 	url := "https://connect.pvdatanet.com/v3/Api/port?ip[]=" + objects.InternalIP.String()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -75,7 +72,8 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 }
 
 func (p *Provider) KeepPortForward(ctx context.Context,
-	_ utils.PortForwardObjects) (err error) {
+	_ utils.PortForwardObjects,
+) (err error) {
 	<-ctx.Done()
 	return ctx.Err()
 }

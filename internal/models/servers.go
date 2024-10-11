@@ -158,9 +158,7 @@ type Servers struct {
 	Servers   []Server `json:"servers,omitempty"`
 }
 
-var (
-	ErrServersFormatNotSupported = errors.New("servers format not supported")
-)
+var ErrServersFormatNotSupported = errors.New("servers format not supported")
 
 func (s *Servers) Format(vpnProvider, format string) (formatted string, err error) {
 	switch format {

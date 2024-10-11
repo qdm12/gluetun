@@ -8,7 +8,8 @@ import (
 )
 
 func (p *Provider) GetConnection(selection settings.ServerSelection, ipv6Supported bool) (
-	connection models.Connection, err error) {
+	connection models.Connection, err error,
+) {
 	// Set port defaults depending on encryption preset.
 	var defaults utils.ConnectionDefaults
 	switch *selection.OpenVPN.PIAEncPreset {

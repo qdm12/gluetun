@@ -18,7 +18,8 @@ type Provider interface {
 var ErrServerHasNotEnoughInformation = errors.New("server has not enough information")
 
 func (u *Updater) updateProvider(ctx context.Context, provider Provider,
-	minRatio float64) (err error) {
+	minRatio float64,
+) (err error) {
 	providerName := provider.Name()
 	existingServersCount := u.storage.GetServersCount(providerName)
 	minServers := int(minRatio * float64(existingServersCount))

@@ -7,7 +7,8 @@ import (
 )
 
 func (p *Provider) GetConnection(selection settings.ServerSelection, ipv6Supported bool) (
-	connection models.Connection, err error) {
+	connection models.Connection, err error,
+) {
 	// TODO: Set the default ports for each VPN protocol+network protocol
 	// combination. If one combination is not supported, set it to `0`.
 	defaults := utils.NewConnectionDefaults(443, 1194, 51820) //nolint:mnd

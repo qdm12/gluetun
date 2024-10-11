@@ -10,7 +10,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	hts := make(hostToServers)
 
 	err = addServersFromAPI(ctx, u.client, hts)

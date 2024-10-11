@@ -22,7 +22,8 @@ var (
 )
 
 func addProviderFlag(flagSet *flag.FlagSet, providerToFormat map[string]*bool,
-	provider string, titleCaser cases.Caser) {
+	provider string, titleCaser cases.Caser,
+) {
 	boolPtr, ok := providerToFormat[provider]
 	if !ok {
 		panic(fmt.Sprintf("unknown provider in format map: %s", provider))
@@ -91,7 +92,7 @@ func (c *CLI) FormatServers(args []string) error {
 	}
 
 	output = filepath.Clean(output)
-	const permission = fs.FileMode(0644)
+	const permission = fs.FileMode(0o644)
 	file, err := os.OpenFile(output, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, permission)
 	if err != nil {
 		return fmt.Errorf("opening output file: %w", err)

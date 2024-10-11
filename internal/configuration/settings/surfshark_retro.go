@@ -7,7 +7,8 @@ import (
 )
 
 func surfsharkRetroRegion(selection ServerSelection) (
-	updatedSelection ServerSelection) {
+	updatedSelection ServerSelection,
+) {
 	locationData := servers.LocationData()
 
 	retroToLocation := make(map[string]servers.ServerLocation, len(locationData))

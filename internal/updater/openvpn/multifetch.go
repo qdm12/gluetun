@@ -9,7 +9,8 @@ import (
 // parses them to extract each of their host. A mapping from host to
 // URL is returned.
 func FetchMultiFiles(ctx context.Context, client *http.Client, urls []string,
-	failEarly bool) (hostToURL map[string]string, errors []error) {
+	failEarly bool,
+) (hostToURL map[string]string, errors []error) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 

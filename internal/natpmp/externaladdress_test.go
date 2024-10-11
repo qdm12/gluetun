@@ -57,8 +57,7 @@ func Test_Client_ExternalAddress(t *testing.T) {
 				maxRetries:                1,
 			}
 
-			durationSinceStartOfEpoch, externalIPv4Address, err :=
-				client.ExternalAddress(testCase.ctx, testCase.gateway)
+			durationSinceStartOfEpoch, externalIPv4Address, err := client.ExternalAddress(testCase.ctx, testCase.gateway)
 			assert.ErrorIs(t, err, testCase.err)
 			if testCase.err != nil {
 				assert.EqualError(t, err, testCase.errMessage)

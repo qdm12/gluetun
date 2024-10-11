@@ -8,7 +8,8 @@ import (
 )
 
 func (p *Provider) OpenVPNConfig(connection models.Connection,
-	settings settings.OpenVPN, ipv6Supported bool) (lines []string) {
+	settings settings.OpenVPN, ipv6Supported bool,
+) (lines []string) {
 	// TODO: Set the necessary fields in `providerSettings` to
 	// generate the right OpenVPN configuration file.
 	//nolint:mnd

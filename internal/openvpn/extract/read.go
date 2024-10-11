@@ -7,7 +7,8 @@ import (
 )
 
 func readCustomConfigLines(filepath string) (
-	lines []string, err error) {
+	lines []string, err error,
+) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err

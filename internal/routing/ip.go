@@ -14,9 +14,7 @@ func ipIsPrivate(ip netip.Addr) bool {
 		ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast()
 }
 
-var (
-	errInterfaceIPNotFound = errors.New("IP address not found for interface")
-)
+var errInterfaceIPNotFound = errors.New("IP address not found for interface")
 
 func ipMatchesFamily(ip netip.Addr, family int) bool {
 	return (family == netlink.FamilyV4 && ip.Is4()) ||

@@ -3,7 +3,8 @@ package updater
 import "strings"
 
 func codeToCountry(countryCode string, countryCodes map[string]string) (
-	country string, warning string) {
+	country string, warning string,
+) {
 	countryCode = strings.ToLower(countryCode)
 	country, ok := countryCodes[countryCode]
 	if !ok {

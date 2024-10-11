@@ -10,7 +10,8 @@ import (
 )
 
 func (p *Provider) OpenVPNConfig(connection models.Connection,
-	settings settings.OpenVPN, ipv6Supported bool) (lines []string) {
+	settings settings.OpenVPN, ipv6Supported bool,
+) (lines []string) {
 	const defaultMTU = 1320               // see https://github.com/qdm12/gluetun/issues/1650#issuecomment-1988298206
 	const defaultMSSFix = defaultMTU - 28 // 28 bytes of IPv4 UDP header size
 	providerSettings := utils.OpenVPNProviderSettings{
@@ -31,7 +32,8 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 		providerSettings.Ciphers = []string{
 			openvpn.AES256gcm, openvpn.AES256cbc, openvpn.AES192gcm,
 			openvpn.AES192cbc, openvpn.AES128gcm, openvpn.AES128cbc,
-			openvpn.Chacha20Poly1305}
+			openvpn.Chacha20Poly1305,
+		}
 	default:
 		panic(fmt.Sprintf("openvpn version %q is not implemented", settings.Version))
 	}

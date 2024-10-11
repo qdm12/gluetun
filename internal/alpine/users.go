@@ -9,9 +9,7 @@ import (
 	"strconv"
 )
 
-var (
-	ErrUserAlreadyExists = errors.New("user already exists")
-)
+var ErrUserAlreadyExists = errors.New("user already exists")
 
 // CreateUser creates a user in Alpine with the given UID.
 func (a *Alpine) CreateUser(username string, uid int) (createdUsername string, err error) {
@@ -40,7 +38,7 @@ func (a *Alpine) CreateUser(username string, uid int) (createdUsername string, e
 			ErrUserAlreadyExists, username, u.Uid, uid)
 	}
 
-	const permission = fs.FileMode(0644)
+	const permission = fs.FileMode(0o644)
 	file, err := os.OpenFile(a.passwdPath, os.O_APPEND|os.O_WRONLY, permission)
 	if err != nil {
 		return "", err

@@ -34,9 +34,7 @@ type WireguardConfig struct {
 	EndpointPort *string
 }
 
-var (
-	regexINISectionNotExist = regexp.MustCompile(`^section ".+" does not exist$`)
-)
+var regexINISectionNotExist = regexp.MustCompile(`^section ".+" does not exist$`)
 
 func ParseWireguardConf(path string) (config WireguardConfig, err error) {
 	iniFile, err := ini.InsensitiveLoad(path)
@@ -68,18 +66,18 @@ func ParseWireguardConf(path string) (config WireguardConfig, err error) {
 }
 
 func parseWireguardInterfaceSection(interfaceSection *ini.Section) (
-	privateKey, addresses *string) {
+	privateKey, addresses *string,
+) {
 	privateKey = getINIKeyFromSection(interfaceSection, "PrivateKey")
 	addresses = getINIKeyFromSection(interfaceSection, "Address")
 	return privateKey, addresses
 }
 
-var (
-	ErrEndpointHostNotIP = errors.New("endpoint host is not an IP")
-)
+var ErrEndpointHostNotIP = errors.New("endpoint host is not an IP")
 
 func parseWireguardPeerSection(peerSection *ini.Section) (
-	preSharedKey, publicKey, endpointIP, endpointPort *string) {
+	preSharedKey, publicKey, endpointIP, endpointPort *string,
+) {
 	preSharedKey = getINIKeyFromSection(peerSection, "PresharedKey")
 	publicKey = getINIKeyFromSection(peerSection, "PublicKey")
 	endpoint := getINIKeyFromSection(peerSection, "Endpoint")
@@ -96,9 +94,7 @@ func parseWireguardPeerSection(peerSection *ini.Section) (
 	return preSharedKey, publicKey, endpointIP, endpointPort
 }
 
-var (
-	regexINIKeyNotExist = regexp.MustCompile(`key ".*" not exists$`)
-)
+var regexINIKeyNotExist = regexp.MustCompile(`key ".*" not exists$`)
 
 func getINIKeyFromSection(section *ini.Section, key string) (value *string) {
 	iniKey, err := section.GetKey(key)

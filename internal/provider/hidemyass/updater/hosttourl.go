@@ -9,7 +9,8 @@ import (
 )
 
 func getAllHostToURL(ctx context.Context, client *http.Client) (
-	tcpHostToURL, udpHostToURL map[string]string, err error) {
+	tcpHostToURL, udpHostToURL map[string]string, err error,
+) {
 	tcpHostToURL, err = getHostToURL(ctx, client, "TCP")
 	if err != nil {
 		return nil, nil, err
@@ -24,7 +25,8 @@ func getAllHostToURL(ctx context.Context, client *http.Client) (
 }
 
 func getHostToURL(ctx context.Context, client *http.Client, protocol string) (
-	hostToURL map[string]string, err error) {
+	hostToURL map[string]string, err error,
+) {
 	const baseURL = "https://vpn.hidemyass.com/vpn-config"
 	indexURL := baseURL + "/" + strings.ToUpper(protocol) + "/"
 

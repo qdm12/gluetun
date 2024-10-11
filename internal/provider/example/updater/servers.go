@@ -11,7 +11,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	// FetchServers obtains information for each VPN server
 	// for the VPN service provider.
 	//

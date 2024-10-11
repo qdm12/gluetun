@@ -15,7 +15,8 @@ func (s *State) GetSettings() (settings settings.HTTPProxy) {
 }
 
 func (s *State) SetSettings(ctx context.Context,
-	settings settings.HTTPProxy) (outcome string) {
+	settings settings.HTTPProxy,
+) (outcome string) {
 	s.settingsMu.Lock()
 	settingsUnchanged := reflect.DeepEqual(settings, s.settings)
 	if settingsUnchanged {

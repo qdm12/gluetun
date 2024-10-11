@@ -15,7 +15,8 @@ import (
 // to the given selection. The filtered servers are deep copied so they
 // are safe for mutation by the caller.
 func (s *Storage) FilterServers(provider string, selection settings.ServerSelection) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	if provider == providers.Custom {
 		return nil, nil
 	}
@@ -47,7 +48,8 @@ func (s *Storage) FilterServers(provider string, selection settings.ServerSelect
 }
 
 func filterServer(server models.Server,
-	selection settings.ServerSelection) (filtered bool) {
+	selection settings.ServerSelection,
+) (filtered bool) {
 	// Note each condition is split to make sure
 	// we have full testing coverage.
 	if server.VPN != selection.VPN {
@@ -151,7 +153,8 @@ func filterAnyByPossibilities(values, possibilities []string) (filtered bool) {
 }
 
 func filterByProtocol(selection settings.ServerSelection,
-	serverTCP, serverUDP bool) (filtered bool) {
+	serverTCP, serverUDP bool,
+) (filtered bool) {
 	switch selection.VPN {
 	case vpn.Wireguard:
 		return !serverUDP

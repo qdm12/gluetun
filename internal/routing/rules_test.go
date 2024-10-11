@@ -17,7 +17,8 @@ func makeNetipPrefix(n byte) netip.Prefix {
 }
 
 func makeIPRule(src, dst netip.Prefix,
-	table, priority int) netlink.Rule {
+	table, priority int,
+) netlink.Rule {
 	rule := netlink.NewRule()
 	rule.Src = src
 	rule.Dst = dst

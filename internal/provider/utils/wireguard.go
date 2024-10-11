@@ -9,7 +9,8 @@ import (
 )
 
 func BuildWireguardSettings(connection models.Connection,
-	userSettings settings.Wireguard, ipv6Supported bool) (settings wireguard.Settings) {
+	userSettings settings.Wireguard, ipv6Supported bool,
+) (settings wireguard.Settings) {
 	settings.PrivateKey = *userSettings.PrivateKey
 	settings.PublicKey = connection.PubKey
 	settings.PreSharedKey = *userSettings.PreSharedKey

@@ -14,7 +14,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	const tcpURL = "https://torguard.net/downloads/OpenVPN-TCP-Linux.zip"
 	tcpContents, err := u.unzipper.FetchAndExtract(ctx, tcpURL)
 	if err != nil {
@@ -75,7 +76,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 }
 
 func addServerFromOvpn(fileName string, content []byte,
-	hts hostToServer, tcp, udp bool, titleCaser cases.Caser) (warnings []string) {
+	hts hostToServer, tcp, udp bool, titleCaser cases.Caser,
+) (warnings []string) {
 	if !strings.HasSuffix(fileName, ".ovpn") {
 		return nil // not an OpenVPN file
 	}

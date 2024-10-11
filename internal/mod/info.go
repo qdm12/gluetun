@@ -26,9 +26,7 @@ type moduleInfo struct {
 	dependencyPaths []string
 }
 
-var (
-	ErrModulesDirectoryNotFound = errors.New("modules directory not found")
-)
+var ErrModulesDirectoryNotFound = errors.New("modules directory not found")
 
 func getModulesInfo() (modulesInfo map[string]moduleInfo, err error) {
 	var utsName unix.Utsname
@@ -177,9 +175,7 @@ func getLoadedModules(modulesInfo map[string]moduleInfo) (err error) {
 	return nil
 }
 
-var (
-	ErrModulePathNotFound = errors.New("module path not found")
-)
+var ErrModulePathNotFound = errors.New("module path not found")
 
 func findModulePath(moduleName string, modulesInfo map[string]moduleInfo) (modulePath string, err error) {
 	// Kernel module names can have underscores or hyphens in their names,

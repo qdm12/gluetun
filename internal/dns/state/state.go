@@ -10,7 +10,8 @@ import (
 
 func New(statusApplier StatusApplier,
 	settings settings.DNS,
-	updateTicker chan<- struct{}) *State {
+	updateTicker chan<- struct{},
+) *State {
 	return &State{
 		statusApplier: statusApplier,
 		settings:      settings,

@@ -42,7 +42,8 @@ type IPv6Checker interface {
 }
 
 func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
-	ipv6Checker IPv6Checker) error {
+	ipv6Checker IPv6Checker,
+) error {
 	storage, err := storage.New(logger, constants.ServersData)
 	if err != nil {
 		return err

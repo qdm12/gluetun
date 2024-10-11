@@ -8,7 +8,8 @@ import (
 )
 
 func FetchFile(ctx context.Context, client *http.Client, url string) (
-	host string, err error) {
+	host string, err error,
+) {
 	b, err := fetchData(ctx, client, url)
 	if err != nil {
 		return "", err
@@ -25,7 +26,8 @@ func FetchFile(ctx context.Context, client *http.Client, url string) (
 }
 
 func fetchData(ctx context.Context, client *http.Client, url string) (
-	b []byte, err error) {
+	b []byte, err error,
+) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err

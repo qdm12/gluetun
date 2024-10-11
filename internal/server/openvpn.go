@@ -11,7 +11,8 @@ import (
 )
 
 func newOpenvpnHandler(ctx context.Context, looper VPNLooper,
-	pfGetter PortForwardedGetter, w warner) http.Handler {
+	pfGetter PortForwardedGetter, w warner,
+) http.Handler {
 	return &openvpnHandler{
 		ctx:    ctx,
 		looper: looper,

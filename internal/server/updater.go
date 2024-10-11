@@ -20,7 +20,8 @@ type UpdaterLooper interface {
 func newUpdaterHandler(
 	ctx context.Context,
 	looper UpdaterLooper,
-	warner warner) http.Handler {
+	warner warner,
+) http.Handler {
 	return &updaterHandler{
 		ctx:    ctx,
 		looper: looper,

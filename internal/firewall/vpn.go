@@ -8,7 +8,8 @@ import (
 )
 
 func (c *Config) SetVPNConnection(ctx context.Context,
-	connection models.Connection, vpnIntf string) (err error) {
+	connection models.Connection, vpnIntf string,
+) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 

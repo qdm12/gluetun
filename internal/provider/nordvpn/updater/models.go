@@ -175,7 +175,8 @@ var (
 
 // wireguardPublicKey returns the Wireguard public key for the server.
 func (s *serverData) wireguardPublicKey(technologies map[uint32]technologyData) (
-	wgPubKey string, err error) {
+	wgPubKey string, err error,
+) {
 	for _, technology := range s.Technologies {
 		data, ok := technologies[technology.ID]
 		if !ok || data.Identifier != "wireguard_udp" {

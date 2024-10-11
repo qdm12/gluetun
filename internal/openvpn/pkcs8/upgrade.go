@@ -8,9 +8,7 @@ import (
 	pkcs8lib "github.com/youmark/pkcs8"
 )
 
-var (
-	ErrUnsupportedKeyType = errors.New("unsupported key type")
-)
+var ErrUnsupportedKeyType = errors.New("unsupported key type")
 
 // UpgradeEncryptedKey eventually upgrades an encrypted key to a newer encryption
 // if its encryption is too weak for Openvpn/Openssl.

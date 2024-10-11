@@ -8,9 +8,7 @@ import (
 	"net/http"
 )
 
-var (
-	ErrHTTPStatusNotOK = errors.New("HTTP response status is not OK")
-)
+var ErrHTTPStatusNotOK = errors.New("HTTP response status is not OK")
 
 type Client struct {
 	httpClient *http.Client

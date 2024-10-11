@@ -12,7 +12,8 @@ type closer struct {
 type closers []closer
 
 func (c *closers) add(operation string, step step,
-	closeFunc func() error) {
+	closeFunc func() error,
+) {
 	closer := closer{
 		operation: operation,
 		step:      step,

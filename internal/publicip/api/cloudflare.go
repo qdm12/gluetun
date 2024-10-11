@@ -26,7 +26,8 @@ func newCloudflare(client *http.Client) *cloudflare {
 // and returns an error if the `ip` argument is set since the Cloudflare API
 // can only be used to provide details about the current machine public IP.
 func (c *cloudflare) FetchInfo(ctx context.Context, ip netip.Addr) (
-	result models.PublicIP, err error) {
+	result models.PublicIP, err error,
+) {
 	url := "https://speed.cloudflare.com/meta"
 	if ip.IsValid() {
 		return result, fmt.Errorf("%w: cloudflare cannot provide information on the arbitrary IP address %s",

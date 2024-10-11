@@ -10,7 +10,8 @@ import (
 )
 
 func newHandlerV1(w warner, buildInfo models.BuildInformation,
-	vpn, openvpn, dns, updater, publicip http.Handler) http.Handler {
+	vpn, openvpn, dns, updater, publicip http.Handler,
+) http.Handler {
 	return &handlerV1{
 		warner:    w,
 		buildInfo: buildInfo,

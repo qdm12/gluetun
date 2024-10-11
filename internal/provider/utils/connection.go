@@ -16,7 +16,8 @@ type ConnectionDefaults struct {
 }
 
 func NewConnectionDefaults(openvpnTCPPort, openvpnUDPPort,
-	wireguardPort uint16) ConnectionDefaults {
+	wireguardPort uint16,
+) ConnectionDefaults {
 	return ConnectionDefaults{
 		OpenVPNTCPPort: openvpnTCPPort,
 		OpenVPNUDPPort: openvpnUDPPort,
@@ -35,7 +36,8 @@ func GetConnection(provider string,
 	defaults ConnectionDefaults,
 	ipv6Supported bool,
 	randSource rand.Source) (
-	connection models.Connection, err error) {
+	connection models.Connection, err error,
+) {
 	servers, err := storage.FilterServers(provider, selection)
 	if err != nil {
 		return connection, fmt.Errorf("filtering servers: %w", err)

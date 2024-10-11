@@ -62,7 +62,7 @@ routes = ["GET /v1/vpn/status"]
 
 			tempDir := t.TempDir()
 			filepath := tempDir + "/config.toml"
-			const permissions fs.FileMode = 0600
+			const permissions fs.FileMode = 0o600
 			err := os.WriteFile(filepath, []byte(testCase.fileContent), permissions)
 			require.NoError(t, err)
 

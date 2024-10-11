@@ -12,7 +12,8 @@ func ptrTo[T any](value T) *T { return &value }
 
 // waitForError waits 100ms for an error in the waitError channel.
 func (l *Loop) waitForError(ctx context.Context,
-	waitError chan error) (err error) {
+	waitError chan error,
+) (err error) {
 	const waitDurationForError = 100 * time.Millisecond
 	timer := time.NewTimer(waitDurationForError)
 	select {

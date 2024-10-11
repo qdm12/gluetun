@@ -36,7 +36,8 @@ type Config struct { //nolint:maligned
 // if no iptables implementation is available.
 func NewConfig(ctx context.Context, logger Logger,
 	runner CmdRunner, defaultRoutes []routing.DefaultRoute,
-	localNetworks []routing.LocalNetwork) (config *Config, err error) {
+	localNetworks []routing.LocalNetwork,
+) (config *Config, err error) {
 	iptables, err := checkIptablesSupport(ctx, runner, "iptables", "iptables-nft", "iptables-legacy")
 	if err != nil {
 		return nil, err

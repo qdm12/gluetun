@@ -40,7 +40,8 @@ var (
 )
 
 func (pr *Parallel) Resolve(ctx context.Context, settings ParallelSettings) (
-	hostToIPs map[string][]netip.Addr, warnings []string, err error) {
+	hostToIPs map[string][]netip.Addr, warnings []string, err error,
+) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -96,7 +97,8 @@ func (pr *Parallel) Resolve(ctx context.Context, settings ParallelSettings) (
 }
 
 func (pr *Parallel) resolveAsync(ctx context.Context, host string,
-	settings RepeatSettings, results chan<- parallelResult, errors chan<- error) {
+	settings RepeatSettings, results chan<- parallelResult, errors chan<- error,
+) {
 	IPs, err := pr.repeatResolver.Resolve(ctx, host, settings)
 	if err != nil {
 		errors <- err

@@ -60,7 +60,8 @@ func (r *Routing) deleteIPRule(src, dst netip.Prefix, table, priority int) error
 }
 
 func ruleDbgMsg(add bool, src, dst netip.Prefix,
-	table, priority int) (debugMessage string) {
+	table, priority int,
+) (debugMessage string) {
 	debugMessage = "ip rule"
 
 	if add {

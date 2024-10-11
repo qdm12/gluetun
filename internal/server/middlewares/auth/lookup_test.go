@@ -39,7 +39,8 @@ func Test_settingsToLookupMap(t *testing.T) {
 				},
 				"PUT /path": {
 					{name: "b", checker: newNoneMethod()},
-				}},
+				},
+			},
 		},
 	}
 

@@ -13,7 +13,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	zipURL := url.URL{
 		Scheme: "https",
 		Host:   "www.perfect-privacy.com",
@@ -53,7 +54,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 }
 
 func addServerFromOvpn(cts cityToServer,
-	fileName string, content []byte) (err error) {
+	fileName string, content []byte,
+) (err error) {
 	if !strings.HasSuffix(fileName, ".conf") {
 		return nil // not an OpenVPN file
 	}

@@ -76,7 +76,8 @@ func (b *DNSBlacklist) overrideWith(other DNSBlacklist) {
 }
 
 func (b DNSBlacklist) ToBlockBuilderSettings(client *http.Client) (
-	settings blockbuilder.Settings) {
+	settings blockbuilder.Settings,
+) {
 	return blockbuilder.Settings{
 		Client:               client,
 		BlockMalicious:       b.BlockMalicious,
@@ -159,12 +160,11 @@ func (b *DNSBlacklist) read(r *reader.Reader) (err error) {
 	return nil
 }
 
-var (
-	ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
-)
+var ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
 
 func readDoTPrivateAddresses(reader *reader.Reader) (ips []netip.Addr,
-	ipPrefixes []netip.Prefix, err error) {
+	ipPrefixes []netip.Prefix, err error,
+) {
 	privateAddresses := reader.CSV("DOT_PRIVATE_ADDRESS")
 	if len(privateAddresses) == 0 {
 		return nil, nil, nil

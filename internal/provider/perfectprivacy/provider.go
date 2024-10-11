@@ -15,7 +15,8 @@ type Provider struct {
 }
 
 func New(storage common.Storage, randSource rand.Source,
-	unzipper common.Unzipper, updaterWarner common.Warner) *Provider {
+	unzipper common.Unzipper, updaterWarner common.Warner,
+) *Provider {
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,

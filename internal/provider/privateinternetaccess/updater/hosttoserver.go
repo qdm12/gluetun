@@ -10,7 +10,8 @@ import (
 type nameToServer map[string]models.Server
 
 func (nts nameToServer) add(name, hostname, region string,
-	tcp, udp, portForward bool, ip netip.Addr) (change bool) {
+	tcp, udp, portForward bool, ip netip.Addr,
+) (change bool) {
 	server, ok := nts[name]
 	if !ok {
 		change = true

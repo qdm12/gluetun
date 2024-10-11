@@ -1,7 +1,8 @@
 package updater
 
 func getUniqueHosts(tcpHostToURL, udpHostToURL map[string]string) (
-	hosts []string) {
+	hosts []string,
+) {
 	uniqueHosts := make(map[string]struct{}, len(tcpHostToURL))
 	for host := range tcpHostToURL {
 		uniqueHosts[host] = struct{}{}

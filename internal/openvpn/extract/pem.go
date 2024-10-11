@@ -7,9 +7,7 @@ import (
 	"fmt"
 )
 
-var (
-	errPEMDecode = errors.New("cannot decode PEM encoded block")
-)
+var errPEMDecode = errors.New("cannot decode PEM encoded block")
 
 func PEM(b []byte) (encodedData string, err error) {
 	pemBlock, _ := pem.Decode(b)

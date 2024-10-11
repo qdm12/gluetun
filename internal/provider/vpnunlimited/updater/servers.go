@@ -10,7 +10,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	// Hardcoded data from a user provided ZIP file since it's behind a login wall
 	hts, warnings := getHostToServer()
 	for _, warning := range warnings {

@@ -14,7 +14,8 @@ func getProtocol(selection settings.ServerSelection) (protocol string) {
 }
 
 func filterByProtocol(selection settings.ServerSelection,
-	serverTCP, serverUDP bool) (filtered bool) {
+	serverTCP, serverUDP bool,
+) (filtered bool) {
 	switch selection.VPN {
 	case vpn.Wireguard:
 		return !serverUDP

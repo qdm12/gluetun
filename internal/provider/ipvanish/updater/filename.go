@@ -12,7 +12,8 @@ import (
 var errCountryCodeUnknown = errors.New("country code is unknown")
 
 func parseFilename(fileName, hostname string, titleCaser cases.Caser) (
-	country, city string, err error) {
+	country, city string, err error,
+) {
 	const prefix = "ipvanish-"
 	s := strings.TrimPrefix(fileName, prefix)
 

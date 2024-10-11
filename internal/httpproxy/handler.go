@@ -8,14 +8,16 @@ import (
 )
 
 func newHandler(ctx context.Context, wg *sync.WaitGroup, logger Logger,
-	stealth, verbose bool, username, password string) http.Handler {
+	stealth, verbose bool, username, password string,
+) http.Handler {
 	const httpTimeout = 24 * time.Hour
 	return &handler{
 		ctx: ctx,
 		wg:  wg,
 		client: &http.Client{
 			Timeout:       httpTimeout,
-			CheckRedirect: returnRedirect},
+			CheckRedirect: returnRedirect,
+		},
 		logger:   logger,
 		verbose:  verbose,
 		stealth:  stealth,

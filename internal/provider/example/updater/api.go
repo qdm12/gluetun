@@ -8,9 +8,7 @@ import (
 	"net/http"
 )
 
-var (
-	errHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-)
+var errHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 
 type apiData struct {
 	Servers []apiServer `json:"servers"`
@@ -26,7 +24,8 @@ type apiServer struct {
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
-	data apiData, err error) {
+	data apiData, err error,
+) {
 	// TODO: adapt this URL and the structures above to match the real
 	// API models you have.
 	const url = "https://example.com/servers"

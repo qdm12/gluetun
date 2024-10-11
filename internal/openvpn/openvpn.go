@@ -14,7 +14,8 @@ type Configurator struct {
 }
 
 func New(logger Infoer, cmder CmdRunStarter,
-	puid, pgid int) *Configurator {
+	puid, pgid int,
+) *Configurator {
 	return &Configurator{
 		logger:       logger,
 		cmder:        cmder,

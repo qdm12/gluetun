@@ -116,8 +116,7 @@ func Test_checkIptablesSupport(t *testing.T) {
 
 			runner := testCase.buildRunner(ctrl)
 
-			iptablesPath, err :=
-				checkIptablesSupport(ctx, runner, testCase.iptablesPathsToTry...)
+			iptablesPath, err := checkIptablesSupport(ctx, runner, testCase.iptablesPathsToTry...)
 
 			require.ErrorIs(t, err, testCase.errSentinel)
 			if testCase.errSentinel != nil {
@@ -254,8 +253,7 @@ func Test_testIptablesPath(t *testing.T) {
 
 			runner := testCase.buildRunner(ctrl)
 
-			ok, unsupportedMessage, criticalErr :=
-				testIptablesPath(ctx, path, runner)
+			ok, unsupportedMessage, criticalErr := testIptablesPath(ctx, path, runner)
 
 			assert.Equal(t, testCase.ok, ok)
 			assert.Equal(t, testCase.unsupportedMessage, unsupportedMessage)

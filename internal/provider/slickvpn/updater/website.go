@@ -12,7 +12,8 @@ import (
 )
 
 func fetchServers(ctx context.Context, client *http.Client) (
-	hostToData map[string]serverData, err error) {
+	hostToData map[string]serverData, err error,
+) {
 	const url = "https://www.slickvpn.com/locations/"
 	rootNode, err := htmlutils.Fetch(ctx, client, url)
 	if err != nil {
@@ -133,9 +134,7 @@ func matchA(cellNode *html.Node) (match bool) {
 
 var serverNameRegex = regexp.MustCompile(`^.+\/(?P<serverName>.+)\.ovpn$`)
 
-var (
-	ErrExtractHostnameFromURL = errors.New("cannot extract hostname from url")
-)
+var ErrExtractHostnameFromURL = errors.New("cannot extract hostname from url")
 
 func extractHostnameFromURL(url string) (hostname string, err error) {
 	matches := serverNameRegex.FindStringSubmatch(url)

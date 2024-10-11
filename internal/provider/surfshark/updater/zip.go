@@ -11,7 +11,8 @@ import (
 
 func addOpenVPNServersFromZip(ctx context.Context,
 	unzipper common.Unzipper, hts hostToServers) (
-	warnings []string, err error) {
+	warnings []string, err error,
+) {
 	const url = "https://my.surfshark.com/vpn/api/v1/server/configurations"
 	contents, err := unzipper.FetchAndExtract(ctx, url)
 	if err != nil {

@@ -70,9 +70,7 @@ func ipPrefixesEqual(instruction, chainRule netip.Prefix) bool {
 		(!instruction.IsValid() && chainRule.Bits() == 0 && chainRule.Addr().IsUnspecified())
 }
 
-var (
-	ErrIptablesCommandMalformed = errors.New("iptables command is malformed")
-)
+var ErrIptablesCommandMalformed = errors.New("iptables command is malformed")
 
 func parseIptablesInstruction(s string) (instruction iptablesInstruction, err error) {
 	if s == "" {

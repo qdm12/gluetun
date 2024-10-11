@@ -8,12 +8,11 @@ import (
 	"net/http"
 )
 
-var (
-	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-)
+var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 
 func (u *Unzipper) FetchAndExtract(ctx context.Context, url string) (
-	contents map[string][]byte, err error) {
+	contents map[string][]byte, err error,
+) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err

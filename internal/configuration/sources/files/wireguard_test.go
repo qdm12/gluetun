@@ -77,7 +77,7 @@ PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 			t.Parallel()
 
 			configFile := filepath.Join(t.TempDir(), "wg.conf")
-			const permission = fs.FileMode(0600)
+			const permission = fs.FileMode(0o600)
 			err := os.WriteFile(configFile, []byte(testCase.fileContent), permission)
 			require.NoError(t, err)
 

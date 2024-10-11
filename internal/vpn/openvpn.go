@@ -15,7 +15,8 @@ func setupOpenVPN(ctx context.Context, fw Firewall,
 	openvpnConf OpenVPN, providerConf provider.Provider,
 	settings settings.VPN, ipv6Supported bool, starter CmdStarter,
 	logger openvpn.Logger) (runner *openvpn.Runner, serverName string,
-	canPortForward bool, err error) {
+	canPortForward bool, err error,
+) {
 	connection, err := providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Supported)
 	if err != nil {
 		return nil, "", false, fmt.Errorf("finding a valid server connection: %w", err)

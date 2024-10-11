@@ -7,7 +7,8 @@ import (
 
 func New(settings Settings, debugLogger DebugLogger) (
 	middleware func(http.Handler) http.Handler,
-	err error) {
+	err error,
+) {
 	routeToRoles, err := settingsToLookupMap(settings)
 	if err != nil {
 		return nil, fmt.Errorf("converting settings to lookup maps: %w", err)

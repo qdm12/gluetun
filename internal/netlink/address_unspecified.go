@@ -3,7 +3,8 @@
 package netlink
 
 func (n *NetLink) AddrList(link Link, family int) (
-	addresses []Addr, err error) {
+	addresses []Addr, err error,
+) {
 	panic("not implemented")
 }
 

@@ -22,7 +22,8 @@ func (r *Routing) SetOutboundRoutes(outboundSubnets []netip.Prefix) error {
 }
 
 func (r *Routing) setOutboundRoutes(outboundSubnets []netip.Prefix,
-	defaultRoutes []DefaultRoute) (err error) {
+	defaultRoutes []DefaultRoute,
+) (err error) {
 	r.stateMutex.Lock()
 	defer r.stateMutex.Unlock()
 
@@ -47,7 +48,8 @@ func (r *Routing) setOutboundRoutes(outboundSubnets []netip.Prefix,
 }
 
 func (r *Routing) removeOutboundSubnets(subnets []netip.Prefix,
-	defaultRoutes []DefaultRoute) (warnings []string) {
+	defaultRoutes []DefaultRoute,
+) (warnings []string) {
 	for i, subNet := range subnets {
 		for _, defaultRoute := range defaultRoutes {
 			err := r.deleteRouteVia(subNet, defaultRoute.Gateway, defaultRoute.NetInterface, outboundTable)
@@ -73,7 +75,8 @@ func (r *Routing) removeOutboundSubnets(subnets []netip.Prefix,
 }
 
 func (r *Routing) addOutboundSubnets(subnets []netip.Prefix,
-	defaultRoutes []DefaultRoute) (err error) {
+	defaultRoutes []DefaultRoute,
+) (err error) {
 	for i, subnet := range subnets {
 		subnetIsIPv6 := subnet.Addr().Is6()
 		subnetRouteAdded := false

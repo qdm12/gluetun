@@ -82,7 +82,8 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 	readyCh := make(chan struct{})
 	go func(ctx context.Context, portForwarder PortForwarder,
 		obj utils.PortForwardObjects, readyCh chan<- struct{},
-		runError chan<- error, doneCh chan<- struct{}) {
+		runError chan<- error, doneCh chan<- struct{},
+	) {
 		defer close(doneCh)
 		close(readyCh)
 		err = portForwarder.KeepPortForward(ctx, obj)

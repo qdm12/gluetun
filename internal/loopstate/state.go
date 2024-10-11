@@ -8,7 +8,8 @@ import (
 
 func New(status models.LoopStatus,
 	start chan<- struct{}, running <-chan models.LoopStatus,
-	stop chan<- struct{}, stopped <-chan struct{}) *State {
+	stop chan<- struct{}, stopped <-chan struct{},
+) *State {
 	return &State{
 		status:  status,
 		start:   start,

@@ -13,7 +13,8 @@ type Updater struct {
 }
 
 func New(client *http.Client, warner common.Warner,
-	parallelResolver common.ParallelResolver) *Updater {
+	parallelResolver common.ParallelResolver,
+) *Updater {
 	return &Updater{
 		client:           client,
 		parallelResolver: parallelResolver,

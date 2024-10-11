@@ -43,7 +43,8 @@ type Logger interface {
 }
 
 func NewLoop(settings settings.Updater, providers updater.Providers,
-	storage updater.Storage, client *http.Client, logger Logger) *Loop {
+	storage updater.Storage, client *http.Client, logger Logger,
+) *Loop {
 	return &Loop{
 		state: state{
 			status:   constants.Stopped,

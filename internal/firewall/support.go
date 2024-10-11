@@ -18,7 +18,8 @@ var (
 )
 
 func checkIptablesSupport(ctx context.Context, runner CmdRunner,
-	iptablesPathsToTry ...string) (iptablesPath string, err error) {
+	iptablesPathsToTry ...string,
+) (iptablesPath string, err error) {
 	iptablesPathToUnsupportedMessage := make(map[string]string, len(iptablesPathsToTry))
 	for _, pathToTest := range iptablesPathsToTry {
 		ok, unsupportedMessage, err := testIptablesPath(ctx, pathToTest, runner)
@@ -61,7 +62,8 @@ func checkIptablesSupport(ctx context.Context, runner CmdRunner,
 
 func testIptablesPath(ctx context.Context, path string,
 	runner CmdRunner) (ok bool, unsupportedMessage string,
-	criticalErr error) {
+	criticalErr error,
+) {
 	// Just listing iptables rules often work but we need
 	// to modify them to ensure we can support the iptables
 	// being tested.

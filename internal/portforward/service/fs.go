@@ -15,7 +15,7 @@ func (s *Service) writePortForwardedFile(ports []uint16) (err error) {
 
 	filepath := s.settings.Filepath
 	s.logger.Info("writing port file " + filepath)
-	const perms = os.FileMode(0644)
+	const perms = os.FileMode(0o644)
 	err = os.WriteFile(filepath, fileData, perms)
 	if err != nil {
 		return fmt.Errorf("writing file: %w", err)

@@ -18,7 +18,8 @@ type Server struct {
 
 func New(ctx context.Context, address string, logger Logger,
 	stealth, verbose bool, username, password string,
-	readHeaderTimeout, readTimeout time.Duration) *Server {
+	readHeaderTimeout, readTimeout time.Duration,
+) *Server {
 	wg := &sync.WaitGroup{}
 	return &Server{
 		address:           address,

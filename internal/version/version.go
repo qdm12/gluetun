@@ -15,7 +15,8 @@ import (
 // GetMessage returns a message for the user describing if there is a newer version
 // available. It should only be called once the tunnel is established.
 func GetMessage(ctx context.Context, buildInfo models.BuildInformation,
-	client *http.Client) (message string, err error) {
+	client *http.Client,
+) (message string, err error) {
 	if buildInfo.Version == "latest" {
 		// Find # of commits between current commit and latest commit
 		commitsSince, err := getCommitsSince(ctx, client, buildInfo.Commit)

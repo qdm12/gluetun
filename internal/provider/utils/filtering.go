@@ -9,7 +9,8 @@ import (
 )
 
 func filterServers(servers []models.Server,
-	selection settings.ServerSelection) (filtered []models.Server) {
+	selection settings.ServerSelection,
+) (filtered []models.Server) {
 	for _, server := range servers {
 		if filterServer(server, selection) {
 			continue
@@ -22,7 +23,8 @@ func filterServers(servers []models.Server,
 }
 
 func filterServer(server models.Server,
-	selection settings.ServerSelection) (filtered bool) {
+	selection settings.ServerSelection,
+) (filtered bool) {
 	// Note each condition is split to make sure
 	// we have full testing coverage.
 	if server.VPN != selection.VPN {

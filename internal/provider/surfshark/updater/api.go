@@ -11,7 +11,8 @@ import (
 )
 
 func addServersFromAPI(ctx context.Context, client *http.Client,
-	hts hostToServers) (err error) {
+	hts hostToServers,
+) (err error) {
 	data, err := fetchAPI(ctx, client)
 	if err != nil {
 		return err
@@ -37,9 +38,7 @@ func addServersFromAPI(ctx context.Context, client *http.Client,
 	return nil
 }
 
-var (
-	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-)
+var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 
 type serverData struct {
 	Host     string `json:"connectionName"`
@@ -50,7 +49,8 @@ type serverData struct {
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
-	servers []serverData, err error) {
+	servers []serverData, err error,
+) {
 	const url = "https://api.surfshark.com/v4/server/clusters"
 
 	for _, clustersType := range [...]string{"generic", "double", "static", "obfuscated"} {

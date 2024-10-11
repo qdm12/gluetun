@@ -11,12 +11,11 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-var (
-	errRemoteLineNotFound = errors.New("remote line not found")
-)
+var errRemoteLineNotFound = errors.New("remote line not found")
 
 func extractDataFromLines(lines []string) (
-	connection models.Connection, err error) {
+	connection models.Connection, err error,
+) {
 	for i, line := range lines {
 		hashSymbolIndex := strings.Index(line, "#")
 		if hashSymbolIndex >= 0 {
@@ -54,7 +53,8 @@ func extractDataFromLines(lines []string) (
 }
 
 func extractDataFromLine(line string) (
-	ip netip.Addr, port uint16, protocol string, err error) {
+	ip netip.Addr, port uint16, protocol string, err error,
+) {
 	switch {
 	case strings.HasPrefix(line, "proto "):
 		protocol, err = extractProto(line)
@@ -108,7 +108,8 @@ var (
 )
 
 func extractRemote(line string) (ip netip.Addr, port uint16,
-	protocol string, err error) {
+	protocol string, err error,
+) {
 	fields := strings.Fields(line)
 	n := len(fields)
 
@@ -146,9 +147,7 @@ func extractRemote(line string) (ip netip.Addr, port uint16,
 	return ip, port, protocol, nil
 }
 
-var (
-	errPostLineFieldsCount = errors.New("post line has not 2 fields as expected")
-)
+var errPostLineFieldsCount = errors.New("post line has not 2 fields as expected")
 
 func extractPort(line string) (port uint16, err error) {
 	fields := strings.Fields(line)

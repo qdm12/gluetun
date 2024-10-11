@@ -8,9 +8,7 @@ import (
 	"net/http"
 )
 
-var (
-	errHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-)
+var errHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 
 type apiData struct {
 	Servers []apiServer `json:"servers"`
@@ -31,7 +29,8 @@ type apiHostnames struct {
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
-	data apiData, err error) {
+	data apiData, err error,
+) {
 	const url = "https://api.ivpn.net/v4/servers/stats"
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)

@@ -6,9 +6,7 @@ import (
 	"fmt"
 )
 
-var (
-	ErrRequestSizeTooSmall = errors.New("message size is too small")
-)
+var ErrRequestSizeTooSmall = errors.New("message size is too small")
 
 func checkRequest(request []byte) (err error) {
 	const minMessageSize = 2 // version number + operation code
@@ -28,7 +26,8 @@ var (
 )
 
 func checkResponse(response []byte, expectedOperationCode byte,
-	expectedResponseSize uint) (err error) {
+	expectedResponseSize uint,
+) (err error) {
 	const minResponseSize = 4
 	if len(response) < minResponseSize {
 		return fmt.Errorf("%w: need at least %d bytes and got %d byte(s)",

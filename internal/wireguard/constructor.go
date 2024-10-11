@@ -7,7 +7,8 @@ type Wireguard struct {
 }
 
 func New(settings Settings, netlink NetLinker,
-	logger Logger) (w *Wireguard, err error) {
+	logger Logger,
+) (w *Wireguard, err error) {
 	settings.SetDefaults()
 	if err := settings.Check(); err != nil {
 		return nil, err

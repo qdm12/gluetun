@@ -54,7 +54,8 @@ func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint1
 	portForward PortForward, starter CmdStarter,
 	publicip PublicIPLoop, dnsLooper DNSLoop,
 	logger log.LoggerInterface, client *http.Client,
-	buildInfo models.BuildInformation, versionInfo bool) *Loop {
+	buildInfo models.BuildInformation, versionInfo bool,
+) *Loop {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})

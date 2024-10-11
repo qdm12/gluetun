@@ -17,7 +17,8 @@ var (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	cities := getAvailableCities()
 	servers = make([]models.Server, 0, len(cities))
 	hostnames := make([]string, len(cities))

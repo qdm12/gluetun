@@ -11,6 +11,7 @@ func (l *Loop) GetSettings() (settings settings.HTTPProxy) {
 }
 
 func (l *Loop) SetSettings(ctx context.Context, settings settings.HTTPProxy) (
-	outcome string) {
+	outcome string,
+) {
 	return l.state.SetSettings(ctx, settings)
 }

@@ -8,7 +8,8 @@ import (
 )
 
 func New(logger Logger, enabled bool) (
-	middleware func(http.Handler) http.Handler) {
+	middleware func(http.Handler) http.Handler,
+) {
 	return func(handler http.Handler) http.Handler {
 		return &logMiddleware{
 			childHandler: handler,

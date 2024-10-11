@@ -19,16 +19,15 @@ type apiServer struct {
 	hostname string
 }
 
-var (
-	ErrDataMalformed = errors.New("data is malformed")
-)
+var ErrDataMalformed = errors.New("data is malformed")
 
 const apiURL = "https://support.fastestvpn.com/wp-admin/admin-ajax.php"
 
 // The API URL and requests are shamelessly taken from network operations
 // done on the page https://support.fastestvpn.com/vpn-servers/
 func fetchAPIServers(ctx context.Context, client *http.Client, protocol string) (
-	servers []apiServer, err error) {
+	servers []apiServer, err error,
+) {
 	form := url.Values{
 		"action":   []string{"vpn_servers"},
 		"protocol": []string{protocol},

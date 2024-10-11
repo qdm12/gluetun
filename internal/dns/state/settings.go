@@ -15,7 +15,8 @@ func (s *State) GetSettings() (settings settings.DNS) {
 }
 
 func (s *State) SetSettings(ctx context.Context, settings settings.DNS) (
-	outcome string) {
+	outcome string,
+) {
 	s.settingsMu.Lock()
 
 	settingsUnchanged := reflect.DeepEqual(s.settings, settings)

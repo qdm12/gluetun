@@ -13,7 +13,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	data, err := fetchAPI(ctx, u.client)
 	if err != nil {
 		return nil, fmt.Errorf("fetching API: %w", err)

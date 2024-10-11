@@ -12,6 +12,7 @@ func (l *Loop) GetSettings() (settings settings.VPN) {
 
 func (l *Loop) SetSettings(ctx context.Context,
 	vpn settings.VPN) (
-	outcome string) {
+	outcome string,
+) {
 	return l.state.SetSettings(ctx, vpn)
 }

@@ -18,7 +18,8 @@ type Settings struct {
 // and returns them if they are valid, or returns an error otherwise.
 // In all cases, the receiving settings are unmodified.
 func (s Settings) updateWith(partialUpdate Settings,
-	forStartup bool) (updated Settings, err error) {
+	forStartup bool,
+) (updated Settings, err error) {
 	updated = s.copy()
 	updated.overrideWith(partialUpdate)
 	err = updated.validate(forStartup)

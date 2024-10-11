@@ -31,7 +31,8 @@ type RepeatSettings struct {
 }
 
 func (r *Repeat) Resolve(ctx context.Context, host string, settings RepeatSettings) (
-	ips []netip.Addr, err error) {
+	ips []netip.Addr, err error,
+) {
 	timedCtx, cancel := context.WithTimeout(ctx, settings.MaxDuration)
 	defer cancel()
 
@@ -68,7 +69,8 @@ var (
 
 func (r *Repeat) resolveOnce(ctx, timedCtx context.Context, host string,
 	settings RepeatSettings, uniqueIPs map[string]struct{}, noNewCounter, failCounter int) (
-	newNoNewCounter, newFailCounter int, err error) {
+	newNoNewCounter, newFailCounter int, err error,
+) {
 	IPs, err := r.lookupIPs(timedCtx, host)
 	if err != nil {
 		failCounter++

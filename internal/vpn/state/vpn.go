@@ -16,7 +16,8 @@ func (s *State) GetSettings() (vpn settings.VPN) {
 }
 
 func (s *State) SetSettings(ctx context.Context, vpn settings.VPN) (
-	outcome string) {
+	outcome string,
+) {
 	s.settingsMu.Lock()
 	settingsUnchanged := reflect.DeepEqual(s.vpn, vpn)
 	if settingsUnchanged {

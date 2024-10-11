@@ -8,12 +8,11 @@ import (
 	"net/http"
 )
 
-var (
-	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-)
+var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 
 func fetchAPI(ctx context.Context, client *http.Client,
-	limit uint) (data serversData, err error) {
+	limit uint,
+) (data serversData, err error) {
 	url := "https://api.nordvpn.com/v2/servers"
 	url += fmt.Sprintf("?limit=%d", limit) // 0 means no limit
 

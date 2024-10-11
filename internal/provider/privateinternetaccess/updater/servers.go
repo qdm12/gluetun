@@ -11,7 +11,8 @@ import (
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
-	servers []models.Server, err error) {
+	servers []models.Server, err error,
+) {
 	nts := make(nameToServer)
 
 	noChangeCounter := 0

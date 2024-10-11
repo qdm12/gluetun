@@ -112,7 +112,8 @@ func (c *Config) acceptInputThroughInterface(ctx context.Context, intf string, r
 }
 
 func (c *Config) acceptInputToSubnet(ctx context.Context, intf string,
-	destination netip.Prefix, remove bool) error {
+	destination netip.Prefix, remove bool,
+) error {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
@@ -144,7 +145,8 @@ func (c *Config) acceptEstablishedRelatedTraffic(ctx context.Context, remove boo
 }
 
 func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
-	defaultInterface string, connection models.Connection, remove bool) error {
+	defaultInterface string, connection models.Connection, remove bool,
+) error {
 	protocol := connection.Protocol
 	if protocol == "tcp-client" {
 		protocol = "tcp" //nolint:goconst
@@ -162,7 +164,8 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 
 // Thanks to @npawelek.
 func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
-	intf string, sourceIP netip.Addr, destinationSubnet netip.Prefix, remove bool) error {
+	intf string, sourceIP netip.Addr, destinationSubnet netip.Prefix, remove bool,
+) error {
 	doIPv4 := sourceIP.Is4() && destinationSubnet.Addr().Is4()
 
 	interfaceFlag := "-o " + intf
@@ -183,7 +186,8 @@ func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
 
 // NDP uses multicast address (theres no broadcast in IPv6 like ARP uses in IPv4).
 func (c *Config) acceptIpv6MulticastOutput(ctx context.Context,
-	intf string, remove bool) error {
+	intf string, remove bool,
+) error {
 	interfaceFlag := "-o " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""
@@ -207,7 +211,8 @@ func (c *Config) acceptInputToPort(ctx context.Context, intf string, port uint16
 
 // Used for VPN server side port forwarding, with intf set to the VPN tunnel interface.
 func (c *Config) redirectPort(ctx context.Context, intf string,
-	sourcePort, destinationPort uint16, remove bool) (err error) {
+	sourcePort, destinationPort uint16, remove bool,
+) (err error) {
 	interfaceFlag := "-i " + intf
 	if intf == "*" { // all interfaces
 		interfaceFlag = ""

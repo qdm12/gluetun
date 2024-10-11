@@ -28,7 +28,8 @@ func newIPInfo(client *http.Client, token string) *ipInfo {
 // using the ipinfo.io API. If the ip is the zero value, the public IP address
 // of the machine is used as the IP.
 func (i *ipInfo) FetchInfo(ctx context.Context, ip netip.Addr) (
-	result models.PublicIP, err error) {
+	result models.PublicIP, err error,
+) {
 	url := "https://ipinfo.io/"
 	switch {
 	case ip.Is6():

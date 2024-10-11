@@ -9,7 +9,8 @@ import (
 )
 
 func (r *Routing) addRouteVia(destination netip.Prefix, gateway netip.Addr,
-	iface string, table int) error {
+	iface string, table int,
+) error {
 	destinationStr := destination.String()
 	r.logger.Info("adding route for " + destinationStr)
 	r.logger.Debug("ip route replace " + destinationStr +
@@ -37,7 +38,8 @@ func (r *Routing) addRouteVia(destination netip.Prefix, gateway netip.Addr,
 }
 
 func (r *Routing) deleteRouteVia(destination netip.Prefix, gateway netip.Addr,
-	iface string, table int) (err error) {
+	iface string, table int,
+) (err error) {
 	destinationStr := destination.String()
 	r.logger.Info("deleting route for " + destinationStr)
 	r.logger.Debug("ip route delete " + destinationStr +

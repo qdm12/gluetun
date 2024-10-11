@@ -11,7 +11,8 @@ import (
 )
 
 func getPortForwarder(provider Provider, providers Providers, //nolint:ireturn
-	customPortForwarderName string) (portForwarder PortForwarder) {
+	customPortForwarderName string,
+) (portForwarder PortForwarder) {
 	if customPortForwarderName != "" {
 		provider = providers.Get(customPortForwarderName)
 	}
@@ -61,7 +62,8 @@ func (n *noPortForwarder) Name() string {
 }
 
 func (n *noPortForwarder) PortForward(context.Context, pfutils.PortForwardObjects) (
-	ports []uint16, err error) {
+	ports []uint16, err error,
+) {
 	return nil, fmt.Errorf("%w: for %s", ErrPortForwardingNotSupported, n.providerName)
 }
 

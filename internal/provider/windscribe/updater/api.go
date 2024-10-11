@@ -11,9 +11,7 @@ import (
 	"time"
 )
 
-var (
-	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-)
+var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 
 type apiData struct {
 	Data []regionData `json:"data"`
@@ -39,7 +37,8 @@ type serverData struct {
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
-	data apiData, err error) {
+	data apiData, err error,
+) {
 	const baseURL = "https://assets.windscribe.com/serverlist/mob-v2/1/"
 	cacheBreaker := time.Now().Unix()
 	url := baseURL + strconv.Itoa(int(cacheBreaker))

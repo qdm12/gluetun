@@ -155,7 +155,8 @@ func (o OpenVPN) validate(vpnProvider string) (err error) {
 }
 
 func validateOpenVPNConfigFilepath(isCustom bool,
-	confFile string) (err error) {
+	confFile string,
+) (err error) {
 	if !isCustom {
 		return nil
 	}
@@ -179,7 +180,8 @@ func validateOpenVPNConfigFilepath(isCustom bool,
 }
 
 func validateOpenVPNClientCertificate(vpnProvider,
-	clientCert string) (err error) {
+	clientCert string,
+) (err error) {
 	switch vpnProvider {
 	case
 		providers.Airvpn,
@@ -226,7 +228,8 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 }
 
 func validateOpenVPNEncryptedKey(vpnProvider,
-	encryptedPrivateKey string) (err error) {
+	encryptedPrivateKey string,
+) (err error) {
 	if vpnProvider == providers.VPNSecure && encryptedPrivateKey == "" {
 		return fmt.Errorf("%w", ErrMissingValue)
 	}

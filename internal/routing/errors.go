@@ -4,6 +4,4 @@ import (
 	"errors"
 )
 
-var (
-	ErrLinkDefaultNotFound = errors.New("default link not found")
-)
+var ErrLinkDefaultNotFound = errors.New("default link not found")

@@ -17,7 +17,8 @@ type Server struct {
 }
 
 func NewServer(config settings.Health,
-	logger Logger, vpnLoop StatusApplier) *Server {
+	logger Logger, vpnLoop StatusApplier,
+) *Server {
 	return &Server{
 		logger:  logger,
 		handler: newHandler(),

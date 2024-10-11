@@ -23,7 +23,7 @@ func writeIfDifferent(path, content string, puid, pgid int) (err error) {
 		return fmt.Errorf("obtaining file information: %w", err)
 	}
 
-	const perm = os.FileMode(0400)
+	const perm = os.FileMode(0o400)
 	var writeData, setChown bool
 	if os.IsNotExist(err) {
 		writeData = true

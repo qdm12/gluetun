@@ -14,7 +14,8 @@ type Updater struct {
 }
 
 func New(client *http.Client, unzipper common.Unzipper,
-	warner common.Warner, parallelResolver common.ParallelResolver) *Updater {
+	warner common.Warner, parallelResolver common.ParallelResolver,
+) *Updater {
 	return &Updater{
 		client:           client,
 		unzipper:         unzipper,

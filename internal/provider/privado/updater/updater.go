@@ -12,7 +12,8 @@ type Updater struct {
 }
 
 func New(ipFetcher common.IPFetcher, unzipper common.Unzipper,
-	warner common.Warner, parallelResolver common.ParallelResolver) *Updater {
+	warner common.Warner, parallelResolver common.ParallelResolver,
+) *Updater {
 	return &Updater{
 		ipFetcher:        ipFetcher,
 		unzipper:         unzipper,

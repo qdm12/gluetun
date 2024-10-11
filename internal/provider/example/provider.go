@@ -18,7 +18,8 @@ type Provider struct {
 // TODO: remove unneeded arguments once the updater is implemented.
 func New(storage common.Storage, randSource rand.Source,
 	updaterWarner common.Warner, client *http.Client,
-	unzipper common.Unzipper, parallelResolver common.ParallelResolver) *Provider {
+	unzipper common.Unzipper, parallelResolver common.ParallelResolver,
+) *Provider {
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,

@@ -20,7 +20,8 @@ var ErrNoConnectionToPickFrom = errors.New("no connection to pick from")
 // and sets the target IP address as the IP if this one is set.
 func pickConnection(connections []models.Connection,
 	selection settings.ServerSelection, randSource rand.Source) (
-	connection models.Connection, err error) {
+	connection models.Connection, err error,
+) {
 	if len(connections) == 0 {
 		return connection, ErrNoConnectionToPickFrom
 	}
@@ -41,14 +42,16 @@ func pickConnection(connections []models.Connection,
 }
 
 func pickRandomConnection(connections []models.Connection,
-	source rand.Source) models.Connection {
+	source rand.Source,
+) models.Connection {
 	return connections[rand.New(source).Intn(len(connections))] //nolint:gosec
 }
 
 var errTargetIPNotFound = errors.New("target IP address not found")
 
 func getTargetIPConnection(connections []models.Connection,
-	targetIP netip.Addr) (connection models.Connection, err error) {
+	targetIP netip.Addr,
+) (connection models.Connection, err error) {
 	for _, connection := range connections {
 		if targetIP == connection.IP {
 			return connection, nil

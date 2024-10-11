@@ -116,17 +116,23 @@ func Test_Updater_GetServers(t *testing.T) {
 			},
 			resolveWarnings: []string{"resolve warning"},
 			servers: []models.Server{
-				{VPN: vpn.OpenVPN, Country: "Country1",
+				{
+					VPN: vpn.OpenVPN, Country: "Country1",
 					City: "City A", Hostname: "hosta", TCP: true, UDP: true,
-					IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})}},
-				{VPN: vpn.OpenVPN, Country: "Country2",
+					IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1}), netip.AddrFrom4([4]byte{2, 2, 2, 2})},
+				},
+				{
+					VPN: vpn.OpenVPN, Country: "Country2",
 					City: "City B", Hostname: "hostb", TCP: true, UDP: true,
-					IPs: []netip.Addr{netip.AddrFrom4([4]byte{3, 3, 3, 3}), netip.AddrFrom4([4]byte{4, 4, 4, 4})}},
-				{VPN: vpn.Wireguard,
+					IPs: []netip.Addr{netip.AddrFrom4([4]byte{3, 3, 3, 3}), netip.AddrFrom4([4]byte{4, 4, 4, 4})},
+				},
+				{
+					VPN:     vpn.Wireguard,
 					Country: "Country3", City: "City C",
 					Hostname: "hostc",
 					WgPubKey: "xyz",
-					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{5, 5, 5, 5}), netip.AddrFrom4([4]byte{6, 6, 6, 6})}},
+					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{5, 5, 5, 5}), netip.AddrFrom4([4]byte{6, 6, 6, 6})},
+				},
 			},
 		},
 	}

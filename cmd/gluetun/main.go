@@ -140,15 +140,14 @@ func main() {
 	}
 }
 
-var (
-	errCommandUnknown = errors.New("command is unknown")
-)
+var errCommandUnknown = errors.New("command is unknown")
 
 //nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger log.LoggerInterface, reader *reader.Reader,
 	tun Tun, netLinker netLinker, cmder RunStarter,
-	cli clier) error {
+	cli clier,
+) error {
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -288,7 +287,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		logger.Warn(warning)
 	}
 
-	const permission = fs.FileMode(0644)
+	const permission = fs.FileMode(0o644)
 	err = os.MkdirAll("/tmp/gluetun", permission)
 	if err != nil {
 		return err
@@ -366,7 +365,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 	defaultGroupOptions := []group.Option{
 		group.OptionTimeout(defaultShutdownTimeout),
-		group.OptionOnSuccess(defaultShutdownOnSuccess)}
+		group.OptionOnSuccess(defaultShutdownOnSuccess),
+	}
 
 	controlGroupHandler := goshutdown.NewGroupHandler("control", defaultGroupOptions...)
 	tickersGroupHandler := goshutdown.NewGroupHandler("tickers", defaultGroupOptions...)
@@ -532,7 +532,8 @@ type infoer interface {
 }
 
 func printVersions(ctx context.Context, logger infoer,
-	elements []printVersionElement) (err error) {
+	elements []printVersionElement,
+) (err error) {
 	const timeout = 5 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()

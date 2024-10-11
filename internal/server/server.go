@@ -14,7 +14,8 @@ func New(ctx context.Context, address string, logEnabled bool, logger Logger,
 	pfGetter PortForwardedGetter, dnsLooper DNSLoop,
 	updaterLooper UpdaterLooper, publicIPLooper PublicIPLoop, storage Storage,
 	ipv6Supported bool) (
-	server *httpserver.Server, err error) {
+	server *httpserver.Server, err error,
+) {
 	authSettings, err := auth.Read(authConfigPath)
 	if err != nil {
 		return nil, fmt.Errorf("reading auth settings: %w", err)

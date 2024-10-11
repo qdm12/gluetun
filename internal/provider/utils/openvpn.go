@@ -52,7 +52,8 @@ type OpenVPNProviderSettings struct {
 //nolint:gocognit,gocyclo
 func OpenVPNConfig(provider OpenVPNProviderSettings,
 	connection models.Connection,
-	settings settings.OpenVPN, ipv6Supported bool) []string {
+	settings settings.OpenVPN, ipv6Supported bool,
+) []string {
 	var lines openvpnConfigLines
 	lines.add("client")
 	lines.add("nobind")
@@ -254,7 +255,8 @@ func defaultUint16(value, defaultValue uint16) uint16 {
 }
 
 func defaultStringSlice(value, defaultValue []string) (
-	result []string) {
+	result []string,
+) {
 	if len(value) > 0 {
 		result = make([]string, len(value))
 		copy(result, value)

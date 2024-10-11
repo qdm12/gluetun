@@ -8,7 +8,8 @@ import (
 )
 
 func newHandlerV0(ctx context.Context, logger infoWarner,
-	vpn VPNLooper, dns DNSLoop, updater UpdaterLooper) http.Handler {
+	vpn VPNLooper, dns DNSLoop, updater UpdaterLooper,
+) http.Handler {
 	return &handlerV0{
 		ctx:     ctx,
 		logger:  logger,

@@ -35,9 +35,7 @@ type DoT struct {
 	Blacklist DNSBlacklist
 }
 
-var (
-	ErrDoTUpdatePeriodTooShort = errors.New("update period is too short")
-)
+var ErrDoTUpdatePeriodTooShort = errors.New("update period is too short")
 
 func (d DoT) validate() (err error) {
 	const minUpdatePeriod = 30 * time.Second

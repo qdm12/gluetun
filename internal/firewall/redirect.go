@@ -11,7 +11,8 @@ import (
 // If the destination port is zero, the redirection for the source port is removed
 // and no new redirection is added.
 func (c *Config) RedirectPort(ctx context.Context, intf string, sourcePort,
-	destinationPort uint16) (err error) {
+	destinationPort uint16,
+) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
@@ -90,7 +91,8 @@ func (p *portRedirections) remove(intf string, sourcePort uint16) {
 }
 
 func (p *portRedirections) check(dryRun portRedirection) (alreadyExists bool,
-	conflict *portRedirection) {
+	conflict *portRedirection,
+) {
 	slice := *p
 	for _, redirection := range slice {
 		interfaceMatch := redirection.interfaceName == "" ||

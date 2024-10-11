@@ -38,7 +38,8 @@ type Loop struct {
 }
 
 func NewLoop(fetcher Fetcher, logger Logger,
-	settings settings.PublicIP, puid, pgid int) *Loop {
+	settings settings.PublicIP, puid, pgid int,
+) *Loop {
 	return &Loop{
 		settings: settings,
 		fetcher:  fetcher,
@@ -73,7 +74,8 @@ func (l *Loop) Start(_ context.Context) (_ <-chan error, err error) {
 
 func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 	runTrigger <-chan context.Context, runResult chan<- error,
-	updateTrigger <-chan settings.PublicIP, updatedResult chan<- error) {
+	updateTrigger <-chan settings.PublicIP, updatedResult chan<- error,
+) {
 	defer close(runDone)
 
 	for {

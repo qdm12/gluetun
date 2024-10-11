@@ -37,7 +37,8 @@ type Loop struct {
 const defaultBackoffTime = 10 * time.Second
 
 func NewLoop(settings settings.DNS,
-	client *http.Client, logger Logger) (loop *Loop, err error) {
+	client *http.Client, logger Logger,
+) (loop *Loop, err error) {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
 	stop := make(chan struct{})

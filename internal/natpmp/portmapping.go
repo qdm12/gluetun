@@ -21,7 +21,8 @@ func (c *Client) AddPortMapping(ctx context.Context, gateway netip.Addr,
 	protocol string, internalPort, requestedExternalPort uint16,
 	lifetime time.Duration) (durationSinceStartOfEpoch time.Duration,
 	assignedInternalPort, assignedExternalPort uint16, assignedLifetime time.Duration,
-	err error) {
+	err error,
+) {
 	lifetimeSecondsFloat := lifetime.Seconds()
 	const maxLifetimeSeconds = uint64(^uint32(0))
 	if uint64(lifetimeSecondsFloat) > maxLifetimeSeconds {

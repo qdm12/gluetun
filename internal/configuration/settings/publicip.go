@@ -122,7 +122,8 @@ func (p *PublicIP) read(r *reader.Reader, warner Warner) (err error) {
 }
 
 func readPublicIPEnabled(r *reader.Reader, warner Warner) (
-	enabled *bool, err error) {
+	enabled *bool, err error,
+) {
 	periodPtr, err := r.DurationPtr("PUBLICIP_PERIOD") // Retro-compatibility
 	if err != nil {
 		return nil, err

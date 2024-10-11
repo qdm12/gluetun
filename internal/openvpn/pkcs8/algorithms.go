@@ -7,15 +7,11 @@ import (
 	"fmt"
 )
 
-var (
-	// Algorithm identifiers are listed at
-	// https://www.ibm.com/docs/en/zos/2.3.0?topic=programming-object-identifiers
-	oidDESCBC = asn1.ObjectIdentifier{1, 3, 14, 3, 2, 7} //nolint:gochecknoglobals
-)
+// Algorithm identifiers are listed at
+// https://www.ibm.com/docs/en/zos/2.3.0?topic=programming-object-identifiers
+var oidDESCBC = asn1.ObjectIdentifier{1, 3, 14, 3, 2, 7} //nolint:gochecknoglobals
 
-var (
-	ErrEncryptionAlgorithmNotPBES2 = errors.New("encryption algorithm is not PBES2")
-)
+var ErrEncryptionAlgorithmNotPBES2 = errors.New("encryption algorithm is not PBES2")
 
 type encryptedPrivateKey struct {
 	EncryptionAlgorithm pkix.AlgorithmIdentifier
@@ -28,7 +24,8 @@ type encryptedAlgorithmParams struct {
 }
 
 func getEncryptionAlgorithmOid(der []byte) (
-	encryptionSchemeAlgorithm asn1.ObjectIdentifier, err error) {
+	encryptionSchemeAlgorithm asn1.ObjectIdentifier, err error,
+) {
 	var encryptedPrivateKeyData encryptedPrivateKey
 	_, err = asn1.Unmarshal(der, &encryptedPrivateKeyData)
 	if err != nil {

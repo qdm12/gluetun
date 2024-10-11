@@ -11,7 +11,8 @@ import (
 var indexOpenvpnLinksRegex = regexp.MustCompile(`<a[ ]+href=".+\.ovpn">.+\.ovpn</a>`)
 
 func fetchIndex(ctx context.Context, client *http.Client, indexURL string) (
-	openvpnURLs []string, err error) {
+	openvpnURLs []string, err error,
+) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, indexURL, nil)
 	if err != nil {
 		return nil, err

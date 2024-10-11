@@ -127,10 +127,9 @@ func Test_Client_AddPortMapping(t *testing.T) {
 			}
 
 			durationSinceStartOfEpoch, assignedInternalPort,
-				assignedExternalPort, assignedLifetime, err :=
-				client.AddPortMapping(testCase.ctx, testCase.gateway,
-					testCase.protocol, testCase.internalPort,
-					testCase.requestedExternalPort, testCase.lifetime)
+				assignedExternalPort, assignedLifetime, err := client.AddPortMapping(testCase.ctx, testCase.gateway,
+				testCase.protocol, testCase.internalPort,
+				testCase.requestedExternalPort, testCase.lifetime)
 
 			assert.Equal(t, testCase.durationSinceStartOfEpoch, durationSinceStartOfEpoch)
 			assert.Equal(t, testCase.assignedInternalPort, assignedInternalPort)

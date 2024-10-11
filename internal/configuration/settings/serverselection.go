@@ -91,7 +91,8 @@ var (
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
-	filterChoicesGetter FilterChoicesGetter, warner Warner) (err error) {
+	filterChoicesGetter FilterChoicesGetter, warner Warner,
+) (err error) {
 	switch ss.VPN {
 	case vpn.OpenVPN, vpn.Wireguard:
 	default:
@@ -143,7 +144,8 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 
 func getLocationFilterChoices(vpnServiceProvider string,
 	ss *ServerSelection, filterChoicesGetter FilterChoicesGetter, warner Warner) (
-	filterChoices models.FilterChoices, err error) {
+	filterChoices models.FilterChoices, err error,
+) {
 	filterChoices = filterChoicesGetter.GetFilterChoices(vpnServiceProvider)
 
 	if vpnServiceProvider == providers.Surfshark {
@@ -165,7 +167,8 @@ func getLocationFilterChoices(vpnServiceProvider string,
 // validateServerFilters validates filters against the choices given as arguments.
 // Set an argument to nil to pass the check for a particular filter.
 func validateServerFilters(settings ServerSelection, filterChoices models.FilterChoices,
-	vpnServiceProvider string, warner Warner) (err error) {
+	vpnServiceProvider string, warner Warner,
+) (err error) {
 	err = atLeastOneIsOneOfCaseInsensitive(settings.Countries, filterChoices.Countries, warner)
 	if err != nil {
 		return fmt.Errorf("%w: %w", ErrCountryNotValid, err)
@@ -219,7 +222,8 @@ func validateServerFilters(settings ServerSelection, filterChoices models.Filter
 }
 
 func atLeastOneIsOneOfCaseInsensitive(values, choices []string,
-	warner Warner) (err error) {
+	warner Warner,
+) (err error) {
 	if len(values) > 0 && len(choices) == 0 {
 		return fmt.Errorf("%w", validate.ErrNoChoice)
 	}
@@ -456,7 +460,8 @@ func (ss ServerSelection) WithDefaults(provider string) ServerSelection {
 }
 
 func (ss *ServerSelection) read(r *reader.Reader,
-	vpnProvider, vpnType string) (err error) {
+	vpnProvider, vpnType string,
+) (err error) {
 	ss.VPN = vpnType
 
 	ss.TargetIP, err = r.NetipAddr("OPENVPN_ENDPOINT_IP",

@@ -27,7 +27,8 @@ type udpExchange struct {
 // port is dynamically assigned by the OS so calling tests
 // can run in parallel.
 func launchUDPServer(t *testing.T, exchanges []udpExchange) (
-	remoteAddress *net.UDPAddr) {
+	remoteAddress *net.UDPAddr,
+) {
 	t.Helper()
 
 	conn, err := net.ListenUDP("udp", nil)

@@ -14,7 +14,7 @@ import (
 // Create creates a TUN device at the path specified.
 func (t *Tun) Create(path string) (err error) {
 	parentDir := filepath.Dir(path)
-	err = os.MkdirAll(parentDir, 0751) //nolint:mnd
+	err = os.MkdirAll(parentDir, 0o751) //nolint:mnd
 	if err != nil {
 		return err
 	}

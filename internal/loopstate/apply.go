@@ -16,7 +16,8 @@ var ErrInvalidStatus = errors.New("invalid status")
 // matches the requested one. It is thread safe and a synchronous call
 // since it waits to the loop to fully change its status.
 func (s *State) ApplyStatus(ctx context.Context, status models.LoopStatus) (
-	outcome string, err error) {
+	outcome string, err error,
+) {
 	// prevent simultaneous loop changes by restricting
 	// multiple ApplyStatus calls to run sequentially.
 	s.loopMu.Lock()
