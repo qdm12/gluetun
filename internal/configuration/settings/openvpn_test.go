@@ -32,7 +32,6 @@ func Test_ivpnAccountID(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		testCase := testCase
 		t.Run(testCase.s, func(t *testing.T) {
 			t.Parallel()
 

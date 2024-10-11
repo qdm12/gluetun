@@ -138,7 +138,6 @@ func Test_Client_rpc(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -193,7 +192,6 @@ func Test_dedupFailedAttempts(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

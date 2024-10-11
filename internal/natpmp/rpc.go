@@ -69,7 +69,7 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 
 	var retryCount uint
 	var failedAttempts []string
-	for retryCount = 0; retryCount < c.maxRetries; retryCount++ {
+	for retryCount = 0; retryCount < c.maxRetries; retryCount++ { //nolint:intrange
 		deadline := time.Now().Add(connectionDuration)
 		err = connection.SetDeadline(deadline)
 		if err != nil {

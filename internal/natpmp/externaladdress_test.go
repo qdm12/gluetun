@@ -46,7 +46,6 @@ func Test_Client_ExternalAddress(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

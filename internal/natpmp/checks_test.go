@@ -25,7 +25,6 @@ func Test_checkRequest(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -88,7 +87,6 @@ func Test_checkResponse(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -146,7 +144,6 @@ func Test_checkResultCode(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

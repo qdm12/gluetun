@@ -110,7 +110,6 @@ func Test_checkIptablesSupport(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
@@ -249,7 +248,6 @@ func Test_testIptablesPath(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
@@ -287,7 +285,6 @@ func Test_isPermissionDenied(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -330,7 +327,6 @@ func Test_extractInputPolicy(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

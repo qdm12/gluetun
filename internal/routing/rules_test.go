@@ -105,7 +105,6 @@ func Test_Routing_addIPRule(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
@@ -223,7 +222,6 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
@@ -289,7 +287,6 @@ func Test_ruleDbgMsg(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -386,7 +383,6 @@ func Test_rulesAreEqual(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -434,7 +430,6 @@ func Test_ipPrefixesAreEqual(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

@@ -27,7 +27,7 @@ func (a *apiKeyMethod) equal(other authorizationChecker) bool {
 }
 
 func (a *apiKeyMethod) isAuthorized(_ http.Header, request *http.Request) bool {
-	xAPIKey := request.Header.Get("X-API-Key")
+	xAPIKey := request.Header.Get("X-API-Key") //nolint:canonicalheader
 	if xAPIKey == "" {
 		xAPIKey = request.URL.Query().Get("api_key")
 	}

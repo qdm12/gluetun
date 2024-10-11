@@ -37,7 +37,9 @@ linters:
     - asciicheck
     - bidichk
     - bodyclose
+    - canonicalheader
     - containedctx
+    - copyloopvar
     - decorder
     - dogsled
     - dupl
@@ -47,6 +49,7 @@ linters:
     - errchkjson
     - errname
     - exhaustive
+    - fatcontext
     - forcetypeassert
     - gci
     - gocheckcompilerdirectives
@@ -66,6 +69,7 @@ linters:
     - grouper
     - importas
     - interfacebloat
+    - intrange
     - ireturn
     - lll
     - maintidx

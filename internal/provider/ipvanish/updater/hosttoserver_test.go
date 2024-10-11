@@ -87,7 +87,6 @@ func Test_hostToServer_add(t *testing.T) {
 		},
 	}
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			testCase.initialHTS.add(testCase.host, testCase.country, testCase.city, testCase.tcp, testCase.udp)
@@ -121,7 +120,6 @@ func Test_hostToServer_toHostsSlice(t *testing.T) {
 		},
 	}
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			hosts := testCase.hts.toHostsSlice()
@@ -175,7 +173,6 @@ func Test_hostToServer_adaptWithIPs(t *testing.T) {
 		},
 	}
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			testCase.initialHTS.adaptWithIPs(testCase.hostToIPs)
@@ -206,7 +203,6 @@ func Test_hostToServer_toServersSlice(t *testing.T) {
 		},
 	}
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			servers := testCase.hts.toServersSlice()

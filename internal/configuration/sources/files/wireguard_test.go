@@ -73,7 +73,6 @@ PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 	}
 
 	for testName, testCase := range testCases {
-		testCase := testCase
 		t.Run(testName, func(t *testing.T) {
 			t.Parallel()
 
@@ -123,7 +122,6 @@ Address = 10.38.22.35/32
 	}
 
 	for testName, testCase := range testCases {
-		testCase := testCase
 		t.Run(testName, func(t *testing.T) {
 			t.Parallel()
 
@@ -184,7 +182,6 @@ Endpoint = 1.2.3.4:51820`,
 	}
 
 	for testName, testCase := range testCases {
-		testCase := testCase
 		t.Run(testName, func(t *testing.T) {
 			t.Parallel()
 

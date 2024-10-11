@@ -75,7 +75,6 @@ That error usually happens because either:
 		},
 	}
 	for name, tc := range tests {
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			filtered, level := processLogLine(tc.s)

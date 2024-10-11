@@ -274,7 +274,6 @@ func Test_FilterServers(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -305,7 +304,6 @@ func Test_filterByPossibilities(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			filtered := filterByPossibilities(testCase.value, testCase.possibilities)

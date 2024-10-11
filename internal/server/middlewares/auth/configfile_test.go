@@ -57,7 +57,6 @@ routes = ["GET /v1/vpn/status"]
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

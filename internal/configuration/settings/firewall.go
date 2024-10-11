@@ -104,7 +104,6 @@ func (f Firewall) toLinesNode() (node *gotree.Node) {
 	if len(f.OutboundSubnets) > 0 {
 		outboundSubnets := node.Appendf("Outbound subnets:")
 		for _, subnet := range f.OutboundSubnets {
-			subnet := subnet
 			outboundSubnets.Appendf("%s", &subnet)
 		}
 	}

@@ -43,7 +43,6 @@ func Test_unpackPayload(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			port, token, expiration, err := unpackPayload(testCase.payload)
@@ -97,7 +96,6 @@ func Test_replaceInString(t *testing.T) {
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			result := replaceInString(testCase.s, testCase.substitutions)

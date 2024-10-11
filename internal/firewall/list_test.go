@@ -105,7 +105,6 @@ num pkts bytes target     prot opt in     out     source               destinati
 	}
 
 	for name, testCase := range testCases {
-		testCase := testCase
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

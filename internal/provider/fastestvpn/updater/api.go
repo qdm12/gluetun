@@ -77,7 +77,7 @@ func fetchAPIServers(ctx context.Context, client *http.Client, protocol string) 
 		var server apiServer
 
 		const numberOfTDBlocks = 3
-		for i := 0; i < numberOfTDBlocks; i++ {
+		for i := range numberOfTDBlocks {
 			tdBlock := getNextTDBlock(trBlock)
 			if tdBlock == nil {
 				return nil, fmt.Errorf("%w: expected 3 <td> blocks in <tr> block %q",
