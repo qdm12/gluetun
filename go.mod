@@ -13,7 +13,7 @@ require (
 	github.com/qdm12/gosettings v0.4.2
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.2.0
-	github.com/qdm12/gotree v0.2.0
+	github.com/qdm12/gotree v0.3.0
 	github.com/qdm12/log v0.1.0
 	github.com/qdm12/ss-server v0.6.0
 	github.com/stretchr/testify v1.9.0

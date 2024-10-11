@@ -27,9 +27,6 @@ func (c *CLI) ClientKey(args []string) error {
 	if err := file.Close(); err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
 	s := string(data)
 	s = strings.ReplaceAll(s, "\n", "")
 	s = strings.ReplaceAll(s, "\r", "")

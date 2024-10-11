@@ -193,9 +193,6 @@ func (o *OpenVPNSelection) read(r *reader.Reader) (err error) {
 	o.ConfFile = r.Get("OPENVPN_CUSTOM_CONFIG", reader.ForceLowercase(false))
 
 	o.Protocol = r.String("OPENVPN_PROTOCOL", reader.RetroKeys("PROTOCOL"))
-	if err != nil {
-		return err
-	}
 
 	o.CustomPort, err = r.Uint16Ptr("OPENVPN_ENDPOINT_PORT",
 		reader.RetroKeys("PORT", "OPENVPN_PORT", "VPN_ENDPOINT_PORT"))

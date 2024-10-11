@@ -68,8 +68,8 @@ github.com/qdm12/goshutdown v0.3.0 h1:pqBpJkdwlZlfTEx4QHtS8u8CXx6pG0fVo6S1N0MpSE
 github.com/qdm12/goshutdown v0.3.0/go.mod h1:EqZ46No00kCTZ5qzdd3qIzY6ayhMt24QI8Mh8LVQYmM=
 github.com/qdm12/gosplash v0.2.0 h1:DOxCEizbW6ZG+FgpH2oK1atT6bM8MHL9GZ2ywSS4zZY=
 github.com/qdm12/gosplash v0.2.0/go.mod h1:k+1PzhO0th9cpX4q2Nneu4xTsndXqrM/x7NTIYmJ4jo=
-github.com/qdm12/gotree v0.2.0 h1:+58ltxkNLUyHtATFereAcOjBVfY6ETqRex8XK90Fb/c=
-github.com/qdm12/gotree v0.2.0/go.mod h1:1SdFaqKZuI46U1apbXIf25pDMNnrPuYLEqMF/qL4lY4=
+github.com/qdm12/gotree v0.3.0 h1:Q9f4C571EFK7ZEsPkEL2oGZX7I+ZhVxhh1ZSydW+5yI=
+github.com/qdm12/gotree v0.3.0/go.mod h1:iz06uXmRR4Aq9v6tX7mosXStO/yGHxRA1hbyD0UVeYw=
 github.com/qdm12/log v0.1.0 h1:jYBd/xscHYpblzZAd2kjZp2YmuYHjAAfbTViJWxoPTw=
 github.com/qdm12/log v0.1.0/go.mod h1:Vchi5M8uBvHfPNIblN4mjXn/oSbiWguQIbsgF1zdQPI=
 github.com/qdm12/ss-server v0.6.0 h1:OaOdCIBXx0z3DGHPT6Th0v88vGa3MtAS4oRgUsDHGZE=

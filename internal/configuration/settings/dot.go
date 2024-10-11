@@ -127,9 +127,9 @@ func (d DoT) toLinesNode() (node *gotree.Node) {
 	}
 	node.Appendf("Update period: %s", update)
 
-	upstreamResolvers := node.Appendf("Upstream resolvers:")
+	upstreamResolvers := node.Append("Upstream resolvers:")
 	for _, provider := range d.Providers {
-		upstreamResolvers.Appendf(provider)
+		upstreamResolvers.Append(provider)
 	}
 
 	node.Appendf("Caching: %s", gosettings.BoolToYesNo(d.Caching))

@@ -101,30 +101,30 @@ func (b DNSBlacklist) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Block surveillance: %s", gosettings.BoolToYesNo(b.BlockSurveillance))
 
 	if len(b.AllowedHosts) > 0 {
-		allowedHostsNode := node.Appendf("Allowed hosts:")
+		allowedHostsNode := node.Append("Allowed hosts:")
 		for _, host := range b.AllowedHosts {
-			allowedHostsNode.Appendf(host)
+			allowedHostsNode.Append(host)
 		}
 	}
 
 	if len(b.AddBlockedHosts) > 0 {
-		blockedHostsNode := node.Appendf("Blocked hosts:")
+		blockedHostsNode := node.Append("Blocked hosts:")
 		for _, host := range b.AddBlockedHosts {
-			blockedHostsNode.Appendf(host)
+			blockedHostsNode.Append(host)
 		}
 	}
 
 	if len(b.AddBlockedIPs) > 0 {
-		blockedIPsNode := node.Appendf("Blocked IP addresses:")
+		blockedIPsNode := node.Append("Blocked IP addresses:")
 		for _, ip := range b.AddBlockedIPs {
-			blockedIPsNode.Appendf(ip.String())
+			blockedIPsNode.Append(ip.String())
 		}
 	}
 
 	if len(b.AddBlockedIPPrefixes) > 0 {
-		blockedIPPrefixesNode := node.Appendf("Blocked IP networks:")
+		blockedIPPrefixesNode := node.Append("Blocked IP networks:")
 		for _, ipNetwork := range b.AddBlockedIPPrefixes {
-			blockedIPPrefixesNode.Appendf(ipNetwork.String())
+			blockedIPPrefixesNode.Append(ipNetwork.String())
 		}
 	}
 

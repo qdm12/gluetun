@@ -20,14 +20,6 @@ issues:
       text: "newCipherDESCBCBlock returns interface \\(github\\.com\\/youmark\\/pkcs8\\.Cipher\\)"
       linters:
         - ireturn
-    - path: "internal\\/configuration"
-      text: "printf: non-constant format string in call to \\(\\*github.com\\/qdm12\\/gotree\\.Node\\)\\.Appendf"
-      linters:
-        - govet
-    - path: "internal\\/configuration"
-      text: "non-constant format string in call to github\\.com\\/qdm12\\/gotree\\.New"
-      linters:
-        - govet
 
 linters:
   enable:
