@@ -8,8 +8,9 @@ import (
 )
 
 func (l *Loop) update(partialUpdate settings.PublicIP) (err error) {
-	// No need to lock the mutex since it can only be written
-	// in the code below in this goroutine.
+	l.settingsMutex.Lock()
+	defer l.settingsMutex.Unlock()
+
 	updatedSettings, err := l.settings.UpdateWith(partialUpdate)
 	if err != nil {
 		return err
@@ -36,9 +37,7 @@ func (l *Loop) update(partialUpdate settings.PublicIP) (err error) {
 		}
 	}
 
-	l.settingsMutex.Lock()
 	l.settings = updatedSettings
-	l.settingsMutex.Unlock()
 
 	return nil
 }
