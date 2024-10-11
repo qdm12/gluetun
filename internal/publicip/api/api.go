@@ -12,6 +12,8 @@ import (
 )
 
 type API interface {
+	String() string
+	CanFetchAnyIP() bool
 	FetchInfo(ctx context.Context, ip netip.Addr) (
 		result models.PublicIP, err error)
 }

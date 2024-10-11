@@ -16,6 +16,10 @@ import (
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
+	if !u.ipFetcher.CanFetchAnyIP() {
+		return nil, fmt.Errorf("%w: %s", common.ErrIPFetcherUnsupported, u.ipFetcher.String())
+	}
+
 	const url = "https://d11a57lttb2ffq.cloudfront.net/heartbleed/router/Recommended-CA2.zip"
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)
 	if err != nil {

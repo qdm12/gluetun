@@ -22,6 +22,14 @@ func newCloudflare(client *http.Client) *cloudflare {
 	}
 }
 
+func (c *cloudflare) String() string {
+	return string(Cloudflare)
+}
+
+func (c *cloudflare) CanFetchAnyIP() bool {
+	return false
+}
+
 // FetchInfo obtains information on the public IP address of the machine,
 // and returns an error if the `ip` argument is set since the Cloudflare API
 // can only be used to provide details about the current machine public IP.

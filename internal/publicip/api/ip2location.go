@@ -23,6 +23,14 @@ func newIP2Location(client *http.Client, token string) *ip2Location {
 	}
 }
 
+func (i *ip2Location) String() string {
+	return string(IP2Location)
+}
+
+func (i *ip2Location) CanFetchAnyIP() bool {
+	return true
+}
+
 // FetchInfo obtains information on the ip address provided
 // using the api.ip2location.io API. If the ip is the zero value,
 // the public IP address of the machine is used as the IP.

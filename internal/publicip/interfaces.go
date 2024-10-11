@@ -8,6 +8,7 @@ import (
 )
 
 type Fetcher interface {
+	String() string
 	FetchInfo(ctx context.Context, ip netip.Addr) (
 		result models.PublicIP, err error)
 }

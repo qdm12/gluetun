@@ -34,6 +34,8 @@ type ParallelResolver interface {
 }
 
 type IPFetcher interface {
+	String() string
+	CanFetchAnyIP() bool
 	FetchInfo(ctx context.Context, ip netip.Addr) (data models.PublicIP, err error)
 }
 

@@ -24,6 +24,14 @@ func newIPInfo(client *http.Client, token string) *ipInfo {
 	}
 }
 
+func (i *ipInfo) String() string {
+	return string(IPInfo)
+}
+
+func (i *ipInfo) CanFetchAnyIP() bool {
+	return true
+}
+
 // FetchInfo obtains information on the ip address provided
 // using the ipinfo.io API. If the ip is the zero value, the public IP address
 // of the machine is used as the IP.
