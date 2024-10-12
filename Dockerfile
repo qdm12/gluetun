@@ -205,7 +205,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \
     PUBLICIP_ENABLED=on \
-    PUBLICIP_API=ipinfo \
+    PUBLICIP_API=ipinfo,ifconfigco,ip2location,cloudflare \
     PUBLICIP_API_TOKEN= \
     # Storage
     STORAGE_FILEPATH=/gluetun/servers.json \

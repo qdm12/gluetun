@@ -30,6 +30,10 @@ func (c *cloudflare) CanFetchAnyIP() bool {
 	return false
 }
 
+func (c *cloudflare) Token() (token string) {
+	return ""
+}
+
 // FetchInfo obtains information on the public IP address of the machine,
 // and returns an error if the `ip` argument is set since the Cloudflare API
 // can only be used to provide details about the current machine public IP.

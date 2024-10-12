@@ -80,10 +80,17 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	httpClient := &http.Client{Timeout: clientTimeout}
 	unzipper := unzip.New(httpClient)
 	parallelResolver := resolver.NewParallelResolver(options.DNSAddress)
-	ipFetcher, err := api.New(api.IPInfo, httpClient, ipToken)
-	if err != nil {
-		return fmt.Errorf("creating public IP API client: %w", err)
+	nameTokenPairs := []api.NameToken{
+		{Name: string(api.IPInfo), Token: ipToken},
+		{Name: string(api.IP2Location)},
+		{Name: string(api.IfConfigCo)},
 	}
+	fetchers, err := api.New(nameTokenPairs, httpClient)
+	if err != nil {
+		return fmt.Errorf("creating public IP fetchers: %w", err)
+	}
+	ipFetcher := api.NewResilient(fetchers, logger)
+
 	openvpnFileExtractor := extract.New()
 
 	providers := provider.NewProviders(storage, time.Now, logger, httpClient,

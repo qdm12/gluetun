@@ -3,12 +3,14 @@ package publicip
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/netip"
 	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/publicip/api"
 )
 
 type Loop struct {
@@ -17,9 +19,10 @@ type Loop struct {
 	settingsMutex sync.RWMutex
 	ipData        models.PublicIP
 	ipDataMutex   sync.RWMutex
+	fetcher       *api.ResilientFetcher
 	// Fixed injected objects
-	fetcher Fetcher
-	logger  Logger
+	httpClient *http.Client
+	logger     Logger
 	// Fixed parameters
 	puid int
 	pgid int
@@ -37,17 +40,34 @@ type Loop struct {
 	timeNow func() time.Time
 }
 
-func NewLoop(fetcher Fetcher, logger Logger,
-	settings settings.PublicIP, puid, pgid int,
-) *Loop {
-	return &Loop{
-		settings: settings,
-		fetcher:  fetcher,
-		logger:   logger,
-		puid:     puid,
-		pgid:     pgid,
-		timeNow:  time.Now,
+func NewLoop(settings settings.PublicIP, puid, pgid int,
+	httpClient *http.Client, logger Logger,
+) (loop *Loop, err error) {
+	fetchers, err := api.New(makeNameTokenPairs(settings.APIs), httpClient)
+	if err != nil {
+		return nil, fmt.Errorf("creating fetchers: %w", err)
 	}
+
+	return &Loop{
+		settings:   settings,
+		httpClient: httpClient,
+		fetcher:    api.NewResilient(fetchers, logger),
+		logger:     logger,
+		puid:       puid,
+		pgid:       pgid,
+		timeNow:    time.Now,
+	}, nil
+}
+
+func makeNameTokenPairs(apis []settings.PublicIPAPI) (nameTokenPairs []api.NameToken) {
+	nameTokenPairs = make([]api.NameToken, len(apis))
+	for i := range apis {
+		nameTokenPairs[i] = api.NameToken{
+			Name:  apis[i].Name,
+			Token: apis[i].Token,
+		}
+	}
+	return nameTokenPairs
 }
 
 func (l *Loop) String() string {
@@ -102,7 +122,8 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 		}
 
 		message := "Public IP address is " + result.IP.String()
-		message += " (" + result.Country + ", " + result.Region + ", " + result.City + ")"
+		message += " (" + result.Country + ", " + result.Region + ", " + result.City +
+			" - source: " + l.fetcher.String() + ")"
 		l.logger.Info(message)
 
 		l.ipDataMutex.Lock()
@@ -158,4 +179,8 @@ func (l *Loop) Stop() (err error) {
 	l.runCancel()
 	<-l.runDone
 	return l.ClearData()
+}
+
+func (l *Loop) Fetcher() (fetcher *api.ResilientFetcher) {
+	return l.fetcher
 }

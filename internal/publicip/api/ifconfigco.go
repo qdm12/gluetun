@@ -28,6 +28,10 @@ func (i *ifConfigCo) CanFetchAnyIP() bool {
 	return true
 }
 
+func (i *ifConfigCo) Token() string {
+	return ""
+}
+
 // FetchInfo obtains information on the ip address provided
 // using the ifconfig.co/json API. If the ip is the zero value,
 // the public IP address of the machine is used as the IP.

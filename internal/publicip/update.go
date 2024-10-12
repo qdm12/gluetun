@@ -3,8 +3,10 @@ package publicip
 import (
 	"fmt"
 	"os"
+	"reflect"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
+	"github.com/qdm12/gluetun/internal/publicip/api"
 )
 
 func (l *Loop) update(partialUpdate settings.PublicIP) (err error) {
@@ -35,6 +37,15 @@ func (l *Loop) update(partialUpdate settings.PublicIP) (err error) {
 				return fmt.Errorf("renaming ip data file path: %w", err)
 			}
 		}
+	}
+
+	if !reflect.DeepEqual(l.settings.APIs, updatedSettings.APIs) {
+		newFetchers, err := api.New(makeNameTokenPairs(updatedSettings.APIs), l.httpClient)
+		if err != nil {
+			return fmt.Errorf("creating fetchers: %w", err)
+		}
+
+		l.fetcher.UpdateFetchers(newFetchers)
 	}
 
 	l.settings = updatedSettings
