@@ -10,7 +10,7 @@ func Test_PortForwarding_String(t *testing.T) {
 	t.Parallel()
 
 	settings := PortForwarding{
-		Enabled: boolPtr(false),
+		Enabled: ptrTo(false),
 	}
 
 	s := settings.String()

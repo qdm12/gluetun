@@ -13,7 +13,7 @@ import (
 // If an error is encountered, all the operations are canceled and
 // an error is returned, so the results returned should be considered
 // incomplete in this case.
-func FetchMultiInfo(ctx context.Context, fetcher Fetcher, ips []netip.Addr) (
+func FetchMultiInfo(ctx context.Context, fetcher InfoFetcher, ips []netip.Addr) (
 	results []models.PublicIP, err error,
 ) {
 	ctx, cancel := context.WithCancel(ctx)

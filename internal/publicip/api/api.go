@@ -1,22 +1,11 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
-	"net/netip"
 	"strings"
-
-	"github.com/qdm12/gluetun/internal/models"
 )
-
-type API interface {
-	String() string
-	CanFetchAnyIP() bool
-	FetchInfo(ctx context.Context, ip netip.Addr) (
-		result models.PublicIP, err error)
-}
 
 type Provider string
 
@@ -27,21 +16,34 @@ const (
 	IP2Location Provider = "ip2location"
 )
 
-func New(provider Provider, client *http.Client, token string) ( //nolint:ireturn
-	a API, err error,
+type NameToken struct {
+	Name  string
+	Token string
+}
+
+func New(nameTokenPairs []NameToken, client *http.Client) (
+	fetchers []Fetcher, err error,
 ) {
-	switch provider {
-	case Cloudflare:
-		return newCloudflare(client), nil
-	case IfConfigCo:
-		return newIfConfigCo(client), nil
-	case IPInfo:
-		return newIPInfo(client, token), nil
-	case IP2Location:
-		return newIP2Location(client, token), nil
-	default:
-		panic("provider not valid: " + provider)
+	fetchers = make([]Fetcher, len(nameTokenPairs))
+	for i, nameTokenPair := range nameTokenPairs {
+		provider, err := ParseProvider(nameTokenPair.Name)
+		if err != nil {
+			return nil, fmt.Errorf("parsing API name: %w", err)
+		}
+		switch provider {
+		case Cloudflare:
+			fetchers[i] = newCloudflare(client)
+		case IfConfigCo:
+			fetchers[i] = newIfConfigCo(client)
+		case IPInfo:
+			fetchers[i] = newIPInfo(client, nameTokenPair.Token)
+		case IP2Location:
+			fetchers[i] = newIP2Location(client, nameTokenPair.Token)
+		default:
+			panic("provider not valid: " + provider)
+		}
 	}
+	return fetchers, nil
 }
 
 var ErrProviderNotValid = errors.New("API name is not valid")

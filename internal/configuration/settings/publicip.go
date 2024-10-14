@@ -20,15 +20,20 @@ type PublicIP struct {
 	// to write to a file. It cannot be nil for the
 	// internal state
 	IPFilepath *string
-	// API is the API name to use to fetch public IP information.
-	// It can be cloudflare, ifconfigco, ip2location or ipinfo.
-	// It defaults to ipinfo.
-	API string
-	// APIToken is the token to use for the IP data service
-	// such as ipinfo.io. It can be the empty string to
-	// indicate not to use a token. It cannot be nil for the
-	// internal state.
-	APIToken *string
+	// APIs is the list of public ip APIs to use to fetch public IP information.
+	// If there is more than one API, the first one is used
+	// by default and the others are used as fallbacks in case of
+	// the service rate limiting us. It defaults to use all services,
+	// with the first one being ipinfo.io for historical reasons.
+	APIs []PublicIPAPI
+}
+
+type PublicIPAPI struct {
+	// Name is the name of the public ip API service.
+	// It can be "cloudflare", "ifconfigco", "ip2location" or "ipinfo".
+	Name string
+	// Token is the token to use for the public ip API service.
+	Token string
 }
 
 // UpdateWith deep copies the receiving settings, overrides the copy with
@@ -53,9 +58,11 @@ func (p PublicIP) validate() (err error) {
 		}
 	}
 
-	_, err = api.ParseProvider(p.API)
-	if err != nil {
-		return fmt.Errorf("API name: %w", err)
+	for _, publicIPAPI := range p.APIs {
+		_, err = api.ParseProvider(publicIPAPI.Name)
+		if err != nil {
+			return fmt.Errorf("API name: %w", err)
+		}
 	}
 
 	return nil
@@ -65,23 +72,25 @@ func (p *PublicIP) copy() (copied PublicIP) {
 	return PublicIP{
 		Enabled:    gosettings.CopyPointer(p.Enabled),
 		IPFilepath: gosettings.CopyPointer(p.IPFilepath),
-		API:        p.API,
-		APIToken:   gosettings.CopyPointer(p.APIToken),
+		APIs:       gosettings.CopySlice(p.APIs),
 	}
 }
 
 func (p *PublicIP) overrideWith(other PublicIP) {
 	p.Enabled = gosettings.OverrideWithPointer(p.Enabled, other.Enabled)
 	p.IPFilepath = gosettings.OverrideWithPointer(p.IPFilepath, other.IPFilepath)
-	p.API = gosettings.OverrideWithComparable(p.API, other.API)
-	p.APIToken = gosettings.OverrideWithPointer(p.APIToken, other.APIToken)
+	p.APIs = gosettings.OverrideWithSlice(p.APIs, other.APIs)
 }
 
 func (p *PublicIP) setDefaults() {
 	p.Enabled = gosettings.DefaultPointer(p.Enabled, true)
 	p.IPFilepath = gosettings.DefaultPointer(p.IPFilepath, "/tmp/gluetun/ip")
-	p.API = gosettings.DefaultComparable(p.API, "ipinfo")
-	p.APIToken = gosettings.DefaultPointer(p.APIToken, "")
+	p.APIs = gosettings.DefaultSlice(p.APIs, []PublicIPAPI{
+		{Name: string(api.IPInfo)},
+		{Name: string(api.Cloudflare)},
+		{Name: string(api.IfConfigCo)},
+		{Name: string(api.IP2Location)},
+	})
 }
 
 func (p PublicIP) String() string {
@@ -99,10 +108,20 @@ func (p PublicIP) toLinesNode() (node *gotree.Node) {
 		node.Appendf("IP file path: %s", *p.IPFilepath)
 	}
 
-	node.Appendf("Public IP data API: %s", p.API)
-
-	if *p.APIToken != "" {
-		node.Appendf("API token: %s", gosettings.ObfuscateKey(*p.APIToken))
+	baseAPIString := "Public IP data base API: " + p.APIs[0].Name
+	if p.APIs[0].Token != "" {
+		baseAPIString += " (token " + gosettings.ObfuscateKey(p.APIs[0].Token) + ")"
+	}
+	node.Append(baseAPIString)
+	if len(p.APIs) > 1 {
+		backupAPIsNode := node.Append("Public IP data backup APIs:")
+		for i := 1; i < len(p.APIs); i++ {
+			message := p.APIs[i].Name
+			if p.APIs[i].Token != "" {
+				message += " (token " + gosettings.ObfuscateKey(p.APIs[i].Token) + ")"
+			}
+			backupAPIsNode.Append(message)
+		}
 	}
 
 	return node
@@ -116,8 +135,21 @@ func (p *PublicIP) read(r *reader.Reader, warner Warner) (err error) {
 
 	p.IPFilepath = r.Get("PUBLICIP_FILE",
 		reader.ForceLowercase(false), reader.RetroKeys("IP_STATUS_FILE"))
-	p.API = r.String("PUBLICIP_API")
-	p.APIToken = r.Get("PUBLICIP_API_TOKEN")
+
+	apiNames := r.CSV("PUBLICIP_API")
+	if len(apiNames) > 0 {
+		apiTokens := r.CSV("PUBLICIP_API_TOKEN")
+		p.APIs = make([]PublicIPAPI, len(apiNames))
+		for i := range apiNames {
+			p.APIs[i].Name = apiNames[i]
+			var token string
+			if i < len(apiTokens) { // only set token if it exists
+				token = apiTokens[i]
+			}
+			p.APIs[i].Token = token
+		}
+	}
+
 	return nil
 }
 

@@ -34,7 +34,6 @@ import (
 	"github.com/qdm12/gluetun/internal/pprof"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/publicip"
-	pubipapi "github.com/qdm12/gluetun/internal/publicip/api"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
@@ -407,14 +406,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go dnsLooper.RunRestartTicker(dnsTickerCtx, dnsTickerDone)
 	controlGroupHandler.Add(dnsTickerHandler)
 
-	publicipAPI, _ := pubipapi.ParseProvider(allSettings.PublicIP.API)
-	ipFetcher, err := pubipapi.New(publicipAPI, httpClient, *allSettings.PublicIP.APIToken)
+	publicIPLooper, err := publicip.NewLoop(allSettings.PublicIP, puid, pgid, httpClient,
+		logger.New(log.SetComponent("ip getter")))
 	if err != nil {
-		return fmt.Errorf("creating public IP API client: %w", err)
+		return fmt.Errorf("creating public ip loop: %w", err)
 	}
-	publicIPLooper := publicip.NewLoop(ipFetcher,
-		logger.New(log.SetComponent("ip getter")),
-		allSettings.PublicIP, puid, pgid)
 	publicIPRunError, err := publicIPLooper.Start(ctx)
 	if err != nil {
 		return fmt.Errorf("starting public ip loop: %w", err)
@@ -426,7 +422,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
 	openvpnFileExtractor := extract.New()
 	providers := provider.NewProviders(storage, time.Now, updaterLogger,
-		httpClient, unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
+		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(), openvpnFileExtractor)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,

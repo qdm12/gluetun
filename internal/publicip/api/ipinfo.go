@@ -32,6 +32,10 @@ func (i *ipInfo) CanFetchAnyIP() bool {
 	return true
 }
 
+func (i *ipInfo) Token() string {
+	return i.token
+}
+
 // FetchInfo obtains information on the ip address provided
 // using the ipinfo.io API. If the ip is the zero value, the public IP address
 // of the machine is used as the IP.

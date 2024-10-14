@@ -79,7 +79,11 @@ func Test_Settings_String(t *testing.T) {
 |   └── Process GID: 1000
 ├── Public IP settings:
 |   ├── IP file path: /tmp/gluetun/ip
-|   └── Public IP data API: ipinfo
+|   ├── Public IP data base API: ipinfo
+|   └── Public IP data backup APIs:
+|       ├── cloudflare
+|       ├── ifconfigco
+|       └── ip2location
 └── Version settings:
     └── Enabled: yes`,
 		},
