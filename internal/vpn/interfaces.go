@@ -72,6 +72,7 @@ type Router interface {
 type Ruler interface {
 	RuleAdd(rule netlink.Rule) error
 	RuleDel(rule netlink.Rule) error
+	RuleList(family int) (rules []netlink.Rule, err error)
 }
 
 type Linker interface {
