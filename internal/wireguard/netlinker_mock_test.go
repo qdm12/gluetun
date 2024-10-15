@@ -207,3 +207,18 @@ func (mr *MockNetLinkerMockRecorder) RuleDel(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RuleDel", reflect.TypeOf((*MockNetLinker)(nil).RuleDel), arg0)
 }
+
+// RuleList mocks base method.
+func (m *MockNetLinker) RuleList(arg0 int) ([]netlink.Rule, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RuleList", arg0)
+	ret0, _ := ret[0].([]netlink.Rule)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RuleList indicates an expected call of RuleList.
+func (mr *MockNetLinkerMockRecorder) RuleList(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RuleList", reflect.TypeOf((*MockNetLinker)(nil).RuleList), arg0)
+}
