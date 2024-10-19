@@ -3,7 +3,9 @@ package api
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
+	"slices"
 	"strings"
 )
 
@@ -49,17 +51,47 @@ func New(nameTokenPairs []NameToken, client *http.Client) (
 var ErrProviderNotValid = errors.New("API name is not valid")
 
 func ParseProvider(s string) (provider Provider, err error) {
-	switch strings.ToLower(s) {
-	case "cloudflare":
-		return Cloudflare, nil
-	case string(IfConfigCo):
-		return IfConfigCo, nil
-	case "ipinfo":
-		return IPInfo, nil
-	case "ip2location":
-		return IP2Location, nil
-	default:
-		return "", fmt.Errorf(`%w: %q can only be "cloudflare", "ifconfigco", "ip2location" or "ipinfo"`,
-			ErrProviderNotValid, s)
+	possibleProviders := []Provider{
+		Cloudflare,
+		IfConfigCo,
+		IP2Location,
+		IPInfo,
 	}
+	stringToProvider := make(map[string]Provider, len(possibleProviders))
+	for _, provider := range possibleProviders {
+		stringToProvider[string(provider)] = provider
+	}
+	provider, ok := stringToProvider[strings.ToLower(s)]
+	if ok {
+		return provider, nil
+	}
+
+	providerStrings := slices.Sorted(maps.Keys(stringToProvider))
+	for i := range providerStrings {
+		providerStrings[i] = `"` + providerStrings[i] + `"`
+	}
+
+	return "", fmt.Errorf(`%w: %q can only be %s`,
+		ErrProviderNotValid, s, orStrings(providerStrings))
+}
+
+func orStrings(strings []string) (result string) {
+	return joinStrings(strings, "or")
+}
+
+func joinStrings(strings []string, lastJoin string) (result string) {
+	if len(strings) == 0 {
+		return ""
+	}
+
+	result = strings[0]
+	for i := 1; i < len(strings); i++ {
+		if i < len(strings)-1 {
+			result += ", " + strings[i]
+		} else {
+			result += " " + lastJoin + " " + strings[i]
+		}
+	}
+
+	return result
 }
