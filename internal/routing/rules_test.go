@@ -48,13 +48,11 @@ func Test_Routing_addIPRule(t *testing.T) {
 		dst      netip.Prefix
 		table    int
 		priority int
-		dbgMsg   string
 		ruleList ruleListCall
 		ruleAdd  ruleAddCall
 		err      error
 	}{
 		"list error": {
-			dbgMsg: "ip rule add pref 0",
 			ruleList: ruleListCall{
 				err: errDummy,
 			},
@@ -65,7 +63,6 @@ func Test_Routing_addIPRule(t *testing.T) {
 			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
-			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
 					makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
@@ -78,7 +75,6 @@ func Test_Routing_addIPRule(t *testing.T) {
 			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
-			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleAdd: ruleAddCall{
 				expected:  true,
 				ruleToAdd: makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
@@ -91,7 +87,6 @@ func Test_Routing_addIPRule(t *testing.T) {
 			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
-			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
 					makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
@@ -110,9 +105,6 @@ func Test_Routing_addIPRule(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 
-			logger := NewMockLogger(ctrl)
-			logger.EXPECT().Debug(testCase.dbgMsg)
-
 			netLinker := NewMockNetLinker(ctrl)
 			netLinker.EXPECT().RuleList(netlink.FamilyAll).
 				Return(testCase.ruleList.rules, testCase.ruleList.err)
@@ -122,7 +114,6 @@ func Test_Routing_addIPRule(t *testing.T) {
 			}
 
 			r := Routing{
-				logger:    logger,
 				netLinker: netLinker,
 			}
 
@@ -160,13 +151,11 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 		dst      netip.Prefix
 		table    int
 		priority int
-		dbgMsg   string
 		ruleList ruleListCall
 		ruleDel  ruleDelCall
 		err      error
 	}{
 		"list error": {
-			dbgMsg: "ip rule del pref 0",
 			ruleList: ruleListCall{
 				err: errDummy,
 			},
@@ -177,7 +166,6 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
-			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
 					makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
@@ -195,7 +183,6 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
-			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
 					makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
@@ -212,7 +199,6 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			dst:      makeNetipPrefix(2),
 			table:    99,
 			priority: 99,
-			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 99 pref 99",
 			ruleList: ruleListCall{
 				rules: []netlink.Rule{
 					makeIPRule(makeNetipPrefix(2), makeNetipPrefix(2), 99, 99),
@@ -227,9 +213,6 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			t.Parallel()
 			ctrl := gomock.NewController(t)
 
-			logger := NewMockLogger(ctrl)
-			logger.EXPECT().Debug(testCase.dbgMsg)
-
 			netLinker := NewMockNetLinker(ctrl)
 			netLinker.EXPECT().RuleList(netlink.FamilyAll).
 				Return(testCase.ruleList.rules, testCase.ruleList.err)
@@ -239,7 +222,6 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			}
 
 			r := Routing{
-				logger:    logger,
 				netLinker: netLinker,
 			}
 
@@ -252,49 +234,6 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-		})
-	}
-}
-
-func Test_ruleDbgMsg(t *testing.T) {
-	t.Parallel()
-
-	testCases := map[string]struct {
-		add      bool
-		src      netip.Prefix
-		dst      netip.Prefix
-		table    int
-		priority int
-		dbgMsg   string
-	}{
-		"default values": {
-			dbgMsg: "ip rule del pref 0",
-		},
-		"add rule": {
-			add:      true,
-			src:      makeNetipPrefix(1),
-			dst:      makeNetipPrefix(2),
-			table:    100,
-			priority: 101,
-			dbgMsg:   "ip rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 100 pref 101",
-		},
-		"del rule": {
-			src:      makeNetipPrefix(1),
-			dst:      makeNetipPrefix(2),
-			table:    100,
-			priority: 101,
-			dbgMsg:   "ip rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 100 pref 101",
-		},
-	}
-
-	for name, testCase := range testCases {
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			dbgMsg := ruleDbgMsg(testCase.add, testCase.src,
-				testCase.dst, testCase.table, testCase.priority)
-
-			assert.Equal(t, testCase.dbgMsg, dbgMsg)
 		})
 	}
 }

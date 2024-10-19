@@ -8,9 +8,6 @@ import (
 )
 
 func (r *Routing) addIPRule(src, dst netip.Prefix, table, priority int) error {
-	const add = true
-	r.logger.Debug(ruleDbgMsg(add, src, dst, table, priority))
-
 	rule := netlink.NewRule()
 	rule.Src = src
 	rule.Dst = dst
@@ -35,9 +32,6 @@ func (r *Routing) addIPRule(src, dst netip.Prefix, table, priority int) error {
 }
 
 func (r *Routing) deleteIPRule(src, dst netip.Prefix, table, priority int) error {
-	const add = false
-	r.logger.Debug(ruleDbgMsg(add, src, dst, table, priority))
-
 	rule := netlink.NewRule()
 	rule.Src = src
 	rule.Dst = dst
@@ -57,36 +51,6 @@ func (r *Routing) deleteIPRule(src, dst netip.Prefix, table, priority int) error
 		}
 	}
 	return nil
-}
-
-func ruleDbgMsg(add bool, src, dst netip.Prefix,
-	table, priority int,
-) (debugMessage string) {
-	debugMessage = "ip rule"
-
-	if add {
-		debugMessage += " add"
-	} else {
-		debugMessage += " del"
-	}
-
-	if src.IsValid() {
-		debugMessage += " from " + src.String()
-	}
-
-	if dst.IsValid() {
-		debugMessage += " to " + dst.String()
-	}
-
-	if table != 0 {
-		debugMessage += " lookup " + fmt.Sprint(table)
-	}
-
-	if priority != -1 {
-		debugMessage += " pref " + fmt.Sprint(priority)
-	}
-
-	return debugMessage
 }
 
 func rulesAreEqual(a, b netlink.Rule) bool {
