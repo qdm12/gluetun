@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"maps"
 	"net/http"
+	"net/url"
+	"regexp"
 	"slices"
 	"strings"
 )
@@ -17,6 +19,8 @@ const (
 	IPInfo      Provider = "ipinfo"
 	IP2Location Provider = "ip2location"
 )
+
+const echoipPrefix = "echoip#"
 
 type NameToken struct {
 	Name  string
@@ -32,21 +36,27 @@ func New(nameTokenPairs []NameToken, client *http.Client) (
 		if err != nil {
 			return nil, fmt.Errorf("parsing API name: %w", err)
 		}
-		switch provider {
-		case Cloudflare:
+		switch {
+		case provider == Cloudflare:
 			fetchers[i] = newCloudflare(client)
-		case IfConfigCo:
-			fetchers[i] = newIfConfigCo(client)
-		case IPInfo:
+		case provider == IfConfigCo:
+			const ifConfigCoURL = "https://ifconfig.co"
+			fetchers[i] = newEchoip(client, ifConfigCoURL)
+		case provider == IPInfo:
 			fetchers[i] = newIPInfo(client, nameTokenPair.Token)
-		case IP2Location:
+		case provider == IP2Location:
 			fetchers[i] = newIP2Location(client, nameTokenPair.Token)
+		case strings.HasPrefix(string(provider), echoipPrefix):
+			url := strings.TrimPrefix(string(provider), echoipPrefix)
+			fetchers[i] = newEchoip(client, url)
 		default:
 			panic("provider not valid: " + provider)
 		}
 	}
 	return fetchers, nil
 }
+
+var regexEchoipURL = regexp.MustCompile(`^http(s|):\/\/.+$`)
 
 var ErrProviderNotValid = errors.New("API name is not valid")
 
@@ -66,13 +76,49 @@ func ParseProvider(s string) (provider Provider, err error) {
 		return provider, nil
 	}
 
-	providerStrings := slices.Sorted(maps.Keys(stringToProvider))
-	for i := range providerStrings {
-		providerStrings[i] = `"` + providerStrings[i] + `"`
+	customPrefixToURLRegex := map[string]*regexp.Regexp{
+		echoipPrefix: regexEchoipURL,
+	}
+	for prefix, urlRegex := range customPrefixToURLRegex {
+		match, err := checkCustomURL(s, prefix, urlRegex)
+		if !match {
+			continue
+		} else if err != nil {
+			return "", err
+		}
+		return Provider(s), nil
+	}
+
+	providerStrings := make([]string, 0, len(stringToProvider)+len(customPrefixToURLRegex))
+	for _, providerString := range slices.Sorted(maps.Keys(stringToProvider)) {
+		providerStrings = append(providerStrings, `"`+providerString+`"`)
+	}
+	for _, prefix := range slices.Sorted(maps.Keys(customPrefixToURLRegex)) {
+		providerStrings = append(providerStrings, "a custom "+prefix+" url")
 	}
 
 	return "", fmt.Errorf(`%w: %q can only be %s`,
 		ErrProviderNotValid, s, orStrings(providerStrings))
+}
+
+var ErrCustomURLNotValid = errors.New("custom URL is not valid")
+
+func checkCustomURL(s, prefix string, regex *regexp.Regexp) (match bool, err error) {
+	if !strings.HasPrefix(s, prefix) {
+		return false, nil
+	}
+	s = strings.TrimPrefix(s, prefix)
+	_, err = url.Parse(s)
+	if err != nil {
+		return true, fmt.Errorf("%s %w: %w", prefix, ErrCustomURLNotValid, err)
+	}
+
+	if regex.MatchString(s) {
+		return true, nil
+	}
+
+	return true, fmt.Errorf("%s %w: %q does not match regular expression: %s",
+		prefix, ErrCustomURLNotValid, s, regex)
 }
 
 func orStrings(strings []string) (result string) {

@@ -17,12 +17,14 @@ func Test_ParseProvider(t *testing.T) {
 	}{
 		"empty": {
 			errWrapped: ErrProviderNotValid,
-			errMessage: `API name is not valid: "" can only be "cloudflare", "ifconfigco", "ip2location" or "ipinfo"`,
+			errMessage: `API name is not valid: "" can only be ` +
+				`"cloudflare", "ifconfigco", "ip2location", "ipinfo" or a custom echoip# url`,
 		},
 		"invalid": {
 			s:          "xyz",
 			errWrapped: ErrProviderNotValid,
-			errMessage: `API name is not valid: "xyz" can only be "cloudflare", "ifconfigco", "ip2location" or "ipinfo"`,
+			errMessage: `API name is not valid: "xyz" can only be ` +
+				`"cloudflare", "ifconfigco", "ip2location", "ipinfo" or a custom echoip# url`,
 		},
 		"ipinfo": {
 			s:        "ipinfo",
@@ -31,6 +33,22 @@ func Test_ParseProvider(t *testing.T) {
 		"IpInfo": {
 			s:        "IpInfo",
 			provider: IPInfo,
+		},
+		"echoip_url_empty": {
+			s:          "echoip#",
+			errWrapped: ErrCustomURLNotValid,
+			errMessage: `echoip# custom URL is not valid: "" ` +
+				`does not match regular expression: ^http(s|):\/\/.+$`,
+		},
+		"echoip_url_invalid": {
+			s:          "echoip#postgres://localhost:3451",
+			errWrapped: ErrCustomURLNotValid,
+			errMessage: `echoip# custom URL is not valid: "postgres://localhost:3451" ` +
+				`does not match regular expression: ^http(s|):\/\/.+$`,
+		},
+		"echoip_url_valid": {
+			s:        "echoip#http://localhost:3451",
+			provider: Provider("echoip#http://localhost:3451"),
 		},
 	}
 
