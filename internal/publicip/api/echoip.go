@@ -6,39 +6,45 @@ import (
 	"fmt"
 	"net/http"
 	"net/netip"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-type ifConfigCo struct {
+type echoip struct {
 	client *http.Client
+	url    string
 }
 
-func newIfConfigCo(client *http.Client) *ifConfigCo {
-	return &ifConfigCo{
+func newEchoip(client *http.Client, url string) *echoip {
+	return &echoip{
 		client: client,
+		url:    url,
 	}
 }
 
-func (i *ifConfigCo) String() string {
-	return string(IfConfigCo)
+func (e *echoip) String() string {
+	s := e.url
+	s = strings.TrimPrefix(s, "http://")
+	s = strings.TrimPrefix(s, "https://")
+	return s
 }
 
-func (i *ifConfigCo) CanFetchAnyIP() bool {
+func (e *echoip) CanFetchAnyIP() bool {
 	return true
 }
 
-func (i *ifConfigCo) Token() string {
+func (e *echoip) Token() string {
 	return ""
 }
 
 // FetchInfo obtains information on the ip address provided
-// using the ifconfig.co/json API. If the ip is the zero value,
+// using the echoip API at the url given. If the ip is the zero value,
 // the public IP address of the machine is used as the IP.
-func (i *ifConfigCo) FetchInfo(ctx context.Context, ip netip.Addr) (
+func (e *echoip) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result models.PublicIP, err error,
 ) {
-	url := "https://ifconfig.co/json"
+	url := e.url + "/json"
 	if ip.IsValid() {
 		url += "?ip=" + ip.String()
 	}
@@ -48,7 +54,7 @@ func (i *ifConfigCo) FetchInfo(ctx context.Context, ip netip.Addr) (
 		return result, err
 	}
 
-	response, err := i.client.Do(request)
+	response, err := e.client.Do(request)
 	if err != nil {
 		return result, err
 	}
