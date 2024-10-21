@@ -2,14 +2,11 @@ package shadowsocks
 
 import (
 	"context"
-	"fmt"
-	"sync"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
-	shadowsockslib "github.com/qdm12/ss-server/pkg/tcpudp"
 )
 
 type Loop struct {
@@ -17,11 +14,10 @@ type Loop struct {
 	// Other objects
 	logger Logger
 	// Internal channels and locks
-	loopLock      sync.Mutex
-	running       chan models.LoopStatus
-	stop, stopped chan struct{}
-	start         chan struct{}
-	backoffTime   time.Duration
+	refreshing  bool
+	refresh     chan struct{}
+	changed     chan models.LoopStatus
+	backoffTime time.Duration
 
 	runCancel context.CancelFunc
 	runDone   <-chan struct{}
@@ -36,10 +32,8 @@ func NewLoop(settings settings.Shadowsocks, logger Logger) *Loop {
 			settings: settings,
 		},
 		logger:      logger,
-		start:       make(chan struct{}),
-		running:     make(chan models.LoopStatus),
-		stop:        make(chan struct{}),
-		stopped:     make(chan struct{}),
+		refresh:     make(chan struct{}, 1), // capacity of 1 to handle crash auto-restart
+		changed:     make(chan models.LoopStatus),
 		backoffTime: defaultBackoffTime,
 	}
 }
@@ -55,13 +49,6 @@ func (l *Loop) Start(ctx context.Context) (runError <-chan error, err error) {
 
 	<-ready
 
-	if *l.GetSettings().Enabled {
-		_, err = l.SetStatus(ctx, constants.Running)
-		if err != nil {
-			return nil, fmt.Errorf("setting running status: %w", err)
-		}
-	}
-
 	return nil, nil //nolint:nilnil
 }
 
@@ -69,80 +56,61 @@ func (l *Loop) run(ctx context.Context, ready, done chan<- struct{}) {
 	defer close(done)
 	close(ready)
 
-	select {
-	case <-l.start:
-	case <-ctx.Done():
-		return
-	}
-
-	crashed := false
-
 	for ctx.Err() == nil {
+		// What if update and crash at the same time ish?
 		settings := l.GetSettings()
-		server, err := shadowsockslib.NewServer(settings.Settings, l.logger)
-		if err != nil {
-			crashed = true
-			l.logAndWait(ctx, err)
-			continue
-		}
 
-		shadowsocksCtx, shadowsocksCancel := context.WithCancel(ctx)
-
-		waitError := make(chan error)
-		go func() {
-			waitError <- server.Listen(shadowsocksCtx)
-		}()
-		if err != nil {
-			crashed = true
-			shadowsocksCancel()
-			l.logAndWait(ctx, err)
-			continue
-		}
-
-		isStableTimer := time.NewTimer(time.Second)
-
-		stayHere := true
-		for stayHere {
-			select {
-			case <-ctx.Done():
-				shadowsocksCancel()
-				<-waitError
-				close(waitError)
-				return
-			case <-isStableTimer.C:
-				if !crashed {
-					l.running <- constants.Running
-					crashed = false
-				} else {
-					l.backoffTime = defaultBackoffTime
-					l.state.setStatusWithLock(constants.Running)
-				}
-			case <-l.start:
-				l.logger.Info("starting")
-				shadowsocksCancel()
-				<-waitError
-				close(waitError)
-				stayHere = false
-			case <-l.stop:
-				l.logger.Info("stopping")
-				shadowsocksCancel()
-				<-waitError
-				close(waitError)
-				l.stopped <- struct{}{}
-			case err := <-waitError: // unexpected error
-				shadowsocksCancel()
-				close(waitError)
-				if ctx.Err() != nil {
-					return
-				}
-				l.state.setStatusWithLock(constants.Crashed)
-				l.logAndWait(ctx, err)
-				crashed = true
-				stayHere = false
+		var service *service
+		var runError <-chan error
+		var err error
+		if *settings.Enabled {
+			service = newService(settings.Settings, l.logger)
+			runError, err = service.Start(ctx)
+			if err != nil {
+				runErrorCh := make(chan error, 1)
+				runError = runErrorCh
+				runErrorCh <- err
+			} else if l.refreshing {
+				l.changed <- constants.Running
+			} else { // auto-restart due to crash
+				l.state.setStatusWithLock(constants.Running)
+				l.backoffTime = defaultBackoffTime
+			}
+		} else {
+			if l.refreshing {
+				l.changed <- constants.Stopped
+			} else { // auto-restart due to crash
+				l.state.setStatusWithLock(constants.Stopped)
+				l.backoffTime = defaultBackoffTime
 			}
 		}
-		shadowsocksCancel() // repetition for linter only
-		isStableTimer.Stop()
+		l.refreshing = false
+
+		select {
+		case <-l.refresh:
+			l.refreshing = true
+			if service != nil {
+				err = service.Stop()
+				if err != nil {
+					l.logger.Error("stopping service: " + err.Error())
+				}
+			}
+		case err = <-runError:
+			if l.refreshing {
+				l.changed <- constants.Crashed
+			} else {
+				l.state.setStatusWithLock(constants.Crashed)
+			}
+			l.logAndWait(ctx, err)
+		case <-ctx.Done():
+			if service != nil {
+				err = service.Stop()
+				if err != nil {
+					l.logger.Error("stopping service: " + err.Error())
+				}
+			}
+			return
+		}
 	}
 }
 
@@ -162,8 +130,7 @@ func (l *Loop) logAndWait(ctx context.Context, err error) {
 	select {
 	case <-timer.C:
 	case <-ctx.Done():
-		if !timer.Stop() {
-			<-timer.C
-		}
+		_ = timer.Stop()
+	case <-l.refresh: // user-triggered refresh
 	}
 }

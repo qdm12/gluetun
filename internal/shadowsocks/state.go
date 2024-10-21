@@ -1,14 +1,10 @@
 package shadowsocks
 
 import (
-	"context"
-	"errors"
-	"fmt"
 	"reflect"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
@@ -25,64 +21,13 @@ func (s *state) setStatusWithLock(status models.LoopStatus) {
 	s.status = status
 }
 
+// GetStatus returns the status of the loop for informative purposes.
+// In no case it should be used programmatically to avoid any
+// TOCTOU race conditions.
 func (l *Loop) GetStatus() (status models.LoopStatus) {
 	l.state.statusMu.RLock()
 	defer l.state.statusMu.RUnlock()
 	return l.state.status
-}
-
-var ErrInvalidStatus = errors.New("invalid status")
-
-func (l *Loop) SetStatus(ctx context.Context, status models.LoopStatus) (
-	outcome string, err error,
-) {
-	l.state.statusMu.Lock()
-	defer l.state.statusMu.Unlock()
-	existingStatus := l.state.status
-
-	switch status {
-	case constants.Running:
-		switch existingStatus {
-		case constants.Starting, constants.Running, constants.Stopping, constants.Crashed:
-			return fmt.Sprintf("already %s", existingStatus), nil
-		}
-		l.loopLock.Lock()
-		defer l.loopLock.Unlock()
-		l.state.status = constants.Starting
-		l.state.statusMu.Unlock()
-		l.start <- struct{}{}
-
-		newStatus := constants.Starting // for canceled context
-		select {
-		case <-ctx.Done():
-		case newStatus = <-l.running:
-		}
-		l.state.statusMu.Lock()
-		l.state.status = newStatus
-		return newStatus.String(), nil
-	case constants.Stopped:
-		switch existingStatus {
-		case constants.Stopped, constants.Stopping, constants.Starting, constants.Crashed:
-			return fmt.Sprintf("already %s", existingStatus), nil
-		}
-		l.loopLock.Lock()
-		defer l.loopLock.Unlock()
-		l.state.status = constants.Stopping
-		l.state.statusMu.Unlock()
-		l.stop <- struct{}{}
-		newStatus := constants.Stopping // for canceled context
-		select {
-		case <-ctx.Done():
-		case <-l.stopped:
-			newStatus = constants.Stopped
-		}
-		l.state.statusMu.Lock()
-		l.state.status = newStatus
-		return status.String(), nil
-	default:
-		return "", fmt.Errorf("%w: %s: it can only be one of: %s, %s",
-			ErrInvalidStatus, status, constants.Running, constants.Stopped)
-	}
 }
 
 func (l *Loop) GetSettings() (settings settings.Shadowsocks) {
@@ -91,29 +36,19 @@ func (l *Loop) GetSettings() (settings settings.Shadowsocks) {
 	return l.state.settings
 }
 
-func (l *Loop) SetSettings(ctx context.Context, settings settings.Shadowsocks) (
-	outcome string,
-) {
+func (l *Loop) UpdateSettings(updateSettings settings.Shadowsocks) (outcome string) {
 	l.state.settingsMu.Lock()
-	settingsUnchanged := reflect.DeepEqual(settings, l.state.settings)
+	previousSettings := l.state.settings.Copy()
+	l.state.settings.OverrideWith(updateSettings)
+	settingsUnchanged := reflect.DeepEqual(previousSettings, l.state.settings)
+	l.state.settingsMu.Unlock()
 	if settingsUnchanged {
-		l.state.settingsMu.Unlock()
 		return "settings left unchanged"
 	}
-	newEnabled := *settings.Enabled
-	previousEnabled := *l.state.settings.Enabled
-	l.state.settings = settings
-	l.state.settingsMu.Unlock()
-	// Either restart or set changed status
-	switch {
-	case !newEnabled && !previousEnabled:
-	case newEnabled && previousEnabled:
-		_, _ = l.SetStatus(ctx, constants.Stopped)
-		_, _ = l.SetStatus(ctx, constants.Running)
-	case newEnabled && !previousEnabled:
-		_, _ = l.SetStatus(ctx, constants.Running)
-	case !newEnabled && previousEnabled:
-		_, _ = l.SetStatus(ctx, constants.Stopped)
-	}
-	return "settings updated"
+	l.refresh <- struct{}{}
+	newStatus := <-l.changed
+	l.state.statusMu.Lock()
+	l.state.status = newStatus
+	l.state.statusMu.Unlock()
+	return "settings updated (service " + newStatus.String() + ")"
 }

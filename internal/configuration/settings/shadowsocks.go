@@ -22,7 +22,7 @@ func (s Shadowsocks) validate() (err error) {
 	return s.Settings.Validate()
 }
 
-func (s *Shadowsocks) copy() (copied Shadowsocks) {
+func (s *Shadowsocks) Copy() (copied Shadowsocks) {
 	return Shadowsocks{
 		Enabled:  gosettings.CopyPointer(s.Enabled),
 		Settings: s.Settings.Copy(),
@@ -32,7 +32,7 @@ func (s *Shadowsocks) copy() (copied Shadowsocks) {
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
-func (s *Shadowsocks) overrideWith(other Shadowsocks) {
+func (s *Shadowsocks) OverrideWith(other Shadowsocks) {
 	s.Enabled = gosettings.OverrideWithPointer(s.Enabled, other.Enabled)
 	s.Settings.OverrideWith(other.Settings)
 }
