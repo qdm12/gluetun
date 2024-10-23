@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
 func commaJoin(slice []string) string {
@@ -16,7 +17,7 @@ func commaJoin(slice []string) string {
 
 var ErrNoServerFound = errors.New("no server found")
 
-func noServerFoundError(selection settings.ServerSelection) (err error) {
+func noServerFoundError(selection settings.ServerSelection) (err error) { //nolint:gocyclo
 	var messageParts []string
 
 	messageParts = append(messageParts, "VPN "+selection.VPN)
@@ -151,6 +152,15 @@ func noServerFoundError(selection settings.ServerSelection) (err error) {
 	if selection.TargetIP.IsValid() {
 		messageParts = append(messageParts,
 			"target ip address "+selection.TargetIP.String())
+	}
+
+	customPort := *selection.OpenVPN.CustomPort
+	if selection.VPN == vpn.Wireguard {
+		customPort = *selection.Wireguard.EndpointPort
+	}
+	if customPort > 0 {
+		messageParts = append(messageParts,
+			fmt.Sprintf("%s endpoint port %d", selection.VPN, customPort))
 	}
 
 	message := "for " + strings.Join(messageParts, "; ")
