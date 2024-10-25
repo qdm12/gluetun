@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/qdm12/dns/v2/pkg/dot"
 	"github.com/qdm12/dns/v2/pkg/middlewares/filter/mapfilter"
+	"github.com/qdm12/dns/v2/pkg/server"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/dns/state"
@@ -18,7 +18,7 @@ import (
 type Loop struct {
 	statusManager *loopstate.State
 	state         *state.State
-	server        *dot.Server
+	server        *server.Server
 	filter        *mapfilter.Filter
 	resolvConf    string
 	client        *http.Client

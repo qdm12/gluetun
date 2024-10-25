@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/qdm12/dns/v2/pkg/check"
-	"github.com/qdm12/dns/v2/pkg/dot"
 	"github.com/qdm12/dns/v2/pkg/nameserver"
+	"github.com/qdm12/dns/v2/pkg/server"
 )
 
 var errUpdateBlockLists = errors.New("cannot update filter block lists")
@@ -25,12 +25,12 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 		return nil, fmt.Errorf("building DoT settings: %w", err)
 	}
 
-	server, err := dot.NewServer(dotSettings)
+	server, err := server.New(dotSettings)
 	if err != nil {
 		return nil, fmt.Errorf("creating DoT server: %w", err)
 	}
 
-	runError, err = server.Start()
+	runError, err = server.Start(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("starting server: %w", err)
 	}
