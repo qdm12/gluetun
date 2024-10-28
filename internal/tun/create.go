@@ -34,6 +34,9 @@ func (t *Tun) Create(path string) (err error) {
 
 	fd, err := unix.Open(path, 0, 0)
 	if err != nil {
+		if err.Error() == "operation not permitted" {
+			err = fmt.Errorf("%w (did you specify --device /dev/net/tun to your container command?)", err)
+		}
 		return fmt.Errorf("unix opening TUN device file: %w", err)
 	}
 
