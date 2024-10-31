@@ -13,18 +13,29 @@ import (
 )
 
 type WireguardSelection struct {
-	EndpointIP   netip.Addr `json:"endpoint_ip"`
-	EndpointPort *uint16    `json:"endpoint_port"`
-	PublicKey    string     `json:"public_key"`
-	UseIPv6      bool       `json:"use_ipv6"`
+	// EndpointIP is the server endpoint IP address.
+	// It is only used with VPN providers generating Wireguard
+	// configurations specific to each server and user.
+	// To indicate it should not be used, it should be set
+	// to netip.IPv4Unspecified(). It can never be the zero value
+	// in the internal state.
+	EndpointIP netip.Addr `json:"endpoint_ip"`
+	// EndpointPort is a the server port to use for the VPN server.
+	// It is optional for VPN providers IVPN, Mullvad, Surfshark
+	// and Windscribe, and compulsory for the others.
+	// When optional, it can be set to 0 to indicate not use
+	// a custom endpoint port. It cannot be nil in the internal
+	// state.
+	EndpointPort *uint16 `json:"endpoint_port"`
+	// PublicKey is the server public key.
+	// It is only used with VPN providers generating Wireguard
+	// configurations specific to each server and user.
+	PublicKey string `json:"public_key"`
 }
 
+// Validate validates WireguardSelection settings.
+// It should only be ran if the VPN type chosen is Wireguard.
 func (w WireguardSelection) validate(vpnProvider string) (err error) {
-	// Validate IPv6 usage setting
-	if !w.UseIPv6 && w.EndpointIP.Is6() {
-		return fmt.Errorf("%w: IPv6 address is disabled by configuration", ErrWireguardEndpointIPNotSet)
-	}
-
 	// Validate EndpointIP
 	switch vpnProvider {
 	case providers.Airvpn, providers.Fastestvpn, providers.Ivpn,
@@ -100,6 +111,47 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	return nil
 }
 
+func (w *WireguardSelection) copy() (copied WireguardSelection) {
+	return WireguardSelection{
+		EndpointIP:   w.EndpointIP,
+		EndpointPort: gosettings.CopyPointer(w.EndpointPort),
+		PublicKey:    w.PublicKey,
+	}
+}
+
+func (w *WireguardSelection) overrideWith(other WireguardSelection) {
+	w.EndpointIP = gosettings.OverrideWithValidator(w.EndpointIP, other.EndpointIP)
+	w.EndpointPort = gosettings.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
+	w.PublicKey = gosettings.OverrideWithComparable(w.PublicKey, other.PublicKey)
+}
+
+func (w *WireguardSelection) setDefaults() {
+	w.EndpointIP = gosettings.DefaultValidator(w.EndpointIP, netip.IPv4Unspecified())
+	w.EndpointPort = gosettings.DefaultPointer(w.EndpointPort, 0)
+}
+
+func (w WireguardSelection) String() string {
+	return w.toLinesNode().String()
+}
+
+func (w WireguardSelection) toLinesNode() (node *gotree.Node) {
+	node = gotree.New("Wireguard selection settings:")
+
+	if !w.EndpointIP.IsUnspecified() {
+		node.Appendf("Endpoint IP address: %s", w.EndpointIP)
+	}
+
+	if *w.EndpointPort != 0 {
+		node.Appendf("Endpoint port: %d", *w.EndpointPort)
+	}
+
+	if w.PublicKey != "" {
+		node.Appendf("Server public key: %s", w.PublicKey)
+	}
+
+	return node
+}
+
 func (w *WireguardSelection) read(r *reader.Reader) (err error) {
 	w.EndpointIP, err = r.NetipAddr("WIREGUARD_ENDPOINT_IP", reader.RetroKeys("VPN_ENDPOINT_IP"))
 	if err != nil {
@@ -112,12 +164,5 @@ func (w *WireguardSelection) read(r *reader.Reader) (err error) {
 	}
 
 	w.PublicKey = r.String("WIREGUARD_PUBLIC_KEY", reader.ForceLowercase(false))
-
-	// Read the IPv6 usage setting
-	w.UseIPv6, err = r.Bool("WIREGUARD_USE_IPV6_SERVER", reader.RetroKeys("VPN_USE_IPV6_SERVER"))
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
