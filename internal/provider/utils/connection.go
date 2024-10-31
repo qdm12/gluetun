@@ -31,20 +31,29 @@ type Storage interface {
 		servers []models.Server, err error)
 }
 
+type VPNSettings struct {
+	IPv6Server *bool
+}
+
+// Read method to populate the VPNSettings from the reader
+func (v *VPNSettings) read(reader *reader.Reader) (err error) {
+	v.IPv6Server, err = reader.BoolPtr("VPN_IPV6_SERVER")
+	return err
+}
+
 func GetConnection(provider string,
 	storage Storage,
 	selection settings.ServerSelection,
 	defaults ConnectionDefaults,
 	ipv6Supported bool,
-	randSource rand.Source) (
+	randSource rand.Source,
+	reader *reader.Reader) (
 	connection models.Connection, err error,
 ) {
-	// Use reader.BoolPtr to check the VPN_IPV6_SERVER environment variable
-	vpnIPv6ServerPtr := reader.BoolPtr("VPN_IPV6_SERVER")
-	useIPv6 := ipv6Supported // Default to system IPv6 support
-
-	if vpnIPv6ServerPtr != nil && !*vpnIPv6ServerPtr {
-		useIPv6 = false // Disable IPv6 if the environment variable is set to "off"
+	// Create an instance of VPNSettings and read settings
+	var vpnSettings VPNSettings
+	if err := vpnSettings.read(reader); err != nil {
+		return connection, fmt.Errorf("reading VPN settings: %w", err)
 	}
 
 	servers, err := storage.FilterServers(provider, selection)
@@ -59,15 +68,13 @@ func GetConnection(provider string,
 	connections := make([]models.Connection, 0, len(servers))
 	for _, server := range servers {
 		for _, ip := range server.IPs {
-			// Skip IPv6 addresses if IPv6 is unsupported or explicitly disabled
-			if !useIPv6 && ip.Is6() {
+			// Skip IPv6 if unsupported or if VPN_IPV6_SERVER is false
+			if !ipv6Supported || (vpnSettings.IPv6Server != nil && !*vpnSettings.IPv6Server && ip.Is6()) {
 				continue
 			}
 
 			hostname := server.Hostname
 			if selection.VPN == vpn.OpenVPN && server.OvpnX509 != "" {
-				// For Windscribe where hostname and
-				// OpenVPN x509 are not the same.
 				hostname = server.OvpnX509
 			}
 
