@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gosettings/reader"
 )
 
 type ConnectionDefaults struct {
@@ -38,6 +39,14 @@ func GetConnection(provider string,
 	randSource rand.Source) (
 	connection models.Connection, err error,
 ) {
+	// Use reader.BoolPtr to check the VPN_IPV6_SERVER environment variable
+	vpnIPv6ServerPtr := reader.BoolPtr("VPN_IPV6_SERVER")
+	useIPv6 := ipv6Supported // Default to system IPv6 support
+
+	if vpnIPv6ServerPtr != nil && !*vpnIPv6ServerPtr {
+		useIPv6 = false // Disable IPv6 if the environment variable is set to "off"
+	}
+
 	servers, err := storage.FilterServers(provider, selection)
 	if err != nil {
 		return connection, fmt.Errorf("filtering servers: %w", err)
@@ -50,7 +59,8 @@ func GetConnection(provider string,
 	connections := make([]models.Connection, 0, len(servers))
 	for _, server := range servers {
 		for _, ip := range server.IPs {
-			if !ipv6Supported && ip.Is6() {
+			// Skip IPv6 addresses if IPv6 is unsupported or explicitly disabled
+			if !useIPv6 && ip.Is6() {
 				continue
 			}
 
