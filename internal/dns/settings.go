@@ -29,7 +29,6 @@ func buildDoTSettings(settings settings.DNS,
 	serverSettings.Logger = logger
 
 	var dotSettings dot.Settings
-	dotSettings.Warner = logger
 	providersData := provider.NewProviders()
 	dotSettings.UpstreamResolvers = make([]provider.Provider, len(settings.DoT.Providers))
 	for i := range settings.DoT.Providers {
