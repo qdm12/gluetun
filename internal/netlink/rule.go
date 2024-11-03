@@ -77,7 +77,18 @@ func netlinkRuleToRule(netlinkRule netlink.Rule) (rule Rule) {
 }
 
 func ruleDbgMsg(add bool, rule Rule) (debugMessage string) {
-	debugMessage = "ip rule"
+	debugMessage = "ip"
+
+	switch rule.Family {
+	case FamilyV4:
+		debugMessage += " -f inet"
+	case FamilyV6:
+		debugMessage += " -f inet6"
+	default:
+		debugMessage += " -f " + fmt.Sprint(rule.Family)
+	}
+
+	debugMessage += " rule"
 
 	if add {
 		debugMessage += " add"
