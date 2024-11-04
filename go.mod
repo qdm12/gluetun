@@ -9,7 +9,7 @@ require (
 	github.com/klauspost/compress v1.17.9
 	github.com/klauspost/pgzip v1.2.6
 	github.com/pelletier/go-toml/v2 v2.2.2
-	github.com/qdm12/dns/v2 v2.0.0-rc8
+	github.com/qdm12/dns/v2 v2.0.0-rc8.0.20241104163901-111c6a1be760
 	github.com/qdm12/gosettings v0.4.3
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.2.0
