@@ -2,9 +2,11 @@ package healthcheck
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"net"
+	"strings"
 	"time"
 )
 
@@ -77,6 +79,22 @@ func (s *Server) healthCheck(ctx context.Context) (err error) {
 	connection, err := s.dialer.DialContext(ctx, dialNetwork, address)
 	if err != nil {
 		return fmt.Errorf("dialing: %w", err)
+	}
+
+	if strings.HasSuffix(address, ":443") {
+		host, _, err := net.SplitHostPort(address)
+		if err != nil {
+			return fmt.Errorf("splitting host and port: %w", err)
+		}
+		tlsConfig := &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			ServerName: host,
+		}
+		tlsConnection := tls.Client(connection, tlsConfig)
+		err = tlsConnection.HandshakeContext(ctx)
+		if err != nil {
+			return fmt.Errorf("running TLS handshake: %w", err)
+		}
 	}
 
 	err = connection.Close()
