@@ -215,12 +215,12 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 
 	addressesNode := node.Appendf("Interface addresses:")
 	for _, address := range w.Addresses {
-		addressesNode.Append(address.String())
+		addressesNode.Appendf(address.String())
 	}
 
 	allowedIPsNode := node.Appendf("Allowed IPs:")
 	for _, allowedIP := range w.AllowedIPs {
-		allowedIPsNode.Append(allowedIP.String())
+		allowedIPsNode.Appendf(allowedIP.String())
 	}
 
 	if *w.PersistentKeepaliveInterval > 0 {

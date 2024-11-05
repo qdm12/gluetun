@@ -112,15 +112,15 @@ func (p PublicIP) toLinesNode() (node *gotree.Node) {
 	if p.APIs[0].Token != "" {
 		baseAPIString += " (token " + gosettings.ObfuscateKey(p.APIs[0].Token) + ")"
 	}
-	node.Append(baseAPIString)
+	node.Appendf(baseAPIString)
 	if len(p.APIs) > 1 {
-		backupAPIsNode := node.Append("Public IP data backup APIs:")
+		backupAPIsNode := node.Appendf("Public IP data backup APIs:")
 		for i := 1; i < len(p.APIs); i++ {
 			message := p.APIs[i].Name
 			if p.APIs[i].Token != "" {
 				message += " (token " + gosettings.ObfuscateKey(p.APIs[i].Token) + ")"
 			}
-			backupAPIsNode.Append(message)
+			backupAPIsNode.Appendf(message)
 		}
 	}
 

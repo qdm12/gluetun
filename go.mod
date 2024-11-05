@@ -1,6 +1,6 @@
 module github.com/qdm12/gluetun
 
-go 1.23
+go 1.22.0
 
 require (
 	github.com/breml/rootcerts v0.2.18
@@ -9,11 +9,11 @@ require (
 	github.com/klauspost/compress v1.17.9
 	github.com/klauspost/pgzip v1.2.6
 	github.com/pelletier/go-toml/v2 v2.2.2
-	github.com/qdm12/dns/v2 v2.0.0-rc8.0.20241104163901-111c6a1be760
+	github.com/qdm12/dns/v2 v2.0.0-rc6.0.20241105090509-18093eb3b447
 	github.com/qdm12/gosettings v0.4.3
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.2.0
-	github.com/qdm12/gotree v0.3.0
+	github.com/qdm12/gotree v0.2.0
 	github.com/qdm12/log v0.1.0
 	github.com/qdm12/ss-server v0.6.0
 	github.com/stretchr/testify v1.9.0
