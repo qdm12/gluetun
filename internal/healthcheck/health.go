@@ -53,7 +53,7 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 			select {
 			case <-s.vpn.healthyTimer.C:
 				timeoutIndex = 0 // retry next with the smallest timeout
-				s.onUnhealthyVPN(ctx)
+				s.onUnhealthyVPN(ctx, err.Error())
 			default:
 			}
 		case previousErr == nil && err == nil: // Nth success
