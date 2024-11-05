@@ -39,9 +39,12 @@ type Wireguard struct {
 	PersistentKeepaliveInterval *time.Duration `json:"persistent_keep_alive_interval"`
 	// Maximum Transmission Unit (MTU) of the Wireguard interface.
 	// It cannot be zero in the internal state, and defaults to
-	// 1400. Note it is not the wireguard-go MTU default of 1420
+	// 1320. Note it is not the wireguard-go MTU default of 1420
 	// because this impacts bandwidth a lot on some VPN providers,
 	// see https://github.com/qdm12/gluetun/issues/1650.
+	// It has been lowered to 1320 following quite a bit of
+	// investigation in the issue:
+	// https://github.com/qdm12/gluetun/issues/2533.
 	MTU uint16 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
@@ -191,7 +194,7 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs, defaultAllowedIPs)
 	w.PersistentKeepaliveInterval = gosettings.DefaultPointer(w.PersistentKeepaliveInterval, 0)
 	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
-	const defaultMTU = 1400
+	const defaultMTU = 1320
 	w.MTU = gosettings.DefaultComparable(w.MTU, defaultMTU)
 	w.Implementation = gosettings.DefaultComparable(w.Implementation, "auto")
 }
