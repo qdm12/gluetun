@@ -10,10 +10,12 @@ import (
 func (p *Provider) OpenVPNConfig(connection models.Connection,
 	settings settings.OpenVPN, ipv6Supported bool,
 ) (lines []string) {
+	//nolint:mnd
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,
 		AuthUserPass:  false,
-		Ping:          5, //nolint:mnd
+		MssFix:        1320,
+		Ping:          5,
 		RenegDisabled: true,
 		Ciphers:       []string{openvpn.AES256cbc},
 		Auth:          openvpn.SHA512,

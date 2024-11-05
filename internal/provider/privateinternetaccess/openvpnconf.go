@@ -11,10 +11,12 @@ import (
 func (p *Provider) OpenVPNConfig(connection models.Connection,
 	settings settings.OpenVPN, ipv6Supported bool,
 ) (lines []string) {
+	//nolint:mnd
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,
 		RenegDisabled: true,
 		AuthUserPass:  true,
+		MssFix:        1320,
 	}
 
 	const (

@@ -16,6 +16,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 		Ciphers: []string{
 			openvpn.AES256cbc,
 		},
+		MssFix:         1320,
 		Ping:           5,
 		RemoteCertTLS:  true,
 		VerifyX509Type: "name-prefix",

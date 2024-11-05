@@ -14,6 +14,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,
 		AuthUserPass:  true,
+		MssFix:        1320,
 		Ping:          10,
 		// note DES-CBC is not added since it's quite unsecure
 		Ciphers: []string{openvpn.AES256cbc, openvpn.AES128cbc},

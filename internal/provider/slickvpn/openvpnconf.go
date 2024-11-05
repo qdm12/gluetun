@@ -12,6 +12,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 ) (lines []string) {
 	const pingSeconds = 10
 	const bufSize = 393216
+	const mssFix = 1320
 	providerSettings := utils.OpenVPNProviderSettings{
 		RemoteCertTLS: true,
 		AuthUserPass:  true,
@@ -19,6 +20,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 			openvpn.AES256gcm,
 			openvpn.AES256cbc,
 		},
+		MssFix: mssFix,
 		Ping:   pingSeconds,
 		SndBuf: bufSize,
 		RcvBuf: bufSize,
