@@ -29,7 +29,6 @@ linters:
     - asciicheck
     - bidichk
     - bodyclose
-    - canonicalheader
     - containedctx
     - copyloopvar
     - decorder
