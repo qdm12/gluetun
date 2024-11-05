@@ -66,6 +66,8 @@ func GetConnection(provider string,
 
 			hostname := server.Hostname
 			if selection.VPN == vpn.OpenVPN && server.OvpnX509 != "" {
+				// For Windscribe where hostname and
+				// OpenVPN x509 are not the same.
 				hostname = server.OvpnX509
 			}
 
