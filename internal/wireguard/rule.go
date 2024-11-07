@@ -16,7 +16,7 @@ func (w *Wireguard) addRule(rulePriority int, firewallMark uint32,
 	rule.Table = int(firewallMark)
 	rule.Family = family
 	if err := w.netlink.RuleAdd(rule); err != nil {
-		return nil, fmt.Errorf("adding rule %s: %w", rule, err)
+		return nil, fmt.Errorf("adding %s: %w", rule, err)
 	}
 
 	cleanup = func() error {

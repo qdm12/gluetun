@@ -80,7 +80,7 @@ func Test_Routing_addIPRule(t *testing.T) {
 				ruleToAdd: makeIPRule(makeNetipPrefix(1), makeNetipPrefix(2), 99, 99),
 				err:       errDummy,
 			},
-			err: errors.New("adding rule ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
+			err: errors.New("adding ip rule 99: from 1.1.1.0/24 to 2.2.2.0/24 table 99: dummy error"),
 		},
 		"add rule success": {
 			src:      makeNetipPrefix(1),
