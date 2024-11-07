@@ -92,7 +92,7 @@ func testIptablesPath(ctx context.Context, path string,
 	// Set policy as the existing policy so no mutation is done.
 	// This is an extra check for some buggy kernels where setting the policy
 	// does not work.
-	cmd = exec.CommandContext(ctx, path, "-L", "INPUT")
+	cmd = exec.CommandContext(ctx, path, "-nL", "INPUT")
 	output, err = runner.Run(cmd)
 	if err != nil {
 		unsupportedMessage = fmt.Sprintf("%s (%s)", output, err)
