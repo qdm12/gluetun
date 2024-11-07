@@ -118,5 +118,5 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 		_ = nilCleanup() // in case it succeeds
 	}
 	require.Error(t, err)
-	assert.EqualError(t, err, "adding rule ip rule 10000: from all to all table 999: file exists")
+	assert.EqualError(t, err, "adding ip rule 10000: from all to all table 999: file exists")
 }

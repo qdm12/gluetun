@@ -26,7 +26,7 @@ func (r *Routing) addIPRule(src, dst netip.Prefix, table, priority int) error {
 	}
 
 	if err := r.netLinker.RuleAdd(rule); err != nil {
-		return fmt.Errorf("adding rule %s: %w", rule, err)
+		return fmt.Errorf("adding %s: %w", rule, err)
 	}
 	return nil
 }
