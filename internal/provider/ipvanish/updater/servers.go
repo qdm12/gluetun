@@ -16,7 +16,7 @@ import (
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
-	const url = "https://configs.ipvanish.com/configs/configs.zip"
+	const url = "https://configs.ipvanish.com/openvpn/v2.6.0-0/configs.zip"
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)
 	if err != nil {
 		return nil, err
