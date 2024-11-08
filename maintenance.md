@@ -1,6 +1,8 @@
 # Maintenance
 
-- Rename `UNBLOCK` to `DNS_HOSTNAMES_UNBLOCKED`
+<https://github.com/macvk/dnsleaktest/blob/master/dnsleaktest.go>
+
+- Rename `UNBLOCK` to `DNS_ALLOWED_HOSTNAMES`
 - Change `Run` methods to `Start`+`Stop`, returning channels rather than injecting them
 - Go 1.18
   - gofumpt

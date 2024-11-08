@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
+	"time"
 )
 
 type Parallel struct {
-	repeatResolver *Repeat
+	lastRequestTime time.Time
+	repeatResolver  *Repeat
 }
 
 func NewParallelResolver(resolverAddress string) *Parallel {

@@ -20,7 +20,7 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 
 	settings := l.GetSettings()
 
-	dotSettings, err := buildDoTSettings(settings, l.filter, l.logger)
+	dotSettings, err := buildServerSettings(settings, l.filter, l.logger)
 	if err != nil {
 		return nil, fmt.Errorf("building DoT settings: %w", err)
 	}

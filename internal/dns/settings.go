@@ -22,14 +22,15 @@ func (l *Loop) SetSettings(ctx context.Context, settings settings.DNS) (
 	return l.state.SetSettings(ctx, settings)
 }
 
-func buildDoTSettings(settings settings.DNS,
+func buildServerSettings(settings settings.DNS,
 	filter *mapfilter.Filter, logger Logger) (
 	serverSettings server.Settings, err error,
 ) {
 	serverSettings.Logger = logger
+	providersData := provider.NewProviders()
 
 	var dotSettings dot.Settings
-	providersData := provider.NewProviders()
+	dotSettings.Warner = logger
 	dotSettings.UpstreamResolvers = make([]provider.Provider, len(settings.DoT.Providers))
 	for i := range settings.DoT.Providers {
 		var err error
