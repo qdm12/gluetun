@@ -9,15 +9,16 @@ import (
 )
 
 type Server struct {
-	logger  Logger
-	handler *handler
-	dialer  *net.Dialer
-	config  settings.Health
-	vpn     vpnHealth
+	logger            Logger
+	handler           *handler
+	dialer            *net.Dialer
+	config            settings.Health
+	vpn               vpnHealth
+	exitOnceConnected bool
 }
 
 func NewServer(config settings.Health,
-	logger Logger, vpnLoop StatusApplier,
+	logger Logger, vpnLoop StatusApplier, exitOnceConnected bool,
 ) *Server {
 	return &Server{
 		logger:  logger,

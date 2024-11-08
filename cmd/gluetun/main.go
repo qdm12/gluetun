@@ -145,6 +145,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	tun Tun, netLinker netLinker, cmder RunStarter,
 	cli clier,
 ) error {
+	var exitOnceConnected bool
 	if len(args) > 1 { // cli operation
 		switch args[1] {
 		case "healthcheck":
@@ -159,6 +160,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			return cli.FormatServers(args[2:])
 		case "genkey":
 			return cli.GenKey(args[2:])
+		case "exit-once-connected":
+			exitOnceConnected = true
 		default:
 			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
@@ -477,7 +480,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	controlGroupHandler.Add(httpServerHandler)
 
 	healthLogger := logger.New(log.SetComponent("healthcheck"))
-	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, vpnLooper)
+	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, vpnLooper,
+		exitOnceConnected)
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)

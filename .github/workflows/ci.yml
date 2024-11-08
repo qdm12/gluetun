@@ -66,6 +66,33 @@ jobs:
       - name: Build final image
         run: docker build -t final-image .
 
+      - name: Run Wireguard
+        if: |
+          github.repository == 'qdm12/gluetun' &&
+          (
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+          )
+        run: |
+          docker run -it --rm --cap-add=NET_ADMIN -e VPNSP=mullvad -e VPN_TYPE=wireguard \
+          -e WIREGUARD_PRIVATE_KEY=${{ secrets.WIREGUARD_PRIVATE_KEY }} \
+          -e WIREGUARD_ADDRESS=${{ secrets.WIREGUARD_ADDRESS }} \
+          final-image \
+          exit-once-connected
+
+      - name: Run OpenVPN
+        if: |
+          github.repository == 'qdm12/gluetun' &&
+          (
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+          )
+        run: |
+          docker run -it --rm --cap-add=NET_ADMIN -e VPNSP=mullvad -e VPN_TYPE=openvpn \
+          -e OPENVPN_PASSWORD=${{ secrets.OPENVPN_PASSWORD }} \
+          final-image \
+          exit-once-connected
+
   codeql:
     runs-on: ubuntu-latest
     permissions:
