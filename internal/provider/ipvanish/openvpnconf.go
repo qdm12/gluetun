@@ -14,6 +14,7 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 	providerSettings := utils.OpenVPNProviderSettings{
 		AuthUserPass: true,
 		Ciphers: []string{
+			openvpn.AES256gcm,
 			openvpn.AES256cbc,
 		},
 		Auth:           openvpn.SHA256,
