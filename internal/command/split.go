@@ -63,7 +63,8 @@ func Split(command string) (words []string, err error) {
 
 // WARNING: buffer must be cleared before calling this function.
 func splitWord(input string, startIndex int, buffer *bytes.Buffer) (
-	word string, newStartIndex int, err error) {
+	word string, newStartIndex int, err error,
+) {
 	cursor := startIndex
 	for cursor < len(input) {
 		character, runeLength := utf8.DecodeRuneInString(input[cursor:])
@@ -94,7 +95,8 @@ func splitWord(input string, startIndex int, buffer *bytes.Buffer) (
 }
 
 func handleDoubleQuoted(input string, startIndex int, buffer *bytes.Buffer) (
-	word string, newStartIndex int, err error) {
+	word string, newStartIndex int, err error,
+) {
 	cursor := startIndex
 	for cursor < len(input) {
 		nextCharacter, nextRuneLength := utf8.DecodeRuneInString(input[cursor:])
@@ -121,7 +123,8 @@ func handleDoubleQuoted(input string, startIndex int, buffer *bytes.Buffer) (
 }
 
 func handleSingleQuoted(input string, startIndex int, buffer *bytes.Buffer) (
-	word string, newStartIndex int, err error) {
+	word string, newStartIndex int, err error,
+) {
 	closingQuoteIndex := strings.IndexRune(input[startIndex:], '\'')
 	if closingQuoteIndex == -1 {
 		return "", 0, fmt.Errorf("%w", ErrSingleQuoteUnterminated)
@@ -133,7 +136,8 @@ func handleSingleQuoted(input string, startIndex int, buffer *bytes.Buffer) (
 }
 
 func handleEscaped(input string, startIndex int, buffer *bytes.Buffer) (
-	word string, newStartIndex int, err error) {
+	word string, newStartIndex int, err error,
+) {
 	if input[startIndex:] == "" {
 		return "", 0, fmt.Errorf("%w", ErrEscapeUnterminated)
 	}
