@@ -33,6 +33,10 @@ type PortForwarding struct {
 	// It can be the empty string to indicate not to run a command.
 	// It cannot be nil in the internal state.
 	UpCommand *string `json:"up_command"`
+	// DownCommand is the command to use after the port forwarding goes down.
+	// It can be the empty string to indicate to NOT run a command.
+	// It cannot be nil in the internal state.
+	DownCommand *string `json:"down_command"`
 	// ListeningPort is the port traffic would be redirected to from the
 	// forwarded port. The redirection is disabled if it is set to 0, which
 	// is its default as well.
@@ -89,6 +93,7 @@ func (p *PortForwarding) Copy() (copied PortForwarding) {
 		Provider:      gosettings.CopyPointer(p.Provider),
 		Filepath:      gosettings.CopyPointer(p.Filepath),
 		UpCommand:     gosettings.CopyPointer(p.UpCommand),
+		DownCommand:   gosettings.CopyPointer(p.DownCommand),
 		ListeningPort: gosettings.CopyPointer(p.ListeningPort),
 		Username:      p.Username,
 		Password:      p.Password,
@@ -100,6 +105,7 @@ func (p *PortForwarding) OverrideWith(other PortForwarding) {
 	p.Provider = gosettings.OverrideWithPointer(p.Provider, other.Provider)
 	p.Filepath = gosettings.OverrideWithPointer(p.Filepath, other.Filepath)
 	p.UpCommand = gosettings.OverrideWithPointer(p.UpCommand, other.UpCommand)
+	p.DownCommand = gosettings.OverrideWithPointer(p.DownCommand, other.DownCommand)
 	p.ListeningPort = gosettings.OverrideWithPointer(p.ListeningPort, other.ListeningPort)
 	p.Username = gosettings.OverrideWithComparable(p.Username, other.Username)
 	p.Password = gosettings.OverrideWithComparable(p.Password, other.Password)
@@ -110,6 +116,7 @@ func (p *PortForwarding) setDefaults() {
 	p.Provider = gosettings.DefaultPointer(p.Provider, "")
 	p.Filepath = gosettings.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
 	p.UpCommand = gosettings.DefaultPointer(p.UpCommand, "")
+	p.DownCommand = gosettings.DefaultPointer(p.DownCommand, "")
 	p.ListeningPort = gosettings.DefaultPointer(p.ListeningPort, 0)
 }
 
@@ -142,9 +149,11 @@ func (p PortForwarding) toLinesNode() (node *gotree.Node) {
 	}
 	node.Appendf("Forwarded port file path: %s", filepath)
 
-	command := *p.UpCommand
-	if command != "" {
-		node.Appendf("Forwarded port command: %s", command)
+	if *p.UpCommand != "" {
+		node.Appendf("Forwarded port up command: %s", *p.UpCommand)
+	}
+	if *p.DownCommand != "" {
+		node.Appendf("Forwarded port down command: %s", *p.DownCommand)
 	}
 
 	if p.Username != "" {
@@ -176,6 +185,9 @@ func (p *PortForwarding) read(r *reader.Reader) (err error) {
 		))
 
 	p.UpCommand = r.Get("VPN_PORT_FORWARDING_UP_COMMAND",
+		reader.ForceLowercase(false))
+
+	p.DownCommand = r.Get("VPN_PORT_FORWARDING_DOWN_COMMAND",
 		reader.ForceLowercase(false))
 
 	p.ListeningPort, err = r.Uint16Ptr("VPN_PORT_FORWARDING_LISTENING_PORT")

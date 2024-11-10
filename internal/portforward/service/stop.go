@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 )
 
 func (s *Service) Stop() (err error) {
@@ -29,6 +30,17 @@ func (s *Service) Stop() (err error) {
 func (s *Service) cleanup() (err error) {
 	s.portMutex.Lock()
 	defer s.portMutex.Unlock()
+
+	if s.settings.DownCommand != "" {
+		const downTimeout = 60 * time.Second
+		ctx, cancel := context.WithTimeout(context.Background(), downTimeout)
+		defer cancel()
+		err = runCommand(ctx, s.cmder, s.logger, s.settings.DownCommand, s.ports)
+		if err != nil {
+			err = fmt.Errorf("running down command: %w", err)
+			s.logger.Error(err.Error())
+		}
+	}
 
 	for _, port := range s.ports {
 		err = s.portAllower.RemoveAllowedPort(context.Background(), port)

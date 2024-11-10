@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/command"
 )
 
-func runUpCommand(ctx context.Context, cmder Cmder, logger Logger,
+func runCommand(ctx context.Context, cmder Cmder, logger Logger,
 	commandTemplate string, ports []uint16,
 ) (err error) {
 	portStrings := make([]string, len(ports))

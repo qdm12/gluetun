@@ -74,7 +74,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 	s.portMutex.Unlock()
 
 	if s.settings.UpCommand != "" {
-		err = runUpCommand(ctx, s.cmder, s.logger, s.settings.UpCommand, ports)
+		err = runCommand(ctx, s.cmder, s.logger, s.settings.UpCommand, ports)
 		if err != nil {
 			err = fmt.Errorf("running up command: %w", err)
 			s.logger.Error(err.Error())

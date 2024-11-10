@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Service_runUpCommand(t *testing.T) {
+func Test_Service_runCommand(t *testing.T) {
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 
@@ -22,7 +22,7 @@ func Test_Service_runUpCommand(t *testing.T) {
 	logger := NewMockLogger(ctrl)
 	logger.EXPECT().Info("1234,5678")
 
-	err := runUpCommand(ctx, cmder, logger, commandTemplate, ports)
+	err := runCommand(ctx, cmder, logger, commandTemplate, ports)
 
 	require.NoError(t, err)
 }
