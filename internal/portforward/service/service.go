@@ -19,6 +19,7 @@ type Service struct {
 	client      *http.Client
 	portAllower PortAllower
 	logger      Logger
+	cmder       Cmder
 	// Internal channels and locks
 	startStopMutex sync.Mutex
 	keepPortCancel context.CancelFunc
@@ -26,7 +27,7 @@ type Service struct {
 }
 
 func New(settings Settings, routing Routing, client *http.Client,
-	portAllower PortAllower, logger Logger, puid, pgid int,
+	portAllower PortAllower, logger Logger, cmder Cmder, puid, pgid int,
 ) *Service {
 	return &Service{
 		// Fixed parameters
@@ -38,6 +39,7 @@ func New(settings Settings, routing Routing, client *http.Client,
 		client:      client,
 		portAllower: portAllower,
 		logger:      logger,
+		cmder:       cmder,
 	}
 }
 
