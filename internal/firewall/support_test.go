@@ -24,7 +24,7 @@ func newDeleteTestRuleMatcher(path string) *cmdMatcher {
 
 func newListInputRulesMatcher(path string) *cmdMatcher {
 	return newCmdMatcher(path,
-		"^-L$", "^INPUT$")
+		"^-nL$", "^INPUT$")
 }
 
 func newSetPolicyMatcher(path, inputPolicy string) *cmdMatcher { //nolint:unparam
