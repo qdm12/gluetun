@@ -242,10 +242,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	ipv6Supported, err := netLinker.IsIPv6Supported()
+	ipv6SupportLevel, err := netLinker.FindIPv6SupportLevel()
 	if err != nil {
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
+	ipv6Supported := ipv6SupportLevel == netlink.IPv6Supported ||
+		ipv6SupportLevel == netlink.IPv6Internet
 
 	err = allSettings.Validate(storage, ipv6Supported, logger)
 	if err != nil {
@@ -423,7 +425,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(), openvpnFileExtractor)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
-	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
+	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6SupportLevel, allSettings.Firewall.VPNInputPorts,
 		providers, storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
 		cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
@@ -467,7 +469,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		logger.New(log.SetComponent("http server")),
 		allSettings.ControlServer.AuthFilePath,
 		buildInfo, vpnLooper, portForwardLooper, dnsLooper, updaterLooper, publicIPLooper,
-		storage, ipv6Supported)
+		storage, ipv6SupportLevel.IsSupported())
 	if err != nil {
 		return fmt.Errorf("setting up control server: %w", err)
 	}
@@ -549,7 +551,7 @@ type netLinker interface {
 	Ruler
 	Linker
 	IsWireguardSupported() (ok bool, err error)
-	IsIPv6Supported() (ok bool, err error)
+	FindIPv6SupportLevel() (level netlink.IPv6SupportLevel, err error)
 	PatchLoggerLevel(level log.Level)
 }
 
