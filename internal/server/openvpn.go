@@ -156,11 +156,6 @@ func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if len(data.Ports) == 0 {
-		http.Error(w, "no port specified", http.StatusBadRequest)
-		return
-	}
-
 	if err := h.pf.SetPortsForwarded(data.Ports); err != nil {
 		h.warner.Warn(fmt.Sprintf("failed setting forwarded ports: %s", err))
 		http.Error(w, "failed setting forwarded ports", http.StatusInternalServerError)
