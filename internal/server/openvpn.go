@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -150,7 +151,8 @@ func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&data); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		h.warner.Warn(fmt.Sprintf("failed setting forwarded ports: %s", err))
+		http.Error(w, "failed setting forwarded ports", http.StatusBadRequest)
 		return
 	}
 
@@ -160,7 +162,8 @@ func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request
 	}
 
 	if err := h.pf.SetPortsForwarded(data.Ports); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.warner.Warn(fmt.Sprintf("failed setting forwarded ports: %s", err))
+		http.Error(w, "failed setting forwarded ports", http.StatusInternalServerError)
 		return
 	}
 
