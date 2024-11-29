@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"sync"
 )
@@ -58,8 +59,7 @@ func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err er
 			for j := range i {
 				_ = s.portAllower.SetAllowedPort(ctx, s.ports[j], s.settings.Interface)
 			}
-			s.logger.Error(err.Error())
-			return err
+			return fmt.Errorf("removing allowed port: %w", err)
 		}
 	}
 
@@ -72,8 +72,7 @@ func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err er
 			for _, port := range s.ports {
 				_ = s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
 			}
-			s.logger.Error(err.Error())
-			return err
+			return fmt.Errorf("setting allowed port: %w", err)
 		}
 	}
 
