@@ -173,7 +173,6 @@ func (l *Loop) SetPortsForwarded(ports []uint16) (err error) {
 
 	err = l.service.SetPortsForwarded(l.runCtx, ports)
 	if err != nil {
-		l.logger.Error(err.Error())
 		return err
 	}
 
