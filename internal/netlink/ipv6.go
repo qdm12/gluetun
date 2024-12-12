@@ -1,7 +1,11 @@
 package netlink
 
 import (
+	"context"
 	"fmt"
+	"net"
+	"net/netip"
+	"time"
 )
 
 type IPv6SupportLevel uint8
@@ -21,7 +25,9 @@ func (i IPv6SupportLevel) IsSupported() bool {
 	return i == IPv6Supported || i == IPv6Internet
 }
 
-func (n *NetLink) FindIPv6SupportLevel() (level IPv6SupportLevel, err error) {
+func (n *NetLink) FindIPv6SupportLevel(ctx context.Context,
+	checkAddress netip.AddrPort, firewall Firewall,
+) (level IPv6SupportLevel, err error) {
 	routes, err := n.RouteList(FamilyV6)
 	if err != nil {
 		return IPv6Unsupported, fmt.Errorf("listing IPv6 routes: %w", err)
@@ -44,7 +50,14 @@ func (n *NetLink) FindIPv6SupportLevel() (level IPv6SupportLevel, err error) {
 		case sourceIsIPv4 && destinationIsIPv4,
 			destinationIsIPv6 && route.Dst.Addr().IsLoopback():
 		case route.Dst.Addr().IsUnspecified(): // default ipv6 route
-			n.debugLogger.Debugf("IPv6 internet access is enabled on link %s", link.Name)
+			n.debugLogger.Debugf("IPv6 default route found on link %s", link.Name)
+			err = dialAddrThroughFirewall(ctx, link.Name, checkAddress, firewall)
+			if err != nil {
+				n.debugLogger.Debugf("IPv6 query failed on %s: %w", link.Name, err)
+				level = IPv6Supported
+				continue
+			}
+			n.debugLogger.Debugf("IPv6 internet is accessible through link %s", link.Name)
 			return IPv6Internet, nil
 		default: // non-default ipv6 route found
 			n.debugLogger.Debugf("IPv6 is supported by link %s", link.Name)
@@ -56,4 +69,38 @@ func (n *NetLink) FindIPv6SupportLevel() (level IPv6SupportLevel, err error) {
 		n.debugLogger.Debugf("no IPv6 route found in %d routes", len(routes))
 	}
 	return level, nil
+}
+
+func dialAddrThroughFirewall(ctx context.Context, intf string,
+	checkAddress netip.AddrPort, firewall Firewall,
+) (err error) {
+	const protocol = "tcp"
+	remove := false
+	err = firewall.AcceptOutput(ctx, protocol, intf,
+		checkAddress.Addr(), checkAddress.Port(), remove)
+	if err != nil {
+		return fmt.Errorf("accepting output traffic: %w", err)
+	}
+	defer func() {
+		remove = true
+		firewallErr := firewall.AcceptOutput(ctx, protocol, intf,
+			checkAddress.Addr(), checkAddress.Port(), remove)
+		if err == nil && firewallErr != nil {
+			err = fmt.Errorf("removing output traffic rule: %w", firewallErr)
+		}
+	}()
+
+	dialer := &net.Dialer{
+		Timeout: time.Second,
+	}
+	conn, err := dialer.DialContext(ctx, protocol, checkAddress.String())
+	if err != nil {
+		return fmt.Errorf("dialing: %w", err)
+	}
+	err = conn.Close()
+	if err != nil {
+		return fmt.Errorf("closing connection: %w", err)
+	}
+
+	return nil
 }

@@ -55,6 +55,8 @@ func Test_Settings_String(t *testing.T) {
 |   └── Enabled: yes
 ├── Log settings:
 |   └── Log level: INFO
+├── IPv6 settings:
+|   └── Check address: [2606:4700::6810:84e5]:443
 ├── Health settings:
 |   ├── Server listening address: 127.0.0.1:9999
 |   ├── Target address: cloudflare.com:443

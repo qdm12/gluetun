@@ -41,7 +41,9 @@ type IPFetcher interface {
 }
 
 type IPv6Checker interface {
-	FindIPv6SupportLevel() (level netlink.IPv6SupportLevel, err error)
+	FindIPv6SupportLevel(ctx context.Context,
+		checkAddress netip.AddrPort, firewall netlink.Firewall,
+	) (level netlink.IPv6SupportLevel, err error)
 }
 
 func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
@@ -59,7 +61,8 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
 	}
 	allSettings.SetDefaults()
 
-	ipv6SupportLevel, err := ipv6Checker.FindIPv6SupportLevel()
+	ipv6SupportLevel, err := ipv6Checker.FindIPv6SupportLevel(context.Background(),
+		allSettings.IPv6.CheckAddress, &noopFirewall{})
 	if err != nil {
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
