@@ -250,7 +250,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	ipv6SupportLevel, err := netLinker.FindIPv6SupportLevel()
+	ipv6SupportLevel, err := netLinker.FindIPv6SupportLevel(ctx,
+		allSettings.IPv6.CheckAddresses, firewallConf)
 	if err != nil {
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
@@ -580,7 +581,9 @@ type netLinker interface {
 	Ruler
 	Linker
 	IsWireguardSupported() (ok bool, err error)
-	FindIPv6SupportLevel() (level netlink.IPv6SupportLevel, err error)
+	FindIPv6SupportLevel(ctx context.Context,
+		checkAddresses []netip.AddrPort, firewall netlink.Firewall,
+	) (level netlink.IPv6SupportLevel, err error)
 	FlushConntrack() error
 	PatchLoggerLevel(level log.Level)
 }
