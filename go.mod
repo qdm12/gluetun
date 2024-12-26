@@ -3,7 +3,7 @@ module github.com/qdm12/gluetun
 go 1.23
 
 require (
-	github.com/breml/rootcerts v0.2.18
+	github.com/breml/rootcerts v0.2.19
 	github.com/fatih/color v1.18.0
 	github.com/golang/mock v1.6.0
 	github.com/klauspost/compress v1.17.11
@@ -16,7 +16,7 @@ require (
 	github.com/qdm12/gotree v0.3.0
 	github.com/qdm12/log v0.1.0
 	github.com/qdm12/ss-server v0.6.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/ulikunitz/xz v0.5.11
 	github.com/vishvananda/netlink v1.2.1
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a

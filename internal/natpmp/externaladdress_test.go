@@ -2,6 +2,7 @@ package natpmp
 
 import (
 	"context"
+	"net"
 	"net/netip"
 	"testing"
 	"time"
@@ -23,14 +24,15 @@ func Test_Client_ExternalAddress(t *testing.T) {
 		durationSinceStartOfEpoch time.Duration
 		externalIPv4Address       netip.Addr
 		err                       error
-		errMessage                string
+		errMessageRegex           string
 	}{
 		"failure": {
 			ctx:                 canceledCtx,
 			gateway:             netip.AddrFrom4([4]byte{127, 0, 0, 1}),
 			initialConnDuration: initialConnectionDuration,
-			err:                 context.Canceled,
-			errMessage:          "executing remote procedure call: reading from udp connection: context canceled",
+			err:                 net.ErrClosed,
+			errMessageRegex: "executing remote procedure call: setting connection deadline: " +
+				"set udp 127.0.0.1:[1-9][0-9]{1,4}: use of closed network connection",
 		},
 		"success": {
 			ctx:                 context.Background(),
@@ -60,7 +62,7 @@ func Test_Client_ExternalAddress(t *testing.T) {
 			durationSinceStartOfEpoch, externalIPv4Address, err := client.ExternalAddress(testCase.ctx, testCase.gateway)
 			assert.ErrorIs(t, err, testCase.err)
 			if testCase.err != nil {
-				assert.EqualError(t, err, testCase.errMessage)
+				assert.Regexp(t, testCase.errMessageRegex, err.Error())
 			}
 			assert.Equal(t, testCase.durationSinceStartOfEpoch, durationSinceStartOfEpoch)
 			assert.Equal(t, testCase.externalIPv4Address, externalIPv4Address)

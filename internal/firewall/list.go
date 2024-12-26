@@ -22,7 +22,7 @@ type chainRule struct {
 	packets         uint64
 	bytes           uint64
 	target          string       // "ACCEPT", "DROP", "REJECT" or "REDIRECT"
-	protocol        string       // "tcp", "udp" or "" for all protocols.
+	protocol        string       // "icmp", "tcp", "udp" or "" for all protocols.
 	inputInterface  string       // input interface, for example "tun0" or "*""
 	outputInterface string       // output interface, for example "eth0" or "*""
 	source          netip.Prefix // source IP CIDR, for example 0.0.0.0/0. Must be valid.
@@ -324,6 +324,8 @@ var ErrProtocolUnknown = errors.New("unknown protocol")
 func parseProtocol(s string) (protocol string, err error) {
 	switch s {
 	case "0":
+	case "1":
+		protocol = "icmp"
 	case "6":
 		protocol = "tcp"
 	case "17":

@@ -45,8 +45,10 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 		cancel()
 		<-endGoroutineDone
 	}()
+	ctxListeningReady := make(chan struct{})
 	go func() {
 		defer close(endGoroutineDone)
+		close(ctxListeningReady)
 		// Context is canceled either by the parent context or
 		// when this function returns.
 		<-ctx.Done()
@@ -60,6 +62,7 @@ func (c *Client) rpc(ctx context.Context, gateway netip.Addr,
 		}
 		err = fmt.Errorf("%w; closing connection: %w", err, closeErr)
 	}()
+	<-ctxListeningReady // really to make unit testing reliable
 
 	const maxResponseSize = 16
 	response = make([]byte, maxResponseSize)

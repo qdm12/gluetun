@@ -56,7 +56,8 @@ num pkts bytes target     prot opt in     out     source               destinati
 num pkts bytes target     prot opt in     out     source               destination
 1   0     0 ACCEPT     17   --  tun0   *       0.0.0.0/0            0.0.0.0/0            udp dpt:55405
 2   0     0 ACCEPT     6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:55405
-3   0     0 DROP       0    --  tun0   *       1.2.3.4              0.0.0.0/0
+3   0     0 ACCEPT     1    --  tun0   *       0.0.0.0/0            0.0.0.0/0
+4   0     0 DROP       0    --  tun0   *       1.2.3.4              0.0.0.0/0
 `,
 			table: chain{
 				name:    "INPUT",
@@ -90,6 +91,17 @@ num pkts bytes target     prot opt in     out     source               destinati
 					},
 					{
 						lineNumber:      3,
+						packets:         0,
+						bytes:           0,
+						target:          "ACCEPT",
+						protocol:        "icmp",
+						inputInterface:  "tun0",
+						outputInterface: "*",
+						source:          netip.MustParsePrefix("0.0.0.0/0"),
+						destination:     netip.MustParsePrefix("0.0.0.0/0"),
+					},
+					{
+						lineNumber:      4,
 						packets:         0,
 						bytes:           0,
 						target:          "DROP",
