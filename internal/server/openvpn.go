@@ -150,20 +150,22 @@ func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request
 	var data portsWrapper
 
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&data); err != nil {
+	err := decoder.Decode(&data)
+	if err != nil {
 		h.warner.Warn(fmt.Sprintf("failed setting forwarded ports: %s", err))
 		http.Error(w, "failed setting forwarded ports", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.pf.SetPortsForwarded(data.Ports); err != nil {
+	err = h.pf.SetPortsForwarded(data.Ports)
+	if err != nil {
 		h.warner.Warn(fmt.Sprintf("failed setting forwarded ports: %s", err))
 		http.Error(w, "failed setting forwarded ports", http.StatusInternalServerError)
 		return
 	}
 
 	encoder := json.NewEncoder(w)
-	err := encoder.Encode(h.pf.GetPortsForwarded())
+	err = encoder.Encode(h.pf.GetPortsForwarded())
 	if err != nil {
 		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

@@ -66,7 +66,7 @@ func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err er
 	for i, port := range ports {
 		err := s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
 		if err != nil {
-			for j := 0; j < i; j++ {
+			for j := range i {
 				_ = s.portAllower.RemoveAllowedPort(ctx, s.ports[j])
 			}
 			for _, port := range s.ports {
@@ -79,7 +79,7 @@ func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err er
 	err = s.writePortForwardedFile(ports)
 	if err != nil {
 		_ = s.cleanup()
-		return err
+		return fmt.Errorf("writing port forwarded file: %w", err)
 	}
 
 	s.portMutex.RLock()
