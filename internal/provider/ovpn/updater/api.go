@@ -24,13 +24,11 @@ type apiDataCenter struct {
 }
 
 type apiServer struct {
-	IP                    netip.Addr `json:"ip"`
-	Ptr                   string     `json:"ptr"` // hostname
-	Online                bool       `json:"online"`
-	PublicKey             string     `json:"public_key"`
-	WireguardPorts        []uint16   `json:"wireguard_ports"`
-	MultiHopOpenvpnPort   uint16     `json:"multihop_openvpn_port"`
-	MultiHopWireguardPort uint16     `json:"multihop_wireguard_port"`
+	IP             netip.Addr `json:"ip"`
+	Ptr            string     `json:"ptr"` // hostname
+	Online         bool       `json:"online"`
+	PublicKey      string     `json:"public_key"`
+	WireguardPorts []uint16   `json:"wireguard_ports"`
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
@@ -109,13 +107,11 @@ func (a *apiDataCenter) validate() (err error) {
 }
 
 var (
-	ErrIPFieldNotValid             = errors.New("ip address is not set")
-	ErrHostnameFieldNotSet         = errors.New("hostname field is not set")
-	ErrPublicKeyFieldNotSet        = errors.New("public key field is not set")
-	ErrWireguardPortsNotSet        = errors.New("wireguard ports array is not set")
-	ErrWireguardPortNotDefault     = errors.New("wireguard port is not the default 9929")
-	ErrMultiHopOpenVPNPortNotSet   = errors.New("multihop OpenVPN port is not set")
-	ErrMultiHopWireguardPortNotSet = errors.New("multihop WireGuard port is not set")
+	ErrIPFieldNotValid         = errors.New("ip address is not set")
+	ErrHostnameFieldNotSet     = errors.New("hostname field is not set")
+	ErrPublicKeyFieldNotSet    = errors.New("public key field is not set")
+	ErrWireguardPortsNotSet    = errors.New("wireguard ports array is not set")
+	ErrWireguardPortNotDefault = errors.New("wireguard port is not the default 9929")
 )
 
 func (a *apiServer) validate() (err error) {
@@ -129,8 +125,6 @@ func (a *apiServer) validate() (err error) {
 			err:       ErrWireguardPortNotDefault,
 			condition: len(a.WireguardPorts) != 1 || a.WireguardPorts[0] != defaultWireguardPort,
 		},
-		{err: ErrMultiHopOpenVPNPortNotSet, condition: a.MultiHopOpenvpnPort == 0},
-		{err: ErrMultiHopWireguardPortNotSet, condition: a.MultiHopWireguardPort == 0},
 	}
 	err = collectErrors(conditionalErrors)
 	switch {

@@ -58,7 +58,7 @@ func Test_Updater_FetchServers(t *testing.T) {
 			errMessage: "validating data center 1 of 1: data center Vienna: country name is not set",
 		},
 		"not_enough_servers": {
-			minServers:     5,
+			minServers:     3,
 			responseStatus: http.StatusOK,
 			responseBody: `{
   "success": true,
@@ -81,10 +81,10 @@ func Test_Updater_FetchServers(t *testing.T) {
   ]
 }`,
 			errWrapped: common.ErrNotEnoughServers,
-			errMessage: "not enough servers found: 4 and expected at least 5",
+			errMessage: "not enough servers found: 2 and expected at least 3",
 		},
 		"success": {
-			minServers: 4,
+			minServers: 2,
 			responseBody: `{
   "success": true,
   "datacenters": [
@@ -141,30 +141,8 @@ func Test_Updater_FetchServers(t *testing.T) {
 					City:     "Vienna",
 					Hostname: "vpn44.prd.vienna.ovpn.com",
 					IPs:      []netip.Addr{netip.MustParseAddr("37.120.212.227")},
-					VPN:      vpn.OpenVPN,
-					UDP:      true,
-					TCP:      true,
-					MultiHop: true,
-					PortsTCP: []uint16{20044},
-					PortsUDP: []uint16{20044},
-				},
-				{
-					Country:  "Austria",
-					City:     "Vienna",
-					Hostname: "vpn44.prd.vienna.ovpn.com",
-					IPs:      []netip.Addr{netip.MustParseAddr("37.120.212.227")},
 					VPN:      vpn.Wireguard,
 					WgPubKey: "r83LIc0Q2F8s3dY9x5y17Yz8wTADJc7giW1t5eSmoXc=",
-				},
-				{
-					Country:  "Austria",
-					City:     "Vienna",
-					Hostname: "vpn44.prd.vienna.ovpn.com",
-					IPs:      []netip.Addr{netip.MustParseAddr("37.120.212.227")},
-					VPN:      vpn.Wireguard,
-					WgPubKey: "r83LIc0Q2F8s3dY9x5y17Yz8wTADJc7giW1t5eSmoXc=",
-					MultiHop: true,
-					PortsUDP: []uint16{30044},
 				},
 			},
 		},

@@ -72,13 +72,11 @@ func Test_fetchAPI(t *testing.T) {
 				DataCenters: []apiDataCenter{
 					{CountryName: "Austria", City: "Vienna", Servers: []apiServer{
 						{
-							IP:                    netip.MustParseAddr("37.120.212.227"),
-							Ptr:                   "vpn44.prd.vienna.ovpn.com",
-							Online:                true,
-							PublicKey:             "r83LIc0Q2F8s3dY9x5y17Yz8wTADJc7giW1t5eSmoXc=",
-							WireguardPorts:        []uint16{9929},
-							MultiHopOpenvpnPort:   20044,
-							MultiHopWireguardPort: 30044,
+							IP:             netip.MustParseAddr("37.120.212.227"),
+							Ptr:            "vpn44.prd.vienna.ovpn.com",
+							Online:         true,
+							PublicKey:      "r83LIc0Q2F8s3dY9x5y17Yz8wTADJc7giW1t5eSmoXc=",
+							WireguardPorts: []uint16{9929},
 						},
 					}},
 				},

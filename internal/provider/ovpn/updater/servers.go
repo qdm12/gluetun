@@ -46,19 +46,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			openVPNServer.VPN = vpn.OpenVPN
 			openVPNServer.TCP = true
 			openVPNServer.UDP = true
-			multiHopOpenVPNServer := openVPNServer
-			multiHopOpenVPNServer.MultiHop = true
-			multiHopOpenVPNServer.PortsTCP = []uint16{apiServer.MultiHopOpenvpnPort}
-			multiHopOpenVPNServer.PortsUDP = []uint16{apiServer.MultiHopOpenvpnPort}
-			servers = append(servers, openVPNServer, multiHopOpenVPNServer)
+			servers = append(servers, openVPNServer)
 
 			wireguardServer := baseServer
 			wireguardServer.VPN = vpn.Wireguard
 			wireguardServer.WgPubKey = apiServer.PublicKey
-			multiHopWireguardServer := wireguardServer
-			multiHopWireguardServer.MultiHop = true
-			multiHopWireguardServer.PortsUDP = []uint16{apiServer.MultiHopWireguardPort}
-			servers = append(servers, wireguardServer, multiHopWireguardServer)
+			servers = append(servers, wireguardServer)
 		}
 	}
 
