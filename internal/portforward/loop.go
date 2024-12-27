@@ -2,6 +2,7 @@ package portforward
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"sync"
@@ -166,9 +167,11 @@ func (l *Loop) GetPortsForwarded() (ports []uint16) {
 	return l.service.GetPortsForwarded()
 }
 
+var ErrServiceNotStarted = errors.New("port forwarding service not started")
+
 func (l *Loop) SetPortsForwarded(ports []uint16) (err error) {
 	if l.service == nil {
-		return nil
+		return fmt.Errorf("%w", ErrServiceNotStarted)
 	}
 
 	return l.service.SetPortsForwarded(l.runCtx, ports)
