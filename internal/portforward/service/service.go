@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"slices"
 	"sync"
 )
 
@@ -53,39 +54,25 @@ func (s *Service) GetPortsForwarded() (ports []uint16) {
 }
 
 func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err error) {
-	for i, port := range s.ports {
-		err := s.portAllower.RemoveAllowedPort(ctx, port)
-		if err != nil {
-			for j := range i {
-				_ = s.portAllower.SetAllowedPort(ctx, s.ports[j], s.settings.Interface)
-			}
-			return fmt.Errorf("removing allowed port: %w", err)
-		}
+	s.startStopMutex.Lock()
+	defer s.startStopMutex.Unlock()
+
+	s.portMutex.Lock()
+	defer s.portMutex.Unlock()
+	slices.Sort(ports)
+	if slices.Equal(s.ports, ports) {
+		return nil
 	}
 
-	for i, port := range ports {
-		err := s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
-		if err != nil {
-			for j := range i {
-				_ = s.portAllower.RemoveAllowedPort(ctx, s.ports[j])
-			}
-			for _, port := range s.ports {
-				_ = s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
-			}
-			return fmt.Errorf("setting allowed port: %w", err)
-		}
-	}
-
-	err = s.writePortForwardedFile(ports)
+	err = s.cleanup()
 	if err != nil {
-		_ = s.cleanup()
-		return fmt.Errorf("writing port forwarded file: %w", err)
+		return fmt.Errorf("cleaning up: %w", err)
 	}
 
-	s.portMutex.RLock()
-	defer s.portMutex.RUnlock()
-	s.ports = make([]uint16, len(ports))
-	copy(s.ports, ports)
+	err = s.onNewPorts(ctx, ports)
+	if err != nil {
+		return fmt.Errorf("handling new ports: %w", err)
+	}
 
 	s.logger.Info("updated: " + portsToString(s.ports))
 
