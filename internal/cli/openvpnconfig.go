@@ -56,6 +56,7 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
 	if err != nil {
 		return err
 	}
+	allSettings.SetDefaults()
 
 	ipv6Supported, err := ipv6Checker.IsIPv6Supported()
 	if err != nil {
