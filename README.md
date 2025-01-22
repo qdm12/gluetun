@@ -1,6 +1,6 @@
 # Gluetun VPN client
 
-Lightweight swiss-knife-like VPN client to multiple VPN service providers
+Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
@@ -88,7 +88,7 @@ Go to the [Wiki](https://github.com/qdm12/gluetun-wiki)!
 Here's a docker-compose.yml for the laziest:
 
 ```yml
-version: "3"
+---
 services:
   gluetun:
     image: qmcgaw/gluetun
