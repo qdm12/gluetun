@@ -10,7 +10,9 @@ WGET_OPTS="--quiet"
 
 usage() {
     echo "Usage: $0 [OPTIONS]"
-    echo
+    echo ""
+    echo "Update Transmission peer-port via RPC API"
+    echo ""
     echo "Options:"
     echo "  -h, --help       Show this help message and exit."
     echo "  -u, --user USER  Specify the Transmission RPC user name."
@@ -18,18 +20,20 @@ usage() {
     echo "  -p, --pass PASS  Specify the Transmission RPC password."
     echo "                   (Omit if not required)"
     echo "  -P, --port PORT  Specify the Transmission Peer Port."
+    echo "                   If PORT is a comma-separated list of ports,"
+    echo "                   only use the first one."
     echo "                   REQUIRED"
     echo "  -U, --url  URL   Specify the Transmission RPC URL."
     echo "                   DEFAULT: ${DEFAULT_URL}"
     echo "Example:"
     echo "  $0 -u admin -p **** 40409"
-    exit 1
 }
 
 while [ $# -gt 0 ]; do
     case "$1" in
     -h | --help)
         usage
+        exit 0
         ;;
     -u | --user)
         USERNAME="$2"
@@ -42,7 +46,8 @@ while [ $# -gt 0 ]; do
         shift 2
         ;;
     -P | --port)
-        PORT="$2"
+        PORTS="$2"
+        PORT=$(echo "$PORTS" | cut -d',' -f1)
         shift 2
         ;;
     -U | --url)
@@ -52,29 +57,33 @@ while [ $# -gt 0 ]; do
     *)
         echo "Unknown option: $1"
         usage
+        exit 1
         ;;
     esac
 done
 
 if [ -z "${PORT}" ]; then
-    echo "ERROR: No PORT provided!"
+    echo "ERROR: No Transmission peer-port provided!"
     exit 1
 fi
 
 if [ "${_USECRED}" ]; then
     # make sure username AND password were provided
-    if [ -z "${USERNAME}" ] || [ -z "${PASSWORD}" ]; then
-        echo "ERROR: Username or password not provided."
+    if [ -z "${USERNAME}" ]; then
+        echo "ERROR: Transmission RPC Username not provided."
         exit 1
-    else
-        # basic auth options, --auth-no-challenge avoids 409 Conflict
-        WGET_OPTS="
+    fi
+    if [ -z "${PASSWORD}" ]; then
+        echo "ERROR: Transmission RPC Password not provided."
+        exit 1
+    fi
+    # basic auth options, --auth-no-challenge avoids 409 Conflict
+    WGET_OPTS="
             ${WGET_OPTS}
             --auth-no-challenge
             --user=${USERNAME}
             --password=${PASSWORD}
         "
-    fi
 fi
 
 if [ -z "${RPC_URL+x}" ]; then
@@ -82,6 +91,7 @@ if [ -z "${RPC_URL+x}" ]; then
 fi
 
 # get the X-Transmission-Session-Id
+# shellcheck disable=SC2086
 SESSION_ID=$(
     wget \
         ${WGET_OPTS} \
@@ -100,6 +110,7 @@ PAYLOAD=$(printf '{
 }' "$PORT")
 
 # update peer host via API
+# shellcheck disable=SC2086
 RES=$(
     wget \
         ${WGET_OPTS} \
@@ -112,10 +123,10 @@ RES=$(
 
 # check string returned by wget
 SUCCESS='{"arguments":{},"result":"success"}'
-if [ "$RES" = "$SUCCESS" ]; then
-    echo "Success! Peer port updated to ${PORT}"
-    exit 0
-else
-    echo "ERROR: Could not update peer port"
+if [ "$RES" != "$SUCCESS" ]; then
+    echo "ERROR: Could not update Transmission peer-port"
     exit 1
 fi
+
+echo "Success! Transmission peer-port updated to ${PORT}"
+exit 0
