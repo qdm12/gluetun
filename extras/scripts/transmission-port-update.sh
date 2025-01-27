@@ -124,7 +124,7 @@ RES=$(
 # check string returned by wget
 SUCCESS='{"arguments":{},"result":"success"}'
 if [ "$RES" != "$SUCCESS" ]; then
-    echo "ERROR: Could not update Transmission peer-port"
+    echo "ERROR: Could not update Transmission peer-port: ${RES}"
     exit 1
 fi
 
