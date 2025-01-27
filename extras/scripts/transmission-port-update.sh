@@ -79,7 +79,7 @@ if [ "${_USECRED}" ]; then
     fi
     # basic auth options, --auth-no-challenge avoids 409 Conflict
     WGET_OPTS="
-            ${WGET_OPTS}
+            --quiet
             --auth-no-challenge
             --user=${USERNAME}
             --password=${PASSWORD}
