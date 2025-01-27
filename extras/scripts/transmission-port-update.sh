@@ -6,7 +6,7 @@
 
 # default values
 DEFAULT_URL="http://localhost:9091/transmission/rpc"
-WGET_OPTS="--quiet"
+WGET_OPTS=""
 
 usage() {
     echo "Usage: $0 [OPTIONS]"
@@ -79,7 +79,6 @@ if [ "${_USECRED}" ]; then
     fi
     # basic auth options, --auth-no-challenge avoids 409 Conflict
     WGET_OPTS="
-            --quiet
             --auth-no-challenge
             --user=${USERNAME}
             --password=${PASSWORD}
@@ -94,6 +93,7 @@ fi
 # shellcheck disable=SC2086
 SESSION_ID=$(
     wget \
+        --quiet \
         ${WGET_OPTS} \
         --server-response \
         "$RPC_URL" 2>&1 |
@@ -113,6 +113,7 @@ PAYLOAD=$(printf '{
 # shellcheck disable=SC2086
 RES=$(
     wget \
+        --quiet \
         ${WGET_OPTS} \
         --header="Content-Type: application/json" \
         --header="X-Transmission-Session-Id: $SESSION_ID" \
