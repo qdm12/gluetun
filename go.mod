@@ -4,7 +4,7 @@ go 1.23
 toolchain go1.24.1
 
 require (
-	github.com/breml/rootcerts v0.2.19
+	github.com/breml/rootcerts v0.2.20
 	github.com/fatih/color v1.18.0
 	github.com/golang/mock v1.6.0
 	github.com/klauspost/compress v1.17.11
