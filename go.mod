@@ -1,7 +1,6 @@
 module github.com/qdm12/gluetun
 
 go 1.23
-
 require (
 	github.com/breml/rootcerts v0.2.19
 	github.com/fatih/color v1.18.0
@@ -23,7 +22,7 @@ require (
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c
 	golang.org/x/net v0.34.0
 	golang.org/x/sys v0.29.0
-	golang.org/x/text v0.21.0
+	golang.org/x/text v0.23.0
 	golang.zx2c4.com/wireguard v0.0.0-20231211153847-12269c276173
 	golang.zx2c4.com/wireguard/wgctrl v0.0.0-20230429144221-925a1e7659e6
 	gopkg.in/ini.v1 v1.67.0
@@ -52,7 +51,7 @@ require (
 	github.com/vishvananda/netns v0.0.4 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/mod v0.21.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/tools v0.26.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	google.golang.org/protobuf v1.35.1 // indirect
