@@ -85,7 +85,7 @@ jobs:
 
   publish:
     if: |
-      github.repository == 'qdm12/gluetun' &&
+      github.repository == 'mort666/gluetun' &&
       (
         github.event_name == 'push' ||
         github.event_name == 'release' ||
@@ -109,9 +109,7 @@ jobs:
           flavor: |
             latest=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
           images: |
-            ghcr.io/qdm12/gluetun
-            qmcgaw/gluetun
-            qmcgaw/private-internet-access
+            ghcr.io/mort666/gluetun
           tags: |
             type=ref,event=pr
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
@@ -124,13 +122,8 @@ jobs:
 
       - uses: docker/login-action@v3
         with:
-          username: qmcgaw
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - uses: docker/login-action@v3
-        with:
           registry: ghcr.io
-          username: qdm12
+          username: mort666
           password: ${{ github.token }}
 
       - name: Short commit

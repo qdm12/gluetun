@@ -38,10 +38,10 @@ jobs:
           config-file: .github/workflows/configs/mlc-config.json
 
       - uses: peter-evans/dockerhub-description@v4
-        if: github.repository == 'qdm12/gluetun' && github.event_name == 'push'
+        if: github.repository == 'mort666/gluetun' && github.event_name == 'push'
         with:
-          username: qmcgaw
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: qmcgaw/gluetun
+          username: mort666
+          password: ${{ github.token }}
+          repository: ghcr.io/mort666/gluetun
           short-description: Lightweight Swiss-knife VPN client to connect to several VPN providers
           readme-filepath: README.md
