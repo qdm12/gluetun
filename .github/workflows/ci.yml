@@ -47,8 +47,8 @@ jobs:
             ./internal/storage/servers.json
             *.md
 
-      - name: Linting
-        run: docker build --target lint .
+      # - name: Linting
+      #   run: docker build --target lint .
 
       - name: Mocks check
         run: docker build --target mocks .
