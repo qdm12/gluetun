@@ -64,15 +64,15 @@ ARG VERSION=unknown
 ARG CREATED="an unknown date"
 ARG COMMIT=unknown
 LABEL \
-    org.opencontainers.image.authors="quentin.mcgaw@gmail.com" \
+    org.opencontainers.image.authors="quentin.mcgaw@gmail.com,mort666@virus.org" \
     org.opencontainers.image.created=$CREATED \
     org.opencontainers.image.version=$VERSION \
     org.opencontainers.image.revision=$COMMIT \
-    org.opencontainers.image.url="https://github.com/qdm12/gluetun" \
-    org.opencontainers.image.documentation="https://github.com/qdm12/gluetun" \
-    org.opencontainers.image.source="https://github.com/qdm12/gluetun" \
-    org.opencontainers.image.title="VPN swiss-knife like client for multiple VPN providers" \
-    org.opencontainers.image.description="VPN swiss-knife like client to tunnel to multiple VPN servers using OpenVPN, IPtables, DNS over TLS, Shadowsocks, an HTTP proxy and Alpine Linux"
+    org.opencontainers.image.url="https://github.com/mort666/gluetun" \
+    org.opencontainers.image.documentation="https://github.com/mort666/gluetun" \
+    org.opencontainers.image.source="https://github.com/mort666/gluetun" \
+    org.opencontainers.image.title="VPN swiss-knife like client for multiple VPN providers (modded release)" \
+    org.opencontainers.image.description="VPN swiss-knife like client to tunnel to multiple VPN servers using OpenVPN, IPtables, DNS over TLS, Shadowsocks, an HTTP proxy and Alpine Linux."
 ENV VPN_SERVICE_PROVIDER=pia \
     VPN_TYPE=openvpn \
     # Common VPN options
