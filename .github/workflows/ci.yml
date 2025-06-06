@@ -1,91 +1,71 @@
 name: CI
+
 on:
-  release:
-    types:
-      - published
   push:
     branches:
-      - master
-    paths:
-      - .github/workflows/ci.yml
-      - cmd/**
-      - internal/**
-      - pkg/**
-      - .dockerignore
-      - .golangci.yml
-      - Dockerfile
-      - go.mod
-      - go.sum
+      - main
+      - develop
+      - release/*
+      - beta/*
+    tags:
+      - v*
   pull_request:
-    paths:
-      - .github/workflows/ci.yml
-      - cmd/**
-      - internal/**
-      - pkg/**
-      - .dockerignore
-      - .golangci.yml
-      - Dockerfile
-      - go.mod
-      - go.sum
+    branches:
+      - main
+      - develop
+      - release/*
+      - beta/*
+  release:
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   verify:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-    env:
-      DOCKER_BUILDKIT: "1"
     steps:
       - uses: actions/checkout@v4
-
-      - uses: reviewdog/action-misspell@v1
+      - uses: actions/setup-go@v5
         with:
-          locale: "US"
-          level: error
-          exclude: |
-            ./internal/storage/servers.json
-            *.md
-
-      - name: Linting
-        run: docker build --target lint .
-
-      - name: Mocks check
-        run: docker build --target mocks .
-
-      - name: Build test image
-        run: docker build --target test -t test-container .
-
-      - name: Run tests in test container
-        run: |
-          touch coverage.txt
-          docker run --rm --device /dev/net/tun \
-          -v "$(pwd)/coverage.txt:/tmp/gobuild/coverage.txt" \
-          test-container
-
-      - name: Build final image
-        run: docker build -t final-image .
+          go-version-file: go.mod
+          cache: true
+      - name: Verify
+        run: make verify
 
   codeql:
+    name: CodeQL
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["go"]
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
         with:
-          go-version: "^1.23"
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: go
-      - uses: github/codeql-action/autobuild@v3
-      - uses: github/codeql-action/analyze@v3
+          languages: ${{ matrix.language }}
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and queries in the config file.
+          # For more information on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-qlpacks
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
   publish:
     if: |
-      github.repository == 'qdm12/gluetun' &&
       (
         github.event_name == 'push' ||
         github.event_name == 'release' ||
@@ -109,9 +89,8 @@ jobs:
           flavor: |
             latest=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
           images: |
-            ghcr.io/qdm12/gluetun
-            qmcgaw/gluetun
-            qmcgaw/private-internet-access
+            ghcr.io/${{ github.repository_owner }}/gluetun
+            ${{ github.repository_owner }}/gluetun
           tags: |
             type=ref,event=pr
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
@@ -122,20 +101,24 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
 
+      # Login to Docker Hub (optional, only if you want to push to Docker Hub)
       - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
         with:
-          username: qmcgaw
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Login to GitHub Container Registry
       - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
         with:
           registry: ghcr.io
-          username: qdm12
-          password: ${{ github.token }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Short commit
         id: shortcommit
-        run: echo "::set-output name=value::$(git rev-parse --short HEAD)"
+        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Build and push final image
         uses: docker/build-push-action@v6
@@ -147,4 +130,4 @@ jobs:
             COMMIT=${{ steps.shortcommit.outputs.value }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           tags: ${{ steps.meta.outputs.tags }}
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
