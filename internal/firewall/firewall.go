@@ -32,6 +32,12 @@ type Config struct { //nolint:maligned
 	stateMutex        sync.Mutex
 }
 
+// applyUserPostRules applies user-defined post firewall rules
+func (c *Config) applyUserPostRules(ctx context.Context) error {
+    const remove = false
+    return c.runUserPostRules(ctx, c.customRulesPath, remove)
+}
+
 // NewConfig creates a new Config instance and returns an error
 // if no iptables implementation is available.
 func NewConfig(ctx context.Context, logger Logger,

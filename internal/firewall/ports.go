@@ -7,42 +7,36 @@ import (
 )
 
 func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (err error) {
-	c.stateMutex.Lock()
-	defer c.stateMutex.Unlock()
+    c.stateMutex.Lock()
+    defer c.stateMutex.Unlock()
 
-	if port == 0 {
-		return nil
-	}
+    interfaceSet, ok := c.allowedInputPorts[port]
+    if !ok {
+        interfaceSet = make(map[string]struct{})
+        c.allowedInputPorts[port] = interfaceSet
+    }
 
-	if !c.enabled {
-		c.logger.Info("firewall disabled, only updating allowed ports internal state")
-		existingInterfaces, ok := c.allowedInputPorts[port]
-		if !ok {
-			existingInterfaces = make(map[string]struct{})
-		}
-		existingInterfaces[intf] = struct{}{}
-		c.allowedInputPorts[port] = existingInterfaces
-		return nil
-	}
+    _, alreadySet := interfaceSet[intf]
+    if alreadySet {
+        return nil
+    }
 
-	netInterfaces, has := c.allowedInputPorts[port]
-	if !has {
-		netInterfaces = make(map[string]struct{})
-	} else if _, exists := netInterfaces[intf]; exists {
-		return nil
-	}
+    if c.enabled {
+        const remove = false
+        err = c.acceptInputToPort(ctx, intf, port, remove)
+        if err != nil {
+            return fmt.Errorf("accepting input port %d on interface %s: %w",
+                port, intf, err)
+        }
+        
+        // ADD THIS: Re-apply user post-rules after port changes
+        if err = c.applyUserPostRules(ctx); err != nil {
+            return fmt.Errorf("re-applying user post-rules after port change: %w", err)
+        }
+    }
 
-	c.logger.Info("setting allowed input port " + fmt.Sprint(port) + " through interface " + intf + "...")
-
-	const remove = false
-	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-		return fmt.Errorf("allowing input to port %d through interface %s: %w",
-			port, intf, err)
-	}
-	netInterfaces[intf] = struct{}{}
-	c.allowedInputPorts[port] = netInterfaces
-
-	return nil
+    interfaceSet[intf] = struct{}{}
+    return nil
 }
 
 func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error) {

@@ -264,6 +264,15 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 	} else if err != nil {
 		return err
 	}
+
+	// Log when post-rules are being applied
+    if !remove {
+        c.logger.Info("applying user-defined post firewall rules from " + filepath)
+    } else {
+        c.logger.Info("removing user-defined post firewall rules from " + filepath)
+    }
+
+
 	b, err := io.ReadAll(file)
 	if err != nil {
 		_ = file.Close()

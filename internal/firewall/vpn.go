@@ -7,54 +7,45 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-func (c *Config) SetVPNConnection(ctx context.Context,
-	connection models.Connection, vpnIntf string,
-) (err error) {
-	c.stateMutex.Lock()
-	defer c.stateMutex.Unlock()
+func (c *Config) SetVPNConnection(ctx context.Context, connection models.Connection, intf string) (err error) {
+    c.stateMutex.Lock()
+    defer c.stateMutex.Unlock()
 
-	if !c.enabled {
-		c.logger.Info("firewall disabled, only updating internal VPN connection")
-		c.vpnConnection = connection
-		return nil
-	}
+    if !c.enabled {
+        c.vpnConnection = connection
+        c.vpnIntf = intf
+        return nil
+    }
 
-	c.logger.Info("allowing VPN connection...")
+    // Remove previous VPN rules
+    if c.vpnConnection.IP.IsValid() {
+        const remove = true
+        interfacesSeen := make(map[string]struct{}, len(c.defaultRoutes))
+        for _, defaultRoute := range c.defaultRoutes {
+            _, seen := interfacesSeen[defaultRoute.NetInterface]
+            if seen {
+                continue
+            }
+            interfacesSeen[defaultRoute.NetInterface] = struct{}{}
+            err = c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove)
+            if err != nil {
+                return fmt.Errorf("removing output traffic through VPN: %w", err)
+            }
+        }
+    }
 
-	if c.vpnConnection.Equal(connection) {
-		return nil
-	}
+    c.vpnConnection = connection
+    c.vpnIntf = intf
 
-	remove := true
-	if c.vpnConnection.IP.IsValid() {
-		for _, defaultRoute := range c.defaultRoutes {
-			if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove); err != nil {
-				c.logger.Error("cannot remove outdated VPN connection rule: " + err.Error())
-			}
-		}
-	}
-	c.vpnConnection = models.Connection{}
+    // Add new VPN rules
+    if err = c.allowVPNIP(ctx); err != nil {
+        return err
+    }
 
-	if c.vpnIntf != "" {
-		if err = c.acceptOutputThroughInterface(ctx, c.vpnIntf, remove); err != nil {
-			c.logger.Error("cannot remove outdated VPN interface rule: " + err.Error())
-		}
-	}
-	c.vpnIntf = ""
+    // Re-apply user post-rules after VPN changes
+    if err = c.applyUserPostRules(ctx); err != nil {
+        return fmt.Errorf("re-applying user post-rules after VPN change: %w", err)
+    }
 
-	remove = false
-
-	for _, defaultRoute := range c.defaultRoutes {
-		if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, connection, remove); err != nil {
-			return fmt.Errorf("allowing output traffic through VPN connection: %w", err)
-		}
-	}
-	c.vpnConnection = connection
-
-	if err = c.acceptOutputThroughInterface(ctx, vpnIntf, remove); err != nil {
-		return fmt.Errorf("accepting output traffic through interface %s: %w", vpnIntf, err)
-	}
-	c.vpnIntf = vpnIntf
-
-	return nil
+    return nil
 }
