@@ -9,47 +9,30 @@ import (
 	"github.com/qdm12/gluetun/internal/subnet"
 )
 
-func (c *Config) SetOutboundSubnets(ctx context.Context, outboundSubnets []netip.Prefix) (err error) {
-    c.stateMutex.Lock()
-    defer c.stateMutex.Unlock()
+func (c *Config) SetOutboundSubnets(ctx context.Context, subnets []netip.Prefix) (err error) {
+	c.stateMutex.Lock()
+	defer c.stateMutex.Unlock()
 
-    if !c.enabled {
-        c.outboundSubnets = outboundSubnets
-        return nil
-    }
+	if !c.enabled {
+		c.logger.Info("firewall disabled, only updating allowed subnets internal list")
+		c.outboundSubnets = make([]netip.Prefix, len(subnets))
+		copy(c.outboundSubnets, subnets)
+		return nil
+	}
 
-    // Remove previous outbound subnet rules
-    for _, subnet := range c.outboundSubnets {
-        subnetIsIPv6 := subnet.Addr().Is6()
-        for _, defaultRoute := range c.defaultRoutes {
-            defaultRouteIsIPv6 := defaultRoute.Family == netlink.FamilyV6
-            ipFamilyMatch := subnetIsIPv6 == defaultRouteIsIPv6
-            if !ipFamilyMatch {
-                continue
-            }
+	c.logger.Info("setting allowed subnets...")
 
-            const remove = true
-            err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
-                defaultRoute.AssignedIP, subnet, remove)
-            if err != nil {
-                return err
-            }
-        }
-    }
+	subnetsToAdd, subnetsToRemove := subnet.FindSubnetsToChange(c.outboundSubnets, subnets)
+	if len(subnetsToAdd) == 0 && len(subnetsToRemove) == 0 {
+		return nil
+	}
 
-    c.outboundSubnets = outboundSubnets
+	c.removeOutboundSubnets(ctx, subnetsToRemove)
+	if err := c.addOutboundSubnets(ctx, subnetsToAdd); err != nil {
+		return fmt.Errorf("setting allowed outbound subnets: %w", err)
+	}
 
-    // Add new outbound subnet rules
-    if err = c.allowOutboundSubnets(ctx); err != nil {
-        return err
-    }
-
-    // Re-apply user post-rules after subnet changes
-    if err = c.applyUserPostRules(ctx); err != nil {
-        return fmt.Errorf("re-applying user post-rules after outbound subnet change: %w", err)
-    }
-
-    return nil
+	return nil
 }
 
 func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []netip.Prefix) {

@@ -3,86 +3,100 @@ package firewall
 import (
 	"context"
 	"fmt"
-	"strconv"
 )
 
 func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
-	if port == 0 {
-		return nil
-	}
-
 	if !c.enabled {
-		c.logger.Info("firewall disabled, only updating allowed ports internal state")
-		existingInterfaces, ok := c.allowedInputPorts[port]
-		if !ok {
-			existingInterfaces = make(map[string]struct{})
-		}
-		existingInterfaces[intf] = struct{}{}
-		c.allowedInputPorts[port] = existingInterfaces
+		c.logger.Info("firewall disabled, only updating allowed ports internal list")
+		c.setAllowedPortInternalList(port, intf)
 		return nil
 	}
 
-	netInterfaces, has := c.allowedInputPorts[port]
-	if !has {
-		netInterfaces = make(map[string]struct{})
-	} else if _, exists := netInterfaces[intf]; exists {
-		return nil
+	c.logger.Info(fmt.Sprintf("setting allowed port %d...", port))
+
+	interfaces, portExists := c.allowedInputPorts[port]
+	if !portExists {
+		interfaces = make(map[string]struct{})
+		c.allowedInputPorts[port] = interfaces
 	}
 
-	c.logger.Info("setting allowed input port " + fmt.Sprint(port) + " through interface " + intf + "...")
+	_, interfaceExists := interfaces[intf]
+	if interfaceExists {
+		return nil
+	}
 
 	const remove = false
-	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
-		return fmt.Errorf("allowing input to port %d through interface %s: %w",
-			port, intf, err)
+	err = c.acceptInputToPort(ctx, intf, port, remove)
+	if err != nil {
+		return fmt.Errorf("accepting input to port %d: %w", port, err)
 	}
-	netInterfaces[intf] = struct{}{}
-	c.allowedInputPorts[port] = netInterfaces
 
-	// Apply post-rules only once after adding the port, and only if not already applied
+	interfaces[intf] = struct{}{}
+
+	// Apply post-rules once after adding the port
 	if err := c.applyPostRulesOnce(ctx); err != nil {
-		c.logger.Warn("failed to apply post-rules after adding port: " + err.Error())
+		return fmt.Errorf("applying post firewall rules: %w", err)
 	}
 
 	return nil
 }
 
-func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error) {
+func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16, intf string) (err error) {
 	c.stateMutex.Lock()
 	defer c.stateMutex.Unlock()
 
-	if port == 0 {
-		return nil
-	}
-
 	if !c.enabled {
 		c.logger.Info("firewall disabled, only updating allowed ports internal list")
-		delete(c.allowedInputPorts, port)
+		c.removeAllowedPortInternalList(port, intf)
 		return nil
 	}
 
-	c.logger.Info("removing allowed port " + strconv.Itoa(int(port)) + "...")
+	c.logger.Info(fmt.Sprintf("removing allowed port %d...", port))
 
-	interfacesSet, ok := c.allowedInputPorts[port]
-	if !ok {
+	interfaces, portExists := c.allowedInputPorts[port]
+	if !portExists {
+		return nil
+	}
+
+	_, interfaceExists := interfaces[intf]
+	if !interfaceExists {
 		return nil
 	}
 
 	const remove = true
-	for netInterface := range interfacesSet {
-		err := c.acceptInputToPort(ctx, netInterface, port, remove)
-		if err != nil {
-			return fmt.Errorf("removing allowed port %d on interface %s: %w",
-				port, netInterface, err)
-		}
-		delete(interfacesSet, netInterface)
+	err = c.acceptInputToPort(ctx, intf, port, remove)
+	if err != nil {
+		return fmt.Errorf("removing input to port %d: %w", port, err)
 	}
 
-	// All interfaces were removed successfully, so remove the port entry.
-	delete(c.allowedInputPorts, port)
+	delete(interfaces, intf)
+	if len(interfaces) == 0 {
+		delete(c.allowedInputPorts, port)
+	}
 
 	return nil
+}
+
+func (c *Config) setAllowedPortInternalList(port uint16, intf string) {
+	interfaces, portExists := c.allowedInputPorts[port]
+	if !portExists {
+		interfaces = make(map[string]struct{})
+		c.allowedInputPorts[port] = interfaces
+	}
+	interfaces[intf] = struct{}{}
+}
+
+func (c *Config) removeAllowedPortInternalList(port uint16, intf string) {
+	interfaces, portExists := c.allowedInputPorts[port]
+	if !portExists {
+		return
+	}
+
+	delete(interfaces, intf)
+	if len(interfaces) == 0 {
+		delete(c.allowedInputPorts, port)
+	}
 }
