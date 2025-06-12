@@ -63,23 +63,6 @@ func NewConfig(ctx context.Context, logger Logger,
 	}, nil
 }
 
-// flipRule converts an iptables rule from add to delete or vice versa
-func flipRule(rule string) string {
-	if strings.Contains(rule, " -A ") {
-		return strings.Replace(rule, " -A ", " -D ", 1)
-	}
-	if strings.Contains(rule, " -I ") {
-		return strings.Replace(rule, " -I ", " -D ", 1)
-	}
-	if strings.Contains(rule, " --append ") {
-		return strings.Replace(rule, " --append ", " --delete ", 1)
-	}
-	if strings.Contains(rule, " --insert ") {
-		return strings.Replace(rule, " --insert ", " --delete ", 1)
-	}
-	return rule
-}
-
 // clearAppliedPostRules removes all previously applied post-rules
 func (c *Config) clearAppliedPostRules(ctx context.Context) error {
 	for _, rule := range c.appliedPostRules {
