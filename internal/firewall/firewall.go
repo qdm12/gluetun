@@ -3,6 +3,7 @@ package firewall
 import (
 	"context"
 	"net/netip"
+	"strings"
 	"sync"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -29,13 +30,8 @@ type Config struct { //nolint:maligned
 	outboundSubnets   []netip.Prefix
 	allowedInputPorts map[uint16]map[string]struct{} // port to interfaces set mapping
 	portRedirections  portRedirections
+	appliedPostRules  []string // Track applied post-rules to avoid duplicates
 	stateMutex        sync.Mutex
-}
-
-// applyUserPostRules applies user-defined post firewall rules
-func (c *Config) applyUserPostRules(ctx context.Context) error {
-    const remove = false
-    return c.runUserPostRules(ctx, c.customRulesPath, remove)
 }
 
 // NewConfig creates a new Config instance and returns an error
@@ -65,4 +61,31 @@ func NewConfig(ctx context.Context, logger Logger,
 		defaultRoutes: defaultRoutes,
 		localNetworks: localNetworks,
 	}, nil
+}
+
+// clearAppliedPostRules removes all previously applied post-rules
+func (c *Config) clearAppliedPostRules(ctx context.Context) error {
+	for _, rule := range c.appliedPostRules {
+		flippedRule := flipRule(rule)
+		if strings.Contains(rule, "ip6tables") {
+			if err := c.runIP6tablesInstruction(ctx, flippedRule); err != nil {
+				c.logger.Debug("failed to remove post-rule (may not exist): " + err.Error())
+			}
+		} else {
+			if err := c.runIptablesInstruction(ctx, flippedRule); err != nil {
+				c.logger.Debug("failed to remove post-rule (may not exist): " + err.Error())
+			}
+		}
+	}
+	c.appliedPostRules = nil
+	return nil
+}
+
+// applyPostRulesOnce applies post-rules only if they haven't been applied yet
+func (c *Config) applyPostRulesOnce(ctx context.Context) error {
+	if len(c.appliedPostRules) > 0 {
+		c.logger.Debug("post-rules already applied, skipping")
+		return nil
+	}
+	return c.runUserPostRules(ctx, c.customRulesPath, false)
 }
