@@ -41,36 +41,6 @@ func (c *Config) SetEnabled(ctx context.Context, enabled bool) (err error) {
 	return nil
 }
 
-func (c *Config) disable(ctx context.Context) (err error) {
-	if err = c.clearAllRules(ctx); err != nil {
-		return fmt.Errorf("clearing all rules: %w", err)
-	}
-	if err = c.setIPv4AllPolicies(ctx, "ACCEPT"); err != nil {
-		return fmt.Errorf("setting ipv4 policies: %w", err)
-	}
-	if err = c.setIPv6AllPolicies(ctx, "ACCEPT"); err != nil {
-		return fmt.Errorf("setting ipv6 policies: %w", err)
-	}
-
-	const remove = true
-	err = c.redirectPorts(ctx, remove)
-	if err != nil {
-		return fmt.Errorf("removing port redirections: %w", err)
-	}
-
-	return nil
-}
-
-// To use in defered call when enabling the firewall.
-func (c *Config) fallbackToDisabled(ctx context.Context) {
-	if ctx.Err() != nil {
-		return
-	}
-	if err := c.disable(ctx); err != nil {
-		c.logger.Error("failed reversing firewall changes: " + err.Error())
-	}
-}
-
 func (c *Config) enable(ctx context.Context) (err error) {
 	touched := false
 	if err = c.setIPv4AllPolicies(ctx, "DROP"); err != nil {
@@ -89,6 +59,11 @@ func (c *Config) enable(ctx context.Context) (err error) {
 			c.fallbackToDisabled(ctx)
 		}
 	}()
+
+	// Clear any previously applied post-rules
+	if err = c.clearAppliedPostRules(ctx); err != nil {
+		c.logger.Warn("failed to clear previous post-rules: " + err.Error())
+	}
 
 	// Loopback traffic
 	if err = c.acceptInputThroughInterface(ctx, "lo", remove); err != nil {
@@ -144,11 +119,47 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		return fmt.Errorf("redirecting ports: %w", err)
 	}
 
+	// Apply post-rules only once at the end
 	if err := c.runUserPostRules(ctx, c.customRulesPath, remove); err != nil {
 		return fmt.Errorf("running user defined post firewall rules: %w", err)
 	}
 
 	return nil
+}
+
+func (c *Config) disable(ctx context.Context) (err error) {
+	// Clear applied post-rules when disabling
+	if err = c.clearAppliedPostRules(ctx); err != nil {
+		c.logger.Warn("failed to clear post-rules during disable: " + err.Error())
+	}
+
+	if err = c.clearAllRules(ctx); err != nil {
+		return fmt.Errorf("clearing all rules: %w", err)
+	}
+	if err = c.setIPv4AllPolicies(ctx, "ACCEPT"); err != nil {
+		return fmt.Errorf("setting ipv4 policies: %w", err)
+	}
+	if err = c.setIPv6AllPolicies(ctx, "ACCEPT"); err != nil {
+		return fmt.Errorf("setting ipv6 policies: %w", err)
+	}
+
+	const remove = true
+	err = c.redirectPorts(ctx, remove)
+	if err != nil {
+		return fmt.Errorf("removing port redirections: %w", err)
+	}
+
+	return nil
+}
+
+// To use in defered call when enabling the firewall.
+func (c *Config) fallbackToDisabled(ctx context.Context) {
+	if ctx.Err() != nil {
+		return
+	}
+	if err := c.disable(ctx); err != nil {
+		c.logger.Error("failed reversing firewall changes: " + err.Error())
+	}
 }
 
 func (c *Config) allowVPNIP(ctx context.Context) (err error) {
