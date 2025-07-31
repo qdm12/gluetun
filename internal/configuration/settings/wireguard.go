@@ -77,17 +77,17 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 	if w.CustomConfigFile != nil && *w.CustomConfigFile != "" {
 		// Validate the custom config file
 		fmt.Printf("DEBUG: Validating custom config file: %s\n", *w.CustomConfigFile)
-		
+
 		conf, err := wireguard.ParseConfFile(*w.CustomConfigFile)
 		if err != nil {
 			return fmt.Errorf("failed to parse custom WireGuard config file '%s': %w", *w.CustomConfigFile, err)
 		}
-		
+
 		err = wireguard.ValidateConfFile(conf)
 		if err != nil {
 			return fmt.Errorf("invalid custom WireGuard config file '%s': %w", *w.CustomConfigFile, err)
 		}
-		
+
 		fmt.Printf("DEBUG: Custom config file validation passed\n")
 		return nil
 	}
@@ -174,16 +174,16 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
-		CustomConfigFile:      gosettings.CopyPointer(w.CustomConfigFile),
-		PrivateKey:            gosettings.CopyPointer(w.PrivateKey),
-		PublicKey:             gosettings.CopyPointer(w.PublicKey),
-		PreSharedKey:          gosettings.CopyPointer(w.PreSharedKey),
-		EndpointIP:            w.EndpointIP,
-		EndpointPort:          gosettings.CopyPointer(w.EndpointPort),
-		Addresses:             gosettings.CopySlice(w.Addresses),
-		AllowedIPs:            gosettings.CopySlice(w.AllowedIPs),
-		PersistentKeepalive:   gosettings.CopyPointer(w.PersistentKeepalive),
-		Interface:             gosettings.CopyPointer(w.Interface),
+		CustomConfigFile:    gosettings.CopyPointer(w.CustomConfigFile),
+		PrivateKey:          gosettings.CopyPointer(w.PrivateKey),
+		PublicKey:           gosettings.CopyPointer(w.PublicKey),
+		PreSharedKey:        gosettings.CopyPointer(w.PreSharedKey),
+		EndpointIP:          w.EndpointIP,
+		EndpointPort:        gosettings.CopyPointer(w.EndpointPort),
+		Addresses:           gosettings.CopySlice(w.Addresses),
+		AllowedIPs:          gosettings.CopySlice(w.AllowedIPs),
+		PersistentKeepalive: gosettings.CopyPointer(w.PersistentKeepalive),
+		Interface:           gosettings.CopyPointer(w.Interface),
 	}
 }
 

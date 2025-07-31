@@ -54,7 +54,7 @@ func containsBogusWireguardValues(content string) bool {
 		"8.8.8.8",               // bogus DNS from wg_test.conf
 		"123.123.123.123:51820", // bogus endpoint from wg_test.conf
 	}
-	
+
 	// Check if ALL bogus values are present (indicates test config)
 	for _, bogusValue := range bogusValues {
 		if !strings.Contains(content, bogusValue) {
