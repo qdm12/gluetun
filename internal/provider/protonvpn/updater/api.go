@@ -55,9 +55,9 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	const sessionsURL = "https://account.proton.me/api/auth/v4/sessions"
 
 	// Old Logicals API endpoint: https://api.protonmail.ch/vpn/logicals
-	// New Logicals API endpoint: https://account.proton.me/api/vpn/logicals
+	// New Logicals API endpoint: https://account.proton.me/api/vpn/v1/logicals with SecureCoreFilter
 
-	const url = "https://account.proton.me/api/vpn/logicals"
+	const url = "https://account.proton.me/api/vpn/v1/logicals?SecureCoreFilter=all"
 
 	sessionRequest, err := http.NewRequestWithContext(ctx, http.MethodPost, sessionsURL, nil)
 	if err != nil {
@@ -86,6 +86,11 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	sessionDecoder := json.NewDecoder(sessionResponse.Body)
 	if err := sessionDecoder.Decode(&pmSession); err != nil {
 		return data, fmt.Errorf("decoding session response body: %w", err)
+	}
+
+	// Validate session response has required fields
+	if pmSession.AccessToken == "" || pmSession.UID == "" {
+		return data, fmt.Errorf("invalid session response: missing AccessToken or UID")
 	}
 
 	if err := sessionResponse.Body.Close(); err != nil {
