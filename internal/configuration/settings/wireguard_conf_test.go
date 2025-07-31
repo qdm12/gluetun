@@ -38,40 +38,26 @@ func TestWireguardCustomConfigFile(t *testing.T) {
 
 	t.Log("Checking for bogus or real values in config file...")
 	if containsBogusWireguardValues(content) {
-		t.Log("Bogus values found in config file (safe for public use/testing).")
-	} else if containsRealWireguardValues(content) {
-		t.Log("Real values found in config file (for production/validation use).")
+		t.Log("Expected bogus test values found in config file (safe for public use/testing).")
 	} else {
-		t.Error("wg_test.conf does not contain recognized bogus or real values.")
+		t.Error("wg_test.conf does not contain the expected bogus test values. " +
+			"The test config should contain the known safe test values, not real production values.")
 	}
 }
 
 // containsBogusWireguardValues checks for known bogus values in the config
 func containsBogusWireguardValues(content string) bool {
-	bogusKeys := []string{
-		"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", // bogus private key
-		"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=", // bogus public key
-		"1.2.3.4/32",            // bogus address
-		"8.8.8.8",               // bogus DNS
-		"123.123.123.123:51820", // bogus endpoint
+	bogusValues := []string{
+		"eOjmwWHYOpRwZHvFgxNCD/msMO+PGnF3xZejEei8Klw=", // bogus private key from wg_test.conf
+		"g+04U6gzk1+3zNUSMQtRvILfToBT8r6gsR0hEb4BOWI=", // bogus public key from wg_test.conf
+		"1.2.3.4/32",            // bogus address from wg_test.conf
+		"8.8.8.8",               // bogus DNS from wg_test.conf
+		"123.123.123.123:51820", // bogus endpoint from wg_test.conf
 	}
-	for _, v := range bogusKeys {
-		if !strings.Contains(content, v) {
-			return false
-		}
-	}
-	return true
-}
-
-// containsRealWireguardValues checks for known real values in the config (edit as needed for your real config)
-func containsRealWireguardValues(content string) bool {
-	// If not bogus, assume real/production values (do not match any known bogus test values)
-	realKeys := []string{
-		// These are placeholders for real values; in production, these would be actual keys/addresses.
-		// For test, just check that the config does NOT contain all bogus values.
-	}
-	for _, v := range realKeys {
-		if !strings.Contains(content, v) {
+	
+	// Check if ALL bogus values are present (indicates test config)
+	for _, bogusValue := range bogusValues {
+		if !strings.Contains(content, bogusValue) {
 			return false
 		}
 	}
