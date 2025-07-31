@@ -28,7 +28,13 @@ func (v *VPN) Validate(filterChoicesGetter FilterChoicesGetter, ipv6Supported bo
 		return fmt.Errorf("%w: %w", ErrVPNTypeNotValid, err)
 	}
 
-	err = v.Provider.validate(v.Type, filterChoicesGetter, warner)
+	// Check if using custom config file for Wireguard
+	var usingCustomConfig bool
+	if v.Type == vpn.Wireguard {
+		usingCustomConfig = v.Wireguard.CustomConfigFile != nil && *v.Wireguard.CustomConfigFile != ""
+	}
+
+	err = v.Provider.validate(v.Type, filterChoicesGetter, warner, usingCustomConfig)
 	if err != nil {
 		return fmt.Errorf("provider settings: %w", err)
 	}

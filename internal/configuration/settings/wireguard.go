@@ -9,6 +9,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
+	"github.com/qdm12/gluetun/internal/wireguard"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
@@ -74,8 +75,20 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 	}
 
 	if w.CustomConfigFile != nil && *w.CustomConfigFile != "" {
-		// skip validation if a custom config file is used
-		fmt.Printf("DEBUG: Skipping validation, using custom config file: %s\n", *w.CustomConfigFile)
+		// Validate the custom config file
+		fmt.Printf("DEBUG: Validating custom config file: %s\n", *w.CustomConfigFile)
+		
+		conf, err := wireguard.ParseConfFile(*w.CustomConfigFile)
+		if err != nil {
+			return fmt.Errorf("failed to parse custom WireGuard config file '%s': %w", *w.CustomConfigFile, err)
+		}
+		
+		err = wireguard.ValidateConfFile(conf)
+		if err != nil {
+			return fmt.Errorf("invalid custom WireGuard config file '%s': %w", *w.CustomConfigFile, err)
+		}
+		
+		fmt.Printf("DEBUG: Custom config file validation passed\n")
 		return nil
 	}
 

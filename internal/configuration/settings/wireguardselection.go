@@ -35,7 +35,12 @@ type WireguardSelection struct {
 
 // Validate validates WireguardSelection settings.
 // It should only be ran if the VPN type chosen is Wireguard.
-func (w WireguardSelection) validate(vpnProvider string) (err error) {
+func (w WireguardSelection) validate(vpnProvider string, usingCustomConfig bool) (err error) {
+	// Skip validation if using custom config file
+	if usingCustomConfig {
+		return nil
+	}
+
 	// Validate EndpointIP
 	switch vpnProvider {
 	case providers.Airvpn, providers.Fastestvpn, providers.Ivpn,
