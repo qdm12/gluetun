@@ -75,8 +75,11 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 	if w.CustomConfigFile != nil && *w.CustomConfigFile != "" {
 		// skip validation if a custom config file is used
+		fmt.Printf("DEBUG: Skipping validation, using custom config file: %s\n", *w.CustomConfigFile)
 		return nil
 	}
+
+	fmt.Printf("DEBUG: Not using custom config, proceeding with validation. CustomConfigFile: %v\n", w.CustomConfigFile)
 
 	// Validate PrivateKey
 	if w.PrivateKey == nil || *w.PrivateKey == "" {
