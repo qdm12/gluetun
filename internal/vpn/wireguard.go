@@ -34,7 +34,13 @@ func setupWireguard(ctx context.Context, netlinker NetLinker,
 		return nil, "", false, fmt.Errorf("creating Wireguard: %w", err)
 	}
 
-	err = fw.SetVPNConnection(ctx, connection, settings.Wireguard.Interface)
+	// Fix: use string value for interface
+	iface := "wg0"
+	if settings.Wireguard.Interface != nil && *settings.Wireguard.Interface != "" {
+		iface = *settings.Wireguard.Interface
+	}
+
+	err = fw.SetVPNConnection(ctx, connection, iface)
 	if err != nil {
 		return nil, "", false, fmt.Errorf("setting firewall: %w", err)
 	}

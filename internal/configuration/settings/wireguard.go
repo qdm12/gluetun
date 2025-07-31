@@ -11,46 +11,46 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
-	"github.com/qdm12/gosettings/validate"
 	"github.com/qdm12/gotree"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
 // Wireguard contains settings to configure the Wireguard client.
 type Wireguard struct {
+	// CustomConfigFile is the path to a custom Wireguard
+	// configuration file to use. It is optional.
+	// If it is used, settings such as the private key,
+	// public key and addresses are ignored.
+	CustomConfigFile *string `json:"custom_config_file"`
 	// PrivateKey is the Wireguard client peer private key.
-	// It cannot be nil in the internal state.
+	// It is mandatory if CustomConfigFile is not set.
 	PrivateKey *string `json:"private_key"`
+	// PublicKey is the Wireguard server peer public key.
+	// It is mandatory if CustomConfigFile is not set.
+	PublicKey *string `json:"public_key"`
 	// PreSharedKey is the Wireguard pre-shared key.
-	// It can be the empty string to indicate there
-	// is no pre-shared key.
-	// It cannot be nil in the internal state.
-	PreSharedKey *string `json:"pre_shared_key"`
-	// Addresses are the Wireguard interface addresses.
+	// It is optional.
+	PreSharedKey *string `json:"preshared_key"`
+	// EndpointIP is the server endpoint IP address.
+	// It is mandatory if CustomConfigFile is not set.
+	EndpointIP netip.Addr `json:"endpoint_ip"`
+	// EndpointPort is the server endpoint port.
+	// It is mandatory if CustomConfigFile is not set.
+	EndpointPort *uint16 `json:"endpoint_port"`
+	// Addresses are the client tunnel IP addresses.
+	// It is mandatory if CustomConfigFile is not set.
 	Addresses []netip.Prefix `json:"addresses"`
-	// AllowedIPs are the Wireguard allowed IPs.
-	// If left unset, they default to "0.0.0.0/0"
-	// and, if IPv6 is supported, "::0".
+	// AllowedIPs are the allowed IP addresses for the server peer.
+	// It defaults to 0.0.0.0/0 and ::/0.
+	// It is optional.
 	AllowedIPs []netip.Prefix `json:"allowed_ips"`
-	// Interface is the name of the Wireguard interface
-	// to create. It cannot be the empty string in the
-	// internal state.
-	Interface                   string         `json:"interface"`
-	PersistentKeepaliveInterval *time.Duration `json:"persistent_keep_alive_interval"`
-	// Maximum Transmission Unit (MTU) of the Wireguard interface.
-	// It cannot be zero in the internal state, and defaults to
-	// 1320. Note it is not the wireguard-go MTU default of 1420
-	// because this impacts bandwidth a lot on some VPN providers,
-	// see https://github.com/qdm12/gluetun/issues/1650.
-	// It has been lowered to 1320 following quite a bit of
-	// investigation in the issue:
-	// https://github.com/qdm12/gluetun/issues/2533.
-	MTU uint16 `json:"mtu"`
-	// Implementation is the Wireguard implementation to use.
-	// It can be "auto", "userspace" or "kernelspace".
-	// It defaults to "auto" and cannot be the empty string
-	// in the internal state.
-	Implementation string `json:"implementation"`
+	// PersistentKeepalive is the persistent keepalive interval.
+	// It is optional.
+	PersistentKeepalive *time.Duration `json:"persistent_keepalive"`
+	// Interface is the name of the Wireguard interface to create.
+	// It defaults to wg0.
+	// It is optional.
+	Interface *string `json:"interface"`
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -73,9 +73,14 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		return nil
 	}
 
+	if w.CustomConfigFile != nil && *w.CustomConfigFile != "" {
+		// skip validation if a custom config file is used
+		return nil
+	}
+
 	// Validate PrivateKey
-	if *w.PrivateKey == "" {
-		return fmt.Errorf("%w", ErrWireguardPrivateKeyNotSet)
+	if w.PrivateKey == nil || *w.PrivateKey == "" {
+		return fmt.Errorf("wireguard private key is not set")
 	}
 	_, err = wgtypes.ParseKey(*w.PrivateKey)
 	if err != nil {
@@ -87,18 +92,32 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		return err
 	}
 
+	// Validate PublicKey
+	if w.PublicKey == nil || *w.PublicKey == "" {
+		return fmt.Errorf("wireguard public key is not set")
+	}
+	_, err = wgtypes.ParseKey(*w.PublicKey)
+	if err != nil {
+		return fmt.Errorf("public key is not valid: %w", err)
+	}
+
 	if vpnProvider == providers.Airvpn {
-		if *w.PreSharedKey == "" {
+		if w.PreSharedKey == nil || *w.PreSharedKey == "" {
 			return fmt.Errorf("%w", ErrWireguardPreSharedKeyNotSet)
 		}
 	}
 
 	// Validate PreSharedKey
-	if *w.PreSharedKey != "" { // Note: this is optional
+	if w.PreSharedKey != nil && *w.PreSharedKey != "" { // Note: this is optional
 		_, err = wgtypes.ParseKey(*w.PreSharedKey)
 		if err != nil {
 			return fmt.Errorf("pre-shared key is not valid: %w", err)
 		}
+	}
+
+	// Validate EndpointIP
+	if !w.EndpointIP.IsValid() {
+		return fmt.Errorf("wireguard endpoint IP is not set")
 	}
 
 	// Validate Addresses
@@ -118,8 +137,6 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 	}
 
 	// Validate AllowedIPs
-	// WARNING: do not check for IPv6 networks in the allowed IPs,
-	// the wireguard code will take care to ignore it.
 	if len(w.AllowedIPs) == 0 {
 		return fmt.Errorf("%w", ErrWireguardAllowedIPsNotSet)
 	}
@@ -130,20 +147,10 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		}
 	}
 
-	if *w.PersistentKeepaliveInterval < 0 {
-		return fmt.Errorf("%w: %s", ErrWireguardKeepAliveNegative,
-			*w.PersistentKeepaliveInterval)
-	}
-
 	// Validate interface
-	if !regexpInterfaceName.MatchString(w.Interface) {
-		return fmt.Errorf("%w: '%s' does not match regex '%s'",
+	if w.Interface == nil || !regexpInterfaceName.MatchString(*w.Interface) {
+		return fmt.Errorf("%w: '%v' does not match regex '%s'",
 			ErrWireguardInterfaceNotValid, w.Interface, regexpInterfaceName)
-	}
-
-	validImplementations := []string{"auto", "userspace", "kernelspace"}
-	if err := validate.IsOneOf(w.Implementation, validImplementations...); err != nil {
-		return fmt.Errorf("%w: %w", ErrWireguardImplementationNotValid, err)
 	}
 
 	return nil
@@ -151,52 +158,60 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 
 func (w *Wireguard) copy() (copied Wireguard) {
 	return Wireguard{
-		PrivateKey:                  gosettings.CopyPointer(w.PrivateKey),
-		PreSharedKey:                gosettings.CopyPointer(w.PreSharedKey),
-		Addresses:                   gosettings.CopySlice(w.Addresses),
-		AllowedIPs:                  gosettings.CopySlice(w.AllowedIPs),
-		PersistentKeepaliveInterval: gosettings.CopyPointer(w.PersistentKeepaliveInterval),
-		Interface:                   w.Interface,
-		MTU:                         w.MTU,
-		Implementation:              w.Implementation,
+		CustomConfigFile:      gosettings.CopyPointer(w.CustomConfigFile),
+		PrivateKey:            gosettings.CopyPointer(w.PrivateKey),
+		PublicKey:             gosettings.CopyPointer(w.PublicKey),
+		PreSharedKey:          gosettings.CopyPointer(w.PreSharedKey),
+		EndpointIP:            w.EndpointIP,
+		EndpointPort:          gosettings.CopyPointer(w.EndpointPort),
+		Addresses:             gosettings.CopySlice(w.Addresses),
+		AllowedIPs:            gosettings.CopySlice(w.AllowedIPs),
+		PersistentKeepalive:   gosettings.CopyPointer(w.PersistentKeepalive),
+		Interface:             gosettings.CopyPointer(w.Interface),
 	}
+}
+
+func (w *Wireguard) mergeWith(other Wireguard) {
+	w.CustomConfigFile = gosettings.OverrideWithPointer(w.CustomConfigFile, other.CustomConfigFile)
+	w.PrivateKey = gosettings.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PublicKey = gosettings.OverrideWithPointer(w.PublicKey, other.PublicKey)
+	w.PreSharedKey = gosettings.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
+	if other.EndpointIP.IsValid() {
+		w.EndpointIP = other.EndpointIP
+	}
+	w.EndpointPort = gosettings.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
+	w.Addresses = gosettings.OverrideWithSlice(w.Addresses, other.Addresses)
+	w.AllowedIPs = gosettings.OverrideWithSlice(w.AllowedIPs, other.AllowedIPs)
+	w.PersistentKeepalive = gosettings.OverrideWithPointer(w.PersistentKeepalive, other.PersistentKeepalive)
+	w.Interface = gosettings.OverrideWithPointer(w.Interface, other.Interface)
 }
 
 func (w *Wireguard) overrideWith(other Wireguard) {
+	w.CustomConfigFile = gosettings.OverrideWithPointer(w.CustomConfigFile, other.CustomConfigFile)
 	w.PrivateKey = gosettings.OverrideWithPointer(w.PrivateKey, other.PrivateKey)
+	w.PublicKey = gosettings.OverrideWithPointer(w.PublicKey, other.PublicKey)
 	w.PreSharedKey = gosettings.OverrideWithPointer(w.PreSharedKey, other.PreSharedKey)
+	if other.EndpointIP.IsValid() {
+		w.EndpointIP = other.EndpointIP
+	}
+	w.EndpointPort = gosettings.OverrideWithPointer(w.EndpointPort, other.EndpointPort)
 	w.Addresses = gosettings.OverrideWithSlice(w.Addresses, other.Addresses)
 	w.AllowedIPs = gosettings.OverrideWithSlice(w.AllowedIPs, other.AllowedIPs)
-	w.PersistentKeepaliveInterval = gosettings.OverrideWithPointer(w.PersistentKeepaliveInterval,
-		other.PersistentKeepaliveInterval)
-	w.Interface = gosettings.OverrideWithComparable(w.Interface, other.Interface)
-	w.MTU = gosettings.OverrideWithComparable(w.MTU, other.MTU)
-	w.Implementation = gosettings.OverrideWithComparable(w.Implementation, other.Implementation)
+	w.PersistentKeepalive = gosettings.OverrideWithPointer(w.PersistentKeepalive, other.PersistentKeepalive)
+	w.Interface = gosettings.OverrideWithPointer(w.Interface, other.Interface)
 }
 
 func (w *Wireguard) setDefaults(vpnProvider string) {
+	w.CustomConfigFile = gosettings.DefaultPointer(w.CustomConfigFile, "")
 	w.PrivateKey = gosettings.DefaultPointer(w.PrivateKey, "")
+	w.PublicKey = gosettings.DefaultPointer(w.PublicKey, "")
 	w.PreSharedKey = gosettings.DefaultPointer(w.PreSharedKey, "")
-	switch vpnProvider {
-	case providers.Nordvpn:
-		defaultNordVPNAddress := netip.AddrFrom4([4]byte{10, 5, 0, 2})
-		defaultNordVPNPrefix := netip.PrefixFrom(defaultNordVPNAddress, defaultNordVPNAddress.BitLen())
-		w.Addresses = gosettings.DefaultSlice(w.Addresses, []netip.Prefix{defaultNordVPNPrefix})
-	case providers.Protonvpn:
-		defaultAddress := netip.AddrFrom4([4]byte{10, 2, 0, 2})
-		defaultPrefix := netip.PrefixFrom(defaultAddress, defaultAddress.BitLen())
-		w.Addresses = gosettings.DefaultSlice(w.Addresses, []netip.Prefix{defaultPrefix})
-	}
-	defaultAllowedIPs := []netip.Prefix{
-		netip.PrefixFrom(netip.IPv4Unspecified(), 0),
-		netip.PrefixFrom(netip.IPv6Unspecified(), 0),
-	}
-	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs, defaultAllowedIPs)
-	w.PersistentKeepaliveInterval = gosettings.DefaultPointer(w.PersistentKeepaliveInterval, 0)
-	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
-	const defaultMTU = 1320
-	w.MTU = gosettings.DefaultComparable(w.MTU, defaultMTU)
-	w.Implementation = gosettings.DefaultComparable(w.Implementation, "auto")
+	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs,
+		[]netip.Prefix{
+			netip.MustParsePrefix("0.0.0.0/0"),
+			netip.MustParsePrefix("::/0"),
+		})
+	w.Interface = gosettings.DefaultPointer(w.Interface, "wg0")
 }
 
 func (w Wireguard) String() string {
@@ -206,77 +221,117 @@ func (w Wireguard) String() string {
 func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Wireguard settings:")
 
-	if *w.PrivateKey != "" {
+	if w.CustomConfigFile != nil && *w.CustomConfigFile != "" {
+		node.Append(fmt.Sprintf("Custom configuration file: %s", *w.CustomConfigFile))
+		return node
+	}
+
+	if w.PrivateKey != nil && *w.PrivateKey != "" {
 		s := gosettings.ObfuscateKey(*w.PrivateKey)
-		node.Appendf("Private key: %s", s)
+		node.Append(fmt.Sprintf("Private key: %s", s))
 	}
 
-	if *w.PreSharedKey != "" {
+	if w.PublicKey != nil && *w.PublicKey != "" {
+		node.Append(fmt.Sprintf("Public key: %s", *w.PublicKey))
+	}
+
+	if w.PreSharedKey != nil && *w.PreSharedKey != "" {
 		s := gosettings.ObfuscateKey(*w.PreSharedKey)
-		node.Appendf("Pre-shared key: %s", s)
+		node.Append(fmt.Sprintf("Pre-shared key: %s", s))
 	}
 
-	addressesNode := node.Appendf("Interface addresses:")
-	for _, address := range w.Addresses {
-		addressesNode.Append(address.String())
+	if w.EndpointIP.IsValid() {
+		node.Append(fmt.Sprintf("Endpoint IP address: %s", w.EndpointIP))
 	}
 
-	allowedIPsNode := node.Appendf("Allowed IPs:")
-	for _, allowedIP := range w.AllowedIPs {
-		allowedIPsNode.Append(allowedIP.String())
+	if w.EndpointPort != nil {
+		node.Append(fmt.Sprintf("Endpoint port: %d", *w.EndpointPort))
 	}
 
-	if *w.PersistentKeepaliveInterval > 0 {
-		node.Appendf("Persistent keepalive interval: %s", w.PersistentKeepaliveInterval)
+	if len(w.Addresses) > 0 {
+		node.Append(fmt.Sprintf("Tunnel addresses: %s", commaJoin(w.Addresses)))
 	}
 
-	interfaceNode := node.Appendf("Network interface: %s", w.Interface)
-	interfaceNode.Appendf("MTU: %d", w.MTU)
+	if len(w.AllowedIPs) > 0 {
+		node.Append(fmt.Sprintf("Allowed IPs: %s", commaJoin(w.AllowedIPs)))
+	}
 
-	if w.Implementation != "auto" {
-		node.Appendf("Implementation: %s", w.Implementation)
+	if w.PersistentKeepalive != nil {
+		node.Append(fmt.Sprintf("Persistent keepalive: %s", *w.PersistentKeepalive))
+	}
+
+	if w.Interface != nil {
+		node.Append(fmt.Sprintf("Interface: %s", *w.Interface))
 	}
 
 	return node
 }
 
 func (w *Wireguard) read(r *reader.Reader) (err error) {
+	w.CustomConfigFile = r.Get("WIREGUARD_CUSTOM_CONFIG_FILE")
 	w.PrivateKey = r.Get("WIREGUARD_PRIVATE_KEY", reader.ForceLowercase(false))
+	w.PublicKey = r.Get("WIREGUARD_PUBLIC_KEY", reader.ForceLowercase(false))
 	w.PreSharedKey = r.Get("WIREGUARD_PRESHARED_KEY", reader.ForceLowercase(false))
-	w.Interface = r.String("VPN_INTERFACE",
-		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
-	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
 
-	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
-	// WARNING: do not initialize w.Addresses to an empty slice
-	// or the defaults for nordvpn will not work.
-	for _, addressString := range addressStrings {
-		if !strings.ContainsRune(addressString, '/') {
-			addressString += "/32"
-		}
-		addressString = strings.TrimSpace(addressString)
-		address, err := netip.ParsePrefix(addressString)
-		if err != nil {
-			return fmt.Errorf("parsing address: %w", err)
-		}
-		w.Addresses = append(w.Addresses, address)
-	}
-
-	w.AllowedIPs, err = r.CSVNetipPrefixes("WIREGUARD_ALLOWED_IPS")
-	if err != nil {
-		return err // already wrapped
-	}
-
-	w.PersistentKeepaliveInterval, err = r.DurationPtr("WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL")
+	w.EndpointIP, err = r.NetipAddr("WIREGUARD_ENDPOINT_IP")
 	if err != nil {
 		return err
 	}
 
-	mtuPtr, err := r.Uint16Ptr("WIREGUARD_MTU")
+	w.EndpointPort, err = r.Uint16Ptr("WIREGUARD_ENDPOINT_PORT")
 	if err != nil {
 		return err
-	} else if mtuPtr != nil {
-		w.MTU = *mtuPtr
 	}
+
+	// Parse comma-separated addresses for Addresses and AllowedIPs
+	addressesStr := r.Get("WIREGUARD_ADDRESSES")
+	if addressesStr != nil && *addressesStr != "" {
+		addressList := strings.Split(*addressesStr, ",")
+		w.Addresses = make([]netip.Prefix, 0, len(addressList))
+		for _, addr := range addressList {
+			addr = strings.TrimSpace(addr)
+			if addr == "" {
+				continue
+			}
+			prefix, err := netip.ParsePrefix(addr)
+			if err != nil {
+				return fmt.Errorf("invalid address prefix: %w", err)
+			}
+			w.Addresses = append(w.Addresses, prefix)
+		}
+	}
+
+	allowedIPsStr := r.Get("WIREGUARD_ALLOWED_IPS")
+	if allowedIPsStr != nil && *allowedIPsStr != "" {
+		allowedList := strings.Split(*allowedIPsStr, ",")
+		w.AllowedIPs = make([]netip.Prefix, 0, len(allowedList))
+		for _, ip := range allowedList {
+			ip = strings.TrimSpace(ip)
+			if ip == "" {
+				continue
+			}
+			prefix, err := netip.ParsePrefix(ip)
+			if err != nil {
+				return fmt.Errorf("invalid allowed ip prefix: %w", err)
+			}
+			w.AllowedIPs = append(w.AllowedIPs, prefix)
+		}
+	}
+
+	w.PersistentKeepalive, err = r.DurationPtr("WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL")
+	if err != nil {
+		return err
+	}
+
+	w.Interface = r.Get("WIREGUARD_INTERFACE")
+
 	return nil
+}
+
+func commaJoin[T any](slice []T) string {
+	ss := make([]string, len(slice))
+	for i, value := range slice {
+		ss[i] = fmt.Sprint(value)
+	}
+	return strings.Join(ss, ",")
 }
