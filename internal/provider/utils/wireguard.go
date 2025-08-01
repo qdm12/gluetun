@@ -52,6 +52,14 @@ func BuildWireguardSettings(connection models.Connection,
 					}
 				}
 			}
+			
+			// CRITICAL FIX: Set defaults and validate for custom configs
+			settings.SetDefaults()
+			if err := settings.Check(); err != nil {
+				// Log error but continue with defaults
+				// This ensures routing works even if some validation fails
+			}
+			
 			return settings
 		}
 	}

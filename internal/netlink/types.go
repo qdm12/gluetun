@@ -33,13 +33,14 @@ type Route struct {
 }
 
 type Rule struct {
-	Priority int
-	Family   int
-	Table    int
-	Mark     uint32
-	Src      netip.Prefix
-	Dst      netip.Prefix
-	Invert   bool
+	Priority           int
+	Family             int
+	Table              int
+	Mark               uint32
+	Src                netip.Prefix
+	Dst                netip.Prefix
+	Invert             bool
+	SuppressPrefixlen  int
 }
 
 func (r Rule) String() string {

@@ -61,18 +61,20 @@ func ruleToNetlinkRule(rule Rule) (netlinkRule netlink.Rule) {
 	netlinkRule.Src = netipPrefixToIPNet(rule.Src)
 	netlinkRule.Dst = netipPrefixToIPNet(rule.Dst)
 	netlinkRule.Invert = rule.Invert
+	netlinkRule.SuppressPrefixlen = rule.SuppressPrefixlen
 	return netlinkRule
 }
 
 func netlinkRuleToRule(netlinkRule netlink.Rule) (rule Rule) {
 	return Rule{
-		Priority: netlinkRule.Priority,
-		Family:   netlinkRule.Family,
-		Table:    netlinkRule.Table,
-		Mark:     netlinkRule.Mark,
-		Src:      netIPNetToNetipPrefix(netlinkRule.Src),
-		Dst:      netIPNetToNetipPrefix(netlinkRule.Dst),
-		Invert:   netlinkRule.Invert,
+		Priority:          netlinkRule.Priority,
+		Family:            netlinkRule.Family,
+		Table:             netlinkRule.Table,
+		Mark:              netlinkRule.Mark,
+		Src:               netIPNetToNetipPrefix(netlinkRule.Src),
+		Dst:               netIPNetToNetipPrefix(netlinkRule.Dst),
+		Invert:            netlinkRule.Invert,
+		SuppressPrefixlen: netlinkRule.SuppressPrefixlen,
 	}
 }
 
@@ -110,6 +112,10 @@ func ruleDbgMsg(add bool, rule Rule) (debugMessage string) {
 
 	if rule.Priority != -1 {
 		debugMessage += " pref " + fmt.Sprint(rule.Priority)
+	}
+
+	if rule.SuppressPrefixlen >= 0 {
+		debugMessage += " suppress_prefixlength " + fmt.Sprint(rule.SuppressPrefixlen)
 	}
 
 	return debugMessage

@@ -33,3 +33,27 @@ func (w *Wireguard) addRule(rulePriority int, firewallMark uint32,
 	}
 	return cleanup, nil
 }
+
+func (w *Wireguard) addSuppressPrefixLengthRule(family int) (cleanup func() error, err error) {
+	rule := netlink.NewRule()
+	rule.Priority = 32767 // Lower priority than main table rules
+	rule.Table = 254      // Main table
+	rule.SuppressPrefixlen = 0
+	rule.Family = family
+	if err := w.netlink.RuleAdd(rule); err != nil {
+		if strings.HasSuffix(err.Error(), "file exists") {
+			// Rule already exists, that's fine
+			return func() error { return nil }, nil
+		}
+		return nil, fmt.Errorf("adding suppress_prefixlength rule %s: %w", rule, err)
+	}
+
+	cleanup = func() error {
+		err := w.netlink.RuleDel(rule)
+		if err != nil {
+			return fmt.Errorf("deleting suppress_prefixlength rule %s: %w", rule, err)
+		}
+		return nil
+	}
+	return cleanup, nil
+}
