@@ -58,7 +58,7 @@ var ErrPolicyNotValid = errors.New("policy is not valid")
 
 func (c *Config) setIPv6AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
-	case "ACCEPT", "DROP": //nolint:goconst
+	case "ACCEPT", "DROP":
 	default:
 		return fmt.Errorf("%w: %s", ErrPolicyNotValid, policy)
 	}

@@ -40,7 +40,11 @@ func Test_Server_healthCheck(t *testing.T) {
 	t.Run("dial localhost:0", func(t *testing.T) {
 		t.Parallel()
 
-		listener, err := net.Listen("tcp4", "localhost:0")
+		const timeout = 100 * time.Millisecond
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		listenConfig := &net.ListenConfig{}
+		listener, err := listenConfig.Listen(ctx, "tcp4", "localhost:0")
 		require.NoError(t, err)
 		t.Cleanup(func() {
 			err = listener.Close()
@@ -56,10 +60,6 @@ func Test_Server_healthCheck(t *testing.T) {
 				TargetAddress: listeningAddress.String(),
 			},
 		}
-
-		const timeout = 100 * time.Millisecond
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
 
 		err = server.healthCheck(ctx)
 

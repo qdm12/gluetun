@@ -36,7 +36,7 @@ func FetchMultiInfo(ctx context.Context, fetcher InfoFetcher, ips []netip.Addr) 
 	}
 
 	results = make([]models.PublicIP, len(ips))
-	for range len(ips) {
+	for range ips {
 		aResult := <-resultsCh
 		if aResult.err != nil {
 			if err == nil {

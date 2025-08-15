@@ -13,7 +13,7 @@ const (
 func FamilyToString(family int) string {
 	switch family {
 	case FamilyAll:
-		return "all" //nolint:goconst
+		return "all"
 	case FamilyV4:
 		return "v4"
 	case FamilyV6:

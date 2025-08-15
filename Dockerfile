@@ -2,7 +2,7 @@ ARG ALPINE_VERSION=3.20
 ARG GO_ALPINE_VERSION=3.20
 ARG GO_VERSION=1.23
 ARG XCPUTRANSLATE_VERSION=v0.6.0
-ARG GOLANGCI_LINT_VERSION=v1.61.0
+ARG GOLANGCI_LINT_VERSION=v2.4.0
 ARG MOCKGEN_VERSION=v1.6.0
 ARG BUILDPLATFORM=linux/amd64
 
@@ -32,7 +32,7 @@ ENTRYPOINT go test -race -coverpkg=./... -coverprofile=coverage.txt -covermode=a
 
 FROM --platform=${BUILDPLATFORM} base AS lint
 COPY .golangci.yml ./
-RUN golangci-lint run --timeout=10m
+RUN golangci-lint run
 
 FROM --platform=${BUILDPLATFORM} base AS mocks
 RUN git init && \
