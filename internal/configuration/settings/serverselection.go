@@ -91,7 +91,7 @@ var (
 )
 
 func (ss *ServerSelection) validate(vpnServiceProvider string,
-	filterChoicesGetter FilterChoicesGetter, warner Warner,
+	filterChoicesGetter FilterChoicesGetter, warner Warner, usingCustomConfig bool,
 ) (err error) {
 	switch ss.VPN {
 	case vpn.OpenVPN, vpn.Wireguard:
@@ -133,7 +133,7 @@ func (ss *ServerSelection) validate(vpnServiceProvider string,
 			return fmt.Errorf("OpenVPN server selection settings: %w", err)
 		}
 	} else {
-		err = ss.Wireguard.validate(vpnServiceProvider)
+		err = ss.Wireguard.validate(vpnServiceProvider, usingCustomConfig)
 		if err != nil {
 			return fmt.Errorf("Wireguard server selection settings: %w", err)
 		}

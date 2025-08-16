@@ -117,6 +117,14 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 			return
 		}
 		closers.add("removing IPv6 rule", stepOne, ruleCleanup6)
+
+		// Add suppress_prefixlength rule for IPv6 as well
+		suppressCleanup6, err := w.addSuppressPrefixLengthRule(unix.AF_INET6)
+		if err != nil {
+			waitError <- fmt.Errorf("adding IPv6 suppress_prefixlength rule: %w", err)
+			return
+		}
+		closers.add("removing IPv6 suppress_prefixlength rule", stepOne, suppressCleanup6)
 	}
 
 	ruleCleanup, err := w.addRule(w.settings.RulePriority,
@@ -127,6 +135,15 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	}
 
 	closers.add("removing IPv4 rule", stepOne, ruleCleanup)
+
+	// Add suppress_prefixlength rule for proper policy routing (like wg-quick does)
+	suppressCleanup, err := w.addSuppressPrefixLengthRule(unix.AF_INET)
+	if err != nil {
+		waitError <- fmt.Errorf("adding suppress_prefixlength rule: %w", err)
+		return
+	}
+	closers.add("removing suppress_prefixlength rule", stepOne, suppressCleanup)
+
 	w.logger.Info("Wireguard setup is complete. " +
 		"Note Wireguard is a silent protocol and it may or may not work, without giving any error message. " +
 		"Typically i/o timeout errors indicate the Wireguard connection is not working.")

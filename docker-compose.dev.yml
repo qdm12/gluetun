@@ -1,0 +1,92 @@
+services:
+  gluetun:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gluetun-dev
+    container_name: gluetun-custom
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      # Mount your WireGuard config file
+      - /home/daniel/wg10.conf:/gluetun/custom.conf:ro
+    environment:
+      # Custom WireGuard config settings
+      - WIREGUARD_CUSTOM_CONFIG_FILE=/gluetun/custom.conf
+      - VPN_TYPE=wireguard
+      - VPN_SERVICE_PROVIDER=custom
+      
+      # Optional settings
+      - LOG_LEVEL=debug
+      - HEALTHCHECK_VPN_DURATION_INITIAL=60s
+      - HEALTH_SERVER_ADDRESS=:9999
+      - CONTROL_SERVER_ADDRESS=:8000
+      
+      # Try bypassing DNS issues
+      - DOT=off
+      - DNS_KEEP_NAMESERVER=on
+      
+      # Optional: Enable HTTP proxy
+      # - HTTPPROXY=on
+      # - HTTPPROXY_LISTENING_ADDRESS=:8888
+      
+      # Optional: Enable Shadowsocks
+      # - SHADOWSOCKS=on
+      # - SHADOWSOCKS_LISTENING_ADDRESS=:8388
+      
+    ports:
+      # Health check endpoint
+      - "9999:9999"
+      # Control server endpoint  
+      - "8000:8000"
+      # HTTP proxy (if enabled)
+      - "8888:8888"
+      # Shadowsocks (if enabled)
+      - "8388:8388"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Example service using Gluetun VPN
+  test-client:
+    image: alpine:latest
+    container_name: gluetun-test-client
+    network_mode: "service:gluetun"
+    depends_on:
+      - gluetun
+    command: >
+      sh -c "
+        echo 'Waiting for VPN connection...' &&
+        sleep 30 &&
+        echo 'Testing VPN connection:' &&
+        wget -qO- https://ipinfo.io/ip &&
+        echo '' &&
+        echo 'Keeping container alive...' &&
+        tail -f /dev/null
+      "
+    restart: unless-stopped
+
+  # Example: qBittorrent through VPN
+  # qbittorrent:
+  #   image: lscr.io/linuxserver/qbittorrent:latest
+  #   container_name: qbittorrent-vpn
+  #   network_mode: "service:gluetun"
+  #   depends_on:
+  #     - gluetun
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=Europe/Stockholm
+  #     - WEBUI_PORT=8080
+  #   volumes:
+  #     - ./qbittorrent/config:/config
+  #     - ./qbittorrent/downloads:/downloads
+  #   ports:
+  #     - "8080:8080"
+  #   restart: unless-stopped

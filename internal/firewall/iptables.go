@@ -132,9 +132,20 @@ func (c *Config) acceptInputToSubnet(ctx context.Context, intf string,
 }
 
 func (c *Config) acceptOutputThroughInterface(ctx context.Context, intf string, remove bool) error {
-	return c.runMixedIptablesInstruction(ctx, fmt.Sprintf(
+	err := c.runMixedIptablesInstruction(ctx, fmt.Sprintf(
 		"%s OUTPUT -o %s -j ACCEPT", appendOrDelete(remove), intf,
 	))
+	if err != nil {
+		return err
+	}
+
+	// Add NAT masquerading for VPN interface
+	if intf != "lo" { // Don't masquerade loopback traffic
+		return c.runMixedIptablesInstruction(ctx, fmt.Sprintf(
+			"-t nat %s POSTROUTING -o %s -j MASQUERADE", appendOrDelete(remove), intf,
+		))
+	}
+	return nil
 }
 
 func (c *Config) acceptEstablishedRelatedTraffic(ctx context.Context, remove bool) error {
