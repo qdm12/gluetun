@@ -20,8 +20,10 @@ func (s *Server) Run(ctx context.Context, ready chan<- struct{}, done chan<- str
 
 	crashed := make(chan struct{})
 	shutdownDone := make(chan struct{})
+	listenCtx, listenCancel := context.WithCancel(ctx)
 	go func() {
 		defer close(shutdownDone)
+		defer listenCancel()
 		select {
 		case <-ctx.Done():
 		case <-crashed:
@@ -37,7 +39,8 @@ func (s *Server) Run(ctx context.Context, ready chan<- struct{}, done chan<- str
 		}
 	}()
 
-	listener, err := net.Listen("tcp", s.address)
+	listenConfig := &net.ListenConfig{}
+	listener, err := listenConfig.Listen(listenCtx, "tcp", s.address)
 	if err != nil {
 		close(s.addressSet)
 		close(crashed) // stop shutdown goroutine

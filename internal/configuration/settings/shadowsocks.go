@@ -15,7 +15,7 @@ type Shadowsocks struct {
 	// It defaults to false, and cannot be nil in the internal state.
 	Enabled *bool
 	// Settings are settings for the TCP+UDP server.
-	tcpudp.Settings
+	Settings tcpudp.Settings
 }
 
 func (s Shadowsocks) validate() (err error) {

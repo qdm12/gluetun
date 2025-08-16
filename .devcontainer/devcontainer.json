@@ -82,6 +82,9 @@
                 "gopls": {
                     "usePlaceholders": false,
                     "staticcheck": true,
+                    "ui.diagnostic.analyses": {
+                        "ST1000": false
+                    },
                     "formatting.gofumpt": true,
                 },
                 "go.lintTool": "golangci-lint",

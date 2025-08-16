@@ -19,16 +19,16 @@ It works on Linux, Windows (WSL2) and OSX.
     mkdir -p ~/.ssh
     ```
 
-1. **For Docker on OSX**: ensure the project directory and your home directory `~` are accessible by Docker.
+1. **For OSX hosts**: ensure the project directory and your home directory `~` are accessible by Docker.
 1. Open the command palette in Visual Studio Code (CTRL+SHIFT+P).
-1. Select `Dev Containers: Open Folder in Container...` and choose the project directory.
+1. Select `Dev-Containers: Open Folder in Container...` and choose the project directory.
 
 ## Customization
 
 For any customization to take effect, you should "rebuild and reopen":
 
 1. Open the command palette in Visual Studio Code (CTRL+SHIFT+P)
-2. Select `Dev Containers: Rebuild Container`
+2. Select `Dev-Containers: Rebuild Container`
 
 Changes you can make are notably:
 

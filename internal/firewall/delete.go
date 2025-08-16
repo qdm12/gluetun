@@ -16,7 +16,7 @@ func isDeleteMatchInstruction(instruction string) bool {
 	fields := strings.Fields(instruction)
 	for i, field := range fields {
 		switch {
-		case field != "-D" && field != "--delete": //nolint:goconst
+		case field != "-D" && field != "--delete":
 			continue
 		case i == len(fields)-1: // malformed: missing chain name
 			return false

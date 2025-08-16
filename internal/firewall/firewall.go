@@ -9,7 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/routing"
 )
 
-type Config struct { //nolint:maligned
+type Config struct {
 	runner         CmdRunner
 	logger         Logger
 	iptablesMutex  sync.Mutex

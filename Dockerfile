@@ -1,14 +1,14 @@
 ARG ALPINE_VERSION=3.20
 ARG GO_ALPINE_VERSION=3.20
 ARG GO_VERSION=1.23
-ARG XCPUTRANSLATE_VERSION=v0.6.0
-ARG GOLANGCI_LINT_VERSION=v1.61.0
+ARG XCPUTRANSLATE_VERSION=v0.9.0
+ARG GOLANGCI_LINT_VERSION=v2.4.0
 ARG MOCKGEN_VERSION=v1.6.0
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=${BUILDPLATFORM} qmcgaw/xcputranslate:${XCPUTRANSLATE_VERSION} AS xcputranslate
-FROM --platform=${BUILDPLATFORM} qmcgaw/binpot:golangci-lint-${GOLANGCI_LINT_VERSION} AS golangci-lint
-FROM --platform=${BUILDPLATFORM} qmcgaw/binpot:mockgen-${MOCKGEN_VERSION} AS mockgen
+FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/xcputranslate:${XCPUTRANSLATE_VERSION} AS xcputranslate
+FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:golangci-lint-${GOLANGCI_LINT_VERSION} AS golangci-lint
+FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:mockgen-${MOCKGEN_VERSION} AS mockgen
 
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}-alpine${GO_ALPINE_VERSION} AS base
 COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
@@ -32,7 +32,7 @@ ENTRYPOINT go test -race -coverpkg=./... -coverprofile=coverage.txt -covermode=a
 
 FROM --platform=${BUILDPLATFORM} base AS lint
 COPY .golangci.yml ./
-RUN golangci-lint run --timeout=10m
+RUN golangci-lint run
 
 FROM --platform=${BUILDPLATFORM} base AS mocks
 RUN git init && \

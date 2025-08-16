@@ -17,7 +17,7 @@ import (
 	"github.com/qdm12/gotree"
 )
 
-type ServerSelection struct { //nolint:maligned
+type ServerSelection struct {
 	// VPN is the VPN type which can be 'openvpn'
 	// or 'wireguard'. It cannot be the empty string
 	// in the internal state.
@@ -354,11 +354,8 @@ func (ss *ServerSelection) setDefaults(vpnProvider string, portForwardingEnabled
 	ss.SecureCoreOnly = gosettings.DefaultPointer(ss.SecureCoreOnly, false)
 	ss.TorOnly = gosettings.DefaultPointer(ss.TorOnly, false)
 	ss.MultiHopOnly = gosettings.DefaultPointer(ss.MultiHopOnly, false)
-	defaultPortForwardOnly := false
-	if portForwardingEnabled && helpers.IsOneOf(vpnProvider,
-		providers.PrivateInternetAccess, providers.Protonvpn) {
-		defaultPortForwardOnly = true
-	}
+	defaultPortForwardOnly := portForwardingEnabled &&
+		helpers.IsOneOf(vpnProvider, providers.PrivateInternetAccess, providers.Protonvpn)
 	ss.PortForwardOnly = gosettings.DefaultPointer(ss.PortForwardOnly, defaultPortForwardOnly)
 	ss.OpenVPN.setDefaults(vpnProvider)
 	ss.Wireguard.setDefaults()
