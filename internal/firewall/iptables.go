@@ -283,6 +283,7 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 			_ = c.runIptablesInstruction(ctx, flipRule(rule))
 		}
 	}()
+	
 	for _, line := range lines {
 		var ipv4 bool
 		var rule string
@@ -313,6 +314,21 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 			rule = flipRule(rule)
 		}
 
+		// Check if this rule was already applied (avoid duplicates)
+		if !remove {
+			ruleAlreadyApplied := false
+			for _, appliedRule := range c.appliedPostRules {
+				if appliedRule == line {
+					ruleAlreadyApplied = true
+					break
+				}
+			}
+			if ruleAlreadyApplied {
+				c.logger.Debug("skipping duplicate post-rule: " + line)
+				continue
+			}
+		}
+
 		switch {
 		case ipv4:
 			err = c.runIptablesInstruction(ctx, rule)
@@ -326,6 +342,11 @@ func (c *Config) runUserPostRules(ctx context.Context, filepath string, remove b
 		}
 
 		successfulRules = append(successfulRules, rule)
+		
+		// Track applied rules (only when adding, not removing)
+		if !remove {
+			c.appliedPostRules = append(c.appliedPostRules, line)
+		}
 	}
 	return nil
 }

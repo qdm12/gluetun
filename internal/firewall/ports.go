@@ -42,6 +42,11 @@ func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (
 	netInterfaces[intf] = struct{}{}
 	c.allowedInputPorts[port] = netInterfaces
 
+	// Apply post-rules only once after adding the port, and only if not already applied
+	if err := c.applyPostRulesOnce(ctx); err != nil {
+		c.logger.Warn("failed to apply post-rules after adding port: " + err.Error())
+	}
+
 	return nil
 }
 
