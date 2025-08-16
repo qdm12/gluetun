@@ -15,13 +15,10 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 
 	timeoutIndex := 0
 	healthcheckTimeouts := []time.Duration{
-		2 * time.Second,
-		4 * time.Second,
-		6 * time.Second,
-		8 * time.Second,
+		30 * time.Second,
 		// This can be useful when the connection is under stress
 		// See https://github.com/qdm12/gluetun/issues/2270
-		10 * time.Second,
+		60 * time.Second,
 	}
 	s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 
@@ -43,7 +40,7 @@ func (s *Server) runHealthcheckLoop(ctx context.Context, done chan<- struct{}) {
 			s.vpn.healthyTimer.Stop()
 			s.vpn.healthyWait = *s.config.VPN.Initial
 		case previousErr == nil && err != nil: // First failure
-			s.logger.Debug("unhealthy: " + err.Error())
+			s.logger.Info("unhealthy: " + err.Error())
 			s.vpn.healthyTimer.Stop()
 			s.vpn.healthyTimer = time.NewTimer(s.vpn.healthyWait)
 		case previousErr != nil && err != nil: // Nth failure
