@@ -1,13 +1,13 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+    "version": "2.0.0",
+    "tasks": [
         {
-            "name": "Update a VPN provider servers data",
-            "type": "go",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "program": "cmd/gluetun/main.go",
+            "label": "Update a VPN provider servers data",
+            "type": "shell",
+            "command": "go",
             "args": [
+                "run",
+                "./cmd/gluetun/main.go",
                 "update",
                 "${input:updateMode}",
                 "-providers",
