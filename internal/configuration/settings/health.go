@@ -34,6 +34,8 @@ type Health struct {
 	SuccessWait time.Duration
 	// VPN has health settings specific to the VPN loop.
 	VPN HealthyWait
+	// Disable the healthcheck server loop. Useful for environments like Kubernetes which have their own healthcheck loops.
+	DisableLoop *bool
 }
 
 func (h Health) Validate() (err error) {
@@ -58,6 +60,7 @@ func (h *Health) copy() (copied Health) {
 		TargetAddress:     h.TargetAddress,
 		SuccessWait:       h.SuccessWait,
 		VPN:               h.VPN.copy(),
+		DisableLoop:       gosettings.CopyPointer(h.DisableLoop),
 	}
 }
 
@@ -71,6 +74,7 @@ func (h *Health) OverrideWith(other Health) {
 	h.TargetAddress = gosettings.OverrideWithComparable(h.TargetAddress, other.TargetAddress)
 	h.SuccessWait = gosettings.OverrideWithComparable(h.SuccessWait, other.SuccessWait)
 	h.VPN.overrideWith(other.VPN)
+	h.DisableLoop = gosettings.OverrideWithPointer(h.DisableLoop, other.DisableLoop)
 }
 
 func (h *Health) SetDefaults() {
@@ -83,6 +87,7 @@ func (h *Health) SetDefaults() {
 	const defaultSuccessWait = 5 * time.Second
 	h.SuccessWait = gosettings.DefaultComparable(h.SuccessWait, defaultSuccessWait)
 	h.VPN.setDefaults()
+	h.DisableLoop = gosettings.DefaultPointer(h.DisableLoop, false)
 }
 
 func (h Health) String() string {
@@ -97,6 +102,7 @@ func (h Health) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Read header timeout: %s", h.ReadHeaderTimeout)
 	node.Appendf("Read timeout: %s", h.ReadTimeout)
 	node.AppendNode(h.VPN.toLinesNode("VPN"))
+	node.Appendf("Disable loop: %s", gosettings.BoolToYesNo(h.DisableLoop))
 	return node
 }
 
@@ -104,16 +110,17 @@ func (h *Health) Read(r *reader.Reader) (err error) {
 	h.ServerAddress = r.String("HEALTH_SERVER_ADDRESS")
 	h.TargetAddress = r.String("HEALTH_TARGET_ADDRESS",
 		reader.RetroKeys("HEALTH_ADDRESS_TO_PING"))
-
 	h.SuccessWait, err = r.Duration("HEALTH_SUCCESS_WAIT_DURATION")
 	if err != nil {
 		return err
 	}
-
 	err = h.VPN.read(r)
 	if err != nil {
 		return fmt.Errorf("VPN health settings: %w", err)
 	}
-
+	h.DisableLoop, err = r.BoolPtr("HEALTH_SERVER_DISABLE_LOOP")
+	if err != nil {
+		return err
+	}
 	return nil
 }
