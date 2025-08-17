@@ -13,6 +13,17 @@
                 "-providers",
                 "${input:provider}"
             ],
+        },
+        {
+            "label": "Add a Gluetun Github Git remote",
+            "type": "shell",
+            "command": "git",
+            "args": [
+                "remote",
+                "add",
+                "${input:githubRemoteUsername}",
+                "git@github.com:${input:githubRemoteUsername}/gluetun.git"
+            ],
         }
     ],
     "inputs": [
@@ -30,6 +41,11 @@
                 "-enduser"
             ],
             "default": "-maintainer"
+        },
+        {
+            "id": "githubRemoteUsername",
+            "type": "promptString",
+            "description": "Please enter a Github username",
         },
     ]
 }
