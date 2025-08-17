@@ -89,8 +89,11 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	}
 
 	// Validate session response has required fields
-	if pmSession.AccessToken == "" || pmSession.UID == "" {
-		return data, fmt.Errorf("invalid session response: missing AccessToken or UID")
+	switch {
+	case pmSession.AccessToken == "":
+		return data, fmt.Errorf("session response has no value for the AccessToken field")
+	case pmSession.UID == "":
+		return data, fmt.Errorf("session response has no value for the UID field")
 	}
 
 	if err := sessionResponse.Body.Close(); err != nil {
