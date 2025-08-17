@@ -32,9 +32,14 @@ func (w *Wireguard) addRoutes(link netlink.Link, destinations []netip.Prefix,
 func (w *Wireguard) addRoute(link netlink.Link, dst netip.Prefix,
 	firewallMark uint32,
 ) (err error) {
+	family := netlink.FamilyV4
+	if dst.Addr().Is6() {
+		family = netlink.FamilyV6
+	}
 	route := netlink.Route{
 		LinkIndex: link.Index,
 		Dst:       dst,
+		Family:    family,
 		Table:     int(firewallMark),
 	}
 
