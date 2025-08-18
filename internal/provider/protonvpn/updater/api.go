@@ -1,6 +1,7 @@
 package updater
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -45,6 +46,11 @@ type protonSession struct {
 	LocalID      int64         `json:"LocalID"`
 }
 
+// Session request structure
+type sessionRequest struct {
+	Scope []string `json:"Scope"`
+}
+
 func fetchAPI(ctx context.Context, client *http.Client) (
 	data apiData, err error,
 ) {
@@ -55,11 +61,23 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	const sessionsURL = "https://account.proton.me/api/auth/v4/sessions"
 
 	// Old Logicals API endpoint: https://api.protonmail.ch/vpn/logicals
-	// New Logicals API endpoint: https://account.proton.me/api/vpn/v1/logicals with SecureCoreFilter
-
+	// New Logicals API endpoint: https://account.proton.me/api/vpn/v1/logicals
+	// SecureCoreFilter=all includes both regular and Secure Core servers
+	// SecureCoreFilter=1 would only include Secure Core servers
+	// SecureCoreFilter=0 would only include regular servers
 	const url = "https://account.proton.me/api/vpn/v1/logicals?SecureCoreFilter=all"
 
-	sessionRequest, err := http.NewRequestWithContext(ctx, http.MethodPost, sessionsURL, nil)
+	// Create request body with VPN scope
+	reqBody := sessionRequest{
+		Scope: []string{"vpn"},
+	}
+	
+	requestBodyBytes, err := json.Marshal(reqBody)
+	if err != nil {
+		return data, fmt.Errorf("marshaling session request body: %w", err)
+	}
+
+	sessionRequest, err := http.NewRequestWithContext(ctx, http.MethodPost, sessionsURL, bytes.NewBuffer(requestBodyBytes))
 	if err != nil {
 		return data, err
 	}
@@ -68,6 +86,7 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	// US locale and force an unauthed session, only the x-pm-appversion header
 	// is required the other two headers are optional
 
+	sessionRequest.Header.Set("Content-Type", "application/json")
 	sessionRequest.Header.Set("x-pm-appversion", ProtonAppVer)
 	sessionRequest.Header.Set("x-pm-locale", "en_US")
 	sessionRequest.Header.Set("x-enforce-unauthsession", "true")
@@ -86,6 +105,11 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	sessionDecoder := json.NewDecoder(sessionResponse.Body)
 	if err := sessionDecoder.Decode(&pmSession); err != nil {
 		return data, fmt.Errorf("decoding session response body: %w", err)
+	}
+
+	// Check for API error response
+	if pmSession.Code != 0 {
+		return data, fmt.Errorf("ProtonVPN API error: code %d", pmSession.Code)
 	}
 
 	// Validate session response has required fields
@@ -120,6 +144,12 @@ func fetchAPI(ctx context.Context, client *http.Client) (
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
+		// Try to decode error response body for more detailed error information
+		var responseBody bytes.Buffer
+		if _, err := responseBody.ReadFrom(response.Body); err == nil {
+			return data, fmt.Errorf("%w: %d %s, response: %s", ErrHTTPStatusCodeNotOK,
+				response.StatusCode, response.Status, responseBody.String())
+		}
 		return data, fmt.Errorf("%w: %d %s", ErrHTTPStatusCodeNotOK,
 			response.StatusCode, response.Status)
 	}
