@@ -6,162 +6,206 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
-	"net/netip"
+	"net/url"
 )
 
-var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
+// Define static errors to avoid dynamic error creation
+var (
+	ErrNoAccessToken = errors.New("session response has no value for the AccessToken field")
+	ErrNoUID         = errors.New("session response has no value for the UID field")
+	ErrMissingVPNScope = errors.New("missing VPN scope or insufficient permissions")
+)
 
 type apiData struct {
-	LogicalServers []logicalServer `json:"LogicalServers"`
+	AuthData  authData
+	UserAgent string
 }
 
-type logicalServer struct {
-	Name        string           `json:"Name"`
-	ExitCountry string           `json:"ExitCountry"`
-	Region      *string          `json:"Region"`
-	City        *string          `json:"City"`
-	Servers     []physicalServer `json:"Servers"`
-	Features    uint16           `json:"Features"`
-	Tier        *uint8           `json:"Tier,omitempty"`
-}
-
-type physicalServer struct {
-	EntryIP         netip.Addr `json:"EntryIP"`
-	ExitIP          netip.Addr `json:"ExitIP"`
-	Domain          string     `json:"Domain"`
-	Status          uint8      `json:"Status"`
-	X25519PublicKey string     `json:"X25519PublicKey"`
-}
-
-// Session Structure for the sessions api endpoint
-
-type protonSession struct {
-	Code         int64         `json:"Code"`
-	AccessToken  string        `json:"AccessToken"`
-	RefreshToken string        `json:"RefreshToken"`
-	TokenType    string        `json:"TokenType"`
-	Scopes       []interface{} `json:"Scopes"` // This is likely to be []string, however cannot confirm
-	UID          string        `json:"UID"`
-	LocalID      int64         `json:"LocalID"`
-}
-
-// Session request structure
-type sessionRequest struct {
-	Scope []string `json:"Scope"`
+type authData struct {
+	AccessToken string
+	UID         string
 }
 
 func fetchAPI(ctx context.Context, client *http.Client) (
-	data apiData, err error,
-) {
-	var pmSession protonSession
+	data apiData, err error) {
+	// ProtonVPN API requires a specific user agent
+	data.UserAgent = "gluetun"
 
-	const TokenType = "Bearer"
-	const ProtonAppVer = "web-account@5.0.235.1" // Setting this here incase version needs updating
-	const sessionsURL = "https://account.proton.me/api/auth/v4/sessions"
-
-	// Old Logicals API endpoint: https://api.protonmail.ch/vpn/logicals
-	// New Logicals API endpoint: https://account.proton.me/api/vpn/v1/logicals
-	// SecureCoreFilter=all includes both regular and Secure Core servers
-	// SecureCoreFilter=1 would only include Secure Core servers
-	// SecureCoreFilter=0 would only include regular servers
-	const url = "https://account.proton.me/api/vpn/v1/logicals?SecureCoreFilter=all"
-
-	// Create request body with VPN scope
-	reqBody := sessionRequest{
-		Scope: []string{"vpn"},
+	// Create an unauthenticated session to get access token with VPN scope
+	authData, err := createSession(ctx, client)
+	if err != nil {
+		return data, fmt.Errorf("creating session: %w", err)
 	}
+
+	data.AuthData = authData
+	return data, nil
+}
+
+// protonSession represents the session response from ProtonVPN API.
+type protonSession struct {
+	Code        int    `json:"Code"`
+	AccessToken string `json:"AccessToken"`
+	UID         string `json:"UID"`
+	Scope       string `json:"Scope"`
+	LocalID     int64  `json:"LocalID"`
+}
+
+// sessionRequest structure for creating an unauthenticated session with scope.
+type sessionRequest struct {
+	ClientSecret string `json:"ClientSecret,omitempty"`
+	Payload      string `json:"Payload,omitempty"`
+	Scope        string `json:"Scope,omitempty"` // Add scope field to request VPN access.
+}
+
+func createSession(ctx context.Context, client *http.Client) (
+	authData authData, err error) {
+	// Create an unauthenticated session request with VPN scope
+	// This is required to access the VPN logicals endpoint
+	sessionReq := sessionRequest{
+		Scope: "vpn", // Request VPN scope for accessing VPN resources
+	}
+
+	requestBody, err := json.Marshal(sessionReq)
+	if err != nil {
+		return authData, fmt.Errorf("marshaling session request: %w", err)
+	}
+
+	// Use the sessions endpoint to create an unauthenticated session with VPN scope
+	const sessionURL = "https://api.proton.me/auth/v4/sessions"
 	
-	requestBodyBytes, err := json.Marshal(reqBody)
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, sessionURL, bytes.NewReader(requestBody))
 	if err != nil {
-		return data, fmt.Errorf("marshaling session request body: %w", err)
+		return authData, fmt.Errorf("creating session request: %w", err)
 	}
 
-	sessionRequest, err := http.NewRequestWithContext(ctx, http.MethodPost, sessionsURL, bytes.NewBuffer(requestBodyBytes))
+	// Set required headers
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("x-pm-appversion", "Other")
+	request.Header.Set("x-pm-apiversion", "3")
+	request.Header.Set("User-Agent", "gluetun")
+
+	response, err := client.Do(request)
 	if err != nil {
-		return data, err
+		return authData, fmt.Errorf("doing session request: %w", err)
 	}
+	defer response.Body.Close()
 
-	// Setup API Request Headers, using app information as the web-account app
-	// US locale and force an unauthed session, only the x-pm-appversion header
-	// is required the other two headers are optional
-
-	sessionRequest.Header.Set("Content-Type", "application/json")
-	sessionRequest.Header.Set("x-pm-appversion", ProtonAppVer)
-	sessionRequest.Header.Set("x-pm-locale", "en_US")
-	sessionRequest.Header.Set("x-enforce-unauthsession", "true")
-
-	sessionResponse, err := client.Do(sessionRequest)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		return data, err
-	}
-	defer sessionResponse.Body.Close()
-
-	if sessionResponse.StatusCode != http.StatusOK {
-		return data, fmt.Errorf("%w: %d %s", ErrHTTPStatusCodeNotOK,
-			sessionResponse.StatusCode, sessionResponse.Status)
+		return authData, fmt.Errorf("reading session response body: %w", err)
 	}
 
-	sessionDecoder := json.NewDecoder(sessionResponse.Body)
-	if err := sessionDecoder.Decode(&pmSession); err != nil {
-		return data, fmt.Errorf("decoding session response body: %w", err)
+	if response.StatusCode != http.StatusOK {
+		return authData, fmt.Errorf("HTTP status code %d: %s", response.StatusCode, string(responseBody))
+	}
+
+	var pmSession protonSession
+	err = json.Unmarshal(responseBody, &pmSession)
+	if err != nil {
+		return authData, fmt.Errorf("decoding session response body: %w", err)
 	}
 
 	// Check for API error response
 	if pmSession.Code != 0 {
-		return data, fmt.Errorf("ProtonVPN API error: code %d", pmSession.Code)
+		// Code 1000 typically means missing scope or permissions
+		if pmSession.Code == 1000 {
+			return authData, fmt.Errorf("ProtonVPN API error code %d: %w", pmSession.Code, ErrMissingVPNScope)
+		}
+		return authData, fmt.Errorf("ProtonVPN API error: code %d", pmSession.Code)
 	}
 
 	// Validate session response has required fields
 	switch {
 	case pmSession.AccessToken == "":
-		return data, fmt.Errorf("session response has no value for the AccessToken field")
+		return authData, ErrNoAccessToken
 	case pmSession.UID == "":
-		return data, fmt.Errorf("session response has no value for the UID field")
+		return authData, ErrNoUID
 	}
 
-	if err := sessionResponse.Body.Close(); err != nil {
-		return data, err
-	}
+	authData.AccessToken = pmSession.AccessToken
+	authData.UID = pmSession.UID
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	return authData, nil
+}
+
+// fetchServers fetches the VPN server list using the session.
+func fetchServers(ctx context.Context, client *http.Client, authData authData) (
+	servers []Server, err error) {
+	// Use versioned API endpoint with proper parameters
+	// Using api.proton.me domain to match the session endpoint
+	apiURL := "https://api.proton.me/vpn/v1/logicals"
+	
+	// Add query parameters to match official client
+	params := url.Values{}
+	params.Set("SecureCoreFilter", "all")
+	fullURL := apiURL + "?" + params.Encode()
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, fullURL, nil)
 	if err != nil {
-		return data, err
+		return nil, fmt.Errorf("creating servers request: %w", err)
 	}
 
-	// Setup the auth token from the newly obtained session, the logicals API end
-	// point requires in addition to the auth token two custom header entries
-	// one specifying the app that made the request and the proton uid attached
-	// to the session. If either are missing a HTTP 401 is returned
-	request.Header.Set("Authorization", TokenType+" "+pmSession.AccessToken)
-	request.Header.Set("x-pm-uid", pmSession.UID)
-	request.Header.Set("x-pm-appversion", ProtonAppVer)
+	// Set required headers with authentication
+	request.Header.Set("Authorization", "Bearer "+authData.AccessToken)
+	request.Header.Set("x-pm-uid", authData.UID)
+	request.Header.Set("x-pm-appversion", "Other")
+	request.Header.Set("x-pm-apiversion", "3")
+	request.Header.Set("User-Agent", "gluetun")
 
 	response, err := client.Do(request)
 	if err != nil {
-		return data, err
+		return nil, fmt.Errorf("doing servers request: %w", err)
 	}
 	defer response.Body.Close()
 
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading servers response body: %w", err)
+	}
+
 	if response.StatusCode != http.StatusOK {
-		// Try to decode error response body for more detailed error information
-		var responseBody bytes.Buffer
-		if _, err := responseBody.ReadFrom(response.Body); err == nil {
-			return data, fmt.Errorf("%w: %d %s, response: %s", ErrHTTPStatusCodeNotOK,
-				response.StatusCode, response.Status, responseBody.String())
+		// Check if it's a scope/permission error
+		if response.StatusCode == http.StatusForbidden || response.StatusCode == http.StatusUnauthorized {
+			return nil, fmt.Errorf("access denied (HTTP %d): %w - %s", 
+				response.StatusCode, ErrMissingVPNScope, string(responseBody))
 		}
-		return data, fmt.Errorf("%w: %d %s", ErrHTTPStatusCodeNotOK,
-			response.StatusCode, response.Status)
+		return nil, fmt.Errorf("HTTP status code %d: %s", response.StatusCode, string(responseBody))
 	}
 
-	decoder := json.NewDecoder(response.Body)
-	if err := decoder.Decode(&data); err != nil {
-		return data, fmt.Errorf("decoding response body: %w", err)
+	var serverResponse struct {
+		Code           int      `json:"Code"`
+		LogicalServers []Server `json:"LogicalServers"`
 	}
 
-	if err := response.Body.Close(); err != nil {
-		return data, err
+	err = json.Unmarshal(responseBody, &serverResponse)
+	if err != nil {
+		return nil, fmt.Errorf("decoding servers response: %w", err)
 	}
 
-	return data, nil
+	// Check for API error in response
+	if serverResponse.Code != 0 {
+		if serverResponse.Code == 1000 {
+			return nil, fmt.Errorf("ProtonVPN API error code %d: %w", serverResponse.Code, ErrMissingVPNScope)
+		}
+		return nil, fmt.Errorf("ProtonVPN API error: code %d", serverResponse.Code)
+	}
+
+	return serverResponse.LogicalServers, nil
+}
+
+// Server represents a ProtonVPN server.
+type Server struct {
+	Name     string `json:"Name"`
+	EntryIP  string `json:"EntryIP"`
+	ExitIP   string `json:"ExitIP"`
+	Domain   string `json:"Domain"`
+	Tier     int    `json:"Tier"`
+	Features int    `json:"Features"`
+	Region   string `json:"Region"`
+	City     string `json:"City"`
+	Score    float64 `json:"Score"`
+	Status   int    `json:"Status"`
+	// Add other fields as needed
 }
