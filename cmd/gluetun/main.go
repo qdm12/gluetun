@@ -159,7 +159,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			return cli.FormatServers(args[2:])
 		case "genkey":
 			return cli.GenKey(args[2:])
+		case "-help", "--help":
+			cli.Help()
+			return nil
 		default:
+			cli.Help()
 			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
 		}
 	}
@@ -589,6 +593,7 @@ type clier interface {
 	HealthCheck(ctx context.Context, reader *reader.Reader, warner cli.Warner) error
 	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
 	GenKey(args []string) error
+	Help()
 }
 
 type Tun interface {
