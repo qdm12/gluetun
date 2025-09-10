@@ -132,18 +132,17 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 		// cannot be working if we had a timeout.
 		for i := len(tests) - 2; i >= 0; i-- { //nolint:mnd
 			if tests[i].ok {
-				return pmtudMultiSizes(ctx, ip, tests[i].mtu, tests[i+1].mtu,
+				return pmtudMultiSizes(ctx, ip, tests[i].mtu, tests[i+1].mtu-1,
 					pingTimeout, logger)
 			}
 		}
 
-		// All MTUs failed.
-		if tests[0].mtu == minMTU+1 {
+		if tests[0].mtu == minMTU+1 { // All MTUs failed.
 			return minMTU, nil
 		}
 		// Re-test with MTUs between the minimum MTU
 		// and the smallest next MTU we tested.
-		return pmtudMultiSizes(ctx, ip, minMTU, tests[0].mtu,
+		return pmtudMultiSizes(ctx, ip, minMTU, tests[0].mtu-1,
 			pingTimeout, logger)
 	case err != nil:
 		return 0, fmt.Errorf("collecting ICMP echo replies: %w", err)
@@ -152,14 +151,17 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 	}
 }
 
-// Create the MTU slice of length 8 such that:
+// Create the MTU slice of length 11 such that:
 // - the first element is the minMTU plus the step
 // - the last element is the maxMTU
 // - elements in-between are separated as close to each other
 // - Don't make the minMTU part of the MTUs to test since
 // it's assumed it's already working.
+// The number 11 is chosen to find the final MTU in 3 searches;
+// to find it in 2 searches requires 37 parallel queries which
+// could be blocked by firewalls.
 func makeMTUsToTest(minMTU, maxMTU int) (mtus []int) {
-	const mtusLength = 8
+	const mtusLength = 11 // find the final MTU in 3 searches
 	diff := maxMTU - minMTU
 	switch {
 	case minMTU > maxMTU:
