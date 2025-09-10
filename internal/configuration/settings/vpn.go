@@ -18,6 +18,7 @@ type VPN struct {
 	Provider  Provider  `json:"provider"`
 	OpenVPN   OpenVPN   `json:"openvpn"`
 	Wireguard Wireguard `json:"wireguard"`
+	PMTUD     *bool     `json:"pmtud"`
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
@@ -54,6 +55,7 @@ func (v *VPN) Copy() (copied VPN) {
 		Provider:  v.Provider.copy(),
 		OpenVPN:   v.OpenVPN.copy(),
 		Wireguard: v.Wireguard.copy(),
+		PMTUD:     gosettings.CopyPointer(v.PMTUD),
 	}
 }
 
@@ -62,6 +64,7 @@ func (v *VPN) OverrideWith(other VPN) {
 	v.Provider.overrideWith(other.Provider)
 	v.OpenVPN.overrideWith(other.OpenVPN)
 	v.Wireguard.overrideWith(other.Wireguard)
+	v.PMTUD = gosettings.OverrideWithPointer(v.PMTUD, other.PMTUD)
 }
 
 func (v *VPN) setDefaults() {
@@ -69,6 +72,7 @@ func (v *VPN) setDefaults() {
 	v.Provider.setDefaults()
 	v.OpenVPN.setDefaults(v.Provider.Name)
 	v.Wireguard.setDefaults(v.Provider.Name)
+	v.PMTUD = gosettings.DefaultPointer(v.PMTUD, true)
 }
 
 func (v VPN) String() string {
@@ -85,6 +89,8 @@ func (v VPN) toLinesNode() (node *gotree.Node) {
 	} else {
 		node.AppendNode(v.Wireguard.toLinesNode())
 	}
+
+	node.Appendf("Path MTU discovery update: %s", gosettings.BoolToYesNo(v.PMTUD))
 
 	return node
 }
@@ -105,6 +111,11 @@ func (v *VPN) read(r *reader.Reader) (err error) {
 	err = v.Wireguard.read(r)
 	if err != nil {
 		return fmt.Errorf("wireguard: %w", err)
+	}
+
+	v.PMTUD, err = r.BoolPtr("VPN_PMTUD")
+	if err != nil {
+		return err
 	}
 
 	return nil
