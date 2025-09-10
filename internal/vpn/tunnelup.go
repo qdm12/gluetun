@@ -40,7 +40,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 
 	if data.PMTUD {
 		mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
-		mtuLogger.Info("finding maximum MTU, this takes around 3 seconds")
+		mtuLogger.Info("finding maximum MTU, this can take up to 4 seconds")
 		err := updateToMaxMTU(ctx, data.vpnIntf, data.serverIP, data.vpnType,
 			l.netLinker, mtuLogger)
 		if err != nil {
