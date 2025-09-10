@@ -73,6 +73,7 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 
 	_, err = conn.WriteTo(encodedMessage, &net.IPAddr{IP: ip.AsSlice()})
 	if err != nil {
+		err = wrapConnErr(err, ctx, pingTimeout)
 		return 0, fmt.Errorf("writing ICMP message: %w", err)
 	}
 
@@ -84,6 +85,7 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 		// https://groups.google.com/g/golang-nuts/c/5dy2Q4nPs08/m/KmuSQAGEtG4J
 		bytesRead, _, err := conn.ReadFrom(buffer)
 		if err != nil {
+			err = wrapConnErr(err, ctx, pingTimeout)
 			return 0, fmt.Errorf("reading from ICMP connection: %w", err)
 		}
 		packetBytes := buffer[:bytesRead]
@@ -135,7 +137,7 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 			if inboundID == outboundID {
 				return physicalLinkMTU, nil
 			}
-			logger.Debug("discarding received ICMP echo reply with id %d mismatching sent id %d",
+			logger.Debugf("discarding received ICMP echo reply with id %d mismatching sent id %d",
 				inboundID, outboundID)
 			continue
 		default:
