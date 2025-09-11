@@ -37,7 +37,7 @@ func PathMTUDiscover(ctx context.Context, ip netip.Addr,
 		switch {
 		case err == nil:
 			return mtu, nil
-		case errors.Is(err, net.ErrClosed): // blackhole
+		case errors.Is(err, net.ErrClosed) || errors.Is(err, ErrICMPCommunicationAdministrativelyProhibited): // blackhole
 		default:
 			return 0, fmt.Errorf("finding IPv4 next hop MTU: %w", err)
 		}

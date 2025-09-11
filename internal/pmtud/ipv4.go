@@ -104,7 +104,15 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 		switch typedBody := inboundMessage.Body.(type) {
 		case *icmp.DstUnreach:
 			const fragmentationRequiredAndDFFlagSetCode = 4
-			if inboundMessage.Code != fragmentationRequiredAndDFFlagSetCode {
+			const communicationAdministrativelyProhibitedCode = 13
+			switch inboundMessage.Code {
+			case fragmentationRequiredAndDFFlagSetCode:
+			case communicationAdministrativelyProhibitedCode:
+				return 0, fmt.Errorf("%w: %w (code %d)",
+					ErrICMPDestinationUnreachable,
+					ErrICMPCommunicationAdministrativelyProhibited,
+					inboundMessage.Code)
+			default:
 				return 0, fmt.Errorf("%w: code %d",
 					ErrICMPDestinationUnreachable, inboundMessage.Code)
 			}
