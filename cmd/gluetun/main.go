@@ -159,7 +159,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 			return cli.FormatServers(args[2:])
 		case "genkey":
 			return cli.GenKey(args[2:])
-		case "-help", "--help":
+		case "help":
 			cli.Help()
 			return nil
 		default:

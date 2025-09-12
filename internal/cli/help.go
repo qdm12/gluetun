@@ -13,4 +13,5 @@ func (c *CLI) Help() {
 	fmt.Printf("  openvpnconfig  \tPrint the OpenVPN configuration (for debugging)\n")
 	fmt.Printf("  format-servers \tFormat the servers data into a Markdown table\n")
 	fmt.Printf("  genkey         \tGenerate a new 32 bytes Wireguard key (base58 encoded)\n")
+	fmt.Printf("  help			 \tDisplay available options\n")
 }
