@@ -40,8 +40,10 @@ func (c *CLI) RunCommand(ctx context.Context, command string) error {
 }
 
 func (c *CLI) help() {
-	//nolint:lll
-	fmt.Printf("Usage: gluetun [COMMAND [OPTIONS]]\n\nLightweight swiss-army-knife-like VPN client to multiple VPN service providers.\n\nCommands:\n")
+	fmt.Printf("Usage: gluetun [COMMAND [OPTIONS]]\n\n" +
+		"Lightweight swiss-army-knife-like VPN client to multiple VPN service providers.\n\n" +
+		"Commands:\n")
+
 	for _, command := range c.subCommands {
 		fmt.Printf("  %-20s\t%s\n", command.Name(), command.Description())
 	}
