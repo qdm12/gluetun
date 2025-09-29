@@ -4,7 +4,6 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 )
 
-//nolint:lll
 func hardcodedServers() (servers []models.Server) {
 	return []models.Server{
 		{Country: "Albania", Hostname: "albania-ca-version-2.expressnetw.com"},
