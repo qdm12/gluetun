@@ -12,6 +12,8 @@ import (
 	"golang.org/x/net/icmp"
 )
 
+var ErrICMPAllMTUsFailed = errors.New("all MTU sizes tested failed")
+
 // PathMTUDiscover discovers the maximum MTU for the path to the given ip address.
 // If the physicalLinkMTU is zero, it defaults to 1500 which is the ethernet standard MTU.
 // If the pingTimeout is zero, it defaults to 1 second.
@@ -138,7 +140,7 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 		}
 
 		if tests[0].mtu == minMTU+1 { // All MTUs failed.
-			return minMTU, nil
+			return 0, fmt.Errorf("%w", ErrICMPAllMTUsFailed)
 		}
 		// Re-test with MTUs between the minimum MTU
 		// and the smallest next MTU we tested.
