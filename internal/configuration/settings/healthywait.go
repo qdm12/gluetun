@@ -40,7 +40,7 @@ func (h *HealthyWait) overrideWith(other HealthyWait) {
 }
 
 func (h *HealthyWait) setDefaults() {
-	const initialDurationDefault = 6 * time.Second
+	const initialDurationDefault = 60 * time.Second
 	const additionDurationDefault = 5 * time.Second
 	h.Initial = gosettings.DefaultPointer(h.Initial, initialDurationDefault)
 	h.Addition = gosettings.DefaultPointer(h.Addition, additionDurationDefault)
