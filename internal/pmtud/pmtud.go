@@ -158,20 +158,20 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 // to find it in 2 searches requires 37 parallel queries which
 // could be blocked by firewalls.
 func makeMTUsToTest(minMTU, maxMTU int) (mtus []int) {
-	const mtusLength = 11 // find the final MTU in 3 searches
+	const maxMTUsToTest = 11 // find the final MTU in 3 searches
 	diff := maxMTU - minMTU
 	switch {
 	case minMTU > maxMTU:
 		panic("minMTU > maxMTU")
-	case diff <= mtusLength:
+	case diff <= maxMTUsToTest:
 		mtus = make([]int, 0, diff)
 		for mtu := minMTU; mtu <= maxMTU; mtu++ {
 			mtus = append(mtus, mtu)
 		}
 	default:
-		step := float64(diff) / float64(mtusLength-1)
-		mtus = make([]int, 0, mtusLength)
-		for mtu := float64(minMTU); len(mtus) < mtusLength-1; mtu += step {
+		step := float64(diff) / float64(maxMTUsToTest-1)
+		mtus = make([]int, 0, maxMTUsToTest)
+		for mtu := float64(minMTU); len(mtus) < maxMTUsToTest-1; mtu += step {
 			mtus = append(mtus, int(math.Round(mtu)))
 		}
 		mtus = append(mtus, maxMTU) // last element is the maxMTU
