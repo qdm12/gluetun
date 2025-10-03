@@ -95,6 +95,8 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 		return fmt.Errorf("getting VPN interface by name: %w", err)
 	}
 
+	originalMTU := link.MTU
+
 	// Note: no point testing for an MTU of 1500, it will never work due to the VPN
 	// protocol overhead, so start lower than 1500 according to the protocol used.
 	const physicalLinkMTU = 1500
@@ -123,10 +125,9 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	case err == nil:
 		logger.Infof("Setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
 	case errors.Is(err, pmtud.ErrMTUNotFound):
-		const conservativeMTU = 1300
-		vpnLinkMTU = conservativeMTU
-		logger.Infof("Setting VPN interface %s MTU to a conservative MTU of %d (due to: %s)",
-			vpnInterface, conservativeMTU, err)
+		vpnLinkMTU = int(originalMTU)
+		logger.Infof("Reverting VPN interface %s MTU to %d (due to: %s)",
+			vpnInterface, originalMTU, err)
 	default:
 		return fmt.Errorf("path MTU discovering: %w", err)
 	}

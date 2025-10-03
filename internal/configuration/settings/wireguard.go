@@ -45,6 +45,7 @@ type Wireguard struct {
 	// It has been lowered to 1320 following quite a bit of
 	// investigation in the issue:
 	// https://github.com/qdm12/gluetun/issues/2533.
+	// Note this should now be replaced with the PMTUD feature.
 	MTU uint16 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
