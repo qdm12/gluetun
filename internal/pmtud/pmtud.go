@@ -12,12 +12,13 @@ import (
 	"golang.org/x/net/icmp"
 )
 
-var ErrICMPAllMTUsFailed = errors.New("all MTU sizes tested failed")
+var ErrMTUNotFound = errors.New("path MTU discovery failed to find MTU")
 
 // PathMTUDiscover discovers the maximum MTU for the path to the given ip address.
 // If the physicalLinkMTU is zero, it defaults to 1500 which is the ethernet standard MTU.
 // If the pingTimeout is zero, it defaults to 1 second.
 // If the logger is nil, a no-op logger is used.
+// It returns [ErrMTUNotFound] if the MTU could not be determined.
 func PathMTUDiscover(ctx context.Context, ip netip.Addr,
 	physicalLinkMTU int, pingTimeout time.Duration, logger Logger) (
 	mtu int, err error,
@@ -90,7 +91,7 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 	}
 
 	mtusToTest := makeMTUsToTest(minMTU, maxPossibleMTU)
-	if len(mtusToTest) == 0 {
+	if len(mtusToTest) == 1 { // only minMTU because minMTU == maxPossibleMTU
 		return minMTU, nil
 	}
 	logger.Debugf("testing the following MTUs: %v", mtusToTest)
@@ -139,13 +140,8 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 			}
 		}
 
-		if tests[0].mtu == minMTU+1 { // All MTUs failed.
-			return 0, fmt.Errorf("%w", ErrICMPAllMTUsFailed)
-		}
-		// Re-test with MTUs between the minimum MTU
-		// and the smallest next MTU we tested.
-		return pmtudMultiSizes(ctx, ip, minMTU, tests[0].mtu-1,
-			pingTimeout, logger)
+		// All MTUs failed.
+		return 0, fmt.Errorf("%w: ICMP might be blocked", ErrMTUNotFound)
 	case err != nil:
 		return 0, fmt.Errorf("collecting ICMP echo replies: %w", err)
 	default:
@@ -154,12 +150,11 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 }
 
 // Create the MTU slice of length 11 such that:
-// - the first element is the minMTU plus the step
+// - the first element is the minMTU
 // - the last element is the maxMTU
 // - elements in-between are separated as close to each other
-// - Don't make the minMTU part of the MTUs to test since
-// it's assumed it's already working.
-// The number 11 is chosen to find the final MTU in 3 searches;
+// The number 11 is chosen to find the final MTU in 3 searches,
+// with a total search space of 1728 MTUs which is enough;
 // to find it in 2 searches requires 37 parallel queries which
 // could be blocked by firewalls.
 func makeMTUsToTest(minMTU, maxMTU int) (mtus []int) {
@@ -170,21 +165,14 @@ func makeMTUsToTest(minMTU, maxMTU int) (mtus []int) {
 		panic("minMTU > maxMTU")
 	case diff <= mtusLength:
 		mtus = make([]int, 0, diff)
-		for mtu := minMTU + 1; mtu <= maxMTU; mtu++ {
+		for mtu := minMTU; mtu <= maxMTU; mtu++ {
 			mtus = append(mtus, mtu)
 		}
-	case diff < mtusLength*2:
-		step := float64(diff) / float64(mtusLength)
-		mtus = make([]int, 0, mtusLength)
-		for mtu := float64(minMTU) + step; len(mtus) < mtusLength-1; mtu += step {
-			mtus = append(mtus, int(math.Round(mtu)))
-		}
-		mtus = append(mtus, maxMTU) // last element is the maxMTU
 	default:
-		step := diff / mtusLength
+		step := float64(diff) / float64(mtusLength-1)
 		mtus = make([]int, 0, mtusLength)
-		for mtu := minMTU + step; len(mtus) < mtusLength-1; mtu += step {
-			mtus = append(mtus, mtu)
+		for mtu := float64(minMTU); len(mtus) < mtusLength-1; mtu += step {
+			mtus = append(mtus, int(math.Round(mtu)))
 		}
 		mtus = append(mtus, maxMTU) // last element is the maxMTU
 	}

@@ -120,7 +120,13 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	const pingTimeout = time.Second
 	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, serverIP, vpnLinkMTU, pingTimeout, logger)
 	if err != nil {
-		return fmt.Errorf("path MTU discovering: %w", err)
+		if errors.Is(err, pmtud.ErrMTUNotFound) {
+			const conservativeMTU = 1300
+			vpnLinkMTU = conservativeMTU
+			logger.Debugf("using a conservative MTU of %d (%s)", conservativeMTU, err)
+		} else {
+			return fmt.Errorf("path MTU discovering: %w", err)
+		}
 	}
 
 	err = netlinker.LinkSetMTU(link, vpnLinkMTU)
