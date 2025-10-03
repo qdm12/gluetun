@@ -18,10 +18,6 @@ type tunnelUpData struct {
 	// vpnIntf is the name of the VPN network interface
 	// which is used both for port forwarding and MTU discovery
 	vpnIntf string
-	// Path MTU discovery fields:
-	// PMTUD indicates whether to perform Path MTU Discovery and
-	// adjust the VPN interface MTU accordingly.
-	PMTUD bool
 	// serverIP is used for path MTU discovery
 	serverIP netip.Addr
 	// vpnType is used for path MTU discovery to find the protocol overhead.
@@ -38,14 +34,12 @@ type tunnelUpData struct {
 func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 	l.client.CloseIdleConnections()
 
-	if data.PMTUD {
-		mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
-		mtuLogger.Info("finding maximum MTU, this can take up to 4 seconds")
-		err := updateToMaxMTU(ctx, data.vpnIntf, data.serverIP, data.vpnType,
-			l.netLinker, mtuLogger)
-		if err != nil {
-			l.logger.Error(err.Error())
-		}
+	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
+	mtuLogger.Info("finding maximum MTU, this can take up to 4 seconds")
+	err := updateToMaxMTU(ctx, data.vpnIntf, data.serverIP, data.vpnType,
+		l.netLinker, mtuLogger)
+	if err != nil {
+		l.logger.Error(err.Error())
 	}
 
 	for _, vpnPort := range l.vpnInputPorts {
@@ -64,7 +58,7 @@ func (l *Loop) onTunnelUp(ctx context.Context, data tunnelUpData) {
 		}
 	}
 
-	err := l.publicip.RunOnce(ctx)
+	err = l.publicip.RunOnce(ctx)
 	if err != nil {
 		l.logger.Error("getting public IP address information: " + err.Error())
 	}

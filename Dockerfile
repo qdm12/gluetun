@@ -77,7 +77,6 @@ ENV VPN_SERVICE_PROVIDER=pia \
     VPN_TYPE=openvpn \
     # Common VPN options
     VPN_INTERFACE=tun0 \
-    VPN_PMTUD=on \
     # OpenVPN
     OPENVPN_ENDPOINT_IP= \
     OPENVPN_ENDPOINT_PORT= \
