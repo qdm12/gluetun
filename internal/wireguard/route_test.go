@@ -37,6 +37,7 @@ func Test_Wireguard_addRoute(t *testing.T) {
 			expectedRoute: netlink.Route{
 				LinkIndex: linkIndex,
 				Dst:       ipPrefix,
+				Family:    netlink.FamilyV4,
 				Table:     firewallMark,
 			},
 		},
@@ -49,6 +50,7 @@ func Test_Wireguard_addRoute(t *testing.T) {
 			expectedRoute: netlink.Route{
 				LinkIndex: linkIndex,
 				Dst:       ipPrefix,
+				Family:    netlink.FamilyV4,
 				Table:     firewallMark,
 			},
 			routeAddErr: errDummy,
