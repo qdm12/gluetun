@@ -63,7 +63,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	c.stop = cancel
 	done := make(chan struct{})
 	c.done = done
-	const smallCheckPeriod = 5 * time.Second
+	const smallCheckPeriod = 15 * time.Second
 	smallCheckTimer := time.NewTimer(smallCheckPeriod)
 	const fullCheckPeriod = 5 * time.Minute
 	fullCheckTimer := time.NewTimer(fullCheckPeriod)
