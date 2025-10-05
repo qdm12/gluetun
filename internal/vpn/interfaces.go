@@ -99,3 +99,12 @@ type CmdStarter interface {
 		stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, startErr error)
 }
+
+type HealthChecker interface {
+	Start(ctx context.Context) (runError <-chan error, err error)
+	Stop() error
+}
+
+type HealthServer interface {
+	SetError(err error)
+}

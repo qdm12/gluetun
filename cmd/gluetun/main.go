@@ -414,6 +414,12 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return fmt.Errorf("starting public ip loop: %w", err)
 	}
 
+	healthLogger := logger.New(log.SetComponent("healthcheck"))
+	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger)
+	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
+		"HTTP health server", goroutine.OptionTimeout(defaultShutdownTimeout))
+	go healthcheckServer.Run(healthServerCtx, healthServerDone)
+
 	updaterLogger := logger.New(log.SetComponent("updater"))
 
 	unzipper := unzip.New(httpClient)
@@ -422,10 +428,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	providers := provider.NewProviders(storage, time.Now, updaterLogger,
 		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(), openvpnFileExtractor)
 
+	healthChecker := healthcheck.NewChecker(allSettings.Health.TargetAddress, healthLogger)
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
-		providers, storage, ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper,
-		cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
+		providers, storage, healthChecker, healthcheckServer, ovpnConf, netLinker, firewallConf,
+		routingConf, portForwardLooper, cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
 		"vpn", goroutine.OptionTimeout(time.Second))
@@ -475,12 +482,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go httpServer.Run(httpServerCtx, httpServerReady, httpServerDone)
 	<-httpServerReady
 	controlGroupHandler.Add(httpServerHandler)
-
-	healthLogger := logger.New(log.SetComponent("healthcheck"))
-	healthcheckServer := healthcheck.NewServer(allSettings.Health, healthLogger, vpnLooper)
-	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
-		"HTTP health server", goroutine.OptionTimeout(defaultShutdownTimeout))
-	go healthcheckServer.Run(healthServerCtx, healthServerDone)
 
 	orderHandler := goshutdown.NewOrderHandler("gluetun",
 		order.OptionTimeout(totalShutdownTimeout),

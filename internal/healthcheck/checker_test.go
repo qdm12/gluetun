@@ -7,12 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Server_healthCheck(t *testing.T) {
+func Test_Checker_check(t *testing.T) {
 	t.Parallel()
 
 	t.Run("canceled real dialer", func(t *testing.T) {
@@ -21,17 +20,15 @@ func Test_Server_healthCheck(t *testing.T) {
 		dialer := &net.Dialer{}
 		const address = "cloudflare.com:443"
 
-		server := &Server{
-			dialer: dialer,
-			config: settings.Health{
-				TargetAddress: address,
-			},
+		checker := &Checker{
+			dialer:        dialer,
+			targetAddress: address,
 		}
 
 		canceledCtx, cancel := context.WithCancel(context.Background())
 		cancel()
 
-		err := server.healthCheck(canceledCtx)
+		err := checker.check(canceledCtx)
 
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "operation was canceled")
@@ -54,14 +51,12 @@ func Test_Server_healthCheck(t *testing.T) {
 		listeningAddress := listener.Addr()
 
 		dialer := &net.Dialer{}
-		server := &Server{
-			dialer: dialer,
-			config: settings.Health{
-				TargetAddress: listeningAddress.String(),
-			},
+		checker := &Checker{
+			dialer:        dialer,
+			targetAddress: listeningAddress.String(),
 		}
 
-		err = server.healthCheck(ctx)
+		err = checker.check(ctx)
 
 		assert.NoError(t, err)
 	})

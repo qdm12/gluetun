@@ -57,13 +57,7 @@ func Test_Settings_String(t *testing.T) {
 |   └── Log level: INFO
 ├── Health settings:
 |   ├── Server listening address: 127.0.0.1:9999
-|   ├── Target address: cloudflare.com:443
-|   ├── Duration to wait after success: 5s
-|   ├── Read header timeout: 100ms
-|   ├── Read timeout: 500ms
-|   └── VPN wait durations:
-|       ├── Initial duration: 6s
-|       └── Additional duration: 5s
+|   └── Target address: cloudflare.com:443
 ├── Shadowsocks server settings:
 |   └── Enabled: no
 ├── HTTP proxy settings:

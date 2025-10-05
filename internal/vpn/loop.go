@@ -17,6 +17,8 @@ type Loop struct {
 	state         *state.State
 	providers     Providers
 	storage       Storage
+	healthChecker HealthChecker
+	healthServer  HealthServer
 	// Fixed parameters
 	buildInfo     models.BuildInformation
 	versionInfo   bool
@@ -49,7 +51,8 @@ const (
 )
 
 func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint16,
-	providers Providers, storage Storage, openvpnConf OpenVPN,
+	providers Providers, storage Storage, healthChecker HealthChecker,
+	healthServer HealthServer, openvpnConf OpenVPN,
 	netLinker NetLinker, fw Firewall, routing Routing,
 	portForward PortForward, starter CmdStarter,
 	publicip PublicIPLoop, dnsLooper DNSLoop,
@@ -69,6 +72,8 @@ func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint1
 		state:         state,
 		providers:     providers,
 		storage:       storage,
+		healthChecker: healthChecker,
+		healthServer:  healthServer,
 		buildInfo:     buildInfo,
 		versionInfo:   versionInfo,
 		ipv6Supported: ipv6Supported,
