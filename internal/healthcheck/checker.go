@@ -52,7 +52,11 @@ func (c *Checker) SetICMPTargetIP(ip netip.Addr) {
 }
 
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
-	err = c.fullCheck(ctx)
+	// connection isn't under load yet when the checker starts, so a short
+	// 2 seconds timeout suffices and provides quick enough feedback that
+	// the new connection is not working.
+	const timeout = 2 * time.Second
+	err = tcpTLSCheck(ctx, c.dialer, c.targetAddress, timeout)
 	if err != nil {
 		return nil, fmt.Errorf("startup healthcheck: %w", err)
 	}
@@ -123,17 +127,17 @@ func (c *Checker) fullCheck(ctx context.Context) error {
 	const maxTries = 2
 	const timeout = 10 * time.Second
 	check := func(ctx context.Context) error {
-		return tcpTLSCheck(ctx, c.dialer, c.targetAddress)
+		// 10s timeout in case the connection is under stress
+		// See https://github.com/qdm12/gluetun/issues/2270
+		const timeout = 10 * time.Second
+		return tcpTLSCheck(ctx, c.dialer, c.targetAddress, timeout)
 	}
 	return withRetries(ctx, maxTries, timeout, c.logger, "TCP+TLS dial", check)
 }
 
-func tcpTLSCheck(ctx context.Context,
-	dialer *net.Dialer, targetAddress string,
+func tcpTLSCheck(ctx context.Context, dialer *net.Dialer,
+	targetAddress string, timeout time.Duration,
 ) error {
-	// 10s timeout in case the connection is under stress
-	// See https://github.com/qdm12/gluetun/issues/2270
-	const timeout = 10 * time.Second
 	ctx, healthcheckCancel := context.WithTimeout(ctx, timeout)
 	defer healthcheckCancel()
 
