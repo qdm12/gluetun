@@ -44,7 +44,7 @@ func NewChecker(tlsDialAddress string, logger Logger) *Checker {
 }
 
 // SetICMPTargetIP sets the target IP address for ICMP echo requests
-// for the "small" healthchecks. By default the IP address is 1.1.1.1.
+// for the "small" checks. By default the IP address is 1.1.1.1.
 func (c *Checker) SetICMPTargetIP(ip netip.Addr) {
 	c.targetIPMu.Lock()
 	defer c.targetIPMu.Unlock()
@@ -58,9 +58,9 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	const timeout = 2 * time.Second
 	err = tcpTLSCheck(ctx, c.dialer, c.targetAddress, timeout)
 	if err != nil {
-		return nil, fmt.Errorf("startup healthcheck: %w", err)
+		return nil, fmt.Errorf("startup check: %w", err)
 	}
-	c.logger.Debug("initial healthcheck successful")
+	c.logger.Debug("initial check successful")
 
 	ready := make(chan struct{})
 	ctx, cancel := context.WithCancel(context.Background())
@@ -83,20 +83,20 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 				smallCheckTimer.Stop()
 				return
 			case <-smallCheckTimer.C:
-				err := c.smallCheck(ctx)
+				err := c.smallPeriodicCheck(ctx)
 				if err != nil {
-					runErrorCh <- fmt.Errorf("periodic small healthcheck: %w", err)
+					runErrorCh <- fmt.Errorf("periodic small check: %w", err)
 					return
 				}
-				c.logger.Debug("small healthcheck successful")
+				c.logger.Debug("small check successful")
 				smallCheckTimer.Reset(smallCheckPeriod)
 			case <-fullCheckTimer.C:
-				err := c.fullCheck(ctx)
+				err := c.fullPeriodicCheck(ctx)
 				if err != nil {
-					runErrorCh <- fmt.Errorf("periodic full healthcheck: %w", err)
+					runErrorCh <- fmt.Errorf("periodic full check: %w", err)
 					return
 				}
-				c.logger.Debug("full healthcheck successful")
+				c.logger.Debug("full check successful")
 				fullCheckTimer.Reset(fullCheckPeriod)
 			}
 		}
@@ -111,7 +111,7 @@ func (c *Checker) Stop() error {
 	return nil
 }
 
-func (c *Checker) smallCheck(ctx context.Context) error {
+func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	c.targetIPMu.Lock()
 	ip := c.targetIP
 	c.targetIPMu.Unlock()
@@ -123,7 +123,7 @@ func (c *Checker) smallCheck(ctx context.Context) error {
 	return withRetries(ctx, maxTries, timeout, c.logger, "ICMP echo", check)
 }
 
-func (c *Checker) fullCheck(ctx context.Context) error {
+func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 	const maxTries = 2
 	const timeout = 10 * time.Second
 	check := func(ctx context.Context) error {

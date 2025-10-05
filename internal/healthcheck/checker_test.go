@@ -28,7 +28,7 @@ func Test_Checker_fullcheck(t *testing.T) {
 		canceledCtx, cancel := context.WithCancel(context.Background())
 		cancel()
 
-		err := checker.fullCheck(canceledCtx)
+		err := checker.fullPeriodicCheck(canceledCtx)
 
 		require.Error(t, err)
 		assert.EqualError(t, err, "TCP+TLS dial context error: context canceled")
@@ -56,7 +56,7 @@ func Test_Checker_fullcheck(t *testing.T) {
 			targetAddress: listeningAddress.String(),
 		}
 
-		err = checker.fullCheck(ctx)
+		err = checker.fullPeriodicCheck(ctx)
 
 		assert.NoError(t, err)
 	})
