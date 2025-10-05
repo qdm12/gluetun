@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Checker_check(t *testing.T) {
+func Test_Checker_fullcheck(t *testing.T) {
 	t.Parallel()
 
 	t.Run("canceled real dialer", func(t *testing.T) {
@@ -28,7 +28,7 @@ func Test_Checker_check(t *testing.T) {
 		canceledCtx, cancel := context.WithCancel(context.Background())
 		cancel()
 
-		err := checker.check(canceledCtx)
+		err := checker.fullCheck(canceledCtx)
 
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "operation was canceled")
@@ -56,7 +56,7 @@ func Test_Checker_check(t *testing.T) {
 			targetAddress: listeningAddress.String(),
 		}
 
-		err = checker.check(ctx)
+		err = checker.fullCheck(ctx)
 
 		assert.NoError(t, err)
 	})

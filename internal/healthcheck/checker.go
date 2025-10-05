@@ -6,8 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/netip"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/qdm12/gluetun/internal/healthcheck/icmp"
 )
 
 type Checker struct {
@@ -15,14 +19,17 @@ type Checker struct {
 	dialer        *net.Dialer
 
 	// Periodic service
-	logger DebugLogger
+	logger     Logger
+	echoer     *icmp.Echoer
+	targetIP   netip.Addr
+	targetIPMu sync.Mutex
 
 	// Internal periodic service signals
 	stop context.CancelFunc
 	done <-chan struct{}
 }
 
-func NewChecker(tlsDialAddress string, logger DebugLogger) *Checker {
+func NewChecker(tlsDialAddress string, logger Logger) *Checker {
 	return &Checker{
 		targetAddress: tlsDialAddress,
 		dialer: &net.Dialer{
@@ -30,12 +37,22 @@ func NewChecker(tlsDialAddress string, logger DebugLogger) *Checker {
 				PreferGo: true,
 			},
 		},
-		logger: logger,
+		echoer:   icmp.NewEchoer(logger),
+		targetIP: netip.AddrFrom4([4]byte{1, 1, 1, 1}),
+		logger:   logger,
 	}
 }
 
+// SetICMPTargetIP sets the target IP address for ICMP echo requests
+// for the "small" healthchecks. By default the IP address is 1.1.1.1.
+func (c *Checker) SetICMPTargetIP(ip netip.Addr) {
+	c.targetIPMu.Lock()
+	defer c.targetIPMu.Unlock()
+	c.targetIP = ip
+}
+
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
-	err = c.check(ctx)
+	err = c.fullCheck(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("startup healthcheck: %w", err)
 	}
@@ -46,8 +63,10 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	c.stop = cancel
 	done := make(chan struct{})
 	c.done = done
-	const period = 5 * time.Minute
-	timer := time.NewTimer(period)
+	const smallCheckPeriod = 5 * time.Second
+	smallCheckTimer := time.NewTimer(smallCheckPeriod)
+	const fullCheckPeriod = 5 * time.Minute
+	fullCheckTimer := time.NewTimer(fullCheckPeriod)
 	runErrorCh := make(chan error)
 	runError = runErrorCh
 	go func() {
@@ -56,16 +75,25 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 		for {
 			select {
 			case <-ctx.Done():
-				timer.Stop()
+				fullCheckTimer.Stop()
+				smallCheckTimer.Stop()
 				return
-			case <-timer.C:
-				err := c.check(ctx)
+			case <-smallCheckTimer.C:
+				err := c.smallCheck(ctx)
 				if err != nil {
-					runErrorCh <- fmt.Errorf("periodic healthcheck: %w", err)
+					runErrorCh <- fmt.Errorf("periodic small healthcheck: %w", err)
 					return
 				}
-				c.logger.Debug("healthcheck successful")
-				timer.Reset(period)
+				c.logger.Debug("small healthcheck successful")
+				smallCheckTimer.Reset(smallCheckPeriod)
+			case <-fullCheckTimer.C:
+				err := c.fullCheck(ctx)
+				if err != nil {
+					runErrorCh <- fmt.Errorf("periodic full healthcheck: %w", err)
+					return
+				}
+				c.logger.Debug("full healthcheck successful")
+				fullCheckTimer.Reset(fullCheckPeriod)
 			}
 		}
 	}()
@@ -79,7 +107,17 @@ func (c *Checker) Stop() error {
 	return nil
 }
 
-func (c *Checker) check(ctx context.Context) error {
+func (c *Checker) smallCheck(ctx context.Context) error {
+	c.targetIPMu.Lock()
+	ip := c.targetIP
+	c.targetIPMu.Unlock()
+	const timeout = 4 * time.Second // 4 seconds should be enough for an ICMP echo
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	return c.echoer.Echo(ctx, ip)
+}
+
+func (c *Checker) fullCheck(ctx context.Context) error {
 	// 10s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
 	const timeout = 10 * time.Second

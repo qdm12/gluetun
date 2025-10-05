@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"context"
+	"net/netip"
 
 	"github.com/qdm12/dns/v2/pkg/check"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -9,6 +10,8 @@ import (
 )
 
 type tunnelUpData struct {
+	// Healthcheck
+	serverIP netip.Addr
 	// Port forwarding
 	vpnIntf        string
 	serverName     string // used for PIA
@@ -27,6 +30,8 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 			l.logger.Error("cannot allow input port through firewall: " + err.Error())
 		}
 	}
+
+	l.healthChecker.SetICMPTargetIP(data.serverIP)
 
 	healthErrCh, err := l.healthChecker.Start(ctx)
 	l.healthServer.SetError(err)

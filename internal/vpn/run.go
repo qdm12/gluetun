@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/log"
 )
 
@@ -28,17 +29,17 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		var vpnRunner interface {
 			Run(ctx context.Context, waitError chan<- error, tunnelReady chan<- struct{})
 		}
-		var serverName, vpnInterface string
-		var canPortForward bool
+		var vpnInterface string
+		var connection models.Connection
 		var err error
 		subLogger := l.logger.New(log.SetComponent(settings.Type))
 		if settings.Type == vpn.OpenVPN {
 			vpnInterface = settings.OpenVPN.Interface
-			vpnRunner, serverName, canPortForward, err = setupOpenVPN(ctx, l.fw,
+			vpnRunner, connection, err = setupOpenVPN(ctx, l.fw,
 				l.openvpnConf, providerConf, settings, l.ipv6Supported, l.starter, subLogger)
 		} else { // Wireguard
 			vpnInterface = settings.Wireguard.Interface
-			vpnRunner, serverName, canPortForward, err = setupWireguard(ctx, l.netLinker, l.fw,
+			vpnRunner, connection, err = setupWireguard(ctx, l.netLinker, l.fw,
 				providerConf, settings, l.ipv6Supported, subLogger)
 		}
 		if err != nil {
@@ -46,8 +47,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 		tunnelUpData := tunnelUpData{
-			serverName:     serverName,
-			canPortForward: canPortForward,
+			serverIP:       connection.IP,
+			serverName:     connection.ServerName,
+			canPortForward: connection.PortForward,
 			portForwarder:  portForwarder,
 			vpnIntf:        vpnInterface,
 			username:       settings.Provider.PortForwarding.Username,
