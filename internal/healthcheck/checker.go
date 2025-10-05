@@ -197,9 +197,9 @@ func withRetries(ctx context.Context, maxTries uint, tryTimeout time.Duration,
 ) error {
 	try := uint(1)
 	for {
-		ctx, cancel := context.WithTimeout(ctx, tryTimeout)
-		defer cancel()
-		err := check(ctx)
+		checkCtx, cancel := context.WithTimeout(ctx, tryTimeout)
+		err := check(checkCtx)
+		cancel()
 		switch {
 		case err == nil:
 			return nil
