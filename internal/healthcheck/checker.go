@@ -60,7 +60,6 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	if err != nil {
 		return nil, fmt.Errorf("startup check: %w", err)
 	}
-	c.logger.Debug("initial check successful")
 
 	ready := make(chan struct{})
 	ctx, cancel := context.WithCancel(context.Background())
@@ -88,7 +87,6 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 					runErrorCh <- fmt.Errorf("periodic small check: %w", err)
 					return
 				}
-				c.logger.Debug("small check successful")
 				smallCheckTimer.Reset(smallCheckPeriod)
 			case <-fullCheckTimer.C:
 				err := c.fullPeriodicCheck(ctx)
@@ -96,7 +94,6 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 					runErrorCh <- fmt.Errorf("periodic full check: %w", err)
 					return
 				}
-				c.logger.Debug("full check successful")
 				fullCheckTimer.Reset(fullCheckPeriod)
 			}
 		}
