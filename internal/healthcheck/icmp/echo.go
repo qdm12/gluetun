@@ -19,6 +19,7 @@ import (
 
 var (
 	ErrICMPBodyUnsupported  = errors.New("ICMP body type is not supported")
+	ErrICMPDstUnreachable   = errors.New("ICMP destination unreachable")
 	ErrICMPEchoDataMismatch = errors.New("ICMP data mismatch")
 )
 
@@ -155,17 +156,18 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 			return nil, fmt.Errorf("parsing message: %w", err)
 		}
 
-		echoBody, ok := message.Body.(*icmp.Echo)
-		if !ok {
-			return nil, fmt.Errorf("%w: %T", ErrICMPBodyUnsupported, message.Body)
+		switch body := message.Body.(type) {
+		case *icmp.Echo:
+			if id != body.ID {
+				logger.Warnf("ignoring ICMP reply with unexpected ID %d (type: %d, code: %d, length: %d)",
+					body.ID, message.Type, message.Code, len(packetBytes))
+				continue // not the ID we are looking for
+			}
+			return body.Data, nil
+		case *icmp.DstUnreach:
+			return nil, fmt.Errorf("%w (ICMP type 3 code %d)", ErrICMPDstUnreachable, message.Code)
+		default:
+			return nil, fmt.Errorf("%w: %T", ErrICMPBodyUnsupported, body)
 		}
-
-		if id != echoBody.ID {
-			logger.Warnf("ignoring ICMP reply with unexpected ID %d (type: %d, code: %d, length: %d)",
-				echoBody.ID, message.Type, message.Code, len(packetBytes))
-			continue // not the ID we are looking for
-		}
-
-		return echoBody.Data, nil
 	}
 }
