@@ -111,13 +111,26 @@ func (c *Checker) smallCheck(ctx context.Context) error {
 	c.targetIPMu.Lock()
 	ip := c.targetIP
 	c.targetIPMu.Unlock()
-	const timeout = 4 * time.Second // 4 seconds should be enough for an ICMP echo
-	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-	return c.echoer.Echo(ctx, ip)
+	const maxTries = 3
+	const timeout = 3 * time.Second
+	check := func(ctx context.Context) error {
+		return c.echoer.Echo(ctx, ip)
+	}
+	return withRetries(ctx, maxTries, timeout, c.logger, "ICMP echo", check)
 }
 
 func (c *Checker) fullCheck(ctx context.Context) error {
+	const maxTries = 2
+	const timeout = 10 * time.Second
+	check := func(ctx context.Context) error {
+		return tcpTLSCheck(ctx, c.dialer, c.targetAddress)
+	}
+	return withRetries(ctx, maxTries, timeout, c.logger, "TCP+TLS dial", check)
+}
+
+func tcpTLSCheck(ctx context.Context,
+	dialer *net.Dialer, targetAddress string,
+) error {
 	// 10s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
 	const timeout = 10 * time.Second
@@ -126,13 +139,13 @@ func (c *Checker) fullCheck(ctx context.Context) error {
 
 	// TODO use mullvad API if current provider is Mullvad
 
-	address, err := makeAddressToDial(c.targetAddress)
+	address, err := makeAddressToDial(targetAddress)
 	if err != nil {
 		return err
 	}
 
 	const dialNetwork = "tcp4"
-	connection, err := c.dialer.DialContext(ctx, dialNetwork, address)
+	connection, err := dialer.DialContext(ctx, dialNetwork, address)
 	if err != nil {
 		return fmt.Errorf("dialing: %w", err)
 	}
@@ -175,4 +188,29 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 	}
 	address = net.JoinHostPort(host, port)
 	return address, nil
+}
+
+var ErrAllCheckTriesFailed = errors.New("all check tries failed")
+
+func withRetries(ctx context.Context, maxTries uint, tryTimeout time.Duration,
+	warner Logger, checkName string, check func(ctx context.Context) error,
+) error {
+	try := uint(1)
+	for {
+		ctx, cancel := context.WithTimeout(ctx, tryTimeout)
+		defer cancel()
+		err := check(ctx)
+		switch {
+		case err == nil:
+			return nil
+		case try == maxTries:
+			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try, maxTries, err)
+			return fmt.Errorf("%w: %s: after %d attempts", ErrAllCheckTriesFailed, checkName, maxTries)
+		case ctx.Err() != nil:
+			return fmt.Errorf("%s context error: %w", checkName, ctx.Err())
+		default:
+			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try, maxTries, err)
+			try++
+		}
+	}
 }
