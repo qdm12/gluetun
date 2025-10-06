@@ -11,11 +11,15 @@ func (s *Server) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
 	loopDone := make(chan struct{})
-	go s.runHealthcheckLoop(ctx, loopDone)
+	if !*s.config.DisableLoop {
+		go s.runHealthcheckLoop(ctx, loopDone)
+	} else {
+		close(done)
+	}
 
 	server := http.Server{
 		Addr:              s.config.ServerAddress,
-		Handler:           s.handler,
+		Handler:           s.mux,
 		ReadHeaderTimeout: s.config.ReadHeaderTimeout,
 		ReadTimeout:       s.config.ReadTimeout,
 	}

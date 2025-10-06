@@ -3,6 +3,7 @@ package healthcheck
 import (
 	"context"
 	"net"
+	"net/http"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
@@ -14,12 +15,13 @@ type Server struct {
 	dialer  *net.Dialer
 	config  settings.Health
 	vpn     vpnHealth
+	mux     *http.ServeMux
 }
 
 func NewServer(config settings.Health,
 	logger Logger, vpnLoop StatusApplier,
 ) *Server {
-	return &Server{
+	s := &Server{
 		logger:  logger,
 		handler: newHandler(),
 		dialer: &net.Dialer{
@@ -32,7 +34,18 @@ func NewServer(config settings.Health,
 			loop:        vpnLoop,
 			healthyWait: *config.VPN.Initial,
 		},
+		mux: http.NewServeMux(),
 	}
+	s.mux.Handle("/", s.handler)
+	s.mux.HandleFunc("/check/", func(w http.ResponseWriter, r *http.Request) {
+		err := s.healthCheck(r.Context())
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+	return s
 }
 
 type StatusApplier interface {
