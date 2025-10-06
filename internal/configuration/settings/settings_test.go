@@ -57,7 +57,8 @@ func Test_Settings_String(t *testing.T) {
 |   └── Log level: INFO
 ├── Health settings:
 |   ├── Server listening address: 127.0.0.1:9999
-|   └── Target address: cloudflare.com:443
+|   ├── Target address: cloudflare.com:443
+|   └── ICMP target IP: VPN server IP
 ├── Shadowsocks server settings:
 |   └── Enabled: no
 ├── HTTP proxy settings:
