@@ -13,12 +13,13 @@ import (
 )
 
 type Loop struct {
-	statusManager *loopstate.State
-	state         *state.State
-	providers     Providers
-	storage       Storage
-	healthChecker HealthChecker
-	healthServer  HealthServer
+	statusManager  *loopstate.State
+	state          *state.State
+	providers      Providers
+	storage        Storage
+	healthSettings settings.Health
+	healthChecker  HealthChecker
+	healthServer   HealthServer
 	// Fixed parameters
 	buildInfo     models.BuildInformation
 	versionInfo   bool
@@ -51,8 +52,8 @@ const (
 )
 
 func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint16,
-	providers Providers, storage Storage, healthChecker HealthChecker,
-	healthServer HealthServer, openvpnConf OpenVPN,
+	providers Providers, storage Storage, healthSettings settings.Health,
+	healthChecker HealthChecker, healthServer HealthServer, openvpnConf OpenVPN,
 	netLinker NetLinker, fw Firewall, routing Routing,
 	portForward PortForward, starter CmdStarter,
 	publicip PublicIPLoop, dnsLooper DNSLoop,
@@ -68,31 +69,32 @@ func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint1
 	state := state.New(statusManager, vpnSettings)
 
 	return &Loop{
-		statusManager: statusManager,
-		state:         state,
-		providers:     providers,
-		storage:       storage,
-		healthChecker: healthChecker,
-		healthServer:  healthServer,
-		buildInfo:     buildInfo,
-		versionInfo:   versionInfo,
-		ipv6Supported: ipv6Supported,
-		vpnInputPorts: vpnInputPorts,
-		openvpnConf:   openvpnConf,
-		netLinker:     netLinker,
-		fw:            fw,
-		routing:       routing,
-		portForward:   portForward,
-		publicip:      publicip,
-		dnsLooper:     dnsLooper,
-		starter:       starter,
-		logger:        logger,
-		client:        client,
-		start:         start,
-		running:       running,
-		stop:          stop,
-		stopped:       stopped,
-		userTrigger:   true,
-		backoffTime:   defaultBackoffTime,
+		statusManager:  statusManager,
+		state:          state,
+		providers:      providers,
+		storage:        storage,
+		healthSettings: healthSettings,
+		healthChecker:  healthChecker,
+		healthServer:   healthServer,
+		buildInfo:      buildInfo,
+		versionInfo:    versionInfo,
+		ipv6Supported:  ipv6Supported,
+		vpnInputPorts:  vpnInputPorts,
+		openvpnConf:    openvpnConf,
+		netLinker:      netLinker,
+		fw:             fw,
+		routing:        routing,
+		portForward:    portForward,
+		publicip:       publicip,
+		dnsLooper:      dnsLooper,
+		starter:        starter,
+		logger:         logger,
+		client:         client,
+		start:          start,
+		running:        running,
+		stop:           stop,
+		stopped:        stopped,
+		userTrigger:    true,
+		backoffTime:    defaultBackoffTime,
 	}
 }

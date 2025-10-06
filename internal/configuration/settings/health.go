@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"net/netip"
 	"os"
 	"time"
 
@@ -27,6 +28,10 @@ type Health struct {
 	// to TCP TLS dial to periodically for the health check.
 	// It cannot be the empty string in the internal state.
 	TargetAddress string
+	// ICMPTargetIP is the IP address to use for ICMP echo requests
+	// in the health checker. It can be set to an unspecified address
+	// such that the VPN server IP is used, which is also the default behavior.
+	ICMPTargetIP netip.Addr
 }
 
 func (h Health) Validate() (err error) {
@@ -44,6 +49,7 @@ func (h *Health) copy() (copied Health) {
 		ReadHeaderTimeout: h.ReadHeaderTimeout,
 		ReadTimeout:       h.ReadTimeout,
 		TargetAddress:     h.TargetAddress,
+		ICMPTargetIP:      h.ICMPTargetIP,
 	}
 }
 
@@ -55,6 +61,7 @@ func (h *Health) OverrideWith(other Health) {
 	h.ReadHeaderTimeout = gosettings.OverrideWithComparable(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
 	h.ReadTimeout = gosettings.OverrideWithComparable(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = gosettings.OverrideWithComparable(h.TargetAddress, other.TargetAddress)
+	h.ICMPTargetIP = gosettings.OverrideWithComparable(h.ICMPTargetIP, other.ICMPTargetIP)
 }
 
 func (h *Health) SetDefaults() {
@@ -64,6 +71,7 @@ func (h *Health) SetDefaults() {
 	const defaultReadTimeout = 500 * time.Millisecond
 	h.ReadTimeout = gosettings.DefaultComparable(h.ReadTimeout, defaultReadTimeout)
 	h.TargetAddress = gosettings.DefaultComparable(h.TargetAddress, "cloudflare.com:443")
+	h.ICMPTargetIP = gosettings.DefaultComparable(h.ICMPTargetIP, netip.IPv4Unspecified()) // use the VPN server IP
 }
 
 func (h Health) String() string {
@@ -74,6 +82,11 @@ func (h Health) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Health settings:")
 	node.Appendf("Server listening address: %s", h.ServerAddress)
 	node.Appendf("Target address: %s", h.TargetAddress)
+	icmpTarget := "VPN server IP"
+	if !h.ICMPTargetIP.IsUnspecified() {
+		icmpTarget = h.ICMPTargetIP.String()
+	}
+	node.Appendf("ICMP target IP: %s", icmpTarget)
 	return node
 }
 
@@ -81,5 +94,9 @@ func (h *Health) Read(r *reader.Reader) (err error) {
 	h.ServerAddress = r.String("HEALTH_SERVER_ADDRESS")
 	h.TargetAddress = r.String("HEALTH_TARGET_ADDRESS",
 		reader.RetroKeys("HEALTH_ADDRESS_TO_PING"))
+	h.ICMPTargetIP, err = r.NetipAddr("HEALTH_ICMP_TARGET_IP")
+	if err != nil {
+		return err
+	}
 	return nil
 }

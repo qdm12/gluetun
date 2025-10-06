@@ -431,7 +431,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	healthChecker := healthcheck.NewChecker(allSettings.Health.TargetAddress, healthLogger)
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
-		providers, storage, healthChecker, healthcheckServer, ovpnConf, netLinker, firewallConf,
+		providers, storage, allSettings.Health, healthChecker, healthcheckServer, ovpnConf, netLinker, firewallConf,
 		routingConf, portForwardLooper, cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
 		buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
