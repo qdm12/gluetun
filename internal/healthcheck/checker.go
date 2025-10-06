@@ -19,10 +19,10 @@ type Checker struct {
 	dialer        *net.Dialer
 
 	// Periodic service
-	logger     Logger
-	echoer     *icmp.Echoer
-	targetIP   netip.Addr
-	targetIPMu sync.Mutex
+	echoer       *icmp.Echoer
+	logger       Logger
+	icmpTarget   netip.Addr
+	icmpTargetMu sync.Mutex
 
 	// Internal periodic service signals
 	stop context.CancelFunc
@@ -37,21 +37,31 @@ func NewChecker(tlsDialAddress string, logger Logger) *Checker {
 				PreferGo: true,
 			},
 		},
-		echoer:   icmp.NewEchoer(logger),
-		targetIP: netip.AddrFrom4([4]byte{1, 1, 1, 1}),
-		logger:   logger,
+		echoer: icmp.NewEchoer(logger),
+		logger: logger,
 	}
 }
 
-// SetICMPTargetIP sets the target IP address for ICMP echo requests
-// for the "small" checks. By default the IP address is 1.1.1.1.
+// SetICMPTargetIP sets the ICMP echo target IP address to be used
+// for ICMP echo requests for the "small" periodic checks.
+// This function MUST be called before calling [Checker.Start].
 func (c *Checker) SetICMPTargetIP(ip netip.Addr) {
-	c.targetIPMu.Lock()
-	defer c.targetIPMu.Unlock()
-	c.targetIP = ip
+	c.icmpTargetMu.Lock()
+	defer c.icmpTargetMu.Unlock()
+	c.icmpTarget = ip
 }
 
+// Start starts the checker by first running a blocking 2s-timed TCP+TLS check,
+// and, on success, starts the periodic checks in a separate goroutine:
+// - a "small" ICMP echo check every 15 seconds
+// - a "full" TCP+TLS check every 5 minutes
+// It returns a channel `runError` that receives an error if one of the periodic checks fail.
+// It returns an error if the initial TCP+TLS check fails.
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
+	if c.icmpTarget.IsUnspecified() {
+		panic("ICMP target not set: call Checker.SetICMPTargetIP before Checker.Start")
+	}
+
 	// connection isn't under load yet when the checker starts, so a short
 	// 2 seconds timeout suffices and provides quick enough feedback that
 	// the new connection is not working.
@@ -105,13 +115,14 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 func (c *Checker) Stop() error {
 	c.stop()
 	<-c.done
+	c.icmpTarget = netip.Addr{}
 	return nil
 }
 
 func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
-	c.targetIPMu.Lock()
-	ip := c.targetIP
-	c.targetIPMu.Unlock()
+	c.icmpTargetMu.Lock()
+	ip := c.icmpTarget
+	c.icmpTargetMu.Unlock()
 	const maxTries = 3
 	const timeout = 3 * time.Second
 	check := func(ctx context.Context) error {
