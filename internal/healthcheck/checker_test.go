@@ -21,8 +21,8 @@ func Test_Checker_fullcheck(t *testing.T) {
 		const address = "cloudflare.com:443"
 
 		checker := &Checker{
-			dialer:        dialer,
-			targetAddress: address,
+			dialer:      dialer,
+			tlsDialAddr: address,
 		}
 
 		canceledCtx, cancel := context.WithCancel(context.Background())
@@ -52,8 +52,8 @@ func Test_Checker_fullcheck(t *testing.T) {
 
 		dialer := &net.Dialer{}
 		checker := &Checker{
-			dialer:        dialer,
-			targetAddress: listeningAddress.String(),
+			dialer:      dialer,
+			tlsDialAddr: listeningAddress.String(),
 		}
 
 		err = checker.fullPeriodicCheck(ctx)

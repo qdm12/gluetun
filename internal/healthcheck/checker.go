@@ -15,23 +15,20 @@ import (
 )
 
 type Checker struct {
-	targetAddress string
-	dialer        *net.Dialer
-
-	// Periodic service
-	echoer       *icmp.Echoer
-	logger       Logger
-	icmpTarget   netip.Addr
-	icmpTargetMu sync.Mutex
+	tlsDialAddr string
+	dialer      *net.Dialer
+	echoer      *icmp.Echoer
+	logger      Logger
+	icmpTarget  netip.Addr
+	configMutex sync.Mutex
 
 	// Internal periodic service signals
 	stop context.CancelFunc
 	done <-chan struct{}
 }
 
-func NewChecker(tlsDialAddress string, logger Logger) *Checker {
+func NewChecker(logger Logger) *Checker {
 	return &Checker{
-		targetAddress: tlsDialAddress,
 		dialer: &net.Dialer{
 			Resolver: &net.Resolver{
 				PreferGo: true,
@@ -42,13 +39,14 @@ func NewChecker(tlsDialAddress string, logger Logger) *Checker {
 	}
 }
 
-// SetICMPTargetIP sets the ICMP echo target IP address to be used
-// for ICMP echo requests for the "small" periodic checks.
+// SetConfig sets the TCP+TLS dial address and the ICMP echo IP address
+// to target by the [Checker].
 // This function MUST be called before calling [Checker.Start].
-func (c *Checker) SetICMPTargetIP(ip netip.Addr) {
-	c.icmpTargetMu.Lock()
-	defer c.icmpTargetMu.Unlock()
-	c.icmpTarget = ip
+func (c *Checker) SetConfig(tlsDialAddr string, icmpTarget netip.Addr) {
+	c.configMutex.Lock()
+	defer c.configMutex.Unlock()
+	c.tlsDialAddr = tlsDialAddr
+	c.icmpTarget = icmpTarget
 }
 
 // Start starts the checker by first running a blocking 2s-timed TCP+TLS check,
@@ -58,15 +56,15 @@ func (c *Checker) SetICMPTargetIP(ip netip.Addr) {
 // It returns a channel `runError` that receives an error if one of the periodic checks fail.
 // It returns an error if the initial TCP+TLS check fails.
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
-	if c.icmpTarget.IsUnspecified() {
-		panic("ICMP target not set: call Checker.SetICMPTargetIP before Checker.Start")
+	if c.tlsDialAddr == "" || c.icmpTarget.IsUnspecified() {
+		panic("call Checker.SetConfig with non empty values before Checker.Start")
 	}
 
 	// connection isn't under load yet when the checker starts, so a short
 	// 2 seconds timeout suffices and provides quick enough feedback that
 	// the new connection is not working.
 	const timeout = 2 * time.Second
-	err = tcpTLSCheck(ctx, c.dialer, c.targetAddress, timeout)
+	err = tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr, timeout)
 	if err != nil {
 		return nil, fmt.Errorf("startup check: %w", err)
 	}
@@ -120,9 +118,9 @@ func (c *Checker) Stop() error {
 }
 
 func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
-	c.icmpTargetMu.Lock()
+	c.configMutex.Lock()
 	ip := c.icmpTarget
-	c.icmpTargetMu.Unlock()
+	c.configMutex.Unlock()
 	const maxTries = 3
 	const timeout = 3 * time.Second
 	check := func(ctx context.Context) error {
@@ -138,7 +136,7 @@ func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 		// 10s timeout in case the connection is under stress
 		// See https://github.com/qdm12/gluetun/issues/2270
 		const timeout = 10 * time.Second
-		return tcpTLSCheck(ctx, c.dialer, c.targetAddress, timeout)
+		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr, timeout)
 	}
 	return withRetries(ctx, maxTries, timeout, c.logger, "TCP+TLS dial", check)
 }

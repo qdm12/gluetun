@@ -419,6 +419,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	healthServerHandler, healthServerCtx, healthServerDone := goshutdown.NewGoRoutineHandler(
 		"HTTP health server", goroutine.OptionTimeout(defaultShutdownTimeout))
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)
+	healthChecker := healthcheck.NewChecker(healthLogger)
 
 	updaterLogger := logger.New(log.SetComponent("updater"))
 
@@ -428,7 +429,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	providers := provider.NewProviders(storage, time.Now, updaterLogger,
 		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(), openvpnFileExtractor)
 
-	healthChecker := healthcheck.NewChecker(allSettings.Health.TargetAddress, healthLogger)
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
 		providers, storage, allSettings.Health, healthChecker, healthcheckServer, ovpnConf, netLinker, firewallConf,
