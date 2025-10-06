@@ -123,22 +123,24 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	c.configMutex.Unlock()
 	const maxTries = 3
 	const timeout = 3 * time.Second
+	const extraTryTime = time.Second // 1s added for each subsequent retry
 	check := func(ctx context.Context) error {
 		return c.echoer.Echo(ctx, ip)
 	}
-	return withRetries(ctx, maxTries, timeout, c.logger, "ICMP echo", check)
+	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "ICMP echo", check)
 }
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 	const maxTries = 2
 	const timeout = 10 * time.Second
+	const extraTryTime = 3 * time.Second // 3s added for each subsequent retry
 	check := func(ctx context.Context) error {
 		// 10s timeout in case the connection is under stress
 		// See https://github.com/qdm12/gluetun/issues/2270
 		const timeout = 10 * time.Second
 		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr, timeout)
 	}
-	return withRetries(ctx, maxTries, timeout, c.logger, "TCP+TLS dial", check)
+	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "TCP+TLS dial", check)
 }
 
 func tcpTLSCheck(ctx context.Context, dialer *net.Dialer,
@@ -202,24 +204,25 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 
 var ErrAllCheckTriesFailed = errors.New("all check tries failed")
 
-func withRetries(ctx context.Context, maxTries uint, tryTimeout time.Duration,
+func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime time.Duration,
 	warner Logger, checkName string, check func(ctx context.Context) error,
 ) error {
-	try := uint(1)
+	try := uint(0)
+	timeout := tryTimeout + time.Duration(try)*extraTryTime
 	for {
-		checkCtx, cancel := context.WithTimeout(ctx, tryTimeout)
+		checkCtx, cancel := context.WithTimeout(ctx, timeout)
 		err := check(checkCtx)
 		cancel()
 		switch {
 		case err == nil:
 			return nil
-		case try == maxTries:
-			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try, maxTries, err)
+		case try == maxTries-1:
+			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try+1, maxTries, err)
 			return fmt.Errorf("%w: %s: after %d attempts", ErrAllCheckTriesFailed, checkName, maxTries)
 		case ctx.Err() != nil:
 			return fmt.Errorf("%s context error: %w", checkName, ctx.Err())
 		default:
-			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try, maxTries, err)
+			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try+1, maxTries, err)
 			try++
 		}
 	}
