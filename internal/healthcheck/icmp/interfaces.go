@@ -1,5 +1,6 @@
 package icmp
 
-type Warner interface {
+type Logger interface {
+	Debugf(format string, args ...any)
 	Warnf(format string, args ...any)
 }

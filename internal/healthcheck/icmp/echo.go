@@ -19,17 +19,16 @@ import (
 
 var (
 	ErrICMPBodyUnsupported  = errors.New("ICMP body type is not supported")
-	ErrICMPDstUnreachable   = errors.New("ICMP destination unreachable")
 	ErrICMPEchoDataMismatch = errors.New("ICMP data mismatch")
 )
 
 type Echoer struct {
 	buffer       []byte
 	randomSource io.Reader
-	warner       Warner
+	logger       Logger
 }
 
-func NewEchoer(warner Warner) *Echoer {
+func NewEchoer(logger Logger) *Echoer {
 	const maxICMPEchoSize = 1500
 	buffer := make([]byte, maxICMPEchoSize)
 	var seed [32]byte
@@ -38,7 +37,7 @@ func NewEchoer(warner Warner) *Echoer {
 	return &Echoer{
 		buffer:       buffer,
 		randomSource: randomSource,
-		warner:       warner,
+		logger:       logger,
 	}
 }
 
@@ -76,7 +75,7 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 		return fmt.Errorf("writing ICMP message: %w", err)
 	}
 
-	receivedData, err := receiveEchoReply(conn, id, i.buffer, ipVersion, i.warner)
+	receivedData, err := receiveEchoReply(conn, id, i.buffer, ipVersion, i.logger)
 	if err != nil {
 		if errors.Is(err, net.ErrClosed) && ctx.Err() != nil {
 			return fmt.Errorf("%w", ErrTimedOut)
@@ -124,7 +123,7 @@ func buildMessageToSend(ipVersion string, size uint, randomSource io.Reader) (id
 	return id, message
 }
 
-func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion string, logger Warner,
+func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion string, logger Logger,
 ) (data []byte, err error) {
 	var icmpProtocol int
 	const (
@@ -159,13 +158,17 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 		switch body := message.Body.(type) {
 		case *icmp.Echo:
 			if id != body.ID {
-				logger.Warnf("ignoring ICMP reply mismatching expected id %d (id: %d, type: %d, code: %d, length: %d)",
+				logger.Warnf("ignoring ICMP echo reply mismatching expected id %d (id: %d, type: %d, code: %d, length: %d)",
 					id, body.ID, message.Type, message.Code, len(packetBytes))
 				continue // not the ID we are looking for
 			}
 			return body.Data, nil
 		case *icmp.DstUnreach:
-			return nil, fmt.Errorf("%w (id %d and reply ICMP type 3 code %d)", ErrICMPDstUnreachable, id, message.Code)
+			logger.Debugf("ignoring ICMP destination unreachable message (type: 3, code: %d)", message.Code)
+			// See https://github.com/qdm12/gluetun/pull/2923#issuecomment-3377532249
+			// on why we ignore this message. If it is actually unreachable, the timeout on waiting for
+			// the echo reply will do instead of returning an error error.
+			continue
 		default:
 			return nil, fmt.Errorf("%w: %T (id %d, type %d)", ErrICMPBodyUnsupported, body, id, message.Type)
 		}
