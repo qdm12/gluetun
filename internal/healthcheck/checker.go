@@ -216,14 +216,14 @@ func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime ti
 		switch {
 		case err == nil:
 			return nil
-		case try == maxTries-1:
-			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try+1, maxTries, err)
-			return fmt.Errorf("%w: %s: after %d attempts", ErrAllCheckTriesFailed, checkName, maxTries)
 		case ctx.Err() != nil:
 			return fmt.Errorf("%s context error: %w", checkName, ctx.Err())
 		default:
 			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try+1, maxTries, err)
 			try++
+			if try == maxTries {
+				return fmt.Errorf("%w: %s: after %d attempts", ErrAllCheckTriesFailed, checkName, maxTries)
+			}
 		}
 	}
 }
