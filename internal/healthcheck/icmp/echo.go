@@ -159,15 +159,15 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 		switch body := message.Body.(type) {
 		case *icmp.Echo:
 			if id != body.ID {
-				logger.Warnf("ignoring ICMP reply with unexpected ID %d (type: %d, code: %d, length: %d)",
-					body.ID, message.Type, message.Code, len(packetBytes))
+				logger.Warnf("ignoring ICMP reply mismatching expected id %d (id: %d, type: %d, code: %d, length: %d)",
+					id, body.ID, message.Type, message.Code, len(packetBytes))
 				continue // not the ID we are looking for
 			}
 			return body.Data, nil
 		case *icmp.DstUnreach:
-			return nil, fmt.Errorf("%w (ICMP type 3 code %d)", ErrICMPDstUnreachable, message.Code)
+			return nil, fmt.Errorf("%w (id %d and reply ICMP type 3 code %d)", ErrICMPDstUnreachable, id, message.Code)
 		default:
-			return nil, fmt.Errorf("%w: %T", ErrICMPBodyUnsupported, body)
+			return nil, fmt.Errorf("%w: %T (id %d)", ErrICMPBodyUnsupported, body, id)
 		}
 	}
 }
