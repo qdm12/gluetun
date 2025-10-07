@@ -63,7 +63,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	// connection isn't under load yet when the checker starts, so a short
 	// 2 seconds timeout suffices and provides quick enough feedback that
 	// the new connection is not working.
-	const timeout = 2 * time.Second
+	const timeout = 6 * time.Second
 	err = tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr, timeout)
 	if err != nil {
 		return nil, fmt.Errorf("startup check: %w", err)
