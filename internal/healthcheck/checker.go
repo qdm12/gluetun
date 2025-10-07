@@ -208,8 +208,8 @@ func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime ti
 	warner Logger, checkName string, check func(ctx context.Context) error,
 ) error {
 	try := uint(0)
-	timeout := tryTimeout + time.Duration(try)*extraTryTime
 	for {
+		timeout := tryTimeout + time.Duration(try)*extraTryTime //nolint:gosec
 		checkCtx, cancel := context.WithTimeout(ctx, timeout)
 		err := check(checkCtx)
 		cancel()
