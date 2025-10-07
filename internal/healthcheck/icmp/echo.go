@@ -167,7 +167,7 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 		case *icmp.DstUnreach:
 			return nil, fmt.Errorf("%w (id %d and reply ICMP type 3 code %d)", ErrICMPDstUnreachable, id, message.Code)
 		default:
-			return nil, fmt.Errorf("%w: %T (id %d)", ErrICMPBodyUnsupported, body, id)
+			return nil, fmt.Errorf("%w: %T (id %d, type %d)", ErrICMPBodyUnsupported, body, id, message.Type)
 		}
 	}
 }
