@@ -9,7 +9,7 @@ jobs:
       issues: write
     runs-on: ubuntu-latest
     steps:
-      - uses: peter-evans/create-or-update-comment@v4
+      - uses: peter-evans/create-or-update-comment@v5
         with:
           token: ${{ github.token }}
           issue-number: ${{ github.event.issue.number }}
