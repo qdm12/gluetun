@@ -32,7 +32,29 @@ type UpdaterLogger interface {
 	Error(s string)
 }
 
-func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
+type UpdateCommand struct {
+	repoServersPath string
+	args            []string
+	logger          UpdaterLogger
+}
+
+func NewUpdateCommand(repoServersPath string, args []string, logger UpdaterLogger) *UpdateCommand {
+	return &UpdateCommand{
+		repoServersPath: repoServersPath,
+		args:            args,
+		logger:          logger,
+	}
+}
+
+func (c *UpdateCommand) Name() string {
+	return "update"
+}
+
+func (c *UpdateCommand) Description() string {
+	return "Update the VPN servers information of one or more providers"
+}
+
+func (c *UpdateCommand) Run(ctx context.Context) error {
 	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
 	var csvProviders, ipToken string
@@ -47,7 +69,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
 	flagSet.StringVar(&ipToken, "ip-token", "", "IP data service token (e.g. ipinfo.io) to use")
-	if err := flagSet.Parse(args); err != nil {
+	if err := flagSet.Parse(c.args[2:]); err != nil {
 		return err
 	}
 
@@ -71,7 +93,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		return fmt.Errorf("options validation failed: %w", err)
 	}
 
-	storage, err := storage.New(logger, constants.ServersData)
+	storage, err := storage.New(c.logger, constants.ServersData)
 	if err != nil {
 		return fmt.Errorf("creating servers storage: %w", err)
 	}
@@ -89,14 +111,14 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	if err != nil {
 		return fmt.Errorf("creating public IP fetchers: %w", err)
 	}
-	ipFetcher := api.NewResilient(fetchers, logger)
+	ipFetcher := api.NewResilient(fetchers, c.logger)
 
 	openvpnFileExtractor := extract.New()
 
-	providers := provider.NewProviders(storage, time.Now, logger, httpClient,
+	providers := provider.NewProviders(storage, time.Now, c.logger, httpClient,
 		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
 
-	updater := updater.New(httpClient, storage, providers, logger)
+	updater := updater.New(httpClient, storage, providers, c.logger)
 	err = updater.UpdateServers(ctx, options.Providers, options.MinRatio)
 	if err != nil {
 		return fmt.Errorf("updating server information: %w", err)
