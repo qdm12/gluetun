@@ -61,10 +61,12 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	}
 
 	// connection isn't under load yet when the checker starts, so a short
-	// 2 seconds timeout suffices and provides quick enough feedback that
+	// 6 seconds timeout suffices and provides quick enough feedback that
 	// the new connection is not working.
 	const timeout = 6 * time.Second
-	err = tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr, timeout)
+	tcpTLSCheckCtx, tcpTLSCheckCancel := context.WithTimeout(ctx, timeout)
+	err = tcpTLSCheck(tcpTLSCheckCtx, c.dialer, c.tlsDialAddr)
+	tcpTLSCheckCancel()
 	if err != nil {
 		return nil, fmt.Errorf("startup check: %w", err)
 	}
@@ -132,23 +134,17 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 	const maxTries = 2
+	// 10s timeout in case the connection is under stress
+	// See https://github.com/qdm12/gluetun/issues/2270
 	const timeout = 10 * time.Second
 	const extraTryTime = 3 * time.Second // 3s added for each subsequent retry
 	check := func(ctx context.Context) error {
-		// 10s timeout in case the connection is under stress
-		// See https://github.com/qdm12/gluetun/issues/2270
-		const timeout = 10 * time.Second
-		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr, timeout)
+		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr)
 	}
 	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "TCP+TLS dial", check)
 }
 
-func tcpTLSCheck(ctx context.Context, dialer *net.Dialer,
-	targetAddress string, timeout time.Duration,
-) error {
-	ctx, healthcheckCancel := context.WithTimeout(ctx, timeout)
-	defer healthcheckCancel()
-
+func tcpTLSCheck(ctx context.Context, dialer *net.Dialer, targetAddress string) error {
 	// TODO use mullvad API if current provider is Mullvad
 
 	address, err := makeAddressToDial(targetAddress)
