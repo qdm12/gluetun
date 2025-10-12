@@ -3,6 +3,7 @@ package files
 import (
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -84,6 +85,10 @@ func parseWireguardPeerSection(peerSection *ini.Section) (
 	if endpoint != nil {
 		parts := strings.Split(*endpoint, ":")
 		endpointIP = &parts[0]
+		addrs, _ := net.LookupHost(*endpointIP)
+		//convert string to string*
+		endpointIP = &addrs[0]
+
 		const partsWithPort = 2
 		if len(parts) >= partsWithPort {
 			endpointPort = new(string)
