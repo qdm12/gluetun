@@ -11,6 +11,7 @@ import (
 	"math/rand/v2"
 	"net"
 	"net/netip"
+	"strings"
 
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
@@ -41,7 +42,10 @@ func NewEchoer(logger Logger) *Echoer {
 	}
 }
 
-var ErrTimedOut = errors.New("timed out waiting for ICMP echo reply")
+var (
+	ErrTimedOut     = errors.New("timed out waiting for ICMP echo reply")
+	ErrNotPermitted = errors.New("not permitted")
+)
 
 func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 	var ipVersion string
@@ -54,6 +58,9 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 		conn, err = listenICMPv6(ctx)
 	}
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
+			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrNotPermitted)
+		}
 		return fmt.Errorf("listening for ICMP packets: %w", err)
 	}
 
@@ -72,6 +79,9 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 
 	_, err = conn.WriteTo(encodedMessage, &net.IPAddr{IP: ip.AsSlice()})
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "sendto: operation not permitted") {
+			err = fmt.Errorf("%w", ErrNotPermitted)
+		}
 		return fmt.Errorf("writing ICMP message: %w", err)
 	}
 

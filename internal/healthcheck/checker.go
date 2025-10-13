@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/healthcheck/dns"
 	"github.com/qdm12/gluetun/internal/healthcheck/icmp"
 )
 
@@ -18,9 +19,12 @@ type Checker struct {
 	tlsDialAddr string
 	dialer      *net.Dialer
 	echoer      *icmp.Echoer
+	dnsClient   *dns.Client
 	logger      Logger
 	icmpTarget  netip.Addr
 	configMutex sync.Mutex
+
+	icmpNotPermitted bool
 
 	// Internal periodic service signals
 	stop context.CancelFunc
@@ -34,8 +38,9 @@ func NewChecker(logger Logger) *Checker {
 				PreferGo: true,
 			},
 		},
-		echoer: icmp.NewEchoer(logger),
-		logger: logger,
+		echoer:    icmp.NewEchoer(logger),
+		dnsClient: dns.New(),
+		logger:    logger,
 	}
 }
 
@@ -127,7 +132,16 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	const timeout = 3 * time.Second
 	const extraTryTime = time.Second // 1s added for each subsequent retry
 	check := func(ctx context.Context) error {
-		return c.echoer.Echo(ctx, ip)
+		if c.icmpNotPermitted {
+			return c.dnsClient.Check(ctx)
+		}
+		err := c.echoer.Echo(ctx, ip)
+		if errors.Is(err, icmp.ErrNotPermitted) {
+			c.icmpNotPermitted = true
+			c.logger.Warnf("%s; permanently falling back to plaintext DNS checks.", err)
+			return c.dnsClient.Check(ctx)
+		}
+		return err
 	}
 	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "ICMP echo", check)
 }
