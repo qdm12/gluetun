@@ -7,6 +7,7 @@ import (
 	"math"
 	"net"
 	"net/netip"
+	"strings"
 	"time"
 
 	"golang.org/x/net/icmp"
@@ -87,6 +88,9 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 		conn, err = listenICMPv6(ctx)
 	}
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
+			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrICMPNotPermitted)
+		}
 		return 0, fmt.Errorf("listening for ICMP packets: %w", err)
 	}
 
@@ -120,6 +124,9 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 
 		_, err = conn.WriteTo(encodedMessage, &net.IPAddr{IP: ip.AsSlice()})
 		if err != nil {
+			if strings.HasSuffix(err.Error(), "sendto: operation not permitted") {
+				err = fmt.Errorf("%w", ErrICMPNotPermitted)
+			}
 			return 0, fmt.Errorf("writing ICMP message: %w", err)
 		}
 	}

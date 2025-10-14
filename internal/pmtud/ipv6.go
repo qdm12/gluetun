@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/netip"
+	"strings"
 	"time"
 
 	"golang.org/x/net/icmp"
@@ -21,6 +22,9 @@ func listenICMPv6(ctx context.Context) (conn net.PacketConn, err error) {
 	const listenAddress = ""
 	packetConn, err := listenConfig.ListenPacket(ctx, "ip6:ipv6-icmp", listenAddress)
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
+			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrICMPNotPermitted)
+		}
 		return nil, fmt.Errorf("listening for ICMPv6 packets: %w", err)
 	}
 	return packetConn, nil

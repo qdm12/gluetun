@@ -120,10 +120,10 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, vpnGatewayIP, vpnLinkMTU, pingTimeout, logger)
 	switch {
 	case err == nil:
-		logger.Infof("Setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
-	case errors.Is(err, pmtud.ErrMTUNotFound):
+		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
+	case errors.Is(err, pmtud.ErrMTUNotFound) || errors.Is(err, pmtud.ErrICMPNotPermitted):
 		vpnLinkMTU = int(originalMTU)
-		logger.Infof("Reverting VPN interface %s MTU to %d (due to: %s)",
+		logger.Infof("reverting VPN interface %s MTU to %d (due to: %s)",
 			vpnInterface, originalMTU, err)
 	default:
 		return fmt.Errorf("path MTU discovering: %w", err)

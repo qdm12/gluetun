@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/netip"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 
@@ -36,6 +37,9 @@ func listenICMPv4(ctx context.Context) (conn net.PacketConn, err error) {
 	const listenAddress = ""
 	packetConn, err := listenConfig.ListenPacket(ctx, "ip4:icmp", listenAddress)
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
+			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrICMPNotPermitted)
+		}
 		return nil, fmt.Errorf("listening for ICMP packets: %w", err)
 	}
 
