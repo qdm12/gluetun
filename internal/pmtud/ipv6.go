@@ -25,7 +25,7 @@ func listenICMPv6(ctx context.Context) (conn net.PacketConn, err error) {
 		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
 			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrICMPNotPermitted)
 		}
-		return nil, fmt.Errorf("listening for ICMPv6 packets: %w", err)
+		return nil, err
 	}
 	return packetConn, nil
 }

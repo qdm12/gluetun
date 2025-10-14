@@ -40,7 +40,7 @@ func listenICMPv4(ctx context.Context) (conn net.PacketConn, err error) {
 		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
 			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrICMPNotPermitted)
 		}
-		return nil, fmt.Errorf("listening for ICMP packets: %w", err)
+		return nil, err
 	}
 
 	if runtime.GOOS == "darwin" || runtime.GOOS == "ios" {
