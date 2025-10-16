@@ -10,9 +10,6 @@ import (
 func (s *Server) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	loopDone := make(chan struct{})
-	go s.runHealthcheckLoop(ctx, loopDone)
-
 	server := http.Server{
 		Addr:              s.config.ServerAddress,
 		Handler:           s.handler,
@@ -37,6 +34,5 @@ func (s *Server) Run(ctx context.Context, done chan<- struct{}) {
 		s.logger.Error(err.Error())
 	}
 
-	<-loopDone
 	<-serverDone
 }
