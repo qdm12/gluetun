@@ -179,6 +179,9 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 			// on why we ignore this message. If it is actually unreachable, the timeout on waiting for
 			// the echo reply will do instead of returning an error error.
 			continue
+		case *icmp.TimeExceeded:
+			logger.Debugf("ignoring ICMP time exceeded message (type: 11, code: %d, expected-id %d)", message.Code, id)
+			continue
 		default:
 			return nil, fmt.Errorf("%w: %T (type %d, code %d, expected-id %d)",
 				ErrICMPBodyUnsupported, body, message.Type, message.Code, id)
