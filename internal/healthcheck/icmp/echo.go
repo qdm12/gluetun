@@ -180,7 +180,8 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 			// the echo reply will do instead of returning an error error.
 			continue
 		default:
-			return nil, fmt.Errorf("%w: %T (id %d, type %d)", ErrICMPBodyUnsupported, body, id, message.Type)
+			return nil, fmt.Errorf("%w: %T (id %d, type %d, code %d)",
+				ErrICMPBodyUnsupported, body, id, message.Type, message.Code)
 		}
 	}
 }
