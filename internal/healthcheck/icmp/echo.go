@@ -174,14 +174,14 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 			}
 			return body.Data, nil
 		case *icmp.DstUnreach:
-			logger.Debugf("ignoring ICMP destination unreachable message (type: 3, code: %d)", message.Code)
+			logger.Debugf("ignoring ICMP destination unreachable message (type: 3, code: %d, expected-id %d)", message.Code, id)
 			// See https://github.com/qdm12/gluetun/pull/2923#issuecomment-3377532249
 			// on why we ignore this message. If it is actually unreachable, the timeout on waiting for
 			// the echo reply will do instead of returning an error error.
 			continue
 		default:
-			return nil, fmt.Errorf("%w: %T (id %d, type %d, code %d)",
-				ErrICMPBodyUnsupported, body, id, message.Type, message.Code)
+			return nil, fmt.Errorf("%w: %T (type %d, code %d, expected-id %d)",
+				ErrICMPBodyUnsupported, body, message.Type, message.Code, id)
 		}
 	}
 }
