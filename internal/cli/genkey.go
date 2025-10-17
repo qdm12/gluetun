@@ -1,14 +1,33 @@
 package cli
 
 import (
+	"context"
 	"crypto/rand"
 	"flag"
 	"fmt"
 )
 
-func (c *CLI) GenKey(args []string) (err error) {
+type GenKeyCommand struct {
+	args []string
+}
+
+func NewGenKeyCommand(args []string) *GenKeyCommand {
+	return &GenKeyCommand{
+		args: args,
+	}
+}
+
+func (c *GenKeyCommand) Name() string {
+	return "genkey"
+}
+
+func (c *GenKeyCommand) Description() string {
+	return "Generate a new 32 bytes Wireguard key (base58 encoded)"
+}
+
+func (c *GenKeyCommand) Run(_ context.Context) (err error) {
 	flagSet := flag.NewFlagSet("genkey", flag.ExitOnError)
-	err = flagSet.Parse(args)
+	err = flagSet.Parse(c.args[2:])
 	if err != nil {
 		return fmt.Errorf("parsing flags: %w", err)
 	}
