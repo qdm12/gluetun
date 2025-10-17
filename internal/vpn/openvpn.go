@@ -15,8 +15,7 @@ import (
 func setupOpenVPN(ctx context.Context, fw Firewall,
 	openvpnConf OpenVPN, providerConf provider.Provider,
 	settings settings.VPN, ipv6Supported bool, starter CmdStarter,
-	logger openvpn.Logger) (runner *openvpn.Runner,
-	connection models.Connection, err error,
+	logger openvpn.Logger) (runner *openvpn.Runner, connection models.Connection, err error,
 ) {
 	connection, err = providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Supported)
 	if err != nil {

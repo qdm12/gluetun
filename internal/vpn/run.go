@@ -48,6 +48,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		}
 		tunnelUpData := tunnelUpData{
 			vpnType:        settings.Type,
+			serverIP:       connection.IP,
 			serverName:     connection.ServerName,
 			canPortForward: connection.PortForward,
 			portForwarder:  portForwarder,
@@ -75,7 +76,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		for stayHere {
 			select {
 			case <-tunnelReady:
-				go l.onTunnelUp(openvpnCtx, tunnelUpData)
+				go l.onTunnelUp(openvpnCtx, ctx, tunnelUpData)
 			case <-ctx.Done():
 				l.cleanup()
 				openvpnCancel()
