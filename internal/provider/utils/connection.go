@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 	"math/rand"
+	"os"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
@@ -38,6 +40,10 @@ func GetConnection(provider string,
 	randSource rand.Source) (
 	connection models.Connection, err error,
 ) {
+	// Read the VPN_IPV6_SERVER environment variable
+	vpnIPv6Server := os.Getenv("VPN_IPV6_SERVER")
+	skipIPv6Servers := strings.EqualFold(vpnIPv6Server, "off")
+
 	servers, err := storage.FilterServers(provider, selection)
 	if err != nil {
 		return connection, fmt.Errorf("filtering servers: %w", err)
@@ -50,6 +56,10 @@ func GetConnection(provider string,
 	connections := make([]models.Connection, 0, len(servers))
 	for _, server := range servers {
 		for _, ip := range server.IPs {
+			if skipIPv6Servers && ip.Is6() {
+				continue
+			}
+
 			if !ipv6Supported && ip.Is6() {
 				continue
 			}
