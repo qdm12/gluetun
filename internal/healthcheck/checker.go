@@ -25,6 +25,7 @@ type Checker struct {
 	configMutex sync.Mutex
 
 	icmpNotPermitted bool
+	smallCheckName   string
 
 	// Internal periodic service signals
 	stop context.CancelFunc
@@ -81,6 +82,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	c.stop = cancel
 	done := make(chan struct{})
 	c.done = done
+	c.smallCheckName = "ICMP echo"
 	const smallCheckPeriod = 15 * time.Second
 	smallCheckTimer := time.NewTimer(smallCheckPeriod)
 	const fullCheckPeriod = 5 * time.Minute
@@ -138,12 +140,13 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		err := c.echoer.Echo(ctx, ip)
 		if errors.Is(err, icmp.ErrNotPermitted) {
 			c.icmpNotPermitted = true
+			c.smallCheckName = "plain DNS over UDP"
 			c.logger.Warnf("%s; permanently falling back to plaintext DNS checks.", err)
 			return c.dnsClient.Check(ctx)
 		}
 		return err
 	}
-	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "ICMP echo", check)
+	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, c.smallCheckName, check)
 }
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
