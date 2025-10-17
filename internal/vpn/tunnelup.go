@@ -32,13 +32,6 @@ type tunnelUpData struct {
 func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	l.client.CloseIdleConnections()
 
-	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
-	err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
-		l.netLinker, l.routing, mtuLogger)
-	if err != nil {
-		mtuLogger.Error(err.Error())
-	}
-
 	for _, vpnPort := range l.vpnInputPorts {
 		err := l.fw.SetAllowedPort(ctx, vpnPort, data.vpnIntf)
 		if err != nil {
@@ -63,6 +56,13 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	defer func() {
 		_ = l.healthChecker.Stop()
 	}()
+
+	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
+	err = updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
+		l.netLinker, l.routing, mtuLogger)
+	if err != nil {
+		mtuLogger.Error(err.Error())
+	}
 
 	if *l.dnsLooper.GetSettings().DoT.Enabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
