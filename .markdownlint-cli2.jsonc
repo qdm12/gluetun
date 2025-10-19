@@ -1,0 +1,9 @@
+{
+  "config": {
+    "default": true,
+    "MD013": false,
+  },
+  "ignores": [
+    ".github/pull_request_template.md"
+  ]
+}
