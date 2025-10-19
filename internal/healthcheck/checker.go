@@ -83,7 +83,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	done := make(chan struct{})
 	c.done = done
 	c.smallCheckName = "ICMP echo"
-	const smallCheckPeriod = 15 * time.Second
+	const smallCheckPeriod = time.Minute
 	smallCheckTimer := time.NewTimer(smallCheckPeriod)
 	const fullCheckPeriod = 5 * time.Minute
 	fullCheckTimer := time.NewTimer(fullCheckPeriod)
@@ -131,8 +131,8 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	ip := c.icmpTarget
 	c.configMutex.Unlock()
 	const maxTries = 3
-	const timeout = 3 * time.Second
-	const extraTryTime = time.Second // 1s added for each subsequent retry
+	const timeout = 10 * time.Second
+	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
 	check := func(ctx context.Context) error {
 		if c.icmpNotPermitted {
 			return c.dnsClient.Check(ctx)
@@ -151,10 +151,10 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 	const maxTries = 2
-	// 10s timeout in case the connection is under stress
+	// 20s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
-	const timeout = 10 * time.Second
-	const extraTryTime = 3 * time.Second // 3s added for each subsequent retry
+	const timeout = 20 * time.Second
+	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
 	check := func(ctx context.Context) error {
 		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr)
 	}
