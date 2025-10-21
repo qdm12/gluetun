@@ -75,6 +75,11 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		l.logger.Error(err.Error())
 	}
 
+	l.collectHealthErrors(ctx, loopCtx, healthErrCh)
+}
+
+func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-chan error) {
+	var previousHealthErr error
 	for {
 		select {
 		case <-ctx.Done():
@@ -82,6 +87,10 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 			return
 		case healthErr := <-healthErrCh:
 			l.healthServer.SetError(healthErr)
+			if previousHealthErr != nil && healthErr == nil {
+				l.logger.Info("healthcheck passed successfully after previous failure(s)")
+				continue
+			}
 			if healthErr != nil {
 				if *l.healthSettings.RestartVPN {
 					// Note this restart call must be done in a separate goroutine
@@ -93,6 +102,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 				l.logger.Warnf("healthcheck failed: %s", healthErr)
 				l.logger.Info("👉 See https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md")
 			}
+			previousHealthErr = healthErr
 		}
 	}
 }
