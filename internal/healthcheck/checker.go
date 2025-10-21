@@ -59,8 +59,9 @@ func (c *Checker) SetConfig(tlsDialAddr string, icmpTarget netip.Addr) {
 // and, on success, starts the periodic checks in a separate goroutine:
 // - a "small" ICMP echo check every 15 seconds
 // - a "full" TCP+TLS check every 5 minutes
-// It returns a channel `runError` that receives an error if one of the periodic checks fail.
+// It returns a channel `runError` that receives an error (nil or not) when a periodic check is performed.
 // It returns an error if the initial TCP+TLS check fails.
+// The Checker has to be ultimately stopped by calling [Checker.Stop].
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
 	if c.tlsDialAddr == "" || c.icmpTarget.IsUnspecified() {
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
@@ -101,16 +102,16 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 			case <-smallCheckTimer.C:
 				err := c.smallPeriodicCheck(ctx)
 				if err != nil {
-					runErrorCh <- fmt.Errorf("periodic small check: %w", err)
-					return
+					err = fmt.Errorf("small periodic check: %w", err)
 				}
+				runErrorCh <- err
 				smallCheckTimer.Reset(smallCheckPeriod)
 			case <-fullCheckTimer.C:
 				err := c.fullPeriodicCheck(ctx)
 				if err != nil {
-					runErrorCh <- fmt.Errorf("periodic full check: %w", err)
-					return
+					err = fmt.Errorf("full periodic check: %w", err)
 				}
+				runErrorCh <- err
 				fullCheckTimer.Reset(fullCheckPeriod)
 			}
 		}

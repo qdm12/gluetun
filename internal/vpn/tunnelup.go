@@ -45,9 +45,6 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		l.restartVPN(loopCtx, err)
 		return
 	}
-	defer func() {
-		_ = l.healthChecker.Stop()
-	}()
 
 	if *l.dnsLooper.GetSettings().DoT.Enabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
@@ -78,13 +75,25 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		l.logger.Error(err.Error())
 	}
 
-	select {
-	case <-ctx.Done():
-	case healthErr := <-healthErrCh:
-		l.healthServer.SetError(healthErr)
-		// Note this restart call must be done in a separate goroutine
-		// from the VPN loop goroutine.
-		l.restartVPN(loopCtx, healthErr)
+	for {
+		select {
+		case <-ctx.Done():
+			_ = l.healthChecker.Stop()
+			return
+		case healthErr := <-healthErrCh:
+			l.healthServer.SetError(healthErr)
+			if healthErr != nil {
+				if *l.healthSettings.RestartVPN {
+					// Note this restart call must be done in a separate goroutine
+					// from the VPN loop goroutine.
+					_ = l.healthChecker.Stop()
+					l.restartVPN(loopCtx, healthErr)
+					return
+				}
+				l.logger.Warnf("healthcheck failed: %s", healthErr)
+				l.logger.Info("👉 See https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md")
+			}
+		}
 	}
 }
 
