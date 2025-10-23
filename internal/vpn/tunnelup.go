@@ -87,10 +87,6 @@ func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-c
 			return
 		case healthErr := <-healthErrCh:
 			l.healthServer.SetError(healthErr)
-			if previousHealthErr != nil && healthErr == nil {
-				l.logger.Info("healthcheck passed successfully after previous failure(s)")
-				continue
-			}
 			if healthErr != nil {
 				if *l.healthSettings.RestartVPN {
 					// Note this restart call must be done in a separate goroutine
@@ -101,6 +97,8 @@ func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-c
 				}
 				l.logger.Warnf("healthcheck failed: %s", healthErr)
 				l.logger.Info("👉 See https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md")
+			} else if previousHealthErr != nil {
+				l.logger.Info("healthcheck passed successfully after previous failure(s)")
 			}
 			previousHealthErr = healthErr
 		}
