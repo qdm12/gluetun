@@ -60,10 +60,7 @@ func newAPIClient(ctx context.Context, httpClient *http.Client) (client *apiClie
 	}, nil
 }
 
-var (
-	ErrCodeNotSuccess      = errors.New("response code is not success")
-	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-)
+var ErrCodeNotSuccess = errors.New("response code is not success")
 
 // setHeaders sets the minimal necessary headers for Proton API requests
 // to succeed without being blocked by their "security" measures.
@@ -180,9 +177,7 @@ func (c *apiClient) getUnauthSession(ctx context.Context, sessionID string) (
 	if err != nil {
 		return "", "", "", "", fmt.Errorf("reading response body: %w", err)
 	} else if response.StatusCode != http.StatusOK {
-		// TODO parse JSON and fallback to plain
-		return "", "", "", "", fmt.Errorf("%w: %s: %s",
-			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
+		return "", "", "", "", buildError(response.StatusCode, responseBody)
 	}
 
 	var data struct {
@@ -270,9 +265,7 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 	if err != nil {
 		return "", fmt.Errorf("reading response body: %w", err)
 	} else if response.StatusCode != http.StatusOK {
-		// TODO parse JSON and fallback to plain
-		return "", fmt.Errorf("%w: %s: %s",
-			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
+		return "", buildError(response.StatusCode, responseBody)
 	}
 
 	var cookies struct {
@@ -344,9 +337,7 @@ func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie 
 	if err != nil {
 		return "", "", "", "", 0, fmt.Errorf("reading response body: %w", err)
 	} else if response.StatusCode != http.StatusOK {
-		// TODO parse JSON and fallback to plain
-		return "", "", "", "", 0, fmt.Errorf("%w: %s: %s",
-			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
+		return "", "", "", "", 0, buildError(response.StatusCode, responseBody)
 	}
 
 	var info struct {
@@ -434,9 +425,8 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 	requestBody := requestBodySchema{
 		ClientEphemeral: clientEphemeral,
 		ClientProof:     clientProof,
-		// TODO add payload?
-		SRPSession: srpSession,
-		Username:   username,
+		SRPSession:      srpSession,
+		Username:        username,
 	}
 
 	buffer := bytes.NewBuffer(nil)
@@ -461,9 +451,7 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 	if err != nil {
 		return cookie{}, fmt.Errorf("reading response body: %w", err)
 	} else if response.StatusCode != http.StatusOK {
-		// TODO parse JSON and fallback to plain
-		return cookie{}, fmt.Errorf("%w: %s: %s",
-			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
+		return cookie{}, buildError(response.StatusCode, responseBody)
 	}
 
 	type twoFAStatus uint
@@ -612,8 +600,7 @@ func (c *apiClient) fetchServers(ctx context.Context, cookie cookie) (
 
 	if response.StatusCode != http.StatusOK {
 		b, _ := io.ReadAll(response.Body)
-		return data, fmt.Errorf("%w: %d %s (%s)", ErrHTTPStatusCodeNotOK,
-			response.StatusCode, response.Status, b)
+		return data, buildError(response.StatusCode, b)
 	}
 
 	decoder := json.NewDecoder(response.Body)
@@ -622,4 +609,24 @@ func (c *apiClient) fetchServers(ctx context.Context, cookie cookie) (
 	}
 
 	return data, nil
+}
+
+var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
+
+func buildError(httpCode int, body []byte) error {
+	prettyCode := http.StatusText(httpCode)
+	var protonError struct {
+		Code    *int    `json:"Code,omitempty"`
+		Error   *string `json:"Error,omitempty"`
+		Details any     `json:"Details"`
+	}
+	decoder := json.NewDecoder(bytes.NewReader(body))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&protonError)
+	if err != nil || protonError.Error == nil || protonError.Code == nil {
+		return fmt.Errorf("%w: %s: %s",
+			ErrHTTPStatusCodeNotOK, prettyCode, body)
+	}
+	return fmt.Errorf("%w: %s: %s (code %d, details %v)",
+		ErrHTTPStatusCodeNotOK, prettyCode, *protonError.Error, *protonError.Code, protonError.Details)
 }
