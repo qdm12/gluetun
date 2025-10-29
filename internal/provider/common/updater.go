@@ -13,6 +13,7 @@ var (
 	ErrNotEnoughServers     = errors.New("not enough servers found")
 	ErrHTTPStatusCodeNotOK  = errors.New("HTTP status code not OK")
 	ErrIPFetcherUnsupported = errors.New("IP fetcher not supported")
+	ErrCredentialsMissing   = errors.New("credentials missing")
 )
 
 type Fetcher interface {

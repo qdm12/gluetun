@@ -59,12 +59,10 @@ func (u Updater) Validate() (err error) {
 
 		if provider == providers.Protonvpn {
 			switch {
-			case *u.ProtonUsername == "":
-				return fmt.Errorf("%w for provider %s",
-					ErrUpdaterProtonUsernameMissing, providers.Protonvpn)
-			case *u.ProtonPassword == "":
-				return fmt.Errorf("%w for provider %s",
-					ErrUpdaterProtonPasswordMissing, providers.Protonvpn)
+			case *u.ProtonUsername == "" && *u.ProtonPassword != "":
+				return fmt.Errorf("%w", ErrUpdaterProtonUsernameMissing)
+			case *u.ProtonUsername != "" && *u.ProtonPassword == "":
+				return fmt.Errorf("%w", ErrUpdaterProtonPasswordMissing)
 			}
 		}
 	}
