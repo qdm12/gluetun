@@ -77,6 +77,7 @@ type twoFAInfo struct {
 // twoFAStatus represents 2FA state advertised by the API.
 type twoFAStatus uint
 
+//nolint:unused
 const (
 	twoFADisabled twoFAStatus = iota
 	twoFAHasTOTP
