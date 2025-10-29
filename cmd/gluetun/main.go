@@ -427,7 +427,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
 	openvpnFileExtractor := extract.New()
 	providers := provider.NewProviders(storage, time.Now, updaterLogger,
-		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(), openvpnFileExtractor)
+		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(),
+		openvpnFileExtractor, allSettings.Updater)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
