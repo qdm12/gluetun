@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -31,6 +32,10 @@ type Updater struct {
 	// Providers is the list of VPN service providers
 	// to update server information for.
 	Providers []string
+	// ProtonUsername is the username to authenticate with the Proton API.
+	ProtonUsername *string
+	// ProtonPassword is the password to authenticate with the Proton API.
+	ProtonPassword *string
 }
 
 func (u Updater) Validate() (err error) {
@@ -51,6 +56,17 @@ func (u Updater) Validate() (err error) {
 		if err != nil {
 			return fmt.Errorf("%w: %w", ErrVPNProviderNameNotValid, err)
 		}
+
+		if provider == providers.Protonvpn {
+			switch {
+			case *u.ProtonUsername == "":
+				return fmt.Errorf("%w for provider %s",
+					ErrUpdaterProtonUsernameMissing, providers.Protonvpn)
+			case *u.ProtonPassword == "":
+				return fmt.Errorf("%w for provider %s",
+					ErrUpdaterProtonPasswordMissing, providers.Protonvpn)
+			}
+		}
 	}
 
 	return nil
@@ -58,10 +74,12 @@ func (u Updater) Validate() (err error) {
 
 func (u *Updater) copy() (copied Updater) {
 	return Updater{
-		Period:     gosettings.CopyPointer(u.Period),
-		DNSAddress: u.DNSAddress,
-		MinRatio:   u.MinRatio,
-		Providers:  gosettings.CopySlice(u.Providers),
+		Period:         gosettings.CopyPointer(u.Period),
+		DNSAddress:     u.DNSAddress,
+		MinRatio:       u.MinRatio,
+		Providers:      gosettings.CopySlice(u.Providers),
+		ProtonUsername: gosettings.CopyPointer(u.ProtonUsername),
+		ProtonPassword: gosettings.CopyPointer(u.ProtonPassword),
 	}
 }
 
@@ -73,6 +91,8 @@ func (u *Updater) overrideWith(other Updater) {
 	u.DNSAddress = gosettings.OverrideWithComparable(u.DNSAddress, other.DNSAddress)
 	u.MinRatio = gosettings.OverrideWithComparable(u.MinRatio, other.MinRatio)
 	u.Providers = gosettings.OverrideWithSlice(u.Providers, other.Providers)
+	u.ProtonUsername = gosettings.OverrideWithPointer(u.ProtonUsername, other.ProtonUsername)
+	u.ProtonPassword = gosettings.OverrideWithPointer(u.ProtonPassword, other.ProtonPassword)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
@@ -103,6 +123,10 @@ func (u Updater) toLinesNode() (node *gotree.Node) {
 	node.Appendf("DNS address: %s", u.DNSAddress)
 	node.Appendf("Minimum ratio: %.1f", u.MinRatio)
 	node.Appendf("Providers to update: %s", strings.Join(u.Providers, ", "))
+	if slices.Contains(u.Providers, providers.Protonvpn) {
+		node.Appendf("Proton API username: %s", *u.ProtonUsername)
+		node.Appendf("Proton API password: %s", gosettings.ObfuscateKey(*u.ProtonPassword))
+	}
 
 	return node
 }
@@ -124,6 +148,9 @@ func (u *Updater) read(r *reader.Reader) (err error) {
 	}
 
 	u.Providers = r.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
+
+	u.ProtonUsername = r.Get("UPDATER_PROTONVPN_USERNAME")
+	u.ProtonPassword = r.Get("UPDATER_PROTONVPN_PASSWORD")
 
 	return nil
 }
