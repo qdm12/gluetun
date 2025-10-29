@@ -484,12 +484,7 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 		return cookie{}, fmt.Errorf("%w: in %v", ErrVPNScopeNotFound, auth.Scopes)
 	}
 
-	const headerKey = "Set-Cookie"
-	setCookieHeaders := response.Header[headerKey]
-	if len(setCookieHeaders) == 0 {
-		setCookieHeaders = response.Header["Set-Cookie"]
-	}
-	for _, setCookieHeader := range setCookieHeaders {
+	for _, setCookieHeader := range response.Header.Values("Set-Cookie") {
 		parts := strings.Split(setCookieHeader, ";")
 		for _, part := range parts {
 			if strings.HasPrefix(part, "AUTH-"+unauthCookie.uid+"=") {
