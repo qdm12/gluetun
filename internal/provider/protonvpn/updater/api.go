@@ -12,6 +12,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"net/netip"
+	"slices"
 	"strings"
 
 	srp "github.com/ProtonMail/go-srp"
@@ -199,6 +200,8 @@ func (c *apiClient) getUnauthSession(ctx context.Context, sessionID string) (
 	return data.TokenType, data.AccessToken, data.RefreshToken, data.UID, nil
 }
 
+var ErrUIDMismatch = errors.New("UID in response does not match request UID")
+
 func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, accessToken,
 	refreshToken, uid string,
 ) (cookieToken string, err error) {
@@ -256,8 +259,8 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 		return "", fmt.Errorf("%w: expected %d got %d",
 			ErrCodeNotSuccess, successCode, cookies.Code)
 	case cookies.UID != requestBody.UID:
-		return "", fmt.Errorf("mismatched UID: expected %s got %s",
-			requestBody.UID, cookies.UID)
+		return "", fmt.Errorf("%w: expected %s got %s",
+			ErrUIDMismatch, requestBody.UID, cookies.UID)
 	}
 
 	for _, cookie := range response.Cookies() {
@@ -337,6 +340,8 @@ func (c *cookie) String() string {
 var (
 	// ErrServerProofNotValid indicates the M2 from the server didn't match the expected proof.
 	ErrServerProofNotValid = errors.New("server proof from server is not valid")
+	ErrVPNScopeNotFound    = errors.New("VPN scope not found in scopes")
+	ErrTwoFANotSupported   = errors.New("two factor authentication not supported in this client")
 	ErrAuthCookieNotFound  = errors.New("auth cookie not found")
 )
 
@@ -397,8 +402,15 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 			ErrServerProofNotValid, proofs.ExpectedServerProof, m2)
 	}
 
+	switch {
+	case auth.TwoFactor != 0:
+		return cookie{}, fmt.Errorf("%w", ErrTwoFANotSupported)
+	case !slices.Contains(auth.Scopes, "vpn"):
+		return cookie{}, fmt.Errorf("%w: in %v", ErrVPNScopeNotFound, auth.Scopes)
+	}
+
 	const headerKey = "set-cookie"
-	setCookieHeaders := response.Header[headerKey]
+	setCookieHeaders := response.Header[headerKey] //nolint:staticcheck
 	if len(setCookieHeaders) == 0 {
 		setCookieHeaders = response.Header["Set-Cookie"]
 	}
@@ -421,11 +433,6 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 // https://github.com/ProtonMail/WebClients/blob/e4d7e4ab9babe15b79a131960185f9f8275512cd/packages/utils/generateLettersDigits.ts
 func generateLettersDigits(rng *rand.ChaCha8, length uint) string {
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-	return generateFromCharset(rng, length, charset)
-}
-
-func generateLowercaseDigits(rng *rand.ChaCha8, length uint) string {
-	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
 	return generateFromCharset(rng, length, charset)
 }
 
