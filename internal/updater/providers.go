@@ -29,7 +29,7 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 			u.logger.Warn("note: if running the update manually, you can use the flag " +
 				"-minratio to allow the update to succeed with less servers found")
 		}
-		return fmt.Errorf("getting servers: %w", err)
+		return fmt.Errorf("getting %s servers: %w", providerName, err)
 	}
 
 	for _, server := range servers {
