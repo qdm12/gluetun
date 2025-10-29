@@ -156,6 +156,8 @@ func (c *apiClient) getSessionID(ctx context.Context) (sessionID string, err err
 	return "", fmt.Errorf("%w", ErrSessionIDNotFound)
 }
 
+var ErrDataFieldMissing = errors.New("data field missing in response")
+
 func (c *apiClient) getUnauthSession(ctx context.Context, sessionID string) (
 	tokenType, accessToken, refreshToken, uid string, err error,
 ) {
@@ -203,8 +205,16 @@ func (c *apiClient) getUnauthSession(ctx context.Context, sessionID string) (
 	case data.Code != successCode:
 		return "", "", "", "", fmt.Errorf("%w: expected %d got %d",
 			ErrCodeNotSuccess, successCode, data.Code)
-	default: // TODO add more validation
+	case data.AccessToken == "":
+		return "", "", "", "", fmt.Errorf("%w: access token is empty", ErrDataFieldMissing)
+	case data.RefreshToken == "":
+		return "", "", "", "", fmt.Errorf("%w: refresh token is empty", ErrDataFieldMissing)
+	case data.TokenType == "":
+		return "", "", "", "", fmt.Errorf("%w: token type is empty", ErrDataFieldMissing)
+	case data.UID == "":
+		return "", "", "", "", fmt.Errorf("%w: UID is empty", ErrDataFieldMissing)
 	}
+	// Ignore Scopes and LocalID fields, we don't use them.
 
 	return data.TokenType, data.AccessToken, data.RefreshToken, data.UID, nil
 }
@@ -285,6 +295,7 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 		return "", fmt.Errorf("%w: expected %s got %s",
 			ErrUIDMismatch, requestBody.UID, cookies.UID)
 	}
+	// Ignore LocalID and RefreshCounter fields, we don't use them.
 
 	for _, cookie := range response.Cookies() {
 		if cookie.Name == "AUTH-"+uid {
@@ -295,6 +306,8 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 	return "", fmt.Errorf("%w", ErrAuthCookieNotFound)
 }
 
+var ErrUsernameMismatch = errors.New("username in response does not match request username")
+
 // authInfo fetches SRP parameters for the account.
 func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie cookie) (
 	modulusPGPClearSigned, serverEphemeralBase64, saltBase64, srpSessionHex string,
@@ -302,7 +315,7 @@ func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie 
 ) {
 	type requestBodySchema struct {
 		Intent   string `json:"Intent"`   // "Proton"
-		Username string `json:"Username"` // user@protonmail.com
+		Username string `json:"Username"` // username without @domain.com
 	}
 	requestBody := requestBodySchema{
 		Intent:   "Proton",
@@ -337,20 +350,41 @@ func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie 
 	}
 
 	var info struct {
-		Code            uint   `json:"Code"`            // 1000 on success
-		Modulus         string `json:"Modulus"`         // PGP clearsigned modulus string
-		ServerEphemeral string `json:"ServerEphemeral"` // base64
-		Version         uint   `json:"Version"`         // 4 as of 2025-10-26
-		Salt            string `json:"Salt"`            // base64
-		SRPSession      string `json:"SRPSession"`      // hexadecimal
-		Username        string `json:"Username"`        // user without @domain.com. Mine has its first letter capitalized.
+		Code            uint   `json:"Code"`              // 1000 on success
+		Modulus         string `json:"Modulus"`           // PGP clearsigned modulus string
+		ServerEphemeral string `json:"ServerEphemeral"`   // base64
+		Version         *uint  `json:"Version,omitempty"` // 4 as of 2025-10-26
+		Salt            string `json:"Salt"`              // base64
+		SRPSession      string `json:"SRPSession"`        // hexadecimal
+		Username        string `json:"Username"`          // user without @domain.com. Mine has its first letter capitalized.
 	}
 	err = json.Unmarshal(responseBody, &info)
 	if err != nil {
 		return "", "", "", "", 0, fmt.Errorf("decoding response body: %w", err)
 	}
 
-	version = int(info.Version) //nolint:gosec
+	const successCode = 1000
+	switch {
+	case info.Code != successCode:
+		return "", "", "", "", 0, fmt.Errorf("%w: expected %d got %d",
+			ErrCodeNotSuccess, successCode, info.Code)
+	case info.Modulus == "":
+		return "", "", "", "", 0, fmt.Errorf("%w: modulus is empty", ErrDataFieldMissing)
+	case info.ServerEphemeral == "":
+		return "", "", "", "", 0, fmt.Errorf("%w: server ephemeral is empty", ErrDataFieldMissing)
+	case info.Salt == "":
+		return "", "", "", "", 0, fmt.Errorf("%w: salt is empty", ErrDataFieldMissing)
+	case info.SRPSession == "":
+		return "", "", "", "", 0, fmt.Errorf("%w: SRP session is empty", ErrDataFieldMissing)
+
+	case info.Username != username:
+		return "", "", "", "", 0, fmt.Errorf("%w: expected %s got %s",
+			ErrUsernameMismatch, username, info.Username)
+	case info.Version == nil:
+		return "", "", "", "", 0, fmt.Errorf("%w: version is missing", ErrDataFieldMissing)
+	}
+
+	version = int(*info.Version) //nolint:gosec
 	return info.Modulus, info.ServerEphemeral, info.Salt,
 		info.SRPSession, version, nil
 }
@@ -477,7 +511,14 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 			ErrServerProofNotValid, proofs.ExpectedServerProof, m2)
 	}
 
+	const successCode = 1000
 	switch {
+	case auth.Code != successCode:
+		return cookie{}, fmt.Errorf("%w: expected %d got %d",
+			ErrCodeNotSuccess, successCode, auth.Code)
+	case auth.UID != unauthCookie.uid:
+		return cookie{}, fmt.Errorf("%w: expected %s got %s",
+			ErrUIDMismatch, unauthCookie.uid, auth.UID)
 	case auth.TwoFactor != 0:
 		return cookie{}, fmt.Errorf("%w", ErrTwoFANotSupported)
 	case !slices.Contains(auth.Scopes, "vpn"):
