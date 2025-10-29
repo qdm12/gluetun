@@ -101,15 +101,15 @@ func (c *apiClient) authenticate(ctx context.Context, username, password string,
 		token:     cookieToken,
 		sessionID: sessionID,
 	}
-	info, err := c.authInfo(ctx, username, unauthCookie)
+	modulusPGPClearSigned, serverEphemeralBase64, saltBase64,
+		srpSessionHex, version, err := c.authInfo(ctx, username, unauthCookie)
 	if err != nil {
 		return cookie{}, fmt.Errorf("getting auth information: %w", err)
 	}
 
 	// Prepare SRP proof generator using Proton's official SRP parameters and hashing.
-	version := int(info.Version) //nolint:gosec
 	srpAuth, err := srp.NewAuth(version, username, []byte(password),
-		info.Salt, info.Modulus, info.ServerEphemeral)
+		saltBase64, modulusPGPClearSigned, serverEphemeralBase64)
 	if err != nil {
 		return cookie{}, fmt.Errorf("initializing SRP auth: %w", err)
 	}
@@ -121,7 +121,7 @@ func (c *apiClient) authenticate(ctx context.Context, username, password string,
 		return cookie{}, fmt.Errorf("generating SRP proofs: %w", err)
 	}
 
-	authCookie, err = c.auth(ctx, unauthCookie, username, info.SRPSession, proofs)
+	authCookie, err = c.auth(ctx, unauthCookie, username, srpSessionHex, proofs)
 	if err != nil {
 		return cookie{}, fmt.Errorf("authentifying: %w", err)
 	}
@@ -183,7 +183,16 @@ func (c *apiClient) getUnauthSession(ctx context.Context, sessionID string) (
 			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
 	}
 
-	var data sessionsResponse
+	var data struct {
+		Code         uint     `json:"Code"`         // 1000 on success
+		AccessToken  string   `json:"AccessToken"`  // 32-chars lowercase and digits
+		RefreshToken string   `json:"RefreshToken"` // 32-chars lowercase and digits
+		TokenType    string   `json:"TokenType"`    // "Bearer"
+		Scopes       []string `json:"Scopes"`       // should be [] for our usage
+		UID          string   `json:"UID"`          // 32-chars lowercase and digits
+		LocalID      uint     `json:"LocalID"`      // 0 in my case
+	}
+
 	err = json.Unmarshal(responseBody, &data)
 	if err != nil {
 		return "", "", "", "", fmt.Errorf("decoding response body: %w", err)
@@ -205,7 +214,16 @@ var ErrUIDMismatch = errors.New("UID in response does not match request UID")
 func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, accessToken,
 	refreshToken, uid string,
 ) (cookieToken string, err error) {
-	requestBody := cookiesRequest{
+	type requestBodySchema struct {
+		GrantType    string `json:"GrantType"`    // "refresh_token"
+		Persistent   uint   `json:"Persistent"`   // 0
+		RedirectURI  string `json:"RedirectURI"`  // "https://protonmail.com"
+		RefreshToken string `json:"RefreshToken"` // 32-chars lowercase and digits
+		ResponseType string `json:"ResponseType"` // "token"
+		State        string `json:"State"`        // 24-chars letters and digits
+		UID          string `json:"UID"`          // 32-chars lowercase and digits
+	}
+	requestBody := requestBodySchema{
 		GrantType:    "refresh_token",
 		Persistent:   0,
 		RedirectURI:  "https://protonmail.com",
@@ -247,7 +265,12 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
 	}
 
-	var cookies cookiesResponse
+	var cookies struct {
+		Code           uint   `json:"Code"`           // 1000 on success
+		UID            string `json:"UID"`            // should match request UID
+		LocalID        uint   `json:"LocalID"`        // 0
+		RefreshCounter uint   `json:"RefreshCounter"` // 1
+	}
 	err = json.Unmarshal(responseBody, &cookies)
 	if err != nil {
 		return "", fmt.Errorf("decoding response body: %w", err)
@@ -272,11 +295,16 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 	return "", fmt.Errorf("%w", ErrAuthCookieNotFound)
 }
 
-// authInfo fetches SRP parameters for the account (salt, modulus, B, version, session).
+// authInfo fetches SRP parameters for the account.
 func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie cookie) (
-	data authInfoResponse, err error,
+	modulusPGPClearSigned, serverEphemeralBase64, saltBase64, srpSessionHex string,
+	version int, err error,
 ) {
-	requestBody := authInfoRequest{
+	type requestBodySchema struct {
+		Intent   string `json:"Intent"`   // "Proton"
+		Username string `json:"Username"` // user@protonmail.com
+	}
+	requestBody := requestBodySchema{
 		Intent:   "Proton",
 		Username: username,
 	}
@@ -284,37 +312,47 @@ func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie 
 	buffer := bytes.NewBuffer(nil)
 	encoder := json.NewEncoder(buffer)
 	if err := encoder.Encode(requestBody); err != nil {
-		return authInfoResponse{}, fmt.Errorf("encoding request body: %w", err)
+		return "", "", "", "", 0, fmt.Errorf("encoding request body: %w", err)
 	}
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, c.apiURLBase+"/core/v4/auth/info", buffer)
 	if err != nil {
-		return authInfoResponse{}, fmt.Errorf("creating request: %w", err)
+		return "", "", "", "", 0, fmt.Errorf("creating request: %w", err)
 	}
 	c.setHeaders(request, unauthCookie)
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return authInfoResponse{}, err
+		return "", "", "", "", 0, err
 	}
 	defer response.Body.Close()
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		return authInfoResponse{}, fmt.Errorf("reading response body: %w", err)
+		return "", "", "", "", 0, fmt.Errorf("reading response body: %w", err)
 	} else if response.StatusCode != http.StatusOK {
 		// TODO parse JSON and fallback to plain
-		return authInfoResponse{},
-			fmt.Errorf("%w: %s: %s", ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
+		return "", "", "", "", 0, fmt.Errorf("%w: %s: %s",
+			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
 	}
 
-	var info authInfoResponse
+	var info struct {
+		Code            uint   `json:"Code"`            // 1000 on success
+		Modulus         string `json:"Modulus"`         // PGP clearsigned modulus string
+		ServerEphemeral string `json:"ServerEphemeral"` // base64
+		Version         uint   `json:"Version"`         // 4 as of 2025-10-26
+		Salt            string `json:"Salt"`            // base64
+		SRPSession      string `json:"SRPSession"`      // hexadecimal
+		Username        string `json:"Username"`        // user without @domain.com. Mine has its first letter capitalized.
+	}
 	err = json.Unmarshal(responseBody, &info)
 	if err != nil {
-		return authInfoResponse{}, fmt.Errorf("decoding response body: %w", err)
+		return "", "", "", "", 0, fmt.Errorf("decoding response body: %w", err)
 	}
 
-	return info, nil
+	version = int(info.Version) //nolint:gosec
+	return info.Modulus, info.ServerEphemeral, info.Salt,
+		info.SRPSession, version, nil
 }
 
 type cookie struct {
@@ -352,7 +390,14 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 	clientEphemeral := base64.StdEncoding.EncodeToString(proofs.ClientEphemeral)
 	clientProof := base64.StdEncoding.EncodeToString(proofs.ClientProof)
 
-	requestBody := authRequest{
+	type requestBodySchema struct {
+		ClientEphemeral string            `json:"ClientEphemeral"`   // base64(A)
+		ClientProof     string            `json:"ClientProof"`       // base64(M1)
+		Payload         map[string]string `json:"Payload,omitempty"` // not sure
+		SRPSession      string            `json:"SRPSession"`        // hexadecimal
+		Username        string            `json:"Username"`          // user@protonmail.com
+	}
+	requestBody := requestBodySchema{
 		ClientEphemeral: clientEphemeral,
 		ClientProof:     clientProof,
 		// TODO add payload?
@@ -387,7 +432,37 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 			ErrHTTPStatusCodeNotOK, response.Status, string(responseBody))
 	}
 
-	var auth authResponse
+	type twoFAStatus uint
+	//nolint:unused
+	const (
+		twoFADisabled twoFAStatus = iota
+		twoFAHasTOTP
+		twoFAHasFIDO2
+		twoFAHasFIDO2AndTOTP
+	)
+	type twoFAInfo struct {
+		Enabled twoFAStatus `json:"Enabled"`
+		FIDO2   struct {
+			AuthenticationOptions any   `json:"AuthenticationOptions"`
+			RegisteredKeys        []any `json:"RegisteredKeys"`
+		} `json:"FIDO2"`
+		TOTP uint `json:"TOTP"`
+	}
+
+	var auth struct {
+		Code              uint      `json:"Code"`         // 1000 on success
+		LocalID           uint      `json:"LocalID"`      // 7 in my case
+		Scopes            []string  `json:"Scopes"`       // this should contain "vpn". Same as `Scope` field value.
+		UID               string    `json:"UID"`          // same as `Uid` field value
+		UserID            string    `json:"UserID"`       // base64
+		EventID           string    `json:"EventID"`      // base64
+		PasswordMode      uint      `json:"PasswordMode"` // 1 in my case
+		ServerProof       string    `json:"ServerProof"`  // base64(M2)
+		TwoFactor         uint      `json:"TwoFactor"`    // 0 if 2FA not required
+		TwoFA             twoFAInfo `json:"2FA"`
+		TemporaryPassword uint      `json:"TemporaryPassword"` // 0 in my case
+	}
+
 	err = json.Unmarshal(responseBody, &auth)
 	if err != nil {
 		return cookie{}, fmt.Errorf("decoding response body: %w", err)
@@ -409,8 +484,8 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 		return cookie{}, fmt.Errorf("%w: in %v", ErrVPNScopeNotFound, auth.Scopes)
 	}
 
-	const headerKey = "set-cookie"
-	setCookieHeaders := response.Header[headerKey] //nolint:staticcheck
+	const headerKey = "Set-Cookie"
+	setCookieHeaders := response.Header[headerKey]
 	if len(setCookieHeaders) == 0 {
 		setCookieHeaders = response.Header["Set-Cookie"]
 	}
@@ -487,7 +562,6 @@ func (c *apiClient) fetchServers(ctx context.Context, cookie cookie) (
 	data apiData, err error,
 ) {
 	const url = "https://account.proton.me/api/vpn/logicals"
-	// Old Logicals API endpoint: https://api.protonmail.ch/vpn/logicals
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return data, err
