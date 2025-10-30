@@ -142,7 +142,7 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		if errors.Is(err, icmp.ErrNotPermitted) {
 			c.icmpNotPermitted = true
 			c.smallCheckName = "plain DNS over UDP"
-			c.logger.Warnf("%s; permanently falling back to plaintext DNS checks.", err)
+			c.logger.Infof("%s; permanently falling back to %s checks.", c.smallCheckName, err)
 			return c.dnsClient.Check(ctx)
 		}
 		return err
@@ -219,9 +219,10 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 var ErrAllCheckTriesFailed = errors.New("all check tries failed")
 
 func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime time.Duration,
-	warner Logger, checkName string, check func(ctx context.Context) error,
+	logger Logger, checkName string, check func(ctx context.Context) error,
 ) error {
 	try := uint(0)
+	var errs []error
 	for {
 		timeout := tryTimeout + time.Duration(try)*extraTryTime //nolint:gosec
 		checkCtx, cancel := context.WithTimeout(ctx, timeout)
@@ -231,13 +232,19 @@ func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime ti
 		case err == nil:
 			return nil
 		case ctx.Err() != nil:
-			return fmt.Errorf("%s context error: %w", checkName, ctx.Err())
-		default:
-			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try+1, maxTries, err)
-			try++
-			if try == maxTries {
-				return fmt.Errorf("%w: %s: after %d attempts", ErrAllCheckTriesFailed, checkName, maxTries)
-			}
+			return fmt.Errorf("%s: %w", checkName, ctx.Err())
 		}
+		logger.Debugf("%s attempt %d/%d failed: %s", checkName, try+1, maxTries, err)
+		errs = append(errs, err)
+		try++
+		if try < maxTries {
+			continue
+		}
+		errStrings := make([]string, len(errs))
+		for i, err := range errs {
+			errStrings[i] = fmt.Sprintf("attempt %d: %s", i+1, err.Error())
+		}
+		return fmt.Errorf("%w: after %d %s attempts (%s)",
+			ErrAllCheckTriesFailed, maxTries, checkName, strings.Join(errStrings, "; "))
 	}
 }
