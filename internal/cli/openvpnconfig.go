@@ -43,27 +43,49 @@ type IPv6Checker interface {
 	IsIPv6Supported() (supported bool, err error)
 }
 
-func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
+type OpenVPNConfigCommand struct {
+	logger      OpenvpnConfigLogger
+	reader      *reader.Reader
+	ipv6Checker IPv6Checker
+}
+
+func NewOpenVPNConfigCommand(logger OpenvpnConfigLogger, reader *reader.Reader,
 	ipv6Checker IPv6Checker,
-) error {
-	storage, err := storage.New(logger, constants.ServersData)
+) *OpenVPNConfigCommand {
+	return &OpenVPNConfigCommand{
+		logger:      logger,
+		reader:      reader,
+		ipv6Checker: ipv6Checker,
+	}
+}
+
+func (c *OpenVPNConfigCommand) Name() string {
+	return "openvpnconfig"
+}
+
+func (c *OpenVPNConfigCommand) Description() string {
+	return "OPrint the OpenVPN configuration (for debugging)"
+}
+
+func (c *OpenVPNConfigCommand) Run(_ context.Context) error {
+	storage, err := storage.New(c.logger, constants.ServersData)
 	if err != nil {
 		return err
 	}
 
 	var allSettings settings.Settings
-	err = allSettings.Read(reader, logger)
+	err = allSettings.Read(c.reader, c.logger)
 	if err != nil {
 		return err
 	}
 	allSettings.SetDefaults()
 
-	ipv6Supported, err := ipv6Checker.IsIPv6Supported()
+	ipv6Supported, err := c.ipv6Checker.IsIPv6Supported()
 	if err != nil {
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
 
-	if err = allSettings.Validate(storage, ipv6Supported, logger); err != nil {
+	if err = allSettings.Validate(storage, ipv6Supported, c.logger); err != nil {
 		return fmt.Errorf("validating settings: %w", err)
 	}
 
