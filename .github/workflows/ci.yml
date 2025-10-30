@@ -66,6 +66,33 @@ jobs:
       - name: Build final image
         run: docker build -t final-image .
 
+  verify-private:
+    if: |
+      github.repository == 'qdm12/gluetun' &&
+      (
+        github.event_name == 'push' ||
+        github.event_name == 'release' ||
+        (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
+      )
+    needs: [verify]
+    runs-on: ubuntu-latest
+    environment: production-secrets
+    steps:
+      - uses: actions/checkout@v5
+
+      - run: docker build -t qmcgaw/gluetun .
+
+      - name: Setup Go for CI utility
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ci/go.mod
+
+      - name: Build utility
+        run: go build -C ./ci -o runner ./cmd/main.go
+
+      - name: Run Gluetun container
+        run: echo -e "${{ secrets.MULLVAD_WIREGUARD_PRIVATE_KEY }}\n${{ secrets.MULLVAD_WIREGUARD_ADDRESS }}" | ./ci/runner run-container
+
   codeql:
     runs-on: ubuntu-latest
     permissions:
