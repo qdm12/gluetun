@@ -76,7 +76,7 @@ jobs:
       )
     needs: [verify]
     runs-on: ubuntu-latest
-    environment: production-secrets
+    environment: secrets
     steps:
       - uses: actions/checkout@v5
 
