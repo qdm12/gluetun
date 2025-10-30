@@ -26,7 +26,6 @@ Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
 [![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues?q=is%3Aissue+is%3Aclosed)
 
-[![Lines of code](https://img.shields.io/tokei/lines/github/qdm12/gluetun)](https://github.com/qdm12/gluetun)
 ![Code size](https://img.shields.io/github/languages/code-size/qdm12/gluetun)
 ![GitHub repo size](https://img.shields.io/github/repo-size/qdm12/gluetun)
 ![Go version](https://img.shields.io/github/go-mod/go-version/qdm12/gluetun)
