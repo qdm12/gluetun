@@ -55,7 +55,7 @@ Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
 
 ## Features
 
-- Based on Alpine 3.20 for a small Docker image of 35.6MB
+- Based on Alpine 3.22 for a small Docker image of 41.1MB
 - Supports: **AirVPN**, **Cyberghost**, **ExpressVPN**, **FastestVPN**, **Giganews**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Perfect Privacy**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **SlickVPN**, **Surfshark**, **TorGuard**, **VPNSecure.me**, **VPNUnlimited**, **Vyprvpn**, **WeVPN**, **Windscribe** servers
 - Supports OpenVPN for all providers listed
 - Supports Wireguard both kernelspace and userspace
