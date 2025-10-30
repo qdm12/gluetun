@@ -65,6 +65,7 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		providers.Ivpn,
 		providers.Mullvad,
 		providers.Nordvpn,
+		providers.Ovpn,
 		providers.Protonvpn,
 		providers.Surfshark,
 		providers.Windscribe,
