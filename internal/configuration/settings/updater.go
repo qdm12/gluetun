@@ -105,6 +105,10 @@ func (u *Updater) SetDefaults(vpnProvider string) {
 	if len(u.Providers) == 0 && vpnProvider != providers.Custom {
 		u.Providers = []string{vpnProvider}
 	}
+
+	// Set these to empty strings to avoid nil pointer panics
+	u.ProtonUsername = gosettings.DefaultPointer(u.ProtonUsername, "")
+	u.ProtonPassword = gosettings.DefaultPointer(u.ProtonPassword, "")
 }
 
 func (u Updater) String() string {
