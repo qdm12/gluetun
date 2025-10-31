@@ -16,7 +16,7 @@ require (
 	github.com/qdm12/gotree v0.3.0
 	github.com/qdm12/log v0.1.0
 	github.com/qdm12/ss-server v0.6.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/ulikunitz/xz v0.5.15
 	github.com/vishvananda/netlink v1.3.1
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a
