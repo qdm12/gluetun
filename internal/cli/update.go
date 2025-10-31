@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -24,6 +25,8 @@ import (
 var (
 	ErrModeUnspecified     = errors.New("at least one of -enduser or -maintainer must be specified")
 	ErrNoProviderSpecified = errors.New("no provider was specified")
+	ErrUsernameMissing     = errors.New("username is required for this provider")
+	ErrPasswordMissing     = errors.New("password is required for this provider")
 )
 
 type UpdaterLogger interface {
@@ -35,7 +38,7 @@ type UpdaterLogger interface {
 func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
 	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
-	var csvProviders, ipToken string
+	var csvProviders, ipToken, protonUsername, protonPassword string
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
@@ -47,6 +50,8 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
 	flagSet.StringVar(&ipToken, "ip-token", "", "IP data service token (e.g. ipinfo.io) to use")
+	flagSet.StringVar(&protonUsername, "proton-username", "", "Username to use to authenticate with Proton")
+	flagSet.StringVar(&protonPassword, "proton-password", "", "Password to use to authenticate with Proton")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
@@ -62,6 +67,11 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 			return fmt.Errorf("%w", ErrNoProviderSpecified)
 		}
 		options.Providers = strings.Split(csvProviders, ",")
+	}
+
+	if slices.Contains(options.Providers, providers.Protonvpn) {
+		options.ProtonUsername = &protonUsername
+		options.ProtonPassword = &protonPassword
 	}
 
 	options.SetDefaults(options.Providers[0])
@@ -94,7 +104,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	openvpnFileExtractor := extract.New()
 
 	providers := provider.NewProviders(storage, time.Now, logger, httpClient,
-		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
+		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor, options)
 
 	updater := updater.New(httpClient, storage, providers, logger)
 	err = updater.UpdateServers(ctx, options.Providers, options.MinRatio)

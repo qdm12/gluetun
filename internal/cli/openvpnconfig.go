@@ -76,7 +76,7 @@ func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
 	openvpnFileExtractor := extract.New()
 
 	providers := provider.NewProviders(storage, time.Now, warner, client,
-		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
+		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor, allSettings.Updater)
 	providerConf := providers.Get(allSettings.VPN.Provider.Name)
 	connection, err := providerConf.GetConnection(
 		allSettings.VPN.Provider.ServerSelection, ipv6Supported)
