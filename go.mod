@@ -3,7 +3,7 @@ module github.com/qdm12/gluetun
 go 1.25.0
 
 require (
-	github.com/breml/rootcerts v0.3.2
+	github.com/breml/rootcerts v0.3.3
 	github.com/fatih/color v1.18.0
 	github.com/golang/mock v1.6.0
 	github.com/klauspost/compress v1.18.1
