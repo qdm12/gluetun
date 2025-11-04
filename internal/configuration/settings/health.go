@@ -29,7 +29,7 @@ type Health struct {
 	// It cannot be the empty string in the internal state.
 	TargetAddress string
 	// ICMPTargetIP is the IP address to use for ICMP echo requests
-	// in the health checker. It can be set to an unspecified address
+	// in the health checker. It can be set to an unspecified address (0.0.0.0)
 	// such that the VPN server IP is used, which is also the default behavior.
 	ICMPTargetIP netip.Addr
 	// RestartVPN indicates whether to restart the VPN connection
