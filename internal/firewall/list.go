@@ -324,11 +324,11 @@ var ErrProtocolUnknown = errors.New("unknown protocol")
 func parseProtocol(s string) (protocol string, err error) {
 	switch s {
 	case "0", "all":
-	case "1":
+	case "1", "icmp":
 		protocol = "icmp"
-	case "6":
+	case "6", "tcp":
 		protocol = "tcp"
-	case "17":
+	case "17", "udp":
 		protocol = "udp"
 	default:
 		return "", fmt.Errorf("%w: %s", ErrProtocolUnknown, s)
