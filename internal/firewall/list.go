@@ -36,11 +36,12 @@ var ErrChainListMalformed = errors.New("iptables chain list output is malformed"
 
 func parseChain(iptablesOutput string) (c chain, err error) {
 	// Text example:
-	// Chain INPUT (policy ACCEPT 140K packets, 226M bytes)
-	// pkts bytes target     prot opt in     out     source               destination
-	// 	  0     0 ACCEPT     17   --  tun0   *       0.0.0.0/0            0.0.0.0/0            udp dpt:55405
-	// 	  0     0 ACCEPT     6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:55405
-	// 	  0     0 DROP       0    --  tun0   *       0.0.0.0/0            0.0.0.0/0
+	// Chain INPUT (policy DROP 5 packets, 4196 bytes)
+    // num   pkts bytes target     prot opt in     out     source               destination         
+    // 1      332 23472 ACCEPT     all  --  lo     *       0.0.0.0/0            0.0.0.0/0           
+    // 2       25 14670 ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            ctstate RELATED,ESTABLISHED
+    // 3      323 43665 ACCEPT     all  --  eth0   *       0.0.0.0/0            0.0.0.0/0       
+    /  4        0     0 ACCEPT     all  --  eth1   *       0.0.0.0/0            172.27.0.0/16
 	iptablesOutput = strings.TrimSpace(iptablesOutput)
 	linesWithComments := strings.Split(iptablesOutput, "\n")
 
@@ -324,11 +325,11 @@ var ErrProtocolUnknown = errors.New("unknown protocol")
 func parseProtocol(s string) (protocol string, err error) {
 	switch s {
 	case "0", "all":
-	case "1":
+	case "1", "icmp":
 		protocol = "icmp"
-	case "6":
+	case "6", "tcp":
 		protocol = "tcp"
-	case "17":
+	case "17", "udp":
 		protocol = "udp"
 	default:
 		return "", fmt.Errorf("%w: %s", ErrProtocolUnknown, s)
