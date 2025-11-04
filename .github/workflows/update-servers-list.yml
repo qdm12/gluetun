@@ -1,0 +1,33 @@
+name: Update servers list
+on:
+  pull_request:
+  schedule:
+    - cron: '11 3 1 */2 *'  # Run at 03:11 on the 1st of every 2nd month
+jobs:
+  check-for-updates:
+    if: github.repository == 'qdm12/gluetun'
+    runs-on: ubuntu-latest
+    environment: secrets
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: Update servers list
+        run: |
+          go run ./cmd/gluetun/main.go update -all -maintainer -minratio 0.2
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.UPDATE_SERVERS_LIST_PAT }}
+          title: 'Update servers list'
+          body: 'This Auto Generated PR updates the servers list.'
+          branch: bot/update-servers-list
+          # todo: add labels
