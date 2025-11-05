@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/qdm12/dns/v2/pkg/doh"
 	"github.com/qdm12/dns/v2/pkg/dot"
 	cachemiddleware "github.com/qdm12/dns/v2/pkg/middlewares/cache"
 	"github.com/qdm12/dns/v2/pkg/middlewares/cache/lru"
@@ -54,6 +55,15 @@ func buildServerSettings(settings settings.DNS,
 		dialer, err = dot.New(dialerSettings)
 		if err != nil {
 			return server.Settings{}, fmt.Errorf("creating DNS over TLS dialer: %w", err)
+		}
+	case "doh":
+		dialerSettings := doh.Settings{
+			UpstreamResolvers: upstreamResolvers,
+			IPVersion:         ipVersion,
+		}
+		dialer, err = doh.New(dialerSettings)
+		if err != nil {
+			return server.Settings{}, fmt.Errorf("creating DNS over HTTPS dialer: %w", err)
 		}
 	case "plain":
 		dialerSettings := plain.Settings{

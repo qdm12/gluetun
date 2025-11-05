@@ -61,7 +61,7 @@ var (
 )
 
 func (d DNS) validate() (err error) {
-	if !helpers.IsOneOf(d.UpstreamType, "dot", "plain") {
+	if !helpers.IsOneOf(d.UpstreamType, "dot", "doh", "plain") {
 		return fmt.Errorf("%w: %s", ErrDNSUpstreamTypeNotValid, d.UpstreamType)
 	}
 
