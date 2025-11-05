@@ -30,16 +30,16 @@ func buildDoTSettings(settings settings.DNS,
 
 	var dotSettings dot.Settings
 	providersData := provider.NewProviders()
-	dotSettings.UpstreamResolvers = make([]provider.Provider, len(settings.DoT.Providers))
-	for i := range settings.DoT.Providers {
+	dotSettings.UpstreamResolvers = make([]provider.Provider, len(settings.Providers))
+	for i := range settings.Providers {
 		var err error
-		dotSettings.UpstreamResolvers[i], err = providersData.Get(settings.DoT.Providers[i])
+		dotSettings.UpstreamResolvers[i], err = providersData.Get(settings.Providers[i])
 		if err != nil {
 			panic(err) // this should already had been checked
 		}
 	}
 	dotSettings.IPVersion = "ipv4"
-	if *settings.DoT.IPv6 {
+	if *settings.IPv6 {
 		dotSettings.IPVersion = "ipv6"
 	}
 
@@ -48,7 +48,7 @@ func buildDoTSettings(settings settings.DNS,
 		return server.Settings{}, fmt.Errorf("creating DNS over TLS dialer: %w", err)
 	}
 
-	if *settings.DoT.Caching {
+	if *settings.Caching {
 		lruCache, err := lru.New(lru.Settings{})
 		if err != nil {
 			return server.Settings{}, fmt.Errorf("creating LRU cache: %w", err)

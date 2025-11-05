@@ -166,7 +166,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     HEALTH_TARGET_ADDRESS=cloudflare.com:443 \
     HEALTH_ICMP_TARGET_IP=1.1.1.1 \
     HEALTH_RESTART_VPN=on \
-    # DNS over TLS
+    # DNS
     DOT=on \
     DOT_PROVIDERS=cloudflare \
     DOT_PRIVATE_ADDRESS=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:7f00:1/104,::ffff:a00:0/104,::ffff:a9fe:0/112,::ffff:ac10:0/108,::ffff:c0a8:0/112 \

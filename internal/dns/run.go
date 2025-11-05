@@ -31,7 +31,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		var runError <-chan error
 
 		settings := l.GetSettings()
-		for !*settings.KeepNameserver && *settings.DoT.Enabled {
+		for !*settings.KeepNameserver && *settings.DoTEnabled {
 			var err error
 			runError, err = l.setupServer(ctx)
 			if err == nil {
@@ -56,7 +56,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		}
 
 		settings = l.GetSettings()
-		if !*settings.KeepNameserver && !*settings.DoT.Enabled {
+		if !*settings.KeepNameserver && !*settings.DoTEnabled {
 			const fallback = false
 			l.useUnencryptedDNS(fallback)
 		}
