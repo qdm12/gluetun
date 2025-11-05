@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/dns/v2/pkg/nameserver"
@@ -18,14 +19,15 @@ func (l *Loop) useUnencryptedDNS(fallback bool) {
 	}
 
 	const dialTimeout = 3 * time.Second
+	const defaultDNSPort = 53
 	settingsInternalDNS := nameserver.SettingsInternalDNS{
-		IP:      targetIP,
-		Timeout: dialTimeout,
+		AddrPort: netip.AddrPortFrom(targetIP, defaultDNSPort),
+		Timeout:  dialTimeout,
 	}
 	nameserver.UseDNSInternally(settingsInternalDNS)
 
 	settingsSystemWide := nameserver.SettingsSystemDNS{
-		IP:         targetIP,
+		IPs:        []netip.Addr{targetIP},
 		ResolvPath: l.resolvConf,
 	}
 	err := nameserver.UseDNSSystemWide(settingsSystemWide)

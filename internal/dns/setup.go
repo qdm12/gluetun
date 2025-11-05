@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/netip"
 
 	"github.com/qdm12/dns/v2/pkg/check"
 	"github.com/qdm12/dns/v2/pkg/nameserver"
@@ -37,11 +38,12 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 	l.server = server
 
 	// use internal DNS server
+	const defaultDNSPort = 53
 	nameserver.UseDNSInternally(nameserver.SettingsInternalDNS{
-		IP: settings.ServerAddress,
+		AddrPort: netip.AddrPortFrom(settings.ServerAddress, defaultDNSPort),
 	})
 	err = nameserver.UseDNSSystemWide(nameserver.SettingsSystemDNS{
-		IP:         settings.ServerAddress,
+		IPs:        []netip.Addr{settings.ServerAddress},
 		ResolvPath: l.resolvConf,
 	})
 	if err != nil {
