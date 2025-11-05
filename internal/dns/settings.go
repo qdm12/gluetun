@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/dns/v2/pkg/middlewares/cache/lru"
 	filtermiddleware "github.com/qdm12/dns/v2/pkg/middlewares/filter"
 	"github.com/qdm12/dns/v2/pkg/middlewares/filter/mapfilter"
+	"github.com/qdm12/dns/v2/pkg/plain"
 	"github.com/qdm12/dns/v2/pkg/provider"
 	"github.com/qdm12/dns/v2/pkg/server"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -22,31 +23,51 @@ func (l *Loop) SetSettings(ctx context.Context, settings settings.DNS) (
 	return l.state.SetSettings(ctx, settings)
 }
 
-func buildDoTSettings(settings settings.DNS,
+func buildServerSettings(settings settings.DNS,
 	filter *mapfilter.Filter, logger Logger) (
 	serverSettings server.Settings, err error,
 ) {
 	serverSettings.Logger = logger
 
-	var dotSettings dot.Settings
 	providersData := provider.NewProviders()
-	dotSettings.UpstreamResolvers = make([]provider.Provider, len(settings.Providers))
+	upstreamResolvers := make([]provider.Provider, len(settings.Providers))
 	for i := range settings.Providers {
 		var err error
-		dotSettings.UpstreamResolvers[i], err = providersData.Get(settings.Providers[i])
+		upstreamResolvers[i], err = providersData.Get(settings.Providers[i])
 		if err != nil {
 			panic(err) // this should already had been checked
 		}
 	}
-	dotSettings.IPVersion = "ipv4"
+
+	ipVersion := "ipv4"
 	if *settings.IPv6 {
-		dotSettings.IPVersion = "ipv6"
+		ipVersion = "ipv6"
 	}
 
-	serverSettings.Dialer, err = dot.New(dotSettings)
-	if err != nil {
-		return server.Settings{}, fmt.Errorf("creating DNS over TLS dialer: %w", err)
+	var dialer server.Dialer
+	switch settings.UpstreamType {
+	case "dot":
+		dialerSettings := dot.Settings{
+			UpstreamResolvers: upstreamResolvers,
+			IPVersion:         ipVersion,
+		}
+		dialer, err = dot.New(dialerSettings)
+		if err != nil {
+			return server.Settings{}, fmt.Errorf("creating DNS over TLS dialer: %w", err)
+		}
+	case "plain":
+		dialerSettings := plain.Settings{
+			UpstreamResolvers: upstreamResolvers,
+			IPVersion:         ipVersion,
+		}
+		dialer, err = plain.New(dialerSettings)
+		if err != nil {
+			return server.Settings{}, fmt.Errorf("creating plain DNS dialer: %w", err)
+		}
+	default:
+		panic("unknown upstream type: " + settings.UpstreamType)
 	}
+	serverSettings.Dialer = dialer
 
 	if *settings.Caching {
 		lruCache, err := lru.New(lru.Settings{})

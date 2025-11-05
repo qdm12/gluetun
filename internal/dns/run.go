@@ -26,12 +26,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	}
 
 	for ctx.Err() == nil {
-		// Upper scope variables for the DNS over TLS server only
+		// Upper scope variables for the DNS forwarder server only
 		// Their values are to be used if DOT=off
 		var runError <-chan error
 
 		settings := l.GetSettings()
-		for !*settings.KeepNameserver && *settings.DoTEnabled {
+		for !*settings.KeepNameserver && *settings.ServerEnabled {
 			var err error
 			runError, err = l.setupServer(ctx)
 			if err == nil {
@@ -56,7 +56,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		}
 
 		settings = l.GetSettings()
-		if !*settings.KeepNameserver && !*settings.DoTEnabled {
+		if !*settings.KeepNameserver && !*settings.ServerEnabled {
 			const fallback = false
 			l.useUnencryptedDNS(fallback)
 		}
@@ -101,6 +101,6 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 func (l *Loop) stopServer() {
 	stopErr := l.server.Stop()
 	if stopErr != nil {
-		l.logger.Error("stopping DoT server: " + stopErr.Error())
+		l.logger.Error("stopping server: " + stopErr.Error())
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/qdm12/dns/v2/pkg/provider"
+	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
@@ -14,21 +15,23 @@ import (
 
 // DNS contains settings to configure DNS.
 type DNS struct {
-	// DoTEnabled is true if the DoT server should be running
+	// ServerEnabled is true if the server should be running
 	// and used. It defaults to true, and cannot be nil
 	// in the internal state.
-	DoTEnabled *bool
+	ServerEnabled *bool
+	// UpstreamType can be dot or plain, and defaults to dot.
+	UpstreamType string `json:"upstream_type"`
 	// UpdatePeriod is the period to update DNS block lists.
 	// It can be set to 0 to disable the update.
 	// It defaults to 24h and cannot be nil in
 	// the internal state.
 	UpdatePeriod *time.Duration
-	// Providers is a list of DNS over TLS providers
+	// Providers is a list of DNS providers
 	Providers []string `json:"providers"`
-	// Caching is true if the DoT server should cache
+	// Caching is true if the server should cache
 	// DNS responses.
 	Caching *bool `json:"caching"`
-	// IPv6 is true if the DoT server should connect over IPv6.
+	// IPv6 is true if the server should connect over IPv6.
 	IPv6 *bool `json:"ipv6"`
 	// Blacklist contains settings to configure the filter
 	// block lists.
@@ -36,7 +39,7 @@ type DNS struct {
 	// ServerAddress is the DNS server to use inside
 	// the Go program and for the system.
 	// It defaults to '127.0.0.1' to be used with the
-	// DoT server. It cannot be the zero value in the internal
+	// local server. It cannot be the zero value in the internal
 	// state.
 	ServerAddress netip.Addr
 	// KeepNameserver is true if the existing DNS server
@@ -45,20 +48,27 @@ type DNS struct {
 	// outside the VPN tunnel since it would go through
 	// the local DNS server of your Docker/Kubernetes
 	// configuration, which is likely not going through the tunnel.
-	// This will also disable the DNS over TLS server and the
+	// This will also disable the DNS forwarder server and the
 	// `ServerAddress` field will be ignored.
 	// It defaults to false and cannot be nil in the
 	// internal state.
 	KeepNameserver *bool
 }
 
-var ErrDoTUpdatePeriodTooShort = errors.New("update period is too short")
+var (
+	ErrDNSUpstreamTypeNotValid = errors.New("DNS upstream type is not valid")
+	ErrDNSUpdatePeriodTooShort = errors.New("update period is too short")
+)
 
 func (d DNS) validate() (err error) {
+	if !helpers.IsOneOf(d.UpstreamType, "dot", "plain") {
+		return fmt.Errorf("%w: %s", ErrDNSUpstreamTypeNotValid, d.UpstreamType)
+	}
+
 	const minUpdatePeriod = 30 * time.Second
 	if *d.UpdatePeriod != 0 && *d.UpdatePeriod < minUpdatePeriod {
 		return fmt.Errorf("%w: %s must be bigger than %s",
-			ErrDoTUpdatePeriodTooShort, *d.UpdatePeriod, minUpdatePeriod)
+			ErrDNSUpdatePeriodTooShort, *d.UpdatePeriod, minUpdatePeriod)
 	}
 
 	providers := provider.NewProviders()
@@ -79,7 +89,8 @@ func (d DNS) validate() (err error) {
 
 func (d *DNS) Copy() (copied DNS) {
 	return DNS{
-		DoTEnabled:     gosettings.CopyPointer(d.DoTEnabled),
+		ServerEnabled:  gosettings.CopyPointer(d.ServerEnabled),
+		UpstreamType:   d.UpstreamType,
 		UpdatePeriod:   gosettings.CopyPointer(d.UpdatePeriod),
 		Providers:      gosettings.CopySlice(d.Providers),
 		Caching:        gosettings.CopyPointer(d.Caching),
@@ -94,7 +105,8 @@ func (d *DNS) Copy() (copied DNS) {
 // settings object with any field set in the other
 // settings.
 func (d *DNS) overrideWith(other DNS) {
-	d.DoTEnabled = gosettings.OverrideWithPointer(d.DoTEnabled, other.DoTEnabled)
+	d.ServerEnabled = gosettings.OverrideWithPointer(d.ServerEnabled, other.ServerEnabled)
+	d.UpstreamType = gosettings.OverrideWithComparable(d.UpstreamType, other.UpstreamType)
 	d.UpdatePeriod = gosettings.OverrideWithPointer(d.UpdatePeriod, other.UpdatePeriod)
 	d.Providers = gosettings.OverrideWithSlice(d.Providers, other.Providers)
 	d.Caching = gosettings.OverrideWithPointer(d.Caching, other.Caching)
@@ -105,7 +117,8 @@ func (d *DNS) overrideWith(other DNS) {
 }
 
 func (d *DNS) setDefaults() {
-	d.DoTEnabled = gosettings.DefaultPointer(d.DoTEnabled, true)
+	d.ServerEnabled = gosettings.DefaultPointer(d.ServerEnabled, true)
+	d.UpstreamType = gosettings.DefaultComparable(d.UpstreamType, "dot")
 	const defaultUpdatePeriod = 24 * time.Hour
 	d.UpdatePeriod = gosettings.DefaultPointer(d.UpdatePeriod, defaultUpdatePeriod)
 	d.Providers = gosettings.DefaultSlice(d.Providers, []string{
@@ -148,16 +161,12 @@ func (d DNS) toLinesNode() (node *gotree.Node) {
 	}
 	node.Appendf("DNS server address to use: %s", d.ServerAddress)
 
-	node.Appendf("DNS over TLS forwarder enabled: %s", gosettings.BoolToYesNo(d.DoTEnabled))
-	if !*d.DoTEnabled {
+	node.Appendf("DNS forwarder server enabled: %s", gosettings.BoolToYesNo(d.ServerEnabled))
+	if !*d.ServerEnabled {
 		return node
 	}
 
-	update := "disabled"
-	if *d.UpdatePeriod > 0 {
-		update = "every " + d.UpdatePeriod.String()
-	}
-	node.Appendf("Update period: %s", update)
+	node.Appendf("Upstream resolver type: %s", d.UpstreamType)
 
 	upstreamResolvers := node.Append("Upstream resolvers:")
 	for _, provider := range d.Providers {
@@ -167,30 +176,38 @@ func (d DNS) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Caching: %s", gosettings.BoolToYesNo(d.Caching))
 	node.Appendf("IPv6: %s", gosettings.BoolToYesNo(d.IPv6))
 
+	update := "disabled"
+	if *d.UpdatePeriod > 0 {
+		update = "every " + d.UpdatePeriod.String()
+	}
+	node.Appendf("Update period: %s", update)
+
 	node.AppendNode(d.Blacklist.toLinesNode())
 
 	return node
 }
 
 func (d *DNS) read(r *reader.Reader) (err error) {
-	d.DoTEnabled, err = r.BoolPtr("DOT")
+	d.ServerEnabled, err = r.BoolPtr("DNS_SERVER", reader.RetroKeys("DOT"))
 	if err != nil {
 		return err
 	}
+
+	d.UpstreamType = r.String("DNS_UPSTREAM_RESOLVER_TYPE")
 
 	d.UpdatePeriod, err = r.DurationPtr("DNS_UPDATE_PERIOD")
 	if err != nil {
 		return err
 	}
 
-	d.Providers = r.CSV("DOT_PROVIDERS")
+	d.Providers = r.CSV("DNS_UPSTREAM_RESOLVERS", reader.RetroKeys("DOT_PROVIDERS"))
 
-	d.Caching, err = r.BoolPtr("DOT_CACHING")
+	d.Caching, err = r.BoolPtr("DNS_CACHING", reader.RetroKeys("DOT_CACHING"))
 	if err != nil {
 		return err
 	}
 
-	d.IPv6, err = r.BoolPtr("DOT_IPV6")
+	d.IPv6, err = r.BoolPtr("DNS_UPSTREAM_IPV6", reader.RetroKeys("DOT_IPV6"))
 	if err != nil {
 		return err
 	}

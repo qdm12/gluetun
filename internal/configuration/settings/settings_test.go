@@ -40,12 +40,13 @@ func Test_Settings_String(t *testing.T) {
 ├── DNS settings:
 |   ├── Keep existing nameserver(s): no
 |   ├── DNS server address to use: 127.0.0.1
-|   ├── DNS over TLS forwarder enabled: yes
-|   ├── Update period: every 24h0m0s
+|   ├── DNS forwarder server enabled: yes
+|   ├── Upstream resolver type: dot
 |   ├── Upstream resolvers:
 |   |   └── Cloudflare
 |   ├── Caching: yes
 |   ├── IPv6: no
+|   ├── Update period: every 24h0m0s
 |   └── DNS filtering settings:
 |       ├── Block malicious: yes
 |       ├── Block ads: no

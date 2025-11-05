@@ -150,7 +150,7 @@ func (b *DNSBlacklist) read(r *reader.Reader) (err error) {
 	}
 
 	b.AddBlockedIPs, b.AddBlockedIPPrefixes,
-		err = readDoTPrivateAddresses(r) // TODO v4 split in 2
+		err = readDNSPrivateAddresses(r) // TODO v4 split in 2
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (b *DNSBlacklist) read(r *reader.Reader) (err error) {
 
 var ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
 
-func readDoTPrivateAddresses(reader *reader.Reader) (ips []netip.Addr,
+func readDNSPrivateAddresses(reader *reader.Reader) (ips []netip.Addr,
 	ipPrefixes []netip.Prefix, err error,
 ) {
 	privateAddresses := reader.CSV("DOT_PRIVATE_ADDRESS")

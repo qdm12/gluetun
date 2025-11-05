@@ -167,11 +167,12 @@ ENV VPN_SERVICE_PROVIDER=pia \
     HEALTH_ICMP_TARGET_IP=1.1.1.1 \
     HEALTH_RESTART_VPN=on \
     # DNS
-    DOT=on \
-    DOT_PROVIDERS=cloudflare \
-    DOT_PRIVATE_ADDRESS=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:7f00:1/104,::ffff:a00:0/104,::ffff:a9fe:0/112,::ffff:ac10:0/108,::ffff:c0a8:0/112 \
-    DOT_CACHING=on \
-    DOT_IPV6=off \
+    DNS_SERVER=on \
+    DNS_UPSTREAM_RESOLVER_TYPE=DoT \
+    DNS_UPSTREAM_RESOLVERS=cloudflare \
+    DNS_PRIVATE_ADDRESSES=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:7f00:1/104,::ffff:a00:0/104,::ffff:a9fe:0/112,::ffff:ac10:0/108,::ffff:c0a8:0/112 \
+    DNS_CACHING=on \
+    DNS_UPSTREAM_IPV6=off \
     BLOCK_MALICIOUS=on \
     BLOCK_SURVEILLANCE=off \
     BLOCK_ADS=off \
