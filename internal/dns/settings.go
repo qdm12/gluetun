@@ -3,12 +3,14 @@ package dns
 import (
 	"context"
 	"fmt"
+	"net/netip"
 
 	"github.com/qdm12/dns/v2/pkg/dot"
 	cachemiddleware "github.com/qdm12/dns/v2/pkg/middlewares/cache"
 	"github.com/qdm12/dns/v2/pkg/middlewares/cache/lru"
 	filtermiddleware "github.com/qdm12/dns/v2/pkg/middlewares/filter"
 	"github.com/qdm12/dns/v2/pkg/middlewares/filter/mapfilter"
+	"github.com/qdm12/dns/v2/pkg/middlewares/localdns"
 	"github.com/qdm12/dns/v2/pkg/plain"
 	"github.com/qdm12/dns/v2/pkg/provider"
 	"github.com/qdm12/dns/v2/pkg/server"
@@ -24,7 +26,8 @@ func (l *Loop) SetSettings(ctx context.Context, settings settings.DNS) (
 }
 
 func buildServerSettings(settings settings.DNS,
-	filter *mapfilter.Filter, logger Logger) (
+	filter *mapfilter.Filter, localResolvers []netip.AddrPort,
+	logger Logger) (
 	serverSettings server.Settings, err error,
 ) {
 	serverSettings.Logger = logger
@@ -90,6 +93,18 @@ func buildServerSettings(settings settings.DNS,
 		return server.Settings{}, fmt.Errorf("creating filter middleware: %w", err)
 	}
 	serverSettings.Middlewares = append(serverSettings.Middlewares, filterMiddleware)
+
+	localDNSMiddleware, err := localdns.New(localdns.Settings{
+		Resolvers: localResolvers, // auto-detected at container start only
+		Logger:    logger,
+	})
+	if err != nil {
+		return server.Settings{}, fmt.Errorf("creating local DNS middleware: %w", err)
+	}
+	// Place after cache middleware, since we want to avoid caching for local
+	// hostnames that may change regularly.
+	// Place after filter middleware to avoid conflicts with the rebinding protection.
+	serverSettings.Middlewares = append(serverSettings.Middlewares, localDNSMiddleware)
 
 	return serverSettings, nil
 }

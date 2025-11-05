@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/dns/v2/pkg/middlewares/filter/mapfilter"
@@ -16,22 +17,23 @@ import (
 )
 
 type Loop struct {
-	statusManager *loopstate.State
-	state         *state.State
-	server        *server.Server
-	filter        *mapfilter.Filter
-	resolvConf    string
-	client        *http.Client
-	logger        Logger
-	userTrigger   bool
-	start         <-chan struct{}
-	running       chan<- models.LoopStatus
-	stop          <-chan struct{}
-	stopped       chan<- struct{}
-	updateTicker  <-chan struct{}
-	backoffTime   time.Duration
-	timeNow       func() time.Time
-	timeSince     func(time.Time) time.Duration
+	statusManager  *loopstate.State
+	state          *state.State
+	server         *server.Server
+	filter         *mapfilter.Filter
+	localResolvers []netip.AddrPort
+	resolvConf     string
+	client         *http.Client
+	logger         Logger
+	userTrigger    bool
+	start          <-chan struct{}
+	running        chan<- models.LoopStatus
+	stop           <-chan struct{}
+	stopped        chan<- struct{}
+	updateTicker   <-chan struct{}
+	backoffTime    time.Duration
+	timeNow        func() time.Time
+	timeSince      func(time.Time) time.Duration
 }
 
 const defaultBackoffTime = 10 * time.Second
