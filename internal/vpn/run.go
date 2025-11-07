@@ -56,14 +56,14 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			password:       settings.Provider.PortForwarding.Password,
 		}
 
-		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
+		vpnCtx, vpnCancel := context.WithCancel(context.Background())
 		waitError := make(chan error)
 		tunnelReady := make(chan struct{})
 
-		go vpnRunner.Run(openvpnCtx, waitError, tunnelReady)
+		go vpnRunner.Run(vpnCtx, waitError, tunnelReady)
 
 		if err := l.waitForError(ctx, waitError); err != nil {
-			openvpnCancel()
+			vpnCancel()
 			l.crashed(ctx, err)
 			continue
 		}
@@ -75,10 +75,10 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		for stayHere {
 			select {
 			case <-tunnelReady:
-				go l.onTunnelUp(openvpnCtx, ctx, tunnelUpData)
+				go l.onTunnelUp(vpnCtx, ctx, tunnelUpData)
 			case <-ctx.Done():
 				l.cleanup()
-				openvpnCancel()
+				vpnCancel()
 				<-waitError
 				close(waitError)
 				return
@@ -86,7 +86,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.userTrigger = true
 				l.logger.Info("stopping")
 				l.cleanup()
-				openvpnCancel()
+				vpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
 				// select case will trigger
@@ -99,7 +99,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
 				l.cleanup()
-				openvpnCancel()
+				vpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				stayHere = false
@@ -107,6 +107,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.statusManager.Unlock()
 			}
 		}
-		openvpnCancel()
+		vpnCancel()
 	}
 }
