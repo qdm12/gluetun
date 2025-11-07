@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/netip"
 
 	"github.com/qdm12/dns/v2/pkg/check"
 	"github.com/qdm12/dns/v2/pkg/nameserver"
@@ -20,14 +21,14 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 
 	settings := l.GetSettings()
 
-	dotSettings, err := buildDoTSettings(settings, l.filter, l.logger)
+	serverSettings, err := buildServerSettings(settings, l.filter, l.logger)
 	if err != nil {
-		return nil, fmt.Errorf("building DoT settings: %w", err)
+		return nil, fmt.Errorf("building server settings: %w", err)
 	}
 
-	server, err := server.New(dotSettings)
+	server, err := server.New(serverSettings)
 	if err != nil {
-		return nil, fmt.Errorf("creating DoT server: %w", err)
+		return nil, fmt.Errorf("creating server: %w", err)
 	}
 
 	runError, err = server.Start(ctx)
@@ -37,11 +38,12 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 	l.server = server
 
 	// use internal DNS server
+	const defaultDNSPort = 53
 	nameserver.UseDNSInternally(nameserver.SettingsInternalDNS{
-		IP: settings.ServerAddress,
+		AddrPort: netip.AddrPortFrom(settings.ServerAddress, defaultDNSPort),
 	})
 	err = nameserver.UseDNSSystemWide(nameserver.SettingsSystemDNS{
-		IP:         settings.ServerAddress,
+		IPs:        []netip.Addr{settings.ServerAddress},
 		ResolvPath: l.resolvConf,
 	})
 	if err != nil {

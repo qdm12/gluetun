@@ -29,9 +29,12 @@ type Health struct {
 	// It cannot be the empty string in the internal state.
 	TargetAddress string
 	// ICMPTargetIP is the IP address to use for ICMP echo requests
-	// in the health checker. It can be set to an unspecified address
+	// in the health checker. It can be set to an unspecified address (0.0.0.0)
 	// such that the VPN server IP is used, which is also the default behavior.
 	ICMPTargetIP netip.Addr
+	// RestartVPN indicates whether to restart the VPN connection
+	// when the healthcheck fails.
+	RestartVPN *bool
 }
 
 func (h Health) Validate() (err error) {
@@ -50,6 +53,7 @@ func (h *Health) copy() (copied Health) {
 		ReadTimeout:       h.ReadTimeout,
 		TargetAddress:     h.TargetAddress,
 		ICMPTargetIP:      h.ICMPTargetIP,
+		RestartVPN:        gosettings.CopyPointer(h.RestartVPN),
 	}
 }
 
@@ -62,6 +66,7 @@ func (h *Health) OverrideWith(other Health) {
 	h.ReadTimeout = gosettings.OverrideWithComparable(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = gosettings.OverrideWithComparable(h.TargetAddress, other.TargetAddress)
 	h.ICMPTargetIP = gosettings.OverrideWithComparable(h.ICMPTargetIP, other.ICMPTargetIP)
+	h.RestartVPN = gosettings.OverrideWithPointer(h.RestartVPN, other.RestartVPN)
 }
 
 func (h *Health) SetDefaults() {
@@ -72,6 +77,7 @@ func (h *Health) SetDefaults() {
 	h.ReadTimeout = gosettings.DefaultComparable(h.ReadTimeout, defaultReadTimeout)
 	h.TargetAddress = gosettings.DefaultComparable(h.TargetAddress, "cloudflare.com:443")
 	h.ICMPTargetIP = gosettings.DefaultComparable(h.ICMPTargetIP, netip.IPv4Unspecified()) // use the VPN server IP
+	h.RestartVPN = gosettings.DefaultPointer(h.RestartVPN, true)
 }
 
 func (h Health) String() string {
@@ -87,6 +93,7 @@ func (h Health) toLinesNode() (node *gotree.Node) {
 		icmpTarget = h.ICMPTargetIP.String()
 	}
 	node.Appendf("ICMP target IP: %s", icmpTarget)
+	node.Appendf("Restart VPN on healthcheck failure: %s", gosettings.BoolToYesNo(h.RestartVPN))
 	return node
 }
 
@@ -95,6 +102,10 @@ func (h *Health) Read(r *reader.Reader) (err error) {
 	h.TargetAddress = r.String("HEALTH_TARGET_ADDRESS",
 		reader.RetroKeys("HEALTH_ADDRESS_TO_PING"))
 	h.ICMPTargetIP, err = r.NetipAddr("HEALTH_ICMP_TARGET_IP")
+	if err != nil {
+		return err
+	}
+	h.RestartVPN, err = r.BoolPtr("HEALTH_RESTART_VPN")
 	if err != nil {
 		return err
 	}

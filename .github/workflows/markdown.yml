@@ -23,7 +23,7 @@ jobs:
       - uses: DavidAnson/markdownlint-cli2-action@v20
         with:
           globs: "**.md"
-          config: .markdownlint.json
+          config: .markdownlint-cli2.jsonc
 
       - uses: reviewdog/action-misspell@v1
         with:

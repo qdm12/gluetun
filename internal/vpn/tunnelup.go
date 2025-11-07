@@ -53,9 +53,6 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		l.restartVPN(loopCtx, err)
 		return
 	}
-	defer func() {
-		_ = l.healthChecker.Stop()
-	}()
 
 	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
 	err = updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
@@ -64,7 +61,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		mtuLogger.Error(err.Error())
 	}
 
-	if *l.dnsLooper.GetSettings().DoT.Enabled {
+	if *l.dnsLooper.GetSettings().ServerEnabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	} else {
 		err := check.WaitForDNS(ctx, check.Settings{})
@@ -93,13 +90,33 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		l.logger.Error(err.Error())
 	}
 
-	select {
-	case <-ctx.Done():
-	case healthErr := <-healthErrCh:
-		l.healthServer.SetError(healthErr)
-		// Note this restart call must be done in a separate goroutine
-		// from the VPN loop goroutine.
-		l.restartVPN(loopCtx, healthErr)
+	l.collectHealthErrors(ctx, loopCtx, healthErrCh)
+}
+
+func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-chan error) {
+	var previousHealthErr error
+	for {
+		select {
+		case <-ctx.Done():
+			_ = l.healthChecker.Stop()
+			return
+		case healthErr := <-healthErrCh:
+			l.healthServer.SetError(healthErr)
+			if healthErr != nil {
+				if *l.healthSettings.RestartVPN {
+					// Note this restart call must be done in a separate goroutine
+					// from the VPN loop goroutine.
+					_ = l.healthChecker.Stop()
+					l.restartVPN(loopCtx, healthErr)
+					return
+				}
+				l.logger.Warnf("healthcheck failed: %s", healthErr)
+				l.logger.Info("👉 See https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md")
+			} else if previousHealthErr != nil {
+				l.logger.Info("healthcheck passed successfully after previous failure(s)")
+			}
+			previousHealthErr = healthErr
+		}
 	}
 }
 

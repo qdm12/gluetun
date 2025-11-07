@@ -25,6 +25,7 @@ type Checker struct {
 	configMutex sync.Mutex
 
 	icmpNotPermitted bool
+	smallCheckName   string
 
 	// Internal periodic service signals
 	stop context.CancelFunc
@@ -58,8 +59,9 @@ func (c *Checker) SetConfig(tlsDialAddr string, icmpTarget netip.Addr) {
 // and, on success, starts the periodic checks in a separate goroutine:
 // - a "small" ICMP echo check every 15 seconds
 // - a "full" TCP+TLS check every 5 minutes
-// It returns a channel `runError` that receives an error if one of the periodic checks fail.
+// It returns a channel `runError` that receives an error (nil or not) when a periodic check is performed.
 // It returns an error if the initial TCP+TLS check fails.
+// The Checker has to be ultimately stopped by calling [Checker.Stop].
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
 	if c.tlsDialAddr == "" || c.icmpTarget.IsUnspecified() {
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
@@ -81,7 +83,8 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	c.stop = cancel
 	done := make(chan struct{})
 	c.done = done
-	const smallCheckPeriod = 15 * time.Second
+	c.smallCheckName = "ICMP echo"
+	const smallCheckPeriod = time.Minute
 	smallCheckTimer := time.NewTimer(smallCheckPeriod)
 	const fullCheckPeriod = 5 * time.Minute
 	fullCheckTimer := time.NewTimer(fullCheckPeriod)
@@ -99,16 +102,16 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 			case <-smallCheckTimer.C:
 				err := c.smallPeriodicCheck(ctx)
 				if err != nil {
-					runErrorCh <- fmt.Errorf("periodic small check: %w", err)
-					return
+					err = fmt.Errorf("small periodic check: %w", err)
 				}
+				runErrorCh <- err
 				smallCheckTimer.Reset(smallCheckPeriod)
 			case <-fullCheckTimer.C:
 				err := c.fullPeriodicCheck(ctx)
 				if err != nil {
-					runErrorCh <- fmt.Errorf("periodic full check: %w", err)
-					return
+					err = fmt.Errorf("full periodic check: %w", err)
 				}
+				runErrorCh <- err
 				fullCheckTimer.Reset(fullCheckPeriod)
 			}
 		}
@@ -129,8 +132,8 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	ip := c.icmpTarget
 	c.configMutex.Unlock()
 	const maxTries = 3
-	const timeout = 3 * time.Second
-	const extraTryTime = time.Second // 1s added for each subsequent retry
+	const timeout = 10 * time.Second
+	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
 	check := func(ctx context.Context) error {
 		if c.icmpNotPermitted {
 			return c.dnsClient.Check(ctx)
@@ -138,20 +141,21 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		err := c.echoer.Echo(ctx, ip)
 		if errors.Is(err, icmp.ErrNotPermitted) {
 			c.icmpNotPermitted = true
-			c.logger.Warnf("%s; permanently falling back to plaintext DNS checks.", err)
+			c.smallCheckName = "plain DNS over UDP"
+			c.logger.Infof("%s; permanently falling back to %s checks.", c.smallCheckName, err)
 			return c.dnsClient.Check(ctx)
 		}
 		return err
 	}
-	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "ICMP echo", check)
+	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, c.smallCheckName, check)
 }
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 	const maxTries = 2
-	// 10s timeout in case the connection is under stress
+	// 20s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
-	const timeout = 10 * time.Second
-	const extraTryTime = 3 * time.Second // 3s added for each subsequent retry
+	const timeout = 20 * time.Second
+	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
 	check := func(ctx context.Context) error {
 		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr)
 	}
@@ -215,9 +219,10 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 var ErrAllCheckTriesFailed = errors.New("all check tries failed")
 
 func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime time.Duration,
-	warner Logger, checkName string, check func(ctx context.Context) error,
+	logger Logger, checkName string, check func(ctx context.Context) error,
 ) error {
 	try := uint(0)
+	var errs []error
 	for {
 		timeout := tryTimeout + time.Duration(try)*extraTryTime //nolint:gosec
 		checkCtx, cancel := context.WithTimeout(ctx, timeout)
@@ -227,13 +232,19 @@ func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime ti
 		case err == nil:
 			return nil
 		case ctx.Err() != nil:
-			return fmt.Errorf("%s context error: %w", checkName, ctx.Err())
-		default:
-			warner.Warnf("%s attempt %d/%d failed: %v", checkName, try+1, maxTries, err)
-			try++
-			if try == maxTries {
-				return fmt.Errorf("%w: %s: after %d attempts", ErrAllCheckTriesFailed, checkName, maxTries)
-			}
+			return fmt.Errorf("%s: %w", checkName, ctx.Err())
 		}
+		logger.Debugf("%s attempt %d/%d failed: %s", checkName, try+1, maxTries, err)
+		errs = append(errs, err)
+		try++
+		if try < maxTries {
+			continue
+		}
+		errStrings := make([]string, len(errs))
+		for i, err := range errs {
+			errStrings[i] = fmt.Sprintf("attempt %d: %s", i+1, err.Error())
+		}
+		return fmt.Errorf("%w: after %d %s attempts (%s)",
+			ErrAllCheckTriesFailed, maxTries, checkName, strings.Join(errStrings, "; "))
 	}
 }

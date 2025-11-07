@@ -12,7 +12,7 @@ func (l *Loop) updateFiles(ctx context.Context) (err error) {
 	settings := l.GetSettings()
 
 	l.logger.Info("downloading hostnames and IP block lists")
-	blacklistSettings := settings.DoT.Blacklist.ToBlockBuilderSettings(l.client)
+	blacklistSettings := settings.Blacklist.ToBlockBuilderSettings(l.client)
 
 	blockBuilder, err := blockbuilder.New(blacklistSettings)
 	if err != nil {

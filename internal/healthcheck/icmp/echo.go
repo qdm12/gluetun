@@ -153,7 +153,7 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 		// Note we need to read the whole packet in one call to ReadFrom, so the buffer
 		// must be large enough to read the entire reply packet. See:
 		// https://groups.google.com/g/golang-nuts/c/5dy2Q4nPs08/m/KmuSQAGEtG4J
-		bytesRead, _, err := conn.ReadFrom(buffer)
+		bytesRead, returnAddr, err := conn.ReadFrom(buffer)
 		if err != nil {
 			return nil, fmt.Errorf("reading from ICMP connection: %w", err)
 		}
@@ -168,23 +168,26 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 		switch body := message.Body.(type) {
 		case *icmp.Echo:
 			if id != body.ID {
-				logger.Warnf("ignoring ICMP echo reply mismatching expected id %d (id: %d, type: %d, code: %d, length: %d)",
-					id, body.ID, message.Type, message.Code, len(packetBytes))
+				logger.Warnf("ignoring ICMP echo reply mismatching expected id %d "+
+					"(id: %d, type: %d, code: %d, length: %d, return address %s)",
+					id, body.ID, message.Type, message.Code, len(packetBytes), returnAddr)
 				continue // not the ID we are looking for
 			}
 			return body.Data, nil
 		case *icmp.DstUnreach:
-			logger.Debugf("ignoring ICMP destination unreachable message (type: 3, code: %d, expected-id %d)", message.Code, id)
+			logger.Debugf("ignoring ICMP destination unreachable message (type: 3, code: %d, return address %s, expected-id %d)",
+				message.Code, returnAddr, id)
 			// See https://github.com/qdm12/gluetun/pull/2923#issuecomment-3377532249
 			// on why we ignore this message. If it is actually unreachable, the timeout on waiting for
 			// the echo reply will do instead of returning an error error.
 			continue
 		case *icmp.TimeExceeded:
-			logger.Debugf("ignoring ICMP time exceeded message (type: 11, code: %d, expected-id %d)", message.Code, id)
+			logger.Debugf("ignoring ICMP time exceeded message (type: 11, code: %d, return address %s, expected-id %d)",
+				message.Code, returnAddr, id)
 			continue
 		default:
-			return nil, fmt.Errorf("%w: %T (type %d, code %d, expected-id %d)",
-				ErrICMPBodyUnsupported, body, message.Type, message.Code, id)
+			return nil, fmt.Errorf("%w: %T (type %d, code %d, return address %s, expected-id %d)",
+				ErrICMPBodyUnsupported, body, message.Type, message.Code, returnAddr, id)
 		}
 	}
 }

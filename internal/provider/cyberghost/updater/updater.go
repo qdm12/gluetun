@@ -6,10 +6,12 @@ import (
 
 type Updater struct {
 	parallelResolver common.ParallelResolver
+	warner           common.Warner
 }
 
-func New(parallelResolver common.ParallelResolver) *Updater {
+func New(parallelResolver common.ParallelResolver, warner common.Warner) *Updater {
 	return &Updater{
 		parallelResolver: parallelResolver,
+		warner:           warner,
 	}
 }
