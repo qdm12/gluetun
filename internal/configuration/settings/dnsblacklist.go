@@ -149,8 +149,7 @@ func (b *DNSBlacklist) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	b.AddBlockedIPs, b.AddBlockedIPPrefixes,
-		err = readDNSPrivateAddresses(r) // TODO v4 split in 2
+	b.AddBlockedIPs, b.AddBlockedIPPrefixes, err = readDNSBlockedIPs(r)
 	if err != nil {
 		return err
 	}
@@ -160,12 +159,35 @@ func (b *DNSBlacklist) read(r *reader.Reader) (err error) {
 	return nil
 }
 
-var ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
-
-func readDNSPrivateAddresses(reader *reader.Reader) (ips []netip.Addr,
+func readDNSBlockedIPs(r *reader.Reader) (ips []netip.Addr,
 	ipPrefixes []netip.Prefix, err error,
 ) {
-	privateAddresses := reader.CSV("DOT_PRIVATE_ADDRESS")
+	ips, err = r.CSVNetipAddresses("DNS_BLOCK_IPS")
+	if err != nil {
+		return nil, nil, err
+	}
+	ipPrefixes, err = r.CSVNetipPrefixes("DNS_BLOCK_IP_PREFIXES")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// TODO v4 remove this block below
+	privateIPs, privateIPPrefixes, err := readDNSPrivateAddresses(r)
+	if err != nil {
+		return nil, nil, err
+	}
+	ips = append(ips, privateIPs...)
+	ipPrefixes = append(ipPrefixes, privateIPPrefixes...)
+
+	return ips, ipPrefixes, nil
+}
+
+var ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
+
+func readDNSPrivateAddresses(r *reader.Reader) (ips []netip.Addr,
+	ipPrefixes []netip.Prefix, err error,
+) {
+	privateAddresses := r.CSV("DOT_PRIVATE_ADDRESS", reader.IsRetro("DNS_BLOCK_IP_PREFIXES"))
 	if len(privateAddresses) == 0 {
 		return nil, nil, nil
 	}
