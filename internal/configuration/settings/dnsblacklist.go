@@ -154,7 +154,7 @@ func (b *DNSBlacklist) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	b.AllowedHosts = r.CSV("UNBLOCK") // TODO v4 change name
+	b.AllowedHosts = r.CSV("DNS_UNBLOCK_HOSTNAMES", reader.RetroKeys("UNBLOCK"))
 
 	return nil
 }
