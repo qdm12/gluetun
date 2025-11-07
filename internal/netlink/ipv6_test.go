@@ -24,7 +24,8 @@ func isIPv6LocallySupported() bool {
 func findAvailableTCPPort(t *testing.T) (port uint16) {
 	t.Helper()
 
-	listener, err := net.Listen("tcp", "localhost:0")
+	config := &net.ListenConfig{}
+	listener, err := config.Listen(context.Background(), "tcp", "localhost:0")
 	require.NoError(t, err)
 
 	addr := listener.Addr().String()
