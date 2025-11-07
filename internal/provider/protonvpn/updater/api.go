@@ -299,7 +299,10 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 	return "", fmt.Errorf("%w", ErrAuthCookieNotFound)
 }
 
-var ErrUsernameMismatch = errors.New("username in response does not match request username")
+var (
+	ErrUsernameDoesNotExist = errors.New("username does not exist")
+	ErrUsernameMismatch     = errors.New("username in response does not match request username")
+)
 
 // authInfo fetches SRP parameters for the account.
 func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie cookie) (
@@ -364,7 +367,7 @@ func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie 
 	case info.ServerEphemeral == "":
 		return "", "", "", "", 0, fmt.Errorf("%w: server ephemeral is empty", ErrDataFieldMissing)
 	case info.Salt == "":
-		return "", "", "", "", 0, fmt.Errorf("%w: salt is empty", ErrDataFieldMissing)
+		return "", "", "", "", 0, fmt.Errorf("%w (salt data field is empty)", ErrUsernameDoesNotExist)
 	case info.SRPSession == "":
 		return "", "", "", "", 0, fmt.Errorf("%w: SRP session is empty", ErrDataFieldMissing)
 
@@ -616,9 +619,9 @@ var ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
 func buildError(httpCode int, body []byte) error {
 	prettyCode := http.StatusText(httpCode)
 	var protonError struct {
-		Code    *int    `json:"Code,omitempty"`
-		Error   *string `json:"Error,omitempty"`
-		Details any     `json:"Details"`
+		Code    *int              `json:"Code,omitempty"`
+		Error   *string           `json:"Error,omitempty"`
+		Details map[string]string `json:"Details"`
 	}
 	decoder := json.NewDecoder(bytes.NewReader(body))
 	decoder.DisallowUnknownFields()
@@ -627,6 +630,12 @@ func buildError(httpCode int, body []byte) error {
 		return fmt.Errorf("%w: %s: %s",
 			ErrHTTPStatusCodeNotOK, prettyCode, body)
 	}
-	return fmt.Errorf("%w: %s: %s (code %d, details %v)",
-		ErrHTTPStatusCodeNotOK, prettyCode, *protonError.Error, *protonError.Code, protonError.Details)
+
+	details := make([]string, 0, len(protonError.Details))
+	for key, value := range protonError.Details {
+		details = append(details, fmt.Sprintf("%s: %s", key, value))
+	}
+
+	return fmt.Errorf("%w: %s: %s (code %d with details: %s)",
+		ErrHTTPStatusCodeNotOK, prettyCode, *protonError.Error, *protonError.Code, strings.Join(details, ", "))
 }
