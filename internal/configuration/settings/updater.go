@@ -58,11 +58,14 @@ func (u Updater) Validate() (err error) {
 		}
 
 		if provider == providers.Protonvpn {
-			switch {
-			case *u.ProtonUsername == "" && *u.ProtonPassword != "":
-				return fmt.Errorf("%w", ErrUpdaterProtonUsernameMissing)
-			case *u.ProtonUsername != "" && *u.ProtonPassword == "":
-				return fmt.Errorf("%w", ErrUpdaterProtonPasswordMissing)
+			authenticatedAPI := *u.ProtonUsername == "" || *u.ProtonPassword == ""
+			if authenticatedAPI {
+				switch {
+				case *u.ProtonUsername == "":
+					return fmt.Errorf("%w", ErrUpdaterProtonUsernameMissing)
+				case *u.ProtonPassword == "":
+					return fmt.Errorf("%w", ErrUpdaterProtonPasswordMissing)
+				}
 			}
 		}
 	}
@@ -152,6 +155,11 @@ func (u *Updater) read(r *reader.Reader) (err error) {
 	u.Providers = r.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
 
 	u.ProtonUsername = r.Get("UPDATER_PROTONVPN_USERNAME")
+	if u.ProtonUsername != nil {
+		// Enforce to use the username not the email address
+		*u.ProtonUsername = strings.TrimSuffix(*u.ProtonUsername, "@protonmail.com")
+		*u.ProtonUsername = strings.TrimSuffix(*u.ProtonUsername, "@proton.me")
+	}
 	u.ProtonPassword = r.Get("UPDATER_PROTONVPN_PASSWORD")
 
 	return nil
