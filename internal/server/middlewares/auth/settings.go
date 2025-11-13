@@ -22,6 +22,7 @@ func (s *Settings) SetDefaults() {
 		Routes: []string{
 			http.MethodGet + " /openvpn/actions/restart",
 			http.MethodGet + " /unbound/actions/restart",
+			http.MethodGet + " /openvpn/portforwarded",
 			http.MethodGet + " /updater/restart",
 			http.MethodGet + " /v1/version",
 			http.MethodGet + " /v1/vpn/status",
@@ -112,6 +113,8 @@ func (r Role) validate() (err error) {
 // WARNING: do not mutate programmatically.
 var validRoutes = map[string]struct{}{ //nolint:gochecknoglobals
 	http.MethodGet + " /openvpn/actions/restart":  {},
+	http.MethodGet + " /openvpn/portforwarded":    {},
+	http.MethodGet + " /openvpn/settings":         {},
 	http.MethodGet + " /unbound/actions/restart":  {},
 	http.MethodGet + " /updater/restart":          {},
 	http.MethodGet + " /v1/version":               {},
