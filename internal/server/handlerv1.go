@@ -10,27 +10,29 @@ import (
 )
 
 func newHandlerV1(w warner, buildInfo models.BuildInformation,
-	vpn, openvpn, dns, updater, publicip http.Handler,
+	vpn, openvpn, dns, updater, publicip, portForward http.Handler,
 ) http.Handler {
 	return &handlerV1{
-		warner:    w,
-		buildInfo: buildInfo,
-		vpn:       vpn,
-		openvpn:   openvpn,
-		dns:       dns,
-		updater:   updater,
-		publicip:  publicip,
+		warner:      w,
+		buildInfo:   buildInfo,
+		vpn:         vpn,
+		openvpn:     openvpn,
+		dns:         dns,
+		updater:     updater,
+		publicip:    publicip,
+		portForward: portForward,
 	}
 }
 
 type handlerV1 struct {
-	warner    warner
-	buildInfo models.BuildInformation
-	vpn       http.Handler
-	openvpn   http.Handler
-	dns       http.Handler
-	updater   http.Handler
-	publicip  http.Handler
+	warner      warner
+	buildInfo   models.BuildInformation
+	vpn         http.Handler
+	openvpn     http.Handler
+	dns         http.Handler
+	updater     http.Handler
+	publicip    http.Handler
+	portForward http.Handler
 }
 
 func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +49,8 @@ func (h *handlerV1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.updater.ServeHTTP(w, r)
 	case strings.HasPrefix(r.RequestURI, "/publicip"):
 		h.publicip.ServeHTTP(w, r)
+	case strings.HasPrefix(r.RequestURI, "/portforward"):
+		h.portForward.ServeHTTP(w, r)
 	default:
 		errString := fmt.Sprintf("%s %s not found", r.Method, r.RequestURI)
 		http.Error(w, errString, http.StatusBadRequest)
