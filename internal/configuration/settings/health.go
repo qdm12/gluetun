@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/netip"
 	"os"
-	"time"
 
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
@@ -18,12 +17,6 @@ type Health struct {
 	// for the health check server.
 	// It cannot be the empty string in the internal state.
 	ServerAddress string
-	// ReadHeaderTimeout is the HTTP server header read timeout
-	// duration of the HTTP server. It defaults to 100 milliseconds.
-	ReadHeaderTimeout time.Duration
-	// ReadTimeout is the HTTP read timeout duration of the
-	// HTTP server. It defaults to 500 milliseconds.
-	ReadTimeout time.Duration
 	// TargetAddress is the address (host or host:port)
 	// to TCP TLS dial to periodically for the health check.
 	// It cannot be the empty string in the internal state.
@@ -48,12 +41,10 @@ func (h Health) Validate() (err error) {
 
 func (h *Health) copy() (copied Health) {
 	return Health{
-		ServerAddress:     h.ServerAddress,
-		ReadHeaderTimeout: h.ReadHeaderTimeout,
-		ReadTimeout:       h.ReadTimeout,
-		TargetAddress:     h.TargetAddress,
-		ICMPTargetIP:      h.ICMPTargetIP,
-		RestartVPN:        gosettings.CopyPointer(h.RestartVPN),
+		ServerAddress: h.ServerAddress,
+		TargetAddress: h.TargetAddress,
+		ICMPTargetIP:  h.ICMPTargetIP,
+		RestartVPN:    gosettings.CopyPointer(h.RestartVPN),
 	}
 }
 
@@ -62,8 +53,6 @@ func (h *Health) copy() (copied Health) {
 // settings.
 func (h *Health) OverrideWith(other Health) {
 	h.ServerAddress = gosettings.OverrideWithComparable(h.ServerAddress, other.ServerAddress)
-	h.ReadHeaderTimeout = gosettings.OverrideWithComparable(h.ReadHeaderTimeout, other.ReadHeaderTimeout)
-	h.ReadTimeout = gosettings.OverrideWithComparable(h.ReadTimeout, other.ReadTimeout)
 	h.TargetAddress = gosettings.OverrideWithComparable(h.TargetAddress, other.TargetAddress)
 	h.ICMPTargetIP = gosettings.OverrideWithComparable(h.ICMPTargetIP, other.ICMPTargetIP)
 	h.RestartVPN = gosettings.OverrideWithPointer(h.RestartVPN, other.RestartVPN)
@@ -71,10 +60,6 @@ func (h *Health) OverrideWith(other Health) {
 
 func (h *Health) SetDefaults() {
 	h.ServerAddress = gosettings.DefaultComparable(h.ServerAddress, "127.0.0.1:9999")
-	const defaultReadHeaderTimeout = 100 * time.Millisecond
-	h.ReadHeaderTimeout = gosettings.DefaultComparable(h.ReadHeaderTimeout, defaultReadHeaderTimeout)
-	const defaultReadTimeout = 500 * time.Millisecond
-	h.ReadTimeout = gosettings.DefaultComparable(h.ReadTimeout, defaultReadTimeout)
 	h.TargetAddress = gosettings.DefaultComparable(h.TargetAddress, "cloudflare.com:443")
 	h.ICMPTargetIP = gosettings.DefaultComparable(h.ICMPTargetIP, netip.IPv4Unspecified()) // use the VPN server IP
 	h.RestartVPN = gosettings.DefaultPointer(h.RestartVPN, true)
