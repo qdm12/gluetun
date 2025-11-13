@@ -10,14 +10,13 @@ import (
 func (s *Server) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	loopDone := make(chan struct{})
-	go s.runHealthcheckLoop(ctx, loopDone)
-
+	const readHeaderTimeout = 100 * time.Millisecond
+	const readTimeout = 500 * time.Millisecond
 	server := http.Server{
 		Addr:              s.config.ServerAddress,
 		Handler:           s.handler,
-		ReadHeaderTimeout: s.config.ReadHeaderTimeout,
-		ReadTimeout:       s.config.ReadTimeout,
+		ReadHeaderTimeout: readHeaderTimeout,
+		ReadTimeout:       readTimeout,
 	}
 	serverDone := make(chan struct{})
 	go func() {
@@ -37,6 +36,5 @@ func (s *Server) Run(ctx context.Context, done chan<- struct{}) {
 		s.logger.Error(err.Error())
 	}
 
-	<-loopDone
 	<-serverDone
 }

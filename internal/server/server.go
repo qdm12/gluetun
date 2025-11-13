@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"os"
 
 	"github.com/qdm12/gluetun/internal/httpserver"
 	"github.com/qdm12/gluetun/internal/models"
@@ -17,8 +19,12 @@ func New(ctx context.Context, address string, logEnabled bool, logger Logger,
 	server *httpserver.Server, err error,
 ) {
 	authSettings, err := auth.Read(authConfigPath)
-	if err != nil {
+	switch {
+	case errors.Is(err, os.ErrNotExist): // no auth file present
+	case err != nil:
 		return nil, fmt.Errorf("reading auth settings: %w", err)
+	default:
+		logger.Infof("read %d roles from authentication file", len(authSettings.Roles))
 	}
 	authSettings.SetDefaults()
 	err = authSettings.Validate()

@@ -9,13 +9,15 @@ import (
 type handler struct {
 	healthErr   error
 	healthErrMu sync.RWMutex
+	logger      Logger
 }
 
 var errHealthcheckNotRunYet = errors.New("healthcheck did not run yet")
 
-func newHandler() *handler {
+func newHandler(logger Logger) *handler {
 	return &handler{
 		healthErr: errHealthcheckNotRunYet,
+		logger:    logger,
 	}
 }
 

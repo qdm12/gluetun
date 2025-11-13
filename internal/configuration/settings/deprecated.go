@@ -9,9 +9,11 @@ import (
 
 func readObsolete(r *reader.Reader) (warnings []string) {
 	keyToMessage := map[string]string{
-		"DOT_VERBOSITY":           "DOT_VERBOSITY is obsolete, use LOG_LEVEL instead.",
-		"DOT_VERBOSITY_DETAILS":   "DOT_VERBOSITY_DETAILS is obsolete because it was specific to Unbound.",
-		"DOT_VALIDATION_LOGLEVEL": "DOT_VALIDATION_LOGLEVEL is obsolete because DNSSEC validation is not implemented.",
+		"DOT_VERBOSITY":                "DOT_VERBOSITY is obsolete, use LOG_LEVEL instead.",
+		"DOT_VERBOSITY_DETAILS":        "DOT_VERBOSITY_DETAILS is obsolete because it was specific to Unbound.",
+		"DOT_VALIDATION_LOGLEVEL":      "DOT_VALIDATION_LOGLEVEL is obsolete because DNSSEC validation is not implemented.",
+		"HEALTH_VPN_DURATION_INITIAL":  "HEALTH_VPN_DURATION_INITIAL is obsolete",
+		"HEALTH_VPN_DURATION_ADDITION": "HEALTH_VPN_DURATION_ADDITION is obsolete",
 	}
 	sortedKeys := maps.Keys(keyToMessage)
 	slices.Sort(sortedKeys)

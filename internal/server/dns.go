@@ -26,7 +26,7 @@ type dnsHandler struct {
 func (h *dnsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.RequestURI = strings.TrimPrefix(r.RequestURI, "/dns")
 	switch r.RequestURI {
-	case "/status": //nolint:goconst
+	case "/status":
 		switch r.Method {
 		case http.MethodGet:
 			h.getStatus(w)

@@ -37,7 +37,7 @@ jobs:
     env:
       DOCKER_BUILDKIT: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: reviewdog/action-misspell@v1
         with:
@@ -66,6 +66,33 @@ jobs:
       - name: Build final image
         run: docker build -t final-image .
 
+  verify-private:
+    if: |
+      github.repository == 'qdm12/gluetun' &&
+      (
+        github.event_name == 'push' ||
+        github.event_name == 'release' ||
+        (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
+      )
+    needs: [verify]
+    runs-on: ubuntu-latest
+    environment: secrets
+    steps:
+      - uses: actions/checkout@v5
+
+      - run: docker build -t qmcgaw/gluetun .
+
+      - name: Setup Go for CI utility
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ci/go.mod
+
+      - name: Build utility
+        run: go build -C ./ci -o runner ./cmd/main.go
+
+      - name: Run Gluetun container with Mullvad configuration
+        run: echo -e "${{ secrets.MULLVAD_WIREGUARD_PRIVATE_KEY }}\n${{ secrets.MULLVAD_WIREGUARD_ADDRESS }}" | ./ci/runner mullvad
+
   codeql:
     runs-on: ubuntu-latest
     permissions:
@@ -73,15 +100,15 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
         with:
-          go-version: "^1.23"
-      - uses: github/codeql-action/init@v3
+          go-version-file: go.mod
+      - uses: github/codeql-action/init@v4
         with:
           languages: go
-      - uses: github/codeql-action/autobuild@v3
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/autobuild@v4
+      - uses: github/codeql-action/analyze@v4
 
   publish:
     if: |
@@ -98,7 +125,7 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action

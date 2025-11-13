@@ -58,6 +58,7 @@ num pkts bytes target     prot opt in     out     source               destinati
 2   0     0 ACCEPT     6    --  tun0   *       0.0.0.0/0            0.0.0.0/0            tcp dpt:55405
 3   0     0 ACCEPT     1    --  tun0   *       0.0.0.0/0            0.0.0.0/0
 4   0     0 DROP       0    --  tun0   *       1.2.3.4              0.0.0.0/0
+5   0     0 ACCEPT     all  --  tun0   *       1.2.3.4              0.0.0.0/0
 `,
 			table: chain{
 				name:    "INPUT",
@@ -105,6 +106,17 @@ num pkts bytes target     prot opt in     out     source               destinati
 						packets:         0,
 						bytes:           0,
 						target:          "DROP",
+						protocol:        "",
+						inputInterface:  "tun0",
+						outputInterface: "*",
+						source:          netip.MustParsePrefix("1.2.3.4/32"),
+						destination:     netip.MustParsePrefix("0.0.0.0/0"),
+					},
+					{
+						lineNumber:      5,
+						packets:         0,
+						bytes:           0,
+						target:          "ACCEPT",
 						protocol:        "",
 						inputInterface:  "tun0",
 						outputInterface: "*",

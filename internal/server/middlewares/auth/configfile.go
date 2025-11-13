@@ -13,9 +13,6 @@ import (
 func Read(filepath string) (settings Settings, err error) {
 	file, err := os.Open(filepath)
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return Settings{}, nil
-		}
 		return settings, fmt.Errorf("opening file: %w", err)
 	}
 	decoder := toml.NewDecoder(file)

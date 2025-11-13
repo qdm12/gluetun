@@ -114,6 +114,11 @@ func (l *Loop) run(runCtx context.Context, runDone chan<- struct{},
 			continue
 		}
 
+		if !*l.settings.Enabled {
+			singleRunResult <- nil
+			continue
+		}
+
 		result, err := l.fetcher.FetchInfo(singleRunCtx, netip.Addr{})
 		if err != nil {
 			err = fmt.Errorf("fetching information: %w", err)

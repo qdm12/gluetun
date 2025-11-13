@@ -1,6 +1,5 @@
 # Maintenance
 
-- Rename `UNBLOCK` to `DNS_HOSTNAMES_UNBLOCKED`
 - Change `Run` methods to `Start`+`Stop`, returning channels rather than injecting them
 - Go 1.18
   - gofumpt
