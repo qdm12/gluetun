@@ -58,7 +58,7 @@ func (u Updater) Validate() (err error) {
 		}
 
 		if provider == providers.Protonvpn {
-			authenticatedAPI := *u.ProtonUsername == "" || *u.ProtonPassword == ""
+			authenticatedAPI := *u.ProtonUsername != "" || *u.ProtonPassword != ""
 			if authenticatedAPI {
 				switch {
 				case *u.ProtonUsername == "":
