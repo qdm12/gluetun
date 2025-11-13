@@ -38,7 +38,7 @@ func (m *logMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	m.childHandler.ServeHTTP(statefulWriter, r)
 	duration := m.timeNow().Sub(tStart)
 	m.logger.Info(strconv.Itoa(statefulWriter.statusCode) + " " +
-		r.Method + " " + r.RequestURI +
+		r.Method + " " + r.URL.String() +
 		" wrote " + strconv.Itoa(statefulWriter.length) + "B to " +
 		r.RemoteAddr + " in " + duration.String())
 }
