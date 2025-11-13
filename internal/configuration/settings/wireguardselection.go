@@ -155,7 +155,8 @@ func (w WireguardSelection) toLinesNode() (node *gotree.Node) {
 func (w *WireguardSelection) read(r *reader.Reader) (err error) {
 	w.EndpointIP, err = r.NetipAddr("WIREGUARD_ENDPOINT_IP", reader.RetroKeys("VPN_ENDPOINT_IP"))
 	if err != nil {
-		return err
+		return fmt.Errorf("%w - note this MUST be an IP address, "+
+			"see https://github.com/qdm12/gluetun/issues/788", err)
 	}
 
 	w.EndpointPort, err = r.Uint16Ptr("WIREGUARD_ENDPOINT_PORT", reader.RetroKeys("VPN_ENDPOINT_PORT"))
