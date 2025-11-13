@@ -48,6 +48,9 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		return nil, fmt.Errorf("port forwarding for the first time: %w", err)
 	}
 
+	s.portMutex.Lock()
+	defer s.portMutex.Unlock()
+
 	err = s.onNewPorts(ctx, ports)
 	if err != nil {
 		return nil, err
@@ -73,6 +76,8 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		}
 		s.startStopMutex.Lock()
 		defer s.startStopMutex.Unlock()
+		s.portMutex.Lock()
+		defer s.portMutex.Unlock()
 		_ = s.cleanup()
 		runError <- err
 	}(keepPortCtx, s.settings.PortForwarder, obj, readyCh, runErrorCh, keepPortDoneCh)
@@ -106,10 +111,8 @@ func (s *Service) onNewPorts(ctx context.Context, ports []uint16) (err error) {
 		return fmt.Errorf("writing port file: %w", err)
 	}
 
-	s.portMutex.Lock()
 	s.ports = make([]uint16, len(ports))
 	copy(s.ports, ports)
-	s.portMutex.Unlock()
 
 	if s.settings.UpCommand != "" {
 		err = runCommand(ctx, s.cmder, s.logger, s.settings.UpCommand, ports)

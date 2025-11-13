@@ -56,9 +56,9 @@ func (s *Service) GetPortsForwarded() (ports []uint16) {
 func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err error) {
 	s.startStopMutex.Lock()
 	defer s.startStopMutex.Unlock()
-
 	s.portMutex.Lock()
 	defer s.portMutex.Unlock()
+
 	slices.Sort(ports)
 	if slices.Equal(s.ports, ports) {
 		return nil
