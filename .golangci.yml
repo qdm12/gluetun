@@ -20,6 +20,9 @@ issues:
       text: "newCipherDESCBCBlock returns interface \\(github\\.com\\/youmark\\/pkcs8\\.Cipher\\)"
       linters:
         - ireturn
+    - source: "^\\/\\/ https\\:\\/\\/.+$"
+      linters:
+        - lll
 
 linters:
   enable:
