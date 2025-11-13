@@ -25,13 +25,14 @@ func newHandler(ctx context.Context, logger Logger, logging bool,
 	handler := &handler{}
 
 	vpn := newVPNHandler(ctx, vpnLooper, storage, ipv6Supported, logger)
-	openvpn := newOpenvpnHandler(ctx, vpnLooper, pf, logger)
+	openvpn := newOpenvpnHandler(ctx, vpnLooper, logger)
 	dns := newDNSHandler(ctx, dnsLooper, logger)
 	updater := newUpdaterHandler(ctx, updaterLooper, logger)
 	publicip := newPublicIPHandler(publicIPLooper, logger)
+	portForward := newPortForwardHandler(ctx, pf, logger)
 
 	handler.v0 = newHandlerV0(ctx, logger, vpnLooper, dnsLooper, updaterLooper)
-	handler.v1 = newHandlerV1(logger, buildInfo, vpn, openvpn, dns, updater, publicip)
+	handler.v1 = newHandlerV1(logger, buildInfo, vpn, openvpn, dns, updater, publicip, portForward)
 
 	authMiddleware, err := auth.New(authSettings, logger)
 	if err != nil {

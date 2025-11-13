@@ -20,6 +20,7 @@ func New(settings Settings, debugLogger DebugLogger) (
 			routeToRoles: routeToRoles,
 			unprotectedRoutes: map[string]struct{}{
 				http.MethodGet + " /openvpn/actions/restart": {},
+				http.MethodGet + " /openvpn/portforwarded":   {},
 				http.MethodGet + " /unbound/actions/restart": {},
 				http.MethodGet + " /updater/restart":         {},
 				http.MethodGet + " /v1/version":              {},
@@ -36,6 +37,7 @@ func New(settings Settings, debugLogger DebugLogger) (
 				http.MethodGet + " /v1/updater/status": {},
 				http.MethodPut + " /v1/updater/status": {},
 				http.MethodGet + " /v1/publicip/ip":    {},
+				http.MethodGet + " /v1/portforward":    {},
 			},
 			logger: debugLogger,
 		}

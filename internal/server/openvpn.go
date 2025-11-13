@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,13 +10,10 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
-func newOpenvpnHandler(ctx context.Context, looper VPNLooper,
-	portForwarding PortForwarding, w warner,
-) http.Handler {
+func newOpenvpnHandler(ctx context.Context, looper VPNLooper, w warner) http.Handler {
 	return &openvpnHandler{
 		ctx:    ctx,
 		looper: looper,
-		pf:     portForwarding,
 		warner: w,
 	}
 }
@@ -25,7 +21,6 @@ func newOpenvpnHandler(ctx context.Context, looper VPNLooper,
 type openvpnHandler struct {
 	ctx    context.Context //nolint:containedctx
 	looper VPNLooper
-	pf     PortForwarding
 	warner warner
 }
 
@@ -48,12 +43,10 @@ func (h *openvpnHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		default:
 			errMethodNotSupported(w, r.Method)
 		}
-	case "/portforwarded":
+	case "/portforwarded": // TODO v4 remove
 		switch r.Method {
 		case http.MethodGet:
-			h.getPortForwarded(w)
-		case http.MethodPut:
-			h.setPortForwarded(w, r)
+			http.Redirect(w, r, "/v1/portforward", http.StatusMovedPermanently)
 		default:
 			errMethodNotSupported(w, r.Method)
 		}
@@ -124,45 +117,4 @@ func (h *openvpnHandler) getSettings(w http.ResponseWriter) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-}
-
-func (h *openvpnHandler) getPortForwarded(w http.ResponseWriter) {
-	ports := h.pf.GetPortsForwarded()
-	encoder := json.NewEncoder(w)
-	var data any
-	switch len(ports) {
-	case 0:
-		data = portWrapper{Port: 0} // TODO v4 change to portsWrapper
-	case 1:
-		data = portWrapper{Port: ports[0]} // TODO v4 change to portsWrapper
-	default:
-		data = portsWrapper{Ports: ports}
-	}
-
-	err := encoder.Encode(data)
-	if err != nil {
-		h.warner.Warn(err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-}
-
-func (h *openvpnHandler) setPortForwarded(w http.ResponseWriter, r *http.Request) {
-	var data portsWrapper
-
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&data)
-	if err != nil {
-		h.warner.Warn(fmt.Sprintf("failed setting forwarded ports: %s", err))
-		http.Error(w, "failed setting forwarded ports", http.StatusBadRequest)
-		return
-	}
-
-	err = h.pf.SetPortsForwarded(data.Ports)
-	if err != nil {
-		h.warner.Warn(fmt.Sprintf("failed setting forwarded ports: %s", err))
-		http.Error(w, "failed setting forwarded ports", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
 }

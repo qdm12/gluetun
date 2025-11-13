@@ -22,6 +22,7 @@ func (s *Settings) SetDefaults() {
 		Routes: []string{
 			http.MethodGet + " /openvpn/actions/restart",
 			http.MethodGet + " /unbound/actions/restart",
+			http.MethodGet + " /openvpn/portforwarded",
 			http.MethodGet + " /updater/restart",
 			http.MethodGet + " /v1/version",
 			http.MethodGet + " /v1/vpn/status",
@@ -34,6 +35,7 @@ func (s *Settings) SetDefaults() {
 			http.MethodGet + " /v1/updater/status",
 			http.MethodPut + " /v1/updater/status",
 			http.MethodGet + " /v1/publicip/ip",
+			http.MethodGet + " /v1/portforward",
 		},
 	}})
 }
@@ -112,6 +114,8 @@ func (r Role) validate() (err error) {
 // WARNING: do not mutate programmatically.
 var validRoutes = map[string]struct{}{ //nolint:gochecknoglobals
 	http.MethodGet + " /openvpn/actions/restart":  {},
+	http.MethodGet + " /openvpn/portforwarded":    {},
+	http.MethodGet + " /openvpn/settings":         {},
 	http.MethodGet + " /unbound/actions/restart":  {},
 	http.MethodGet + " /updater/restart":          {},
 	http.MethodGet + " /v1/version":               {},
@@ -122,11 +126,12 @@ var validRoutes = map[string]struct{}{ //nolint:gochecknoglobals
 	http.MethodGet + " /v1/openvpn/status":        {},
 	http.MethodPut + " /v1/openvpn/status":        {},
 	http.MethodGet + " /v1/openvpn/portforwarded": {},
-	http.MethodPut + " /v1/openvpn/portforwarded": {},
 	http.MethodGet + " /v1/openvpn/settings":      {},
 	http.MethodGet + " /v1/dns/status":            {},
 	http.MethodPut + " /v1/dns/status":            {},
 	http.MethodGet + " /v1/updater/status":        {},
 	http.MethodPut + " /v1/updater/status":        {},
 	http.MethodGet + " /v1/publicip/ip":           {},
+	http.MethodGet + " /v1/portforward":           {},
+	http.MethodPut + " /v1/portforward":           {},
 }
