@@ -2,9 +2,11 @@ package updater
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -48,22 +50,22 @@ func (u *Updater) UpdateServers(ctx context.Context, providers []string,
 		// TODO support servers offering only TCP or only UDP
 		// for NordVPN and PureVPN
 		err := u.updateProvider(ctx, fetcher, minRatio)
-		if err == nil {
+		switch {
+		case err == nil:
 			continue
-		}
-
-		// return the only error for the single provider.
-		if len(providers) == 1 {
+		case errors.Is(err, common.ErrCredentialsMissing):
+			u.logger.Warn(err.Error() + " - skipping update for " + providerName)
+			continue
+		case len(providers) == 1:
+			// return the only error for the single provider.
 			return err
+		case ctx.Err() != nil:
+			// stop updating other providers if context is done
+			return ctx.Err()
+		default: // error encountered updating one of multiple providers
+			// Log the error and continue updating the next provider.
+			u.logger.Error(err.Error())
 		}
-
-		// stop updating the next providers if context is canceled.
-		if ctxErr := ctx.Err(); ctxErr != nil {
-			return ctxErr
-		}
-
-		// Log the error and continue updating the next provider.
-		u.logger.Error(err.Error())
 	}
 
 	return nil
