@@ -466,13 +466,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 	otherGroupHandler.Add(shadowsocksHandler)
 
-	controlServerAddress := *allSettings.ControlServer.Address
-	controlServerLogging := *allSettings.ControlServer.Log
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
-	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
+	httpServer, err := server.New(httpServerCtx, allSettings.ControlServer,
 		logger.New(log.SetComponent("http server")),
-		allSettings.ControlServer.AuthFilePath,
 		buildInfo, vpnLooper, portForwardLooper, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
