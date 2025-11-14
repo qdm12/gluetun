@@ -18,37 +18,15 @@ func New(settings Settings, debugLogger DebugLogger) (
 		return &authHandler{
 			childHandler: handler,
 			routeToRoles: routeToRoles,
-			unprotectedRoutes: map[string]struct{}{
-				http.MethodGet + " /openvpn/actions/restart": {},
-				http.MethodGet + " /openvpn/portforwarded":   {},
-				http.MethodGet + " /unbound/actions/restart": {},
-				http.MethodGet + " /updater/restart":         {},
-				http.MethodGet + " /v1/version":              {},
-				http.MethodGet + " /v1/vpn/status":           {},
-				http.MethodPut + " /v1/vpn/status":           {},
-				// GET /v1/vpn/settings is protected by default
-				// PUT /v1/vpn/settings is protected by default
-				http.MethodGet + " /v1/openvpn/status":        {},
-				http.MethodPut + " /v1/openvpn/status":        {},
-				http.MethodGet + " /v1/openvpn/portforwarded": {},
-				// GET /v1/openvpn/settings is protected by default
-				http.MethodGet + " /v1/dns/status":     {},
-				http.MethodPut + " /v1/dns/status":     {},
-				http.MethodGet + " /v1/updater/status": {},
-				http.MethodPut + " /v1/updater/status": {},
-				http.MethodGet + " /v1/publicip/ip":    {},
-				http.MethodGet + " /v1/portforward":    {},
-			},
-			logger: debugLogger,
+			logger:       debugLogger,
 		}
 	}, nil
 }
 
 type authHandler struct {
-	childHandler      http.Handler
-	routeToRoles      map[string][]internalRole
-	unprotectedRoutes map[string]struct{} // TODO v3.41.0 remove
-	logger            DebugLogger
+	childHandler http.Handler
+	routeToRoles map[string][]internalRole
+	logger       DebugLogger
 }
 
 func (h *authHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
@@ -65,8 +43,6 @@ func (h *authHandler) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 		if !role.checker.isAuthorized(responseHeader, request) {
 			continue
 		}
-
-		h.warnIfUnprotectedByDefault(role, route) // TODO v3.41.0 remove
 
 		h.logger.Debugf("access to route %s authorized for role %s", route, role.name)
 		h.childHandler.ServeHTTP(writer, request)
@@ -87,27 +63,4 @@ func (h *authHandler) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 	h.logger.Debugf("access to route %s unauthorized after checking for roles %s",
 		route, andStrings(allRoleNames))
 	http.Error(writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-}
-
-func (h *authHandler) warnIfUnprotectedByDefault(role internalRole, route string) {
-	// TODO v3.41.0 remove
-	if role.name != "public" {
-		// custom role name, allow none authentication to be specified
-		return
-	}
-	_, isNoneChecker := role.checker.(*noneMethod)
-	if !isNoneChecker {
-		// not the none authentication method
-		return
-	}
-	_, isUnprotectedByDefault := h.unprotectedRoutes[route]
-	if !isUnprotectedByDefault {
-		// route is not unprotected by default, so this is a user decision
-		return
-	}
-	h.logger.Warnf("route %s is unprotected by default, "+
-		"please set up authentication following the documentation at "+
-		"https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md#authentication "+
-		"since this will become no longer publicly accessible after release v3.40.",
-		route)
 }

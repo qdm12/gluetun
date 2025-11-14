@@ -60,7 +60,6 @@ func setupAuthMiddleware(authPath, jsonDefaultRole string, logger Logger) (
 	if err != nil {
 		return auth.Settings{}, fmt.Errorf("setting default role: %w", err)
 	}
-	authSettings.SetDefaults()
 	err = authSettings.Validate()
 	if err != nil {
 		return auth.Settings{}, fmt.Errorf("validating auth settings: %w", err)
