@@ -37,6 +37,7 @@ func (l *Loop) updateFiles(ctx context.Context) (err error) {
 		IPPrefixes: result.BlockedIPPrefixes,
 	}
 	updateSettings.BlockHostnames(result.BlockedHostnames)
+	updateSettings.SetRebindingProtectionExempt(settings.Blacklist.RebindingProtectionExemptHostnames)
 	err = l.filter.Update(updateSettings)
 	if err != nil {
 		return fmt.Errorf("updating filter: %w", err)
