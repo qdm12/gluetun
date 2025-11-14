@@ -21,7 +21,7 @@ type Loop struct {
 	state          *state.State
 	server         *server.Server
 	filter         *mapfilter.Filter
-	localResolvers []netip.AddrPort
+	localResolvers []netip.Addr
 	resolvConf     string
 	client         *http.Client
 	logger         Logger

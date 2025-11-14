@@ -11,7 +11,12 @@ import (
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	l.localResolvers = nameserver.GetPrivateDNSServers()
+	var err error
+	l.localResolvers, err = nameserver.GetPrivateDNSServers()
+	if err != nil {
+		l.logger.Error("getting private DNS servers: " + err.Error())
+		return
+	}
 
 	if *l.GetSettings().KeepNameserver {
 		l.logger.Warn("⚠️⚠️⚠️  keeping the default container nameservers, " +

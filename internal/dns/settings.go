@@ -27,7 +27,7 @@ func (l *Loop) SetSettings(ctx context.Context, settings settings.DNS) (
 }
 
 func buildServerSettings(settings settings.DNS,
-	filter *mapfilter.Filter, localResolvers []netip.AddrPort,
+	filter *mapfilter.Filter, localResolvers []netip.Addr,
 	logger Logger) (
 	serverSettings server.Settings, err error,
 ) {
@@ -104,8 +104,13 @@ func buildServerSettings(settings settings.DNS,
 	}
 	serverSettings.Middlewares = append(serverSettings.Middlewares, filterMiddleware)
 
+	localResolversAddrPorts := make([]netip.AddrPort, len(localResolvers))
+	const defaultDNSPort = 53
+	for i, addr := range localResolvers {
+		localResolversAddrPorts[i] = netip.AddrPortFrom(addr, defaultDNSPort)
+	}
 	localDNSMiddleware, err := localdns.New(localdns.Settings{
-		Resolvers: localResolvers, // auto-detected at container start only
+		Resolvers: localResolversAddrPorts, // auto-detected at container start only
 		Logger:    logger,
 	})
 	if err != nil {
