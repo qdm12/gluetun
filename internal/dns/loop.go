@@ -48,7 +48,9 @@ func NewLoop(settings settings.DNS,
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
 	state := state.New(statusManager, settings, updateTicker)
 
-	filter, err := mapfilter.New(mapfilter.Settings{})
+	filter, err := mapfilter.New(mapfilter.Settings{
+		Logger: buildFilterLogger(logger),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("creating map filter: %w", err)
 	}
@@ -99,4 +101,16 @@ func (l *Loop) signalOrSetStatus(status models.LoopStatus) {
 	} else {
 		l.statusManager.SetStatus(status)
 	}
+}
+
+type filterLogger struct {
+	logger Logger
+}
+
+func (l *filterLogger) Log(msg string) {
+	l.logger.Info(msg)
+}
+
+func buildFilterLogger(logger Logger) *filterLogger {
+	return &filterLogger{logger: logger}
 }
