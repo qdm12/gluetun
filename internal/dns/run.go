@@ -4,11 +4,14 @@ import (
 	"context"
 	"errors"
 
+	"github.com/qdm12/dns/v2/pkg/nameserver"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
+
+	l.localResolvers = nameserver.GetPrivateDNSServers()
 
 	if *l.GetSettings().KeepNameserver {
 		l.logger.Warn("⚠️⚠️⚠️  keeping the default container nameservers, " +
