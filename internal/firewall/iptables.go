@@ -162,6 +162,24 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 	return c.runIP6tablesInstruction(ctx, instruction)
 }
 
+func (c *Config) AcceptOutput(ctx context.Context,
+	protocol, intf string, ip netip.Addr, port uint16, remove bool,
+) error {
+	interfaceFlag := "-o " + intf
+	if intf == "*" { // all interfaces
+		interfaceFlag = ""
+	}
+
+	instruction := fmt.Sprintf("%s OUTPUT -d %s %s -p %s -m %s --dport %d -j ACCEPT",
+		appendOrDelete(remove), ip, interfaceFlag, protocol, protocol, port)
+	if ip.Is4() {
+		return c.runIptablesInstruction(ctx, instruction)
+	} else if c.ip6Tables == "" {
+		return fmt.Errorf("accept output to VPN server: %w", ErrNeedIP6Tables)
+	}
+	return c.runIP6tablesInstruction(ctx, instruction)
+}
+
 // Thanks to @npawelek.
 func (c *Config) acceptOutputFromIPToSubnet(ctx context.Context,
 	intf string, sourceIP netip.Addr, destinationSubnet netip.Prefix, remove bool,
