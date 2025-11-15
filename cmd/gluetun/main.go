@@ -175,7 +175,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "All control server routes will become private by default after the v3.41.0 release",
+		Announcement: "All control server routes are now private by default",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
