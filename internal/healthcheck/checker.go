@@ -131,7 +131,18 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	c.configMutex.Lock()
 	ip := c.icmpTarget
 	c.configMutex.Unlock()
-	tryTimeouts := []time.Duration{10 * time.Second, 20 * time.Second, 30 * time.Second}
+	tryTimeouts := []time.Duration{
+		5 * time.Second,
+		5 * time.Second,
+		5 * time.Second,
+		10 * time.Second,
+		10 * time.Second,
+		10 * time.Second,
+		15 * time.Second,
+		15 * time.Second,
+		15 * time.Second,
+		30 * time.Second,
+	}
 	check := func(ctx context.Context) error {
 		if c.icmpNotPermitted {
 			return c.dnsClient.Check(ctx)
@@ -151,7 +162,7 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 	// 20s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
-	tryTimeouts := []time.Duration{20 * time.Second, 30 * time.Second}
+	tryTimeouts := []time.Duration{10 * time.Second, 15 * time.Second, 30 * time.Second}
 	check := func(ctx context.Context) error {
 		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr)
 	}
