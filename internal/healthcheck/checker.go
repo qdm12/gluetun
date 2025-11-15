@@ -131,9 +131,7 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	c.configMutex.Lock()
 	ip := c.icmpTarget
 	c.configMutex.Unlock()
-	const maxTries = 3
-	const timeout = 10 * time.Second
-	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
+	tryTimeouts := []time.Duration{10 * time.Second, 20 * time.Second, 30 * time.Second}
 	check := func(ctx context.Context) error {
 		if c.icmpNotPermitted {
 			return c.dnsClient.Check(ctx)
@@ -147,19 +145,17 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		}
 		return err
 	}
-	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, c.smallCheckName, check)
+	return withRetries(ctx, tryTimeouts, c.logger, c.smallCheckName, check)
 }
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
-	const maxTries = 2
 	// 20s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
-	const timeout = 20 * time.Second
-	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
+	tryTimeouts := []time.Duration{20 * time.Second, 30 * time.Second}
 	check := func(ctx context.Context) error {
 		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr)
 	}
-	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "TCP+TLS dial", check)
+	return withRetries(ctx, tryTimeouts, c.logger, "TCP+TLS dial", check)
 }
 
 func tcpTLSCheck(ctx context.Context, dialer *net.Dialer, targetAddress string) error {
@@ -218,13 +214,17 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 
 var ErrAllCheckTriesFailed = errors.New("all check tries failed")
 
-func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime time.Duration,
+func withRetries(ctx context.Context, tryTimeouts []time.Duration,
 	logger Logger, checkName string, check func(ctx context.Context) error,
 ) error {
-	try := uint(0)
-	var errs []error
-	for {
-		timeout := tryTimeout + time.Duration(try)*extraTryTime //nolint:gosec
+	maxTries := len(tryTimeouts)
+	type errData struct {
+		err      error
+		duration time.Duration
+	}
+	errs := make([]errData, maxTries)
+	for i, timeout := range tryTimeouts {
+		start := time.Now()
 		checkCtx, cancel := context.WithTimeout(ctx, timeout)
 		err := check(checkCtx)
 		cancel()
@@ -234,17 +234,14 @@ func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime ti
 		case ctx.Err() != nil:
 			return fmt.Errorf("%s: %w", checkName, ctx.Err())
 		}
-		logger.Debugf("%s attempt %d/%d failed: %s", checkName, try+1, maxTries, err)
-		errs = append(errs, err)
-		try++
-		if try < maxTries {
-			continue
-		}
-		errStrings := make([]string, len(errs))
-		for i, err := range errs {
-			errStrings[i] = fmt.Sprintf("attempt %d: %s", i+1, err.Error())
-		}
-		return fmt.Errorf("%w: after %d %s attempts (%s)",
-			ErrAllCheckTriesFailed, maxTries, checkName, strings.Join(errStrings, "; "))
+		logger.Debugf("%s attempt %d/%d failed: %s", checkName, i+1, maxTries, err)
+		errs[i].err = err
+		errs[i].duration = time.Since(start)
 	}
+
+	errStrings := make([]string, len(errs))
+	for i, err := range errs {
+		errStrings[i] = fmt.Sprintf("attempt %d (%s): %s", i+1, err.duration, err.err)
+	}
+	return fmt.Errorf("%w: %s", ErrAllCheckTriesFailed, strings.Join(errStrings, ", "))
 }
