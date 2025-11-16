@@ -18,6 +18,7 @@ func runCommand(ctx context.Context, cmder Cmder, logger Logger,
 	}
 	portsString := strings.Join(portStrings, ",")
 	commandString := strings.ReplaceAll(commandTemplate, "{{PORTS}}", portsString)
+	commandString = strings.ReplaceAll(commandString, "{{PORT}}", portStrings[0])
 	args, err := command.Split(commandString)
 	if err != nil {
 		return fmt.Errorf("parsing command: %w", err)
