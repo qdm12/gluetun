@@ -38,7 +38,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
 				l.logger.Info("ready")
-				l.signalOrSetStatus(constants.Running)
 				break
 			}
 
@@ -54,6 +53,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			}
 			l.logAndWait(ctx, err)
 		}
+		l.signalOrSetStatus(constants.Running)
 
 		const fallback = false
 		l.useUnencryptedDNS(fallback)
