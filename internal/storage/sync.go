@@ -52,7 +52,7 @@ func (s *Storage) syncServers() (err error) {
 
 	err = s.flushToFile(s.filepath)
 	if err != nil {
-		return fmt.Errorf("writing servers to file: %w", err)
+		s.logger.Warn("failed writing servers to file: " + err.Error())
 	}
 	return nil
 }
