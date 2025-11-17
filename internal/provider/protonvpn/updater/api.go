@@ -371,7 +371,7 @@ func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie 
 	case info.SRPSession == "":
 		return "", "", "", "", 0, fmt.Errorf("%w: SRP session is empty", ErrDataFieldMissing)
 
-	case info.Username != username:
+	case !strings.EqualFold(info.Username, username):
 		return "", "", "", "", 0, fmt.Errorf("%w: expected %s got %s",
 			ErrUsernameMismatch, username, info.Username)
 	case info.Version == nil:
