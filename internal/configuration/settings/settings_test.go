@@ -38,7 +38,6 @@ func Test_Settings_String(t *testing.T) {
 |       ├── Run OpenVPN as: root
 |       └── Verbosity level: 1
 ├── DNS settings:
-|   ├── DNS server address to use: 127.0.0.1
 |   ├── Upstream resolver type: dot
 |   ├── Upstream resolvers:
 |   |   └── Cloudflare

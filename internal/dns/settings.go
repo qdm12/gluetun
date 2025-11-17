@@ -33,15 +33,7 @@ func buildServerSettings(settings settings.DNS,
 ) {
 	serverSettings.Logger = logger
 
-	providersData := provider.NewProviders()
-	upstreamResolvers := make([]provider.Provider, len(settings.Providers))
-	for i := range settings.Providers {
-		var err error
-		upstreamResolvers[i], err = providersData.Get(settings.Providers[i])
-		if err != nil {
-			panic(err) // this should already had been checked
-		}
-	}
+	upstreamResolvers := buildProviders(settings)
 
 	ipVersion := "ipv4"
 	if *settings.IPv6 {
@@ -122,4 +114,48 @@ func buildServerSettings(settings settings.DNS,
 	serverSettings.Middlewares = append(serverSettings.Middlewares, localDNSMiddleware)
 
 	return serverSettings, nil
+}
+
+func buildProviders(settings settings.DNS) []provider.Provider {
+	if settings.UpstreamType == "plain" && len(settings.UpstreamPlainAddresses) > 0 {
+		providers := make([]provider.Provider, len(settings.UpstreamPlainAddresses))
+		for i, addrPort := range settings.UpstreamPlainAddresses {
+			providers[i] = provider.Provider{
+				Name: addrPort.String(),
+			}
+			if addrPort.Addr().Is4() {
+				providers[i].Plain.IPv4 = []netip.AddrPort{addrPort}
+			} else {
+				providers[i].Plain.IPv6 = []netip.AddrPort{addrPort}
+			}
+		}
+	}
+
+	providersData := provider.NewProviders()
+	providers := make([]provider.Provider, 0, len(settings.Providers)+len(settings.UpstreamPlainAddresses))
+	for _, providerName := range settings.Providers {
+		provider, err := providersData.Get(providerName)
+		if err != nil {
+			panic(err) // this should already had been checked
+		}
+		providers = append(providers, provider)
+	}
+
+	if settings.UpstreamType != "plain" {
+		return providers
+	}
+
+	for _, addrPort := range settings.UpstreamPlainAddresses {
+		newProvider := provider.Provider{
+			Name: addrPort.String(),
+		}
+		if addrPort.Addr().Is4() {
+			newProvider.Plain.IPv4 = []netip.AddrPort{addrPort}
+		} else {
+			newProvider.Plain.IPv6 = []netip.AddrPort{addrPort}
+		}
+		providers = append(providers, newProvider)
+	}
+
+	return providers
 }
