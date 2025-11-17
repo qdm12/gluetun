@@ -23,7 +23,8 @@ type Infoer interface {
 
 // New creates a new storage and reads the servers from the
 // embedded servers file and the file on disk.
-// Passing an empty filepath disables writing servers to a file.
+// Passing an empty filepath disables the reading and writing of
+// servers.
 func New(logger Infoer, filepath string) (storage *Storage, err error) {
 	// A unit test prevents any error from being returned
 	// and ensures all providers are part of the servers returned.
@@ -31,12 +32,15 @@ func New(logger Infoer, filepath string) (storage *Storage, err error) {
 
 	storage = &Storage{
 		hardcodedServers: hardcodedServers,
+		mergedServers:    hardcodedServers,
 		logger:           logger,
 		filepath:         filepath,
 	}
 
-	if err := storage.syncServers(); err != nil {
-		return nil, err
+	if filepath != "" {
+		if err := storage.syncServers(); err != nil {
+			return nil, err
+		}
 	}
 
 	return storage, nil

@@ -81,7 +81,11 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		return fmt.Errorf("options validation failed: %w", err)
 	}
 
-	storage, err := storage.New(logger, constants.ServersData)
+	serversDataPath := constants.ServersData
+	if maintainerMode {
+		serversDataPath = ""
+	}
+	storage, err := storage.New(logger, serversDataPath)
 	if err != nil {
 		return fmt.Errorf("creating servers storage: %w", err)
 	}

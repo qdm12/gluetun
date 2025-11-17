@@ -46,7 +46,7 @@ func (s *Storage) syncServers() (err error) {
 	}
 
 	// Eventually write file
-	if s.filepath == "" || reflect.DeepEqual(serversOnFile, s.mergedServers) {
+	if reflect.DeepEqual(serversOnFile, s.mergedServers) {
 		return nil
 	}
 
