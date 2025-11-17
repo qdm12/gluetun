@@ -38,17 +38,6 @@ type DNS struct {
 	// local server. It cannot be the zero value in the internal
 	// state.
 	ServerAddress netip.Addr
-	// KeepNameserver is true if the existing DNS server
-	// found in /etc/resolv.conf should be used
-	// Note setting this to true will likely DNS traffic
-	// outside the VPN tunnel since it would go through
-	// the local DNS server of your Docker/Kubernetes
-	// configuration, which is likely not going through the tunnel.
-	// This will also disable the DNS forwarder server and the
-	// `ServerAddress` field will be ignored.
-	// It defaults to false and cannot be nil in the
-	// internal state.
-	KeepNameserver *bool
 }
 
 var (
@@ -85,14 +74,13 @@ func (d DNS) validate() (err error) {
 
 func (d *DNS) Copy() (copied DNS) {
 	return DNS{
-		UpstreamType:   d.UpstreamType,
-		UpdatePeriod:   gosettings.CopyPointer(d.UpdatePeriod),
-		Providers:      gosettings.CopySlice(d.Providers),
-		Caching:        gosettings.CopyPointer(d.Caching),
-		IPv6:           gosettings.CopyPointer(d.IPv6),
-		Blacklist:      d.Blacklist.copy(),
-		ServerAddress:  d.ServerAddress,
-		KeepNameserver: gosettings.CopyPointer(d.KeepNameserver),
+		UpstreamType:  d.UpstreamType,
+		UpdatePeriod:  gosettings.CopyPointer(d.UpdatePeriod),
+		Providers:     gosettings.CopySlice(d.Providers),
+		Caching:       gosettings.CopyPointer(d.Caching),
+		IPv6:          gosettings.CopyPointer(d.IPv6),
+		Blacklist:     d.Blacklist.copy(),
+		ServerAddress: d.ServerAddress,
 	}
 }
 
@@ -107,7 +95,6 @@ func (d *DNS) overrideWith(other DNS) {
 	d.IPv6 = gosettings.OverrideWithPointer(d.IPv6, other.IPv6)
 	d.Blacklist.overrideWith(other.Blacklist)
 	d.ServerAddress = gosettings.OverrideWithValidator(d.ServerAddress, other.ServerAddress)
-	d.KeepNameserver = gosettings.OverrideWithPointer(d.KeepNameserver, other.KeepNameserver)
 }
 
 func (d *DNS) setDefaults() {
@@ -122,7 +109,6 @@ func (d *DNS) setDefaults() {
 	d.Blacklist.setDefaults()
 	d.ServerAddress = gosettings.DefaultValidator(d.ServerAddress,
 		netip.AddrFrom4([4]byte{127, 0, 0, 1}))
-	d.KeepNameserver = gosettings.DefaultPointer(d.KeepNameserver, false)
 }
 
 func (d DNS) GetFirstPlaintextIPv4() (ipv4 netip.Addr) {
@@ -148,10 +134,6 @@ func (d DNS) String() string {
 
 func (d DNS) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("DNS settings:")
-	node.Appendf("Keep existing nameserver(s): %s", gosettings.BoolToYesNo(d.KeepNameserver))
-	if *d.KeepNameserver {
-		return node
-	}
 	node.Appendf("DNS server address to use: %s", d.ServerAddress)
 
 	node.Appendf("Upstream resolver type: %s", d.UpstreamType)
@@ -201,11 +183,6 @@ func (d *DNS) read(r *reader.Reader) (err error) {
 	}
 
 	d.ServerAddress, err = r.NetipAddr("DNS_ADDRESS", reader.RetroKeys("DNS_PLAINTEXT_ADDRESS"))
-	if err != nil {
-		return err
-	}
-
-	d.KeepNameserver, err = r.BoolPtr("DNS_KEEP_NAMESERVER")
 	if err != nil {
 		return err
 	}

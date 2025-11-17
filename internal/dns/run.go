@@ -18,14 +18,8 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		return
 	}
 
-	if *l.GetSettings().KeepNameserver {
-		l.logger.Warn("⚠️⚠️⚠️  keeping the default container nameservers, " +
-			"this will likely leak DNS traffic outside the VPN " +
-			"and go through your container network DNS outside the VPN tunnel!")
-	} else {
-		const fallback = false
-		l.useUnencryptedDNS(fallback)
-	}
+	const fallback = false
+	l.useUnencryptedDNS(fallback)
 
 	select {
 	case <-l.start:
@@ -38,8 +32,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		// Their values are to be used if DOT=off
 		var runError <-chan error
 
-		settings := l.GetSettings()
-		for !*settings.KeepNameserver {
+		for {
 			var err error
 			runError, err = l.setupServer(ctx)
 			if err == nil {
@@ -60,14 +53,10 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.useUnencryptedDNS(fallback)
 			}
 			l.logAndWait(ctx, err)
-			settings = l.GetSettings()
 		}
 
-		settings = l.GetSettings()
-		if !*settings.KeepNameserver {
-			const fallback = false
-			l.useUnencryptedDNS(fallback)
-		}
+		const fallback = false
+		l.useUnencryptedDNS(fallback)
 
 		l.userTrigger = false
 
