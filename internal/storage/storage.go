@@ -13,19 +13,20 @@ type Storage struct {
 	// the embedded JSON file on every call to the
 	// SyncServers method.
 	hardcodedServers models.AllServers
-	logger           Infoer
+	logger           Logger
 	filepath         string
 }
 
-type Infoer interface {
+type Logger interface {
 	Info(s string)
+	Warn(s string)
 }
 
 // New creates a new storage and reads the servers from the
 // embedded servers file and the file on disk.
 // Passing an empty filepath disables the reading and writing of
 // servers.
-func New(logger Infoer, filepath string) (storage *Storage, err error) {
+func New(logger Logger, filepath string) (storage *Storage, err error) {
 	// A unit test prevents any error from being returned
 	// and ensures all providers are part of the servers returned.
 	hardcodedServers, _ := parseHardcodedServers()
