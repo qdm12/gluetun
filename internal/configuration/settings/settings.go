@@ -177,7 +177,7 @@ func (s Settings) Warnings() (warnings []string) {
 	// TODO remove in v4
 	if s.DNS.ServerAddress.Unmap().Compare(netip.AddrFrom4([4]byte{127, 0, 0, 1})) != 0 {
 		warnings = append(warnings, "DNS address is set to "+s.DNS.ServerAddress.String()+
-			" so the local forwarding DNS server will not be used."+
+			" so the local forwarding DNS server will not be used."+ // xxx
 			" The default value changed to 127.0.0.1 so it uses the internal DNS server."+
 			" If this server fails to start, the IPv4 address of the first plaintext DNS server"+
 			" corresponding to the first DNS provider chosen is used.")

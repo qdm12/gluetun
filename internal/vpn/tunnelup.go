@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/netip"
 
-	"github.com/qdm12/dns/v2/pkg/check"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/version"
 )
@@ -46,14 +45,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		return
 	}
 
-	if *l.dnsLooper.GetSettings().ServerEnabled {
-		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
-	} else {
-		err := check.WaitForDNS(ctx, check.Settings{})
-		if err != nil {
-			l.logger.Error("waiting for DNS to be ready: " + err.Error())
-		}
-	}
+	_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 
 	err = l.publicip.RunOnce(ctx)
 	if err != nil {

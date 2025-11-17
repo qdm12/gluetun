@@ -15,10 +15,6 @@ import (
 
 // DNS contains settings to configure DNS.
 type DNS struct {
-	// ServerEnabled is true if the server should be running
-	// and used. It defaults to true, and cannot be nil
-	// in the internal state.
-	ServerEnabled *bool
 	// UpstreamType can be dot or plain, and defaults to dot.
 	UpstreamType string `json:"upstream_type"`
 	// UpdatePeriod is the period to update DNS block lists.
@@ -89,7 +85,6 @@ func (d DNS) validate() (err error) {
 
 func (d *DNS) Copy() (copied DNS) {
 	return DNS{
-		ServerEnabled:  gosettings.CopyPointer(d.ServerEnabled),
 		UpstreamType:   d.UpstreamType,
 		UpdatePeriod:   gosettings.CopyPointer(d.UpdatePeriod),
 		Providers:      gosettings.CopySlice(d.Providers),
@@ -105,7 +100,6 @@ func (d *DNS) Copy() (copied DNS) {
 // settings object with any field set in the other
 // settings.
 func (d *DNS) overrideWith(other DNS) {
-	d.ServerEnabled = gosettings.OverrideWithPointer(d.ServerEnabled, other.ServerEnabled)
 	d.UpstreamType = gosettings.OverrideWithComparable(d.UpstreamType, other.UpstreamType)
 	d.UpdatePeriod = gosettings.OverrideWithPointer(d.UpdatePeriod, other.UpdatePeriod)
 	d.Providers = gosettings.OverrideWithSlice(d.Providers, other.Providers)
@@ -117,7 +111,6 @@ func (d *DNS) overrideWith(other DNS) {
 }
 
 func (d *DNS) setDefaults() {
-	d.ServerEnabled = gosettings.DefaultPointer(d.ServerEnabled, true)
 	d.UpstreamType = gosettings.DefaultComparable(d.UpstreamType, "dot")
 	const defaultUpdatePeriod = 24 * time.Hour
 	d.UpdatePeriod = gosettings.DefaultPointer(d.UpdatePeriod, defaultUpdatePeriod)
@@ -161,11 +154,6 @@ func (d DNS) toLinesNode() (node *gotree.Node) {
 	}
 	node.Appendf("DNS server address to use: %s", d.ServerAddress)
 
-	node.Appendf("DNS forwarder server enabled: %s", gosettings.BoolToYesNo(d.ServerEnabled))
-	if !*d.ServerEnabled {
-		return node
-	}
-
 	node.Appendf("Upstream resolver type: %s", d.UpstreamType)
 
 	upstreamResolvers := node.Append("Upstream resolvers:")
@@ -188,11 +176,6 @@ func (d DNS) toLinesNode() (node *gotree.Node) {
 }
 
 func (d *DNS) read(r *reader.Reader) (err error) {
-	d.ServerEnabled, err = r.BoolPtr("DNS_SERVER", reader.RetroKeys("DOT"))
-	if err != nil {
-		return err
-	}
-
 	d.UpstreamType = r.String("DNS_UPSTREAM_RESOLVER_TYPE")
 
 	d.UpdatePeriod, err = r.DurationPtr("DNS_UPDATE_PERIOD")

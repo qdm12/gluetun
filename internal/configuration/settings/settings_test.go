@@ -40,7 +40,6 @@ func Test_Settings_String(t *testing.T) {
 ├── DNS settings:
 |   ├── Keep existing nameserver(s): no
 |   ├── DNS server address to use: 127.0.0.1
-|   ├── DNS forwarder server enabled: yes
 |   ├── Upstream resolver type: dot
 |   ├── Upstream resolvers:
 |   |   └── Cloudflare
