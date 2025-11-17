@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	dnsUpstreamTypeDot   = "dot"
-	dnsUpstreamTypeDoh   = "doh"
-	dnsUpstreamTypePlain = "plain"
+	DNSUpstreamTypeDot   = "dot"
+	DNSUpstreamTypeDoh   = "doh"
+	DNSUpstreamTypePlain = "plain"
 )
 
 // DNS contains settings to configure DNS.
@@ -58,7 +58,7 @@ var (
 )
 
 func (d DNS) validate() (err error) {
-	if !helpers.IsOneOf(d.UpstreamType, dnsUpstreamTypeDot, dnsUpstreamTypeDoh, dnsUpstreamTypePlain) {
+	if !helpers.IsOneOf(d.UpstreamType, DNSUpstreamTypeDot, DNSUpstreamTypeDoh, DNSUpstreamTypePlain) {
 		return fmt.Errorf("%w: %s", ErrDNSUpstreamTypeNotValid, d.UpstreamType)
 	}
 
@@ -76,7 +76,7 @@ func (d DNS) validate() (err error) {
 		}
 	}
 
-	if d.UpstreamType == dnsUpstreamTypePlain {
+	if d.UpstreamType == DNSUpstreamTypePlain {
 		if *d.IPv6 && !slices.ContainsFunc(d.UpstreamPlainAddresses, func(addrPort netip.AddrPort) bool {
 			return addrPort.Addr().Is6()
 		}) {
@@ -122,7 +122,7 @@ func (d *DNS) overrideWith(other DNS) {
 }
 
 func (d *DNS) setDefaults() {
-	d.UpstreamType = gosettings.DefaultComparable(d.UpstreamType, dnsUpstreamTypeDot)
+	d.UpstreamType = gosettings.DefaultComparable(d.UpstreamType, DNSUpstreamTypeDot)
 	const defaultUpdatePeriod = 24 * time.Hour
 	d.UpdatePeriod = gosettings.DefaultPointer(d.UpdatePeriod, defaultUpdatePeriod)
 	d.Providers = gosettings.DefaultSlice(d.Providers, []string{
@@ -141,7 +141,7 @@ func defaultDNSProviders() []string {
 }
 
 func (d DNS) GetFirstPlaintextIPv4() (ipv4 netip.Addr) {
-	if d.UpstreamType == dnsUpstreamTypePlain {
+	if d.UpstreamType == DNSUpstreamTypePlain {
 		for _, addrPort := range d.UpstreamPlainAddresses {
 			if addrPort.Addr().Is4() {
 				return addrPort.Addr()
@@ -191,7 +191,7 @@ func (d DNS) toLinesNode() (node *gotree.Node) {
 
 	upstreamResolvers := node.Append("Upstream resolvers:")
 	if len(d.UpstreamPlainAddresses) > 0 {
-		if d.UpstreamType == dnsUpstreamTypePlain {
+		if d.UpstreamType == DNSUpstreamTypePlain {
 			for _, addr := range d.UpstreamPlainAddresses {
 				upstreamResolvers.Append(addr.String())
 			}
@@ -279,7 +279,7 @@ func (d *DNS) readUpstreamPlainAddresses(r *reader.Reader) (err error) {
 	const defaultPlainPort = 53
 	addrPort := netip.AddrPortFrom(serverAddress, defaultPlainPort)
 	d.UpstreamPlainAddresses = append(d.UpstreamPlainAddresses, addrPort)
-	d.UpstreamType = dnsUpstreamTypePlain
+	d.UpstreamType = DNSUpstreamTypePlain
 	d.Providers = []string{}
 	return nil
 }
