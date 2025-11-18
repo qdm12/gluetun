@@ -157,8 +157,10 @@ func (u *Updater) read(r *reader.Reader) (err error) {
 	u.ProtonEmail = r.Get("UPDATER_PROTONVPN_EMAIL")
 	if u.ProtonEmail == nil {
 		protonUsername := r.String("UPDATER_PROTONVPN_USERNAME", reader.IsRetro("UPDATER_PROTONVPN_EMAIL"))
-		protonEmail := protonUsername + "@protonmail.com"
-		u.ProtonEmail = &protonEmail
+		if protonUsername != "" {
+			protonEmail := protonUsername + "@protonmail.com"
+			u.ProtonEmail = &protonEmail
+		}
 	}
 	u.ProtonPassword = r.Get("UPDATER_PROTONVPN_PASSWORD")
 
