@@ -154,7 +154,12 @@ func (u *Updater) read(r *reader.Reader) (err error) {
 
 	u.Providers = r.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
 
-	u.ProtonEmail = r.Get("UPDATER_PROTONVPN_EMAIL", reader.RetroKeys("UPDATER_PROTONVPN_USERNAME"))
+	u.ProtonEmail = r.Get("UPDATER_PROTONVPN_EMAIL")
+	if u.ProtonEmail == nil {
+		protonUsername := r.String("UPDATER_PROTONVPN_USERNAME", reader.IsRetro("UPDATER_PROTONVPN_EMAIL"))
+		protonEmail := protonUsername + "@protonmail.com"
+		u.ProtonEmail = &protonEmail
+	}
 	u.ProtonPassword = r.Get("UPDATER_PROTONVPN_PASSWORD")
 
 	return nil
