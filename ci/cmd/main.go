@@ -21,6 +21,8 @@ func main() {
 	switch os.Args[1] {
 	case "mullvad":
 		err = internal.MullvadTest(ctx)
+	case "protonvpn":
+		err = internal.ProtonVPNTest(ctx)
 	default:
 		err = fmt.Errorf("unknown command: %s", os.Args[1])
 	}

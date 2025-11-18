@@ -5,10 +5,9 @@ import (
 	"fmt"
 )
 
-func MullvadTest(ctx context.Context) error {
+func ProtonVPNTest(ctx context.Context) error {
 	expectedSecrets := []string{
 		"Wireguard private key",
-		"Wireguard address",
 	}
 	secrets, err := readSecrets(ctx, expectedSecrets)
 	if err != nil {
@@ -16,12 +15,11 @@ func MullvadTest(ctx context.Context) error {
 	}
 
 	env := []string{
-		"VPN_SERVICE_PROVIDER=mullvad",
+		"VPN_SERVICE_PROVIDER=protonvpn",
 		"VPN_TYPE=wireguard",
 		"LOG_LEVEL=debug",
-		"SERVER_COUNTRIES=USA",
+		"SERVER_COUNTRIES=United States",
 		"WIREGUARD_PRIVATE_KEY=" + secrets[0],
-		"WIREGUARD_ADDRESSES=" + secrets[1],
 	}
 	return simpleTest(ctx, env)
 }
