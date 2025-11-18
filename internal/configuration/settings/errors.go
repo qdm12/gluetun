@@ -37,7 +37,7 @@ var (
 	ErrSystemTimezoneNotValid          = errors.New("timezone is not valid")
 	ErrUpdaterPeriodTooSmall           = errors.New("VPN server data updater period is too small")
 	ErrUpdaterProtonPasswordMissing    = errors.New("proton password is missing")
-	ErrUpdaterProtonUsernameMissing    = errors.New("proton username is missing")
+	ErrUpdaterProtonEmailMissing       = errors.New("proton email is missing")
 	ErrVPNProviderNameNotValid         = errors.New("VPN provider name is not valid")
 	ErrVPNTypeNotValid                 = errors.New("VPN type is not valid")
 	ErrWireguardAllowedIPNotSet        = errors.New("allowed IP is not set")
