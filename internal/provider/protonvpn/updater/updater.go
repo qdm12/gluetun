@@ -8,15 +8,15 @@ import (
 
 type Updater struct {
 	client   *http.Client
-	username string
+	email    string
 	password string
 	warner   common.Warner
 }
 
-func New(client *http.Client, warner common.Warner, username, password string) *Updater {
+func New(client *http.Client, warner common.Warner, email, password string) *Updater {
 	return &Updater{
 		client:   client,
-		username: username,
+		email:    email,
 		password: password,
 		warner:   warner,
 	}
