@@ -16,13 +16,13 @@ import (
 )
 
 type Checker struct {
-	tlsDialAddr string
-	dialer      *net.Dialer
-	echoer      *icmp.Echoer
-	dnsClient   *dns.Client
-	logger      Logger
-	icmpTarget  netip.Addr
-	configMutex sync.Mutex
+	tlsDialAddrs []string
+	dialer       *net.Dialer
+	echoer       *icmp.Echoer
+	dnsClient    *dns.Client
+	logger       Logger
+	icmpTarget   netip.Addr
+	configMutex  sync.Mutex
 
 	icmpNotPermitted bool
 	smallCheckName   string
@@ -45,13 +45,13 @@ func NewChecker(logger Logger) *Checker {
 	}
 }
 
-// SetConfig sets the TCP+TLS dial address and the ICMP echo IP address
+// SetConfig sets the TCP+TLS dial addresses and the ICMP echo IP address
 // to target by the [Checker].
 // This function MUST be called before calling [Checker.Start].
-func (c *Checker) SetConfig(tlsDialAddr string, icmpTarget netip.Addr) {
+func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTarget netip.Addr) {
 	c.configMutex.Lock()
 	defer c.configMutex.Unlock()
-	c.tlsDialAddr = tlsDialAddr
+	c.tlsDialAddrs = tlsDialAddrs
 	c.icmpTarget = icmpTarget
 }
 
@@ -63,17 +63,11 @@ func (c *Checker) SetConfig(tlsDialAddr string, icmpTarget netip.Addr) {
 // It returns an error if the initial TCP+TLS check fails.
 // The Checker has to be ultimately stopped by calling [Checker.Stop].
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
-	if c.tlsDialAddr == "" || c.icmpTarget.IsUnspecified() {
+	if len(c.tlsDialAddrs) == 0 || c.icmpTarget.IsUnspecified() {
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
 	}
 
-	// connection isn't under load yet when the checker starts, so a short
-	// 6 seconds timeout suffices and provides quick enough feedback that
-	// the new connection is not working.
-	const timeout = 6 * time.Second
-	tcpTLSCheckCtx, tcpTLSCheckCancel := context.WithTimeout(ctx, timeout)
-	err = tcpTLSCheck(tcpTLSCheckCtx, c.dialer, c.tlsDialAddr)
-	tcpTLSCheckCancel()
+	err = c.startupCheck(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("startup check: %w", err)
 	}
@@ -123,6 +117,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 func (c *Checker) Stop() error {
 	c.stop()
 	<-c.done
+	c.tlsDialAddrs = nil
 	c.icmpTarget = netip.Addr{}
 	return nil
 }
@@ -143,7 +138,7 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		15 * time.Second,
 		30 * time.Second,
 	}
-	check := func(ctx context.Context) error {
+	check := func(ctx context.Context, _ int) error {
 		if c.icmpNotPermitted {
 			return c.dnsClient.Check(ctx)
 		}
@@ -163,8 +158,9 @@ func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
 	// 20s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
 	tryTimeouts := []time.Duration{10 * time.Second, 15 * time.Second, 30 * time.Second}
-	check := func(ctx context.Context) error {
-		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr)
+	check := func(ctx context.Context, try int) error {
+		tlsDialAddr := c.tlsDialAddrs[try%len(c.tlsDialAddrs)]
+		return tcpTLSCheck(ctx, c.dialer, tlsDialAddr)
 	}
 	return withRetries(ctx, tryTimeouts, c.logger, "TCP+TLS dial", check)
 }
@@ -226,7 +222,7 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 var ErrAllCheckTriesFailed = errors.New("all check tries failed")
 
 func withRetries(ctx context.Context, tryTimeouts []time.Duration,
-	logger Logger, checkName string, check func(ctx context.Context) error,
+	logger Logger, checkName string, check func(ctx context.Context, try int) error,
 ) error {
 	maxTries := len(tryTimeouts)
 	type errData struct {
@@ -237,7 +233,7 @@ func withRetries(ctx context.Context, tryTimeouts []time.Duration,
 	for i, timeout := range tryTimeouts {
 		start := time.Now()
 		checkCtx, cancel := context.WithTimeout(ctx, timeout)
-		err := check(checkCtx)
+		err := check(checkCtx, i)
 		cancel()
 		switch {
 		case err == nil:
@@ -253,6 +249,51 @@ func withRetries(ctx context.Context, tryTimeouts []time.Duration,
 	errStrings := make([]string, len(errs))
 	for i, err := range errs {
 		errStrings[i] = fmt.Sprintf("attempt %d (%s): %s", i+1, err.duration, err.err)
+	}
+	return fmt.Errorf("%w: %s", ErrAllCheckTriesFailed, strings.Join(errStrings, ", "))
+}
+
+func (c *Checker) startupCheck(ctx context.Context) error {
+	// connection isn't under load yet when the checker starts, so a short
+	// 6 seconds timeout suffices and provides quick enough feedback that
+	// the new connection is not working. However, since the addresses to dial
+	// may be multiple, we run the check in parallel. If any succeeds, the check passes.
+	// This is to prevent false negatives at startup, if one of the addresses is down
+	// for external reasons.
+	const timeout = 6 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	errCh := make(chan error)
+
+	for _, address := range c.tlsDialAddrs {
+		go func(addr string) {
+			err := tcpTLSCheck(ctx, c.dialer, addr)
+			errCh <- err
+		}(address)
+	}
+
+	errs := make([]error, 0, len(c.tlsDialAddrs))
+	success := false
+	for range c.tlsDialAddrs {
+		err := <-errCh
+		if err == nil {
+			success = true
+			cancel()
+			continue
+		} else if success {
+			continue // ignore canceled errors after success
+		}
+
+		c.logger.Debugf("startup check parallel attempt failed: %s", err)
+		errs = append(errs, err)
+	}
+	if success {
+		return nil
+	}
+
+	errStrings := make([]string, len(errs))
+	for i, err := range errs {
+		errStrings[i] = fmt.Sprintf("parallel attempt %d/%d failed: %s", i+1, len(errs), err)
 	}
 	return fmt.Errorf("%w: %s", ErrAllCheckTriesFailed, strings.Join(errStrings, ", "))
 }

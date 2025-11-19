@@ -163,7 +163,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     LOG_LEVEL=info \
     # Health
     HEALTH_SERVER_ADDRESS=127.0.0.1:9999 \
-    HEALTH_TARGET_ADDRESS=cloudflare.com:443 \
+    HEALTH_TARGET_ADDRESSES=cloudflare.com:443,github.com:443 \
     HEALTH_ICMP_TARGET_IP=1.1.1.1 \
     HEALTH_RESTART_VPN=on \
     # DNS

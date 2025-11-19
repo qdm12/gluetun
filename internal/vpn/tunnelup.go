@@ -35,7 +35,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	if icmpTarget.IsUnspecified() {
 		icmpTarget = data.serverIP
 	}
-	l.healthChecker.SetConfig(l.healthSettings.TargetAddress, icmpTarget)
+	l.healthChecker.SetConfig(l.healthSettings.TargetAddresses, icmpTarget)
 
 	healthErrCh, err := l.healthChecker.Start(ctx)
 	l.healthServer.SetError(err)

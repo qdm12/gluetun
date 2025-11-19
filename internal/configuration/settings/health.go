@@ -17,10 +17,11 @@ type Health struct {
 	// for the health check server.
 	// It cannot be the empty string in the internal state.
 	ServerAddress string
-	// TargetAddress is the address (host or host:port)
+	// TargetAddresses are the addresses (host or host:port)
 	// to TCP TLS dial to periodically for the health check.
-	// It cannot be the empty string in the internal state.
-	TargetAddress string
+	// Addresses after the first one are used as fallbacks for retries.
+	// It cannot be empty in the internal state.
+	TargetAddresses []string
 	// ICMPTargetIP is the IP address to use for ICMP echo requests
 	// in the health checker. It can be set to an unspecified address (0.0.0.0)
 	// such that the VPN server IP is used, which is also the default behavior.
@@ -41,10 +42,10 @@ func (h Health) Validate() (err error) {
 
 func (h *Health) copy() (copied Health) {
 	return Health{
-		ServerAddress: h.ServerAddress,
-		TargetAddress: h.TargetAddress,
-		ICMPTargetIP:  h.ICMPTargetIP,
-		RestartVPN:    gosettings.CopyPointer(h.RestartVPN),
+		ServerAddress:   h.ServerAddress,
+		TargetAddresses: h.TargetAddresses,
+		ICMPTargetIP:    h.ICMPTargetIP,
+		RestartVPN:      gosettings.CopyPointer(h.RestartVPN),
 	}
 }
 
@@ -53,14 +54,14 @@ func (h *Health) copy() (copied Health) {
 // settings.
 func (h *Health) OverrideWith(other Health) {
 	h.ServerAddress = gosettings.OverrideWithComparable(h.ServerAddress, other.ServerAddress)
-	h.TargetAddress = gosettings.OverrideWithComparable(h.TargetAddress, other.TargetAddress)
+	h.TargetAddresses = gosettings.OverrideWithSlice(h.TargetAddresses, other.TargetAddresses)
 	h.ICMPTargetIP = gosettings.OverrideWithComparable(h.ICMPTargetIP, other.ICMPTargetIP)
 	h.RestartVPN = gosettings.OverrideWithPointer(h.RestartVPN, other.RestartVPN)
 }
 
 func (h *Health) SetDefaults() {
 	h.ServerAddress = gosettings.DefaultComparable(h.ServerAddress, "127.0.0.1:9999")
-	h.TargetAddress = gosettings.DefaultComparable(h.TargetAddress, "cloudflare.com:443")
+	h.TargetAddresses = gosettings.DefaultSlice(h.TargetAddresses, []string{"cloudflare.com:443", "github.com:443"})
 	h.ICMPTargetIP = gosettings.DefaultComparable(h.ICMPTargetIP, netip.IPv4Unspecified()) // use the VPN server IP
 	h.RestartVPN = gosettings.DefaultPointer(h.RestartVPN, true)
 }
@@ -72,7 +73,10 @@ func (h Health) String() string {
 func (h Health) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Health settings:")
 	node.Appendf("Server listening address: %s", h.ServerAddress)
-	node.Appendf("Target address: %s", h.TargetAddress)
+	targetAddrs := node.Appendf("Target addresses:")
+	for _, targetAddr := range h.TargetAddresses {
+		targetAddrs.Append(targetAddr)
+	}
 	icmpTarget := "VPN server IP"
 	if !h.ICMPTargetIP.IsUnspecified() {
 		icmpTarget = h.ICMPTargetIP.String()
@@ -84,8 +88,8 @@ func (h Health) toLinesNode() (node *gotree.Node) {
 
 func (h *Health) Read(r *reader.Reader) (err error) {
 	h.ServerAddress = r.String("HEALTH_SERVER_ADDRESS")
-	h.TargetAddress = r.String("HEALTH_TARGET_ADDRESS",
-		reader.RetroKeys("HEALTH_ADDRESS_TO_PING"))
+	h.TargetAddresses = r.CSV("HEALTH_TARGET_ADDRESSES",
+		reader.RetroKeys("HEALTH_ADDRESS_TO_PING", "HEALTH_TARGET_ADDRESS"))
 	h.ICMPTargetIP, err = r.NetipAddr("HEALTH_ICMP_TARGET_IP")
 	if err != nil {
 		return err
