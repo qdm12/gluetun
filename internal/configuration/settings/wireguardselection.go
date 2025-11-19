@@ -14,11 +14,11 @@ import (
 
 type WireguardSelection struct {
 	// EndpointIP is the server endpoint IP address.
-	// It is only used with VPN providers generating Wireguard
-	// configurations specific to each server and user.
-	// To indicate it should not be used, it should be set
-	// to netip.IPv4Unspecified(). It can never be the zero value
-	// in the internal state.
+	// It is notably required with the custom provider.
+	// Otherwise it overrides any IP address from the picked
+	// built-in server connection. To indicate it should
+	// not be used, it should be set to [netip.IPv4Unspecified].
+	// It can never be the zero value in the internal state.
 	EndpointIP netip.Addr `json:"endpoint_ip"`
 	// EndpointPort is a the server port to use for the VPN server.
 	// It is optional for VPN providers IVPN, Mullvad, Surfshark
