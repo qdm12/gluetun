@@ -55,9 +55,9 @@ func (c *Checker) SetConfig(tlsDialAddr string, icmpTarget netip.Addr) {
 	c.icmpTarget = icmpTarget
 }
 
-// Start starts the checker by first running a blocking 2s-timed TCP+TLS check,
+// Start starts the checker by first running a blocking 6s-timed TCP+TLS check,
 // and, on success, starts the periodic checks in a separate goroutine:
-// - a "small" ICMP echo check every 15 seconds
+// - a "small" ICMP echo check every minute
 // - a "full" TCP+TLS check every 5 minutes
 // It returns a channel `runError` that receives an error (nil or not) when a periodic check is performed.
 // It returns an error if the initial TCP+TLS check fails.
