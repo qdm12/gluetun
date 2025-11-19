@@ -24,7 +24,8 @@ type Health struct {
 	TargetAddresses []string
 	// ICMPTargetIP is the IP address to use for ICMP echo requests
 	// in the health checker. It can be set to an unspecified address (0.0.0.0)
-	// such that the VPN server IP is used, which is also the default behavior.
+	// such that the VPN server IP is used, although this can be less reliable.
+	// It defaults to 1.1.1.1, and cannot be left empty (invalid) in the internal state.
 	ICMPTargetIP netip.Addr
 	// RestartVPN indicates whether to restart the VPN connection
 	// when the healthcheck fails.
@@ -62,7 +63,7 @@ func (h *Health) OverrideWith(other Health) {
 func (h *Health) SetDefaults() {
 	h.ServerAddress = gosettings.DefaultComparable(h.ServerAddress, "127.0.0.1:9999")
 	h.TargetAddresses = gosettings.DefaultSlice(h.TargetAddresses, []string{"cloudflare.com:443", "github.com:443"})
-	h.ICMPTargetIP = gosettings.DefaultComparable(h.ICMPTargetIP, netip.IPv4Unspecified()) // use the VPN server IP
+	h.ICMPTargetIP = gosettings.DefaultComparable(h.ICMPTargetIP, netip.AddrFrom4([4]byte{1, 1, 1, 1}))
 	h.RestartVPN = gosettings.DefaultPointer(h.RestartVPN, true)
 }
 

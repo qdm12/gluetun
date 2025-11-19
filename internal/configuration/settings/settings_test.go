@@ -60,7 +60,7 @@ func Test_Settings_String(t *testing.T) {
 |   ├── Target addresses:
 |   |   ├── cloudflare.com:443
 |   |   └── github.com:443
-|   ├── ICMP target IP: VPN server IP
+|   ├── ICMP target IP: 1.1.1.1
 |   └── Restart VPN on healthcheck failure: yes
 ├── Shadowsocks server settings:
 |   └── Enabled: no
