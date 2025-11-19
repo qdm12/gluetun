@@ -74,7 +74,7 @@ jobs:
         github.event_name == 'release' ||
         (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
       )
-    needs: [verify]
+    needs: [verify, verify-private]
     runs-on: ubuntu-latest
     environment: secrets
     steps:
