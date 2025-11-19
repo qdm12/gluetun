@@ -16,13 +16,13 @@ import (
 )
 
 type Checker struct {
-	tlsDialAddrs []string
-	dialer       *net.Dialer
-	echoer       *icmp.Echoer
-	dnsClient    *dns.Client
-	logger       Logger
-	icmpTarget   netip.Addr
-	configMutex  sync.Mutex
+	tlsDialAddrs  []string
+	dialer        *net.Dialer
+	echoer        *icmp.Echoer
+	dnsClient     *dns.Client
+	logger        Logger
+	icmpTargetIPs []netip.Addr
+	configMutex   sync.Mutex
 
 	icmpNotPermitted bool
 	smallCheckName   string
@@ -48,11 +48,11 @@ func NewChecker(logger Logger) *Checker {
 // SetConfig sets the TCP+TLS dial addresses and the ICMP echo IP address
 // to target by the [Checker].
 // This function MUST be called before calling [Checker.Start].
-func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTarget netip.Addr) {
+func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTargets []netip.Addr) {
 	c.configMutex.Lock()
 	defer c.configMutex.Unlock()
 	c.tlsDialAddrs = tlsDialAddrs
-	c.icmpTarget = icmpTarget
+	c.icmpTargetIPs = icmpTargets
 }
 
 // Start starts the checker by first running a blocking 6s-timed TCP+TLS check,
@@ -63,7 +63,7 @@ func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTarget netip.Addr) {
 // It returns an error if the initial TCP+TLS check fails.
 // The Checker has to be ultimately stopped by calling [Checker.Stop].
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
-	if len(c.tlsDialAddrs) == 0 || c.icmpTarget.IsUnspecified() {
+	if len(c.tlsDialAddrs) == 0 || len(c.icmpTargetIPs) == 0 {
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
 	}
 
@@ -118,13 +118,14 @@ func (c *Checker) Stop() error {
 	c.stop()
 	<-c.done
 	c.tlsDialAddrs = nil
-	c.icmpTarget = netip.Addr{}
+	c.icmpTargetIPs = nil
 	return nil
 }
 
 func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	c.configMutex.Lock()
-	ip := c.icmpTarget
+	icmpTargetIPs := make([]netip.Addr, len(c.icmpTargetIPs))
+	copy(icmpTargetIPs, c.icmpTargetIPs)
 	c.configMutex.Unlock()
 	tryTimeouts := []time.Duration{
 		5 * time.Second,
@@ -138,10 +139,11 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		15 * time.Second,
 		30 * time.Second,
 	}
-	check := func(ctx context.Context, _ int) error {
+	check := func(ctx context.Context, try int) error {
 		if c.icmpNotPermitted {
 			return c.dnsClient.Check(ctx)
 		}
+		ip := icmpTargetIPs[try%len(icmpTargetIPs)]
 		err := c.echoer.Echo(ctx, ip)
 		if errors.Is(err, icmp.ErrNotPermitted) {
 			c.icmpNotPermitted = true
