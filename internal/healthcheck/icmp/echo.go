@@ -88,7 +88,7 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 	receivedData, err := receiveEchoReply(conn, id, i.buffer, ipVersion, i.logger)
 	if err != nil {
 		if errors.Is(err, net.ErrClosed) && ctx.Err() != nil {
-			return fmt.Errorf("%w", ErrTimedOut)
+			return fmt.Errorf("%w from %s", ErrTimedOut, ip)
 		}
 		return fmt.Errorf("receiving ICMP echo reply: %w", err)
 	}
