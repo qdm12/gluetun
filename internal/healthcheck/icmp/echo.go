@@ -82,7 +82,7 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 		if strings.HasSuffix(err.Error(), "sendto: operation not permitted") {
 			err = fmt.Errorf("%w", ErrNotPermitted)
 		}
-		return fmt.Errorf("writing ICMP message: %w", err)
+		return fmt.Errorf("writing ICMP message to %s: %w", ip, err)
 	}
 
 	receivedData, err := receiveEchoReply(conn, id, i.buffer, ipVersion, i.logger)
@@ -90,12 +90,12 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 		if errors.Is(err, net.ErrClosed) && ctx.Err() != nil {
 			return fmt.Errorf("%w from %s", ErrTimedOut, ip)
 		}
-		return fmt.Errorf("receiving ICMP echo reply: %w", err)
+		return fmt.Errorf("receiving ICMP echo reply from %s: %w", ip, err)
 	}
 
 	sentData := message.Body.(*icmp.Echo).Data //nolint:forcetypeassert
 	if !bytes.Equal(receivedData, sentData) {
-		return fmt.Errorf("%w: sent %x and received %x", ErrICMPEchoDataMismatch, sentData, receivedData)
+		return fmt.Errorf("%w: sent %x to %s and received %x", ErrICMPEchoDataMismatch, sentData, ip, receivedData)
 	}
 
 	return nil
