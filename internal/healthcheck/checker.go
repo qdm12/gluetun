@@ -237,8 +237,8 @@ func withRetries(ctx context.Context, tryTimeouts []time.Duration,
 ) error {
 	maxTries := len(tryTimeouts)
 	type errData struct {
-		err      error
-		duration time.Duration
+		err        error
+		durationMS int64
 	}
 	errs := make([]errData, maxTries)
 	for i, timeout := range tryTimeouts {
@@ -254,12 +254,12 @@ func withRetries(ctx context.Context, tryTimeouts []time.Duration,
 		}
 		logger.Debugf("%s attempt %d/%d failed: %s", checkName, i+1, maxTries, err)
 		errs[i].err = err
-		errs[i].duration = time.Since(start)
+		errs[i].durationMS = time.Since(start).Round(time.Millisecond).Milliseconds()
 	}
 
 	errStrings := make([]string, len(errs))
 	for i, err := range errs {
-		errStrings[i] = fmt.Sprintf("attempt %d (%s): %s", i+1, err.duration, err.err)
+		errStrings[i] = fmt.Sprintf("attempt %d (%dms): %s", i+1, err.durationMS, err.err)
 	}
 	return fmt.Errorf("%w: %s", ErrAllCheckTriesFailed, strings.Join(errStrings, ", "))
 }
