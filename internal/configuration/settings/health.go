@@ -29,6 +29,10 @@ type Health struct {
 	// although this can be less reliable. It defaults to [1.1.1.1,8.8.8.8],
 	// and cannot be left empty in the internal state.
 	ICMPTargetIPs []netip.Addr
+	// SmallCheckType is the type of small health check to perform.
+	// It can be "icmp" or "dns", and defaults to "icmp".
+	// Note it changes automatically to dns if icmp is not supported.
+	SmallCheckType string
 	// RestartVPN indicates whether to restart the VPN connection
 	// when the healthcheck fails.
 	RestartVPN *bool
@@ -37,6 +41,7 @@ type Health struct {
 var (
 	ErrICMPTargetIPNotValid       = errors.New("ICMP target IP address is not valid")
 	ErrICMPTargetIPsNotCompatible = errors.New("ICMP target IP addresses are not compatible")
+	ErrSmallCheckTypeNotValid     = errors.New("small check type is not valid")
 )
 
 func (h Health) Validate() (err error) {
@@ -55,6 +60,11 @@ func (h Health) Validate() (err error) {
 		}
 	}
 
+	err = validate.IsOneOf(h.SmallCheckType, "icmp", "dns")
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrSmallCheckTypeNotValid, err)
+	}
+
 	return nil
 }
 
@@ -63,6 +73,7 @@ func (h *Health) copy() (copied Health) {
 		ServerAddress:   h.ServerAddress,
 		TargetAddresses: h.TargetAddresses,
 		ICMPTargetIPs:   gosettings.CopySlice(h.ICMPTargetIPs),
+		SmallCheckType:  h.SmallCheckType,
 		RestartVPN:      gosettings.CopyPointer(h.RestartVPN),
 	}
 }
@@ -74,6 +85,7 @@ func (h *Health) OverrideWith(other Health) {
 	h.ServerAddress = gosettings.OverrideWithComparable(h.ServerAddress, other.ServerAddress)
 	h.TargetAddresses = gosettings.OverrideWithSlice(h.TargetAddresses, other.TargetAddresses)
 	h.ICMPTargetIPs = gosettings.OverrideWithSlice(h.ICMPTargetIPs, other.ICMPTargetIPs)
+	h.SmallCheckType = gosettings.OverrideWithComparable(h.SmallCheckType, other.SmallCheckType)
 	h.RestartVPN = gosettings.OverrideWithPointer(h.RestartVPN, other.RestartVPN)
 }
 
@@ -84,6 +96,7 @@ func (h *Health) SetDefaults() {
 		netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 		netip.AddrFrom4([4]byte{8, 8, 8, 8}),
 	})
+	h.SmallCheckType = gosettings.DefaultComparable(h.SmallCheckType, "icmp")
 	h.RestartVPN = gosettings.DefaultPointer(h.RestartVPN, true)
 }
 
@@ -98,13 +111,19 @@ func (h Health) toLinesNode() (node *gotree.Node) {
 	for _, targetAddr := range h.TargetAddresses {
 		targetAddrs.Append(targetAddr)
 	}
-	if len(h.ICMPTargetIPs) == 1 && h.ICMPTargetIPs[0].IsUnspecified() {
-		node.Appendf("ICMP target IP: VPN server IP address")
-	} else {
-		icmpIPs := node.Appendf("ICMP target IPs:")
-		for _, ip := range h.ICMPTargetIPs {
-			icmpIPs.Append(ip.String())
+	switch h.SmallCheckType {
+	case "icmp":
+		icmpNode := node.Appendf("Small health check type: ICMP echo request")
+		if len(h.ICMPTargetIPs) == 1 && h.ICMPTargetIPs[0].IsUnspecified() {
+			icmpNode.Appendf("ICMP target IP: VPN server IP address")
+		} else {
+			icmpIPs := icmpNode.Appendf("ICMP target IPs:")
+			for _, ip := range h.ICMPTargetIPs {
+				icmpIPs.Append(ip.String())
+			}
 		}
+	case "dns":
+		node.Appendf("Small health check type: Plain DNS lookup over UDP")
 	}
 	node.Appendf("Restart VPN on healthcheck failure: %s", gosettings.BoolToYesNo(h.RestartVPN))
 	return node
@@ -118,6 +137,7 @@ func (h *Health) Read(r *reader.Reader) (err error) {
 	if err != nil {
 		return err
 	}
+	h.SmallCheckType = r.String("HEALTH_SMALL_CHECK_TYPE")
 	h.RestartVPN, err = r.BoolPtr("HEALTH_RESTART_VPN")
 	if err != nil {
 		return err

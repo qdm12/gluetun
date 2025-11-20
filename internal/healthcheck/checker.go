@@ -16,16 +16,16 @@ import (
 )
 
 type Checker struct {
-	tlsDialAddrs  []string
-	dialer        *net.Dialer
-	echoer        *icmp.Echoer
-	dnsClient     *dns.Client
-	logger        Logger
-	icmpTargetIPs []netip.Addr
-	configMutex   sync.Mutex
+	tlsDialAddrs   []string
+	dialer         *net.Dialer
+	echoer         *icmp.Echoer
+	dnsClient      *dns.Client
+	logger         Logger
+	icmpTargetIPs  []netip.Addr
+	smallCheckType string
+	configMutex    sync.Mutex
 
 	icmpNotPermitted bool
-	smallCheckName   string
 
 	// Internal periodic service signals
 	stop context.CancelFunc
@@ -45,14 +45,17 @@ func NewChecker(logger Logger) *Checker {
 	}
 }
 
-// SetConfig sets the TCP+TLS dial addresses and the ICMP echo IP address
-// to target by the [Checker].
+// SetConfig sets the TCP+TLS dial addresses, the ICMP echo IP address
+// to target and the desired small check type (dns or icmp).
 // This function MUST be called before calling [Checker.Start].
-func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTargets []netip.Addr) {
+func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTargets []netip.Addr,
+	smallCheckType string,
+) {
 	c.configMutex.Lock()
 	defer c.configMutex.Unlock()
 	c.tlsDialAddrs = tlsDialAddrs
 	c.icmpTargetIPs = icmpTargets
+	c.smallCheckType = smallCheckType
 }
 
 // Start starts the checker by first running a blocking 6s-timed TCP+TLS check,
@@ -63,8 +66,13 @@ func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTargets []netip.Addr) {
 // It returns an error if the initial TCP+TLS check fails.
 // The Checker has to be ultimately stopped by calling [Checker.Stop].
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
-	if len(c.tlsDialAddrs) == 0 || len(c.icmpTargetIPs) == 0 {
+	if len(c.tlsDialAddrs) == 0 || len(c.icmpTargetIPs) == 0 || c.smallCheckType == "" {
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
+	}
+
+	if c.icmpNotPermitted {
+		// restore forced check type to dns if icmp was found to be not permitted
+		c.smallCheckType = smallCheckDNS
 	}
 
 	err = c.startupCheck(ctx)
@@ -77,7 +85,6 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	c.stop = cancel
 	done := make(chan struct{})
 	c.done = done
-	c.smallCheckName = "ICMP echo"
 	const smallCheckPeriod = time.Minute
 	smallCheckTimer := time.NewTimer(smallCheckPeriod)
 	const fullCheckPeriod = 5 * time.Minute
@@ -119,6 +126,7 @@ func (c *Checker) Stop() error {
 	<-c.done
 	c.tlsDialAddrs = nil
 	c.icmpTargetIPs = nil
+	c.smallCheckType = ""
 	return nil
 }
 
@@ -140,20 +148,21 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		30 * time.Second,
 	}
 	check := func(ctx context.Context, try int) error {
-		if c.icmpNotPermitted {
+		if c.smallCheckType == smallCheckDNS {
 			return c.dnsClient.Check(ctx)
 		}
 		ip := icmpTargetIPs[try%len(icmpTargetIPs)]
 		err := c.echoer.Echo(ctx, ip)
 		if errors.Is(err, icmp.ErrNotPermitted) {
 			c.icmpNotPermitted = true
-			c.smallCheckName = "plain DNS over UDP"
-			c.logger.Infof("%s; permanently falling back to %s checks.", c.smallCheckName, err)
+			c.smallCheckType = smallCheckDNS
+			c.logger.Infof("%s; permanently falling back to %s checks",
+				smallCheckTypeToString(c.smallCheckType), err)
 			return c.dnsClient.Check(ctx)
 		}
 		return err
 	}
-	return withRetries(ctx, tryTimeouts, c.logger, c.smallCheckName, check)
+	return withRetries(ctx, tryTimeouts, c.logger, smallCheckTypeToString(c.smallCheckType), check)
 }
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
@@ -298,4 +307,20 @@ func (c *Checker) startupCheck(ctx context.Context) error {
 		errStrings[i] = fmt.Sprintf("parallel attempt %d/%d failed: %s", i+1, len(errs), err)
 	}
 	return fmt.Errorf("%w: %s", ErrAllCheckTriesFailed, strings.Join(errStrings, ", "))
+}
+
+const (
+	smallCheckDNS  = "dns"
+	smallCheckICMP = "icmp"
+)
+
+func smallCheckTypeToString(smallCheckType string) string {
+	switch smallCheckType {
+	case smallCheckICMP:
+		return "ICMP echo"
+	case smallCheckDNS:
+		return "plain DNS over UDP"
+	default:
+		panic("unknown small check type: " + smallCheckType)
+	}
 }

@@ -101,7 +101,7 @@ type CmdStarter interface {
 }
 
 type HealthChecker interface {
-	SetConfig(tlsDialAddrs []string, icmpTargetIPs []netip.Addr)
+	SetConfig(tlsDialAddrs []string, icmpTargetIPs []netip.Addr, smallCheckType string)
 	Start(ctx context.Context) (runError <-chan error, err error)
 	Stop() error
 }
