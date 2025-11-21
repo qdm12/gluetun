@@ -18,7 +18,7 @@ jobs:
       actions: read
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: DavidAnson/markdownlint-cli2-action@v21
         with:
