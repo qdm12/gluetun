@@ -63,31 +63,6 @@ func (s *Settings) SetDefaultRole(jsonRole string) error {
 	return nil
 }
 
-func (s *Settings) SetDefaults() {
-	s.Roles = gosettings.DefaultSlice(s.Roles, []Role{{ // TODO v3.41.0 leave empty
-		Name: "public",
-		Auth: "none",
-		Routes: []string{
-			http.MethodGet + " /openvpn/actions/restart",
-			http.MethodGet + " /unbound/actions/restart",
-			http.MethodGet + " /openvpn/portforwarded",
-			http.MethodGet + " /updater/restart",
-			http.MethodGet + " /v1/version",
-			http.MethodGet + " /v1/vpn/status",
-			http.MethodPut + " /v1/vpn/status",
-			http.MethodGet + " /v1/openvpn/status",
-			http.MethodPut + " /v1/openvpn/status",
-			http.MethodGet + " /v1/openvpn/portforwarded",
-			http.MethodGet + " /v1/dns/status",
-			http.MethodPut + " /v1/dns/status",
-			http.MethodGet + " /v1/updater/status",
-			http.MethodPut + " /v1/updater/status",
-			http.MethodGet + " /v1/publicip/ip",
-			http.MethodGet + " /v1/portforward",
-		},
-	}})
-}
-
 func (s Settings) Validate() (err error) {
 	for i, role := range s.Roles {
 		err = role.Validate()
