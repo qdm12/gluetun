@@ -5,7 +5,7 @@
 # How to use:
 # 1. (Optional) Disable authentication for localhost clients in qBittorrent WebUI settings ("Bypass authentication for clients on localhost" or `bypass_local_auth` in json).
 # 2. Set the environment variable:
-# VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c "/scripts/qbittorrent-port-update.sh --port {{PORTS}} --webui-port 9081"
+# VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c "/scripts/qbittorrent-port-update.sh --port {{PORT}} --webui-port 9081"
 # Alternatively, you can use `--user` and `--pass` options to provide credentials.
 
 build_default_url() {
@@ -14,8 +14,13 @@ build_default_url() {
 }
 
 # default values
+VPN_PORT=""
+VPN_INTERFACE="tun0"
+VPN_ADDRESS="0.0.0.0"
 WEBUI_PORT="8080"
-DEFAULT_URL=$(build_default_url)
+WEBUI_URL=$(build_default_url "$WEBUI_PORT")
+
+# it might take a few tries for qBittorrent to be available (e.g. slow loading with many torrents)
 WGET_OPTS="--retry-connrefused --tries=5"
 
 usage() {
@@ -31,10 +36,14 @@ usage() {
     echo "                     (Omit if not required)"
     echo "  --port PORT        Specify the qBittorrent peer-port."
     echo "                     REQUIRED"
+    echo "  --iface IFACE      Specify the VPN interface to bind to."
+    echo "                     Default: ${VPN_INTERFACE}"
+    echo "  --addr ADDR        Specify the VPN interface address to bind to."
+    echo "                     Default: ${VPN_ADDRESS}"
     echo "  --webui-port PORT  Specify the qBittorrent WebUI Port."
     echo "                     Default: ${WEBUI_PORT}"
-    echo "  --url URL          Specify the qBittorrent API URL."
-    echo "                     Default: ${DEFAULT_URL}"
+    echo "  --url URL          Specify the qBittorrent API URL. Not compatible with --webui-port."
+    echo "                     Default: ${WEBUI_URL}"
     echo "                     Overrides --webui-port option."
     echo "Example:"
     echo "  $0 --user admin --pass **** --port 40409"
@@ -57,15 +66,24 @@ while [ $# -gt 0 ]; do
         shift 2
         ;;
     --port)
-        PORT=$(echo "$2" | cut -d',' -f1)
+        VPN_PORT=$(echo "$2" | cut -d',' -f1)
+        shift 2
+        ;;
+    --iface)
+        VPN_INTERFACE="$2"
+        shift 2
+        ;;
+    --addr)
+        VPN_ADDRESS="$2"
         shift 2
         ;;
     --webui-port)
         WEBUI_PORT="$2"
+        WEBUI_URL=$(build_default_url "$WEBUI_PORT")
         shift 2
         ;;
     --url)
-        PREF_URL="$2"
+        WEBUI_URL="$2"
         shift 2
         ;;
     *)
@@ -76,13 +94,9 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-if [ -z "${PORT}" ]; then
+if [ -z "${VPN_PORT}" ]; then
     echo "ERROR: --port is required but not provided"
     exit 1
-fi
-
-if [ -z "${PREF_URL+x}" ]; then
-    PREF_URL=$(build_default_url)
 fi
 
 if [ "${_USECRED}" ]; then
@@ -97,9 +111,9 @@ if [ "${_USECRED}" ]; then
     fi
 
     cookie=$(wget ${WGET_OPTS} -qO- \
-        --header "Referer: ${PREF_URL}" \
+        --header "Referer: ${WEBUI_URL}" \
         --post-data "username=${USERNAME}&password=${PASSWORD}" \
-        "${PREF_URL}/v2/auth/login" \
+        "${WEBUI_URL}/v2/auth/login" \
         --server-response 2>&1 | \
         grep -i "set-cookie:" | \
         sed 's/.*set-cookie: //I;s/;.*//')
@@ -114,18 +128,18 @@ if [ "${_USECRED}" ]; then
 fi
 
 # update peer host via API, 0 is a dummy port, required due to https://github.com/qdm12/gluetun-wiki/pull/147
-wget ${WGET_OPTS} -qO- --post-data="json={\"random_port\":false,\"upnp\":false,\"listen_port\":0}" "$PREF_URL/v2/app/setPreferences"
+wget ${WGET_OPTS} -qO- --post-data="json={\"random_port\":false,\"upnp\":false,\"listen_port\":0,\"current_network_interface\":\"lo\",\"current_interface_address\":\"\"}" "$WEBUI_URL/v2/app/setPreferences"
 if [ $? -ne 0 ]; then
     echo "ERROR: Could not update qBittorrent peer-port (first call failed)."
     exit 1
 fi
 
 # second call to set the actual port
-wget ${WGET_OPTS} -qO- --post-data="json={\"listen_port\":$PORT}" "$PREF_URL/v2/app/setPreferences"
+wget ${WGET_OPTS} -qO- --post-data="json={\"listen_port\":$VPN_PORT,\"current_network_interface\":\"$VPN_INTERFACE\",\"current_interface_address\":\"$VPN_ADDRESS\"}" "$WEBUI_URL/v2/app/setPreferences"
 if [ $? -ne 0 ]; then
     echo "ERROR: Could not update qBittorrent peer-port (second call failed)."
     exit 1
 fi
 
-echo "Success! qBittorrent peer-port updated to ${PORT}"
+echo "Success! qBittorrent peer-port updated to ${VPN_PORT}"
 exit 0
