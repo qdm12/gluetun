@@ -3,13 +3,11 @@ package updater
 import (
 	"context"
 	"fmt"
-	"net/netip"
 	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/publicip/api"
 	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
 
@@ -72,6 +70,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, err
 	}
 
+
 	if len(hostToIPs) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			common.ErrNotEnoughServers, len(servers), minServers)
@@ -80,22 +79,13 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	hts.adaptWithIPs(hostToIPs)
 
 	servers = hts.toServersSlice()
-
-	// Get public IP address information
-	ipsToGetInfo := make([]netip.Addr, len(servers))
+    
 	for i := range servers {
-		ipsToGetInfo[i] = servers[i].IPs[0]
+        country, city :=  getLocation(servers[i].Hostname)
+		servers[i].Country = country
+		servers[i].Region = ""
+		servers[i].City = city
 	}
-	ipsInfo, err := api.FetchMultiInfo(ctx, u.ipFetcher, ipsToGetInfo)
-	if err != nil {
-		return nil, err
-	}
-	for i := range servers {
-		servers[i].Country = ipsInfo[i].Country
-		servers[i].Region = ipsInfo[i].Region
-		servers[i].City = ipsInfo[i].City
-	}
-
 	sort.Sort(models.SortableServers(servers))
 
 	return servers, nil
