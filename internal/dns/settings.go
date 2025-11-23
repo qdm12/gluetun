@@ -26,31 +26,23 @@ func (l *Loop) SetSettings(ctx context.Context, settings settings.DNS) (
 	return l.state.SetSettings(ctx, settings)
 }
 
-func buildServerSettings(settings settings.DNS,
+func buildServerSettings(userSettings settings.DNS,
 	filter *mapfilter.Filter, localResolvers []netip.Addr,
 	logger Logger) (
 	serverSettings server.Settings, err error,
 ) {
 	serverSettings.Logger = logger
 
-	providersData := provider.NewProviders()
-	upstreamResolvers := make([]provider.Provider, len(settings.Providers))
-	for i := range settings.Providers {
-		var err error
-		upstreamResolvers[i], err = providersData.Get(settings.Providers[i])
-		if err != nil {
-			panic(err) // this should already had been checked
-		}
-	}
+	upstreamResolvers := buildProviders(userSettings)
 
 	ipVersion := "ipv4"
-	if *settings.IPv6 {
+	if *userSettings.IPv6 {
 		ipVersion = "ipv6"
 	}
 
 	var dialer server.Dialer
-	switch settings.UpstreamType {
-	case "dot":
+	switch userSettings.UpstreamType {
+	case settings.DNSUpstreamTypeDot:
 		dialerSettings := dot.Settings{
 			UpstreamResolvers: upstreamResolvers,
 			IPVersion:         ipVersion,
@@ -59,7 +51,7 @@ func buildServerSettings(settings settings.DNS,
 		if err != nil {
 			return server.Settings{}, fmt.Errorf("creating DNS over TLS dialer: %w", err)
 		}
-	case "doh":
+	case settings.DNSUpstreamTypeDoh:
 		dialerSettings := doh.Settings{
 			UpstreamResolvers: upstreamResolvers,
 			IPVersion:         ipVersion,
@@ -68,7 +60,7 @@ func buildServerSettings(settings settings.DNS,
 		if err != nil {
 			return server.Settings{}, fmt.Errorf("creating DNS over HTTPS dialer: %w", err)
 		}
-	case "plain":
+	case settings.DNSUpstreamTypePlain:
 		dialerSettings := plain.Settings{
 			UpstreamResolvers: upstreamResolvers,
 			IPVersion:         ipVersion,
@@ -78,11 +70,11 @@ func buildServerSettings(settings settings.DNS,
 			return server.Settings{}, fmt.Errorf("creating plain DNS dialer: %w", err)
 		}
 	default:
-		panic("unknown upstream type: " + settings.UpstreamType)
+		panic("unknown upstream type: " + userSettings.UpstreamType)
 	}
 	serverSettings.Dialer = dialer
 
-	if *settings.Caching {
+	if *userSettings.Caching {
 		lruCache, err := lru.New(lru.Settings{})
 		if err != nil {
 			return server.Settings{}, fmt.Errorf("creating LRU cache: %w", err)
@@ -122,4 +114,49 @@ func buildServerSettings(settings settings.DNS,
 	serverSettings.Middlewares = append(serverSettings.Middlewares, localDNSMiddleware)
 
 	return serverSettings, nil
+}
+
+func buildProviders(userSettings settings.DNS) []provider.Provider {
+	if userSettings.UpstreamType == settings.DNSUpstreamTypePlain &&
+		len(userSettings.UpstreamPlainAddresses) > 0 {
+		providers := make([]provider.Provider, len(userSettings.UpstreamPlainAddresses))
+		for i, addrPort := range userSettings.UpstreamPlainAddresses {
+			providers[i] = provider.Provider{
+				Name: addrPort.String(),
+			}
+			if addrPort.Addr().Is4() {
+				providers[i].Plain.IPv4 = []netip.AddrPort{addrPort}
+			} else {
+				providers[i].Plain.IPv6 = []netip.AddrPort{addrPort}
+			}
+		}
+	}
+
+	providersData := provider.NewProviders()
+	providers := make([]provider.Provider, 0, len(userSettings.Providers)+len(userSettings.UpstreamPlainAddresses))
+	for _, providerName := range userSettings.Providers {
+		provider, err := providersData.Get(providerName)
+		if err != nil {
+			panic(err) // this should already had been checked
+		}
+		providers = append(providers, provider)
+	}
+
+	if userSettings.UpstreamType != settings.DNSUpstreamTypePlain {
+		return providers
+	}
+
+	for _, addrPort := range userSettings.UpstreamPlainAddresses {
+		newProvider := provider.Provider{
+			Name: addrPort.String(),
+		}
+		if addrPort.Addr().Is4() {
+			newProvider.Plain.IPv4 = []netip.AddrPort{addrPort}
+		} else {
+			newProvider.Plain.IPv6 = []netip.AddrPort{addrPort}
+		}
+		providers = append(providers, newProvider)
+	}
+
+	return providers
 }
