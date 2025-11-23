@@ -3,10 +3,10 @@
 # Description: This script updates the peer-port for the qBittorrent torrent client using its WebUI API.
 #
 # How to use:
-# 1. (Optional) Disable authentication for localhost clients in qBittorrent WebUI settings ("Bypass authentication for clients on localhost" or `bypass_local_auth` in json).
-# 2. Set the environment variable:
-# VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c "/scripts/qbittorrent-port-update.sh --port {{PORT}} --webui-port 9081"
-# Alternatively, you can use `--user` and `--pass` options to provide credentials.
+# 1. Provide username and password via `--user` and `--pass` options.
+# 2. (Alternative) Disable authentication for localhost clients in qBittorrent WebUI settings ("Bypass authentication for clients on localhost" or `bypass_local_auth` in json).
+# 3. Set the environment variable:
+# VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c "/scripts/qbittorrent-port-update.sh [--user USER --pass PASS] --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 9081"
 
 build_default_url() {
     port="${1:-$WEBUI_PORT}"
@@ -16,7 +16,7 @@ build_default_url() {
 # default values
 VPN_PORT=""
 VPN_INTERFACE="tun0"
-VPN_ADDRESS="0.0.0.0"
+VPN_ADDRESS=""
 WEBUI_PORT="8080"
 WEBUI_URL=$(build_default_url "$WEBUI_PORT")
 
@@ -37,16 +37,16 @@ usage() {
     echo "  --port PORT        Specify the qBittorrent peer-port."
     echo "                     REQUIRED"
     echo "  --iface IFACE      Specify the VPN interface to bind to."
-    echo "                     Default: ${VPN_INTERFACE}"
+    echo "                     Default: \"${VPN_INTERFACE}\""
     echo "  --addr ADDR        Specify the VPN interface address to bind to."
-    echo "                     Default: ${VPN_ADDRESS}"
-    echo "  --webui-port PORT  Specify the qBittorrent WebUI Port."
-    echo "                     Default: ${WEBUI_PORT}"
+    echo "                     Available options: empty = All addresses, 0.0.0.0 - All IPv4 addresses, :: - All IPv6 addresses, or a specific IP address"
+    echo "                     Default: \"${VPN_ADDRESS}\""
+    echo "  --webui-port PORT  Specify the qBittorrent WebUI Port. Not compatible with --url."
+    echo "                     Default: \"${WEBUI_PORT}\""
     echo "  --url URL          Specify the qBittorrent API URL. Not compatible with --webui-port."
-    echo "                     Default: ${WEBUI_URL}"
-    echo "                     Overrides --webui-port option."
+    echo "                     Default: \"${WEBUI_URL}\""
     echo "Example:"
-    echo "  $0 --user admin --pass **** --port 40409"
+    echo "  $0 --user ADMIN --pass **** --port 40409"
 }
 
 while [ $# -gt 0 ]; do
