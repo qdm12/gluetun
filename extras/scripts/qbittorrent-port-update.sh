@@ -141,5 +141,4 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Success! qBittorrent peer-port updated to ${VPN_PORT}"
-exit 0
+echo "qBittorrent peer-port updated to ${VPN_PORT}"
