@@ -1,13 +1,5 @@
 #!/bin/sh
 
-# Description: This script updates the peer-port for the qBittorrent torrent client using its WebUI API.
-#
-# How to use:
-# 1. Provide username and password via `--user` and `--pass` options.
-# 2. (Alternative) Disable authentication for localhost clients in qBittorrent WebUI settings ("Bypass authentication for clients on localhost" or `bypass_local_auth` in json).
-# 3. Set the environment variable:
-# VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c "/scripts/qbittorrent-port-update.sh [--user USER --pass PASS] --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 9081"
-
 build_default_url() {
     port="${1:-$WEBUI_PORT}"
     echo "http://127.0.0.1:${port}/api"
@@ -26,27 +18,40 @@ WGET_OPTS="--retry-connrefused --tries=5"
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
-    echo "Update qBittorrent peer-port via API"
+    echo "Update qBittorrent listening port, network interface, and address via its WebUI API."
+    echo "This script is designed to work with Gluetun's VPN_PORT_FORWARDING_UP_COMMAND."
+    echo ""
+    echo "WARNING: If you do not provide --iface and --addr, they will be set to default values on every run"
     echo ""
     echo "Options:"
-    echo "  --help             Show this help message and exit."
-    echo "  --user USER        Specify the qBittorrent username."
-    echo "                     (Omit if not required)"
-    echo "  --pass PASS        Specify the qBittorrent password."
-    echo "                     (Omit if not required)"
-    echo "  --port PORT        Specify the qBittorrent peer-port."
+    echo "  --help             Show this help message and exit"
+    echo "  --user USER        Specify the qBittorrent username"
+    echo "                     (Omit if authentication is disabled for localhost)"
+    echo "  --pass PASS        Specify the qBittorrent password"
+    echo "                     (Omit if authentication is disabled for localhost)"
+    echo "  --port PORT        Specify the qBittorrent listening port (peer-port)"
     echo "                     REQUIRED"
-    echo "  --iface IFACE      Specify the VPN interface to bind to."
+    echo "  --iface IFACE      Specify the network interface to bind to"
+    echo "                     Examples: \"\" (any interface), \"lo\", \"eth0\", \"tun0\", etc."
     echo "                     Default: \"${VPN_INTERFACE}\""
-    echo "  --addr ADDR        Specify the VPN interface address to bind to."
-    echo "                     Available options: empty = All addresses, 0.0.0.0 - All IPv4 addresses, :: - All IPv6 addresses, or a specific IP address"
+    echo "  --addr ADDR        Specify the network address to bind to"
+    echo "                     Examples: \"\" (all addresses), \"0.0.0.0\" (all IPv4), \"::\" (all IPv6), or a specific IP"
     echo "                     Default: \"${VPN_ADDRESS}\""
-    echo "  --webui-port PORT  Specify the qBittorrent WebUI Port. Not compatible with --url."
+    echo "  --webui-port PORT  Specify the qBittorrent WebUI Port. Not compatible with --url"
     echo "                     Default: \"${WEBUI_PORT}\""
-    echo "  --url URL          Specify the qBittorrent API URL. Not compatible with --webui-port."
+    echo "  --url URL          Specify the qBittorrent API URL. Not compatible with --webui-port"
     echo "                     Default: \"${WEBUI_URL}\""
-    echo "Example:"
-    echo "  $0 --user ADMIN --pass **** --port 40409"
+    echo ""
+    echo "Gluetun Placeholders (available in VPN_PORT_FORWARDING_UP_COMMAND):"
+    echo "  {{PORT}}           Replaced by the forwarded port number (or first port if multiple)"
+    echo "  {{PORTS}}          Replaced by the forwarded port numbers (comma separated)"
+    echo "  {{VPN_INTERFACE}}  Replaced by the VPN interface name (e.g. tun0)"
+    echo ""
+    echo "Example commands (set as value of VPN_PORT_FORWARDING_DOWN_COMMAND):"
+    echo "# With authentication:"
+    echo "/bin/sh -c \"/scripts/qbittorrent-port-update.sh --user ADMIN --pass **** --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 8080\""
+    echo "# Without authentication (\"Bypass authentication for clients on localhost\" enabled in qBittorrent):"
+    echo "/bin/sh -c \"/scripts/qbittorrent-port-update.sh --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 8080\""
 }
 
 while [ $# -gt 0 ]; do
@@ -102,11 +107,11 @@ fi
 if [ "${_USECRED}" ]; then
     # make sure username AND password were provided
     if [ -z "${USERNAME}" ]; then
-        echo "ERROR: qBittorrent username not provided."
+        echo "ERROR: qBittorrent username not provided"
         exit 1
     fi
     if [ -z "${PASSWORD}" ]; then
-        echo "ERROR: qBittorrent password not provided."
+        echo "ERROR: qBittorrent password not provided"
         exit 1
     fi
 
@@ -119,7 +124,7 @@ if [ "${_USECRED}" ]; then
         sed 's/.*set-cookie: //I;s/;.*//')
 
     if [ -z "${cookie}" ]; then
-        echo "ERROR: Could not authenticate with qBittorrent."
+        echo "ERROR: Failed to authenticate with qBittorrent. Check username/password or verify WebUI is accessible"
         exit 1
     fi
 
@@ -127,18 +132,19 @@ if [ "${_USECRED}" ]; then
     WGET_OPTS="${WGET_OPTS} --header=Cookie:$cookie"
 fi
 
-# update peer host via API, 0 is a dummy port, required due to https://github.com/qdm12/gluetun-wiki/pull/147
-wget ${WGET_OPTS} -qO- --post-data="json={\"random_port\":false,\"upnp\":false,\"listen_port\":0,\"current_network_interface\":\"lo\",\"current_interface_address\":\"\"}" "$WEBUI_URL/v2/app/setPreferences"
+# update qBittorrent preferences via API, the first call disabled everything and sets safe defaults
+# This is required as per https://github.com/qdm12/gluetun-wiki/pull/147 and https://github.com/qdm12/gluetun/issues/2997#issuecomment-3566749335
+wget ${WGET_OPTS} -qO- --post-data="json={\"random_port\":false,\"upnp\":false,\"listen_port\":0,\"current_network_interface\":\"lo\",\"current_interface_address\":\"127.0.0.1\"}" "$WEBUI_URL/v2/app/setPreferences"
 if [ $? -ne 0 ]; then
-    echo "ERROR: Could not update qBittorrent peer-port (first call failed)."
+    echo "ERROR: Failed to reset qBittorrent settings"
     exit 1
 fi
 
-# second call to set the actual port
+# second call to set the actual port, interface and address
 wget ${WGET_OPTS} -qO- --post-data="json={\"listen_port\":$VPN_PORT,\"current_network_interface\":\"$VPN_INTERFACE\",\"current_interface_address\":\"$VPN_ADDRESS\"}" "$WEBUI_URL/v2/app/setPreferences"
 if [ $? -ne 0 ]; then
-    echo "ERROR: Could not update qBittorrent peer-port (second call failed)."
+    echo "ERROR: Failed to apply qBittorrent port/interface settings"
     exit 1
 fi
 
-echo "qBittorrent peer-port updated to ${VPN_PORT}"
+echo "qBittorrent updated to use peer-port: ${VPN_PORT}, interface: \"${VPN_INTERFACE}\", address: \"${VPN_ADDRESS}\""
