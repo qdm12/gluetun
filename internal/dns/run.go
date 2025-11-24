@@ -74,7 +74,8 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 	for {
 		select {
 		case <-ctx.Done():
-			if !*l.GetSettings().KeepNameserver {
+			settings := l.GetSettings()
+			if !*settings.KeepNameserver && *settings.DoT.Enabled {
 				l.stopServer()
 				// TODO revert OS and Go nameserver when exiting
 			}
@@ -82,7 +83,8 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 		case <-l.stop:
 			l.userTrigger = true
 			l.logger.Info("stopping")
-			if !*l.GetSettings().KeepNameserver {
+			settings := l.GetSettings()
+			if !*settings.KeepNameserver && *settings.DoT.Enabled {
 				const fallback = false
 				l.useUnencryptedDNS(fallback)
 				l.stopServer()
