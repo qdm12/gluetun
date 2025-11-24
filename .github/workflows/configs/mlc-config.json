@@ -8,6 +8,7 @@
   "retryOn429": false,
   "fallbackRetryDelay": "30s",
   "aliveStatusCodes": [
-    200
+    200,
+    429
   ]
 }

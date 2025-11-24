@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Update a VPN provider servers data",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "run",
+                "./cmd/gluetun/main.go",
+                "update",
+                "${input:updateMode}",
+                "-providers",
+                "${input:provider}"
+            ],
+        },
+        {
+            "label": "Add a Gluetun Github Git remote",
+            "type": "shell",
+            "command": "git",
+            "args": [
+                "remote",
+                "add",
+                "${input:githubRemoteUsername}",
+                "git@github.com:${input:githubRemoteUsername}/gluetun.git"
+            ],
+        }
+    ],
+    "inputs": [
+        {
+            "id": "provider",
+            "type": "promptString",
+            "description": "Please enter a provider (or comma separated list of providers)",
+        },
+        {
+            "id": "updateMode",
+            "type": "pickString",
+            "description": "Update mode to use",
+            "options": [
+                "-maintainer",
+                "-enduser"
+            ],
+            "default": "-maintainer"
+        },
+        {
+            "id": "githubRemoteUsername",
+            "type": "promptString",
+            "description": "Please enter a Github username",
+        },
+    ]
+}

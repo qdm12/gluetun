@@ -56,6 +56,13 @@ linters:
           - revive
         path: internal\/provider\/(common|utils)\/.+\.go
         text: "var-naming: avoid (bad|meaningless) package names"
+      - linters:
+          - lll
+        source: "^// https://.+$"
+      - linters:
+          - err113
+          - mnd
+        path: ci\/.+\.go
 
     paths:
       - third_party$

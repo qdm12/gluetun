@@ -5,6 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/vpn"
+	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/log"
 )
 
@@ -28,17 +29,17 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		var vpnRunner interface {
 			Run(ctx context.Context, waitError chan<- error, tunnelReady chan<- struct{})
 		}
-		var serverName, vpnInterface string
-		var canPortForward bool
+		var vpnInterface string
+		var connection models.Connection
 		var err error
 		subLogger := l.logger.New(log.SetComponent(settings.Type))
 		if settings.Type == vpn.OpenVPN {
 			vpnInterface = settings.OpenVPN.Interface
-			vpnRunner, serverName, canPortForward, err = setupOpenVPN(ctx, l.fw,
+			vpnRunner, connection, err = setupOpenVPN(ctx, l.fw,
 				l.openvpnConf, providerConf, settings, l.ipv6Supported, l.starter, subLogger)
 		} else { // Wireguard
 			vpnInterface = settings.Wireguard.Interface
-			vpnRunner, serverName, canPortForward, err = setupWireguard(ctx, l.netLinker, l.fw,
+			vpnRunner, connection, err = setupWireguard(ctx, l.netLinker, l.fw,
 				providerConf, settings, l.ipv6Supported, subLogger)
 		}
 		if err != nil {
@@ -46,22 +47,23 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 		tunnelUpData := tunnelUpData{
-			serverName:     serverName,
-			canPortForward: canPortForward,
+			serverIP:       connection.IP,
+			serverName:     connection.ServerName,
+			canPortForward: connection.PortForward,
 			portForwarder:  portForwarder,
 			vpnIntf:        vpnInterface,
 			username:       settings.Provider.PortForwarding.Username,
 			password:       settings.Provider.PortForwarding.Password,
 		}
 
-		openvpnCtx, openvpnCancel := context.WithCancel(context.Background())
+		vpnCtx, vpnCancel := context.WithCancel(context.Background())
 		waitError := make(chan error)
 		tunnelReady := make(chan struct{})
 
-		go vpnRunner.Run(openvpnCtx, waitError, tunnelReady)
+		go vpnRunner.Run(vpnCtx, waitError, tunnelReady)
 
 		if err := l.waitForError(ctx, waitError); err != nil {
-			openvpnCancel()
+			vpnCancel()
 			l.crashed(ctx, err)
 			continue
 		}
@@ -73,10 +75,10 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		for stayHere {
 			select {
 			case <-tunnelReady:
-				go l.onTunnelUp(openvpnCtx, tunnelUpData)
+				go l.onTunnelUp(vpnCtx, ctx, tunnelUpData)
 			case <-ctx.Done():
 				l.cleanup()
-				openvpnCancel()
+				vpnCancel()
 				<-waitError
 				close(waitError)
 				return
@@ -84,7 +86,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.userTrigger = true
 				l.logger.Info("stopping")
 				l.cleanup()
-				openvpnCancel()
+				vpnCancel()
 				<-waitError
 				// do not close waitError or the waitError
 				// select case will trigger
@@ -97,7 +99,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.statusManager.Lock() // prevent SetStatus from running in parallel
 
 				l.cleanup()
-				openvpnCancel()
+				vpnCancel()
 				l.statusManager.SetStatus(constants.Crashed)
 				l.logAndWait(ctx, err)
 				stayHere = false
@@ -105,6 +107,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 				l.statusManager.Unlock()
 			}
 		}
-		openvpnCancel()
+		vpnCancel()
 	}
 }

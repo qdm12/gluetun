@@ -22,6 +22,9 @@ type DNSBlacklist struct {
 	AddBlockedHosts      []string
 	AddBlockedIPs        []netip.Addr
 	AddBlockedIPPrefixes []netip.Prefix
+	// RebindingProtectionExemptHostnames is a list of hostnames
+	// exempt from DNS rebinding protection.
+	RebindingProtectionExemptHostnames []string
 }
 
 func (b *DNSBlacklist) setDefaults() {
@@ -33,8 +36,9 @@ func (b *DNSBlacklist) setDefaults() {
 var hostRegex = regexp.MustCompile(`^([a-zA-Z0-9]|[a-zA-Z0-9_][a-zA-Z0-9\-_]{0,61}[a-zA-Z0-9_])(\.([a-zA-Z0-9]|[a-zA-Z0-9_][a-zA-Z0-9\-_]{0,61}[a-zA-Z0-9]))*$`) //nolint:lll
 
 var (
-	ErrAllowedHostNotValid = errors.New("allowed host is not valid")
-	ErrBlockedHostNotValid = errors.New("blocked host is not valid")
+	ErrAllowedHostNotValid                   = errors.New("allowed host is not valid")
+	ErrBlockedHostNotValid                   = errors.New("blocked host is not valid")
+	ErrRebindingProtectionExemptHostNotValid = errors.New("rebinding protection exempt host is not valid")
 )
 
 func (b DNSBlacklist) validate() (err error) {
@@ -50,18 +54,25 @@ func (b DNSBlacklist) validate() (err error) {
 		}
 	}
 
+	for _, host := range b.RebindingProtectionExemptHostnames {
+		if !hostRegex.MatchString(host) {
+			return fmt.Errorf("%w: %s", ErrRebindingProtectionExemptHostNotValid, host)
+		}
+	}
+
 	return nil
 }
 
 func (b DNSBlacklist) copy() (copied DNSBlacklist) {
 	return DNSBlacklist{
-		BlockMalicious:       gosettings.CopyPointer(b.BlockMalicious),
-		BlockAds:             gosettings.CopyPointer(b.BlockAds),
-		BlockSurveillance:    gosettings.CopyPointer(b.BlockSurveillance),
-		AllowedHosts:         gosettings.CopySlice(b.AllowedHosts),
-		AddBlockedHosts:      gosettings.CopySlice(b.AddBlockedHosts),
-		AddBlockedIPs:        gosettings.CopySlice(b.AddBlockedIPs),
-		AddBlockedIPPrefixes: gosettings.CopySlice(b.AddBlockedIPPrefixes),
+		BlockMalicious:                     gosettings.CopyPointer(b.BlockMalicious),
+		BlockAds:                           gosettings.CopyPointer(b.BlockAds),
+		BlockSurveillance:                  gosettings.CopyPointer(b.BlockSurveillance),
+		AllowedHosts:                       gosettings.CopySlice(b.AllowedHosts),
+		AddBlockedHosts:                    gosettings.CopySlice(b.AddBlockedHosts),
+		AddBlockedIPs:                      gosettings.CopySlice(b.AddBlockedIPs),
+		AddBlockedIPPrefixes:               gosettings.CopySlice(b.AddBlockedIPPrefixes),
+		RebindingProtectionExemptHostnames: gosettings.CopySlice(b.RebindingProtectionExemptHostnames),
 	}
 }
 
@@ -73,6 +84,8 @@ func (b *DNSBlacklist) overrideWith(other DNSBlacklist) {
 	b.AddBlockedHosts = gosettings.OverrideWithSlice(b.AddBlockedHosts, other.AddBlockedHosts)
 	b.AddBlockedIPs = gosettings.OverrideWithSlice(b.AddBlockedIPs, other.AddBlockedIPs)
 	b.AddBlockedIPPrefixes = gosettings.OverrideWithSlice(b.AddBlockedIPPrefixes, other.AddBlockedIPPrefixes)
+	b.RebindingProtectionExemptHostnames = gosettings.OverrideWithSlice(b.RebindingProtectionExemptHostnames,
+		other.RebindingProtectionExemptHostnames)
 }
 
 func (b DNSBlacklist) ToBlockBuilderSettings(client *http.Client) (
@@ -129,6 +142,13 @@ func (b DNSBlacklist) toLinesNode() (node *gotree.Node) {
 		}
 	}
 
+	if len(b.RebindingProtectionExemptHostnames) > 0 {
+		exemptHostsNode := node.Append("Rebinding protection exempt hostnames:")
+		for _, host := range b.RebindingProtectionExemptHostnames {
+			exemptHostsNode.Append(host)
+		}
+	}
+
 	return node
 }
 
@@ -149,23 +169,47 @@ func (b *DNSBlacklist) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	b.AddBlockedIPs, b.AddBlockedIPPrefixes,
-		err = readDoTPrivateAddresses(r) // TODO v4 split in 2
+	b.AddBlockedIPs, b.AddBlockedIPPrefixes, err = readDNSBlockedIPs(r)
 	if err != nil {
 		return err
 	}
 
-	b.AllowedHosts = r.CSV("UNBLOCK") // TODO v4 change name
+	b.AllowedHosts = r.CSV("DNS_UNBLOCK_HOSTNAMES", reader.RetroKeys("UNBLOCK"))
+
+	b.RebindingProtectionExemptHostnames = r.CSV("DNS_REBINDING_PROTECTION_EXEMPT_HOSTNAMES")
 
 	return nil
 }
 
-var ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
-
-func readDoTPrivateAddresses(reader *reader.Reader) (ips []netip.Addr,
+func readDNSBlockedIPs(r *reader.Reader) (ips []netip.Addr,
 	ipPrefixes []netip.Prefix, err error,
 ) {
-	privateAddresses := reader.CSV("DOT_PRIVATE_ADDRESS")
+	ips, err = r.CSVNetipAddresses("DNS_BLOCK_IPS")
+	if err != nil {
+		return nil, nil, err
+	}
+	ipPrefixes, err = r.CSVNetipPrefixes("DNS_BLOCK_IP_PREFIXES")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// TODO v4 remove this block below
+	privateIPs, privateIPPrefixes, err := readDNSPrivateAddresses(r)
+	if err != nil {
+		return nil, nil, err
+	}
+	ips = append(ips, privateIPs...)
+	ipPrefixes = append(ipPrefixes, privateIPPrefixes...)
+
+	return ips, ipPrefixes, nil
+}
+
+var ErrPrivateAddressNotValid = errors.New("private address is not a valid IP or CIDR range")
+
+func readDNSPrivateAddresses(r *reader.Reader) (ips []netip.Addr,
+	ipPrefixes []netip.Prefix, err error,
+) {
+	privateAddresses := r.CSV("DOT_PRIVATE_ADDRESS", reader.IsRetro("DNS_BLOCK_IP_PREFIXES"))
 	if len(privateAddresses) == 0 {
 		return nil, nil, nil
 	}

@@ -27,7 +27,7 @@ func (s *State) SetSettings(ctx context.Context, settings settings.DNS) (
 
 	// Check for only update period change
 	tempSettings := s.settings.Copy()
-	*tempSettings.DoT.UpdatePeriod = *settings.DoT.UpdatePeriod
+	*tempSettings.UpdatePeriod = *settings.UpdatePeriod
 	onlyUpdatePeriodChanged := reflect.DeepEqual(tempSettings, settings)
 
 	s.settings = settings
@@ -40,7 +40,7 @@ func (s *State) SetSettings(ctx context.Context, settings settings.DNS) (
 
 	// Restart
 	_, _ = s.statusApplier.ApplyStatus(ctx, constants.Stopped)
-	if *settings.DoT.Enabled {
+	if *settings.ServerEnabled {
 		outcome, _ = s.statusApplier.ApplyStatus(ctx, constants.Running)
 	}
 	return outcome

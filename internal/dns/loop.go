@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/dns/v2/pkg/middlewares/filter/mapfilter"
@@ -16,22 +17,23 @@ import (
 )
 
 type Loop struct {
-	statusManager *loopstate.State
-	state         *state.State
-	server        *server.Server
-	filter        *mapfilter.Filter
-	resolvConf    string
-	client        *http.Client
-	logger        Logger
-	userTrigger   bool
-	start         <-chan struct{}
-	running       chan<- models.LoopStatus
-	stop          <-chan struct{}
-	stopped       chan<- struct{}
-	updateTicker  <-chan struct{}
-	backoffTime   time.Duration
-	timeNow       func() time.Time
-	timeSince     func(time.Time) time.Duration
+	statusManager  *loopstate.State
+	state          *state.State
+	server         *server.Server
+	filter         *mapfilter.Filter
+	localResolvers []netip.Addr
+	resolvConf     string
+	client         *http.Client
+	logger         Logger
+	userTrigger    bool
+	start          <-chan struct{}
+	running        chan<- models.LoopStatus
+	stop           <-chan struct{}
+	stopped        chan<- struct{}
+	updateTicker   <-chan struct{}
+	backoffTime    time.Duration
+	timeNow        func() time.Time
+	timeSince      func(time.Time) time.Duration
 }
 
 const defaultBackoffTime = 10 * time.Second
@@ -48,7 +50,9 @@ func NewLoop(settings settings.DNS,
 	statusManager := loopstate.New(constants.Stopped, start, running, stop, stopped)
 	state := state.New(statusManager, settings, updateTicker)
 
-	filter, err := mapfilter.New(mapfilter.Settings{})
+	filter, err := mapfilter.New(mapfilter.Settings{
+		Logger: buildFilterLogger(logger),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("creating map filter: %w", err)
 	}
@@ -99,4 +103,16 @@ func (l *Loop) signalOrSetStatus(status models.LoopStatus) {
 	} else {
 		l.statusManager.SetStatus(status)
 	}
+}
+
+type filterLogger struct {
+	logger Logger
+}
+
+func (l *filterLogger) Log(msg string) {
+	l.logger.Info(msg)
+}
+
+func buildFilterLogger(logger Logger) *filterLogger {
+	return &filterLogger{logger: logger}
 }

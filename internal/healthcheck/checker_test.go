@@ -7,34 +7,31 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_Server_healthCheck(t *testing.T) {
+func Test_Checker_fullcheck(t *testing.T) {
 	t.Parallel()
 
 	t.Run("canceled real dialer", func(t *testing.T) {
 		t.Parallel()
 
 		dialer := &net.Dialer{}
-		const address = "cloudflare.com:443"
+		addresses := []string{"badaddress:9876", "cloudflare.com:443", "google.com:443"}
 
-		server := &Server{
-			dialer: dialer,
-			config: settings.Health{
-				TargetAddress: address,
-			},
+		checker := &Checker{
+			dialer:       dialer,
+			tlsDialAddrs: addresses,
 		}
 
 		canceledCtx, cancel := context.WithCancel(context.Background())
 		cancel()
 
-		err := server.healthCheck(canceledCtx)
+		err := checker.fullPeriodicCheck(canceledCtx)
 
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "operation was canceled")
+		assert.EqualError(t, err, "TCP+TLS dial: context canceled")
 	})
 
 	t.Run("dial localhost:0", func(t *testing.T) {
@@ -54,14 +51,12 @@ func Test_Server_healthCheck(t *testing.T) {
 		listeningAddress := listener.Addr()
 
 		dialer := &net.Dialer{}
-		server := &Server{
-			dialer: dialer,
-			config: settings.Health{
-				TargetAddress: listeningAddress.String(),
-			},
+		checker := &Checker{
+			dialer:       dialer,
+			tlsDialAddrs: []string{listeningAddress.String()},
 		}
 
-		err = server.healthCheck(ctx)
+		err = checker.fullPeriodicCheck(ctx)
 
 		assert.NoError(t, err)
 	})

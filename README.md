@@ -1,5 +1,7 @@
 # Gluetun VPN client
 
+⚠️ This and [gluetun-wiki](https://github.com/qdm12/gluetun-wiki) are the only websites for Gluetun, other websites claiming to be official are scams ⚠️
+
 Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
@@ -26,7 +28,6 @@ Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
 [![GitHub issues](https://img.shields.io/github/issues/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed/qdm12/gluetun.svg)](https://github.com/qdm12/gluetun/issues?q=is%3Aissue+is%3Aclosed)
 
-[![Lines of code](https://img.shields.io/tokei/lines/github/qdm12/gluetun)](https://github.com/qdm12/gluetun)
 ![Code size](https://img.shields.io/github/languages/code-size/qdm12/gluetun)
 ![GitHub repo size](https://img.shields.io/github/repo-size/qdm12/gluetun)
 ![Go version](https://img.shields.io/github/go-mod/go-version/qdm12/gluetun)
@@ -56,7 +57,7 @@ Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
 
 ## Features
 
-- Based on Alpine 3.20 for a small Docker image of 35.6MB
+- Based on Alpine 3.22 for a small Docker image of 41.1MB
 - Supports: **AirVPN**, **Cyberghost**, **ExpressVPN**, **FastestVPN**, **Giganews**, **HideMyAss**, **IPVanish**, **IVPN**, **Mullvad**, **NordVPN**, **Perfect Privacy**, **Privado**, **Private Internet Access**, **PrivateVPN**, **ProtonVPN**, **PureVPN**,  **SlickVPN**, **Surfshark**, **TorGuard**, **VPNSecure.me**, **VPNUnlimited**, **Vyprvpn**, **WeVPN**, **Windscribe** servers
 - Supports OpenVPN for all providers listed
 - Supports Wireguard both kernelspace and userspace

@@ -52,7 +52,7 @@ func (h *handlerV0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.logger.Warn(err.Error())
 		}
 	case "/openvpn/portforwarded":
-		http.Redirect(w, r, "/v1/openvpn/portforwarded", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/v1/portforward", http.StatusPermanentRedirect)
 	case "/openvpn/settings":
 		http.Redirect(w, r, "/v1/openvpn/settings", http.StatusPermanentRedirect)
 	case "/updater/restart":

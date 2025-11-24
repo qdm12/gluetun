@@ -2,7 +2,6 @@ package healthcheck
 
 import (
 	"context"
-	"net"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
@@ -11,28 +10,19 @@ import (
 type Server struct {
 	logger  Logger
 	handler *handler
-	dialer  *net.Dialer
 	config  settings.Health
-	vpn     vpnHealth
 }
 
-func NewServer(config settings.Health,
-	logger Logger, vpnLoop StatusApplier,
-) *Server {
+func NewServer(config settings.Health, logger Logger) *Server {
 	return &Server{
 		logger:  logger,
-		handler: newHandler(),
-		dialer: &net.Dialer{
-			Resolver: &net.Resolver{
-				PreferGo: true,
-			},
-		},
-		config: config,
-		vpn: vpnHealth{
-			loop:        vpnLoop,
-			healthyWait: *config.VPN.Initial,
-		},
+		handler: newHandler(logger),
+		config:  config,
 	}
+}
+
+func (s *Server) SetError(err error) {
+	s.handler.setErr(err)
 }
 
 type StatusApplier interface {
