@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-func MullvadTest(ctx context.Context) error {
+func MullvadTest(ctx context.Context, logger Logger) error {
 	expectedSecrets := []string{
 		"Wireguard private key",
 		"Wireguard address",
 	}
-	secrets, err := readSecrets(ctx, expectedSecrets)
+	secrets, err := readSecrets(ctx, expectedSecrets, logger)
 	if err != nil {
 		return fmt.Errorf("reading secrets: %w", err)
 	}
@@ -23,5 +23,5 @@ func MullvadTest(ctx context.Context) error {
 		"WIREGUARD_PRIVATE_KEY=" + secrets[0],
 		"WIREGUARD_ADDRESSES=" + secrets[1],
 	}
-	return simpleTest(ctx, env)
+	return simpleTest(ctx, env, logger)
 }
