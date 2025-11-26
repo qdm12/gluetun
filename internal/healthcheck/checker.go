@@ -74,6 +74,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 		// restore forced check type to dns if icmp was found to be not permitted
 		c.smallCheckType = smallCheckDNS
 	}
+	c.echoer.Reset()
 
 	err = c.startupCheck(ctx)
 	if err != nil {
