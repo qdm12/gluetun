@@ -34,6 +34,7 @@ jobs:
         id: createpr
         uses: peter-evans/create-pull-request@v7
         with:
+          branch-suffix: timstamp
           branch: bot/update-servers-list
           base: master
           delete-branch: true
