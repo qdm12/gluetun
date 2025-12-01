@@ -1,12 +1,11 @@
 name: Update servers list
 on:
   workflow_dispatch:
-  pull_request:
   schedule:
     - cron: "11 3 1 */2 *" # Run at 03:11 on the 1st of every 2nd month
 jobs:
   update-servers-list:
-    # if: github.repository == 'qdm12/gluetun'
+    if: github.repository == 'qdm12/gluetun'
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -23,13 +22,13 @@ jobs:
         run: |
           go run ./cmd/gluetun/main.go update -all -maintainer
 
-      # - name: Check for changes
-      #   run: |
-      #     git diff --exit-code internal/storage/servers.json >/dev/null
+      - name: Check for changes
+        run: |
+          git diff --exit-code internal/storage/servers.json >/dev/null
 
-      # - name: Check no other file changes
-      #   run: |
-      #     ! git diff --exit-code ':!internal/storage/servers.json' >/dev/null
+      - name: Check no other file changes
+        run: |
+          ! git diff --exit-code ':!internal/storage/servers.json' >/dev/null
 
       - name: Create Pull Request
         id: createpr
