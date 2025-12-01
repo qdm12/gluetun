@@ -38,8 +38,8 @@ jobs:
           base: master
           delete-branch: true
 
-      - name: Merge Pull Request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr merge ${{ steps.createpr.outputs.pull-request-number }} --auto -m -d
+      # - name: Merge Pull Request
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     gh pr merge ${{ steps.createpr.outputs.pull-request-number }} --auto -m -d
