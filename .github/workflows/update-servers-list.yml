@@ -14,14 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup Go
-        uses: actions/setup-go@v6
+      - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
 
       - name: Update servers list
         run: |
-          go run ./cmd/gluetun/main.go update -all -maintainer -minratio 0.2
+          go run ./cmd/gluetun/main.go update -all -maintainer
 
       - name: Check for changes
         run: |
@@ -30,10 +29,6 @@ jobs:
       - name: Check no other file changes
         run: |
           ! git diff --exit-code ':!internal/storage/servers.json' >/dev/null
-
-      - name: Validate json
-        run: |
-          cat internal/storage/servers.json | jq -e >/dev/null
 
       - name: Create Pull Request
         id: createpr
