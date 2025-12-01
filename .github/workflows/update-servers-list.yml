@@ -20,7 +20,7 @@ jobs:
 
       - name: Update servers list
         run: |
-          go run ./cmd/gluetun/main.go update -all -maintainer
+          go run ./cmd/gluetun/main.go update -all -maintainer -proton-email "${{ secrets.PROTON_EMAIL }}" -proton-password "${{ secrets.PROTON_PASSWORD }}"
 
       - name: Check for changes
         run: |
