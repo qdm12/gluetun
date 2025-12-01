@@ -8,17 +8,24 @@ import (
 	"strings"
 )
 
-func readSecrets(ctx context.Context, expectedSecrets []string) (lines []string, err error) {
+type Logger interface {
+	Info(msg string)
+	Infof(format string, args ...any)
+}
+
+func readSecrets(ctx context.Context, expectedSecrets []string,
+	logger Logger,
+) (lines []string, err error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	lines = make([]string, 0, len(expectedSecrets))
 
 	for i := range expectedSecrets {
-		fmt.Println("🤫 reading", expectedSecrets[i], "from Stdin...")
+		logger.Infof("🤫 reading %s from Stdin...", expectedSecrets[i])
 		if !scanner.Scan() {
 			break
 		}
 		lines = append(lines, strings.TrimSpace(scanner.Text()))
-		fmt.Println("🤫 "+expectedSecrets[i], "secret read successfully")
+		logger.Infof("🤫 %s secret read successfully", expectedSecrets[i])
 		if ctx.Err() != nil {
 			return nil, ctx.Err()
 		}

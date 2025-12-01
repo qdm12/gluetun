@@ -16,7 +16,7 @@ import (
 
 func ptrTo[T any](v T) *T { return &v }
 
-func simpleTest(ctx context.Context, env []string) error {
+func simpleTest(ctx context.Context, env []string, logger Logger) error {
 	const timeout = 30 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -57,7 +57,7 @@ func simpleTest(ctx context.Context, env []string) error {
 		return fmt.Errorf("starting container: %w", err)
 	}
 
-	return waitForLogLine(ctx, client, containerID, beforeStartTime)
+	return waitForLogLine(ctx, client, containerID, beforeStartTime, logger)
 }
 
 func stopContainer(client *client.Client, containerID string) {
@@ -74,7 +74,7 @@ func stopContainer(client *client.Client, containerID string) {
 var successRegexp = regexp.MustCompile(`^.+Public IP address is .+$`)
 
 func waitForLogLine(ctx context.Context, client *client.Client, containerID string,
-	beforeStartTime time.Time,
+	beforeStartTime time.Time, logger Logger,
 ) error {
 	logOptions := container.LogsOptions{
 		ShowStdout: true,
@@ -105,13 +105,13 @@ func waitForLogLine(ctx context.Context, client *client.Client, containerID stri
 		}
 		err := scanner.Err()
 		if err != nil && err != io.EOF {
-			logSeenLines(linesSeen)
+			logSeenLines(logger, linesSeen)
 			return fmt.Errorf("reading log stream: %w", err)
 		}
 
 		// The scanner is either done or cannot read because of EOF
-		fmt.Println("The log scanner stopped")
-		logSeenLines(linesSeen)
+		logger.Info("the log scanner stopped")
+		logSeenLines(logger, linesSeen)
 
 		// Check if the container is still running
 		inspect, err := client.ContainerInspect(ctx, containerID)
@@ -126,7 +126,7 @@ func waitForLogLine(ctx context.Context, client *client.Client, containerID stri
 	return ctx.Err()
 }
 
-func logSeenLines(lines []string) {
+func logSeenLines(logger Logger, lines []string) {
 	fmt.Println("Logs seen so far:")
 	for _, line := range lines {
 		fmt.Println("  " + line)
