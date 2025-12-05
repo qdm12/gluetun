@@ -40,27 +40,6 @@ func Test_authHandler_ServeHTTP(t *testing.T) {
 			statusCode:    http.StatusUnauthorized,
 			responseBody:  "Unauthorized\n",
 		},
-		"authorized_unprotected_by_default": {
-			settings: Settings{
-				Roles: []Role{
-					{Name: "public", Auth: AuthNone, Routes: []string{"GET /v1/vpn/status"}},
-				},
-			},
-			makeLogger: func(ctrl *gomock.Controller) *MockDebugLogger {
-				logger := NewMockDebugLogger(ctrl)
-				logger.EXPECT().Warnf("route %s is unprotected by default, "+
-					"please set up authentication following the documentation at "+
-					"https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md#authentication "+
-					"since this will become no longer publicly accessible after release v3.40.",
-					"GET /v1/vpn/status")
-				logger.EXPECT().Debugf("access to route %s authorized for role %s",
-					"GET /v1/vpn/status", "public")
-				return logger
-			},
-			requestMethod: http.MethodGet,
-			requestPath:   "/v1/vpn/status",
-			statusCode:    http.StatusOK,
-		},
 		"authorized_none": {
 			settings: Settings{
 				Roles: []Role{
