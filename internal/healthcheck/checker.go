@@ -262,7 +262,7 @@ func withRetries(ctx context.Context, tryTimeouts []time.Duration,
 	for i, err := range errs {
 		errStrings[i] = fmt.Sprintf("attempt %d (%dms): %s", i+1, err.durationMS, err.err)
 	}
-	return fmt.Errorf("%w: %s", ErrAllCheckTriesFailed, strings.Join(errStrings, ", "))
+	return fmt.Errorf("%w:\n\t%s", ErrAllCheckTriesFailed, strings.Join(errStrings, "\n\t"))
 }
 
 func (c *Checker) startupCheck(ctx context.Context) error {
