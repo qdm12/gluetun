@@ -110,7 +110,7 @@ type filterLogger struct {
 }
 
 func (l *filterLogger) Log(msg string) {
-	l.logger.Info(msg)
+	l.logger.Debug(msg)
 }
 
 func buildFilterLogger(logger Logger) *filterLogger {

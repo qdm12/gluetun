@@ -17,12 +17,13 @@ func Test_Service_runCommand(t *testing.T) {
 
 	ctx := context.Background()
 	cmder := command.New()
-	const commandTemplate = `/bin/sh -c "echo {{PORTS}}"`
+	const commandTemplate = `/bin/sh -c "echo {{PORTS}}-{{PORT}}-{{VPN_INTERFACE}}"`
 	ports := []uint16{1234, 5678}
+	const vpnInterface = "tun0"
 	logger := NewMockLogger(ctrl)
-	logger.EXPECT().Info("1234,5678")
+	logger.EXPECT().Info("1234,5678-1234-tun0")
 
-	err := runCommand(ctx, cmder, logger, commandTemplate, ports)
+	err := runCommand(ctx, cmder, logger, commandTemplate, ports, vpnInterface)
 
 	require.NoError(t, err)
 }

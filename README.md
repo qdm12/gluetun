@@ -125,6 +125,10 @@ services:
 
 🆕 Image also available as `ghcr.io/qdm12/gluetun`
 
+## Fun graphs
+
+[![Star History Chart](https://api.star-history.com/svg?repos=qdm12/gluetun&type=date&legend=top-left)](https://www.star-history.com/#qdm12/gluetun&type=date&legend=top-left)
+
 ## License
 
 [![MIT](https://img.shields.io/github/license/qdm12/gluetun)](https://github.com/qdm12/gluetun/blob/master/LICENSE)
