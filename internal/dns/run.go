@@ -55,9 +55,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		}
 		l.signalOrSetStatus(constants.Running)
 
-		const fallback = false
-		l.useUnencryptedDNS(fallback)
-
 		l.userTrigger = false
 
 		exitLoop := l.runWait(ctx, runError)
