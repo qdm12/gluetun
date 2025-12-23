@@ -8,41 +8,30 @@ import (
 	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
-	hostToData, err := fetchServers(ctx, u.client)
-	if err != nil {
-		return nil, fmt.Errorf("fetching and parsing website: %w", err)
+	// Since SlickVPN website listing VPN servers https://www.slickvpn.com/locations/
+	// went to become a pile of trash, we now hardcode the servers data below.
+	servers = []models.Server{
+		{Hostname: "gw2.sin2.slickvpn.com", Region: "Asia", Country: "Singapore", City: "Singapore"},
+		{Hostname: "gw1.bos1.slickvpn.com", Region: "North America", Country: "United States", City: "Boston"},
+		{Hostname: "gw1.cmh1.slickvpn.com", Region: "North America", Country: "United States", City: "Columbus"},
+		{Hostname: "gw1.lax2.slickvpn.com", Region: "North America", Country: "United States", City: "Los Angeles"},
+		{Hostname: "gw1.lga2.slickvpn.com", Region: "North America", Country: "United States", City: "New York"},
+		{Hostname: "gw1.man2.slickvpn.com", Region: "Europe", Country: "United Kingdom", City: "Manchester"},
+		{Hostname: "gw2.ams3.slickvpn.com", Region: "Europe", Country: "Netherlands", City: "Amsterdam"},
+		{Hostname: "gw2.hou1.slickvpn.com", Region: "North America", Country: "United States", City: "Houston"},
+		{Hostname: "gw1.mci2.slickvpn.com", Region: "North America", Country: "United States", City: "Kansas City"},
+		{Hostname: "gw2.slc1.slickvpn.com", Region: "North America", Country: "United States", City: "Salt Lake City"},
+		{Hostname: "gw1.stl1.slickvpn.com", Region: "North America", Country: "United States", City: "St Louis"},
 	}
 
-	openvpnURLs := make([]string, 0, len(hostToData))
-	for _, data := range hostToData {
-		openvpnURLs = append(openvpnURLs, data.ovpnURL)
-	}
-
-	if len(openvpnURLs) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(openvpnURLs), minServers)
-	}
-
-	const failEarly = false // some URLs from the website are not valid
-	hostToURL, errors := openvpn.FetchMultiFiles(ctx, u.client, openvpnURLs, failEarly)
-	for _, err := range errors {
-		u.warner.Warn(fmt.Sprintf("fetching OpenVPN files: %s", err))
-	}
-
-	if len(hostToURL) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(hostToURL), minServers)
-	}
-
-	hosts := make([]string, 0, len(hostToURL))
-	for host := range hostToURL {
-		hosts = append(hosts, host)
+	hosts := make([]string, len(servers))
+	for i := range servers {
+		hosts[i] = servers[i].Hostname
 	}
 
 	resolveSettings := parallelResolverSettings(hosts)
@@ -59,21 +48,11 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(hosts), minServers)
 	}
 
-	servers = make([]models.Server, 0, len(hostToIPs))
-	for host, IPs := range hostToIPs {
-		serverData := hostToData[host]
-
-		server := models.Server{
-			VPN:      vpn.OpenVPN,
-			Region:   serverData.region,
-			Country:  serverData.country,
-			City:     serverData.city,
-			Hostname: host,
-			UDP:      true,
-			TCP:      true,
-			IPs:      IPs,
-		}
-		servers = append(servers, server)
+	for i := range servers {
+		servers[i].VPN = vpn.OpenVPN
+		servers[i].TCP = true
+		servers[i].UDP = true
+		servers[i].IPs = hostToIPs[servers[i].Hostname]
 	}
 
 	sort.Sort(models.SortableServers(servers))
