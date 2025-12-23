@@ -10,14 +10,14 @@ import (
 )
 
 // comparePlaceNames returns true if strings are within 1 edit
-// distance after normalization
+// distance after normalization.
 func comparePlaceNames(a, b string) bool {
 	normA := normalize(a)
 	normB := normalize(b)
 	return normA == normB || levenshteinDistance(normA, normB) <= 1
 }
 
-// normalize removes accents, trims space, and lowercases the string
+// normalize removes accents, trims space, and lowercases the string.
 func normalize(s string) string {
 	transformer := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
 	result, _, err := transform.String(transformer, s)

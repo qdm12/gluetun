@@ -71,6 +71,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	if err != nil {
 		return nil, err
 	}
+
 	if len(hostToIPs) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			common.ErrNotEnoughServers, len(servers), minServers)
@@ -81,7 +82,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers = hts.toServersSlice()
 
 	// Get public IP address information
-	ipsToGetInfo := make([]netip.Addr, len(hts))
+	ipsToGetInfo := make([]netip.Addr, len(servers))
 	for i := range servers {
 		ipsToGetInfo[i] = servers[i].IPs[0]
 	}

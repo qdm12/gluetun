@@ -7,8 +7,9 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
-var countryCodeToName = constants.CountryCodes()
+var countryCodeToName = constants.CountryCodes() //nolint:gochecknoglobals
 
+//nolint:gochecknoglobals
 var countryCityCodeToCityName = map[string]string{
 	"aume":  "Melbourne",
 	"aupe":  "Perth",
@@ -50,7 +51,8 @@ func parseHostname(hostname string) (country, city string, warnings []string) {
 		warnings = append(warnings,
 			fmt.Sprintf("hostname %q does not contain '2-'", hostname))
 		return country, city, warnings
-	case 2: // no city code
+	case 2: //nolint:mnd
+		// no city code
 		return country, "", warnings
 	}
 	countryCityCode := strings.ToLower(hostname[:twoMinusIndex])

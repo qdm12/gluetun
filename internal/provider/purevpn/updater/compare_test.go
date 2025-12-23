@@ -9,43 +9,43 @@ import (
 func Test_comparePlaceNames(t *testing.T) {
 	t.Parallel() // Allow the top-level test to run in parallel
 
-	tests := map[string]struct {
-		inputA   string
-		inputB   string
-		expected bool
+	testCases := map[string]struct {
+		a    string
+		b    string
+		want bool
 	}{
 		"exact_match": {
-			inputA:   "Paris",
-			inputB:   "Paris",
-			expected: true,
+			a:    "Paris",
+			b:    "Paris",
+			want: true,
 		},
 		"difference_in_casing_and_whitespace": {
-			inputA:   "  Montreal",
-			inputB:   "montreal  ",
-			expected: true,
+			a:    "  Montreal",
+			b:    "montreal  ",
+			want: true,
 		},
 		"accent_normalization": {
-			inputA:   "Montréal",
-			inputB:   "Montreal",
-			expected: true,
+			a:    "Montréal",
+			b:    "Montreal",
+			want: true,
 		},
 		"single_character_typo": {
-			inputA:   "Lyon",
-			inputB:   "Lyonn",
-			expected: true,
+			a:    "Lyon",
+			b:    "Lyonn",
+			want: true,
 		},
 		"too_many_differences": {
-			inputA:   "London",
-			inputB:   "Londres",
-			expected: false,
+			a:    "London",
+			b:    "Londres",
+			want: false,
 		},
 	}
 
-	for name, tc := range tests {
+	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			result := comparePlaceNames(tc.inputA, tc.inputB)
-			assert.Equal(t, tc.expected, result)
+			result := comparePlaceNames(testCase.a, testCase.b)
+			assert.Equal(t, testCase.want, result)
 		})
 	}
 }
