@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetMostPopularResult(t *testing.T) {
+func Test_GetMostPopularResult(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
