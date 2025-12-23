@@ -19,9 +19,3 @@ func parseHardcodedServers() (allServers models.AllServers, err error) {
 	err = decoder.Decode(&allServers)
 	return allServers, err
 }
-
-// HardcodedServers returns the hardcoded servers.
-// Warning: mutating the returned value will impact the storage's internal state.
-func (s *Storage) HardcodedServers() models.AllServers {
-	return s.hardcodedServers
-}

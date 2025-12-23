@@ -22,12 +22,6 @@ func MatchData(data string) MatchFunc {
 	}
 }
 
-func MatchClasses(classStrings ...string) MatchFunc {
-	return func(node *html.Node) (match bool) {
-		return HasClassStrings(node, classStrings...)
-	}
-}
-
 func DirectChild(parent *html.Node,
 	matchFunc MatchFunc,
 ) (child *html.Node) {
