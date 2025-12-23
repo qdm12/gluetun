@@ -104,23 +104,10 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			servers[i].City = ipsInfo[i].City
 		}
 
-		switch {
-		case parsedCountry != "" &&
-			!comparePlaceNames(parsedCountry, ipsInfo[i].Country):
-			u.warner.Warn(fmt.Sprintf("country mismatch for host %q: "+
-				"parsed %q from hostname and obtained %q from %s looking up %s"+
-				" - using country %q and leaving region empty",
-				servers[i].Hostname, parsedCountry, ipsInfo[i].Country,
-				u.ipFetcher, servers[i].IPs[0], parsedCountry))
-		case parsedCity != "" &&
-			!comparePlaceNames(parsedCity, ipsInfo[i].City):
-			u.warner.Warn(fmt.Sprintf("city mismatch for host %q: "+
-				"parsed %q from hostname and obtained %q from %s looking up %s"+
-				" - using city %q and leaving region empty",
-				servers[i].Hostname, parsedCity, ipsInfo[i].City,
-				u.ipFetcher, servers[i].IPs[0], parsedCity))
-		default: // No discrepancies
-			fmt.Println("no discrepancy for", servers[i].Hostname, "setting it to", ipsInfo[i].Region)
+		if (parsedCountry == "" ||
+			comparePlaceNames(parsedCountry, ipsInfo[i].Country)) &&
+			(parsedCity == "" ||
+				comparePlaceNames(parsedCity, ipsInfo[i].City)) {
 			servers[i].Region = ipsInfo[i].Region
 		}
 	}
