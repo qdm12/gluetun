@@ -12,7 +12,7 @@ import (
 	"golang.org/x/text/language"
 )
 
-// readFromFile reads the servers from server.json.
+// readFromFile reads the servers from servers.json.
 // It only reads servers that have the same version as the hardcoded servers version
 // to avoid JSON decoding errors.
 func (s *Storage) readFromFile(filepath string, hardcodedVersions map[string]uint16) (

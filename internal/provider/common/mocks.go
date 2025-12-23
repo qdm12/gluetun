@@ -92,6 +92,20 @@ func (mr *MockStorageMockRecorder) FilterServers(arg0, arg1 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FilterServers", reflect.TypeOf((*MockStorage)(nil).FilterServers), arg0, arg1)
 }
 
+// HardcodedServers mocks base method.
+func (m *MockStorage) HardcodedServers() models.AllServers {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HardcodedServers")
+	ret0, _ := ret[0].(models.AllServers)
+	return ret0
+}
+
+// HardcodedServers indicates an expected call of HardcodedServers.
+func (mr *MockStorageMockRecorder) HardcodedServers() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HardcodedServers", reflect.TypeOf((*MockStorage)(nil).HardcodedServers))
+}
+
 // MockUnzipper is a mock of Unzipper interface.
 type MockUnzipper struct {
 	ctrl     *gomock.Controller

@@ -22,7 +22,7 @@ func New(storage common.Storage, randSource rand.Source,
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(client, updaterWarner, parallelResolver),
+		Fetcher:    updater.New(client, updaterWarner, parallelResolver, storage),
 	}
 }
 

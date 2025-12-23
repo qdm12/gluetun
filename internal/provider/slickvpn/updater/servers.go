@@ -5,44 +5,29 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/qdm12/gluetun/internal/constants/vpn"
+	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
-	hostToData, err := fetchServers(ctx, u.client)
-	if err != nil {
-		return nil, fmt.Errorf("fetching and parsing website: %w", err)
+	// Since SlickVPN website listing VPN servers https://www.slickvpn.com/locations/
+	// went to become a pile of trash, we now use the servers data from our servers.json
+	// to check which servers can be resolved. The previous code was dynamically parsing
+	// their website table of servers and they now list only 11 servers on their website.
+	hardcodedServersData := u.storage.HardcodedServers()
+	slickVPNData, ok := hardcodedServersData.ProviderToServers[providers.SlickVPN]
+	if !ok {
+		return nil, fmt.Errorf("no hardcoded servers for provider %s", providers.SlickVPN)
 	}
+	hardcodedServers := make([]models.Server, len(slickVPNData.Servers))
+	copy(hardcodedServers, slickVPNData.Servers)
 
-	openvpnURLs := make([]string, 0, len(hostToData))
-	for _, data := range hostToData {
-		openvpnURLs = append(openvpnURLs, data.ovpnURL)
-	}
-
-	if len(openvpnURLs) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(openvpnURLs), minServers)
-	}
-
-	const failEarly = false // some URLs from the website are not valid
-	hostToURL, errors := openvpn.FetchMultiFiles(ctx, u.client, openvpnURLs, failEarly)
-	for _, err := range errors {
-		u.warner.Warn(fmt.Sprintf("fetching OpenVPN files: %s", err))
-	}
-
-	if len(hostToURL) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(hostToURL), minServers)
-	}
-
-	hosts := make([]string, 0, len(hostToURL))
-	for host := range hostToURL {
-		hosts = append(hosts, host)
+	hosts := make([]string, len(hardcodedServers))
+	for i := range hardcodedServers {
+		hosts[i] = hardcodedServers[i].Hostname
 	}
 
 	resolveSettings := parallelResolverSettings(hosts)
@@ -60,19 +45,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	}
 
 	servers = make([]models.Server, 0, len(hostToIPs))
-	for host, IPs := range hostToIPs {
-		serverData := hostToData[host]
-
-		server := models.Server{
-			VPN:      vpn.OpenVPN,
-			Region:   serverData.region,
-			Country:  serverData.country,
-			City:     serverData.city,
-			Hostname: host,
-			UDP:      true,
-			TCP:      true,
-			IPs:      IPs,
+	for _, server := range hardcodedServers {
+		IPs, ok := hostToIPs[server.Hostname]
+		if !ok || len(IPs) == 0 {
+			continue
 		}
+		server.IPs = IPs
 		servers = append(servers, server)
 	}
 

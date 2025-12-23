@@ -43,6 +43,7 @@ type Providers struct {
 type Storage interface {
 	FilterServers(provider string, selection settings.ServerSelection) (
 		servers []models.Server, err error)
+	HardcodedServers() models.AllServers
 }
 
 type Extractor interface {
