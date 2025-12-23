@@ -198,7 +198,7 @@ func getMostPopularResult(results []models.PublicIP) models.PublicIP {
 	return results[winnerIdx]
 }
 
-// filterInPlace moves selected indices to the front and trims the slice
+// filterInPlace moves selected indices to the front and trims the slice.
 func filterInPlace(results []models.PublicIP, indices []int) []models.PublicIP {
 	for i, originalIdx := range indices {
 		results[i] = results[originalIdx]
@@ -281,7 +281,7 @@ func (r *ResilientFetcher) UpdateFetchers(fetchers []Fetcher) {
 	r.fetcherToBanTime = newFetcherToBanTime
 }
 
-// normalize removes accents, trims space, and lowercases the string
+// normalize removes accents, trims space, and lowercases the string.
 func normalize(s string) string {
 	firstParentheseIndex := strings.Index(s, " (")
 	if firstParentheseIndex != -1 {
