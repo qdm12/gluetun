@@ -3,7 +3,6 @@ package settings
 import (
 	"errors"
 	"fmt"
-	"net/netip"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
@@ -22,12 +21,6 @@ type ServerSelection struct {
 	// or 'wireguard'. It cannot be the empty string
 	// in the internal state.
 	VPN string `json:"vpn"`
-	// TargetIP is the server endpoint IP address to use.
-	// It will override any IP address from the picked
-	// built-in server. It cannot be the empty value in the internal
-	// state, and can be set to the unspecified address to indicate
-	// there is not target IP address to use.
-	TargetIP netip.Addr `json:"target_ip"`
 	// Countries is the list of countries to filter VPN servers with.
 	Countries []string `json:"countries"`
 	// Categories is the list of categories to filter VPN servers with.
@@ -299,7 +292,6 @@ func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string)
 func (ss *ServerSelection) copy() (copied ServerSelection) {
 	return ServerSelection{
 		VPN:             ss.VPN,
-		TargetIP:        ss.TargetIP,
 		Countries:       gosettings.CopySlice(ss.Countries),
 		Categories:      gosettings.CopySlice(ss.Categories),
 		Regions:         gosettings.CopySlice(ss.Regions),
@@ -323,7 +315,6 @@ func (ss *ServerSelection) copy() (copied ServerSelection) {
 
 func (ss *ServerSelection) overrideWith(other ServerSelection) {
 	ss.VPN = gosettings.OverrideWithComparable(ss.VPN, other.VPN)
-	ss.TargetIP = gosettings.OverrideWithValidator(ss.TargetIP, other.TargetIP)
 	ss.Countries = gosettings.OverrideWithSlice(ss.Countries, other.Countries)
 	ss.Categories = gosettings.OverrideWithSlice(ss.Categories, other.Categories)
 	ss.Regions = gosettings.OverrideWithSlice(ss.Regions, other.Regions)
@@ -346,7 +337,6 @@ func (ss *ServerSelection) overrideWith(other ServerSelection) {
 
 func (ss *ServerSelection) setDefaults(vpnProvider string, portForwardingEnabled bool) {
 	ss.VPN = gosettings.DefaultComparable(ss.VPN, vpn.OpenVPN)
-	ss.TargetIP = gosettings.DefaultValidator(ss.TargetIP, netip.IPv4Unspecified())
 	ss.OwnedOnly = gosettings.DefaultPointer(ss.OwnedOnly, false)
 	ss.FreeOnly = gosettings.DefaultPointer(ss.FreeOnly, false)
 	ss.PremiumOnly = gosettings.DefaultPointer(ss.PremiumOnly, false)
@@ -368,9 +358,6 @@ func (ss ServerSelection) String() string {
 func (ss ServerSelection) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Server selection settings:")
 	node.Appendf("VPN type: %s", ss.VPN)
-	if !ss.TargetIP.IsUnspecified() {
-		node.Appendf("Target IP address: %s", ss.TargetIP)
-	}
 
 	if len(ss.Countries) > 0 {
 		node.Appendf("Countries: %s", strings.Join(ss.Countries, ", "))
@@ -460,12 +447,6 @@ func (ss *ServerSelection) read(r *reader.Reader,
 	vpnProvider, vpnType string,
 ) (err error) {
 	ss.VPN = vpnType
-
-	ss.TargetIP, err = r.NetipAddr("OPENVPN_ENDPOINT_IP",
-		reader.RetroKeys("OPENVPN_TARGET_IP", "VPN_ENDPOINT_IP"))
-	if err != nil {
-		return err
-	}
 
 	countriesRetroKeys := []string{"COUNTRY"}
 	if vpnProvider == providers.Cyberghost {

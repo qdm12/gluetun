@@ -57,8 +57,13 @@ func Test_Settings_String(t *testing.T) {
 |   └── Log level: INFO
 ├── Health settings:
 |   ├── Server listening address: 127.0.0.1:9999
-|   ├── Target address: cloudflare.com:443
-|   ├── ICMP target IP: VPN server IP
+|   ├── Target addresses:
+|   |   ├── cloudflare.com:443
+|   |   └── github.com:443
+|   ├── Small health check type: ICMP echo request
+|   |   └── ICMP target IPs:
+|   |       ├── 1.1.1.1
+|   |       └── 8.8.8.8
 |   └── Restart VPN on healthcheck failure: yes
 ├── Shadowsocks server settings:
 |   └── Enabled: no

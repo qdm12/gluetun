@@ -14,8 +14,8 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
 	switch {
-	case u.username == "":
-		return nil, fmt.Errorf("%w: username is empty", common.ErrCredentialsMissing)
+	case u.email == "":
+		return nil, fmt.Errorf("%w: email is empty", common.ErrCredentialsMissing)
 	case u.password == "":
 		return nil, fmt.Errorf("%w: password is empty", common.ErrCredentialsMissing)
 	}
@@ -25,7 +25,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, fmt.Errorf("creating API client: %w", err)
 	}
 
-	cookie, err := apiClient.authenticate(ctx, u.username, u.password)
+	cookie, err := apiClient.authenticate(ctx, u.email, u.password)
 	if err != nil {
 		return nil, fmt.Errorf("authentifying with Proton: %w", err)
 	}

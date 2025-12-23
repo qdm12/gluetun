@@ -38,7 +38,7 @@ type UpdaterLogger interface {
 func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
 	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
-	var csvProviders, ipToken, protonUsername, protonPassword string
+	var csvProviders, ipToken, protonUsername, protonEmail, protonPassword string
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
@@ -50,7 +50,9 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
 	flagSet.StringVar(&ipToken, "ip-token", "", "IP data service token (e.g. ipinfo.io) to use")
-	flagSet.StringVar(&protonUsername, "proton-username", "", "Username to use to authenticate with Proton")
+	flagSet.StringVar(&protonUsername, "proton-username", "",
+		"(Retro-compatibility) Username to use to authenticate with Proton. Use -proton-email instead.") // v4 remove this
+	flagSet.StringVar(&protonEmail, "proton-email", "", "Email to use to authenticate with Proton")
 	flagSet.StringVar(&protonPassword, "proton-password", "", "Password to use to authenticate with Proton")
 	if err := flagSet.Parse(args); err != nil {
 		return err
@@ -70,7 +72,12 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	}
 
 	if slices.Contains(options.Providers, providers.Protonvpn) {
-		options.ProtonUsername = &protonUsername
+		if protonEmail == "" && protonUsername != "" {
+			protonEmail = protonUsername + "@protonmail.com"
+			logger.Warn("use -proton-email instead of -proton-username in the future. " +
+				"This assumes the email is " + protonEmail + " and may not work.")
+		}
+		options.ProtonEmail = &protonEmail
 		options.ProtonPassword = &protonPassword
 	}
 

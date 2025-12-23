@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"net/netip"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
@@ -24,6 +25,12 @@ type OpenVPNSelection struct {
 	// and can be udp or tcp. It cannot be the empty string
 	// in the internal state.
 	Protocol string `json:"protocol"`
+	// EndpointIP is the server endpoint IP address.
+	// If set, it overrides any IP address from the picked
+	// built-in server connection. To indicate it should
+	// not be used, it should be set to [netip.IPv4Unspecified].
+	// It can never be the zero value in the internal state.
+	EndpointIP netip.Addr `json:"endpoint_ip"`
 	// CustomPort is the OpenVPN server endpoint port.
 	// It can be set to 0 to indicate no custom port should
 	// be used. It cannot be nil in the internal state.
@@ -101,9 +108,6 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			case providers.SlickVPN:
 				allowedTCP = []uint16{443, 8080, 8888}
 				allowedUDP = []uint16{443, 8080, 8888}
-			case providers.Wevpn:
-				allowedTCP = []uint16{53, 1195, 1199, 2018}
-				allowedUDP = []uint16{80, 1194, 1198}
 			case providers.Windscribe:
 				allowedTCP = []uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783}
 				allowedUDP = []uint16{53, 80, 123, 443, 1194, 54783}
@@ -142,6 +146,7 @@ func (o *OpenVPNSelection) copy() (copied OpenVPNSelection) {
 	return OpenVPNSelection{
 		ConfFile:     gosettings.CopyPointer(o.ConfFile),
 		Protocol:     o.Protocol,
+		EndpointIP:   o.EndpointIP,
 		CustomPort:   gosettings.CopyPointer(o.CustomPort),
 		PIAEncPreset: gosettings.CopyPointer(o.PIAEncPreset),
 	}
@@ -151,12 +156,14 @@ func (o *OpenVPNSelection) overrideWith(other OpenVPNSelection) {
 	o.ConfFile = gosettings.OverrideWithPointer(o.ConfFile, other.ConfFile)
 	o.Protocol = gosettings.OverrideWithComparable(o.Protocol, other.Protocol)
 	o.CustomPort = gosettings.OverrideWithPointer(o.CustomPort, other.CustomPort)
+	o.EndpointIP = gosettings.OverrideWithValidator(o.EndpointIP, other.EndpointIP)
 	o.PIAEncPreset = gosettings.OverrideWithPointer(o.PIAEncPreset, other.PIAEncPreset)
 }
 
 func (o *OpenVPNSelection) setDefaults(vpnProvider string) {
 	o.ConfFile = gosettings.DefaultPointer(o.ConfFile, "")
 	o.Protocol = gosettings.DefaultComparable(o.Protocol, constants.UDP)
+	o.EndpointIP = gosettings.DefaultValidator(o.EndpointIP, netip.IPv4Unspecified())
 	o.CustomPort = gosettings.DefaultPointer(o.CustomPort, 0)
 
 	var defaultEncPreset string
@@ -173,6 +180,10 @@ func (o OpenVPNSelection) String() string {
 func (o OpenVPNSelection) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("OpenVPN server selection settings:")
 	node.Appendf("Protocol: %s", strings.ToUpper(o.Protocol))
+
+	if !o.EndpointIP.IsUnspecified() {
+		node.Appendf("Endpoint IP address: %s", o.EndpointIP)
+	}
 
 	if *o.CustomPort != 0 {
 		node.Appendf("Custom port: %d", *o.CustomPort)
@@ -193,6 +204,12 @@ func (o *OpenVPNSelection) read(r *reader.Reader) (err error) {
 	o.ConfFile = r.Get("OPENVPN_CUSTOM_CONFIG", reader.ForceLowercase(false))
 
 	o.Protocol = r.String("OPENVPN_PROTOCOL", reader.RetroKeys("PROTOCOL"))
+
+	o.EndpointIP, err = r.NetipAddr("OPENVPN_ENDPOINT_IP",
+		reader.RetroKeys("OPENVPN_TARGET_IP", "VPN_ENDPOINT_IP"))
+	if err != nil {
+		return err
+	}
 
 	o.CustomPort, err = r.Uint16Ptr("OPENVPN_ENDPOINT_PORT",
 		reader.RetroKeys("PORT", "OPENVPN_PORT", "VPN_ENDPOINT_PORT"))

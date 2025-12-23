@@ -34,7 +34,7 @@ func (s *Service) cleanup() (err error) {
 		const downTimeout = 60 * time.Second
 		ctx, cancel := context.WithTimeout(context.Background(), downTimeout)
 		defer cancel()
-		err = runCommand(ctx, s.cmder, s.logger, s.settings.DownCommand, s.ports)
+		err = runCommand(ctx, s.cmder, s.logger, s.settings.DownCommand, s.ports, s.settings.Interface)
 		if err != nil {
 			err = fmt.Errorf("running down command: %w", err)
 			s.logger.Error(err.Error())
