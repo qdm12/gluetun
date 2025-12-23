@@ -95,10 +95,12 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		for _, warning := range warnings {
 			u.warner.Warn(warning)
 		}
-		if parsedCountry == "" {
+		servers[i].Country = parsedCountry
+		if servers[i].Country == "" {
 			servers[i].Country = ipsInfo[i].Country
 		}
-		if parsedCity == "" {
+		servers[i].City = parsedCity
+		if servers[i].City == "" {
 			servers[i].City = ipsInfo[i].City
 		}
 
