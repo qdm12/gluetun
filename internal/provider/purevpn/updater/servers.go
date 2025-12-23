@@ -70,7 +70,6 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, err
 	}
 
-
 	if len(hostToIPs) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
 			common.ErrNotEnoughServers, len(servers), minServers)
@@ -79,9 +78,9 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	hts.adaptWithIPs(hostToIPs)
 
 	servers = hts.toServersSlice()
-    
+
 	for i := range servers {
-        country, city :=  getLocation(servers[i].Hostname)
+		country, city := getLocation(servers[i].Hostname)
 		servers[i].Country = country
 		servers[i].Region = ""
 		servers[i].City = city
