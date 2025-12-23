@@ -8,10 +8,19 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	"github.com/qdm12/gluetun/internal/models"
+	"golang.org/x/text/runes"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
+// ResilientFetcher is a fetcher implementation using multiple fetchers.
+// If a fetcher fails, it tries the next one.
+// To fetch public IP information for a specific IP address,
+// it fetches from all sources to find the best result, since data
+// from a single source can be wrong.
 type ResilientFetcher struct {
 	fetchers         []Fetcher
 	logger           Warner
@@ -21,7 +30,6 @@ type ResilientFetcher struct {
 }
 
 // NewResilient creates a 'resilient' fetcher given multiple fetchers.
-// For example, it can handle bans and move on to another fetcher if one fails.
 func NewResilient(fetchers []Fetcher, logger Warner) *ResilientFetcher {
 	return &ResilientFetcher{
 		fetchers:         fetchers,
@@ -49,25 +57,21 @@ func (r *ResilientFetcher) isBanned(fetcher Fetcher) (banned bool) {
 func (r *ResilientFetcher) String() string {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
+	names := make([]string, 0, len(r.fetchers))
 	for _, fetcher := range r.fetchers {
 		if r.isBanned(fetcher) {
 			continue
 		}
-		return fetcher.String()
+		names = append(names, fetcher.String())
 	}
-	return "<all-banned>"
+	if len(names) == 0 {
+		return "<all-banned>"
+	}
+	return strings.Join(names, "+")
 }
 
 func (r *ResilientFetcher) Token() string {
-	r.mutex.RLock()
-	defer r.mutex.RUnlock()
-	for _, fetcher := range r.fetchers {
-		if r.isBanned(fetcher) {
-			continue
-		}
-		return fetcher.Token()
-	}
-	return "<all-banned>"
+	panic("invalid call")
 }
 
 // CanFetchAnyIP returns true if any of the fetchers
@@ -85,45 +89,152 @@ func (r *ResilientFetcher) CanFetchAnyIP() bool {
 	return false
 }
 
-var ErrFetchersAllRateLimited = errors.New("all fetchers are rate limited")
-
 // FetchInfo obtains information on the ip address provided.
 // If the ip is the zero value, the public IP address of the machine
 // is used as the IP.
-// If a fetcher gets banned, the next one is tried – until all have been exhausted.
-// Fetchers still within their banned period are skipped.
-// If an error unrelated to being banned is encountered, it is returned and more
-// fetchers are tried.
+// It queries all non-banned fetchers in parallel to obtain the most popular result.
+// It only returns an error if all fetchers fail to return information.
 func (r *ResilientFetcher) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result models.PublicIP, err error,
 ) {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 
+	type resultData struct {
+		fetcher Fetcher
+		result  models.PublicIP
+		err     error
+	}
+	resultsCh := make(chan resultData)
+	fetchersStarted := 0
 	for _, fetcher := range r.fetchers {
 		if r.isBanned(fetcher) ||
 			(ip.IsValid() && !fetcher.CanFetchAnyIP()) {
 			continue
 		}
+		fetchersStarted++
 
-		result, err = fetcher.FetchInfo(ctx, ip)
-		if err == nil || !errors.Is(err, ErrTooManyRequests) {
-			return result, err
+		go func(fetcher Fetcher) {
+			result, err := fetcher.FetchInfo(ctx, ip)
+			resultsCh <- resultData{
+				fetcher: fetcher,
+				result:  result,
+				err:     err,
+			}
+		}(fetcher)
+	}
+
+	results := make([]models.PublicIP, 0, fetchersStarted)
+	errs := make([]error, 0, fetchersStarted)
+	for range fetchersStarted {
+		data := <-resultsCh
+		fetcher := data.fetcher
+		if data.err != nil {
+			if errors.Is(data.err, ErrTooManyRequests) {
+				r.fetcherToBanTime[fetcher] = r.timeNow()
+			}
+			errs = append(errs, fmt.Errorf("%s: %w", fetcher, data.err))
+			continue
+		}
+		results = append(results, data.result)
+	}
+
+	if len(results) == 0 { // all failed
+		return models.PublicIP{}, fmt.Errorf("all fetchers failed: %w", errors.Join(errs...))
+	}
+
+	return getMostPopularResult(results), nil
+}
+
+// getMostPopularResult finds the most popular [models.PublicIP] from
+// a slice of results. It does so by first checking the country, then
+// region, then city fields. The other fields are ignored in this comparison.
+func getMostPopularResult(results []models.PublicIP) models.PublicIP {
+	if len(results) == 0 {
+		panic("no results to choose from")
+	}
+
+	// 1. Filter by Country
+	countries := make([]string, len(results))
+	for i, r := range results {
+		countries[i] = r.Country
+	}
+	_, countryMembers := getMostPopularString(countries)
+	results = filterInPlace(results, countryMembers)
+
+	// 2. Filter by Region
+	regions := make([]string, len(results))
+	for i, r := range results {
+		regions[i] = r.Region
+	}
+	_, regionMembers := getMostPopularString(regions)
+	results = filterInPlace(results, regionMembers)
+
+	// 3. Filter by City
+	cities := make([]string, len(results))
+	for i, r := range results {
+		cities[i] = r.City
+	}
+	winnerIdx, _ := getMostPopularString(cities)
+
+	return results[winnerIdx]
+}
+
+// filterInPlace moves selected indices to the front and trims the slice
+func filterInPlace(results []models.PublicIP, indices []int) []models.PublicIP {
+	for i, originalIdx := range indices {
+		results[i] = results[originalIdx]
+	}
+	return results[:len(indices)]
+}
+
+// getMostPopularString returns the index of the representative winner
+// and a slice of all indexes that belong to that winner's cluster.
+func getMostPopularString(values []string) (winnerIdx int, memberIdxs []int) {
+	if len(values) == 0 {
+		return -1, nil
+	}
+
+	type cluster struct {
+		firstIndex int
+		normRep    string
+		members    []int
+	}
+
+	var groups []cluster
+
+	for i, value := range values {
+		normP := normalize(value)
+		found := false
+
+		for j := range groups {
+			if levenshteinDistance(normP, groups[j].normRep) <= 1 {
+				groups[j].members = append(groups[j].members, i)
+				found = true
+				break
+			}
 		}
 
-		// Fetcher is banned
-		r.fetcherToBanTime[fetcher] = r.timeNow()
-		r.logger.Warn(fetcher.String() + ": " + err.Error())
+		if !found {
+			groups = append(groups, cluster{
+				firstIndex: i,
+				normRep:    normP,
+				members:    []int{i},
+			})
+		}
 	}
 
-	fetcherNames := make([]string, len(r.fetchers))
-	for i, fetcher := range r.fetchers {
-		fetcherNames[i] = fetcher.String()
+	maxCount := -1
+	var bestGroup cluster
+
+	for _, g := range groups {
+		if len(g.members) > maxCount {
+			maxCount = len(g.members)
+			bestGroup = g
+		}
 	}
 
-	return result, fmt.Errorf("%w (%s)",
-		ErrFetchersAllRateLimited,
-		strings.Join(fetcherNames, ", "))
+	return bestGroup.firstIndex, bestGroup.members
 }
 
 func (r *ResilientFetcher) UpdateFetchers(fetchers []Fetcher) {
@@ -150,4 +261,45 @@ func (r *ResilientFetcher) UpdateFetchers(fetchers []Fetcher) {
 
 	r.fetchers = fetchers
 	r.fetcherToBanTime = newFetcherToBanTime
+}
+
+// normalize removes accents, trims space, and lowercases the string
+func normalize(s string) string {
+	transformer := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
+	result, _, err := transform.String(transformer, s)
+	if err != nil {
+		panic(err)
+	}
+	return strings.ToLower(strings.TrimSpace(result))
+}
+
+// levenshteinDistance calculates the edit distance
+// between two strings a and b.
+func levenshteinDistance(a, b string) int {
+	switch {
+	case len(a) == 0:
+		return len(b)
+	case len(b) == 0:
+		return len(a)
+	}
+
+	column := make([]int, len(b)+1)
+	for i := 0; i <= len(b); i++ {
+		column[i] = i
+	}
+
+	for i := 1; i <= len(a); i++ {
+		column[0] = i
+		lastValue := i - 1
+		for j := 1; j <= len(b); j++ {
+			oldValue := column[j]
+			cost := 0
+			if a[i-1] != b[j-1] {
+				cost = 1
+			}
+			column[j] = min(column[j]+1, min(column[j-1]+1, lastValue+cost))
+			lastValue = oldValue
+		}
+	}
+	return column[len(b)]
 }
