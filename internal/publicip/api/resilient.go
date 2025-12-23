@@ -25,6 +25,7 @@ type ResilientFetcher struct {
 	fetchers         []Fetcher
 	logger           Warner
 	fetcherToBanTime map[Fetcher]time.Time
+	banMutex         sync.RWMutex
 	mutex            sync.RWMutex
 	timeNow          func() time.Time
 }
@@ -39,7 +40,15 @@ func NewResilient(fetchers []Fetcher, logger Warner) *ResilientFetcher {
 	}
 }
 
+func (r *ResilientFetcher) setBanned(fetcher Fetcher) {
+	r.banMutex.Lock()
+	defer r.banMutex.Unlock()
+	r.fetcherToBanTime[fetcher] = r.timeNow()
+}
+
 func (r *ResilientFetcher) isBanned(fetcher Fetcher) (banned bool) {
+	r.banMutex.Lock()
+	defer r.banMutex.Unlock()
 	banTime, banned := r.fetcherToBanTime[fetcher]
 	if !banned {
 		return false
@@ -101,37 +110,46 @@ func (r *ResilientFetcher) FetchInfo(ctx context.Context, ip netip.Addr) (
 	defer r.mutex.RUnlock()
 
 	type resultData struct {
-		fetcher Fetcher
-		result  models.PublicIP
-		err     error
+		i      int
+		result models.PublicIP
+		err    error
 	}
 	resultsCh := make(chan resultData)
 	fetchersStarted := 0
-	for _, fetcher := range r.fetchers {
+	for range r.fetchers {
+		fetcher := r.fetchers[fetchersStarted]
 		if r.isBanned(fetcher) ||
 			(ip.IsValid() && !fetcher.CanFetchAnyIP()) {
 			continue
 		}
-		fetchersStarted++
 
-		go func(fetcher Fetcher) {
+		go func(i int, fetcher Fetcher) {
 			result, err := fetcher.FetchInfo(ctx, ip)
 			resultsCh <- resultData{
-				fetcher: fetcher,
-				result:  result,
-				err:     err,
+				i:      i,
+				result: result,
+				err:    err,
 			}
-		}(fetcher)
+		}(fetchersStarted, fetcher)
+		fetchersStarted++
 	}
 
+	// Collect resultDatas from goroutines first, which takes I/O time
+	// so that we don't lock the ban map mutex for too long.
+	resultDatas := make([]resultData, fetchersStarted)
+	for range resultDatas {
+		data := <-resultsCh
+		resultDatas[data.i] = data
+	}
+
+	// Mutex lock ban map and process results
 	results := make([]models.PublicIP, 0, fetchersStarted)
 	errs := make([]error, 0, fetchersStarted)
-	for range fetchersStarted {
-		data := <-resultsCh
-		fetcher := data.fetcher
+	for _, data := range resultDatas {
+		fetcher := r.fetchers[data.i]
 		if data.err != nil {
 			if errors.Is(data.err, ErrTooManyRequests) {
-				r.fetcherToBanTime[fetcher] = r.timeNow()
+				r.setBanned(fetcher)
 			}
 			errs = append(errs, fmt.Errorf("%s: %w", fetcher, data.err))
 			continue
@@ -265,6 +283,10 @@ func (r *ResilientFetcher) UpdateFetchers(fetchers []Fetcher) {
 
 // normalize removes accents, trims space, and lowercases the string
 func normalize(s string) string {
+	firstParentheseIndex := strings.Index(s, " (")
+	if firstParentheseIndex != -1 {
+		s = s[:firstParentheseIndex]
+	}
 	transformer := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
 	result, _, err := transform.String(transformer, s)
 	if err != nil {
