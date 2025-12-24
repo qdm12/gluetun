@@ -51,6 +51,11 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		l.logger.Info("👉 See https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md")
 	}
 
+	// Start collecting health errors asynchronously, since
+	// we should not wait for the code below to complete
+	// to start monitoring health and auto-healing.
+	go l.collectHealthErrors(ctx, loopCtx, healthErrCh)
+
 	if *l.dnsLooper.GetSettings().ServerEnabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 	} else {
@@ -79,8 +84,6 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
-
-	l.collectHealthErrors(ctx, loopCtx, healthErrCh)
 }
 
 func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-chan error) {

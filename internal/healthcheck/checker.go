@@ -25,7 +25,7 @@ type Checker struct {
 	smallCheckType string
 	configMutex    sync.Mutex
 
-	icmpNotPermitted bool
+	icmpNotPermitted *bool
 
 	// Internal periodic service signals
 	stop context.CancelFunc
@@ -70,7 +70,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
 	}
 
-	if c.icmpNotPermitted {
+	if c.icmpNotPermitted != nil && *c.icmpNotPermitted {
 		// restore forced check type to dns if icmp was found to be not permitted
 		c.smallCheckType = smallCheckDNS
 	}
@@ -154,11 +154,12 @@ func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 		}
 		ip := icmpTargetIPs[try%len(icmpTargetIPs)]
 		err := c.echoer.Echo(ctx, ip)
-		if errors.Is(err, icmp.ErrNotPermitted) {
-			c.icmpNotPermitted = true
+		if c.icmpNotPermitted == nil && errors.Is(err, icmp.ErrNotPermitted) {
+			c.icmpNotPermitted = new(bool)
+			*c.icmpNotPermitted = true
 			c.smallCheckType = smallCheckDNS
 			c.logger.Infof("%s; permanently falling back to %s checks",
-				smallCheckTypeToString(c.smallCheckType), err)
+				err, smallCheckTypeToString(c.smallCheckType))
 			return c.dnsClient.Check(ctx)
 		}
 		return err
