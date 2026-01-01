@@ -21,7 +21,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 	url := os.Getenv("PRIVADO_OVPN_URL")
 	if url == "" {
-			url = "https://privadovpn.com/apps/ovpn_configs.zip"
+		url = "https://privadovpn.com/apps/ovpn_configs.zip"
 	}
 
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)
