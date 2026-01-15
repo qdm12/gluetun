@@ -1,27 +1,73 @@
-linters-settings:
-  misspell:
-    locale: US
+version: "2"
 
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - dupl
-        - err113
-        - containedctx
-        - maintidx
-    - path: "internal\\/server\\/.+\\.go"
-      linters:
-        - dupl
-    - text: "returns interface \\(github\\.com\\/vishvananda\\/netlink\\.Link\\)"
-      linters:
-        - ireturn
-    - path: "internal\\/openvpn\\/pkcs8\\/descbc\\.go"
-      text: "newCipherDESCBCBlock returns interface \\(github\\.com\\/youmark\\/pkcs8\\.Cipher\\)"
-      linters:
-        - ireturn
+formatters:
+  enable:
+    - gci
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 
 linters:
+  settings:
+    misspell:
+      locale: US
+    goconst:
+      ignore-string-values:
+        # commonly used settings strings
+        - "^disabled$"
+        # Firewall and routing strings
+        - "^(ACCEPT|DROP)$"
+        - "^--delete$"
+        - "^all$"
+        - "^(tcp|udp)$"
+        # Server route strings
+        - "^/status$"
+
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - containedctx
+          - dupl
+          - err113
+          - maintidx
+        path: _test\.go
+      - linters:
+          - dupl
+        path: internal\/server\/.+\.go
+      - linters:
+          - ireturn
+        text: returns interface \(github\.com\/vishvananda\/netlink\.Link\)
+      - linters:
+          - ireturn
+        path: internal\/openvpn\/pkcs8\/descbc\.go
+        text: newCipherDESCBCBlock returns interface \(github\.com\/youmark\/pkcs8\.Cipher\)
+      - linters:
+          - revive
+        path: internal\/provider\/(common|utils)\/.+\.go
+        text: "var-naming: avoid (bad|meaningless) package names"
+      - linters:
+          - lll
+        source: "^// https://.+$"
+      - linters:
+          - err113
+          - mnd
+        path: ci\/.+\.go
+
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
   enable:
     # - cyclop
     # - errorlint
@@ -42,7 +88,6 @@ linters:
     - exhaustive
     - fatcontext
     - forcetypeassert
-    - gci
     - gocheckcompilerdirectives
     - gochecknoglobals
     - gochecknoinits
@@ -51,9 +96,7 @@ linters:
     - gocritic
     - gocyclo
     - godot
-    - gofumpt
     - goheader
-    - goimports
     - gomoddirectives
     - goprintffuncname
     - gosec
@@ -86,7 +129,6 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - tagalign
-    - tenv
     - thelper
     - tparallel
     - unconvert

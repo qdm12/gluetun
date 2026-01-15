@@ -18,11 +18,12 @@ type Provider struct {
 
 func New(storage common.Storage, randSource rand.Source,
 	client *http.Client, updaterWarner common.Warner,
+	email, password string,
 ) *Provider {
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(client, updaterWarner),
+		Fetcher:    updater.New(client, updaterWarner, email, password),
 	}
 }
 

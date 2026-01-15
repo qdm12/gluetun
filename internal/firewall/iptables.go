@@ -149,7 +149,7 @@ func (c *Config) acceptOutputTrafficToVPN(ctx context.Context,
 ) error {
 	protocol := connection.Protocol
 	if protocol == "tcp-client" {
-		protocol = "tcp" //nolint:goconst
+		protocol = "tcp"
 	}
 	instruction := fmt.Sprintf("%s OUTPUT -d %s -o %s -p %s -m %s --dport %d -j ACCEPT",
 		appendOrDelete(remove), connection.IP, defaultInterface, protocol,

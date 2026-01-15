@@ -407,7 +407,7 @@ func bindPort(ctx context.Context, client *http.Client, apiIPAddress netip.Addr,
 // replaceInErr is used to remove sensitive information from errors.
 func replaceInErr(err error, substitutions map[string]string) error {
 	s := replaceInString(err.Error(), substitutions)
-	return errors.New(s) //nolint:goerr113
+	return errors.New(s) //nolint:err113
 }
 
 // replaceInString is used to remove sensitive information.

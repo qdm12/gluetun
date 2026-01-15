@@ -40,30 +40,31 @@ func Test_Settings_String(t *testing.T) {
 ├── DNS settings:
 |   ├── Keep existing nameserver(s): no
 |   ├── DNS server address to use: 127.0.0.1
-|   └── DNS over TLS settings:
-|       ├── Enabled: yes
-|       ├── Update period: every 24h0m0s
-|       ├── Upstream resolvers:
-|       |   └── Cloudflare
-|       ├── Caching: yes
-|       ├── IPv6: no
-|       └── DNS filtering settings:
-|           ├── Block malicious: yes
-|           ├── Block ads: no
-|           └── Block surveillance: yes
+|   ├── DNS forwarder server enabled: yes
+|   ├── Upstream resolver type: dot
+|   ├── Upstream resolvers:
+|   |   └── Cloudflare
+|   ├── Caching: yes
+|   ├── IPv6: no
+|   ├── Update period: every 24h0m0s
+|   └── DNS filtering settings:
+|       ├── Block malicious: yes
+|       ├── Block ads: no
+|       └── Block surveillance: yes
 ├── Firewall settings:
 |   └── Enabled: yes
 ├── Log settings:
 |   └── Log level: INFO
 ├── Health settings:
 |   ├── Server listening address: 127.0.0.1:9999
-|   ├── Target address: cloudflare.com:443
-|   ├── Duration to wait after success: 5s
-|   ├── Read header timeout: 100ms
-|   ├── Read timeout: 500ms
-|   └── VPN wait durations:
-|       ├── Initial duration: 6s
-|       └── Additional duration: 5s
+|   ├── Target addresses:
+|   |   ├── cloudflare.com:443
+|   |   └── github.com:443
+|   ├── Small health check type: ICMP echo request
+|   |   └── ICMP target IPs:
+|   |       ├── 1.1.1.1
+|   |       └── 8.8.8.8
+|   └── Restart VPN on healthcheck failure: yes
 ├── Shadowsocks server settings:
 |   └── Enabled: no
 ├── HTTP proxy settings:

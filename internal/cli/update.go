@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -24,6 +25,8 @@ import (
 var (
 	ErrModeUnspecified     = errors.New("at least one of -enduser or -maintainer must be specified")
 	ErrNoProviderSpecified = errors.New("no provider was specified")
+	ErrUsernameMissing     = errors.New("username is required for this provider")
+	ErrPasswordMissing     = errors.New("password is required for this provider")
 )
 
 type UpdaterLogger interface {
@@ -35,7 +38,7 @@ type UpdaterLogger interface {
 func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
 	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
-	var csvProviders, ipToken string
+	var csvProviders, ipToken, protonUsername, protonEmail, protonPassword string
 	flagSet := flag.NewFlagSet("update", flag.ExitOnError)
 	flagSet.BoolVar(&endUserMode, "enduser", false, "Write results to /gluetun/servers.json (for end users)")
 	flagSet.BoolVar(&maintainerMode, "maintainer", false,
@@ -47,6 +50,10 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
 	flagSet.StringVar(&ipToken, "ip-token", "", "IP data service token (e.g. ipinfo.io) to use")
+	flagSet.StringVar(&protonUsername, "proton-username", "",
+		"(Retro-compatibility) Username to use to authenticate with Proton. Use -proton-email instead.") // v4 remove this
+	flagSet.StringVar(&protonEmail, "proton-email", "", "Email to use to authenticate with Proton")
+	flagSet.StringVar(&protonPassword, "proton-password", "", "Password to use to authenticate with Proton")
 	if err := flagSet.Parse(args); err != nil {
 		return err
 	}
@@ -64,6 +71,16 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		options.Providers = strings.Split(csvProviders, ",")
 	}
 
+	if slices.Contains(options.Providers, providers.Protonvpn) {
+		if protonEmail == "" && protonUsername != "" {
+			protonEmail = protonUsername + "@protonmail.com"
+			logger.Warn("use -proton-email instead of -proton-username in the future. " +
+				"This assumes the email is " + protonEmail + " and may not work.")
+		}
+		options.ProtonEmail = &protonEmail
+		options.ProtonPassword = &protonPassword
+	}
+
 	options.SetDefaults(options.Providers[0])
 
 	err := options.Validate()
@@ -71,7 +88,11 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		return fmt.Errorf("options validation failed: %w", err)
 	}
 
-	storage, err := storage.New(logger, constants.ServersData)
+	serversDataPath := constants.ServersData
+	if maintainerMode {
+		serversDataPath = ""
+	}
+	storage, err := storage.New(logger, serversDataPath)
 	if err != nil {
 		return fmt.Errorf("creating servers storage: %w", err)
 	}
@@ -94,7 +115,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	openvpnFileExtractor := extract.New()
 
 	providers := provider.NewProviders(storage, time.Now, logger, httpClient,
-		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor)
+		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor, options)
 
 	updater := updater.New(httpClient, storage, providers, logger)
 	err = updater.UpdateServers(ctx, options.Providers, options.MinRatio)

@@ -76,9 +76,9 @@ func initModule(path string) (err error) {
 		const flags = 0
 		err = unix.FinitModule(int(file.Fd()), moduleParams, flags)
 		switch {
-		case err == nil, err == unix.EEXIST: //nolint:goerr113
+		case err == nil, err == unix.EEXIST: //nolint:err113
 			return nil
-		case err != unix.ENOSYS: //nolint:goerr113
+		case err != unix.ENOSYS: //nolint:err113
 			if strings.HasSuffix(err.Error(), "operation not permitted") {
 				err = fmt.Errorf("%w; did you set the SYS_MODULE capability to your container?", err)
 			}

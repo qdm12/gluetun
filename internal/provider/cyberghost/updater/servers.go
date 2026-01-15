@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
@@ -16,7 +17,13 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 	possibleHosts := possibleServers.hostsSlice()
 	resolveSettings := parallelResolverSettings(possibleHosts)
-	hostToIPs, _, err := u.parallelResolver.Resolve(ctx, resolveSettings)
+	hostToIPs, warnings, err := u.parallelResolver.Resolve(ctx, resolveSettings)
+	for _, warning := range warnings {
+		if strings.HasSuffix(warning, "no such host") {
+			continue // ignore no such host warnings
+		}
+		u.warner.Warn(warning)
+	}
 	if err != nil {
 		return nil, err
 	}

@@ -18,12 +18,12 @@ jobs:
       actions: read
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: DavidAnson/markdownlint-cli2-action@v19
+      - uses: DavidAnson/markdownlint-cli2-action@v21
         with:
           globs: "**.md"
-          config: .markdownlint.json
+          config: .markdownlint-cli2.jsonc
 
       - uses: reviewdog/action-misspell@v1
         with:

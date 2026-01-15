@@ -15,6 +15,7 @@ type infoWarner interface {
 
 type infoer interface {
 	Info(s string)
+	Infof(format string, args ...any)
 }
 
 type warner interface {

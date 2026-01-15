@@ -14,7 +14,7 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 	timer.Stop()
 	timerIsStopped := true
 	settings := l.GetSettings()
-	if period := *settings.DoT.UpdatePeriod; period > 0 {
+	if period := *settings.UpdatePeriod; period > 0 {
 		timer.Reset(period)
 		timerIsStopped = false
 	}
@@ -35,6 +35,8 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 					l.statusManager.SetStatus(constants.Crashed)
 					l.logger.Error(err.Error())
 					l.logger.Warn("skipping DNS server restart due to failed files update")
+					settings := l.GetSettings()
+					timer.Reset(*settings.UpdatePeriod)
 					continue
 				}
 			}
@@ -43,14 +45,14 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			_, _ = l.statusManager.ApplyStatus(ctx, constants.Running)
 
 			settings := l.GetSettings()
-			timer.Reset(*settings.DoT.UpdatePeriod)
+			timer.Reset(*settings.UpdatePeriod)
 		case <-l.updateTicker:
 			if !timer.Stop() {
 				<-timer.C
 			}
 			timerIsStopped = true
 			settings := l.GetSettings()
-			newUpdatePeriod := *settings.DoT.UpdatePeriod
+			newUpdatePeriod := *settings.UpdatePeriod
 			if newUpdatePeriod == 0 {
 				continue
 			}

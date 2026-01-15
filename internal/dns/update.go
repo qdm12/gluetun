@@ -12,7 +12,7 @@ func (l *Loop) updateFiles(ctx context.Context) (err error) {
 	settings := l.GetSettings()
 
 	l.logger.Info("downloading hostnames and IP block lists")
-	blacklistSettings := settings.DoT.Blacklist.ToBlockBuilderSettings(l.client)
+	blacklistSettings := settings.Blacklist.ToBlockBuilderSettings(l.client)
 
 	blockBuilder, err := blockbuilder.New(blacklistSettings)
 	if err != nil {
@@ -37,6 +37,7 @@ func (l *Loop) updateFiles(ctx context.Context) (err error) {
 		IPPrefixes: result.BlockedIPPrefixes,
 	}
 	updateSettings.BlockHostnames(result.BlockedHostnames)
+	updateSettings.SetRebindingProtectionExempt(settings.Blacklist.RebindingProtectionExemptHostnames)
 	err = l.filter.Update(updateSettings)
 	if err != nil {
 		return fmt.Errorf("updating filter: %w", err)

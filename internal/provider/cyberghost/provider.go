@@ -15,12 +15,12 @@ type Provider struct {
 }
 
 func New(storage common.Storage, randSource rand.Source,
-	parallelResolver common.ParallelResolver,
+	updaterWarner common.Warner, parallelResolver common.ParallelResolver,
 ) *Provider {
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(parallelResolver),
+		Fetcher:    updater.New(parallelResolver, updaterWarner),
 	}
 }
 

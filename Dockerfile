@@ -1,14 +1,14 @@
-ARG ALPINE_VERSION=3.20
-ARG GO_ALPINE_VERSION=3.20
-ARG GO_VERSION=1.23
-ARG XCPUTRANSLATE_VERSION=v0.6.0
-ARG GOLANGCI_LINT_VERSION=v1.61.0
+ARG ALPINE_VERSION=3.22
+ARG GO_ALPINE_VERSION=3.22
+ARG GO_VERSION=1.25
+ARG XCPUTRANSLATE_VERSION=v0.9.0
+ARG GOLANGCI_LINT_VERSION=v2.4.0
 ARG MOCKGEN_VERSION=v1.6.0
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=${BUILDPLATFORM} qmcgaw/xcputranslate:${XCPUTRANSLATE_VERSION} AS xcputranslate
-FROM --platform=${BUILDPLATFORM} qmcgaw/binpot:golangci-lint-${GOLANGCI_LINT_VERSION} AS golangci-lint
-FROM --platform=${BUILDPLATFORM} qmcgaw/binpot:mockgen-${MOCKGEN_VERSION} AS mockgen
+FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/xcputranslate:${XCPUTRANSLATE_VERSION} AS xcputranslate
+FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:golangci-lint-${GOLANGCI_LINT_VERSION} AS golangci-lint
+FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:mockgen-${MOCKGEN_VERSION} AS mockgen
 
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}-alpine${GO_ALPINE_VERSION} AS base
 COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
@@ -32,7 +32,7 @@ ENTRYPOINT go test -race -coverpkg=./... -coverprofile=coverage.txt -covermode=a
 
 FROM --platform=${BUILDPLATFORM} base AS lint
 COPY .golangci.yml ./
-RUN golangci-lint run --timeout=10m
+RUN golangci-lint run
 
 FROM --platform=${BUILDPLATFORM} base AS mocks
 RUN git init && \
@@ -163,20 +163,23 @@ ENV VPN_SERVICE_PROVIDER=pia \
     LOG_LEVEL=info \
     # Health
     HEALTH_SERVER_ADDRESS=127.0.0.1:9999 \
-    HEALTH_TARGET_ADDRESS=cloudflare.com:443 \
-    HEALTH_SUCCESS_WAIT_DURATION=5s \
-    HEALTH_VPN_DURATION_INITIAL=6s \
-    HEALTH_VPN_DURATION_ADDITION=5s \
-    # DNS over TLS
-    DOT=on \
-    DOT_PROVIDERS=cloudflare \
-    DOT_PRIVATE_ADDRESS=127.0.0.1/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,::1/128,fc00::/7,fe80::/10,::ffff:7f00:1/104,::ffff:a00:0/104,::ffff:a9fe:0/112,::ffff:ac10:0/108,::ffff:c0a8:0/112 \
-    DOT_CACHING=on \
-    DOT_IPV6=off \
+    HEALTH_TARGET_ADDRESSES=cloudflare.com:443,github.com:443 \
+    HEALTH_ICMP_TARGET_IPS=1.1.1.1,8.8.8.8 \
+    HEALTH_SMALL_CHECK_TYPE=icmp \
+    HEALTH_RESTART_VPN=on \
+    # DNS
+    DNS_SERVER=on \
+    DNS_UPSTREAM_RESOLVER_TYPE=DoT \
+    DNS_UPSTREAM_RESOLVERS=cloudflare \
+    DNS_BLOCK_IPS= \
+    DNS_BLOCK_IP_PREFIXES= \
+    DNS_CACHING=on \
+    DNS_UPSTREAM_IPV6=off \
     BLOCK_MALICIOUS=on \
     BLOCK_SURVEILLANCE=off \
     BLOCK_ADS=off \
-    UNBLOCK= \
+    DNS_UNBLOCK_HOSTNAMES= \
+    DNS_REBINDING_PROTECTION_EXEMPT_HOSTNAMES= \
     DNS_UPDATE_PERIOD=24h \
     DNS_ADDRESS=127.0.0.1 \
     DNS_KEEP_NAMESERVER=off \
@@ -200,10 +203,13 @@ ENV VPN_SERVICE_PROVIDER=pia \
     HTTP_CONTROL_SERVER_LOG=on \
     HTTP_CONTROL_SERVER_ADDRESS=":8000" \
     HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH=/gluetun/auth/config.toml \
+    HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE="{}" \
     # Server data updater
     UPDATER_PERIOD=0 \
     UPDATER_MIN_RATIO=0.8 \
     UPDATER_VPN_SERVICE_PROVIDERS= \
+    UPDATER_PROTONVPN_EMAIL= \
+    UPDATER_PROTONVPN_PASSWORD= \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \
     PUBLICIP_ENABLED=on \
@@ -219,8 +225,8 @@ ENV VPN_SERVICE_PROVIDER=pia \
     # Extras
     VERSION_INFORMATION=on \
     TZ= \
-    PUID= \
-    PGID=
+    PUID=1000 \
+    PGID=1000
 ENTRYPOINT ["/gluetun-entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=3 CMD /gluetun-entrypoint healthcheck
