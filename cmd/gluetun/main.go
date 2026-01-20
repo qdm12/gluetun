@@ -549,7 +549,7 @@ type netLinker interface {
 	Router
 	Ruler
 	Linker
-	IsWireguardSupported() (ok bool, err error)
+	IsWireguardSupported() bool
 	IsIPv6Supported() (ok bool, err error)
 	PatchLoggerLevel(level log.Level)
 }

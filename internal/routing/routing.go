@@ -12,7 +12,6 @@ type NetLinker interface {
 	Router
 	Ruler
 	Linker
-	IsWireguardSupported() (ok bool, err error)
 }
 
 type Addresser interface {

@@ -49,12 +49,11 @@ func (mr *MockNetLinkerMockRecorder) AddrReplace(arg0, arg1 interface{}) *gomock
 }
 
 // IsWireguardSupported mocks base method.
-func (m *MockNetLinker) IsWireguardSupported() (bool, error) {
+func (m *MockNetLinker) IsWireguardSupported() bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IsWireguardSupported")
 	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	return ret0
 }
 
 // IsWireguardSupported indicates an expected call of IsWireguardSupported.

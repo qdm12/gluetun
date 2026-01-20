@@ -9,7 +9,7 @@ type NetLinker interface {
 	Router
 	Ruler
 	Linker
-	IsWireguardSupported() (ok bool, err error)
+	IsWireguardSupported() bool
 }
 
 type Router interface {
