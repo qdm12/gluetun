@@ -16,7 +16,6 @@ import (
 )
 
 var (
-	ErrDetectKernel      = errors.New("cannot detect Kernel support")
 	ErrCreateTun         = errors.New("cannot create TUN device")
 	ErrAddLink           = errors.New("cannot add Wireguard link")
 	ErrFindLink          = errors.New("cannot find link")
@@ -35,11 +34,7 @@ var (
 
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
 func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<- struct{}) {
-	kernelSupported, err := w.netlink.IsWireguardSupported()
-	if err != nil {
-		waitError <- fmt.Errorf("%w: %s", ErrDetectKernel, err)
-		return
-	}
+	kernelSupported := w.netlink.IsWireguardSupported()
 
 	setupFunction := setupUserSpace
 	switch w.settings.Implementation {

@@ -63,21 +63,6 @@ func (mr *MockNetLinkerMockRecorder) AddrReplace(arg0, arg1 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddrReplace", reflect.TypeOf((*MockNetLinker)(nil).AddrReplace), arg0, arg1)
 }
 
-// IsWireguardSupported mocks base method.
-func (m *MockNetLinker) IsWireguardSupported() (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsWireguardSupported")
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// IsWireguardSupported indicates an expected call of IsWireguardSupported.
-func (mr *MockNetLinkerMockRecorder) IsWireguardSupported() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsWireguardSupported", reflect.TypeOf((*MockNetLinker)(nil).IsWireguardSupported))
-}
-
 // LinkAdd mocks base method.
 func (m *MockNetLinker) LinkAdd(arg0 netlink.Link) (int, error) {
 	m.ctrl.T.Helper()
