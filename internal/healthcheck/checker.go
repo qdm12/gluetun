@@ -16,16 +16,16 @@ import (
 )
 
 type Checker struct {
-	tlsDialAddr string
-	dialer      *net.Dialer
-	echoer      *icmp.Echoer
-	dnsClient   *dns.Client
-	logger      Logger
-	icmpTarget  netip.Addr
-	configMutex sync.Mutex
+	tlsDialAddrs   []string
+	dialer         *net.Dialer
+	echoer         *icmp.Echoer
+	dnsClient      *dns.Client
+	logger         Logger
+	icmpTargetIPs  []netip.Addr
+	smallCheckType string
+	configMutex    sync.Mutex
 
-	icmpNotPermitted bool
-	smallCheckName   string
+	icmpNotPermitted *bool
 
 	// Internal periodic service signals
 	stop context.CancelFunc
@@ -45,35 +45,38 @@ func NewChecker(logger Logger) *Checker {
 	}
 }
 
-// SetConfig sets the TCP+TLS dial address and the ICMP echo IP address
-// to target by the [Checker].
+// SetConfig sets the TCP+TLS dial addresses, the ICMP echo IP address
+// to target and the desired small check type (dns or icmp).
 // This function MUST be called before calling [Checker.Start].
-func (c *Checker) SetConfig(tlsDialAddr string, icmpTarget netip.Addr) {
+func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTargets []netip.Addr,
+	smallCheckType string,
+) {
 	c.configMutex.Lock()
 	defer c.configMutex.Unlock()
-	c.tlsDialAddr = tlsDialAddr
-	c.icmpTarget = icmpTarget
+	c.tlsDialAddrs = tlsDialAddrs
+	c.icmpTargetIPs = icmpTargets
+	c.smallCheckType = smallCheckType
 }
 
-// Start starts the checker by first running a blocking 2s-timed TCP+TLS check,
+// Start starts the checker by first running a blocking 6s-timed TCP+TLS check,
 // and, on success, starts the periodic checks in a separate goroutine:
-// - a "small" ICMP echo check every 15 seconds
+// - a "small" ICMP echo check every minute
 // - a "full" TCP+TLS check every 5 minutes
 // It returns a channel `runError` that receives an error (nil or not) when a periodic check is performed.
 // It returns an error if the initial TCP+TLS check fails.
 // The Checker has to be ultimately stopped by calling [Checker.Stop].
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
-	if c.tlsDialAddr == "" || c.icmpTarget.IsUnspecified() {
+	if len(c.tlsDialAddrs) == 0 || len(c.icmpTargetIPs) == 0 || c.smallCheckType == "" {
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
 	}
 
-	// connection isn't under load yet when the checker starts, so a short
-	// 6 seconds timeout suffices and provides quick enough feedback that
-	// the new connection is not working.
-	const timeout = 6 * time.Second
-	tcpTLSCheckCtx, tcpTLSCheckCancel := context.WithTimeout(ctx, timeout)
-	err = tcpTLSCheck(tcpTLSCheckCtx, c.dialer, c.tlsDialAddr)
-	tcpTLSCheckCancel()
+	if c.icmpNotPermitted != nil && *c.icmpNotPermitted {
+		// restore forced check type to dns if icmp was found to be not permitted
+		c.smallCheckType = smallCheckDNS
+	}
+	c.echoer.Reset()
+
+	err = c.startupCheck(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("startup check: %w", err)
 	}
@@ -83,7 +86,6 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	c.stop = cancel
 	done := make(chan struct{})
 	c.done = done
-	c.smallCheckName = "ICMP echo"
 	const smallCheckPeriod = time.Minute
 	smallCheckTimer := time.NewTimer(smallCheckPeriod)
 	const fullCheckPeriod = 5 * time.Minute
@@ -123,43 +125,57 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 func (c *Checker) Stop() error {
 	c.stop()
 	<-c.done
-	c.icmpTarget = netip.Addr{}
+	c.tlsDialAddrs = nil
+	c.icmpTargetIPs = nil
+	c.smallCheckType = ""
 	return nil
 }
 
 func (c *Checker) smallPeriodicCheck(ctx context.Context) error {
 	c.configMutex.Lock()
-	ip := c.icmpTarget
+	icmpTargetIPs := make([]netip.Addr, len(c.icmpTargetIPs))
+	copy(icmpTargetIPs, c.icmpTargetIPs)
 	c.configMutex.Unlock()
-	const maxTries = 3
-	const timeout = 10 * time.Second
-	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
-	check := func(ctx context.Context) error {
-		if c.icmpNotPermitted {
+	tryTimeouts := []time.Duration{
+		5 * time.Second,
+		5 * time.Second,
+		5 * time.Second,
+		10 * time.Second,
+		10 * time.Second,
+		10 * time.Second,
+		15 * time.Second,
+		15 * time.Second,
+		15 * time.Second,
+		30 * time.Second,
+	}
+	check := func(ctx context.Context, try int) error {
+		if c.smallCheckType == smallCheckDNS {
 			return c.dnsClient.Check(ctx)
 		}
+		ip := icmpTargetIPs[try%len(icmpTargetIPs)]
 		err := c.echoer.Echo(ctx, ip)
-		if errors.Is(err, icmp.ErrNotPermitted) {
-			c.icmpNotPermitted = true
-			c.smallCheckName = "plain DNS over UDP"
-			c.logger.Infof("%s; permanently falling back to %s checks.", c.smallCheckName, err)
+		if c.icmpNotPermitted == nil && errors.Is(err, icmp.ErrNotPermitted) {
+			c.icmpNotPermitted = new(bool)
+			*c.icmpNotPermitted = true
+			c.smallCheckType = smallCheckDNS
+			c.logger.Infof("%s; permanently falling back to %s checks",
+				err, smallCheckTypeToString(c.smallCheckType))
 			return c.dnsClient.Check(ctx)
 		}
 		return err
 	}
-	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, c.smallCheckName, check)
+	return withRetries(ctx, tryTimeouts, c.logger, smallCheckTypeToString(c.smallCheckType), check)
 }
 
 func (c *Checker) fullPeriodicCheck(ctx context.Context) error {
-	const maxTries = 2
 	// 20s timeout in case the connection is under stress
 	// See https://github.com/qdm12/gluetun/issues/2270
-	const timeout = 20 * time.Second
-	const extraTryTime = 10 * time.Second // 10s added for each subsequent retry
-	check := func(ctx context.Context) error {
-		return tcpTLSCheck(ctx, c.dialer, c.tlsDialAddr)
+	tryTimeouts := []time.Duration{10 * time.Second, 15 * time.Second, 30 * time.Second}
+	check := func(ctx context.Context, try int) error {
+		tlsDialAddr := c.tlsDialAddrs[try%len(c.tlsDialAddrs)]
+		return tcpTLSCheck(ctx, c.dialer, tlsDialAddr)
 	}
-	return withRetries(ctx, maxTries, timeout, extraTryTime, c.logger, "TCP+TLS dial", check)
+	return withRetries(ctx, tryTimeouts, c.logger, "TCP+TLS dial", check)
 }
 
 func tcpTLSCheck(ctx context.Context, dialer *net.Dialer, targetAddress string) error {
@@ -218,15 +234,19 @@ func makeAddressToDial(address string) (addressToDial string, err error) {
 
 var ErrAllCheckTriesFailed = errors.New("all check tries failed")
 
-func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime time.Duration,
-	logger Logger, checkName string, check func(ctx context.Context) error,
+func withRetries(ctx context.Context, tryTimeouts []time.Duration,
+	logger Logger, checkName string, check func(ctx context.Context, try int) error,
 ) error {
-	try := uint(0)
-	var errs []error
-	for {
-		timeout := tryTimeout + time.Duration(try)*extraTryTime //nolint:gosec
+	maxTries := len(tryTimeouts)
+	type errData struct {
+		err        error
+		durationMS int64
+	}
+	errs := make([]errData, maxTries)
+	for i, timeout := range tryTimeouts {
+		start := time.Now()
 		checkCtx, cancel := context.WithTimeout(ctx, timeout)
-		err := check(checkCtx)
+		err := check(checkCtx, i)
 		cancel()
 		switch {
 		case err == nil:
@@ -234,17 +254,75 @@ func withRetries(ctx context.Context, maxTries uint, tryTimeout, extraTryTime ti
 		case ctx.Err() != nil:
 			return fmt.Errorf("%s: %w", checkName, ctx.Err())
 		}
-		logger.Debugf("%s attempt %d/%d failed: %s", checkName, try+1, maxTries, err)
-		errs = append(errs, err)
-		try++
-		if try < maxTries {
+		logger.Debugf("%s attempt %d/%d failed: %s", checkName, i+1, maxTries, err)
+		errs[i].err = err
+		errs[i].durationMS = time.Since(start).Round(time.Millisecond).Milliseconds()
+	}
+
+	errStrings := make([]string, len(errs))
+	for i, err := range errs {
+		errStrings[i] = fmt.Sprintf("attempt %d (%dms): %s", i+1, err.durationMS, err.err)
+	}
+	return fmt.Errorf("%w:\n\t%s", ErrAllCheckTriesFailed, strings.Join(errStrings, "\n\t"))
+}
+
+func (c *Checker) startupCheck(ctx context.Context) error {
+	// connection isn't under load yet when the checker starts, so a short
+	// 6 seconds timeout suffices and provides quick enough feedback that
+	// the new connection is not working. However, since the addresses to dial
+	// may be multiple, we run the check in parallel. If any succeeds, the check passes.
+	// This is to prevent false negatives at startup, if one of the addresses is down
+	// for external reasons.
+	const timeout = 6 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	errCh := make(chan error)
+
+	for _, address := range c.tlsDialAddrs {
+		go func(addr string) {
+			err := tcpTLSCheck(ctx, c.dialer, addr)
+			errCh <- err
+		}(address)
+	}
+
+	errs := make([]error, 0, len(c.tlsDialAddrs))
+	success := false
+	for range c.tlsDialAddrs {
+		err := <-errCh
+		if err == nil {
+			success = true
+			cancel()
 			continue
+		} else if success {
+			continue // ignore canceled errors after success
 		}
-		errStrings := make([]string, len(errs))
-		for i, err := range errs {
-			errStrings[i] = fmt.Sprintf("attempt %d: %s", i+1, err.Error())
-		}
-		return fmt.Errorf("%w: after %d %s attempts (%s)",
-			ErrAllCheckTriesFailed, maxTries, checkName, strings.Join(errStrings, "; "))
+
+		c.logger.Debugf("startup check parallel attempt failed: %s", err)
+		errs = append(errs, err)
+	}
+	if success {
+		return nil
+	}
+
+	errStrings := make([]string, len(errs))
+	for i, err := range errs {
+		errStrings[i] = fmt.Sprintf("parallel attempt %d/%d failed: %s", i+1, len(errs), err)
+	}
+	return fmt.Errorf("%w: %s", ErrAllCheckTriesFailed, strings.Join(errStrings, ", "))
+}
+
+const (
+	smallCheckDNS  = "dns"
+	smallCheckICMP = "icmp"
+)
+
+func smallCheckTypeToString(smallCheckType string) string {
+	switch smallCheckType {
+	case smallCheckICMP:
+		return "ICMP echo"
+	case smallCheckDNS:
+		return "plain DNS over UDP"
+	default:
+		panic("unknown small check type: " + smallCheckType)
 	}
 }

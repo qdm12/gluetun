@@ -21,7 +21,7 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 
 	settings := l.GetSettings()
 
-	serverSettings, err := buildServerSettings(settings, l.filter, l.logger)
+	serverSettings, err := buildServerSettings(settings, l.filter, l.localResolvers, l.logger)
 	if err != nil {
 		return nil, fmt.Errorf("building server settings: %w", err)
 	}

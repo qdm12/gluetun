@@ -39,27 +39,37 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		}
 	}
 
-	icmpTarget := l.healthSettings.ICMPTargetIP
-	if icmpTarget.IsUnspecified() {
-		icmpTarget = data.serverIP
-	}
-	l.healthChecker.SetConfig(l.healthSettings.TargetAddress, icmpTarget)
-
-	healthErrCh, err := l.healthChecker.Start(ctx)
-	l.healthServer.SetError(err)
-	if err != nil {
-		// Note this restart call must be done in a separate goroutine
-		// from the VPN loop goroutine.
-		l.restartVPN(loopCtx, err)
-		return
-	}
-
 	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
-	err = updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
+	err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
 		l.netLinker, l.routing, mtuLogger)
 	if err != nil {
 		mtuLogger.Error(err.Error())
 	}
+
+	icmpTargetIPs := l.healthSettings.ICMPTargetIPs
+	if len(icmpTargetIPs) == 1 && icmpTargetIPs[0].IsUnspecified() {
+		icmpTargetIPs = []netip.Addr{data.serverIP}
+	}
+	l.healthChecker.SetConfig(l.healthSettings.TargetAddresses, icmpTargetIPs,
+		l.healthSettings.SmallCheckType)
+
+	healthErrCh, err := l.healthChecker.Start(ctx)
+	l.healthServer.SetError(err)
+	if err != nil {
+		if *l.healthSettings.RestartVPN {
+			// Note this restart call must be done in a separate goroutine
+			// from the VPN loop goroutine.
+			l.restartVPN(loopCtx, err)
+			return
+		}
+		l.logger.Warnf("(ignored) healthchecker start failed: %s", err)
+		l.logger.Info("👉 See https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md")
+	}
+
+	// Start collecting health errors asynchronously, since
+	// we should not wait for the code below to complete
+	// to start monitoring health and auto-healing.
+	go l.collectHealthErrors(ctx, loopCtx, healthErrCh)
 
 	if *l.dnsLooper.GetSettings().ServerEnabled {
 		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
@@ -89,8 +99,6 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
-
-	l.collectHealthErrors(ctx, loopCtx, healthErrCh)
 }
 
 func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-chan error) {
@@ -110,7 +118,7 @@ func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-c
 					l.restartVPN(loopCtx, healthErr)
 					return
 				}
-				l.logger.Warnf("healthcheck failed: %s", healthErr)
+				l.logger.Warnf("(ignored) healthcheck failed: %s", healthErr)
 				l.logger.Info("👉 See https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md")
 			} else if previousHealthErr != nil {
 				l.logger.Info("healthcheck passed successfully after previous failure(s)")

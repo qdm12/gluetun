@@ -164,6 +164,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
+	defer fmt.Println(gluetunLogo)
+
 	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
 	if err != nil {
 		return err
@@ -427,7 +429,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
 	openvpnFileExtractor := extract.New()
 	providers := provider.NewProviders(storage, time.Now, updaterLogger,
-		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(), openvpnFileExtractor)
+		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(),
+		openvpnFileExtractor, allSettings.Updater)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
@@ -466,13 +469,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 	otherGroupHandler.Add(shadowsocksHandler)
 
-	controlServerAddress := *allSettings.ControlServer.Address
-	controlServerLogging := *allSettings.ControlServer.Log
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
-	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
+	httpServer, err := server.New(httpServerCtx, allSettings.ControlServer,
 		logger.New(log.SetComponent("http server")),
-		allSettings.ControlServer.AuthFilePath,
 		buildInfo, vpnLooper, portForwardLooper, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
@@ -549,7 +549,7 @@ type netLinker interface {
 	Router
 	Ruler
 	Linker
-	IsWireguardSupported() (ok bool, err error)
+	IsWireguardSupported() bool
 	IsIPv6Supported() (ok bool, err error)
 	PatchLoggerLevel(level log.Level)
 }
@@ -603,3 +603,34 @@ type RunStarter interface {
 	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, err error)
 }
+
+const gluetunLogo = `                         @@@
+                         @@@@
+                        @@@@@@
+                       @@@@.@@                       @@@@@@@@@@
+                       @@@@.@@@                   @@@@@@@@==@@@@
+                      @@@.@..@@                @@@@@@@=@..==@@@@
+            @@@@      @@@.@@.@@              @@@@@@===@@@@.=@@@
+           @...-@@   @@@@.@@.@@@  @@@     @@@@@@=======@@@=@@@@
+           @@@@@@@@  @@@.-%@.+@@@@@@@@  @@@@@%============@@@@
+                     @@@.--@..@@@@.-@@@@@@@==============@@@@
+              @@@@  @@@-@--@@.@@.---@@@@@==============#@@@@@
+              @@@   @@@.@@-@@.@@--@@@@@===============@@@@@@
+                   @@@@.@--@@@@@@@@@@================@@@@@@@
+                   @@@..--@@*@@@@@@================@@@@+*@@
+                   @@@.---@@.@@@@=================@@@@--@@
+                  @@@-.---@@@@@@================@@@@*--@@@
+                  @@@.:-#@@@@@@===============*@@@@.---@@
+                  @@@.-------.@@@============@@@@@@.--@@@
+                 @@@..--------:@@@=========@@@@@@@@.--@@@
+                 @@@.-@@@@@@@@@@@========@@@@@  @@@.--@@
+                 @@.@@@@===============@@@@@ @@@@@@---@@@@@@
+                @@@@@@@==============@@@@@@@@@@@@*@---@@@@@@@@
+                @@@@@@=============@@@@@ @@@...------------.*@@@
+                @@@@%===========@@@@@@ @@@..------@@@@.-----.-@@@
+                @@@@@@.=======@@@@@@  @@@.-------@@@@@@-.------=@@
+               @@@@@@@@@===@@@@@@     @@.------@@@@   @@@@.-----@@@
+               @@@==@@@=@@@@@@@      @@@.-@@@@@@@       @@@@@@@--@@
+               @@@@@@@@@@@@@         @@@@@@@@                @@@@@@@
+                @@@@@@@@             @@@@                       @@@@
+                                                                       `

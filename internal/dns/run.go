@@ -4,11 +4,19 @@ import (
 	"context"
 	"errors"
 
+	"github.com/qdm12/dns/v2/pkg/nameserver"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
+
+	var err error
+	l.localResolvers, err = nameserver.GetPrivateDNSServers()
+	if err != nil {
+		l.logger.Error("getting private DNS servers: " + err.Error())
+		return
+	}
 
 	if *l.GetSettings().KeepNameserver {
 		l.logger.Warn("⚠️⚠️⚠️  keeping the default container nameservers, " +
@@ -37,7 +45,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
 				l.logger.Info("ready")
-				l.signalOrSetStatus(constants.Running)
 				break
 			}
 
@@ -54,6 +61,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			l.logAndWait(ctx, err)
 			settings = l.GetSettings()
 		}
+		l.signalOrSetStatus(constants.Running)
 
 		settings = l.GetSettings()
 		if !*settings.KeepNameserver && !*settings.ServerEnabled {
@@ -74,15 +82,21 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 	for {
 		select {
 		case <-ctx.Done():
-			l.stopServer()
-			// TODO revert OS and Go nameserver when exiting
+			settings := l.GetSettings()
+			if !*settings.KeepNameserver && *settings.ServerEnabled {
+				l.stopServer()
+				// TODO revert OS and Go nameserver when exiting
+			}
 			return true
 		case <-l.stop:
 			l.userTrigger = true
 			l.logger.Info("stopping")
-			const fallback = false
-			l.useUnencryptedDNS(fallback)
-			l.stopServer()
+			settings := l.GetSettings()
+			if !*settings.KeepNameserver && *settings.ServerEnabled {
+				const fallback = false
+				l.useUnencryptedDNS(fallback)
+				l.stopServer()
+			}
 			l.stopped <- struct{}{}
 		case <-l.start:
 			l.userTrigger = true

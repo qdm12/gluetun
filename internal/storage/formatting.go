@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 )
 
 func commaJoin(slice []string) string {
@@ -148,9 +149,13 @@ func noServerFoundError(selection settings.ServerSelection) (err error) {
 		messageParts = append(messageParts, "tor only")
 	}
 
-	if selection.TargetIP.IsValid() {
+	targetIP := selection.OpenVPN.EndpointIP
+	if selection.VPN == vpn.Wireguard {
+		targetIP = selection.Wireguard.EndpointIP
+	}
+	if targetIP.IsValid() {
 		messageParts = append(messageParts,
-			"target ip address "+selection.TargetIP.String())
+			"target ip address "+targetIP.String())
 	}
 
 	message := "for " + strings.Join(messageParts, "; ")

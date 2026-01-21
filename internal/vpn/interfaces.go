@@ -61,7 +61,7 @@ type NetLinker interface {
 	Router
 	Ruler
 	Linker
-	IsWireguardSupported() (ok bool, err error)
+	IsWireguardSupported() bool
 }
 
 type Router interface {
@@ -102,7 +102,7 @@ type CmdStarter interface {
 }
 
 type HealthChecker interface {
-	SetConfig(tlsDialAddr string, icmpTarget netip.Addr)
+	SetConfig(tlsDialAddrs []string, icmpTargetIPs []netip.Addr, smallCheckType string)
 	Start(ctx context.Context) (runError <-chan error, err error)
 	Stop() error
 }

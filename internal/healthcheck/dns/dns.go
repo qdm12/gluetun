@@ -44,22 +44,22 @@ func concatAddrPorts(addrs [][]netip.AddrPort) []netip.AddrPort {
 var ErrLookupNoIPs = errors.New("no IPs found from DNS lookup")
 
 func (c *Client) Check(ctx context.Context) error {
-	dnsAddr := c.serverAddrs[c.dnsIPIndex].Addr()
+	dnsAddr := c.serverAddrs[c.dnsIPIndex].String()
 	resolver := &net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, _, _ string) (net.Conn, error) {
 			dialer := net.Dialer{}
-			return dialer.DialContext(ctx, "udp", dnsAddr.String())
+			return dialer.DialContext(ctx, "udp", dnsAddr)
 		},
 	}
 	ips, err := resolver.LookupIP(ctx, "ip", "github.com")
 	switch {
 	case err != nil:
 		c.dnsIPIndex = (c.dnsIPIndex + 1) % len(c.serverAddrs)
-		return err
+		return fmt.Errorf("with DNS server %s: %w", dnsAddr, err)
 	case len(ips) == 0:
 		c.dnsIPIndex = (c.dnsIPIndex + 1) % len(c.serverAddrs)
-		return fmt.Errorf("%w", ErrLookupNoIPs)
+		return fmt.Errorf("with DNS server %s: %w", dnsAddr, ErrLookupNoIPs)
 	default:
 		return nil
 	}
