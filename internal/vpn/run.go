@@ -47,6 +47,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 		tunnelUpData := tunnelUpData{
+			vpnType:        settings.Type,
 			serverIP:       connection.IP,
 			serverName:     connection.ServerName,
 			canPortForward: connection.PortForward,
