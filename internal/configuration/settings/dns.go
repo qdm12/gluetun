@@ -53,6 +53,13 @@ type DNS struct {
 	// It defaults to false and cannot be nil in the
 	// internal state.
 	KeepNameserver *bool
+	// DoTPooling enables or disables connection pooling for DNS
+	// over TLS. When set to false, a new TCP+TLS connection is
+	// created for each DNS query. This can help on systems where
+	// TCP connection reuse causes issues (e.g., older Linux kernels).
+	// It defaults to true (pooling enabled) and cannot be nil in
+	// the internal state.
+	DoTPooling *bool `json:"dot_pooling"`
 }
 
 var (
@@ -98,6 +105,7 @@ func (d *DNS) Copy() (copied DNS) {
 		Blacklist:      d.Blacklist.copy(),
 		ServerAddress:  d.ServerAddress,
 		KeepNameserver: gosettings.CopyPointer(d.KeepNameserver),
+		DoTPooling:     gosettings.CopyPointer(d.DoTPooling),
 	}
 }
 
@@ -114,6 +122,7 @@ func (d *DNS) overrideWith(other DNS) {
 	d.Blacklist.overrideWith(other.Blacklist)
 	d.ServerAddress = gosettings.OverrideWithValidator(d.ServerAddress, other.ServerAddress)
 	d.KeepNameserver = gosettings.OverrideWithPointer(d.KeepNameserver, other.KeepNameserver)
+	d.DoTPooling = gosettings.OverrideWithPointer(d.DoTPooling, other.DoTPooling)
 }
 
 func (d *DNS) setDefaults() {
@@ -130,6 +139,7 @@ func (d *DNS) setDefaults() {
 	d.ServerAddress = gosettings.DefaultValidator(d.ServerAddress,
 		netip.AddrFrom4([4]byte{127, 0, 0, 1}))
 	d.KeepNameserver = gosettings.DefaultPointer(d.KeepNameserver, false)
+	d.DoTPooling = gosettings.DefaultPointer(d.DoTPooling, true)
 }
 
 func (d DNS) GetFirstPlaintextIPv4() (ipv4 netip.Addr) {
@@ -175,6 +185,10 @@ func (d DNS) toLinesNode() (node *gotree.Node) {
 
 	node.Appendf("Caching: %s", gosettings.BoolToYesNo(d.Caching))
 	node.Appendf("IPv6: %s", gosettings.BoolToYesNo(d.IPv6))
+
+	if d.UpstreamType == "dot" && !*d.DoTPooling {
+		node.Append("DoT connection pooling: disabled")
+	}
 
 	update := "disabled"
 	if *d.UpdatePeriod > 0 {
@@ -223,6 +237,11 @@ func (d *DNS) read(r *reader.Reader) (err error) {
 	}
 
 	d.KeepNameserver, err = r.BoolPtr("DNS_KEEP_NAMESERVER")
+	if err != nil {
+		return err
+	}
+
+	d.DoTPooling, err = r.BoolPtr("DOT_CONNECTION_POOLING")
 	if err != nil {
 		return err
 	}

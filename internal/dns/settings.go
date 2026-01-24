@@ -54,6 +54,7 @@ func buildServerSettings(settings settings.DNS,
 		dialerSettings := dot.Settings{
 			UpstreamResolvers: upstreamResolvers,
 			IPVersion:         ipVersion,
+			DisablePooling:    !*settings.DoTPooling,
 		}
 		dialer, err = dot.New(dialerSettings)
 		if err != nil {
