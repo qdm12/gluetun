@@ -21,8 +21,8 @@ var ErrMTUNotFound = errors.New("path MTU discovery failed to find MTU")
 // If the logger is nil, a no-op logger is used.
 // It returns [ErrMTUNotFound] if the MTU could not be determined.
 func PathMTUDiscover(ctx context.Context, ip netip.Addr,
-	physicalLinkMTU int, pingTimeout time.Duration, logger Logger) (
-	mtu int, err error,
+	physicalLinkMTU uint32, pingTimeout time.Duration, logger Logger) (
+	mtu uint32, err error,
 ) {
 	if physicalLinkMTU == 0 {
 		const ethernetStandardMTU = 1500
@@ -68,16 +68,16 @@ func PathMTUDiscover(ctx context.Context, ip netip.Addr,
 }
 
 type pmtudTestUnit struct {
-	mtu       int
+	mtu       uint32
 	echoID    uint16
 	sentBytes int
 	ok        bool
 }
 
 func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
-	minMTU, maxPossibleMTU int, pingTimeout time.Duration,
+	minMTU, maxPossibleMTU uint32, pingTimeout time.Duration,
 	logger Logger,
-) (maxMTU int, err error) {
+) (maxMTU uint32, err error) {
 	var ipVersion string
 	var conn net.PacketConn
 	if ip.Is4() {
@@ -164,22 +164,22 @@ func pmtudMultiSizes(ctx context.Context, ip netip.Addr,
 // with a total search space of 1728 MTUs which is enough;
 // to find it in 2 searches requires 37 parallel queries which
 // could be blocked by firewalls.
-func makeMTUsToTest(minMTU, maxMTU int) (mtus []int) {
+func makeMTUsToTest(minMTU, maxMTU uint32) (mtus []uint32) {
 	const mtusLength = 11 // find the final MTU in 3 searches
 	diff := maxMTU - minMTU
 	switch {
 	case minMTU > maxMTU:
 		panic("minMTU > maxMTU")
 	case diff <= mtusLength:
-		mtus = make([]int, 0, diff)
+		mtus = make([]uint32, 0, diff)
 		for mtu := minMTU; mtu <= maxMTU; mtu++ {
 			mtus = append(mtus, mtu)
 		}
 	default:
 		step := float64(diff) / float64(mtusLength-1)
-		mtus = make([]int, 0, mtusLength)
+		mtus = make([]uint32, 0, mtusLength)
 		for mtu := float64(minMTU); len(mtus) < mtusLength-1; mtu += step {
-			mtus = append(mtus, int(math.Round(mtu)))
+			mtus = append(mtus, uint32(math.Round(mtu)))
 		}
 		mtus = append(mtus, maxMTU) // last element is the maxMTU
 	}

@@ -157,7 +157,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 
 	// Note: no point testing for an MTU of 1500, it will never work due to the VPN
 	// protocol overhead, so start lower than 1500 according to the protocol used.
-	const physicalLinkMTU = 1500
+	const physicalLinkMTU uint32 = 1500
 	vpnLinkMTU := physicalLinkMTU
 	switch vpnType {
 	case "wireguard":
@@ -183,7 +183,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	case err == nil:
 		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
 	case errors.Is(err, pmtud.ErrMTUNotFound) || errors.Is(err, pmtud.ErrICMPNotPermitted):
-		vpnLinkMTU = int(originalMTU)
+		vpnLinkMTU = uint32(originalMTU)
 		logger.Infof("reverting VPN interface %s MTU to %d (due to: %s)",
 			vpnInterface, originalMTU, err)
 	default:

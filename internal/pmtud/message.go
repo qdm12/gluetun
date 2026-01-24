@@ -11,7 +11,7 @@ import (
 	"golang.org/x/net/ipv6"
 )
 
-func buildMessageToSend(ipVersion string, mtu int) (id uint16, message *icmp.Message) {
+func buildMessageToSend(ipVersion string, mtu uint32) (id uint16, message *icmp.Message) {
 	var seed [32]byte
 	_, _ = cryptorand.Read(seed[:])
 	randomSource := rand.NewChaCha8(seed)
@@ -21,7 +21,7 @@ func buildMessageToSend(ipVersion string, mtu int) (id uint16, message *icmp.Mes
 	_, _ = randomSource.Read(idBytes)
 	id = binary.BigEndian.Uint16(idBytes)
 
-	var ipHeaderLength int
+	var ipHeaderLength uint32
 	var icmpType icmp.Type
 	switch ipVersion {
 	case "v4":

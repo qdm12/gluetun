@@ -6,7 +6,6 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"golang.org/x/sys/unix"
 )
 
 var (
@@ -48,7 +47,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	}
 
 	for _, route := range routes {
-		if route.Table != unix.RT_TABLE_MAIN ||
+		if route.Table != tableMain ||
 			(route.Gw.IsValid() && !route.Gw.IsUnspecified()) ||
 			(route.Dst.IsValid() && route.Dst.Addr().IsUnspecified()) {
 			continue

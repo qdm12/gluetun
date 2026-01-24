@@ -31,8 +31,8 @@ func listenICMPv6(ctx context.Context) (conn net.PacketConn, err error) {
 }
 
 func getIPv6PacketTooBig(ctx context.Context, ip netip.Addr,
-	physicalLinkMTU int, pingTimeout time.Duration, logger Logger,
-) (mtu int, err error) {
+	physicalLinkMTU uint32, pingTimeout time.Duration, logger Logger,
+) (mtu uint32, err error) {
 	if ip.Is4() {
 		panic("IP address is not v6")
 	}
@@ -84,7 +84,7 @@ func getIPv6PacketTooBig(ctx context.Context, ip netip.Addr,
 		switch typedBody := inboundMessage.Body.(type) {
 		case *icmp.PacketTooBig:
 			// https://datatracker.ietf.org/doc/html/rfc1885#section-3.2
-			mtu = typedBody.MTU
+			mtu = uint32(typedBody.MTU) //nolint:gosec
 			err = checkMTU(mtu, minIPv6MTU, physicalLinkMTU)
 			if err != nil {
 				return 0, fmt.Errorf("checking MTU: %w", err)
@@ -96,7 +96,7 @@ func getIPv6PacketTooBig(ctx context.Context, ip netip.Addr,
 			if err != nil {
 				return 0, fmt.Errorf("checking invoking message: %w", err)
 			}
-			return typedBody.MTU, nil
+			return uint32(typedBody.MTU), nil //nolint:gosec
 		case *icmp.DstUnreach:
 			// https://datatracker.ietf.org/doc/html/rfc1885#section-3.1
 			idMatch, err := checkInvokingReplyIDMatch(icmpv6Protocol, packetBytes, outboundMessage)

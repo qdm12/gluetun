@@ -17,8 +17,8 @@ import (
 
 const (
 	// see https://en.wikipedia.org/wiki/Maximum_transmission_unit#MTUs_for_common_media
-	minIPv4MTU     = 68
-	icmpv4Protocol = 1
+	minIPv4MTU     uint32 = 68
+	icmpv4Protocol int    = 1
 )
 
 func listenICMPv4(ctx context.Context) (conn net.PacketConn, err error) {
@@ -51,8 +51,8 @@ func listenICMPv4(ctx context.Context) (conn net.PacketConn, err error) {
 }
 
 func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
-	physicalLinkMTU int, pingTimeout time.Duration, logger Logger,
-) (mtu int, err error) {
+	physicalLinkMTU uint32, pingTimeout time.Duration, logger Logger,
+) (mtu uint32, err error) {
 	if ip.Is6() {
 		panic("IP address is not v4")
 	}
@@ -124,7 +124,7 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 			// See https://datatracker.ietf.org/doc/html/rfc1191#section-4
 			// Note: the go library does not handle this NextHopMTU section.
 			nextHopMTU := packetBytes[6:8]
-			mtu = int(binary.BigEndian.Uint16(nextHopMTU))
+			mtu = uint32(binary.BigEndian.Uint16(nextHopMTU))
 			err = checkMTU(mtu, minIPv4MTU, physicalLinkMTU)
 			if err != nil {
 				return 0, fmt.Errorf("checking next-hop-mtu found: %w", err)

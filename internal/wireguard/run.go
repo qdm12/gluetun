@@ -7,10 +7,8 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"golang.org/x/sys/unix"
 	"golang.zx2c4.com/wireguard/conn"
 	"golang.zx2c4.com/wireguard/device"
-	"golang.zx2c4.com/wireguard/ipc"
 	"golang.zx2c4.com/wireguard/tun"
 	"golang.zx2c4.com/wireguard/wgctrl"
 )
@@ -106,7 +104,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	if *w.settings.IPv6 {
 		// requires net.ipv6.conf.all.disable_ipv6=0
 		ruleCleanup6, err := w.addRule(w.settings.RulePriority,
-			w.settings.FirewallMark, unix.AF_INET6)
+			w.settings.FirewallMark, netlink.FamilyV6)
 		if err != nil {
 			waitError <- fmt.Errorf("adding IPv6 rule: %w", err)
 			return
@@ -115,7 +113,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	}
 
 	ruleCleanup, err := w.addRule(w.settings.RulePriority,
-		w.settings.FirewallMark, unix.AF_INET)
+		w.settings.FirewallMark, netlink.FamilyV4)
 	if err != nil {
 		waitError <- fmt.Errorf("adding IPv4 rule: %w", err)
 		return
@@ -217,14 +215,14 @@ func setupUserSpace(ctx context.Context,
 		return nil
 	})
 
-	uapiFile, err := ipc.UAPIOpen(interfaceName)
+	uapiFile, err := uapiOpen(interfaceName)
 	if err != nil {
 		return link, nil, fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
 	}
 
 	closers.add("closing UAPI file", stepThree, uapiFile.Close)
 
-	uapiListener, err := ipc.UAPIListen(interfaceName, uapiFile)
+	uapiListener, err := uapiListen(interfaceName, uapiFile)
 	if err != nil {
 		return link, nil, fmt.Errorf("%w: %s", ErrUAPIListen, err)
 	}

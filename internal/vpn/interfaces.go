@@ -81,7 +81,7 @@ type Linker interface {
 	LinkDel(link netlink.Link) (err error)
 	LinkSetUp(link netlink.Link) (linkIndex int, err error)
 	LinkSetDown(link netlink.Link) (err error)
-	LinkSetMTU(link netlink.Link, mtu int) (err error)
+	LinkSetMTU(link netlink.Link, mtu uint32) (err error)
 }
 
 type DNSLoop interface {

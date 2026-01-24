@@ -13,7 +13,7 @@ var (
 	ErrICMPNextHopMTUTooHigh = errors.New("ICMP Next Hop MTU is too high")
 )
 
-func checkMTU(mtu, minMTU, physicalLinkMTU int) (err error) {
+func checkMTU(mtu, minMTU, physicalLinkMTU uint32) (err error) {
 	switch {
 	case mtu < minMTU:
 		return fmt.Errorf("%w: %d", ErrICMPNextHopMTUTooLow, mtu)

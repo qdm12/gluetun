@@ -6,7 +6,6 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"golang.org/x/sys/unix"
 )
 
 var (
@@ -35,7 +34,7 @@ func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
 			return route.Gw, nil
 		case route.Dst.IsSingleIP() &&
 			route.Dst.Addr().Compare(route.Src) == 0 &&
-			route.Table == unix.RT_TABLE_LOCAL: // Wireguard
+			route.Table == tableLocal: // Wireguard
 			route.Src = route.Src.Unmap()
 			if route.Src.Is6() {
 				return netip.Addr{}, fmt.Errorf("%w: %s", ErrVPNLocalGatewayIPv6NotSupported, route.Src)

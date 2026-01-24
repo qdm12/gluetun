@@ -581,7 +581,7 @@ type Linker interface {
 	LinkDel(link netlink.Link) (err error)
 	LinkSetUp(link netlink.Link) (linkIndex int, err error)
 	LinkSetDown(link netlink.Link) (err error)
-	LinkSetMTU(link netlink.Link, mtu int) error
+	LinkSetMTU(link netlink.Link, mtu uint32) error
 }
 
 type clier interface {
