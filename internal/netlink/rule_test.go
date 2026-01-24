@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ruleDbgMsg(t *testing.T) {
+func Test_Rule_debugMessage(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
@@ -15,7 +15,7 @@ func Test_ruleDbgMsg(t *testing.T) {
 		dbgMsg string
 	}{
 		"default values": {
-			dbgMsg: "ip -f 0 rule del pref 0",
+			dbgMsg: "ip -f 0 rule del",
 		},
 		"add rule": {
 			add: true,
@@ -24,7 +24,7 @@ func Test_ruleDbgMsg(t *testing.T) {
 				Src:      makeNetipPrefix(1),
 				Dst:      makeNetipPrefix(2),
 				Table:    100,
-				Priority: 101,
+				Priority: ptrTo(uint32(101)),
 			},
 			dbgMsg: "ip -f inet rule add from 1.1.1.0/24 to 2.2.2.0/24 lookup 100 pref 101",
 		},
@@ -34,7 +34,7 @@ func Test_ruleDbgMsg(t *testing.T) {
 				Src:      makeNetipPrefix(1),
 				Dst:      makeNetipPrefix(2),
 				Table:    100,
-				Priority: 101,
+				Priority: ptrTo(uint32(101)),
 			},
 			dbgMsg: "ip -f inet rule del from 1.1.1.0/24 to 2.2.2.0/24 lookup 100 pref 101",
 		},
@@ -44,7 +44,7 @@ func Test_ruleDbgMsg(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			dbgMsg := ruleDbgMsg(testCase.add, testCase.rule)
+			dbgMsg := testCase.rule.debugMessage(testCase.add)
 
 			assert.Equal(t, testCase.dbgMsg, dbgMsg)
 		})

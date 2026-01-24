@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	ErrDetectKernel      = errors.New("cannot detect Kernel support")
 	ErrCreateTun         = errors.New("cannot create TUN device")
 	ErrAddLink           = errors.New("cannot add Wireguard link")
 	ErrFindLink          = errors.New("cannot find link")
@@ -32,7 +33,11 @@ var (
 
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
 func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<- struct{}) {
-	kernelSupported := w.netlink.IsWireguardSupported()
+	kernelSupported, err := w.netlink.IsWireguardSupported()
+	if err != nil {
+		waitError <- fmt.Errorf("%w: %s", ErrDetectKernel, err)
+		return
+	}
 
 	setupFunction := setupUserSpace
 	switch w.settings.Implementation {
@@ -65,14 +70,14 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	defer closers.cleanup(w.logger)
 
-	link, waitAndCleanup, err := setupFunction(ctx,
+	linkIndex, waitAndCleanup, err := setupFunction(ctx,
 		w.settings.InterfaceName, w.netlink, w.settings.MTU, &closers, w.logger)
 	if err != nil {
 		waitError <- err
 		return
 	}
 
-	err = w.addAddresses(link, w.settings.Addresses)
+	err = w.addAddresses(linkIndex, w.settings.Addresses)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrAddAddress, err)
 		return
@@ -85,17 +90,16 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	linkIndex, err := w.netlink.LinkSetUp(link)
+	err = w.netlink.LinkSetUp(linkIndex)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrIfaceUp, err)
 		return
 	}
-	link.Index = linkIndex
 	closers.add("shutting down link", stepFour, func() error {
-		return w.netlink.LinkSetDown(link)
+		return w.netlink.LinkSetDown(linkIndex)
 	})
 
-	err = w.addRoutes(link, w.settings.AllowedIPs, w.settings.FirewallMark)
+	err = w.addRoutes(linkIndex, w.settings.AllowedIPs, w.settings.FirewallMark)
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrRouteAdd, err)
 		return
@@ -131,39 +135,38 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 type waitAndCleanupFunc func() error
 
 func setupKernelSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker, mtu uint16,
+	interfaceName string, netLinker NetLinker, mtu uint32,
 	closers *closers, logger Logger) (
-	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error,
+	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, err error,
 ) {
-	link = netlink.Link{
-		Type: "wireguard",
-		Name: interfaceName,
-		MTU:  mtu,
-	}
 	links, err := netLinker.LinkList()
 	if err != nil {
-		return link, nil, fmt.Errorf("listing links: %w", err)
+		return 0, nil, fmt.Errorf("listing links: %w", err)
 	}
 
 	// Cleanup any previous Wireguard interface with the same name
 	// See https://github.com/qdm12/gluetun/issues/1669
 	for _, link := range links {
-		if link.Type == "wireguard" && link.Name == interfaceName {
-			err = netLinker.LinkDel(link)
+		if link.VirtualType == "wireguard" && link.Name == interfaceName {
+			err = netLinker.LinkDel(link.Index)
 			if err != nil {
-				return link, nil, fmt.Errorf("deleting previous Wireguard link %s: %w",
+				return 0, nil, fmt.Errorf("deleting previous Wireguard link %s: %w",
 					interfaceName, err)
 			}
 		}
 	}
 
-	linkIndex, err := netLinker.LinkAdd(link)
-	if err != nil {
-		return link, nil, fmt.Errorf("%w: %s", ErrAddLink, err)
+	link := netlink.Link{
+		VirtualType: "wireguard",
+		Name:        interfaceName,
+		MTU:         mtu,
 	}
-	link.Index = linkIndex
+	linkIndex, err = netLinker.LinkAdd(link)
+	if err != nil {
+		return 0, nil, fmt.Errorf("%w: %s", ErrAddLink, err)
+	}
 	closers.add("deleting link", stepFive, func() error {
-		return netLinker.LinkDel(link)
+		return netLinker.LinkDel(linkIndex)
 	})
 
 	waitAndCleanup = func() error {
@@ -172,35 +175,35 @@ func setupKernelSpace(ctx context.Context,
 		return ctx.Err()
 	}
 
-	return link, waitAndCleanup, nil
+	return linkIndex, waitAndCleanup, nil
 }
 
 func setupUserSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker, mtu uint16,
+	interfaceName string, netLinker NetLinker, mtu uint32,
 	closers *closers, logger Logger) (
-	link netlink.Link, waitAndCleanup waitAndCleanupFunc, err error,
+	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, err error,
 ) {
 	tun, err := tun.CreateTUN(interfaceName, int(mtu))
 	if err != nil {
-		return link, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
+		return 0, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
 	}
 
 	closers.add("closing TUN device", stepSeven, tun.Close)
 
 	tunName, err := tun.Name()
 	if err != nil {
-		return link, nil, fmt.Errorf("%w: cannot get TUN name: %s", ErrCreateTun, err)
+		return 0, nil, fmt.Errorf("%w: cannot get TUN name: %s", ErrCreateTun, err)
 	} else if tunName != interfaceName {
-		return link, nil, fmt.Errorf("%w: names don't match: expected %q and got %q",
+		return 0, nil, fmt.Errorf("%w: names don't match: expected %q and got %q",
 			ErrCreateTun, interfaceName, tunName)
 	}
 
-	link, err = netLinker.LinkByName(interfaceName)
+	link, err := netLinker.LinkByName(interfaceName)
 	if err != nil {
-		return link, nil, fmt.Errorf("%w: %s: %s", ErrFindLink, interfaceName, err)
+		return 0, nil, fmt.Errorf("%w: %s: %s", ErrFindLink, interfaceName, err)
 	}
 	closers.add("deleting link", stepFive, func() error {
-		return netLinker.LinkDel(link)
+		return netLinker.LinkDel(link.Index)
 	})
 
 	bind := conn.NewDefaultBind()
@@ -217,14 +220,14 @@ func setupUserSpace(ctx context.Context,
 
 	uapiFile, err := uapiOpen(interfaceName)
 	if err != nil {
-		return link, nil, fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
+		return 0, nil, fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
 	}
 
 	closers.add("closing UAPI file", stepThree, uapiFile.Close)
 
 	uapiListener, err := uapiListen(interfaceName, uapiFile)
 	if err != nil {
-		return link, nil, fmt.Errorf("%w: %s", ErrUAPIListen, err)
+		return 0, nil, fmt.Errorf("%w: %s", ErrUAPIListen, err)
 	}
 
 	closers.add("closing UAPI listener", stepTwo, uapiListener.Close)
@@ -249,7 +252,7 @@ func setupUserSpace(ctx context.Context,
 		return err
 	}
 
-	return link, waitAndCleanup, nil
+	return link.Index, waitAndCleanup, nil
 }
 
 func acceptAndHandle(uapi net.Listener, device *device.Device,

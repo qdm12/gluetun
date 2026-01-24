@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func FamilyToString(family int) string {
+func FamilyToString(family uint8) string {
 	switch family {
 	case FamilyAll:
 		return "all"

@@ -172,7 +172,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	// the new MTU is set again, but this is necessary to find the highest valid MTU.
 	logger.Debugf("VPN interface %s MTU temporarily set to %d", vpnInterface, vpnLinkMTU)
 
-	err = netlinker.LinkSetMTU(link, vpnLinkMTU)
+	err = netlinker.LinkSetMTU(link.Index, vpnLinkMTU)
 	if err != nil {
 		return fmt.Errorf("setting VPN interface %s MTU to %d: %w", vpnInterface, vpnLinkMTU, err)
 	}
@@ -183,14 +183,14 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	case err == nil:
 		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
 	case errors.Is(err, pmtud.ErrMTUNotFound) || errors.Is(err, pmtud.ErrICMPNotPermitted):
-		vpnLinkMTU = uint32(originalMTU)
+		vpnLinkMTU = originalMTU
 		logger.Infof("reverting VPN interface %s MTU to %d (due to: %s)",
 			vpnInterface, originalMTU, err)
 	default:
 		return fmt.Errorf("path MTU discovering: %w", err)
 	}
 
-	err = netlinker.LinkSetMTU(link, vpnLinkMTU)
+	err = netlinker.LinkSetMTU(link.Index, vpnLinkMTU)
 	if err != nil {
 		return fmt.Errorf("setting VPN interface %s MTU to %d: %w", vpnInterface, vpnLinkMTU, err)
 	}

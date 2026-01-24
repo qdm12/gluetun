@@ -1,107 +1,191 @@
 package netlink
 
-import "github.com/vishvananda/netlink"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/jsimonetti/rtnetlink"
+)
+
+type DeviceType uint16
+
+type Link struct {
+	Index       uint32
+	Name        string
+	DeviceType  DeviceType
+	VirtualType string
+	MTU         uint32
+}
 
 func (n *NetLink) LinkList() (links []Link, err error) {
-	netlinkLinks, err := netlink.LinkList()
+	conn, err := rtnetlink.Dial(nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	linkMessages, err := conn.Link.List()
+	if err != nil {
+		return nil, fmt.Errorf("listing interfaces: %w", err)
 	}
 
-	links = make([]Link, len(netlinkLinks))
-	for i := range netlinkLinks {
-		links[i] = netlinkLinkToLink(netlinkLinks[i])
+	links = make([]Link, len(linkMessages))
+	for i, message := range linkMessages {
+		virtualType := ""
+		if message.Attributes.Info != nil {
+			virtualType = message.Attributes.Info.Kind
+		}
+		links[i] = Link{
+			Index:       message.Index,
+			Name:        message.Attributes.Name,
+			DeviceType:  DeviceType(message.Type),
+			VirtualType: virtualType,
+			MTU:         message.Attributes.MTU,
+		}
 	}
 
 	return links, nil
 }
 
+var ErrLinkNotFound = errors.New("link not found")
+
 func (n *NetLink) LinkByName(name string) (link Link, err error) {
-	netlinkLink, err := netlink.LinkByName(name)
+	links, err := n.LinkList()
 	if err != nil {
-		return Link{}, err
+		return Link{}, fmt.Errorf("listing links: %w", err)
 	}
 
-	return netlinkLinkToLink(netlinkLink), nil
+	for _, link := range links {
+		if link.Name == name {
+			return link, nil
+		}
+	}
+
+	return Link{}, fmt.Errorf("%w: for name %s", ErrLinkNotFound, name)
 }
 
-func (n *NetLink) LinkByIndex(index int) (link Link, err error) {
-	netlinkLink, err := netlink.LinkByIndex(index)
+func (n *NetLink) LinkByIndex(index uint32) (link Link, err error) {
+	links, err := n.LinkList()
 	if err != nil {
-		return Link{}, err
+		return Link{}, fmt.Errorf("listing links: %w", err)
 	}
 
-	return netlinkLinkToLink(netlinkLink), nil
+	for _, link = range links {
+		if link.Index == index {
+			return link, nil
+		}
+	}
+
+	return Link{}, fmt.Errorf("%w: for index %d", ErrLinkNotFound, index)
 }
 
-func (n *NetLink) LinkAdd(link Link) (linkIndex int, err error) {
-	netlinkLink := linkToNetlinkLink(&link)
-	err = netlink.LinkAdd(netlinkLink)
+func (n *NetLink) LinkAdd(link Link) (linkIndex uint32, err error) {
+	conn, err := rtnetlink.Dial(nil)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("dialing netlink: %w", err)
 	}
-	return netlinkLink.Attrs().Index, nil
-}
+	defer conn.Close()
 
-func (n *NetLink) LinkDel(link Link) (err error) {
-	return netlink.LinkDel(linkToNetlinkLink(&link))
-}
-
-func (n *NetLink) LinkSetUp(link Link) (linkIndex int, err error) {
-	netlinkLink := linkToNetlinkLink(&link)
-	err = netlink.LinkSetUp(netlinkLink)
-	if err != nil {
-		return 0, err
-	}
-	return netlinkLink.Attrs().Index, nil
-}
-
-func (n *NetLink) LinkSetDown(link Link) (err error) {
-	return netlink.LinkSetDown(linkToNetlinkLink(&link))
-}
-
-func (n *NetLink) LinkSetMTU(link Link, mtu uint32) error {
-	return netlink.LinkSetMTU(linkToNetlinkLink(&link), int(mtu))
-}
-
-type netlinkLinkImpl struct {
-	attrs    *netlink.LinkAttrs
-	linkType string
-}
-
-func (n *netlinkLinkImpl) Attrs() *netlink.LinkAttrs {
-	return n.attrs
-}
-
-func (n *netlinkLinkImpl) Type() string {
-	return n.linkType
-}
-
-func netlinkLinkToLink(netlinkLink netlink.Link) Link {
-	attributes := netlinkLink.Attrs()
-	return Link{
-		Type:      netlinkLink.Type(),
-		Name:      attributes.Name,
-		Index:     attributes.Index,
-		EncapType: attributes.EncapType,
-		MTU:       uint16(attributes.MTU), //nolint:gosec
-	}
-}
-
-// Warning: we must return `netlink.Link` and not `netlinkLinkImpl`
-// so that the vishvananda/netlink package can compare the returned
-// value against an untyped nil.
-func linkToNetlinkLink(link *Link) netlink.Link {
-	if link == nil {
-		return nil
-	}
-	return &netlinkLinkImpl{
-		linkType: link.Type,
-		attrs: &netlink.LinkAttrs{
-			Name:      link.Name,
-			Index:     link.Index,
-			EncapType: link.EncapType,
-			MTU:       int(link.MTU),
+	tx := &rtnetlink.LinkMessage{
+		Type: uint16(link.DeviceType),
+		Attributes: &rtnetlink.LinkAttributes{
+			MTU:  link.MTU,
+			Name: link.Name,
 		},
 	}
+	if link.VirtualType != "" {
+		tx.Attributes.Info = &rtnetlink.LinkInfo{
+			Kind: link.VirtualType,
+		}
+	}
+
+	err = conn.Link.New(tx)
+	if err != nil {
+		return 0, fmt.Errorf("creating new link: %w", err)
+	}
+
+	linkMessages, err := conn.Link.List()
+	if err != nil {
+		return 0, fmt.Errorf("listing links: %w", err)
+	}
+	for _, linkMessage := range linkMessages {
+		if linkMessage.Attributes.Name == link.Name {
+			return linkMessage.Index, nil
+		}
+	}
+
+	return 0, fmt.Errorf("%w: matching name %s", ErrLinkNotFound, link.Name)
+}
+
+func (n *NetLink) LinkDel(linkIndex uint32) (err error) {
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	return conn.Link.Delete(linkIndex)
+}
+
+func (n *NetLink) LinkSetUp(linkIndex uint32) (err error) {
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	rx, err := conn.Link.Get(linkIndex)
+	if err != nil {
+		return fmt.Errorf("getting link: %w", err)
+	}
+	tx := &rtnetlink.LinkMessage{
+		Type:   rx.Type,
+		Index:  linkIndex,
+		Flags:  iffUp,
+		Change: iffUp,
+	}
+	return conn.Link.Set(tx)
+}
+
+func (n *NetLink) LinkSetDown(linkIndex uint32) (err error) {
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	linkInfo, err := conn.Link.Get(linkIndex)
+	if err != nil {
+		return fmt.Errorf("getting link: %w", err)
+	}
+	message := &rtnetlink.LinkMessage{
+		Type:   linkInfo.Type,
+		Index:  linkIndex,
+		Flags:  0,
+		Change: iffUp,
+	}
+	return conn.Link.Set(message)
+}
+
+func (n *NetLink) LinkSetMTU(linkIndex, mtu uint32) error {
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	message := &rtnetlink.LinkMessage{
+		Index: linkIndex,
+		Attributes: &rtnetlink.LinkAttributes{
+			MTU: mtu,
+		},
+	}
+
+	err = conn.Link.Set(message)
+	if err != nil {
+		return fmt.Errorf("setting MTU to %d for link at index %d: %w",
+			mtu, linkIndex, err)
+	}
+
+	return nil
 }

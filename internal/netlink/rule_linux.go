@@ -1,8 +1,18 @@
 package netlink
 
-import "github.com/vishvananda/netlink"
+import (
+	"fmt"
 
-func (n *NetLink) RuleList(family int) (rules []Rule, err error) {
+	"github.com/jsimonetti/rtnetlink"
+	"golang.org/x/sys/unix"
+)
+
+const (
+	FlagInvert    = unix.FIB_RULE_INVERT
+	ActionToTable = unix.FR_ACT_TO_TBL
+)
+
+func (n *NetLink) RuleList(family uint8) (rules []Rule, err error) {
 	switch family {
 	case FamilyAll:
 		n.debugLogger.Debug("ip -4 rule list")
@@ -12,26 +22,48 @@ func (n *NetLink) RuleList(family int) (rules []Rule, err error) {
 	case FamilyV6:
 		n.debugLogger.Debug("ip -6 rule list")
 	}
-	netlinkRules, err := netlink.RuleList(family)
+
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return nil, fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	ruleMessages, err := conn.Rule.List()
 	if err != nil {
 		return nil, err
 	}
 
-	rules = make([]Rule, len(netlinkRules))
-	for i := range netlinkRules {
-		rules[i] = netlinkRuleToRule(netlinkRules[i])
+	rules = make([]Rule, 0, len(ruleMessages))
+	for _, message := range ruleMessages {
+		if family != FamilyAll && family != message.Family {
+			continue
+		}
+		var rule Rule
+		rule.fromMessage(message)
+		rules = append(rules, rule)
 	}
 	return rules, nil
 }
 
 func (n *NetLink) RuleAdd(rule Rule) error {
-	n.debugLogger.Debug(ruleDbgMsg(true, rule))
-	netlinkRule := ruleToNetlinkRule(rule)
-	return netlink.RuleAdd(&netlinkRule)
+	n.debugLogger.Debug(rule.debugMessage(true))
+
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+	return conn.Rule.Add(rule.message())
 }
 
 func (n *NetLink) RuleDel(rule Rule) error {
-	n.debugLogger.Debug(ruleDbgMsg(false, rule))
-	netlinkRule := ruleToNetlinkRule(rule)
-	return netlink.RuleDel(&netlinkRule)
+	n.debugLogger.Debug(rule.debugMessage(false))
+
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+	return conn.Rule.Delete(rule.message())
 }

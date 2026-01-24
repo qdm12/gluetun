@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	outboundTable    = 199
-	outboundPriority = 99
+	outboundTable    uint32 = 199
+	outboundPriority uint32 = 99
 )
 
 func (r *Routing) SetOutboundRoutes(outboundSubnets []netip.Prefix) error {

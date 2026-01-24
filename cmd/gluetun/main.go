@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"net/netip"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -549,26 +550,26 @@ type netLinker interface {
 	Router
 	Ruler
 	Linker
-	IsWireguardSupported() bool
+	IsWireguardSupported() (ok bool, err error)
 	IsIPv6Supported() (ok bool, err error)
 	PatchLoggerLevel(level log.Level)
 }
 
 type Addresser interface {
-	AddrList(link netlink.Link, family int) (
-		addresses []netlink.Addr, err error)
-	AddrReplace(link netlink.Link, addr netlink.Addr) error
+	AddrList(linkIndex uint32, family uint8) (
+		addresses []netip.Prefix, err error)
+	AddrReplace(linkIndex uint32, addr netip.Prefix) error
 }
 
 type Router interface {
-	RouteList(family int) (routes []netlink.Route, err error)
+	RouteList(family uint8) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
 	RouteDel(route netlink.Route) error
 	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {
-	RuleList(family int) (rules []netlink.Rule, err error)
+	RuleList(family uint8) (rules []netlink.Rule, err error)
 	RuleAdd(rule netlink.Rule) error
 	RuleDel(rule netlink.Rule) error
 }
@@ -576,12 +577,12 @@ type Ruler interface {
 type Linker interface {
 	LinkList() (links []netlink.Link, err error)
 	LinkByName(name string) (link netlink.Link, err error)
-	LinkByIndex(index int) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (linkIndex int, err error)
-	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (linkIndex int, err error)
-	LinkSetDown(link netlink.Link) (err error)
-	LinkSetMTU(link netlink.Link, mtu uint32) error
+	LinkByIndex(index uint32) (link netlink.Link, err error)
+	LinkAdd(link netlink.Link) (linkIndex uint32, err error)
+	LinkDel(linkIndex uint32) (err error)
+	LinkSetUp(linkIndex uint32) (err error)
+	LinkSetDown(linkIndex uint32) (err error)
+	LinkSetMTU(linkIndex, mtu uint32) error
 }
 
 type clier interface {

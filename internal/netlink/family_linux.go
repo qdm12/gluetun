@@ -3,7 +3,7 @@ package netlink
 import "golang.org/x/sys/unix"
 
 const (
-	FamilyAll = unix.AF_UNSPEC
-	FamilyV4  = unix.AF_INET
-	FamilyV6  = unix.AF_INET6
+	FamilyAll uint8 = unix.AF_UNSPEC
+	FamilyV4  uint8 = unix.AF_INET
+	FamilyV6  uint8 = unix.AF_INET6
 )

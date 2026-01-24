@@ -4,6 +4,8 @@ package netlink
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func Test_NetLink_IsWireguardSupported(t *testing.T) {
@@ -12,7 +14,8 @@ func Test_NetLink_IsWireguardSupported(t *testing.T) {
 	netLink := &NetLink{
 		debugLogger: &noopLogger{},
 	}
-	ok := netLink.IsWireguardSupported()
+	ok, err := netLink.IsWireguardSupported()
+	require.NoError(t, err)
 	if ok { // cannot assert since this depends on kernel
 		t.Log("wireguard is supported")
 	} else {
