@@ -1,4 +1,4 @@
-package pmtud
+package test
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_makeMTUsToTest(t *testing.T) {
+func Test_MakeMTUsToTest(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
@@ -48,7 +48,7 @@ func Test_makeMTUsToTest(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			mtus := makeMTUsToTest(testCase.minMTU, testCase.maxMTU)
+			mtus := MakeMTUsToTest(testCase.minMTU, testCase.maxMTU)
 			assert.Equal(t, testCase.mtus, mtus)
 		})
 	}

@@ -1,6 +1,4 @@
-//go:build windows
-
-package pmtud
+package icmp
 
 import (
 	"syscall"

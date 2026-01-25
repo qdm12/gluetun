@@ -2,7 +2,6 @@ package vpn
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/netip"
 	"time"
@@ -17,9 +16,14 @@ import (
 type tunnelUpData struct {
 	// Healthcheck
 	serverIP netip.Addr
-	// vpnType is used for path MTU discovery to find the protocol overhead.
-	// It can be "wireguard" or "openvpn".
+	// vpnType is used for path MTU discovery to find the maximum
+	// IP packet overhead. It can be [vpn.Wireguard] or [vpn.OpenVPN].
 	vpnType string
+	// network is used for path MTU discovery to find the maximum
+	// IP packet overhead. It can be [constants.UDP] or [constants.TCP].
+	network string
+	// tcpAddresses is used for (TCP) path MTU discovery.
+	tcpAddresses []netip.AddrPort
 	// Port forwarding
 	vpnIntf        string
 	serverName     string // used for PIA
@@ -41,7 +45,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 
 	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
 	err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
-		l.netLinker, l.routing, mtuLogger)
+		data.network, data.tcpAddresses, l.netLinker, l.routing, mtuLogger)
 	if err != nil {
 		mtuLogger.Error(err.Error())
 	}
@@ -136,12 +140,11 @@ func (l *Loop) restartVPN(ctx context.Context, healthErr error) {
 	_, _ = l.ApplyStatus(ctx, constants.Running)
 }
 
-var errVPNTypeUnknown = errors.New("unknown VPN type")
-
 func updateToMaxMTU(ctx context.Context, vpnInterface string,
-	vpnType string, netlinker NetLinker, routing Routing, logger *log.Logger,
+	vpnType, network string, tcpAddresses []netip.AddrPort,
+	netlinker NetLinker, routing Routing, logger *log.Logger,
 ) error {
-	logger.Info("finding maximum MTU, this can take up to 4 seconds")
+	logger.Info("finding maximum MTU, this can take up to 6 seconds")
 
 	vpnGatewayIP, err := routing.VPNLocalGatewayIP(vpnInterface)
 	if err != nil {
@@ -155,18 +158,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 
 	originalMTU := link.MTU
 
-	// Note: no point testing for an MTU of 1500, it will never work due to the VPN
-	// protocol overhead, so start lower than 1500 according to the protocol used.
-	const physicalLinkMTU uint32 = 1500
-	vpnLinkMTU := physicalLinkMTU
-	switch vpnType {
-	case "wireguard":
-		vpnLinkMTU -= 60 // Wireguard overhead
-	case "openvpn":
-		vpnLinkMTU -= 41 // OpenVPN overhead
-	default:
-		return fmt.Errorf("%w: %q", errVPNTypeUnknown, vpnType)
-	}
+	vpnLinkMTU := pmtud.MaxTheoreticalVPNMTU(vpnType, network, vpnGatewayIP)
 
 	// Setting the VPN link MTU to 1500 might interrupt the connection until
 	// the new MTU is set again, but this is necessary to find the highest valid MTU.
@@ -178,16 +170,14 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	}
 
 	const pingTimeout = time.Second
-	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, vpnGatewayIP, vpnLinkMTU, pingTimeout, logger)
-	switch {
-	case err == nil:
-		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
-	case errors.Is(err, pmtud.ErrMTUNotFound) || errors.Is(err, pmtud.ErrICMPNotPermitted):
+	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, vpnGatewayIP, tcpAddresses,
+		vpnLinkMTU, pingTimeout, logger)
+	if err != nil {
 		vpnLinkMTU = originalMTU
 		logger.Infof("reverting VPN interface %s MTU to %d (due to: %s)",
 			vpnInterface, originalMTU, err)
-	default:
-		return fmt.Errorf("path MTU discovering: %w", err)
+	} else {
+		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
 	}
 
 	err = netlinker.LinkSetMTU(link.Index, vpnLinkMTU)

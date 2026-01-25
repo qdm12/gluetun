@@ -29,14 +29,18 @@ func Test_Settings_String(t *testing.T) {
 |   |       └── OpenVPN server selection settings:
 |   |           ├── Protocol: UDP
 |   |           └── Private Internet Access encryption preset: strong
-|   └── OpenVPN settings:
-|       ├── OpenVPN version: 2.6
-|       ├── User: [not set]
-|       ├── Password: [not set]
-|       ├── Private Internet Access encryption preset: strong
-|       ├── Network interface: tun0
-|       ├── Run OpenVPN as: root
-|       └── Verbosity level: 1
+|   ├── OpenVPN settings:
+|   |   ├── OpenVPN version: 2.6
+|   |   ├── User: [not set]
+|   |   ├── Password: [not set]
+|   |   ├── Private Internet Access encryption preset: strong
+|   |   ├── Network interface: tun0
+|   |   ├── Run OpenVPN as: root
+|   |   └── Verbosity level: 1
+|   └── Path MTU discovery:
+|       └── TCP addresses:
+|           ├── 1.1.1.1:443
+|           └── 8.8.8.8:443
 ├── DNS settings:
 |   ├── Keep existing nameserver(s): no
 |   ├── DNS server address to use: 127.0.0.1
