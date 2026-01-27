@@ -17,7 +17,7 @@ type PortAllower interface {
 
 type Routing interface {
 	VPNLocalGatewayIP(vpnInterface string) (gateway netip.Addr, err error)
-	AssignedIP(interfaceName string, family int) (ip netip.Addr, err error)
+	AssignedIP(interfaceName string, family uint8) (ip netip.Addr, err error)
 }
 
 type Logger interface {

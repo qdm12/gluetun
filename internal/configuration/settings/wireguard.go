@@ -46,7 +46,7 @@ type Wireguard struct {
 	// investigation in the issue:
 	// https://github.com/qdm12/gluetun/issues/2533.
 	// Note this should now be replaced with the PMTUD feature.
-	MTU uint16 `json:"mtu"`
+	MTU uint32 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
 	// It defaults to "auto" and cannot be the empty string
@@ -273,7 +273,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	mtuPtr, err := r.Uint16Ptr("WIREGUARD_MTU")
+	mtuPtr, err := r.Uint32Ptr("WIREGUARD_MTU")
 	if err != nil {
 		return err
 	} else if mtuPtr != nil {

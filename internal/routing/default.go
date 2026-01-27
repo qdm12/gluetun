@@ -14,7 +14,7 @@ type DefaultRoute struct {
 	NetInterface string
 	Gateway      netip.Addr
 	AssignedIP   netip.Addr
-	Family       int
+	Family       uint8
 }
 
 func (d DefaultRoute) String() string {

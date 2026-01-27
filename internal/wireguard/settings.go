@@ -38,10 +38,10 @@ type Settings struct {
 	FirewallMark uint32
 	// Maximum Transmission Unit (MTU) setting for the network interface.
 	// It defaults to device.DefaultMTU from wireguard-go which is 1420
-	MTU uint16
+	MTU uint32
 	// RulePriority is the priority for the rule created with the
 	// FirewallMark.
-	RulePriority int
+	RulePriority uint32
 	// IPv6 can bet set to true if IPv6 should be handled.
 	// It defaults to false if left unset.
 	IPv6 *bool

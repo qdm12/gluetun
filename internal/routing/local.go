@@ -26,10 +26,10 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		return localNetworks, fmt.Errorf("listing links: %w", err)
 	}
 
-	localLinks := make(map[int]struct{})
+	localLinks := make(map[uint32]struct{})
 
 	for _, link := range links {
-		if link.EncapType != "ether" {
+		if link.DeviceType != netlink.DeviceTypeEthernet {
 			continue
 		}
 
@@ -95,7 +95,7 @@ func (r *Routing) AddLocalRules(subnets []LocalNetwork) (err error) {
 
 		// Local has higher priority then outbound(99) and inbound(100) as the
 		// local routes might be necessary to reach the outbound/inbound routes.
-		const localPriority = 98
+		const localPriority uint32 = 98
 
 		// Main table was setup correctly by Docker, just need to add rules to use it
 		src := netip.Prefix{}
