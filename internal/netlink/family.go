@@ -4,13 +4,7 @@ import (
 	"fmt"
 )
 
-const (
-	FamilyAll = 0
-	FamilyV4  = 2
-	FamilyV6  = 10
-)
-
-func FamilyToString(family int) string {
+func FamilyToString(family uint8) string {
 	switch family {
 	case FamilyAll:
 		return "all"

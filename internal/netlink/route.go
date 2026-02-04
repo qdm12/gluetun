@@ -1,69 +1,125 @@
-//go:build linux || darwin
-
 package netlink
 
 import (
-	"github.com/vishvananda/netlink"
+	"fmt"
+	"net/netip"
+
+	"github.com/jsimonetti/rtnetlink"
 )
 
-func (n *NetLink) RouteList(family int) (routes []Route, err error) {
-	// We set the filter to netlink.RT_FILTER_TABLE so that
-	// routes from all tables are listed, as long as the filter
-	// table is set to 0.
-	const filterMask = netlink.RT_FILTER_TABLE
-	// The filter is not left to `nil` otherwise non-main tables
-	// are ignored.
-	filter := &netlink.Route{}
+type Route struct {
+	LinkIndex uint32
+	Dst       netip.Prefix
+	Src       netip.Prefix
+	Gw        netip.Addr
+	Priority  uint32
+	Family    uint8
+	Table     uint32
+	Type      uint8
+	Scope     uint8
+	Proto     uint8
+}
 
-	netlinkRoutes, err := netlink.RouteListFiltered(family, filter, filterMask)
+func (r *Route) fromMessage(message rtnetlink.RouteMessage) {
+	table := uint32(message.Table)
+	if table == 0 || table == rtTableCompat {
+		table = message.Attributes.Table
+	}
+	r.LinkIndex = message.Attributes.OutIface
+	r.Dst = ipAndLengthToPrefix(&message.Attributes.Dst, message.DstLength)
+	r.Src = ipAndLengthToPrefix(&message.Attributes.Src, message.SrcLength)
+	r.Gw = netIPToNetipAddress(message.Attributes.Gateway)
+	r.Priority = message.Attributes.Priority
+	r.Family = message.Family
+	r.Table = table
+	r.Type = message.Type
+	r.Scope = message.Scope
+	r.Proto = message.Protocol
+}
+
+func (r Route) message() *rtnetlink.RouteMessage {
+	dst, dstLength := prefixToIPAndLength(r.Dst)
+	src, srcLength := prefixToIPAndLength(r.Src)
+	var table uint8
+	var extendedTable uint32
+	if r.Table <= uint32(^uint8(0)) {
+		table = uint8(r.Table)
+	} else {
+		table = rtTableCompat
+		extendedTable = r.Table
+	}
+	message := &rtnetlink.RouteMessage{
+		Family:    r.Family,
+		DstLength: dstLength,
+		SrcLength: srcLength,
+		Table:     table,
+		Type:      r.Type,
+		Scope:     r.Scope,
+		Protocol:  r.Proto,
+		Attributes: rtnetlink.RouteAttributes{
+			OutIface: r.LinkIndex,
+			Dst:      *dst, // there should always be a dst for routes
+			Gateway:  netipAddrToNetIP(r.Gw),
+			Priority: r.Priority,
+			Table:    extendedTable,
+		},
+	}
+	if src != nil { // src is optional
+		message.Attributes.Src = *src
+	}
+	return message
+}
+
+func (n *NetLink) RouteList(family uint8) (routes []Route, err error) {
+	conn, err := rtnetlink.Dial(nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	routeMessages, err := conn.Route.List()
+	if err != nil {
+		return nil, fmt.Errorf("listing interfaces: %w", err)
 	}
 
-	routes = make([]Route, len(netlinkRoutes))
-	for i := range netlinkRoutes {
-		routes[i] = netlinkRouteToRoute(netlinkRoutes[i])
+	routes = make([]Route, 0, len(routeMessages))
+	for _, routeMessage := range routeMessages {
+		if family != FamilyAll && routeMessage.Family != family {
+			continue
+		}
+		var route Route
+		route.fromMessage(routeMessage)
+		routes = append(routes, route)
 	}
 	return routes, nil
 }
 
 func (n *NetLink) RouteAdd(route Route) error {
-	netlinkRoute := routeToNetlinkRoute(route)
-	return netlink.RouteAdd(&netlinkRoute)
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	return conn.Route.Add(route.message())
 }
 
 func (n *NetLink) RouteDel(route Route) error {
-	netlinkRoute := routeToNetlinkRoute(route)
-	return netlink.RouteDel(&netlinkRoute)
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
+	}
+	defer conn.Close()
+
+	return conn.Route.Delete(route.message())
 }
 
 func (n *NetLink) RouteReplace(route Route) error {
-	netlinkRoute := routeToNetlinkRoute(route)
-	return netlink.RouteReplace(&netlinkRoute)
-}
-
-func netlinkRouteToRoute(netlinkRoute netlink.Route) (route Route) {
-	return Route{
-		LinkIndex: netlinkRoute.LinkIndex,
-		Dst:       netIPNetToNetipPrefix(netlinkRoute.Dst),
-		Src:       netIPToNetipAddress(netlinkRoute.Src),
-		Gw:        netIPToNetipAddress(netlinkRoute.Gw),
-		Priority:  netlinkRoute.Priority,
-		Family:    netlinkRoute.Family,
-		Table:     netlinkRoute.Table,
-		Type:      netlinkRoute.Type,
+	conn, err := rtnetlink.Dial(nil)
+	if err != nil {
+		return fmt.Errorf("dialing netlink: %w", err)
 	}
-}
+	defer conn.Close()
 
-func routeToNetlinkRoute(route Route) (netlinkRoute netlink.Route) {
-	return netlink.Route{
-		LinkIndex: route.LinkIndex,
-		Dst:       netipPrefixToIPNet(route.Dst),
-		Src:       netipAddrToNetIP(route.Src),
-		Gw:        netipAddrToNetIP(route.Gw),
-		Priority:  route.Priority,
-		Family:    route.Family,
-		Table:     route.Table,
-		Type:      route.Type,
-	}
+	return conn.Route.Replace(route.message())
 }

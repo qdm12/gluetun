@@ -1,12 +1,12 @@
-//go:build linux
-
 package netlink
 
 import (
+	"errors"
 	"fmt"
+	"os"
 
+	"github.com/mdlayher/genetlink"
 	"github.com/qdm12/gluetun/internal/mod"
-	"github.com/vishvananda/netlink"
 )
 
 func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
@@ -15,9 +15,8 @@ func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
 	// modules directory, such as WSL2 kernels.
 	ok, err = hasWireguardFamily()
 	if err != nil {
-		return false, fmt.Errorf("checking for wireguard family: %w", err)
-	}
-	if ok {
+		return false, fmt.Errorf("checking wireguard family: %w", err)
+	} else if ok {
 		return true, nil
 	}
 
@@ -35,20 +34,25 @@ func (n *NetLink) IsWireguardSupported() (ok bool, err error) {
 	// the wireguard kernel module.
 	ok, err = hasWireguardFamily()
 	if err != nil {
-		return false, fmt.Errorf("checking for wireguard family: %w", err)
+		return false, fmt.Errorf("checking wireguard family: %w", err)
 	}
 	return ok, nil
 }
 
 func hasWireguardFamily() (ok bool, err error) {
-	families, err := netlink.GenlFamilyList()
+	conn, err := genetlink.Dial(nil)
 	if err != nil {
-		return false, fmt.Errorf("listing gen 1 families: %w", err)
+		return false, fmt.Errorf("dialing netlink: %w", err)
 	}
-	for _, family := range families {
-		if family.Name == "wireguard" {
-			return true, nil
+	defer conn.Close()
+
+	_, err = conn.GetFamily("wireguard")
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return false, nil
 		}
+		return false, fmt.Errorf("getting wireguard family: %w", err)
 	}
-	return false, nil
+
+	return true, nil
 }

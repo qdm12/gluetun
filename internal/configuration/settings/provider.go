@@ -48,6 +48,10 @@ func (p *Provider) validate(vpnType string, filterChoicesGetter FilterChoicesGet
 		return fmt.Errorf("%w for Wireguard: %w", ErrVPNProviderNameNotValid, err)
 	}
 
+	if p.Name == providers.Mullvad && vpnType == vpn.OpenVPN {
+		warner.Warn("https://mullvad.net/en/blog/removing-openvpn-15th-january-2026")
+	}
+
 	err = p.ServerSelection.validate(p.Name, filterChoicesGetter, warner)
 	if err != nil {
 		return fmt.Errorf("server selection: %w", err)

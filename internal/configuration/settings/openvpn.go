@@ -209,8 +209,7 @@ func validateOpenVPNClientKey(vpnProvider, clientKey string) (err error) {
 	case
 		providers.Airvpn,
 		providers.Cyberghost,
-		providers.VPNUnlimited,
-		providers.Wevpn:
+		providers.VPNUnlimited:
 		if clientKey == "" {
 			return fmt.Errorf("%w", ErrMissingValue)
 		}
