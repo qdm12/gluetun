@@ -108,9 +108,6 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			case providers.SlickVPN:
 				allowedTCP = []uint16{443, 8080, 8888}
 				allowedUDP = []uint16{443, 8080, 8888}
-			case providers.Wevpn:
-				allowedTCP = []uint16{53, 1195, 1199, 2018}
-				allowedUDP = []uint16{80, 1194, 1198}
 			case providers.Windscribe:
 				allowedTCP = []uint16{21, 22, 80, 123, 143, 443, 587, 1194, 3306, 8080, 54783}
 				allowedUDP = []uint16{53, 80, 123, 443, 1194, 54783}

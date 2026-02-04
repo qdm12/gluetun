@@ -166,8 +166,6 @@ func getMarkdownHeaders(vpnProvider string) (headers []string, err error) {
 		return []string{countryHeader, cityHeader, hostnameHeader, freeHeader, streamHeader, tcpHeader, udpHeader}, nil
 	case providers.Vyprvpn:
 		return []string{regionHeader, hostnameHeader, tcpHeader, udpHeader}, nil
-	case providers.Wevpn:
-		return []string{cityHeader, hostnameHeader, tcpHeader, udpHeader}, nil
 	case providers.Windscribe:
 		return []string{regionHeader, cityHeader, hostnameHeader, vpnHeader}, nil
 	default:

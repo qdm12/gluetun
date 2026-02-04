@@ -19,7 +19,7 @@ func (n *NetLink) IsIPv6Supported() (supported bool, err error) {
 			return false, fmt.Errorf("finding link corresponding to route: %w", err)
 		}
 
-		sourceIsIPv6 := route.Src.IsValid() && route.Src.Is6()
+		sourceIsIPv6 := route.Src.Addr().IsValid() && route.Src.Addr().Is6()
 		destinationIsIPv6 := route.Dst.IsValid() && route.Dst.Addr().Is6()
 		switch {
 		case !sourceIsIPv6 && !destinationIsIPv6,

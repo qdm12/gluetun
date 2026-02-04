@@ -57,7 +57,7 @@ type Storage interface {
 }
 
 type NetLinker interface {
-	AddrReplace(link netlink.Link, addr netlink.Addr) error
+	AddrReplace(linkIndex uint32, addr netip.Prefix) error
 	Router
 	Ruler
 	Linker
@@ -65,7 +65,7 @@ type NetLinker interface {
 }
 
 type Router interface {
-	RouteList(family int) (routes []netlink.Route, err error)
+	RouteList(family uint8) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
 }
 
@@ -77,10 +77,11 @@ type Ruler interface {
 type Linker interface {
 	LinkList() (links []netlink.Link, err error)
 	LinkByName(name string) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (linkIndex int, err error)
-	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (linkIndex int, err error)
-	LinkSetDown(link netlink.Link) (err error)
+	LinkAdd(link netlink.Link) (linkIndex uint32, err error)
+	LinkDel(linkIndex uint32) error
+	LinkSetUp(linkIndex uint32) error
+	LinkSetDown(linkIndex uint32) error
+	LinkSetMTU(linkIndex, mtu uint32) error
 }
 
 type DNSLoop interface {

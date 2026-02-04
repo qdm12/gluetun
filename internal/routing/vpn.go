@@ -6,7 +6,6 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"golang.org/x/sys/unix"
 )
 
 var (
@@ -34,13 +33,12 @@ func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
 		case route.Dst.IsValid() && route.Dst.Addr().IsUnspecified() && route.Gw.IsValid(): // OpenVPN
 			return route.Gw, nil
 		case route.Dst.IsSingleIP() &&
-			route.Dst.Addr().Compare(route.Src) == 0 &&
-			route.Table == unix.RT_TABLE_LOCAL: // Wireguard
-			route.Src = route.Src.Unmap()
-			if route.Src.Is6() {
+			route.Dst.Addr().Compare(route.Src.Addr()) == 0 &&
+			route.Table == tableLocal: // Wireguard
+			if route.Src.Addr().Is6() {
 				return netip.Addr{}, fmt.Errorf("%w: %s", ErrVPNLocalGatewayIPv6NotSupported, route.Src)
 			}
-			bytes := route.Src.As4()
+			bytes := route.Src.Addr().As4()
 			// force last byte to 1 to get the VPN gateway IP
 			// This is not necessarily bullet proof but it seems to work.
 			bytes[3] = 1

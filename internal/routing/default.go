@@ -6,7 +6,6 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"golang.org/x/sys/unix"
 )
 
 var ErrRouteDefaultNotFound = errors.New("default route not found")
@@ -15,7 +14,7 @@ type DefaultRoute struct {
 	NetInterface string
 	Gateway      netip.Addr
 	AssignedIP   netip.Addr
-	Family       int
+	Family       uint8
 }
 
 func (d DefaultRoute) String() string {
@@ -30,7 +29,7 @@ func (r *Routing) DefaultRoutes() (defaultRoutes []DefaultRoute, err error) {
 	}
 
 	for _, route := range routes {
-		if route.Table != unix.RT_TABLE_MAIN {
+		if route.Table != tableMain {
 			// ignore non-main table
 			continue
 		}

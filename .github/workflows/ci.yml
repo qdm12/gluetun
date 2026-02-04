@@ -59,7 +59,7 @@ jobs:
       - name: Run tests in test container
         run: |
           touch coverage.txt
-          docker run --rm --device /dev/net/tun \
+          docker run --rm --cap-add=NET_ADMIN --device /dev/net/tun \
           -v "$(pwd)/coverage.txt:/tmp/gobuild/coverage.txt" \
           test-container
 
