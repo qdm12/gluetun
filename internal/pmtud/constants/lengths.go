@@ -2,7 +2,8 @@ package constants
 
 const (
 	MaxEthernetFrameSize uint32 = 1500
-	// // see https://en.wikipedia.org/wiki/Maximum_transmission_unit#MTUs_for_common_media
+	// MinIPv4MTU is defined according to
+	// https://en.wikipedia.org/wiki/Maximum_transmission_unit#MTUs_for_common_media
 	MinIPv4MTU uint32 = 68
 	MinIPv6MTU uint32 = 1280
 

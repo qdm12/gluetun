@@ -144,7 +144,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	vpnType, network string, tcpAddresses []netip.AddrPort,
 	netlinker NetLinker, routing Routing, logger *log.Logger,
 ) error {
-	logger.Info("finding maximum MTU, this can take up to 4 seconds")
+	logger.Info("finding maximum MTU, this can take up to 6 seconds")
 
 	vpnGatewayIP, err := routing.VPNLocalGatewayIP(vpnInterface)
 	if err != nil {
