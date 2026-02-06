@@ -2,17 +2,30 @@ package tcp
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/netip"
 	"syscall"
 	"testing"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/netlink"
+	"github.com/qdm12/gluetun/internal/routing"
+	"github.com/qdm12/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_runTest(t *testing.T) {
 	t.Parallel()
+
+	noopLogger := &noopLogger{}
+	netlinker := netlink.New(noopLogger)
+	loopbackMTU, err := findLoopbackMTU(netlinker)
+	require.NoError(t, err, "finding loopback IPv4 MTU")
+	defaultIPv4MTU, err := findDefaultIPv4RouteMTU(netlinker)
+	require.NoError(t, err, "finding default IPv4 route MTU")
+	const safetyMTUMargin = 0
 
 	const timeout = 100 * time.Millisecond
 	ctx, cancel := context.WithTimeout(t.Context(), timeout)
@@ -47,41 +60,34 @@ func Test_runTest(t *testing.T) {
 				port := reserveClosedPort(t)
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{127, 0, 0, 1}), port)
 			},
-			mtu:     1430,
+			mtu:     loopbackMTU,
 			success: true,
 		},
 		"remote_not_listening": {
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 12345)
 			},
-			mtu: 1300,
+			mtu: defaultIPv4MTU - safetyMTUMargin,
 		},
-		"1.1.1.1:443_mtu1300": {
+		"1.1.1.1:443": {
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 443)
 			},
-			mtu:     1300,
+			mtu:     defaultIPv4MTU - safetyMTUMargin,
 			success: true,
 		},
-		"1.1.1.1:80_mtu1400": {
+		"1.1.1.1:80": {
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 80)
 			},
-			mtu:     1400,
+			mtu:     defaultIPv4MTU - safetyMTUMargin,
 			success: true,
 		},
-		"1.1.1.1:80_mtu1480": {
-			dst: func(_ *testing.T) netip.AddrPort {
-				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 80)
-			},
-			mtu:     1480,
-			success: true,
-		},
-		"8.8.8.8:443_mtu1300": {
+		"8.8.8.8:443": {
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), 443)
 			},
-			mtu:     1300,
+			mtu:     defaultIPv4MTU - safetyMTUMargin,
 			success: true,
 		},
 	}
@@ -98,6 +104,48 @@ func Test_runTest(t *testing.T) {
 			}
 		})
 	}
+}
+
+var errRouteNotFound = errors.New("route not found")
+
+func findLoopbackMTU(netlinker *netlink.NetLink) (mtu uint32, err error) {
+	routes, err := netlinker.RouteList(netlink.FamilyV4)
+	if err != nil {
+		return 0, fmt.Errorf("getting routes list: %w", err)
+	}
+	for _, route := range routes {
+		if route.Dst.IsValid() && route.Dst.Addr().IsLoopback() {
+			link, err := netlinker.LinkByIndex(route.LinkIndex)
+			if err != nil {
+				return 0, fmt.Errorf("getting link by index: %w", err)
+			}
+			// Quirk: make sure it is maximum 65535, and not i.e. 65536
+			// or the IP header 16 bits will fail to fit that packet length value.
+			const maxMTU = 65535
+			return min(link.MTU, maxMTU), nil
+		}
+	}
+	return 0, fmt.Errorf("%w: no loopback route found", errRouteNotFound)
+}
+
+func findDefaultIPv4RouteMTU(netlinker *netlink.NetLink) (mtu uint32, err error) {
+	noopLogger := &noopLogger{}
+	routing := routing.New(netlinker, noopLogger)
+	defaultRoutes, err := routing.DefaultRoutes()
+	if err != nil {
+		return 0, fmt.Errorf("getting default routes: %w", err)
+	}
+	for _, route := range defaultRoutes {
+		if route.Family != netlink.FamilyV4 {
+			continue
+		}
+		link, err := netlinker.LinkByName(defaultRoutes[0].NetInterface)
+		if err != nil {
+			return 0, fmt.Errorf("getting link by name: %w", err)
+		}
+		return link.MTU, nil
+	}
+	return 0, fmt.Errorf("%w: no default route found", errRouteNotFound)
 }
 
 func reserveClosedPort(t *testing.T) (port uint16) {
@@ -135,3 +183,12 @@ func reserveClosedPort(t *testing.T) (port uint16) {
 
 	return uint16(sockAddr4.Port) //nolint:gosec
 }
+
+type noopLogger struct{}
+
+func (l *noopLogger) Patch(opts ...log.Option)          {}
+func (l *noopLogger) Debug(msg string)                  {}
+func (l *noopLogger) Debugf(format string, args ...any) {}
+func (l *noopLogger) Info(msg string)                   {}
+func (l *noopLogger) Warn(msg string)                   {}
+func (l *noopLogger) Error(msg string)                  {}
