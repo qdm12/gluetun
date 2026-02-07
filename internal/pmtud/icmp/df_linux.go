@@ -1,4 +1,4 @@
-package pmtud
+package icmp
 
 import (
 	"syscall"

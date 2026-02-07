@@ -1,4 +1,4 @@
-package pmtud
+package icmp
 
 import (
 	"context"
@@ -11,14 +11,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
 )
 
 const (
-	// see https://en.wikipedia.org/wiki/Maximum_transmission_unit#MTUs_for_common_media
-	minIPv4MTU     uint32 = 68
-	icmpv4Protocol int    = 1
+	icmpv4Protocol = 1
 )
 
 func listenICMPv4(ctx context.Context) (conn net.PacketConn, err error) {
@@ -38,7 +37,7 @@ func listenICMPv4(ctx context.Context) (conn net.PacketConn, err error) {
 	packetConn, err := listenConfig.ListenPacket(ctx, "ip4:icmp", listenAddress)
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
-			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrICMPNotPermitted)
+			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrNotPermitted)
 		}
 		return nil, err
 	}
@@ -83,7 +82,9 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 
 	buffer := make([]byte, physicalLinkMTU)
 
-	for { // for loop in case we read an echo reply for another ICMP request
+	// for loop in case we read an ICMP message from another ICMP request
+	// or TCP/UDP traffic triggering an ICMP response.
+	for {
 		// Note we need to read the whole packet in one call to ReadFrom, so the buffer
 		// must be large enough to read the entire reply packet. See:
 		// https://groups.google.com/g/golang-nuts/c/5dy2Q4nPs08/m/KmuSQAGEtG4J
@@ -108,24 +109,27 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 		switch typedBody := inboundMessage.Body.(type) {
 		case *icmp.DstUnreach:
 			const fragmentationRequiredAndDFFlagSetCode = 4
+			const portUnreachable = 3
 			const communicationAdministrativelyProhibitedCode = 13
 			switch inboundMessage.Code {
 			case fragmentationRequiredAndDFFlagSetCode:
+			case portUnreachable: // triggered by TCP or UDP from applications
+				continue // ignore and wait for the next message
 			case communicationAdministrativelyProhibitedCode:
 				return 0, fmt.Errorf("%w: %w (code %d)",
-					ErrICMPDestinationUnreachable,
-					ErrICMPCommunicationAdministrativelyProhibited,
+					ErrDestinationUnreachable,
+					ErrCommunicationAdministrativelyProhibited,
 					inboundMessage.Code)
 			default:
 				return 0, fmt.Errorf("%w: code %d",
-					ErrICMPDestinationUnreachable, inboundMessage.Code)
+					ErrDestinationUnreachable, inboundMessage.Code)
 			}
 
 			// See https://datatracker.ietf.org/doc/html/rfc1191#section-4
 			// Note: the go library does not handle this NextHopMTU section.
 			nextHopMTU := packetBytes[6:8]
 			mtu = uint32(binary.BigEndian.Uint16(nextHopMTU))
-			err = checkMTU(mtu, minIPv4MTU, physicalLinkMTU)
+			err = checkMTU(mtu, constants.MinIPv4MTU, physicalLinkMTU)
 			if err != nil {
 				return 0, fmt.Errorf("checking next-hop-mtu found: %w", err)
 			}
@@ -153,7 +157,7 @@ func findIPv4NextHopMTU(ctx context.Context, ip netip.Addr,
 				inboundID, outboundID)
 			continue
 		default:
-			return 0, fmt.Errorf("%w: %T", ErrICMPBodyUnsupported, typedBody)
+			return 0, fmt.Errorf("%w: %T", ErrBodyUnsupported, typedBody)
 		}
 	}
 }

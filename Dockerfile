@@ -108,6 +108,9 @@ ENV VPN_SERVICE_PROVIDER=pia \
     WIREGUARD_ADDRESSES_SECRETFILE=/run/secrets/wireguard_addresses \
     WIREGUARD_MTU=1320 \
     WIREGUARD_IMPLEMENTATION=auto \
+    # PMTUD
+    PMTUD=on \
+    PMTUD_TCP_ADDRESSES=1.1.1.1:443,8.8.8.8:443 \
     # VPN server filtering
     SERVER_REGIONS= \
     SERVER_COUNTRIES= \
