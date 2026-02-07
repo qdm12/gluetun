@@ -106,14 +106,22 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 				if err != nil {
 					err = fmt.Errorf("small periodic check: %w", err)
 				}
-				runErrorCh <- err
+				select {
+				case <-ctx.Done():
+					continue
+				case runErrorCh <- err:
+				}
 				smallCheckTimer.Reset(smallCheckPeriod)
 			case <-fullCheckTimer.C:
 				err := c.fullPeriodicCheck(ctx)
 				if err != nil {
 					err = fmt.Errorf("full periodic check: %w", err)
 				}
-				runErrorCh <- err
+				select {
+				case <-ctx.Done():
+					continue
+				case runErrorCh <- err:
+				}
 				fullCheckTimer.Reset(fullCheckPeriod)
 			}
 		}
