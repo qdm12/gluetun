@@ -62,6 +62,8 @@ func pmtudMultiSizes(ctx context.Context, addr netip.AddrPort,
 	for i := range tests {
 		go func(i int) {
 			err := runTest(runCtx, fd, tracker, addr, tests[i].mtu)
+			logger.Debugf("running TCP test for MTU %d against %s, error is %v",
+				tests[i].mtu, addr, err)
 			tests[i].ok = err == nil
 			doneCh <- struct{}{}
 		}(i)
