@@ -92,17 +92,14 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	fullCheckTimer := time.NewTimer(fullCheckPeriod)
 	runErrorCh := make(chan error)
 	runError = runErrorCh
-	cleanup := func() {
-		fullCheckTimer.Stop()
-		smallCheckTimer.Stop()
-	}
 	go func() {
 		defer close(done)
-		defer cleanup()
 		close(ready)
 		for {
 			select {
 			case <-ctx.Done():
+				fullCheckTimer.Stop()
+				smallCheckTimer.Stop()
 				return
 			case <-smallCheckTimer.C:
 				err := c.smallPeriodicCheck(ctx)
@@ -111,7 +108,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 				}
 				select {
 				case <-ctx.Done():
-					return
+					continue
 				case runErrorCh <- err:
 				}
 				smallCheckTimer.Reset(smallCheckPeriod)
@@ -122,7 +119,7 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 				}
 				select {
 				case <-ctx.Done():
-					return
+					continue
 				case runErrorCh <- err:
 				}
 				fullCheckTimer.Reset(fullCheckPeriod)
