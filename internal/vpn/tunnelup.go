@@ -16,6 +16,8 @@ import (
 type tunnelUpData struct {
 	// Healthcheck
 	serverIP netip.Addr
+	// pmtud is used to enable path MTU discovery.
+	pmtud bool
 	// vpnType is used for path MTU discovery to find the maximum
 	// IP packet overhead. It can be [vpn.Wireguard] or [vpn.OpenVPN].
 	vpnType string
@@ -43,11 +45,13 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		}
 	}
 
-	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
-	err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
-		data.network, data.tcpAddresses, l.netLinker, l.routing, mtuLogger)
-	if err != nil {
-		mtuLogger.Error(err.Error())
+	if data.pmtud {
+		mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
+		err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
+			data.network, data.tcpAddresses, l.netLinker, l.routing, mtuLogger)
+		if err != nil {
+			mtuLogger.Error(err.Error())
+		}
 	}
 
 	icmpTargetIPs := l.healthSettings.ICMPTargetIPs
