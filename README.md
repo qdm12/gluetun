@@ -71,6 +71,7 @@ Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
 - Built in firewall kill switch to allow traffic only with needed the VPN servers and LAN devices
 - Built in Shadowsocks proxy server (protocol based on SOCKS5 with an encryption layer, tunnels TCP+UDP)
 - Built in HTTP proxy (tunnels HTTP and HTTPS through TCP)
+- Built in SOCKS5 proxy (tunnels TCP)
 - [Connect other containers to it](https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md)
 - [Connect LAN devices to it](https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-lan-device-to-gluetun.md)
 - Compatible with amd64, i686 (32 bit), **ARM** 64 bit, ARM 32 bit v6 and v7, and even ppc64le 🎆
@@ -102,6 +103,7 @@ services:
       - /dev/net/tun:/dev/net/tun
     ports:
       - 8888:8888/tcp # HTTP proxy
+      - 1080:1080/tcp # SOCKS5
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
     volumes:
