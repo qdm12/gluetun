@@ -63,6 +63,9 @@ jobs:
           -v "$(pwd)/coverage.txt:/tmp/gobuild/coverage.txt" \
           test-container
 
+      - name: Verify dev cross platform compatibility
+        run: docker build --target xcompile .
+
       - name: Build final image
         run: docker build -t final-image .
 

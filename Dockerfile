@@ -46,6 +46,10 @@ RUN git init && \
     git diff --exit-code && \
     rm -rf .git/
 
+FROM --platform=${BUILDPLATFORM} base AS xcompile
+RUN GOOS=darwin go build -o /dev/null ./...
+RUN GOOS=windows go build -o /dev/null ./...
+
 FROM --platform=${BUILDPLATFORM} base AS build
 ARG TARGETPLATFORM
 ARG VERSION=unknown
