@@ -104,7 +104,7 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 				allowedUDP = []uint16{53, 1194, 1197, 1198, 8080, 9201}
 			case providers.Protonvpn:
 				allowedTCP = []uint16{443, 5995, 8443}
-				allowedUDP = []uint16{80, 443, 1194, 4569, 5060}
+				allowedUDP = []uint16{80, 443, 1194, 4569, 5060, 51820}
 			case providers.SlickVPN:
 				allowedTCP = []uint16{443, 8080, 8888}
 				allowedUDP = []uint16{443, 8080, 8888}
