@@ -24,6 +24,7 @@ type Loop struct {
 	localResolvers []netip.Addr
 	resolvConf     string
 	client         *http.Client
+	firewall       Firewall
 	logger         Logger
 	userTrigger    bool
 	start          <-chan struct{}
@@ -39,7 +40,7 @@ type Loop struct {
 const defaultBackoffTime = 10 * time.Second
 
 func NewLoop(settings settings.DNS,
-	client *http.Client, logger Logger,
+	client *http.Client, firewall Firewall, logger Logger,
 ) (loop *Loop, err error) {
 	start := make(chan struct{})
 	running := make(chan models.LoopStatus)
@@ -64,6 +65,7 @@ func NewLoop(settings settings.DNS,
 		filter:        filter,
 		resolvConf:    "/etc/resolv.conf",
 		client:        client,
+		firewall:      firewall,
 		logger:        logger,
 		userTrigger:   true,
 		start:         start,

@@ -24,7 +24,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			"and go through your container network DNS outside the VPN tunnel!")
 	} else {
 		const fallback = false
-		l.useUnencryptedDNS(fallback)
+		l.useUnencryptedDNS(ctx, fallback)
 	}
 
 	select {
@@ -56,7 +56,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 			if !errors.Is(err, errUpdateBlockLists) {
 				const fallback = true
-				l.useUnencryptedDNS(fallback)
+				l.useUnencryptedDNS(ctx, fallback)
 			}
 			l.logAndWait(ctx, err)
 			settings = l.GetSettings()
@@ -66,7 +66,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		settings = l.GetSettings()
 		if !*settings.KeepNameserver && !*settings.ServerEnabled {
 			const fallback = false
-			l.useUnencryptedDNS(fallback)
+			l.useUnencryptedDNS(ctx, fallback)
 		}
 
 		l.userTrigger = false
@@ -94,7 +94,7 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 			settings := l.GetSettings()
 			if !*settings.KeepNameserver && *settings.ServerEnabled {
 				const fallback = false
-				l.useUnencryptedDNS(fallback)
+				l.useUnencryptedDNS(ctx, fallback)
 				l.stopServer()
 			}
 			l.stopped <- struct{}{}
@@ -105,7 +105,7 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 		case err := <-runError: // unexpected error
 			l.statusManager.SetStatus(constants.Crashed)
 			const fallback = true
-			l.useUnencryptedDNS(fallback)
+			l.useUnencryptedDNS(ctx, fallback)
 			l.logAndWait(ctx, err)
 			return false
 		}
