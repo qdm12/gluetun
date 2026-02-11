@@ -45,6 +45,7 @@ jobs:
           level: error
           exclude: |
             ./internal/storage/servers.json
+            ./golangci.yml
             *.md
 
       - name: Linting
