@@ -1,6 +1,7 @@
 package updater
 
 import (
+	"os"
 	"context"
 	"fmt"
 	"sort"
@@ -18,7 +19,11 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, fmt.Errorf("%w: %s", common.ErrIPFetcherUnsupported, u.ipFetcher.String())
 	}
 
-	const url = "https://privadovpn.com/apps/ovpn_configs.zip"
+	url := os.Getenv("PRIVADO_OVPN_URL")
+	if url == "" {
+		url = "https://privadovpn.com/apps/ovpn_configs.zip"
+	}
+
 	contents, err := u.unzipper.FetchAndExtract(ctx, url)
 	if err != nil {
 		return nil, err
