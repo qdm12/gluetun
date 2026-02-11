@@ -23,19 +23,19 @@ func Test_parseIptablesInstruction(t *testing.T) {
 		"uneven_fields": {
 			s:          "-A",
 			errWrapped: ErrIptablesCommandMalformed,
-			errMessage: "iptables command is malformed: fields count 1 is not even: \"-A\"",
+			errMessage: "parsing \"-A\": iptables command is malformed: flag \"-A\" requires a value, but got none",
 		},
 		"unknown_key": {
 			s:          "-x something",
 			errWrapped: ErrIptablesCommandMalformed,
-			errMessage: "parsing \"-x something\": iptables command is malformed: unknown key \"-x\"",
+			errMessage: "parsing \"-x something\": iptables command is malformed: unknown flag \"-x\"",
 		},
 		"one_pair": {
-			s: "-A INPUT",
+			s: "-I INPUT",
 			instruction: iptablesInstruction{
-				table:  "filter",
-				chain:  "INPUT",
-				append: true,
+				table:     "filter",
+				chain:     "INPUT",
+				operation: opInsert,
 			},
 		},
 		"instruction_A": {
@@ -43,7 +43,7 @@ func Test_parseIptablesInstruction(t *testing.T) {
 			instruction: iptablesInstruction{
 				table:           "filter",
 				chain:           "INPUT",
-				append:          true,
+				operation:       opAppend,
 				inputInterface:  "tun0",
 				protocol:        "tcp",
 				source:          netip.MustParsePrefix("1.2.3.4/32"),
@@ -57,7 +57,7 @@ func Test_parseIptablesInstruction(t *testing.T) {
 			instruction: iptablesInstruction{
 				table:           "nat",
 				chain:           "PREROUTING",
-				append:          false,
+				operation:       opDelete,
 				inputInterface:  "tun0",
 				protocol:        "tcp",
 				destinationPort: 43716,

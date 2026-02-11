@@ -394,7 +394,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	dnsLogger := logger.New(log.SetComponent("dns"))
-	dnsLooper, err := dns.NewLoop(allSettings.DNS, httpClient,
+	dnsLooper, err := dns.NewLoop(allSettings.DNS, httpClient, firewallConf,
 		dnsLogger)
 	if err != nil {
 		return fmt.Errorf("creating DNS loop: %w", err)
