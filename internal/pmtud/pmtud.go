@@ -35,14 +35,15 @@ func PathMTUDiscover(ctx context.Context, addresses []netip.AddrPort,
 	}
 
 	// Try finding the MTU using ICMP
+	maxPossibleMTU := physicalLinkMTU
 	for _, addrPort := range addresses {
 		icmpIP := addrPort.Addr()
-		mtu, err = icmp.PathMTUDiscover(ctx, icmpIP, physicalLinkMTU,
+		mtu, err := icmp.PathMTUDiscover(ctx, icmpIP, physicalLinkMTU,
 			tryTimeout, logger)
 		switch {
 		case err == nil:
 			logger.Debugf("ICMP path MTU discovery against %s found maximum valid MTU %d", icmpIP, mtu)
-			return mtu, nil
+			maxPossibleMTU = mtu
 		case errors.Is(err, icmp.ErrNotPermitted), errors.Is(err, icmp.ErrMTUNotFound):
 			logger.Debugf("ICMP path MTU discovery failed: %s", err)
 		default:
@@ -50,10 +51,8 @@ func PathMTUDiscover(ctx context.Context, addresses []netip.AddrPort,
 		}
 	}
 
-	// If ICMP path MTU discovery is not permitted or failed completely,
-	// we run the below TCP path MTU discovery.
 	for _, addrPort := range addresses {
-		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, physicalLinkMTU, logger)
+		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, maxPossibleMTU, logger)
 		if err != nil {
 			logger.Debugf("TCP path MTU discovery to %s failed: %s", addrPort, err)
 			continue
