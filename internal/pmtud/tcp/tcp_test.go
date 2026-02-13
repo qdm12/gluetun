@@ -25,10 +25,8 @@ func Test_runTest(t *testing.T) {
 	require.NoError(t, err, "finding loopback IPv4 MTU")
 	defaultIPv4MTU, err := findDefaultIPv4RouteMTU(netlinker)
 	require.NoError(t, err, "finding default IPv4 route MTU")
-	const safetyMTUMargin = 0
 
-	const timeout = 100 * time.Millisecond
-	ctx, cancel := context.WithTimeout(t.Context(), timeout)
+	ctx, cancel := context.WithCancel(t.Context())
 	t.Cleanup(cancel)
 
 	const family = syscall.AF_INET
@@ -50,11 +48,13 @@ func Test_runTest(t *testing.T) {
 	})
 
 	testCases := map[string]struct {
+		timeout time.Duration
 		dst     func(t *testing.T) netip.AddrPort
 		mtu     uint32
 		success bool
 	}{
 		"local_not_listening": {
+			timeout: time.Hour,
 			dst: func(t *testing.T) netip.AddrPort {
 				t.Helper()
 				port := reserveClosedPort(t)
@@ -64,30 +64,34 @@ func Test_runTest(t *testing.T) {
 			success: true,
 		},
 		"remote_not_listening": {
+			timeout: 50 * time.Millisecond,
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 12345)
 			},
-			mtu: defaultIPv4MTU - safetyMTUMargin,
+			mtu: defaultIPv4MTU,
 		},
 		"1.1.1.1:443": {
+			timeout: 10 * time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 443)
 			},
-			mtu:     defaultIPv4MTU - safetyMTUMargin,
+			mtu:     defaultIPv4MTU,
 			success: true,
 		},
 		"1.1.1.1:80": {
+			timeout: 10 * time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 80)
 			},
-			mtu:     defaultIPv4MTU - safetyMTUMargin,
+			mtu:     defaultIPv4MTU,
 			success: true,
 		},
 		"8.8.8.8:443": {
+			timeout: time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), 443)
 			},
-			mtu:     defaultIPv4MTU - safetyMTUMargin,
+			mtu:     defaultIPv4MTU,
 			success: true,
 		},
 	}
@@ -95,6 +99,8 @@ func Test_runTest(t *testing.T) {
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+			ctx, cancel := context.WithTimeout(t.Context(), testCase.timeout)
+			defer cancel()
 			dst := testCase.dst(t)
 			err := runTest(ctx, fd, tracker, dst, testCase.mtu)
 			if testCase.success {
