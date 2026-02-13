@@ -8,15 +8,20 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/test"
 )
 
 var ErrMTUNotFound = errors.New("MTU not found")
 
-func PathMTUDiscover(ctx context.Context, addr netip.AddrPort,
-	minMTU, maxPossibleMTU uint32, logger Logger,
-) (maxMTU uint32, err error) {
-	return pmtudMultiSizes(ctx, addr, minMTU, maxPossibleMTU, logger)
+func PathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
+	physicalLinkMTU uint32, logger Logger,
+) (mtu uint32, err error) {
+	minMTU := constants.MinIPv4MTU
+	if addrPort.Addr().Is6() {
+		minMTU = constants.MinIPv6MTU
+	}
+	return pmtudMultiSizes(ctx, addrPort, minMTU, physicalLinkMTU, logger)
 }
 
 type testUnit struct {
@@ -91,6 +96,5 @@ func pmtudMultiSizes(ctx context.Context, addr netip.AddrPort,
 		}
 	}
 
-	return 0, fmt.Errorf("%w: TCP queries to %s might be dropped "+
-		"by the VPN server firewall", ErrMTUNotFound, addr)
+	return 0, fmt.Errorf("%w: your connection might not be working at all", ErrMTUNotFound)
 }
