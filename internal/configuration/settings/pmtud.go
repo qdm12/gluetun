@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
+	"strings"
 
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
@@ -12,19 +13,21 @@ import (
 
 // PMTUD contains settings to configure Path MTU Discovery.
 type PMTUD struct {
-	// TCPAddresses is the list of TCP addresses to use for path MTU discovery.
+	// Addresses is the redundancy list of addresses to use for path MTU discovery.
+	// Each address should either have:
+	// - a listening TCP server listening on ip:port
+	// - handle the ICMP protocol on ip
 	// It cannot be nil in the internal state.
-	TCPAddresses []netip.AddrPort `json:"tcp_addresses"`
+	Addresses []netip.AddrPort `json:"tcp_addresses"`
 }
 
-var ErrPMTUDTCPAddressNotValid = errors.New("PMTUD TCP address is not valid")
+var ErrPMTUDAddressNotValid = errors.New("PMTUD address is not valid")
 
 // Validate validates PMTUD settings.
 func (p PMTUD) validate() (err error) {
-	for i, addr := range p.TCPAddresses {
+	for i, addr := range p.Addresses {
 		if !addr.IsValid() {
-			return fmt.Errorf("%w: at index %d",
-				ErrPMTUDTCPAddressNotValid, i)
+			return fmt.Errorf("%w: at index %d", ErrPMTUDAddressNotValid, i)
 		}
 	}
 	return nil
@@ -32,12 +35,12 @@ func (p PMTUD) validate() (err error) {
 
 func (p *PMTUD) copy() (copied PMTUD) {
 	return PMTUD{
-		TCPAddresses: gosettings.CopySlice(p.TCPAddresses),
+		Addresses: gosettings.CopySlice(p.Addresses),
 	}
 }
 
 func (p *PMTUD) overrideWith(other PMTUD) {
-	p.TCPAddresses = gosettings.OverrideWithSlice(p.TCPAddresses, other.TCPAddresses)
+	p.Addresses = gosettings.OverrideWithSlice(p.Addresses, other.Addresses)
 }
 
 func (p *PMTUD) setDefaults() {
@@ -46,7 +49,7 @@ func (p *PMTUD) setDefaults() {
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), tlsPort),
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), tlsPort),
 	}
-	p.TCPAddresses = gosettings.DefaultSlice(p.TCPAddresses, defaultTCPAddresses)
+	p.Addresses = gosettings.DefaultSlice(p.Addresses, defaultTCPAddresses)
 }
 
 func (p PMTUD) String() string {
@@ -54,16 +57,17 @@ func (p PMTUD) String() string {
 }
 
 func (p PMTUD) toLinesNode() (node *gotree.Node) {
-	node = gotree.New("PMTUD settings:")
-	tcpNode := node.Append("TCP addresses:")
-	for _, addr := range p.TCPAddresses {
-		tcpNode.Append(addr.String())
+	node = gotree.New("Path MTU discovery:")
+	addrs := make([]string, len(p.Addresses))
+	for i, addr := range p.Addresses {
+		addrs[i] = addr.String()
 	}
+	node.Appendf("Addresses: %s", strings.Join(addrs, ", "))
 	return node
 }
 
 func (p *PMTUD) read(r *reader.Reader) (err error) {
-	p.TCPAddresses, err = r.CSVNetipAddrPorts("PMTUD_TCP_ADDRESSES")
+	p.Addresses, err = r.CSVNetipAddrPorts("PMTUD_ADDRESSES")
 	if err != nil {
 		return err
 	}

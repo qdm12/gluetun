@@ -22,8 +22,9 @@ type tunnelUpData struct {
 	// network is used for path MTU discovery to find the maximum
 	// IP packet overhead. It can be [constants.UDP] or [constants.TCP].
 	network string
-	// tcpAddresses is used for (TCP) path MTU discovery.
-	tcpAddresses []netip.AddrPort
+	// pmtudAddrs are addresses used for Path MTU discovery.
+	// See [pmtud.PathMTUDiscover].
+	pmtudAddrs []netip.AddrPort
 	// Port forwarding
 	vpnIntf        string
 	serverName     string // used for PIA
@@ -45,7 +46,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 
 	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
 	err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
-		data.network, data.tcpAddresses, l.netLinker, l.routing, mtuLogger)
+		data.network, data.pmtudAddrs, l.netLinker, l.routing, mtuLogger)
 	if err != nil {
 		mtuLogger.Error(err.Error())
 	}
@@ -141,7 +142,7 @@ func (l *Loop) restartVPN(ctx context.Context, healthErr error) {
 }
 
 func updateToMaxMTU(ctx context.Context, vpnInterface string,
-	vpnType, network string, tcpAddresses []netip.AddrPort,
+	vpnType, network string, addresses []netip.AddrPort,
 	netlinker NetLinker, routing Routing, logger *log.Logger,
 ) error {
 	logger.Info("finding maximum MTU, this can take up to 6 seconds")
@@ -170,7 +171,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	}
 
 	const pingTimeout = time.Second
-	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, vpnGatewayIP, tcpAddresses,
+	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, addresses,
 		vpnLinkMTU, pingTimeout, logger)
 	if err != nil {
 		vpnLinkMTU = originalMTU
