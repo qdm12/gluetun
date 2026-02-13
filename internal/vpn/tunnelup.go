@@ -46,7 +46,8 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 
 	mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
 	err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
-		data.network, data.pmtudAddrs, l.netLinker, l.routing, mtuLogger)
+		data.network, data.pmtudAddrs, l.netLinker, l.routing,
+		l.fw, mtuLogger)
 	if err != nil {
 		mtuLogger.Error(err.Error())
 	}
@@ -143,7 +144,8 @@ func (l *Loop) restartVPN(ctx context.Context, healthErr error) {
 
 func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	vpnType, network string, addresses []netip.AddrPort,
-	netlinker NetLinker, routing Routing, logger *log.Logger,
+	netlinker NetLinker, routing Routing, firewall Firewall,
+	logger *log.Logger,
 ) error {
 	logger.Info("finding maximum MTU, this can take up to 6 seconds")
 
@@ -184,6 +186,11 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	err = netlinker.LinkSetMTU(link.Index, vpnLinkMTU)
 	if err != nil {
 		return fmt.Errorf("setting VPN interface %s MTU to %d: %w", vpnInterface, vpnLinkMTU, err)
+	}
+
+	err = firewall.SetVPNTCPMSS(ctx, vpnLinkMTU)
+	if err != nil {
+		return fmt.Errorf("setting safe TCP MSS for MTU %d: %w", vpnLinkMTU, err)
 	}
 
 	return nil

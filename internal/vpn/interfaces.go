@@ -17,6 +17,7 @@ type Firewall interface {
 	SetVPNConnection(ctx context.Context, connection models.Connection, interfaceName string) error
 	SetAllowedPort(ctx context.Context, port uint16, interfaceName string) error
 	RemoveAllowedPort(ctx context.Context, port uint16) error
+	SetVPNTCPMSS(ctx context.Context, mtu uint32) error
 }
 
 type Routing interface {

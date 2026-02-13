@@ -22,6 +22,7 @@ linters:
         - "^disabled$"
         # Firewall and routing strings
         - "^(ACCEPT|DROP)$"
+        - "^--append$"
         - "^--delete$"
         - "^all$"
         - "^(tcp|udp)$"

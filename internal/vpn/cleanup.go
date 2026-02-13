@@ -11,6 +11,12 @@ func (l *Loop) cleanup() {
 		if err != nil {
 			l.logger.Error("cannot remove allowed input port from firewall: " + err.Error())
 		}
+
+		const mtu uint32 = 0
+		err = l.fw.SetVPNTCPMSS(context.Background(), mtu)
+		if err != nil {
+			l.logger.Error("cannot clear VPN TCP MSS mangle rules: " + err.Error())
+		}
 	}
 
 	err := l.publicip.ClearData()
