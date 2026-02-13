@@ -16,7 +16,17 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.PreSharedKey = *userSettings.PreSharedKey
 	settings.InterfaceName = userSettings.Interface
 	settings.Implementation = userSettings.Implementation
-	settings.MTU = userSettings.MTU
+	if *userSettings.MTU > 0 {
+		settings.MTU = *userSettings.MTU
+	} else {
+		// The default is 1320 which is NOT the wireguard-go default
+		// of 1420 because this impacts bandwidth a lot on some
+		// VPN providers, see https://github.com/qdm12/gluetun/issues/1650.
+		// It has been lowered to 1320 following quite a bit of
+		// investigation in the issue: https://github.com/qdm12/gluetun/issues/2533.
+		const defaultMTU = 1320
+		settings.MTU = defaultMTU
+	}
 	settings.IPv6 = &ipv6Supported
 
 	const rulePriority = 101 // 100 is to receive external connections

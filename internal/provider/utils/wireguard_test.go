@@ -22,7 +22,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 		ipv6Supported bool
 		settings      wireguard.Settings
 	}{
-		"some settings": {
+		"some_settings": {
 			connection: models.Connection{
 				IP:     netip.AddrFrom4([4]byte{1, 2, 3, 4}),
 				Port:   51821,
@@ -41,6 +41,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				},
 				PersistentKeepaliveInterval: ptrTo(time.Hour),
 				Interface:                   "wg1",
+				MTU:                         ptrTo(uint32(1000)),
 			},
 			ipv6Supported: false,
 			settings: wireguard.Settings{
@@ -58,6 +59,7 @@ func Test_BuildWireguardSettings(t *testing.T) {
 				PersistentKeepaliveInterval: time.Hour,
 				RulePriority:                101,
 				IPv6:                        boolPtr(false),
+				MTU:                         1000,
 			},
 		},
 	}

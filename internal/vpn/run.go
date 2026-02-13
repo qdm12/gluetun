@@ -47,6 +47,7 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 		tunnelUpData := tunnelUpData{
+			pmtud:          settings.Type != vpn.Wireguard || *settings.Wireguard.MTU == 0,
 			vpnType:        settings.Type,
 			network:        connection.Protocol,
 			pmtudAddrs:     settings.PMTUD.Addresses,

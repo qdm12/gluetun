@@ -38,15 +38,9 @@ type Wireguard struct {
 	Interface                   string         `json:"interface"`
 	PersistentKeepaliveInterval *time.Duration `json:"persistent_keep_alive_interval"`
 	// Maximum Transmission Unit (MTU) of the Wireguard interface.
-	// It cannot be zero in the internal state, and defaults to
-	// 1320. Note it is not the wireguard-go MTU default of 1420
-	// because this impacts bandwidth a lot on some VPN providers,
-	// see https://github.com/qdm12/gluetun/issues/1650.
-	// It has been lowered to 1320 following quite a bit of
-	// investigation in the issue:
-	// https://github.com/qdm12/gluetun/issues/2533.
-	// Note this should now be replaced with the PMTUD feature.
-	MTU uint32 `json:"mtu"`
+	// It cannot be nil in the internal state, and defaults to
+	// 0 indicating to use PMTUD.
+	MTU *uint32 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
 	// It defaults to "auto" and cannot be the empty string
@@ -195,8 +189,7 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs, defaultAllowedIPs)
 	w.PersistentKeepaliveInterval = gosettings.DefaultPointer(w.PersistentKeepaliveInterval, 0)
 	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
-	const defaultMTU = 1320
-	w.MTU = gosettings.DefaultComparable(w.MTU, defaultMTU)
+	w.MTU = gosettings.DefaultPointer(w.MTU, 0)
 	w.Implementation = gosettings.DefaultComparable(w.Implementation, "auto")
 }
 
@@ -232,7 +225,11 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	}
 
 	interfaceNode := node.Appendf("Network interface: %s", w.Interface)
-	interfaceNode.Appendf("MTU: %d", w.MTU)
+	if *w.MTU == 0 {
+		interfaceNode.Append("MTU: use path MTU discovery")
+	} else {
+		interfaceNode.Appendf("MTU: %d", *w.MTU)
+	}
 
 	if w.Implementation != "auto" {
 		node.Appendf("Implementation: %s", w.Implementation)
@@ -273,11 +270,9 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	mtuPtr, err := r.Uint32Ptr("WIREGUARD_MTU")
+	w.MTU, err = r.Uint32Ptr("WIREGUARD_MTU")
 	if err != nil {
 		return err
-	} else if mtuPtr != nil {
-		w.MTU = *mtuPtr
 	}
 	return nil
 }
