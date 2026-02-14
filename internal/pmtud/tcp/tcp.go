@@ -7,7 +7,6 @@ import (
 	"net/netip"
 	"syscall"
 
-	"github.com/jsimonetti/rtnetlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
 )
@@ -52,7 +51,8 @@ var (
 func runTest(ctx context.Context, fd fileDescriptor,
 	tracker *tracker, dst netip.AddrPort, mtu uint32,
 ) error {
-	src, cleanup, err := getSrc(dst)
+	const proto = syscall.IPPROTO_TCP
+	src, cleanup, err := ip.SrcAddr(dst, proto)
 	if err != nil {
 		return fmt.Errorf("getting source address: %w", err)
 	}
@@ -119,105 +119,6 @@ func runTest(ctx context.Context, fd fileDescriptor,
 		_ = sendRST(fd, src, dst, ack)
 		return fmt.Errorf("%w: %s", errFinalPacketTypeUnexpected, packetType)
 	}
-}
-
-func getSrc(dst netip.AddrPort) (src netip.AddrPort, cleanup func(), err error) {
-	srcAddr, err := getSourceIP(dst.Addr())
-	if err != nil {
-		return netip.AddrPort{}, nil, fmt.Errorf("finding source IP: %w", err)
-	}
-
-	srcPort, cleanup, err := getSourcePort(srcAddr)
-	if err != nil {
-		return netip.AddrPort{}, nil, fmt.Errorf("reserving source port: %w", err)
-	}
-
-	return netip.AddrPortFrom(srcAddr, srcPort), cleanup, nil
-}
-
-var errNoRoute = fmt.Errorf("no route to destination")
-
-func getSourceIP(dst netip.Addr) (netip.Addr, error) {
-	conn, err := rtnetlink.Dial(nil)
-	if err != nil {
-		return netip.Addr{}, err
-	}
-	defer conn.Close()
-
-	family := uint8(syscall.AF_INET)
-	if dst.Is6() {
-		family = syscall.AF_INET6
-	}
-
-	// Request route to destination
-	requestMessage := &rtnetlink.RouteMessage{
-		Family: family,
-		Attributes: rtnetlink.RouteAttributes{
-			Dst: dst.AsSlice(),
-		},
-	}
-	messages, err := conn.Route.Get(requestMessage)
-	if err != nil {
-		return netip.Addr{}, fmt.Errorf("getting routes to %s: %w", dst, err)
-	}
-
-	for _, message := range messages {
-		if message.Attributes.Src == nil {
-			continue
-		}
-		ipv6 := message.Attributes.Src.To4() == nil
-		if ipv6 {
-			return netip.AddrFrom16([16]byte(message.Attributes.Src)), nil
-		}
-		return netip.AddrFrom4([4]byte(message.Attributes.Src)), nil
-	}
-
-	return netip.Addr{}, fmt.Errorf("%w: in %d route(s)", errNoRoute, len(messages))
-}
-
-// getSourcePort reserves an ephemeral source port by opening a TCP socket
-// bound to the provided source address. It doesn't actually listen on the port.
-// The cleanup function returned should be called to release the port when done.
-func getSourcePort(srcAddr netip.Addr) (srcPort uint16, cleanup func(), err error) {
-	family := syscall.AF_INET
-	if srcAddr.Is6() {
-		family = syscall.AF_INET6
-	}
-
-	fd, err := syscall.Socket(family, syscall.SOCK_STREAM, syscall.IPPROTO_TCP)
-	if err != nil {
-		return 0, nil, fmt.Errorf("creating reservation socket: %w", err)
-	}
-	cleanup = func() {
-		_ = syscall.Close(fd)
-	}
-
-	// Bind to port 0 to get an ephemeral port
-	const port = 0
-	addrPort := netip.AddrPortFrom(srcAddr, port)
-	bindAddr := makeSockAddr(addrPort)
-
-	err = syscall.Bind(fd, bindAddr)
-	if err != nil {
-		cleanup()
-		return 0, nil, fmt.Errorf("binding reservation socket: %w", err)
-	}
-
-	sockAddr, err := syscall.Getsockname(fd)
-	if err != nil {
-		cleanup()
-		return 0, nil, fmt.Errorf("getting bound socket name: %w", err)
-	}
-
-	switch typedSockAddr := sockAddr.(type) {
-	case *syscall.SockaddrInet4:
-		srcPort = uint16(typedSockAddr.Port) //nolint:gosec
-	case *syscall.SockaddrInet6:
-		srcPort = uint16(typedSockAddr.Port) //nolint:gosec
-	default:
-		panic(fmt.Sprintf("unexpected sockaddr type: %T", typedSockAddr))
-	}
-	return srcPort, cleanup, nil
 }
 
 func makeSockAddr(addr netip.AddrPort) syscall.Sockaddr {
