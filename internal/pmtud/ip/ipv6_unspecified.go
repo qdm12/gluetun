@@ -1,7 +1,7 @@
 //go:build !linux && !windows && !darwin
 
-package tcp
+package ip
 
-func setIPv4HeaderIncluded(fd int) error {
+func SetIPv6HeaderIncluded(fd int) error {
 	panic("not implemented")
 }

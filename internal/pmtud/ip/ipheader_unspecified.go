@@ -1,6 +1,6 @@
 //go:build !darwin
 
-package tcp
+package ip
 
 import "encoding/binary"
 

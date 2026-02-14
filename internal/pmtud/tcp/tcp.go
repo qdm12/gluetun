@@ -9,6 +9,7 @@ import (
 
 	"github.com/jsimonetti/rtnetlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
+	"github.com/qdm12/gluetun/internal/pmtud/ip"
 )
 
 func startRawSocket(family int) (fd fileDescriptor, stop func(), err error) {
@@ -17,9 +18,9 @@ func startRawSocket(family int) (fd fileDescriptor, stop func(), err error) {
 		return 0, nil, fmt.Errorf("creating raw socket: %w", err)
 	}
 	if family == syscall.AF_INET {
-		err = setIPv4HeaderIncluded(fdPlatform)
+		err = ip.SetIPv4HeaderIncluded(fdPlatform)
 	} else {
-		err = setIPv6HeaderIncluded(fdPlatform)
+		err = ip.SetIPv6HeaderIncluded(fdPlatform)
 	}
 	if err != nil {
 		_ = syscall.Close(fdPlatform)

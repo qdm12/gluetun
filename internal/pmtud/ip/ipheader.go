@@ -1,4 +1,4 @@
-package tcp
+package ip
 
 import (
 	"encoding/binary"
@@ -8,7 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 )
 
-func makeIPv4Header(srcIP, dstIP netip.Addr, payloadLength uint32) []byte {
+func HeaderV4(srcIP, dstIP netip.Addr, payloadLength uint32) []byte {
 	ipHeader := make([]byte, constants.IPv4HeaderLength)
 	const version byte = 4
 	const headerLength byte = 20 / 4                                          // in 32-bit words
@@ -49,10 +49,10 @@ func ipChecksum(header []byte) uint16 {
 	return ^uint16(sum) //nolint:gosec
 }
 
-// makeIPv6Header makes an IPv6 header.
+// HeaderV6 makes an IPv6 header.
 // payloadLen is the length of the payload following the header.
 // nextHeader can be byte([syscall.IPPROTO_TCP]) for example.
-func makeIPv6Header(srcIP, dstIP netip.Addr,
+func HeaderV6(srcIP, dstIP netip.Addr,
 	payloadLen uint16, nextHeader byte,
 ) []byte {
 	ipv6Header := make([]byte, constants.IPv6HeaderLength)

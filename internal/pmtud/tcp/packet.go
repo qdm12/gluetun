@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
+	"github.com/qdm12/gluetun/internal/pmtud/ip"
 )
 
 // createSYNPacket creates a TCP SYN packet for initiating a handshake.
@@ -57,9 +58,9 @@ func createPacket(src, dst netip.AddrPort,
 
 	var ipHeader []byte
 	if dst.Addr().Is4() {
-		ipHeader = makeIPv4Header(src.Addr(), dst.Addr(), payloadLength)
+		ipHeader = ip.HeaderV4(src.Addr(), dst.Addr(), payloadLength)
 	} else {
-		ipHeader = makeIPv6Header(src.Addr(), dst.Addr(),
+		ipHeader = ip.HeaderV6(src.Addr(), dst.Addr(),
 			uint16(payloadLength), byte(syscall.IPPROTO_TCP)) //nolint:gosec
 	}
 
