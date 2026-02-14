@@ -17,18 +17,7 @@ import (
 type tunnelUpData struct {
 	// Healthcheck
 	serverIP netip.Addr
-	// pmtud is true if path MTU discovery should be performed on the VPN tunnel interface.
-	// It is notably false if the user specifies a custom MTU.
-	pmtud bool
-	// vpnType is used for path MTU discovery to find the maximum
-	// IP packet overhead. It can be [vpn.Wireguard] or [vpn.OpenVPN].
-	vpnType string
-	// network is used for path MTU discovery to find the maximum
-	// IP packet overhead. It can be [constants.UDP] or [constants.TCP].
-	network string
-	// pmtudAddrs are addresses used for Path MTU discovery.
-	// See [pmtud.PathMTUDiscover].
-	pmtudAddrs []netip.AddrPort
+	pmtud    tunnelUpPMTUDData
 	// Port forwarding
 	vpnIntf        string
 	serverName     string // used for PIA
@@ -36,6 +25,23 @@ type tunnelUpData struct {
 	username       string // used for PIA
 	password       string // used for PIA
 	portForwarder  PortForwarder
+}
+
+type tunnelUpPMTUDData struct {
+	// enabled is notably false if the user specifies a custom MTU.
+	enabled bool
+	// vpnType is used to find the maximum VPN header overhead.
+	// It can be [vpn.Wireguard] or [vpn.OpenVPN].
+	vpnType string
+	// network is used to find the network level header overhead.
+	// It can be [constants.UDP] or [constants.TCP].
+	network string
+	// icmpAddrs is the list of addresses to use for ICMP path MTU discovery.
+	// Each address should handle ICMP packets for PMTUD to work.
+	icmpAddrs []netip.Addr
+	// tcpAddrs is the list of addresses to use for TCP path MTU discovery.
+	// Each address should have a listening TCP server on the port specified.
+	tcpAddrs []netip.AddrPort
 }
 
 func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
@@ -48,10 +54,11 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		}
 	}
 
-	if data.pmtud {
+	if data.pmtud.enabled {
 		mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
-		err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
-			data.network, data.pmtudAddrs, l.netLinker, l.routing, mtuLogger)
+		err := updateToMaxMTU(ctx, data.vpnIntf, data.pmtud.vpnType,
+			data.pmtud.network, data.pmtud.icmpAddrs, data.pmtud.tcpAddrs,
+			l.netLinker, l.routing, mtuLogger)
 		if err != nil {
 			mtuLogger.Error(err.Error())
 		}
@@ -148,7 +155,7 @@ func (l *Loop) restartVPN(ctx context.Context, healthErr error) {
 }
 
 func updateToMaxMTU(ctx context.Context, vpnInterface string,
-	vpnType, network string, addresses []netip.AddrPort,
+	vpnType, network string, icmpAddrs []netip.Addr, tcpAddrs []netip.AddrPort,
 	netlinker NetLinker, routing Routing, logger *log.Logger,
 ) error {
 	logger.Info("finding maximum MTU, this can take up to 6 seconds")
@@ -177,7 +184,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	}
 
 	const pingTimeout = time.Second
-	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, addresses,
+	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, icmpAddrs, tcpAddrs,
 		vpnLinkMTU, pingTimeout, logger)
 	if err != nil {
 		vpnLinkMTU = originalMTU

@@ -38,7 +38,8 @@ func Test_Settings_String(t *testing.T) {
 |   |   ├── Run OpenVPN as: root
 |   |   └── Verbosity level: 1
 |   └── Path MTU discovery:
-|       └── Addresses: 1.1.1.1:443, 8.8.8.8:443
+|       ├── ICMP addresses: 1.1.1.1, 8.8.8.8
+|       └── TCP addresses: 1.1.1.1:443, 8.8.8.8:443
 ├── DNS settings:
 |   ├── Keep existing nameserver(s): no
 |   ├── DNS server address to use: 127.0.0.1
