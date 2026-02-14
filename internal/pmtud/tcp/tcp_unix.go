@@ -22,3 +22,7 @@ func setSocketTimeout(fd fileDescriptor, timeout time.Duration) (err error) {
 func recvFrom(fd fileDescriptor, p []byte, flags int) (n int, from syscall.Sockaddr, err error) {
 	return syscall.Recvfrom(int(fd), p, flags)
 }
+
+func setNonBlock(fd int) error {
+	return syscall.SetNonblock(fd, true)
+}

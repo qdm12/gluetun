@@ -1,5 +1,3 @@
-//go:build integration
-
 package tcp
 
 import (
@@ -29,12 +27,10 @@ func Test_runTest(t *testing.T) {
 	require.NoError(t, err, "finding default IPv4 route MTU")
 
 	ctx, cancel := context.WithCancel(t.Context())
-	t.Cleanup(cancel)
 
 	const family = syscall.AF_INET
 	fd, stop, err := startRawSocket(family)
 	require.NoError(t, err)
-	t.Cleanup(stop)
 
 	const ipv4 = true
 	tracker := newTracker(fd, ipv4)
@@ -44,6 +40,7 @@ func Test_runTest(t *testing.T) {
 	}()
 
 	t.Cleanup(func() {
+		stop()
 		cancel() // stop listening
 		err = <-trackerCh
 		require.NoError(t, err)

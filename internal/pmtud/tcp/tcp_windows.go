@@ -3,6 +3,7 @@ package tcp
 import (
 	"syscall"
 	"time"
+	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
@@ -24,4 +25,13 @@ func recvFrom(fd fileDescriptor, p []byte, flags int) (n int, from syscall.Socka
 
 func setMTUDiscovery(fd syscall.Handle) error {
 	panic("not implemented")
+}
+
+func setNonBlock(fd syscall.Handle) error {
+	// Windows: Use ioctlsocket with FIONBIO
+	var arg uint32 = 1 // 1 to enable non-blocking mode
+	var bytesReturned uint32
+	const FIONBIO = 0x8004667e
+	return syscall.WSAIoctl(fd, FIONBIO, (*byte)(unsafe.Pointer(&arg)),
+		uint32(unsafe.Sizeof(arg)), nil, 0, &bytesReturned, nil, 0)
 }

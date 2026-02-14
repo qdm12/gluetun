@@ -16,6 +16,7 @@ func startRawSocket(family int) (fd fileDescriptor, stop func(), err error) {
 	if err != nil {
 		return 0, nil, fmt.Errorf("creating raw socket: %w", err)
 	}
+
 	if family == syscall.AF_INET {
 		err = ip.SetIPv4HeaderIncluded(fdPlatform)
 	} else {
@@ -31,6 +32,15 @@ func startRawSocket(family int) (fd fileDescriptor, stop func(), err error) {
 	if err != nil {
 		_ = syscall.Close(fdPlatform)
 		return 0, nil, fmt.Errorf("setting IP_MTU_DISCOVER: %w", err)
+	}
+
+	// use polling because some Linux systems do not cancel
+	// blocking syscalls such as recvfrom when the socket is closed,
+	// which would cause things to hang indefinitely.
+	err = setNonBlock(fdPlatform)
+	if err != nil {
+		_ = syscall.Close(fdPlatform)
+		return 0, nil, fmt.Errorf("setting non-blocking mode: %w", err)
 	}
 
 	stop = func() {
