@@ -17,11 +17,11 @@ type Firewall interface {
 	SetVPNConnection(ctx context.Context, connection models.Connection, interfaceName string) error
 	SetAllowedPort(ctx context.Context, port uint16, interfaceName string) error
 	RemoveAllowedPort(ctx context.Context, port uint16) error
-	SetVPNTCPMSS(ctx context.Context, mtu uint32) error
 }
 
 type Routing interface {
 	VPNLocalGatewayIP(vpnInterface string) (gateway netip.Addr, err error)
+	VPNRoute(vpnIntf string) (route netlink.Route, err error)
 }
 
 type PortForward interface {
@@ -68,6 +68,7 @@ type NetLinker interface {
 type Router interface {
 	RouteList(family uint8) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
+	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {

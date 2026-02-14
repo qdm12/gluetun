@@ -29,8 +29,6 @@ type Config struct {
 	outboundSubnets   []netip.Prefix
 	allowedInputPorts map[uint16]map[string]struct{} // port to interfaces set mapping
 	portRedirections  portRedirections
-	vpnTCPMSSIPv4     uint32
-	vpnTCPMSSIPv6     uint32
 	stateMutex        sync.Mutex
 }
 

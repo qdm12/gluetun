@@ -58,9 +58,6 @@ func (c *Config) disable(ctx context.Context) (err error) {
 		return fmt.Errorf("removing port redirections: %w", err)
 	}
 
-	c.vpnTCPMSSIPv4 = 0
-	c.vpnTCPMSSIPv6 = 0
-
 	return nil
 }
 

@@ -47,3 +47,26 @@ func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
 	}
 	return ip, fmt.Errorf("%w: in %d routes", ErrVPNLocalGatewayIPNotFound, len(routes))
 }
+
+var ErrVPNRouteNotFound = errors.New("VPN route not found")
+
+func (r *Routing) VPNRoute(vpnIntf string) (route netlink.Route, err error) {
+	vpnLink, err := r.netLinker.LinkByName(vpnIntf)
+	if err != nil {
+		return route, fmt.Errorf("finding link %s: %w", vpnIntf, err)
+	}
+	vpnLinkIndex := vpnLink.Index
+
+	routes, err := r.netLinker.RouteList(netlink.FamilyAll)
+	if err != nil {
+		return route, fmt.Errorf("listing routes: %w", err)
+	}
+	for _, route := range routes {
+		if route.LinkIndex == vpnLinkIndex &&
+			!route.Dst.IsValid() {
+			return route, nil
+		}
+	}
+	return route, fmt.Errorf("%w: for interface %s in %d routes",
+		ErrVPNRouteNotFound, vpnIntf, len(routes))
+}

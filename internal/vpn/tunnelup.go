@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/dns/v2/pkg/check"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/pmtud"
+	pconstants "github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/log"
 )
@@ -50,8 +51,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	if data.pmtud {
 		mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
 		err := updateToMaxMTU(ctx, data.vpnIntf, data.vpnType,
-			data.network, data.pmtudAddrs, l.netLinker, l.routing,
-			l.fw, mtuLogger)
+			data.network, data.pmtudAddrs, l.netLinker, l.routing, mtuLogger)
 		if err != nil {
 			mtuLogger.Error(err.Error())
 		}
@@ -149,8 +149,7 @@ func (l *Loop) restartVPN(ctx context.Context, healthErr error) {
 
 func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	vpnType, network string, addresses []netip.AddrPort,
-	netlinker NetLinker, routing Routing, firewall Firewall,
-	logger *log.Logger,
+	netlinker NetLinker, routing Routing, logger *log.Logger,
 ) error {
 	logger.Info("finding maximum MTU, this can take up to 6 seconds")
 
@@ -193,10 +192,33 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 		return fmt.Errorf("setting VPN interface %s MTU to %d: %w", vpnInterface, vpnLinkMTU, err)
 	}
 
-	err = firewall.SetVPNTCPMSS(ctx, vpnLinkMTU)
+	err = setTCPMSSOnVPNRoute(vpnInterface, vpnLinkMTU, routing, netlinker)
 	if err != nil {
 		return fmt.Errorf("setting safe TCP MSS for MTU %d: %w", vpnLinkMTU, err)
 	}
 
+	return nil
+}
+
+func setTCPMSSOnVPNRoute(vpnIntf string, mtu uint32,
+	routing Routing, netlinker NetLinker,
+) error {
+	route, err := routing.VPNRoute(vpnIntf)
+	if err != nil {
+		return fmt.Errorf("getting VPN route: %w", err)
+	}
+
+	ipHeaderLength := pconstants.IPv4HeaderLength
+	if route.Dst.Addr().Is6() {
+		ipHeaderLength = pconstants.IPv6HeaderLength
+	}
+	const mysteriousOverhead = 20 // most likely TCP options, such as the 12B of timestamps
+	overhead := ipHeaderLength + pconstants.BaseTCPHeaderLength + mysteriousOverhead
+	mss := mtu - overhead
+	route.AdvMSS = mss
+	err = netlinker.RouteReplace(route)
+	if err != nil {
+		return fmt.Errorf("replacing VPN route with MSS changed to %d: %w", mss, err)
+	}
 	return nil
 }
