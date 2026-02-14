@@ -114,7 +114,11 @@ func runTest(ctx context.Context, fd fileDescriptor,
 	case packetTypeRST:
 		return nil
 	case packetTypeACK:
-		return sendRST(fd, src, dst, ack)
+		err = sendRST(fd, src, dst, ack)
+		if err != nil {
+			return fmt.Errorf("sending RST packet: %w", err)
+		}
+		return nil
 	default:
 		_ = sendRST(fd, src, dst, ack)
 		return fmt.Errorf("%w: %s", errFinalPacketTypeUnexpected, packetType)
@@ -169,9 +173,5 @@ func sendRST(fd fileDescriptor, src, dst netip.AddrPort,
 	const ack = 0
 	rstPacket := createRSTPacket(src, dst, seq, ack)
 	const sendToFlags = 0
-	err := sendTo(fd, rstPacket, sendToFlags, makeSockAddr(dst))
-	if err != nil {
-		return fmt.Errorf("sending RST packet: %w", err)
-	}
-	return nil
+	return sendTo(fd, rstPacket, sendToFlags, makeSockAddr(dst))
 }
