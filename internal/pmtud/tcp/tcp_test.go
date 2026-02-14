@@ -70,7 +70,7 @@ func Test_runTest(t *testing.T) {
 			mtu: defaultIPv4MTU,
 		},
 		"1.1.1.1:443": {
-			timeout: 10 * time.Second,
+			timeout: time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 443)
 			},
@@ -78,7 +78,7 @@ func Test_runTest(t *testing.T) {
 			success: true,
 		},
 		"1.1.1.1:80": {
-			timeout: 10 * time.Second,
+			timeout: time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 80)
 			},
