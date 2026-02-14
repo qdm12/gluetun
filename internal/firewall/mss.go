@@ -15,7 +15,7 @@ func (c *Config) SetVPNTCPMSS(ctx context.Context, mtu uint32) error {
 		return nil
 	}
 
-	ruleTemplate := "-t mangle %s FORWARD -o " + c.vpnIntf + " -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss %d"
+	ruleTemplate := "-t mangle %s %s -o " + c.vpnIntf + " -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss %d"
 
 	onlyRemove := mtu == 0
 
@@ -25,9 +25,11 @@ func (c *Config) SetVPNTCPMSS(ctx context.Context, mtu uint32) error {
 	tcpMSSIPv4 := mtu - ipv4Overhead
 	var instructions []string
 	if c.vpnTCPMSSIPv4 != 0 {
-		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--delete", c.vpnTCPMSSIPv4))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--delete", "FORWARD", c.vpnTCPMSSIPv4))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--delete", "POSTROUTING", c.vpnTCPMSSIPv4))
 	} else if !onlyRemove {
-		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--append", tcpMSSIPv4))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--append", "FORWARD", tcpMSSIPv4))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--append", "POSTROUTING", tcpMSSIPv4))
 	}
 	err := c.runIptablesInstructions(ctx, instructions)
 	if err != nil {
@@ -40,9 +42,11 @@ func (c *Config) SetVPNTCPMSS(ctx context.Context, mtu uint32) error {
 	tcpMSSIPv6 := mtu - ipv6Overhead
 	instructions = []string{}
 	if c.vpnTCPMSSIPv6 != 0 {
-		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--delete", c.vpnTCPMSSIPv6))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--delete", "FORWARD", c.vpnTCPMSSIPv6))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--delete", "POSTROUTING", c.vpnTCPMSSIPv6))
 	} else if !onlyRemove {
-		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--append", tcpMSSIPv6))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--append", "FORWARD", tcpMSSIPv6))
+		instructions = append(instructions, fmt.Sprintf(ruleTemplate, "--append", "POSTROUTING", tcpMSSIPv6))
 	}
 	err = c.runIP6tablesInstructions(ctx, instructions)
 	if err != nil {
