@@ -8,30 +8,19 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/test"
 )
 
 var ErrMTUNotFound = errors.New("MTU not found")
-
-func PathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
-	physicalLinkMTU uint32, logger Logger,
-) (mtu uint32, err error) {
-	minMTU := constants.MinIPv4MTU
-	if addrPort.Addr().Is6() {
-		minMTU = constants.MinIPv6MTU
-	}
-	return pmtudMultiSizes(ctx, addrPort, minMTU, physicalLinkMTU, logger)
-}
 
 type testUnit struct {
 	mtu uint32
 	ok  bool
 }
 
-func pmtudMultiSizes(ctx context.Context, addr netip.AddrPort,
+func PathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
 	minMTU, maxPossibleMTU uint32, logger Logger,
-) (maxMTU uint32, err error) {
+) (mtu uint32, err error) {
 	mtusToTest := test.MakeMTUsToTest(minMTU, maxPossibleMTU)
 	if len(mtusToTest) == 1 { // only minMTU because minMTU == maxPossibleMTU
 		return minMTU, nil
@@ -44,7 +33,7 @@ func pmtudMultiSizes(ctx context.Context, addr netip.AddrPort,
 	}
 
 	family := syscall.AF_INET
-	if addr.Addr().Is6() {
+	if addrPort.Addr().Is6() {
 		family = syscall.AF_INET6
 	}
 	fd, stop, err := startRawSocket(family)
@@ -53,7 +42,7 @@ func pmtudMultiSizes(ctx context.Context, addr netip.AddrPort,
 	}
 	defer stop()
 
-	tracker := newTracker(fd, addr.Addr().Is4())
+	tracker := newTracker(fd, addrPort.Addr().Is4())
 
 	const timeout = time.Second
 	runCtx, cancel := context.WithTimeout(ctx, timeout)
@@ -66,7 +55,7 @@ func pmtudMultiSizes(ctx context.Context, addr netip.AddrPort,
 	doneCh := make(chan struct{})
 	for i := range tests {
 		go func(i int) {
-			err := runTest(runCtx, fd, tracker, addr, tests[i].mtu)
+			err := runTest(runCtx, fd, tracker, addrPort, tests[i].mtu)
 			tests[i].ok = err == nil
 			doneCh <- struct{}{}
 		}(i)
@@ -91,7 +80,7 @@ func pmtudMultiSizes(ctx context.Context, addr netip.AddrPort,
 		if tests[i].ok {
 			stop()
 			cancel()
-			return pmtudMultiSizes(ctx, addr,
+			return PathMTUDiscover(ctx, addrPort,
 				tests[i].mtu, tests[i+1].mtu-1, logger)
 		}
 	}

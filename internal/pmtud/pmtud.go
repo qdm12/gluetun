@@ -7,14 +7,17 @@ import (
 	"net/netip"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/icmp"
 	"github.com/qdm12/gluetun/internal/pmtud/tcp"
 )
 
 // PathMTUDiscover discovers the maximum MTU using both ICMP and TCP.
 // Multiple ICMP addresses and TCP addresses can be specified for redundancy.
-// ICMP PMTUD is run first, then TCP PMTUD is run with the maximum MTU found from
-// ICMP PMTUD as its upper bound.
+// ICMP PMTUD is run first. If successful, the range of possible MTU values to
+// check for TCP PMTUD is reduced to [maxMTU-150, maxMTU] where maxMTU is the
+// maximum MTU found with ICMP PMTUD. Otherwise, TCP PMTUD is run with the
+// whole range of possible MTU values up to the physical link MTU to check.
 // If the physicalLinkMTU is zero, it defaults to 1500 which is the ethernet standard MTU.
 // If the pingTimeout is zero, it defaults to 1 second.
 // If the logger is nil, a no-op logger is used.
@@ -36,12 +39,14 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 
 	// Try finding the MTU using ICMP
 	maxPossibleMTU := physicalLinkMTU
+	icmpSuccess := false
 	for _, icmpIP := range icmpAddrs {
 		mtu, err := icmp.PathMTUDiscover(ctx, icmpIP, physicalLinkMTU,
 			tryTimeout, logger)
 		switch {
 		case err == nil:
 			logger.Debugf("ICMP path MTU discovery against %s found maximum valid MTU %d", icmpIP, mtu)
+			icmpSuccess = true
 			maxPossibleMTU = mtu
 		case errors.Is(err, icmp.ErrNotPermitted), errors.Is(err, icmp.ErrMTUNotFound):
 			logger.Debugf("ICMP path MTU discovery failed: %s", err)
@@ -51,7 +56,15 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 	}
 
 	for _, addrPort := range tcpAddrs {
-		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, maxPossibleMTU, logger)
+		minMTU := constants.MinIPv4MTU
+		if addrPort.Addr().Is6() {
+			minMTU = constants.MinIPv6MTU
+		}
+		if icmpSuccess {
+			const mtuMargin = 150
+			minMTU = max(maxPossibleMTU-mtuMargin, minMTU)
+		}
+		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, minMTU, maxPossibleMTU, logger)
 		if err != nil {
 			logger.Debugf("TCP path MTU discovery to %s failed: %s", addrPort, err)
 			continue
