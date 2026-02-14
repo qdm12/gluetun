@@ -23,6 +23,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
 	"github.com/qdm12/gluetun/internal/constants"
+	copenvpn "github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/healthcheck"
@@ -270,11 +271,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	ovpnConf := openvpn.New(
 		logger.New(log.SetComponent("openvpn configurator")),
 		cmder, puid, pgid)
+	ovpnVersion := ovpnConf.Version26
+	if allSettings.VPN.OpenVPN.Version == copenvpn.Openvpn25 {
+		ovpnVersion = ovpnConf.Version25
+	}
 
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
-		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
-		{name: "OpenVPN 2.6", getVersion: ovpnConf.Version26},
+		{name: "OpenVPN", getVersion: ovpnVersion},
 		{name: "IPtables", getVersion: firewallConf.Version},
 	})
 	if err != nil {

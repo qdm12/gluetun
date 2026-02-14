@@ -45,6 +45,7 @@ jobs:
           level: error
           exclude: |
             ./internal/storage/servers.json
+            ./golangci.yml
             *.md
 
       - name: Linting
@@ -62,6 +63,9 @@ jobs:
           docker run --rm --cap-add=NET_ADMIN --device /dev/net/tun \
           -v "$(pwd)/coverage.txt:/tmp/gobuild/coverage.txt" \
           test-container
+
+      - name: Verify dev cross platform compatibility
+        run: docker build --target xcompile .
 
       - name: Build final image
         run: docker build -t final-image .
