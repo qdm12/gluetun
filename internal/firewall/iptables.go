@@ -85,7 +85,7 @@ func (c *Config) runIptablesInstruction(ctx context.Context, instruction string)
 }
 
 func (c *Config) clearAllRules(ctx context.Context) error {
-	tables := []string{"filter", "mangle", "nat"}
+	tables := []string{"filter"}
 	for _, table := range tables {
 		return c.runMixedIptablesInstructions(ctx, []string{
 			"-t " + table + " --flush",        // flush all chains
