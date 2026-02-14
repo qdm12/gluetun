@@ -2,6 +2,8 @@ package settings
 
 import (
 	"fmt"
+	"slices"
+	"sort"
 	"strings"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
@@ -31,6 +33,11 @@ func (p *Provider) validate(vpnType string, filterChoicesGetter FilterChoicesGet
 	if vpnType == vpn.OpenVPN {
 		validNames = providers.AllWithCustom()
 		validNames = append(validNames, "pia") // Retro-compatibility
+		// Remove Mullvad since it no longer supports OpenVPN as of January 15th, 2026
+		mullvadIndex := slices.Index(validNames, providers.Mullvad)
+		validNames[mullvadIndex], validNames[len(validNames)-1] = validNames[len(validNames)-1], validNames[mullvadIndex]
+		validNames = validNames[:len(validNames)-1]
+		sort.Strings(validNames)
 	} else { // Wireguard
 		validNames = []string{
 			providers.Airvpn,
@@ -46,10 +53,6 @@ func (p *Provider) validate(vpnType string, filterChoicesGetter FilterChoicesGet
 	}
 	if err = validate.IsOneOf(p.Name, validNames...); err != nil {
 		return fmt.Errorf("%w for Wireguard: %w", ErrVPNProviderNameNotValid, err)
-	}
-
-	if p.Name == providers.Mullvad && vpnType == vpn.OpenVPN {
-		warner.Warn("https://mullvad.net/en/blog/removing-openvpn-15th-january-2026")
 	}
 
 	err = p.ServerSelection.validate(p.Name, filterChoicesGetter, warner)
