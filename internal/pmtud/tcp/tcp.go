@@ -93,10 +93,19 @@ func runTest(ctx context.Context, fd fileDescriptor,
 		return fmt.Errorf("%w: expected %d, got %d", errTCPSynAckAckMismatch, synSeq+1, synAckAck)
 	}
 
-	ackPacket := createACKPacket(src, dst, synAckAck, synAckSeq+1, mtu)
+	// Send a no-data ACK packet to finish the 3-way handshake.
+	const ackMTU = 0 // no data payload initially
+	ackPacket := createACKPacket(src, dst, synAckAck, synAckSeq+1, ackMTU)
 	err = sendTo(fd, ackPacket, sendToFlags, dstSockAddr)
 	if err != nil {
-		return fmt.Errorf("sending ACK MTU-test packet: %w", err)
+		return fmt.Errorf("sending ACK-without-data packet: %w", err)
+	}
+
+	// Send a data ACK packet to test the MTU given.
+	ackPacket = createACKPacket(src, dst, synAckAck, synAckSeq+1, mtu)
+	err = sendTo(fd, ackPacket, sendToFlags, dstSockAddr)
+	if err != nil {
+		return fmt.Errorf("sending ACK-with-data packet: %w", err)
 	}
 
 	select {

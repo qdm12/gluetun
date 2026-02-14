@@ -24,9 +24,14 @@ func createSYNPacket(src, dst netip.AddrPort, mtu uint32) (packet []byte, seq ui
 	return createPacket(src, dst, seq, ack, payloadLength, synFlag), seq
 }
 
-// createACKPacket creates a TCP ACK packet with a large payload for MTU testing.
+// createACKPacket creates a TCP ACK packet.
+// If the mtu is set to 0, no payload is sent.
+// Otherwise, the payload is calculated to test the MTU given.
 func createACKPacket(src, dst netip.AddrPort, seq, ack uint32, mtu uint32) []byte {
-	payloadLength := getPayloadLength(mtu, dst)
+	payloadLength := constants.BaseTCPHeaderLength // no data payload
+	if mtu > 0 {
+		payloadLength = getPayloadLength(mtu, dst)
+	}
 	const flags = ackFlag | pshFlag
 	return createPacket(src, dst, seq, ack, payloadLength, flags)
 }
