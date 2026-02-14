@@ -69,8 +69,8 @@ func Test_deleteIPTablesRule(t *testing.T) {
 		"invalid_instruction": {
 			instruction: "invalid",
 			errWrapped:  ErrIptablesCommandMalformed,
-			errMessage: "parsing iptables command: parsing \"invalid\": " +
-				"iptables command is malformed: flag \"invalid\" requires a value, but got none",
+			errMessage: "parsing iptables command: iptables command is malformed: " +
+				"fields count 1 is not even: \"invalid\"",
 		},
 		"list_error": {
 			instruction: "-t nat --delete PREROUTING -i tun0 -p tcp --dport 43716 -j REDIRECT --to-ports 5678",

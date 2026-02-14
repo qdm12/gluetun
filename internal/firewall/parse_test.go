@@ -23,7 +23,7 @@ func Test_parseIptablesInstruction(t *testing.T) {
 		"uneven_fields": {
 			s:          "-A",
 			errWrapped: ErrIptablesCommandMalformed,
-			errMessage: "parsing \"-A\": iptables command is malformed: flag \"-A\" requires a value, but got none",
+			errMessage: "iptables command is malformed: fields count 1 is not even: \"-A\"",
 		},
 		"unknown_key": {
 			s:          "-x something",

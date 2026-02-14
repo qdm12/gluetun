@@ -77,43 +77,26 @@ func parseIptablesInstruction(s string) (instruction iptablesInstruction, err er
 		return iptablesInstruction{}, fmt.Errorf("%w: empty instruction", ErrIptablesCommandMalformed)
 	}
 	fields := strings.Fields(s)
+	if len(fields)%2 != 0 {
+		return iptablesInstruction{}, fmt.Errorf("%w: fields count %d is not even: %q",
+			ErrIptablesCommandMalformed, len(fields), s)
+	}
 
-	i := 0
-	for i < len(fields) {
-		consumed, err := parseInstructionFlag(fields[i:], &instruction)
+	for i := 0; i < len(fields); i += 2 {
+		key := fields[i]
+		value := fields[i+1]
+		err = parseInstructionFlag(key, value, &instruction)
 		if err != nil {
 			return iptablesInstruction{}, fmt.Errorf("parsing %q: %w", s, err)
 		}
-		i += consumed
 	}
 
 	instruction.setDefaults()
 	return instruction, nil
 }
 
-func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (consumed int, err error) {
-	flag := fields[0]
-
-	// All flags use one value after the flag, except the following:
-	switch flag {
-	case "-R", "--replace":
-		const expected = 3
-		if len(fields) < expected {
-			return 0, fmt.Errorf("%w: flag %q requires at least 2 values, but got %s",
-				ErrIptablesCommandMalformed, flag, strings.Join(fields, " "))
-		}
-		consumed = expected
-	default:
-		const expected = 2
-		if len(fields) < expected {
-			return 0, fmt.Errorf("%w: flag %q requires a value, but got none",
-				ErrIptablesCommandMalformed, flag)
-		}
-		consumed = expected
-	}
-	value := fields[1]
-
-	switch flag {
+func parseInstructionFlag(key, value string, instruction *iptablesInstruction) (err error) {
+	switch key {
 	case "-t", "--table":
 		instruction.table = value
 	case "-D", "--delete":
@@ -134,18 +117,18 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 	case "-s", "--source":
 		instruction.source, err = parseIPPrefix(value)
 		if err != nil {
-			return 0, fmt.Errorf("parsing source IP CIDR: %w", err)
+			return fmt.Errorf("parsing source IP CIDR: %w", err)
 		}
 	case "-d", "--destination":
 		instruction.destination, err = parseIPPrefix(value)
 		if err != nil {
-			return 0, fmt.Errorf("parsing destination IP CIDR: %w", err)
+			return fmt.Errorf("parsing destination IP CIDR: %w", err)
 		}
 	case "--dport":
 		const base, bitLength = 10, 16
 		destinationPort, err := strconv.ParseUint(value, base, bitLength)
 		if err != nil {
-			return 0, fmt.Errorf("parsing destination port: %w", err)
+			return fmt.Errorf("parsing destination port: %w", err)
 		}
 		instruction.destinationPort = uint16(destinationPort)
 	case "--ctstate":
@@ -157,14 +140,14 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 			const base, bitLength = 10, 16
 			port, err := strconv.ParseUint(portString, base, bitLength)
 			if err != nil {
-				return 0, fmt.Errorf("parsing port redirection: %w", err)
+				return fmt.Errorf("parsing port redirection: %w", err)
 			}
 			instruction.toPorts[i] = uint16(port)
 		}
 	default:
-		return 0, fmt.Errorf("%w: unknown key %q", ErrIptablesCommandMalformed, flag)
+		return fmt.Errorf("%w: unknown key %q", ErrIptablesCommandMalformed, key)
 	}
-	return consumed, nil
+	return nil
 }
 
 func parseIPPrefix(value string) (prefix netip.Prefix, err error) {
