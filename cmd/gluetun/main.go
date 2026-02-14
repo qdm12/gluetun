@@ -80,7 +80,6 @@ func main() {
 	tun := tun.New()
 	netLinkDebugLogger := logger.New(log.SetComponent("netlink"))
 	netLinker := netlink.New(netLinkDebugLogger)
-	cli := cli.New()
 	cmder := command.New()
 
 	reader := reader.New(reader.Settings{
@@ -95,13 +94,24 @@ func main() {
 		},
 	})
 
+	clier, err := cli.New(
+		cli.NewUpdateCommand("./internal/storage/servers.json", args, logger),
+		cli.NewHealthCheckCommand(reader),
+		cli.NewOpenVPNConfigCommand(logger, reader, netLinker),
+		cli.NewFormatServersCommand(args),
+		cli.NewGenKeyCommand(args),
+	)
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, reader, tun, netLinker, cmder, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, reader, tun, netLinker, cmder, clier)
 	}()
 
 	// Wait for OS signal or run error
-	var err error
 	select {
 	case receivedSignal := <-signalCh:
 		signal.Stop(signalCh)
@@ -139,8 +149,6 @@ func main() {
 	}
 }
 
-var errCommandUnknown = errors.New("command is unknown")
-
 //nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger log.LoggerInterface, reader *reader.Reader,
@@ -148,22 +156,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	cli clier,
 ) error {
 	if len(args) > 1 { // cli operation
-		switch args[1] {
-		case "healthcheck":
-			return cli.HealthCheck(ctx, reader, logger)
-		case "clientkey":
-			return cli.ClientKey(args[2:])
-		case "openvpnconfig":
-			return cli.OpenvpnConfig(logger, reader, netLinker)
-		case "update":
-			return cli.Update(ctx, args[2:], logger)
-		case "format-servers":
-			return cli.FormatServers(args[2:])
-		case "genkey":
-			return cli.GenKey(args[2:])
-		default:
-			return fmt.Errorf("%w: %s", errCommandUnknown, args[1])
-		}
+		return cli.RunCommand(ctx, args[1])
 	}
 
 	defer fmt.Println(gluetunLogo)
@@ -590,12 +583,7 @@ type Linker interface {
 }
 
 type clier interface {
-	ClientKey(args []string) error
-	FormatServers(args []string) error
-	OpenvpnConfig(logger cli.OpenvpnConfigLogger, reader *reader.Reader, ipv6Checker cli.IPv6Checker) error
-	HealthCheck(ctx context.Context, reader *reader.Reader, warner cli.Warner) error
-	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
-	GenKey(args []string) error
+	RunCommand(context.Context, string) error
 }
 
 type Tun interface {

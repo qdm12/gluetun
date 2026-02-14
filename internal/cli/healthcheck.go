@@ -11,10 +11,28 @@ import (
 	"github.com/qdm12/gosettings/reader"
 )
 
-func (c *CLI) HealthCheck(ctx context.Context, reader *reader.Reader, _ Warner) (err error) {
+type HealthCheckCommand struct {
+	reader *reader.Reader
+}
+
+func NewHealthCheckCommand(reader *reader.Reader) *HealthCheckCommand {
+	return &HealthCheckCommand{
+		reader: reader,
+	}
+}
+
+func (c *HealthCheckCommand) Name() string {
+	return "healthcheck"
+}
+
+func (c *HealthCheckCommand) Description() string {
+	return "Check the health of the VPN connection of another Gluetun instance"
+}
+
+func (c *HealthCheckCommand) Run(ctx context.Context) (err error) {
 	// Extract the health server port from the configuration.
 	var config settings.Health
-	err = config.Read(reader)
+	err = config.Read(c.reader)
 	if err != nil {
 		return err
 	}
