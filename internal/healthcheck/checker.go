@@ -23,6 +23,7 @@ type Checker struct {
 	logger         Logger
 	icmpTargetIPs  []netip.Addr
 	smallCheckType string
+	startupOnFail  bool
 	configMutex    sync.Mutex
 
 	icmpNotPermitted *bool
@@ -45,26 +46,43 @@ func NewChecker(logger Logger) *Checker {
 	}
 }
 
-// SetConfig sets the TCP+TLS dial addresses, the ICMP echo IP address
-// to target and the desired small check type (dns or icmp).
+// SetConfig sets the following:
+// - TCP+TLS dial addresses
+// - ICMP echo IP addresses to target
+// - the desired small check type (dns or icmp)
+// - whether to startup the periodic checks if the startup check fails.
 // This function MUST be called before calling [Checker.Start].
 func (c *Checker) SetConfig(tlsDialAddrs []string, icmpTargets []netip.Addr,
-	smallCheckType string,
+	smallCheckType string, startupOnFail bool,
 ) {
 	c.configMutex.Lock()
 	defer c.configMutex.Unlock()
 	c.tlsDialAddrs = tlsDialAddrs
 	c.icmpTargetIPs = icmpTargets
 	c.smallCheckType = smallCheckType
+	c.startupOnFail = startupOnFail
 }
 
-// Start starts the checker by first running a blocking 6s-timed TCP+TLS check,
-// and, on success, starts the periodic checks in a separate goroutine:
+// Start starts the [Checker] which behaves differently according to its
+// internal field startupOnFail, which is set by calling [Checker.SetConfig].
+//
+// By default, startupOnFail should be false and the behavior is as follows:
+// A blocking 6s-timed TCP+TLS check is performed first. If it fails,
+// an error is returned and the [Checker] is not started.
+// On success, it starts the periodic checks in a separate goroutine, returning
+// the runError error channel and a nil error.
+//
+// If startupOnFail is true, the behavior is as follows:
+// A blocking 6s-timed TCP+TLS check is performed first. If it fails,
+// the error is sent to the runError channel, but no error is returned
+// and the [Checker] continues to start the periodic checks in a separate goroutine, returning
+// the runError error channel and a nil error.
+//
+// The periodic checks consist in:
 // - a "small" ICMP echo check every minute
 // - a "full" TCP+TLS check every 5 minutes
-// It returns a channel `runError` that receives an error (nil or not) when a periodic check is performed.
-// It returns an error if the initial TCP+TLS check fails.
-// The Checker has to be ultimately stopped by calling [Checker.Stop].
+//
+// The [Checker] has to be ultimately stopped by calling [Checker.Stop].
 func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) {
 	if len(c.tlsDialAddrs) == 0 || len(c.icmpTargetIPs) == 0 || c.smallCheckType == "" {
 		panic("call Checker.SetConfig with non empty values before Checker.Start")
@@ -76,9 +94,19 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	}
 	c.echoer.Reset()
 
+	// runErrorCh MUST be buffered in the case startupOnFail is true, and
+	// a startup error was encountered, to avoid blocking the startup
+	// goroutine when sending the error, especially since the caller may
+	// not be ready to receive from the channel yet.
+	runErrorCh := make(chan error, 1)
+	runError = runErrorCh
 	err = c.startupCheck(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("startup check: %w", err)
+		err = fmt.Errorf("startup check: %w", err)
+		if !c.startupOnFail {
+			return nil, err
+		}
+		runErrorCh <- err
 	}
 
 	ready := make(chan struct{})
@@ -90,8 +118,6 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 	smallCheckTimer := time.NewTimer(smallCheckPeriod)
 	const fullCheckPeriod = 5 * time.Minute
 	fullCheckTimer := time.NewTimer(fullCheckPeriod)
-	runErrorCh := make(chan error)
-	runError = runErrorCh
 	go func() {
 		defer close(done)
 		close(ready)
@@ -106,14 +132,22 @@ func (c *Checker) Start(ctx context.Context) (runError <-chan error, err error) 
 				if err != nil {
 					err = fmt.Errorf("small periodic check: %w", err)
 				}
-				runErrorCh <- err
+				select {
+				case <-ctx.Done():
+					continue
+				case runErrorCh <- err:
+				}
 				smallCheckTimer.Reset(smallCheckPeriod)
 			case <-fullCheckTimer.C:
 				err := c.fullPeriodicCheck(ctx)
 				if err != nil {
 					err = fmt.Errorf("full periodic check: %w", err)
 				}
-				runErrorCh <- err
+				select {
+				case <-ctx.Done():
+					continue
+				case runErrorCh <- err:
+				}
 				fullCheckTimer.Reset(fullCheckPeriod)
 			}
 		}
