@@ -1,4 +1,4 @@
-package pmtud
+package icmp
 
 import (
 	"context"
@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv6"
 )
 
 const (
-	minIPv6MTU     = 1280
 	icmpv6Protocol = 58
 )
 
@@ -23,7 +23,7 @@ func listenICMPv6(ctx context.Context) (conn net.PacketConn, err error) {
 	packetConn, err := listenConfig.ListenPacket(ctx, "ip6:ipv6-icmp", listenAddress)
 	if err != nil {
 		if strings.HasSuffix(err.Error(), "socket: operation not permitted") {
-			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrICMPNotPermitted)
+			err = fmt.Errorf("%w: you can try adding NET_RAW capability to resolve this", ErrNotPermitted)
 		}
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func getIPv6PacketTooBig(ctx context.Context, ip netip.Addr,
 		case *icmp.PacketTooBig:
 			// https://datatracker.ietf.org/doc/html/rfc1885#section-3.2
 			mtu = uint32(typedBody.MTU) //nolint:gosec
-			err = checkMTU(mtu, minIPv6MTU, physicalLinkMTU)
+			err = checkMTU(mtu, constants.MinIPv6MTU, physicalLinkMTU)
 			if err != nil {
 				return 0, fmt.Errorf("checking MTU: %w", err)
 			}
@@ -103,7 +103,7 @@ func getIPv6PacketTooBig(ctx context.Context, ip netip.Addr,
 			if err != nil {
 				return 0, fmt.Errorf("checking invoking message id: %w", err)
 			} else if idMatch {
-				return 0, fmt.Errorf("%w", ErrICMPDestinationUnreachable)
+				return 0, fmt.Errorf("%w", ErrDestinationUnreachable)
 			}
 			logger.Debug("discarding received ICMP destination unreachable reply with an unknown id")
 			continue
@@ -116,7 +116,7 @@ func getIPv6PacketTooBig(ctx context.Context, ip netip.Addr,
 				inboundID, outboundID)
 			continue
 		default:
-			return 0, fmt.Errorf("%w: %T", ErrICMPBodyUnsupported, typedBody)
+			return 0, fmt.Errorf("%w: %T", ErrBodyUnsupported, typedBody)
 		}
 	}
 }

@@ -47,7 +47,13 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			continue
 		}
 		tunnelUpData := tunnelUpData{
-			vpnType:        settings.Type,
+			pmtud: tunnelUpPMTUDData{
+				enabled:   settings.Type != vpn.Wireguard || *settings.Wireguard.MTU == 0,
+				vpnType:   settings.Type,
+				network:   connection.Protocol,
+				icmpAddrs: settings.PMTUD.ICMPAddresses,
+				tcpAddrs:  settings.PMTUD.TCPAddresses,
+			},
 			serverIP:       connection.IP,
 			serverName:     connection.ServerName,
 			canPortForward: connection.PortForward,

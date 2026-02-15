@@ -18,6 +18,7 @@ type Route struct {
 	Type      uint8
 	Scope     uint8
 	Proto     uint8
+	AdvMSS    uint32
 }
 
 func (r *Route) fromMessage(message rtnetlink.RouteMessage) {
@@ -35,6 +36,9 @@ func (r *Route) fromMessage(message rtnetlink.RouteMessage) {
 	r.Type = message.Type
 	r.Scope = message.Scope
 	r.Proto = message.Protocol
+	if metrics := message.Attributes.Metrics; metrics != nil {
+		r.AdvMSS = metrics.AdvMSS
+	}
 }
 
 func (r Route) message() *rtnetlink.RouteMessage {
@@ -58,7 +62,6 @@ func (r Route) message() *rtnetlink.RouteMessage {
 		Protocol:  r.Proto,
 		Attributes: rtnetlink.RouteAttributes{
 			OutIface: r.LinkIndex,
-			Dst:      *dst, // there should always be a dst for routes
 			Gateway:  netipAddrToNetIP(r.Gw),
 			Priority: r.Priority,
 			Table:    extendedTable,
@@ -66,6 +69,15 @@ func (r Route) message() *rtnetlink.RouteMessage {
 	}
 	if src != nil { // src is optional
 		message.Attributes.Src = *src
+	}
+	if dst != nil {
+		message.Attributes.Dst = *dst
+	}
+	if r.AdvMSS != 0 {
+		if message.Attributes.Metrics == nil {
+			message.Attributes.Metrics = &rtnetlink.RouteMetrics{}
+		}
+		message.Attributes.Metrics.AdvMSS = r.AdvMSS
 	}
 	return message
 }
