@@ -29,6 +29,7 @@ type Config struct {
 	outboundSubnets   []netip.Prefix
 	allowedInputPorts map[uint16]map[string]struct{} // port to interfaces set mapping
 	portRedirections  portRedirections
+	outputAddrPort    map[uint16]netip.Addr
 	stateMutex        sync.Mutex
 }
 
@@ -52,6 +53,7 @@ func NewConfig(ctx context.Context, logger Logger,
 		runner:            runner,
 		logger:            logger,
 		allowedInputPorts: make(map[uint16]map[string]struct{}),
+		outputAddrPort:    make(map[uint16]netip.Addr),
 		ipTables:          iptables,
 		ip6Tables:         ip6tables,
 		customRulesPath:   "/iptables/post-rules.txt",

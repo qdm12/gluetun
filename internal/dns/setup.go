@@ -39,8 +39,9 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 
 	// use internal DNS server
 	const defaultDNSPort = 53
+	addrPort := netip.AddrPortFrom(settings.ServerAddress, defaultDNSPort)
 	nameserver.UseDNSInternally(nameserver.SettingsInternalDNS{
-		AddrPort: netip.AddrPortFrom(settings.ServerAddress, defaultDNSPort),
+		AddrPort: addrPort,
 	})
 	err = nameserver.UseDNSSystemWide(nameserver.SettingsSystemDNS{
 		IPs:        []netip.Addr{settings.ServerAddress},
@@ -48,6 +49,11 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 	})
 	if err != nil {
 		l.logger.Error(err.Error())
+	}
+
+	err = l.firewall.RestrictOutputAddrPort(ctx, addrPort)
+	if err != nil {
+		l.logger.Error("restricting plain DNS traffic to " + addrPort.Addr().String() + ": " + err.Error())
 	}
 
 	err = check.WaitForDNS(ctx, check.Settings{})
