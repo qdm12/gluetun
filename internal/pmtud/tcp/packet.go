@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"encoding/binary"
 	"math/rand/v2"
 	"net/netip"
 	"syscall"
@@ -72,10 +73,10 @@ func createPacket(src, dst netip.AddrPort,
 	tcpHeader := makeTCPHeader(src.Port(), dst.Port(), seq, ack, flags)
 
 	// data is just zeroes
-	dataLength := int(payloadLength) - int(constants.BaseTCPHeaderLength)
+	dataLength := int(payloadLength - constants.BaseTCPHeaderLength)
 	var data []byte
 	if dataLength > 0 {
-		data = make([]byte, dataLength)
+		data = generatePayload(uint16(dataLength)) //nolint:gosec
 	}
 	checksum := tcpChecksum(ipHeader, tcpHeader, data)
 	tcpHeader[16] = byte(checksum >> 8)   //nolint:mnd
@@ -86,4 +87,71 @@ func createPacket(src, dst netip.AddrPort,
 	copy(packet[len(ipHeader):], tcpHeader)
 	copy(packet[len(ipHeader)+int(constants.BaseTCPHeaderLength):], data)
 	return packet
+}
+
+// generatePayload creates a byte slice of 'length' size.
+// For lengths below 88B, it returns pseudo random data.
+// For lengths above, it returns a structured TLS Client Hello with padding,
+// which is more likely to be accepted by servers and not trigger RST replies.
+//
+//nolint:mnd
+func generatePayload(length uint16) []byte {
+	const minTLSClientHelloSize = 5 + // TLS record
+		4 + // handshake header
+		67 + // client hello
+		4 + // cipher suites
+		2 + // compression methods
+		2 + // extensions length
+		4 // padding extension header
+	if length < minTLSClientHelloSize {
+		data := make([]byte, length)
+		makeRandom(data)
+		return data
+	}
+
+	payload := make([]byte, length)
+
+	// --- TLS Record Layer ---
+	payload[0] = 0x16 // Handshake
+	payload[1] = 0x03 // Version 3.1
+	payload[2] = 0x01
+	binary.BigEndian.PutUint16(payload[3:5], length-5)
+
+	// --- Handshake Header ---
+	payload[5] = 0x01 // Client Hello
+	handshakeLength := make([]byte, 4)
+	// TLS Handshake length is 24-bit.
+	// We use a 4-byte buffer and copy the trailing 3 bytes.
+	binary.BigEndian.PutUint32(handshakeLength, uint32(length-9))
+	copy(payload[6:9], handshakeLength[1:])
+
+	// --- Client Hello Body ---
+	payload[9] = 0x03 // Version 3.3 (TLS 1.2)
+	payload[10] = 0x03
+	makeRandom(payload[11:43]) // 32 bytes of random
+	payload[43] = 32           // Session ID length
+
+	// Cipher Suites (Length: 2, Data: 2)
+	binary.BigEndian.PutUint16(payload[44:46], 2)
+	binary.BigEndian.PutUint16(payload[46:48], 0x009c) // TLS_RSA_WITH_AES_128_GCM_SHA256
+
+	payload[48] = 0x01 // Compression length
+	payload[49] = 0x00 // Null compression
+
+	// --- Extensions ---
+	binary.BigEndian.PutUint16(payload[50:52], length-52) // extension length
+
+	// --- Padding Extension (Type 21) ---
+	binary.BigEndian.PutUint16(payload[52:54], 21)
+	const bytesUsedSoFar = 88
+	paddingDataLength := length - bytesUsedSoFar
+	binary.BigEndian.PutUint16(payload[54:56], paddingDataLength)
+
+	return payload
+}
+
+func makeRandom(b []byte) {
+	for i := range b {
+		b[i] = byte(rand.Uint32()) //nolint:gosec
+	}
 }
