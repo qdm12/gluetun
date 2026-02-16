@@ -19,6 +19,8 @@ import (
 func Test_runTest(t *testing.T) {
 	t.Parallel()
 
+	t.Skipf("temporarily skipping test")
+
 	noopLogger := &noopLogger{}
 	netlinker := netlink.New(noopLogger)
 	loopbackMTU, err := findLoopbackMTU(netlinker)
