@@ -28,12 +28,12 @@ func (l *Loop) RunRestartTicker(ctx context.Context, done chan<- struct{}) {
 			return
 		case <-timer.C:
 			lastTick = l.timeNow()
+			settings := l.GetSettings()
 			if l.GetStatus() == constants.Running {
-				if err := l.updateFiles(ctx); err != nil {
+				if err := l.updateFiles(ctx, settings); err != nil {
 					l.logger.Warn("updating block lists failed, skipping: " + err.Error())
 				}
 			}
-			settings := l.GetSettings()
 			timer.Reset(*settings.UpdatePeriod)
 		case <-l.updateTicker:
 			if !timer.Stop() {

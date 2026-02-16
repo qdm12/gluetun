@@ -12,7 +12,7 @@ require (
 	github.com/klauspost/pgzip v1.2.6
 	github.com/mdlayher/genetlink v1.3.2
 	github.com/pelletier/go-toml/v2 v2.2.4
-	github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260216144148-3f6b7de87740
+	github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260216151239-36b3306f2205
 	github.com/qdm12/gosettings v0.4.4
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.2.0

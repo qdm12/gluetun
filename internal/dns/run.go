@@ -2,7 +2,6 @@ package dns
 
 import (
 	"context"
-	"errors"
 
 	"github.com/qdm12/dns/v2/pkg/nameserver"
 	"github.com/qdm12/gluetun/internal/constants"
@@ -52,11 +51,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 
 			if ctx.Err() != nil {
 				return
-			}
-
-			if !errors.Is(err, errUpdateBlockLists) {
-				const fallback = true
-				l.useUnencryptedDNS(fallback)
 			}
 			l.logAndWait(ctx, err)
 			settings = l.GetSettings()
