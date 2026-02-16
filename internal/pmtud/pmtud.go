@@ -53,6 +53,9 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 		default:
 			return 0, fmt.Errorf("ICMP path MTU discovery: %w", err)
 		}
+		if icmpSuccess {
+			break
+		}
 	}
 
 	for _, addrPort := range tcpAddrs {
