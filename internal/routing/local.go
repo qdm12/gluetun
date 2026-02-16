@@ -6,7 +6,6 @@ import (
 	"net/netip"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"golang.org/x/sys/unix"
 )
 
 var (
@@ -27,10 +26,10 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 		return localNetworks, fmt.Errorf("listing links: %w", err)
 	}
 
-	localLinks := make(map[int]struct{})
+	localLinks := make(map[uint32]struct{})
 
 	for _, link := range links {
-		if link.EncapType != "ether" {
+		if link.DeviceType != netlink.DeviceTypeEthernet {
 			continue
 		}
 
@@ -48,7 +47,7 @@ func (r *Routing) LocalNetworks() (localNetworks []LocalNetwork, err error) {
 	}
 
 	for _, route := range routes {
-		if route.Table != unix.RT_TABLE_MAIN ||
+		if route.Table != tableMain ||
 			(route.Gw.IsValid() && !route.Gw.IsUnspecified()) ||
 			(route.Dst.IsValid() && route.Dst.Addr().IsUnspecified()) {
 			continue
@@ -96,7 +95,7 @@ func (r *Routing) AddLocalRules(subnets []LocalNetwork) (err error) {
 
 		// Local has higher priority then outbound(99) and inbound(100) as the
 		// local routes might be necessary to reach the outbound/inbound routes.
-		const localPriority = 98
+		const localPriority uint32 = 98
 
 		// Main table was setup correctly by Docker, just need to add rules to use it
 		src := netip.Prefix{}

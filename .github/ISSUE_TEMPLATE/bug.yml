@@ -67,7 +67,6 @@ body:
         - VPNSecure.me
         - VPNUnlimited
         - VyprVPN
-        - WeVPN
         - Windscribe
     validations:
       required: true

@@ -36,6 +36,30 @@ func netIPNetToNetipPrefix(ipNet *net.IPNet) (prefix netip.Prefix) {
 	return netip.PrefixFrom(ip, bits)
 }
 
+func ipAndLengthToPrefix(ip *net.IP, length uint8) netip.Prefix {
+	if ip == nil || len(*ip) == 0 {
+		return netip.Prefix{}
+	}
+	var dstIP netip.Addr
+	if ipv4 := ip.To4(); ipv4 != nil { // IPv6
+		dstIP = netip.AddrFrom4([4]byte(*ip))
+	} else {
+		dstIP = netip.AddrFrom16([16]byte(*ip))
+	}
+	return netip.PrefixFrom(dstIP, int(length))
+}
+
+func prefixToIPAndLength(prefix netip.Prefix) (ip *net.IP, length uint8) {
+	if !prefix.IsValid() {
+		return nil, 0
+	}
+	prefixIP := prefix.Addr().Unmap()
+	ip = new(net.IP)
+	*ip = netipAddrToNetIP(prefixIP)
+	length = uint8(prefix.Bits()) //nolint:gosec
+	return ip, length
+}
+
 func netipAddrToNetIP(address netip.Addr) (ip net.IP) {
 	switch {
 	case !address.IsValid():

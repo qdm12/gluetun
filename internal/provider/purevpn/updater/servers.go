@@ -90,10 +90,27 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	if err != nil {
 		return nil, err
 	}
+
 	for i := range servers {
-		servers[i].Country = ipsInfo[i].Country
-		servers[i].Region = ipsInfo[i].Region
-		servers[i].City = ipsInfo[i].City
+		parsedCountry, parsedCity, warnings := parseHostname(servers[i].Hostname)
+		for _, warning := range warnings {
+			u.warner.Warn(warning)
+		}
+		servers[i].Country = parsedCountry
+		if servers[i].Country == "" {
+			servers[i].Country = ipsInfo[i].Country
+		}
+		servers[i].City = parsedCity
+		if servers[i].City == "" {
+			servers[i].City = ipsInfo[i].City
+		}
+
+		if (parsedCountry == "" ||
+			comparePlaceNames(parsedCountry, ipsInfo[i].Country)) &&
+			(parsedCity == "" ||
+				comparePlaceNames(parsedCity, ipsInfo[i].City)) {
+			servers[i].Region = ipsInfo[i].Region
+		}
 	}
 
 	sort.Sort(models.SortableServers(servers))

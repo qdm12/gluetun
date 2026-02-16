@@ -9,10 +9,11 @@ import (
 )
 
 func Test_NetLink_IsWireguardSupported(t *testing.T) {
-	t.Skip() // TODO unskip once the data race problem with netlink.GenlFamilyList() is fixed
-
 	t.Parallel()
-	netLink := &NetLink{}
+
+	netLink := &NetLink{
+		debugLogger: &noopLogger{},
+	}
 	ok, err := netLink.IsWireguardSupported()
 	require.NoError(t, err)
 	if ok { // cannot assert since this depends on kernel

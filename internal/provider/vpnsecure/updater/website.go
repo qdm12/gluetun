@@ -112,18 +112,18 @@ func parseHTMLGridItem(gridItem *html.Node) (
 	}
 
 	region := findSpanStrong(gridItemDD, "Region:")
-	region = naToEmpty(region)
 	if region == "" {
 		warning := fmt.Sprintf("region for host %s not found", host)
 		return server, htmlutils.WrapWarning(warning, gridItemDD)
 	}
+	region = naToEmpty(region)
 
 	city := findSpanStrong(gridItemDD, "City:")
-	city = naToEmpty(city)
 	if city == "" {
 		warning := fmt.Sprintf("region for host %s not found", host)
 		return server, htmlutils.WrapWarning(warning, gridItemDD)
 	}
+	city = naToEmpty(city)
 
 	premiumString := findSpanStrong(gridItemDD, "Premium:")
 	premiumString = naToEmpty(premiumString)

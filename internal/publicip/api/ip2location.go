@@ -8,18 +8,21 @@ import (
 	"net/netip"
 	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 type ip2Location struct {
-	client *http.Client
-	token  string
+	client       *http.Client
+	token        string
+	countryCodes map[string]string
 }
 
 func newIP2Location(client *http.Client, token string) *ip2Location {
 	return &ip2Location{
-		client: client,
-		token:  token,
+		client:       client,
+		token:        token,
+		countryCodes: constants.CountryCodes(),
 	}
 }
 
@@ -93,6 +96,24 @@ func (i *ip2Location) FetchInfo(ctx context.Context, ip netip.Addr) (
 	}
 	if err := decoder.Decode(&data); err != nil {
 		return result, fmt.Errorf("decoding response: %w", err)
+	}
+
+	// Remove parentheses from country name
+	idx := strings.Index(data.CountryName, " (")
+	if idx != -1 {
+		data.CountryName = data.CountryName[:idx]
+	}
+
+	// Rename country to match country string obtained from other IP data sources
+	countryRenames := map[string]string{
+		"Netherlands":              i.countryCodes["nl"],
+		"United States of America": i.countryCodes["us"],
+		"United Kingdom of Great Britain and Northern Ireland": i.countryCodes["gb"],
+		"Czechia": i.countryCodes["cz"],
+		"Korea":   i.countryCodes["kr"],
+	}
+	if newName, ok := countryRenames[data.CountryName]; ok {
+		data.CountryName = newName
 	}
 
 	result = models.PublicIP{

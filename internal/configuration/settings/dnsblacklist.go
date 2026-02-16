@@ -23,7 +23,9 @@ type DNSBlacklist struct {
 	AddBlockedIPs        []netip.Addr
 	AddBlockedIPPrefixes []netip.Prefix
 	// RebindingProtectionExemptHostnames is a list of hostnames
-	// exempt from DNS rebinding protection.
+	// exempt from DNS rebinding protection. It can contain parent
+	// domains which are of the form "*.example.com". Note the wildcard
+	// can only be used at the start of the hostname.
 	RebindingProtectionExemptHostnames []string
 }
 
@@ -55,6 +57,9 @@ func (b DNSBlacklist) validate() (err error) {
 	}
 
 	for _, host := range b.RebindingProtectionExemptHostnames {
+		if len(host) > 2 && host[:2] == "*." {
+			host = host[2:]
+		}
 		if !hostRegex.MatchString(host) {
 			return fmt.Errorf("%w: %s", ErrRebindingProtectionExemptHostNotValid, host)
 		}

@@ -13,7 +13,6 @@ func (h *handler) isAuthorized(responseWriter http.ResponseWriter, request *http
 	}
 	basicAuth := request.Header.Get("Proxy-Authorization")
 	if basicAuth == "" {
-		h.logger.Info("Proxy-Authorization header not found from " + request.RemoteAddr)
 		responseWriter.Header().Set("Proxy-Authenticate", `Basic realm="Access to Gluetun over HTTP"`)
 		responseWriter.WriteHeader(http.StatusProxyAuthRequired)
 		return false

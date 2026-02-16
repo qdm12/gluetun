@@ -46,6 +46,10 @@ RUN git init && \
     git diff --exit-code && \
     rm -rf .git/
 
+FROM --platform=${BUILDPLATFORM} base AS xcompile
+RUN GOOS=darwin go build -o /dev/null ./...
+RUN GOOS=windows go build -o /dev/null ./...
+
 FROM --platform=${BUILDPLATFORM} base AS build
 ARG TARGETPLATFORM
 ARG VERSION=unknown
@@ -106,8 +110,11 @@ ENV VPN_SERVICE_PROVIDER=pia \
     WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL=0 \
     WIREGUARD_ADDRESSES= \
     WIREGUARD_ADDRESSES_SECRETFILE=/run/secrets/wireguard_addresses \
-    WIREGUARD_MTU=1320 \
+    WIREGUARD_MTU= \
     WIREGUARD_IMPLEMENTATION=auto \
+    # PMTUD
+    PMTUD_ICMP_ADDRESSES=1.1.1.1,8.8.8.8 \
+    PMTUD_TCP_ADDRESSES=1.1.1.1:443,8.8.8.8:443 \
     # VPN server filtering
     SERVER_REGIONS= \
     SERVER_COUNTRIES= \

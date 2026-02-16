@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -29,7 +30,12 @@ func (s *Storage) mergeServers(hardcoded, persisted models.AllServers) models.Al
 func (s *Storage) mergeProviderServers(provider string,
 	hardcoded, persisted models.Servers,
 ) (merged models.Servers) {
-	if persisted.Timestamp > hardcoded.Timestamp {
+	nowTimestamp := time.Now().Unix()
+	if persisted.Timestamp > nowTimestamp {
+		s.logger.Warn(fmt.Sprintf(
+			"persisted %s servers have a timestamp %d in the future, ignoring them",
+			provider, persisted.Timestamp))
+	} else if persisted.Timestamp > hardcoded.Timestamp {
 		diff := time.Unix(persisted.Timestamp, 0).Sub(time.Unix(hardcoded.Timestamp, 0))
 		if diff < 0 {
 			diff = -diff

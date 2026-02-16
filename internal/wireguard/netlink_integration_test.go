@@ -1,4 +1,4 @@
-//go:build netlink && linux
+//go:build linux
 
 package wireguard
 
@@ -10,13 +10,16 @@ import (
 	"github.com/qdm12/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/sys/unix"
 )
 
 type noopDebugLogger struct{}
 
-func (n noopDebugLogger) Debugf(format string, args ...any) {}
-func (n noopDebugLogger) Patch(options ...log.Option)       {}
+func (n noopDebugLogger) Debug(_ string)            {}
+func (n noopDebugLogger) Debugf(_ string, _ ...any) {}
+func (n noopDebugLogger) Info(_ string)             {}
+func (n noopDebugLogger) Error(_ string)            {}
+func (n noopDebugLogger) Errorf(_ string, _ ...any) {}
+func (n noopDebugLogger) Patch(_ ...log.Option)     {}
 
 func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	t.Parallel()
@@ -24,15 +27,9 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	netlinker := netlink.New(&noopDebugLogger{})
 
 	link := netlink.Link{
-		Type: "bridge",
-		Name: "test_8081",
-	}
-
-	// Remove any previously created test interface from a crashed/panic
-	// test or test suite run.
-	err := netlinker.LinkDel(link)
-	if err != nil && err.Error() != "invalid argument" {
-		require.NoError(t, err)
+		DeviceType:  netlink.DeviceTypeNone,
+		VirtualType: "bridge",
+		Name:        makeLinkName(),
 	}
 
 	linkIndex, err := netlinker.LinkAdd(link)
@@ -40,7 +37,7 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	link.Index = linkIndex
 
 	defer func() {
-		err = netlinker.LinkDel(link)
+		err = netlinker.LinkDel(linkIndex)
 		assert.NoError(t, err)
 	}()
 
@@ -57,17 +54,15 @@ func Test_netlink_Wireguard_addAddresses(t *testing.T) {
 	}
 
 	const addIterations = 2 // initial + replace
-
-	for i := 0; i < addIterations; i++ {
-		err = wg.addAddresses(link, addresses)
+	for range addIterations {
+		err = wg.addAddresses(link.Index, addresses)
 		require.NoError(t, err)
 
-		netlinkAddresses, err := netlinker.AddrList(link, netlink.FamilyAll)
+		ipPrefixes, err := netlinker.AddrList(link.Index, netlink.FamilyAll)
 		require.NoError(t, err)
-		require.Equal(t, len(addresses), len(netlinkAddresses))
-		for i, netlinkAddress := range netlinkAddresses {
-			require.NotNil(t, netlinkAddress.Network)
-			assert.Equal(t, addresses[i], netlinkAddress.Network)
+		require.Equal(t, len(addresses), len(ipPrefixes))
+		for i, ipPrefix := range ipPrefixes {
+			assert.Equal(t, addresses[i], ipPrefix)
 		}
 	}
 }
@@ -78,38 +73,41 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 	netlinker := netlink.New(&noopDebugLogger{})
 	wg := &Wireguard{
 		netlink: netlinker,
+		logger:  &noopDebugLogger{},
 	}
 
-	rulePriority := 10000
-	const firewallMark = 999
-	const family = unix.AF_INET // ipv4
+	// Unique combination for this test
+	const rulePriority uint32 = 10000
+	const firewallMark uint32 = 12345
+	const family = netlink.FamilyV4
 
 	cleanup, err := wg.addRule(rulePriority,
 		firewallMark, family)
 	require.NoError(t, err)
-	defer func() {
+	t.Cleanup(func() {
 		err := cleanup()
 		assert.NoError(t, err)
-	}()
+	})
 
 	rules, err := netlinker.RuleList(netlink.FamilyV4)
 	require.NoError(t, err)
+	expectedRule := netlink.Rule{
+		Priority: ptrTo(rulePriority),
+		Family:   netlink.FamilyV4,
+		Table:    firewallMark,
+		Mark:     ptrTo(firewallMark),
+		Flags:    netlink.FlagInvert,
+		Action:   netlink.ActionToTable,
+	}
 	var rule netlink.Rule
 	var ruleFound bool
 	for _, rule = range rules {
-		if rule.Mark == firewallMark {
+		if rulesAreEqual(rule, expectedRule) {
 			ruleFound = true
 			break
 		}
 	}
 	require.True(t, ruleFound)
-	expectedRule := netlink.Rule{
-		Invert:   true,
-		Priority: rulePriority,
-		Mark:     firewallMark,
-		Table:    firewallMark,
-	}
-	assert.Equal(t, expectedRule, rule)
 
 	// Existing rule cannot be added
 	nilCleanup, err := wg.addRule(rulePriority,
@@ -118,5 +116,5 @@ func Test_netlink_Wireguard_addRule(t *testing.T) {
 		_ = nilCleanup() // in case it succeeds
 	}
 	require.Error(t, err)
-	assert.EqualError(t, err, "adding ip rule 10000: from all to all table 999: file exists")
+	assert.EqualError(t, err, "adding ip rule 10000: from all to all table 12345: netlink receive: file exists")
 }
