@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"net/netip"
 	"time"
 
@@ -26,7 +25,7 @@ func PathMTUDiscover(ctx context.Context, ip netip.Addr,
 		switch {
 		case err == nil:
 			return mtu, nil
-		case errors.Is(err, net.ErrClosed) || errors.Is(err, ErrCommunicationAdministrativelyProhibited): // blackhole
+		case errors.Is(err, errTimeout) || errors.Is(err, ErrCommunicationAdministrativelyProhibited): // blackhole
 		default:
 			return 0, fmt.Errorf("finding IPv4 next hop MTU: %w", err)
 		}
@@ -36,7 +35,7 @@ func PathMTUDiscover(ctx context.Context, ip netip.Addr,
 		switch {
 		case err == nil:
 			return mtu, nil
-		case errors.Is(err, net.ErrClosed): // blackhole
+		case errors.Is(err, errTimeout): // blackhole
 		default:
 			return 0, fmt.Errorf("getting IPv6 packet-too-big message: %w", err)
 		}
