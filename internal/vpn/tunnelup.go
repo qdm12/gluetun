@@ -10,6 +10,7 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/pmtud"
 	pconstants "github.com/qdm12/gluetun/internal/pmtud/constants"
+	"github.com/qdm12/gluetun/internal/pmtud/tcp"
 	"github.com/qdm12/gluetun/internal/version"
 	"github.com/qdm12/log"
 )
@@ -58,7 +59,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 		mtuLogger := l.logger.New(log.SetComponent("MTU discovery"))
 		err := updateToMaxMTU(ctx, data.vpnIntf, data.pmtud.vpnType,
 			data.pmtud.network, data.pmtud.icmpAddrs, data.pmtud.tcpAddrs,
-			l.netLinker, l.routing, mtuLogger)
+			l.netLinker, l.routing, l.fw, mtuLogger)
 		if err != nil {
 			mtuLogger.Error(err.Error())
 		}
@@ -156,7 +157,7 @@ func (l *Loop) restartVPN(ctx context.Context, healthErr error) {
 
 func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	vpnType, network string, icmpAddrs []netip.Addr, tcpAddrs []netip.AddrPort,
-	netlinker NetLinker, routing Routing, logger *log.Logger,
+	netlinker NetLinker, routing Routing, firewall tcp.Firewall, logger *log.Logger,
 ) error {
 	logger.Info("finding maximum MTU, this can take up to 6 seconds")
 
@@ -185,7 +186,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 
 	const pingTimeout = time.Second
 	vpnLinkMTU, err = pmtud.PathMTUDiscover(ctx, icmpAddrs, tcpAddrs,
-		vpnLinkMTU, pingTimeout, logger)
+		vpnLinkMTU, pingTimeout, firewall, logger)
 	if err != nil {
 		vpnLinkMTU = originalMTU
 		logger.Infof("reverting VPN interface %s MTU to %d (due to: %s)",

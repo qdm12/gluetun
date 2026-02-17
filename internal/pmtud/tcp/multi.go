@@ -19,7 +19,25 @@ type testUnit struct {
 }
 
 func PathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
-	minMTU, maxPossibleMTU uint32, logger Logger,
+	minMTU, maxPossibleMTU uint32, firewall Firewall, logger Logger,
+) (mtu uint32, err error) {
+	const excludeMark = 4325
+	revert, err := firewall.TempDropOutputTCPRST(ctx, addrPort, excludeMark)
+	if err != nil {
+		return 0, fmt.Errorf("temporarily dropping outgoing TCP RST packets: %w", err)
+	}
+	defer func() {
+		err := revert(ctx)
+		if err != nil {
+			logger.Warnf("reverting firewall changes: %s", err)
+		}
+	}()
+
+	return pathMTUDiscover(ctx, addrPort, minMTU, maxPossibleMTU, excludeMark, logger)
+}
+
+func pathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
+	minMTU, maxPossibleMTU uint32, excludeMark int, logger Logger,
 ) (mtu uint32, err error) {
 	mtusToTest := test.MakeMTUsToTest(minMTU, maxPossibleMTU)
 	if len(mtusToTest) == 1 { // only minMTU because minMTU == maxPossibleMTU
@@ -36,7 +54,7 @@ func PathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
 	if addrPort.Addr().Is6() {
 		family = constants.AF_INET6
 	}
-	fd, stop, err := startRawSocket(family)
+	fd, stop, err := startRawSocket(family, excludeMark)
 	if err != nil {
 		return 0, fmt.Errorf("starting raw socket: %w", err)
 	}
@@ -80,8 +98,8 @@ func PathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
 		if tests[i].ok {
 			stop()
 			cancel()
-			return PathMTUDiscover(ctx, addrPort,
-				tests[i].mtu, tests[i+1].mtu-1, logger)
+			return pathMTUDiscover(ctx, addrPort,
+				tests[i].mtu, tests[i+1].mtu-1, excludeMark, logger)
 		}
 	}
 

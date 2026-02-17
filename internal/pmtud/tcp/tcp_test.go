@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/command"
+	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/routing"
@@ -22,9 +24,32 @@ import (
 func Test_runTest(t *testing.T) {
 	t.Parallel()
 
-	t.Skipf("temporarily skipping test")
+	serverAddrs := map[string]netip.AddrPort{
+		"cloudflare-http":  netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 80),
+		"cloudflare-https": netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 443),
+		"google-https":     netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), 443),
+	}
 
 	noopLogger := &noopLogger{}
+
+	cmder := command.New()
+	fw, err := firewall.NewConfig(t.Context(), noopLogger, cmder, nil, nil)
+	if errors.Is(err, firewall.ErrIPTablesNotSupported) {
+		t.Skip("iptables not installed, skipping TCP PMTUD tests")
+	}
+	require.NoError(t, err, "creating firewall config")
+
+	// Prevent Kernel from sending RST packets back to servers
+	const excludeMark = 4324
+	for _, addrPort := range serverAddrs {
+		revert, err := fw.TempDropOutputTCPRST(t.Context(), addrPort, excludeMark)
+		require.NoError(t, err)
+		t.Cleanup(func() {
+			err := revert(context.Background())
+			assert.NoError(t, err)
+		})
+	}
+
 	netlinker := netlink.New(noopLogger)
 	loopbackMTU, err := findLoopbackMTU(netlinker)
 	require.NoError(t, err, "finding loopback IPv4 MTU")
@@ -34,7 +59,7 @@ func Test_runTest(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 
 	const family = constants.AF_INET
-	fd, stop, err := startRawSocket(family)
+	fd, stop, err := startRawSocket(family, excludeMark)
 	require.NoError(t, err)
 
 	const ipv4 = true
@@ -43,6 +68,8 @@ func Test_runTest(t *testing.T) {
 	go func() {
 		trackerCh <- tracker.listen(ctx)
 	}()
+
+	const mtuSafetyBuffer = 200
 
 	t.Cleanup(func() {
 		stop()
@@ -72,30 +99,30 @@ func Test_runTest(t *testing.T) {
 			dst: func(_ *testing.T) netip.AddrPort {
 				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 12345)
 			},
-			mtu: defaultIPv4MTU,
+			mtu: defaultIPv4MTU - mtuSafetyBuffer,
 		},
 		"1.1.1.1:443": {
-			timeout: time.Second,
+			timeout: 5 * time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
-				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 443)
+				return serverAddrs["cloudflare-https"]
 			},
-			mtu:     defaultIPv4MTU,
+			mtu:     defaultIPv4MTU - mtuSafetyBuffer,
 			success: true,
 		},
 		"1.1.1.1:80": {
-			timeout: time.Second,
+			timeout: 5 * time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
-				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 80)
+				return serverAddrs["cloudflare-http"]
 			},
-			mtu:     defaultIPv4MTU,
+			mtu:     defaultIPv4MTU - mtuSafetyBuffer,
 			success: true,
 		},
 		"8.8.8.8:443": {
-			timeout: time.Second,
+			timeout: 5 * time.Second,
 			dst: func(_ *testing.T) netip.AddrPort {
-				return netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), 443)
+				return serverAddrs["google-https"]
 			},
-			mtu:     defaultIPv4MTU,
+			mtu:     defaultIPv4MTU - mtuSafetyBuffer,
 			success: true,
 		},
 	}
@@ -103,9 +130,11 @@ func Test_runTest(t *testing.T) {
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+
+			dst := testCase.dst(t)
+
 			ctx, cancel := context.WithTimeout(t.Context(), testCase.timeout)
 			defer cancel()
-			dst := testCase.dst(t)
 			err := runTest(ctx, fd, tracker, dst, testCase.mtu)
 			if testCase.success {
 				require.NoError(t, err)

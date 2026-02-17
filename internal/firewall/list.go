@@ -31,6 +31,12 @@ type chainRule struct {
 	redirPorts      []uint16     // Not specified if empty.
 	ctstate         []string     // for example ["RELATED","ESTABLISHED"]. Can be empty.
 	tcpFlags        tcpFlags
+	mark            mark
+}
+
+type mark struct {
+	invert bool
+	value  uint
 }
 
 var ErrChainListMalformed = errors.New("iptables chain list output is malformed")
@@ -278,6 +284,14 @@ func parseChainRuleOptionalFields(optionalFields []string, rule *chainRule) (err
 			i++
 			rule.ctstate = strings.Split(optionalFields[i], ",")
 			i++
+		case "mark":
+			i++
+			mark, consumed, err := parseMark(optionalFields[i:])
+			if err != nil {
+				return fmt.Errorf("parsing mark: %w", err)
+			}
+			rule.mark = mark
+			i += consumed
 		default:
 			return fmt.Errorf("%w: unexpected optional field: %s",
 				ErrChainRuleMalformed, optionalFields[i])
@@ -395,6 +409,32 @@ func parsePortsCSV(s string) (ports []uint16, err error) {
 		ports[i] = uint16(port)
 	}
 	return ports, nil
+}
+
+var errMarkValueMalformed = errors.New("mark value is malformed")
+
+func parseMark(optionalFields []string) (m mark, consumed int, err error) {
+	switch optionalFields[consumed] {
+	case "match":
+		consumed++
+		if optionalFields[consumed] == "!" {
+			m.invert = true
+			consumed++
+		}
+
+		const base = 0 // auto-detect
+		const bits = 32
+		value, err := strconv.ParseUint(optionalFields[consumed], base, bits)
+		if err != nil {
+			return mark{}, 0, fmt.Errorf("%w: %s", errMarkValueMalformed, optionalFields[consumed])
+		}
+		m.value = uint(value)
+		consumed++
+	default:
+		return mark{}, 0, fmt.Errorf("%w: unexpected mark mode field: %s",
+			ErrChainRuleMalformed, optionalFields[consumed])
+	}
+	return m, consumed, nil
 }
 
 var ErrLineNumberIsZero = errors.New("line number is zero")

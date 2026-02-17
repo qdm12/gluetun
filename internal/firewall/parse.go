@@ -23,6 +23,7 @@ type iptablesInstruction struct {
 	toPorts         []uint16     // if empty, there is no redirection
 	ctstate         []string     // if empty, there is no ctstate
 	tcpFlags        tcpFlags
+	mark            mark
 }
 
 func (i *iptablesInstruction) setDefaults() {
@@ -58,6 +59,8 @@ func (i *iptablesInstruction) equalToRule(table, chain string, rule chainRule) (
 		return false
 	case !slices.Equal(i.tcpFlags.mask, rule.tcpFlags.mask) ||
 		!slices.Equal(i.tcpFlags.comparison, rule.tcpFlags.comparison):
+		return false
+	case i.mark != rule.mark:
 		return false
 	default:
 		return true
@@ -100,7 +103,7 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 
 	// All flags use one value after the flag, except the following:
 	switch flag {
-	case "--tcp-flags":
+	case "--tcp-flags": // -m can have 1 or 2 values
 		const expected = 3
 		if len(fields) < expected {
 			return 0, fmt.Errorf("%w: flag %q requires at least 2 values, but got %s",
@@ -130,7 +133,30 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 		instruction.target = value
 	case "-p", "--protocol":
 		instruction.protocol = value
-	case "-m", "--match": // ignore match
+	case "-m", "--match":
+		consumed = 2 // -m can have 1 or 2 values, so it consumes 2 or 3 fields.
+		switch value {
+		case "tcp", "udp": // for now ignore the protocol match since it's auto-loaded
+		case "mark":
+			switch fields[2] {
+			case "!":
+				consumed++
+				instruction.mark.invert = true
+			default:
+				return 0, fmt.Errorf("%w: unsupported match mark with value: %s",
+					ErrIptablesCommandMalformed, fields[2])
+			}
+		default:
+			return 0, fmt.Errorf("%w: unknown match value: %s", ErrIptablesCommandMalformed, value)
+		}
+	case "--mark":
+		const base = 0 // auto-detect
+		const bits = 32
+		value, err := strconv.ParseUint(value, base, bits)
+		if err != nil {
+			return 0, fmt.Errorf("parsing mark value %q: %w", fields[2], err)
+		}
+		instruction.mark.value = uint(value)
 	case "-i", "--in-interface":
 		instruction.inputInterface = value
 	case "-o", "--out-interface":

@@ -1,8 +1,11 @@
 package firewall
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"net/netip"
+	"os"
 )
 
 type tcpFlags struct {
@@ -59,4 +62,36 @@ func parseTCPFlag(s string) (tcpFlag, error) {
 		}
 	}
 	return 0, fmt.Errorf("%w: %s", errTCPFlagUnknown, s)
+}
+
+var ErrMarkMatchModuleMissing = errors.New("kernel is missing the mark module libxt_mark.so")
+
+// TempDropOutputTCPRST temporarily drops outgoing TCP RST packets to the specified address and port,
+// for any TCP packets not marked with the excludeMark given.
+// This is necessary for TCP path MTU discovery to work, as the kernel will try to terminate the connection
+// by sending a TCP RST packet, although we want to handle the connection manually.
+func (c *Config) TempDropOutputTCPRST(ctx context.Context,
+	addrPort netip.AddrPort, excludeMark int) (
+	revert func(ctx context.Context) error, err error,
+) {
+	_, err = os.Stat("/usr/lib/xtables/libxt_mark.so")
+	if err != nil && errors.Is(err, os.ErrNotExist) {
+		return nil, fmt.Errorf("%w", ErrMarkMatchModuleMissing)
+	}
+
+	const template = "%s OUTPUT -p tcp -d %s --dport %d --tcp-flags RST RST -m mark ! --mark %d -j DROP" //nolint:dupword
+	instruction := fmt.Sprintf(template, "--append", addrPort.Addr(), addrPort.Port(), excludeMark)
+	revertInstruction := fmt.Sprintf(template, "--delete", addrPort.Addr(), addrPort.Port(), excludeMark)
+	run := c.runIptablesInstruction
+	if addrPort.Addr().Is6() {
+		run = c.runIP6tablesInstruction
+	}
+	revert = func(ctx context.Context) error {
+		return run(ctx, revertInstruction)
+	}
+	err = run(ctx, instruction)
+	if err != nil {
+		return nil, fmt.Errorf("running instruction: %w", err)
+	}
+	return revert, nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
+	"github.com/qdm12/gluetun/internal/pmtud/tcp"
 	portforward "github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -17,6 +18,7 @@ type Firewall interface {
 	SetVPNConnection(ctx context.Context, connection models.Connection, interfaceName string) error
 	SetAllowedPort(ctx context.Context, port uint16, interfaceName string) error
 	RemoveAllowedPort(ctx context.Context, port uint16) error
+	tcp.Firewall
 }
 
 type Routing interface {

@@ -10,10 +10,16 @@ import (
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
 )
 
-func startRawSocket(family int) (fd fileDescriptor, stop func(), err error) {
+func startRawSocket(family, excludeMark int) (fd fileDescriptor, stop func(), err error) {
 	fdPlatform, err := socket(family, constants.SOCK_RAW, constants.IPPROTO_TCP)
 	if err != nil {
 		return 0, nil, fmt.Errorf("creating raw socket: %w", err)
+	}
+
+	err = setMark(fdPlatform, excludeMark)
+	if err != nil {
+		_ = closeSocket(fdPlatform)
+		return 0, nil, fmt.Errorf("setting mark option on raw socket: %w", err)
 	}
 
 	if family == constants.AF_INET {

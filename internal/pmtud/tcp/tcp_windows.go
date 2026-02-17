@@ -31,6 +31,10 @@ func recvFrom(fd fileDescriptor, p []byte, flags int) (n int, from windows.Socka
 	return windows.Recvfrom(windows.Handle(fd), p, flags)
 }
 
+func setMark(fd windows.Handle, _ int) error {
+	panic("not implemented")
+}
+
 func setMTUDiscovery(fd windows.Handle) error {
 	panic("not implemented")
 }

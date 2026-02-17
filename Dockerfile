@@ -13,7 +13,7 @@ FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:mockgen-${MOCKGEN_VERSION}
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}-alpine${GO_ALPINE_VERSION} AS base
 COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
 # Note: findutils needed to have xargs support `-d` flag for mocks stage.
-RUN apk --update add git g++ findutils
+RUN apk --update add git g++ findutils iptables
 ENV CGO_ENABLED=0
 COPY --from=golangci-lint /bin /go/bin/golangci-lint
 COPY --from=mockgen /bin /go/bin/mockgen

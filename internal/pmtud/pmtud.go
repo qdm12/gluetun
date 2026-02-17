@@ -7,10 +7,13 @@ import (
 	"net/netip"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/icmp"
 	"github.com/qdm12/gluetun/internal/pmtud/tcp"
 )
+
+var ErrPMTUDFailICMPAndTCP = errors.New("PMTUD failed with both ICMP and TCP")
 
 // PathMTUDiscover discovers the maximum MTU using both ICMP and TCP.
 // Multiple ICMP addresses and TCP addresses can be specified for redundancy.
@@ -23,7 +26,7 @@ import (
 // If the logger is nil, a no-op logger is used.
 // It returns [ErrMTUNotFound] if the MTU could not be determined.
 func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []netip.AddrPort,
-	physicalLinkMTU uint32, tryTimeout time.Duration, logger Logger) (
+	physicalLinkMTU uint32, tryTimeout time.Duration, fw tcp.Firewall, logger Logger) (
 	mtu uint32, err error,
 ) {
 	if physicalLinkMTU == 0 {
@@ -67,13 +70,23 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 			const mtuMargin = 150
 			minMTU = max(maxPossibleMTU-mtuMargin, minMTU)
 		}
-		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, minMTU, maxPossibleMTU, logger)
+		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, minMTU, maxPossibleMTU, fw, logger)
 		if err != nil {
+			if errors.Is(err, firewall.ErrMarkMatchModuleMissing) {
+				logger.Debugf("aborting TCP path MTU discovery: %s", err)
+				if icmpSuccess {
+					return maxPossibleMTU, nil // only rely on ICMP PMTUD results
+				}
+				return 0, fmt.Errorf("%w", ErrPMTUDFailICMPAndTCP)
+			}
 			logger.Debugf("TCP path MTU discovery to %s failed: %s", addrPort, err)
 			continue
 		}
 		logger.Debugf("TCP path MTU discovery to %s found maximum valid MTU %d", addrPort, mtu)
 		return mtu, nil
 	}
+
+	// TCP PMTUD failed for all addresses for external reasons,
+	// so do not take the risk and return an error.
 	return 0, fmt.Errorf("TCP path MTU discovery: last error: %w", err)
 }
