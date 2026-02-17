@@ -1,8 +1,7 @@
 package ip
 
-import "syscall"
+import "golang.org/x/sys/unix"
 
 func SetIPv6HeaderIncluded(fd int) error {
-	const ipv6HdrIncluded = 36 // IPV6_HDRINCL
-	return syscall.SetsockoptInt(fd, syscall.IPPROTO_IPV6, ipv6HdrIncluded, 1)
+	return unix.SetsockoptInt(fd, unix.IPPROTO_IPV6, unix.IPV6_HDRINCL, 1)
 }

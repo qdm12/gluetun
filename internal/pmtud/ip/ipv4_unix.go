@@ -2,8 +2,8 @@
 
 package ip
 
-import "syscall"
+import "golang.org/x/sys/unix"
 
 func SetIPv4HeaderIncluded(fd int) error {
-	return syscall.SetsockoptInt(fd, syscall.IPPROTO_IP, syscall.IP_HDRINCL, 1)
+	return unix.SetsockoptInt(fd, unix.IPPROTO_IP, unix.IP_HDRINCL, 1)
 }

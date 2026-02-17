@@ -3,7 +3,6 @@ package ip
 import (
 	"encoding/binary"
 	"net/netip"
-	"syscall"
 
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 )
@@ -19,7 +18,7 @@ func HeaderV4(srcIP, dstIP netip.Addr, payloadLength uint32) []byte {
 	const flagsAndOffset uint16 = 0x4000                                      // DF bit set
 	putUint16(ipHeader[6:], flagsAndOffset)
 	ipHeader[8] = 64 // ttl
-	ipHeader[9] = syscall.IPPROTO_TCP
+	ipHeader[9] = constants.IPPROTO_TCP
 	srcIPBytes := srcIP.As4()
 	copy(ipHeader[12:16], srcIPBytes[:])
 	dstIPBytes := dstIP.As4()
@@ -51,7 +50,7 @@ func ipChecksum(header []byte) uint16 {
 
 // HeaderV6 makes an IPv6 header.
 // payloadLen is the length of the payload following the header.
-// nextHeader can be byte([syscall.IPPROTO_TCP]) for example.
+// nextHeader can be byte([constants.IPPROTO_TCP]) for example.
 func HeaderV6(srcIP, dstIP netip.Addr,
 	payloadLen uint16, nextHeader byte,
 ) []byte {

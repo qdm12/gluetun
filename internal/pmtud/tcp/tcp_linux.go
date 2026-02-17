@@ -1,7 +1,7 @@
 package tcp
 
-import "syscall"
+import "golang.org/x/sys/unix"
 
 func setMTUDiscovery(fd int) error {
-	return syscall.SetsockoptInt(fd, syscall.IPPROTO_IP, syscall.IP_MTU_DISCOVER, syscall.IP_PMTUDISC_PROBE)
+	return unix.SetsockoptInt(fd, unix.IPPROTO_IP, unix.IP_MTU_DISCOVER, unix.IP_PMTUDISC_PROBE)
 }

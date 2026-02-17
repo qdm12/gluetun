@@ -5,32 +5,31 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
-	"syscall"
 
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
 )
 
 func startRawSocket(family int) (fd fileDescriptor, stop func(), err error) {
-	fdPlatform, err := syscall.Socket(family, syscall.SOCK_RAW, syscall.IPPROTO_TCP)
+	fdPlatform, err := socket(family, constants.SOCK_RAW, constants.IPPROTO_TCP)
 	if err != nil {
 		return 0, nil, fmt.Errorf("creating raw socket: %w", err)
 	}
 
-	if family == syscall.AF_INET {
+	if family == constants.AF_INET {
 		err = ip.SetIPv4HeaderIncluded(fdPlatform)
 	} else {
 		err = ip.SetIPv6HeaderIncluded(fdPlatform)
 	}
 	if err != nil {
-		_ = syscall.Close(fdPlatform)
+		_ = closeSocket(fdPlatform)
 		return 0, nil, fmt.Errorf("setting header option on raw socket: %w", err)
 	}
 
 	// Allow sending packets larger than cached PMTU (for PMTUD probing)
 	err = setMTUDiscovery(fdPlatform)
 	if err != nil {
-		_ = syscall.Close(fdPlatform)
+		_ = closeSocket(fdPlatform)
 		return 0, nil, fmt.Errorf("setting IP_MTU_DISCOVER: %w", err)
 	}
 
@@ -39,12 +38,12 @@ func startRawSocket(family int) (fd fileDescriptor, stop func(), err error) {
 	// which would cause things to hang indefinitely.
 	err = setNonBlock(fdPlatform)
 	if err != nil {
-		_ = syscall.Close(fdPlatform)
+		_ = closeSocket(fdPlatform)
 		return 0, nil, fmt.Errorf("setting non-blocking mode: %w", err)
 	}
 
 	stop = func() {
-		_ = syscall.Close(fdPlatform)
+		_ = closeSocket(fdPlatform)
 	}
 	return fileDescriptor(fdPlatform), stop, nil
 }
@@ -61,7 +60,7 @@ var (
 func runTest(ctx context.Context, fd fileDescriptor,
 	tracker *tracker, dst netip.AddrPort, mtu uint32,
 ) error {
-	const proto = syscall.IPPROTO_TCP
+	const proto = constants.IPPROTO_TCP
 	src, cleanup, err := ip.SrcAddr(dst, proto)
 	if err != nil {
 		return fmt.Errorf("getting source address: %w", err)
@@ -134,19 +133,6 @@ func runTest(ctx context.Context, fd fileDescriptor,
 	default:
 		_ = sendRST(fd, src, dst, ack)
 		return fmt.Errorf("%w: %s", errFinalPacketTypeUnexpected, packetType)
-	}
-}
-
-func makeSockAddr(addr netip.AddrPort) syscall.Sockaddr {
-	if addr.Addr().Is4() {
-		return &syscall.SockaddrInet4{
-			Port: int(addr.Port()),
-			Addr: addr.Addr().As4(),
-		}
-	}
-	return &syscall.SockaddrInet6{
-		Port: int(addr.Port()),
-		Addr: addr.Addr().As16(),
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"math/rand/v2"
 	"net/netip"
-	"syscall"
 
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
@@ -67,7 +66,7 @@ func createPacket(src, dst netip.AddrPort,
 		ipHeader = ip.HeaderV4(src.Addr(), dst.Addr(), payloadLength)
 	} else {
 		ipHeader = ip.HeaderV6(src.Addr(), dst.Addr(),
-			uint16(payloadLength), byte(syscall.IPPROTO_TCP)) //nolint:gosec
+			uint16(payloadLength), byte(constants.IPPROTO_TCP)) //nolint:gosec
 	}
 
 	tcpHeader := makeTCPHeader(src.Port(), dst.Port(), seq, ack, flags)

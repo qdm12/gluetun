@@ -3,9 +3,9 @@ package ip
 import (
 	"fmt"
 	"net/netip"
-	"syscall"
 
 	"github.com/jsimonetti/rtnetlink"
+	"github.com/qdm12/gluetun/internal/pmtud/constants"
 )
 
 // SrcAddr determines the appropriate source IP address to use when sending a packet to the
@@ -35,9 +35,9 @@ func srcIP(dst netip.Addr) (netip.Addr, error) {
 	}
 	defer conn.Close()
 
-	family := uint8(syscall.AF_INET)
+	family := uint8(constants.AF_INET)
 	if dst.Is6() {
-		family = syscall.AF_INET6
+		family = constants.AF_INET6
 	}
 
 	// Request route to destination
@@ -71,53 +71,34 @@ func srcIP(dst netip.Addr) (netip.Addr, error) {
 // It doesn't actually listen on the port.
 // The cleanup function returned should be called to release the port when done.
 func srcPort(srcAddr netip.Addr, proto int) (srcPort uint16, cleanup func(), err error) {
-	family := syscall.AF_INET
+	family := constants.AF_INET
 	if srcAddr.Is6() {
-		family = syscall.AF_INET6
+		family = constants.AF_INET6
 	}
 
-	fd, err := syscall.Socket(family, syscall.SOCK_STREAM, proto)
+	fd, err := socket(family, constants.SOCK_STREAM, proto)
 	if err != nil {
 		return 0, nil, fmt.Errorf("creating reservation socket: %w", err)
 	}
 	cleanup = func() {
-		_ = syscall.Close(fd)
+		_ = closeSocket(fd)
 	}
 
 	// Bind to port 0 to get an ephemeral port
 	const port = 0
-	var bindAddr syscall.Sockaddr
-	if srcAddr.Is4() {
-		bindAddr = &syscall.SockaddrInet4{
-			Port: port,
-			Addr: srcAddr.As4(),
-		}
-	} else {
-		bindAddr = &syscall.SockaddrInet6{
-			Port: port,
-			Addr: srcAddr.As16(),
-		}
-	}
+	bindAddr := makeSockAddr(srcAddr, port)
 
-	err = syscall.Bind(fd, bindAddr)
+	err = bind(fd, bindAddr)
 	if err != nil {
 		cleanup()
 		return 0, nil, fmt.Errorf("binding reservation socket: %w", err)
 	}
 
-	sockAddr, err := syscall.Getsockname(fd)
+	srcPort, err = extractPortFromFD(fd)
 	if err != nil {
 		cleanup()
-		return 0, nil, fmt.Errorf("getting bound socket name: %w", err)
+		return 0, nil, fmt.Errorf("extracting port from socket fd: %w", err)
 	}
 
-	switch typedSockAddr := sockAddr.(type) {
-	case *syscall.SockaddrInet4:
-		srcPort = uint16(typedSockAddr.Port) //nolint:gosec
-	case *syscall.SockaddrInet6:
-		srcPort = uint16(typedSockAddr.Port) //nolint:gosec
-	default:
-		panic(fmt.Sprintf("unexpected sockaddr type: %T", typedSockAddr))
-	}
 	return srcPort, cleanup, nil
 }

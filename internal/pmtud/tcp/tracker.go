@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
@@ -80,8 +79,7 @@ func (t *tracker) listen(ctx context.Context) error {
 		n, _, err := recvFrom(t.fd, reply, 0)
 		if err != nil {
 			switch {
-			case errors.Is(err, syscall.EAGAIN),
-				errors.Is(err, syscall.EWOULDBLOCK):
+			case errors.Is(err, constants.EAGAIN), errors.Is(err, constants.EWOULDBLOCK):
 				pollSleep(ctx)
 				continue
 			case ctx.Err() != nil:

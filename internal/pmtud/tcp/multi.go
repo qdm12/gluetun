@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
-	"syscall"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/test"
 )
 
@@ -32,9 +32,9 @@ func PathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
 		tests[i] = testUnit{mtu: mtusToTest[i]}
 	}
 
-	family := syscall.AF_INET
+	family := constants.AF_INET
 	if addrPort.Addr().Is6() {
-		family = syscall.AF_INET6
+		family = constants.AF_INET6
 	}
 	fd, stop, err := startRawSocket(family)
 	if err != nil {

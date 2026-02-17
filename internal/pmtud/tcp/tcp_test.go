@@ -1,3 +1,5 @@
+//go:build linux
+
 package tcp
 
 import (
@@ -5,15 +7,16 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
-	"syscall"
 	"testing"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/netlink"
+	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sys/unix"
 )
 
 func Test_runTest(t *testing.T) {
@@ -30,7 +33,7 @@ func Test_runTest(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(t.Context())
 
-	const family = syscall.AF_INET
+	const family = constants.AF_INET
 	fd, stop, err := startRawSocket(family)
 	require.NoError(t, err)
 
@@ -158,33 +161,33 @@ func findDefaultIPv4RouteMTU(netlinker *netlink.NetLink) (mtu uint32, err error)
 func reserveClosedPort(t *testing.T) (port uint16) {
 	t.Helper()
 
-	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, syscall.IPPROTO_TCP)
+	fd, err := unix.Socket(constants.AF_INET, constants.SOCK_STREAM, constants.IPPROTO_TCP)
 	require.NoError(t, err)
 	t.Cleanup(func() {
-		err := syscall.Close(fd)
+		err := unix.Close(fd)
 		assert.NoError(t, err)
 	})
 
-	addr := &syscall.SockaddrInet4{
+	addr := &unix.SockaddrInet4{
 		Port: 0,
 		Addr: [4]byte{127, 0, 0, 1},
 	}
 
-	err = syscall.Bind(fd, addr)
+	err = unix.Bind(fd, addr)
 	if err != nil {
-		_ = syscall.Close(fd)
+		_ = unix.Close(fd)
 		t.Fatal(err)
 	}
 
-	sockAddr, err := syscall.Getsockname(fd)
+	sockAddr, err := unix.Getsockname(fd)
 	if err != nil {
-		_ = syscall.Close(fd)
+		_ = unix.Close(fd)
 		t.Fatal(err)
 	}
 
-	sockAddr4, ok := sockAddr.(*syscall.SockaddrInet4)
+	sockAddr4, ok := sockAddr.(*unix.SockaddrInet4)
 	if !ok {
-		_ = syscall.Close(fd)
+		_ = unix.Close(fd)
 		t.Fatal("not an IPv4 address")
 	}
 

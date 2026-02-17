@@ -48,7 +48,7 @@ linters:
         path: internal\/server\/.+\.go
       - linters:
           - ireturn
-        text: returns interface \(github\.com\/vishvananda\/netlink\.Link\)
+        text: returns interface \(golang\.org\/x\/sys\/unix\.Sockaddr\)
       - linters:
           - ireturn
         path: internal\/openvpn\/pkcs8\/descbc\.go
