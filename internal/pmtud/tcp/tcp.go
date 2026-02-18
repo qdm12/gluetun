@@ -58,6 +58,7 @@ var (
 	errTCPPacketNotSynAck        = errors.New("TCP packet is not a SYN-ACK")
 	errTCPSynAckAckMismatch      = errors.New("TCP SYN-ACK ACK number does not match expected value")
 	errFinalPacketTypeUnexpected = errors.New("final TCP packet type is unexpected")
+	errTCPPacketLost             = errors.New("TCP packet was lost")
 )
 
 // Craft and send a raw TCP packet to test the MTU.
@@ -95,22 +96,37 @@ func runTest(ctx context.Context, fd fileDescriptor,
 	case reply = <-ch:
 	}
 
-	packetType, synAckSeq, synAckAck, err := parseTCPHeader(reply[:constants.BaseTCPHeaderLength])
+	firstReplyHeader, err := parseTCPHeader(reply)
 	switch {
 	case err != nil:
 		return fmt.Errorf("parsing first reply TCP header: %w", err)
-	case packetType == packetTypeRST:
+	case firstReplyHeader.typ == packetTypeRST,
+		firstReplyHeader.typ == packetTypeRSTACK:
 		// server actively closed the connection, try sending a SYN with data
 		return handleRSTReply(ctx, fd, ch, src, dst, mtu)
-	case packetType != packetTypeSYNACK:
-		return fmt.Errorf("%w: unexpected packet type %s", errTCPPacketNotSynAck, packetType)
-	case synAckAck != synSeq+1:
-		return fmt.Errorf("%w: expected %d, got %d", errTCPSynAckAckMismatch, synSeq+1, synAckAck)
+	case firstReplyHeader.typ != packetTypeSYNACK:
+		return fmt.Errorf("%w: unexpected packet type %s", errTCPPacketNotSynAck, firstReplyHeader.typ)
+	case firstReplyHeader.ack != synSeq+1:
+		return fmt.Errorf("%w: expected %d, got %d", errTCPSynAckAckMismatch, synSeq+1, firstReplyHeader.ack)
+	}
+
+	if firstReplyHeader.options.mss != 0 {
+		// If the server sent an MSS option, make sure our test packet is not larger than that MSS.
+		tcpDataLength := getPayloadLength(mtu, dst) - constants.BaseTCPHeaderLength
+		if tcpDataLength > uint32(firstReplyHeader.options.mss) {
+			diff := tcpDataLength - uint32(firstReplyHeader.options.mss)
+			minMTU := constants.MinIPv4MTU
+			if dst.Addr().Is6() {
+				minMTU = constants.MinIPv6MTU
+			}
+			diff = min(diff, mtu-minMTU)
+			mtu -= diff
+		}
 	}
 
 	// Send an ACK packet to finish the 3-way handshake, together with the
 	// data to test the MTU, using TCP fast-open.
-	ackPacket := createACKPacket(src, dst, synAckAck, synAckSeq+1, mtu)
+	ackPacket := createACKPacket(src, dst, firstReplyHeader.ack, firstReplyHeader.seq+1, mtu)
 	err = sendTo(fd, ackPacket, sendToFlags, dstSockAddr)
 	if err != nil {
 		return fmt.Errorf("sending ACK packet: %w", err)
@@ -122,23 +138,25 @@ func runTest(ctx context.Context, fd fileDescriptor,
 	case reply = <-ch:
 	}
 
-	packetType, _, ack, err := parseTCPHeader(reply[:constants.BaseTCPHeaderLength])
+	finalPacketHeader, err := parseTCPHeader(reply)
 	if err != nil {
 		return fmt.Errorf("parsing second reply TCP header: %w", err)
 	}
 
-	switch packetType { //nolint:exhaustive
+	switch finalPacketHeader.typ { //nolint:exhaustive
 	case packetTypeRST:
 		return nil
 	case packetTypeACK:
-		err = sendRST(fd, src, dst, ack)
+		err = sendRST(fd, src, dst, finalPacketHeader.ack)
 		if err != nil {
 			return fmt.Errorf("sending RST packet: %w", err)
 		}
 		return nil
+	case packetTypeSYNACK: // server never received our MTU-test ACK packet
+		return fmt.Errorf("%w: server responded with second SYN-ACK packet", errTCPPacketLost)
 	default:
-		_ = sendRST(fd, src, dst, ack)
-		return fmt.Errorf("%w: %s", errFinalPacketTypeUnexpected, packetType)
+		_ = sendRST(fd, src, dst, finalPacketHeader.ack)
+		return fmt.Errorf("%w: %s", errFinalPacketTypeUnexpected, finalPacketHeader.typ)
 	}
 }
 
@@ -161,11 +179,12 @@ func handleRSTReply(ctx context.Context, fd fileDescriptor, ch <-chan []byte,
 	case reply = <-ch:
 	}
 
-	packetType, _, _, err := parseTCPHeader(reply[:constants.BaseTCPHeaderLength])
+	replyPacketHeader, err := parseTCPHeader(reply)
 	if err != nil {
 		return fmt.Errorf("parsing reply TCP header: %w", err)
-	} else if packetType != packetTypeRST {
-		return fmt.Errorf("%w: %s", errTCPPacketNotRST, packetType)
+	} else if replyPacketHeader.typ != packetTypeRST &&
+		replyPacketHeader.typ != packetTypeRSTACK {
+		return fmt.Errorf("%w: %s", errTCPPacketNotRST, replyPacketHeader.typ)
 	}
 	return nil
 }
