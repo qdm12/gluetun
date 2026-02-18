@@ -64,8 +64,9 @@ var (
 // Craft and send a raw TCP packet to test the MTU.
 // It expects either an RST reply (if no server is listening)
 // or a SYN-ACK/ACK reply (if a server is listening).
-func runTest(ctx context.Context, fd fileDescriptor,
-	tracker *tracker, dst netip.AddrPort, mtu uint32,
+func runTest(ctx context.Context, dst netip.AddrPort, mtu uint32,
+	excludeMark int, fd fileDescriptor, tracker *tracker,
+	firewall Firewall, logger Logger,
 ) error {
 	const proto = constants.IPPROTO_TCP
 	src, cleanup, err := ip.SrcAddr(dst, proto)
@@ -73,6 +74,20 @@ func runTest(ctx context.Context, fd fileDescriptor,
 		return fmt.Errorf("getting source address: %w", err)
 	}
 	defer cleanup()
+
+	revert, err := firewall.TempDropOutputTCPRST(ctx, src, dst, excludeMark)
+	if err != nil {
+		return fmt.Errorf("temporarily dropping outgoing TCP RST packets: %w", err)
+	}
+	defer func() {
+		// we don't want to skip reverting the firewall changes
+		// even if the context is already expired, so we use a
+		// background context here.
+		err := revert(context.Background())
+		if err != nil {
+			logger.Warnf("reverting firewall changes: %s", err)
+		}
+	}()
 
 	ch := make(chan []byte)
 	abort := make(chan struct{})

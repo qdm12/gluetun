@@ -18,6 +18,7 @@ type iptablesInstruction struct {
 	inputInterface  string       // for example "tun0" or "" for any interface.
 	outputInterface string       // for example "tun0" or "" for any interface.
 	source          netip.Prefix // if not valid, then it is unspecified.
+	sourcePort      uint16       // if zero, there is no source port
 	destination     netip.Prefix // if not valid, then it is unspecified.
 	destinationPort uint16       // if zero, there is no destination port
 	toPorts         []uint16     // if empty, there is no redirection
@@ -44,6 +45,8 @@ func (i *iptablesInstruction) equalToRule(table, chain string, rule chainRule) (
 	case i.protocol != rule.protocol:
 		return false
 	case i.destinationPort != rule.destinationPort:
+		return false
+	case i.sourcePort != rule.sourcePort:
 		return false
 	case !slices.Equal(i.toPorts, rule.redirPorts):
 		return false
@@ -99,25 +102,11 @@ func parseIptablesInstruction(s string) (instruction iptablesInstruction, err er
 }
 
 func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (consumed int, err error) {
-	flag := fields[0]
-
-	// All flags use one value after the flag, except the following:
-	switch flag {
-	case "--tcp-flags": // -m can have 1 or 2 values
-		const expected = 3
-		if len(fields) < expected {
-			return 0, fmt.Errorf("%w: flag %q requires at least 2 values, but got %s",
-				ErrIptablesCommandMalformed, flag, strings.Join(fields, " "))
-		}
-		consumed = expected
-	default:
-		const expected = 2
-		if len(fields) < expected {
-			return 0, fmt.Errorf("%w: flag %q requires a value, but got none",
-				ErrIptablesCommandMalformed, flag)
-		}
-		consumed = expected
+	consumed, err = preCheckInstructionFields(fields)
+	if err != nil {
+		return 0, err
 	}
+	flag := fields[0]
 	value := fields[1]
 
 	switch flag {
@@ -134,20 +123,9 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 	case "-p", "--protocol":
 		instruction.protocol = value
 	case "-m", "--match":
-		consumed = 2 // -m can have 1 or 2 values, so it consumes 2 or 3 fields.
-		switch value {
-		case "tcp", "udp": // for now ignore the protocol match since it's auto-loaded
-		case "mark":
-			switch fields[2] {
-			case "!":
-				consumed++
-				instruction.mark.invert = true
-			default:
-				return 0, fmt.Errorf("%w: unsupported match mark with value: %s",
-					ErrIptablesCommandMalformed, fields[2])
-			}
-		default:
-			return 0, fmt.Errorf("%w: unknown match value: %s", ErrIptablesCommandMalformed, value)
+		consumed, err = parseMatchModule(fields, instruction)
+		if err != nil {
+			return 0, fmt.Errorf("parsing match module: %w", err)
 		}
 	case "--mark":
 		const base = 0 // auto-detect
@@ -166,30 +144,27 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 		if err != nil {
 			return 0, fmt.Errorf("parsing source IP CIDR: %w", err)
 		}
+	case "--sport":
+		instruction.sourcePort, err = parsePort(value)
+		if err != nil {
+			return 0, fmt.Errorf("parsing source port: %w", err)
+		}
 	case "-d", "--destination":
 		instruction.destination, err = parseIPPrefix(value)
 		if err != nil {
 			return 0, fmt.Errorf("parsing destination IP CIDR: %w", err)
 		}
 	case "--dport":
-		const base, bitLength = 10, 16
-		destinationPort, err := strconv.ParseUint(value, base, bitLength)
+		instruction.destinationPort, err = parsePort(value)
 		if err != nil {
 			return 0, fmt.Errorf("parsing destination port: %w", err)
 		}
-		instruction.destinationPort = uint16(destinationPort)
 	case "--ctstate":
 		instruction.ctstate = strings.Split(value, ",")
 	case "--to-ports":
-		portStrings := strings.Split(value, ",")
-		instruction.toPorts = make([]uint16, len(portStrings))
-		for i, portString := range portStrings {
-			const base, bitLength = 10, 16
-			port, err := strconv.ParseUint(portString, base, bitLength)
-			if err != nil {
-				return 0, fmt.Errorf("parsing port redirection: %w", err)
-			}
-			instruction.toPorts[i] = uint16(port)
+		instruction.toPorts, err = parseToPorts(value)
+		if err != nil {
+			return 0, fmt.Errorf("parsing port redirection: %w", err)
 		}
 	case "--tcp-flags":
 		mask, comparison := value, fields[2]
@@ -203,6 +178,27 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 	return consumed, nil
 }
 
+func preCheckInstructionFields(fields []string) (consumed int, err error) {
+	flag := fields[0]
+	// All flags use one value after the flag, except the following:
+	switch flag {
+	case "--tcp-flags": // -m can have 1 or 2 values
+		const expected = 3
+		if len(fields) < expected {
+			return 0, fmt.Errorf("%w: flag %q requires at least 2 values, but got %s",
+				ErrIptablesCommandMalformed, flag, strings.Join(fields, " "))
+		}
+		return expected, nil
+	default:
+		const expected = 2
+		if len(fields) < expected {
+			return 0, fmt.Errorf("%w: flag %q requires a value, but got none",
+				ErrIptablesCommandMalformed, flag)
+		}
+		return expected, nil
+	}
+}
+
 func parseIPPrefix(value string) (prefix netip.Prefix, err error) {
 	slashIndex := strings.Index(value, "/")
 	if slashIndex >= 0 {
@@ -214,4 +210,53 @@ func parseIPPrefix(value string) (prefix netip.Prefix, err error) {
 		return netip.Prefix{}, fmt.Errorf("parsing IP address: %w", err)
 	}
 	return netip.PrefixFrom(ip, ip.BitLen()), nil
+}
+
+func parsePort(value string) (port uint16, err error) {
+	const base, bitLength = 10, 16
+	portValue, err := strconv.ParseUint(value, base, bitLength)
+	if err != nil {
+		return 0, err
+	}
+	return uint16(portValue), nil
+}
+
+func parseMatchModule(fields []string, instruction *iptablesInstruction) (
+	consumed int, err error,
+) {
+	_ = fields[consumed] // -m or --match flag already detected
+	consumed++
+	switch fields[consumed] {
+	case "tcp", "udp":
+		consumed++
+		// for now ignore the protocol match since it's auto-loaded
+		// when parsing the -p/--protocol flag, and we don't need to
+		// parse it twice.
+	case "mark":
+		consumed++
+		switch fields[consumed] {
+		case "!":
+			consumed++
+			instruction.mark.invert = true
+		default:
+			return consumed, fmt.Errorf("%w: unsupported match mark with value: %s",
+				ErrIptablesCommandMalformed, fields[2])
+		}
+	default:
+		return 0, fmt.Errorf("%w: unknown match value: %s",
+			ErrIptablesCommandMalformed, fields[consumed])
+	}
+	return consumed, nil
+}
+
+func parseToPorts(value string) (toPorts []uint16, err error) {
+	portStrings := strings.Split(value, ",")
+	toPorts = make([]uint16, len(portStrings))
+	for i, portString := range portStrings {
+		toPorts[i], err = parsePort(portString)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return toPorts, nil
 }

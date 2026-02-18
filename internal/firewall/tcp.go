@@ -71,7 +71,7 @@ var ErrMarkMatchModuleMissing = errors.New("kernel is missing the mark module li
 // This is necessary for TCP path MTU discovery to work, as the kernel will try to terminate the connection
 // by sending a TCP RST packet, although we want to handle the connection manually.
 func (c *Config) TempDropOutputTCPRST(ctx context.Context,
-	addrPort netip.AddrPort, excludeMark int) (
+	src, dst netip.AddrPort, excludeMark int) (
 	revert func(ctx context.Context) error, err error,
 ) {
 	_, err = os.Stat("/usr/lib/xtables/libxt_mark.so")
@@ -79,11 +79,12 @@ func (c *Config) TempDropOutputTCPRST(ctx context.Context,
 		return nil, fmt.Errorf("%w", ErrMarkMatchModuleMissing)
 	}
 
-	const template = "%s OUTPUT -p tcp -d %s --dport %d --tcp-flags RST RST -m mark ! --mark %d -j DROP" //nolint:dupword
-	instruction := fmt.Sprintf(template, "--append", addrPort.Addr(), addrPort.Port(), excludeMark)
-	revertInstruction := fmt.Sprintf(template, "--delete", addrPort.Addr(), addrPort.Port(), excludeMark)
+	const template = "%s OUTPUT -p tcp -s %s --sport %d -d %s --dport %d " +
+		"--tcp-flags RST RST -m mark ! --mark %d -j DROP" //nolint:dupword
+	instruction := fmt.Sprintf(template, "--append", src.Addr(), src.Port(), dst.Addr(), dst.Port(), excludeMark)
+	revertInstruction := fmt.Sprintf(template, "--delete", src.Addr(), src.Port(), dst.Addr(), dst.Port(), excludeMark)
 	run := c.runIptablesInstruction
-	if addrPort.Addr().Is6() {
+	if dst.Addr().Is6() {
 		run = c.runIP6tablesInstruction
 	}
 	revert = func(ctx context.Context) error {

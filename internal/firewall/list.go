@@ -26,6 +26,7 @@ type chainRule struct {
 	inputInterface  string       // input interface, for example "tun0" or "*""
 	outputInterface string       // output interface, for example "eth0" or "*""
 	source          netip.Prefix // source IP CIDR, for example 0.0.0.0/0. Must be valid.
+	sourcePort      uint16       // Not specified if set to zero.
 	destination     netip.Prefix // destination IP CIDR, for example 0.0.0.0/0. Must be valid.
 	destinationPort uint16       // Not specified if set to zero.
 	redirPorts      []uint16     // Not specified if empty.
@@ -315,6 +316,12 @@ func parseUDPOptional(optionalFields []string, rule *chainRule) (consumed int, e
 				return 0, fmt.Errorf("parsing destination port: %w", err)
 			}
 			consumed++
+		case strings.HasPrefix(value, "spt:"):
+			rule.sourcePort, err = parseSourcePort(value)
+			if err != nil {
+				return 0, fmt.Errorf("parsing source port: %w", err)
+			}
+			consumed++
 		default:
 			return 0, fmt.Errorf("%w: %s", errUDPOptionalUnknown, value)
 		}
@@ -337,6 +344,12 @@ func parseTCPOptional(optionalFields []string, rule *chainRule) (consumed int, e
 				return 0, fmt.Errorf("parsing destination port: %w", err)
 			}
 			consumed++
+		case strings.HasPrefix(value, "spt:"):
+			rule.sourcePort, err = parseSourcePort(value)
+			if err != nil {
+				return 0, fmt.Errorf("parsing source port: %w", err)
+			}
+			consumed++
 		case strings.HasPrefix(value, "flags:"):
 			rule.tcpFlags, err = parseTCPFlags(value)
 			if err != nil {
@@ -352,12 +365,12 @@ func parseTCPOptional(optionalFields []string, rule *chainRule) (consumed int, e
 
 func parseDestinationPort(value string) (port uint16, err error) {
 	value = strings.TrimPrefix(value, "dpt:")
-	const base, bitLength = 10, 16
-	destinationPort, err := strconv.ParseUint(value, base, bitLength)
-	if err != nil {
-		return 0, fmt.Errorf("parsing %q: %w", value, err)
-	}
-	return uint16(destinationPort), nil
+	return parsePort(value)
+}
+
+func parseSourcePort(value string) (port uint16, err error) {
+	value = strings.TrimPrefix(value, "spt:")
+	return parsePort(value)
 }
 
 var errTCPFlagsMalformed = errors.New("TCP flags are malformed")
@@ -401,12 +414,10 @@ func parsePortsCSV(s string) (ports []uint16, err error) {
 	fields := strings.Split(s, ",")
 	ports = make([]uint16, len(fields))
 	for i, field := range fields {
-		const base, bitLength = 10, 16
-		port, err := strconv.ParseUint(field, base, bitLength)
+		ports[i], err = parsePort(field)
 		if err != nil {
-			return nil, fmt.Errorf("parsing port %q: %w", field, err)
+			return nil, err
 		}
-		ports[i] = uint16(port)
 	}
 	return ports, nil
 }

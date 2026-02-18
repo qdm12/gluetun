@@ -6,7 +6,7 @@ import (
 )
 
 type Firewall interface {
-	TempDropOutputTCPRST(ctx context.Context, addrPort netip.AddrPort,
+	TempDropOutputTCPRST(ctx context.Context, src, dst netip.AddrPort,
 		excludeMark int) (revert func(ctx context.Context) error, err error)
 }
 

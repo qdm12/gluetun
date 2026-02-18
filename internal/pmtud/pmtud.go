@@ -70,7 +70,7 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 			const mtuMargin = 150
 			minMTU = max(maxPossibleMTU-mtuMargin, minMTU)
 		}
-		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, minMTU, maxPossibleMTU, fw, logger)
+		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, minMTU, maxPossibleMTU, tryTimeout, fw, logger)
 		if err != nil {
 			if errors.Is(err, firewall.ErrMarkMatchModuleMissing) {
 				logger.Debugf("aborting TCP path MTU discovery: %s", err)
