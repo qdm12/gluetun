@@ -73,18 +73,21 @@ func pathMTUDiscover(ctx context.Context, addrPort netip.AddrPort,
 	doneCh := make(chan struct{})
 	for i := range tests {
 		go func(i int) {
-			err := runTest(runCtx, fd, tracker, addrPort, tests[i].mtu)
+			err := runTest(runCtx, fd, tracker, src, dst, tests[i].mtu)
 			tests[i].ok = err == nil
 			doneCh <- struct{}{}
 		}(i)
 	}
 
-	for range tests {
+	i := 0
+	for i < len(tests) {
 		select {
 		case <-doneCh:
+			i++
 		case err := <-errCh:
 			if err == nil { // timeout
-				break
+				cancel()
+				continue
 			}
 			return 0, fmt.Errorf("listening for TCP replies: %w", err)
 		}
