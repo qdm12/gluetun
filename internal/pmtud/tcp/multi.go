@@ -59,17 +59,17 @@ func PathMTUDiscover(ctx context.Context, dsts []netip.AddrPort,
 	}
 	mssResultCh := make(chan mssResult)
 
-	ctx, cancel := context.WithTimeout(ctx, tryTimeout)
-	defer cancel()
+	mssCtx, mssCancel := context.WithTimeout(ctx, tryTimeout)
+	defer mssCancel()
 	go func() {
-		dst, mss, err := findHighestMSSDestination(ctx, fd, dsts, excludeMark,
+		dst, mss, err := findHighestMSSDestination(mssCtx, fd, dsts, excludeMark,
 			maxPossibleMTU, tryTimeout, tracker, firewall, logger)
 		mssResultCh <- mssResult{dst: dst, mss: mss, err: err}
 	}()
 	var highestMSSDst netip.AddrPort
 	select {
 	case err = <-trackerErrCh:
-		cancel()
+		mssCancel()
 		<-mssResultCh
 		return 0, fmt.Errorf("listening for TCP replies: %w", err)
 	case result := <-mssResultCh:
@@ -88,17 +88,17 @@ func PathMTUDiscover(ctx context.Context, dsts []netip.AddrPort,
 		err error
 	}
 	resultCh := make(chan pmtudResult)
-	ctx, cancel = context.WithCancel(ctx)
-	defer cancel()
+	pmtudCtx, pmtudCancel := context.WithCancel(ctx)
+	defer pmtudCancel()
 	go func() {
-		mtu, err := pathMTUDiscover(ctx, fd, highestMSSDst, minMTU, maxPossibleMTU,
+		mtu, err := pathMTUDiscover(pmtudCtx, fd, highestMSSDst, minMTU, maxPossibleMTU,
 			excludeMark, tryTimeout, tracker, firewall, logger)
 		resultCh <- pmtudResult{mtu: mtu, err: err}
 	}()
 
 	select {
 	case err = <-trackerErrCh:
-		cancel()
+		pmtudCancel()
 		<-resultCh
 		return 0, fmt.Errorf("listening for TCP replies: %w", err)
 	case result := <-resultCh:
