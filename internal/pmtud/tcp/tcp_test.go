@@ -4,14 +4,11 @@ package tcp
 
 import (
 	"context"
-	"errors"
 	"net/netip"
 	"testing"
 	"time"
 
 	gomock "github.com/golang/mock/gomock"
-	"github.com/qdm12/gluetun/internal/command"
-	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
@@ -26,13 +23,6 @@ func Test_runTest(t *testing.T) {
 
 	noopLogger := &noopLogger{}
 
-	cmder := command.New()
-	fw, err := firewall.NewConfig(t.Context(), noopLogger, cmder, nil, nil)
-	if errors.Is(err, firewall.ErrIPTablesNotSupported) {
-		t.Skip("iptables not installed, skipping TCP PMTUD tests")
-	}
-	require.NoError(t, err, "creating firewall config")
-
 	netlinker := netlink.New(noopLogger)
 	loopbackMTU, err := findLoopbackMTU(netlinker)
 	require.NoError(t, err, "finding loopback IPv4 MTU")
@@ -42,7 +32,6 @@ func Test_runTest(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 
 	const family = constants.AF_INET
-	const excludeMark = 4545
 	fd, stop, err := startRawSocket(family, excludeMark)
 	require.NoError(t, err)
 
@@ -116,6 +105,7 @@ func Test_runTest(t *testing.T) {
 			require.NoError(t, err, "getting source address to reach remote server %s", dst)
 			t.Cleanup(cleanup)
 
+			fw := getFirewall(t)
 			revert, err := fw.TempDropOutputTCPRST(t.Context(), src, dst, excludeMark)
 			require.NoError(t, err)
 			t.Cleanup(func() {

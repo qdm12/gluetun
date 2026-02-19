@@ -3,8 +3,11 @@ package tcp
 import (
 	"errors"
 	"fmt"
+	"sync"
 	"testing"
 
+	"github.com/qdm12/gluetun/internal/command"
+	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/routing"
@@ -13,6 +16,35 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sys/unix"
 )
+
+// testFirewall must be global to prevent parallel tests from interfering
+// with each other since they would interact with the same filter table.
+// The first test to use should initialize it, and the rest will reuse it.
+var (
+	testFirewall     *firewall.Config //nolint:gochecknoglobals
+	testFirewallOnce sync.Once        //nolint:gochecknoglobals
+)
+
+// getFirewall returns a Firewall instance, initializing it if needed. If
+// iptables is not supported, it skips the test.
+func getFirewall(t *testing.T) *firewall.Config {
+	t.Helper()
+
+	testFirewallOnce.Do(func() {
+		noopLogger := &noopLogger{}
+		cmder := command.New()
+		var err error
+		testFirewall, err = firewall.NewConfig(t.Context(), noopLogger, cmder, nil, nil)
+		if errors.Is(err, firewall.ErrIPTablesNotSupported) {
+			t.Skip("iptables not installed, skipping TCP PMTUD tests")
+		}
+		require.NoError(t, err, "creating firewall config")
+	})
+	if testFirewall == nil {
+		t.Skip("iptables not installed, skipping TCP PMTUD tests")
+	}
+	return testFirewall
+}
 
 type noopLogger struct{}
 

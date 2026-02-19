@@ -129,8 +129,8 @@ func runTest(ctx context.Context, dst netip.AddrPort, mtu uint32,
 	if firstReplyHeader.options.mss != 0 {
 		// If the server sent an MSS option, make sure our test packet is not larger than that MSS.
 		tcpDataLength := getPayloadLength(mtu, dst) - constants.BaseTCPHeaderLength
-		if tcpDataLength > uint32(firstReplyHeader.options.mss) {
-			diff := tcpDataLength - uint32(firstReplyHeader.options.mss)
+		if tcpDataLength > firstReplyHeader.options.mss {
+			diff := tcpDataLength - firstReplyHeader.options.mss
 			minMTU := constants.MinIPv4MTU
 			if dst.Addr().Is6() {
 				minMTU = constants.MinIPv6MTU

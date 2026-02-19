@@ -7,6 +7,13 @@ import (
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 )
 
+func HeaderLength(ipv4 bool) uint32 {
+	if ipv4 {
+		return constants.IPv4HeaderLength
+	}
+	return constants.IPv6HeaderLength
+}
+
 func HeaderV4(srcIP, dstIP netip.Addr, payloadLength uint32) []byte {
 	ipHeader := make([]byte, constants.IPv4HeaderLength)
 	const version byte = 4

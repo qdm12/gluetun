@@ -199,7 +199,7 @@ func parseTCPHeader(b []byte) (header tcpHeader, err error) {
 }
 
 type options struct {
-	mss           uint16
+	mss           uint32
 	windowScale   *uint8 // Pointer to differentiate between 0 and "not present"
 	sackPermitted bool
 	timestamps    *optionTimestamps
@@ -266,7 +266,7 @@ func parseTCPOptions(b []byte) (parsed options, err error) {
 				return options{}, fmt.Errorf("%w: MSS option at offset %d has length %d, expected %d",
 					ErrTCPOptionMSSInvalid, i, length, expectedLength)
 			}
-			parsed.mss = binary.BigEndian.Uint16(data)
+			parsed.mss = uint32(binary.BigEndian.Uint16(data))
 		case optionTypeWindowScale:
 			const expectedLength = 3
 			if length != expectedLength {

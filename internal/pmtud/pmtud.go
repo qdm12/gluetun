@@ -61,32 +61,24 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 		}
 	}
 
-	for _, addrPort := range tcpAddrs {
-		minMTU := constants.MinIPv4MTU
-		if addrPort.Addr().Is6() {
-			minMTU = constants.MinIPv6MTU
-		}
-		if icmpSuccess {
-			const mtuMargin = 150
-			minMTU = max(maxPossibleMTU-mtuMargin, minMTU)
-		}
-		mtu, err = tcp.PathMTUDiscover(ctx, addrPort, minMTU, maxPossibleMTU, tryTimeout, fw, logger)
-		if err != nil {
-			if errors.Is(err, firewall.ErrMarkMatchModuleMissing) {
-				logger.Debugf("aborting TCP path MTU discovery: %s", err)
-				if icmpSuccess {
-					return maxPossibleMTU, nil // only rely on ICMP PMTUD results
-				}
-				return 0, fmt.Errorf("%w", ErrPMTUDFailICMPAndTCP)
-			}
-			logger.Debugf("TCP path MTU discovery to %s failed: %s", addrPort, err)
-			continue
-		}
-		logger.Debugf("TCP path MTU discovery to %s found maximum valid MTU %d", addrPort, mtu)
-		return mtu, nil
+	minMTU := constants.MinIPv4MTU
+	if tcpAddrs[0].Addr().Is6() {
+		minMTU = constants.MinIPv6MTU
 	}
-
-	// TCP PMTUD failed for all addresses for external reasons,
-	// so do not take the risk and return an error.
-	return 0, fmt.Errorf("TCP path MTU discovery: last error: %w", err)
+	if icmpSuccess {
+		const mtuMargin = 150
+		minMTU = max(maxPossibleMTU-mtuMargin, minMTU)
+	}
+	mtu, err = tcp.PathMTUDiscover(ctx, tcpAddrs, minMTU, maxPossibleMTU, tryTimeout, fw, logger)
+	if err != nil {
+		if errors.Is(err, firewall.ErrMarkMatchModuleMissing) {
+			logger.Debugf("aborting TCP path MTU discovery: %s", err)
+			if icmpSuccess {
+				return maxPossibleMTU, nil // only rely on ICMP PMTUD results
+			}
+		}
+		return 0, fmt.Errorf("%w", ErrPMTUDFailICMPAndTCP)
+	}
+	logger.Debugf("TCP path MTU discovery found maximum valid MTU %d", mtu)
+	return mtu, nil
 }
