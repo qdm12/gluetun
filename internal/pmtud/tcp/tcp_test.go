@@ -26,17 +26,15 @@ func Test_runTest(t *testing.T) {
 	netlinker := netlink.New(noopLogger)
 	loopbackMTU, err := findLoopbackMTU(netlinker)
 	require.NoError(t, err, "finding loopback IPv4 MTU")
-	defaultIPv4MTU, err := findDefaultIPv4RouteMTU(netlinker)
-	require.NoError(t, err, "finding default IPv4 route MTU")
+	defaultMTU, err := findDefaultRouteMTU(netlinker)
+	require.NoError(t, err, "finding default route MTU")
 
 	ctx, cancel := context.WithCancel(t.Context())
 
-	const family = constants.AF_INET
-	fd, stop, err := startRawSocket(family, excludeMark)
+	familyToFD, stop, err := startRawSockets([]int{constants.AF_INET, constants.AF_INET6}, excludeMark)
 	require.NoError(t, err)
 
-	const ipv4 = true
-	tracker := newTracker(fd, ipv4)
+	tracker := newTracker(familyToFD)
 	trackerCh := make(chan error)
 	go func() {
 		trackerCh <- tracker.listen(ctx)
@@ -71,24 +69,24 @@ func Test_runTest(t *testing.T) {
 		"remote_not_listening": {
 			timeout: 50 * time.Millisecond,
 			server:  netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 12345),
-			mtu:     defaultIPv4MTU - mtuSafetyBuffer,
+			mtu:     defaultMTU - mtuSafetyBuffer,
 		},
 		"1.1.1.1:443": {
 			timeout: 5 * time.Second,
 			server:  netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 443),
-			mtu:     defaultIPv4MTU - mtuSafetyBuffer,
+			mtu:     defaultMTU - mtuSafetyBuffer,
 			success: true,
 		},
 		"1.1.1.1:80": {
 			timeout: 5 * time.Second,
 			server:  netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 80),
-			mtu:     defaultIPv4MTU - mtuSafetyBuffer,
+			mtu:     defaultMTU - mtuSafetyBuffer,
 			success: true,
 		},
 		"8.8.8.8:443": {
 			timeout: 5 * time.Second,
 			server:  netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), 443),
-			mtu:     defaultIPv4MTU - mtuSafetyBuffer,
+			mtu:     defaultMTU - mtuSafetyBuffer,
 			success: true,
 		},
 	}
@@ -99,6 +97,7 @@ func Test_runTest(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
 			dst := testCase.server
+			fd := familyToFD[ip.GetFamily(dst)]
 
 			const proto = constants.IPPROTO_TCP
 			src, cleanup, err := ip.SrcAddr(dst, proto)

@@ -12,8 +12,7 @@ import (
 )
 
 type tracker struct {
-	fd              fileDescriptor
-	ipv4            bool
+	familyToFD      map[int]fileDescriptor
 	mutex           sync.RWMutex
 	portsToDispatch map[uint32]dispatch
 }
@@ -23,10 +22,9 @@ type dispatch struct {
 	abort   <-chan struct{}
 }
 
-func newTracker(fd fileDescriptor, ipv4 bool) *tracker {
+func newTracker(familyToFD map[int]fileDescriptor) *tracker {
 	return &tracker{
-		fd:              fd,
-		ipv4:            ipv4,
+		familyToFD:      familyToFD,
 		portsToDispatch: make(map[uint32]dispatch),
 	}
 }
@@ -57,11 +55,36 @@ func (t *tracker) unregister(localPort, remotePort uint16) {
 	delete(t.portsToDispatch, key)
 }
 
-// listen listens for incoming TCP packets and dispatches them to the
-// correct channel based on the source and destination port.
+func (t *tracker) listen(ctx context.Context) (err error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	type result struct {
+		family int
+		err    error
+	}
+	resultCh := make(chan result)
+	for family, fd := range t.familyToFD {
+		go func(family int, fd fileDescriptor) {
+			err := t.listenFD(ctx, fd, family == constants.AF_INET)
+			resultCh <- result{family: family, err: err}
+		}(family, fd)
+	}
+
+	for range t.familyToFD {
+		result := <-resultCh
+		if err == nil && result.err != nil {
+			cancel() // stop the other listener if it is still running
+			err = fmt.Errorf("listening for family %d: %w", result.family, result.err)
+		}
+	}
+	return err
+}
+
+// listenFD listens for incoming TCP packets on the given file descriptor,
+// and dispatches them to the correct channel based on the source and destination port.
 // If the context has a deadline associated, this one is used on the socket.
 // Note it returns a nil error on context cancellation.
-func (t *tracker) listen(ctx context.Context) error {
+func (t *tracker) listenFD(ctx context.Context, fd fileDescriptor, ipv4 bool) error {
 	deadline, hasDeadline := ctx.Deadline()
 	for ctx.Err() == nil {
 		if hasDeadline {
@@ -69,14 +92,14 @@ func (t *tracker) listen(ctx context.Context) error {
 			if remaining <= 0 {
 				return nil
 			}
-			err := setSocketTimeout(t.fd, remaining)
+			err := setSocketTimeout(fd, remaining)
 			if err != nil {
 				return fmt.Errorf("setting socket receive timeout: %w", err)
 			}
 		}
 
 		reply := make([]byte, constants.MaxEthernetFrameSize)
-		n, _, err := recvFrom(t.fd, reply, 0)
+		n, _, err := recvFrom(fd, reply, 0)
 		if err != nil {
 			switch {
 			case errors.Is(err, constants.EAGAIN), errors.Is(err, constants.EWOULDBLOCK):
@@ -91,7 +114,7 @@ func (t *tracker) listen(ctx context.Context) error {
 		}
 		reply = reply[:n]
 
-		if t.ipv4 {
+		if ipv4 {
 			var ok bool
 			reply, ok = stripIPv4Header(reply)
 			if !ok {

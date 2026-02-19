@@ -18,10 +18,21 @@ import (
 
 func Test_PathMTUDiscover(t *testing.T) {
 	t.Parallel()
-	noopLogger := log.New(log.SetLevel(log.LevelDebug))
+
+	const tryTimeout = time.Second
+	deadline, ok := t.Deadline()
+	if ok {
+		timeLeft := time.Until(deadline)
+		const maxTimeNeeded = tryTimeout * 4 // MSS discovery + 3 MTU tries
+		require.GreaterOrEqual(t, timeLeft, maxTimeNeeded,
+			"not enough time remaining for TCP PMTUD test, need %s and got %s",
+			maxTimeNeeded, timeLeft)
+	}
+
+	logger := log.New(log.SetLevel(log.LevelDebug))
 
 	cmder := command.New()
-	fw, err := firewall.NewConfig(t.Context(), noopLogger, cmder, nil, nil)
+	fw, err := firewall.NewConfig(t.Context(), logger, cmder, nil, nil)
 	if errors.Is(err, firewall.ErrIPTablesNotSupported) {
 		t.Skip("iptables not installed, skipping TCP PMTUD tests")
 	}
@@ -32,11 +43,12 @@ func Test_PathMTUDiscover(t *testing.T) {
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 443),
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), 53),
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), 443),
+		netip.AddrPortFrom(netip.MustParseAddr("2606:4700:4700::1111"), 443),
+		netip.AddrPortFrom(netip.MustParseAddr("2001:4860:4860::8888"), 443),
 	}
 	const minMTU = constants.MinIPv6MTU
 	const maxMTU = constants.MaxEthernetFrameSize
-	const tryTimeout = time.Second
-	mtu, err := PathMTUDiscover(t.Context(), dsts, minMTU, maxMTU, tryTimeout, fw, noopLogger)
+	mtu, err := PathMTUDiscover(t.Context(), dsts, minMTU, maxMTU, tryTimeout, fw, logger)
 	require.NoError(t, err, "discovering path MTU")
 	assert.Greater(t, mtu, uint32(0), "MTU should be greater than 0")
 	t.Logf("discovered path MTU is %d", mtu)

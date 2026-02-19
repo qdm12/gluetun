@@ -78,24 +78,30 @@ func findLoopbackMTU(netlinker *netlink.NetLink) (mtu uint32, err error) {
 	return 0, fmt.Errorf("%w: no loopback route found", errRouteNotFound)
 }
 
-func findDefaultIPv4RouteMTU(netlinker *netlink.NetLink) (mtu uint32, err error) {
+func findDefaultRouteMTU(netlinker *netlink.NetLink) (mtu uint32, err error) {
 	noopLogger := &noopLogger{}
 	routing := routing.New(netlinker, noopLogger)
 	defaultRoutes, err := routing.DefaultRoutes()
 	if err != nil {
 		return 0, fmt.Errorf("getting default routes: %w", err)
 	}
-	for _, route := range defaultRoutes {
-		if route.Family != netlink.FamilyV4 {
-			continue
+	families := []uint8{constants.AF_INET, constants.AF_INET6}
+	for _, family := range families {
+		for _, route := range defaultRoutes {
+			if route.Family != family {
+				continue
+			}
+			link, err := netlinker.LinkByName(route.NetInterface)
+			if err != nil {
+				return 0, fmt.Errorf("getting link by name: %w", err)
+			}
+			mtu = max(mtu, link.MTU)
 		}
-		link, err := netlinker.LinkByName(defaultRoutes[0].NetInterface)
-		if err != nil {
-			return 0, fmt.Errorf("getting link by name: %w", err)
-		}
-		return link.MTU, nil
 	}
-	return 0, fmt.Errorf("%w: no default route found", errRouteNotFound)
+	if mtu == 0 {
+		return 0, fmt.Errorf("%w: no default route found", errRouteNotFound)
+	}
+	return mtu, nil
 }
 
 func reserveClosedPort(t *testing.T) (port uint16) {

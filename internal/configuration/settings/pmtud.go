@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
-	"strings"
 
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
@@ -70,6 +69,10 @@ func (p *PMTUD) setDefaults() {
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), dnsPort),
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), tlsPort),
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), tlsPort),
+		netip.AddrPortFrom(netip.MustParseAddr("2606:4700:4700::1111"), dnsPort),
+		netip.AddrPortFrom(netip.MustParseAddr("2001:4860:4860::8888"), dnsPort),
+		netip.AddrPortFrom(netip.MustParseAddr("2606:4700:4700::1111"), tlsPort),
+		netip.AddrPortFrom(netip.MustParseAddr("2001:4860:4860::8888"), tlsPort),
 	}
 	p.TCPAddresses = gosettings.DefaultSlice(p.TCPAddresses, defaultTCPAddresses)
 }
@@ -81,17 +84,15 @@ func (p PMTUD) String() string {
 func (p PMTUD) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("Path MTU discovery:")
 
-	addrs := make([]string, len(p.ICMPAddresses))
-	for i, addr := range p.ICMPAddresses {
-		addrs[i] = addr.String()
+	icmpAddrNode := node.Append("ICMP addresses:")
+	for _, addr := range p.ICMPAddresses {
+		icmpAddrNode.Append(addr.String())
 	}
-	node.Appendf("ICMP addresses: %s", strings.Join(addrs, ", "))
 
-	addrs = make([]string, len(p.TCPAddresses))
-	for i, addr := range p.TCPAddresses {
-		addrs[i] = addr.String()
+	tcpAddrNode := node.Append("TCP addresses:")
+	for _, addr := range p.TCPAddresses {
+		tcpAddrNode.Append(addr.String())
 	}
-	node.Appendf("TCP addresses: %s", strings.Join(addrs, ", "))
 	return node
 }
 

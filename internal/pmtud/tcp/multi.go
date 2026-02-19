@@ -33,17 +33,14 @@ func PathMTUDiscover(ctx context.Context, dsts []netip.AddrPort,
 	minMTU, maxPossibleMTU uint32, tryTimeout time.Duration,
 	firewall Firewall, logger Logger,
 ) (mtu uint32, err error) {
-	family := constants.AF_INET
-	if dsts[0].Addr().Is6() {
-		family = constants.AF_INET6
-	}
-	fd, stop, err := startRawSocket(family, excludeMark)
+	families := ip.GetFamilies(dsts)
+	familyToFD, stop, err := startRawSockets(families, excludeMark)
 	if err != nil {
-		return 0, fmt.Errorf("starting raw socket: %w", err)
+		return 0, fmt.Errorf("starting raw sockets: %w", err)
 	}
 	defer stop()
 
-	tracker := newTracker(fd, family == constants.AF_INET)
+	tracker := newTracker(familyToFD)
 
 	trackerCtx, trackerCancel := context.WithCancel(ctx)
 	defer trackerCancel()
@@ -62,7 +59,7 @@ func PathMTUDiscover(ctx context.Context, dsts []netip.AddrPort,
 	mssCtx, mssCancel := context.WithTimeout(ctx, tryTimeout)
 	defer mssCancel()
 	go func() {
-		dst, mss, err := findHighestMSSDestination(mssCtx, fd, dsts, excludeMark,
+		dst, mss, err := findHighestMSSDestination(mssCtx, familyToFD, dsts, excludeMark,
 			maxPossibleMTU, tryTimeout, tracker, firewall, logger)
 		mssResultCh <- mssResult{dst: dst, mss: mss, err: err}
 	}()
@@ -82,6 +79,8 @@ func PathMTUDiscover(ctx context.Context, dsts []netip.AddrPort,
 		ipHeaderLength := ip.HeaderLength(highestMSSDst.Addr().Is4())
 		maxPossibleMTU = ipHeaderLength + constants.BaseTCPHeaderLength + result.mss
 	}
+
+	fd := familyToFD[ip.GetFamily(highestMSSDst)]
 
 	type pmtudResult struct {
 		mtu uint32

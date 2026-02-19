@@ -14,7 +14,7 @@ import (
 
 // findHighestMSSDestination finds the destination with the highest
 // MSS amongst the provided destinations.
-func findHighestMSSDestination(ctx context.Context, fd fileDescriptor,
+func findHighestMSSDestination(ctx context.Context, familyToFD map[int]fileDescriptor,
 	dsts []netip.AddrPort, excludeMark int, maxPossibleMTU uint32,
 	timeout time.Duration, tracker *tracker, fw Firewall, logger Logger) (
 	dst netip.AddrPort, mss uint32, err error,
@@ -30,6 +30,7 @@ func findHighestMSSDestination(ctx context.Context, fd fileDescriptor,
 	defer cancel()
 	for _, dst := range dsts {
 		go func(dst netip.AddrPort) {
+			fd := familyToFD[ip.GetFamily(dst)]
 			mss, err := findMSS(ctx, fd, dst, excludeMark, tracker, fw, logger)
 			resultCh <- result{dst: dst, mss: mss, err: err}
 		}(dst)

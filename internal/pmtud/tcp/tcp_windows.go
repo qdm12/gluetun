@@ -35,7 +35,7 @@ func setMark(fd windows.Handle, _ int) error {
 	panic("not implemented")
 }
 
-func setMTUDiscovery(fd windows.Handle) error {
+func setMTUDiscovery(fd windows.Handle, ipv4 bool) error {
 	panic("not implemented")
 }
 

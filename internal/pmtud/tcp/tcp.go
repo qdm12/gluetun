@@ -10,6 +10,29 @@ import (
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
 )
 
+func startRawSockets(families []int, excludeMark int) (familyToSocket map[int]fileDescriptor, stop func(), err error) {
+	familyToSocket = make(map[int]fileDescriptor, len(families))
+	stops := make([]func(), 0, len(families))
+	for _, family := range families {
+		fd, stop, err := startRawSocket(family, excludeMark)
+		if err != nil {
+			for _, stop := range stops {
+				stop()
+			}
+			return nil, nil, fmt.Errorf("starting raw socket for family %d: %w", family, err)
+		}
+		stops = append(stops, stop)
+		familyToSocket[family] = fd
+	}
+
+	stop = func() {
+		for _, stop := range stops {
+			stop()
+		}
+	}
+	return familyToSocket, stop, nil
+}
+
 func startRawSocket(family, excludeMark int) (fd fileDescriptor, stop func(), err error) {
 	fdPlatform, err := socket(family, constants.SOCK_RAW, constants.IPPROTO_TCP)
 	if err != nil {
@@ -33,10 +56,10 @@ func startRawSocket(family, excludeMark int) (fd fileDescriptor, stop func(), er
 	}
 
 	// Allow sending packets larger than cached PMTU (for PMTUD probing)
-	err = setMTUDiscovery(fdPlatform)
+	err = setMTUDiscovery(fdPlatform, family == constants.AF_INET)
 	if err != nil {
 		_ = closeSocket(fdPlatform)
-		return 0, nil, fmt.Errorf("setting IP_MTU_DISCOVER: %w", err)
+		return 0, nil, fmt.Errorf("setting MTU discovery options: %w", err)
 	}
 
 	// use polling because some Linux systems do not cancel
