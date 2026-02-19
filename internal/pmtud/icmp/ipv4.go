@@ -25,7 +25,8 @@ func listenICMPv4(ctx context.Context) (conn net.PacketConn, err error) {
 	listenConfig.Control = func(_, _ string, rawConn syscall.RawConn) error {
 		var setDFErr error
 		err := rawConn.Control(func(fd uintptr) {
-			setDFErr = setDontFragment(fd) // runs when calling ListenPacket
+			const ipv4 = true
+			setDFErr = setDontFragment(fd, ipv4) // runs when calling ListenPacket
 		})
 		if err == nil {
 			err = setDFErr

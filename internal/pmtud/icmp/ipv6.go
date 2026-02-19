@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/netip"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
@@ -19,6 +20,17 @@ const (
 
 func listenICMPv6(ctx context.Context) (conn net.PacketConn, err error) {
 	var listenConfig net.ListenConfig
+	listenConfig.Control = func(_, _ string, rawConn syscall.RawConn) error {
+		var setDFErr error
+		err := rawConn.Control(func(fd uintptr) {
+			const ipv4 = false
+			setDFErr = setDontFragment(fd, ipv4) // runs when calling ListenPacket
+		})
+		if err == nil {
+			err = setDFErr
+		}
+		return err
+	}
 	const listenAddress = ""
 	packetConn, err := listenConfig.ListenPacket(ctx, "ip6:ipv6-icmp", listenAddress)
 	if err != nil {
