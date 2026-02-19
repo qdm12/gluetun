@@ -1,6 +1,9 @@
 package test
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 // MakeMTUsToTest determines a slice of MTU values to test
 // between minMTU and maxMTU inclusive. It creates an MTU
@@ -17,7 +20,7 @@ func MakeMTUsToTest(minMTU, maxMTU uint32) (mtus []uint32) {
 	diff := maxMTU - minMTU
 	switch {
 	case minMTU > maxMTU:
-		panic("minMTU > maxMTU")
+		panic(fmt.Sprintf("minMTU %d is greater than maxMTU %d", minMTU, maxMTU))
 	case diff <= mtusLength:
 		mtus = make([]uint32, 0, diff)
 		for mtu := minMTU; mtu <= maxMTU; mtu++ {

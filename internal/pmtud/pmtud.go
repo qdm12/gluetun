@@ -13,7 +13,7 @@ import (
 	"github.com/qdm12/gluetun/internal/pmtud/tcp"
 )
 
-var ErrPMTUDFailICMPAndTCP = errors.New("PMTUD failed with both ICMP and TCP")
+var ErrPMTUDFailICMPAndTCP = errors.New("PMTUD succeeded with ICMP but failed with TCP")
 
 // PathMTUDiscover discovers the maximum MTU using both ICMP and TCP.
 // Multiple ICMP addresses and TCP addresses can be specified for redundancy.
@@ -66,7 +66,7 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 		minMTU = constants.MinIPv6MTU
 	}
 	if icmpSuccess {
-		const mtuMargin = 150
+		const mtuMargin = 300
 		minMTU = max(maxPossibleMTU-mtuMargin, minMTU)
 	}
 	mtu, err = tcp.PathMTUDiscover(ctx, tcpAddrs, minMTU, maxPossibleMTU, tryTimeout, fw, logger)
@@ -77,7 +77,8 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 				return maxPossibleMTU, nil // only rely on ICMP PMTUD results
 			}
 		}
-		return 0, fmt.Errorf("%w", ErrPMTUDFailICMPAndTCP)
+		return 0, fmt.Errorf("%w - ignoring ICMP obtained MTU %d",
+			ErrPMTUDFailICMPAndTCP, maxPossibleMTU)
 	}
 	logger.Debugf("TCP path MTU discovery found maximum valid MTU %d", mtu)
 	return mtu, nil
