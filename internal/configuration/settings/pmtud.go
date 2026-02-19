@@ -64,8 +64,10 @@ func (p *PMTUD) setDefaults() {
 	}
 	p.ICMPAddresses = gosettings.DefaultSlice(p.ICMPAddresses, defaultICMPAddresses)
 
-	const tlsPort = 443
+	const dnsPort, tlsPort = 53, 443
 	defaultTCPAddresses := []netip.AddrPort{
+		netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), dnsPort),
+		netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), dnsPort),
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), tlsPort),
 		netip.AddrPortFrom(netip.AddrFrom4([4]byte{8, 8, 8, 8}), tlsPort),
 	}

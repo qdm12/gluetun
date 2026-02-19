@@ -39,7 +39,7 @@ func Test_Settings_String(t *testing.T) {
 |   |   └── Verbosity level: 1
 |   └── Path MTU discovery:
 |       ├── ICMP addresses: 1.1.1.1, 8.8.8.8
-|       └── TCP addresses: 1.1.1.1:443, 8.8.8.8:443
+|       └── TCP addresses: 1.1.1.1:53, 8.8.8.8:53, 1.1.1.1:443, 8.8.8.8:443
 ├── DNS settings:
 |   ├── Keep existing nameserver(s): no
 |   ├── DNS server address to use: 127.0.0.1
