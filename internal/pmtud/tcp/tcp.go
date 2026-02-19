@@ -107,6 +107,7 @@ func runTest(ctx context.Context, dst netip.AddrPort, mtu uint32,
 	var reply []byte
 	select {
 	case <-ctx.Done():
+		_ = sendRST(fd, src, dst, synSeq+1)
 		return ctx.Err()
 	case reply = <-ch:
 	}
@@ -149,6 +150,7 @@ func runTest(ctx context.Context, dst netip.AddrPort, mtu uint32,
 
 	select {
 	case <-ctx.Done():
+		_ = sendRST(fd, src, dst, firstReplyHeader.ack)
 		return ctx.Err()
 	case reply = <-ch:
 	}
@@ -180,7 +182,7 @@ var errTCPPacketNotRST = errors.New("TCP packet is not an RST")
 func handleRSTReply(ctx context.Context, fd fileDescriptor, ch <-chan []byte,
 	src, dst netip.AddrPort, mtu uint32,
 ) error {
-	packet, _ := createSYNPacket(src, dst, mtu)
+	packet, synSeq := createSYNPacket(src, dst, mtu)
 	const sendToFlags = 0
 	err := sendTo(fd, packet, sendToFlags, makeSockAddr(dst))
 	if err != nil {
@@ -190,6 +192,7 @@ func handleRSTReply(ctx context.Context, fd fileDescriptor, ch <-chan []byte,
 	var reply []byte
 	select {
 	case <-ctx.Done():
+		_ = sendRST(fd, src, dst, synSeq+1)
 		return ctx.Err() // timeout: the MTU test SYN packet was too big
 	case reply = <-ch:
 	}
