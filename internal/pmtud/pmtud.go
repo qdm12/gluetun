@@ -66,7 +66,7 @@ func PathMTUDiscover(ctx context.Context, icmpAddrs []netip.Addr, tcpAddrs []net
 		minMTU = constants.MinIPv6MTU
 	}
 	if icmpSuccess {
-		const mtuMargin = 300
+		const mtuMargin = 150
 		minMTU = max(maxPossibleMTU-mtuMargin, minMTU)
 	}
 	mtu, err = tcp.PathMTUDiscover(ctx, tcpAddrs, minMTU, maxPossibleMTU, tryTimeout, fw, logger)
