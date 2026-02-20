@@ -168,7 +168,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	defer fmt.Println(gluetunLogo)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2026-04-01T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "All control server routes will become private by default after the v3.41.0 release",
+		Announcement: "All control server routes are now private by default",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
