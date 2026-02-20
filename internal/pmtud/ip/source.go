@@ -1,8 +1,10 @@
 package ip
 
 import (
+	"errors"
 	"fmt"
 	"net/netip"
+	"syscall"
 
 	"github.com/jsimonetti/rtnetlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
@@ -26,7 +28,10 @@ func SrcAddr(dst netip.AddrPort, proto int) (src netip.AddrPort, cleanup func(),
 	return netip.AddrPortFrom(srcAddr, srcPort), cleanup, nil
 }
 
-var errNoRoute = fmt.Errorf("no route to destination")
+var (
+	errNoRoute            = fmt.Errorf("no route to destination")
+	ErrNetworkUnreachable = errors.New("network unreachable")
+)
 
 func srcIP(dst netip.Addr) (netip.Addr, error) {
 	conn, err := rtnetlink.Dial(nil)
@@ -49,6 +54,10 @@ func srcIP(dst netip.Addr) (netip.Addr, error) {
 	}
 	messages, err := conn.Route.Get(requestMessage)
 	if err != nil {
+		var sysErr syscall.Errno
+		if errors.As(err, &sysErr) && sysErr == syscall.ENETUNREACH {
+			err = ErrNetworkUnreachable
+		}
 		return netip.Addr{}, fmt.Errorf("getting routes to %s: %w", dst, err)
 	}
 

@@ -43,6 +43,9 @@ func findHighestMSSDestination(ctx context.Context, familyToFD map[int]fileDescr
 			case err != nil: // error already occurred for another findMSS goroutine
 			case errors.Is(result.err, firewall.ErrMarkMatchModuleMissing):
 				err = fmt.Errorf("finding MSS for %s: %w", result.dst, result.err)
+			case dst.Addr().Is6() && errors.Is(result.err, ip.ErrNetworkUnreachable):
+				// silently discard IPv6 network unreachable errors since they are common
+				// and expected when the host doesn't have IPv6 connectivity
 			default: // another error not due to the match module missing
 				logger.Debugf("finding MSS for %s failed: %s", result.dst, result.err)
 			}
