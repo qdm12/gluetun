@@ -12,7 +12,6 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -99,23 +98,12 @@ func Test_runTest(t *testing.T) {
 			dst := testCase.server
 			fd := familyToFD[ip.GetFamily(dst)]
 
-			const proto = constants.IPPROTO_TCP
-			src, cleanup, err := ip.SrcAddr(dst, proto)
-			require.NoError(t, err, "getting source address to reach remote server %s", dst)
-			t.Cleanup(cleanup)
-
 			fw := getFirewall(t)
-			revert, err := fw.TempDropOutputTCPRST(t.Context(), src, dst, excludeMark)
-			require.NoError(t, err)
-			t.Cleanup(func() {
-				err := revert(context.Background())
-				assert.NoError(t, err)
-			})
 			logger := NewMockLogger(ctrl)
 
 			ctx, cancel := context.WithTimeout(t.Context(), testCase.timeout)
 			defer cancel()
-			err = runTest(ctx, dst, testCase.mtu, excludeMark,
+			err := runTest(ctx, dst, testCase.mtu, excludeMark,
 				fd, tracker, fw, logger)
 			if testCase.success {
 				require.NoError(t, err)
