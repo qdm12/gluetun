@@ -76,7 +76,7 @@ func (c *apiClient) setHeaders(request *http.Request, cookie cookie) {
 
 // authenticate performs the full Proton authentication flow
 // to obtain an authenticated cookie (uid, token and session ID).
-func (c *apiClient) authenticate(ctx context.Context, username, password string,
+func (c *apiClient) authenticate(ctx context.Context, email, password string,
 ) (authCookie cookie, err error) {
 	sessionID, err := c.getSessionID(ctx)
 	if err != nil {
@@ -98,8 +98,8 @@ func (c *apiClient) authenticate(ctx context.Context, username, password string,
 		token:     cookieToken,
 		sessionID: sessionID,
 	}
-	modulusPGPClearSigned, serverEphemeralBase64, saltBase64,
-		srpSessionHex, version, err := c.authInfo(ctx, username, unauthCookie)
+	username, modulusPGPClearSigned, serverEphemeralBase64, saltBase64,
+		srpSessionHex, version, err := c.authInfo(ctx, email, unauthCookie)
 	if err != nil {
 		return cookie{}, fmt.Errorf("getting auth information: %w", err)
 	}
@@ -118,7 +118,7 @@ func (c *apiClient) authenticate(ctx context.Context, username, password string,
 		return cookie{}, fmt.Errorf("generating SRP proofs: %w", err)
 	}
 
-	authCookie, err = c.auth(ctx, unauthCookie, username, srpSessionHex, proofs)
+	authCookie, err = c.auth(ctx, unauthCookie, email, srpSessionHex, proofs)
 	if err != nil {
 		return cookie{}, fmt.Errorf("authentifying: %w", err)
 	}
@@ -299,48 +299,45 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 	return "", fmt.Errorf("%w", ErrAuthCookieNotFound)
 }
 
-var (
-	ErrUsernameDoesNotExist = errors.New("username does not exist")
-	ErrUsernameMismatch     = errors.New("username in response does not match request username")
-)
+var ErrUsernameDoesNotExist = errors.New("username does not exist")
 
 // authInfo fetches SRP parameters for the account.
-func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie cookie) (
-	modulusPGPClearSigned, serverEphemeralBase64, saltBase64, srpSessionHex string,
+func (c *apiClient) authInfo(ctx context.Context, email string, unauthCookie cookie) (
+	username, modulusPGPClearSigned, serverEphemeralBase64, saltBase64, srpSessionHex string,
 	version int, err error,
 ) {
 	type requestBodySchema struct {
-		Intent   string `json:"Intent"`   // "Proton"
-		Username string `json:"Username"` // username without @domain.com
+		Intent   string `json:"Intent"` // "Proton"
+		Username string `json:"Username"`
 	}
 	requestBody := requestBodySchema{
 		Intent:   "Proton",
-		Username: username,
+		Username: email,
 	}
 
 	buffer := bytes.NewBuffer(nil)
 	encoder := json.NewEncoder(buffer)
 	if err := encoder.Encode(requestBody); err != nil {
-		return "", "", "", "", 0, fmt.Errorf("encoding request body: %w", err)
+		return "", "", "", "", "", 0, fmt.Errorf("encoding request body: %w", err)
 	}
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodPost, c.apiURLBase+"/core/v4/auth/info", buffer)
 	if err != nil {
-		return "", "", "", "", 0, fmt.Errorf("creating request: %w", err)
+		return "", "", "", "", "", 0, fmt.Errorf("creating request: %w", err)
 	}
 	c.setHeaders(request, unauthCookie)
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
-		return "", "", "", "", 0, err
+		return "", "", "", "", "", 0, err
 	}
 	defer response.Body.Close()
 
 	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
-		return "", "", "", "", 0, fmt.Errorf("reading response body: %w", err)
+		return "", "", "", "", "", 0, fmt.Errorf("reading response body: %w", err)
 	} else if response.StatusCode != http.StatusOK {
-		return "", "", "", "", 0, buildError(response.StatusCode, responseBody)
+		return "", "", "", "", "", 0, buildError(response.StatusCode, responseBody)
 	}
 
 	var info struct {
@@ -354,32 +351,30 @@ func (c *apiClient) authInfo(ctx context.Context, username string, unauthCookie 
 	}
 	err = json.Unmarshal(responseBody, &info)
 	if err != nil {
-		return "", "", "", "", 0, fmt.Errorf("decoding response body: %w", err)
+		return "", "", "", "", "", 0, fmt.Errorf("decoding response body: %w", err)
 	}
 
 	const successCode = 1000
 	switch {
 	case info.Code != successCode:
-		return "", "", "", "", 0, fmt.Errorf("%w: expected %d got %d",
+		return "", "", "", "", "", 0, fmt.Errorf("%w: expected %d got %d",
 			ErrCodeNotSuccess, successCode, info.Code)
 	case info.Modulus == "":
-		return "", "", "", "", 0, fmt.Errorf("%w: modulus is empty", ErrDataFieldMissing)
+		return "", "", "", "", "", 0, fmt.Errorf("%w: modulus is empty", ErrDataFieldMissing)
 	case info.ServerEphemeral == "":
-		return "", "", "", "", 0, fmt.Errorf("%w: server ephemeral is empty", ErrDataFieldMissing)
+		return "", "", "", "", "", 0, fmt.Errorf("%w: server ephemeral is empty", ErrDataFieldMissing)
 	case info.Salt == "":
-		return "", "", "", "", 0, fmt.Errorf("%w (salt data field is empty)", ErrUsernameDoesNotExist)
+		return "", "", "", "", "", 0, fmt.Errorf("%w (salt data field is empty)", ErrUsernameDoesNotExist)
 	case info.SRPSession == "":
-		return "", "", "", "", 0, fmt.Errorf("%w: SRP session is empty", ErrDataFieldMissing)
-
-	case info.Username != username:
-		return "", "", "", "", 0, fmt.Errorf("%w: expected %s got %s",
-			ErrUsernameMismatch, username, info.Username)
+		return "", "", "", "", "", 0, fmt.Errorf("%w: SRP session is empty", ErrDataFieldMissing)
+	case info.Username == "":
+		return "", "", "", "", "", 0, fmt.Errorf("%w: username is empty", ErrDataFieldMissing)
 	case info.Version == nil:
-		return "", "", "", "", 0, fmt.Errorf("%w: version is missing", ErrDataFieldMissing)
+		return "", "", "", "", "", 0, fmt.Errorf("%w: version is missing", ErrDataFieldMissing)
 	}
 
 	version = int(*info.Version) //nolint:gosec
-	return info.Modulus, info.ServerEphemeral, info.Salt,
+	return info.Username, info.Modulus, info.ServerEphemeral, info.Salt,
 		info.SRPSession, version, nil
 }
 

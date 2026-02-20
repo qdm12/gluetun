@@ -29,17 +29,16 @@ func appendOrDelete(remove bool) string {
 // flipRule changes an append rule in a delete rule or a delete rule into an
 // append rule.
 func flipRule(rule string) string {
-	switch {
-	case strings.HasPrefix(rule, "-A"):
-		return strings.Replace(rule, "-A", "-D", 1)
-	case strings.HasPrefix(rule, "--append"):
-		return strings.Replace(rule, "--append", "-D", 1)
-	case strings.HasPrefix(rule, "-D"):
-		return strings.Replace(rule, "-D", "-A", 1)
-	case strings.HasPrefix(rule, "--delete"):
-		return strings.Replace(rule, "--delete", "-A", 1)
+	fields := strings.Fields(rule)
+	for i, field := range fields {
+		switch field {
+		case "-A", "--append":
+			fields[i] = "--delete"
+		case "-D", "--delete":
+			fields[i] = "--append"
+		}
 	}
-	return rule
+	return strings.Join(fields, " ")
 }
 
 // Version obtains the version of the installed iptables.
@@ -86,10 +85,14 @@ func (c *Config) runIptablesInstruction(ctx context.Context, instruction string)
 }
 
 func (c *Config) clearAllRules(ctx context.Context) error {
-	return c.runMixedIptablesInstructions(ctx, []string{
-		"--flush",        // flush all chains
-		"--delete-chain", // delete all chains
-	})
+	tables := []string{"filter"}
+	for _, table := range tables {
+		return c.runMixedIptablesInstructions(ctx, []string{
+			"-t " + table + " --flush",        // flush all chains
+			"-t " + table + " --delete-chain", // delete all chains
+		})
+	}
+	return nil
 }
 
 func (c *Config) setIPv4AllPolicies(ctx context.Context, policy string) error {

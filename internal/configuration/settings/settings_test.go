@@ -29,14 +29,27 @@ func Test_Settings_String(t *testing.T) {
 |   |       └── OpenVPN server selection settings:
 |   |           ├── Protocol: UDP
 |   |           └── Private Internet Access encryption preset: strong
-|   └── OpenVPN settings:
-|       ├── OpenVPN version: 2.6
-|       ├── User: [not set]
-|       ├── Password: [not set]
-|       ├── Private Internet Access encryption preset: strong
-|       ├── Network interface: tun0
-|       ├── Run OpenVPN as: root
-|       └── Verbosity level: 1
+|   ├── OpenVPN settings:
+|   |   ├── OpenVPN version: 2.6
+|   |   ├── User: [not set]
+|   |   ├── Password: [not set]
+|   |   ├── Private Internet Access encryption preset: strong
+|   |   ├── Network interface: tun0
+|   |   ├── Run OpenVPN as: root
+|   |   └── Verbosity level: 1
+|   └── Path MTU discovery:
+|       ├── ICMP addresses:
+|       |   ├── 1.1.1.1
+|       |   └── 8.8.8.8
+|       └── TCP addresses:
+|           ├── 1.1.1.1:53
+|           ├── 8.8.8.8:53
+|           ├── 1.1.1.1:443
+|           ├── 8.8.8.8:443
+|           ├── [2606:4700:4700::1111]:53
+|           ├── [2001:4860:4860::8888]:53
+|           ├── [2606:4700:4700::1111]:443
+|           └── [2001:4860:4860::8888]:443
 ├── DNS settings:
 |   ├── Keep existing nameserver(s): no
 |   ├── DNS server address to use: 127.0.0.1
@@ -57,8 +70,13 @@ func Test_Settings_String(t *testing.T) {
 |   └── Log level: INFO
 ├── Health settings:
 |   ├── Server listening address: 127.0.0.1:9999
-|   ├── Target address: cloudflare.com:443
-|   ├── ICMP target IP: VPN server IP
+|   ├── Target addresses:
+|   |   ├── cloudflare.com:443
+|   |   └── github.com:443
+|   ├── Small health check type: ICMP echo request
+|   |   └── ICMP target IPs:
+|   |       ├── 1.1.1.1
+|   |       └── 8.8.8.8
 |   └── Restart VPN on healthcheck failure: yes
 ├── Shadowsocks server settings:
 |   └── Enabled: no

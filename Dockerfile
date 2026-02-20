@@ -13,7 +13,7 @@ FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:mockgen-${MOCKGEN_VERSION}
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}-alpine${GO_ALPINE_VERSION} AS base
 COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
 # Note: findutils needed to have xargs support `-d` flag for mocks stage.
-RUN apk --update add git g++ findutils
+RUN apk --update add git g++ findutils iptables
 ENV CGO_ENABLED=0
 COPY --from=golangci-lint /bin /go/bin/golangci-lint
 COPY --from=mockgen /bin /go/bin/mockgen
@@ -45,6 +45,10 @@ RUN git init && \
     go generate -run "mockgen" ./... && \
     git diff --exit-code && \
     rm -rf .git/
+
+FROM --platform=${BUILDPLATFORM} base AS xcompile
+RUN GOOS=darwin go build -o /dev/null ./...
+RUN GOOS=windows go build -o /dev/null ./...
 
 FROM --platform=${BUILDPLATFORM} base AS build
 ARG TARGETPLATFORM
@@ -106,8 +110,11 @@ ENV VPN_SERVICE_PROVIDER=pia \
     WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL=0 \
     WIREGUARD_ADDRESSES= \
     WIREGUARD_ADDRESSES_SECRETFILE=/run/secrets/wireguard_addresses \
-    WIREGUARD_MTU=1320 \
+    WIREGUARD_MTU= \
     WIREGUARD_IMPLEMENTATION=auto \
+    # PMTUD
+    PMTUD_ICMP_ADDRESSES=1.1.1.1,8.8.8.8 \
+    PMTUD_TCP_ADDRESSES=1.1.1.1:443,8.8.8.8:443,1.1.1.1:53,8.8.8.8:53,[2606:4700:4700::1111]:53,[2001:4860:4860::8888]:53,[2606:4700:4700::1111]:443,[2001:4860:4860::8888]:443 \
     # VPN server filtering
     SERVER_REGIONS= \
     SERVER_COUNTRIES= \
@@ -163,8 +170,9 @@ ENV VPN_SERVICE_PROVIDER=pia \
     LOG_LEVEL=info \
     # Health
     HEALTH_SERVER_ADDRESS=127.0.0.1:9999 \
-    HEALTH_TARGET_ADDRESS=cloudflare.com:443 \
-    HEALTH_ICMP_TARGET_IP=1.1.1.1 \
+    HEALTH_TARGET_ADDRESSES=cloudflare.com:443,github.com:443 \
+    HEALTH_ICMP_TARGET_IPS=1.1.1.1,8.8.8.8 \
+    HEALTH_SMALL_CHECK_TYPE=icmp \
     HEALTH_RESTART_VPN=on \
     # DNS
     DNS_SERVER=on \
@@ -207,7 +215,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     UPDATER_PERIOD=0 \
     UPDATER_MIN_RATIO=0.8 \
     UPDATER_VPN_SERVICE_PROVIDERS= \
-    UPDATER_PROTONVPN_USERNAME= \
+    UPDATER_PROTONVPN_EMAIL= \
     UPDATER_PROTONVPN_PASSWORD= \
     # Public IP
     PUBLICIP_FILE="/tmp/gluetun/ip" \

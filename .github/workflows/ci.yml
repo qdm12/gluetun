@@ -37,7 +37,7 @@ jobs:
     env:
       DOCKER_BUILDKIT: "1"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: reviewdog/action-misspell@v1
         with:
@@ -45,6 +45,7 @@ jobs:
           level: error
           exclude: |
             ./internal/storage/servers.json
+            ./golangci.yml
             *.md
 
       - name: Linting
@@ -59,9 +60,12 @@ jobs:
       - name: Run tests in test container
         run: |
           touch coverage.txt
-          docker run --rm --device /dev/net/tun \
+          docker run --rm --cap-add=NET_ADMIN --device /dev/net/tun \
           -v "$(pwd)/coverage.txt:/tmp/gobuild/coverage.txt" \
           test-container
+
+      - name: Verify dev cross platform compatibility
+        run: docker build --target xcompile .
 
       - name: Build final image
         run: docker build -t final-image .
@@ -78,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: secrets
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - run: docker build -t qmcgaw/gluetun .
 
@@ -93,6 +97,9 @@ jobs:
       - name: Run Gluetun container with Mullvad configuration
         run: echo -e "${{ secrets.MULLVAD_WIREGUARD_PRIVATE_KEY }}\n${{ secrets.MULLVAD_WIREGUARD_ADDRESS }}" | ./ci/runner mullvad
 
+      - name: Run Gluetun container with ProtonVPN configuration
+        run: echo -e "${{ secrets.PROTONVPN_WIREGUARD_PRIVATE_KEY }}" | ./ci/runner protonvpn
+
   codeql:
     runs-on: ubuntu-latest
     permissions:
@@ -100,7 +107,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
@@ -118,14 +125,14 @@ jobs:
         github.event_name == 'release' ||
         (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
       )
-    needs: [verify, codeql]
+    needs: [verify, verify-private, codeql]
     permissions:
       actions: read
       contents: read
       packages: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       # extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action

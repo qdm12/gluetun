@@ -8,6 +8,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
+	"github.com/qdm12/gluetun/internal/pmtud/tcp"
 	portforward "github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -17,10 +18,12 @@ type Firewall interface {
 	SetVPNConnection(ctx context.Context, connection models.Connection, interfaceName string) error
 	SetAllowedPort(ctx context.Context, port uint16, interfaceName string) error
 	RemoveAllowedPort(ctx context.Context, port uint16) error
+	tcp.Firewall
 }
 
 type Routing interface {
 	VPNLocalGatewayIP(vpnInterface string) (gateway netip.Addr, err error)
+	VPNRoute(vpnIntf string) (route netlink.Route, err error)
 }
 
 type PortForward interface {
@@ -57,7 +60,7 @@ type Storage interface {
 }
 
 type NetLinker interface {
-	AddrReplace(link netlink.Link, addr netlink.Addr) error
+	AddrReplace(linkIndex uint32, addr netip.Prefix) error
 	Router
 	Ruler
 	Linker
@@ -65,8 +68,9 @@ type NetLinker interface {
 }
 
 type Router interface {
-	RouteList(family int) (routes []netlink.Route, err error)
+	RouteList(family uint8) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
+	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {
@@ -77,10 +81,11 @@ type Ruler interface {
 type Linker interface {
 	LinkList() (links []netlink.Link, err error)
 	LinkByName(name string) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (linkIndex int, err error)
-	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (linkIndex int, err error)
-	LinkSetDown(link netlink.Link) (err error)
+	LinkAdd(link netlink.Link) (linkIndex uint32, err error)
+	LinkDel(linkIndex uint32) error
+	LinkSetUp(linkIndex uint32) error
+	LinkSetDown(linkIndex uint32) error
+	LinkSetMTU(linkIndex, mtu uint32) error
 }
 
 type DNSLoop interface {
@@ -101,7 +106,8 @@ type CmdStarter interface {
 }
 
 type HealthChecker interface {
-	SetConfig(tlsDialAddr string, icmpTarget netip.Addr)
+	SetConfig(tlsDialAddrs []string, icmpTargetIPs []netip.Addr,
+		smallCheckType string, startupOnFail bool)
 	Start(ctx context.Context) (runError <-chan error, err error)
 	Stop() error
 }

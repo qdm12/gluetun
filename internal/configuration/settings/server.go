@@ -127,7 +127,7 @@ func (c *ControlServer) read(r *reader.Reader) (err error) {
 	c.Address = r.Get("HTTP_CONTROL_SERVER_ADDRESS")
 
 	c.AuthFilePath = r.String("HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH")
-	c.AuthDefaultRole = r.String("HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE")
+	c.AuthDefaultRole = r.String("HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE", reader.ForceLowercase(false))
 
 	return nil
 }

@@ -33,7 +33,6 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/vpnsecure"
 	"github.com/qdm12/gluetun/internal/provider/vpnunlimited"
 	"github.com/qdm12/gluetun/internal/provider/vyprvpn"
-	"github.com/qdm12/gluetun/internal/provider/wevpn"
 	"github.com/qdm12/gluetun/internal/provider/windscribe"
 )
 
@@ -75,7 +74,7 @@ func NewProviders(storage Storage, timeNow func() time.Time,
 		providers.Privado:               privado.New(storage, randSource, ipFetcher, unzipper, updaterWarner, parallelResolver),
 		providers.PrivateInternetAccess: privateinternetaccess.New(storage, randSource, timeNow, client),
 		providers.Privatevpn:            privatevpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
-		providers.Protonvpn:             protonvpn.New(storage, randSource, client, updaterWarner, *credentials.ProtonUsername, *credentials.ProtonPassword),
+		providers.Protonvpn:             protonvpn.New(storage, randSource, client, updaterWarner, *credentials.ProtonEmail, *credentials.ProtonPassword),
 		providers.Purevpn:               purevpn.New(storage, randSource, ipFetcher, unzipper, updaterWarner, parallelResolver),
 		providers.SlickVPN:              slickvpn.New(storage, randSource, client, updaterWarner, parallelResolver),
 		providers.Surfshark:             surfshark.New(storage, randSource, client, unzipper, updaterWarner, parallelResolver),
@@ -83,7 +82,6 @@ func NewProviders(storage Storage, timeNow func() time.Time,
 		providers.VPNSecure:             vpnsecure.New(storage, randSource, client, updaterWarner, parallelResolver),
 		providers.VPNUnlimited:          vpnunlimited.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
 		providers.Vyprvpn:               vyprvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
-		providers.Wevpn:                 wevpn.New(storage, randSource, updaterWarner, parallelResolver),
 		providers.Windscribe:            windscribe.New(storage, randSource, client, updaterWarner),
 	}
 

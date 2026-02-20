@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
 )
@@ -44,6 +45,12 @@ func (e *echoip) Token() string {
 func (e *echoip) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result models.PublicIP, err error,
 ) {
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	url := e.url + "/json"
 	if ip.IsValid() {
 		url += "?ip=" + ip.String()

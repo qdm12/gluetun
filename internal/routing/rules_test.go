@@ -17,14 +17,20 @@ func makeNetipPrefix(n byte) netip.Prefix {
 }
 
 func makeIPRule(src, dst netip.Prefix,
-	table, priority int,
+	table uint32, priority uint32,
 ) netlink.Rule {
-	rule := netlink.NewRule()
-	rule.Src = src
-	rule.Dst = dst
-	rule.Table = table
-	rule.Priority = priority
-	return rule
+	family := netlink.FamilyV4
+	if (src.IsValid() && src.Addr().Is6()) || (dst.IsValid() && dst.Addr().Is6()) {
+		family = netlink.FamilyV6
+	}
+	return netlink.Rule{
+		Priority: &priority,
+		Family:   family,
+		Table:    table,
+		Src:      src,
+		Dst:      dst,
+		Action:   netlink.ActionToTable,
+	}
 }
 
 func Test_Routing_addIPRule(t *testing.T) {
@@ -46,8 +52,8 @@ func Test_Routing_addIPRule(t *testing.T) {
 	testCases := map[string]struct {
 		src      netip.Prefix
 		dst      netip.Prefix
-		table    int
-		priority int
+		table    uint32
+		priority uint32
 		ruleList ruleListCall
 		ruleAdd  ruleAddCall
 		err      error
@@ -149,8 +155,8 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 	testCases := map[string]struct {
 		src      netip.Prefix
 		dst      netip.Prefix
-		table    int
-		priority int
+		table    uint32
+		priority uint32
 		ruleList ruleListCall
 		ruleDel  ruleDelCall
 		err      error
@@ -238,6 +244,8 @@ func Test_Routing_deleteIPRule(t *testing.T) {
 	}
 }
 
+func ptrTo[T any](v T) *T { return &v }
+
 func Test_rulesAreEqual(t *testing.T) {
 	t.Parallel()
 
@@ -253,13 +261,13 @@ func Test_rulesAreEqual(t *testing.T) {
 			a: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{9, 9, 9, 9}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 			b: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 		},
@@ -267,13 +275,13 @@ func Test_rulesAreEqual(t *testing.T) {
 			a: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{9, 9, 9, 9}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 			b: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 		},
@@ -281,13 +289,13 @@ func Test_rulesAreEqual(t *testing.T) {
 			a: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 999,
+				Priority: ptrTo(uint32(999)),
 				Table:    101,
 			},
 			b: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 		},
@@ -295,13 +303,13 @@ func Test_rulesAreEqual(t *testing.T) {
 			a: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
-				Table:    999,
+				Priority: ptrTo(uint32(100)),
+				Table:    102,
 			},
 			b: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 		},
@@ -309,13 +317,13 @@ func Test_rulesAreEqual(t *testing.T) {
 			a: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 			b: netlink.Rule{
 				Src:      netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 1, 1, 1}), 24),
 				Dst:      netip.PrefixFrom(netip.AddrFrom4([4]byte{2, 2, 2, 2}), 32),
-				Priority: 100,
+				Priority: ptrTo(uint32(100)),
 				Table:    101,
 			},
 			equal: true,

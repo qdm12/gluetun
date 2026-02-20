@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 var ErrHTTPStatusNotOK = errors.New("HTTP response status is not OK")
@@ -21,6 +22,9 @@ func NewClient(httpClient *http.Client) *Client {
 }
 
 func (c *Client) Check(ctx context.Context, url string) error {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err

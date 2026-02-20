@@ -18,6 +18,7 @@ type VPN struct {
 	Provider  Provider  `json:"provider"`
 	OpenVPN   OpenVPN   `json:"openvpn"`
 	Wireguard Wireguard `json:"wireguard"`
+	PMTUD     PMTUD     `json:"pmtud"`
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
@@ -45,6 +46,11 @@ func (v *VPN) Validate(filterChoicesGetter FilterChoicesGetter, ipv6Supported bo
 		}
 	}
 
+	err = v.PMTUD.validate()
+	if err != nil {
+		return fmt.Errorf("PMTUD settings: %w", err)
+	}
+
 	return nil
 }
 
@@ -54,6 +60,7 @@ func (v *VPN) Copy() (copied VPN) {
 		Provider:  v.Provider.copy(),
 		OpenVPN:   v.OpenVPN.copy(),
 		Wireguard: v.Wireguard.copy(),
+		PMTUD:     v.PMTUD.copy(),
 	}
 }
 
@@ -62,6 +69,7 @@ func (v *VPN) OverrideWith(other VPN) {
 	v.Provider.overrideWith(other.Provider)
 	v.OpenVPN.overrideWith(other.OpenVPN)
 	v.Wireguard.overrideWith(other.Wireguard)
+	v.PMTUD.overrideWith(other.PMTUD)
 }
 
 func (v *VPN) setDefaults() {
@@ -69,6 +77,7 @@ func (v *VPN) setDefaults() {
 	v.Provider.setDefaults()
 	v.OpenVPN.setDefaults(v.Provider.Name)
 	v.Wireguard.setDefaults(v.Provider.Name)
+	v.PMTUD.setDefaults()
 }
 
 func (v VPN) String() string {
@@ -85,6 +94,7 @@ func (v VPN) toLinesNode() (node *gotree.Node) {
 	} else {
 		node.AppendNode(v.Wireguard.toLinesNode())
 	}
+	node.AppendNode(v.PMTUD.toLinesNode())
 
 	return node
 }
@@ -105,6 +115,11 @@ func (v *VPN) read(r *reader.Reader) (err error) {
 	err = v.Wireguard.read(r)
 	if err != nil {
 		return fmt.Errorf("wireguard: %w", err)
+	}
+
+	err = v.PMTUD.read(r)
+	if err != nil {
+		return fmt.Errorf("PMTUD: %w", err)
 	}
 
 	return nil

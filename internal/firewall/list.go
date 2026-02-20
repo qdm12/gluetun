@@ -26,10 +26,18 @@ type chainRule struct {
 	inputInterface  string       // input interface, for example "tun0" or "*""
 	outputInterface string       // output interface, for example "eth0" or "*""
 	source          netip.Prefix // source IP CIDR, for example 0.0.0.0/0. Must be valid.
+	sourcePort      uint16       // Not specified if set to zero.
 	destination     netip.Prefix // destination IP CIDR, for example 0.0.0.0/0. Must be valid.
 	destinationPort uint16       // Not specified if set to zero.
 	redirPorts      []uint16     // Not specified if empty.
 	ctstate         []string     // for example ["RELATED","ESTABLISHED"]. Can be empty.
+	tcpFlags        tcpFlags
+	mark            mark
+}
+
+type mark struct {
+	invert bool
+	value  uint
 }
 
 var ErrChainListMalformed = errors.New("iptables chain list output is malformed")
@@ -241,19 +249,23 @@ func parseChainRuleField(fieldIndex int, field string, rule *chainRule) (err err
 }
 
 func parseChainRuleOptionalFields(optionalFields []string, rule *chainRule) (err error) {
-	for i := 0; i < len(optionalFields); i++ {
-		key := optionalFields[i]
-		switch key {
-		case "tcp", "udp":
+	i := 0
+	for i < len(optionalFields) {
+		switch optionalFields[i] {
+		case "udp":
 			i++
-			value := optionalFields[i]
-			value = strings.TrimPrefix(value, "dpt:")
-			const base, bitLength = 10, 16
-			destinationPort, err := strconv.ParseUint(value, base, bitLength)
+			consumed, err := parseUDPOptional(optionalFields[i:], rule)
 			if err != nil {
-				return fmt.Errorf("parsing destination port %q: %w", value, err)
+				return fmt.Errorf("parsing UDP optional fields: %w", err)
 			}
-			rule.destinationPort = uint16(destinationPort)
+			i += consumed
+		case "tcp":
+			i++
+			consumed, err := parseTCPOptional(optionalFields[i:], rule)
+			if err != nil {
+				return fmt.Errorf("parsing TCP optional fields: %w", err)
+			}
+			i += consumed
 		case "redir":
 			i++
 			switch optionalFields[i] {
@@ -264,18 +276,134 @@ func parseChainRuleOptionalFields(optionalFields []string, rule *chainRule) (err
 					return fmt.Errorf("parsing redirection ports: %w", err)
 				}
 				rule.redirPorts = ports
+				i++
 			default:
-				return fmt.Errorf("%w: unexpected optional field: %s",
-					ErrChainRuleMalformed, optionalFields[i])
+				return fmt.Errorf("%w: unexpected %q after redir",
+					ErrChainRuleMalformed, optionalFields[1])
 			}
 		case "ctstate":
 			i++
 			rule.ctstate = strings.Split(optionalFields[i], ",")
+			i++
+		case "mark":
+			i++
+			mark, consumed, err := parseMark(optionalFields[i:])
+			if err != nil {
+				return fmt.Errorf("parsing mark: %w", err)
+			}
+			rule.mark = mark
+			i += consumed
 		default:
-			return fmt.Errorf("%w: unexpected optional field: %s", ErrChainRuleMalformed, key)
+			return fmt.Errorf("%w: unexpected optional field: %s",
+				ErrChainRuleMalformed, optionalFields[i])
 		}
 	}
 	return nil
+}
+
+var errUDPOptionalUnknown = errors.New("unknown UDP optional field")
+
+func parseUDPOptional(optionalFields []string, rule *chainRule) (consumed int, err error) {
+	for _, value := range optionalFields {
+		if !strings.ContainsRune(value, ':') {
+			// no longer a UDP-associated option
+			return consumed, nil
+		}
+		switch {
+		case strings.HasPrefix(value, "dpt:"):
+			rule.destinationPort, err = parseDestinationPort(value)
+			if err != nil {
+				return 0, fmt.Errorf("parsing destination port: %w", err)
+			}
+			consumed++
+		case strings.HasPrefix(value, "spt:"):
+			rule.sourcePort, err = parseSourcePort(value)
+			if err != nil {
+				return 0, fmt.Errorf("parsing source port: %w", err)
+			}
+			consumed++
+		default:
+			return 0, fmt.Errorf("%w: %s", errUDPOptionalUnknown, value)
+		}
+	}
+	return consumed, nil
+}
+
+var errTCPOptionalUnknown = errors.New("unknown TCP optional field")
+
+func parseTCPOptional(optionalFields []string, rule *chainRule) (consumed int, err error) {
+	for _, value := range optionalFields {
+		if !strings.ContainsRune(value, ':') {
+			// no longer a TCP-associated option
+			return consumed, nil
+		}
+		switch {
+		case strings.HasPrefix(value, "dpt:"):
+			rule.destinationPort, err = parseDestinationPort(value)
+			if err != nil {
+				return 0, fmt.Errorf("parsing destination port: %w", err)
+			}
+			consumed++
+		case strings.HasPrefix(value, "spt:"):
+			rule.sourcePort, err = parseSourcePort(value)
+			if err != nil {
+				return 0, fmt.Errorf("parsing source port: %w", err)
+			}
+			consumed++
+		case strings.HasPrefix(value, "flags:"):
+			rule.tcpFlags, err = parseTCPFlags(value)
+			if err != nil {
+				return 0, fmt.Errorf("parsing TCP flags: %w", err)
+			}
+			consumed++
+		default:
+			return 0, fmt.Errorf("%w: %s", errTCPOptionalUnknown, value)
+		}
+	}
+	return consumed, nil
+}
+
+func parseDestinationPort(value string) (port uint16, err error) {
+	value = strings.TrimPrefix(value, "dpt:")
+	return parsePort(value)
+}
+
+func parseSourcePort(value string) (port uint16, err error) {
+	value = strings.TrimPrefix(value, "spt:")
+	return parsePort(value)
+}
+
+var errTCPFlagsMalformed = errors.New("TCP flags are malformed")
+
+func parseTCPFlags(value string) (tcpFlags, error) {
+	value = strings.TrimPrefix(value, "flags:")
+	fields := strings.Split(value, "/")
+	const expectedFields = 2
+	if len(fields) != expectedFields {
+		return tcpFlags{}, fmt.Errorf("%w: expected format 'flags:<mask>/<comparison>' in %q",
+			errTCPFlagsMalformed, value)
+	}
+	maskFlags := strings.Split(fields[0], ",")
+	mask := make([]tcpFlag, len(maskFlags))
+	var err error
+	for i, maskFlag := range maskFlags {
+		mask[i], err = parseTCPFlag(maskFlag)
+		if err != nil {
+			return tcpFlags{}, fmt.Errorf("parsing TCP mask flags: %w", err)
+		}
+	}
+	comparisonFlags := strings.Split(fields[1], ",")
+	comparison := make([]tcpFlag, len(comparisonFlags))
+	for i, comparisonFlag := range comparisonFlags {
+		comparison[i], err = parseTCPFlag(comparisonFlag)
+		if err != nil {
+			return tcpFlags{}, fmt.Errorf("parsing TCP comparison flags: %w", err)
+		}
+	}
+	return tcpFlags{
+		mask:       mask,
+		comparison: comparison,
+	}, nil
 }
 
 func parsePortsCSV(s string) (ports []uint16, err error) {
@@ -286,14 +414,38 @@ func parsePortsCSV(s string) (ports []uint16, err error) {
 	fields := strings.Split(s, ",")
 	ports = make([]uint16, len(fields))
 	for i, field := range fields {
-		const base, bitLength = 10, 16
-		port, err := strconv.ParseUint(field, base, bitLength)
+		ports[i], err = parsePort(field)
 		if err != nil {
-			return nil, fmt.Errorf("parsing port %q: %w", field, err)
+			return nil, err
 		}
-		ports[i] = uint16(port)
 	}
 	return ports, nil
+}
+
+var errMarkValueMalformed = errors.New("mark value is malformed")
+
+func parseMark(optionalFields []string) (m mark, consumed int, err error) {
+	switch optionalFields[consumed] {
+	case "match":
+		consumed++
+		if optionalFields[consumed] == "!" {
+			m.invert = true
+			consumed++
+		}
+
+		const base = 0 // auto-detect
+		const bits = 32
+		value, err := strconv.ParseUint(optionalFields[consumed], base, bits)
+		if err != nil {
+			return mark{}, 0, fmt.Errorf("%w: %s", errMarkValueMalformed, optionalFields[consumed])
+		}
+		m.value = uint(value)
+		consumed++
+	default:
+		return mark{}, 0, fmt.Errorf("%w: unexpected mark mode field: %s",
+			ErrChainRuleMalformed, optionalFields[consumed])
+	}
+	return m, consumed, nil
 }
 
 var ErrLineNumberIsZero = errors.New("line number is zero")

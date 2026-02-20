@@ -2,24 +2,28 @@ package dns
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/netip"
 
 	"github.com/qdm12/dns/v2/pkg/check"
+	"github.com/qdm12/dns/v2/pkg/middlewares/filter/update"
 	"github.com/qdm12/dns/v2/pkg/nameserver"
 	"github.com/qdm12/dns/v2/pkg/server"
 )
 
-var errUpdateBlockLists = errors.New("cannot update filter block lists")
-
 func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err error) {
-	err = l.updateFiles(ctx)
+	settings := l.GetSettings()
+	var updateSettings update.Settings
+	updateSettings.SetRebindingProtectionExempt(settings.Blacklist.RebindingProtectionExemptHostnames)
+	err = l.filter.Update(updateSettings)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", errUpdateBlockLists, err)
+		return nil, fmt.Errorf("updating filter for rebinding protection: %w", err)
 	}
 
-	settings := l.GetSettings()
+	err = l.updateFiles(ctx, settings)
+	if err != nil {
+		l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
+	}
 
 	serverSettings, err := buildServerSettings(settings, l.filter, l.localResolvers, l.logger)
 	if err != nil {

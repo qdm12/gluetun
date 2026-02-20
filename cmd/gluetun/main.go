@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"net/netip"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -22,6 +23,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
 	"github.com/qdm12/gluetun/internal/constants"
+	copenvpn "github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/healthcheck"
@@ -164,6 +166,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
+	defer fmt.Println(gluetunLogo)
+
 	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
 	if err != nil {
 		return err
@@ -260,18 +264,21 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	puid, pgid := int(*allSettings.System.PUID), int(*allSettings.System.PGID)
 
-	const clientTimeout = 15 * time.Second
+	const clientTimeout = 35 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.New()
 	ovpnConf := openvpn.New(
 		logger.New(log.SetComponent("openvpn configurator")),
 		cmder, puid, pgid)
+	ovpnVersion := ovpnConf.Version26
+	if allSettings.VPN.OpenVPN.Version == copenvpn.Openvpn25 {
+		ovpnVersion = ovpnConf.Version25
+	}
 
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
-		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
-		{name: "OpenVPN 2.6", getVersion: ovpnConf.Version26},
+		{name: "OpenVPN", getVersion: ovpnVersion},
 		{name: "IPtables", getVersion: firewallConf.Version},
 	})
 	if err != nil {
@@ -553,20 +560,20 @@ type netLinker interface {
 }
 
 type Addresser interface {
-	AddrList(link netlink.Link, family int) (
-		addresses []netlink.Addr, err error)
-	AddrReplace(link netlink.Link, addr netlink.Addr) error
+	AddrList(linkIndex uint32, family uint8) (
+		addresses []netip.Prefix, err error)
+	AddrReplace(linkIndex uint32, addr netip.Prefix) error
 }
 
 type Router interface {
-	RouteList(family int) (routes []netlink.Route, err error)
+	RouteList(family uint8) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
 	RouteDel(route netlink.Route) error
 	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {
-	RuleList(family int) (rules []netlink.Rule, err error)
+	RuleList(family uint8) (rules []netlink.Rule, err error)
 	RuleAdd(rule netlink.Rule) error
 	RuleDel(rule netlink.Rule) error
 }
@@ -574,11 +581,12 @@ type Ruler interface {
 type Linker interface {
 	LinkList() (links []netlink.Link, err error)
 	LinkByName(name string) (link netlink.Link, err error)
-	LinkByIndex(index int) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (linkIndex int, err error)
-	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (linkIndex int, err error)
-	LinkSetDown(link netlink.Link) (err error)
+	LinkByIndex(index uint32) (link netlink.Link, err error)
+	LinkAdd(link netlink.Link) (linkIndex uint32, err error)
+	LinkDel(linkIndex uint32) (err error)
+	LinkSetUp(linkIndex uint32) (err error)
+	LinkSetDown(linkIndex uint32) (err error)
+	LinkSetMTU(linkIndex, mtu uint32) error
 }
 
 type clier interface {
@@ -600,3 +608,34 @@ type RunStarter interface {
 	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, err error)
 }
+
+const gluetunLogo = `                         @@@
+                         @@@@
+                        @@@@@@
+                       @@@@.@@                       @@@@@@@@@@
+                       @@@@.@@@                   @@@@@@@@==@@@@
+                      @@@.@..@@                @@@@@@@=@..==@@@@
+            @@@@      @@@.@@.@@              @@@@@@===@@@@.=@@@
+           @...-@@   @@@@.@@.@@@  @@@     @@@@@@=======@@@=@@@@
+           @@@@@@@@  @@@.-%@.+@@@@@@@@  @@@@@%============@@@@
+                     @@@.--@..@@@@.-@@@@@@@==============@@@@
+              @@@@  @@@-@--@@.@@.---@@@@@==============#@@@@@
+              @@@   @@@.@@-@@.@@--@@@@@===============@@@@@@
+                   @@@@.@--@@@@@@@@@@================@@@@@@@
+                   @@@..--@@*@@@@@@================@@@@+*@@
+                   @@@.---@@.@@@@=================@@@@--@@
+                  @@@-.---@@@@@@================@@@@*--@@@
+                  @@@.:-#@@@@@@===============*@@@@.---@@
+                  @@@.-------.@@@============@@@@@@.--@@@
+                 @@@..--------:@@@=========@@@@@@@@.--@@@
+                 @@@.-@@@@@@@@@@@========@@@@@  @@@.--@@
+                 @@.@@@@===============@@@@@ @@@@@@---@@@@@@
+                @@@@@@@==============@@@@@@@@@@@@*@---@@@@@@@@
+                @@@@@@=============@@@@@ @@@...------------.*@@@
+                @@@@%===========@@@@@@ @@@..------@@@@.-----.-@@@
+                @@@@@@.=======@@@@@@  @@@.-------@@@@@@-.------=@@
+               @@@@@@@@@===@@@@@@     @@.------@@@@   @@@@.-----@@@
+               @@@==@@@=@@@@@@@      @@@.-@@@@@@@       @@@@@@@--@@
+               @@@@@@@@@@@@@         @@@@@@@@                @@@@@@@
+                @@@@@@@@             @@@@                       @@@@
+                                                                       `
