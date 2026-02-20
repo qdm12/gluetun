@@ -35,7 +35,29 @@ type UpdaterLogger interface {
 	Error(s string)
 }
 
-func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) error {
+type UpdateCommand struct {
+	repoServersPath string
+	args            []string
+	logger          UpdaterLogger
+}
+
+func NewUpdateCommand(repoServersPath string, args []string, logger UpdaterLogger) *UpdateCommand {
+	return &UpdateCommand{
+		repoServersPath: repoServersPath,
+		args:            args,
+		logger:          logger,
+	}
+}
+
+func (c *UpdateCommand) Name() string {
+	return "update"
+}
+
+func (c *UpdateCommand) Description() string {
+	return "Update the VPN servers information of one or more providers"
+}
+
+func (c *UpdateCommand) Run(ctx context.Context) error {
 	options := settings.Updater{}
 	var endUserMode, maintainerMode, updateAll bool
 	var csvProviders, ipToken, protonUsername, protonEmail, protonPassword string
@@ -54,7 +76,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		"(Retro-compatibility) Username to use to authenticate with Proton. Use -proton-email instead.") // v4 remove this
 	flagSet.StringVar(&protonEmail, "proton-email", "", "Email to use to authenticate with Proton")
 	flagSet.StringVar(&protonPassword, "proton-password", "", "Password to use to authenticate with Proton")
-	if err := flagSet.Parse(args); err != nil {
+	if err := flagSet.Parse(c.args[2:]); err != nil {
 		return err
 	}
 
@@ -74,7 +96,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	if slices.Contains(options.Providers, providers.Protonvpn) {
 		if protonEmail == "" && protonUsername != "" {
 			protonEmail = protonUsername + "@protonmail.com"
-			logger.Warn("use -proton-email instead of -proton-username in the future. " +
+			c.logger.Warn("use -proton-email instead of -proton-username in the future. " +
 				"This assumes the email is " + protonEmail + " and may not work.")
 		}
 		options.ProtonEmail = &protonEmail
@@ -92,7 +114,7 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	if maintainerMode {
 		serversDataPath = ""
 	}
-	storage, err := storage.New(logger, serversDataPath)
+	storage, err := storage.New(c.logger, serversDataPath)
 	if err != nil {
 		return fmt.Errorf("creating servers storage: %w", err)
 	}
@@ -110,14 +132,14 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	if err != nil {
 		return fmt.Errorf("creating public IP fetchers: %w", err)
 	}
-	ipFetcher := api.NewResilient(fetchers, logger)
+	ipFetcher := api.NewResilient(fetchers, c.logger)
 
 	openvpnFileExtractor := extract.New()
 
-	providers := provider.NewProviders(storage, time.Now, logger, httpClient,
+	providers := provider.NewProviders(storage, time.Now, c.logger, httpClient,
 		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor, options)
 
-	updater := updater.New(httpClient, storage, providers, logger)
+	updater := updater.New(httpClient, storage, providers, c.logger)
 	err = updater.UpdateServers(ctx, options.Providers, options.MinRatio)
 	if err != nil {
 		return fmt.Errorf("updating server information: %w", err)
