@@ -63,15 +63,11 @@ func tcpChecksum(ipHeader, tcpHeader, payload []byte) uint16 {
 }
 
 const (
-	tcpFlagsOffset      = 13
-	finFlag        byte = 0x01
-	synFlag        byte = 0x02
-	rstFlag        byte = 0x04
-	pshFlag        byte = 0x08
-	ackFlag        byte = 0x10
-	urgFlag        byte = 0x20
-	eceFlag        byte = 0x40
-	cwrFlag        byte = 0x80
+	finFlag byte = 0x01
+	synFlag byte = 0x02
+	rstFlag byte = 0x04
+	pshFlag byte = 0x08
+	ackFlag byte = 0x10
 )
 
 type packetType uint8
