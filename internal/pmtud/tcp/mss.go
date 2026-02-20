@@ -12,6 +12,8 @@ import (
 	"github.com/qdm12/gluetun/internal/pmtud/ip"
 )
 
+var errTCPServersUnreachable = errors.New("all TCP servers are unreachable")
+
 // findHighestMSSDestination finds the destination with the highest
 // MSS amongst the provided destinations.
 func findHighestMSSDestination(ctx context.Context, familyToFD map[int]fileDescriptor,
@@ -63,6 +65,10 @@ func findHighestMSSDestination(ctx context.Context, familyToFD map[int]fileDescr
 			mss = result.mss
 			dst = result.dst
 		}
+	}
+
+	if mss == 0 { // no MSS found for any destination
+		return netip.AddrPort{}, 0, fmt.Errorf("%w (%d servers)", errTCPServersUnreachable, len(dsts))
 	}
 
 	maxPossibleMTU = ip.HeaderLength(dst.Addr().Is4()) + constants.BaseTCPHeaderLength + mss
