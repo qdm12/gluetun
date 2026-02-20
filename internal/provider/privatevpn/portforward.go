@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/provider/common"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -23,6 +24,12 @@ var ErrPortForwardedNotFound = errors.New("port forwarded not found")
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
 	ports []uint16, err error,
 ) {
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 10 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	url := "https://connect.pvdatanet.com/v3/Api/port?ip[]=" + objects.InternalIP.String()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

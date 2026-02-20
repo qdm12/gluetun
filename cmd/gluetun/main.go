@@ -264,7 +264,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	puid, pgid := int(*allSettings.System.PUID), int(*allSettings.System.PGID)
 
-	const clientTimeout = 15 * time.Second
+	const clientTimeout = 35 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.New()

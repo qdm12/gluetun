@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // getMostRecentStableTag finds the most recent proton-account stable tag version,
@@ -18,6 +19,12 @@ func getMostRecentStableTag(ctx context.Context, client *http.Client) (version s
 	page := 1
 	regexVersion := regexp.MustCompile(`^proton-account@(\d+\.\d+\.\d+\.\d+)$`)
 	for ctx.Err() == nil {
+		// Define a timeout since the default client has a large timeout and we don't
+		// want to wait too long.
+		const timeout = 5 * time.Second
+		ctx, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+
 		url := "https://api.github.com/repos/ProtonMail/WebClients/tags?per_page=30&page=" + fmt.Sprint(page)
 
 		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
