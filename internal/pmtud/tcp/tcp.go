@@ -47,12 +47,10 @@ func startRawSocket(family, excludeMark int) (fd fileDescriptor, stop func(), er
 
 	if family == constants.AF_INET {
 		err = ip.SetIPv4HeaderIncluded(fdPlatform)
-	} else {
-		err = ip.SetIPv6HeaderIncluded(fdPlatform)
-	}
-	if err != nil {
-		_ = closeSocket(fdPlatform)
-		return 0, nil, fmt.Errorf("setting header option on raw socket: %w", err)
+		if err != nil {
+			_ = closeSocket(fdPlatform)
+			return 0, nil, fmt.Errorf("setting header option on raw socket: %w", err)
+		}
 	}
 
 	// Allow sending packets larger than cached PMTU (for PMTUD probing)

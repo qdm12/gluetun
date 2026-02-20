@@ -29,7 +29,7 @@ func makeSockAddr(ip netip.Addr, port uint16) unix.Sockaddr {
 		}
 	}
 	return &unix.SockaddrInet6{
-		Port: int(port),
+		Port: 0,
 		Addr: ip.As16(),
 	}
 }

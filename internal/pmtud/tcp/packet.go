@@ -65,13 +65,15 @@ func createPacket(src, dst netip.AddrPort,
 	if dst.Addr().Is4() {
 		ipHeader = ip.HeaderV4(src.Addr(), dst.Addr(), payloadLength)
 	} else {
+		// Pseudo-header, this is actually not part of the packet since
+		// the kernel will calculate and add it itself to the packet;
+		// it is only used for calculating the TCP checksum.
 		ipHeader = ip.HeaderV6(src.Addr(), dst.Addr(),
 			uint16(payloadLength), byte(constants.IPPROTO_TCP)) //nolint:gosec
 	}
 
 	tcpHeader := makeTCPHeader(src.Port(), dst.Port(), seq, ack, flags)
 
-	// data is just zeroes
 	dataLength := int(payloadLength - constants.BaseTCPHeaderLength)
 	var data []byte
 	if dataLength > 0 {
@@ -81,10 +83,18 @@ func createPacket(src, dst netip.AddrPort,
 	tcpHeader[16] = byte(checksum >> 8)   //nolint:mnd
 	tcpHeader[17] = byte(checksum & 0xff) //nolint:mnd
 
-	packet := make([]byte, len(ipHeader)+int(constants.BaseTCPHeaderLength)+dataLength)
-	copy(packet, ipHeader)
-	copy(packet[len(ipHeader):], tcpHeader)
-	copy(packet[len(ipHeader)+int(constants.BaseTCPHeaderLength):], data)
+	var packet []byte
+	i := 0
+	if dst.Addr().Is4() {
+		packet = make([]byte, len(ipHeader)+int(constants.BaseTCPHeaderLength)+dataLength)
+		copy(packet, ipHeader)
+		i += len(ipHeader)
+	} else {
+		packet = make([]byte, int(constants.BaseTCPHeaderLength)+dataLength)
+	}
+	copy(packet[i:], tcpHeader)
+	i += int(constants.BaseTCPHeaderLength)
+	copy(packet[i:], data)
 	return packet
 }
 
