@@ -168,7 +168,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	defer fmt.Println(gluetunLogo)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2026-04-01T00:00:00Z")
 	if err != nil {
 		return err
 	}
