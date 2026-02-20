@@ -237,6 +237,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
 ENTRYPOINT ["/gluetun-entrypoint"]
 EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=3 CMD /gluetun-entrypoint healthcheck
+COPY extras/scripts/qbittorrent-port-update.sh /scripts/qbittorrent-port-update.sh
 ARG TARGETPLATFORM
 RUN apk add --no-cache --update -l wget && \
     apk add --no-cache --update -X "https://dl-cdn.alpinelinux.org/alpine/v3.17/main" openvpn\~2.5 && \
