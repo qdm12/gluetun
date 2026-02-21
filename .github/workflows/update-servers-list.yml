@@ -1,0 +1,46 @@
+name: Update servers list
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "11 3 1 */2 *" # Run at 03:11 on the 1st of every 2nd month
+jobs:
+  update-servers-list:
+    if: github.repository == 'qdm12/gluetun'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: Update servers list
+        run: |
+          go run ./cmd/gluetun/main.go update -all -maintainer -proton-email "${{ secrets.PROTON_EMAIL }}" -proton-password "${{ secrets.PROTON_PASSWORD }}"
+
+      - name: Check for changes
+        run: |
+          git diff --exit-code internal/storage/servers.json >/dev/null
+
+      - name: Check no other file changes
+        run: |
+          ! git diff --exit-code ':!internal/storage/servers.json' >/dev/null
+
+      - name: Create Pull Request
+        id: createpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch-suffix: timestamp
+          branch: bot/update-servers-list
+          base: master
+          delete-branch: true
+
+      # - name: Merge Pull Request
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     gh pr merge ${{ steps.createpr.outputs.pull-request-number }} --auto -m -d
