@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/ProtonMail/go-srp v0.0.7
-	github.com/breml/rootcerts v0.3.3
+	github.com/breml/rootcerts v0.3.4
 	github.com/fatih/color v1.18.0
 	github.com/golang/mock v1.6.0
 	github.com/jsimonetti/rtnetlink v1.4.2
@@ -20,6 +20,7 @@ require (
 	github.com/qdm12/log v0.1.0
 	github.com/qdm12/ss-server v0.6.0
 	github.com/stretchr/testify v1.11.1
+	github.com/ti-mo/conntrack v0.6.0
 	github.com/ulikunitz/xz v0.5.15
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a
 	golang.org/x/exp v0.0.0-20241009180824-f66d83c29e7c
@@ -55,7 +56,6 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/qdm12/goservices v0.1.1-0.20251104135713-6bee97bd4978 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
-	github.com/ti-mo/conntrack v0.6.0 // indirect
 	github.com/ti-mo/netfilter v0.5.3 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/mod v0.31.0 // indirect
