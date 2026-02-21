@@ -55,6 +55,8 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/qdm12/goservices v0.1.1-0.20251104135713-6bee97bd4978 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
+	github.com/ti-mo/conntrack v0.6.0 // indirect
+	github.com/ti-mo/netfilter v0.5.3 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/mod v0.31.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
