@@ -237,6 +237,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		if err != nil {
 			return err
 		}
+		err = netLinker.FlushConntrack()
+		if err != nil {
+			return fmt.Errorf("flushing conntrack: %w", err)
+		}
 	}
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
@@ -556,6 +560,7 @@ type netLinker interface {
 	Linker
 	IsWireguardSupported() (ok bool, err error)
 	IsIPv6Supported() (ok bool, err error)
+	FlushConntrack() error
 	PatchLoggerLevel(level log.Level)
 }
 
