@@ -199,6 +199,14 @@ ENV VPN_SERVICE_PROVIDER=pia \
     HTTPPROXY_PASSWORD= \
     HTTPPROXY_USER_SECRETFILE=/run/secrets/httpproxy_user \
     HTTPPROXY_PASSWORD_SECRETFILE=/run/secrets/httpproxy_password \
+    # SOCKS5
+    SOCKS5=off \
+    SOCKS5_LOG=off \
+    SOCKS5_LISTENING_ADDRESS=":1080" \
+    SOCKS5_USER= \
+    SOCKS5_PASSWORD= \
+    SOCKS5_USER_SECRETFILE=/run/secrets/socks5_user \
+    SOCKS5_PASSWORD_SECRETFILE=/run/secrets/socks5_password \
     # Shadowsocks
     SHADOWSOCKS=off \
     SHADOWSOCKS_LOG=off \
@@ -235,7 +243,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     PUID=1000 \
     PGID=1000
 ENTRYPOINT ["/gluetun-entrypoint"]
-EXPOSE 8000/tcp 8888/tcp 8388/tcp 8388/udp
+EXPOSE 8000/tcp 8888/tcp 1080/tcp 8388/tcp 8388/udp
 HEALTHCHECK --interval=5s --timeout=5s --start-period=10s --retries=3 CMD /gluetun-entrypoint healthcheck
 ARG TARGETPLATFORM
 RUN apk add --no-cache --update -l wget && \

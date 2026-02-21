@@ -38,6 +38,7 @@ import (
 	"github.com/qdm12/gluetun/internal/publicip"
 	"github.com/qdm12/gluetun/internal/routing"
 	"github.com/qdm12/gluetun/internal/server"
+	"github.com/qdm12/gluetun/internal/socks5"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/tun"
@@ -477,6 +478,13 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		"shadowsocks proxy", goroutine.OptionTimeout(defaultShutdownTimeout))
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 	otherGroupHandler.Add(shadowsocksHandler)
+
+	socks5Looper := socks5.NewLoop(allSettings.Socks5,
+		logger.New(log.SetComponent("socks5")))
+	socks5Handler, socks5Ctx, socks5Done := goshutdown.NewGoRoutineHandler(
+		"socks5 proxy", goroutine.OptionTimeout(defaultShutdownTimeout))
+	go socks5Looper.Run(socks5Ctx, socks5Done)
+	otherGroupHandler.Add(socks5Handler)
 
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
