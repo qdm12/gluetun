@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/amneziawg"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
@@ -46,8 +47,11 @@ type Settings struct {
 	// It defaults to false if left unset.
 	IPv6 *bool
 	// Implementation is the implementation to use.
-	// It can be auto, kernelspace or userspace, and defaults to auto.
+	// It can be auto, kernelspace, userspace or amneziawg,
+	// and defaults to auto.
 	Implementation string
+	// AmneziaWG settings are optional extra obfuscation parameters
+	AmneziaWG amneziawg.Settings
 }
 
 func (s *Settings) SetDefaults() {
@@ -106,6 +110,7 @@ var (
 	ErrFirewallMarkMissing     = errors.New("firewall mark is missing")
 	ErrMTUMissing              = errors.New("MTU is missing")
 	ErrImplementationInvalid   = errors.New("invalid implementation")
+	ErrImplementationAmneziaWG = errors.New("amneziawg settings require amneziawg implementation")
 )
 
 var interfaceNameRegexp = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -178,9 +183,18 @@ func (s *Settings) Check() (err error) {
 	}
 
 	switch s.Implementation {
-	case "auto", "kernelspace", "userspace":
+	case "auto", "kernelspace", "userspace", "amneziawg":
 	default:
 		return fmt.Errorf("%w: %s", ErrImplementationInvalid, s.Implementation)
+	}
+
+	if s.Implementation != "amneziawg" && !s.AmneziaWG.IsZero() {
+		return fmt.Errorf("%w", ErrImplementationAmneziaWG)
+	}
+
+	err = s.AmneziaWG.Validate()
+	if err != nil {
+		return fmt.Errorf("validating amneziawg settings: %w", err)
 	}
 
 	return nil
@@ -269,6 +283,10 @@ func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
 
 	if s.Implementation != "auto" {
 		lines = append(lines, fieldPrefix+"Implementation: "+s.Implementation)
+	}
+
+	if !s.AmneziaWG.IsZero() {
+		lines = append(lines, fieldPrefix+"AmneziaWG obfuscation: enabled")
 	}
 
 	if len(s.Addresses) == 0 {

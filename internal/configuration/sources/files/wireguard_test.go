@@ -100,6 +100,9 @@ func Test_parseWireguardInterfaceSection(t *testing.T) {
 		iniData    string
 		privateKey *string
 		addresses  *string
+		jc         *string
+		h1         *string
+		i1         *string
 	}{
 		"no_fields": {
 			iniData: `[Interface]`,
@@ -115,9 +118,15 @@ PrivateKey = x
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
 Address = 10.38.22.35/32
+Jc = 4
+H1 = 721391205
+I1 = <b 0x1234>
 `,
 			privateKey: ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
 			addresses:  ptrTo("10.38.22.35/32"),
+			jc:         ptrTo("4"),
+			h1:         ptrTo("721391205"),
+			i1:         ptrTo("<b 0x1234>"),
 		},
 	}
 
@@ -130,10 +139,15 @@ Address = 10.38.22.35/32
 			iniSection, err := iniFile.GetSection("Interface")
 			require.NoError(t, err)
 
-			privateKey, addresses := parseWireguardInterfaceSection(iniSection)
+			privateKey, addresses, jc, _, _, _, _, _, _, h1, _, _, _, i1, _, _, _, _ := parseWireguardInterfaceSection(
+				iniSection,
+			)
 
 			assert.Equal(t, testCase.privateKey, privateKey)
 			assert.Equal(t, testCase.addresses, addresses)
+			assert.Equal(t, testCase.jc, jc)
+			assert.Equal(t, testCase.h1, h1)
+			assert.Equal(t, testCase.i1, i1)
 		})
 	}
 }

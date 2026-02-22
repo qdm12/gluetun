@@ -4,6 +4,7 @@ import (
 	"net/netip"
 	"testing"
 
+	"github.com/qdm12/gluetun/internal/amneziawg"
 	"github.com/stretchr/testify/assert"
 	"golang.zx2c4.com/wireguard/device"
 )
@@ -270,6 +271,28 @@ func Test_Settings_Check(t *testing.T) {
 			},
 			errWrapped: ErrImplementationInvalid,
 			errMessage: "invalid implementation: x",
+		},
+		"amnezia settings with non amnezia implementation": {
+			settings: Settings{
+				InterfaceName: "wg0",
+				PrivateKey:    validKey1,
+				PublicKey:     validKey2,
+				Endpoint:      netip.AddrPortFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 51820),
+				AllowedIPs:    []netip.Prefix{allIPv4()},
+				Addresses: []netip.Prefix{
+					netip.PrefixFrom(netip.AddrFrom4([4]byte{1, 2, 3, 4}), 24),
+				},
+				FirewallMark:   999,
+				MTU:            1420,
+				Implementation: "userspace",
+				AmneziaWG: amneziawg.Settings{
+					JunkPacketCount: 4,
+					JunkPacketMin:   16,
+					JunkPacketMax:   32,
+				},
+			},
+			errWrapped: ErrImplementationAmneziaWG,
+			errMessage: "amneziawg settings require amneziawg implementation",
 		},
 		"all valid": {
 			settings: Settings{

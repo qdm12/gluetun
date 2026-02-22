@@ -16,6 +16,7 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.PreSharedKey = *userSettings.PreSharedKey
 	settings.InterfaceName = userSettings.Interface
 	settings.Implementation = userSettings.Implementation
+	settings.AmneziaWG = userSettings.AmneziaWG
 	if *userSettings.MTU > 0 {
 		settings.MTU = *userSettings.MTU
 	} else {

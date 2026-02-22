@@ -55,4 +55,5 @@ var (
 	ErrWireguardPublicKeyNotValid      = errors.New("public key is not valid")
 	ErrWireguardKeepAliveNegative      = errors.New("persistent keep alive interval is negative")
 	ErrWireguardImplementationNotValid = errors.New("implementation is not valid")
+	ErrWireguardAmneziaImplementation  = errors.New("amneziawg settings require WIREGUARD_IMPLEMENTATION=amneziawg")
 )

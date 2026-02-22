@@ -13,7 +13,7 @@ func Test_makeDeviceLogger(t *testing.T) {
 
 	logger := NewMockLogger(ctrl)
 
-	deviceLogger := makeDeviceLogger(logger)
+	deviceLogger := makeWgDeviceLogger(logger)
 
 	logger.EXPECT().Debugf("test %d", 1)
 	deviceLogger.Verbosef("test %d", 1)
