@@ -1,7 +1,8 @@
 package wireguard
 
 import (
-	"golang.zx2c4.com/wireguard/device"
+	amneziaDevice "github.com/amnezia-vpn/amneziawg-go/device"
+	wgDevice "golang.zx2c4.com/wireguard/device"
 )
 
 //go:generate mockgen -destination=log_mock_test.go -package wireguard . Logger
@@ -14,8 +15,15 @@ type Logger interface {
 	Errorf(format string, args ...interface{})
 }
 
-func makeDeviceLogger(logger Logger) (deviceLogger *device.Logger) {
-	return &device.Logger{
+func makeWgDeviceLogger(logger Logger) (deviceLogger *wgDevice.Logger) {
+	return &wgDevice.Logger{
+		Verbosef: logger.Debugf,
+		Errorf:   logger.Errorf,
+	}
+}
+
+func makeAmneziaDeviceLogger(logger Logger) (deviceLogger *amneziaDevice.Logger) {
+	return &amneziaDevice.Logger{
 		Verbosef: logger.Debugf,
 		Errorf:   logger.Errorf,
 	}

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/qdm12/gluetun/internal/amneziawg"
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
@@ -46,6 +47,8 @@ type Wireguard struct {
 	// It defaults to "auto" and cannot be the empty string
 	// in the internal state.
 	Implementation string `json:"implementation"`
+	// AmneziaWG contains optional obfuscation parameters
+	AmneziaWG amneziawg.Settings `json:"amneziawg"`
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -136,9 +139,18 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 			ErrWireguardInterfaceNotValid, w.Interface, regexpInterfaceName)
 	}
 
-	validImplementations := []string{"auto", "userspace", "kernelspace"}
+	validImplementations := []string{"auto", "userspace", "kernelspace", "amneziawg"}
 	if err := validate.IsOneOf(w.Implementation, validImplementations...); err != nil {
 		return fmt.Errorf("%w: %w", ErrWireguardImplementationNotValid, err)
+	}
+
+	if w.Implementation != "amneziawg" && !w.AmneziaWG.IsZero() {
+		return fmt.Errorf("%w", ErrWireguardAmneziaImplementation)
+	}
+
+	err = w.AmneziaWG.Validate()
+	if err != nil {
+		return fmt.Errorf("amneziawg settings: %w", err)
 	}
 
 	return nil
@@ -154,6 +166,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 		Interface:                   w.Interface,
 		MTU:                         w.MTU,
 		Implementation:              w.Implementation,
+		AmneziaWG:                   w.AmneziaWG,
 	}
 }
 
@@ -167,6 +180,9 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.Interface = gosettings.OverrideWithComparable(w.Interface, other.Interface)
 	w.MTU = gosettings.OverrideWithComparable(w.MTU, other.MTU)
 	w.Implementation = gosettings.OverrideWithComparable(w.Implementation, other.Implementation)
+	if !other.AmneziaWG.IsZero() {
+		w.AmneziaWG = other.AmneziaWG
+	}
 }
 
 func (w *Wireguard) setDefaults(vpnProvider string) {
@@ -235,6 +251,10 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 		node.Appendf("Implementation: %s", w.Implementation)
 	}
 
+	if !w.AmneziaWG.IsZero() {
+		node.Append("AmneziaWG obfuscation settings: enabled")
+	}
+
 	return node
 }
 
@@ -244,6 +264,72 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 	w.Interface = r.String("VPN_INTERFACE",
 		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
 	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
+
+	jc, err := r.Uint16Ptr("WIREGUARD_JC")
+	if err != nil {
+		return err
+	}
+	if jc != nil {
+		w.AmneziaWG.JunkPacketCount = *jc
+	}
+
+	jmin, err := r.Uint16Ptr("WIREGUARD_JMIN")
+	if err != nil {
+		return err
+	}
+	if jmin != nil {
+		w.AmneziaWG.JunkPacketMin = *jmin
+	}
+
+	jmax, err := r.Uint16Ptr("WIREGUARD_JMAX")
+	if err != nil {
+		return err
+	}
+	if jmax != nil {
+		w.AmneziaWG.JunkPacketMax = *jmax
+	}
+
+	s1, err := r.Uint16Ptr("WIREGUARD_S1")
+	if err != nil {
+		return err
+	}
+	if s1 != nil {
+		w.AmneziaWG.PaddingS1 = *s1
+	}
+
+	s2, err := r.Uint16Ptr("WIREGUARD_S2")
+	if err != nil {
+		return err
+	}
+	if s2 != nil {
+		w.AmneziaWG.PaddingS2 = *s2
+	}
+
+	s3, err := r.Uint16Ptr("WIREGUARD_S3")
+	if err != nil {
+		return err
+	}
+	if s3 != nil {
+		w.AmneziaWG.PaddingS3 = *s3
+	}
+
+	s4, err := r.Uint16Ptr("WIREGUARD_S4")
+	if err != nil {
+		return err
+	}
+	if s4 != nil {
+		w.AmneziaWG.PaddingS4 = *s4
+	}
+
+	w.AmneziaWG.HeaderH1 = r.String("WIREGUARD_H1", reader.ForceLowercase(false))
+	w.AmneziaWG.HeaderH2 = r.String("WIREGUARD_H2", reader.ForceLowercase(false))
+	w.AmneziaWG.HeaderH3 = r.String("WIREGUARD_H3", reader.ForceLowercase(false))
+	w.AmneziaWG.HeaderH4 = r.String("WIREGUARD_H4", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI1 = r.String("WIREGUARD_I1", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI2 = r.String("WIREGUARD_I2", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI3 = r.String("WIREGUARD_I3", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI4 = r.String("WIREGUARD_I4", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI5 = r.String("WIREGUARD_I5", reader.ForceLowercase(false))
 
 	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
 	// WARNING: do not initialize w.Addresses to an empty slice

@@ -81,6 +81,38 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointIP)
 	case "wireguard_endpoint_port":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointPort)
+	case "wireguard_jc":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().Jc)
+	case "wireguard_jmin":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().Jmin)
+	case "wireguard_jmax":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().Jmax)
+	case "wireguard_s1":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().S1)
+	case "wireguard_s2":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().S2)
+	case "wireguard_s3":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().S3)
+	case "wireguard_s4":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().S4)
+	case "wireguard_h1":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().H1)
+	case "wireguard_h2":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().H2)
+	case "wireguard_h3":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().H3)
+	case "wireguard_h4":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().H4)
+	case "wireguard_i1":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().I1)
+	case "wireguard_i2":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().I2)
+	case "wireguard_i3":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().I3)
+	case "wireguard_i4":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().I4)
+	case "wireguard_i5":
+		return strPtrToStringIsSet(s.lazyLoadWireguardConf().I5)
 	}
 
 	value, isSet, err := files.ReadFromFile(path)
