@@ -94,7 +94,7 @@ func (h *vpnHandler) setStatus(w http.ResponseWriter, r *http.Request) {
 func (h *vpnHandler) getSettings(w http.ResponseWriter) {
 	settings := h.looper.GetSettings()
 	encoder := json.NewEncoder(w)
-	if err := encoder.Encode(settings); err != nil {
+	if err := encoder.Encode(settings); err != nil { //nolint:musttag
 		h.warner.Warn(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -104,7 +104,7 @@ func (h *vpnHandler) getSettings(w http.ResponseWriter) {
 func (h *vpnHandler) patchSettings(w http.ResponseWriter, r *http.Request) {
 	var overrideSettings settings.VPN
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&overrideSettings)
+	err := decoder.Decode(&overrideSettings) //nolint:musttag
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -57,21 +57,21 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	setupFunction := setupUserSpace
 	switch w.settings.Implementation {
-	case "auto": //nolint:goconst
+	case WgAuto:
 		if !kernelSupported {
 			w.logger.Info("Using userspace implementation since Kernel support does not exist")
 			break
 		}
 		w.logger.Info("Using available kernelspace implementation")
 		setupFunction = setupKernelSpace
-	case "userspace":
-	case "kernelspace":
+	case WgUserspace:
+	case WgKernelspace:
 		if !kernelSupported {
 			waitError <- fmt.Errorf("%w", ErrKernelSupport)
 			return
 		}
 		setupFunction = setupKernelSpace
-	case "amneziawg":
+	case WgAmnezia:
 		setupFunction = setupAmneziaUserSpace
 		w.logger.Info("Using amneziawg userspace implementation")
 	default:
@@ -161,6 +161,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 type waitAndCleanupFunc func() error
 
+//nolint:ireturn
 func setupKernelSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint32,
 	closers *closers, logger Logger) (
@@ -208,6 +209,7 @@ func setupKernelSpace(ctx context.Context,
 	return linkIndex, waitAndCleanup, nil, nil
 }
 
+//nolint:dupl,ireturn
 func setupUserSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint32,
 	closers *closers, logger Logger) (
@@ -285,6 +287,7 @@ func setupUserSpace(ctx context.Context,
 	return link.Index, waitAndCleanup, nil, nil
 }
 
+//nolint:dupl,ireturn
 func setupAmneziaUserSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint32,
 	closers *closers, logger Logger) (

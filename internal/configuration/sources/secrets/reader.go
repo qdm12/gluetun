@@ -37,6 +37,7 @@ func New(warner Warner) (source *Source) {
 
 func (s *Source) String() string { return "secret files" }
 
+//nolint:gocyclo
 func (s *Source) Get(key string) (value string, isSet bool) {
 	if key == "" {
 		return "", false
