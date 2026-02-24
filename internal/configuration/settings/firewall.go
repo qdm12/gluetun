@@ -16,6 +16,7 @@ type Firewall struct {
 	OutboundSubnets []netip.Prefix
 	Enabled         *bool
 	Debug           *bool
+	FlushConntrack  *bool
 }
 
 func (f Firewall) validate() (err error) {
@@ -52,6 +53,7 @@ func (f *Firewall) copy() (copied Firewall) {
 		OutboundSubnets: gosettings.CopySlice(f.OutboundSubnets),
 		Enabled:         gosettings.CopyPointer(f.Enabled),
 		Debug:           gosettings.CopyPointer(f.Debug),
+		FlushConntrack:  gosettings.CopyPointer(f.FlushConntrack),
 	}
 }
 
@@ -64,11 +66,15 @@ func (f *Firewall) overrideWith(other Firewall) {
 	f.OutboundSubnets = gosettings.OverrideWithSlice(f.OutboundSubnets, other.OutboundSubnets)
 	f.Enabled = gosettings.OverrideWithPointer(f.Enabled, other.Enabled)
 	f.Debug = gosettings.OverrideWithPointer(f.Debug, other.Debug)
+	f.FlushConntrack = gosettings.OverrideWithPointer(f.FlushConntrack, other.FlushConntrack)
+
 }
 
 func (f *Firewall) setDefaults() {
 	f.Enabled = gosettings.DefaultPointer(f.Enabled, true)
 	f.Debug = gosettings.DefaultPointer(f.Debug, false)
+	f.FlushConntrack = gosettings.DefaultPointer(f.FlushConntrack, false)
+
 }
 
 func (f Firewall) String() string {
@@ -86,6 +92,8 @@ func (f Firewall) toLinesNode() (node *gotree.Node) {
 	if *f.Debug {
 		node.Appendf("Debug mode: on")
 	}
+
+	node.Appendf("Flush conntrack: %s", gosettings.BoolToYesNo(f.FlushConntrack))
 
 	if len(f.VPNInputPorts) > 0 {
 		vpnInputPortsNode := node.Appendf("VPN input ports:")
@@ -134,6 +142,11 @@ func (f *Firewall) read(r *reader.Reader) (err error) {
 	}
 
 	f.Debug, err = r.BoolPtr("FIREWALL_DEBUG")
+	if err != nil {
+		return err
+	}
+
+	f.FlushConntrack, err = r.BoolPtr("FIREWALL_FLUSH_CONNTRACK")
 	if err != nil {
 		return err
 	}

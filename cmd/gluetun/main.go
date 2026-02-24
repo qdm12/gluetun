@@ -232,14 +232,16 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
-	if *allSettings.Firewall.Enabled {
+    if *allSettings.Firewall.Enabled {
 		err = firewallConf.SetEnabled(ctx, true)
 		if err != nil {
 			return err
 		}
-		err = netLinker.FlushConntrack()
-		if err != nil {
-			logger.Warn("flushing conntrack: " + err.Error() + " (non-fatal, continuing)")
+		if *allSettings.Firewall.FlushConntrack {
+			err = netLinker.FlushConntrack()
+			if err != nil {
+				logger.Warn("flushing conntrack: " + err.Error())
+			}
 		}
 	}
 
