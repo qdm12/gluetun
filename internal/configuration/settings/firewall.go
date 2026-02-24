@@ -73,7 +73,7 @@ func (f *Firewall) overrideWith(other Firewall) {
 func (f *Firewall) setDefaults() {
 	f.Enabled = gosettings.DefaultPointer(f.Enabled, true)
 	f.Debug = gosettings.DefaultPointer(f.Debug, false)
-	f.FlushConntrack = gosettings.DefaultPointer(f.FlushConntrack, false)
+	f.FlushConntrack = gosettings.DefaultPointer(f.FlushConntrack, true)
 
 }
 
