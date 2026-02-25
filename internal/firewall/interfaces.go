@@ -19,6 +19,10 @@ type Logger interface {
 	Error(s string)
 }
 
+type Netlinker interface {
+	FlushConntrack() error
+}
+
 type firewallImpl interface { //nolint:interfacebloat
 	SaveAndRestore(ctx context.Context) (restore func(context.Context), err error)
 	AcceptEstablishedRelatedTraffic(ctx context.Context) error

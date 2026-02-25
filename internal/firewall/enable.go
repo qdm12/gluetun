@@ -121,6 +121,11 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		return fmt.Errorf("running user defined post firewall rules: %w", err)
 	}
 
+	err = c.netlinker.FlushConntrack()
+	if err != nil {
+		c.logger.Warn("flushing conntrack failed: " + err.Error())
+	}
+
 	return nil
 }
 
