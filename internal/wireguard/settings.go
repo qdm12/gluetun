@@ -13,29 +13,6 @@ import (
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
-type WgImplementation string
-
-const (
-	WgAuto        WgImplementation = "auto"
-	WgUserspace   WgImplementation = "userspace"
-	WgKernelspace WgImplementation = "kernelspace"
-	WgAmnezia     WgImplementation = "amneziawg"
-)
-
-func ParseImplementation(s string) WgImplementation {
-	switch s {
-	case "auto":
-		return WgAuto
-	case "userspace":
-		return WgUserspace
-	case "kernelspace":
-		return WgKernelspace
-	case "amneziawg":
-		return WgAmnezia
-	}
-	return WgAuto
-}
-
 type Settings struct {
 	// Interface name for the Wireguard interface.
 	// It defaults to wg0 if unset.
@@ -72,8 +49,8 @@ type Settings struct {
 	// Implementation is the implementation to use.
 	// It can be auto, kernelspace, userspace or amneziawg,
 	// and defaults to auto.
-	Implementation WgImplementation
-	// AmneziaWG settings are optional extra obfuscation parameters
+	Implementation string
+	// AmneziaWG settings are extra obfuscation parameters
 	AmneziaWG amneziawg.Settings
 }
 
@@ -110,8 +87,7 @@ func (s *Settings) SetDefaults() {
 	}
 
 	if s.Implementation == "" {
-		const defaultImplementation = WgAuto
-		s.Implementation = defaultImplementation
+		s.Implementation = "auto"
 	}
 }
 
@@ -133,7 +109,6 @@ var (
 	ErrFirewallMarkMissing     = errors.New("firewall mark is missing")
 	ErrMTUMissing              = errors.New("MTU is missing")
 	ErrImplementationInvalid   = errors.New("invalid implementation")
-	ErrImplementationAmneziaWG = errors.New("amneziawg settings require amneziawg implementation")
 )
 
 var interfaceNameRegexp = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -206,13 +181,9 @@ func (s *Settings) Check() (err error) {
 	}
 
 	switch s.Implementation {
-	case WgAuto, WgKernelspace, WgUserspace, WgAmnezia:
+	case "auto", "kernelspace", "userspace", "amneziawg":
 	default:
 		return fmt.Errorf("%w: %s", ErrImplementationInvalid, s.Implementation)
-	}
-
-	if s.Implementation != WgAmnezia && !s.AmneziaWG.IsZero() {
-		return fmt.Errorf("%w", ErrImplementationAmneziaWG)
 	}
 
 	err = s.AmneziaWG.Validate()
@@ -304,12 +275,8 @@ func (s Settings) ToLines(settings ToLinesSettings) (lines []string) {
 		lines = append(lines, fieldPrefix+"Rule priority: "+fmt.Sprint(s.RulePriority))
 	}
 
-	if s.Implementation != WgAuto {
-		lines = append(lines, fieldPrefix+"Implementation: "+string(s.Implementation))
-	}
-
-	if !s.AmneziaWG.IsZero() {
-		lines = append(lines, fieldPrefix+"AmneziaWG obfuscation: enabled")
+	if s.Implementation != "auto" {
+		lines = append(lines, fieldPrefix+"Implementation: "+s.Implementation)
 	}
 
 	if len(s.Addresses) == 0 {
