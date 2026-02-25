@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"net"
 
-	amneziaConn "github.com/amnezia-vpn/amneziawg-go/conn"
-	amneziaDevice "github.com/amnezia-vpn/amneziawg-go/device"
-	amneziaTun "github.com/amnezia-vpn/amneziawg-go/tun"
+	amneziaconn "github.com/amnezia-vpn/amneziawg-go/conn"
+	amneziadevice "github.com/amnezia-vpn/amneziawg-go/device"
+	amneziatun "github.com/amnezia-vpn/amneziawg-go/tun"
 	"github.com/qdm12/gluetun/internal/netlink"
-	wgConn "golang.zx2c4.com/wireguard/conn"
-	wgDevice "golang.zx2c4.com/wireguard/device"
-	wgTun "golang.zx2c4.com/wireguard/tun"
+	wgconn "golang.zx2c4.com/wireguard/conn"
+	wgdevice "golang.zx2c4.com/wireguard/device"
+	wgtun "golang.zx2c4.com/wireguard/tun"
 	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
@@ -43,8 +43,8 @@ type userspaceDevice interface {
 }
 
 var (
-	_ userspaceDevice = (*wgDevice.Device)(nil)
-	_ userspaceDevice = (*amneziaDevice.Device)(nil)
+	_ userspaceDevice = (*wgdevice.Device)(nil)
+	_ userspaceDevice = (*amneziadevice.Device)(nil)
 )
 
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
@@ -57,23 +57,22 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	setupFunction := setupUserSpace
 	switch w.settings.Implementation {
-	case WgAuto:
+	case "auto": //nolint:goconst
 		if !kernelSupported {
 			w.logger.Info("Using userspace implementation since Kernel support does not exist")
 			break
 		}
 		w.logger.Info("Using available kernelspace implementation")
 		setupFunction = setupKernelSpace
-	case WgUserspace:
-	case WgKernelspace:
+	case "userspace":
+	case "kernelspace":
 		if !kernelSupported {
 			waitError <- fmt.Errorf("%w", ErrKernelSupport)
 			return
 		}
 		setupFunction = setupKernelSpace
-	case WgAmnezia:
+	case "amneziawg":
 		setupFunction = setupAmneziaUserSpace
-		w.logger.Info("Using amneziawg userspace implementation")
 	default:
 		panic(fmt.Sprintf("unknown implementation %q", w.settings.Implementation))
 	}
@@ -178,11 +177,8 @@ func setupKernelSpace(ctx context.Context,
 		if link.VirtualType == "wireguard" && link.Name == interfaceName {
 			err = netLinker.LinkDel(link.Index)
 			if err != nil {
-				return 0, nil, nil, fmt.Errorf(
-					"deleting previous Wireguard link %s: %w",
-					interfaceName,
-					err,
-				)
+				return 0, nil, nil, fmt.Errorf("deleting previous Wireguard link %s: %w",
+					interfaceName, err)
 			}
 		}
 	}
@@ -215,7 +211,7 @@ func setupUserSpace(ctx context.Context,
 	closers *closers, logger Logger) (
 	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, device userspaceDevice, err error,
 ) {
-	tun, err := wgTun.CreateTUN(interfaceName, int(mtu))
+	tun, err := wgtun.CreateTUN(interfaceName, int(mtu))
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
 	}
@@ -238,12 +234,12 @@ func setupUserSpace(ctx context.Context,
 		return netLinker.LinkDel(link.Index)
 	})
 
-	bind := wgConn.NewDefaultBind()
+	bind := wgconn.NewDefaultBind()
 
 	closers.add("closing bind", stepSeven, bind.Close)
 
 	deviceLogger := makeWgDeviceLogger(logger)
-	device = wgDevice.NewDevice(tun, bind, deviceLogger)
+	device = wgdevice.NewDevice(tun, bind, deviceLogger)
 
 	closers.add("closing Wireguard device", stepSix, func() error {
 		device.Close()
@@ -293,7 +289,7 @@ func setupAmneziaUserSpace(ctx context.Context,
 	closers *closers, logger Logger) (
 	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, device userspaceDevice, err error,
 ) {
-	tun, err := amneziaTun.CreateTUN(interfaceName, int(mtu))
+	tun, err := amneziatun.CreateTUN(interfaceName, int(mtu))
 	if err != nil {
 		return 0, nil, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
 	}
@@ -316,12 +312,12 @@ func setupAmneziaUserSpace(ctx context.Context,
 		return netLinker.LinkDel(link.Index)
 	})
 
-	bind := amneziaConn.NewDefaultBind()
+	bind := amneziaconn.NewDefaultBind()
 
 	closers.add("closing bind", stepSeven, bind.Close)
 
 	deviceLogger := makeAmneziaDeviceLogger(logger)
-	device = amneziaDevice.NewDevice(tun, bind, deviceLogger)
+	device = amneziadevice.NewDevice(tun, bind, deviceLogger)
 
 	closers.add("closing Wireguard device", stepSix, func() error {
 		device.Close()

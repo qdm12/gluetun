@@ -18,7 +18,7 @@ ENV CGO_ENABLED=0
 COPY --from=golangci-lint /bin /go/bin/golangci-lint
 COPY --from=mockgen /bin /go/bin/mockgen
 WORKDIR /tmp/gobuild
-COPY go.mod go.sum ./
+COPY go.mod go.sum ./ß
 RUN go mod download
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
@@ -113,22 +113,22 @@ ENV VPN_SERVICE_PROVIDER=pia \
     WIREGUARD_MTU= \
     WIREGUARD_IMPLEMENTATION=auto \
     # Wireguard AmneziaWG userspace obfuscation (requires WIREGUARD_IMPLEMENTATION=amneziawg)
-    WIREGUARD_JC= \
-    WIREGUARD_JMIN= \
-    WIREGUARD_JMAX= \
-    WIREGUARD_S1= \
-    WIREGUARD_S2= \
-    WIREGUARD_S3= \
-    WIREGUARD_S4= \
-    WIREGUARD_H1= \
-    WIREGUARD_H2= \
-    WIREGUARD_H3= \
-    WIREGUARD_H4= \
-    WIREGUARD_I1= \
-    WIREGUARD_I2= \
-    WIREGUARD_I3= \
-    WIREGUARD_I4= \
-    WIREGUARD_I5= \
+    AMNEZIAWG_JC= \
+    AMNEZIAWG_JMIN= \
+    AMNEZIAWG_JMAX= \
+    AMNEZIAWG_S1= \
+    AMNEZIAWG_S2= \
+    AMNEZIAWG_S3= \
+    AMNEZIAWG_S4= \
+    AMNEZIAWG_H1= \
+    AMNEZIAWG_H2= \
+    AMNEZIAWG_H3= \
+    AMNEZIAWG_H4= \
+    AMNEZIAWG_I1= \
+    AMNEZIAWG_I2= \
+    AMNEZIAWG_I3= \
+    AMNEZIAWG_I4= \
+    AMNEZIAWG_I5= \
     # VPN server port forwarding
     VPN_PORT_FORWARDING=off \
     VPN_PORT_FORWARDING_PROVIDER= \
