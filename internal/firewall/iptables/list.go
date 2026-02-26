@@ -35,6 +35,7 @@ type chainRule struct {
 	mark            mark
 	connMark        mark
 	setMark         uint
+	rejectWith      string // for example "tcp-reset", only used for REJECT targets
 }
 
 type mark struct {
@@ -295,6 +296,10 @@ func parseChainRuleOptionalFields(optionalFields []string, rule *chainRule) (err
 			}
 			rule.mark = mark
 			i += consumed
+		case "reject-with":
+			i++
+			rule.rejectWith = optionalFields[i] // for example "tcp-reset"
+			i++
 		case "connmark":
 			i++
 			connMark, consumed, err := parseMark(optionalFields[i:])

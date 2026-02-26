@@ -27,6 +27,7 @@ type Netlinker interface {
 type firewallImpl interface { //nolint:interfacebloat
 	SaveAndRestore(ctx context.Context) (restore func(context.Context), err error)
 	AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error
+	RejectOutputPublicTraffic(ctx context.Context, remove bool) error
 	AcceptInputThroughInterface(ctx context.Context, intf string) error
 	AcceptEstablishedRelatedTraffic(ctx context.Context) error
 	AcceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error

@@ -36,7 +36,8 @@ type iptablesInstruction struct {
 	tcpFlags        tcpFlags
 	mark            mark
 	connMark        mark
-	setMark         uint // only used for jump CONNMARK --set-mark
+	setMark         uint   // only used for jump CONNMARK --set-mark
+	rejectWith      string // only used for REJECT targets
 }
 
 func (i *iptablesInstruction) setDefaults() {
@@ -80,6 +81,8 @@ func (i *iptablesInstruction) equalToRule(table, chain string, rule chainRule) (
 	case i.connMark != rule.connMark:
 		return false
 	case i.setMark != rule.setMark:
+		return false
+	case i.rejectWith != rule.rejectWith:
 		return false
 	default:
 		return true
@@ -193,6 +196,8 @@ func parseInstructionFlag(fields []string, instruction *iptablesInstruction) (co
 		if err != nil {
 			return 0, fmt.Errorf("parsing TCP flags: %w", err)
 		}
+	case "--reject-with":
+		instruction.rejectWith = value // for example "tcp-reset"
 	default:
 		return 0, fmt.Errorf("%w: unknown key %q", ErrIptablesCommandMalformed, flag)
 	}

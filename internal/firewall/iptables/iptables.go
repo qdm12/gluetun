@@ -162,31 +162,12 @@ func (c *Config) AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error {
 		return fmt.Errorf("checking kernel modules: %w", err)
 	}
 
-	ipv4PrivatePrefixes := []netip.Prefix{
-		netip.MustParsePrefix("10.0.0.0/8"),
-		netip.MustParsePrefix("172.16.0.0/12"),
-		netip.MustParsePrefix("192.168.0.0/16"),
-		netip.MustParsePrefix("127.0.0.0/8"),
-	}
-	ipv6PrivatePrefixes := []netip.Prefix{
-		netip.MustParsePrefix("fc00::/7"),
-		netip.MustParsePrefix("fe80::/10"),
-		netip.MustParsePrefix("::1/128"),
-	}
-	var ipv4Instructions, ipv6Instructions []string //nolint:prealloc
+	ipv4Instructions, ipv6Instructions := makeCreatePublicIPChainInstructions()
 	appendToBoth := func(instruction string) {
 		ipv4Instructions = append(ipv4Instructions, instruction)
 		ipv6Instructions = append(ipv6Instructions, instruction)
 	}
-	appendToBoth("-N PUBLIC_ONLY")
-	for _, prefix := range ipv4PrivatePrefixes {
-		ipv4Instructions = append(ipv4Instructions, fmt.Sprintf(
-			"-A PUBLIC_ONLY -d %s -j RETURN", prefix))
-	}
-	for _, prefix := range ipv6PrivatePrefixes {
-		ipv6Instructions = append(ipv6Instructions, fmt.Sprintf(
-			"-A PUBLIC_ONLY -d %s -j RETURN", prefix))
-	}
+
 	// Mark new connections with mark 0x567
 	appendToBoth("-A PUBLIC_ONLY -m conntrack --ctstate NEW -j CONNMARK --set-mark 0x567")
 	// Drop related/established connections that made it through; marked connections would
@@ -218,6 +199,75 @@ func (c *Config) AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+func (c *Config) RejectOutputPublicTraffic(ctx context.Context, remove bool) error {
+	removeInstructions := []string{
+		"-D OUTPUT -j PUBLIC_ONLY",
+		"-F PUBLIC_ONLY",
+		"-X PUBLIC_ONLY",
+	}
+	if remove {
+		return c.runMixedIptablesInstructions(ctx, removeInstructions)
+	}
+
+	err := checkKernelModulesAreOK(c.modules.nfConntrack, c.modules.nfRejectIPv4, c.modules.xtReject)
+	if err != nil {
+		return fmt.Errorf("checking kernel modules: %w", err)
+	}
+
+	ipv4Instructions, ipv6Instructions := makeCreatePublicIPChainInstructions()
+	appendToBoth := func(instruction string) {
+		ipv4Instructions = append(ipv4Instructions, instruction)
+		ipv6Instructions = append(ipv6Instructions, instruction)
+	}
+
+	// Block UDP and ICMP, sending back ICMP port unreachable.
+	appendToBoth("-A PUBLIC_ONLY -m conntrack --ctstate RELATED,ESTABLISHED -j REJECT")
+	// Block TCP by sending back TCP RST packets.
+	appendToBoth("-A PUBLIC_ONLY -p tcp -m conntrack --ctstate RELATED,ESTABLISHED " +
+		"-j REJECT --reject-with tcp-reset")
+	appendToBoth("-I OUTPUT -j PUBLIC_ONLY")
+
+	err = c.runIptablesInstructions(ctx, ipv4Instructions)
+	if err != nil {
+		return err
+	}
+	err = c.runIP6tablesInstructions(ctx, ipv6Instructions)
+	if err != nil {
+		_ = c.runIptablesInstructions(ctx, removeInstructions)
+		return err
+	}
+	return nil
+}
+
+func makeCreatePublicIPChainInstructions() (ipv4Instructions, ipv6Instructions []string) {
+	ipv4PrivatePrefixes := []netip.Prefix{
+		netip.MustParsePrefix("10.0.0.0/8"),
+		netip.MustParsePrefix("172.16.0.0/12"),
+		netip.MustParsePrefix("192.168.0.0/16"),
+		netip.MustParsePrefix("127.0.0.0/8"),
+	}
+	ipv6PrivatePrefixes := []netip.Prefix{
+		netip.MustParsePrefix("fc00::/7"),
+		netip.MustParsePrefix("fe80::/10"),
+		netip.MustParsePrefix("::1/128"),
+	}
+
+	ipv4Instructions = append(ipv4Instructions, "-N PUBLIC_ONLY")
+	ipv6Instructions = append(ipv6Instructions, "-N PUBLIC_ONLY")
+
+	for _, prefix := range ipv4PrivatePrefixes {
+		ipv4Instructions = append(ipv4Instructions, fmt.Sprintf(
+			"-A PUBLIC_ONLY -d %s -j RETURN", prefix))
+	}
+
+	for _, prefix := range ipv6PrivatePrefixes {
+		ipv6Instructions = append(ipv6Instructions, fmt.Sprintf(
+			"-A PUBLIC_ONLY -d %s -j RETURN", prefix))
+	}
+
+	return ipv4Instructions, ipv6Instructions
 }
 
 func (c *Config) AcceptOutputTrafficToVPN(ctx context.Context,

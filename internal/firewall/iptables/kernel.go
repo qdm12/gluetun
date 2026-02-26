@@ -8,9 +8,11 @@ import (
 )
 
 type kernelModules struct {
-	nfConntrack kernelModule
-	xtConnmark  kernelModule
-	xtConntrack kernelModule
+	nfConntrack  kernelModule
+	nfRejectIPv4 kernelModule
+	xtConnmark   kernelModule
+	xtConntrack  kernelModule
+	xtReject     kernelModule
 }
 
 type kernelModule struct {
@@ -22,8 +24,10 @@ func newKernelModules() kernelModules {
 	var m kernelModules
 	nameToFieldPtr := map[string]*kernelModule{
 		"nf_conntrack_netlink": &m.nfConntrack,
+		"nf_reject_ipv4":       &m.nfRejectIPv4,
 		"xt_connmark":          &m.xtConnmark,
 		"xt_conntrack":         &m.xtConntrack,
+		"xt_reject":            &m.xtReject,
 	}
 	for name, fieldPtr := range nameToFieldPtr {
 		fieldPtr.name = name
