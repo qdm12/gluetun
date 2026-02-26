@@ -12,12 +12,11 @@ import (
 var ErrConntrackNetlinkNotSupported = errors.New("nf_conntrack_netlink is not supported by the kernel")
 
 func (n *NetLink) FlushConntrack() error {
-	if !n.conntrackNetlink {
-		return fmt.Errorf("%w", ErrConntrackNetlinkNotSupported)
-	}
-
 	conn, err := netfilter.Dial(nil)
 	if err != nil {
+		if !n.conntrackNetlink {
+			err = fmt.Errorf("%w: %w", err, ErrConntrackNetlinkNotSupported)
+		}
 		return fmt.Errorf("dialing netfilter: %w", err)
 	}
 	defer conn.Close()
@@ -36,6 +35,9 @@ func (n *NetLink) FlushConntrack() error {
 
 	_, err = conn.Query(request)
 	if err != nil {
+		if !n.conntrackNetlink {
+			err = fmt.Errorf("%w: %w", err, ErrConntrackNetlinkNotSupported)
+		}
 		return fmt.Errorf("querying netlink request: %w", err)
 	}
 	return nil
