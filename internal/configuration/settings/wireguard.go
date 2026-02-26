@@ -247,10 +247,6 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 		node.Appendf("Implementation: %s", w.Implementation)
 	}
 
-	if !w.AmneziaWG.IsZero() {
-		node.Append("AmneziaWG obfuscation settings: enabled")
-	}
-
 	return node
 }
 
@@ -261,7 +257,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
 	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
 
-	jc, err := r.Uint16Ptr("AMNEZIAWG_JC")
+	jc, err := r.Uint16Ptr("WIREGUARD_JC")
 	if err != nil {
 		return err
 	}
@@ -269,7 +265,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.AmneziaWG.JunkPacketCount = *jc
 	}
 
-	jmin, err := r.Uint16Ptr("AMNEZIAWG_JMIN")
+	jmin, err := r.Uint16Ptr("WIREGUARD_JMIN")
 	if err != nil {
 		return err
 	}
@@ -277,7 +273,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.AmneziaWG.JunkPacketMin = *jmin
 	}
 
-	jmax, err := r.Uint16Ptr("AMNEZIAWG_JMAX")
+	jmax, err := r.Uint16Ptr("WIREGUARD_JMAX")
 	if err != nil {
 		return err
 	}
@@ -285,7 +281,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.AmneziaWG.JunkPacketMax = *jmax
 	}
 
-	s1, err := r.Uint16Ptr("AMNEZIAWG_S1")
+	s1, err := r.Uint16Ptr("WIREGUARD_S1")
 	if err != nil {
 		return err
 	}
@@ -293,7 +289,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.AmneziaWG.PaddingS1 = *s1
 	}
 
-	s2, err := r.Uint16Ptr("AMNEZIAWG_S2")
+	s2, err := r.Uint16Ptr("WIREGUARD_S2")
 	if err != nil {
 		return err
 	}
@@ -301,7 +297,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.AmneziaWG.PaddingS2 = *s2
 	}
 
-	s3, err := r.Uint16Ptr("AMNEZIAWG_S3")
+	s3, err := r.Uint16Ptr("WIREGUARD_S3")
 	if err != nil {
 		return err
 	}
@@ -309,7 +305,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.AmneziaWG.PaddingS3 = *s3
 	}
 
-	s4, err := r.Uint16Ptr("AMNEZIAWG_S4")
+	s4, err := r.Uint16Ptr("WIREGUARD_S4")
 	if err != nil {
 		return err
 	}
@@ -317,15 +313,15 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.AmneziaWG.PaddingS4 = *s4
 	}
 
-	w.AmneziaWG.HeaderH1 = r.String("AMNEZIAWG_H1", reader.ForceLowercase(false))
-	w.AmneziaWG.HeaderH2 = r.String("AMNEZIAWG_H2", reader.ForceLowercase(false))
-	w.AmneziaWG.HeaderH3 = r.String("AMNEZIAWG_H3", reader.ForceLowercase(false))
-	w.AmneziaWG.HeaderH4 = r.String("AMNEZIAWG_H4", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI1 = r.String("AMNEZIAWG_I1", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI2 = r.String("AMNEZIAWG_I2", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI3 = r.String("AMNEZIAWG_I3", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI4 = r.String("AMNEZIAWG_I4", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI5 = r.String("AMNEZIAWG_I5", reader.ForceLowercase(false))
+	w.AmneziaWG.HeaderH1 = r.String("WIREGUARD_H1", reader.ForceLowercase(false))
+	w.AmneziaWG.HeaderH2 = r.String("WIREGUARD_H2", reader.ForceLowercase(false))
+	w.AmneziaWG.HeaderH3 = r.String("WIREGUARD_H3", reader.ForceLowercase(false))
+	w.AmneziaWG.HeaderH4 = r.String("WIREGUARD_H4", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI1 = r.String("WIREGUARD_I1", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI2 = r.String("WIREGUARD_I2", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI3 = r.String("WIREGUARD_I3", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI4 = r.String("WIREGUARD_I4", reader.ForceLowercase(false))
+	w.AmneziaWG.InitPacketI5 = r.String("WIREGUARD_I5", reader.ForceLowercase(false))
 
 	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
 	// WARNING: do not initialize w.Addresses to an empty slice

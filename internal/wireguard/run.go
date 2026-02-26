@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 
 	amneziaconn "github.com/amnezia-vpn/amneziawg-go/conn"
 	amneziadevice "github.com/amnezia-vpn/amneziawg-go/device"
@@ -35,18 +34,6 @@ var (
 	ErrAmneziaConfigure  = errors.New("cannot configure AmneziaWG")
 )
 
-type userspaceDevice interface {
-	IpcHandle(net.Conn)
-	Wait() chan struct{}
-	Close()
-	IpcSet(string) error
-}
-
-var (
-	_ userspaceDevice = (*wgdevice.Device)(nil)
-	_ userspaceDevice = (*amneziadevice.Device)(nil)
-)
-
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
 func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<- struct{}) {
 	kernelSupported, err := w.netlink.IsWireguardSupported()
@@ -55,7 +42,27 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	setupFunction := setupUserSpace
+	userspaceBackend := userSpaceBackend{
+		createTun: func(name string, mtu int) (tunDevice, error) {
+			return wgtun.CreateTUN(name, mtu)
+		},
+		createBind: func() bind {
+			return wgconn.NewDefaultBind()
+		},
+		createDevice: func(td tunDevice, b bind, logger Logger) userspaceDevice {
+			wgtun, _ := td.(wgtun.Device)
+			wgBind, _ := b.(wgconn.Bind)
+			wgLogger := wgdevice.Logger{
+				Verbosef: logger.Debugf,
+				Errorf:   logger.Errorf,
+			}
+			device := wgdevice.NewDevice(wgtun, wgBind, &wgLogger)
+			return device
+		},
+		preStart: nil,
+	}
+
+	setupFunction := setupUserSpaceCommon
 	switch w.settings.Implementation {
 	case "auto": //nolint:goconst
 		if !kernelSupported {
@@ -72,7 +79,29 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		}
 		setupFunction = setupKernelSpace
 	case "amneziawg":
-		setupFunction = setupAmneziaUserSpace
+		userspaceBackend = userSpaceBackend{
+			createTun: func(name string, mtu int) (tunDevice, error) {
+				return amneziatun.CreateTUN(name, mtu)
+			},
+			createBind: func() bind {
+				return amneziaconn.NewDefaultBind()
+			},
+			createDevice: func(td tunDevice, b bind, logger Logger) userspaceDevice {
+				wgamneziaTun, _ := td.(amneziatun.Device)
+				wgamneziaBind, _ := b.(amneziaconn.Bind)
+				wgamneziaLogger := amneziadevice.Logger{
+					Verbosef: logger.Debugf,
+					Errorf:   logger.Errorf,
+				}
+				device := amneziadevice.NewDevice(wgamneziaTun, wgamneziaBind, &wgamneziaLogger)
+				return device
+			},
+			preStart: func(ud userspaceDevice, s Settings) error {
+				uapiConfig := s.AmneziaWG.UAPIConfig()
+				err = ud.IpcSet(uapiConfig)
+				return err
+			},
+		}
 	default:
 		panic(fmt.Sprintf("unknown implementation %q", w.settings.Implementation))
 	}
@@ -88,8 +117,8 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 	defer closers.cleanup(w.logger)
 
-	linkIndex, waitAndCleanup, device, err := setupFunction(ctx,
-		w.settings.InterfaceName, w.netlink, w.settings.MTU, &closers, w.logger)
+	linkIndex, waitAndCleanup, err := setupFunction(ctx,
+		w.settings.InterfaceName, w.netlink, w.settings.MTU, &closers, w.logger, w.settings, userspaceBackend)
 	if err != nil {
 		waitError <- err
 		return
@@ -106,14 +135,6 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	if err != nil {
 		waitError <- fmt.Errorf("%w: %s", ErrConfigure, err)
 		return
-	}
-
-	if device != nil {
-		err = configureAmneziaDevice(device, w.settings)
-		if err != nil {
-			waitError <- fmt.Errorf("%w: %s", ErrConfigure, err)
-			return
-		}
 	}
 
 	err = w.netlink.LinkSetUp(linkIndex)
@@ -160,15 +181,14 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 
 type waitAndCleanupFunc func() error
 
-//nolint:ireturn
 func setupKernelSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint32,
-	closers *closers, logger Logger) (
-	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, device userspaceDevice, err error,
+	closers *closers, logger Logger, _ Settings, _ userSpaceBackend) (
+	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, err error,
 ) {
 	links, err := netLinker.LinkList()
 	if err != nil {
-		return 0, nil, nil, fmt.Errorf("listing links: %w", err)
+		return 0, nil, fmt.Errorf("listing links: %w", err)
 	}
 
 	// Cleanup any previous Wireguard interface with the same name
@@ -177,7 +197,7 @@ func setupKernelSpace(ctx context.Context,
 		if link.VirtualType == "wireguard" && link.Name == interfaceName {
 			err = netLinker.LinkDel(link.Index)
 			if err != nil {
-				return 0, nil, nil, fmt.Errorf("deleting previous Wireguard link %s: %w",
+				return 0, nil, fmt.Errorf("deleting previous Wireguard link %s: %w",
 					interfaceName, err)
 			}
 		}
@@ -190,7 +210,7 @@ func setupKernelSpace(ctx context.Context,
 	}
 	linkIndex, err = netLinker.LinkAdd(link)
 	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s", ErrAddLink, err)
+		return 0, nil, fmt.Errorf("%w: %s", ErrAddLink, err)
 	}
 	closers.add("deleting link", stepFive, func() error {
 		return netLinker.LinkDel(linkIndex)
@@ -202,174 +222,5 @@ func setupKernelSpace(ctx context.Context,
 		return ctx.Err()
 	}
 
-	return linkIndex, waitAndCleanup, nil, nil
-}
-
-//nolint:dupl,ireturn
-func setupUserSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker, mtu uint32,
-	closers *closers, logger Logger) (
-	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, device userspaceDevice, err error,
-) {
-	tun, err := wgtun.CreateTUN(interfaceName, int(mtu))
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
-	}
-
-	closers.add("closing TUN device", stepSeven, tun.Close)
-
-	tunName, err := tun.Name()
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: cannot get TUN name: %s", ErrCreateTun, err)
-	} else if tunName != interfaceName {
-		return 0, nil, nil, fmt.Errorf("%w: names don't match: expected %q and got %q",
-			ErrCreateTun, interfaceName, tunName)
-	}
-
-	link, err := netLinker.LinkByName(interfaceName)
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s: %s", ErrFindLink, interfaceName, err)
-	}
-	closers.add("deleting link", stepFive, func() error {
-		return netLinker.LinkDel(link.Index)
-	})
-
-	bind := wgconn.NewDefaultBind()
-
-	closers.add("closing bind", stepSeven, bind.Close)
-
-	deviceLogger := makeWgDeviceLogger(logger)
-	device = wgdevice.NewDevice(tun, bind, deviceLogger)
-
-	closers.add("closing Wireguard device", stepSix, func() error {
-		device.Close()
-		return nil
-	})
-
-	uapiFile, err := uapiOpen(interfaceName)
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
-	}
-
-	closers.add("closing UAPI file", stepThree, uapiFile.Close)
-
-	uapiListener, err := uapiListen(interfaceName, uapiFile)
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s", ErrUAPIListen, err)
-	}
-
-	closers.add("closing UAPI listener", stepTwo, uapiListener.Close)
-
-	// acceptAndHandle exits when uapiListener is closed
-	uapiAcceptErrorCh := make(chan error)
-	go acceptAndHandle(uapiListener, device, uapiAcceptErrorCh)
-	waitAndCleanup = func() error {
-		select {
-		case <-ctx.Done():
-			err = ctx.Err()
-		case err = <-uapiAcceptErrorCh:
-			close(uapiAcceptErrorCh)
-		case <-device.Wait():
-			err = ErrDeviceWaited
-		}
-
-		closers.cleanup(logger)
-
-		<-uapiAcceptErrorCh // wait for acceptAndHandle to exit
-
-		return err
-	}
-
-	return link.Index, waitAndCleanup, nil, nil
-}
-
-//nolint:dupl,ireturn
-func setupAmneziaUserSpace(ctx context.Context,
-	interfaceName string, netLinker NetLinker, mtu uint32,
-	closers *closers, logger Logger) (
-	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, device userspaceDevice, err error,
-) {
-	tun, err := amneziatun.CreateTUN(interfaceName, int(mtu))
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
-	}
-
-	closers.add("closing TUN device", stepSeven, tun.Close)
-
-	tunName, err := tun.Name()
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: cannot get TUN name: %s", ErrCreateTun, err)
-	} else if tunName != interfaceName {
-		return 0, nil, nil, fmt.Errorf("%w: names don't match: expected %q and got %q",
-			ErrCreateTun, interfaceName, tunName)
-	}
-
-	link, err := netLinker.LinkByName(interfaceName)
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s: %s", ErrFindLink, interfaceName, err)
-	}
-	closers.add("deleting link", stepFive, func() error {
-		return netLinker.LinkDel(link.Index)
-	})
-
-	bind := amneziaconn.NewDefaultBind()
-
-	closers.add("closing bind", stepSeven, bind.Close)
-
-	deviceLogger := makeAmneziaDeviceLogger(logger)
-	device = amneziadevice.NewDevice(tun, bind, deviceLogger)
-
-	closers.add("closing Wireguard device", stepSix, func() error {
-		device.Close()
-		return nil
-	})
-
-	uapiFile, err := uapiOpen(interfaceName)
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s", ErrUAPISocketOpening, err)
-	}
-
-	closers.add("closing UAPI file", stepThree, uapiFile.Close)
-
-	uapiListener, err := uapiListen(interfaceName, uapiFile)
-	if err != nil {
-		return 0, nil, nil, fmt.Errorf("%w: %s", ErrUAPIListen, err)
-	}
-
-	closers.add("closing UAPI listener", stepTwo, uapiListener.Close)
-
-	// acceptAndHandle exits when uapiListener is closed
-	uapiAcceptErrorCh := make(chan error)
-	go acceptAndHandle(uapiListener, device, uapiAcceptErrorCh)
-	waitAndCleanup = func() error {
-		select {
-		case <-ctx.Done():
-			err = ctx.Err()
-		case err = <-uapiAcceptErrorCh:
-			close(uapiAcceptErrorCh)
-		case <-device.Wait():
-			err = ErrDeviceWaited
-		}
-
-		closers.cleanup(logger)
-
-		<-uapiAcceptErrorCh // wait for acceptAndHandle to exit
-
-		return err
-	}
-
-	return link.Index, waitAndCleanup, device, nil
-}
-
-func acceptAndHandle(uapi net.Listener, device userspaceDevice,
-	uapiAcceptErrorCh chan<- error,
-) {
-	for { // stopped by uapiFile.Close()
-		conn, err := uapi.Accept()
-		if err != nil {
-			uapiAcceptErrorCh <- err
-			return
-		}
-		go device.IpcHandle(conn)
-	}
+	return linkIndex, waitAndCleanup, nil
 }
