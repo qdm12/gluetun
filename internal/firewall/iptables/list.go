@@ -33,6 +33,8 @@ type chainRule struct {
 	ctstate         []string     // for example ["RELATED","ESTABLISHED"]. Can be empty.
 	tcpFlags        tcpFlags
 	mark            mark
+	connMark        mark
+	setMark         uint
 }
 
 type mark struct {
@@ -293,6 +295,29 @@ func parseChainRuleOptionalFields(optionalFields []string, rule *chainRule) (err
 			}
 			rule.mark = mark
 			i += consumed
+		case "connmark":
+			i++
+			connMark, consumed, err := parseMark(optionalFields[i:])
+			if err != nil {
+				return fmt.Errorf("parsing connmark: %w", err)
+			}
+			rule.connMark = connMark
+			i += consumed
+		case "CONNMARK":
+			i++
+			switch optionalFields[i] {
+			case "set":
+				i++
+				value, err := parseAny32bNumber(optionalFields[i])
+				if err != nil {
+					return fmt.Errorf("parsing CONNMARK set value: %w", err)
+				}
+				rule.setMark = value
+				i++
+			default:
+				return fmt.Errorf("%w: unexpected %q after CONNMARK",
+					ErrChainRuleMalformed, optionalFields[i])
+			}
 		default:
 			return fmt.Errorf("%w: unexpected optional field: %s",
 				ErrChainRuleMalformed, optionalFields[i])
@@ -422,8 +447,6 @@ func parsePortsCSV(s string) (ports []uint16, err error) {
 	return ports, nil
 }
 
-var errMarkValueMalformed = errors.New("mark value is malformed")
-
 func parseMark(optionalFields []string) (m mark, consumed int, err error) {
 	switch optionalFields[consumed] {
 	case "match":
@@ -433,13 +456,11 @@ func parseMark(optionalFields []string) (m mark, consumed int, err error) {
 			consumed++
 		}
 
-		const base = 0 // auto-detect
-		const bits = 32
-		value, err := strconv.ParseUint(optionalFields[consumed], base, bits)
+		value, err := parseAny32bNumber(optionalFields[consumed])
 		if err != nil {
-			return mark{}, 0, fmt.Errorf("%w: %s", errMarkValueMalformed, optionalFields[consumed])
+			return mark{}, 0, fmt.Errorf("value malformed: %w", err)
 		}
-		m.value = uint(value)
+		m.value = value
 		consumed++
 	default:
 		return mark{}, 0, fmt.Errorf("%w: unexpected mark mode field: %s",

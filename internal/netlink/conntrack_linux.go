@@ -1,6 +1,7 @@
 package netlink
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/mdlayher/netlink"
@@ -8,7 +9,13 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+var ErrConntrackNetlinkNotSupported = errors.New("nf_conntrack_netlink is not supported by the kernel")
+
 func (n *NetLink) FlushConntrack() error {
+	if !n.conntrackNetlink {
+		return fmt.Errorf("%w", ErrConntrackNetlinkNotSupported)
+	}
+
 	conn, err := netfilter.Dial(nil)
 	if err != nil {
 		return fmt.Errorf("dialing netfilter: %w", err)

@@ -141,10 +141,83 @@ func (c *Config) AcceptOutputThroughInterface(ctx context.Context, intf string, 
 }
 
 func (c *Config) AcceptEstablishedRelatedTraffic(ctx context.Context) error {
+	if !c.modules.nfConntrack.ok {
+		return fmt.Errorf("%w: %s", ErrKernelModuleMissing, c.modules.nfConntrack.name)
+	}
 	return c.runMixedIptablesInstructions(ctx, []string{
 		"--append OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
 		"--append INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
 	})
+}
+
+// AcceptOutputPublicOnlyNewTraffic adds rules to mark new output connections, and to accept
+// established or related packets with this mark only. This effectively forces
+// previously established or related traffic to be blocked.
+// If remove is true, the rules are removed instead of appended.
+// If the relevant kernel modules (nf_conntrack, xt_conntrack and xt_connmark)
+// are not available, it returns an error indicating which kernel module is missing.
+func (c *Config) AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error {
+	err := checkKernelModulesAreOK(c.modules.nfConntrack, c.modules.xtConntrack, c.modules.xtConnmark)
+	if err != nil {
+		return fmt.Errorf("checking kernel modules: %w", err)
+	}
+
+	ipv4PrivatePrefixes := []netip.Prefix{
+		netip.MustParsePrefix("10.0.0.0/8"),
+		netip.MustParsePrefix("172.16.0.0/12"),
+		netip.MustParsePrefix("192.168.0.0/16"),
+		netip.MustParsePrefix("127.0.0.0/8"),
+	}
+	ipv6PrivatePrefixes := []netip.Prefix{
+		netip.MustParsePrefix("fc00::/7"),
+		netip.MustParsePrefix("fe80::/10"),
+		netip.MustParsePrefix("::1/128"),
+	}
+	var ipv4Instructions, ipv6Instructions []string //nolint:prealloc
+	appendToBoth := func(instruction string) {
+		ipv4Instructions = append(ipv4Instructions, instruction)
+		ipv6Instructions = append(ipv6Instructions, instruction)
+	}
+	appendToBoth("-N PUBLIC_ONLY")
+	for _, prefix := range ipv4PrivatePrefixes {
+		ipv4Instructions = append(ipv4Instructions, fmt.Sprintf(
+			"-A PUBLIC_ONLY -d %s -j RETURN", prefix))
+	}
+	for _, prefix := range ipv6PrivatePrefixes {
+		ipv6Instructions = append(ipv6Instructions, fmt.Sprintf(
+			"-A PUBLIC_ONLY -d %s -j RETURN", prefix))
+	}
+	// Mark new connections with mark 0x567
+	appendToBoth("-A PUBLIC_ONLY -m conntrack --ctstate NEW -j CONNMARK --set-mark 0x567")
+	// Drop related/established connections that made it through; marked connections would
+	// be directly accepted by the first rule in the OUTPUT chain (see below)
+	appendToBoth("-A PUBLIC_ONLY -m conntrack --ctstate RELATED,ESTABLISHED -j DROP")
+	// Set the PUBLIC_ONLY chain as the second rule in the OUTPUT chain, so that it is evaluated
+	// after the accept rule below, for performance reasons.
+	appendToBoth("-I OUTPUT -j PUBLIC_ONLY")
+	appendToBoth("-I OUTPUT -m conntrack --ctstate RELATED,ESTABLISHED -m connmark --mark 0x567 -j ACCEPT")
+
+	c.iptablesMutex.Lock()
+	c.ip6tablesMutex.Lock()
+	defer c.iptablesMutex.Unlock()
+	defer c.ip6tablesMutex.Unlock()
+
+	restore, err := c.saveAndRestore(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = c.runIptablesInstructionsNoSave(ctx, ipv4Instructions)
+	if err != nil {
+		restore(ctx)
+		return err
+	}
+	err = c.runIP6tablesInstructionsNoSave(ctx, ipv6Instructions)
+	if err != nil {
+		restore(ctx)
+		return err
+	}
+	return nil
 }
 
 func (c *Config) AcceptOutputTrafficToVPN(ctx context.Context,
