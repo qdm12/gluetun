@@ -162,7 +162,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 		Interface:                   w.Interface,
 		MTU:                         w.MTU,
 		Implementation:              w.Implementation,
-		AmneziaWG:                   w.AmneziaWG,
+		AmneziaWG:                   w.AmneziaWG.Copy(),
 	}
 }
 
@@ -176,9 +176,7 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.Interface = gosettings.OverrideWithComparable(w.Interface, other.Interface)
 	w.MTU = gosettings.OverrideWithComparable(w.MTU, other.MTU)
 	w.Implementation = gosettings.OverrideWithComparable(w.Implementation, other.Implementation)
-	if !other.AmneziaWG.IsZero() {
-		w.AmneziaWG = other.AmneziaWG
-	}
+	w.AmneziaWG = gosettings.OverrideWithComparable(w.AmneziaWG, other.AmneziaWG)
 }
 
 func (w *Wireguard) setDefaults(vpnProvider string) {
@@ -262,7 +260,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 	if jc != nil {
-		w.AmneziaWG.JunkPacketCount = *jc
+		w.AmneziaWG.JunkPacketCount = jc
 	}
 
 	jmin, err := r.Uint16Ptr("WIREGUARD_JMIN")
@@ -270,7 +268,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 	if jmin != nil {
-		w.AmneziaWG.JunkPacketMin = *jmin
+		w.AmneziaWG.JunkPacketMin = jmin
 	}
 
 	jmax, err := r.Uint16Ptr("WIREGUARD_JMAX")
@@ -278,7 +276,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 	if jmax != nil {
-		w.AmneziaWG.JunkPacketMax = *jmax
+		w.AmneziaWG.JunkPacketMax = jmax
 	}
 
 	s1, err := r.Uint16Ptr("WIREGUARD_S1")
@@ -286,7 +284,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 	if s1 != nil {
-		w.AmneziaWG.PaddingS1 = *s1
+		w.AmneziaWG.PaddingS1 = s1
 	}
 
 	s2, err := r.Uint16Ptr("WIREGUARD_S2")
@@ -294,7 +292,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 	if s2 != nil {
-		w.AmneziaWG.PaddingS2 = *s2
+		w.AmneziaWG.PaddingS2 = s2
 	}
 
 	s3, err := r.Uint16Ptr("WIREGUARD_S3")
@@ -302,7 +300,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 	if s3 != nil {
-		w.AmneziaWG.PaddingS3 = *s3
+		w.AmneziaWG.PaddingS3 = s3
 	}
 
 	s4, err := r.Uint16Ptr("WIREGUARD_S4")
@@ -310,7 +308,7 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		return err
 	}
 	if s4 != nil {
-		w.AmneziaWG.PaddingS4 = *s4
+		w.AmneziaWG.PaddingS4 = s4
 	}
 
 	w.AmneziaWG.HeaderH1 = r.String("WIREGUARD_H1", reader.ForceLowercase(false))
