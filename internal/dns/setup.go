@@ -20,11 +20,6 @@ func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err erro
 		return nil, fmt.Errorf("updating filter for rebinding protection: %w", err)
 	}
 
-	err = l.updateFiles(ctx, settings)
-	if err != nil {
-		l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
-	}
-
 	serverSettings, err := buildServerSettings(settings, l.filter, l.localResolvers, l.logger)
 	if err != nil {
 		return nil, fmt.Errorf("building server settings: %w", err)

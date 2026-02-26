@@ -43,7 +43,12 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			runError, err = l.setupServer(ctx)
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
-				l.logger.Info("ready")
+				l.logger.Info("ready and using DNS server at address " + settings.ServerAddress.String())
+
+				err = l.updateFiles(ctx, settings)
+				if err != nil {
+					l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
+				}
 				break
 			}
 

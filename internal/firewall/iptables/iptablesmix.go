@@ -5,8 +5,19 @@ import (
 )
 
 func (c *Config) runMixedIptablesInstructions(ctx context.Context, instructions []string) error {
+	c.iptablesMutex.Lock()
+	c.ip6tablesMutex.Lock()
+	defer c.iptablesMutex.Unlock()
+	defer c.ip6tablesMutex.Unlock()
+
+	restore, err := c.saveAndRestore(ctx)
+	if err != nil {
+		return err
+	}
+
 	for _, instruction := range instructions {
-		if err := c.runMixedIptablesInstruction(ctx, instruction); err != nil {
+		if err := c.runMixedIptablesInstructionNoSave(ctx, instruction); err != nil {
+			restore(ctx)
 			return err
 		}
 	}
@@ -14,8 +25,25 @@ func (c *Config) runMixedIptablesInstructions(ctx context.Context, instructions 
 }
 
 func (c *Config) runMixedIptablesInstruction(ctx context.Context, instruction string) error {
-	if err := c.runIptablesInstruction(ctx, instruction); err != nil {
+	c.iptablesMutex.Lock()
+	c.ip6tablesMutex.Lock()
+	defer c.iptablesMutex.Unlock()
+	defer c.ip6tablesMutex.Unlock()
+
+	restore, err := c.saveAndRestore(ctx)
+	if err != nil {
 		return err
 	}
-	return c.runIP6tablesInstruction(ctx, instruction)
+	err = c.runIptablesInstructionNoSave(ctx, instruction)
+	if err != nil {
+		restore(ctx)
+	}
+	return err
+}
+
+func (c *Config) runMixedIptablesInstructionNoSave(ctx context.Context, instruction string) error {
+	if err := c.runIptablesInstructionNoSave(ctx, instruction); err != nil {
+		return err
+	}
+	return c.runIP6tablesInstructionNoSave(ctx, instruction)
 }

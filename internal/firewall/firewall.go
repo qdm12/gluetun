@@ -23,6 +23,7 @@ type Config struct {
 
 	// State
 	enabled           bool
+	restore           func(context.Context)
 	vpnConnection     models.Connection
 	vpnIntf           string
 	outboundSubnets   []netip.Prefix
