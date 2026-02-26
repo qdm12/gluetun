@@ -222,10 +222,6 @@ func parseChainRuleField(fieldIndex int, field string, rule *chainRule) (err err
 			return fmt.Errorf("parsing bytes: %w", err)
 		}
 	case targetIndex:
-		err = checkTarget(field)
-		if err != nil {
-			return fmt.Errorf("checking target: %w", err)
-		}
 		rule.target = field
 	case protocolIndex:
 		rule.protocol, err = parseProtocol(field)
