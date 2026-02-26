@@ -80,6 +80,8 @@ func Test_Settings_String(t *testing.T) {
 |   └── Restart VPN on healthcheck failure: yes
 ├── Shadowsocks server settings:
 |   └── Enabled: no
+├── SOCKS5 server settings:
+|   └── Enabled: no
 ├── HTTP proxy settings:
 |   └── Enabled: no
 ├── Control server settings:
