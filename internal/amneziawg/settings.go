@@ -7,22 +7,22 @@ import (
 )
 
 type Settings struct {
-	JunkPacketCount uint16
-	JunkPacketMin   uint16
-	JunkPacketMax   uint16
-	PaddingS1       uint16
-	PaddingS2       uint16
-	PaddingS3       uint16
-	PaddingS4       uint16
-	HeaderH1        string
-	HeaderH2        string
-	HeaderH3        string
-	HeaderH4        string
-	InitPacketI1    string
-	InitPacketI2    string
-	InitPacketI3    string
-	InitPacketI4    string
-	InitPacketI5    string
+	JunkPacketCount uint16 `json:"junk_packet_count"`
+	JunkPacketMin   uint16 `json:"junk_packet_min"`
+	JunkPacketMax   uint16 `json:"junk_packet_max"`
+	PaddingS1       uint16 `json:"padding_s1"`
+	PaddingS2       uint16 `json:"padding_s2"`
+	PaddingS3       uint16 `json:"padding_s3"`
+	PaddingS4       uint16 `json:"padding_s4"`
+	HeaderH1        string `json:"header_h1"`
+	HeaderH2        string `json:"header_h2"`
+	HeaderH3        string `json:"header_h3"`
+	HeaderH4        string `json:"header_h4"`
+	InitPacketI1    string `json:"init_packet_i1"`
+	InitPacketI2    string `json:"init_packet_i2"`
+	InitPacketI3    string `json:"init_packet_i3"`
+	InitPacketI4    string `json:"init_packet_i4"`
+	InitPacketI5    string `json:"init_packet_i5"`
 }
 
 func (s Settings) IsZero() bool {
