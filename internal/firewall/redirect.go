@@ -50,7 +50,7 @@ func (c *Config) RedirectPort(ctx context.Context, intf string, sourcePort,
 		return nil
 	case conflict != nil:
 		const remove = true
-		err = c.redirectPort(ctx, conflict.interfaceName, conflict.sourcePort,
+		err = c.impl.RedirectPort(ctx, conflict.interfaceName, conflict.sourcePort,
 			conflict.destinationPort, remove)
 		if err != nil {
 			return fmt.Errorf("removing conflicting redirection: %w", err)
@@ -60,7 +60,7 @@ func (c *Config) RedirectPort(ctx context.Context, intf string, sourcePort,
 	}
 
 	const remove = false
-	err = c.redirectPort(ctx, intf, sourcePort, destinationPort, remove)
+	err = c.impl.RedirectPort(ctx, intf, sourcePort, destinationPort, remove)
 	if err != nil {
 		return fmt.Errorf("redirecting port: %w", err)
 	}

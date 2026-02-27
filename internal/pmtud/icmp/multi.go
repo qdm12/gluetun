@@ -151,10 +151,16 @@ func collectReplies(conn net.PacketConn, ipVersion string,
 			return fmt.Errorf("parsing message: %w", err)
 		}
 
-		echoBody, ok := message.Body.(*icmp.Echo)
-		if !ok {
+		switch message.Body.(type) {
+		case *icmp.Echo:
+		case *icmp.DstUnreach, *icmp.TimeExceeded:
+			logger.Debugf("ignoring ICMP message (type: %d, code: %d)", message.Type, message.Code)
+			continue
+		default:
 			return fmt.Errorf("%w: %T", ErrBodyUnsupported, message.Body)
 		}
+
+		echoBody, _ := message.Body.(*icmp.Echo)
 
 		id := uint16(echoBody.ID) //nolint:gosec
 		testIndex, testing := echoIDToTestIndex[id]

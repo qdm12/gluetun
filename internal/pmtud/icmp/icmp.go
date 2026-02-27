@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
 	"net/netip"
 	"time"
 
@@ -21,22 +20,22 @@ func PathMTUDiscover(ctx context.Context, ip netip.Addr,
 	physicalLinkMTU uint32, timeout time.Duration, logger Logger,
 ) (mtu uint32, err error) {
 	if ip.Is4() {
-		logger.Debug("finding IPv4 next hop MTU")
+		logger.Debugf("finding IPv4 next hop MTU to %s", ip)
 		mtu, err = findIPv4NextHopMTU(ctx, ip, physicalLinkMTU, timeout, logger)
 		switch {
 		case err == nil:
 			return mtu, nil
-		case errors.Is(err, net.ErrClosed) || errors.Is(err, ErrCommunicationAdministrativelyProhibited): // blackhole
+		case errors.Is(err, errTimeout) || errors.Is(err, ErrCommunicationAdministrativelyProhibited): // blackhole
 		default:
-			return 0, fmt.Errorf("finding IPv4 next hop MTU: %w", err)
+			return 0, fmt.Errorf("finding IPv4 next hop MTU to %s: %w", ip, err)
 		}
 	} else {
-		logger.Debug("requesting IPv6 ICMP packet-too-big reply")
+		logger.Debugf("requesting IPv6 ICMP packet-too-big reply from %s", ip)
 		mtu, err = getIPv6PacketTooBig(ctx, ip, physicalLinkMTU, timeout, logger)
 		switch {
 		case err == nil:
 			return mtu, nil
-		case errors.Is(err, net.ErrClosed): // blackhole
+		case errors.Is(err, errTimeout): // blackhole
 		default:
 			return 0, fmt.Errorf("getting IPv6 packet-too-big message: %w", err)
 		}
@@ -44,7 +43,7 @@ func PathMTUDiscover(ctx context.Context, ip netip.Addr,
 
 	// Fall back method: send echo requests with different packet
 	// sizes and check which ones succeed to find the maximum MTU.
-	logger.Debug("falling back to sending different sized echo packets")
+	logger.Debugf("falling back to sending different sized echo packets to %s", ip)
 	minMTU := constants.MinIPv4MTU
 	if ip.Is6() {
 		minMTU = constants.MinIPv6MTU

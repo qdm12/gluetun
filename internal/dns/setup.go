@@ -8,20 +8,15 @@ import (
 	"github.com/qdm12/dns/v2/pkg/middlewares/filter/update"
 	"github.com/qdm12/dns/v2/pkg/nameserver"
 	"github.com/qdm12/dns/v2/pkg/server"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (l *Loop) setupServer(ctx context.Context) (runError <-chan error, err error) {
-	settings := l.GetSettings()
+func (l *Loop) setupServer(ctx context.Context, settings settings.DNS) (runError <-chan error, err error) {
 	var updateSettings update.Settings
 	updateSettings.SetRebindingProtectionExempt(settings.Blacklist.RebindingProtectionExemptHostnames)
 	err = l.filter.Update(updateSettings)
 	if err != nil {
 		return nil, fmt.Errorf("updating filter for rebinding protection: %w", err)
-	}
-
-	err = l.updateFiles(ctx, settings)
-	if err != nil {
-		l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
 	}
 
 	serverSettings, err := buildServerSettings(settings, l.filter, l.localResolvers, l.logger)

@@ -168,7 +168,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	defer fmt.Println(gluetunLogo)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2026-04-01T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "All control server routes will become private by default after the v3.41.0 release",
+		Announcement: "All control server routes are now private by default",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
@@ -237,6 +237,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		if err != nil {
 			return err
 		}
+		err = netLinker.FlushConntrack()
+		if err != nil {
+			logger.Warnf("flushing conntrack failed: %s", err)
+		}
 	}
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
@@ -264,7 +268,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	puid, pgid := int(*allSettings.System.PUID), int(*allSettings.System.PGID)
 
-	const clientTimeout = 15 * time.Second
+	const clientTimeout = 35 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.New()
@@ -279,7 +283,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
 		{name: "OpenVPN", getVersion: ovpnVersion},
-		{name: "IPtables", getVersion: firewallConf.Version},
+		{name: "Firewall", getVersion: firewallConf.Version},
 	})
 	if err != nil {
 		return err
@@ -556,6 +560,7 @@ type netLinker interface {
 	Linker
 	IsWireguardSupported() (ok bool, err error)
 	IsIPv6Supported() (ok bool, err error)
+	FlushConntrack() error
 	PatchLoggerLevel(level log.Level)
 }
 

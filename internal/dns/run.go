@@ -32,11 +32,17 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		var runError <-chan error
 
 		for {
+			settings := l.GetSettings()
 			var err error
-			runError, err = l.setupServer(ctx)
+			runError, err = l.setupServer(ctx, settings)
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
-				l.logger.Info("ready")
+				l.logger.Infof("ready and using DNS server with %s upstream resolvers", settings.UpstreamType)
+
+				err = l.updateFiles(ctx, settings)
+				if err != nil {
+					l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
+				}
 				break
 			}
 

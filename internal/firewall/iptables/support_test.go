@@ -1,4 +1,4 @@
-package firewall
+package iptables
 
 import (
 	"context"
@@ -101,7 +101,7 @@ func Test_checkIptablesSupport(t *testing.T) {
 				return runner
 			},
 			iptablesPathsToTry: []string{"path1", "path2"},
-			errSentinel:        ErrIPTablesNotSupported,
+			errSentinel:        ErrNotSupported,
 			errMessage: "no iptables supported found: " +
 				"errors encountered are: " +
 				"path1: output 1 (exit code 4); " +

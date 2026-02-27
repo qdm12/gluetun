@@ -2,6 +2,7 @@ package privado
 
 import (
 	"math/rand"
+	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/common"
@@ -15,14 +16,12 @@ type Provider struct {
 }
 
 func New(storage common.Storage, randSource rand.Source,
-	ipFetcher common.IPFetcher, unzipper common.Unzipper,
-	updaterWarner common.Warner,
-	parallelResolver common.ParallelResolver,
+	client *http.Client, updaterWarner common.Warner,
 ) *Provider {
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(ipFetcher, unzipper, updaterWarner, parallelResolver),
+		Fetcher:    updater.New(client, updaterWarner),
 	}
 }
 

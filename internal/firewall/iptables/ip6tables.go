@@ -1,4 +1,4 @@
-package firewall
+package iptables
 
 import (
 	"context"
@@ -14,8 +14,8 @@ import (
 func findIP6tablesSupported(ctx context.Context, runner CmdRunner) (
 	ip6tablesPath string, err error,
 ) {
-	ip6tablesPath, err = checkIptablesSupport(ctx, runner, "ip6tables", "ip6tables-nft", "ip6tables-legacy")
-	if errors.Is(err, ErrIPTablesNotSupported) {
+	ip6tablesPath, err = checkIptablesSupport(ctx, runner, "ip6tables", "ip6tables-legacy")
+	if errors.Is(err, ErrNotSupported) {
 		return "", nil
 	} else if err != nil {
 		return "", err
@@ -24,8 +24,23 @@ func findIP6tablesSupported(ctx context.Context, runner CmdRunner) (
 }
 
 func (c *Config) runIP6tablesInstructions(ctx context.Context, instructions []string) error {
+	c.ip6tablesMutex.Lock() // only one ip6tables command at once
+	defer c.ip6tablesMutex.Unlock()
+
+	restore, err := c.saveAndRestoreIPv6(ctx)
+	if err != nil {
+		return err
+	}
+	err = c.runIP6tablesInstructionsNoSave(ctx, instructions)
+	if err != nil {
+		restore(ctx)
+	}
+	return err
+}
+
+func (c *Config) runIP6tablesInstructionsNoSave(ctx context.Context, instructions []string) error {
 	for _, instruction := range instructions {
-		if err := c.runIP6tablesInstruction(ctx, instruction); err != nil {
+		if err := c.runIP6tablesInstructionNoSave(ctx, instruction); err != nil {
 			return err
 		}
 	}
@@ -33,11 +48,24 @@ func (c *Config) runIP6tablesInstructions(ctx context.Context, instructions []st
 }
 
 func (c *Config) runIP6tablesInstruction(ctx context.Context, instruction string) error {
+	c.ip6tablesMutex.Lock() // only one ip6tables command at once
+	defer c.ip6tablesMutex.Unlock()
+
+	restore, err := c.saveAndRestoreIPv6(ctx)
+	if err != nil {
+		return err
+	}
+	err = c.runIP6tablesInstructionNoSave(ctx, instruction)
+	if err != nil {
+		restore(ctx)
+	}
+	return err
+}
+
+func (c *Config) runIP6tablesInstructionNoSave(ctx context.Context, instruction string) error {
 	if c.ip6Tables == "" {
 		return nil
 	}
-	c.ip6tablesMutex.Lock() // only one ip6tables command at once
-	defer c.ip6tablesMutex.Unlock()
 
 	if isDeleteMatchInstruction(instruction) {
 		return deleteIPTablesRule(ctx, c.ip6Tables, instruction,
@@ -56,7 +84,7 @@ func (c *Config) runIP6tablesInstruction(ctx context.Context, instruction string
 
 var ErrPolicyNotValid = errors.New("policy is not valid")
 
-func (c *Config) setIPv6AllPolicies(ctx context.Context, policy string) error {
+func (c *Config) SetIPv6AllPolicies(ctx context.Context, policy string) error {
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:

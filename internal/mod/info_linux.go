@@ -30,36 +30,7 @@ type moduleInfo struct {
 
 var ErrModulesDirectoryNotFound = errors.New("modules directory not found")
 
-func getModulesInfo() (modulesInfo map[string]moduleInfo, err error) {
-	var utsName unix.Utsname
-	err = unix.Uname(&utsName)
-	if err != nil {
-		return nil, fmt.Errorf("getting unix uname release: %w", err)
-	}
-	release := unix.ByteSliceToString(utsName.Release[:])
-	release = strings.TrimSpace(release)
-
-	modulePaths := []string{
-		filepath.Join("/lib/modules", release),
-		filepath.Join("/usr/lib/modules", release),
-	}
-
-	var modulesPath string
-	var found bool
-	for _, modulesPath = range modulePaths {
-		info, err := os.Stat(modulesPath)
-		if err == nil && info.IsDir() {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		return nil, fmt.Errorf("%w: %s are not valid existing directories"+
-			"; have you bind mounted the /lib/modules directory?",
-			ErrModulesDirectoryNotFound, strings.Join(modulePaths, ", "))
-	}
-
+func getModulesInfo(modulesPath string) (modulesInfo map[string]moduleInfo, err error) {
 	dependencyFilepath := filepath.Join(modulesPath, "modules.dep")
 	dependencyFile, err := os.Open(dependencyFilepath)
 	if err != nil {
@@ -109,6 +80,39 @@ func getModulesInfo() (modulesInfo map[string]moduleInfo, err error) {
 	}
 
 	return modulesInfo, nil
+}
+
+func getModulesPath() (string, error) {
+	release, err := getReleaseName()
+	if err != nil {
+		return "", fmt.Errorf("getting release name: %w", err)
+	}
+
+	modulePaths := []string{
+		filepath.Join("/lib/modules", release),
+		filepath.Join("/usr/lib/modules", release),
+	}
+
+	for _, modulesPath := range modulePaths {
+		info, err := os.Stat(modulesPath)
+		if err == nil && info.IsDir() {
+			return modulesPath, nil
+		}
+	}
+	return "", fmt.Errorf("%w: %s are not valid existing directories"+
+		"; have you bind mounted the /lib/modules directory?",
+		ErrModulesDirectoryNotFound, strings.Join(modulePaths, ", "))
+}
+
+func getReleaseName() (release string, err error) {
+	var utsName unix.Utsname
+	err = unix.Uname(&utsName)
+	if err != nil {
+		return "", fmt.Errorf("getting unix uname release: %w", err)
+	}
+	release = unix.ByteSliceToString(utsName.Release[:])
+	release = strings.TrimSpace(release)
+	return release, nil
 }
 
 func getBuiltinModules(modulesDirPath string, modulesInfo map[string]moduleInfo) error {

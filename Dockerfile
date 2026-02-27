@@ -13,7 +13,7 @@ FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:mockgen-${MOCKGEN_VERSION}
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}-alpine${GO_ALPINE_VERSION} AS base
 COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
 # Note: findutils needed to have xargs support `-d` flag for mocks stage.
-RUN apk --update add git g++ findutils
+RUN apk --update add git g++ findutils iptables
 ENV CGO_ENABLED=0
 COPY --from=golangci-lint /bin /go/bin/golangci-lint
 COPY --from=mockgen /bin /go/bin/mockgen
@@ -114,7 +114,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     WIREGUARD_IMPLEMENTATION=auto \
     # PMTUD
     PMTUD_ICMP_ADDRESSES=1.1.1.1,8.8.8.8 \
-    PMTUD_TCP_ADDRESSES=1.1.1.1:443,8.8.8.8:443 \
+    PMTUD_TCP_ADDRESSES=1.1.1.1:443,8.8.8.8:443,1.1.1.1:53,8.8.8.8:53,[2606:4700:4700::1111]:53,[2001:4860:4860::8888]:53,[2606:4700:4700::1111]:443,[2001:4860:4860::8888]:443 \
     # VPN server filtering
     SERVER_REGIONS= \
     SERVER_COUNTRIES= \

@@ -2,6 +2,10 @@
 
 package tcp
 
-func setMTUDiscovery(fd int) error {
+func setMark(fd, excludeMark int) error {
+	panic("not implemented")
+}
+
+func setMTUDiscovery(fd int, ipv4 bool) error {
 	panic("not implemented")
 }

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
@@ -40,6 +41,12 @@ func (c *cloudflare) Token() (token string) {
 func (c *cloudflare) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result models.PublicIP, err error,
 ) {
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	urlBase := "https://speed.cloudflare.com"
 	url := urlBase + "/meta"
 	if ip.IsValid() {

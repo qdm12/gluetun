@@ -1,4 +1,4 @@
-package firewall
+package iptables
 
 import (
 	"context"
@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	ErrNetAdminMissing      = errors.New("NET_ADMIN capability is missing")
-	ErrTestRuleCleanup      = errors.New("failed cleaning up test rule")
-	ErrInputPolicyNotFound  = errors.New("input policy not found")
-	ErrIPTablesNotSupported = errors.New("no iptables supported found")
+	ErrNetAdminMissing     = errors.New("NET_ADMIN capability is missing")
+	ErrTestRuleCleanup     = errors.New("failed cleaning up test rule")
+	ErrInputPolicyNotFound = errors.New("input policy not found")
+	ErrNotSupported        = errors.New("no iptables supported found")
 )
 
 func checkIptablesSupport(ctx context.Context, runner CmdRunner,
@@ -57,7 +57,7 @@ func checkIptablesSupport(ctx context.Context, runner CmdRunner,
 	}
 
 	return "", fmt.Errorf("%w: errors encountered are: %s",
-		ErrIPTablesNotSupported, strings.Join(allUnsupportedMessages, "; "))
+		ErrNotSupported, strings.Join(allUnsupportedMessages, "; "))
 }
 
 func testIptablesPath(ctx context.Context, path string,

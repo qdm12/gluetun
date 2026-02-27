@@ -48,7 +48,7 @@ func (c *Config) removeOutboundSubnets(ctx context.Context, subnets []netip.Pref
 			}
 
 			firewallUpdated = true
-			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
+			err := c.impl.AcceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
 				defaultRoute.AssignedIP, subNet, remove)
 			if err != nil {
 				c.logger.Error("cannot remove outdated outbound subnet: " + err.Error())
@@ -77,7 +77,7 @@ func (c *Config) addOutboundSubnets(ctx context.Context, subnets []netip.Prefix)
 			}
 
 			firewallUpdated = true
-			err := c.acceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
+			err := c.impl.AcceptOutputFromIPToSubnet(ctx, defaultRoute.NetInterface,
 				defaultRoute.AssignedIP, subnet, remove)
 			if err != nil {
 				return err
