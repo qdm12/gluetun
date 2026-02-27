@@ -116,24 +116,14 @@ func buildServerSettings(userSettings settings.DNS,
 	return serverSettings, nil
 }
 
-func buildProviders(userSettings settings.DNS) []provider.Provider {
-	if userSettings.UpstreamType == settings.DNSUpstreamTypePlain &&
-		len(userSettings.UpstreamPlainAddresses) > 0 {
-		providers := make([]provider.Provider, len(userSettings.UpstreamPlainAddresses))
-		for i, addrPort := range userSettings.UpstreamPlainAddresses {
-			providers[i] = provider.Provider{
-				Name: addrPort.String(),
-			}
-			if addrPort.Addr().Is4() {
-				providers[i].Plain.IPv4 = []netip.AddrPort{addrPort}
-			} else {
-				providers[i].Plain.IPv6 = []netip.AddrPort{addrPort}
-			}
-		}
+func buildProviders(userSettings settings.DNS) (providers []provider.Provider) {
+	providersCount := len(userSettings.Providers)
+	if userSettings.UpstreamType == settings.DNSUpstreamTypePlain {
+		providersCount += len(userSettings.UpstreamPlainAddresses)
 	}
+	providers = make([]provider.Provider, 0, providersCount)
 
 	providersData := provider.NewProviders()
-	providers := make([]provider.Provider, 0, len(userSettings.Providers)+len(userSettings.UpstreamPlainAddresses))
 	for _, providerName := range userSettings.Providers {
 		provider, err := providersData.Get(providerName)
 		if err != nil {
@@ -142,20 +132,16 @@ func buildProviders(userSettings settings.DNS) []provider.Provider {
 		providers = append(providers, provider)
 	}
 
-	if userSettings.UpstreamType != settings.DNSUpstreamTypePlain {
-		return providers
-	}
-
 	for _, addrPort := range userSettings.UpstreamPlainAddresses {
-		newProvider := provider.Provider{
+		provider := provider.Provider{
 			Name: addrPort.String(),
 		}
 		if addrPort.Addr().Is4() {
-			newProvider.Plain.IPv4 = []netip.AddrPort{addrPort}
+			provider.Plain.IPv4 = []netip.AddrPort{addrPort}
 		} else {
-			newProvider.Plain.IPv6 = []netip.AddrPort{addrPort}
+			provider.Plain.IPv6 = []netip.AddrPort{addrPort}
 		}
-		providers = append(providers, newProvider)
+		providers = append(providers, provider)
 	}
 
 	return providers
