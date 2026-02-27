@@ -208,6 +208,14 @@ func (c *Config) AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error {
 }
 
 func (c *Config) RejectOutputPublicTraffic(ctx context.Context, remove bool) error {
+	return c.targetOutputPublicTraffic(ctx, "REJECT", remove)
+}
+
+func (c *Config) DropOutputPublicTraffic(ctx context.Context, remove bool) error {
+	return c.targetOutputPublicTraffic(ctx, "DROP", remove)
+}
+
+func (c *Config) targetOutputPublicTraffic(ctx context.Context, target string, remove bool) error {
 	removeInstructions := []string{
 		"-D OUTPUT -j PUBLIC_ONLY",
 		"-F PUBLIC_ONLY",
@@ -223,11 +231,15 @@ func (c *Config) RejectOutputPublicTraffic(ctx context.Context, remove bool) err
 		ipv6Instructions = append(ipv6Instructions, instruction)
 	}
 
-	// Block UDP and ICMP, sending back ICMP port unreachable.
-	appendToBoth("-A PUBLIC_ONLY -m conntrack --ctstate RELATED,ESTABLISHED -j REJECT")
-	// Block TCP by sending back TCP RST packets.
-	appendToBoth("-A PUBLIC_ONLY -p tcp -m conntrack --ctstate RELATED,ESTABLISHED " +
-		"-j REJECT --reject-with tcp-reset")
+	if target == "REJECT" {
+		// Block TCP by sending back TCP RST packets.
+		appendToBoth("-A PUBLIC_ONLY -p tcp -m conntrack --ctstate RELATED,ESTABLISHED " +
+			"-j REJECT --reject-with tcp-reset")
+		// Block UDP and ICMP, sending back ICMP port unreachable.
+		appendToBoth("-A PUBLIC_ONLY -m conntrack --ctstate RELATED,ESTABLISHED -j REJECT")
+	} else {
+		appendToBoth("-A PUBLIC_ONLY -m conntrack --ctstate RELATED,ESTABLISHED -j " + target)
+	}
 	appendToBoth("-I OUTPUT -j PUBLIC_ONLY")
 
 	kernelErr := checkKernelModulesAreOK(c.modules.nfConntrack,
