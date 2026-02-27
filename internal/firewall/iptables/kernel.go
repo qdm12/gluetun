@@ -27,7 +27,7 @@ func newKernelModules() kernelModules {
 		"nf_reject_ipv4":       &m.nfRejectIPv4,
 		"xt_connmark":          &m.xtConnmark,
 		"xt_conntrack":         &m.xtConntrack,
-		"xt_reject":            &m.xtReject,
+		"xt_REJECT":            &m.xtReject,
 	}
 	for name, fieldPtr := range nameToFieldPtr {
 		fieldPtr.name = name

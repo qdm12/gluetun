@@ -92,12 +92,12 @@ func moduleNameToKernelFeatureGroups(moduleName string) (featureGroups [][]strin
 		"nf_reject_ipv4":       {{"CONFIG_NF_REJECT_IPV4"}},
 
 		// Common Netfilter Targets
-		"xt_log": {{"CONFIG_NETFILTER_XT_TARGET_LOG"}},
-		"xt_reject": {
+		"xt_LOG": {{"CONFIG_NETFILTER_XT_TARGET_LOG"}},
+		"xt_REJECT": {
 			{"CONFIG_IP_NF_TARGET_REJECT", "CONFIG_NF_REJECT_IPV4"},
 			{"CONFIG_NETFILTER_XT_TARGET_REJECT", "CONFIG_NF_REJECT_IPV4"},
 		},
-		"xt_masquerade": {{"CONFIG_NETFILTER_XT_TARGET_MASQUERADE"}},
+		"xt_MASQUERADE": {{"CONFIG_NETFILTER_XT_TARGET_MASQUERADE"}},
 
 		// Additional Netfilter Matches
 		"xt_addrtype":  {{"CONFIG_NETFILTER_XT_MATCH_ADDRTYPE"}},
