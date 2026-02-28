@@ -25,7 +25,7 @@ func (s *Source) lazyLoadWireguardConf() WireguardConfig {
 	return s.cached.wireguardConf
 }
 
-type AmneziaWgConfig struct {
+type amneziaWgConfig struct {
 	Jc   *string
 	Jmin *string
 	Jmax *string
@@ -44,8 +44,8 @@ type AmneziaWgConfig struct {
 	I5   *string
 }
 
-func NewAmneziaWgConfigFromInerfaceIniSection(interfaceSection *ini.Section) *AmneziaWgConfig {
-	return &AmneziaWgConfig{
+func parseWireguardAmneziaInterfaceSection(interfaceSection *ini.Section) amneziaWgConfig {
+	return amneziaWgConfig{
 		Jc:   getINIKeyFromSection(interfaceSection, "Jc"),
 		Jmin: getINIKeyFromSection(interfaceSection, "Jmin"),
 		Jmax: getINIKeyFromSection(interfaceSection, "Jmax"),
@@ -72,7 +72,7 @@ type WireguardConfig struct {
 	PublicKey     *string
 	EndpointIP    *string
 	EndpointPort  *string
-	AmneziaParams AmneziaWgConfig
+	AmneziaParams amneziaWgConfig
 }
 
 var regexINISectionNotExist = regexp.MustCompile(`^section ".+" does not exist$`)
@@ -89,7 +89,7 @@ func ParseWireguardConf(path string) (config WireguardConfig, err error) {
 	interfaceSection, err := iniFile.GetSection("Interface")
 	if err == nil {
 		config.PrivateKey, config.Addresses = parseWireguardInterfaceSection(interfaceSection)
-		config.AmneziaParams = *NewAmneziaWgConfigFromInerfaceIniSection(interfaceSection)
+		config.AmneziaParams = parseWireguardAmneziaInterfaceSection(interfaceSection)
 	} else if !regexINISectionNotExist.MatchString(err.Error()) {
 		// can never happen
 		return WireguardConfig{}, fmt.Errorf("getting interface section: %w", err)
@@ -107,7 +107,9 @@ func ParseWireguardConf(path string) (config WireguardConfig, err error) {
 	return config, nil
 }
 
-func parseWireguardInterfaceSection(interfaceSection *ini.Section) (privateKey, addresses *string) {
+func parseWireguardInterfaceSection(interfaceSection *ini.Section) (
+	privateKey, addresses *string,
+) {
 	privateKey = getINIKeyFromSection(interfaceSection, "PrivateKey")
 	addresses = getINIKeyFromSection(interfaceSection, "Address")
 	return privateKey, addresses

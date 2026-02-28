@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/amneziawg"
 	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
@@ -48,7 +47,7 @@ type Wireguard struct {
 	// in the internal state.
 	Implementation string `json:"implementation"`
 	// AmneziaWG contains obfuscation parameters
-	AmneziaWG amneziawg.Settings `json:"amneziawg"`
+	AmneziaWG AmneziaWg `json:"amneziawg"`
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -144,7 +143,7 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 		return fmt.Errorf("%w: %w", ErrWireguardImplementationNotValid, err)
 	}
 
-	err = w.AmneziaWG.Validate()
+	err = w.AmneziaWG.validate()
 	if err != nil {
 		return fmt.Errorf("amneziawg settings: %w", err)
 	}
@@ -162,7 +161,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 		Interface:                   w.Interface,
 		MTU:                         w.MTU,
 		Implementation:              w.Implementation,
-		AmneziaWG:                   w.AmneziaWG.Copy(),
+		AmneziaWG:                   w.AmneziaWG.copy(),
 	}
 }
 
@@ -176,7 +175,7 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.Interface = gosettings.OverrideWithComparable(w.Interface, other.Interface)
 	w.MTU = gosettings.OverrideWithComparable(w.MTU, other.MTU)
 	w.Implementation = gosettings.OverrideWithComparable(w.Implementation, other.Implementation)
-	w.AmneziaWG = gosettings.OverrideWithComparable(w.AmneziaWG, other.AmneziaWG)
+	w.AmneziaWG.overrideWith(other.AmneziaWG)
 }
 
 func (w *Wireguard) setDefaults(vpnProvider string) {
@@ -242,7 +241,11 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	}
 
 	if w.Implementation != "auto" {
-		node.Appendf("Implementation: %s", w.Implementation)
+		implNode := node.Appendf("Implementation: %s", w.Implementation)
+
+		if w.Implementation == "amneziawg" {
+			implNode.AppendNode(w.AmneziaWG.toLinesNode())
+		}
 	}
 
 	return node
@@ -255,60 +258,39 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
 	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
 
-	jc, err := r.Uint16Ptr("WIREGUARD_JC")
+	w.AmneziaWG.JunkPacketCount, err = r.Uint16("WIREGUARD_JC")
 	if err != nil {
 		return err
-	}
-	if jc != nil {
-		w.AmneziaWG.JunkPacketCount = jc
 	}
 
-	jmin, err := r.Uint16Ptr("WIREGUARD_JMIN")
+	w.AmneziaWG.JunkPacketMin, err = r.Uint16("WIREGUARD_JMIN")
 	if err != nil {
 		return err
-	}
-	if jmin != nil {
-		w.AmneziaWG.JunkPacketMin = jmin
 	}
 
-	jmax, err := r.Uint16Ptr("WIREGUARD_JMAX")
+	w.AmneziaWG.JunkPacketMax, err = r.Uint16("WIREGUARD_JMAX")
 	if err != nil {
 		return err
-	}
-	if jmax != nil {
-		w.AmneziaWG.JunkPacketMax = jmax
 	}
 
-	s1, err := r.Uint16Ptr("WIREGUARD_S1")
+	w.AmneziaWG.PaddingS1, err = r.Uint16("WIREGUARD_S1")
 	if err != nil {
 		return err
-	}
-	if s1 != nil {
-		w.AmneziaWG.PaddingS1 = s1
 	}
 
-	s2, err := r.Uint16Ptr("WIREGUARD_S2")
+	w.AmneziaWG.PaddingS2, err = r.Uint16("WIREGUARD_S2")
 	if err != nil {
 		return err
-	}
-	if s2 != nil {
-		w.AmneziaWG.PaddingS2 = s2
 	}
 
-	s3, err := r.Uint16Ptr("WIREGUARD_S3")
+	w.AmneziaWG.PaddingS3, err = r.Uint16("WIREGUARD_S3")
 	if err != nil {
 		return err
-	}
-	if s3 != nil {
-		w.AmneziaWG.PaddingS3 = s3
 	}
 
-	s4, err := r.Uint16Ptr("WIREGUARD_S4")
+	w.AmneziaWG.PaddingS4, err = r.Uint16("WIREGUARD_S4")
 	if err != nil {
 		return err
-	}
-	if s4 != nil {
-		w.AmneziaWG.PaddingS4 = s4
 	}
 
 	w.AmneziaWG.HeaderH1 = r.String("WIREGUARD_H1", reader.ForceLowercase(false))

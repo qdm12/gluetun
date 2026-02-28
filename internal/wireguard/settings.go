@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/amneziawg"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
@@ -51,7 +50,7 @@ type Settings struct {
 	// and defaults to auto.
 	Implementation string
 	// AmneziaWG settings are extra obfuscation parameters
-	AmneziaWG amneziawg.Settings
+	AmneziaWG AmneziaSettings
 }
 
 func (s *Settings) SetDefaults() {
@@ -87,7 +86,8 @@ func (s *Settings) SetDefaults() {
 	}
 
 	if s.Implementation == "" {
-		s.Implementation = "auto"
+		const defaultImplementation = "auto"
+		s.Implementation = defaultImplementation
 	}
 }
 
@@ -184,11 +184,6 @@ func (s *Settings) Check() (err error) {
 	case "auto", "kernelspace", "userspace", "amneziawg":
 	default:
 		return fmt.Errorf("%w: %s", ErrImplementationInvalid, s.Implementation)
-	}
-
-	err = s.AmneziaWG.Validate()
-	if err != nil {
-		return fmt.Errorf("validating amneziawg settings: %w", err)
 	}
 
 	return nil
