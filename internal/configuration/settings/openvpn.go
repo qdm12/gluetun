@@ -268,6 +268,8 @@ func (o *OpenVPN) copy() (copied OpenVPN) {
 // overrideWith overrides fields of the receiver
 // settings object with any field set in the other
 // settings.
+//
+//nolint:dupl
 func (o *OpenVPN) overrideWith(other OpenVPN) {
 	o.Version = gosettings.OverrideWithComparable(o.Version, other.Version)
 	o.User = gosettings.OverrideWithPointer(o.User, other.User)
