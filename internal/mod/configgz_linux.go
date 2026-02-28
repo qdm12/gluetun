@@ -81,8 +81,11 @@ func moduleNameToKernelFeatureGroups(moduleName string) (featureGroups [][]strin
 		// Netfilter Matches
 		"xt_conntrack": {{"CONFIG_NETFILTER_XT_MATCH_CONNTRACK"}},
 		"xt_connmark": {
-			{"CONFIG_NETFILTER_XT_CONNMARK"},
-			{"CONFIG_NETFILTER_XT_MATCH_CONNMARK", "CONFIG_NETFILTER_XT_TARGET_CONNMARK"},
+			{"CONFIG_NETFILTER_XT_MATCH_CONNMARK"},
+		},
+		"xt_CONNMARK": {
+			{"CONFIG_NETFILTER_XT_MATCH_CONNMARK"},
+			{"CONFIG_NETFILTER_XT_TARGET_CONNMARK"}, // older kernels
 		},
 		"xt_mark": {
 			{"CONFIG_NETFILTER_XT_MARK"},

@@ -185,7 +185,7 @@ func (c *Config) AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error {
 	}
 
 	kernelErr := checkKernelModulesAreOK(c.modules.nfConntrack,
-		c.modules.xtConntrack, c.modules.xtConnmark)
+		c.modules.xtConntrack, c.modules.xtConnmark, c.modules.xtCONNMARK)
 
 	err = c.runIptablesInstructionsNoSave(ctx, ipv4Instructions)
 	if err != nil {

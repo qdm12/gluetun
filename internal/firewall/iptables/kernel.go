@@ -11,6 +11,7 @@ type kernelModules struct {
 	nfConntrack  kernelModule
 	nfRejectIPv4 kernelModule
 	xtConnmark   kernelModule
+	xtCONNMARK   kernelModule
 	xtConntrack  kernelModule
 	xtReject     kernelModule
 }
@@ -26,6 +27,7 @@ func newKernelModules() kernelModules {
 		"nf_conntrack_netlink": &m.nfConntrack,
 		"nf_reject_ipv4":       &m.nfRejectIPv4,
 		"xt_connmark":          &m.xtConnmark,
+		"xt_CONNMARK":          &m.xtCONNMARK,
 		"xt_conntrack":         &m.xtConntrack,
 		"xt_REJECT":            &m.xtReject,
 	}
