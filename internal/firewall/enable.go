@@ -45,6 +45,12 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		return fmt.Errorf("saving firewall rules: %w", err)
 	}
 
+	defer func() {
+		if err != nil {
+			c.restore(context.Background())
+		}
+	}()
+
 	if err = c.impl.SetIPv4AllPolicies(ctx, "DROP"); err != nil {
 		return err
 	}
@@ -52,12 +58,6 @@ func (c *Config) enable(ctx context.Context) (err error) {
 	if err = c.impl.SetIPv6AllPolicies(ctx, "DROP"); err != nil {
 		return err
 	}
-
-	defer func() {
-		if err != nil {
-			c.restore(context.Background())
-		}
-	}()
 
 	// Loopback traffic
 	if err = c.impl.AcceptInputThroughInterface(ctx, "lo"); err != nil {
