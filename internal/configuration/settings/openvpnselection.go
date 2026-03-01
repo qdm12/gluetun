@@ -60,7 +60,6 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		providers.Giganews,
 		providers.Ipvanish,
 		providers.Perfectprivacy,
-		providers.Privado,
 		providers.Vyprvpn,
 	) {
 		return fmt.Errorf("%w: for VPN service provider %s",
