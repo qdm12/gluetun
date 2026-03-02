@@ -81,11 +81,8 @@ func moduleNameToKernelFeatureGroups(moduleName string) (featureGroups [][]strin
 		// Netfilter Matches
 		"xt_conntrack": {{"CONFIG_NETFILTER_XT_MATCH_CONNTRACK"}},
 		"xt_connmark": {
-			{"CONFIG_NETFILTER_XT_MATCH_CONNMARK"},
-		},
-		"xt_CONNMARK": {
-			{"CONFIG_NETFILTER_XT_MATCH_CONNMARK"},
-			{"CONFIG_NETFILTER_XT_TARGET_CONNMARK"}, // older kernels
+			{"CONFIG_NETFILTER_XT_CONNMARK"},
+			{"CONFIG_NETFILTER_XT_MATCH_CONNMARK", "CONFIG_NETFILTER_XT_TARGET_CONNMARK"},
 		},
 		"xt_mark": {
 			{"CONFIG_NETFILTER_XT_MARK"},
@@ -95,12 +92,12 @@ func moduleNameToKernelFeatureGroups(moduleName string) (featureGroups [][]strin
 		"nf_reject_ipv4":       {{"CONFIG_NF_REJECT_IPV4"}},
 
 		// Common Netfilter Targets
-		"xt_LOG": {{"CONFIG_NETFILTER_XT_TARGET_LOG"}},
-		"xt_REJECT": {
+		"xt_log": {{"CONFIG_NETFILTER_XT_TARGET_LOG"}},
+		"xt_reject": {
 			{"CONFIG_IP_NF_TARGET_REJECT", "CONFIG_NF_REJECT_IPV4"},
 			{"CONFIG_NETFILTER_XT_TARGET_REJECT", "CONFIG_NF_REJECT_IPV4"},
 		},
-		"xt_MASQUERADE": {{"CONFIG_NETFILTER_XT_TARGET_MASQUERADE"}},
+		"xt_masquerade": {{"CONFIG_NETFILTER_XT_TARGET_MASQUERADE"}},
 
 		// Additional Netfilter Matches
 		"xt_addrtype":  {{"CONFIG_NETFILTER_XT_MATCH_ADDRTYPE"}},
