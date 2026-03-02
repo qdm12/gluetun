@@ -60,7 +60,6 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 		providers.Giganews,
 		providers.Ipvanish,
 		providers.Perfectprivacy,
-		providers.Privado,
 		providers.Vyprvpn,
 	) {
 		return fmt.Errorf("%w: for VPN service provider %s",
@@ -75,8 +74,8 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			providers.Privatevpn, providers.Torguard:
 		// no custom port allowed
 		case providers.Expressvpn, providers.Fastestvpn,
-			providers.Giganews, providers.Ipvanish, providers.Nordvpn,
-			providers.Privado, providers.Purevpn,
+			providers.Giganews, providers.Ipvanish,
+			providers.Nordvpn, providers.Purevpn,
 			providers.Surfshark, providers.VPNSecure,
 			providers.VPNUnlimited, providers.Vyprvpn:
 			return fmt.Errorf("%w: for VPN service provider %s",
@@ -99,6 +98,9 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			case providers.Perfectprivacy:
 				allowedTCP = []uint16{44, 443, 4433}
 				allowedUDP = []uint16{44, 443, 4433}
+			case providers.Privado:
+				allowedTCP = []uint16{443, 1194, 8080, 8443}
+				allowedUDP = []uint16{443, 1194, 8080, 8443}
 			case providers.PrivateInternetAccess:
 				allowedTCP = []uint16{80, 110, 443}
 				allowedUDP = []uint16{53, 1194, 1197, 1198, 8080, 9201}
