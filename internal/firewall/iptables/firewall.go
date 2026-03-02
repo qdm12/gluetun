@@ -17,7 +17,6 @@ type Config struct {
 	// Fixed state
 	ipTables  string
 	ip6Tables string
-	modules   kernelModules
 }
 
 func New(ctx context.Context, runner CmdRunner, logger Logger) (*Config, error) {
@@ -36,6 +35,5 @@ func New(ctx context.Context, runner CmdRunner, logger Logger) (*Config, error) 
 		logger:    logger,
 		ipTables:  iptables,
 		ip6Tables: ip6tables,
-		modules:   newKernelModules(),
 	}, nil
 }

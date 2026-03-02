@@ -141,22 +141,18 @@ func (c *Config) AcceptOutputThroughInterface(ctx context.Context, intf string, 
 }
 
 func (c *Config) AcceptEstablishedRelatedTraffic(ctx context.Context) error {
-	err := c.runMixedIptablesInstructions(ctx, []string{
+	return c.runMixedIptablesInstructions(ctx, []string{
 		"--append OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
 		"--append INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
 	})
-	if err != nil && !c.modules.nfConntrack.ok {
-		return fmt.Errorf("%w: %s", ErrKernelModuleMissing, c.modules.nfConntrack.name)
-	}
-	return err
 }
 
 // AcceptOutputPublicOnlyNewTraffic adds rules to mark new output connections, and to accept
 // established or related packets with this mark only. This effectively forces
 // previously established or related traffic to be blocked.
 // If remove is true, the rules are removed instead of appended.
-// If the relevant kernel modules (nf_conntrack, xt_conntrack and xt_connmark)
-// are not available, it returns an error indicating which kernel module is missing.
+// If the relevant kernel modules are not available, it returns an error indicating
+// which kernel module is missing.
 func (c *Config) AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error {
 	ipv4Instructions, ipv6Instructions := makeCreatePublicIPChainInstructions()
 	appendToBoth := func(instruction string) {
@@ -184,23 +180,14 @@ func (c *Config) AcceptOutputPublicOnlyNewTraffic(ctx context.Context) error {
 		return err
 	}
 
-	kernelErr := checkKernelModulesAreOK(c.modules.nfConntrack,
-		c.modules.xtConntrack, c.modules.xtConnmark, c.modules.xtCONNMARK)
-
 	err = c.runIptablesInstructionsNoSave(ctx, ipv4Instructions)
 	if err != nil {
 		restore(ctx)
-		if strings.Contains(err.Error(), "support") && kernelErr != nil {
-			err = fmt.Errorf("%w: %w", err, kernelErr)
-		}
 		return err
 	}
 	err = c.runIP6tablesInstructionsNoSave(ctx, ipv6Instructions)
 	if err != nil {
 		restore(ctx)
-		if strings.Contains(err.Error(), "support") && kernelErr != nil {
-			err = fmt.Errorf("%w: %w", err, kernelErr)
-		}
 		return err
 	}
 
@@ -242,22 +229,18 @@ func (c *Config) targetOutputPublicTraffic(ctx context.Context, target string, r
 	}
 	appendToBoth("-I OUTPUT -j PUBLIC_ONLY")
 
-	kernelErr := checkKernelModulesAreOK(c.modules.nfConntrack,
-		c.modules.nfRejectIPv4, c.modules.xtReject)
-
 	err := c.runIptablesInstructions(ctx, ipv4Instructions)
 	if err != nil {
-		if strings.Contains(err.Error(), "support") && kernelErr != nil {
-			err = fmt.Errorf("%w: %w", err, kernelErr)
+		if strings.Contains(err.Error(), " support") {
+			return fmt.Errorf("%w: %w", ErrKernelModuleMissing, err)
 		}
-		return err
 	}
 
 	err = c.runIP6tablesInstructions(ctx, ipv6Instructions)
 	if err != nil {
 		_ = c.runIptablesInstructions(ctx, removeInstructions)
-		if strings.Contains(err.Error(), "support") && kernelErr != nil {
-			err = fmt.Errorf("%w: %w", err, kernelErr)
+		if strings.Contains(err.Error(), " support") {
+			return fmt.Errorf("%w: %w", ErrKernelModuleMissing, err)
 		}
 		return err
 	}
