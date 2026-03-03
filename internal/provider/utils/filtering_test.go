@@ -167,101 +167,6 @@ func Test_FilterServers(t *testing.T) {
 				{PortForward: true, VPN: vpn.OpenVPN, UDP: true},
 			},
 		},
-		"filter by purevpn regular server type": {
-			selection: settings.ServerSelection{
-				PureVPNServerTypes: []string{"regular"},
-			}.WithDefaults(providers.Purevpn),
-			servers: []models.Server{
-				{PortForward: true, VPN: vpn.OpenVPN, UDP: true},
-				{QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-				{Obfuscated: true, VPN: vpn.OpenVPN, UDP: true},
-				{VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
-		"filter by purevpn portforwarding server type": {
-			selection: settings.ServerSelection{
-				PureVPNServerTypes: []string{"portforwarding"},
-			}.WithDefaults(providers.Purevpn),
-			servers: []models.Server{
-				{PortForward: false, VPN: vpn.OpenVPN, UDP: true},
-				{PortForward: true, VPN: vpn.OpenVPN, UDP: true},
-				{PortForward: true, QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{PortForward: true, VPN: vpn.OpenVPN, UDP: true},
-				{PortForward: true, QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
-		"filter by purevpn quantumresistant server type": {
-			selection: settings.ServerSelection{
-				PureVPNServerTypes: []string{"quantumresistant"},
-			}.WithDefaults(providers.Purevpn),
-			servers: []models.Server{
-				{PortForward: true, VPN: vpn.OpenVPN, UDP: true},
-				{QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-				{PortForward: true, QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-				{PortForward: true, QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
-		"filter by purevpn obfuscation server type": {
-			selection: settings.ServerSelection{
-				PureVPNServerTypes: []string{"obfuscation"},
-			}.WithDefaults(providers.Purevpn),
-			servers: []models.Server{
-				{QuantumResistant: true, VPN: vpn.OpenVPN, UDP: true},
-				{Obfuscated: true, VPN: vpn.OpenVPN, UDP: true},
-				{Obfuscated: true, PortForward: true, VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{Obfuscated: true, VPN: vpn.OpenVPN, UDP: true},
-				{Obfuscated: true, PortForward: true, VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
-		"filter by purevpn p2p server type": {
-			selection: settings.ServerSelection{
-				PureVPNServerTypes: []string{"p2p"},
-			}.WithDefaults(providers.Purevpn),
-			servers: []models.Server{
-				{Categories: []string{"standard"}, VPN: vpn.OpenVPN, UDP: true},
-				{Categories: []string{"p2p"}, VPN: vpn.OpenVPN, UDP: true},
-				{Categories: []string{"p2p", "other"}, VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{Categories: []string{"p2p"}, VPN: vpn.OpenVPN, UDP: true},
-				{Categories: []string{"p2p", "other"}, VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
-		"filter by purevpn country codes": {
-			selection: settings.ServerSelection{
-				PureVPNCountryCodes: []string{"us"},
-			}.WithDefaults(providers.Purevpn),
-			servers: []models.Server{
-				{Hostname: "usca2-auto-udp.ptoserver.com", VPN: vpn.OpenVPN, UDP: true},
-				{Hostname: "de2-auto-udp.ptoserver.com", VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{Hostname: "usca2-auto-udp.ptoserver.com", VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
-		"filter by purevpn location codes": {
-			selection: settings.ServerSelection{
-				PureVPNLocationCodes: []string{"usca"},
-			}.WithDefaults(providers.Purevpn),
-			servers: []models.Server{
-				{Hostname: "usca2-auto-udp.ptoserver.com", VPN: vpn.OpenVPN, UDP: true},
-				{Hostname: "usny2-auto-udp.ptoserver.com", VPN: vpn.OpenVPN, UDP: true},
-				{Hostname: "de2-auto-udp.ptoserver.com", VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{Hostname: "usca2-auto-udp.ptoserver.com", VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
 		"filter by country": {
 			selection: settings.ServerSelection{
 				Countries: []string{"b"},
@@ -273,6 +178,19 @@ func Test_FilterServers(t *testing.T) {
 			},
 			filtered: []models.Server{
 				{Country: "b", VPN: vpn.OpenVPN, UDP: true},
+			},
+		},
+		"filter by region": {
+			selection: settings.ServerSelection{
+				Regions: []string{"b"},
+			}.WithDefaults(providers.Surfshark),
+			servers: []models.Server{
+				{Region: "a", VPN: vpn.OpenVPN, UDP: true},
+				{Region: "b", VPN: vpn.OpenVPN, UDP: true},
+				{Region: "c", VPN: vpn.OpenVPN, UDP: true},
+			},
+			filtered: []models.Server{
+				{Region: "b", VPN: vpn.OpenVPN, UDP: true},
 			},
 		},
 		"filter by city": {
@@ -299,19 +217,6 @@ func Test_FilterServers(t *testing.T) {
 			},
 			filtered: []models.Server{
 				{Categories: []string{"legacy_p2p"}, VPN: vpn.OpenVPN, UDP: true},
-			},
-		},
-		"filter by categories match all": {
-			selection: settings.ServerSelection{
-				Categories: []string{"legacy_p2p", "streaming"},
-			}.WithDefaults(providers.Nordvpn),
-			servers: []models.Server{
-				{Categories: []string{"legacy_p2p"}, VPN: vpn.OpenVPN, UDP: true},
-				{Categories: []string{"streaming"}, VPN: vpn.OpenVPN, UDP: true},
-				{Categories: []string{"legacy_p2p", "streaming"}, VPN: vpn.OpenVPN, UDP: true},
-			},
-			filtered: []models.Server{
-				{Categories: []string{"legacy_p2p", "streaming"}, VPN: vpn.OpenVPN, UDP: true},
 			},
 		},
 		"filter by ISP": {

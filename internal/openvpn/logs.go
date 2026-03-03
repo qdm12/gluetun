@@ -54,7 +54,7 @@ That error usually happens because either:
 1. The VPN server IP address you are trying to connect to is no longer valid 🔌
    Check out https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
 
-2. The VPN server crashed 💥, try changing your VPN servers filtering options such as SERVER_CITIES
+2. The VPN server crashed 💥, try changing your VPN servers filtering options such as SERVER_REGIONS
 
 3. Your Internet connection is not working 🤯, ensure it works
 

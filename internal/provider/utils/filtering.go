@@ -59,13 +59,6 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if filterByPureVPNServerTypes(server, selection.PureVPNServerTypes) {
-		return true
-	}
-	if filterByPureVPNLocationCodes(server, selection.PureVPNCountryCodes, selection.PureVPNLocationCodes) {
-		return true
-	}
-
 	if *selection.SecureCoreOnly && !server.SecureCore {
 		return true
 	}
@@ -78,7 +71,11 @@ func filterServer(server models.Server,
 		return true
 	}
 
-	if filterAllByPossibilities(server.Categories, selection.Categories) {
+	if filterAnyByPossibilities(server.Categories, selection.Categories) {
+		return true
+	}
+
+	if filterByPossibilities(server.Region, selection.Regions) {
 		return true
 	}
 
@@ -107,92 +104,6 @@ func filterServer(server models.Server,
 	return false
 }
 
-func filterByPureVPNServerTypes(server models.Server, serverTypes []string) (filtered bool) {
-	isP2P := containsCategory(server.Categories, "p2p")
-	if len(serverTypes) == 0 {
-		return server.Obfuscated
-	}
-
-	allowObfuscated := containsCategory(serverTypes, "obfuscation")
-	if server.Obfuscated && !allowObfuscated {
-		return true
-	}
-
-	for _, serverType := range serverTypes {
-		switch serverType {
-		case "regular":
-			if server.PortForward || server.QuantumResistant || server.Obfuscated || isP2P {
-				return true
-			}
-		case "portforwarding":
-			if !server.PortForward {
-				return true
-			}
-		case "quantumresistant":
-			if !server.QuantumResistant {
-				return true
-			}
-		case "obfuscation":
-			if !server.Obfuscated {
-				return true
-			}
-		case "p2p":
-			if !isP2P {
-				return true
-			}
-		default:
-			return false
-		}
-	}
-	return false
-}
-
-func containsCategory(categories []string, category string) bool {
-	for _, existingCategory := range categories {
-		if strings.EqualFold(existingCategory, category) {
-			return true
-		}
-	}
-	return false
-}
-
-func filterByPureVPNLocationCodes(server models.Server,
-	countryCodes, locationCodes []string,
-) (filtered bool) {
-	if len(countryCodes) == 0 && len(locationCodes) == 0 {
-		return false
-	}
-
-	countryCode, locationCode := parsePureVPNLocationCodes(server.Hostname)
-	if len(countryCodes) > 0 && filterByPossibilities(countryCode, countryCodes) {
-		return true
-	}
-	if len(locationCodes) > 0 && filterByPossibilities(locationCode, locationCodes) {
-		return true
-	}
-	return false
-}
-
-func parsePureVPNLocationCodes(hostname string) (countryCode, locationCode string) {
-	firstLabel := hostname
-	if dotIndex := strings.IndexByte(hostname, '.'); dotIndex > -1 {
-		firstLabel = hostname[:dotIndex]
-	}
-
-	twoMinusIndex := strings.Index(firstLabel, "2-")
-	if twoMinusIndex <= 0 {
-		return "", ""
-	}
-
-	locationCode = strings.ToLower(firstLabel[:twoMinusIndex])
-	if len(locationCode) < 2 {
-		return "", ""
-	}
-
-	countryCode = locationCode[:2]
-	return countryCode, locationCode
-}
-
 func filterByPossibilities[T string | uint16](value T, possibilities []T) (filtered bool) {
 	if len(possibilities) == 0 {
 		return false
@@ -217,16 +128,4 @@ func filterAnyByPossibilities(values, possibilities []string) (filtered bool) {
 	}
 
 	return true
-}
-
-func filterAllByPossibilities(values, possibilities []string) (filtered bool) {
-	if len(possibilities) == 0 {
-		return false
-	}
-	for _, possibility := range possibilities {
-		if !containsCategory(values, possibility) {
-			return true
-		}
-	}
-	return false
 }

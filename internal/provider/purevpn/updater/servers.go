@@ -3,7 +3,6 @@ package updater
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"net/netip"
 	"sort"
 	"strings"
@@ -16,12 +15,12 @@ import (
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
-	debURL, err := fetchDebURL(ctx, http.DefaultClient)
+	debURL, err := fetchDebURL(ctx, u.client)
 	if err != nil {
 		return nil, fmt.Errorf("fetching .deb URL: %w", err)
 	}
 
-	debContent, err := fetchURL(ctx, http.DefaultClient, debURL)
+	debContent, err := fetchURL(ctx, u.client, debURL)
 	if err != nil {
 		return nil, fmt.Errorf("fetching PureVPN .deb file %q: %w", debURL, err)
 	}
@@ -60,7 +59,7 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, fmt.Errorf("building inventory URL: %w", err)
 	}
 
-	inventoryContent, err := fetchURL(ctx, http.DefaultClient, inventoryURL)
+	inventoryContent, err := fetchURL(ctx, u.client, inventoryURL)
 	if err != nil {
 		return nil, fmt.Errorf("fetching inventory JSON %q: %w", inventoryURL, err)
 	}
