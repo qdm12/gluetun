@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/netip"
+	"slices"
 
 	"github.com/qdm12/dns/v2/pkg/doh"
 	"github.com/qdm12/dns/v2/pkg/dot"
@@ -28,12 +29,12 @@ func (l *Loop) SetSettings(ctx context.Context, settings settings.DNS) (
 
 func buildServerSettings(userSettings settings.DNS,
 	filter *mapfilter.Filter, localResolvers []netip.Addr,
-	logger Logger) (
+	localSubnets []netip.Prefix, logger Logger) (
 	serverSettings server.Settings, err error,
 ) {
 	serverSettings.Logger = logger
 
-	upstreamResolvers := buildProviders(userSettings)
+	upstreamResolvers := buildProviders(userSettings, localSubnets, logger)
 
 	ipVersion := "ipv4"
 	if *userSettings.IPv6 {
@@ -116,7 +117,9 @@ func buildServerSettings(userSettings settings.DNS,
 	return serverSettings, nil
 }
 
-func buildProviders(userSettings settings.DNS) (providers []provider.Provider) {
+func buildProviders(userSettings settings.DNS, localSubnets []netip.Prefix,
+	logger Logger,
+) (providers []provider.Provider) {
 	providersCount := len(userSettings.Providers)
 	if userSettings.UpstreamType == settings.DNSUpstreamTypePlain {
 		providersCount += len(userSettings.UpstreamPlainAddresses)
@@ -133,10 +136,20 @@ func buildProviders(userSettings settings.DNS) (providers []provider.Provider) {
 	}
 
 	for _, addrPort := range userSettings.UpstreamPlainAddresses {
+		addr := addrPort.Addr()
+		if addr.IsPrivate() && !addr.IsLoopback() &&
+			!slices.ContainsFunc(localSubnets, func(prefix netip.Prefix) bool {
+				return prefix.Contains(addr)
+			}) {
+			logger.Warnf("DNS server address %s is not in local subnets, "+
+				"make sure to specify it in FIREWALL_OUTBOUND_SUBNETS as %s",
+				addr, netip.PrefixFrom(addr, addr.BitLen()))
+		}
+
 		provider := provider.Provider{
 			Name: addrPort.String(),
 		}
-		if addrPort.Addr().Is4() {
+		if addr.Is4() {
 			provider.Plain.IPv4 = []netip.AddrPort{addrPort}
 		} else {
 			provider.Plain.IPv6 = []netip.AddrPort{addrPort}

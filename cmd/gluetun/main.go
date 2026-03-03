@@ -399,7 +399,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	dnsLogger := logger.New(log.SetComponent("dns"))
 	dnsLooper, err := dns.NewLoop(allSettings.DNS, httpClient,
-		dnsLogger)
+		dnsLogger, localNetworksToPrefixes(localNetworks))
 	if err != nil {
 		return fmt.Errorf("creating DNS loop: %w", err)
 	}
@@ -551,6 +551,14 @@ func printVersions(ctx context.Context, logger infoer,
 	}
 
 	return nil
+}
+
+func localNetworksToPrefixes(localNetworks []routing.LocalNetwork) (prefixes []netip.Prefix) {
+	prefixes = make([]netip.Prefix, len(localNetworks))
+	for i, localNetwork := range localNetworks {
+		prefixes[i] = localNetwork.IPNet
+	}
+	return prefixes
 }
 
 type netLinker interface {

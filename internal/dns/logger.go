@@ -5,5 +5,6 @@ type Logger interface {
 	Info(s string)
 	Infof(format string, args ...any)
 	Warn(s string)
+	Warnf(format string, args ...any)
 	Error(s string)
 }

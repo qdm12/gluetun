@@ -22,8 +22,8 @@ const (
 
 // DNS contains settings to configure DNS.
 type DNS struct {
-	// UpstreamType can be [dnsUpstreamTypeDot], [dnsUpstreamTypeDoh]
-	// or [dnsUpstreamTypePlain]. It defaults to [dnsUpstreamTypeDot].
+	// UpstreamType can be [DNSUpstreamTypeDot], [DNSUpstreamTypeDoh]
+	// or [DNSUpstreamTypePlain]. It defaults to [DNSUpstreamTypeDot].
 	UpstreamType string `json:"upstream_type"`
 	// UpdatePeriod is the period to update DNS block lists.
 	// It can be set to 0 to disable the update.

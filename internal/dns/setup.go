@@ -19,7 +19,7 @@ func (l *Loop) setupServer(ctx context.Context, settings settings.DNS) (runError
 		return nil, fmt.Errorf("updating filter for rebinding protection: %w", err)
 	}
 
-	serverSettings, err := buildServerSettings(settings, l.filter, l.localResolvers, l.logger)
+	serverSettings, err := buildServerSettings(settings, l.filter, l.localResolvers, l.localSubnets, l.logger)
 	if err != nil {
 		return nil, fmt.Errorf("building server settings: %w", err)
 	}
