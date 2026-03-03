@@ -337,11 +337,11 @@ func (c *Config) RunUserPostRules(ctx context.Context, filepath string) error {
 
 		switch {
 		case ipv4:
-			err = c.runIptablesInstruction(ctx, rule)
+			err = c.runIptablesInstructionNoSave(ctx, rule)
 		case c.ip6Tables == "":
 			err = fmt.Errorf("running user ip6tables rule: %w", ErrNeedIP6Tables)
 		default: // ipv6
-			err = c.runIP6tablesInstruction(ctx, rule)
+			err = c.runIP6tablesInstructionNoSave(ctx, rule)
 		}
 		if err != nil {
 			restore(ctx)

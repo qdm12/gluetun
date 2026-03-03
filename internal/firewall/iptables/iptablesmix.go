@@ -34,7 +34,7 @@ func (c *Config) runMixedIptablesInstruction(ctx context.Context, instruction st
 	if err != nil {
 		return err
 	}
-	err = c.runIptablesInstructionNoSave(ctx, instruction)
+	err = c.runMixedIptablesInstructionNoSave(ctx, instruction)
 	if err != nil {
 		restore(ctx)
 	}
