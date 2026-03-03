@@ -19,7 +19,8 @@ usage() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Update qBittorrent listening port, network interface, and address via its WebUI API."
-    echo "This script is designed to work with Gluetun's VPN_PORT_FORWARDING_UP_COMMAND."
+    echo "This script is designed to work with Gluetun's VPN_PORT_FORWARDING_UP_COMMAND"
+    echo "and VPN_PORT_FORWARDING_DOWN_COMMAND."
     echo ""
     echo "WARNING: If you do not provide --iface and --addr, they will be set to default values on every run"
     echo ""
@@ -47,11 +48,13 @@ usage() {
     echo "  {{PORTS}}          Replaced by the forwarded port numbers (comma separated)"
     echo "  {{VPN_INTERFACE}}  Replaced by the VPN interface name (e.g. tun0)"
     echo ""
-    echo "Example commands (set as value of VPN_PORT_FORWARDING_UP_COMMAND):"
+    echo "Examples:"
     echo "# With authentication:"
-    echo "/bin/sh -c \"/scripts/qbittorrent-port-update.sh --user ADMIN --pass **** --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 8080\""
+    echo "VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c \"/scripts/qbittorrent-port-update.sh --user ADMIN --pass **** --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 8080\""
+    echo "VPN_PORT_FORWARDING_DOWN_COMMAND=/bin/sh -c \"/scripts/qbittorrent-port-update.sh --user ADMIN --pass **** --port 0 --iface lo --webui-port 8080\""
     echo "# Without authentication (\"Bypass authentication for clients on localhost\" enabled in qBittorrent):"
-    echo "/bin/sh -c \"/scripts/qbittorrent-port-update.sh --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 8080\""
+    echo "VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c \"/scripts/qbittorrent-port-update.sh --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 8080\""
+    echo "VPN_PORT_FORWARDING_DOWN_COMMAND=/bin/sh -c \"/scripts/qbittorrent-port-update.sh --port 0 --iface lo --webui-port 8080\""
 }
 
 while [ $# -gt 0 ]; do
