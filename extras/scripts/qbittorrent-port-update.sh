@@ -47,7 +47,7 @@ usage() {
     echo "  {{PORTS}}          Replaced by the forwarded port numbers (comma separated)"
     echo "  {{VPN_INTERFACE}}  Replaced by the VPN interface name (e.g. tun0)"
     echo ""
-    echo "Example commands (set as value of VPN_PORT_FORWARDING_DOWN_COMMAND):"
+    echo "Example commands (set as value of VPN_PORT_FORWARDING_UP_COMMAND):"
     echo "# With authentication:"
     echo "/bin/sh -c \"/scripts/qbittorrent-port-update.sh --user ADMIN --pass **** --port {{PORT}} --iface {{VPN_INTERFACE}} --webui-port 8080\""
     echo "# Without authentication (\"Bypass authentication for clients on localhost\" enabled in qBittorrent):"
@@ -61,33 +61,68 @@ while [ $# -gt 0 ]; do
         exit 0
         ;;
     --user)
+        if [ $# -lt 2 ] || [ -z "$2" ]; then
+            echo "Error: --user requires a non-empty argument."
+            usage
+            exit 1
+        fi
         USERNAME="$2"
         _USECRED=true
         shift 2
         ;;
     --pass)
+        if [ $# -lt 2 ] || [ -z "$2" ]; then
+            echo "Error: --pass requires a non-empty argument."
+            usage
+            exit 1
+        fi
         PASSWORD="$2"
         _USECRED=true
         shift 2
         ;;
     --port)
+        if [ $# -lt 2 ] || [ -z "$2" ]; then
+            echo "Error: --port requires a non-empty argument."
+            usage
+            exit 1
+        fi
         VPN_PORT=$(echo "$2" | cut -d',' -f1)
         shift 2
         ;;
     --iface)
+        if [ $# -lt 2 ] || [ -z "$2" ]; then
+            echo "Error: --iface requires a non-empty argument."
+            usage
+            exit 1
+        fi
         VPN_INTERFACE="$2"
         shift 2
         ;;
     --addr)
+        if [ $# -lt 2 ] || [ -z "$2" ]; then
+            echo "Error: --addr requires a non-empty argument."
+            usage
+            exit 1
+        fi
         VPN_ADDRESS="$2"
         shift 2
         ;;
     --webui-port)
+        if [ $# -lt 2 ] || [ -z "$2" ]; then
+            echo "Error: --webui-port requires a non-empty argument."
+            usage
+            exit 1
+        fi
         WEBUI_PORT="$2"
         WEBUI_URL=$(build_default_url "$WEBUI_PORT")
         shift 2
         ;;
     --url)
+        if [ $# -lt 2 ] || [ -z "$2" ]; then
+            echo "Error: --url requires a non-empty argument."
+            usage
+            exit 1
+        fi
         WEBUI_URL="$2"
         shift 2
         ;;
@@ -104,7 +139,7 @@ if [ -z "${VPN_PORT}" ]; then
     exit 1
 fi
 
-if [ "${_USECRED}" ]; then
+if [ "${_USECRED}" = "true" ]; then
     # make sure username AND password were provided
     if [ -z "${USERNAME}" ]; then
         echo "ERROR: qBittorrent username not provided"
