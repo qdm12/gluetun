@@ -1,6 +1,37 @@
 name: Update servers list
 on:
   workflow_dispatch:
+    inputs:
+      provider:
+        description: "VPN Provider to update"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - airvpn
+          - cyberghost
+          - expressvpn
+          - fastestvpn
+          - giganews
+          - hidemyass
+          - ipvanish
+          - ivpn
+          - mullvad
+          - nordvpn
+          - perfect privacy
+          - privado
+          - private internet access
+          - privatevpn
+          - protonvpn
+          - purevpn
+          - slickvpn
+          - surfshark
+          - torguard
+          - vpnsecure
+          - vpn unlimited
+          - vyprvpn
+          - windscribe
   schedule:
     - cron: "11 3 1 */2 *" # Run at 03:11 on the 1st of every 2nd month
 jobs:
@@ -20,7 +51,18 @@ jobs:
 
       - name: Update servers list
         run: |
-          go run ./cmd/gluetun/main.go update -all -maintainer -proton-email "${{ secrets.PROTON_EMAIL }}" -proton-password "${{ secrets.PROTON_PASSWORD }}"
+          SELECTED_PROVIDER="${{ github.event.inputs.provider || 'all' }}"
+
+          if [ "$SELECTED_PROVIDER" = "all" ]; then
+            FLAGS="-all"
+          else
+            FLAGS="-providers $SELECTED_PROVIDER"
+          fi
+
+          go run ./cmd/gluetun/main.go update $FLAGS \
+            -maintainer \
+            -proton-email "${{ secrets.PROTON_EMAIL }}" \
+            -proton-password "${{ secrets.PROTON_PASSWORD }}"
 
       - name: Check for changes
         run: |
