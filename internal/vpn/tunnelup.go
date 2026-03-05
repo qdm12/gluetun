@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/dns/v2/pkg/check"
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/pmtud"
 	pconstants "github.com/qdm12/gluetun/internal/pmtud/constants"
 	"github.com/qdm12/gluetun/internal/pmtud/tcp"
@@ -166,6 +167,11 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 		return fmt.Errorf("getting VPN gateway IP address: %w", err)
 	}
 
+	vpnRoute, err := routing.VPNRoute(vpnInterface)
+	if err != nil {
+		return fmt.Errorf("getting VPN route: %w", err)
+	}
+
 	link, err := netlinker.LinkByName(vpnInterface)
 	if err != nil {
 		return fmt.Errorf("getting VPN interface by name: %w", err)
@@ -195,7 +201,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
 	}
 
-	err = setTCPMSSOnVPNRoute(vpnInterface, vpnLinkMTU, routing, netlinker)
+	err = setTCPMSSOnVPNRoute(vpnLinkMTU, vpnRoute, netlinker)
 	if err != nil {
 		err = fmt.Errorf("setting safe TCP MSS for MTU %d: %w", vpnLinkMTU, err)
 		vpnLinkMTU = originalMTU
@@ -211,14 +217,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	return nil
 }
 
-func setTCPMSSOnVPNRoute(vpnIntf string, mtu uint32,
-	routing Routing, netlinker NetLinker,
-) error {
-	route, err := routing.VPNRoute(vpnIntf)
-	if err != nil {
-		return fmt.Errorf("getting VPN route: %w", err)
-	}
-
+func setTCPMSSOnVPNRoute(mtu uint32, route netlink.Route, netlinker NetLinker) error {
 	ipHeaderLength := pconstants.IPv4HeaderLength
 	if route.Dst.Addr().Is6() {
 		ipHeaderLength = pconstants.IPv6HeaderLength
@@ -227,9 +226,5 @@ func setTCPMSSOnVPNRoute(vpnIntf string, mtu uint32,
 	overhead := ipHeaderLength + pconstants.BaseTCPHeaderLength + mysteriousOverhead
 	mss := mtu - overhead
 	route.AdvMSS = mss
-	err = netlinker.RouteReplace(route)
-	if err != nil {
-		return fmt.Errorf("replacing VPN route with MSS changed to %d: %w", mss, err)
-	}
-	return nil
+	return netlinker.RouteReplace(route)
 }
