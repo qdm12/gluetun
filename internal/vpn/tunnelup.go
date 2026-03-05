@@ -195,14 +195,17 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
 	}
 
+	err = setTCPMSSOnVPNRoute(vpnInterface, vpnLinkMTU, routing, netlinker)
+	if err != nil {
+		err = fmt.Errorf("setting safe TCP MSS for MTU %d: %w", vpnLinkMTU, err)
+		vpnLinkMTU = originalMTU
+		logger.Infof("reverting VPN interface %s MTU to %d (due to: %s)",
+			vpnInterface, originalMTU, err)
+	}
+
 	err = netlinker.LinkSetMTU(link.Index, vpnLinkMTU)
 	if err != nil {
 		return fmt.Errorf("setting VPN interface %s MTU to %d: %w", vpnInterface, vpnLinkMTU, err)
-	}
-
-	err = setTCPMSSOnVPNRoute(vpnInterface, vpnLinkMTU, routing, netlinker)
-	if err != nil {
-		return fmt.Errorf("setting safe TCP MSS for MTU %d: %w", vpnLinkMTU, err)
 	}
 
 	return nil
