@@ -200,6 +200,7 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
 	w.MTU = gosettings.DefaultPointer(w.MTU, 0)
 	w.Implementation = gosettings.DefaultComparable(w.Implementation, "auto")
+	w.AmneziaWG.setDefaults()
 }
 
 func (w Wireguard) String() string {
@@ -258,50 +259,10 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
 	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
 
-	w.AmneziaWG.JunkPacketCount, err = r.Uint16("WIREGUARD_JC")
+	err = w.AmneziaWG.read(r)
 	if err != nil {
 		return err
 	}
-
-	w.AmneziaWG.JunkPacketMin, err = r.Uint16("WIREGUARD_JMIN")
-	if err != nil {
-		return err
-	}
-
-	w.AmneziaWG.JunkPacketMax, err = r.Uint16("WIREGUARD_JMAX")
-	if err != nil {
-		return err
-	}
-
-	w.AmneziaWG.PaddingS1, err = r.Uint16("WIREGUARD_S1")
-	if err != nil {
-		return err
-	}
-
-	w.AmneziaWG.PaddingS2, err = r.Uint16("WIREGUARD_S2")
-	if err != nil {
-		return err
-	}
-
-	w.AmneziaWG.PaddingS3, err = r.Uint16("WIREGUARD_S3")
-	if err != nil {
-		return err
-	}
-
-	w.AmneziaWG.PaddingS4, err = r.Uint16("WIREGUARD_S4")
-	if err != nil {
-		return err
-	}
-
-	w.AmneziaWG.HeaderH1 = r.String("WIREGUARD_H1", reader.ForceLowercase(false))
-	w.AmneziaWG.HeaderH2 = r.String("WIREGUARD_H2", reader.ForceLowercase(false))
-	w.AmneziaWG.HeaderH3 = r.String("WIREGUARD_H3", reader.ForceLowercase(false))
-	w.AmneziaWG.HeaderH4 = r.String("WIREGUARD_H4", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI1 = r.String("WIREGUARD_I1", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI2 = r.String("WIREGUARD_I2", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI3 = r.String("WIREGUARD_I3", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI4 = r.String("WIREGUARD_I4", reader.ForceLowercase(false))
-	w.AmneziaWG.InitPacketI5 = r.String("WIREGUARD_I5", reader.ForceLowercase(false))
 
 	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
 	// WARNING: do not initialize w.Addresses to an empty slice

@@ -25,7 +25,6 @@ type AmneziaSettings struct {
 }
 
 func (s AmneziaSettings) uapiConfig() string {
-	var lines []string
 	uintFields := map[string]uint16{
 		"jc":   s.JunkPacketCount,
 		"jmin": s.JunkPacketMin,
@@ -46,17 +45,14 @@ func (s AmneziaSettings) uapiConfig() string {
 		"i4": s.InitPacketI4,
 		"i5": s.InitPacketI5,
 	}
+	lines := make([]string, 0, len(uintFields)+len(stringFields))
 
 	for key, val := range uintFields {
-		if val != 0 {
-			lines = append(lines, fmt.Sprintf("%s=%d", key, val))
-		}
+		lines = append(lines, fmt.Sprintf("%s=%d", key, val))
 	}
 
 	for key, val := range stringFields {
-		if val != "" {
-			lines = append(lines, key+"="+val)
-		}
+		lines = append(lines, key+"="+val)
 	}
 	return strings.Join(lines, "\n")
 }
