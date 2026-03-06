@@ -16,6 +16,8 @@ import (
 	_ "time/tzdata"
 
 	_ "github.com/breml/rootcerts"
+	"github.com/qdm12/dns/v2/pkg/doh"
+	dnsprovider "github.com/qdm12/dns/v2/pkg/provider"
 	"github.com/qdm12/gluetun/internal/alpine"
 	"github.com/qdm12/gluetun/internal/boringpoll"
 	"github.com/qdm12/gluetun/internal/cli"
@@ -433,10 +435,18 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)
 	healthChecker := healthcheck.NewChecker(healthLogger)
 
+	// Note: we use a separate DoH dialer for the VPN servers data updater, separate from the
+	// main DNS local server to make sure no request is blocked by filters.
+	dohDialer, err := doh.New(doh.Settings{
+		UpstreamResolvers: []dnsprovider.Provider{dnsprovider.Cloudflare(), dnsprovider.Google()},
+	})
+	if err != nil {
+		return fmt.Errorf("creating updater DoH dialer: %w", err)
+	}
 	updaterLogger := logger.New(log.SetComponent("updater"))
 
 	unzipper := unzip.New(httpClient)
-	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
+	parallelResolver := resolver.NewParallelResolver(dohDialer)
 	openvpnFileExtractor := extract.New()
 	providers := provider.NewProviders(storage, time.Now, updaterLogger,
 		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(),
