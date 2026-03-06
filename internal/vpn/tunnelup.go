@@ -119,6 +119,11 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	if err != nil {
 		l.logger.Error(err.Error())
 	}
+
+	_, err = l.boringPoll.Start()
+	if err != nil {
+		l.logger.Error("cannot start boring poll: " + err.Error())
+	}
 }
 
 func (l *Loop) collectHealthErrors(ctx, loopCtx context.Context, healthErrCh <-chan error) {

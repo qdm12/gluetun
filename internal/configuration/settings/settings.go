@@ -28,6 +28,7 @@ type Settings struct {
 	Version       Version
 	VPN           VPN
 	Pprof         pprof.Settings
+	BoringPoll    BoringPoll
 }
 
 type FilterChoicesGetter interface {
@@ -57,6 +58,7 @@ func (s *Settings) Validate(filterChoicesGetter FilterChoicesGetter, ipv6Support
 		"VPN": func() error {
 			return s.VPN.Validate(filterChoicesGetter, ipv6Supported, warner)
 		},
+		"boring poll": s.BoringPoll.validate,
 	}
 
 	for name, validation := range nameToValidation {
@@ -85,6 +87,7 @@ func (s *Settings) copy() (copied Settings) {
 		Version:       s.Version.copy(),
 		VPN:           s.VPN.Copy(),
 		Pprof:         s.Pprof.Copy(),
+		BoringPoll:    s.BoringPoll.Copy(),
 	}
 }
 
@@ -106,6 +109,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Version.overrideWith(other.Version)
 	patchedSettings.VPN.OverrideWith(other.VPN)
 	patchedSettings.Pprof.OverrideWith(other.Pprof)
+	patchedSettings.BoringPoll.overrideWith(other.BoringPoll)
 	err = patchedSettings.Validate(filterChoicesGetter, ipv6Supported, warner)
 	if err != nil {
 		return err
@@ -129,6 +133,7 @@ func (s *Settings) SetDefaults() {
 	s.VPN.setDefaults()
 	s.Updater.SetDefaults(s.VPN.Provider.Name)
 	s.Pprof.SetDefaults()
+	s.BoringPoll.setDefaults()
 }
 
 func (s Settings) String() string {
@@ -152,6 +157,7 @@ func (s Settings) toLinesNode() (node *gotree.Node) {
 	node.AppendNode(s.Updater.toLinesNode())
 	node.AppendNode(s.Version.toLinesNode())
 	node.AppendNode(s.Pprof.ToLinesNode())
+	node.AppendNode(s.BoringPoll.toLinesNode())
 
 	return node
 }
@@ -209,6 +215,7 @@ func (s *Settings) Read(r *reader.Reader, warner Warner) (err error) {
 		"version":     s.Version.read,
 		"VPN":         s.VPN.read,
 		"profiling":   s.Pprof.Read,
+		"boring poll": s.BoringPoll.read,
 	}
 
 	for name, read := range readFunctions {

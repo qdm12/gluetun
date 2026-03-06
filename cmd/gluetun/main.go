@@ -17,6 +17,7 @@ import (
 
 	_ "github.com/breml/rootcerts"
 	"github.com/qdm12/gluetun/internal/alpine"
+	"github.com/qdm12/gluetun/internal/boringpoll"
 	"github.com/qdm12/gluetun/internal/cli"
 	"github.com/qdm12/gluetun/internal/command"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -168,7 +169,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	defer fmt.Println(gluetunLogo)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2026-04-01T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2026-04-30T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -179,7 +180,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "All control server routes are now private by default",
+		Announcement: "Set BORINGPOLL_GLUETUNCOM=on to help combat AI slop and shutdown that scam website",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
@@ -441,11 +442,14 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(),
 		openvpnFileExtractor, allSettings.Updater)
 
+	boringPollLogger := logger.New(log.SetComponent("boring poll"))
+	boringPoll := boringpoll.New(httpClient, boringPollLogger, allSettings.BoringPoll)
+
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
-		providers, storage, allSettings.Health, healthChecker, healthcheckServer, ovpnConf, netLinker, firewallConf,
-		routingConf, portForwardLooper, cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
-		buildInfo, *allSettings.Version.Enabled)
+		providers, storage, boringPoll, allSettings.Health, healthChecker, healthcheckServer,
+		ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper, cmder, publicIPLooper,
+		dnsLooper, vpnLogger, httpClient, buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
 		"vpn", goroutine.OptionTimeout(time.Second))
 	go vpnLooper.Run(vpnCtx, vpnDone)
