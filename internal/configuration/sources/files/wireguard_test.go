@@ -97,9 +97,10 @@ func Test_parseWireguardInterfaceSection(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		iniData    string
-		privateKey *string
-		addresses  *string
+		iniData       string
+		privateKey    *string
+		addresses     *string
+		amneziaParams amneziaWgConfig
 	}{
 		"no_fields": {
 			iniData: `[Interface]`,
@@ -115,9 +116,17 @@ PrivateKey = x
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
 Address = 10.38.22.35/32
+Jc = 4
+H1 = 721391205
+I1 = <b 0x1234>
 `,
 			privateKey: ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
 			addresses:  ptrTo("10.38.22.35/32"),
+			amneziaParams: amneziaWgConfig{
+				Jc: ptrTo("4"),
+				H1: ptrTo("721391205"),
+				I1: ptrTo("<b 0x1234>"),
+			},
 		},
 	}
 
@@ -131,9 +140,13 @@ Address = 10.38.22.35/32
 			require.NoError(t, err)
 
 			privateKey, addresses := parseWireguardInterfaceSection(iniSection)
+			amneziaWgConfig := parseWireguardAmneziaInterfaceSection(iniSection)
 
 			assert.Equal(t, testCase.privateKey, privateKey)
 			assert.Equal(t, testCase.addresses, addresses)
+			assert.Equal(t, testCase.amneziaParams.Jc, amneziaWgConfig.Jc)
+			assert.Equal(t, testCase.amneziaParams.H1, amneziaWgConfig.H1)
+			assert.Equal(t, testCase.amneziaParams.I1, amneziaWgConfig.I1)
 		})
 	}
 }

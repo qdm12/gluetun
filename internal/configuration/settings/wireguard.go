@@ -42,10 +42,12 @@ type Wireguard struct {
 	// 0 indicating to use PMTUD.
 	MTU *uint32 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
-	// It can be "auto", "userspace" or "kernelspace".
+	// It can be "auto", "userspace", "kernelspace" or "amneziawg".
 	// It defaults to "auto" and cannot be the empty string
 	// in the internal state.
 	Implementation string `json:"implementation"`
+	// AmneziaWG contains obfuscation parameters
+	AmneziaWG AmneziaWg `json:"amneziawg"`
 }
 
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
@@ -136,9 +138,14 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 			ErrWireguardInterfaceNotValid, w.Interface, regexpInterfaceName)
 	}
 
-	validImplementations := []string{"auto", "userspace", "kernelspace"}
+	validImplementations := []string{"auto", "userspace", "kernelspace", "amneziawg"}
 	if err := validate.IsOneOf(w.Implementation, validImplementations...); err != nil {
 		return fmt.Errorf("%w: %w", ErrWireguardImplementationNotValid, err)
+	}
+
+	err = w.AmneziaWG.validate()
+	if err != nil {
+		return fmt.Errorf("amneziawg settings: %w", err)
 	}
 
 	return nil
@@ -154,6 +161,7 @@ func (w *Wireguard) copy() (copied Wireguard) {
 		Interface:                   w.Interface,
 		MTU:                         w.MTU,
 		Implementation:              w.Implementation,
+		AmneziaWG:                   w.AmneziaWG.copy(),
 	}
 }
 
@@ -167,6 +175,7 @@ func (w *Wireguard) overrideWith(other Wireguard) {
 	w.Interface = gosettings.OverrideWithComparable(w.Interface, other.Interface)
 	w.MTU = gosettings.OverrideWithComparable(w.MTU, other.MTU)
 	w.Implementation = gosettings.OverrideWithComparable(w.Implementation, other.Implementation)
+	w.AmneziaWG.overrideWith(other.AmneziaWG)
 }
 
 func (w *Wireguard) setDefaults(vpnProvider string) {
@@ -191,6 +200,7 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
 	w.MTU = gosettings.DefaultPointer(w.MTU, 0)
 	w.Implementation = gosettings.DefaultComparable(w.Implementation, "auto")
+	w.AmneziaWG.setDefaults()
 }
 
 func (w Wireguard) String() string {
@@ -232,7 +242,11 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	}
 
 	if w.Implementation != "auto" {
-		node.Appendf("Implementation: %s", w.Implementation)
+		implNode := node.Appendf("Implementation: %s", w.Implementation)
+
+		if w.Implementation == "amneziawg" {
+			implNode.AppendNode(w.AmneziaWG.toLinesNode())
+		}
 	}
 
 	return node
@@ -244,6 +258,11 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 	w.Interface = r.String("VPN_INTERFACE",
 		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
 	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
+
+	err = w.AmneziaWG.read(r)
+	if err != nil {
+		return err
+	}
 
 	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
 	// WARNING: do not initialize w.Addresses to an empty slice

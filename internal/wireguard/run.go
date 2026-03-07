@@ -7,9 +7,6 @@ import (
 	"net"
 
 	"github.com/qdm12/gluetun/internal/netlink"
-	"golang.zx2c4.com/wireguard/conn"
-	"golang.zx2c4.com/wireguard/device"
-	"golang.zx2c4.com/wireguard/tun"
 	"golang.zx2c4.com/wireguard/wgctrl"
 )
 
@@ -29,6 +26,7 @@ var (
 	ErrRouteAdd          = errors.New("cannot add route for interface")
 	ErrDeviceWaited      = errors.New("device waited for")
 	ErrKernelSupport     = errors.New("kernel does not support Wireguard")
+	ErrAmneziaConfigure  = errors.New("cannot configure AmneziaWG")
 )
 
 // See https://git.zx2c4.com/wireguard-go/tree/main.go
@@ -39,7 +37,8 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		return
 	}
 
-	setupFunction := setupUserSpace
+	userspaceBackend := defaultUserSpaceBackend()
+	setupFunction := setupUserSpaceCommon
 	switch w.settings.Implementation {
 	case "auto": //nolint:goconst
 		if !kernelSupported {
@@ -55,6 +54,8 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 			return
 		}
 		setupFunction = setupKernelSpace
+	case "amneziawg":
+		userspaceBackend = amneziaUserSpaceBackend()
 	default:
 		panic(fmt.Sprintf("unknown implementation %q", w.settings.Implementation))
 	}
@@ -71,7 +72,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	defer closers.cleanup(w.logger)
 
 	linkIndex, waitAndCleanup, err := setupFunction(ctx,
-		w.settings.InterfaceName, w.netlink, w.settings.MTU, &closers, w.logger)
+		w.settings.InterfaceName, w.netlink, w.settings.MTU, &closers, w.logger, w.settings, userspaceBackend)
 	if err != nil {
 		waitError <- err
 		return
@@ -136,7 +137,7 @@ type waitAndCleanupFunc func() error
 
 func setupKernelSpace(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint32,
-	closers *closers, logger Logger) (
+	closers *closers, logger Logger, _ Settings, _ userSpaceBackend) (
 	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, err error,
 ) {
 	links, err := netLinker.LinkList()
@@ -178,12 +179,14 @@ func setupKernelSpace(ctx context.Context,
 	return linkIndex, waitAndCleanup, nil
 }
 
-func setupUserSpace(ctx context.Context,
+func setupUserSpaceCommon(ctx context.Context,
 	interfaceName string, netLinker NetLinker, mtu uint32,
-	closers *closers, logger Logger) (
+	closers *closers, logger Logger,
+	settings Settings, b userSpaceBackend,
+) (
 	linkIndex uint32, waitAndCleanup waitAndCleanupFunc, err error,
 ) {
-	tun, err := tun.CreateTUN(interfaceName, int(mtu))
+	tun, err := b.createTun(interfaceName, int(mtu))
 	if err != nil {
 		return 0, nil, fmt.Errorf("%w: %s", ErrCreateTun, err)
 	}
@@ -206,12 +209,11 @@ func setupUserSpace(ctx context.Context,
 		return netLinker.LinkDel(link.Index)
 	})
 
-	bind := conn.NewDefaultBind()
+	bind := b.createBind()
 
 	closers.add("closing bind", stepSeven, bind.Close)
 
-	deviceLogger := makeDeviceLogger(logger)
-	device := device.NewDevice(tun, bind, deviceLogger)
+	device := b.createDevice(tun, bind, logger)
 
 	closers.add("closing Wireguard device", stepSix, func() error {
 		device.Close()
@@ -231,6 +233,13 @@ func setupUserSpace(ctx context.Context,
 	}
 
 	closers.add("closing UAPI listener", stepTwo, uapiListener.Close)
+
+	if b.preStart != nil {
+		err = b.preStart(device, settings)
+		if err != nil {
+			return 0, nil, err
+		}
+	}
 
 	// acceptAndHandle exits when uapiListener is closed
 	uapiAcceptErrorCh := make(chan error)
@@ -255,7 +264,7 @@ func setupUserSpace(ctx context.Context,
 	return link.Index, waitAndCleanup, nil
 }
 
-func acceptAndHandle(uapi net.Listener, device *device.Device,
+func acceptAndHandle(uapi net.Listener, device userspaceDevice,
 	uapiAcceptErrorCh chan<- error,
 ) {
 	for { // stopped by uapiFile.Close()
