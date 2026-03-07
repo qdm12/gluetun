@@ -5,7 +5,7 @@ import (
 )
 
 type PublicIP struct {
-	IP           netip.Addr `json:"public_ip,omitempty"`
+	IP           netip.Addr `json:"public_ip"`
 	Region       string     `json:"region,omitempty"`
 	Country      string     `json:"country,omitempty"`
 	City         string     `json:"city,omitempty"`

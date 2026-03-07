@@ -1,11 +1,14 @@
 package settings
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
 	"strconv"
 
+	"github.com/qdm12/gluetun/internal/server/middlewares/auth"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
 	"github.com/qdm12/gotree"
@@ -24,6 +27,9 @@ type ControlServer struct {
 	// It cannot be empty in the internal state and defaults to
 	// /gluetun/auth/config.toml.
 	AuthFilePath string
+	// AuthDefaultRole is a JSON encoded object defining the default role
+	// that applies to all routes without a previously user-defined role assigned to.
+	AuthDefaultRole string
 }
 
 func (c ControlServer) validate() (err error) {
@@ -44,14 +50,30 @@ func (c ControlServer) validate() (err error) {
 			ErrControlServerPrivilegedPort, port, uid)
 	}
 
+	jsonDecoder := json.NewDecoder(bytes.NewBufferString(c.AuthDefaultRole))
+	jsonDecoder.DisallowUnknownFields()
+	var role auth.Role
+	err = jsonDecoder.Decode(&role)
+	if err != nil {
+		return fmt.Errorf("default authentication role is not valid JSON: %w", err)
+	}
+
+	if role.Auth != "" {
+		err = role.Validate()
+		if err != nil {
+			return fmt.Errorf("default authentication role is not valid: %w", err)
+		}
+	}
+
 	return nil
 }
 
 func (c *ControlServer) copy() (copied ControlServer) {
 	return ControlServer{
-		Address:      gosettings.CopyPointer(c.Address),
-		Log:          gosettings.CopyPointer(c.Log),
-		AuthFilePath: c.AuthFilePath,
+		Address:         gosettings.CopyPointer(c.Address),
+		Log:             gosettings.CopyPointer(c.Log),
+		AuthFilePath:    c.AuthFilePath,
+		AuthDefaultRole: c.AuthDefaultRole,
 	}
 }
 
@@ -62,12 +84,21 @@ func (c *ControlServer) overrideWith(other ControlServer) {
 	c.Address = gosettings.OverrideWithPointer(c.Address, other.Address)
 	c.Log = gosettings.OverrideWithPointer(c.Log, other.Log)
 	c.AuthFilePath = gosettings.OverrideWithComparable(c.AuthFilePath, other.AuthFilePath)
+	c.AuthDefaultRole = gosettings.OverrideWithComparable(c.AuthDefaultRole, other.AuthDefaultRole)
 }
 
 func (c *ControlServer) setDefaults() {
 	c.Address = gosettings.DefaultPointer(c.Address, ":8000")
 	c.Log = gosettings.DefaultPointer(c.Log, true)
 	c.AuthFilePath = gosettings.DefaultComparable(c.AuthFilePath, "/gluetun/auth/config.toml")
+	c.AuthDefaultRole = gosettings.DefaultComparable(c.AuthDefaultRole, "{}")
+	if c.AuthDefaultRole != "{}" {
+		var role auth.Role
+		_ = json.Unmarshal([]byte(c.AuthDefaultRole), &role)
+		role.Name = "default"
+		roleBytes, _ := json.Marshal(role) //nolint:errchkjson
+		c.AuthDefaultRole = string(roleBytes)
+	}
 }
 
 func (c ControlServer) String() string {
@@ -79,6 +110,11 @@ func (c ControlServer) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Listening address: %s", *c.Address)
 	node.Appendf("Logging: %s", gosettings.BoolToYesNo(c.Log))
 	node.Appendf("Authentication file path: %s", c.AuthFilePath)
+	if c.AuthDefaultRole != "{}" {
+		var role auth.Role
+		_ = json.Unmarshal([]byte(c.AuthDefaultRole), &role)
+		node.AppendNode(role.ToLinesNode())
+	}
 	return node
 }
 
@@ -91,6 +127,7 @@ func (c *ControlServer) read(r *reader.Reader) (err error) {
 	c.Address = r.Get("HTTP_CONTROL_SERVER_ADDRESS")
 
 	c.AuthFilePath = r.String("HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH")
+	c.AuthDefaultRole = r.String("HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE", reader.ForceLowercase(false))
 
 	return nil
 }

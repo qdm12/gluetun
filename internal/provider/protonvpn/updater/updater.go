@@ -7,13 +7,17 @@ import (
 )
 
 type Updater struct {
-	client *http.Client
-	warner common.Warner
+	client   *http.Client
+	email    string
+	password string
+	warner   common.Warner
 }
 
-func New(client *http.Client, warner common.Warner) *Updater {
+func New(client *http.Client, warner common.Warner, email, password string) *Updater {
 	return &Updater{
-		client: client,
-		warner: warner,
+		client:   client,
+		email:    email,
+		password: password,
+		warner:   warner,
 	}
 }

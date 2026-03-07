@@ -60,7 +60,8 @@ func (s *Storage) Format(provider, format string) (formatted string, err error) 
 	return serversObject.Format(provider, format)
 }
 
-// GetServersCount returns the number of servers for the provider given.
+// ServersAreEqual returns whether the servers for the provider
+// in storage are equal to the servers slice given.
 func (s *Storage) ServersAreEqual(provider string, servers []models.Server) (equal bool) {
 	if provider == providers.Custom {
 		return true

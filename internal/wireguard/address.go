@@ -3,26 +3,20 @@ package wireguard
 import (
 	"fmt"
 	"net/netip"
-
-	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func (w *Wireguard) addAddresses(link netlink.Link,
+func (w *Wireguard) addAddresses(linkIndex uint32,
 	addresses []netip.Prefix,
 ) (err error) {
-	for _, ipNet := range addresses {
-		if !*w.settings.IPv6 && ipNet.Addr().Is6() {
+	for _, address := range addresses {
+		if !*w.settings.IPv6 && address.Addr().Is6() {
 			continue
 		}
 
-		address := netlink.Addr{
-			Network: ipNet,
-		}
-
-		err = w.netlink.AddrReplace(link, address)
+		err = w.netlink.AddrReplace(linkIndex, address)
 		if err != nil {
-			return fmt.Errorf("%w: when adding address %s to link %s",
-				err, address, link.Name)
+			return fmt.Errorf("%w: when adding address %s to link with index %d",
+				err, address, linkIndex)
 		}
 	}
 

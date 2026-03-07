@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
-	"syscall"
 
 	"github.com/qdm12/gluetun/internal/constants/openvpn"
 )
@@ -33,7 +32,7 @@ func start(ctx context.Context, starter CmdStarter, version string, flags []stri
 	args := []string{"--config", configPath}
 	args = append(args, flags...)
 	cmd := exec.CommandContext(ctx, bin, args...)
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	setCmdSysProcAttr(cmd)
 
 	return starter.Start(cmd)
 }

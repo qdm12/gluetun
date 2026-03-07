@@ -2,22 +2,23 @@ package dns
 
 import (
 	"context"
-	"errors"
 
+	"github.com/qdm12/dns/v2/pkg/nameserver"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
 func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 	defer close(done)
 
-	if *l.GetSettings().KeepNameserver {
-		l.logger.Warn("⚠️⚠️⚠️  keeping the default container nameservers, " +
-			"this will likely leak DNS traffic outside the VPN " +
-			"and go through your container network DNS outside the VPN tunnel!")
-	} else {
-		const fallback = false
-		l.useUnencryptedDNS(fallback)
+	var err error
+	l.localResolvers, err = nameserver.GetPrivateDNSServers()
+	if err != nil {
+		l.logger.Error("getting private DNS servers: " + err.Error())
+		return
 	}
+
+	const fallback = false
+	l.useUnencryptedDNS(fallback)
 
 	select {
 	case <-l.start:
@@ -30,14 +31,18 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		// Their values are to be used if DOT=off
 		var runError <-chan error
 
-		settings := l.GetSettings()
-		for !*settings.KeepNameserver && *settings.ServerEnabled {
+		for {
+			settings := l.GetSettings()
 			var err error
-			runError, err = l.setupServer(ctx)
+			runError, err = l.setupServer(ctx, settings)
 			if err == nil {
 				l.backoffTime = defaultBackoffTime
-				l.logger.Info("ready")
-				l.signalOrSetStatus(constants.Running)
+				l.logger.Infof("ready and using DNS server with %s upstream resolvers", settings.UpstreamType)
+
+				err = l.updateFiles(ctx, settings)
+				if err != nil {
+					l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
+				}
 				break
 			}
 
@@ -46,20 +51,9 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 			if ctx.Err() != nil {
 				return
 			}
-
-			if !errors.Is(err, errUpdateBlockLists) {
-				const fallback = true
-				l.useUnencryptedDNS(fallback)
-			}
 			l.logAndWait(ctx, err)
-			settings = l.GetSettings()
 		}
-
-		settings = l.GetSettings()
-		if !*settings.KeepNameserver && !*settings.ServerEnabled {
-			const fallback = false
-			l.useUnencryptedDNS(fallback)
-		}
+		l.signalOrSetStatus(constants.Running)
 
 		l.userTrigger = false
 

@@ -18,11 +18,11 @@ func Test_Checker_fullcheck(t *testing.T) {
 		t.Parallel()
 
 		dialer := &net.Dialer{}
-		const address = "cloudflare.com:443"
+		addresses := []string{"badaddress:9876", "cloudflare.com:443", "google.com:443"}
 
 		checker := &Checker{
-			dialer:      dialer,
-			tlsDialAddr: address,
+			dialer:       dialer,
+			tlsDialAddrs: addresses,
 		}
 
 		canceledCtx, cancel := context.WithCancel(context.Background())
@@ -52,8 +52,8 @@ func Test_Checker_fullcheck(t *testing.T) {
 
 		dialer := &net.Dialer{}
 		checker := &Checker{
-			dialer:      dialer,
-			tlsDialAddr: listeningAddress.String(),
+			dialer:       dialer,
+			tlsDialAddrs: []string{listeningAddress.String()},
 		}
 
 		err = checker.fullPeriodicCheck(ctx)

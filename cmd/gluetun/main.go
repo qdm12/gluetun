@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"net/netip"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -15,13 +16,17 @@ import (
 	_ "time/tzdata"
 
 	_ "github.com/breml/rootcerts"
+	"github.com/qdm12/dns/v2/pkg/doh"
+	dnsprovider "github.com/qdm12/dns/v2/pkg/provider"
 	"github.com/qdm12/gluetun/internal/alpine"
+	"github.com/qdm12/gluetun/internal/boringpoll"
 	"github.com/qdm12/gluetun/internal/cli"
 	"github.com/qdm12/gluetun/internal/command"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/configuration/sources/files"
 	"github.com/qdm12/gluetun/internal/configuration/sources/secrets"
 	"github.com/qdm12/gluetun/internal/constants"
+	copenvpn "github.com/qdm12/gluetun/internal/constants/openvpn"
 	"github.com/qdm12/gluetun/internal/dns"
 	"github.com/qdm12/gluetun/internal/firewall"
 	"github.com/qdm12/gluetun/internal/healthcheck"
@@ -164,7 +169,9 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		}
 	}
 
-	announcementExp, err := time.Parse(time.RFC3339, "2024-12-01T00:00:00Z")
+	defer fmt.Println(gluetunLogo)
+
+	announcementExp, err := time.Parse(time.RFC3339, "2026-04-30T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -175,7 +182,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "All control server routes will become private by default after the v3.41.0 release",
+		Announcement: "Set BORINGPOLL_GLUETUNCOM=on to help combat AI slop and shutdown that scam website",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
@@ -233,6 +240,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		if err != nil {
 			return err
 		}
+		err = netLinker.FlushConntrack()
+		if err != nil {
+			logger.Warnf("flushing conntrack failed: %s", err)
+		}
 	}
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
@@ -260,19 +271,22 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	puid, pgid := int(*allSettings.System.PUID), int(*allSettings.System.PGID)
 
-	const clientTimeout = 15 * time.Second
+	const clientTimeout = 35 * time.Second
 	httpClient := &http.Client{Timeout: clientTimeout}
 	// Create configurators
 	alpineConf := alpine.New()
 	ovpnConf := openvpn.New(
 		logger.New(log.SetComponent("openvpn configurator")),
 		cmder, puid, pgid)
+	ovpnVersion := ovpnConf.Version26
+	if allSettings.VPN.OpenVPN.Version == copenvpn.Openvpn25 {
+		ovpnVersion = ovpnConf.Version25
+	}
 
 	err = printVersions(ctx, logger, []printVersionElement{
 		{name: "Alpine", getVersion: alpineConf.Version},
-		{name: "OpenVPN 2.5", getVersion: ovpnConf.Version25},
-		{name: "OpenVPN 2.6", getVersion: ovpnConf.Version26},
-		{name: "IPtables", getVersion: firewallConf.Version},
+		{name: "OpenVPN", getVersion: ovpnVersion},
+		{name: "Firewall", getVersion: firewallConf.Version},
 	})
 	if err != nil {
 		return err
@@ -388,7 +402,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	dnsLogger := logger.New(log.SetComponent("dns"))
 	dnsLooper, err := dns.NewLoop(allSettings.DNS, httpClient,
-		dnsLogger)
+		dnsLogger, localNetworksToPrefixes(localNetworks))
 	if err != nil {
 		return fmt.Errorf("creating DNS loop: %w", err)
 	}
@@ -421,19 +435,31 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go healthcheckServer.Run(healthServerCtx, healthServerDone)
 	healthChecker := healthcheck.NewChecker(healthLogger)
 
+	// Note: we use a separate DoH dialer for the VPN servers data updater, separate from the
+	// main DNS local server to make sure no request is blocked by filters.
+	dohDialer, err := doh.New(doh.Settings{
+		UpstreamResolvers: []dnsprovider.Provider{dnsprovider.Cloudflare(), dnsprovider.Google()},
+	})
+	if err != nil {
+		return fmt.Errorf("creating updater DoH dialer: %w", err)
+	}
 	updaterLogger := logger.New(log.SetComponent("updater"))
 
 	unzipper := unzip.New(httpClient)
-	parallelResolver := resolver.NewParallelResolver(allSettings.Updater.DNSAddress)
+	parallelResolver := resolver.NewParallelResolver(dohDialer)
 	openvpnFileExtractor := extract.New()
 	providers := provider.NewProviders(storage, time.Now, updaterLogger,
-		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(), openvpnFileExtractor)
+		httpClient, unzipper, parallelResolver, publicIPLooper.Fetcher(),
+		openvpnFileExtractor, allSettings.Updater)
+
+	boringPollLogger := logger.New(log.SetComponent("boring poll"))
+	boringPoll := boringpoll.New(httpClient, boringPollLogger, allSettings.BoringPoll)
 
 	vpnLogger := logger.New(log.SetComponent("vpn"))
 	vpnLooper := vpn.NewLoop(allSettings.VPN, ipv6Supported, allSettings.Firewall.VPNInputPorts,
-		providers, storage, allSettings.Health, healthChecker, healthcheckServer, ovpnConf, netLinker, firewallConf,
-		routingConf, portForwardLooper, cmder, publicIPLooper, dnsLooper, vpnLogger, httpClient,
-		buildInfo, *allSettings.Version.Enabled)
+		providers, storage, boringPoll, allSettings.Health, healthChecker, healthcheckServer,
+		ovpnConf, netLinker, firewallConf, routingConf, portForwardLooper, cmder, publicIPLooper,
+		dnsLooper, vpnLogger, httpClient, buildInfo, *allSettings.Version.Enabled)
 	vpnHandler, vpnCtx, vpnDone := goshutdown.NewGoRoutineHandler(
 		"vpn", goroutine.OptionTimeout(time.Second))
 	go vpnLooper.Run(vpnCtx, vpnDone)
@@ -466,13 +492,10 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	go shadowsocksLooper.Run(shadowsocksCtx, shadowsocksDone)
 	otherGroupHandler.Add(shadowsocksHandler)
 
-	controlServerAddress := *allSettings.ControlServer.Address
-	controlServerLogging := *allSettings.ControlServer.Log
 	httpServerHandler, httpServerCtx, httpServerDone := goshutdown.NewGoRoutineHandler(
 		"http server", goroutine.OptionTimeout(defaultShutdownTimeout))
-	httpServer, err := server.New(httpServerCtx, controlServerAddress, controlServerLogging,
+	httpServer, err := server.New(httpServerCtx, allSettings.ControlServer,
 		logger.New(log.SetComponent("http server")),
-		allSettings.ControlServer.AuthFilePath,
 		buildInfo, vpnLooper, portForwardLooper, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
@@ -544,6 +567,14 @@ func printVersions(ctx context.Context, logger infoer,
 	return nil
 }
 
+func localNetworksToPrefixes(localNetworks []routing.LocalNetwork) (prefixes []netip.Prefix) {
+	prefixes = make([]netip.Prefix, len(localNetworks))
+	for i, localNetwork := range localNetworks {
+		prefixes[i] = localNetwork.IPNet
+	}
+	return prefixes
+}
+
 type netLinker interface {
 	Addresser
 	Router
@@ -551,24 +582,25 @@ type netLinker interface {
 	Linker
 	IsWireguardSupported() (ok bool, err error)
 	IsIPv6Supported() (ok bool, err error)
+	FlushConntrack() error
 	PatchLoggerLevel(level log.Level)
 }
 
 type Addresser interface {
-	AddrList(link netlink.Link, family int) (
-		addresses []netlink.Addr, err error)
-	AddrReplace(link netlink.Link, addr netlink.Addr) error
+	AddrList(linkIndex uint32, family uint8) (
+		addresses []netip.Prefix, err error)
+	AddrReplace(linkIndex uint32, addr netip.Prefix) error
 }
 
 type Router interface {
-	RouteList(family int) (routes []netlink.Route, err error)
+	RouteList(family uint8) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
 	RouteDel(route netlink.Route) error
 	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {
-	RuleList(family int) (rules []netlink.Rule, err error)
+	RuleList(family uint8) (rules []netlink.Rule, err error)
 	RuleAdd(rule netlink.Rule) error
 	RuleDel(rule netlink.Rule) error
 }
@@ -576,11 +608,12 @@ type Ruler interface {
 type Linker interface {
 	LinkList() (links []netlink.Link, err error)
 	LinkByName(name string) (link netlink.Link, err error)
-	LinkByIndex(index int) (link netlink.Link, err error)
-	LinkAdd(link netlink.Link) (linkIndex int, err error)
-	LinkDel(link netlink.Link) (err error)
-	LinkSetUp(link netlink.Link) (linkIndex int, err error)
-	LinkSetDown(link netlink.Link) (err error)
+	LinkByIndex(index uint32) (link netlink.Link, err error)
+	LinkAdd(link netlink.Link) (linkIndex uint32, err error)
+	LinkDel(linkIndex uint32) (err error)
+	LinkSetUp(linkIndex uint32) (err error)
+	LinkSetDown(linkIndex uint32) (err error)
+	LinkSetMTU(linkIndex, mtu uint32) error
 }
 
 type clier interface {
@@ -602,3 +635,34 @@ type RunStarter interface {
 	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, err error)
 }
+
+const gluetunLogo = `                         @@@
+                         @@@@
+                        @@@@@@
+                       @@@@.@@                       @@@@@@@@@@
+                       @@@@.@@@                   @@@@@@@@==@@@@
+                      @@@.@..@@                @@@@@@@=@..==@@@@
+            @@@@      @@@.@@.@@              @@@@@@===@@@@.=@@@
+           @...-@@   @@@@.@@.@@@  @@@     @@@@@@=======@@@=@@@@
+           @@@@@@@@  @@@.-%@.+@@@@@@@@  @@@@@%============@@@@
+                     @@@.--@..@@@@.-@@@@@@@==============@@@@
+              @@@@  @@@-@--@@.@@.---@@@@@==============#@@@@@
+              @@@   @@@.@@-@@.@@--@@@@@===============@@@@@@
+                   @@@@.@--@@@@@@@@@@================@@@@@@@
+                   @@@..--@@*@@@@@@================@@@@+*@@
+                   @@@.---@@.@@@@=================@@@@--@@
+                  @@@-.---@@@@@@================@@@@*--@@@
+                  @@@.:-#@@@@@@===============*@@@@.---@@
+                  @@@.-------.@@@============@@@@@@.--@@@
+                 @@@..--------:@@@=========@@@@@@@@.--@@@
+                 @@@.-@@@@@@@@@@@========@@@@@  @@@.--@@
+                 @@.@@@@===============@@@@@ @@@@@@---@@@@@@
+                @@@@@@@==============@@@@@@@@@@@@*@---@@@@@@@@
+                @@@@@@=============@@@@@ @@@...------------.*@@@
+                @@@@%===========@@@@@@ @@@..------@@@@.-----.-@@@
+                @@@@@@.=======@@@@@@  @@@.-------@@@@@@-.------=@@
+               @@@@@@@@@===@@@@@@     @@.------@@@@   @@@@.-----@@@
+               @@@==@@@=@@@@@@@      @@@.-@@@@@@@       @@@@@@@--@@
+               @@@@@@@@@@@@@         @@@@@@@@                @@@@@@@
+                @@@@@@@@             @@@@                       @@@@
+                                                                       `

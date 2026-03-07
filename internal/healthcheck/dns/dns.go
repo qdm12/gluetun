@@ -56,10 +56,10 @@ func (c *Client) Check(ctx context.Context) error {
 	switch {
 	case err != nil:
 		c.dnsIPIndex = (c.dnsIPIndex + 1) % len(c.serverAddrs)
-		return err
+		return fmt.Errorf("with DNS server %s: %w", dnsAddr, err)
 	case len(ips) == 0:
 		c.dnsIPIndex = (c.dnsIPIndex + 1) % len(c.serverAddrs)
-		return fmt.Errorf("%w", ErrLookupNoIPs)
+		return fmt.Errorf("with DNS server %s: %w", dnsAddr, ErrLookupNoIPs)
 	default:
 		return nil
 	}

@@ -8,15 +8,14 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/sys/unix"
 )
 
 func Test_Wireguard_addRule(t *testing.T) {
 	t.Parallel()
 
-	const rulePriority = 987
-	const firewallMark = 456
-	const family = unix.AF_INET
+	const rulePriority uint32 = 987
+	const firewallMark uint32 = 456
+	const family = netlink.FamilyV4
 
 	errDummy := errors.New("dummy")
 
@@ -29,31 +28,34 @@ func Test_Wireguard_addRule(t *testing.T) {
 	}{
 		"success": {
 			expectedRule: netlink.Rule{
-				Invert:   true,
-				Priority: rulePriority,
-				Mark:     firewallMark,
+				Priority: ptrTo(rulePriority),
+				Mark:     ptrTo(firewallMark),
 				Table:    firewallMark,
 				Family:   family,
+				Flags:    netlink.FlagInvert,
+				Action:   netlink.ActionToTable,
 			},
 		},
 		"rule add error": {
 			expectedRule: netlink.Rule{
-				Invert:   true,
-				Priority: rulePriority,
-				Mark:     firewallMark,
+				Priority: ptrTo(rulePriority),
+				Mark:     ptrTo(firewallMark),
 				Table:    firewallMark,
 				Family:   family,
+				Flags:    netlink.FlagInvert,
+				Action:   netlink.ActionToTable,
 			},
 			ruleAddErr: errDummy,
 			err:        errors.New("adding ip rule 987: from all to all table 456: dummy"),
 		},
 		"rule delete error": {
 			expectedRule: netlink.Rule{
-				Invert:   true,
-				Priority: rulePriority,
-				Mark:     firewallMark,
+				Priority: ptrTo(rulePriority),
+				Mark:     ptrTo(firewallMark),
 				Table:    firewallMark,
 				Family:   family,
+				Flags:    netlink.FlagInvert,
+				Action:   netlink.ActionToTable,
 			},
 			ruleDelErr: errDummy,
 			cleanupErr: errors.New("deleting rule ip rule 987: from all to all table 456: dummy"),

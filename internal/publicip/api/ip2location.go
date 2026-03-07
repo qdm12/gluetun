@@ -7,19 +7,23 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"time"
 
+	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 )
 
 type ip2Location struct {
-	client *http.Client
-	token  string
+	client       *http.Client
+	token        string
+	countryCodes map[string]string
 }
 
 func newIP2Location(client *http.Client, token string) *ip2Location {
 	return &ip2Location{
-		client: client,
-		token:  token,
+		client:       client,
+		token:        token,
+		countryCodes: constants.CountryCodes(),
 	}
 }
 
@@ -41,6 +45,12 @@ func (i *ip2Location) Token() string {
 func (i *ip2Location) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result models.PublicIP, err error,
 ) {
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	url := "https://api.ip2location.io/"
 	if ip.IsValid() {
 		url += "?ip=" + ip.String()
@@ -93,6 +103,24 @@ func (i *ip2Location) FetchInfo(ctx context.Context, ip netip.Addr) (
 	}
 	if err := decoder.Decode(&data); err != nil {
 		return result, fmt.Errorf("decoding response: %w", err)
+	}
+
+	// Remove parentheses from country name
+	idx := strings.Index(data.CountryName, " (")
+	if idx != -1 {
+		data.CountryName = data.CountryName[:idx]
+	}
+
+	// Rename country to match country string obtained from other IP data sources
+	countryRenames := map[string]string{
+		"Netherlands":              i.countryCodes["nl"],
+		"United States of America": i.countryCodes["us"],
+		"United Kingdom of Great Britain and Northern Ireland": i.countryCodes["gb"],
+		"Czechia": i.countryCodes["cz"],
+		"Korea":   i.countryCodes["kr"],
+	}
+	if newName, ok := countryRenames[data.CountryName]; ok {
+		data.CountryName = newName
 	}
 
 	result = models.PublicIP{

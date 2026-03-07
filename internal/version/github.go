@@ -28,6 +28,12 @@ type githubCommit struct {
 var errHTTPStatusCode = errors.New("bad response HTTP status code")
 
 func getGithubReleases(ctx context.Context, client *http.Client) (releases []githubRelease, err error) {
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	const url = "https://api.github.com/repos/qdm12/gluetun/releases"
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
@@ -53,6 +59,12 @@ func getGithubReleases(ctx context.Context, client *http.Client) (releases []git
 }
 
 func getGithubCommits(ctx context.Context, client *http.Client) (commits []githubCommit, err error) {
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	const url = "https://api.github.com/repos/qdm12/gluetun/commits"
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

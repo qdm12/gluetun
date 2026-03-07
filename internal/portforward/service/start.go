@@ -115,7 +115,7 @@ func (s *Service) onNewPorts(ctx context.Context, ports []uint16) (err error) {
 	copy(s.ports, ports)
 
 	if s.settings.UpCommand != "" {
-		err = runCommand(ctx, s.cmder, s.logger, s.settings.UpCommand, ports)
+		err = runCommand(ctx, s.cmder, s.logger, s.settings.UpCommand, ports, s.settings.Interface)
 		if err != nil {
 			err = fmt.Errorf("running up command: %w", err)
 			s.logger.Error(err.Error())

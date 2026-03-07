@@ -23,38 +23,36 @@ func Test_Wireguard_addRoute(t *testing.T) {
 	errDummy := errors.New("dummy")
 
 	testCases := map[string]struct {
-		link          netlink.Link
 		dst           netip.Prefix
 		expectedRoute netlink.Route
 		routeAddErr   error
 		err           error
 	}{
 		"success": {
-			link: netlink.Link{
-				Index: linkIndex,
-			},
 			dst: ipPrefix,
 			expectedRoute: netlink.Route{
 				LinkIndex: linkIndex,
 				Dst:       ipPrefix,
 				Family:    netlink.FamilyV4,
 				Table:     firewallMark,
+				Type:      netlink.RouteTypeUnicast,
+				Scope:     netlink.ScopeUniverse,
+				Proto:     netlink.ProtoStatic,
 			},
 		},
 		"route add error": {
-			link: netlink.Link{
-				Name:  "a_bridge",
-				Index: linkIndex,
-			},
 			dst: ipPrefix,
 			expectedRoute: netlink.Route{
 				LinkIndex: linkIndex,
 				Dst:       ipPrefix,
 				Family:    netlink.FamilyV4,
 				Table:     firewallMark,
+				Type:      netlink.RouteTypeUnicast,
+				Scope:     netlink.ScopeUniverse,
+				Proto:     netlink.ProtoStatic,
 			},
 			routeAddErr: errDummy,
-			err:         errors.New("adding route for link a_bridge, destination 1.2.3.4/32 and table 51820: dummy"), //nolint:lll
+			err:         errors.New("adding route for link with index 88, destination 1.2.3.4/32 and table 51820: dummy"), //nolint:lll
 		},
 	}
 
@@ -72,7 +70,7 @@ func Test_Wireguard_addRoute(t *testing.T) {
 				RouteAdd(testCase.expectedRoute).
 				Return(testCase.routeAddErr)
 
-			err := wg.addRoute(testCase.link, testCase.dst, firewallMark)
+			err := wg.addRoute(linkIndex, testCase.dst, firewallMark)
 
 			if testCase.err != nil {
 				require.Error(t, err)

@@ -46,13 +46,13 @@ func (s *Storage) syncServers() (err error) {
 	}
 
 	// Eventually write file
-	if s.filepath == "" || reflect.DeepEqual(serversOnFile, s.mergedServers) {
+	if reflect.DeepEqual(serversOnFile, s.mergedServers) {
 		return nil
 	}
 
 	err = s.flushToFile(s.filepath)
 	if err != nil {
-		return fmt.Errorf("writing servers to file: %w", err)
+		s.logger.Warn("failed writing servers to file: " + err.Error())
 	}
 	return nil
 }

@@ -10,7 +10,7 @@ import (
 )
 
 func runCommand(ctx context.Context, cmder Cmder, logger Logger,
-	commandTemplate string, ports []uint16,
+	commandTemplate string, ports []uint16, vpnInterface string,
 ) (err error) {
 	portStrings := make([]string, len(ports))
 	for i, port := range ports {
@@ -18,6 +18,8 @@ func runCommand(ctx context.Context, cmder Cmder, logger Logger,
 	}
 	portsString := strings.Join(portStrings, ",")
 	commandString := strings.ReplaceAll(commandTemplate, "{{PORTS}}", portsString)
+	commandString = strings.ReplaceAll(commandString, "{{PORT}}", portStrings[0])
+	commandString = strings.ReplaceAll(commandString, "{{VPN_INTERFACE}}", vpnInterface)
 	args, err := command.Split(commandString)
 	if err != nil {
 		return fmt.Errorf("parsing command: %w", err)

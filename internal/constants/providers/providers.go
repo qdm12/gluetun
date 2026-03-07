@@ -27,7 +27,6 @@ const (
 	VPNSecure             = "vpnsecure"
 	VPNUnlimited          = "vpn unlimited"
 	Vyprvpn               = "vyprvpn"
-	Wevpn                 = "wevpn"
 	Windscribe            = "windscribe"
 )
 
@@ -56,7 +55,6 @@ func All() []string {
 		VPNSecure,
 		VPNUnlimited,
 		Vyprvpn,
-		Wevpn,
 		Windscribe,
 	}
 }

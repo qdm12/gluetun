@@ -260,6 +260,12 @@ func fetchToken(ctx context.Context, client *http.Client,
 		url.QueryEscape(password): "<password>",
 	}
 
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 10 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	form := url.Values{}
 	form.Add("username", username)
 	form.Add("password", password)
@@ -304,6 +310,11 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, apiIP netip.
 ) {
 	errSubstitutions := map[string]string{url.QueryEscape(token): "<token>"}
 
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
 	queryParams := make(url.Values)
 	queryParams.Add("token", token)
 	url := url.URL{
@@ -353,6 +364,12 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, apiIP netip.
 var ErrBadResponse = errors.New("bad response received")
 
 func bindPort(ctx context.Context, client *http.Client, apiIPAddress netip.Addr, data piaPortForwardData) (err error) {
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
 	payload, err := packPayload(data.Port, data.Token, data.Expiration)
 	if err != nil {
 		return fmt.Errorf("serializing payload: %w", err)

@@ -26,16 +26,25 @@ func pickConnection(connections []models.Connection,
 		return connection, ErrNoConnectionToPickFrom
 	}
 
-	targetIPSet := selection.TargetIP.IsValid() && !selection.TargetIP.IsUnspecified()
+	var targetIP netip.Addr
+	switch selection.VPN {
+	case vpn.OpenVPN:
+		targetIP = selection.OpenVPN.EndpointIP
+	case vpn.Wireguard:
+		targetIP = selection.Wireguard.EndpointIP
+	default:
+		panic("unknown VPN type: " + selection.VPN)
+	}
+	targetIPSet := targetIP.IsValid() && !targetIP.IsUnspecified()
 
 	if targetIPSet && selection.VPN == vpn.Wireguard {
 		// we need the right public key
-		return getTargetIPConnection(connections, selection.TargetIP)
+		return getTargetIPConnection(connections, targetIP)
 	}
 
 	connection = pickRandomConnection(connections, randSource)
 	if targetIPSet {
-		connection.IP = selection.TargetIP
+		connection.IP = targetIP
 	}
 
 	return connection, nil

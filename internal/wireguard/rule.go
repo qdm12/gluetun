@@ -7,15 +7,17 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func (w *Wireguard) addRule(rulePriority int, firewallMark uint32,
-	family int,
+func (w *Wireguard) addRule(rulePriority, firewallMark uint32,
+	family uint8,
 ) (cleanup func() error, err error) {
-	rule := netlink.NewRule()
-	rule.Invert = true
-	rule.Priority = rulePriority
-	rule.Mark = firewallMark
-	rule.Table = int(firewallMark)
-	rule.Family = family
+	rule := netlink.Rule{
+		Priority: &rulePriority,
+		Family:   family,
+		Table:    firewallMark,
+		Mark:     &firewallMark,
+		Flags:    netlink.FlagInvert,
+		Action:   netlink.ActionToTable,
+	}
 	if err := w.netlink.RuleAdd(rule); err != nil {
 		if strings.HasSuffix(err.Error(), "file exists") {
 			w.logger.Info("if you are using Kubernetes, this may fix the error below: " +

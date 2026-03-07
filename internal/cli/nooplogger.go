@@ -7,3 +7,4 @@ func newNoopLogger() *noopLogger {
 }
 
 func (l *noopLogger) Info(string) {}
+func (l *noopLogger) Warn(string) {}

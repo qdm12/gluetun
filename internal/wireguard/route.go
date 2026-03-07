@@ -8,11 +8,11 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 )
 
-func (w *Wireguard) addRoutes(link netlink.Link, destinations []netip.Prefix,
+func (w *Wireguard) addRoutes(linkIndex uint32, destinations []netip.Prefix,
 	firewallMark uint32,
 ) (err error) {
 	for _, dst := range destinations {
-		err = w.addRoute(link, dst, firewallMark)
+		err = w.addRoute(linkIndex, dst, firewallMark)
 		if err == nil {
 			continue
 		}
@@ -29,7 +29,7 @@ func (w *Wireguard) addRoutes(link netlink.Link, destinations []netip.Prefix,
 	return nil
 }
 
-func (w *Wireguard) addRoute(link netlink.Link, dst netip.Prefix,
+func (w *Wireguard) addRoute(linkIndex uint32, dst netip.Prefix,
 	firewallMark uint32,
 ) (err error) {
 	family := netlink.FamilyV4
@@ -37,17 +37,20 @@ func (w *Wireguard) addRoute(link netlink.Link, dst netip.Prefix,
 		family = netlink.FamilyV6
 	}
 	route := netlink.Route{
-		LinkIndex: link.Index,
+		LinkIndex: linkIndex,
 		Dst:       dst,
 		Family:    family,
-		Table:     int(firewallMark),
+		Table:     firewallMark,
+		Type:      netlink.RouteTypeUnicast,
+		Scope:     netlink.ScopeUniverse,
+		Proto:     netlink.ProtoStatic,
 	}
 
 	err = w.netlink.RouteAdd(route)
 	if err != nil {
 		return fmt.Errorf(
-			"adding route for link %s, destination %s and table %d: %w",
-			link.Name, dst, firewallMark, err)
+			"adding route for link with index %d, destination %s and table %d: %w",
+			linkIndex, dst, firewallMark, err)
 	}
 
 	return err

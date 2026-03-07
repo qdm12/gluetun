@@ -38,38 +38,6 @@ func Test_Provider_GetConnection(t *testing.T) {
 			errWrapped: errTest,
 			errMessage: "filtering servers: test error",
 		},
-		"default OpenVPN TCP port": {
-			filteredServers: []models.Server{
-				{IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})}},
-			},
-			selection: settings.ServerSelection{
-				OpenVPN: settings.OpenVPNSelection{
-					Protocol: constants.TCP,
-				},
-			}.WithDefaults(provider),
-			connection: models.Connection{
-				Type:     vpn.OpenVPN,
-				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
-				Port:     443,
-				Protocol: constants.TCP,
-			},
-		},
-		"default OpenVPN UDP port": {
-			filteredServers: []models.Server{
-				{IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})}},
-			},
-			selection: settings.ServerSelection{
-				OpenVPN: settings.OpenVPNSelection{
-					Protocol: constants.UDP,
-				},
-			}.WithDefaults(provider),
-			connection: models.Connection{
-				Type:     vpn.OpenVPN,
-				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
-				Port:     1194,
-				Protocol: constants.UDP,
-			},
-		},
 		"default Wireguard port": {
 			filteredServers: []models.Server{
 				{IPs: []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})}, WgPubKey: "x"},

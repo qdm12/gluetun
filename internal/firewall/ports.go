@@ -35,7 +35,7 @@ func (c *Config) SetAllowedPort(ctx context.Context, port uint16, intf string) (
 	c.logger.Info("setting allowed input port " + fmt.Sprint(port) + " through interface " + intf + "...")
 
 	const remove = false
-	if err := c.acceptInputToPort(ctx, intf, port, remove); err != nil {
+	if err := c.impl.AcceptInputToPort(ctx, intf, port, remove); err != nil {
 		return fmt.Errorf("allowing input to port %d through interface %s: %w",
 			port, intf, err)
 	}
@@ -68,7 +68,7 @@ func (c *Config) RemoveAllowedPort(ctx context.Context, port uint16) (err error)
 
 	const remove = true
 	for netInterface := range interfacesSet {
-		err := c.acceptInputToPort(ctx, netInterface, port, remove)
+		err := c.impl.AcceptInputToPort(ctx, netInterface, port, remove)
 		if err != nil {
 			return fmt.Errorf("removing allowed port %d on interface %s: %w",
 				port, netInterface, err)

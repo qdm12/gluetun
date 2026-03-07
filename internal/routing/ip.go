@@ -16,12 +16,12 @@ func ipIsPrivate(ip netip.Addr) bool {
 
 var errInterfaceIPNotFound = errors.New("IP address not found for interface")
 
-func ipMatchesFamily(ip netip.Addr, family int) bool {
+func ipMatchesFamily(ip netip.Addr, family uint8) bool {
 	return (family == netlink.FamilyV4 && ip.Is4()) ||
 		(family == netlink.FamilyV6 && ip.Is6())
 }
 
-func (r *Routing) AssignedIP(interfaceName string, family int) (ip netip.Addr, err error) {
+func (r *Routing) AssignedIP(interfaceName string, family uint8) (ip netip.Addr, err error) {
 	iface, err := net.InterfaceByName(interfaceName)
 	if err != nil {
 		return ip, fmt.Errorf("network interface %s not found: %w", interfaceName, err)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
@@ -40,7 +41,14 @@ func (c *cloudflare) Token() (token string) {
 func (c *cloudflare) FetchInfo(ctx context.Context, ip netip.Addr) (
 	result models.PublicIP, err error,
 ) {
-	url := "https://speed.cloudflare.com/meta"
+	// Define a timeout since the default client has a large timeout and we don't
+	// want to wait too long.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	urlBase := "https://speed.cloudflare.com"
+	url := urlBase + "/meta"
 	if ip.IsValid() {
 		return result, fmt.Errorf("%w: cloudflare cannot provide information on the arbitrary IP address %s",
 			ErrServiceLimited, ip)
@@ -50,6 +58,7 @@ func (c *cloudflare) FetchInfo(ctx context.Context, ip netip.Addr) (
 	if err != nil {
 		return result, err
 	}
+	request.Header.Add("Referer", urlBase) // returns HTTP 403 otherwise
 
 	response, err := c.client.Do(request)
 	if err != nil {

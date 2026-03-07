@@ -1,12 +1,16 @@
 package auth
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/validate"
+	"github.com/qdm12/gotree"
 )
 
 type Settings struct {
@@ -15,34 +19,53 @@ type Settings struct {
 	Roles []Role
 }
 
-func (s *Settings) SetDefaults() {
-	s.Roles = gosettings.DefaultSlice(s.Roles, []Role{{ // TODO v3.41.0 leave empty
-		Name: "public",
-		Auth: "none",
-		Routes: []string{
-			http.MethodGet + " /openvpn/actions/restart",
-			http.MethodGet + " /unbound/actions/restart",
-			http.MethodGet + " /openvpn/portforwarded",
-			http.MethodGet + " /updater/restart",
-			http.MethodGet + " /v1/version",
-			http.MethodGet + " /v1/vpn/status",
-			http.MethodPut + " /v1/vpn/status",
-			http.MethodGet + " /v1/openvpn/status",
-			http.MethodPut + " /v1/openvpn/status",
-			http.MethodGet + " /v1/openvpn/portforwarded",
-			http.MethodGet + " /v1/dns/status",
-			http.MethodPut + " /v1/dns/status",
-			http.MethodGet + " /v1/updater/status",
-			http.MethodPut + " /v1/updater/status",
-			http.MethodGet + " /v1/publicip/ip",
-			http.MethodGet + " /v1/portforward",
-		},
-	}})
+// SetDefaultRole sets a default role to apply to all routes without a
+// previously user-defined role assigned to. Note the role argument
+// routes are ignored. This should be called BEFORE calling [Settings.SetDefaults].
+func (s *Settings) SetDefaultRole(jsonRole string) error {
+	var role Role
+	decoder := json.NewDecoder(bytes.NewBufferString(jsonRole))
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&role)
+	if err != nil {
+		return fmt.Errorf("decoding default role: %w", err)
+	}
+	if role.Auth == "" {
+		return nil // no default role to set
+	}
+	err = role.Validate()
+	if err != nil {
+		return fmt.Errorf("validating default role: %w", err)
+	}
+
+	authenticatedRoutes := make(map[string]struct{}, len(validRoutes))
+	for _, role := range s.Roles {
+		for _, route := range role.Routes {
+			authenticatedRoutes[route] = struct{}{}
+		}
+	}
+
+	if len(authenticatedRoutes) == len(validRoutes) {
+		return nil
+	}
+
+	unauthenticatedRoutes := make([]string, 0, len(validRoutes))
+	for route := range validRoutes {
+		_, authenticated := authenticatedRoutes[route]
+		if !authenticated {
+			unauthenticatedRoutes = append(unauthenticatedRoutes, route)
+		}
+	}
+
+	slices.Sort(unauthenticatedRoutes)
+	role.Routes = unauthenticatedRoutes
+	s.Roles = append(s.Roles, role)
+	return nil
 }
 
 func (s Settings) Validate() (err error) {
 	for i, role := range s.Roles {
-		err = role.validate()
+		err = role.Validate()
 		if err != nil {
 			return fmt.Errorf("role %s (%d of %d): %w",
 				role.Name, i+1, len(s.Roles), err)
@@ -63,18 +86,18 @@ const (
 type Role struct {
 	// Name is the role name and is only used for documentation
 	// and in the authentication middleware debug logs.
-	Name string
-	// Auth is the authentication method to use, which can be 'none' or 'apikey'.
-	Auth string
+	Name string `json:"name"`
+	// Auth is the authentication method to use, which can be 'none', 'basic' or 'apikey'.
+	Auth string `json:"auth"`
 	// APIKey is the API key to use when using the 'apikey' authentication.
-	APIKey string
+	APIKey string `json:"apikey"`
 	// Username for HTTP Basic authentication method.
-	Username string
+	Username string `json:"username"`
 	// Password for HTTP Basic authentication method.
-	Password string
+	Password string `json:"password"`
 	// Routes is a list of routes that the role can access in the format
 	// "HTTP_METHOD PATH", for example "GET /v1/vpn/status"
-	Routes []string
+	Routes []string `json:"-"`
 }
 
 var (
@@ -85,7 +108,7 @@ var (
 	ErrRouteNotSupported  = errors.New("route not supported by the control server")
 )
 
-func (r Role) validate() (err error) {
+func (r Role) Validate() (err error) {
 	err = validate.IsOneOf(r.Auth, AuthNone, AuthAPIKey, AuthBasic)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrMethodNotSupported, r.Auth)
@@ -134,4 +157,21 @@ var validRoutes = map[string]struct{}{ //nolint:gochecknoglobals
 	http.MethodGet + " /v1/publicip/ip":           {},
 	http.MethodGet + " /v1/portforward":           {},
 	http.MethodPut + " /v1/portforward":           {},
+}
+
+func (r Role) ToLinesNode() (node *gotree.Node) {
+	node = gotree.New("Role " + r.Name)
+	node.Appendf("Authentication method: %s", r.Auth)
+	switch r.Auth {
+	case AuthNone:
+	case AuthBasic:
+		node.Appendf("Username: %s", r.Username)
+		node.Appendf("Password: %s", gosettings.ObfuscateKey(r.Password))
+	case AuthAPIKey:
+		node.Appendf("API key: %s", gosettings.ObfuscateKey(r.APIKey))
+	default:
+		panic("missing code for authentication method: " + r.Auth)
+	}
+	node.Appendf("Number of routes covered: %d", len(r.Routes))
+	return node
 }

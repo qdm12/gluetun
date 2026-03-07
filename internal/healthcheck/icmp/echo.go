@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/netip"
 	"strings"
+	"time"
 
 	"golang.org/x/net/icmp"
 	"golang.org/x/net/ipv4"
@@ -27,6 +28,9 @@ type Echoer struct {
 	buffer       []byte
 	randomSource io.Reader
 	logger       Logger
+	seqStart     time.Time
+	id           int
+	seq          int
 }
 
 func NewEchoer(logger Logger) *Echoer {
@@ -42,12 +46,26 @@ func NewEchoer(logger Logger) *Echoer {
 	}
 }
 
+// Reset resets the [Echoer] icmp echo parameters:
+// - ID is assigned a new random value
+// - sequence is reset to 1
+// - sequence start time is set to now
+// It is used when the sequence is complete or when the VPN reconnects.
+func (e *Echoer) Reset() {
+	const uint16Bytes = 2
+	idBytes := make([]byte, uint16Bytes)
+	_, _ = e.randomSource.Read(idBytes)
+	e.id = int(binary.BigEndian.Uint16(idBytes))
+	e.seq = 1
+	e.seqStart = time.Now()
+}
+
 var (
 	ErrTimedOut     = errors.New("timed out waiting for ICMP echo reply")
 	ErrNotPermitted = errors.New("not permitted")
 )
 
-func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
+func (e *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 	var ipVersion string
 	var conn net.PacketConn
 	if ip.Is4() {
@@ -69,8 +87,13 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 		conn.Close()
 	}()
 
-	const echoDataSize = 32
-	id, message := buildMessageToSend(ipVersion, echoDataSize, i.randomSource)
+	const maxSeq = 1<<16 - 1
+	const refreshIDInterval = 5 * time.Minute
+	if e.seq > maxSeq && time.Since(e.seqStart) >= refreshIDInterval {
+		e.Reset()
+	}
+
+	message := buildMessageToSend(ipVersion, e.id, e.seq, e.randomSource)
 
 	encodedMessage, err := message.Marshal(nil)
 	if err != nil {
@@ -82,31 +105,29 @@ func (i *Echoer) Echo(ctx context.Context, ip netip.Addr) (err error) {
 		if strings.HasSuffix(err.Error(), "sendto: operation not permitted") {
 			err = fmt.Errorf("%w", ErrNotPermitted)
 		}
-		return fmt.Errorf("writing ICMP message: %w", err)
+		return fmt.Errorf("writing ICMP message to %s: %w", ip, err)
 	}
+	defer func() {
+		e.seq++
+	}()
 
-	receivedData, err := receiveEchoReply(conn, id, i.buffer, ipVersion, i.logger)
+	receivedData, err := receiveEchoReply(conn, e.id, e.seq, e.buffer, ipVersion, e.logger)
 	if err != nil {
 		if errors.Is(err, net.ErrClosed) && ctx.Err() != nil {
-			return fmt.Errorf("%w", ErrTimedOut)
+			return fmt.Errorf("%w from %s", ErrTimedOut, ip)
 		}
-		return fmt.Errorf("receiving ICMP echo reply: %w", err)
+		return fmt.Errorf("receiving ICMP echo reply from %s: %w", ip, err)
 	}
 
 	sentData := message.Body.(*icmp.Echo).Data //nolint:forcetypeassert
 	if !bytes.Equal(receivedData, sentData) {
-		return fmt.Errorf("%w: sent %x and received %x", ErrICMPEchoDataMismatch, sentData, receivedData)
+		return fmt.Errorf("%w: sent %x to %s and received %x", ErrICMPEchoDataMismatch, sentData, ip, receivedData)
 	}
 
 	return nil
 }
 
-func buildMessageToSend(ipVersion string, size uint, randomSource io.Reader) (id int, message *icmp.Message) {
-	const uint16Bytes = 2
-	idBytes := make([]byte, uint16Bytes)
-	_, _ = randomSource.Read(idBytes)
-	id = int(binary.BigEndian.Uint16(idBytes))
-
+func buildMessageToSend(ipVersion string, id, seq int, randomSource io.Reader) (message *icmp.Message) {
 	var icmpType icmp.Type
 	switch ipVersion {
 	case "v4":
@@ -116,6 +137,7 @@ func buildMessageToSend(ipVersion string, size uint, randomSource io.Reader) (id
 	default:
 		panic(fmt.Sprintf("IP version %q not supported", ipVersion))
 	}
+	const size = 32
 	messageBodyData := make([]byte, size)
 	_, _ = randomSource.Read(messageBodyData)
 
@@ -126,14 +148,14 @@ func buildMessageToSend(ipVersion string, size uint, randomSource io.Reader) (id
 		Checksum: 0,        // calculated at encoding (ipv4) or sending (ipv6)
 		Body: &icmp.Echo{
 			ID:   id,
-			Seq:  0, // only one packet
+			Seq:  seq,
 			Data: messageBodyData,
 		},
 	}
-	return id, message
+	return message
 }
 
-func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion string, logger Logger,
+func receiveEchoReply(conn net.PacketConn, id, seq int, buffer []byte, ipVersion string, logger Logger,
 ) (data []byte, err error) {
 	var icmpProtocol int
 	const (
@@ -167,27 +189,35 @@ func receiveEchoReply(conn net.PacketConn, id int, buffer []byte, ipVersion stri
 
 		switch body := message.Body.(type) {
 		case *icmp.Echo:
-			if id != body.ID {
+			switch {
+			case id != body.ID:
 				logger.Warnf("ignoring ICMP echo reply mismatching expected id %d "+
-					"(id: %d, type: %d, code: %d, length: %d, return address %s)",
-					id, body.ID, message.Type, message.Code, len(packetBytes), returnAddr)
+					"(id: %d, seq: %d, type: %d, code: %d, length: %d, return address %s)",
+					id, body.Seq, body.ID, message.Type, message.Code, len(packetBytes), returnAddr)
 				continue // not the ID we are looking for
+			case seq != body.Seq:
+				logger.Warnf("ignoring ICMP echo reply mismatching expected sequence number %d "+
+					"(id: %d, seq: %d, type: %d, code: %d, length: %d, return address %s)",
+					seq, body.ID, body.Seq, message.Type, message.Code, len(packetBytes), returnAddr)
+				continue // not the seq we are looking for
 			}
 			return body.Data, nil
 		case *icmp.DstUnreach:
-			logger.Debugf("ignoring ICMP destination unreachable message (type: 3, code: %d, return address %s, expected-id %d)",
-				message.Code, returnAddr, id)
+			logger.Debugf("ignoring ICMP destination unreachable message "+
+				"(type: 3, code: %d, return address %s, expected id %d and seq %d)",
+				message.Code, returnAddr, id, seq)
 			// See https://github.com/qdm12/gluetun/pull/2923#issuecomment-3377532249
 			// on why we ignore this message. If it is actually unreachable, the timeout on waiting for
 			// the echo reply will do instead of returning an error error.
 			continue
 		case *icmp.TimeExceeded:
-			logger.Debugf("ignoring ICMP time exceeded message (type: 11, code: %d, return address %s, expected-id %d)",
-				message.Code, returnAddr, id)
+			logger.Debugf("ignoring ICMP time exceeded message "+
+				"(type: 11, code: %d, return address %s, expected id %d and seq %d)",
+				message.Code, returnAddr, id, seq)
 			continue
 		default:
-			return nil, fmt.Errorf("%w: %T (type %d, code %d, return address %s, expected-id %d)",
-				ErrICMPBodyUnsupported, body, message.Type, message.Code, returnAddr, id)
+			return nil, fmt.Errorf("%w: %T (type %d, code %d, return address %s, expected id %d and seq %d)",
+				ErrICMPBodyUnsupported, body, message.Type, message.Code, returnAddr, id, seq)
 		}
 	}
 }

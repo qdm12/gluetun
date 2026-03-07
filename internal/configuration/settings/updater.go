@@ -2,6 +2,7 @@ package settings
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -20,10 +21,6 @@ type Updater struct {
 	// updater. It cannot be nil in the internal state.
 	// TODO change to value and add Enabled field.
 	Period *time.Duration
-	// DNSAddress is the DNS server address to use
-	// to resolve VPN server hostnames to IP addresses.
-	// It cannot be the empty string in the internal state.
-	DNSAddress string
 	// MinRatio is the minimum ratio of servers to
 	// find per provider, compared to the total current
 	// number of servers. It defaults to 0.8.
@@ -31,6 +28,10 @@ type Updater struct {
 	// Providers is the list of VPN service providers
 	// to update server information for.
 	Providers []string
+	// ProtonEmail is the email to authenticate with the Proton API.
+	ProtonEmail *string
+	// ProtonPassword is the password to authenticate with the Proton API.
+	ProtonPassword *string
 }
 
 func (u Updater) Validate() (err error) {
@@ -51,6 +52,18 @@ func (u Updater) Validate() (err error) {
 		if err != nil {
 			return fmt.Errorf("%w: %w", ErrVPNProviderNameNotValid, err)
 		}
+
+		if provider == providers.Protonvpn {
+			authenticatedAPI := *u.ProtonEmail != "" || *u.ProtonPassword != ""
+			if authenticatedAPI {
+				switch {
+				case *u.ProtonEmail == "":
+					return fmt.Errorf("%w", ErrUpdaterProtonEmailMissing)
+				case *u.ProtonPassword == "":
+					return fmt.Errorf("%w", ErrUpdaterProtonPasswordMissing)
+				}
+			}
+		}
 	}
 
 	return nil
@@ -58,10 +71,11 @@ func (u Updater) Validate() (err error) {
 
 func (u *Updater) copy() (copied Updater) {
 	return Updater{
-		Period:     gosettings.CopyPointer(u.Period),
-		DNSAddress: u.DNSAddress,
-		MinRatio:   u.MinRatio,
-		Providers:  gosettings.CopySlice(u.Providers),
+		Period:         gosettings.CopyPointer(u.Period),
+		MinRatio:       u.MinRatio,
+		Providers:      gosettings.CopySlice(u.Providers),
+		ProtonEmail:    gosettings.CopyPointer(u.ProtonEmail),
+		ProtonPassword: gosettings.CopyPointer(u.ProtonPassword),
 	}
 }
 
@@ -70,14 +84,14 @@ func (u *Updater) copy() (copied Updater) {
 // settings.
 func (u *Updater) overrideWith(other Updater) {
 	u.Period = gosettings.OverrideWithPointer(u.Period, other.Period)
-	u.DNSAddress = gosettings.OverrideWithComparable(u.DNSAddress, other.DNSAddress)
 	u.MinRatio = gosettings.OverrideWithComparable(u.MinRatio, other.MinRatio)
 	u.Providers = gosettings.OverrideWithSlice(u.Providers, other.Providers)
+	u.ProtonEmail = gosettings.OverrideWithPointer(u.ProtonEmail, other.ProtonEmail)
+	u.ProtonPassword = gosettings.OverrideWithPointer(u.ProtonPassword, other.ProtonPassword)
 }
 
 func (u *Updater) SetDefaults(vpnProvider string) {
 	u.Period = gosettings.DefaultPointer(u.Period, 0)
-	u.DNSAddress = gosettings.DefaultComparable(u.DNSAddress, "1.1.1.1:53")
 
 	if u.MinRatio == 0 {
 		const defaultMinRatio = 0.8
@@ -87,6 +101,10 @@ func (u *Updater) SetDefaults(vpnProvider string) {
 	if len(u.Providers) == 0 && vpnProvider != providers.Custom {
 		u.Providers = []string{vpnProvider}
 	}
+
+	// Set these to empty strings to avoid nil pointer panics
+	u.ProtonEmail = gosettings.DefaultPointer(u.ProtonEmail, "")
+	u.ProtonPassword = gosettings.DefaultPointer(u.ProtonPassword, "")
 }
 
 func (u Updater) String() string {
@@ -100,20 +118,18 @@ func (u Updater) toLinesNode() (node *gotree.Node) {
 
 	node = gotree.New("Server data updater settings:")
 	node.Appendf("Update period: %s", *u.Period)
-	node.Appendf("DNS address: %s", u.DNSAddress)
 	node.Appendf("Minimum ratio: %.1f", u.MinRatio)
 	node.Appendf("Providers to update: %s", strings.Join(u.Providers, ", "))
+	if slices.Contains(u.Providers, providers.Protonvpn) {
+		node.Appendf("Proton API email: %s", *u.ProtonEmail)
+		node.Appendf("Proton API password: %s", gosettings.ObfuscateKey(*u.ProtonPassword))
+	}
 
 	return node
 }
 
 func (u *Updater) read(r *reader.Reader) (err error) {
 	u.Period, err = r.DurationPtr("UPDATER_PERIOD")
-	if err != nil {
-		return err
-	}
-
-	u.DNSAddress, err = readUpdaterDNSAddress()
 	if err != nil {
 		return err
 	}
@@ -125,14 +141,15 @@ func (u *Updater) read(r *reader.Reader) (err error) {
 
 	u.Providers = r.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
 
-	return nil
-}
+	u.ProtonEmail = r.Get("UPDATER_PROTONVPN_EMAIL")
+	if u.ProtonEmail == nil {
+		protonUsername := r.String("UPDATER_PROTONVPN_USERNAME", reader.IsRetro("UPDATER_PROTONVPN_EMAIL"))
+		if protonUsername != "" {
+			protonEmail := protonUsername + "@protonmail.com"
+			u.ProtonEmail = &protonEmail
+		}
+	}
+	u.ProtonPassword = r.Get("UPDATER_PROTONVPN_PASSWORD")
 
-func readUpdaterDNSAddress() (address string, err error) {
-	// TODO this is currently using Cloudflare in
-	// plaintext to not be blocked by DNS over TLS by default.
-	// If a plaintext address is set in the DNS settings, this one will be used.
-	// use custom future encrypted DNS written in Go without blocking
-	// as it's too much trouble to start another parallel unbound instance for now.
-	return "", nil
+	return nil
 }

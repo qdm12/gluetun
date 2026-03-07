@@ -28,7 +28,7 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 	remove := true
 	if c.vpnConnection.IP.IsValid() {
 		for _, defaultRoute := range c.defaultRoutes {
-			if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove); err != nil {
+			if err := c.impl.AcceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, c.vpnConnection, remove); err != nil {
 				c.logger.Error("cannot remove outdated VPN connection rule: " + err.Error())
 			}
 		}
@@ -36,7 +36,7 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 	c.vpnConnection = models.Connection{}
 
 	if c.vpnIntf != "" {
-		if err = c.acceptOutputThroughInterface(ctx, c.vpnIntf, remove); err != nil {
+		if err = c.impl.AcceptOutputThroughInterface(ctx, c.vpnIntf, remove); err != nil {
 			c.logger.Error("cannot remove outdated VPN interface rule: " + err.Error())
 		}
 	}
@@ -45,13 +45,13 @@ func (c *Config) SetVPNConnection(ctx context.Context,
 	remove = false
 
 	for _, defaultRoute := range c.defaultRoutes {
-		if err := c.acceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, connection, remove); err != nil {
+		if err := c.impl.AcceptOutputTrafficToVPN(ctx, defaultRoute.NetInterface, connection, remove); err != nil {
 			return fmt.Errorf("allowing output traffic through VPN connection: %w", err)
 		}
 	}
 	c.vpnConnection = connection
 
-	if err = c.acceptOutputThroughInterface(ctx, vpnIntf, remove); err != nil {
+	if err = c.impl.AcceptOutputThroughInterface(ctx, vpnIntf, remove); err != nil {
 		return fmt.Errorf("accepting output traffic through interface %s: %w", vpnIntf, err)
 	}
 	c.vpnIntf = vpnIntf

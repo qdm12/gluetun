@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	inboundTable    = 200
-	inboundPriority = 100
+	inboundTable    uint32 = 200
+	inboundPriority uint32 = 100
 )
 
 func (r *Routing) routeInboundFromDefault(defaultRoutes []DefaultRoute) (err error) {
@@ -60,7 +60,7 @@ func (r *Routing) unrouteInboundFromDefault(defaultRoutes []DefaultRoute) (err e
 	return nil
 }
 
-func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRoute) (err error) {
+func (r *Routing) addRuleInboundFromDefault(table uint32, defaultRoutes []DefaultRoute) (err error) {
 	for _, defaultRoute := range defaultRoutes {
 		assignedIP := defaultRoute.AssignedIP
 		bits := 32
@@ -78,7 +78,7 @@ func (r *Routing) addRuleInboundFromDefault(table int, defaultRoutes []DefaultRo
 	return nil
 }
 
-func (r *Routing) delRuleInboundFromDefault(table int, defaultRoutes []DefaultRoute) (err error) {
+func (r *Routing) delRuleInboundFromDefault(table uint32, defaultRoutes []DefaultRoute) (err error) {
 	for _, defaultRoute := range defaultRoutes {
 		assignedIP := defaultRoute.AssignedIP
 		bits := 32

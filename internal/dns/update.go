@@ -6,11 +6,10 @@ import (
 
 	"github.com/qdm12/dns/v2/pkg/blockbuilder"
 	"github.com/qdm12/dns/v2/pkg/middlewares/filter/update"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 )
 
-func (l *Loop) updateFiles(ctx context.Context) (err error) {
-	settings := l.GetSettings()
-
+func (l *Loop) updateFiles(ctx context.Context, settings settings.DNS) (err error) {
 	l.logger.Info("downloading hostnames and IP block lists")
 	blacklistSettings := settings.Blacklist.ToBlockBuilderSettings(l.client)
 

@@ -2,77 +2,66 @@ package updater
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/netip"
 	"sort"
-	"strings"
 
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/updater/openvpn"
 )
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
-	if !u.ipFetcher.CanFetchAnyIP() {
-		return nil, fmt.Errorf("%w: %s", common.ErrIPFetcherUnsupported, u.ipFetcher.String())
-	}
-
-	const url = "https://privadovpn.com/apps/ovpn_configs.zip"
-	contents, err := u.unzipper.FetchAndExtract(ctx, url)
+	const url = "https://privadovpn.com/apps/servers_export.json"
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
-	} else if len(contents) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(contents), minServers)
+		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	hts := make(hostToServer)
-
-	for fileName, content := range contents {
-		if !strings.HasSuffix(fileName, ".ovpn") {
-			continue // not an OpenVPN file
-		}
-
-		host, warning, err := openvpn.ExtractHost(content)
-		if warning != "" {
-			u.warner.Warn(warning)
-		}
-		if err != nil {
-			// treat error as warning and go to next file
-			u.warner.Warn(err.Error() + " in " + fileName)
-			continue
-		}
-
-		hts.add(host)
-	}
-
-	if len(hts) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(hts), minServers)
-	}
-
-	hosts := hts.toHostsSlice()
-	resolveSettings := parallelResolverSettings(hosts)
-	hostToIPs, warnings, err := u.parallelResolver.Resolve(ctx, resolveSettings)
-	for _, warning := range warnings {
-		u.warner.Warn(warning)
-	}
+	response, err := u.client.Do(request)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(hostToIPs) < minServers {
-		return nil, fmt.Errorf("%w: %d and expected at least %d",
-			common.ErrNotEnoughServers, len(servers), minServers)
+	var data struct {
+		Servers []struct {
+			Country  string     `json:"country"`
+			City     string     `json:"city"`
+			Hostname string     `json:"hostname"`
+			IP       netip.Addr `json:"ip"`
+		} `json:"servers"`
+	}
+	decoder := json.NewDecoder(response.Body)
+	err = decoder.Decode(&data)
+	if err != nil {
+		_ = response.Body.Close()
+		return nil, fmt.Errorf("decoding JSON response: %w", err)
 	}
 
-	hts.adaptWithIPs(hostToIPs)
+	err = response.Body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("closing response body: %w", err)
+	}
 
-	servers = hts.toServersSlice()
+	if len(data.Servers) < minServers {
+		return nil, fmt.Errorf("%w: %d and expected at least %d",
+			common.ErrNotEnoughServers, len(data.Servers), minServers)
+	}
 
-	if err := setLocationInfo(ctx, u.ipFetcher, servers); err != nil {
-		return nil, err
+	servers = make([]models.Server, len(data.Servers))
+	for i, server := range data.Servers {
+		servers[i] = models.Server{
+			VPN:      vpn.OpenVPN,
+			Country:  server.Country,
+			City:     server.City,
+			Hostname: server.Hostname,
+			IPs:      []netip.Addr{server.IP},
+			UDP:      true,
+		}
 	}
 
 	sort.Sort(models.SortableServers(servers))
