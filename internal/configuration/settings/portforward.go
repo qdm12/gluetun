@@ -58,6 +58,7 @@ func (p PortForwarding) Validate(vpnProvider string) (err error) {
 		providerSelected = *p.Provider
 	}
 	validProviders := []string{
+		providers.Cryptostorm,
 		providers.Perfectprivacy,
 		providers.PrivateInternetAccess,
 		providers.Privatevpn,
