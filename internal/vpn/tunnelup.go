@@ -6,7 +6,6 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/qdm12/dns/v2/pkg/check"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/pmtud"
@@ -91,14 +90,7 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 	// to start monitoring health and auto-healing.
 	go l.collectHealthErrors(ctx, loopCtx, healthErrCh)
 
-	if *l.dnsLooper.GetSettings().ServerEnabled {
-		_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
-	} else {
-		err := check.WaitForDNS(ctx, check.Settings{})
-		if err != nil {
-			l.logger.Error("waiting for DNS to be ready: " + err.Error())
-		}
-	}
+	_, _ = l.dnsLooper.ApplyStatus(ctx, constants.Running)
 
 	err = l.publicip.RunOnce(ctx)
 	if err != nil {
