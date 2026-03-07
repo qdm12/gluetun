@@ -69,6 +69,11 @@ func (c *Config) enable(ctx context.Context) (err error) {
 		return err
 	}
 
+	err = c.flushExistingConnections(ctx)
+	if err != nil {
+		return fmt.Errorf("flushing existing connections: %w", err)
+	}
+
 	if err = c.impl.AcceptEstablishedRelatedTraffic(ctx); err != nil {
 		return err
 	}

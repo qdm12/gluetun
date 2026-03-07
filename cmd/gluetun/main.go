@@ -230,7 +230,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		firewallLogger.Patch(log.SetLevel(log.LevelDebug))
 	}
 	firewallConf, err := firewall.NewConfig(ctx, firewallLogger, cmder,
-		defaultRoutes, localNetworks)
+		netLinker, defaultRoutes, localNetworks)
 	if err != nil {
 		return err
 	}
@@ -239,10 +239,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		err = firewallConf.SetEnabled(ctx, true)
 		if err != nil {
 			return err
-		}
-		err = netLinker.FlushConntrack()
-		if err != nil {
-			logger.Warnf("flushing conntrack failed: %s", err)
 		}
 	}
 
