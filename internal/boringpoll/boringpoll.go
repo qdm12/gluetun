@@ -91,8 +91,8 @@ func (b *BoringPoll) Start() (runError <-chan error, err error) {
 					return
 				case <-timer.C:
 				}
-
-				n, err := fetchURL(ctx, b.client, url)
+				var n int64
+				n, err = fetchURL(ctx, b.client, url)
 				if err != nil {
 					consecutiveFails++
 					continue
@@ -101,7 +101,7 @@ func (b *BoringPoll) Start() (runError <-chan error, err error) {
 				totalDownloaded += uint64(n) //nolint:gosec
 				lastDownloaded += uint64(n)  //nolint:gosec
 				if lastDownloaded >= logEveryBytes {
-					b.logger.Infof("thanks for helping! Downloaded %s from %s!",
+					b.logger.Infof("thanks for helping! You have downloaded %s from %s so far!",
 						byteCountSI(totalDownloaded), url)
 					lastDownloaded = 0
 				}
