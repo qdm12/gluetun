@@ -100,10 +100,12 @@ type PublicIPLoop interface {
 	ClearData() (err error)
 }
 
-type CmdStarter interface {
+type Cmder interface {
 	Start(cmd *exec.Cmd) (
 		stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, startErr error)
+	RunAndLog(ctx context.Context, command string,
+		logger command.Logger) (err error)
 }
 
 type HealthChecker interface {
@@ -120,8 +122,4 @@ type HealthServer interface {
 type Service interface {
 	Start() (runError <-chan error, err error)
 	Stop() error
-}
-
-type Cmder interface {
-	RunAndLog(ctx context.Context, command string, logger command.Logger) (err error)
 }

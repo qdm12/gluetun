@@ -17,7 +17,6 @@ type Loop struct {
 	state          *state.State
 	providers      Providers
 	storage        Storage
-	cmder          Cmder
 	healthSettings settings.Health
 	healthChecker  HealthChecker
 	healthServer   HealthServer
@@ -36,9 +35,9 @@ type Loop struct {
 	dnsLooper   DNSLoop
 	boringPoll  Service
 	// Other objects
-	starter CmdStarter // for OpenVPN
-	logger  log.LoggerInterface
-	client  *http.Client
+	cmder  Cmder // for OpenVPN and up/down commands
+	logger log.LoggerInterface
+	client *http.Client
 	// Internal channels and values
 	stop        <-chan struct{}
 	stopped     chan<- struct{}
@@ -57,7 +56,7 @@ func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint1
 	providers Providers, storage Storage, boringPoll Service,
 	healthSettings settings.Health, healthChecker HealthChecker, healthServer HealthServer,
 	openvpnConf OpenVPN, netLinker NetLinker, fw Firewall, routing Routing,
-	portForward PortForward, starter CmdStarter,
+	portForward PortForward, cmder Cmder,
 	publicip PublicIPLoop, dnsLooper DNSLoop,
 	logger log.LoggerInterface, client *http.Client,
 	buildInfo models.BuildInformation, versionInfo bool,
@@ -90,7 +89,7 @@ func NewLoop(vpnSettings settings.VPN, ipv6Supported bool, vpnInputPorts []uint1
 		portForward:    portForward,
 		publicip:       publicip,
 		dnsLooper:      dnsLooper,
-		starter:        starter,
+		cmder:          cmder,
 		logger:         logger,
 		client:         client,
 		start:          start,
