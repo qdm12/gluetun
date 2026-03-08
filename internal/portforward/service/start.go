@@ -42,6 +42,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		CanPortForward: s.settings.CanPortForward,
 		Username:       s.settings.Username,
 		Password:       s.settings.Password,
+		PortsCount:     s.settings.PortsCount,
 	}
 	ports, err := s.settings.PortForwarder.PortForward(ctx, obj)
 	if err != nil {
@@ -91,16 +92,18 @@ func (s *Service) onNewPorts(ctx context.Context, ports []uint16) (err error) {
 
 	s.logger.Info(portsToString(ports))
 
-	for _, port := range ports {
+	redirectionEnabled := !slices.Equal(s.settings.ListeningPorts, []uint16{0})
+	for i, port := range ports {
 		err = s.portAllower.SetAllowedPort(ctx, port, s.settings.Interface)
 		if err != nil {
 			return fmt.Errorf("allowing port in firewall: %w", err)
 		}
 
-		if s.settings.ListeningPort != 0 {
-			err = s.portAllower.RedirectPort(ctx, s.settings.Interface, port, s.settings.ListeningPort)
+		if redirectionEnabled {
+			err = s.portAllower.RedirectPort(ctx, s.settings.Interface, port, s.settings.ListeningPorts[i])
 			if err != nil {
-				return fmt.Errorf("redirecting port in firewall: %w", err)
+				return fmt.Errorf("redirecting port %d to %d in firewall: %w",
+					port, s.settings.ListeningPorts[i], err)
 			}
 		}
 	}
