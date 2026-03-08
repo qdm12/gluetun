@@ -24,7 +24,7 @@ type Firewall interface {
 
 type Routing interface {
 	VPNLocalGatewayIP(vpnInterface string) (gateway netip.Addr, err error)
-	VPNRoute(vpnIntf string) (route netlink.Route, err error)
+	VPNRoutes(vpnIntf string) (route []netlink.Route, err error)
 }
 
 type PortForward interface {

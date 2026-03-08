@@ -174,9 +174,9 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 		return fmt.Errorf("getting VPN gateway IP address: %w", err)
 	}
 
-	vpnRoute, err := routing.VPNRoute(vpnInterface)
+	vpnRoutes, err := routing.VPNRoutes(vpnInterface)
 	if err != nil {
-		return fmt.Errorf("getting VPN route: %w", err)
+		return fmt.Errorf("getting VPN routes: %w", err)
 	}
 
 	link, err := netlinker.LinkByName(vpnInterface)
@@ -208,7 +208,7 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 		logger.Infof("setting VPN interface %s MTU to maximum valid MTU %d", vpnInterface, vpnLinkMTU)
 	}
 
-	err = setTCPMSSOnVPNRoute(vpnLinkMTU, vpnRoute, netlinker)
+	err = setTCPMSSOnVPNRoutes(vpnLinkMTU, vpnRoutes, netlinker)
 	if err != nil {
 		err = fmt.Errorf("setting safe TCP MSS for MTU %d: %w", vpnLinkMTU, err)
 		vpnLinkMTU = originalMTU
@@ -224,14 +224,20 @@ func updateToMaxMTU(ctx context.Context, vpnInterface string,
 	return nil
 }
 
-func setTCPMSSOnVPNRoute(mtu uint32, route netlink.Route, netlinker NetLinker) error {
-	ipHeaderLength := pconstants.IPv4HeaderLength
-	if route.Dst.Addr().Is6() {
-		ipHeaderLength = pconstants.IPv6HeaderLength
+func setTCPMSSOnVPNRoutes(mtu uint32, routes []netlink.Route, netlinker NetLinker) error {
+	for _, route := range routes {
+		ipHeaderLength := pconstants.IPv4HeaderLength
+		if route.Dst.Addr().Is6() {
+			ipHeaderLength = pconstants.IPv6HeaderLength
+		}
+		const mysteriousOverhead = 20 // most likely TCP options, such as the 12B of timestamps
+		overhead := ipHeaderLength + pconstants.BaseTCPHeaderLength + mysteriousOverhead
+		mss := mtu - overhead
+		route.AdvMSS = mss
+		err := netlinker.RouteReplace(route)
+		if err != nil {
+			return fmt.Errorf("replacing route %v: %w", route, err)
+		}
 	}
-	const mysteriousOverhead = 20 // most likely TCP options, such as the 12B of timestamps
-	overhead := ipHeaderLength + pconstants.BaseTCPHeaderLength + mysteriousOverhead
-	mss := mtu - overhead
-	route.AdvMSS = mss
-	return netlinker.RouteReplace(route)
+	return nil
 }
