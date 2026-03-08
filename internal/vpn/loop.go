@@ -17,6 +17,7 @@ type Loop struct {
 	state          *state.State
 	providers      Providers
 	storage        Storage
+	cmder          Cmder
 	healthSettings settings.Health
 	healthChecker  HealthChecker
 	healthServer   HealthServer

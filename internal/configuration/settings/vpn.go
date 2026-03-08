@@ -19,6 +19,14 @@ type VPN struct {
 	OpenVPN   OpenVPN   `json:"openvpn"`
 	Wireguard Wireguard `json:"wireguard"`
 	PMTUD     PMTUD     `json:"pmtud"`
+	// UpCommand is the command to use when the VPN connection is up.
+	// It can be the empty string to indicate not to run a command.
+	// It cannot be nil in the internal state.
+	UpCommand *string `json:"up_command"`
+	// DownCommand is the command to use after the VPN connection goes down.
+	// It can be the empty string to indicate to NOT run a command.
+	// It cannot be nil in the internal state.
+	DownCommand *string `json:"down_command"`
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
@@ -56,11 +64,13 @@ func (v *VPN) Validate(filterChoicesGetter FilterChoicesGetter, ipv6Supported bo
 
 func (v *VPN) Copy() (copied VPN) {
 	return VPN{
-		Type:      v.Type,
-		Provider:  v.Provider.copy(),
-		OpenVPN:   v.OpenVPN.copy(),
-		Wireguard: v.Wireguard.copy(),
-		PMTUD:     v.PMTUD.copy(),
+		Type:        v.Type,
+		Provider:    v.Provider.copy(),
+		OpenVPN:     v.OpenVPN.copy(),
+		Wireguard:   v.Wireguard.copy(),
+		PMTUD:       v.PMTUD.copy(),
+		UpCommand:   gosettings.CopyPointer(v.UpCommand),
+		DownCommand: gosettings.CopyPointer(v.DownCommand),
 	}
 }
 
@@ -70,6 +80,8 @@ func (v *VPN) OverrideWith(other VPN) {
 	v.OpenVPN.overrideWith(other.OpenVPN)
 	v.Wireguard.overrideWith(other.Wireguard)
 	v.PMTUD.overrideWith(other.PMTUD)
+	v.UpCommand = gosettings.OverrideWithPointer(v.UpCommand, other.UpCommand)
+	v.DownCommand = gosettings.OverrideWithPointer(v.DownCommand, other.DownCommand)
 }
 
 func (v *VPN) setDefaults() {
@@ -78,6 +90,8 @@ func (v *VPN) setDefaults() {
 	v.OpenVPN.setDefaults(v.Provider.Name)
 	v.Wireguard.setDefaults(v.Provider.Name)
 	v.PMTUD.setDefaults()
+	v.UpCommand = gosettings.DefaultPointer(v.UpCommand, "")
+	v.DownCommand = gosettings.DefaultPointer(v.DownCommand, "")
 }
 
 func (v VPN) String() string {
@@ -95,6 +109,13 @@ func (v VPN) toLinesNode() (node *gotree.Node) {
 		node.AppendNode(v.Wireguard.toLinesNode())
 	}
 	node.AppendNode(v.PMTUD.toLinesNode())
+
+	if *v.UpCommand != "" {
+		node.Appendf("Up command: %s", *v.UpCommand)
+	}
+	if *v.DownCommand != "" {
+		node.Appendf("Down command: %s", *v.DownCommand)
+	}
 
 	return node
 }
@@ -121,6 +142,10 @@ func (v *VPN) read(r *reader.Reader) (err error) {
 	if err != nil {
 		return fmt.Errorf("PMTUD: %w", err)
 	}
+
+	v.UpCommand = r.Get("VPN_UP_COMMAND", reader.ForceLowercase(false))
+
+	v.DownCommand = r.Get("VPN_DOWN_COMMAND", reader.ForceLowercase(false))
 
 	return nil
 }

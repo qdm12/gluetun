@@ -634,6 +634,8 @@ type RunStarter interface {
 	Run(cmd *exec.Cmd) (output string, err error)
 	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, err error)
+	RunAndLog(ctx context.Context, commandString string,
+		logger command.Logger) (err error)
 }
 
 const gluetunLogo = `                         @@@

@@ -5,6 +5,7 @@ import (
 	"net/netip"
 	"os/exec"
 
+	"github.com/qdm12/gluetun/internal/command"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
@@ -119,4 +120,8 @@ type HealthServer interface {
 type Service interface {
 	Start() (runError <-chan error, err error)
 	Stop() error
+}
+
+type Cmder interface {
+	RunAndLog(ctx context.Context, command string, logger command.Logger) (err error)
 }

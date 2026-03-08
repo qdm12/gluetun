@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/netip"
+	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
@@ -16,6 +17,7 @@ import (
 )
 
 type tunnelUpData struct {
+	upCommand string
 	// Healthcheck
 	serverIP netip.Addr
 	pmtud    tunnelUpPMTUDData
@@ -104,6 +106,14 @@ func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
 			l.logger.Error("cannot get version information: " + err.Error())
 		} else {
 			l.logger.Info(message)
+		}
+	}
+
+	if data.upCommand != "" {
+		commandString := strings.ReplaceAll(data.upCommand, "{{VPN_INTERFACE}}", data.vpnIntf)
+		err := l.cmder.RunAndLog(context.Background(), commandString, l.logger)
+		if err != nil {
+			l.logger.Error("failed to run VPN up command: " + err.Error())
 		}
 	}
 
