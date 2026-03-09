@@ -69,7 +69,9 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 
 	// Parse all currently active port forwards from the plain text response.
 	// Each line looks like: 37.120.234.253:55555 -> 10.10.123.139:55555
-	matches := regexForwardEntry.FindAllStringSubmatch(string(body), -1)
+	bodyStr := string(body)
+	objects.Logger.Info("port forward response: " + bodyStr)
+	matches := regexForwardEntry.FindAllStringSubmatch(bodyStr, -1)
 	if len(matches) == 0 {
 		return nil, fmt.Errorf("%w: no active port forwards found in response",
 			common.ErrPortForwardNotSupported)
