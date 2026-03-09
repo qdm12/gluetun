@@ -3,7 +3,6 @@ package updater
 import (
 	"context"
 	"fmt"
-	"net/netip"
 	"sort"
 	"strings"
 
@@ -15,33 +14,30 @@ import (
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
 ) {
-	nodes, err := fetchAPI(ctx, u.client)
+	nodes, warnings, err := fetchNodes(ctx, u.client)
+	for _, warning := range warnings {
+		u.warner.Warn(warning)
+	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching nodes: %w", err)
 	}
 
-	for _, node := range nodes {
-		if node.IPv4 == "" {
-			continue
-		}
+	hts := make(hostToServer)
 
-		ip, err := netip.ParseAddr(node.IPv4)
-		if err != nil {
-			return nil, fmt.Errorf("parsing IP for node %s: %w", node.Hostname, err)
-		}
+	for _, node := range nodes {
+		country, city := parseLocation(node.Location)
 
 		// WireGuard server entry (only if public key is available).
 		if node.WgPubKey != "" {
 			server := models.Server{
 				VPN:         vpn.Wireguard,
-				Country:     node.Country,
-				City:        node.City,
+				Country:     country,
+				City:        city,
 				Hostname:    node.Hostname,
 				WgPubKey:    node.WgPubKey,
-				PortForward: node.PortFwd,
-				IPs:         []netip.Addr{ip},
+				PortForward: true,
 			}
-			servers = append(servers, server)
+			hts[node.Hostname+"/wg"] = server
 		}
 
 		// OpenVPN server entry.
@@ -50,17 +46,31 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		ovpnX509 := "cryptostorm " + location + " server"
 		openvpnServer := models.Server{
 			VPN:         vpn.OpenVPN,
-			Country:     node.Country,
-			City:        node.City,
+			Country:     country,
+			City:        city,
 			Hostname:    node.Hostname,
 			OvpnX509:    ovpnX509,
 			TCP:         true,
 			UDP:         true,
-			PortForward: node.PortFwd,
-			IPs:         []netip.Addr{ip},
+			PortForward: true,
 		}
-		servers = append(servers, openvpnServer)
+		hts[node.Hostname+"/ovpn"] = openvpnServer
 	}
+
+	hosts := hts.toUniqueHostsSlice()
+
+	resolveSettings := parallelResolverSettings(hosts)
+	hostToIPs, resolveWarnings, err := u.parallelResolver.Resolve(ctx, resolveSettings)
+	for _, warning := range resolveWarnings {
+		u.warner.Warn(warning)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	hts.adaptWithIPs(hostToIPs)
+
+	servers = hts.toServersSlice()
 
 	if len(servers) < minServers {
 		return nil, fmt.Errorf("%w: %d and expected at least %d",
@@ -70,4 +80,40 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	sort.Sort(models.SortableServers(servers))
 
 	return servers, nil
+}
+
+// parseLocation splits a location string like "Canada - Montreal" into
+// country and city. It handles these formats from cryptostorm:
+//   - "Austria" (country only)
+//   - "Canada - Montreal" (country - city)
+//   - "US - Texas - Dallas" (country - state - city)
+//   - "Sydney - Australia" (city - country, detected by known country names)
+func parseLocation(location string) (country, city string) {
+	parts := strings.Split(location, " - ")
+	switch len(parts) {
+	case 1:
+		return parts[0], ""
+	case 2:
+		// Check if the second part is a known country name, indicating
+		// a reversed "City - Country" format (e.g. "Sydney - Australia").
+		if isCountryName(parts[1]) && !isCountryName(parts[0]) {
+			return parts[1], parts[0]
+		}
+		return parts[0], parts[1]
+	default:
+		// "US - Texas - Dallas" -> country: first part, city: last part
+		return parts[0], parts[len(parts)-1]
+	}
+}
+
+// isCountryName returns true if the string matches a known country name
+// that appears in the cryptostorm server list in a potentially reversed
+// "City - Country" format.
+func isCountryName(s string) bool {
+	switch s {
+	case "Australia", "Japan":
+		return true
+	default:
+		return false
+	}
 }
