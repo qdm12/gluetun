@@ -2,54 +2,105 @@ package updater
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
+
+	htmlutils "github.com/qdm12/gluetun/internal/updater/html"
+	"golang.org/x/net/html"
 )
 
-var (
-	ErrHTTPStatusCodeNotOK = errors.New("HTTP status code not OK")
-	ErrDecodeResponseBody  = errors.New("failed decoding response body")
-)
+var ErrHTMLTableNotFound = errors.New("HTML server table not found")
 
-// nodeData represents one entry in the Cryptostorm node list JSON.
+// nodeData represents one entry parsed from the Cryptostorm wireguard page.
 type nodeData struct {
-	Hostname string `json:"hostname"`
-	Country  string `json:"country"`
-	City     string `json:"city"`
-	IPv4     string `json:"ip"`
-	WgPubKey string `json:"wg_pubkey"`
-	PortFwd  bool   `json:"port_forward"`
+	Location string // e.g. "Canada - Montreal", "Austria", "US - Texas - Dallas"
+	Hostname string // e.g. "austria.cstorm.is"
+	WgPubKey string // WireGuard public key
 }
 
-// fetchAPI retrieves the Cryptostorm node list.
-// Cryptostorm does not publish a formal JSON API; this function fetches
-// their publicly available node list. If the upstream format changes,
-// update the nodeData struct and parsing logic accordingly.
-func fetchAPI(ctx context.Context, client *http.Client) (data []nodeData, err error) {
-	const url = "https://cryptostorm.is/wireguard/nodes.json"
+// fetchNodes retrieves and parses the Cryptostorm node list from their
+// wireguard page at https://cryptostorm.is/wireguard.
+func fetchNodes(ctx context.Context, client *http.Client) (
+	nodes []nodeData, warnings []string, err error) {
+	const url = "https://cryptostorm.is/wireguard"
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	rootNode, err := htmlutils.Fetch(ctx, client, url)
 	if err != nil {
-		return nil, err
+		return nil, nil, fmt.Errorf("fetching HTML: %w", err)
 	}
 
-	response, err := client.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
+	return parseHTML(rootNode)
+}
 
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: %d %s", ErrHTTPStatusCodeNotOK,
-			response.StatusCode, response.Status)
-	}
-
-	decoder := json.NewDecoder(response.Body)
-	if err := decoder.Decode(&data); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrDecodeResponseBody, err)
+func parseHTML(rootNode *html.Node) (nodes []nodeData,
+	warnings []string, err error) {
+	tableNode := htmlutils.BFS(rootNode, htmlutils.MatchData("table"))
+	if tableNode == nil {
+		return nil, nil, fmt.Errorf("%w", ErrHTMLTableNotFound)
 	}
 
-	return data, nil
+	// html.Parse inserts <tbody> per the HTML5 spec, so <tr> elements
+	// are not direct children of <table>.
+	tbody := htmlutils.DirectChild(tableNode, htmlutils.MatchData("tbody"))
+	rowParent := tableNode
+	if tbody != nil {
+		rowParent = tbody
+	}
+	rows := htmlutils.DirectChildren(rowParent, htmlutils.MatchData("tr"))
+	for i, row := range rows {
+		if i == 0 {
+			// Skip header row.
+			continue
+		}
+
+		cells := htmlutils.DirectChildren(row, htmlutils.MatchData("td"))
+		const expectedCells = 3
+		if len(cells) != expectedCells {
+			warnings = append(warnings,
+				htmlutils.WrapWarning(fmt.Sprintf("expected %d cells but got %d",
+					expectedCells, len(cells)), row))
+			continue
+		}
+
+		location := textContent(cells[0])
+		location = strings.TrimSpace(location)
+		// Remove non-breaking spaces left over from &nbsp; entities.
+		location = strings.ReplaceAll(location, "\u00a0", "")
+		location = strings.TrimSpace(location)
+
+		hostname := strings.TrimSpace(textContent(cells[1]))
+		wgPubKey := strings.TrimSpace(textContent(cells[2]))
+
+		if hostname == "" {
+			warnings = append(warnings,
+				htmlutils.WrapWarning("empty hostname", row))
+			continue
+		}
+
+		nodes = append(nodes, nodeData{
+			Location: location,
+			Hostname: hostname,
+			WgPubKey: wgPubKey,
+		})
+	}
+
+	return nodes, warnings, nil
+}
+
+// textContent returns the concatenated text content of a node and
+// all its descendants, similar to the DOM's textContent property.
+func textContent(node *html.Node) string {
+	if node == nil {
+		return ""
+	}
+	if node.Type == html.TextNode {
+		return node.Data
+	}
+	var sb strings.Builder
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
+		sb.WriteString(textContent(child))
+	}
+	return sb.String()
 }

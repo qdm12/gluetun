@@ -17,19 +17,16 @@ import (
 // regexActivePort matches forwarded ports listed in the Cryptostorm HTML response,
 // e.g. <p class="list-group-item-header">Port 55555</p>
 // Valid port range per Cryptostorm is 30000-65535.
-var regexActivePort = regexp.MustCompile(`list-group-item-header">Port ([0-9]+)<`)
-
-// cryptostormPFServer is the fixed internal IP of Cryptostorm's
-// port forwarding server, reachable only from within the VPN tunnel.
-const cryptostormPFServer = "10.31.33.7"
+var regexActivePort = regexp.MustCompile(
+	`list-group-item-header">Port ((?:[3-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]))<`)
 
 // PortForward registers a forwarded port with the Cryptostorm port forwarding server
 // and returns the active forwarded ports. The server always returns an HTML page;
 // we POST the desired port and then parse the current forwards list from the response.
 // If the port is already forwarded (e.g. from a previous session) it will appear in
 // the list regardless of whether the POST succeeded, so we treat that as success.
-// Valid port range is 30000–65535.
-// See: https://cryptostorm.is/port_forwarding
+// Valid port range is 30000-65535.
+// See: https://cryptostorm.is/portfwd
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
 	ports []uint16, err error,
 ) {
@@ -42,8 +39,10 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		postBody = "port=" + strconv.FormatUint(uint64(objects.ListeningPort), 10)
 	}
 
-	pfURL := "http://" + cryptostormPFServer + "/fwd"
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, pfURL,
+	// IPv4: http://10.31.33.7/fwd
+	// IPv6: http://[2001:db8::7]/fwd (for future use)
+	const portForwardURL = "http://10.31.33.7/fwd"
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, portForwardURL,
 		strings.NewReader(postBody))
 	if err != nil {
 		return nil, fmt.Errorf("creating HTTP request: %w", err)
