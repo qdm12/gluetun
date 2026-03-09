@@ -14,17 +14,19 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-// regexActivePort matches forwarded ports listed in the Cryptostorm HTML response,
-// e.g. <p class="list-group-item-header">Port 55555</p>
+// regexForwardEntry matches port forwarding entries in the Cryptostorm response.
+// The response is plain text with lines like:
+//
+//	37.120.234.253:55555 -> 10.10.123.139:55555
+//
+// We capture the external port (first port in each line).
 // Valid port range per Cryptostorm is 30000-65535.
-var regexActivePort = regexp.MustCompile(
-	`list-group-item-header">Port ((?:[3-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]))<`)
+var regexForwardEntry = regexp.MustCompile(
+	`\d+\.\d+\.\d+\.\d+:(\d+)\s*->\s*\d+\.\d+\.\d+\.\d+:\d+`)
 
 // PortForward registers a forwarded port with the Cryptostorm port forwarding server
-// and returns the active forwarded ports. The server always returns an HTML page;
-// we POST the desired port and then parse the current forwards list from the response.
-// If the port is already forwarded (e.g. from a previous session) it will appear in
-// the list regardless of whether the POST succeeded, so we treat that as success.
+// and returns the active forwarded ports. The server returns plain text listing
+// current forwardings. We POST the desired port and parse the response.
 // Valid port range is 30000-65535.
 // See: https://cryptostorm.is/portfwd
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
@@ -65,8 +67,9 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		return nil, fmt.Errorf("reading response body: %w", err)
 	}
 
-	// Parse all currently active port forwards from the HTML response.
-	matches := regexActivePort.FindAllStringSubmatch(string(body), -1)
+	// Parse all currently active port forwards from the plain text response.
+	// Each line looks like: 37.120.234.253:55555 -> 10.10.123.139:55555
+	matches := regexForwardEntry.FindAllStringSubmatch(string(body), -1)
 	if len(matches) == 0 {
 		return nil, fmt.Errorf("%w: no active port forwards found in response",
 			common.ErrPortForwardNotSupported)
