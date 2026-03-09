@@ -14,15 +14,18 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
-// regexForwardEntry matches port forwarding entries in the Cryptostorm response.
-// The response is plain text with lines like:
+// regexForwardPlainText matches plain text responses (e.g. from curl):
 //
 //	37.120.234.253:55555 -> 10.10.123.139:55555
-//
-// We capture the external port (first port in each line).
-// Valid port range per Cryptostorm is 30000-65535.
-var regexForwardEntry = regexp.MustCompile(
+var regexForwardPlainText = regexp.MustCompile(
 	`\d+\.\d+\.\d+\.\d+:(\d+)\s*->\s*\d+\.\d+\.\d+\.\d+:\d+`)
+
+// regexForwardHTML matches the HTML response from the port forwarding page.
+// Each forwarded port has a hidden delete input:
+//
+//	<input type="hidden" name="delfwd" value="30000">
+var regexForwardHTML = regexp.MustCompile(
+	`name="delfwd"\s+value="(\d+)"`)
 
 // PortForward registers a forwarded port with the Cryptostorm port forwarding server
 // and returns the active forwarded ports. The server returns plain text listing
@@ -67,11 +70,13 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		return nil, fmt.Errorf("reading response body: %w", err)
 	}
 
-	// Parse all currently active port forwards from the plain text response.
-	// Each line looks like: 37.120.234.253:55555 -> 10.10.123.139:55555
+	// Parse forwarded ports from the response. The server returns HTML to
+	// Go's HTTP client but plain text to curl, so we try both formats.
 	bodyStr := string(body)
-	objects.Logger.Info("port forward response: " + bodyStr)
-	matches := regexForwardEntry.FindAllStringSubmatch(bodyStr, -1)
+	matches := regexForwardPlainText.FindAllStringSubmatch(bodyStr, -1)
+	if len(matches) == 0 {
+		matches = regexForwardHTML.FindAllStringSubmatch(bodyStr, -1)
+	}
 	if len(matches) == 0 {
 		return nil, fmt.Errorf("%w: no active port forwards found in response",
 			common.ErrPortForwardNotSupported)
