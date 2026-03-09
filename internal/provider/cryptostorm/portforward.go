@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -39,10 +40,14 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	postBody := ""
-	if objects.ListeningPort != 0 {
-		postBody = "port=" + strconv.FormatUint(uint64(objects.ListeningPort), 10)
+	// Cryptostorm requires a port in the 30000-65535 range.
+	// If none is specified, pick a random one.
+	port := objects.ListeningPort
+	if port == 0 {
+		const minPort, maxPort = 30000, 65535
+		port = uint16(minPort + rand.Intn(maxPort-minPort+1)) //nolint:gosec,mnd
 	}
+	postBody := "port=" + strconv.FormatUint(uint64(port), 10)
 
 	// IPv4: http://10.31.33.7/fwd
 	// IPv6: http://[2001:db8::7]/fwd (for future use)
