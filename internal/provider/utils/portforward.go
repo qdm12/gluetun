@@ -25,6 +25,9 @@ type PortForwardObjects struct {
 	Username string
 	// Password is used by Private Internet Access for port forwarding.
 	Password string
+	// ListeningPort is the port to request from the provider, used by Cryptostorm.
+	// A value of 0 means let the provider assign a port.
+	ListeningPort uint16
 }
 
 type Routing interface {

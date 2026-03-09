@@ -22,7 +22,7 @@ type Provider struct {
 func New(storage common.Storage, randSource rand.Source,
 	timeNow func() time.Time, client *http.Client,
 ) *Provider {
-	const jsonPortForwardPath = "/gluetun/piaportforward.json"
+	const jsonPortForwardPath = "/gluetun/piaportforward.json" // TODO v4: move to /gluetun/portforward/privateinternetaccess.json
 	return &Provider{
 		storage:         storage,
 		timeNow:         timeNow,
