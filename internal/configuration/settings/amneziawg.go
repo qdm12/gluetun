@@ -3,6 +3,8 @@ package settings
 import (
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
@@ -171,19 +173,55 @@ var (
 	ErrJunkPacketBounds       = errors.New("junk packet minimum must be lower than or equal to maximum")
 	ErrJunkPacketMinMaxNotSet = errors.New("junk packet min and max must be set when junk packet count is set")
 	ErrJunkPacketCountNotSet  = errors.New("junk packet count must be set when junk packet min or max is set")
+	ErrHeaderRangeMalformed   = errors.New("header range is malformed")
 )
 
 func (s AmneziaWg) validate() error {
-	switch {
-	case *s.JunkPacketMax != 0 && *s.JunkPacketMin > *s.JunkPacketMax:
-		return fmt.Errorf("%w: jmin=%d and jmax=%d",
-			ErrJunkPacketBounds, s.JunkPacketMin, s.JunkPacketMax)
-	case *s.JunkPacketCount == 0 && (*s.JunkPacketMin != 0 || *s.JunkPacketMax != 0):
-		return fmt.Errorf("%w: jc=%d and jmin=%d and jmax=%d",
-			ErrJunkPacketCountNotSet, s.JunkPacketCount, *s.JunkPacketMin, *s.JunkPacketMax)
-	case *s.JunkPacketCount != 0 && (*s.JunkPacketMin == 0 || *s.JunkPacketMax == 0):
-		return fmt.Errorf("%w: jc=%d and jmin=%d and jmax=%d",
-			ErrJunkPacketMinMaxNotSet, s.JunkPacketCount, s.JunkPacketMin, s.JunkPacketMax)
+	if *s.JunkPacketCount == 0 {
+		if *s.JunkPacketMin != 0 || *s.JunkPacketMax != 0 {
+			return fmt.Errorf("%w: jc=%d and jmin=%d and jmax=%d",
+				ErrJunkPacketCountNotSet, s.JunkPacketCount, *s.JunkPacketMin, *s.JunkPacketMax)
+		}
+	} else {
+		if *s.JunkPacketMin == 0 || *s.JunkPacketMax == 0 {
+			return fmt.Errorf("%w: jc=%d and jmin=%d and jmax=%d",
+				ErrJunkPacketMinMaxNotSet, s.JunkPacketCount, *s.JunkPacketMin, *s.JunkPacketMax)
+		} else if *s.JunkPacketMin > *s.JunkPacketMax {
+			return fmt.Errorf("%w: jmin=%d and jmax=%d",
+				ErrJunkPacketBounds, *s.JunkPacketMin, *s.JunkPacketMax)
+		}
+	}
+
+	nameToHeaderRange := map[string]string{
+		"h1": *s.HeaderH1,
+		"h2": *s.HeaderH2,
+		"h3": *s.HeaderH3,
+		"h4": *s.HeaderH4,
+	}
+	for name, headerRange := range nameToHeaderRange {
+		if headerRange == "" {
+			continue
+		}
+		fields := strings.Split(headerRange, "-")
+		switch len(fields) {
+		case 1:
+			_, err := strconv.Atoi(fields[0])
+			if err != nil {
+				return fmt.Errorf("%w: %s value %s is not a number",
+					ErrHeaderRangeMalformed, name, headerRange)
+			}
+		case 2: //nolint:mnd
+			for _, field := range fields {
+				_, err := strconv.Atoi(field)
+				if err != nil {
+					return fmt.Errorf("%w: %s value %s is not a valid range",
+						ErrHeaderRangeMalformed, name, headerRange)
+				}
+			}
+		default:
+			return fmt.Errorf("%w: %s value %s must be in the form n or n-m",
+				ErrHeaderRangeMalformed, name, headerRange)
+		}
 	}
 
 	return nil
