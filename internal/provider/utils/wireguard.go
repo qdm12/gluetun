@@ -16,7 +16,7 @@ func BuildWireguardSettings(connection models.Connection,
 	settings.PreSharedKey = *userSettings.PreSharedKey
 	settings.InterfaceName = userSettings.Interface
 	settings.Implementation = userSettings.Implementation
-	settings.AmneziaWG = builsAmneziaWgSettings(userSettings.AmneziaWG)
+	settings.AmneziaWG = buildAmneziaWgSettings(userSettings.AmneziaWG)
 	if *userSettings.MTU > 0 {
 		settings.MTU = *userSettings.MTU
 	} else {
@@ -57,7 +57,7 @@ func BuildWireguardSettings(connection models.Connection,
 	return settings
 }
 
-func builsAmneziaWgSettings(s settings.AmneziaWg) wireguard.AmneziaSettings {
+func buildAmneziaWgSettings(s settings.AmneziaWg) wireguard.AmneziaSettings {
 	return wireguard.AmneziaSettings{
 		JunkPacketCount: *s.JunkPacketCount,
 		JunkPacketMin:   *s.JunkPacketMin,

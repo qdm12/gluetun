@@ -144,9 +144,7 @@ I1 = <b 0x1234>
 
 			assert.Equal(t, testCase.privateKey, privateKey)
 			assert.Equal(t, testCase.addresses, addresses)
-			assert.Equal(t, testCase.amneziaParams.Jc, amneziaWgConfig.Jc)
-			assert.Equal(t, testCase.amneziaParams.H1, amneziaWgConfig.H1)
-			assert.Equal(t, testCase.amneziaParams.I1, amneziaWgConfig.I1)
+			assert.Equal(t, testCase.amneziaParams, amneziaWgConfig)
 		})
 	}
 }
