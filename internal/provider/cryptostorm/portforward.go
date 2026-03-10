@@ -18,18 +18,21 @@ import (
 	"github.com/qdm12/gluetun/internal/provider/utils"
 )
 
+// portRangePattern matches the valid Cryptostorm port range 30000-65535.
+const portRangePattern = `([3-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])`
+
 // regexForwardPlainText matches plain text responses (e.g. from curl):
 //
 //	37.120.234.253:55555 -> 10.10.123.139:55555
 var regexForwardPlainText = regexp.MustCompile(
-	`\d+\.\d+\.\d+\.\d+:(\d+)\s*->\s*\d+\.\d+\.\d+\.\d+:\d+`)
+	`\d+\.\d+\.\d+\.\d+:` + portRangePattern + `\s*->\s*\d+\.\d+\.\d+\.\d+:\d+`)
 
 // regexForwardHTML matches the HTML response from the port forwarding page.
 // Each forwarded port has a hidden delete input:
 //
 //	<input type="hidden" name="delfwd" value="30000">
 var regexForwardHTML = regexp.MustCompile(
-	`name="delfwd"\s+value="(\d+)"`)
+	`name="delfwd"\s+value="` + portRangePattern + `"`)
 
 // portForwardData is the data persisted to the port forward JSON file.
 type portForwardData struct {
