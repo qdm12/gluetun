@@ -2,9 +2,12 @@ package cryptostorm
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,6 +30,11 @@ var regexForwardPlainText = regexp.MustCompile(
 var regexForwardHTML = regexp.MustCompile(
 	`name="delfwd"\s+value="(\d+)"`)
 
+// portForwardData is the data persisted to the port forward JSON file.
+type portForwardData struct {
+	Ports []uint16 `json:"ports"`
+}
+
 // PortForward registers a forwarded port with the Cryptostorm port forwarding server
 // and returns the active forwarded ports. The server returns plain text listing
 // current forwardings. We POST the desired port and parse the response.
@@ -39,13 +47,27 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	// Cryptostorm requires a port in the 30000-65535 range to be specified
-	// via VPN_PORT_FORWARDING_LISTENING_PORT.
-	if objects.ListeningPort == 0 {
+	// Determine the port to request:
+	// 1. Use VPN_PORT_FORWARDING_LISTENING_PORT if set.
+	// 2. Otherwise try to read a previously persisted port.
+	// 3. Otherwise return an error (Cryptostorm does not auto-assign ports).
+	listeningPort := objects.ListeningPort
+	if listeningPort == 0 {
+		data, err := readPortForwardData(p.portForwardPath)
+		if err != nil {
+			return nil, fmt.Errorf("reading persisted port forward data: %w", err)
+		}
+		if len(data.Ports) > 0 {
+			listeningPort = data.Ports[0]
+		}
+	}
+
+	if listeningPort == 0 {
 		return nil, fmt.Errorf("%w: set VPN_PORT_FORWARDING_LISTENING_PORT to a value between 30000 and 65535",
 			common.ErrPortForwardNotSupported)
 	}
-	postBody := "port=" + strconv.FormatUint(uint64(objects.ListeningPort), 10)
+
+	postBody := "port=" + strconv.FormatUint(uint64(listeningPort), 10)
 
 	// IPv4: http://10.31.33.7/fwd
 	// IPv6: http://[2001:db8::7]/fwd (for future use)
@@ -94,6 +116,11 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		ports = append(ports, uint16(portUint64))
 	}
 
+	// Persist the resulting ports for future restarts.
+	if err := writePortForwardData(p.portForwardPath, portForwardData{Ports: ports}); err != nil {
+		return nil, fmt.Errorf("persisting port forward data: %w", err)
+	}
+
 	return ports, nil
 }
 
@@ -103,4 +130,37 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 	// Cryptostorm port assignments persist for the session; no keepalive needed.
 	<-ctx.Done()
 	return ctx.Err()
+}
+
+func readPortForwardData(path string) (data portForwardData, err error) {
+	file, err := os.Open(path)
+	if os.IsNotExist(err) {
+		return data, nil
+	} else if err != nil {
+		return data, err
+	}
+
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&data); err != nil {
+		_ = file.Close()
+		return data, err
+	}
+
+	return data, file.Close()
+}
+
+func writePortForwardData(path string, data portForwardData) (err error) {
+	const permission = fs.FileMode(0o644)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, permission)
+	if err != nil {
+		return err
+	}
+
+	encoder := json.NewEncoder(file)
+	if err := encoder.Encode(data); err != nil {
+		_ = file.Close()
+		return err
+	}
+
+	return file.Close()
 }

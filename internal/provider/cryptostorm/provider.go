@@ -10,8 +10,9 @@ import (
 )
 
 type Provider struct {
-	storage    common.Storage
-	randSource rand.Source
+	storage         common.Storage
+	randSource      rand.Source
+	portForwardPath string
 	common.Fetcher
 }
 
@@ -19,10 +20,12 @@ func New(storage common.Storage, randSource rand.Source,
 	client *http.Client, updaterWarner common.Warner,
 	parallelResolver common.ParallelResolver,
 ) *Provider {
+	const jsonPortForwardPath = "/gluetun/portforward/cryptostorm.json"
 	return &Provider{
-		storage:    storage,
-		randSource: randSource,
-		Fetcher:    updater.New(client, updaterWarner, parallelResolver),
+		storage:         storage,
+		randSource:      randSource,
+		portForwardPath: jsonPortForwardPath,
+		Fetcher:         updater.New(client, updaterWarner, parallelResolver),
 	}
 }
 

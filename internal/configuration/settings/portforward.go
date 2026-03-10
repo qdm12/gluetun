@@ -43,7 +43,8 @@ type PortForwarding struct {
 	// forwarded ports. The redirection is disabled if it is the slice [0],
 	// which is its default as well. If set and not [0], its length must match
 	// the PortsCount value, such that each forwarded port is redirected to
-	// the corresponding listening port.
+	// the corresponding listening port. For Cryptostorm, ListeningPorts[0]
+	// also specifies the port to request from the forwarding server (30000–65535).
 	ListeningPorts []uint16 `json:"listening_port"`
 	// PortsCount is the number of ports to forward. It is optional for ProtonVPN
 	// and be between 1 and 5. For other providers, it must be set to 1 if port
