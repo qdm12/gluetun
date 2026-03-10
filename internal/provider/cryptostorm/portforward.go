@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -150,6 +151,11 @@ func readPortForwardData(path string) (data portForwardData, err error) {
 }
 
 func writePortForwardData(path string, data portForwardData) (err error) {
+	const dirPermission = fs.FileMode(0o755)
+	if err := os.MkdirAll(filepath.Dir(path), dirPermission); err != nil {
+		return err
+	}
+
 	const permission = fs.FileMode(0o644)
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, permission)
 	if err != nil {
