@@ -39,7 +39,8 @@ type PortForwarding struct {
 	DownCommand *string `json:"down_command"`
 	// ListeningPort is the port traffic would be redirected to from the
 	// forwarded port. The redirection is disabled if it is set to 0, which
-	// is its default as well.
+	// is its default as well. For Cryptostorm, this also specifies the
+	// port to request for forwarding (must be between 30000 and 65535).
 	ListeningPort *uint16 `json:"listening_port"`
 	// Username is only used for Private Internet Access port forwarding.
 	Username string `json:"username"`
