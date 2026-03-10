@@ -50,6 +50,8 @@ func (r *Routing) VPNLocalGatewayIP(vpnIntf string) (ip netip.Addr, err error) {
 
 var ErrVPNRouteNotFound = errors.New("VPN route not found")
 
+// VPNRoutes returns the routes that are using the VPN interface, excluding local routes
+// and link-local multicast and unicast routes.
 func (r *Routing) VPNRoutes(vpnIntf string) (routes []netlink.Route, err error) {
 	vpnLink, err := r.netLinker.LinkByName(vpnIntf)
 	if err != nil {
@@ -63,7 +65,16 @@ func (r *Routing) VPNRoutes(vpnIntf string) (routes []netlink.Route, err error) 
 	}
 	routes = make([]netlink.Route, 0, len(allRoutes))
 	for _, route := range allRoutes {
-		if route.LinkIndex == vpnLinkIndex {
+		const localTable = 255
+		switch {
+		case route.LinkIndex != vpnLinkIndex,
+			route.Table == localTable:
+			continue
+		case !route.Dst.IsValid(), route.Dst.Addr().IsUnspecified():
+			routes = append(routes, route)
+		case route.Dst.Addr().IsLinkLocalMulticast(), route.Dst.Addr().IsLinkLocalUnicast():
+			continue
+		case !route.Dst.Addr().IsPrivate():
 			routes = append(routes, route)
 		}
 	}
