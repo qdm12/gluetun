@@ -19,7 +19,7 @@ type Settings struct {
 	ServerName     string // needed for PIA
 	CanPortForward bool   // needed for PIA
 	ListeningPorts []uint16
-	PortsCount     uint16 // optional for ProtonVPN
+	PortsCount     uint16
 	Username       string // needed for PIA
 	Password       string // needed for PIA
 }

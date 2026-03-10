@@ -43,7 +43,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	const lifetime = 60 * time.Second
 
 	p.portsForwarded = make([]uint16, objects.PortsCount)
-	for i := range objects.PortsCount {
+	for i := range p.portsForwarded {
 		protoToPort := map[string]uint16{
 			"udp": 0,
 			"tcp": 0,
