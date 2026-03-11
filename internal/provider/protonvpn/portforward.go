@@ -39,11 +39,12 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	logger := objects.Logger
 
 	logger.Info("gateway external IPv4 address is " + externalIPv4Address.String())
-	const internalPort, externalPort = 0, 1
+	const externalPort = 1
 	const lifetime = 60 * time.Second
 
 	p.portsForwarded = make([]uint16, objects.PortsCount)
 	for i := range p.portsForwarded {
+		internalPort := uint16(i + 1) //nolint:gosec
 		protoToPort := map[string]uint16{
 			"udp": 0,
 			"tcp": 0,
@@ -100,10 +101,10 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 
 		objects.Logger.Debug("refreshing forwarded ports since 45 seconds have elapsed")
 		networkProtocols := []string{"udp", "tcp"}
-		const internalPort = 0
 		const lifetime = 60 * time.Second
 
-		for _, portForwarded := range p.portsForwarded {
+		for i, portForwarded := range p.portsForwarded {
+			internalPort := uint16(i + 1) //nolint:gosec
 			for _, networkProtocol := range networkProtocols {
 				_, _, assignedExternalPort, assignedLiftetime, err := client.AddPortMapping(ctx, objects.Gateway, networkProtocol,
 					internalPort, portForwarded, lifetime)
