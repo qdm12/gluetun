@@ -30,41 +30,36 @@ type AmneziaWg struct {
 	InitPacketI5    *string `json:"init_packet_i5"`
 }
 
-func (s *AmneziaWg) read(r *reader.Reader) error {
-	uint16Fields := map[string]*uint16{
-		"AMNEZIAWG_JC":   s.JunkPacketCount,
-		"AMNEZIAWG_JMIN": s.JunkPacketMin,
-		"AMNEZIAWG_JMAX": s.JunkPacketMax,
-		"AMNEZIAWG_S1":   s.PaddingS1,
-		"AMNEZIAWG_S2":   s.PaddingS2,
-		"AMNEZIAWG_S3":   s.PaddingS3,
-		"AMNEZIAWG_S4":   s.PaddingS4,
+func (s *AmneziaWg) read(r *reader.Reader) (err error) {
+	uint16Fields := map[string]**uint16{
+		"AMNEZIAWG_JC":   &s.JunkPacketCount,
+		"AMNEZIAWG_JMIN": &s.JunkPacketMin,
+		"AMNEZIAWG_JMAX": &s.JunkPacketMax,
+		"AMNEZIAWG_S1":   &s.PaddingS1,
+		"AMNEZIAWG_S2":   &s.PaddingS2,
+		"AMNEZIAWG_S3":   &s.PaddingS3,
+		"AMNEZIAWG_S4":   &s.PaddingS4,
 	}
 	for key, dst := range uint16Fields {
-		v, err := r.Uint16Ptr(key)
+		*dst, err = r.Uint16Ptr(key)
 		if err != nil {
 			return err
-		} else if v != nil {
-			*dst = *v
 		}
 	}
-	stringFields := map[string]*string{
-		"AMNEZIAWG_H1": s.HeaderH1,
-		"AMNEZIAWG_H2": s.HeaderH2,
-		"AMNEZIAWG_H3": s.HeaderH3,
-		"AMNEZIAWG_H4": s.HeaderH4,
-		"AMNEZIAWG_I1": s.InitPacketI1,
-		"AMNEZIAWG_I2": s.InitPacketI2,
-		"AMNEZIAWG_I3": s.InitPacketI3,
-		"AMNEZIAWG_I4": s.InitPacketI4,
-		"AMNEZIAWG_I5": s.InitPacketI5,
+	stringFields := map[string]**string{
+		"AMNEZIAWG_H1": &s.HeaderH1,
+		"AMNEZIAWG_H2": &s.HeaderH2,
+		"AMNEZIAWG_H3": &s.HeaderH3,
+		"AMNEZIAWG_H4": &s.HeaderH4,
+		"AMNEZIAWG_I1": &s.InitPacketI1,
+		"AMNEZIAWG_I2": &s.InitPacketI2,
+		"AMNEZIAWG_I3": &s.InitPacketI3,
+		"AMNEZIAWG_I4": &s.InitPacketI4,
+		"AMNEZIAWG_I5": &s.InitPacketI5,
 	}
 	opt := reader.ForceLowercase(false)
 	for key, dst := range stringFields {
-		v := r.Get(key, opt)
-		if v != nil {
-			*dst = *v
-		}
+		*dst = r.Get(key, opt)
 	}
 	return nil
 }
