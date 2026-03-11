@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
-	"os"
 )
 
 type tcpFlags struct {
@@ -74,8 +73,7 @@ func (c *Config) TempDropOutputTCPRST(ctx context.Context,
 	src, dst netip.AddrPort, excludeMark int) (
 	revert func(ctx context.Context) error, err error,
 ) {
-	_, err = os.Stat("/usr/lib/xtables/libxt_mark.so")
-	if err != nil && errors.Is(err, os.ErrNotExist) {
+	if !c.nftables && !c.xtMark {
 		return nil, fmt.Errorf("%w", ErrMarkMatchModuleMissing)
 	}
 

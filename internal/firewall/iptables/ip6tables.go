@@ -81,18 +81,3 @@ func (c *Config) runIP6tablesInstructionNoSave(ctx context.Context, instruction 
 	}
 	return nil
 }
-
-var ErrPolicyNotValid = errors.New("policy is not valid")
-
-func (c *Config) SetIPv6AllPolicies(ctx context.Context, policy string) error {
-	switch policy {
-	case "ACCEPT", "DROP":
-	default:
-		return fmt.Errorf("%w: %s", ErrPolicyNotValid, policy)
-	}
-	return c.runIP6tablesInstructions(ctx, []string{
-		"--policy INPUT " + policy,
-		"--policy OUTPUT " + policy,
-		"--policy FORWARD " + policy,
-	})
-}

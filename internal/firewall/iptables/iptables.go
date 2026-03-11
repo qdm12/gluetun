@@ -98,13 +98,14 @@ func (c *Config) runIptablesInstructionNoSave(ctx context.Context, instruction s
 	return nil
 }
 
-func (c *Config) SetIPv4AllPolicies(ctx context.Context, policy string) error {
+func (c *Config) SetBaseChainsPolicy(ctx context.Context, policy string) error {
+	policy = strings.ToUpper(policy)
 	switch policy {
 	case "ACCEPT", "DROP":
 	default:
 		return fmt.Errorf("%w: %s", ErrPolicyUnknown, policy)
 	}
-	return c.runIptablesInstructions(ctx, []string{
+	return c.runMixedIptablesInstructions(ctx, []string{
 		"--policy INPUT " + policy,
 		"--policy OUTPUT " + policy,
 		"--policy FORWARD " + policy,
