@@ -15,6 +15,8 @@ type Source struct {
 	cached        struct {
 		wireguardLoaded bool
 		wireguardConf   files.WireguardConfig
+		amneziawgLoaded bool
+		amneziawgConf   files.AmneziawgConfig
 	}
 }
 
@@ -60,26 +62,26 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 			s.warner.Warnf("skipping %s: parsing PEM: %s", path, err)
 		}
 		return value, isSet
-	case "wireguard_private_key":
+	case "wireguard_private_key", "amneziawg_private_key":
 		privateKey := s.lazyLoadWireguardConf().PrivateKey
 		if privateKey != nil {
 			return *privateKey, true
 		} // else continue to read from individual secret file
-	case "wireguard_preshared_key":
+	case "wireguard_preshared_key", "amneziawg_preshared_key":
 		preSharedKey := s.lazyLoadWireguardConf().PreSharedKey
 		if preSharedKey != nil {
 			return *preSharedKey, true
 		} // else continue to read from individual secret file
-	case "wireguard_addresses":
+	case "wireguard_addresses", "amneziawg_addresses":
 		addresses := s.lazyLoadWireguardConf().Addresses
 		if addresses != nil {
 			return *addresses, true
 		} // else continue to read from individual secret file
-	case "wireguard_public_key":
+	case "wireguard_public_key", "amneziawg_public_key":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().PublicKey)
-	case "wireguard_endpoint_ip":
+	case "wireguard_endpoint_ip", "amneziawg_endpoint_ip":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointIP)
-	case "wireguard_endpoint_port":
+	case "wireguard_endpoint_port", "amneziawg_endpoint_port":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointPort)
 	}
 
@@ -112,38 +114,50 @@ func (s *Source) KeyTransform(key string) string {
 
 func (s *Source) getAmneziaWg(key string) (value string, isSet, matched bool) {
 	switch key {
-	case "wireguard_jc":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jc)
-	case "wireguard_jmin":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jmin)
-	case "wireguard_jmax":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jmax)
-	case "wireguard_s1":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S1)
-	case "wireguard_s2":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S2)
-	case "wireguard_s3":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S3)
-	case "wireguard_s4":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S4)
-	case "wireguard_h1":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H1)
-	case "wireguard_h2":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H2)
-	case "wireguard_h3":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H3)
-	case "wireguard_h4":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H4)
-	case "wireguard_i1":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I1)
-	case "wireguard_i2":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I2)
-	case "wireguard_i3":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I3)
-	case "wireguard_i4":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I4)
-	case "wireguard_i5":
-		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I5)
+	case "amneziawg_private_key":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PrivateKey)
+	case "amneziawg_preshared_key":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PreSharedKey)
+	case "wireguard_addresses", "amneziawg_addresses":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.Addresses)
+	case "wireguard_public_key", "amneziawg_public_key":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PublicKey)
+	case "wireguard_endpoint_ip", "amneziawg_endpoint_ip":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.EndpointIP)
+	case "wireguard_endpoint_port", "amneziawg_endpoint_port":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.EndpointPort)
+	case "amneziawg_jc":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Jc)
+	case "amneziawg_jmin":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Jmin)
+	case "amneziawg_jmax":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Jmax)
+	case "amneziawg_s1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S1)
+	case "amneziawg_s2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S2)
+	case "amneziawg_s3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S3)
+	case "amneziawg_s4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S4)
+	case "amneziawg_h1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H1)
+	case "amneziawg_h2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H2)
+	case "amneziawg_h3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H3)
+	case "amneziawg_h4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H4)
+	case "amneziawg_i1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I1)
+	case "amneziawg_i2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I2)
+	case "amneziawg_i3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I3)
+	case "amneziawg_i4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I4)
+	case "amneziawg_i5":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I5)
 	default:
 		return "", false, false
 	}

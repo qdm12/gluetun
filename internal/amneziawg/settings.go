@@ -1,11 +1,14 @@
-package wireguard
+package amneziawg
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/qdm12/gluetun/internal/wireguard"
 )
 
-type AmneziaSettings struct {
+type Settings struct {
+	Wireguard       wireguard.Settings
 	JunkPacketCount uint16
 	JunkPacketMin   uint16
 	JunkPacketMax   uint16
@@ -24,7 +27,7 @@ type AmneziaSettings struct {
 	InitPacketI5    string
 }
 
-func (s AmneziaSettings) uapiConfig() string {
+func (s Settings) uapiConfig() string {
 	uintFields := map[string]uint16{
 		"jc":   s.JunkPacketCount,
 		"jmin": s.JunkPacketMin,
@@ -55,4 +58,12 @@ func (s AmneziaSettings) uapiConfig() string {
 		lines = append(lines, key+"="+val)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func (s *Settings) SetDefaults() {
+	s.Wireguard.SetDefaults()
+}
+
+func (s *Settings) Check() error {
+	return s.Wireguard.Check()
 }

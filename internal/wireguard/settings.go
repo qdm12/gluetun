@@ -46,11 +46,8 @@ type Settings struct {
 	// It defaults to false if left unset.
 	IPv6 *bool
 	// Implementation is the implementation to use.
-	// It can be auto, kernelspace, userspace or amneziawg,
-	// and defaults to auto.
+	// It can be auto, kernelspace or userspace, and defaults to auto.
 	Implementation string
-	// AmneziaWG settings are extra obfuscation parameters
-	AmneziaWG AmneziaSettings
 }
 
 func (s *Settings) SetDefaults() {
@@ -181,7 +178,7 @@ func (s *Settings) Check() (err error) {
 	}
 
 	switch s.Implementation {
-	case "auto", "kernelspace", "userspace", "amneziawg":
+	case "auto", "kernelspace", "userspace":
 	default:
 		return fmt.Errorf("%w: %s", ErrImplementationInvalid, s.Implementation)
 	}

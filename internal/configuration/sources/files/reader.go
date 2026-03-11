@@ -13,6 +13,8 @@ type Source struct {
 	cached        struct {
 		wireguardLoaded bool
 		wireguardConf   WireguardConfig
+		amneziawgLoaded bool
+		amneziawgConf   AmneziawgConfig
 	}
 }
 
@@ -69,38 +71,11 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointIP)
 	case "wireguard_endpoint_port":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointPort)
-	case "wireguard_jc":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jc)
-	case "wireguard_jmin":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jmin)
-	case "wireguard_jmax":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jmax)
-	case "wireguard_s1":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S1)
-	case "wireguard_s2":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S2)
-	case "wireguard_s3":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S3)
-	case "wireguard_s4":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S4)
-	case "wireguard_h1":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H1)
-	case "wireguard_h2":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H2)
-	case "wireguard_h3":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H3)
-	case "wireguard_h4":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H4)
-	case "wireguard_i1":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I1)
-	case "wireguard_i2":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I2)
-	case "wireguard_i3":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I3)
-	case "wireguard_i4":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I4)
-	case "wireguard_i5":
-		return strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I5)
+	}
+
+	value, isSet, matched := s.getAmneziawgKey(key)
+	if matched {
+		return value, isSet
 	}
 
 	value, isSet, err := ReadFromFile(path)
@@ -108,6 +83,58 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 		s.warner.Warnf("skipping %s: reading file: %s", path, err)
 	}
 	return value, isSet
+}
+
+func (s *Source) getAmneziawgKey(key string) (value string, isSet, matched bool) {
+	switch key {
+	case "amnezia_private_key":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PrivateKey)
+	case "amnezia_preshared_key":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PreSharedKey)
+	case "amnezia_addresses":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.Addresses)
+	case "amnezia_public_key":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PublicKey)
+	case "amnezia_endpoint_ip":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.EndpointIP)
+	case "amnezia_endpoint_port":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.EndpointPort)
+	case "amnezia_jc":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Jc)
+	case "amnezia_jmin":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Jmin)
+	case "amnezia_jmax":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Jmax)
+	case "amnezia_s1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S1)
+	case "amnezia_s2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S2)
+	case "amnezia_s3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S3)
+	case "amnezia_s4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().S4)
+	case "amnezia_h1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H1)
+	case "amnezia_h2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H2)
+	case "amnezia_h3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H3)
+	case "amnezia_h4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().H4)
+	case "amnezia_i1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I1)
+	case "amnezia_i2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I2)
+	case "amnezia_i3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I3)
+	case "amnezia_i4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I4)
+	case "amnezia_i5":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().I5)
+	default:
+		return "", false, false
+	}
+	return value, isSet, true
 }
 
 func (s *Source) KeyTransform(key string) string {
