@@ -24,6 +24,8 @@ type Provider struct {
 	ServerSelection ServerSelection `json:"server_selection"`
 	// PortForwarding is the settings about port forwarding.
 	PortForwarding PortForwarding `json:"port_forwarding"`
+	// AzirevpnToken is the API token used by AzireVPN.
+	AzirevpnToken string `json:"azirevpn_token"`
 }
 
 // TODO v4 remove pointer for receiver (because of Surfshark).
@@ -37,10 +39,15 @@ func (p *Provider) validate(vpnType string, filterChoicesGetter FilterChoicesGet
 		mullvadIndex := slices.Index(validNames, providers.Mullvad)
 		validNames[mullvadIndex], validNames[len(validNames)-1] = validNames[len(validNames)-1], validNames[mullvadIndex]
 		validNames = validNames[:len(validNames)-1]
+		// Remove AzireVPN since it is Wireguard only.
+		azirevpnIndex := slices.Index(validNames, providers.Azirevpn)
+		validNames[azirevpnIndex], validNames[len(validNames)-1] = validNames[len(validNames)-1], validNames[azirevpnIndex]
+		validNames = validNames[:len(validNames)-1]
 		sort.Strings(validNames)
 	} else { // Wireguard
 		validNames = []string{
 			providers.Airvpn,
+			providers.Azirevpn,
 			providers.Custom,
 			providers.Fastestvpn,
 			providers.Ivpn,
@@ -53,6 +60,10 @@ func (p *Provider) validate(vpnType string, filterChoicesGetter FilterChoicesGet
 	}
 	if err = validate.IsOneOf(p.Name, validNames...); err != nil {
 		return fmt.Errorf("%w for Wireguard: %w", ErrVPNProviderNameNotValid, err)
+	}
+
+	if p.Name == providers.Azirevpn && *p.PortForwarding.Enabled && p.AzirevpnToken == "" {
+		return fmt.Errorf("%w", ErrAzirevpnTokenMissing)
 	}
 
 	err = p.ServerSelection.validate(p.Name, filterChoicesGetter, warner)
@@ -73,6 +84,7 @@ func (p *Provider) copy() (copied Provider) {
 		Name:            p.Name,
 		ServerSelection: p.ServerSelection.copy(),
 		PortForwarding:  p.PortForwarding.Copy(),
+		AzirevpnToken:   p.AzirevpnToken,
 	}
 }
 
@@ -80,12 +92,14 @@ func (p *Provider) overrideWith(other Provider) {
 	p.Name = gosettings.OverrideWithComparable(p.Name, other.Name)
 	p.ServerSelection.overrideWith(other.ServerSelection)
 	p.PortForwarding.OverrideWith(other.PortForwarding)
+	p.AzirevpnToken = gosettings.OverrideWithComparable(p.AzirevpnToken, other.AzirevpnToken)
 }
 
 func (p *Provider) setDefaults() {
 	p.Name = gosettings.DefaultComparable(p.Name, providers.PrivateInternetAccess)
 	p.PortForwarding.setDefaults()
 	p.ServerSelection.setDefaults(p.Name, *p.PortForwarding.Enabled)
+	p.AzirevpnToken = gosettings.DefaultComparable(p.AzirevpnToken, "")
 }
 
 func (p Provider) String() string {
@@ -95,6 +109,9 @@ func (p Provider) String() string {
 func (p Provider) toLinesNode() (node *gotree.Node) {
 	node = gotree.New("VPN provider settings:")
 	node.Appendf("Name: %s", p.Name)
+	if p.AzirevpnToken != "" {
+		node.Appendf("AzireVPN token: %s", gosettings.ObfuscateKey(p.AzirevpnToken))
+	}
 	node.AppendNode(p.ServerSelection.toLinesNode())
 	node.AppendNode(p.PortForwarding.toLinesNode())
 	return node
@@ -102,6 +119,7 @@ func (p Provider) toLinesNode() (node *gotree.Node) {
 
 func (p *Provider) read(r *reader.Reader, vpnType string) (err error) {
 	p.Name = readVPNServiceProvider(r, vpnType)
+	p.AzirevpnToken = r.String("AZIREVPN_TOKEN", reader.ForceLowercase(false))
 
 	err = p.ServerSelection.read(r, p.Name, vpnType)
 	if err != nil {

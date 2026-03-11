@@ -268,7 +268,8 @@ func validateSubscriptionTierFilters(settings ServerSelection, vpnServiceProvide
 
 func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string) error {
 	switch {
-	case *settings.OwnedOnly && vpnServiceProvider != providers.Mullvad:
+	case *settings.OwnedOnly &&
+		!helpers.IsOneOf(vpnServiceProvider, providers.Mullvad, providers.Azirevpn):
 		return fmt.Errorf("%w", ErrOwnedOnlyNotSupported)
 	case vpnServiceProvider == providers.Protonvpn && *settings.FreeOnly && *settings.PortForwardOnly:
 		return fmt.Errorf("%w: together with free only filter", ErrPortForwardOnlyNotSupported)
@@ -278,7 +279,8 @@ func validateFeatureFilters(settings ServerSelection, vpnServiceProvider string)
 	case *settings.MultiHopOnly && vpnServiceProvider != providers.Surfshark:
 		return fmt.Errorf("%w", ErrMultiHopOnlyNotSupported)
 	case *settings.PortForwardOnly &&
-		!helpers.IsOneOf(vpnServiceProvider, providers.PrivateInternetAccess, providers.Protonvpn):
+		!helpers.IsOneOf(vpnServiceProvider, providers.Azirevpn,
+			providers.PrivateInternetAccess, providers.Protonvpn):
 		return fmt.Errorf("%w", ErrPortForwardOnlyNotSupported)
 	case *settings.SecureCoreOnly && vpnServiceProvider != providers.Protonvpn:
 		return fmt.Errorf("%w", ErrSecureCoreOnlyNotSupported)

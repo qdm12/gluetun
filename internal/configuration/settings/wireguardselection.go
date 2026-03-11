@@ -38,7 +38,8 @@ type WireguardSelection struct {
 func (w WireguardSelection) validate(vpnProvider string) (err error) {
 	// Validate EndpointIP
 	switch vpnProvider {
-	case providers.Airvpn, providers.Fastestvpn, providers.Ivpn,
+	case providers.Airvpn, providers.Azirevpn,
+		providers.Fastestvpn, providers.Ivpn,
 		providers.Mullvad, providers.Nordvpn, providers.Protonvpn,
 		providers.Surfshark, providers.Windscribe:
 		// endpoint IP addresses are baked in
@@ -57,7 +58,7 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 			return fmt.Errorf("%w", ErrWireguardEndpointPortNotSet)
 		}
 	// EndpointPort cannot be set
-	case providers.Fastestvpn, providers.Nordvpn,
+	case providers.Azirevpn, providers.Fastestvpn, providers.Nordvpn,
 		providers.Protonvpn, providers.Surfshark:
 		if *w.EndpointPort != 0 {
 			return fmt.Errorf("%w", ErrWireguardEndpointPortSet)
@@ -91,7 +92,8 @@ func (w WireguardSelection) validate(vpnProvider string) (err error) {
 
 	// Validate PublicKey
 	switch vpnProvider {
-	case providers.Fastestvpn, providers.Ivpn, providers.Mullvad,
+	case providers.Azirevpn, providers.Fastestvpn,
+		providers.Ivpn, providers.Mullvad,
 		providers.Surfshark, providers.Windscribe:
 		// public keys are baked in
 	case providers.Custom:
