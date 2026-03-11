@@ -12,7 +12,7 @@ require (
 	github.com/klauspost/compress v1.18.4
 	github.com/klauspost/pgzip v1.2.6
 	github.com/mdlayher/genetlink v1.3.2
-	github.com/mdlayher/netlink v1.7.2
+	github.com/mdlayher/netlink v1.9.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260310123525-76fabc2b3294
 	github.com/qdm12/gosettings v0.4.4
@@ -43,7 +43,6 @@ require (
 	github.com/cronokirby/saferith v0.33.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/josharian/native v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mdlayher/socket v0.5.1 // indirect
