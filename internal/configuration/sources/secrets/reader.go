@@ -83,6 +83,11 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointPort)
 	}
 
+	value, isSet, matched := s.getAmneziaWg(key)
+	if matched {
+		return value, isSet
+	}
+
 	value, isSet, err := files.ReadFromFile(path)
 	if err != nil {
 		s.warner.Warnf("skipping %s: reading file: %s", path, err)
@@ -103,4 +108,44 @@ func (s *Source) KeyTransform(key string) string {
 		key = strings.ToLower(key) // HTTPROXY_USER -> httpproxy_user
 		return key
 	}
+}
+
+func (s *Source) getAmneziaWg(key string) (value string, isSet, matched bool) {
+	switch key {
+	case "wireguard_jc":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jc)
+	case "wireguard_jmin":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jmin)
+	case "wireguard_jmax":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.Jmax)
+	case "wireguard_s1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S1)
+	case "wireguard_s2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S2)
+	case "wireguard_s3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S3)
+	case "wireguard_s4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.S4)
+	case "wireguard_h1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H1)
+	case "wireguard_h2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H2)
+	case "wireguard_h3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H3)
+	case "wireguard_h4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.H4)
+	case "wireguard_i1":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I1)
+	case "wireguard_i2":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I2)
+	case "wireguard_i3":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I3)
+	case "wireguard_i4":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I4)
+	case "wireguard_i5":
+		value, isSet = strPtrToStringIsSet(s.lazyLoadWireguardConf().AmneziaParams.I5)
+	default:
+		return "", false, false
+	}
+	return value, isSet, true
 }

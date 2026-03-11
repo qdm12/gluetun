@@ -25,13 +25,54 @@ func (s *Source) lazyLoadWireguardConf() WireguardConfig {
 	return s.cached.wireguardConf
 }
 
+type amneziaWgConfig struct {
+	Jc   *string
+	Jmin *string
+	Jmax *string
+	S1   *string
+	S2   *string
+	S3   *string
+	S4   *string
+	H1   *string
+	H2   *string
+	H3   *string
+	H4   *string
+	I1   *string
+	I2   *string
+	I3   *string
+	I4   *string
+	I5   *string
+}
+
+func parseWireguardAmneziaInterfaceSection(interfaceSection *ini.Section) amneziaWgConfig {
+	return amneziaWgConfig{
+		Jc:   getINIKeyFromSection(interfaceSection, "Jc"),
+		Jmin: getINIKeyFromSection(interfaceSection, "Jmin"),
+		Jmax: getINIKeyFromSection(interfaceSection, "Jmax"),
+		S1:   getINIKeyFromSection(interfaceSection, "S1"),
+		S2:   getINIKeyFromSection(interfaceSection, "S2"),
+		S3:   getINIKeyFromSection(interfaceSection, "S3"),
+		S4:   getINIKeyFromSection(interfaceSection, "S4"),
+		H1:   getINIKeyFromSection(interfaceSection, "H1"),
+		H2:   getINIKeyFromSection(interfaceSection, "H2"),
+		H3:   getINIKeyFromSection(interfaceSection, "H3"),
+		H4:   getINIKeyFromSection(interfaceSection, "H4"),
+		I1:   getINIKeyFromSection(interfaceSection, "I1"),
+		I2:   getINIKeyFromSection(interfaceSection, "I2"),
+		I3:   getINIKeyFromSection(interfaceSection, "I3"),
+		I4:   getINIKeyFromSection(interfaceSection, "I4"),
+		I5:   getINIKeyFromSection(interfaceSection, "I5"),
+	}
+}
+
 type WireguardConfig struct {
-	PrivateKey   *string
-	PreSharedKey *string
-	Addresses    *string
-	PublicKey    *string
-	EndpointIP   *string
-	EndpointPort *string
+	PrivateKey    *string
+	PreSharedKey  *string
+	Addresses     *string
+	PublicKey     *string
+	EndpointIP    *string
+	EndpointPort  *string
+	AmneziaParams amneziaWgConfig
 }
 
 var regexINISectionNotExist = regexp.MustCompile(`^section ".+" does not exist$`)
@@ -48,6 +89,7 @@ func ParseWireguardConf(path string) (config WireguardConfig, err error) {
 	interfaceSection, err := iniFile.GetSection("Interface")
 	if err == nil {
 		config.PrivateKey, config.Addresses = parseWireguardInterfaceSection(interfaceSection)
+		config.AmneziaParams = parseWireguardAmneziaInterfaceSection(interfaceSection)
 	} else if !regexINISectionNotExist.MatchString(err.Error()) {
 		// can never happen
 		return WireguardConfig{}, fmt.Errorf("getting interface section: %w", err)
