@@ -92,6 +92,9 @@ func (c *Config) runIptablesInstructionNoSave(ctx context.Context, instruction s
 	cmd := exec.CommandContext(ctx, c.ipTables, flags...) // #nosec G204
 	c.logger.Debug(cmd.String())
 	if output, err := c.runner.Run(cmd); err != nil {
+		if strings.Contains(output, "missing kernel module") {
+			err = ErrKernelModuleMissing
+		}
 		return fmt.Errorf("command failed: \"%s %s\": %s: %w",
 			c.ipTables, instruction, output, err)
 	}
