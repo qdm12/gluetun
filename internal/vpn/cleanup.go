@@ -13,10 +13,12 @@ func (l *Loop) cleanup() {
 	settings := l.GetSettings()
 
 	var err error
-	commandString := strings.ReplaceAll(*settings.DownCommand, "{{VPN_INTERFACE}}", getVPNInterface(settings))
-	err = l.cmder.RunAndLog(context.Background(), commandString, l.logger)
-	if err != nil {
-		l.logger.Error("failed to run VPN down command: " + err.Error())
+	if *settings.DownCommand != "" {
+		commandString := strings.ReplaceAll(*settings.DownCommand, "{{VPN_INTERFACE}}", getVPNInterface(settings))
+		err = l.cmder.RunAndLog(context.Background(), commandString, l.logger)
+		if err != nil {
+			l.logger.Error("failed to run VPN down command: " + err.Error())
+		}
 	}
 
 	for _, vpnPort := range l.vpnInputPorts {
