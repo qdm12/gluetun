@@ -5,9 +5,11 @@ import (
 	"net/netip"
 	"os/exec"
 
+	"github.com/qdm12/gluetun/internal/command"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
+	"github.com/qdm12/gluetun/internal/pmtud/tcp"
 	portforward "github.com/qdm12/gluetun/internal/portforward"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -17,10 +19,12 @@ type Firewall interface {
 	SetVPNConnection(ctx context.Context, connection models.Connection, interfaceName string) error
 	SetAllowedPort(ctx context.Context, port uint16, interfaceName string) error
 	RemoveAllowedPort(ctx context.Context, port uint16) error
+	tcp.Firewall
 }
 
 type Routing interface {
 	VPNLocalGatewayIP(vpnInterface string) (gateway netip.Addr, err error)
+	VPNRoutes(vpnIntf string) (route []netlink.Route, err error)
 }
 
 type PortForward interface {
@@ -67,6 +71,7 @@ type NetLinker interface {
 type Router interface {
 	RouteList(family uint8) (routes []netlink.Route, err error)
 	RouteAdd(route netlink.Route) error
+	RouteReplace(route netlink.Route) error
 }
 
 type Ruler interface {
@@ -95,10 +100,12 @@ type PublicIPLoop interface {
 	ClearData() (err error)
 }
 
-type CmdStarter interface {
+type Cmder interface {
 	Start(cmd *exec.Cmd) (
 		stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, startErr error)
+	RunAndLog(ctx context.Context, command string,
+		logger command.Logger) (err error)
 }
 
 type HealthChecker interface {
@@ -110,4 +117,9 @@ type HealthChecker interface {
 
 type HealthServer interface {
 	SetError(err error)
+}
+
+type Service interface {
+	Start() (runError <-chan error, err error)
+	Stop() error
 }

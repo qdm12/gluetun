@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/qdm12/gluetun/internal/configuration/settings/helpers"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gosettings"
 	"github.com/qdm12/gosettings/reader"
@@ -38,15 +37,9 @@ type Wireguard struct {
 	Interface                   string         `json:"interface"`
 	PersistentKeepaliveInterval *time.Duration `json:"persistent_keep_alive_interval"`
 	// Maximum Transmission Unit (MTU) of the Wireguard interface.
-	// It cannot be zero in the internal state, and defaults to
-	// 1320. Note it is not the wireguard-go MTU default of 1420
-	// because this impacts bandwidth a lot on some VPN providers,
-	// see https://github.com/qdm12/gluetun/issues/1650.
-	// It has been lowered to 1320 following quite a bit of
-	// investigation in the issue:
-	// https://github.com/qdm12/gluetun/issues/2533.
-	// Note this should now be replaced with the PMTUD feature.
-	MTU uint32 `json:"mtu"`
+	// It cannot be nil in the internal state, and defaults to
+	// 0 indicating to use PMTUD.
+	MTU *uint32 `json:"mtu"`
 	// Implementation is the Wireguard implementation to use.
 	// It can be "auto", "userspace" or "kernelspace".
 	// It defaults to "auto" and cannot be the empty string
@@ -57,23 +50,8 @@ type Wireguard struct {
 var regexpInterfaceName = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 
 // Validate validates Wireguard settings.
-// It should only be ran if the VPN type chosen is Wireguard.
-func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) {
-	if !helpers.IsOneOf(vpnProvider,
-		providers.Airvpn,
-		providers.Custom,
-		providers.Fastestvpn,
-		providers.Ivpn,
-		providers.Mullvad,
-		providers.Nordvpn,
-		providers.Protonvpn,
-		providers.Surfshark,
-		providers.Windscribe,
-	) {
-		// do not validate for VPN provider not supporting Wireguard
-		return nil
-	}
-
+// It should only be ran if the VPN type chosen is Wireguard or AmneziaWg.
+func (w Wireguard) validate(vpnProvider string, ipv6Supported, amneziawg bool) (err error) {
 	// Validate PrivateKey
 	if *w.PrivateKey == "" {
 		return fmt.Errorf("%w", ErrWireguardPrivateKeyNotSet)
@@ -142,9 +120,11 @@ func (w Wireguard) validate(vpnProvider string, ipv6Supported bool) (err error) 
 			ErrWireguardInterfaceNotValid, w.Interface, regexpInterfaceName)
 	}
 
-	validImplementations := []string{"auto", "userspace", "kernelspace"}
-	if err := validate.IsOneOf(w.Implementation, validImplementations...); err != nil {
-		return fmt.Errorf("%w: %w", ErrWireguardImplementationNotValid, err)
+	if !amneziawg { // amneziawg should have its own Implementation field and ignore this one
+		validImplementations := []string{"auto", "userspace", "kernelspace"}
+		if err := validate.IsOneOf(w.Implementation, validImplementations...); err != nil {
+			return fmt.Errorf("%w: %w", ErrWireguardImplementationNotValid, err)
+		}
 	}
 
 	return nil
@@ -195,8 +175,7 @@ func (w *Wireguard) setDefaults(vpnProvider string) {
 	w.AllowedIPs = gosettings.DefaultSlice(w.AllowedIPs, defaultAllowedIPs)
 	w.PersistentKeepaliveInterval = gosettings.DefaultPointer(w.PersistentKeepaliveInterval, 0)
 	w.Interface = gosettings.DefaultComparable(w.Interface, "wg0")
-	const defaultMTU = 1320
-	w.MTU = gosettings.DefaultComparable(w.MTU, defaultMTU)
+	w.MTU = gosettings.DefaultPointer(w.MTU, 0)
 	w.Implementation = gosettings.DefaultComparable(w.Implementation, "auto")
 }
 
@@ -232,7 +211,11 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	}
 
 	interfaceNode := node.Appendf("Network interface: %s", w.Interface)
-	interfaceNode.Appendf("MTU: %d", w.MTU)
+	if *w.MTU == 0 {
+		interfaceNode.Append("MTU: use path MTU discovery")
+	} else {
+		interfaceNode.Appendf("MTU: %d", *w.MTU)
+	}
 
 	if w.Implementation != "auto" {
 		node.Appendf("Implementation: %s", w.Implementation)
@@ -241,14 +224,21 @@ func (w Wireguard) toLinesNode() (node *gotree.Node) {
 	return node
 }
 
-func (w *Wireguard) read(r *reader.Reader) (err error) {
-	w.PrivateKey = r.Get("WIREGUARD_PRIVATE_KEY", reader.ForceLowercase(false))
-	w.PreSharedKey = r.Get("WIREGUARD_PRESHARED_KEY", reader.ForceLowercase(false))
+func (w *Wireguard) read(r *reader.Reader, amneziaWG bool) (err error) {
+	prefix := "WIREGUARD"
+	if amneziaWG {
+		prefix = "AMNEZIAWG"
+	}
+	w.PrivateKey = r.Get(prefix+"_PRIVATE_KEY", reader.ForceLowercase(false))
+	w.PreSharedKey = r.Get(prefix+"_PRESHARED_KEY", reader.ForceLowercase(false))
 	w.Interface = r.String("VPN_INTERFACE",
-		reader.RetroKeys("WIREGUARD_INTERFACE"), reader.ForceLowercase(false))
-	w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
+		reader.RetroKeys(prefix+"_INTERFACE"), reader.ForceLowercase(false))
 
-	addressStrings := r.CSV("WIREGUARD_ADDRESSES", reader.RetroKeys("WIREGUARD_ADDRESS"))
+	if !amneziaWG {
+		w.Implementation = r.String("WIREGUARD_IMPLEMENTATION")
+	}
+
+	addressStrings := r.CSV(prefix+"_ADDRESSES", reader.RetroKeys(prefix+"_ADDRESS"))
 	// WARNING: do not initialize w.Addresses to an empty slice
 	// or the defaults for nordvpn will not work.
 	for _, addressString := range addressStrings {
@@ -263,21 +253,19 @@ func (w *Wireguard) read(r *reader.Reader) (err error) {
 		w.Addresses = append(w.Addresses, address)
 	}
 
-	w.AllowedIPs, err = r.CSVNetipPrefixes("WIREGUARD_ALLOWED_IPS")
+	w.AllowedIPs, err = r.CSVNetipPrefixes(prefix + "_ALLOWED_IPS")
 	if err != nil {
 		return err // already wrapped
 	}
 
-	w.PersistentKeepaliveInterval, err = r.DurationPtr("WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL")
+	w.PersistentKeepaliveInterval, err = r.DurationPtr(prefix + "_PERSISTENT_KEEPALIVE_INTERVAL")
 	if err != nil {
 		return err
 	}
 
-	mtuPtr, err := r.Uint32Ptr("WIREGUARD_MTU")
+	w.MTU, err = r.Uint32Ptr(prefix + "_MTU")
 	if err != nil {
 		return err
-	} else if mtuPtr != nil {
-		w.MTU = *mtuPtr
 	}
 	return nil
 }

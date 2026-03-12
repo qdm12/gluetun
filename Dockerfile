@@ -13,7 +13,7 @@ FROM --platform=${BUILDPLATFORM} ghcr.io/qdm12/binpot:mockgen-${MOCKGEN_VERSION}
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION}-alpine${GO_ALPINE_VERSION} AS base
 COPY --from=xcputranslate /xcputranslate /usr/local/bin/xcputranslate
 # Note: findutils needed to have xargs support `-d` flag for mocks stage.
-RUN apk --update add git g++ findutils
+RUN apk --update add git g++ findutils iptables
 ENV CGO_ENABLED=0
 COPY --from=golangci-lint /bin /go/bin/golangci-lint
 COPY --from=mockgen /bin /go/bin/mockgen
@@ -110,8 +110,65 @@ ENV VPN_SERVICE_PROVIDER=pia \
     WIREGUARD_PERSISTENT_KEEPALIVE_INTERVAL=0 \
     WIREGUARD_ADDRESSES= \
     WIREGUARD_ADDRESSES_SECRETFILE=/run/secrets/wireguard_addresses \
-    WIREGUARD_MTU=1320 \
+    WIREGUARD_MTU= \
     WIREGUARD_IMPLEMENTATION=auto \
+    # Amnezia
+    AMNEZIAWG_ENDPOINT_IP= \
+    AMNEZIAWG_ENDPOINT_PORT= \
+    AMNEZIAWG_CONF_SECRETFILE=/run/secrets/wg0.conf \
+    AMNEZIAWG_PRIVATE_KEY= \
+    AMNEZIAWG_PRIVATE_KEY_SECRETFILE=/run/secrets/wireguard_private_key \
+    AMNEZIAWG_PRESHARED_KEY= \
+    AMNEZIAWG_PRESHARED_KEY_SECRETFILE=/run/secrets/wireguard_preshared_key \
+    AMNEZIAWG_PUBLIC_KEY= \
+    AMNEZIAWG_ALLOWED_IPS= \
+    AMNEZIAWG_PERSISTENT_KEEPALIVE_INTERVAL=0 \
+    AMNEZIAWG_ADDRESSES= \
+    AMNEZIAWG_ADDRESSES_SECRETFILE=/run/secrets/wireguard_addresses \
+    AMNEZIAWG_MTU= \
+    AMNEZIAWG_JC=0 \
+    AMNEZIAWG_JMIN=0 \
+    AMNEZIAWG_JMAX=0 \
+    AMNEZIAWG_S1=0 \
+    AMNEZIAWG_S2=0 \
+    AMNEZIAWG_S3=0 \
+    AMNEZIAWG_S4=0 \
+    AMNEZIAWG_H1= \
+    AMNEZIAWG_H2= \
+    AMNEZIAWG_H3= \
+    AMNEZIAWG_H4= \
+    AMNEZIAWG_I1= \
+    AMNEZIAWG_I2= \
+    AMNEZIAWG_I3= \
+    AMNEZIAWG_I4= \
+    AMNEZIAWG_I5= \
+    # Wireguard AmneziaWG userspace obfuscation (requires WIREGUARD_IMPLEMENTATION=amneziawg)
+    AMNEZIAWG_JC=0 \
+    AMNEZIAWG_JMIN=0 \
+    AMNEZIAWG_JMAX=0 \
+    AMNEZIAWG_S1=0 \
+    AMNEZIAWG_S2=0 \
+    AMNEZIAWG_S3=0 \
+    AMNEZIAWG_S4=0 \
+    AMNEZIAWG_H1= \
+    AMNEZIAWG_H2= \
+    AMNEZIAWG_H3= \
+    AMNEZIAWG_H4= \
+    AMNEZIAWG_I1= \
+    AMNEZIAWG_I2= \
+    AMNEZIAWG_I3= \
+    AMNEZIAWG_I4= \
+    AMNEZIAWG_I5= \
+    # VPN server port forwarding
+    VPN_PORT_FORWARDING=off \
+    VPN_PORT_FORWARDING_PROVIDER= \
+    VPN_PORT_FORWARDING_UP_COMMAND= \
+    VPN_PORT_FORWARDING_DOWN_COMMAND= \
+    VPN_PORT_FORWARDING_LISTENING_PORT=0 \
+    VPN_PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
+    # PMTUD
+    PMTUD_ICMP_ADDRESSES=1.1.1.1,8.8.8.8 \
+    PMTUD_TCP_ADDRESSES=1.1.1.1:443,8.8.8.8:443,1.1.1.1:53,8.8.8.8:53,[2606:4700:4700::1111]:53,[2001:4860:4860::8888]:53,[2606:4700:4700::1111]:443,[2001:4860:4860::8888]:443 \
     # VPN server filtering
     SERVER_REGIONS= \
     SERVER_COUNTRIES= \
@@ -123,14 +180,8 @@ ENV VPN_SERVICE_PROVIDER=pia \
     OWNED_ONLY=no \
     # # Private Internet Access only:
     PRIVATE_INTERNET_ACCESS_OPENVPN_ENCRYPTION_PRESET= \
-    VPN_PORT_FORWARDING=off \
-    VPN_PORT_FORWARDING_LISTENING_PORT=0 \
-    VPN_PORT_FORWARDING_PROVIDER= \
-    VPN_PORT_FORWARDING_STATUS_FILE="/tmp/gluetun/forwarded_port" \
     VPN_PORT_FORWARDING_USERNAME= \
     VPN_PORT_FORWARDING_PASSWORD= \
-    VPN_PORT_FORWARDING_UP_COMMAND= \
-    VPN_PORT_FORWARDING_DOWN_COMMAND= \
     # # Cyberghost only:
     OPENVPN_CERT= \
     OPENVPN_KEY= \
@@ -172,7 +223,6 @@ ENV VPN_SERVICE_PROVIDER=pia \
     HEALTH_SMALL_CHECK_TYPE=icmp \
     HEALTH_RESTART_VPN=on \
     # DNS
-    DNS_SERVER=on \
     DNS_UPSTREAM_RESOLVER_TYPE=DoT \
     DNS_UPSTREAM_RESOLVERS=cloudflare \
     DNS_BLOCK_IPS= \
@@ -185,8 +235,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     DNS_UNBLOCK_HOSTNAMES= \
     DNS_REBINDING_PROTECTION_EXEMPT_HOSTNAMES= \
     DNS_UPDATE_PERIOD=24h \
-    DNS_ADDRESS=127.0.0.1 \
-    DNS_KEEP_NAMESERVER=off \
+    DNS_UPSTREAM_PLAIN_ADDRESSES= \
     # HTTP proxy
     HTTPPROXY= \
     HTTPPROXY_LOG=off \
@@ -228,6 +277,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     PPROF_HTTP_SERVER_ADDRESS=":6060" \
     # Extras
     VERSION_INFORMATION=on \
+    BORINGPOLL_GLUETUNCOM=off \
     TZ= \
     PUID=1000 \
     PGID=1000

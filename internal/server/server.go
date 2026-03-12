@@ -14,7 +14,7 @@ import (
 
 func New(ctx context.Context, settings settings.ControlServer, logger Logger,
 	buildInfo models.BuildInformation, openvpnLooper VPNLooper,
-	pfGetter PortForwardedGetter, dnsLooper DNSLoop,
+	pf PortForwarding, dnsLooper DNSLoop,
 	updaterLooper UpdaterLooper, publicIPLooper PublicIPLoop, storage Storage,
 	ipv6Supported bool) (
 	server *httpserver.Server, err error,
@@ -25,7 +25,7 @@ func New(ctx context.Context, settings settings.ControlServer, logger Logger,
 	}
 
 	handler, err := newHandler(ctx, logger, *settings.Log, authSettings, buildInfo,
-		openvpnLooper, pfGetter, dnsLooper, updaterLooper, publicIPLooper,
+		openvpnLooper, pf, dnsLooper, updaterLooper, publicIPLooper,
 		storage, ipv6Supported)
 	if err != nil {
 		return nil, fmt.Errorf("creating handler: %w", err)
@@ -60,7 +60,6 @@ func setupAuthMiddleware(authPath, jsonDefaultRole string, logger Logger) (
 	if err != nil {
 		return auth.Settings{}, fmt.Errorf("setting default role: %w", err)
 	}
-	authSettings.SetDefaults()
 	err = authSettings.Validate()
 	if err != nil {
 		return auth.Settings{}, fmt.Errorf("validating auth settings: %w", err)
