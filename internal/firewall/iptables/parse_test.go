@@ -33,9 +33,9 @@ func Test_parseIptablesInstruction(t *testing.T) {
 		"one_pair": {
 			s: "-A INPUT",
 			instruction: iptablesInstruction{
-				table:  "filter",
-				chain:  "INPUT",
-				append: true,
+				table:     "filter",
+				chain:     "INPUT",
+				operation: opAppend,
 			},
 		},
 		"instruction_A": {
@@ -43,7 +43,7 @@ func Test_parseIptablesInstruction(t *testing.T) {
 			instruction: iptablesInstruction{
 				table:           "filter",
 				chain:           "INPUT",
-				append:          true,
+				operation:       opAppend,
 				inputInterface:  "tun0",
 				protocol:        "tcp",
 				source:          netip.MustParsePrefix("1.2.3.4/32"),
@@ -57,7 +57,7 @@ func Test_parseIptablesInstruction(t *testing.T) {
 			instruction: iptablesInstruction{
 				table:           "nat",
 				chain:           "PREROUTING",
-				append:          false,
+				operation:       opDelete,
 				inputInterface:  "tun0",
 				protocol:        "tcp",
 				destinationPort: 43716,
