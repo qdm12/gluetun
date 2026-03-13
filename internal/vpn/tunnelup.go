@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants"
+	"github.com/qdm12/gluetun/internal/constants/vpn"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/pmtud"
 	pconstants "github.com/qdm12/gluetun/internal/pmtud/constants"
@@ -48,6 +49,14 @@ type tunnelUpPMTUDData struct {
 }
 
 func (l *Loop) onTunnelUp(ctx, loopCtx context.Context, data tunnelUpData) {
+	switch vpnType := l.GetSettings().Type; vpnType {
+	case vpn.Wireguard, vpn.AmneziaWg:
+		l.logger.Infof("%s setup is complete. "+
+			"Note %s is a silent protocol and it may or may not work, without giving any error message. "+
+			"Typically i/o timeout errors indicate the %s connection is not working.",
+			vpnType, vpnType, vpnType)
+	}
+
 	l.client.CloseIdleConnections()
 
 	for _, vpnPort := range l.vpnInputPorts {

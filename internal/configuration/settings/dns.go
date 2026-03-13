@@ -69,19 +69,27 @@ func (d DNS) validate() (err error) {
 	}
 
 	providers := provider.NewProviders()
+	selectedHasPlainIPv4, selectedHasPlainIPv6 := false, false
 	for _, providerName := range d.Providers {
-		_, err := providers.Get(providerName)
+		provider, err := providers.Get(providerName)
 		if err != nil {
 			return err
+		}
+		if !selectedHasPlainIPv4 && len(provider.Plain.IPv4) > 0 {
+			selectedHasPlainIPv4 = true
+		}
+		if !selectedHasPlainIPv6 && len(provider.Plain.IPv6) > 0 {
+			selectedHasPlainIPv6 = true
 		}
 	}
 
 	if d.UpstreamType == DNSUpstreamTypePlain {
-		if *d.IPv6 && !slices.ContainsFunc(d.UpstreamPlainAddresses, func(addrPort netip.AddrPort) bool {
-			return addrPort.Addr().Is6()
-		}) {
+		if *d.IPv6 && !selectedHasPlainIPv6 &&
+			!slices.ContainsFunc(d.UpstreamPlainAddresses, func(addrPort netip.AddrPort) bool {
+				return addrPort.Addr().Is6()
+			}) {
 			return fmt.Errorf("%w: in %d addresses", ErrDNSUpstreamPlainNoIPv6, len(d.UpstreamPlainAddresses))
-		} else if !slices.ContainsFunc(d.UpstreamPlainAddresses, func(addrPort netip.AddrPort) bool {
+		} else if !selectedHasPlainIPv4 && !slices.ContainsFunc(d.UpstreamPlainAddresses, func(addrPort netip.AddrPort) bool {
 			return addrPort.Addr().Is4()
 		}) {
 			return fmt.Errorf("%w: in %d addresses", ErrDNSUpstreamPlainNoIPv4, len(d.UpstreamPlainAddresses))
