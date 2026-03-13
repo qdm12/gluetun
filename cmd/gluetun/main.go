@@ -222,11 +222,11 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 
+	iptablesLogLevel, _ := log.ParseLevel(allSettings.Firewall.Iptables.LogLevel)
+	iptablesLogger := logger.New(log.SetComponent("iptables"), log.SetLevel(iptablesLogLevel))
+
 	firewallLogger := logger.New(log.SetComponent("firewall"))
-	if *allSettings.Firewall.IptablesDebug { // To remove in v4
-		firewallLogger.Patch(log.SetLevel(log.LevelDebug))
-	}
-	firewallConf, err := firewall.NewConfig(ctx, firewallLogger, cmder,
+	firewallConf, err := firewall.NewConfig(ctx, firewallLogger, iptablesLogger, cmder,
 		defaultRoutes, localNetworks)
 	if err != nil {
 		return err
