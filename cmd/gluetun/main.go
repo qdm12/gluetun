@@ -210,9 +210,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	netLinker.PatchLoggerLevel(logLevel)
 
 	routingLogger := logger.New(log.SetComponent("routing"))
-	if *allSettings.Firewall.Debug { // To remove in v4
-		routingLogger.Patch(log.SetLevel(log.LevelDebug))
-	}
 	routingConf := routing.New(netLinker, routingLogger)
 
 	defaultRoutes, err := routingConf.DefaultRoutes()
@@ -226,7 +223,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	}
 
 	firewallLogger := logger.New(log.SetComponent("firewall"))
-	if *allSettings.Firewall.Debug { // To remove in v4
+	if *allSettings.Firewall.IptablesDebug { // To remove in v4
 		firewallLogger.Patch(log.SetLevel(log.LevelDebug))
 	}
 	firewallConf, err := firewall.NewConfig(ctx, firewallLogger, cmder,
