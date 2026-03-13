@@ -34,6 +34,10 @@ func (e *apiHTTPStatusError) StatusCode() int {
 	return e.statusCode
 }
 
+func (e *apiHTTPStatusError) Body() string {
+	return e.body
+}
+
 func statusCodeOf(err error) (statusCode int, ok bool) {
 	var statusErr *apiHTTPStatusError
 	if !errors.As(err, &statusErr) {

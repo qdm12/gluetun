@@ -81,6 +81,17 @@ func (p *Provider) PortForward(ctx context.Context,
 			break
 		}
 
+		if isCreatePortForwardingDailyLimitReachedError(err) {
+			persisted.Port = 0
+			persisted.PortExpiresAt = 0
+			persistErr := writePersistedData(p.dataPath, persisted)
+			if persistErr != nil {
+				return nil, fmt.Errorf("persisting azirevpn state: %w", persistErr)
+			}
+			objects.Logger.Warn("azirevpn API daily creation limit reached, continuing without port forwarding for now")
+			return nil, nil
+		}
+
 		statusCode, hasStatusCode := statusCodeOf(err)
 		if !(hasStatusCode && statusCode == http.StatusTooManyRequests) {
 			return nil, fmt.Errorf("creating port forwarding: %w", err)
@@ -141,7 +152,9 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 	}
 
 	if persisted.Port == 0 {
-		return errors.New("persisted azirevpn state has no forwarded port")
+		objects.Logger.Info("no azirevpn forwarded port to maintain")
+		<-ctx.Done()
+		return ctx.Err()
 	}
 
 	internalIPv4, err := determineInternalIPv4(persisted, objects.InternalIP)
@@ -248,4 +261,18 @@ func formatPortsForLog(apiPorts []portForward) (s string) {
 	}
 
 	return "[" + strings.Join(ports, ", ") + "]"
+}
+
+func isCreatePortForwardingDailyLimitReachedError(err error) bool {
+	var statusErr *apiHTTPStatusError
+	if !errors.As(err, &statusErr) {
+		return false
+	}
+
+	if statusErr.StatusCode() != http.StatusNotAcceptable {
+		return false
+	}
+
+	body := strings.ToLower(statusErr.Body())
+	return strings.Contains(body, "todays limit reached")
 }
