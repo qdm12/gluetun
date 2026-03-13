@@ -53,7 +53,8 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 			_, _, assignedExternalPort, assignedLifetime, err := client.AddPortMapping(ctx, objects.Gateway, protocol,
 				internalPort, externalPort, lifetime)
 			if err != nil {
-				return nil, fmt.Errorf("adding %s port mapping: %w", protocol, err)
+				return nil, fmt.Errorf("adding %d/%d %s port mapping: %w",
+					i+1, len(p.portsForwarded), strings.ToUpper(protocol), err)
 			}
 			checkLifetime(logger, strings.ToUpper(protocol), lifetime, assignedLifetime)
 			protoToPort[protocol] = assignedExternalPort
