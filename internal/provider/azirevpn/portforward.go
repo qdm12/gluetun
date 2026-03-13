@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/netip"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/provider/utils"
@@ -35,7 +37,10 @@ func (p *Provider) PortForward(ctx context.Context,
 		if !(hasStatusCode && statusCode == http.StatusNotFound) {
 			return nil, fmt.Errorf("listing port forwardings: %w", err)
 		}
+		objects.Logger.Info("fetching existing port forwards, got []")
 		objects.Logger.Debug("no existing azirevpn port forwarding found, creating one")
+	} else {
+		objects.Logger.Info("fetching existing port forwards, got " + formatPortsForLog(portForwardingData.Ports))
 	}
 
 	nowUnix := time.Now().Unix()
@@ -48,7 +53,7 @@ func (p *Provider) PortForward(ctx context.Context,
 				if err != nil {
 					return nil, fmt.Errorf("persisting azirevpn state: %w", err)
 				}
-				objects.Logger.Info(fmt.Sprintf("reusing existing port %d", persisted.Port))
+				objects.Logger.Info(fmt.Sprintf("reusing existing forwarded port: %d", persisted.Port))
 				return []uint16{persisted.Port}, nil
 			}
 		}
@@ -62,7 +67,7 @@ func (p *Provider) PortForward(ctx context.Context,
 			if err != nil {
 				return nil, fmt.Errorf("persisting azirevpn state: %w", err)
 			}
-			objects.Logger.Info(fmt.Sprintf("reusing existing port %d", persisted.Port))
+			objects.Logger.Info(fmt.Sprintf("reusing existing forwarded port: %d", persisted.Port))
 			return []uint16{persisted.Port}, nil
 		}
 	}
@@ -230,4 +235,17 @@ func (p *Provider) cleanupOnStop(client *http.Client,
 	}
 
 	return nil
+}
+
+func formatPortsForLog(apiPorts []portForward) (s string) {
+	if len(apiPorts) == 0 {
+		return "[]"
+	}
+
+	ports := make([]string, len(apiPorts))
+	for i, apiPort := range apiPorts {
+		ports[i] = strconv.FormatUint(uint64(apiPort.Port), 10)
+	}
+
+	return "[" + strings.Join(ports, ", ") + "]"
 }
