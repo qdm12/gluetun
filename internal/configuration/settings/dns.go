@@ -44,9 +44,10 @@ type DNS struct {
 	Blacklist DNSBlacklist
 	// UpstreamPlainAddresses are the upstream plaintext DNS resolver
 	// addresses to use by the built-in DNS server forwarder.
-	// Note, if the upstream type is [dnsUpstreamTypePlain] these are merged
-	// together with provider names set in the Providers field.
-	// If this field is set, the Providers field will default to the empty slice.
+	// Note, if the upstream type is [dnsUpstreamTypePlain] and this field is set,
+	// the Providers field will default to the empty slice. If the Providers field
+	// is set by the user, then the content of this field will be merged together
+	// with the plain addresses of the providers set in the Providers field.
 	UpstreamPlainAddresses []netip.AddrPort
 }
 
@@ -133,13 +134,15 @@ func (d *DNS) setDefaults() {
 	d.UpstreamType = gosettings.DefaultComparable(d.UpstreamType, DNSUpstreamTypeDot)
 	const defaultUpdatePeriod = 24 * time.Hour
 	d.UpdatePeriod = gosettings.DefaultPointer(d.UpdatePeriod, defaultUpdatePeriod)
-	d.Providers = gosettings.DefaultSlice(d.Providers, []string{
-		provider.Cloudflare().Name,
-	})
+	d.UpstreamPlainAddresses = gosettings.DefaultSlice(d.UpstreamPlainAddresses, []netip.AddrPort{})
+	defaultProviders := defaultDNSProviders()
+	if d.UpstreamType == DNSUpstreamTypePlain && len(d.UpstreamPlainAddresses) == 0 {
+		defaultProviders = []string{}
+	}
+	d.Providers = gosettings.DefaultSlice(d.Providers, defaultProviders)
 	d.Caching = gosettings.DefaultPointer(d.Caching, true)
 	d.IPv6 = gosettings.DefaultPointer(d.IPv6, false)
 	d.Blacklist.setDefaults()
-	d.UpstreamPlainAddresses = gosettings.DefaultSlice(d.UpstreamPlainAddresses, []netip.AddrPort{})
 }
 
 func defaultDNSProviders() []string {
