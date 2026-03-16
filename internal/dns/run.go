@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/qdm12/dns/v2/pkg/nameserver"
+	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 )
 
@@ -31,27 +32,28 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		// Their values are to be used if DOT=off
 		var runError <-chan error
 
+		var settings settings.DNS
 		for {
-			settings := l.GetSettings()
+			settings = l.GetSettings()
 			var err error
 			runError, err = l.setupServer(ctx, settings)
 			if err == nil {
-				l.backoffTime = defaultBackoffTime
-				l.logger.Infof("ready and using DNS server with %s upstream resolvers", settings.UpstreamType)
-
-				err = l.updateFiles(ctx, settings)
-				if err != nil {
-					l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
-				}
 				break
 			}
 
 			l.signalOrSetStatus(constants.Crashed)
-
 			if ctx.Err() != nil {
 				return
 			}
 			l.logAndWait(ctx, err)
+		}
+
+		l.backoffTime = defaultBackoffTime
+		l.logger.Infof("ready and using DNS server with %s upstream resolvers", settings.UpstreamType)
+
+		err = l.updateFiles(ctx, settings)
+		if err != nil {
+			l.logger.Warn("downloading block lists failed, skipping: " + err.Error())
 		}
 		l.signalOrSetStatus(constants.Running)
 
