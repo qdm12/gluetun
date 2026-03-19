@@ -116,14 +116,23 @@ services:
       - OPENVPN_USER=
       - OPENVPN_PASSWORD=
       # Wireguard:
+      # - VPN_TYPE=wireguard
       # - WIREGUARD_PRIVATE_KEY=wOEI9rqqbDwnN8/Bpp22sVz48T71vJ4fYmFWujulwUU=
       # - WIREGUARD_ADDRESSES=10.64.222.21/32
+      # Tunnel healthcheck and auto-restart
+      - HEALTH_RESTART_VPN=on
+      - HEALTH_TARGET_ADDRESSES=cloudflare.com:443,github.com:443
+      # Optional: override the small healthcheck used between full 5 minute tunnel checks
+      # - HEALTH_SMALL_CHECK_TYPE=icmp
+      # - HEALTH_ICMP_TARGET_IPS=1.1.1.1,8.8.8.8
       # Timezone for accurate log times
       - TZ=
       # Server list updater
       # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       - UPDATER_PERIOD=
 ```
+
+The healthcheck runs a full tunnel check every 5 minutes and restarts the VPN if it fails.
 
 🆕 Image also available as `ghcr.io/qdm12/gluetun`
 
