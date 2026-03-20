@@ -4,12 +4,15 @@ import (
 	"context"
 	"net/netip"
 	"os/exec"
+
+	"github.com/qdm12/gluetun/internal/command"
 )
 
 type Service interface {
 	Start(ctx context.Context) (runError <-chan error, err error)
 	Stop() (err error)
 	GetPortsForwarded() (ports []uint16)
+	SetPortsForwarded(ctx context.Context, ports []uint16) (err error)
 }
 
 type Routing interface {
@@ -34,4 +37,5 @@ type Logger interface {
 type Cmder interface {
 	Start(cmd *exec.Cmd) (stdoutLines, stderrLines <-chan string,
 		waitError <-chan error, startErr error)
+	RunAndLog(ctx context.Context, commandString string, logger command.Logger) (err error)
 }
