@@ -54,7 +54,7 @@ func (c *Config) saveAndRestoreIPv4(ctx context.Context) (restore func(context.C
 		cmd.Stdin = strings.NewReader(data)
 		output, err := c.runner.Run(cmd)
 		if err != nil {
-			c.logger.Warn(fmt.Sprintf("restoring IPv4 iptables failed: %v: %s", err, output))
+			c.logger.Warn(fmt.Sprintf("restoring IPv4 iptables failed: %s", makeRestoreErrorMessage(err, output, data)))
 		}
 	}
 	return restore, nil
@@ -78,8 +78,12 @@ func (c *Config) saveAndRestoreIPv6(ctx context.Context) (restore func(context.C
 		cmd.Stdin = strings.NewReader(data)
 		output, err := c.runner.Run(cmd)
 		if err != nil {
-			c.logger.Warn(fmt.Sprintf("restoring IPv6 iptables failed: %v: %s", err, output))
+			c.logger.Warn(fmt.Sprintf("restoring IPv6 iptables failed: %s", makeRestoreErrorMessage(err, output, data)))
 		}
 	}
 	return restore, nil
+}
+
+func makeRestoreErrorMessage(err error, output, data string) string {
+	return fmt.Sprintf("%s: %s: restoring from data:\n%s", err, output, data)
 }
