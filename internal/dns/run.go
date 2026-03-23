@@ -18,9 +18,6 @@ func (l *Loop) Run(ctx context.Context, done chan<- struct{}) {
 		return
 	}
 
-	const fallback = false
-	l.useUnencryptedDNS(fallback)
-
 	select {
 	case <-l.start:
 	case <-ctx.Done():
@@ -83,8 +80,6 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 		case <-l.stop:
 			l.userTrigger = true
 			l.logger.Info("stopping")
-			const fallback = false
-			l.useUnencryptedDNS(fallback)
 			l.stopServer()
 			l.stopped <- struct{}{}
 		case <-l.start:
@@ -93,8 +88,6 @@ func (l *Loop) runWait(ctx context.Context, runError <-chan error) (exitLoop boo
 			return false
 		case err := <-runError: // unexpected error
 			l.statusManager.SetStatus(constants.Crashed)
-			const fallback = true
-			l.useUnencryptedDNS(fallback)
 			l.logAndWait(ctx, err)
 			return false
 		}
