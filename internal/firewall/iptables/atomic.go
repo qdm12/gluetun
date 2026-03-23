@@ -11,9 +11,7 @@ import (
 // returns a restore function that can be called to restore the saved rules.
 func (c *Config) SaveAndRestore(ctx context.Context) (restore func(context.Context), err error) {
 	c.iptablesMutex.Lock()
-	c.ip6tablesMutex.Lock()
 	defer c.iptablesMutex.Unlock()
-	defer c.ip6tablesMutex.Unlock()
 
 	return c.saveAndRestore(ctx)
 }
