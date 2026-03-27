@@ -9,7 +9,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/golang/mock v1.6.0
 	github.com/jsimonetti/rtnetlink v1.4.2
-	github.com/klauspost/compress v1.18.4
+	github.com/klauspost/compress v1.18.5
 	github.com/klauspost/pgzip v1.2.6
 	github.com/mdlayher/genetlink v1.3.2
 	github.com/mdlayher/netlink v1.9.0
