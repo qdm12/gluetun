@@ -522,7 +522,8 @@ func (ss *ServerSelection) read(r *reader.Reader,
 		return err
 	}
 
-	err = ss.Wireguard.read(r)
+	amneziawg := ss.VPN == vpn.AmneziaWg
+	err = ss.Wireguard.read(r, amneziawg)
 	if err != nil {
 		return err
 	}
