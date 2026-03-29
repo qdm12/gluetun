@@ -13,7 +13,7 @@ type Provider struct {
 	storage    common.Storage
 	randSource rand.Source
 	common.Fetcher
-	portForwarded uint16
+	portsForwarded []uint16
 }
 
 func New(storage common.Storage, randSource rand.Source,
