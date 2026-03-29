@@ -160,36 +160,48 @@ if [ "${_USECRED}" = "true" ]; then
         exit 1
     fi
 
-    cookie=$(wget ${WGET_OPTS} -qO- \
-        --header "Referer: ${WEBUI_URL}" \
-        --post-data "username=${USERNAME}&password=${PASSWORD}" \
-        "${WEBUI_URL}/v2/auth/login" \
-        --server-response 2>&1 | \
-        grep -i "set-cookie:" | \
-        sed 's/.*set-cookie: //I;s/;.*//')
-
-    if [ -z "${cookie}" ]; then
-        echo "ERROR: Failed to authenticate with qBittorrent. Check username/password or verify WebUI is accessible"
+    COOKIE_JAR=$(mktemp)
+    if [ ! -w "${COOKIE_JAR}" ]; then
+        echo "ERROR: Failed to create temporary cookie jar"
         exit 1
     fi
 
-    # set cookie for future requests
-    WGET_OPTS="${WGET_OPTS} --header=Cookie:$cookie"
+    wget ${WGET_OPTS} --save-cookies "${COOKIE_JAR}" --keep-session-cookies \
+        --header "Referer: ${WEBUI_URL}" \
+        --post-data "username=${USERNAME}&password=${PASSWORD}" \
+        "${WEBUI_URL}/v2/auth/login" -qO- >/dev/null 2>&1
+
+    if [ $? -ne 0 ] || [ ! -s "${COOKIE_JAR}" ]; then
+        echo "ERROR: Failed to authenticate with qBittorrent. Check username/password or verify WebUI is accessible"
+        rm -f "${COOKIE_JAR}"
+        exit 1
+    fi
 fi
 
 # update qBittorrent preferences via API, the first call disabled everything and sets safe defaults
 # This is required as per https://github.com/qdm12/gluetun-wiki/pull/147 and https://github.com/qdm12/gluetun/issues/2997#issuecomment-3566749335
-wget ${WGET_OPTS} -qO- --post-data="json={\"random_port\":false,\"upnp\":false,\"listen_port\":0,\"current_network_interface\":\"lo\",\"current_interface_address\":\"127.0.0.1\"}" "$WEBUI_URL/v2/app/setPreferences"
+if [ "${_USECRED}" = "true" ]; then
+    wget ${WGET_OPTS} --load-cookies "${COOKIE_JAR}" -qO- --post-data="json={\"random_port\":false,\"upnp\":false,\"listen_port\":0,\"current_network_interface\":\"lo\",\"current_interface_address\":\"127.0.0.1\"}" "$WEBUI_URL/v2/app/setPreferences"
+else
+    wget ${WGET_OPTS} -qO- --post-data="json={\"random_port\":false,\"upnp\":false,\"listen_port\":0,\"current_network_interface\":\"lo\",\"current_interface_address\":\"127.0.0.1\"}" "$WEBUI_URL/v2/app/setPreferences"
+fi
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to reset qBittorrent settings"
+    [ "${_USECRED}" = "true" ] && rm -f "${COOKIE_JAR}"
     exit 1
 fi
 
 # second call to set the actual port, interface and address
-wget ${WGET_OPTS} -qO- --post-data="json={\"listen_port\":$VPN_PORT,\"current_network_interface\":\"$VPN_INTERFACE\",\"current_interface_address\":\"$VPN_ADDRESS\"}" "$WEBUI_URL/v2/app/setPreferences"
+if [ "${_USECRED}" = "true" ]; then
+    wget ${WGET_OPTS} --load-cookies "${COOKIE_JAR}" -qO- --post-data="json={\"listen_port\":$VPN_PORT,\"current_network_interface\":\"$VPN_INTERFACE\",\"current_interface_address\":\"$VPN_ADDRESS\"}" "$WEBUI_URL/v2/app/setPreferences"
+else
+    wget ${WGET_OPTS} -qO- --post-data="json={\"listen_port\":$VPN_PORT,\"current_network_interface\":\"$VPN_INTERFACE\",\"current_interface_address\":\"$VPN_ADDRESS\"}" "$WEBUI_URL/v2/app/setPreferences"
+fi
 if [ $? -ne 0 ]; then
     echo "ERROR: Failed to apply qBittorrent port/interface settings"
+    [ "${_USECRED}" = "true" ] && rm -f "${COOKIE_JAR}"
     exit 1
 fi
 
+[ "${_USECRED}" = "true" ] && rm -f "${COOKIE_JAR}"
 echo "qBittorrent updated to use peer-port: ${VPN_PORT}, interface: \"${VPN_INTERFACE}\", address: \"${VPN_ADDRESS}\""
