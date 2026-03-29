@@ -85,6 +85,18 @@ while [ $# -gt 0 ]; do
             exit 1
         fi
         VPN_PORT=$(echo "$2" | cut -d',' -f1)
+        case "$VPN_PORT" in
+            ''|*[!0-9]*)
+                echo "Error: --port must be a numeric value between 0 and 65535."
+                usage
+                exit 1
+                ;;
+        esac
+        if [ "$VPN_PORT" -lt 0 ] || [ "$VPN_PORT" -gt 65535 ]; then
+            echo "Error: --port must be between 0 and 65535."
+            usage
+            exit 1
+        fi
         shift 2
         ;;
     --iface)
