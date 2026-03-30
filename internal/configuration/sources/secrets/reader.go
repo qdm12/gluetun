@@ -62,26 +62,26 @@ func (s *Source) Get(key string) (value string, isSet bool) {
 			s.warner.Warnf("skipping %s: parsing PEM: %s", path, err)
 		}
 		return value, isSet
-	case "wireguard_private_key", "amneziawg_private_key":
+	case "wireguard_private_key":
 		privateKey := s.lazyLoadWireguardConf().PrivateKey
 		if privateKey != nil {
 			return *privateKey, true
 		} // else continue to read from individual secret file
-	case "wireguard_preshared_key", "amneziawg_preshared_key":
+	case "wireguard_preshared_key":
 		preSharedKey := s.lazyLoadWireguardConf().PreSharedKey
 		if preSharedKey != nil {
 			return *preSharedKey, true
 		} // else continue to read from individual secret file
-	case "wireguard_addresses", "amneziawg_addresses":
+	case "wireguard_addresses":
 		addresses := s.lazyLoadWireguardConf().Addresses
 		if addresses != nil {
 			return *addresses, true
 		} // else continue to read from individual secret file
-	case "wireguard_public_key", "amneziawg_public_key":
+	case "wireguard_public_key":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().PublicKey)
-	case "wireguard_endpoint_ip", "amneziawg_endpoint_ip":
+	case "wireguard_endpoint_ip":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointIP)
-	case "wireguard_endpoint_port", "amneziawg_endpoint_port":
+	case "wireguard_endpoint_port":
 		return strPtrToStringIsSet(s.lazyLoadWireguardConf().EndpointPort)
 	}
 
@@ -118,13 +118,13 @@ func (s *Source) getAmneziaWg(key string) (value string, isSet, matched bool) {
 		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PrivateKey)
 	case "amneziawg_preshared_key":
 		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PreSharedKey)
-	case "wireguard_addresses", "amneziawg_addresses":
+	case "amneziawg_addresses":
 		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.Addresses)
-	case "wireguard_public_key", "amneziawg_public_key":
+	case "amneziawg_public_key":
 		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.PublicKey)
-	case "wireguard_endpoint_ip", "amneziawg_endpoint_ip":
+	case "amneziawg_endpoint_ip":
 		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.EndpointIP)
-	case "wireguard_endpoint_port", "amneziawg_endpoint_port":
+	case "amneziawg_endpoint_port":
 		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Wireguard.EndpointPort)
 	case "amneziawg_jc":
 		value, isSet = strPtrToStringIsSet(s.lazyLoadAmneziawgConf().Jc)
