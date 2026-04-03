@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/ProtonMail/go-srp v0.0.7
-	github.com/amnezia-vpn/amneziawg-go v0.2.16
+	github.com/amnezia-vpn/amneziawg-go v1.0.4
 	github.com/breml/rootcerts v0.3.4
 	github.com/fatih/color v1.18.0
 	github.com/golang/mock v1.6.0
@@ -56,6 +56,8 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/qdm12/goservices v0.1.1-0.20251104135713-6bee97bd4978 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
+	github.com/tevino/abool v1.2.0 // indirect
+	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
