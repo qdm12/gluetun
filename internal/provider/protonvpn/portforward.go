@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
+	"maps"
 	"strings"
 	"time"
 
@@ -14,9 +14,11 @@ import (
 
 var ErrServerPortForwardNotSupported = errors.New("server does not support port forwarding")
 
+const nonSymmetricPortStart uint16 = 56789
+
 // PortForward obtains a VPN server side port forwarded from ProtonVPN gateway.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
-	ports []uint16, err error,
+	internalToExternalPorts map[uint16]uint16, err error,
 ) {
 	if !objects.CanPortForward {
 		return nil, fmt.Errorf("%w", ErrServerPortForwardNotSupported)
@@ -38,33 +40,37 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 
 	logger := objects.Logger
 
-	logger.Info("gateway external IPv4 address is " + externalIPv4Address.String())
-	const externalPort = 1
+	logger.Debug("gateway external IPv4 address is " + externalIPv4Address.String())
+	const externalPort = 0
 	const lifetime = 60 * time.Second
 
-	p.portsForwarded = make([]uint16, objects.PortsCount)
-	for i := range p.portsForwarded {
-		internalPort := uint16(i + 1) //nolint:gosec
-		protoToPort := map[string]uint16{
+	p.internalToExternalPorts = make(map[uint16]uint16, objects.PortsCount)
+	for i := range objects.PortsCount {
+		internalPort := nonSymmetricPortStart + i
+		protoToInternalPort := map[string]uint16{
 			"udp": 0,
 			"tcp": 0,
 		}
-		for protocol := range protoToPort {
-			_, _, assignedExternalPort, assignedLifetime, err := client.AddPortMapping(ctx, objects.Gateway, protocol,
-				internalPort, externalPort, lifetime)
+		protoToExternalPort := maps.Clone(protoToInternalPort)
+		for protocol := range protoToExternalPort {
+			_, assignedInternalPort, assignedExternalPort, assignedLifetime, err := client.AddPortMapping(
+				ctx, objects.Gateway, protocol, internalPort, externalPort, lifetime)
 			if err != nil {
 				return nil, fmt.Errorf("adding %d/%d %s port mapping: %w",
-					i+1, len(p.portsForwarded), strings.ToUpper(protocol), err)
+					i+1, objects.PortsCount, strings.ToUpper(protocol), err)
 			}
 			checkLifetime(logger, strings.ToUpper(protocol), lifetime, assignedLifetime)
-			protoToPort[protocol] = assignedExternalPort
+			checkInternalPort(logger, internalPort, assignedInternalPort)
+			protoToInternalPort[protocol] = assignedInternalPort
+			protoToExternalPort[protocol] = assignedExternalPort
 		}
 
-		checkExternalPorts(logger, protoToPort["udp"], protoToPort["tcp"])
-		p.portsForwarded[i] = protoToPort["tcp"] // use TCP port as the forwarded port, UDP is the same as TCP
+		checkInternalPorts(logger, protoToInternalPort["udp"], protoToInternalPort["tcp"])
+		checkExternalPorts(logger, protoToExternalPort["udp"], protoToExternalPort["tcp"])
+		p.internalToExternalPorts[protoToInternalPort["tcp"]] = protoToExternalPort["tcp"]
 	}
 
-	return slices.Clone(p.portsForwarded), nil
+	return maps.Clone(p.internalToExternalPorts), nil
 }
 
 func checkLifetime(logger utils.Logger, protocol string,
@@ -77,6 +83,20 @@ func checkLifetime(logger utils.Logger, protocol string,
 	}
 }
 
+func checkInternalPort(logger utils.Logger, sent, received uint16) {
+	if sent != received {
+		logger.Warn(fmt.Sprintf("internal port assigned %d differs from requested internal port %d",
+			sent, received))
+	}
+}
+
+func checkInternalPorts(logger utils.Logger, udpPort, tcpPort uint16) {
+	if udpPort != tcpPort {
+		logger.Warn(fmt.Sprintf("UDP internal port %d differs from TCP internal port %d",
+			udpPort, tcpPort))
+	}
+}
+
 func checkExternalPorts(logger utils.Logger, udpPort, tcpPort uint16) {
 	if udpPort != tcpPort {
 		logger.Warn(fmt.Sprintf("UDP external port %d differs from TCP external port %d",
@@ -84,7 +104,10 @@ func checkExternalPorts(logger utils.Logger, udpPort, tcpPort uint16) {
 	}
 }
 
-var ErrExternalPortChanged = errors.New("external port changed")
+var (
+	ErrInternalPortChanged = errors.New("internal port changed")
+	ErrExternalPortChanged = errors.New("external port changed")
+)
 
 func (p *Provider) KeepPortForward(ctx context.Context,
 	objects utils.PortForwardObjects,
@@ -101,29 +124,25 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 		}
 
 		objects.Logger.Debug("refreshing forwarded ports since 45 seconds have elapsed")
-		networkProtocols := []string{"udp", "tcp"}
+		networkProtocols := [...]string{"udp", "tcp"}
 		const lifetime = 60 * time.Second
-
-		for i, portForwarded := range p.portsForwarded {
-			internalPort := uint16(i + 1) //nolint:gosec
+		for internalPort, externalPort := range p.internalToExternalPorts {
 			for _, networkProtocol := range networkProtocols {
-				_, _, assignedExternalPort, assignedLiftetime, err := client.AddPortMapping(ctx, objects.Gateway, networkProtocol,
-					internalPort, portForwarded, lifetime)
+				_, assignedInternalPort, assignedExternalPort, assignedLiftetime, err := client.AddPortMapping(
+					ctx, objects.Gateway, networkProtocol, internalPort, externalPort, lifetime)
 				if err != nil {
 					return fmt.Errorf("adding port mapping: %w", err)
 				}
-
-				if assignedLiftetime != lifetime {
-					logger.Warn(fmt.Sprintf("assigned lifetime %s differs"+
-						" from requested lifetime %s", assignedLiftetime, lifetime))
-				}
-
-				if portForwarded != assignedExternalPort {
+				checkLifetime(logger, networkProtocol, lifetime, assignedLiftetime)
+				if externalPort != assignedExternalPort {
 					return fmt.Errorf("%w: %d changed to %d",
-						ErrExternalPortChanged, portForwarded, assignedExternalPort)
+						ErrExternalPortChanged, externalPort, assignedExternalPort)
+				} else if internalPort != assignedInternalPort {
+					return fmt.Errorf("%w: %d (for external port %d) changed to %d",
+						ErrInternalPortChanged, internalPort, externalPort, assignedInternalPort)
 				}
-				objects.Logger.Debug(fmt.Sprintf("port forwarded %d maintained", portForwarded))
 			}
+			objects.Logger.Debug(fmt.Sprintf("port forwarded %d maintained", externalPort))
 		}
 
 		timer.Reset(refreshTimeout)
