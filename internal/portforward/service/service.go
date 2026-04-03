@@ -69,7 +69,11 @@ func (s *Service) SetPortsForwarded(ctx context.Context, ports []uint16) (err er
 		return fmt.Errorf("cleaning up: %w", err)
 	}
 
-	err = s.onNewPorts(ctx, ports)
+	internalToExternalPorts := make(map[uint16]uint16, len(ports))
+	for _, port := range ports {
+		internalToExternalPorts[port] = port
+	}
+	err = s.onNewPorts(ctx, internalToExternalPorts)
 	if err != nil {
 		return fmt.Errorf("handling new ports: %w", err)
 	}

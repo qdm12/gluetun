@@ -26,7 +26,7 @@ var ErrServerNameNotFound = errors.New("server name not found in servers")
 // PortForward obtains a VPN server side port forwarded from PIA.
 func (p *Provider) PortForward(ctx context.Context,
 	objects utils.PortForwardObjects,
-) (ports []uint16, err error) {
+) (internalToExternalPorts map[uint16]uint16, err error) {
 	switch {
 	case objects.ServerName == "":
 		panic("server name cannot be empty")
@@ -84,7 +84,7 @@ func (p *Provider) PortForward(ctx context.Context,
 		return nil, fmt.Errorf("binding port: %w", err)
 	}
 
-	return []uint16{data.Port}, nil
+	return map[uint16]uint16{data.Port: data.Port}, nil
 }
 
 var ErrPortForwardedExpired = errors.New("port forwarded data expired")

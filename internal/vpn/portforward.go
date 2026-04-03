@@ -62,7 +62,7 @@ func (n *noPortForwarder) Name() string {
 }
 
 func (n *noPortForwarder) PortForward(context.Context, pfutils.PortForwardObjects) (
-	ports []uint16, err error,
+	internalToExternalPorts map[uint16]uint16, err error,
 ) {
 	return nil, fmt.Errorf("%w: for %s", ErrPortForwardingNotSupported, n.providerName)
 }
