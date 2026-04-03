@@ -7,6 +7,7 @@ import (
 	"github.com/qdm12/gluetun/internal/amneziawg"
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/wireguard"
 	"github.com/qdm12/gosettings"
@@ -15,15 +16,16 @@ import (
 // setupAmneziaWg sets AmneziaWG up using the configurators and settings given.
 func setupAmneziaWg(ctx context.Context, netlinker NetLinker,
 	fw Firewall, providerConf provider.Provider,
-	settings settings.VPN, ipv6Supported bool, logger wireguard.Logger) (
+	settings settings.VPN, ipv6SupportLevel netlink.IPv6SupportLevel, logger wireguard.Logger) (
 	amneziawger *amneziawg.Amneziawg, connection models.Connection, err error,
 ) {
-	connection, err = providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Supported)
+	ipv6Internet := ipv6SupportLevel == netlink.IPv6Internet
+	connection, err = providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Internet)
 	if err != nil {
 		return nil, models.Connection{}, fmt.Errorf("finding a VPN server: %w", err)
 	}
 
-	amneziaWGSettings := buildAmneziaWgSettings(connection, settings.AmneziaWg, ipv6Supported)
+	amneziaWGSettings := buildAmneziaWgSettings(connection, settings.AmneziaWg, ipv6SupportLevel.IsSupported())
 
 	logger.Debug("Amneziawg server public key: " + amneziaWGSettings.Wireguard.PublicKey)
 	logger.Debug("Amneziawg client private key: " + gosettings.ObfuscateKey(amneziaWGSettings.Wireguard.PrivateKey))
