@@ -4,68 +4,51 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"regexp"
 	"strings"
-	"time"
 )
 
-// getMostRecentStableTag finds the most recent proton-account stable tag version,
+// getMostRecentStableTag finds the latest proton-vpn-gtk-app semver tag,
 // in order to use it in the x-pm-appversion http request header. Because if we do
 // fall behind on versioning, Proton doesn't like it because they like to create
 // complications where there is no need for it. Hence this function.
 func getMostRecentStableTag(ctx context.Context, client *http.Client) (version string, err error) {
-	page := 1
-	regexVersion := regexp.MustCompile(`^proton-account@(\d+\.\d+\.\d+\.\d+)$`)
-	for ctx.Err() == nil {
-		// Define a timeout since the default client has a large timeout and we don't
-		// want to wait too long.
-		const timeout = 5 * time.Second
-		ctx, cancel := context.WithTimeout(ctx, timeout)
-		defer cancel()
+	const url = "https://api.github.com/repos/ProtonVPN/proton-vpn-gtk-app/tags?per_page=30"
 
-		url := "https://api.github.com/repos/ProtonMail/WebClients/tags?per_page=30&page=" + fmt.Sprint(page)
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return "", fmt.Errorf("creating request: %w", err)
+	}
+	request.Header.Set("Accept", "application/vnd.github.v3+json")
 
-		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-		if err != nil {
-			return "", fmt.Errorf("creating request: %w", err)
-		}
-		request.Header.Set("Accept", "application/vnd.github.v3+json")
+	response, err := client.Do(request)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
 
-		response, err := client.Do(request)
-		if err != nil {
-			return "", err
-		}
-		defer response.Body.Close()
-
-		data, err := io.ReadAll(response.Body)
-		if err != nil {
-			return "", fmt.Errorf("reading response body: %w", err)
-		}
-
-		if response.StatusCode != http.StatusOK {
-			return "", fmt.Errorf("%w: %s: %s", ErrHTTPStatusCodeNotOK, response.Status, data)
-		}
-
-		var tags []struct {
-			Name string `json:"name"`
-		}
-		err = json.Unmarshal(data, &tags)
-		if err != nil {
-			return "", fmt.Errorf("decoding JSON response: %w", err)
-		}
-
-		for _, tag := range tags {
-			if !regexVersion.MatchString(tag.Name) {
-				continue
-			}
-			version := "web-account@" + strings.TrimPrefix(tag.Name, "proton-account@")
-			return version, nil
-		}
-
-		page++
+	if response.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("%w: %s", ErrHTTPStatusCodeNotOK, response.Status)
 	}
 
-	return "", fmt.Errorf("%w (queried %d pages)", context.Canceled, page)
+	decoder := json.NewDecoder(response.Body)
+	var data []struct {
+		Name string `json:"name"`
+	}
+	err = decoder.Decode(&data)
+	if err != nil {
+		return "", fmt.Errorf("decoding JSON response: %w", err)
+	}
+
+	// Find the first valid semver tag (tags are returned newest first by GitHub)
+	regexVersion := regexp.MustCompile(`^v(\d+\.\d+\.\d+)$`)
+	for _, tag := range data {
+		if m := regexVersion.FindStringSubmatch(tag.Name); m != nil {
+			version = "linux-vpn@" + strings.TrimPrefix(tag.Name, "v")
+			return version, nil
+		}
+	}
+
+	return "", fmt.Errorf("no valid semver tag found in proton-vpn-gtk-app tags")
 }
