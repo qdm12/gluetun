@@ -101,7 +101,7 @@ func (p PortForwarding) Validate(vpnProvider string) (err error) {
 			return fmt.Errorf("%w", ErrPortForwardingPasswordEmpty)
 		}
 	case providers.Protonvpn:
-		const maxPortsCount = 5
+		const maxPortsCount = 4
 		if p.PortsCount > maxPortsCount {
 			return fmt.Errorf("%w: %d > %d", ErrPortsCountTooHigh, p.PortsCount, maxPortsCount)
 		}
