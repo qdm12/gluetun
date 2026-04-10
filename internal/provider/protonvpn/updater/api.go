@@ -326,6 +326,7 @@ func (c *apiClient) authInfo(ctx context.Context, email string, unauthCookie coo
 		return "", "", "", "", "", 0, fmt.Errorf("creating request: %w", err)
 	}
 	c.setHeaders(request, unauthCookie)
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
@@ -438,6 +439,7 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 		return cookie{}, fmt.Errorf("creating request: %w", err)
 	}
 	c.setHeaders(request, unauthCookie)
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
