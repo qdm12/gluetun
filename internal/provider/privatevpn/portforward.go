@@ -22,7 +22,7 @@ var ErrPortForwardedNotFound = errors.New("port forwarded not found")
 // PortForward obtains a VPN server side port forwarded from the PrivateVPN API.
 // It returns 0 if all ports are to forwarded on a dedicated server IP.
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
-	ports []uint16, err error,
+	internalToExternalPorts map[uint16]uint16, err error,
 ) {
 	// Define a timeout since the default client has a large timeout and we don't
 	// want to wait too long.
@@ -75,7 +75,8 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	if err != nil {
 		return nil, fmt.Errorf("parsing port: %w", err)
 	}
-	return []uint16{uint16(portUint64)}, nil
+	port := uint16(portUint64)
+	return map[uint16]uint16{port: port}, nil
 }
 
 func (p *Provider) KeepPortForward(ctx context.Context,
