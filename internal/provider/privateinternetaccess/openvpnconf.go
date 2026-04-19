@@ -27,10 +27,6 @@ func (p *Provider) OpenVPNConfig(connection models.Connection,
 		providerSettings.Ciphers = []string{openvpn.AES128cbc}
 		providerSettings.Auth = openvpn.SHA1
 		providerSettings.CAs = []string{caNormalPreset}
-	case presets.None:
-		providerSettings.Ciphers = []string{"none"}
-		providerSettings.Auth = "none"
-		providerSettings.CAs = []string{caNormalPreset}
 	default: // strong
 		providerSettings.Ciphers = []string{openvpn.AES256cbc}
 		providerSettings.Auth = openvpn.SHA256

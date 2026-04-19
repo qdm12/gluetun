@@ -132,7 +132,6 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	// Validate EncPreset
 	if vpnProvider == providers.PrivateInternetAccess {
 		validEncryptionPresets := []string{
-			presets.None,
 			presets.Normal,
 			presets.Strong,
 		}
