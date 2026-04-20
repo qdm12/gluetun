@@ -74,8 +74,8 @@ github.com/prometheus/common v0.60.1 h1:FUas6GcOw66yB/73KC+BOZoFJmbo/1pojoILArPA
 github.com/prometheus/common v0.60.1/go.mod h1:h0LYf1R1deLSKtD4Vdg8gy4RuOvENW2J/h19V5NADQw=
 github.com/prometheus/procfs v0.15.1 h1:YagwOFzUgYfKKHX6Dr+sHT7km/hxC76UB0learggepc=
 github.com/prometheus/procfs v0.15.1/go.mod h1:fB45yRUv8NstnjriLhBQLuOUt+WW4BsoGhij/e3PBqk=
-github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260418231648-0418ff535211 h1:1+06j7G/xZ5yjaY34IeYrENO4UPmg1zDPhKr9Tt0BaQ=
-github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260418231648-0418ff535211/go.mod h1:98foWgXJZ+g8gJIuO+fdO+oWpFei5WShMFTeN4Im2lE=
+github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260420142954-82c9a88e64b0 h1:QSeTaPgAi5jLKL9y33Ob5k1Mu+5EU5WLj7ULtiDBDEk=
+github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260420142954-82c9a88e64b0/go.mod h1:98foWgXJZ+g8gJIuO+fdO+oWpFei5WShMFTeN4Im2lE=
 github.com/qdm12/goservices v0.1.1-0.20251104135713-6bee97bd4978 h1:TRGpCU1l0lNwtogEUSs5U+RFceYxkAJUmrGabno7J5c=
 github.com/qdm12/goservices v0.1.1-0.20251104135713-6bee97bd4978/go.mod h1:D1Po4CRQLYjccnAR2JsVlN1sBMgQrcNLONbvyuzcdTg=
 github.com/qdm12/gosettings v0.4.4 h1:SM6tOZDf6k8qbjWU8KWyBF4mWIixfsKCfh9DGRLHlj4=

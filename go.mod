@@ -14,7 +14,7 @@ require (
 	github.com/mdlayher/genetlink v1.3.2
 	github.com/mdlayher/netlink v1.9.0
 	github.com/pelletier/go-toml/v2 v2.2.4
-	github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260418231648-0418ff535211
+	github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260420142954-82c9a88e64b0
 	github.com/qdm12/gosettings v0.4.4
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.2.1-0.20260305164749-b713de4fee6c
