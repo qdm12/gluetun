@@ -39,7 +39,6 @@ func (p *Provider) PortForward(ctx context.Context,
 	}
 
 	serverName := objects.ServerName
-	apiIP := buildAPIIPAddress(objects.Gateway)
 	logger := objects.Logger
 
 	if !objects.CanPortForward {
@@ -68,9 +67,14 @@ func (p *Provider) PortForward(ctx context.Context,
 		}
 	}
 
+	p.apiIP, err = findAPIIP(ctx, privateIPClient, objects.Gateway)
+	if err != nil {
+		return nil, fmt.Errorf("finding API IP address: %w", err)
+	}
+
 	if !dataFound || expired {
 		client := objects.Client
-		data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, apiIP,
+		data, err = refreshPIAPortForwardData(ctx, client, privateIPClient, p.apiIP,
 			p.portForwardPath, objects.Username, objects.Password)
 		if err != nil {
 			return nil, fmt.Errorf("refreshing port forward data: %w", err)
@@ -80,7 +84,7 @@ func (p *Provider) PortForward(ctx context.Context,
 	logger.Info("Port forwarded data expires in " + format.FriendlyDuration(durationToExpiration))
 
 	// First time binding
-	if err := bindPort(ctx, privateIPClient, apiIP, data); err != nil {
+	if err := bindPort(ctx, privateIPClient, p.apiIP, data); err != nil {
 		return nil, fmt.Errorf("binding port: %w", err)
 	}
 
@@ -98,8 +102,6 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 	case !objects.Gateway.IsValid():
 		panic("gateway is not set")
 	}
-
-	apiIP := buildAPIIPAddress(objects.Gateway)
 
 	privateIPClient, err := newHTTPClient(objects.ServerName)
 	if err != nil {
@@ -128,7 +130,7 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 			}
 			return ctx.Err()
 		case <-keepAliveTimer.C:
-			err = bindPort(ctx, privateIPClient, apiIP, data)
+			err = bindPort(ctx, privateIPClient, p.apiIP, data)
 			if err != nil {
 				return fmt.Errorf("binding port: %w", err)
 			}
@@ -140,15 +142,53 @@ func (p *Provider) KeepPortForward(ctx context.Context,
 	}
 }
 
-func buildAPIIPAddress(gateway netip.Addr) (api netip.Addr) {
+var errAPIIPNotFound = errors.New("API IP address not found")
+
+func findAPIIP(ctx context.Context, client *http.Client, gateway netip.Addr) (
+	apiIP netip.Addr, err error,
+) {
 	if gateway.Is6() {
 		panic("IPv6 gateway not supported")
 	}
 
 	gatewayBytes := gateway.As4()
-	gatewayBytes[2] = 128
-	gatewayBytes[3] = 1
-	return netip.AddrFrom4(gatewayBytes)
+	gatewayBytes[3] = 1 // x.y.z.1
+
+	gatewayBytes[2] = 128 // x.y.128.1
+	oldAPIIP := netip.AddrFrom4(gatewayBytes)
+	gatewayBytes[2] = 0 // x.y.0.1 - new API IP reported by some users
+	newAPIIP := netip.AddrFrom4(gatewayBytes)
+	possibleIPs := []netip.Addr{oldAPIIP, newAPIIP}
+
+	errs := make([]error, 0, len(possibleIPs))
+	for _, ip := range possibleIPs {
+		const timeout = 5 * time.Second
+		ctx, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+
+		url := url.URL{
+			Scheme: "https",
+			Host:   net.JoinHostPort(ip.String(), "19999"),
+			Path:   "/ping",
+		}
+
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("trying IP %s: %w", ip, err))
+			continue
+		}
+
+		response, err := client.Do(request)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("trying IP %s: %w", ip, err))
+			continue
+		}
+
+		_ = response.Body.Close()
+		return ip, nil
+	}
+
+	return netip.Addr{}, fmt.Errorf("%w: %w", errAPIIPNotFound, errors.Join(errs...))
 }
 
 func refreshPIAPortForwardData(ctx context.Context, client, privateIPClient *http.Client,
