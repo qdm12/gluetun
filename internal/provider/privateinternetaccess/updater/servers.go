@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/models"
@@ -77,6 +78,9 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 
 func addData(regions []regionData, nts nameToServer) (change bool) {
 	for _, region := range regions {
+		if strings.HasSuffix(region.DNS, "pvt.site") {
+			continue
+		}
 		for _, server := range region.Servers.UDP {
 			const tcp, udp = false, true
 			if nts.add(server.CN, region.DNS, region.Name, tcp, udp, region.PortForward, server.IP) {
