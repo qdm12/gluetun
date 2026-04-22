@@ -22,11 +22,12 @@ import (
 // oddities of Proton's authentication flow they want to keep hidden
 // from the public.
 type apiClient struct {
-	apiURLBase string
-	httpClient *http.Client
-	appVersion string
-	userAgent  string
-	generator  *rand.ChaCha8
+	apiURLBase       string
+	httpClient       *http.Client
+	appVersion       string
+	vpnGtkAppVersion string
+	userAgent        string
+	generator        *rand.ChaCha8
 }
 
 // newAPIClient returns an [apiClient] with sane defaults matching Proton's
@@ -46,17 +47,22 @@ func newAPIClient(ctx context.Context, httpClient *http.Client) (client *apiClie
 	}
 	userAgent := userAgents[generator.Uint64()%uint64(len(userAgents))]
 
-	appVersion, err := getMostRecentStableTag(ctx, httpClient)
+	appVersion, err := getMostRecentStableWebAccountTag(ctx, httpClient)
 	if err != nil {
-		return nil, fmt.Errorf("getting most recent version for proton app: %w", err)
+		return nil, fmt.Errorf("getting most recent version for web-account: %w", err)
+	}
+	vpnGtkAppVersion, err := getMostRecentStableVPNGtkAppTag(ctx, httpClient)
+	if err != nil {
+		return nil, fmt.Errorf("getting most recent version for linux VPN GTK app: %w", err)
 	}
 
 	return &apiClient{
-		apiURLBase: "https://account.proton.me/api",
-		httpClient: httpClient,
-		appVersion: appVersion,
-		userAgent:  userAgent,
-		generator:  generator,
+		apiURLBase:       "https://account.proton.me/api",
+		httpClient:       httpClient,
+		appVersion:       appVersion,
+		vpnGtkAppVersion: vpnGtkAppVersion,
+		userAgent:        userAgent,
+		generator:        generator,
 	}, nil
 }
 
@@ -66,10 +72,10 @@ var ErrCodeNotSuccess = errors.New("response code is not success")
 // to succeed without being blocked by their "security" measures.
 // See for example [getMostRecentStableTag] on how the app version must
 // be set to a recent version or they block your request. "SeCuRiTy"...
-func (c *apiClient) setHeaders(request *http.Request, cookie cookie) {
+func (c *apiClient) setHeaders(request *http.Request, cookie cookie, appVersion string) {
 	request.Header.Set("Cookie", cookie.String())
 	request.Header.Set("User-Agent", c.userAgent)
-	request.Header.Set("x-pm-appversion", c.appVersion)
+	request.Header.Set("x-pm-appversion", appVersion)
 	request.Header.Set("x-pm-locale", "en_US")
 	request.Header.Set("x-pm-uid", cookie.uid)
 }
@@ -165,7 +171,7 @@ func (c *apiClient) getUnauthSession(ctx context.Context, sessionID string) (
 	unauthCookie := cookie{
 		sessionID: sessionID,
 	}
-	c.setHeaders(request, unauthCookie)
+	c.setHeaders(request, unauthCookie, c.appVersion)
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
@@ -252,7 +258,7 @@ func (c *apiClient) cookieToken(ctx context.Context, sessionID, tokenType, acces
 		uid:       uid,
 		sessionID: sessionID,
 	}
-	c.setHeaders(request, unauthCookie)
+	c.setHeaders(request, unauthCookie, c.appVersion)
 	request.Header.Set("Authorization", tokenType+" "+accessToken)
 
 	response, err := c.httpClient.Do(request)
@@ -325,7 +331,7 @@ func (c *apiClient) authInfo(ctx context.Context, email string, unauthCookie coo
 	if err != nil {
 		return "", "", "", "", "", 0, fmt.Errorf("creating request: %w", err)
 	}
-	c.setHeaders(request, unauthCookie)
+	c.setHeaders(request, unauthCookie, c.appVersion)
 	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.httpClient.Do(request)
@@ -438,7 +444,7 @@ func (c *apiClient) auth(ctx context.Context, unauthCookie cookie,
 	if err != nil {
 		return cookie{}, fmt.Errorf("creating request: %w", err)
 	}
-	c.setHeaders(request, unauthCookie)
+	c.setHeaders(request, unauthCookie, c.appVersion)
 	request.Header.Set("Content-Type", "application/json")
 
 	response, err := c.httpClient.Do(request)
@@ -590,7 +596,9 @@ func (c *apiClient) fetchServers(ctx context.Context, cookie cookie) (
 	if err != nil {
 		return data, err
 	}
-	c.setHeaders(request, cookie)
+	// Note we use the vpnGtkAppVersion field given it produces an output of more servers
+	c.setHeaders(request, cookie, c.vpnGtkAppVersion)
+	request.Header.Set("x-pm-appversion", "linux-vpn@4.15.2")
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {
