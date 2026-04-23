@@ -45,17 +45,20 @@ type portForwardData struct {
 // Valid port range is 30000-65535.
 // See: https://cryptostorm.is/portfwd
 func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObjects) (
-	ports []uint16, err error,
+	internalToExternalPorts map[uint16]uint16, err error,
 ) {
 	const timeout = 10 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	// Determine the port to request:
-	// 1. Use VPN_PORT_FORWARDING_LISTENING_PORT if set.
+	// 1. Use VPN_PORT_FORWARDING_LISTENING_PORTS[0] if set (non-zero).
 	// 2. Otherwise try to read a previously persisted port.
 	// 3. Otherwise return an error (Cryptostorm does not auto-assign ports).
-	listeningPort := objects.ListeningPort
+	var listeningPort uint16
+	if len(objects.ListeningPorts) > 0 && objects.ListeningPorts[0] != 0 {
+		listeningPort = objects.ListeningPorts[0]
+	}
 	if listeningPort == 0 {
 		data, err := readPortForwardData(p.portForwardPath)
 		if err != nil {
@@ -67,7 +70,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	}
 
 	if listeningPort == 0 {
-		return nil, fmt.Errorf("%w: set VPN_PORT_FORWARDING_LISTENING_PORT to a value between 30000 and 65535",
+		return nil, fmt.Errorf("%w: set VPN_PORT_FORWARDING_LISTENING_PORTS to a value between 30000 and 65535",
 			common.ErrPortForwardNotSupported)
 	}
 
@@ -111,13 +114,17 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 			common.ErrPortForwardNotSupported)
 	}
 
+	internalToExternalPorts = make(map[uint16]uint16, len(matches))
+	ports := make([]uint16, 0, len(matches))
 	const base, bitSize = 10, 16
 	for _, match := range matches {
 		portUint64, err := strconv.ParseUint(match[1], base, bitSize)
 		if err != nil {
 			return nil, fmt.Errorf("parsing port number %q: %w", match[1], err)
 		}
-		ports = append(ports, uint16(portUint64))
+		port := uint16(portUint64)
+		ports = append(ports, port)
+		internalToExternalPorts[port] = port // no NAT; internal == external
 	}
 
 	// Persist the resulting ports for future restarts.
@@ -125,7 +132,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		return nil, fmt.Errorf("persisting port forward data: %w", err)
 	}
 
-	return ports, nil
+	return internalToExternalPorts, nil
 }
 
 func (p *Provider) KeepPortForward(ctx context.Context,
