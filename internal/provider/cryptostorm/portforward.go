@@ -114,21 +114,30 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 			common.ErrPortForwardNotSupported)
 	}
 
-	internalToExternalPorts = make(map[uint16]uint16, len(matches))
-	ports := make([]uint16, 0, len(matches))
+	// The server response lists all currently active forwards for this session,
+	// which may include stale ports from prior runs. Only return the port we
+	// actually requested so the caller's ListeningPorts slice stays in sync.
 	const base, bitSize = 10, 16
+	requestedFound := false
 	for _, match := range matches {
 		portUint64, err := strconv.ParseUint(match[1], base, bitSize)
 		if err != nil {
 			return nil, fmt.Errorf("parsing port number %q: %w", match[1], err)
 		}
-		port := uint16(portUint64)
-		ports = append(ports, port)
-		internalToExternalPorts[port] = port // no NAT; internal == external
+		if uint16(portUint64) == listeningPort {
+			requestedFound = true
+			break
+		}
+	}
+	if !requestedFound {
+		return nil, fmt.Errorf("%w: requested port %d not found in server response",
+			common.ErrPortForwardNotSupported, listeningPort)
 	}
 
-	// Persist the resulting ports for future restarts.
-	if err := writePortForwardData(p.portForwardPath, portForwardData{Ports: ports}); err != nil {
+	internalToExternalPorts = map[uint16]uint16{listeningPort: listeningPort}
+
+	// Persist so the next restart can reuse this port without re-requesting.
+	if err := writePortForwardData(p.portForwardPath, portForwardData{Ports: []uint16{listeningPort}}); err != nil {
 		return nil, fmt.Errorf("persisting port forward data: %w", err)
 	}
 
