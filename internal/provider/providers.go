@@ -11,6 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/airvpn"
 	"github.com/qdm12/gluetun/internal/provider/common"
+	"github.com/qdm12/gluetun/internal/provider/cryptostorm"
 	"github.com/qdm12/gluetun/internal/provider/custom"
 	"github.com/qdm12/gluetun/internal/provider/cyberghost"
 	"github.com/qdm12/gluetun/internal/provider/expressvpn"
@@ -60,6 +61,7 @@ func NewProviders(storage Storage, timeNow func() time.Time,
 	//nolint:lll
 	providerNameToProvider := map[string]Provider{
 		providers.Airvpn:                airvpn.New(storage, randSource, client),
+		providers.Cryptostorm:           cryptostorm.New(storage, randSource, client, updaterWarner, parallelResolver),
 		providers.Custom:                custom.New(extractor),
 		providers.Cyberghost:            cyberghost.New(storage, randSource, updaterWarner, parallelResolver),
 		providers.Expressvpn:            expressvpn.New(storage, randSource, unzipper, updaterWarner, parallelResolver),
