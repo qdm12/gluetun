@@ -13,6 +13,7 @@ type Provider struct {
 	storage         common.Storage
 	randSource      rand.Source
 	portForwardPath string
+	forwardedPort   uint16 // set after a successful PortForward, used for teardown
 	common.Fetcher
 }
 

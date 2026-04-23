@@ -115,8 +115,8 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 	}
 
 	// The server response lists all currently active forwards for this session,
-	// which may include stale ports from prior runs. Only return the port we
-	// actually requested so the caller's ListeningPorts slice stays in sync.
+	// which may include stale ports from prior runs. Delete any that are not
+	// the one we requested, then verify ours is present.
 	const base, bitSize = 10, 16
 	requestedFound := false
 	for _, match := range matches {
@@ -124,9 +124,15 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 		if err != nil {
 			return nil, fmt.Errorf("parsing port number %q: %w", match[1], err)
 		}
-		if uint16(portUint64) == listeningPort {
+		port := uint16(portUint64)
+		if port == listeningPort {
 			requestedFound = true
-			break
+			continue
+		}
+		// Best-effort delete; log but don't fail if it errors.
+		if err := p.deletePort(ctx, objects.Client, port); err != nil {
+			objects.Logger.Warn("deleting stale port forward " +
+				strconv.FormatUint(uint64(port), 10) + ": " + err.Error())
 		}
 	}
 	if !requestedFound {
@@ -134,6 +140,7 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 			common.ErrPortForwardNotSupported, listeningPort)
 	}
 
+	p.forwardedPort = listeningPort
 	internalToExternalPorts = map[uint16]uint16{listeningPort: listeningPort}
 
 	// Persist so the next restart can reuse this port without re-requesting.
@@ -145,11 +152,44 @@ func (p *Provider) PortForward(ctx context.Context, objects utils.PortForwardObj
 }
 
 func (p *Provider) KeepPortForward(ctx context.Context,
-	_ utils.PortForwardObjects,
+	objects utils.PortForwardObjects,
 ) (err error) {
 	// Cryptostorm port assignments persist for the session; no keepalive needed.
 	<-ctx.Done()
+
+	// Best-effort deregister on teardown. Use a fresh context since the
+	// original is already cancelled.
+	if p.forwardedPort != 0 {
+		const deleteTimeout = 5 * time.Second
+		deleteCtx, cancel := context.WithTimeout(context.Background(), deleteTimeout)
+		defer cancel()
+		if err := p.deletePort(deleteCtx, objects.Client, p.forwardedPort); err != nil {
+			objects.Logger.Warn("deregistering port forward on teardown: " + err.Error())
+		}
+		p.forwardedPort = 0
+	}
+
 	return ctx.Err()
+}
+
+func (p *Provider) deletePort(ctx context.Context, client *http.Client, port uint16) error {
+	const portForwardURL = "http://10.31.33.7/fwd"
+	body := strings.NewReader("delfwd=" + strconv.FormatUint(uint64(port), 10))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, portForwardURL, body)
+	if err != nil {
+		return fmt.Errorf("creating delete request: %w", err)
+	}
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	response, err := client.Do(request)
+	if err != nil {
+		return fmt.Errorf("sending delete request: %w", err)
+	}
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("%w: %d %s", common.ErrHTTPStatusCodeNotOK,
+			response.StatusCode, response.Status)
+	}
+	return nil
 }
 
 func readPortForwardData(path string) (data portForwardData, err error) {
