@@ -25,3 +25,7 @@ func (n *NoFetcher) FetchServers(context.Context, int) (
 ) {
 	return nil, fmt.Errorf("%w: for %s", ErrFetcherNotSupported, n.providerName)
 }
+
+func (n *NoFetcher) Version() uint16 {
+	return 1
+}

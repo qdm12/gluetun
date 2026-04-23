@@ -6,7 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/provider/surfshark/updater"
+	"github.com/qdm12/gluetun/pkg/updaters/surfshark"
 )
 
 type Provider struct {
@@ -22,7 +22,7 @@ func New(storage common.Storage, randSource rand.Source,
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(client, unzipper, updaterWarner, parallelResolver),
+		Fetcher:    surfshark.New(client, unzipper, updaterWarner, parallelResolver),
 	}
 }
 

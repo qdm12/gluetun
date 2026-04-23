@@ -5,7 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/provider/cyberghost/updater"
+	"github.com/qdm12/gluetun/pkg/updaters/cyberghost"
 )
 
 type Provider struct {
@@ -20,7 +20,7 @@ func New(storage common.Storage, randSource rand.Source,
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(parallelResolver, updaterWarner),
+		Fetcher:    cyberghost.New(parallelResolver, updaterWarner),
 	}
 }
 

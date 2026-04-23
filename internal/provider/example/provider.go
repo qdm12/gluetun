@@ -6,7 +6,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/provider/example/updater"
+	"github.com/qdm12/gluetun/pkg/updaters/example"
 )
 
 type Provider struct {
@@ -23,7 +23,7 @@ func New(storage common.Storage, randSource rand.Source,
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(updaterWarner, unzipper, client, parallelResolver),
+		Fetcher:    example.New(updaterWarner, unzipper, client, parallelResolver),
 	}
 }
 
