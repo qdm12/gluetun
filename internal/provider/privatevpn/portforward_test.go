@@ -28,10 +28,10 @@ func Test_Provider_PortForward(t *testing.T) {
 	cancel()
 
 	testCases := map[string]struct {
-		ctx        context.Context
-		objects    utils.PortForwardObjects
-		ports      []uint16
-		errMessage string
+		ctx                     context.Context
+		objects                 utils.PortForwardObjects
+		internalToExternalPorts map[uint16]uint16
+		errMessage              string
 	}{
 		"canceled context": {
 			ctx: canceledCtx,
@@ -192,7 +192,7 @@ func Test_Provider_PortForward(t *testing.T) {
 					}),
 				},
 			},
-			ports: []uint16{61527},
+			internalToExternalPorts: map[uint16]uint16{61527: 61527},
 		},
 	}
 	for name, testCase := range testCases {
@@ -203,7 +203,7 @@ func Test_Provider_PortForward(t *testing.T) {
 			ports, err := provider.PortForward(testCase.ctx,
 				testCase.objects)
 
-			assert.Equal(t, testCase.ports, ports)
+			assert.Equal(t, testCase.internalToExternalPorts, ports)
 			if testCase.errMessage != "" {
 				assert.EqualError(t, err, testCase.errMessage)
 			} else {

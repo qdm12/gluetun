@@ -22,7 +22,7 @@ type BoringPoll struct {
 
 	// Internal signals and channels
 	cancel context.CancelFunc
-	done   <-chan struct{}
+	done   *sync.WaitGroup
 	mutex  sync.Mutex
 }
 
@@ -53,6 +53,7 @@ func (b *BoringPoll) Start() (runError <-chan error, err error) {
 	const logEveryBytes = 100 * 1000 * 1000 // 100 IEC MB
 
 	var ready, done sync.WaitGroup
+	b.done = &done
 	ready.Add(len(b.urlToData))
 	done.Add(len(b.urlToData))
 	ctx, cancel := context.WithCancel(context.Background())
@@ -166,7 +167,7 @@ func (b *BoringPoll) Stop() error {
 		return nil
 	}
 	b.cancel()
-	<-b.done
+	b.done.Wait()
 	b.cancel = nil
 	b.done = nil
 	return nil

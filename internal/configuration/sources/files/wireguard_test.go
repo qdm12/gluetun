@@ -179,6 +179,11 @@ Endpoint = 1.2.3.4:51820`,
 			endpointIP:   ptrTo("1.2.3.4"),
 			endpointPort: ptrTo("51820"),
 		},
+		"ipv6_endpoint": {
+			iniData: `[Peer]
+Endpoint = [2a02:bbbb:aaaa:8075::10]:51820`,
+			endpointIP: ptrTo("2a02:bbbb:aaaa:8075::10"),
+		},
 	}
 
 	for testName, testCase := range testCases {

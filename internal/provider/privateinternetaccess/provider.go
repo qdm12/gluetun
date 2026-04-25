@@ -3,6 +3,7 @@ package privateinternetaccess
 import (
 	"math/rand"
 	"net/http"
+	"net/netip"
 	"time"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
@@ -17,6 +18,7 @@ type Provider struct {
 	common.Fetcher
 	// Port forwarding
 	portForwardPath string
+	apiIP           netip.Addr
 }
 
 func New(storage common.Storage, randSource rand.Source,

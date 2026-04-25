@@ -138,46 +138,6 @@ func defaultDNSProviders() []string {
 	}
 }
 
-func (d DNS) GetFirstPlaintextIPv4() (ipv4 netip.Addr) {
-	if d.UpstreamType == DNSUpstreamTypePlain {
-		for _, addrPort := range d.UpstreamPlainAddresses {
-			if addrPort.Addr().Is4() {
-				return addrPort.Addr()
-			}
-		}
-	}
-
-	ipv4 = findPlainIPv4InProviders(d.Providers)
-	if ipv4.IsValid() {
-		return ipv4
-	}
-
-	// Either:
-	// - all upstream plain addresses are IPv6 and no provider is set
-	// - all providers set do not have a plaintext IPv4 address
-	ipv4 = findPlainIPv4InProviders(defaultDNSProviders())
-	if !ipv4.IsValid() {
-		panic("no plaintext IPv4 address found in default DNS providers")
-	}
-	return ipv4
-}
-
-func findPlainIPv4InProviders(providerNames []string) netip.Addr {
-	providers := provider.NewProviders()
-	for _, name := range providerNames {
-		provider, err := providers.Get(name)
-		if err != nil {
-			// Settings should be validated before calling this function,
-			// so an error happening here is a programming error.
-			panic(err)
-		}
-		if len(provider.Plain.IPv4) > 0 {
-			return provider.Plain.IPv4[0].Addr()
-		}
-	}
-	return netip.Addr{}
-}
-
 func (d DNS) String() string {
 	return d.toLinesNode().String()
 }

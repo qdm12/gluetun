@@ -11,6 +11,7 @@ import (
 	"github.com/qdm12/gluetun/internal/configuration/settings"
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
 	"github.com/qdm12/gluetun/internal/storage"
@@ -40,7 +41,9 @@ type IPFetcher interface {
 }
 
 type IPv6Checker interface {
-	IsIPv6Supported() (supported bool, err error)
+	FindIPv6SupportLevel(ctx context.Context,
+		checkAddresses []netip.AddrPort, firewall netlink.Firewall,
+	) (level netlink.IPv6SupportLevel, err error)
 }
 
 type OpenVPNConfigCommand struct {
@@ -67,7 +70,7 @@ func (c *OpenVPNConfigCommand) Description() string {
 	return "OPrint the OpenVPN configuration (for debugging)"
 }
 
-func (c *OpenVPNConfigCommand) Run(_ context.Context) error {
+func (c *OpenVPNConfigCommand) Run(ctx context.Context) error {
 	storage, err := storage.New(c.logger, constants.ServersData)
 	if err != nil {
 		return err
@@ -80,12 +83,13 @@ func (c *OpenVPNConfigCommand) Run(_ context.Context) error {
 	}
 	allSettings.SetDefaults()
 
-	ipv6Supported, err := c.ipv6Checker.IsIPv6Supported()
+	ipv6SupportLevel, err := c.ipv6Checker.FindIPv6SupportLevel(ctx,
+		allSettings.IPv6.CheckAddresses, &noopFirewall{})
 	if err != nil {
 		return fmt.Errorf("checking for IPv6 support: %w", err)
 	}
 
-	if err = allSettings.Validate(storage, ipv6Supported, c.logger); err != nil {
+	if err = allSettings.Validate(storage, ipv6SupportLevel.IsSupported(), c.logger); err != nil {
 		return fmt.Errorf("validating settings: %w", err)
 	}
 
@@ -101,13 +105,13 @@ func (c *OpenVPNConfigCommand) Run(_ context.Context) error {
 		unzipper, parallelResolver, ipFetcher, openvpnFileExtractor, allSettings.Updater)
 	providerConf := providers.Get(allSettings.VPN.Provider.Name)
 	connection, err := providerConf.GetConnection(
-		allSettings.VPN.Provider.ServerSelection, ipv6Supported)
+		allSettings.VPN.Provider.ServerSelection, ipv6SupportLevel == netlink.IPv6Internet)
 	if err != nil {
 		return err
 	}
 
 	lines := providerConf.OpenVPNConfig(connection,
-		allSettings.VPN.OpenVPN, ipv6Supported)
+		allSettings.VPN.OpenVPN, ipv6SupportLevel.IsSupported())
 
 	fmt.Println(strings.Join(lines, "\n"))
 	return nil

@@ -3,6 +3,7 @@ package files
 import (
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -82,12 +83,15 @@ func parseWireguardPeerSection(peerSection *ini.Section) (
 	publicKey = getINIKeyFromSection(peerSection, "PublicKey")
 	endpoint := getINIKeyFromSection(peerSection, "Endpoint")
 	if endpoint != nil {
-		parts := strings.Split(*endpoint, ":")
-		endpointIP = &parts[0]
-		const partsWithPort = 2
-		if len(parts) >= partsWithPort {
-			endpointPort = new(string)
-			*endpointPort = strings.Join(parts[1:], ":")
+		host, port, err := net.SplitHostPort(*endpoint)
+		if err == nil {
+			endpointIP = &host
+			// IPv6 hosts contain colons; port is managed by the provider for those
+			if !strings.Contains(host, ":") {
+				endpointPort = &port
+			}
+		} else {
+			endpointIP = endpoint
 		}
 	}
 

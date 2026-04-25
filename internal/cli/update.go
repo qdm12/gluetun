@@ -83,7 +83,7 @@ func (c *UpdateCommand) Run(ctx context.Context) error {
 	}
 
 	if dnsServer != "" {
-		logger.Warn("The -dns flag is no longer used, your DNS will use DoH with Cloudflare and Google")
+		c.logger.Warn("The -dns flag is no longer used, your DNS will use DoH with Cloudflare and Google")
 	}
 
 	if !endUserMode && !maintainerMode {

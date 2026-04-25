@@ -23,6 +23,8 @@
   color: "959a9c"
 - name: "Closed: ☠️ cannot be done"
   color: "959a9c"
+- name: "Closed: 🤖🍺 drunk AI"
+  color: "959a9c"
 
 - name: "Priority: 🚨 Urgent"
   color: "03adfc"
